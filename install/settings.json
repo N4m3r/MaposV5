@@ -1,12 +1,12 @@
 {
-	"title": "MAPOS - Sistema de Controle de Ordens de Serviço",
-	"extensions": [
-		"cURL",
-		"MySQLi",
-		"GD",
+  "title": "MAPOS V5 - Sistema de Controle de Ordens de Serviço",
+  "extensions": [
+    "cURL",
+    "MySQLi",
+    "GD",
     "zip"
-	],
-  "database_file": "../banco.sql",
+  ],
+  "database_file": "../database/sql/instalacao_completa_mapos5.sql",
   "writeable_directories": {
     "files": "/updates"
   }
