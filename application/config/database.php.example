@@ -1,0 +1,36 @@
+<?php
+/**
+ * Configuração do Banco de Dados
+ *
+ * INSTRUÇÕES:
+ * 1. Copie este arquivo para database.php
+ * 2. Altere as credenciais abaixo
+ * 3. Salve o arquivo
+ */
+
+defined('BASEPATH') or exit('No direct script access allowed');
+
+$active_group = 'default';
+$query_builder = true;
+
+$db['default'] = [
+    'dsn'          => '',
+    'hostname'     => 'localhost',      // Servidor MySQL
+    'username'     => 'root',           // Usuário do banco
+    'password'     => '',               // Senha do banco
+    'database'     => 'mapos',          // Nome do banco
+    'dbdriver'     => 'mysqli',         // Driver (mysqli ou pdo)
+    'dbprefix'     => '',
+    'pconnect'     => false,
+    'db_debug'     => true,
+    'cache_on'     => false,
+    'cachedir'     => '',
+    'char_set'     => 'utf8mb4',
+    'dbcollat'     => 'utf8mb4_unicode_ci',
+    'swap_pre'     => '',
+    'encrypt'      => false,
+    'compress'     => false,
+    'stricton'     => false,
+    'failover'     => [],
+    'save_queries' => true,
+];

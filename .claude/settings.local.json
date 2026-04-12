@@ -1,0 +1,34 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cat application/logs/*.log)",
+      "Bash(ls -la assets/assinaturas/*/)",
+      "Bash(grep -n \"CREATE TABLE.*os_assinaturas\" -A 20 application/logs/*.sql)",
+      "Bash(php -r \"require 'index.php'; echo 'OK';\")",
+      "Bash(ls -la application/database/migrations/*dashboard* application/controllers/Dashboard.php application/models/Dashboard_model.php application/views/dashboard/index.php application/views/tema/menu.php)",
+      "Bash(php index.php tools migrate)",
+      "Bash(php -l application/models/Os_model.php)",
+      "Bash(php -l application/controllers/Os.php)",
+      "Bash(php:*)",
+      "WebFetch(domain:developers.cora.com.br)",
+      "WebSearch",
+      "Bash(composer update:*)",
+      "Bash(mv menu.php menu_backup.php)",
+      "Bash(mv menu_novo.php menu.php)",
+      "Bash(ls -la application/libraries/email/)",
+      "Bash(ls -la application/libraries/scheduler/)",
+      "Bash(ls application/controllers/Email.php)",
+      "Bash(ls application/controllers/Certificado.php)",
+      "Bash(ls:*)",
+      "Bash(sed -i 's|require_once APPPATH . '\\\\''libraries/email/EmailQueue.php'\\\\'';||' /home/jj-ferreiras/www/mapos3/application/controllers/Email.php)",
+      "Bash(sed -i 's|require_once APPPATH . '\\\\''libraries/email/TemplateEngine.php'\\\\'';||' /home/jj-ferreiras/www/mapos3/application/controllers/Email.php)",
+      "Bash(sed -i 's|require_once APPPATH . '\\\\''libraries/email/EmailTracker.php'\\\\'';||' /home/jj-ferreiras/www/mapos3/application/controllers/Email.php)",
+      "Bash(sed -i 's|require_once APPPATH . '\\\\''libraries/scheduler/EventScheduler.php'\\\\'';||' /home/jj-ferreiras/www/mapos3/application/controllers/Email.php)",
+      "Bash(grep:*)",
+      "Bash(awk '{print $9}')",
+      "Bash(xargs -n1 basename)",
+      "Bash(awk '{print \"   \" $9}')",
+      "Bash(awk '{print $9, \"-\", $5}')"
+    ]
+  }
+}

@@ -1,0 +1,541 @@
+<?php
+/**
+ * Model: Impostos Simples Nacional
+ * Gerencia retenção automática de impostos em boletos e integração com DRE
+ */
+class Impostos_model extends CI_Model
+{
+    public function __construct()
+    {
+        parent::__construct();
+        $this->load->model('dre_model');
+        $this->load->model('certificado_model');
+    }
+
+    // ==================== CONFIGURAÇÕES ====================
+
+    /**
+     * Obtém configuração do sistema
+     */
+    public function getConfig($chave)
+    {
+        $this->db->where('chave', $chave);
+        $result = $this->db->get('config_sistema_impostos')->row();
+        return $result ? $result->valor : null;
+    }
+
+    /**
+     * Atualiza configuração
+     */
+    public function setConfig($chave, $valor)
+    {
+        $this->db->where('chave', $chave);
+        $exists = $this->db->get('config_sistema_impostos')->row();
+
+        if ($exists) {
+            $this->db->where('chave', $chave);
+            return $this->db->update('config_sistema_impostos', [
+                'valor' => $valor,
+                'updated_at' => date('Y-m-d H:i:s')
+            ]);
+        } else {
+            return $this->db->insert('config_sistema_impostos', [
+                'chave' => $chave,
+                'valor' => $valor,
+                'updated_at' => date('Y-m-d H:i:s')
+            ]);
+        }
+    }
+
+    /**
+     * Obtém todas as alíquotas de um anexo
+     */
+    public function getAliquotasAnexo($anexo = 'III')
+    {
+        $this->db->where('anexo', $anexo);
+        $this->db->where('ativo', 1);
+        $this->db->order_by('faixa', 'ASC');
+        return $this->db->get('impostos_config')->result();
+    }
+
+    /**
+     * Obtém alíquota específica por faixa
+     */
+    public function getAliquotaFaixa($anexo, $faixa)
+    {
+        $this->db->where('anexo', $anexo);
+        $this->db->where('faixa', $faixa);
+        $this->db->where('ativo', 1);
+        return $this->db->get('impostos_config')->row();
+    }
+
+    /**
+     * Calcula a alíquota efetiva com base no faturamento
+     * (simplificado - usa a faixa configurada)
+     * Se houver certificado configurado, tenta identificar automaticamente
+     */
+    public function getAliquotaEfetiva($anexo = null, $faixa = null)
+    {
+        // Tentar obter do certificado primeiro
+        $certificado = $this->certificado_model->getCertificadoAtivo();
+
+        if ($certificado) {
+            // Buscar dados do Simples Nacional vinculados ao certificado
+            $this->db->where('certificado_id', $certificado->id);
+            $this->db->where('tipo_consulta', 'SIMPLES_NACIONAL');
+            $this->db->where('sucesso', 1);
+            $this->db->order_by('data_consulta', 'DESC');
+            $consulta = $this->db->get('certificado_consultas', 1)->row();
+
+            if ($consulta && $consulta->dados_retorno) {
+                $dados = json_decode($consulta->dados_retorno, true);
+                if (isset($dados['anexo_sugerido']) && !$anexo) {
+                    $anexo = $dados['anexo_sugerido'];
+                }
+            }
+
+            // Se não tiver anexo definido, usar padrão
+            if (!$anexo) {
+                $anexo = $this->getConfig('IMPOSTO_ANEXO_PADRAO') ?: 'III';
+            }
+
+            // Tentar identificar faixa pelo faturamento (simplificado)
+            if (!$faixa) {
+                $faixa = $this->identificarFaixaFaturamento($certificado->cnpj);
+            }
+        } else {
+            // Usar configurações manuais
+            if (!$anexo) {
+                $anexo = $this->getConfig('IMPOSTO_ANEXO_PADRAO') ?: 'III';
+            }
+            if (!$faixa) {
+                $faixa = $this->getConfig('IMPOSTO_FAIXA_ATUAL') ?: 1;
+            }
+        }
+
+        return $this->getAliquotaFaixa($anexo, $faixa);
+    }
+
+    /**
+     * Identifica a faixa de faturamento com base no histórico
+     */
+    private function identificarFaixaFaturamento($cnpj)
+    {
+        // Calcular faturamento dos últimos 12 meses
+        $data_inicio = date('Y-m-d', strtotime('-12 months'));
+        $data_fim = date('Y-m-t');
+
+        $sql = "
+            SELECT SUM(valor_bruto) as total
+            FROM impostos_retidos
+            WHERE data_competencia BETWEEN ? AND ?
+        ";
+
+        $result = $this->db->query($sql, [$data_inicio, $data_fim])->row();
+        $faturamento = $result->total ?: 0;
+
+        // Definir faixa conforme tabela do Simples Nacional 2024
+        // Anexo III - Serviços
+        // 1ª Faixa: até R$ 180.000
+        // 2ª Faixa: de R$ 180.001 a R$ 360.000
+        // 3ª Faixa: de R$ 360.001 a R$ 720.000
+        // 4ª Faixa: de R$ 720.001 a R$ 1.800.000
+        // 5ª Faixa: de R$ 1.800.001 a R$ 4.800.000
+
+        if ($faturamento <= 180000) return 1;
+        if ($faturamento <= 360000) return 2;
+        if ($faturamento <= 720000) return 3;
+        if ($faturamento <= 1800000) return 4;
+        return 5;
+    }
+
+    // ==================== CÁLCULO DE IMPOSTOS ====================
+
+    /**
+     * Calcula os impostos sobre um valor
+     * Retorna array com todos os valores de impostos
+     */
+    public function calcularImpostos($valor_bruto, $anexo = null, $faixa = null)
+    {
+        $aliquota = $this->getAliquotaEfetiva($anexo, $faixa);
+
+        if (!$aliquota) {
+            return false;
+        }
+
+        // Calcular cada imposto baseado na proporção dentro da alíquota nominal
+        $total_impostos = 0;
+        $aliquota_nominal = floatval($aliquota->aliquota_nominal);
+
+        // Se não houver alíquota nominal, usar divisão padrão
+        if ($aliquota_nominal == 0) {
+            $aliquota_nominal = 6.0; // Alíquota mínima padrão
+        }
+
+        $calculos = [
+            'aliquota_nominal' => $aliquota_nominal,
+            'aliquota_irpj' => floatval($aliquota->irpj),
+            'aliquota_csll' => floatval($aliquota->csll),
+            'aliquota_cofins' => floatval($aliquota->cofins),
+            'aliquota_pis' => floatval($aliquota->pis),
+            'aliquota_cpp' => floatval($aliquota->cpp),
+            'aliquota_iss' => floatval($aliquota->iss),
+        ];
+
+        // Calcular valores em R$
+        $calculos['irpj_valor'] = round($valor_bruto * ($calculos['aliquota_irpj'] / 100), 2);
+        $calculos['csll_valor'] = round($valor_bruto * ($calculos['aliquota_csll'] / 100), 2);
+        $calculos['cofins_valor'] = round($valor_bruto * ($calculos['aliquota_cofins'] / 100), 2);
+        $calculos['pis_valor'] = round($valor_bruto * ($calculos['aliquota_pis'] / 100), 2);
+        $calculos['iss_valor'] = round($valor_bruto * ($calculos['aliquota_iss'] / 100), 2);
+
+        // Total de impostos (exceto CPP que é contribuição previdenciária)
+        $calculos['total_impostos'] = $calculos['irpj_valor'] + $calculos['csll_valor'] +
+                                       $calculos['cofins_valor'] + $calculos['pis_valor'] +
+                                       $calculos['iss_valor'];
+
+        $calculos['valor_liquido'] = $valor_bruto - $calculos['total_impostos'];
+
+        return $calculos;
+    }
+
+    /**
+     * Calcula impostos apenas com ISS (para cálculo isolado)
+     */
+    public function calcularISS($valor_bruto)
+    {
+        $aliquota_iss = floatval($this->getConfig('IMPOSTO_ISS_MUNICIPAL')) ?: 5.00;
+        $valor_iss = round($valor_bruto * ($aliquota_iss / 100), 2);
+
+        return [
+            'aliquota' => $aliquota_iss,
+            'valor' => $valor_iss,
+            'valor_liquido' => $valor_bruto - $valor_iss
+        ];
+    }
+
+    // ==================== RETENÇÃO EM BOLETOS ====================
+
+    /**
+     * Registra retenção de impostos para uma cobrança
+     * Chamado automaticamente na geração de boleto
+     */
+    public function reterImpostos($dados)
+    {
+        // Verificar se retenção automática está ativa
+        if ($this->getConfig('IMPOSTO_RETENCAO_AUTOMATICA') != '1') {
+            return false;
+        }
+
+        // Calcular impostos
+        $calculos = $this->calcularImpostos($dados['valor_bruto']);
+
+        if (!$calculos) {
+            return false;
+        }
+
+        // Preparar dados para inserção
+        $retencao = [
+            'cobranca_id' => $dados['cobranca_id'] ?? null,
+            'os_id' => $dados['os_id'] ?? null,
+            'venda_id' => $dados['venda_id'] ?? null,
+            'cliente_id' => $dados['cliente_id'],
+            'valor_bruto' => $dados['valor_bruto'],
+            'valor_liquido' => $calculos['valor_liquido'],
+            'aliquota_aplicada' => $calculos['aliquota_nominal'],
+            'irpj_valor' => $calculos['irpj_valor'],
+            'csll_valor' => $calculos['csll_valor'],
+            'cofins_valor' => $calculos['cofins_valor'],
+            'pis_valor' => $calculos['pis_valor'],
+            'iss_valor' => $calculos['iss_valor'],
+            'total_impostos' => $calculos['total_impostos'],
+            'data_competencia' => $dados['data_competencia'] ?? date('Y-m-01'),
+            'data_retencao' => date('Y-m-d H:i:s'),
+            'nota_fiscal' => $dados['nota_fiscal'] ?? null,
+            'status' => 'Retido',
+            'observacao' => $dados['observacao'] ?? 'Retenção automática na geração do boleto',
+            'usuarios_id' => $this->session->userdata('id_admin'),
+            'created_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s')
+        ];
+
+        if ($this->db->insert('impostos_retidos', $retencao)) {
+            $retencao_id = $this->db->insert_id();
+
+            // Integrar com DRE se configurado
+            if ($this->getConfig('IMPOSTO_DRE_INTEGRACAO') == '1') {
+                $this->integrarComDRE($retencao, $retencao_id);
+            }
+
+            return $retencao_id;
+        }
+
+        return false;
+    }
+
+    /**
+     * Integra a retenção com lançamentos DRE
+     */
+    private function integrarComDRE($retencao, $retencao_id)
+    {
+        // Buscar conta de deduções do DRE
+        $this->db->where('codigo', '2.1'); // Impostos Sobre Vendas
+        $conta_imposto = $this->db->get('dre_contas')->row();
+
+        if ($conta_imposto) {
+            $lancamento_id = $this->dre_model->adicionarLancamento([
+                'conta_id' => $conta_imposto->id,
+                'data' => date('Y-m-d'),
+                'valor' => $retencao['total_impostos'],
+                'tipo_movimento' => 'DEBITO',
+                'descricao' => 'Impostos retidos Simples Nacional - Boleto #' . ($retencao['cobranca_id'] ?? 'N/A'),
+                'documento' => 'NF ' . ($retencao['nota_fiscal'] ?? 'N/A'),
+            ]);
+
+            // Atualizar vínculo
+            if ($lancamento_id) {
+                $this->db->where('id', $retencao_id);
+                $this->db->update('impostos_retidos', [
+                    'dre_lancamento_id' => $lancamento_id
+                ]);
+            }
+        }
+    }
+
+    /**
+     * Obtém retenções por período
+     */
+    public function getRetencoes($data_inicio, $data_fim, $cliente_id = null)
+    {
+        $this->db->select('ir.*, c.nomeCliente, os.idOs as os_numero, cobrancas.charge_id');
+        $this->db->from('impostos_retidos ir');
+        $this->db->join('clientes c', 'c.idClientes = ir.cliente_id', 'left');
+        $this->db->join('os', 'os.idOs = ir.os_id', 'left');
+        $this->db->join('cobrancas', 'cobrancas.idCobranca = ir.cobranca_id', 'left');
+        $this->db->where('ir.data_competencia >=', $data_inicio);
+        $this->db->where('ir.data_competencia <=', $data_fim);
+
+        if ($cliente_id) {
+            $this->db->where('ir.cliente_id', $cliente_id);
+        }
+
+        $this->db->order_by('ir.data_retencao', 'DESC');
+        return $this->db->get()->result();
+    }
+
+    /**
+     * Obtém totais de impostos por período
+     */
+    public function getTotaisImpostos($data_inicio, $data_fim)
+    {
+        $sql = "
+            SELECT
+                COUNT(*) as total_retencoes,
+                SUM(valor_bruto) as total_bruto,
+                SUM(valor_liquido) as total_liquido,
+                SUM(total_impostos) as total_impostos,
+                SUM(irpj_valor) as total_irpj,
+                SUM(csll_valor) as total_csll,
+                SUM(cofins_valor) as total_cofins,
+                SUM(pis_valor) as total_pis,
+                SUM(iss_valor) as total_iss
+            FROM impostos_retidos
+            WHERE data_competencia BETWEEN ? AND ?
+            AND status != 'Estornado'
+        ";
+
+        $result = $this->db->query($sql, [$data_inicio, $data_fim])->row();
+
+        // Adicionar percentuais
+        if ($result->total_bruto > 0) {
+            $result->percentual_imposto = round(($result->total_impostos / $result->total_bruto) * 100, 2);
+        } else {
+            $result->percentual_imposto = 0;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Obtém evolução mensal de impostos
+     */
+    public function getEvolucaoImpostos($meses = 6)
+    {
+        $dados = [];
+
+        for ($i = $meses - 1; $i >= 0; $i--) {
+            $data_fim = date('Y-m-t', strtotime("-{$i} months"));
+            $data_inicio = date('Y-m-01', strtotime("-{$i} months"));
+
+            $totais = $this->getTotaisImpostos($data_inicio, $data_fim);
+
+            $dados[] = [
+                'mes' => date('Y-m', strtotime($data_inicio)),
+                'mes_formatado' => date('m/Y', strtotime($data_inicio)),
+                'total_bruto' => $totais->total_bruto ?: 0,
+                'total_impostos' => $totais->total_impostos ?: 0,
+                'total_liquido' => $totais->total_liquido ?: 0,
+                'percentual' => $totais->percentual_imposto ?: 0,
+            ];
+        }
+
+        return $dados;
+    }
+
+    /**
+     * Atualiza status de uma retenção
+     */
+    public function atualizarStatusRetencao($id, $status, $observacao = null)
+    {
+        $data = [
+            'status' => $status,
+            'updated_at' => date('Y-m-d H:i:s')
+        ];
+
+        if ($observacao) {
+            $data['observacao'] = $observacao;
+        }
+
+        $this->db->where('id', $id);
+        return $this->db->update('impostos_retidos', $data);
+    }
+
+    /**
+     * Processa retenção automática quando uma cobrança é criada
+     * Chamado pelo hook após geração de boleto
+     */
+    public function processarRetencaoCobranca($cobranca_id, $dados_adicionais = [])
+    {
+        // Verificar se retenção automática está ativa
+        if ($this->getConfig('IMPOSTO_RETENCAO_AUTOMATICA') != '1') {
+            return false;
+        }
+
+        // Buscar dados da cobrança
+        $this->db->where('idCobranca', $cobranca_id);
+        $cobranca = $this->db->get('cobrancas')->row();
+
+        if (!$cobranca) {
+            return false;
+        }
+
+        // Verificar se já existe retenção para esta cobrança
+        $this->db->where('cobranca_id', $cobranca_id);
+        if ($this->db->get('impostos_retidos')->num_rows() > 0) {
+            return false; // Já existe retenção
+        }
+
+        // Preparar dados para retenção
+        $dados_retencao = [
+            'cobranca_id' => $cobranca_id,
+            'os_id' => $cobranca->os_id,
+            'venda_id' => $cobranca->vendas_id,
+            'cliente_id' => $cobranca->clientes_id,
+            'data_competencia' => date('Y-m-01'),
+            'nota_fiscal' => $dados_adicionais['nota_fiscal'] ?? null,
+        ];
+
+        // Buscar valor da OS ou Venda
+        if ($cobranca->os_id) {
+            $this->db->where('idOs', $cobranca->os_id);
+            $os = $this->db->get('os')->row();
+            $dados_retencao['valor_bruto'] = $os ? floatval($os->valorTotal) : 0;
+        } elseif ($cobranca->vendas_id) {
+            $this->db->where('idVendas', $cobranca->vendas_id);
+            $venda = $this->db->get('vendas')->row();
+            $dados_retencao['valor_bruto'] = $venda ? floatval($venda->valorTotal) : 0;
+        } else {
+            $dados_retencao['valor_bruto'] = 0;
+        }
+
+        if ($dados_retencao['valor_bruto'] <= 0) {
+            return false;
+        }
+
+        return $this->reterImpostos($dados_retencao);
+    }
+
+    /**
+     * Estorna uma retenção (quando boleto é cancelado)
+     */
+    public function estornarRetencao($cobranca_id)
+    {
+        $this->db->where('cobranca_id', $cobranca_id);
+        $this->db->where('status', 'Retido');
+        $retencao = $this->db->get('impostos_retidos')->row();
+
+        if ($retencao) {
+            $this->db->where('id', $retencao->id);
+            $this->db->update('impostos_retidos', [
+                'status' => 'Estornado',
+                'observacao' => 'Estornado por cancelamento do boleto',
+                'updated_at' => date('Y-m-d H:i:s')
+            ]);
+
+            // Estornar também no DRE
+            if ($retencao->dre_lancamento_id) {
+                $this->dre_model->excluirLancamento($retencao->dre_lancamento_id);
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    // ==================== RELATÓRIOS ====================
+
+    /**
+     * Gera relatório de impostos para o DRE
+     */
+    public function getRelatorioImpostosDRE($data_inicio, $data_fim)
+    {
+        $totais = $this->getTotaisImpostos($data_inicio, $data_fim);
+        $retencoes = $this->getRetencoes($data_inicio, $data_fim);
+        $evolucao = $this->getEvolucaoImpostos(6);
+
+        return [
+            'totais' => $totais,
+            'retencoes' => $retencoes,
+            'evolucao' => $evolucao,
+            'periodo' => [
+                'inicio' => $data_inicio,
+                'fim' => $data_fim
+            ]
+        ];
+    }
+
+    /**
+     * Exporta relatório de impostos
+     */
+    public function exportarRelatorio($data_inicio, $data_fim)
+    {
+        $retencoes = $this->getRetencoes($data_inicio, $data_fim);
+
+        $csv = [
+            ['RELATÓRIO DE IMPOSTOS RETIDOS - SIMPLES NACIONAL'],
+            ['Período: ' . date('d/m/Y', strtotime($data_inicio)) . ' a ' . date('d/m/Y', strtotime($data_fim))],
+            [''],
+            ['Cliente', 'NF', 'Valor Bruto', 'IRPJ', 'CSLL', 'COFINS', 'PIS', 'ISS', 'Total Impostos', 'Valor Líquido', 'Data', 'Status']
+        ];
+
+        foreach ($retencoes as $r) {
+            $csv[] = [
+                $r->nomeCliente,
+                $r->nota_fiscal ?: '-',
+                number_format($r->valor_bruto, 2, ',', '.'),
+                number_format($r->irpj_valor, 2, ',', '.'),
+                number_format($r->csll_valor, 2, ',', '.'),
+                number_format($r->cofins_valor, 2, ',', '.'),
+                number_format($r->pis_valor, 2, ',', '.'),
+                number_format($r->iss_valor, 2, ',', '.'),
+                number_format($r->total_impostos, 2, ',', '.'),
+                number_format($r->valor_liquido, 2, ',', '.'),
+                date('d/m/Y', strtotime($r->data_retencao)),
+                $r->status
+            ];
+        }
+
+        return $csv;
+    }
+}

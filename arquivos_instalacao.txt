@@ -1,0 +1,210 @@
+================================================================================
+MAPOS V5 - LISTA DE ARQUIVOS PARA INSTALAÇÃO LIMPA
+================================================================================
+
+ESTRUTURA DE PASTAS OBRIGATÓRIA:
+================================
+
+mapos5/
+│
+├── 📄 ARQUIVOS RAIZ (Essenciais)
+│   ├── index.php
+│   ├── .htaccess
+│   ├── composer.json
+│   ├── composer.lock
+│   ├── robots.txt
+│   ├── manifest.json
+│   └── .gitignore
+│
+├── 📁 application/              # CÓDIGO PRINCIPAL
+│   ├── config/
+│   │   ├── config.php          # Configurações gerais
+│   │   ├── database.php        # Configurar DB aqui
+│   │   ├── routes.php          # Rotas
+│   │   ├── autoload.php        # Auto-load
+│   │   └── ...
+│   │
+│   ├── controllers/            # TODOS os controllers
+│   │   ├── Mapos.php
+│   │   ├── Login.php
+│   │   ├── Clientes.php
+│   │   ├── Os.php
+│   │   ├── Vendas.php
+│   │   ├── Email.php           # NOVO - Sistema de email
+│   │   ├── Certificado.php     # NOVO - Certificado digital
+│   │   ├── Dre.php             # NOVO - DRE Contábil
+│   │   ├── Impostos.php        # NOVO - Impostos
+│   │   ├── Webhooks.php        # NOVO - Webhooks
+│   │   └── ...
+│   │
+│   ├── models/                 # TODOS os models
+│   │   ├── Mapos_model.php
+│   │   ├── Clientes_model.php
+│   │   ├── Os_model.php
+│   │   └── ...
+│   │
+│   ├── views/                  # TODAS as views
+│   │   ├── tema/              # Tema principal
+│   │   ├── cliente/
+│   │   ├── os/
+│   │   ├── vendas/
+│   │   ├── emails/            # NOVO - Views de email
+│   │   ├── certificado/       # NOVO - Views certificado
+│   │   ├── dre/               # NOVO - Views DRE
+│   │   ├── impostos/          # NOVO - Views impostos
+│   │   ├── webhooks/          # NOVO - Views webhooks
+│   │   └── ...
+│   │
+│   ├── libraries/              # LIBRARIES (IMPORTANTE!)
+│   │   ├── email/             # NOVO - Sistema de email
+│   │   │   ├── EmailQueue.php
+│   │   │   ├── TemplateEngine.php
+│   │   │   ├── EmailTracker.php
+│   │   │   └── SmtpPool.php
+│   │   │
+│   │   ├── scheduler/         # NOVO - Agendamento
+│   │   │   └── EventScheduler.php
+│   │   │
+│   │   ├── notifications/
+│   │   ├── gateways/
+│   │   └── ...
+│   │
+│   ├── helpers/                # HELPERS
+│   │   ├── autoload_helper.php # NOVO - Autoloader
+│   │   ├── general_helper.php
+│   │   ├── date_helper.php
+│   │   └── ...
+│   │
+│   ├── database/
+│   │   └── migrations/        # Migrations
+│   │
+│   ├── hooks/
+│   ├── core/
+│   ├── language/
+│   ├── logs/                  # (vazio, apenas .htaccess)
+│   └── cache/                 # (vazio, apenas .htaccess)
+│
+├── 📁 assets/                  # ARQUIVOS ESTÁTICOS
+│   ├── css/
+│   ├── js/
+│   ├── img/
+│   ├── font-awesome/
+│   ├── uploads/              # (vazio, criar na instalação)
+│   └── ...
+│
+├── 📁 system/                  # CODEIGNITER CORE
+│   └── ...
+│
+├── 📁 install/                 # INSTALADOR WEB
+│   ├── index.php
+│   ├── do_install.php
+│   ├── view/
+│   └── assets/
+│
+└── 📁 database/sql/            # SCRIPTS SQL
+    └── instalacao_completa_mapos5.sql  # BANCO COMPLETO V5
+
+================================================================================
+ARQUIVOS QUE DEVEM SER REMOVIDOS/IGNORADOS NA INSTALAÇÃO:
+================================================================================
+
+❌ NÃO ENVIAR:
+├── .git/                       # Repositório Git
+├── .claude/                    # Arquivos do Claude
+├── .github/                    # GitHub Actions
+├── docs/                       # Documentação
+├── projeto/                    # Arquivos de planejamento
+├── deploy/                     # Scripts de deploy
+├── database/sql/ (exceto instalacao_completa_mapos5.sql)
+├── *.md                        # Readmes (exceto README.md raiz)
+├── *.bat                       # Scripts batch
+├── *.ps1                       # Scripts PowerShell
+├── *.tar.gz                    # Arquivos compactados
+├── *.log                       # Logs
+├── application/logs/*          # (manter apenas .htaccess)
+├── application/cache/*         # (manter apenas .htaccess)
+└── INSTRUCOES_*.md            # Instruções avulsas
+
+================================================================================
+PERMISSÕES DE PASTAS (APÓS UPLOAD):
+================================================================================
+
+Pasta                           Permissão
+-------------------------------------------
+application/logs/               777
+application/cache/              777
+assets/uploads/                 777
+updates/                        777
+
+================================================================================
+CHECKLIST PRÉ-INSTALAÇÃO:
+================================================================================
+
+Servidor:
+[ ] PHP 8.2 ou 8.3
+[ ] MySQL 5.7+ ou MariaDB 10.3+
+[ ] Apache com mod_rewrite habilitado
+[ ] Extensões PHP: mysqli, mbstring, intl, json, openssl
+
+Banco de Dados:
+[ ] Criar database: mapos
+[ ] Importar: database/sql/instalacao_completa_mapos5.sql
+
+Arquivos:
+[ ] Enviar todos os arquivos ESSENCIAIS
+[ ] Configurar application/config/database.php
+[ ] Configurar application/config/config.php (base_url)
+[ ] Ajustar permissões das pastas
+
+Pós-Instalação:
+[ ] Acessar: http://seudominio.com/install
+[ ] Finalizar instalação
+[ ] Acessar: http://seudominio.com
+[ ] Login: admin@mapos.com.br / admin
+[ ] ALTERAR SENHA IMEDIATAMENTE!
+
+================================================================================
+COMANDO PARA CRIAR PACOTE LIMPO:
+================================================================================
+
+Windows (PowerShell):
+---------------------
+# 1. Criar pasta temporária
+mkdir mapos5_instalar
+
+# 2. Copiar estrutura essencial
+xcopy application mapos5_instalar\application\ /E /I /H
+xcopy assets mapos5_instalar\assets\ /E /I /H
+xcopy system mapos5_instalar\system\ /E /I /H
+xcopy install mapos5_instalar\install\ /E /I /H
+
+# 3. Copiar arquivos raiz
+copy index.php mapos5_instalar\
+copy .htaccess mapos5_instalar\
+copy composer.json mapos5_instalar\
+copy composer.lock mapos5_instalar\
+copy robots.txt mapos5_instalar\
+
+# 4. Limpar arquivos desnecessários
+rmdir /s /q mapos5_instalar\application\logs\* 2>nul
+rmdir /s /q mapos5_instalar\application\cache\* 2>nul
+
+# 5. Compactar
+7z a -tzip mapos5_instalar.zip mapos5_instalar\
+
+Linux:
+------
+# Criar pacote limpo
+tar -czf mapos5_instalar.tar.gz \
+  --exclude='.git' \
+  --exclude='.claude' \
+  --exclude='docs' \
+  --exclude='projeto' \
+  --exclude='deploy' \
+  --exclude='*.bat' \
+  --exclude='*.ps1' \
+  --exclude='*.log' \
+  --exclude='*.tar.gz' \
+  application assets system install index.php .htaccess composer.* robots.txt
+
+================================================================================

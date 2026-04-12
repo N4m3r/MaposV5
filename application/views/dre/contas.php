@@ -1,0 +1,165 @@
+<?php
+/**
+ * Plano de Contas DRE
+ */
+?\u003e
+
+<style>
+.conta-row {
+    display: flex;
+    align-items: center;
+    padding: 8px 15px;
+    border-bottom: 1px solid #eee;
+}
+.conta-row:hover {
+    background: #f9f9f9;
+}
+.conta-row.nivel-1 { font-weight: bold; background: #f0f0f0; }
+.conta-row.nivel-2 { padding-left: 30px; }
+.conta-row.nivel-3 { padding-left: 50px; font-size: 13px; }
+
+.conta-codigo {
+    width: 100px;
+    font-family: monospace;
+    color: #666;
+}
+.conta-nome {
+    flex: 1;
+}
+.conta-tipo {
+    width: 120px;
+}
+.conta-grupo {
+    width: 180px;
+}
+.conta-acoes {
+    width: 100px;
+    text-align: right;
+}
+
+.badge-tipo {
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 11px;
+}
+.badge-tipo.RECEITA { background: #27ae60; color: white; }
+.badge-tipo.CUSTO { background: #e74c3c; color: white; }
+.badge-tipo.DESPESA { background: #e67e22; color: white; }
+.badge-tipo.IMPOSTO { background: #9b59b6; color: white; }
+.badge-tipo.TRANSFERENCIA { background: #95a5a6; color: white; }
+</style>
+
+<!-- Header -->
+<div class="row-fluid">
+    <div class="span12">
+        <ul class="breadcrumb">
+            <li><a href="\u003c?= site_url('dashboard') ?\u003e">Dashboard</a> <span class="divider">/</span></li>
+            <li><a href="\u003c?= site_url('dre') ?\u003e">DRE Contábil</a> <span class="divider">/</span></li>
+            <li class="active">Plano de Contas</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Botões -->
+<div class="row-fluid">
+    <div class="span12">
+        <div class="widget-box">
+            <div class="widget-title">
+                <span class="icon"><i class="fas fa-list-alt"></i></span>
+                <h5>Plano de Contas DRE</h5>
+                <div class="buttons">
+                    <a href="\u003c?= site_url('dre/conta_form') ?\u003e" class="btn btn-success btn-small">
+                        <i class="fas fa-plus"></i> Nova Conta
+                    </a>
+                    <a href="\u003c?= site_url('dre') ?\u003e" class="btn btn-small">
+                        <i class="fas fa-arrow-left"></i> Voltar
+                    </a>
+                </div>
+            </div>
+            <div class="widget-content">
+                <p class="text-info">
+                    <i class="fas fa-info-circle"></i>
+                    Configure as contas do plano de contas para a Demonstração do Resultado do Exercício.
+                    As contas são organizadas em grupos que compõem a estrutura da DRE.
+                </p>
+
+                <!-- Legenda -->
+                <div class="well well-small" style="margin-bottom: 20px;">
+                    <strong>Legenda:</strong>
+                    <span class="badge-tipo RECEITA" style="margin-left: 10px;">RECEITA</span>
+                    <span class="badge-tipo CUSTO">CUSTO</span>
+                    <span class="badge-tipo DESPESA">DESPESA</span>
+                    <span class="badge-tipo IMPOSTO">IMPOSTO</span>
+                    <span class="badge-tipo TRANSFERENCIA">TRANSFERÊNCIA</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Lista de Contas -->
+<div class="row-fluid">
+    <div class="span12">
+        <div class="widget-box">
+            <div class="widget-content nopadding">
+                <!-- Header da Lista -->
+                <div class="conta-row nivel-1" style="background: #e0e0e0;">
+                    <div class="conta-codigo"><strong>Código</strong></div>
+                    <div class="conta-nome"><strong>Nome</strong></div>
+                    <div class="conta-tipo"><strong>Tipo</strong></div>
+                    <div class="conta-grupo"><strong>Grupo DRE</strong></div>
+                    <div class="conta-acoes"><strong>Ações</strong></div>
+                </div>
+
+                <!-- Contas -->
+                \u003c?php foreach ($contas as $conta): ?\u003e
+                <div class="conta-row nivel-\u003c?= $conta->nivel ?\u003e">
+                    <div class="conta-codigo">\u003c?= $conta->codigo ?\u003e</div>
+                    <div class="conta-nome">\u003c?= $conta->nome ?\u003e</div>
+                    <div class="conta-tipo">
+                        <span class="badge-tipo \u003c?= $conta->tipo ?\u003e">\u003c?= $conta->tipo ?\u003e</span>
+                    </div>
+                    <div class="conta-grupo">
+                        \u003c?= str_replace('_', ' ', $conta->grupo) ?\u003e
+                    </div>
+                    <div class="conta-acoes">
+                        <a href="\u003c?= site_url('dre/conta_form/' . $conta->id) ?\u003e" class="btn btn-mini btn-info" title="Editar">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="\u003c?= site_url('dre/conta_excluir/' . $conta->id) ?\u003e" class="btn btn-mini btn-danger" title="Excluir" onclick="return confirm('Tem certeza que deseja excluir esta conta?')">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </div>
+                </div>
+                \u003c?php endforeach; ?\u003e
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Estrutura DRE -->
+<div class="row-fluid">
+    <div class="span12">
+        <div class="widget-box">
+            <div class="widget-title">
+                <span class="icon"><i class="fas fa-sitemap"></i></span>
+                <h5>Estrutura da DRE</h5>
+            </div>
+            <div class="widget-content">
+                <ol>
+                    <li><strong>RECEITA BRUTA</strong> - Total de vendas e serviços</li>
+                    <li><strong>(-) DEDUÇÕES</strong> - Impostos, devoluções e descontos</li>
+                    <li><strong>= RECEITA LÍQUIDA</strong> - Receita menos deduções</li>
+                    <li><strong>(-) CUSTOS</strong> - Custo dos serviços/produtos vendidos</li>
+                    <li><strong>= LUCRO BRUTO</strong> - Margem de contribuição</li>
+                    <li><strong>(-) DESPESAS OPERACIONAIS</strong> - Administrativas, vendas, etc</li>
+                    <li><strong>= LUCRO OPERACIONAL</strong> - Resultado da operação</li>
+                    <li><strong>(+/-) OUTRAS RECEITAS/DESPESAS</strong> - Financeiras, não-operacionais</li>
+                    <li><strong>= LUCRO ANTES DO IR</strong> - Base para cálculo do imposto</li>
+                    <li><strong>(-) IMPOSTO DE RENDA</strong> - IRPJ, CSLL, etc</li>
+                    <li><strong>= LUCRO LÍQUIDO</strong> - Resultado final do exercício</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
