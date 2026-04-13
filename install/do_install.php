@@ -17,42 +17,16 @@ if (! file_exists($settings_file)) {
     $settings = json_decode($contents, true);
 }
 
-// Função para retornar progresso (não usada diretamente, apenas via saveProgress)
-function sendProgress($percent, $message, $step) {
-    echo json_encode([
-        'success' => false,
-        'progress' => true,
-        'percent' => $percent,
-        'message' => $message,
-        'step' => $step
-    ]);
-    if (ob_get_level() > 0) {
-        ob_flush();
-    }
-    flush();
-}
-
-// Verificar se é uma requisição de progresso
-if (isset($_GET['action']) && $_GET['action'] === 'progress') {
-    // Retorna o estado atual (se houver arquivo de progresso)
-    $progress_file = sys_get_temp_dir() . '/mapos_install_progress.json';
-    if (file_exists($progress_file)) {
-        echo file_get_contents($progress_file);
-    } else {
-        echo json_encode(['percent' => 0, 'message' => 'Aguardando início...', 'step' => 0]);
-    }
+// Função auxiliar para retornar erro
+function returnError($message, $step = 0) {
+    echo json_encode(['success' => false, 'message' => $message, 'step' => $step]);
     exit();
 }
 
-// Função para salvar progresso
+// Função de progresso (mantida para compatibilidade, mas não salva em arquivo)
 function saveProgress($percent, $message, $step) {
-    $progress_file = sys_get_temp_dir() . '/mapos_install_progress.json';
-    file_put_contents($progress_file, json_encode([
-        'percent' => $percent,
-        'message' => $message,
-        'step' => $step,
-        'timestamp' => time()
-    ]));
+    // Não faz nada - o progresso é apenas informativo no código
+    // e será retornado no JSON final
 }
 
 if (! empty($_POST)) {
@@ -560,7 +534,13 @@ if (! empty($_POST)) {
     $env_file = str_replace('enter_encryption_key', $encryption_key, $env_file);
     $env_file = str_replace('enter_baseurl', $base_url, $env_file);
 
-    $env_file = str_replace('enter_jwt_key', base64_encode(openssl_random_pseudo_bytes(32)), $env_file);
+    // Gerar chave JWT - usar openssl se disponível, senão fallback para mt_rand
+    if (function_exists('openssl_random_pseudo_bytes')) {
+        $jwt_key = base64_encode(openssl_random_pseudo_bytes(32));
+    } else {
+        $jwt_key = base64_encode(md5(uniqid(mt_rand(), true)) . md5(uniqid(mt_rand(), true)));
+    }
+    $env_file = str_replace('enter_jwt_key', $jwt_key, $env_file);
     $env_file = str_replace('enter_token_expire_time', '3600', $env_file);
     $env_file = str_replace('enter_api_enabled', 'true', $env_file);
     $env_file = str_replace('pre_installation', 'production', $env_file);
@@ -575,12 +555,6 @@ if (! empty($_POST)) {
     if (!file_exists($env_output_path) || filesize($env_output_path) === 0) {
         echo json_encode(['success' => false, 'message' => 'Arquivo .env foi criado mas está vazio.', 'step' => 8]);
         exit();
-    }
-
-    // Limpar arquivo de progresso
-    $progress_file = sys_get_temp_dir() . '/mapos_install_progress.json';
-    if (file_exists($progress_file)) {
-        unlink($progress_file);
     }
 
     echo json_encode(['success' => true, 'message' => 'Instalação bem sucedida!', 'percent' => 100, 'step' => 8]);
