@@ -474,8 +474,38 @@ if (! empty($_POST)) {
     $mysqli->close();
     // database created
 
+    // ============================================
+    // CRIAR ARQUIVO .ENV
+    // ============================================
     $env_file_path = '..' . DIRECTORY_SEPARATOR . 'application' . DIRECTORY_SEPARATOR . '.env.example';
+    $env_output_path = '..' . DIRECTORY_SEPARATOR . 'application' . DIRECTORY_SEPARATOR . '.env';
+
+    // Verificar se o arquivo .env.example existe
+    if (!file_exists($env_file_path)) {
+        echo json_encode(['success' => false, 'message' => 'Arquivo .env.example não encontrado em: ' . realpath(dirname($env_file_path))]);
+        exit();
+    }
+
+    // Verificar se o arquivo .env.example é legível
+    if (!is_readable($env_file_path)) {
+        echo json_encode(['success' => false, 'message' => 'Arquivo .env.example não pode ser lido. Verifique as permissões.']);
+        exit();
+    }
+
     $env_file = file_get_contents($env_file_path);
+
+    // Verificar se o conteúdo foi lido corretamente
+    if ($env_file === false) {
+        echo json_encode(['success' => false, 'message' => 'Erro ao ler o arquivo .env.example']);
+        exit();
+    }
+
+    // Verificar se o diretório de saída é gravável
+    $env_dir = dirname($env_output_path);
+    if (!is_writable($env_dir)) {
+        echo json_encode(['success' => false, 'message' => 'Diretório application/ não é gravável. Verifique as permissões.']);
+        exit();
+    }
 
     // set the database config file
     $env_file = str_replace('enter_db_hostname', $host, $env_file);
@@ -496,11 +526,20 @@ if (! empty($_POST)) {
     // set the environment = production
     $env_file = str_replace('pre_installation', 'production', $env_file);
 
-    if (file_put_contents('..' . DIRECTORY_SEPARATOR . 'application' . DIRECTORY_SEPARATOR . '.env', $env_file)) {
-        echo json_encode(['success' => true, 'message' => 'Instalação bem sucedida.']);
-    } else {
-        echo json_encode(['success' => false, 'message' => 'Erro ao criar arquivo env.']);
+    // Tentar criar o arquivo .env
+    $result = file_put_contents($env_output_path, $env_file);
+
+    if ($result === false) {
+        echo json_encode(['success' => false, 'message' => 'Erro ao criar arquivo .env. Verifique as permissões de escrita no diretório application/.']);
+        exit();
     }
 
+    // Verificar se o arquivo foi criado e tem conteúdo
+    if (!file_exists($env_output_path) || filesize($env_output_path) === 0) {
+        echo json_encode(['success' => false, 'message' => 'Arquivo .env foi criado mas está vazio ou não pôde ser verificado.']);
+        exit();
+    }
+
+    echo json_encode(['success' => true, 'message' => 'Instalação bem sucedida.']);
     exit();
 }

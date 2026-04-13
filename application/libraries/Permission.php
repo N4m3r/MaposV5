@@ -68,7 +68,7 @@ class Permission
             $this->CI->db->limit(1);
             $array = $this->CI->db->get($this->table)->row_array();
 
-            if (count($array) > 0) {
+            if (is_array($array) && count($array) > 0) {
                 $array = unserialize($array[$this->select]);
                 //Atribui as permissoes ao atributo permissions
                 $this->permissions = [$array];
