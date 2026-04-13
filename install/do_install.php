@@ -1,6 +1,12 @@
 <?php
 
+// Garantir que erros não quebrem o JSON de resposta
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
 ini_set('max_execution_time', 300); //300 seconds
+
+header('Content-Type: application/json');
 
 $settings_file = __DIR__ . DIRECTORY_SEPARATOR . 'settings.json';
 
@@ -484,8 +490,8 @@ if (! empty($_POST)) {
 
     // set random enter_jwt_key
     $env_file = str_replace('enter_jwt_key', base64_encode(openssl_random_pseudo_bytes(32)), $env_file);
-    $env_file = str_replace('enter_token_expire_time', $_POST['enter_token_expire_time'], $env_file);
-    $env_file = str_replace('enter_api_enabled', (string) $_POST['enter_api_enabled'], $env_file);
+    $env_file = str_replace('enter_token_expire_time', '3600', $env_file);
+    $env_file = str_replace('enter_api_enabled', 'true', $env_file);
 
     // set the environment = production
     $env_file = str_replace('pre_installation', 'production', $env_file);
