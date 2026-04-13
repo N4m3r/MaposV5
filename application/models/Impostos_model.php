@@ -125,14 +125,25 @@ class Impostos_model extends CI_Model
         $data_inicio = date('Y-m-d', strtotime('-12 months'));
         $data_fim = date('Y-m-t');
 
+        // Verificar se a tabela existe
+        if (!$this->db->table_exists('impostos_retidos')) {
+            return 1; // Retorna faixa 1 como padrão
+        }
+
         $sql = "
             SELECT SUM(valor_bruto) as total
             FROM impostos_retidos
             WHERE data_competencia BETWEEN ? AND ?
         ";
 
-        $result = $this->db->query($sql, [$data_inicio, $data_fim])->row();
-        $faturamento = $result->total ?: 0;
+        $query = $this->db->query($sql, [$data_inicio, $data_fim]);
+
+        if ($query === false) {
+            return 1; // Retorna faixa 1 como padrão em caso de erro
+        }
+
+        $result = $query->row();
+        $faturamento = $result ? ($result->total ?: 0) : 0;
 
         // Definir faixa conforme tabela do Simples Nacional 2024
         // Anexo III - Serviços
@@ -222,6 +233,11 @@ class Impostos_model extends CI_Model
      */
     public function reterImpostos($dados)
     {
+        // Verificar se a tabela existe
+        if (!$this->db->table_exists('impostos_retidos')) {
+            return false;
+        }
+
         // Verificar se retenção automática está ativa
         if ($this->getConfig('IMPOSTO_RETENCAO_AUTOMATICA') != '1') {
             return false;
@@ -307,6 +323,11 @@ class Impostos_model extends CI_Model
      */
     public function getRetencoes($data_inicio, $data_fim, $cliente_id = null)
     {
+        // Verificar se a tabela existe
+        if (!$this->db->table_exists('impostos_retidos')) {
+            return [];
+        }
+
         $this->db->select('ir.*, c.nomeCliente, os.idOs as os_numero, cobrancas.charge_id');
         $this->db->from('impostos_retidos ir');
         $this->db->join('clientes c', 'c.idClientes = ir.cliente_id', 'left');
@@ -328,6 +349,22 @@ class Impostos_model extends CI_Model
      */
     public function getTotaisImpostos($data_inicio, $data_fim)
     {
+        // Verificar se a tabela existe
+        if (!$this->db->table_exists('impostos_retidos')) {
+            return (object) [
+                'total_retencoes' => 0,
+                'total_bruto' => 0,
+                'total_liquido' => 0,
+                'total_impostos' => 0,
+                'total_irpj' => 0,
+                'total_csll' => 0,
+                'total_cofins' => 0,
+                'total_pis' => 0,
+                'total_iss' => 0,
+                'percentual_imposto' => 0
+            ];
+        }
+
         $sql = "
             SELECT
                 COUNT(*) as total_retencoes,
@@ -344,10 +381,28 @@ class Impostos_model extends CI_Model
             AND status != 'Estornado'
         ";
 
-        $result = $this->db->query($sql, [$data_inicio, $data_fim])->row();
+        $query = $this->db->query($sql, [$data_inicio, $data_fim]);
+
+        // Verificar se a query foi bem sucedida
+        if ($query === false) {
+            return (object) [
+                'total_retencoes' => 0,
+                'total_bruto' => 0,
+                'total_liquido' => 0,
+                'total_impostos' => 0,
+                'total_irpj' => 0,
+                'total_csll' => 0,
+                'total_cofins' => 0,
+                'total_pis' => 0,
+                'total_iss' => 0,
+                'percentual_imposto' => 0
+            ];
+        }
+
+        $result = $query->row();
 
         // Adicionar percentuais
-        if ($result->total_bruto > 0) {
+        if ($result && $result->total_bruto > 0) {
             $result->percentual_imposto = round(($result->total_impostos / $result->total_bruto) * 100, 2);
         } else {
             $result->percentual_imposto = 0;
@@ -387,6 +442,11 @@ class Impostos_model extends CI_Model
      */
     public function atualizarStatusRetencao($id, $status, $observacao = null)
     {
+        // Verificar se a tabela existe
+        if (!$this->db->table_exists('impostos_retidos')) {
+            return false;
+        }
+
         $data = [
             'status' => $status,
             'updated_at' => date('Y-m-d H:i:s')
@@ -406,6 +466,11 @@ class Impostos_model extends CI_Model
      */
     public function processarRetencaoCobranca($cobranca_id, $dados_adicionais = [])
     {
+        // Verificar se a tabela existe
+        if (!$this->db->table_exists('impostos_retidos')) {
+            return false;
+        }
+
         // Verificar se retenção automática está ativa
         if ($this->getConfig('IMPOSTO_RETENCAO_AUTOMATICA') != '1') {
             return false;
@@ -460,6 +525,11 @@ class Impostos_model extends CI_Model
      */
     public function estornarRetencao($cobranca_id)
     {
+        // Verificar se a tabela existe
+        if (!$this->db->table_exists('impostos_retidos')) {
+            return false;
+        }
+
         $this->db->where('cobranca_id', $cobranca_id);
         $this->db->where('status', 'Retido');
         $retencao = $this->db->get('impostos_retidos')->row();
