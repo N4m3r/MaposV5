@@ -81,12 +81,45 @@ echo "</ul>";
 echo "<h2 style='color:#3498db;'>🔧 3. Correção de Permissões</h2>";
 
 $novasPermissoes = [
+    // Certificado
     'vCertificado' => 'Certificado Digital',
+    'cCertificado' => 'Adicionar Certificado',
+    'eCertificado' => 'Editar Certificado',
+    'dCertificado' => 'Excluir Certificado',
+    // Impostos
     'vImpostos' => 'Impostos Simples',
-    'vDRE' => 'DRE Contábil',
+    'cImpostos' => 'Adicionar Impostos',
+    'eImpostos' => 'Editar Impostos',
+    'dImpostos' => 'Excluir Impostos',
+    'cImpostosConfig' => 'Configurar Impostos',
+    'vImpostosRelatorio' => 'Relatório de Impostos',
+    'vImpostosExportar' => 'Exportar Impostos',
+    // DRE Contábil
+    'vDRE' => 'Visualizar DRE',
+    'cDRE' => 'Adicionar DRE',
+    'eDRE' => 'Editar DRE',
+    'dDRE' => 'Excluir DRE',
+    // Outras
     'vRelatorioAtendimentos' => 'Relatório de Atendimentos',
     'vWebhooks' => 'Webhooks',
     'cDocOs' => 'Vincular Documentos à OS',
+    // Dashboard
+    'vDashboard' => 'Dashboard',
+    'vRelatorioCompleto' => 'Relatório Completo',
+    'vExportarDados' => 'Exportar Dados',
+    // Portal do Cliente
+    'vUsuariosCliente' => 'Usuários Cliente',
+    'cUsuariosCliente' => 'Adicionar Usuário Cliente',
+    'eUsuariosCliente' => 'Editar Usuário Cliente',
+    'dUsuariosCliente' => 'Excluir Usuário Cliente',
+    'cPermUsuariosCliente' => 'Permissões Usuário Cliente',
+    // Técnicos
+    'vRelatorioTecnicos' => 'Relatório de Técnicos',
+    'vBtnAtendimento' => 'Botão Atendimento',
+    'vTecnicoOS' => 'Técnico Visualizar OS',
+    'eTecnicoCheckin' => 'Técnico Checkin',
+    'eTecnicoCheckout' => 'Técnico Checkout',
+    'eTecnicoFotos' => 'Técnico Fotos',
 ];
 
 $result = $mysqli->query("SELECT idPermissao, nome, permissoes FROM permissoes WHERE situacao = 1");

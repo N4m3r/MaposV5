@@ -719,6 +719,19 @@ class Impostos_model extends CI_Model
     }
 
     /**
+     * Obtém configurações de tributação para NFS-e
+     */
+    public function getConfiguracaoTributacao()
+    {
+        return [
+            'codigo_tributacao_nacional' => $this->getConfig('IMPOSTO_CODIGO_TRIBUTACAO_NACIONAL') ?: '010701',
+            'codigo_tributacao_municipal' => $this->getConfig('IMPOSTO_CODIGO_TRIBUTACAO_MUNICIPAL') ?: '100',
+            'descricao_servico' => $this->getConfig('IMPOSTO_DESCRICAO_SERVICO') ?: 'Suporte técnico em informática, inclusive instalação, configuração e manutenção de programas de computação e bancos de dados.',
+            'aliquota_iss' => $this->getConfig('IMPOSTO_ISS_MUNICIPAL') ?: '5.00',
+        ];
+    }
+
+    /**
      * Exporta relatório de impostos
      */
     public function exportarRelatorio($data_inicio, $data_fim)

@@ -55,15 +55,9 @@ try {
         'vImpostosExportar' => '1',
         // DRE
         'vDRE' => '1',
-        'vDRERelatorio' => '1',
-        'cDREConta' => '1',
-        'dDREConta' => '1',
-        'cDRELancamento' => '1',
-        'dDRELancamento' => '1',
-        'vDRELancamento' => '1',
-        'cDREIntegracao' => '1',
-        'vDREExportar' => '1',
-        'vDREAnalise' => '1',
+        'cDRE' => '1',
+        'eDRE' => '1',
+        'dDRE' => '1',
         // Relatório de Atendimentos
         'vRelatorioAtendimentos' => '1',
     ];

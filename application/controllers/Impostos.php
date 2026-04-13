@@ -60,6 +60,9 @@ class Impostos extends MY_Controller
             $this->impostos_model->setConfig('IMPOSTO_RETENCAO_AUTOMATICA', $this->input->post('retencao_automatica') ? '1' : '0');
             $this->impostos_model->setConfig('IMPOSTO_DRE_INTEGRACAO', $this->input->post('dre_integracao') ? '1' : '0');
             $this->impostos_model->setConfig('IMPOSTO_ISS_MUNICIPAL', $this->input->post('iss_municipal'));
+            $this->impostos_model->setConfig('IMPOSTO_CODIGO_TRIBUTACAO_NACIONAL', $this->input->post('codigo_tributacao_nacional'));
+            $this->impostos_model->setConfig('IMPOSTO_CODIGO_TRIBUTACAO_MUNICIPAL', $this->input->post('codigo_tributacao_municipal'));
+            $this->impostos_model->setConfig('IMPOSTO_DESCRICAO_SERVICO', $this->input->post('descricao_servico'));
 
             $this->session->set_flashdata('success', 'Configurações atualizadas!');
             redirect('impostos/configuracoes');
@@ -71,6 +74,9 @@ class Impostos extends MY_Controller
             'retencao_automatica' => $this->impostos_model->getConfig('IMPOSTO_RETENCAO_AUTOMATICA') == '1',
             'dre_integracao' => $this->impostos_model->getConfig('IMPOSTO_DRE_INTEGRACAO') == '1',
             'iss_municipal' => $this->impostos_model->getConfig('IMPOSTO_ISS_MUNICIPAL') ?: '5.00',
+            'codigo_tributacao_nacional' => $this->impostos_model->getConfig('IMPOSTO_CODIGO_TRIBUTACAO_NACIONAL') ?: '010701',
+            'codigo_tributacao_municipal' => $this->impostos_model->getConfig('IMPOSTO_CODIGO_TRIBUTACAO_MUNICIPAL') ?: '100',
+            'descricao_servico' => $this->impostos_model->getConfig('IMPOSTO_DESCRICAO_SERVICO') ?: 'Suporte técnico em informática, inclusive instalação, configuração e manutenção de programas de computação e bancos de dados.',
         ];
 
         $this->data['anexos'] = [

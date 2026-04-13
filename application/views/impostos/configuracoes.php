@@ -99,6 +99,37 @@
                         </div>
                     </div>
 
+                    <hr style="margin: 20px 0;">
+
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> <strong>Códigos de Tributação para NFS-e</strong><br>
+                        Configuração específica para emissão de Nota Fiscal de Serviços Eletrônica (NFS-e).
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">Cód. Tributação Nacional:*</label>
+                        <div class="controls">
+                            <input type="text" name="codigo_tributacao_nacional" class="span3" value="<?= $configs['codigo_tributacao_nacional'] ?>" required maxlength="10" />
+                            <span class="help-inline">Código LC 116/2003 (ex: 010701)</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">Cód. Tributação Municipal:*</label>
+                        <div class="controls">
+                            <input type="text" name="codigo_tributacao_municipal" class="span3" value="<?= $configs['codigo_tributacao_municipal'] ?>" required maxlength="10" />
+                            <span class="help-inline">Código do serviço na cidade</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">Descrição do Serviço:*</label>
+                        <div class="controls">
+                            <textarea name="descricao_servico" class="span8" rows="3" required><?= $configs['descricao_servico'] ?></textarea>
+                            <span class="help-inline">Descrição completa para a nota fiscal</span>
+                        </div>
+                    </div>
+
                     <div class="control-group">
                         <div class="controls">
                             <label class="checkbox">
@@ -160,6 +191,15 @@
                     <li>PIS (Programa de Integração Social)</li>
                     <li>ISS (Imposto Sobre Serviços) - conforme alíquota municipal</li>
                 </ul>
+
+                <hr>
+
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i> <strong>Configuração Atual de NFS-e:</strong><br>
+                    <b>Código Nacional:</b> <?= $configs['codigo_tributacao_nacional'] ?><br>
+                    <b>Código Municipal:</b> <?= $configs['codigo_tributacao_municipal'] ?><br>
+                    <b>Descrição:</b> <?= $configs['descricao_servico'] ?>
+                </div>
             </div>
         </div>
     </div>

@@ -126,6 +126,9 @@ if (! empty($_POST)) {
             ['IMPOSTO_RETENCAO_AUTOMATICA', '1', 'Habilitar retenção automática em novos boletos (1=Sim, 0=Não)'],
             ['IMPOSTO_DRE_INTEGRACAO', '1', 'Integrar retenções automaticamente com DRE (1=Sim, 0=Não)'],
             ['IMPOSTO_ISS_MUNICIPAL', '5.00', 'Alíquota de ISS municipal para cálculo isolado (%)'],
+            ['IMPOSTO_CODIGO_TRIBUTACAO_NACIONAL', '010701', 'Código de Tributação Nacional (LC 116/2003)'],
+            ['IMPOSTO_CODIGO_TRIBUTACAO_MUNICIPAL', '100', 'Código de Tributação Municipal'],
+            ['IMPOSTO_DESCRICAO_SERVICO', 'Suporte técnico em informática, inclusive instalação, configuração e manutenção de programas de computação e bancos de dados.', 'Descrição do serviço para NFS-e'],
         ];
 
         $stmt = $mysqli->prepare("INSERT INTO config_sistema_impostos (chave, valor, descricao) VALUES (?, ?, ?)");
@@ -195,6 +198,28 @@ if (! empty($_POST)) {
       INDEX `idx_cnpj_destinatario` (`cnpj_destinatario`),
       INDEX `idx_situacao` (`situacao`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+    // Tabela: os_tecnico_atribuicao (histórico de atribuições de técnicos às OS)
+    $mysqli->query("CREATE TABLE IF NOT EXISTS `os_tecnico_atribuicao` (
+      `idAtribuicao` INT(11) NOT NULL AUTO_INCREMENT,
+      `os_id` INT(11) NOT NULL,
+      `tecnico_id` INT(11) NOT NULL COMMENT 'ID do tecnico atribuido',
+      `atribuido_por` INT(11) NOT NULL COMMENT 'ID do usuario que fez a atribuicao',
+      `data_atribuicao` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      `data_remocao` DATETIME NULL,
+      `motivo_remocao` TEXT NULL,
+      `observacao` TEXT NULL,
+      PRIMARY KEY (`idAtribuicao`),
+      INDEX `idx_os_id` (`os_id`),
+      INDEX `idx_tecnico_id` (`tecnico_id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+    // Adicionar coluna tecnico_responsavel na tabela os se não existir
+    $result = $mysqli->query("SHOW COLUMNS FROM `os` LIKE 'tecnico_responsavel'");
+    if ($result->num_rows == 0) {
+        $mysqli->query("ALTER TABLE `os` ADD COLUMN `tecnico_responsavel` INT(11) NULL COMMENT 'ID do usuario tecnico responsavel pela OS'");
+        $mysqli->query("ALTER TABLE `os` ADD INDEX `idx_tecnico_responsavel` (`tecnico_responsavel`)");
+    }
 
     $mysqli->query("SET FOREIGN_KEY_CHECKS = 1");
 

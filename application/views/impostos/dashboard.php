@@ -206,6 +206,48 @@ $data_fim = $results['data_fim'];
     </div>
 </div>
 
+<!-- Informações de Tributação NFS-e -->
+<div class="row-fluid">
+    <div class="span12">
+        <div class="widget-box">
+            <div class="widget-title">
+                <span class="icon"><i class="fas fa-file-invoice"></i></span>
+                <h5>Configuração de Tributação para NFS-e</h5>
+            </div>
+            <div class="widget-content">
+                <div class="row-fluid">
+                    <div class="span4">
+                        <div class="alert alert-info" style="margin-bottom: 0;">
+                            <i class="fas fa-barcode"></i> <strong>Código Tributação Nacional:</strong><br>
+                            <span style="font-size: 18px;"><?= $this->impostos_model->getConfig('IMPOSTO_CODIGO_TRIBUTACAO_NACIONAL') ?: '010701' ?></span>
+                        </div>
+                    </div>
+                    <div class="span4">
+                        <div class="alert alert-info" style="margin-bottom: 0;">
+                            <i class="fas fa-city"></i> <strong>Código Tributação Municipal:</strong><br>
+                            <span style="font-size: 18px;"><?= $this->impostos_model->getConfig('IMPOSTO_CODIGO_TRIBUTACAO_MUNICIPAL') ?: '100' ?></span>
+                        </div>
+                    </div>
+                    <div class="span4">
+                        <div class="alert alert-success" style="margin-bottom: 0;">
+                            <i class="fas fa-percentage"></i> <strong>Alíquota ISS:</strong><br>
+                            <span style="font-size: 18px;"><?= $this->impostos_model->getConfig('IMPOSTO_ISS_MUNICIPAL') ?: '5.00' ?>%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row-fluid" style="margin-top: 10px;">
+                    <div class="span12">
+                        <div class="well well-small">
+                            <i class="fas fa-info-circle"></i> <strong>Descrição do Serviço:</strong><br>
+                            <?= $this->impostos_model->getConfig('IMPOSTO_DESCRICAO_SERVICO') ?: 'Suporte técnico em informática, inclusive instalação, configuração e manutenção de programas de computação e bancos de dados.' ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Ações Rápidas -->
 <div class="row-fluid">
     <div class="span12">
