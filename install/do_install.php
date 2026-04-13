@@ -84,26 +84,56 @@ if (! empty($_POST)) {
     // Isso evita erros de serialização no SQL
     // ============================================
 
-    // Array completo de permissões V5
+    // Array completo de permissões V5 - Administrador tem acesso total a todas as funcionalidades
     $permissoes_array = [
+        // Clientes
         'aCliente' => '1', 'eCliente' => '1', 'dCliente' => '1', 'vCliente' => '1',
+        // Produtos
         'aProduto' => '1', 'eProduto' => '1', 'dProduto' => '1', 'vProduto' => '1',
+        // Serviços
         'aServico' => '1', 'eServico' => '1', 'dServico' => '1', 'vServico' => '1',
+        // Ordens de Serviço
         'aOs' => '1', 'eOs' => '1', 'dOs' => '1', 'vOs' => '1',
+        // Permissões de Técnico na OS
+        'vBtnAtendimento' => '1', 'vTecnicoOS' => '1', 'eTecnicoCheckin' => '1',
+        'eTecnicoCheckout' => '1', 'eTecnicoFotos' => '1',
+        // Vendas
         'aVenda' => '1', 'eVenda' => '1', 'dVenda' => '1', 'vVenda' => '1',
+        // Garantias
+        'aGarantia' => '1', 'eGarantia' => '1', 'dGarantia' => '1', 'vGarantia' => '1',
+        // Lançamentos/Financeiro
         'aLancamento' => '1', 'eLancamento' => '1', 'dLancamento' => '1', 'vLancamento' => '1',
-        'aArquivo' => '1', 'dArquivo' => '1', 'vArquivo' => '1',
+        // Pagamentos
+        'aPagamento' => '1', 'ePagamento' => '1', 'dPagamento' => '1', 'vPagamento' => '1',
+        // Arquivos/Anexos
+        'aArquivo' => '1', 'eArquivo' => '1', 'dArquivo' => '1', 'vArquivo' => '1',
+        // Categorias
         'categoria_d' => '1', 'categoria_v' => '1', 'categoria_a' => '1', 'categoria_e' => '1',
-        'vCategoria' => '1', 'aCobranca' => '1', 'eCobranca' => '1', 'dCobranca' => '1',
-        'vCobranca' => '1', 'aGarantia' => '1', 'eGarantia' => '1', 'dGarantia' => '1',
-        'vGarantia' => '1', 'aConfiguracao' => '1', 'eConfiguracao' => '1', 'dConfiguracao' => '1',
-        'vConfiguracao' => '1', 'aEmitente' => '1', 'eEmitente' => '1', 'dEmitente' => '1',
-        'vEmitente' => '1', 'aPermissao' => '1', 'ePermissao' => '1', 'dPermissao' => '1',
-        'vPermissao' => '1', 'aAuditoria' => '1', 'eAuditoria' => '1', 'dAuditoria' => '1',
-        'vAuditoria' => '1', 'aEmail' => '1', 'eEmail' => '1', 'dEmail' => '1', 'vEmail' => '1',
+        'vCategoria' => '1',
+        // Cobranças
+        'aCobranca' => '1', 'eCobranca' => '1', 'dCobranca' => '1', 'vCobranca' => '1',
+        // Configurações
+        'aConfiguracao' => '1', 'eConfiguracao' => '1', 'dConfiguracao' => '1', 'vConfiguracao' => '1',
+        // Emitente
+        'aEmitente' => '1', 'eEmitente' => '1', 'dEmitente' => '1', 'vEmitente' => '1',
+        // Permissões
+        'aPermissao' => '1', 'ePermissao' => '1', 'dPermissao' => '1', 'vPermissao' => '1',
+        // Auditoria
+        'aAuditoria' => '1', 'eAuditoria' => '1', 'dAuditoria' => '1', 'vAuditoria' => '1',
+        // Emails
+        'aEmail' => '1', 'eEmail' => '1', 'dEmail' => '1', 'vEmail' => '1',
+        // Relatórios
         'rContas' => '1', 'rFinanceiro' => '1', 'rProdutos' => '1', 'rServicos' => '1',
-        'rVendas' => '1', 'rOs' => '1', 'rClientes' => '1', 'vCertificado' => '1',
-        'vImpostos' => '1', 'vDRE' => '1', 'vWebhooks' => '1', 'vRelatorioAtendimentos' => '1'
+        'rVendas' => '1', 'rOs' => '1', 'rClientes' => '1', 'rCliente' => '1',
+        'rProduto' => '1', 'rServico' => '1',
+        // Controles de Sistema (cada um permite acesso a uma seção administrativa)
+        'cUsuario' => '1', 'cEmitente' => '1', 'cPermissao' => '1', 'cBackup' => '1',
+        'cAuditoria' => '1', 'cEmail' => '1', 'cSistema' => '1', 'cDocOs' => '1',
+        // Novas Funcionalidades V5
+        'vCertificado' => '1', 'vImpostos' => '1', 'vDRE' => '1',
+        'vWebhooks' => '1', 'vRelatorioAtendimentos' => '1',
+        // Dashboard e Relatórios Avançados
+        'vDashboard' => '1', 'vRelatorioCompleto' => '1', 'vExportarDados' => '1'
     ];
 
     $permissoes_serializado = serialize($permissoes_array);
