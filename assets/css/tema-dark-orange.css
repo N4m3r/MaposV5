@@ -241,6 +241,15 @@ body {
     color: var(--white);
 }
 
+/* Divisores de menu - Tema Dark Orange */
+.menu-divider .divider-text {
+    color: #757e89;
+}
+
+.menu-divider-sub .divider-text-sub {
+    color: #4c595e;
+}
+
 /* CARDS */
 .cardBox .card:nth-child(1) {
     background: var(--dark-orange-widg);

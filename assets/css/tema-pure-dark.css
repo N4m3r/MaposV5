@@ -236,6 +236,15 @@ body {
     color: var(--white-blak-tit2);
 }
 
+/* Divisores de menu - Tema Pure Dark */
+.menu-divider .divider-text {
+    color: #676779;
+}
+
+.menu-divider-sub .divider-text-sub {
+    color: #4a4a5c;
+}
+
 /* CARDS */
 .cardBox .card:nth-child(1) {
     background: var(--wid-dark);

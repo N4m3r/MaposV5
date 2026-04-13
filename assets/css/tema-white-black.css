@@ -228,6 +228,15 @@ body {
     color: var(--white-blak);
 }
 
+/* Divisores de menu - Tema White Black */
+.menu-divider .divider-text {
+    color: #525a6a;
+}
+
+.menu-divider-sub .divider-text-sub {
+    color: #a0a0a0;
+}
+
 /* CARDS */
 .cardBox .card {
     background: var(--white) !important;

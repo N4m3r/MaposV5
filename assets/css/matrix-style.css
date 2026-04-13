@@ -850,7 +850,8 @@ End hora certa */
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  max-height: calc(100vh - 200px);
+  max-height: calc(100vh - 150px);
+  padding-bottom: 20px;
 }
 
 .menu-scrollable::-webkit-scrollbar {
@@ -868,6 +869,39 @@ End hora certa */
 
 .menu-scrollable::-webkit-scrollbar-thumb:hover {
   background: #676779;
+}
+
+/* Divisores de menu */
+.menu-divider {
+  list-style: none;
+  padding: 15px 0 5px 15px;
+  margin: 0;
+  border: none;
+}
+
+.menu-divider .divider-text {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #676779;
+  display: block;
+}
+
+.menu-divider-sub {
+  list-style: none;
+  padding: 8px 0 3px 25px;
+  margin: 0;
+  border: none;
+}
+
+.menu-divider-sub .divider-text-sub {
+  font-size: 9px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: #4a547e;
+  display: block;
 }
 
 /* Garantir que o botão sair sempre fique visível */

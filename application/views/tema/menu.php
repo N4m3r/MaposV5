@@ -48,21 +48,15 @@
                 <?php } ?>
 
                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vRelatorioCompleto') || $this->permission->checkPermission($this->session->userdata('permissao'), 'cPermissao')) { ?>
-                    <li class="submenu <?php if (isset($menuRelatorios)) { echo 'active open'; }; ?>">
-                        <a class="tip-bottom" title="" href="#"><i class='bx bx-line-chart iconX'></i>
-                            <span class="title">Relatórios</span>
-                            <span class="title-tooltip">Relatórios</span>
-                            <i class='bx bx-chevron-down arrow'></i>
-                        </a>
-                        <ul style="display: <?php echo isset($menuRelatorios) ? 'block' : 'none'; ?>;">
-                            <li class="<?php if (isset($menuRelAtendimentos)) { echo 'active'; }; ?>"><a href="<?= site_url('dashboard/relatorio_atendimentos') ?>"><i class='bx bx-time iconX'></i><span class="title">Atendimentos</span></a></li>
-                            <li class="<?php if (isset($menuRelFinanceiro)) { echo 'active'; }; ?>"><a href="<?= site_url('dashboard/relatorio_financeiro') ?>"><i class='bx bx-dollar-circle iconX'></i><span class="title">Financeiro</span></a></li>
-                            <li class="<?php if (isset($menuRelProdutos)) { echo 'active'; }; ?>"><a href="<?= site_url('dashboard/relatorio_produtos') ?>"><i class='bx bx-package iconX'></i><span class="title">Produtos</span></a></li>
-                            <li class="<?php if (isset($menuRelClientes)) { echo 'active'; }; ?>"><a href="<?= site_url('dashboard/relatorio_clientes') ?>"><i class='bx bx-user-check iconX'></i><span class="title">Clientes</span></a></li>
-                            <li class="<?php if (isset($menuRelTecnicos)) { echo 'active'; }; ?>"><a href="<?= site_url('relatoriotecnicos') ?>"><i class='bx bx-hard-hat iconX'></i><span class="title">Performance Técnicos</span></a></li>
-                        </ul>
-                    </li>
+                    <li class="menu-divider"><span class="divider-text">RELATÓRIOS</span></li>
+                    <li class="<?php if (isset($menuRelAtendimentos)) { echo 'active'; }; ?>"><a href="<?= site_url('dashboard/relatorio_atendimentos') ?>"><i class='bx bx-time iconX'></i><span class="title">Atendimentos</span><span class="title-tooltip">Atendimentos</span></a></li>
+                    <li class="<?php if (isset($menuRelFinanceiro)) { echo 'active'; }; ?>"><a href="<?= site_url('dashboard/relatorio_financeiro') ?>"><i class='bx bx-dollar-circle iconX'></i><span class="title">Financeiro</span><span class="title-tooltip">Financeiro</span></a></li>
+                    <li class="<?php if (isset($menuRelProdutos)) { echo 'active'; }; ?>"><a href="<?= site_url('dashboard/relatorio_produtos') ?>"><i class='bx bx-package iconX'></i><span class="title">Produtos</span><span class="title-tooltip">Produtos</span></a></li>
+                    <li class="<?php if (isset($menuRelClientes)) { echo 'active'; }; ?>"><a href="<?= site_url('dashboard/relatorio_clientes') ?>"><i class='bx bx-user-check iconX'></i><span class="title">Clientes</span><span class="title-tooltip">Clientes</span></a></li>
+                    <li class="<?php if (isset($menuRelTecnicos)) { echo 'active'; }; ?>"><a href="<?= site_url('relatoriotecnicos') ?>"><i class='bx bx-hard-hat iconX'></i><span class="title">Performance Técnicos</span><span class="title-tooltip">Performance</span></a></li>
                 <?php } ?>
+
+                <li class="menu-divider"><span class="divider-text">CADASTROS</span></li>
 
                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vCliente')) { ?>
                     <li class="<?php if (isset($menuClientes)) { echo 'active'; }; ?>"><a class="tip-bottom" href="<?= site_url('clientes') ?>"><i class='bx bx-user iconX'></i><span class="title">Cliente / Fornecedor</span><span class="title-tooltip">Clientes</span></a></li>
@@ -100,106 +94,67 @@
                     <li class="<?php if (isset($menuArquivos)) { echo 'active'; }; ?>"><a class="tip-bottom" href="<?= site_url('arquivos') ?>"><i class='bx bx-box iconX'></i><span class="title">Arquivos</span><span class="title-tooltip">Arquivos</span></a></li>
                 <?php } ?>
 
-                <!-- Financeiro - Agrupado -->
+                <!-- Financeiro -->
                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vLancamento') || $this->permission->checkPermission($this->session->userdata('permissao'), 'vCobranca')) { ?>
-                    <li class="submenu <?php if (isset($menuFinanceiro)) { echo 'active open'; }; ?>">
-                        <a class="tip-bottom" href="#"><i class='bx bx-dollar-circle iconX'></i>
-                            <span class="title">Financeiro</span>
-                            <span class="title-tooltip">Financeiro</span>
-                            <i class='bx bx-chevron-down arrow'></i>
-                        </a>
-                        <ul style="display: <?php echo isset($menuFinanceiro) ? 'block' : 'none'; ?>;">
-                            <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vLancamento')) { ?>
-                                <li class="<?php if (isset($menuLancamentos)) { echo 'active'; }; ?>"><a href="<?= site_url('financeiro/lancamentos') ?>"><i class='bx bx-bar-chart-alt-2 iconX'></i><span class="title">Lançamentos</span></a></li>
-                            <?php } ?>
-                            <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vCobranca')) { ?>
-                                <li class="<?php if (isset($menuCobrancas)) { echo 'active'; }; ?>"><a href="<?= site_url('cobrancas/cobrancas') ?>"><i class='bx bx-credit-card iconX'></i><span class="title">Cobranças</span></a></li>
-                            <?php } ?>
-                        </ul>
-                    </li>
+                    <li class="menu-divider"><span class="divider-text">FINANCEIRO</span></li>
+                    <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vLancamento')) { ?>
+                        <li class="<?php if (isset($menuLancamentos)) { echo 'active'; }; ?>"><a href="<?= site_url('financeiro/lancamentos') ?>"><i class='bx bx-bar-chart-alt-2 iconX'></i><span class="title">Lançamentos</span><span class="title-tooltip">Lançamentos</span></a></li>
+                    <?php } ?>
+                    <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vCobranca')) { ?>
+                        <li class="<?php if (isset($menuCobrancas)) { echo 'active'; }; ?>"><a href="<?= site_url('cobrancas/cobrancas') ?>"><i class='bx bx-credit-card iconX'></i><span class="title">Cobranças</span><span class="title-tooltip">Cobranças</span></a></li>
+                    <?php } ?>
                 <?php } ?>
 
-                <!-- NOVAS FUNCIONALIDADES V5 - Agrupadas em submenu -->
+                <!-- NOVAS FUNCIONALIDADES V5 -->
                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vRelatorioAtendimentos') ||
                           $this->permission->checkPermission($this->session->userdata('permissao'), 'vCertificado') ||
                           $this->permission->checkPermission($this->session->userdata('permissao'), 'vImpostos') ||
                           $this->permission->checkPermission($this->session->userdata('permissao'), 'vDRE') ||
                           $this->permission->checkPermission($this->session->userdata('permissao'), 'vUsuariosCliente')) { ?>
-                    <li class="submenu <?php if (isset($menuNovidadesV5)) { echo 'active open'; }; ?>">
-                        <a class="tip-bottom" href="#"><i class='bx bx-rocket iconX'></i>
-                            <span class="title">Novidades V5</span>
-                            <span class="title-tooltip">Novidades V5</span>
-                            <i class='bx bx-chevron-down arrow'></i>
-                        </a>
-                        <ul style="display: <?php echo isset($menuNovidadesV5) ? 'block' : 'none'; ?>;">
-                            <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vRelatorioAtendimentos')) { ?>
-                                <li class="<?php if (isset($menuRelatorioAtendimentos)) { echo 'active'; }; ?>"><a href="<?= site_url('relatorioatendimentos') ?>"><i class='bx bx-time iconX'></i><span class="title">Rel. Atendimentos</span></a></li>
-                            <?php } ?>
+                    <li class="menu-divider"><span class="divider-text">NOVIDADES V5</span></li>
 
-                            <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vCertificado')) { ?>
-                                <li class="submenu <?php if (isset($menuCertificado)) { echo 'active open'; }; ?>">
-                                    <a href="#"><i class='bx bx-id-card iconX'></i><span class="title">Certificado</span><i class='bx bx-chevron-down arrow'></i></a>
-                                    <ul style="display: <?php echo isset($menuCertificado) ? 'block' : 'none'; ?>;">
-                                        <li class="<?php if (isset($menuCertificadoDashboard)) { echo 'active'; }; ?>"><a href="<?= site_url('certificado') ?>"><i class='bx bx-check-shield iconX'></i><span class="title">Status</span></a></li>
-                                        <li class="<?php if (isset($menuCertificadoConfig)) { echo 'active'; }; ?>"><a href="<?= site_url('certificado/configurar') ?>"><i class='bx bx-cog iconX'></i><span class="title">Configurar</span></a></li>
-                                        <li class="<?php if (isset($menuNfseListar)) { echo 'active'; }; ?>"><a href="<?= site_url('nfse') ?>"><i class='bx bx-receipt iconX'></i><span class="title">NFS-e Importadas</span></a></li>
-                                        <li class="<?php if (isset($menuCertificadoImportar)) { echo 'active'; }; ?>"><a href="<?= site_url('certificado/importar_nfse') ?>"><i class='bx bx-import iconX'></i><span class="title">Importar NFS-e</span></a></li>
-                                    </ul>
-                                </li>
-                            <?php } ?>
+                    <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vRelatorioAtendimentos')) { ?>
+                        <li class="<?php if (isset($menuRelatorioAtendimentos)) { echo 'active'; }; ?>"><a href="<?= site_url('relatorioatendimentos') ?>"><i class='bx bx-time iconX'></i><span class="title">Rel. Atendimentos</span><span class="title-tooltip">Rel. Atend.</span></a></li>
+                    <?php } ?>
 
-                            <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vImpostos')) { ?>
-                                <li class="submenu <?php if (isset($menuImpostos)) { echo 'active open'; }; ?>">
-                                    <a href="#"><i class='bx bx-money iconX'></i><span class="title">Impostos</span><i class='bx bx-chevron-down arrow'></i></a>
-                                    <ul style="display: <?php echo isset($menuImpostos) ? 'block' : 'none'; ?>;">
-                                        <li class="<?php if (isset($menuImpostosDashboard)) { echo 'active'; }; ?>"><a href="<?= site_url('impostos') ?>"><i class='bx bx-chart iconX'></i><span class="title">Dashboard</span></a></li>
-                                        <li class="<?php if (isset($menuImpostosConfig)) { echo 'active'; }; ?>"><a href="<?= site_url('impostos/configuracoes') ?>"><i class='bx bx-cog iconX'></i><span class="title">Configurações</span></a></li>
-                                        <li class="<?php if (isset($menuImpostosSimulador)) { echo 'active'; }; ?>"><a href="<?= site_url('impostos/simulador') ?>"><i class='bx bx-calculator iconX'></i><span class="title">Simulador</span></a></li>
-                                    </ul>
-                                </li>
-                            <?php } ?>
+                    <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vCertificado')) { ?>
+                        <li class="menu-divider-sub"><span class="divider-text-sub">Certificado</span></li>
+                        <li class="<?php if (isset($menuCertificadoDashboard)) { echo 'active'; }; ?>"><a href="<?= site_url('certificado') ?>"><i class='bx bx-check-shield iconX'></i><span class="title">Status Certificado</span><span class="title-tooltip">Status Cert.</span></a></li>
+                        <li class="<?php if (isset($menuCertificadoConfig)) { echo 'active'; }; ?>"><a href="<?= site_url('certificado/configurar') ?>"><i class='bx bx-cog iconX'></i><span class="title">Configurar Cert.</span><span class="title-tooltip">Config. Cert.</span></a></li>
+                        <li class="<?php if (isset($menuNfseListar)) { echo 'active'; }; ?>"><a href="<?= site_url('nfse') ?>"><i class='bx bx-receipt iconX'></i><span class="title">NFS-e Importadas</span><span class="title-tooltip">NFS-e Importadas</span></a></li>
+                        <li class="<?php if (isset($menuCertificadoImportar)) { echo 'active'; }; ?>"><a href="<?= site_url('certificado/importar_nfse') ?>"><i class='bx bx-import iconX'></i><span class="title">Importar NFS-e</span><span class="title-tooltip">Importar NFS-e</span></a></li>
+                    <?php } ?>
 
-                            <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vDRE')) { ?>
-                                <li class="submenu <?php if (isset($menuDRE)) { echo 'active open'; }; ?>">
-                                    <a href="#"><i class='bx bx-line-chart-down iconX'></i><span class="title">DRE Contábil</span><i class='bx bx-chevron-down arrow'></i></a>
-                                    <ul style="display: <?php echo isset($menuDRE) ? 'block' : 'none'; ?>;">
-                                        <li class="<?php if (isset($menuDREDashboard)) { echo 'active'; }; ?>"><a href="<?= site_url('dre') ?>"><i class='bx bx-bar-chart-alt-2 iconX'></i><span class="title">Demonstração</span></a></li>
-                                        <li class="<?php if (isset($menuDREContas)) { echo 'active'; }; ?>"><a href="<?= site_url('dre/contas') ?>"><i class='bx bx-list-ul iconX'></i><span class="title">Plano de Contas</span></a></li>
-                                        <li class="<?php if (isset($menuDRELancamentos)) { echo 'active'; }; ?>"><a href="<?= site_url('dre/lancamentos') ?>"><i class='bx bx-book iconX'></i><span class="title">Lançamentos</span></a></li>
-                                    </ul>
-                                </li>
-                            <?php } ?>
+                    <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vImpostos')) { ?>
+                        <li class="menu-divider-sub"><span class="divider-text-sub">Impostos</span></li>
+                        <li class="<?php if (isset($menuImpostosDashboard)) { echo 'active'; }; ?>"><a href="<?= site_url('impostos') ?>"><i class='bx bx-chart iconX'></i><span class="title">Dashboard Impostos</span><span class="title-tooltip">Dashboard Imp.</span></a></li>
+                        <li class="<?php if (isset($menuImpostosConfig)) { echo 'active'; }; ?>"><a href="<?= site_url('impostos/configuracoes') ?>"><i class='bx bx-cog iconX'></i><span class="title">Config. Impostos</span><span class="title-tooltip">Config. Imp.</span></a></li>
+                        <li class="<?php if (isset($menuImpostosSimulador)) { echo 'active'; }; ?>"><a href="<?= site_url('impostos/simulador') ?>"><i class='bx bx-calculator iconX'></i><span class="title">Simulador</span><span class="title-tooltip">Simulador</span></a></li>
+                    <?php } ?>
 
-                            <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vUsuariosCliente')) { ?>
-                                <li class="submenu <?php if (isset($menuUsuariosCliente)) { echo 'active open'; }; ?>">
-                                    <a href="#"><i class='bx bx-user-check iconX'></i><span class="title">Usuários Cliente</span><i class='bx bx-chevron-down arrow'></i></a>
-                                    <ul style="display: <?php echo isset($menuUsuariosCliente) ? 'block' : 'none'; ?>;">
-                                        <li class="<?php if (isset($menuUsuariosClienteListar)) { echo 'active'; }; ?>"><a href="<?= site_url('usuarioscliente') ?>"><i class='bx bx-list-ul iconX'></i><span class="title">Listar Usuários</span></a></li>
-                                        <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cUsuariosCliente')) { ?>
-                                        <li class="<?php if (isset($menuUsuariosClienteAdicionar)) { echo 'active'; }; ?>"><a href="<?= site_url('usuarioscliente/adicionar') ?>"><i class='bx bx-plus iconX'></i><span class="title">Novo Usuário</span></a></li>
-                                        <?php } ?>
-                                    </ul>
-                                </li>
-                            <?php } ?>
-                        </ul>
-                    </li>
+                    <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vDRE')) { ?>
+                        <li class="menu-divider-sub"><span class="divider-text-sub">DRE Contábil</span></li>
+                        <li class="<?php if (isset($menuDREDashboard)) { echo 'active'; }; ?>"><a href="<?= site_url('dre') ?>"><i class='bx bx-bar-chart-alt-2 iconX'></i><span class="title">Demonstração DRE</span><span class="title-tooltip">Demonstração</span></a></li>
+                        <li class="<?php if (isset($menuDREContas)) { echo 'active'; }; ?>"><a href="<?= site_url('dre/contas') ?>"><i class='bx bx-list-ul iconX'></i><span class="title">Plano de Contas</span><span class="title-tooltip">Plano Contas</span></a></li>
+                        <li class="<?php if (isset($menuDRELancamentos)) { echo 'active'; }; ?>"><a href="<?= site_url('dre/lancamentos') ?>"><i class='bx bx-book iconX'></i><span class="title">Lançamentos DRE</span><span class="title-tooltip">Lançamentos</span></a></li>
+                    <?php } ?>
+
+                    <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vUsuariosCliente')) { ?>
+                        <li class="menu-divider-sub"><span class="divider-text-sub">Usuários Cliente</span></li>
+                        <li class="<?php if (isset($menuUsuariosClienteListar)) { echo 'active'; }; ?>"><a href="<?= site_url('usuarioscliente') ?>"><i class='bx bx-list-ul iconX'></i><span class="title">Listar Usuários</span><span class="title-tooltip">Listar Usuários</span></a></li>
+                        <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cUsuariosCliente')) { ?>
+                        <li class="<?php if (isset($menuUsuariosClienteAdicionar)) { echo 'active'; }; ?>"><a href="<?= site_url('usuarioscliente/adicionar') ?>"><i class='bx bx-plus iconX'></i><span class="title">Novo Usuário</span><span class="title-tooltip">Novo Usuário</span></a></li>
+                        <?php } ?>
+                    <?php } ?>
                 <?php } ?>
 
                 <!-- Ferramentas Admin -->
                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cPermissao')) { ?>
-                    <li class="submenu <?php if (isset($menuFerramentas)) { echo 'active open'; }; ?>">
-                        <a class="tip-bottom" href="#"><i class='bx bx-wrench iconX'></i>
-                            <span class="title">Ferramentas</span>
-                            <span class="title-tooltip">Ferramentas</span>
-                            <i class='bx bx-chevron-down arrow'></i>
-                        </a>
-                        <ul style="display: <?php echo isset($menuFerramentas) ? 'block' : 'none'; ?>;">
-                            <li class="<?php if (isset($menuEmailQueue)) { echo 'active'; }; ?>"><a href="<?= site_url('emails/dashboard') ?>"><i class='bx bx-envelope iconX'></i><span class="title">Fila de Emails</span></a></li>
-                            <li class="<?php if (isset($menuWebhooks)) { echo 'active'; }; ?>"><a href="<?= site_url('webhooks') ?>"><i class='bx bx-webhook iconX'></i><span class="title">Webhooks</span></a></li>
-                            <li class="<?php if (isset($menuWebhooksDocs)) { echo 'active'; }; ?>"><a href="<?= site_url('webhooks/docs') ?>" target="_blank"><i class='bx bx-book-open iconX'></i><span class="title">Docs Webhooks</span></a></li>
-                            <li class="<?php if (isset($menuApiDocs)) { echo 'active'; }; ?>"><a href="<?= site_url('api/docs') ?>"><i class='bx bx-code-alt iconX'></i><span class="title">API v2</span></a></li>
-                        </ul>
-                    </li>
+                    <li class="menu-divider"><span class="divider-text">FERRAMENTAS</span></li>
+                    <li class="<?php if (isset($menuEmailQueue)) { echo 'active'; }; ?>"><a href="<?= site_url('emails/dashboard') ?>"><i class='bx bx-envelope iconX'></i><span class="title">Fila de Emails</span><span class="title-tooltip">Fila Emails</span></a></li>
+                    <li class="<?php if (isset($menuWebhooks)) { echo 'active'; }; ?>"><a href="<?= site_url('webhooks') ?>"><i class='bx bx-webhook iconX'></i><span class="title">Webhooks</span><span class="title-tooltip">Webhooks</span></a></li>
+                    <li class="<?php if (isset($menuWebhooksDocs)) { echo 'active'; }; ?>"><a href="<?= site_url('webhooks/docs') ?>" target="_blank"><i class='bx bx-book-open iconX'></i><span class="title">Docs Webhooks</span><span class="title-tooltip">Docs Webhooks</span></a></li>
+                    <li class="<?php if (isset($menuApiDocs)) { echo 'active'; }; ?>"><a href="<?= site_url('api/docs') ?>"><i class='bx bx-code-alt iconX'></i><span class="title">API v2</span><span class="title-tooltip">API v2</span></a></li>
                 <?php } ?>
             </ul>
         </div>

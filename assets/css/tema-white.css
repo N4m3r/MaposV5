@@ -156,6 +156,15 @@ body {
   color: #04395b;
 }
 
+/* Divisores de menu - Tema White */
+.menu-divider .divider-text {
+  color: #8a8a8a;
+}
+
+.menu-divider-sub .divider-text-sub {
+  color: #a0a0a0;
+}
+
 #newlog .title1 {
   color: var(--title-w);
 }

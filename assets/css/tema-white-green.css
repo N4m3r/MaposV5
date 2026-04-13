@@ -221,6 +221,15 @@ body {
     color: var(--white);
 }
 
+/* Divisores de menu - Tema White Green */
+.menu-divider .divider-text {
+    color: #6dad8d;
+}
+
+.menu-divider-sub .divider-text-sub {
+    color: #8fbfa0;
+}
+
 /* CARDS */
 .cardBox .card {
     background: linear-gradient(270deg,  #6dad8d, #b9e3c4) !important;

@@ -203,6 +203,15 @@ body {
     color: var(--dark-violet-side);
 }
 
+/* Divisores de menu - Tema Dark Violet */
+.menu-divider .divider-text {
+    color: #c3b2e9;
+}
+
+.menu-divider-sub .divider-text-sub {
+    color: #9e8ec9;
+}
+
 /* CARDS */
 .cardBox {
     grid-gap: 0;
