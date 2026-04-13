@@ -121,7 +121,7 @@
                         <span class="badge-tipo <?= $conta->tipo ?>"><?= $conta->tipo ?></span>
                     </div>
                     <div class="conta-grupo">
-                        <?= str_replace('_', ' ', $conta->grupo) ?>
+                        <?= isset($conta->grupo) ? str_replace('_', ' ', $conta->grupo) : '-' ?>
                     </div>
                     <div class="conta-acoes">
                         <a href="<?= site_url('dre/conta_form/' . $conta->id) ?>" class="btn btn-mini btn-info" title="Editar">

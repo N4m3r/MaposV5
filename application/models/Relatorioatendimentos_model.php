@@ -81,6 +81,16 @@ class Relatorioatendimentos_model extends CI_Model
      */
     public function getEstatisticas($data_inicio, $data_fim, $usuario_id = null)
     {
+        if (!$this->tabelaExiste()) {
+            return (object)[
+                'total_atendimentos' => 0,
+                'finalizados' => 0,
+                'em_andamento' => 0,
+                'tempo_medio_minutos' => 0,
+                'tempo_medio_horas' => 0
+            ];
+        }
+
         $this->db->select('
             COUNT(*) as total_atendimentos,
             SUM(CASE WHEN data_saida IS NOT NULL THEN 1 ELSE 0 END) as finalizados,
@@ -117,6 +127,10 @@ class Relatorioatendimentos_model extends CI_Model
      */
     public function getAtendimentosPorDia($data_inicio, $data_fim, $usuario_id = null)
     {
+        if (!$this->tabelaExiste()) {
+            return [];
+        }
+
         $this->db->select('DATE(data_entrada) as data, COUNT(*) as quantidade');
         $this->db->from('os_checkin');
         $this->db->where('DATE(data_entrada) >=', $data_inicio);
@@ -141,6 +155,10 @@ class Relatorioatendimentos_model extends CI_Model
      */
     public function getAtendimentosPorTecnico($data_inicio, $data_fim)
     {
+        if (!$this->tabelaExiste()) {
+            return [];
+        }
+
         $this->db->select('usuarios.nome as tecnico, COUNT(*) as quantidade');
         $this->db->from('os_checkin');
         $this->db->join('usuarios', 'usuarios.idUsuarios = os_checkin.usuarios_id');
@@ -162,6 +180,10 @@ class Relatorioatendimentos_model extends CI_Model
      */
     public function getAtendimentosPorStatus($data_inicio, $data_fim, $usuario_id = null)
     {
+        if (!$this->tabelaExiste()) {
+            return [];
+        }
+
         $this->db->select('
             CASE WHEN data_saida IS NOT NULL THEN "Finalizado" ELSE "Em Andamento" END as status,
             COUNT(*) as quantidade
@@ -188,6 +210,10 @@ class Relatorioatendimentos_model extends CI_Model
      */
     public function getTempoMedioPorTecnico($data_inicio, $data_fim)
     {
+        if (!$this->tabelaExiste()) {
+            return [];
+        }
+
         $this->db->select('
             usuarios.nome as tecnico,
             AVG(TIMESTAMPDIFF(MINUTE, os_checkin.data_entrada, os_checkin.data_saida)) as tempo_medio_minutos
@@ -219,6 +245,10 @@ class Relatorioatendimentos_model extends CI_Model
      */
     public function getRankingTecnicos($data_inicio, $data_fim)
     {
+        if (!$this->tabelaExiste()) {
+            return [];
+        }
+
         $this->db->select('
             usuarios.nome as tecnico,
             COUNT(*) as total_atendimentos,
