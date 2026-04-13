@@ -142,10 +142,32 @@ class Usuarios_cliente_model extends CI_Model
 
     /**
      * Remover CNPJ do usuário
+     * @param int $usuario_id - ID do usuário cliente
+     * @param mixed $cnpj_id - ID do registro ou CNPJ formatado
+     * @return bool
      */
     public function removeCnpj($usuario_id, $cnpj_id)
     {
-        $this->db->where('id', $cnpj_id);
+        // Se for numérico, assume que é o ID do registro
+        if (is_numeric($cnpj_id)) {
+            $this->db->where('id', $cnpj_id);
+        } else {
+            // Se for string, assume que é o CNPJ
+            $this->db->where('cnpj', $cnpj_id);
+        }
+        $this->db->where('usuario_cliente_id', $usuario_id);
+        return $this->db->delete('usuarios_cliente_cnpjs');
+    }
+
+    /**
+     * Remover CNPJ do usuário pelo CNPJ (string)
+     * @param int $usuario_id - ID do usuário cliente
+     * @param string $cnpj - CNPJ formatado (00.000.000/0000-00)
+     * @return bool
+     */
+    public function removeCnpjByCnpj($usuario_id, $cnpj)
+    {
+        $this->db->where('cnpj', $cnpj);
         $this->db->where('usuario_cliente_id', $usuario_id);
         return $this->db->delete('usuarios_cliente_cnpjs');
     }

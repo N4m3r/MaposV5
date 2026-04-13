@@ -301,4 +301,116 @@ class Usuarioscliente extends MY_Controller
             ]);
         }
     }
+
+    /**
+     * Ativar usuário
+     */
+    public function ativar($id = null)
+    {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'eUsuariosCliente')) {
+            $this->session->set_flashdata('error', 'Sem permissão para ativar usuários.');
+            redirect('usuarioscliente');
+        }
+
+        if (!$id || !is_numeric($id)) {
+            $this->session->set_flashdata('error', 'ID inválido.');
+            redirect('usuarioscliente');
+        }
+
+        $this->usuarios_cliente_model->update($id, ['ativo' => 1]);
+        $this->session->set_flashdata('success', 'Usuário ativado com sucesso!');
+        redirect('usuarioscliente');
+    }
+
+    /**
+     * Desativar usuário
+     */
+    public function desativar($id = null)
+    {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'eUsuariosCliente')) {
+            $this->session->set_flashdata('error', 'Sem permissão para desativar usuários.');
+            redirect('usuarioscliente');
+        }
+
+        if (!$id || !is_numeric($id)) {
+            $this->session->set_flashdata('error', 'ID inválido.');
+            redirect('usuarioscliente');
+        }
+
+        $this->usuarios_cliente_model->update($id, ['ativo' => 0]);
+        $this->session->set_flashdata('success', 'Usuário desativado com sucesso!');
+        redirect('usuarioscliente');
+    }
+
+    /**
+     * AJAX: Adicionar CNPJ ao usuário
+     */
+    public function adicionar_cnpj($usuario_id = null)
+    {
+        if (!$this->input->is_ajax_request()) {
+            show_404();
+        }
+
+        if (!$usuario_id || !is_numeric($usuario_id)) {
+            echo json_encode(['error' => 'ID inválido']);
+            return;
+        }
+
+        $cnpj = $this->input->post('cnpj');
+        $razao_social = $this->input->post('razao_social');
+
+        if (empty($cnpj)) {
+            echo json_encode(['error' => 'CNPJ é obrigatório']);
+            return;
+        }
+
+        $result = $this->usuarios_cliente_model->addCnpj($usuario_id, $cnpj, $razao_social);
+
+        if ($result) {
+            echo json_encode(['success' => true, 'message' => 'CNPJ adicionado com sucesso!']);
+        } else {
+            echo json_encode(['error' => 'Erro ao adicionar CNPJ']);
+        }
+    }
+
+    /**
+     * AJAX: Remover CNPJ do usuário
+     */
+    public function remover_cnpj($usuario_id = null, $cnpj = null)
+    {
+        if (!$this->input->is_ajax_request()) {
+            show_404();
+        }
+
+        if (!$usuario_id || !is_numeric($usuario_id) || empty($cnpj)) {
+            echo json_encode(['error' => 'Parâmetros inválidos']);
+            return;
+        }
+
+        $result = $this->usuarios_cliente_model->removeCnpj($usuario_id, urldecode($cnpj));
+
+        if ($result) {
+            echo json_encode(['success' => true, 'message' => 'CNPJ removido com sucesso!']);
+        } else {
+            echo json_encode(['error' => 'Erro ao remover CNPJ']);
+        }
+    }
+
+    /**
+     * AJAX: Listar CNPJs do usuário
+     */
+    public function get_cnpjs($usuario_id = null)
+    {
+        if (!$this->input->is_ajax_request()) {
+            show_404();
+        }
+
+        if (!$usuario_id || !is_numeric($usuario_id)) {
+            echo json_encode(['error' => 'ID inválido']);
+            return;
+        }
+
+        $cnpjs = $this->usuarios_cliente_model->getCnpjs($usuario_id);
+        echo json_encode(['success' => true, 'data' => $cnpjs]);
+    }
 }

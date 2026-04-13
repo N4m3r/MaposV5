@@ -107,5 +107,26 @@ $route['relatorioatendimentos/estatisticas'] = 'relatorioatendimentos/estatistic
 $route['relatorioatendimentos/exportar'] = 'relatorioatendimentos/exportar';
 $route['relatorioatendimentos/visualizar/(:num)'] = 'relatorioatendimentos/visualizar/$1';
 
+// Rotas do Dashboard para relatórios
+$route['dashboard/relatorio_atendimentos'] = 'dashboard/relatorio_atendimentos';
+$route['dashboard/relatorio_financeiro'] = 'dashboard/relatorio_financeiro';
+$route['dashboard/relatorio_produtos'] = 'dashboard/relatorio_produtos';
+$route['dashboard/relatorio_clientes'] = 'dashboard/relatorio_clientes';
+
+// Rotas de Usuários Cliente (Multi-CNPJ)
+$route['usuarioscliente'] = 'usuarioscliente';
+$route['usuarioscliente/adicionar'] = 'usuarioscliente/adicionar';
+$route['usuarioscliente/editar/(:num)'] = 'usuarioscliente/editar/$1';
+$route['usuarioscliente/excluir/(:num)'] = 'usuarioscliente/excluir/$1';
+$route['usuarioscliente/visualizar/(:num)'] = 'usuarioscliente/visualizar/$1';
+$route['usuarioscliente/salvar'] = 'usuarioscliente/salvar';
+$route['usuarioscliente/atualizar'] = 'usuarioscliente/atualizar';
+$route['usuarioscliente/ativar/(:num)'] = 'usuarioscliente/ativar/$1';
+$route['usuarioscliente/desativar/(:num)'] = 'usuarioscliente/desativar/$1';
+// Rotas para gerenciar CNPJs vinculados
+$route['usuarioscliente/adicionar_cnpj/(:num)'] = 'usuarioscliente/adicionar_cnpj/$1';
+$route['usuarioscliente/remover_cnpj/(:num)/(:any)'] = 'usuarioscliente/remover_cnpj/$1/$2';
+$route['usuarioscliente/get_cnpjs/(:num)'] = 'usuarioscliente/get_cnpjs/$1';
+
 /* End of file routes.php */
 /* Location: ./application/config/routes.php */

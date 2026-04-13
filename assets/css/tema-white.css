@@ -114,6 +114,7 @@ body {
 
 #sidebar > ul > li > ul {
   background-color: #fbfcff;
+  z-index: 1000;
 }
 
 #sidebar > ul li ul li a {

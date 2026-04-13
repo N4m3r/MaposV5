@@ -5,32 +5,48 @@ $(document).ready(function(){
 	
 	// === Sidebar navigation === //
 	
+	// === Sidebar navigation - Suporte a submenus aninhados === //
+
 	$('.submenu > a').click(function(e)
 	{
 		e.preventDefault();
-		var submenu = $(this).siblings('ul');
-		var li = $(this).parents('li');
-		var submenus = $('#sidebar li.submenu ul');
-		var submenus_parents = $('#sidebar li.submenu');
-		if(li.hasClass('open'))
+		var $link = $(this);
+		var $li = $link.closest('li');
+		var $submenu = $link.siblings('ul');
+		var isNested = $li.parent().closest('.submenu').length > 0;
+
+		if($li.hasClass('open'))
 		{
+			// Fecha o submenu atual
 			if(($(window).width() > 768) || ($(window).width() < 479)) {
-				submenu.slideUp();
+				$submenu.slideUp();
 			} else {
-				submenu.fadeOut(250);
+				$submenu.fadeOut(250);
 			}
-			li.removeClass('open');
-		} else 
+			$li.removeClass('open');
+			// Fecha todos os submenus filhos também
+			$li.find('li.submenu').removeClass('open').find('> ul').slideUp();
+		} else
 		{
-			if(($(window).width() > 768) || ($(window).width() < 479)) {
-				submenus.slideUp();			
-				submenu.slideDown();
+			// Se não for submenu aninhado, fecha outros submenus no mesmo nível
+			if (!isNested) {
+				var $siblings = $li.siblings('li.submenu');
+				$siblings.removeClass('open').find('> ul').slideUp();
+				$siblings.find('li.submenu').removeClass('open').find('> ul').slideUp();
 			} else {
-				submenus.fadeOut(250);			
-				submenu.fadeIn(250);
+				// Se for submenu aninhado, fecha apenas os irmãos no mesmo nível
+				var $parentUl = $li.parent('ul');
+				var $siblings = $parentUl.children('li.submenu');
+				$siblings.not($li).removeClass('open').find('> ul').slideUp();
 			}
-			submenus_parents.removeClass('open');		
-			li.addClass('open');	
+
+			// Abre o submenu atual
+			if(($(window).width() > 768) || ($(window).width() < 479)) {
+				$submenu.slideDown();
+			} else {
+				$submenu.fadeIn(250);
+			}
+			$li.addClass('open');
 		}
 	});
 	

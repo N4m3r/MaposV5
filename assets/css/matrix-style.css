@@ -4351,3 +4351,98 @@ fieldset[disabled] .btn-info.active {
 .button-container .cascading-buttons a {
   margin: 0 0 3px 0;
 }
+
+/* ============================================
+   SUBMENU ANINHADO - CSS PARA MENU V5
+   ============================================ */
+
+/* Estilo para submenus aninhados */
+#sidebar > ul > li.submenu {
+  position: relative;
+}
+
+/* Submenu nível 1 */
+#sidebar > ul > li.submenu > ul {
+  position: relative;
+  display: none;
+  margin: 0;
+  padding: 5px 0 5px 25px;
+  background-color: rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  z-index: 1000;
+}
+
+/* Submenu nível 2 (aninhado) */
+#sidebar > ul > li.submenu > ul > li.submenu > ul {
+  position: relative;
+  display: none;
+  margin: 0;
+  padding: 5px 0 5px 15px;
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  z-index: 1001;
+}
+
+/* Quando o submenu está aberto */
+#sidebar > ul > li.submenu.open > ul,
+#sidebar > ul > li.submenu.active > ul {
+  display: block;
+}
+
+/* Submenu nível 2 quando pai está ativo/aberto */
+#sidebar > ul > li.submenu > ul > li.submenu.open > ul,
+#sidebar > ul > li.submenu > ul > li.submenu.active > ul {
+  display: block;
+}
+
+/* Estilo dos itens do submenu */
+#sidebar > ul > li.submenu > ul > li {
+  position: relative;
+  display: block;
+  height: auto;
+  min-height: 35px;
+}
+
+#sidebar > ul > li.submenu > ul > li > a {
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  color: var(--cinza0);
+  font-size: 0.95em;
+}
+
+#sidebar > ul > li.submenu > ul > li > a:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+/* Ícone do submenu aninhado */
+#sidebar > ul > li.submenu > a .arrow {
+  margin-left: auto;
+  transition: transform 0.3s ease;
+}
+
+#sidebar > ul > li.submenu.open > a .arrow,
+#sidebar > ul > li.submenu.active > a .arrow {
+  transform: rotate(180deg);
+}
+
+/* Z-index para garantir que submenus apareçam por cima */
+#sidebar .submenu ul {
+  z-index: 1000 !important;
+}
+
+#sidebar .submenu .submenu ul {
+  z-index: 1001 !important;
+}
+
+/* Fix para tema white */
+body.theme-white #sidebar > ul > li.submenu > ul,
+body.theme-whitegreen #sidebar > ul > li.submenu > ul {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+body.theme-white #sidebar > ul > li.submenu > ul > li.submenu > ul,
+body.theme-whitegreen #sidebar > ul > li.submenu > ul > li.submenu > ul {
+  background-color: rgba(0, 0, 0, 0.03);
+}

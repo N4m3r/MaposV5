@@ -132,6 +132,10 @@ if (! empty($_POST)) {
         // Novas Funcionalidades V5
         'vCertificado' => '1', 'vImpostos' => '1', 'vDRE' => '1',
         'vWebhooks' => '1', 'vRelatorioAtendimentos' => '1',
+        // Usuários Cliente (Multi-CNPJ)
+        'vUsuariosCliente' => '1', 'cUsuariosCliente' => '1',
+        'eUsuariosCliente' => '1', 'dUsuariosCliente' => '1',
+        'cPermUsuariosCliente' => '1',
         // Dashboard e Relatórios Avançados
         'vDashboard' => '1', 'vRelatorioCompleto' => '1', 'vExportarDados' => '1'
     ];
