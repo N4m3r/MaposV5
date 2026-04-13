@@ -4446,3 +4446,72 @@ body.theme-white #sidebar > ul > li.submenu > ul > li.submenu > ul,
 body.theme-whitegreen #sidebar > ul > li.submenu > ul > li.submenu > ul {
   background-color: rgba(0, 0, 0, 0.03);
 }
+
+/* ============================================
+   CORREÇÕES PARA SUBMENU APARECER CORRETAMENTE
+   ============================================ */
+
+/* Aumentar z-index do sidebar e seus submenus */
+#sidebar {
+  z-index: 99999 !important;
+}
+
+/* Garantir que submenus apareçam por cima */
+#sidebar .submenu ul,
+#sidebar .submenu.open ul,
+#sidebar .submenu.active ul {
+  z-index: 100000 !important;
+}
+
+/* Submenus nível 2 precisam de z-index maior */
+#sidebar .submenu .submenu ul,
+#sidebar .submenu .submenu.open ul,
+#sidebar .submenu .submenu.active ul {
+  z-index: 100001 !important;
+}
+
+/* Ajuste para o menu quando sidebar está aberta/fechada */
+#sidebar.open .submenu ul {
+  position: relative;
+  left: auto;
+  width: auto;
+}
+
+/* Submenu deve aparecer acima do conteúdo principal */
+#sidebar > ul > li.submenu > ul {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Animação suave para submenus */
+#sidebar .submenu ul {
+  transition: all 0.3s ease;
+}
+
+/* Corrigir posicionamento quando o menu está recolhido */
+@media (min-width: 769px) {
+  #sidebar:not(.open) > ul > li.submenu > ul {
+    left: 80px;
+    width: 220px;
+  }
+}
+
+/* Submenu nível 2 sempre abaixo do item pai */
+#sidebar > ul > li.submenu > ul > li.submenu > ul {
+  position: relative;
+  left: 0;
+  margin-left: 30px;
+  margin-top: 5px;
+  width: calc(100% - 30px);
+}
+
+/* Garantir que itens de submenu tenham altura mínima */
+#sidebar li.submenu ul li {
+  min-height: 35px;
+  height: auto;
+}
+
+/* Ajuste para o ícone de seta no submenu */
+#sidebar li.submenu ul li.submenu > a .arrow {
+  font-size: 0.8em;
+  margin-left: 5px;
+}

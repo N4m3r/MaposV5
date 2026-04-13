@@ -18,11 +18,6 @@ class Relatorioatendimentos extends MY_Controller
     {
         parent::__construct();
 
-        // Verifica se está logado
-        if (!$this->session->userdata('id_usuario')) {
-            redirect('login');
-        }
-
         // Carrega models
         $this->load->model('relatorioatendimentos_model');
         $this->load->model('checkin_model');

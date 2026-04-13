@@ -14,10 +14,6 @@ class Certificado extends MY_Controller
     {
         parent::__construct();
 
-        if (!$this->session->userdata('id_admin')) {
-            redirect('login');
-        }
-
         $this->load->model('certificado_model');
         $this->load->model('impostos_model');
         $this->load->helper(['date', 'currency']);

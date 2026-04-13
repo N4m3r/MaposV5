@@ -14,10 +14,6 @@ class Dre extends MY_Controller
     {
         parent::__construct();
 
-        if (!$this->session->userdata('id_admin')) {
-            redirect('login');
-        }
-
         $this->load->model('dre_model');
         $this->load->model('financeiro_model');
         $this->load->helper(['date', 'currency']);

@@ -19,11 +19,6 @@ class Tecnico extends MY_Controller
         $this->load->model('checklist_model');
         $this->load->model('mapos_model');
 
-        // Verificar se usuario esta logado
-        if (!$this->session->userdata('id_admin')) {
-            redirect('login');
-        }
-
         // Verificar se tem permissao para acessar area do tecnico
         if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vTecnicoDashboard')) {
             $this->session->set_flashdata('error', 'Você não tem permissão para acessar a Área do Técnico.');

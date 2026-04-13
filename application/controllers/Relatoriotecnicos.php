@@ -20,10 +20,6 @@ class Relatoriotecnicos extends MY_Controller
     {
         parent::__construct();
 
-        if (!$this->session->userdata('id_admin')) {
-            redirect('login');
-        }
-
         // Carregar models
         $this->load->model('relatoriotecnicos_model');
         $this->load->model('tecnico_model');
