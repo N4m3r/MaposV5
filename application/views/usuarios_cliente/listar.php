@@ -30,7 +30,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach ($usuarios as $u): ?
+                            <?php foreach ($usuarios as $u): ?>
                                 <tr>
                                     <td><?= $u->id ?></td>
                                     <td><?= htmlspecialchars($u->nome) ?></td>
