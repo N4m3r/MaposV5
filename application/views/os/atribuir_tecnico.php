@@ -438,14 +438,14 @@
     <div class="span12 filtro-box" style="margin-left: 0; margin-top: 15px;">
         <form method="get" action="<?php echo base_url(); ?>index.php/os/atribuir" id="formFiltros">
             <div class="row-fluid">
-                <!-- Linha 1: Filtros principais -->
-                <div class="span3">
-                    <label><i class='bx bx-search'></i> Cliente</label>
-                    <input type="text" name="pesquisa" id="pesquisa" placeholder="Nome do cliente..." class="span12" value="<?= $this->input->get('pesquisa') ?>">
+                <!-- Linha 1: Busca e Filtros principais -->
+                <div class="span4">
+                    <label><i class='fas fa-search'></i> Buscar OS</label>
+                    <input type="text" name="busca_global" id="busca_global" placeholder="N° OS, cliente, descrição, defeito, observações, telefone..." class="span12" value="<?= $this->input->get('busca_global') ?>">
                 </div>
 
                 <div class="span2">
-                    <label><i class='bx bx-flag'></i> Status</label>
+                    <label><i class='fas fa-flag'></i> Status</label>
                     <select name="status" id="status" class="span12">
                         <option value="">Todos</option>
                         <option value="Aberto" <?= $this->input->get('status') == 'Aberto' ? 'selected' : '' ?>>Aberto</option>
@@ -461,7 +461,7 @@
                 </div>
 
                 <div class="span2">
-                    <label><i class='bx bx-user'></i> Técnico</label>
+                    <label><i class='fas fa-user'></i> Técnico</label>
                     <select name="tecnico" id="tecnico" class="span12">
                         <option value="">Todos</option>
                         <option value="sem_tecnico" <?= $this->input->get('tecnico') == 'sem_tecnico' ? 'selected' : '' ?>>⚠ Sem Técnico</option>
@@ -477,8 +477,8 @@
                     </select>
                 </div>
 
-                <div class="span3">
-                    <label><i class='bx bx-calendar'></i> Período</label>
+                <div class="span2">
+                    <label><i class='fas fa-calendar'></i> Período</label>
                     <div class="periodo-inputs">
                         <input type="text" name="data" autocomplete="off" id="data" placeholder="Início" class="datepicker" value="<?= $this->input->get('data') ?>">
                         <input type="text" name="data2" autocomplete="off" id="data2" placeholder="Fim" class="datepicker" value="<?= $this->input->get('data2') ?>">
@@ -487,31 +487,26 @@
 
                 <div class="span2">
                     <label>&nbsp;</label>
-                    <div class="checkbox-wrapper">
-                        <input type="checkbox" name="mostrar_finalizados" id="mostrar_finalizados" value="1" <?= $this->input->get('mostrar_finalizados') ? 'checked' : '' ?>>
-                        <label for="mostrar_finalizados" style="margin: 0; cursor: pointer;">Mostrar Finalizados</label>
+                    <div style="display: flex; gap: 5px;">
+                        <button type="submit" class="button btn btn-mini btn-success" style="flex: 1;">
+                            <span class="button__icon"><i class='fas fa-search'></i></span>
+                            <span class="button__text2">Filtrar</span>
+                        </button>
+
+                        <a href="<?php echo base_url(); ?>index.php/os/atribuir" class="button btn btn-mini" style="flex: 1;">
+                            <span class="button__icon"><i class='fas fa-undo'></i></span>
+                            <span class="button__text2">Limpar</span>
+                        </a>
                     </div>
                 </div>
             </div>
 
-            <!-- Linha 2: Busca Global -->
-            <div class="row-fluid" style="margin-top: 15px; border-top: 1px solid rgba(0,0,0,0.1); padding-top: 15px;">
-                <div class="span8">
-                    <label><i class='bx bx-search'></i> Buscar em todas as OS</label>
-                    <input type="text" name="busca_global" id="busca_global" placeholder="N° OS, cliente, descrição, defeito, observações, telefone..." class="span12" value="<?= $this->input->get('busca_global') ?>">
-                </div>
-                <div class="span4">
-                    <label>&nbsp;</label>
-                    <div>
-                        <button type="submit" class="button btn btn-mini btn-success">
-                            <span class="button__icon"><i class='bx bx-search-alt'></i></span>
-                            <span class="button__text2">Aplicar Filtros</span>
-                        </button>
-
-                        <a href="<?php echo base_url(); ?>index.php/os/atribuir" class="button btn btn-mini">
-                            <span class="button__icon"><i class='bx bx-reset'></i></span>
-                            <span class="button__text2">Limpar</span>
-                        </a>
+            <!-- Linha 2: Opções adicionais -->
+            <div class="row-fluid" style="margin-top: 10px;">
+                <div class="span12">
+                    <div class="checkbox-wrapper" style="display: inline-block;">
+                        <input type="checkbox" name="mostrar_finalizados" id="mostrar_finalizados" value="1" <?= $this->input->get('mostrar_finalizados') ? 'checked' : '' ?>>
+                        <label for="mostrar_finalizados" style="margin: 0; cursor: pointer;">Mostrar OS Finalizadas/Canceladas/Faturadas</label>
                     </div>
                 </div>
             </div>
@@ -543,7 +538,7 @@
                         <?php if (empty($ordens)): ?>
                             <tr>
                                 <td colspan="7" class="text-center" style="padding: 40px;">
-                                    <i class='bx bx-inbox' style="font-size: 3em; display: block; margin-bottom: 15px; opacity: 0.5;"></i>
+                                    <i class='fas fa-inbox' style="font-size: 3em; display: block; margin-bottom: 15px; opacity: 0.5;"></i>
                                     <span style="font-size: 14px;">Nenhuma OS encontrada com os filtros selecionados</span>
                                 </td>
                             </tr>
@@ -589,7 +584,7 @@
                                         <a href="<?php echo base_url(); ?>index.php/clientes/visualizar/<?php echo $os->clientes_id; ?>" title="Ver cliente">
                                             <?php echo $os->nomeCliente; ?>
                                         </a><br>
-                                        <small><i class='bx bx-phone' style="font-size: 10px;"></i> <?php echo $os->telefone ?: 'N/A'; ?></small>
+                                        <small><i class='fas fa-phone' style="font-size: 10px;"></i> <?php echo $os->telefone ?: 'N/A'; ?></small>
                                     </td>
                                     <td>
                                         <?php echo character_limiter(strip_tags($os->descricaoProduto), 45); ?>
@@ -605,18 +600,18 @@
                                     <td class="text-center">
                                         <?php if ($os->tecnico_responsavel): ?>
                                             <span class="tecnico-badge tecnico-atribuido">
-                                                <i class='bx bx-user'></i> <?php echo $os->nome_tecnico; ?>
+                                                <i class='fas fa-user'></i> <?php echo $os->nome_tecnico; ?>
                                             </span>
                                         <?php else: ?>
                                             <span class="tecnico-badge tecnico-pendente">
-                                                <i class='bx bx-user-x'></i> Pendente
+                                                <i class='fas fa-user-times'></i> Pendente
                                             </span>
                                         <?php endif; ?>
                                     </td>
                                     <td class="text-center">
                                         <a href="<?php echo base_url(); ?>index.php/os/visualizar/<?php echo $os->idOs; ?>"
                                            class="btn-nwe btn-acao" title="Visualizar OS">
-                                            <i class='bx bx-show'></i>
+                                            <i class='fas fa-eye'></i>
                                         </a>
                                         <button class="btn-nwe3 btn-acao btn-atribuir"
                                                 data-os="<?php echo $os->idOs; ?>"
@@ -624,14 +619,14 @@
                                                 data-tecnico-atual="<?php echo $os->tecnico_responsavel; ?>"
                                                 data-tecnico-nome="<?php echo htmlspecialchars($os->nome_tecnico ?? ''); ?>"
                                                 title="<?php echo $os->tecnico_responsavel ? 'Trocar Técnico' : 'Atribuir Técnico'; ?>">
-                                            <i class='<?php echo $os->tecnico_responsavel ? 'bx bx-transfer' : 'bx bx-user-plus'; ?>'></i>
+                                            <i class='<?php echo $os->tecnico_responsavel ? 'fas fa-exchange-alt' : 'fas fa-user-plus'; ?>'></i>
                                         </button>
                                         <?php if ($os->tecnico_responsavel): ?>
                                             <button class="btn-nwe4 btn-acao btn-remover"
                                                     data-os="<?php echo $os->idOs; ?>"
                                                     data-cliente="<?php echo htmlspecialchars($os->nomeCliente); ?>"
                                                     title="Remover Técnico">
-                                                <i class='bx bx-user-x'></i>
+                                                <i class='fas fa-user-times'></i>
                                             </button>
                                         <?php endif; ?>
                                     </td>
@@ -654,7 +649,7 @@
     <!-- Info de paginação -->
     <?php if (!empty($ordens)): ?>
         <div class="info-paginacao">
-            <i class='bx bx-info-circle'></i>
+            <i class='fas fa-info-circle'></i>
             Mostrando <?php echo count($ordens); ?> OS por página
             <?php if ($this->input->get('pesquisa') || $this->input->get('status') || $this->input->get('tecnico')): ?>
                 | Filtros ativos
@@ -668,7 +663,7 @@
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
         <h5 id="modalAtribuirLabel">
-            <i class='bx bx-user-plus'></i> Atribuir Técnico
+            <i class='fas fa-user-plus'></i> Atribuir Técnico
         </h5>
     </div>
     <form action="<?php echo base_url(); ?>index.php/os/atribuirTecnicoAction" method="POST" id="formAtribuir">
@@ -709,17 +704,17 @@
             </div>
 
             <div id="tecnico-atual-info" class="alert alert-info hide" style="margin-top: 10px;">
-                <strong><i class='bx bx-info-circle'></i> Técnico atual:</strong> <span id="tecnico-atual-nome"></span><br>
+                <strong><i class='fas fa-info-circle'></i> Técnico atual:</strong> <span id="tecnico-atual-nome"></span><br>
                 <small>Ao atribuir um novo técnico, o atual será substituído.</small>
             </div>
         </div>
         <div class="modal-footer" style="display:flex;justify-content: center">
             <button class="button btn btn-warning" data-dismiss="modal" aria-hidden="true">
-                <span class="button__icon"><i class="bx bx-x"></i></span>
+                <span class="button__icon"><i class="fas fa-times"></i></span>
                 <span class="button__text2">Cancelar</span>
             </button>
             <button type="submit" class="button btn btn-success">
-                <span class="button__icon"><i class='bx bx-check'></i></span>
+                <span class="button__icon"><i class='fas fa-check'></i></span>
                 <span class="button__text2">Confirmar</span>
             </button>
         </div>
@@ -731,7 +726,7 @@
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
         <h5 id="modalRemoverLabel">
-            <i class='bx bx-user-x'></i> Remover Técnico
+            <i class='fas fa-user-times'></i> Remover Técnico
         </h5>
     </div>
     <form action="<?php echo base_url(); ?>index.php/os/removerTecnicoAction" method="POST" id="formRemover">
@@ -739,7 +734,7 @@
             <input type="hidden" name="os_id" id="os_id_remover">
 
             <div class="alert alert-warning">
-                <p><i class='bx bx-error-circle'></i> Tem certeza que deseja remover o técnico da OS #<strong id="os_numero_remover"></strong>?</p>
+                <p><i class='fas fa-exclamation-circle'></i> Tem certeza que deseja remover o técnico da OS #<strong id="os_numero_remover"></strong>?</p>
                 <p>Cliente: <strong id="os_cliente_remover"></strong></p>
             </div>
 
@@ -752,11 +747,11 @@
         </div>
         <div class="modal-footer" style="display:flex;justify-content: center">
             <button class="button btn btn-warning" data-dismiss="modal" aria-hidden="true">
-                <span class="button__icon"><i class="bx bx-x"></i></span>
+                <span class="button__icon"><i class="fas fa-times"></i></span>
                 <span class="button__text2">Cancelar</span>
             </button>
             <button type="submit" class="button btn btn-danger">
-                <span class="button__icon"><i class='bx bx-trash'></i></span>
+                <span class="button__icon"><i class='fas fa-trash'></i></span>
                 <span class="button__text2">Confirmar</span>
             </button>
         </div>
@@ -779,10 +774,10 @@
             if (tecnicoAtual) {
                 $('#tecnico-atual-nome').text(tecnicoNome);
                 $('#tecnico-atual-info').removeClass('hide');
-                $('#modalAtribuirLabel').html('<i class="bx bx-transfer"></i> Trocar Técnico');
+                $('#modalAtribuirLabel').html('<i class="fas fa-exchange-alt"></i> Trocar Técnico');
             } else {
                 $('#tecnico-atual-info').addClass('hide');
-                $('#modalAtribuirLabel').html('<i class="bx bx-user-plus"></i> Atribuir Técnico');
+                $('#modalAtribuirLabel').html('<i class="fas fa-user-plus"></i> Atribuir Técnico');
             }
 
             $('#modalAtribuir').modal('show');

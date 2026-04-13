@@ -229,11 +229,13 @@ CREATE TABLE IF NOT EXISTS `os` (
   `lancamento` INT(11) NULL DEFAULT NULL,
   `faturado` TINYINT(1) NOT NULL,
   `garantias_id` int(11) NULL,
+  `tecnico_responsavel` INT(11) NULL COMMENT 'ID do usuario tecnico responsavel pela OS',
   PRIMARY KEY (`idOs`),
   INDEX `fk_os_clientes1` (`clientes_id` ASC),
   INDEX `fk_os_usuarios1` (`usuarios_id` ASC),
   INDEX `fk_os_lancamentos1` (`lancamento` ASC),
   INDEX `fk_os_garantias1` (`garantias_id` ASC),
+  INDEX `idx_tecnico_responsavel` (`tecnico_responsavel` ASC),
   CONSTRAINT `fk_os_clientes1`
     FOREIGN KEY (`clientes_id`)
     REFERENCES `clientes` (`idClientes`)
@@ -851,6 +853,23 @@ CREATE TABLE IF NOT EXISTS `checkin` (
   PRIMARY KEY (`idCheckin`),
   FOREIGN KEY (`os_id`) REFERENCES `os`(`idOs`),
   FOREIGN KEY (`tecnico_id`) REFERENCES `usuarios`(`idUsuarios`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- -----------------------------------------------------
+-- Table `os_tecnico_atribuicao`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `os_tecnico_atribuicao` (
+  `idAtribuicao` INT(11) NOT NULL AUTO_INCREMENT,
+  `os_id` INT(11) NOT NULL,
+  `tecnico_id` INT(11) NOT NULL COMMENT 'ID do tecnico atribuido',
+  `atribuido_por` INT(11) NOT NULL COMMENT 'ID do usuario que fez a atribuicao',
+  `data_atribuicao` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `data_remocao` DATETIME NULL,
+  `motivo_remocao` TEXT NULL,
+  `observacao` TEXT NULL,
+  PRIMARY KEY (`idAtribuicao`),
+  INDEX `idx_os_id` (`os_id`),
+  INDEX `idx_tecnico_id` (`tecnico_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- -----------------------------------------------------

@@ -749,6 +749,8 @@
                                                     <span class="lbl"> Visualizar DRE</span>
                                                 </label>
                                             </td>
+                                        </tr>
+                                        <tr>
                                             <td>
                                                 <label>
                                                     <input name="cDRE" class="marcar" type="checkbox" checked="checked" value="1" />
@@ -767,8 +769,6 @@
                                                     <span class="lbl"> Excluir DRE</span>
                                                 </label>
                                             </td>
-                                        </tr>
-                                        <tr>
                                             <td>
                                                 <label>
                                                     <input name="vRelatorioAtendimentos" class="marcar" type="checkbox" checked="checked" value="1" />

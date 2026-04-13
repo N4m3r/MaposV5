@@ -993,6 +993,8 @@
                                             <span class="lbl"> Visualizar DRE</span>
                                         </label>
                                     </td>
+                                </tr>
+                                <tr>
                                 <td>
                                     <label>
                                             <input <?php echo (isset($permissoes['cDRE']) && $permissoes['cDRE'] == '1') ? 'checked' : ''; ?> name="cDRE" class="marcar" type="checkbox" value="1" />
@@ -1011,8 +1013,6 @@
                                             <span class="lbl"> Excluir DRE</span>
                                         </label>
                                     </td>
-                                </tr>
-                                <tr>
                                 <td>
                                     <label>
                                             <input <?php echo (isset($permissoes['vRelatorioAtendimentos']) && $permissoes['vRelatorioAtendimentos'] == '1') ? 'checked' : ''; ?> name="vRelatorioAtendimentos" class="marcar" type="checkbox" value="1" />
