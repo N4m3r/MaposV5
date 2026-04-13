@@ -181,7 +181,8 @@ class Relatoriotecnicos_model extends CI_Model
         $this->db->group_by('DATE(oc.data_entrada), u.idUsuarios');
         $this->db->order_by('data', 'ASC');
 
-        return $this->db->get()->result();
+        $query = $this->db->get();
+        return $query ? $query->result() : [];
     }
 
     // ==================== OS POR TÉCNICO ====================
@@ -231,7 +232,8 @@ class Relatoriotecnicos_model extends CI_Model
             ORDER BY data ASC
         ";
 
-        $result = $this->db->query($sql, [$data_inicio . ' 00:00:00', $data_fim . ' 23:59:59'])->result();
+        $query = $this->db->query($sql, [$data_inicio . ' 00:00:00', $data_fim . ' 23:59:59']);
+        $result = $query ? $query->result() : [];
 
         foreach ($result as $row) {
             $row->media_horas_tecnico = round($row->media_horas_tecnico, 2);
@@ -290,7 +292,8 @@ class Relatoriotecnicos_model extends CI_Model
             ORDER BY mes ASC
         ";
 
-        $historico = $this->db->query($sql, [$data_3meses])->result();
+        $query = $this->db->query($sql, [$data_3meses]);
+        $historico = $query ? $query->result() : [];
 
         $taxa_crescimento = 0;
         if (count($historico) >= 2) {
@@ -352,7 +355,8 @@ class Relatoriotecnicos_model extends CI_Model
             ORDER BY mes ASC
         ";
 
-        return $this->db->query($sql, [$meses])->result();
+        $query = $this->db->query($sql, [$meses]);
+        return $query ? $query->result() : [];
     }
 
     // ==================== DETALHES ====================
@@ -376,7 +380,8 @@ class Relatoriotecnicos_model extends CI_Model
             ORDER BY data ASC
         ";
 
-        return $this->db->query($sql, [$tecnico_id, $data_inicio, $data_fim])->result();
+        $query = $this->db->query($sql, [$tecnico_id, $data_inicio, $data_fim]);
+        return $query ? $query->result() : [];
     }
 
     /**
@@ -403,7 +408,8 @@ class Relatoriotecnicos_model extends CI_Model
         $this->db->where('o.dataInicial <=', $data_fim);
         $this->db->order_by('o.dataInicial', 'DESC');
 
-        return $this->db->get()->result();
+        $query = $this->db->get();
+        return $query ? $query->result() : [];
     }
 
     /**
@@ -428,7 +434,8 @@ class Relatoriotecnicos_model extends CI_Model
             ORDER BY eficiencia DESC
         ";
 
-        return $this->db->query($sql, [$data_inicio, $data_fim])->result();
+        $query = $this->db->query($sql, [$data_inicio, $data_fim]);
+        return $query ? $query->result() : [];
     }
 
     /**
@@ -447,6 +454,7 @@ class Relatoriotecnicos_model extends CI_Model
             ORDER BY data, hora
         ";
 
-        return $this->db->query($sql, [$data_inicio . ' 00:00:00', $data_fim . ' 23:59:59'])->result();
+        $query = $this->db->query($sql, [$data_inicio . ' 00:00:00', $data_fim . ' 23:59:59']);
+        return $query ? $query->result() : [];
     }
 }
