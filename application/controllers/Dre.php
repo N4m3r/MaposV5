@@ -51,9 +51,7 @@ class Dre extends MY_Controller
         ];
 
         $this->data['view'] = 'dre/dashboard';
-        $this->load->view('tema/topo', $this->data);
-        $this->load->view($this->data['view'], $this->data);
-        $this->load->view('tema/rodape');
+        return $this->layout();
     }
 
     /**
@@ -82,9 +80,7 @@ class Dre extends MY_Controller
         ];
 
         $this->data['view'] = 'dre/relatorio';
-        $this->load->view('tema/topo', $this->data);
-        $this->load->view($this->data['view'], $this->data);
-        $this->load->view('tema/rodape');
+        return $this->layout();
     }
 
     /**
@@ -99,10 +95,7 @@ class Dre extends MY_Controller
 
         $this->data['contas'] = $this->dre_model->getContas();
         $this->data['view'] = 'dre/contas';
-
-        $this->load->view('tema/topo', $this->data);
-        $this->load->view($this->data['view'], $this->data);
-        $this->load->view('tema/rodape');
+        return $this->layout();
     }
 
     /**
@@ -120,10 +113,7 @@ class Dre extends MY_Controller
         $this->data['conta'] = $conta;
         $this->data['contas_pai'] = $this->dre_model->getContas(1);
         $this->data['view'] = 'dre/conta_form';
-
-        $this->load->view('tema/topo', $this->data);
-        $this->load->view($this->data['view'], $this->data);
-        $this->load->view('tema/rodape');
+        return $this->layout();
     }
 
     /**
@@ -193,10 +183,7 @@ class Dre extends MY_Controller
         $this->data['data_inicio'] = $data_inicio;
         $this->data['data_fim'] = $data_fim;
         $this->data['view'] = 'dre/lancamentos';
-
-        $this->load->view('tema/topo', $this->data);
-        $this->load->view($this->data['view'], $this->data);
-        $this->load->view('tema/rodape');
+        return $this->layout();
     }
 
     /**
@@ -223,10 +210,7 @@ class Dre extends MY_Controller
         $this->data['lancamento'] = $lancamento;
         $this->data['contas'] = $this->dre_model->getContas(1);
         $this->data['view'] = 'dre/lancamento_form';
-
-        $this->load->view('tema/topo', $this->data);
-        $this->load->view($this->data['view'], $this->data);
-        $this->load->view('tema/rodape');
+        return $this->layout();
     }
 
     /**
@@ -380,9 +364,6 @@ class Dre extends MY_Controller
         $this->data['meses'] = $meses;
         $this->data['ano'] = $ano;
         $this->data['view'] = 'dre/analise';
-
-        $this->load->view('tema/topo', $this->data);
-        $this->load->view($this->data['view'], $this->data);
-        $this->load->view('tema/rodape');
+        return $this->layout();
     }
 }

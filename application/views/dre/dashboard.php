@@ -272,7 +272,7 @@ $periodo_anterior = $dre['periodo_anterior'] ?? null;
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($dre['grupos'] as $grupo): ?>
+                        <?php foreach ($dre['grupos'] as $grupo_key => $grupo): ?>
                         <tr class="<?= $grupo['destaque'] ? 'grupo-destaque' : 'grupo-principal' ?>">
                             <td><?= $grupo['titulo'] ?></td>
                             <td class="valor">
@@ -281,7 +281,7 @@ $periodo_anterior = $dre['periodo_anterior'] ?? null;
                             </td>
                             <td class="percentual"><?= number_format($grupo['percentual'], 2) ?>%</td>
                             <?php if ($comparativo):
-                                $valor_ant = $comparativo['grupos'][array_search($grupo, $dre['grupos'])]['valor'] ?? 0;
+                                $valor_ant = $comparativo['grupos'][$grupo_key]['valor'] ?? 0;
                                 $diff = $grupo['valor'] - $valor_ant;
                                 $percent_var = $valor_ant != 0 ? (($grupo['valor'] - $valor_ant) / abs($valor_ant)) * 100 : 0;
                             ?>

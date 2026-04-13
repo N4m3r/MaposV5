@@ -37,10 +37,7 @@ class Certificado extends MY_Controller
         $this->data['validade'] = $validade;
         $this->data['consultas'] = $consultas;
         $this->data['view'] = 'certificado/dashboard';
-
-        $this->load->view('tema/topo', $this->data);
-        $this->load->view($this->data['view'], $this->data);
-        $this->load->view('tema/rodape');
+        return $this->layout();
     }
 
     /**
@@ -79,10 +76,7 @@ class Certificado extends MY_Controller
 
         $this->data['certificado'] = $this->certificado_model->getCertificadoAtivo();
         $this->data['view'] = 'certificado/configurar';
-
-        $this->load->view('tema/topo', $this->data);
-        $this->load->view($this->data['view'], $this->data);
-        $this->load->view('tema/rodape');
+        return $this->layout();
     }
 
     /**
@@ -193,10 +187,7 @@ class Certificado extends MY_Controller
         $this->data['notas'] = $this->db->get('certificado_nfe_importada', $config['per_page'], $this->input->get('per_page'))->result();
 
         $this->data['view'] = 'certificado/listar_nfse';
-
-        $this->load->view('tema/topo', $this->data);
-        $this->load->view($this->data['view'], $this->data);
-        $this->load->view('tema/rodape');
+        return $this->layout();
     }
 
     /**
@@ -259,9 +250,7 @@ class Certificado extends MY_Controller
         );
 
         $this->data['view'] = 'certificado/importar_nfse';
-        $this->load->view('tema/topo', $this->data);
-        $this->load->view($this->data['view'], $this->data);
-        $this->load->view('tema/rodape');
+        return $this->layout();
     }
 
     /**

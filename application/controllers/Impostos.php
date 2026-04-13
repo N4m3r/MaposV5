@@ -41,9 +41,7 @@ class Impostos extends MY_Controller
         ]);
 
         $this->data['view'] = 'impostos/dashboard';
-        $this->load->view('tema/topo', $this->data);
-        $this->load->view($this->data['view'], $this->data);
-        $this->load->view('tema/rodape');
+        return $this->layout();
     }
 
     /**
@@ -84,9 +82,7 @@ class Impostos extends MY_Controller
         $this->data['aliquotas_iv'] = $this->impostos_model->getAliquotasAnexo('IV');
 
         $this->data['view'] = 'impostos/configuracoes';
-        $this->load->view('tema/topo', $this->data);
-        $this->load->view($this->data['view'], $this->data);
-        $this->load->view('tema/rodape');
+        return $this->layout();
     }
 
     /**
@@ -118,10 +114,7 @@ class Impostos extends MY_Controller
         $this->data['aliquotas_iii'] = $this->impostos_model->getAliquotasAnexo('III');
         $this->data['aliquotas_iv'] = $this->impostos_model->getAliquotasAnexo('IV');
         $this->data['view'] = 'impostos/simulador';
-
-        $this->load->view('tema/topo', $this->data);
-        $this->load->view($this->data['view'], $this->data);
-        $this->load->view('tema/rodape');
+        return $this->layout();
     }
 
     /**
@@ -145,9 +138,7 @@ class Impostos extends MY_Controller
         ]);
 
         $this->data['view'] = 'impostos/relatorio';
-        $this->load->view('tema/topo', $this->data);
-        $this->load->view($this->data['view'], $this->data);
-        $this->load->view('tema/rodape');
+        return $this->layout();
     }
 
     /**
@@ -216,10 +207,7 @@ class Impostos extends MY_Controller
         $this->data['data_inicio'] = $data_inicio;
         $this->data['data_fim'] = $data_fim;
         $this->data['view'] = 'impostos/retencoes';
-
-        $this->load->view('tema/topo', $this->data);
-        $this->load->view($this->data['view'], $this->data);
-        $this->load->view('tema/rodape');
+        return $this->layout();
     }
 
     /**

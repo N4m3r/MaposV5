@@ -197,7 +197,7 @@
     </div>
 
     <div class="span6">
-        <div class="widget-box"
+        <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-info-circle"></i></span>
                 <h5>Informações de Integração</h5>
