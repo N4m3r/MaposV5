@@ -131,6 +131,17 @@ class Permissoes extends MY_Controller
                 'vRelatorioCompleto' => $this->input->post('vRelatorioCompleto'),
                 'vExportarDados' => $this->input->post('vExportarDados'),
 
+                // Permissões Pagamentos
+                'aPagamento' => $this->input->post('aPagamento'),
+                'ePagamento' => $this->input->post('ePagamento'),
+                'dPagamento' => $this->input->post('dPagamento'),
+                'vPagamento' => $this->input->post('vPagamento'),
+
+                // Permissões Dashboard
+                'vDashboard' => $this->input->post('vDashboard'),
+                'vRelatorioCompleto' => $this->input->post('vRelatorioCompleto'),
+                'vExportarDados' => $this->input->post('vExportarDados'),
+
                 // Permissões Novas Funcionalidades
                 'vCertificado' => $this->input->post('vCertificado'),
                 'vImpostos' => $this->input->post('vImpostos'),
@@ -138,6 +149,16 @@ class Permissoes extends MY_Controller
                 'vRelatorioAtendimentos' => $this->input->post('vRelatorioAtendimentos'),
                 'vWebhooks' => $this->input->post('vWebhooks'),
                 'cDocOs' => $this->input->post('cDocOs'),
+
+                // Permissões Relatório de Técnicos
+                'vRelatorioTecnicos' => $this->input->post('vRelatorioTecnicos'),
+
+                // Permissões Portal do Cliente - Usuários
+                'vUsuariosCliente' => $this->input->post('vUsuariosCliente'),
+                'cUsuariosCliente' => $this->input->post('cUsuariosCliente'),
+                'eUsuariosCliente' => $this->input->post('eUsuariosCliente'),
+                'dUsuariosCliente' => $this->input->post('dUsuariosCliente'),
+                'cPermUsuariosCliente' => $this->input->post('cPermUsuariosCliente'),
             ];
             $permissoes = serialize($permissoes);
 
@@ -250,6 +271,17 @@ class Permissoes extends MY_Controller
                 'vRelatorioCompleto' => $this->input->post('vRelatorioCompleto'),
                 'vExportarDados' => $this->input->post('vExportarDados'),
 
+                // Permissões Pagamentos
+                'aPagamento' => $this->input->post('aPagamento'),
+                'ePagamento' => $this->input->post('ePagamento'),
+                'dPagamento' => $this->input->post('dPagamento'),
+                'vPagamento' => $this->input->post('vPagamento'),
+
+                // Permissões Dashboard
+                'vDashboard' => $this->input->post('vDashboard'),
+                'vRelatorioCompleto' => $this->input->post('vRelatorioCompleto'),
+                'vExportarDados' => $this->input->post('vExportarDados'),
+
                 // Permissões Novas Funcionalidades
                 'vCertificado' => $this->input->post('vCertificado'),
                 'vImpostos' => $this->input->post('vImpostos'),
@@ -257,6 +289,16 @@ class Permissoes extends MY_Controller
                 'vRelatorioAtendimentos' => $this->input->post('vRelatorioAtendimentos'),
                 'vWebhooks' => $this->input->post('vWebhooks'),
                 'cDocOs' => $this->input->post('cDocOs'),
+
+                // Permissões Relatório de Técnicos
+                'vRelatorioTecnicos' => $this->input->post('vRelatorioTecnicos'),
+
+                // Permissões Portal do Cliente - Usuários
+                'vUsuariosCliente' => $this->input->post('vUsuariosCliente'),
+                'cUsuariosCliente' => $this->input->post('cUsuariosCliente'),
+                'eUsuariosCliente' => $this->input->post('eUsuariosCliente'),
+                'dUsuariosCliente' => $this->input->post('dUsuariosCliente'),
+                'cPermUsuariosCliente' => $this->input->post('cPermUsuariosCliente'),
 
             ];
             $permissoes = serialize($permissoes);

@@ -126,6 +126,7 @@
                     <div class="widget-content" style="padding: 5px 0 !important">
         <div id="tab1" class="tab-pane active" style="min-height: 300px">
             <div class="accordion" id="collapse-group">
+                <!-- Clientes -->
                 <div class="accordion-group widget-box">
                     <div class="accordion-heading">
                         <div class="widget-title">
@@ -144,42 +145,26 @@
                                 </tr>
                                 <tr>
                                     <td>
-                                        <label......>
-                                            <input <?php if (isset($permissoes['vCliente'])) {
-                                                if ($permissoes['vCliente'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="vCliente" class="marcar" type="checkbox" value="1" />
+                                        <label>
+                                            <input <?php echo (isset($permissoes['vCliente']) && $permissoes['vCliente'] == '1') ? 'checked' : ''; ?> name="vCliente" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Visualizar Cliente</span>
                                         </label>
                                     </td>
                                     <td>
                                         <label>
-                                            <input <?php if (isset($permissoes['aCliente'])) {
-                                                if ($permissoes['aCliente'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="aCliente" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['aCliente']) && $permissoes['aCliente'] == '1') ? 'checked' : ''; ?> name="aCliente" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Adicionar Cliente</span>
                                         </label>
                                     </td>
                                     <td>
                                         <label>
-                                            <input <?php if (isset($permissoes['eCliente'])) {
-                                                if ($permissoes['eCliente'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="eCliente" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['eCliente']) && $permissoes['eCliente'] == '1') ? 'checked' : ''; ?> name="eCliente" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Editar Cliente</span>
                                         </label>
                                     </td>
                                     <td>
                                         <label>
-                                            <input <?php if (isset($permissoes['dCliente'])) {
-                                                if ($permissoes['dCliente'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="dCliente" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['dCliente']) && $permissoes['dCliente'] == '1') ? 'checked' : ''; ?> name="dCliente" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Excluir Cliente</span>
                                         </label>
                                     </td>
@@ -189,6 +174,7 @@
                 </div>
             </div>
 
+                <!-- Produtos -->
                 <div class="accordion-group widget-box">
                     <div class="accordion-heading">
                         <div class="widget-title">
@@ -208,41 +194,25 @@
                             <tr>
                                 <td>
                                     <label>
-                                        <input <?php if (isset($permissoes['vProduto'])) {
-                                            if ($permissoes['vProduto'] == '1') {
-                                                echo 'checked';
-                                            }
-                                        }?> name="vProduto" class="marcar" type="checkbox" value="1" />
+                                        <input <?php echo (isset($permissoes['vProduto']) && $permissoes['vProduto'] == '1') ? 'checked' : ''; ?> name="vProduto" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Visualizar Produto</span>
                                         </label>
                                     </td>
                                     <td>
                                         <label>
-                                            <input <?php if (isset($permissoes['aProduto'])) {
-                                                if ($permissoes['aProduto'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="aProduto" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['aProduto']) && $permissoes['aProduto'] == '1') ? 'checked' : ''; ?> name="aProduto" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Adicionar Produto</span>
                                         </label>
                                     </td>
                                     <td>
                                         <label>
-                                            <input <?php if (isset($permissoes['eProduto'])) {
-                                                if ($permissoes['eProduto'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="eProduto" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['eProduto']) && $permissoes['eProduto'] == '1') ? 'checked' : ''; ?> name="eProduto" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Editar Produto</span>
                                         </label>
                                     </td>
                                     <td>
                                         <label>
-                                            <input <?php if (isset($permissoes['dProduto'])) {
-                                                if ($permissoes['dProduto'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="dProduto" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['dProduto']) && $permissoes['dProduto'] == '1') ? 'checked' : ''; ?> name="dProduto" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Excluir Produto</span>
                                         </label>
                                     </td>
@@ -252,6 +222,7 @@
                     </div>
                 </div>
 
+                <!-- Serviços -->
                 <div class="accordion-group widget-box">
                     <div class="accordion-heading">
                         <div class="widget-title">
@@ -271,41 +242,25 @@
                             <tr>
                                 <td>
                                     <label>
-                                            <input <?php if (isset($permissoes['vServico'])) {
-                                                if ($permissoes['vServico'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="vServico" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['vServico']) && $permissoes['vServico'] == '1') ? 'checked' : ''; ?> name="vServico" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Visualizar Serviço</span>
                                         </label>
                                     </td>
                                     <td>
                                         <label>
-                                            <input <?php if (isset($permissoes['aServico'])) {
-                                                if ($permissoes['aServico'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="aServico" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['aServico']) && $permissoes['aServico'] == '1') ? 'checked' : ''; ?> name="aServico" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Adicionar Serviço</span>
                                         </label>
                                     </td>
                                     <td>
                                         <label>
-                                            <input <?php if (isset($permissoes['eServico'])) {
-                                                if ($permissoes['eServico'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="eServico" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['eServico']) && $permissoes['eServico'] == '1') ? 'checked' : ''; ?> name="eServico" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Editar Serviço</span>
                                         </label>
                                     </td>
                                     <td>
                                         <label>
-                                            <input <?php if (isset($permissoes['dServico'])) {
-                                                if ($permissoes['dServico'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="dServico" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['dServico']) && $permissoes['dServico'] == '1') ? 'checked' : ''; ?> name="dServico" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Excluir Serviço</span>
                                         </label>
                                     </td>
@@ -315,6 +270,7 @@
                     </div>
                 </div>
 
+                <!-- Ordens de Serviço -->
                 <div class="accordion-group widget-box">
                     <div class="accordion-heading">
                         <div class="widget-title">
@@ -334,41 +290,25 @@
                             <tr>
                                 <td>
                                     <label>
-                                            <input <?php if (isset($permissoes['vOs'])) {
-                                                if ($permissoes['vOs'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="vOs" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['vOs']) && $permissoes['vOs'] == '1') ? 'checked' : ''; ?> name="vOs" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Visualizar OS</span>
                                         </label>
                                     </td>
                                     <td>
                                         <label>
-                                            <input <?php if (isset($permissoes['aOs'])) {
-                                                if ($permissoes['aOs'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="aOs" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['aOs']) && $permissoes['aOs'] == '1') ? 'checked' : ''; ?> name="aOs" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Adicionar OS</span>
                                         </label>
                                     </td>
                                     <td>
                                         <label>
-                                            <input <?php if (isset($permissoes['eOs'])) {
-                                                if ($permissoes['eOs'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="eOs" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['eOs']) && $permissoes['eOs'] == '1') ? 'checked' : ''; ?> name="eOs" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Editar OS</span>
                                         </label>
                                     </td>
                                     <td>
                                         <label>
-                                            <input <?php if (isset($permissoes['dOs'])) {
-                                                if ($permissoes['dOs'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="dOs" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['dOs']) && $permissoes['dOs'] == '1') ? 'checked' : ''; ?> name="dOs" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Excluir OS</span>
                                         </label>
                                     </td>
@@ -376,11 +316,7 @@
                                 <tr>
                                     <td colspan="4">
                                         <label>
-                                            <input <?php if (isset($permissoes['vBtnAtendimento'])) {
-                                                if ($permissoes['vBtnAtendimento'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="vBtnAtendimento" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['vBtnAtendimento']) && $permissoes['vBtnAtendimento'] == '1') ? 'checked' : ''; ?> name="vBtnAtendimento" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Visualizar Botões Iniciar/Finalizar Atendimento</span>
                                         </label>
                                     </td>
@@ -390,6 +326,7 @@
                     </div>
                 </div>
 
+                <!-- Permissões de Técnico -->
                 <div class="accordion-group widget-box">
                     <div class="accordion-heading">
                         <div class="widget-title">
@@ -409,41 +346,25 @@
                             <tr>
                                 <td>
                                     <label>
-                                        <input <?php if (isset($permissoes['vTecnicoOS'])) {
-                                            if ($permissoes['vTecnicoOS'] == '1') {
-                                                echo 'checked';
-                                            }
-                                        }?> name="vTecnicoOS" class="marcar" type="checkbox" value="1" />
+                                        <input <?php echo (isset($permissoes['vTecnicoOS']) && $permissoes['vTecnicoOS'] == '1') ? 'checked' : ''; ?> name="vTecnicoOS" class="marcar" type="checkbox" value="1" />
                                         <span class="lbl"> Visualizar apenas OS atribuídas a mim</span>
                                     </label>
                                 </td>
                                 <td>
                                     <label>
-                                        <input <?php if (isset($permissoes['eTecnicoCheckin'])) {
-                                            if ($permissoes['eTecnicoCheckin'] == '1') {
-                                                echo 'checked';
-                                            }
-                                        }?> name="eTecnicoCheckin" class="marcar" type="checkbox" value="1" />
+                                        <input <?php echo (isset($permissoes['eTecnicoCheckin']) && $permissoes['eTecnicoCheckin'] == '1') ? 'checked' : ''; ?> name="eTecnicoCheckin" class="marcar" type="checkbox" value="1" />
                                         <span class="lbl"> Iniciar Atendimento (Check-in)</span>
                                     </label>
                                 </td>
                                 <td>
                                     <label>
-                                        <input <?php if (isset($permissoes['eTecnicoCheckout'])) {
-                                            if ($permissoes['eTecnicoCheckout'] == '1') {
-                                                echo 'checked';
-                                            }
-                                        }?> name="eTecnicoCheckout" class="marcar" type="checkbox" value="1" />
+                                        <input <?php echo (isset($permissoes['eTecnicoCheckout']) && $permissoes['eTecnicoCheckout'] == '1') ? 'checked' : ''; ?> name="eTecnicoCheckout" class="marcar" type="checkbox" value="1" />
                                         <span class="lbl"> Finalizar Atendimento (Check-out)</span>
                                     </label>
                                 </td>
                                 <td>
                                     <label>
-                                        <input <?php if (isset($permissoes['eTecnicoFotos'])) {
-                                            if ($permissoes['eTecnicoFotos'] == '1') {
-                                                echo 'checked';
-                                            }
-                                        }?> name="eTecnicoFotos" class="marcar" type="checkbox" value="1" />
+                                        <input <?php echo (isset($permissoes['eTecnicoFotos']) && $permissoes['eTecnicoFotos'] == '1') ? 'checked' : ''; ?> name="eTecnicoFotos" class="marcar" type="checkbox" value="1" />
                                         <span class="lbl"> Adicionar Fotos ao Atendimento</span>
                                     </label>
                                 </td>
@@ -453,6 +374,7 @@
                     </div>
                 </div>
 
+                <!-- Vendas -->
                 <div class="accordion-group widget-box">
                     <div class="accordion-heading">
                         <div class="widget-title">
@@ -472,41 +394,25 @@
                             <tr>
                                 <td>
                                     <label>
-                                            <input <?php if (isset($permissoes['vVenda'])) {
-                                                if ($permissoes['vVenda'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="vVenda" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['vVenda']) && $permissoes['vVenda'] == '1') ? 'checked' : ''; ?> name="vVenda" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Visualizar Venda</span>
                                         </label>
                                     </td>
                                     <td>
                                         <label>
-                                            <input <?php if (isset($permissoes['aVenda'])) {
-                                                if ($permissoes['aVenda'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="aVenda" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['aVenda']) && $permissoes['aVenda'] == '1') ? 'checked' : ''; ?> name="aVenda" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Adicionar Venda</span>
                                         </label>
                                     </td>
                                     <td>
                                         <label>
-                                            <input <?php if (isset($permissoes['eVenda'])) {
-                                                if ($permissoes['eVenda'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="eVenda" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['eVenda']) && $permissoes['eVenda'] == '1') ? 'checked' : ''; ?> name="eVenda" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Editar Venda</span>
                                         </label>
                                     </td>
                                     <td>
                                         <label>
-                                            <input <?php if (isset($permissoes['dVenda'])) {
-                                                if ($permissoes['dVenda'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="dVenda" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['dVenda']) && $permissoes['dVenda'] == '1') ? 'checked' : ''; ?> name="dVenda" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Excluir Venda</span>
                                         </label>
                                     </td>
@@ -516,6 +422,7 @@
                     </div>
                 </div>
 
+                <!-- Cobranças -->
                 <div class="accordion-group widget-box">
                     <div class="accordion-heading">
                         <div class="widget-title">
@@ -535,41 +442,25 @@
                             <tr>
                                 <td>
                                     <label>
-                                            <input <?php if (isset($permissoes['vCobranca'])) {
-                                                if ($permissoes['vCobranca'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="vCobranca" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['vCobranca']) && $permissoes['vCobranca'] == '1') ? 'checked' : ''; ?> name="vCobranca" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Visualizar Cobranças</span>
                                         </label>
                                     </td>
                                     <td>
                                         <label>
-                                            <input <?php if (isset($permissoes['aCobranca'])) {
-                                                if ($permissoes['aCobranca'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="aCobranca" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['aCobranca']) && $permissoes['aCobranca'] == '1') ? 'checked' : ''; ?> name="aCobranca" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Adicionar Cobranças</span>
                                         </label>
                                     </td>
                                     <td>
                                         <label>
-                                            <input <?php if (isset($permissoes['eCobranca'])) {
-                                                if ($permissoes['eCobranca'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="eCobranca" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['eCobranca']) && $permissoes['eCobranca'] == '1') ? 'checked' : ''; ?> name="eCobranca" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Editar Cobranças</span>
                                         </label>
                                     </td>
                                     <td>
                                         <label>
-                                            <input <?php if (isset($permissoes['dCobranca'])) {
-                                                if ($permissoes['dCobranca'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="dCobranca" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['dCobranca']) && $permissoes['dCobranca'] == '1') ? 'checked' : ''; ?> name="dCobranca" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Excluir Cobranças</span>
                                         </label>
                                     </td>
@@ -579,6 +470,7 @@
                     </div>
                 </div>
 
+                <!-- Garantias -->
                 <div class="accordion-group widget-box">
                     <div class="accordion-heading">
                         <div class="widget-title">
@@ -598,41 +490,25 @@
                             <tr>
                                 <td>
                                     <label>
-                                            <input <?php if (isset($permissoes['vGarantia'])) {
-                                                if ($permissoes['vGarantia'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="vGarantia" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['vGarantia']) && $permissoes['vGarantia'] == '1') ? 'checked' : ''; ?> name="vGarantia" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Visualizar Garantia</span>
                                         </label>
                                     </td>
                                     <td>
                                         <label>
-                                            <input <?php if (isset($permissoes['aGarantia'])) {
-                                                if ($permissoes['aGarantia'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="aGarantia" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['aGarantia']) && $permissoes['aGarantia'] == '1') ? 'checked' : ''; ?> name="aGarantia" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Adicionar Garantia</span>
                                         </label>
                                     </td>
                                     <td>
                                         <label>
-                                            <input <?php if (isset($permissoes['eGarantia'])) {
-                                                if ($permissoes['eGarantia'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="eGarantia" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['eGarantia']) && $permissoes['eGarantia'] == '1') ? 'checked' : ''; ?> name="eGarantia" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Editar Garantia</span>
                                         </label>
                                     </td>
                                     <td>
                                         <label>
-                                            <input <?php if (isset($permissoes['dGarantia'])) {
-                                                if ($permissoes['dGarantia'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="dGarantia" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['dGarantia']) && $permissoes['dGarantia'] == '1') ? 'checked' : ''; ?> name="dGarantia" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Excluir Garantia</span>
                                         </label>
                                     </td>
@@ -642,6 +518,7 @@
                     </div>
                 </div>
 
+                <!-- Arquivos -->
                 <div class="accordion-group widget-box">
                     <div class="accordion-heading">
                         <div class="widget-title">
@@ -661,41 +538,25 @@
                             <tr>
                                 <td>
                                     <label>
-                                            <input <?php if (isset($permissoes['vArquivo'])) {
-                                                if ($permissoes['vArquivo'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="vArquivo" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['vArquivo']) && $permissoes['vArquivo'] == '1') ? 'checked' : ''; ?> name="vArquivo" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Visualizar Arquivo</span>
                                         </label>
                                     </td>
                                     <td>
                                         <label>
-                                            <input <?php if (isset($permissoes['aArquivo'])) {
-                                                if ($permissoes['aArquivo'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="aArquivo" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['aArquivo']) && $permissoes['aArquivo'] == '1') ? 'checked' : ''; ?> name="aArquivo" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Adicionar Arquivo</span>
                                         </label>
                                     </td>
                                     <td>
                                         <label>
-                                            <input <?php if (isset($permissoes['eArquivo'])) {
-                                                if ($permissoes['eArquivo'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="eArquivo" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['eArquivo']) && $permissoes['eArquivo'] == '1') ? 'checked' : ''; ?> name="eArquivo" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Editar Arquivo</span>
                                         </label>
                                     </td>
                                     <td>
                                         <label>
-                                            <input <?php if (isset($permissoes['dArquivo'])) {
-                                                if ($permissoes['dArquivo'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="dArquivo" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['dArquivo']) && $permissoes['dArquivo'] == '1') ? 'checked' : ''; ?> name="dArquivo" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Excluir Arquivo</span>
                                         </label>
                                     </td>
@@ -705,6 +566,55 @@
                     </div>
                 </div>
 
+                <!-- Pagamentos -->
+                <div class="accordion-group widget-box">
+                    <div class="accordion-heading">
+                        <div class="widget-title">
+                            <a data-parent="#collapse-group" href="#collapseGPagamento" data-toggle="collapse">
+                                <span><i class='bx bx-money icon-cli' ></i></span>
+                                <h5 style="padding-left: 28px">Pagamentos</h5>
+                                <span><i class='bx bx-chevron-right icon-clic'></i></span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="collapse accordion-body" id="collapseGPagamento">
+                        <div class="widget-content">
+                        <table class="table table-bordered">
+                            <tr>
+                                <td colspan="4"></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label>
+                                            <input <?php echo (isset($permissoes['vPagamento']) && $permissoes['vPagamento'] == '1') ? 'checked' : ''; ?> name="vPagamento" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> Visualizar Pagamento</span>
+                                        </label>
+                                    </td>
+                                    <td>
+                                        <label>
+                                            <input <?php echo (isset($permissoes['aPagamento']) && $permissoes['aPagamento'] == '1') ? 'checked' : ''; ?> name="aPagamento" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> Adicionar Pagamento</span>
+                                        </label>
+                                    </td>
+                                    <td>
+                                        <label>
+                                            <input <?php echo (isset($permissoes['ePagamento']) && $permissoes['ePagamento'] == '1') ? 'checked' : ''; ?> name="ePagamento" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> Editar Pagamento</span>
+                                        </label>
+                                    </td>
+                                    <td>
+                                        <label>
+                                            <input <?php echo (isset($permissoes['dPagamento']) && $permissoes['dPagamento'] == '1') ? 'checked' : ''; ?> name="dPagamento" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> Excluir Pagamento</span>
+                                        </label>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Financeiro -->
                 <div class="accordion-group widget-box">
                     <div class="accordion-heading">
                         <div class="widget-title">
@@ -724,41 +634,25 @@
                             <tr>
                                 <td>
                                     <label>
-                                            <input <?php if (isset($permissoes['vLancamento'])) {
-                                                if ($permissoes['vLancamento'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="vLancamento" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['vLancamento']) && $permissoes['vLancamento'] == '1') ? 'checked' : ''; ?> name="vLancamento" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Visualizar Lançamento</span>
                                         </label>
                                     </td>
                                     <td>
                                         <label>
-                                            <input <?php if (isset($permissoes['aLancamento'])) {
-                                                if ($permissoes['aLancamento'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="aLancamento" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['aLancamento']) && $permissoes['aLancamento'] == '1') ? 'checked' : ''; ?> name="aLancamento" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Adicionar Lançamento</span>
                                         </label>
                                     </td>
                                     <td>
                                         <label>
-                                            <input <?php if (isset($permissoes['eLancamento'])) {
-                                                if ($permissoes['eLancamento'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="eLancamento" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['eLancamento']) && $permissoes['eLancamento'] == '1') ? 'checked' : ''; ?> name="eLancamento" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Editar Lançamento</span>
                                         </label>
                                     </td>
                                     <td>
                                         <label>
-                                            <input <?php if (isset($permissoes['dLancamento'])) {
-                                                if ($permissoes['dLancamento'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="dLancamento" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['dLancamento']) && $permissoes['dLancamento'] == '1') ? 'checked' : ''; ?> name="dLancamento" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Excluir Lançamento</span>
                                         </label>
                                     </td>
@@ -768,6 +662,7 @@
                     </div>
                 </div>
 
+                <!-- Relatórios -->
                 <div class="accordion-group widget-box">
                     <div class="accordion-heading">
                         <div class="widget-title">
@@ -787,41 +682,25 @@
                             <tr>
                                 <td>
                                     <label>
-                                            <input <?php if (isset($permissoes['rCliente'])) {
-                                                if ($permissoes['rCliente'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="rCliente" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['rCliente']) && $permissoes['rCliente'] == '1') ? 'checked' : ''; ?> name="rCliente" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Relatório Cliente</span>
                                         </label>
                                     </td>
                                     <td>
                                         <label>
-                                            <input <?php if (isset($permissoes['rServico'])) {
-                                                if ($permissoes['rServico'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="rServico" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['rServico']) && $permissoes['rServico'] == '1') ? 'checked' : ''; ?> name="rServico" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Relatório Serviço</span>
                                         </label>
                                     </td>
                                     <td>
                                         <label>
-                                            <input <?php if (isset($permissoes['rOs'])) {
-                                                if ($permissoes['rOs'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="rOs" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['rOs']) && $permissoes['rOs'] == '1') ? 'checked' : ''; ?> name="rOs" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Relatório OS</span>
                                         </label>
                                     </td>
                                     <td>
                                         <label>
-                                            <input <?php if (isset($permissoes['rProduto'])) {
-                                                if ($permissoes['rProduto'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="rProduto" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['rProduto']) && $permissoes['rProduto'] == '1') ? 'checked' : ''; ?> name="rProduto" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Relatório Produto</span>
                                         </label>
                                     </td>
@@ -829,43 +708,41 @@
                                 <tr>
                                     <td>
                                         <label>
-                                            <input <?php if (isset($permissoes['rVenda'])) {
-                                                if ($permissoes['rVenda'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="rVenda" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['rVenda']) && $permissoes['rVenda'] == '1') ? 'checked' : ''; ?> name="rVenda" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Relatório Venda</span>
                                         </label>
                                     </td>
                                     <td>
                                         <label>
-                                            <input <?php if (isset($permissoes['rFinanceiro'])) {
-                                                if ($permissoes['rFinanceiro'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="rFinanceiro" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['rFinanceiro']) && $permissoes['rFinanceiro'] == '1') ? 'checked' : ''; ?> name="rFinanceiro" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Relatório Financeiro</span>
                                         </label>
                                     </td>
-                                    <td colspan="2"></td>
+                                    <td>
+                                        <label>
+                                            <input <?php echo (isset($permissoes['vRelatorioTecnicos']) && $permissoes['vRelatorioTecnicos'] == '1') ? 'checked' : ''; ?> name="vRelatorioTecnicos" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> Relatório de Técnicos</span>
+                                        </label>
+                                    </td>
+                                    <td></td>
                                 </tr>
                             </table>
                         </div>
                     </div>
                 </div>
 
-                <!-- Seção Dashboard e Relatórios Avançados -->
+                <!-- Dashboard e Relatórios Avançados -->
                 <div class="accordion-group widget-box">
                     <div class="accordion-heading">
                         <div class="widget-title">
-                            <a data-parent="#collapse-group" href="#collapseG Twelve" data-toggle="collapse">
+                            <a data-parent="#collapse-group" href="#collapseGDashboard" data-toggle="collapse">
                                 <span><i class='bx bx-dashboard icon-cli' ></i></span>
                                 <h5 style="padding-left: 28px">Dashboard e Relatórios Avançados</h5>
                                 <span><i class='bx bx-chevron-right icon-clic'></i></span>
                             </a>
                         </div>
                     </div>
-                    <div class="collapse accordion-body" id="collapseG Twelve">
+                    <div class="collapse accordion-body" id="collapseGDashboard">
                         <div class="widget-content">
                         <table class="table table-bordered">
                             <tr>
@@ -874,31 +751,19 @@
                             <tr>
                                 <td>
                                     <label>
-                                            <input <?php if (isset($permissoes['vDashboard'])) {
-                                                if ($permissoes['vDashboard'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="vDashboard" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['vDashboard']) && $permissoes['vDashboard'] == '1') ? 'checked' : ''; ?> name="vDashboard" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Visualizar Dashboard</span>
                                         </label>
                                     </td>
                                     <td>
                                         <label>
-                                            <input <?php if (isset($permissoes['vRelatorioCompleto'])) {
-                                                if ($permissoes['vRelatorioCompleto'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="vRelatorioCompleto" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['vRelatorioCompleto']) && $permissoes['vRelatorioCompleto'] == '1') ? 'checked' : ''; ?> name="vRelatorioCompleto" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Relatório Completo</span>
                                         </label>
                                     </td>
                                     <td>
                                         <label>
-                                            <input <?php if (isset($permissoes['vExportarDados'])) {
-                                                if ($permissoes['vExportarDados'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="vExportarDados" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['vExportarDados']) && $permissoes['vExportarDados'] == '1') ? 'checked' : ''; ?> name="vExportarDados" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Exportar Dados</span>
                                         </label>
                                     </td>
@@ -909,6 +774,7 @@
                     </div>
                 </div>
 
+                <!-- Configurações e Sistema -->
                 <div class="accordion-group widget-box">
                     <div class="accordion-heading">
                         <div class="widget-title">
@@ -928,41 +794,25 @@
                             <tr>
                                 <td>
                                     <label>
-                                            <input <?php if (isset($permissoes['cUsuario'])) {
-                                                if ($permissoes['cUsuario'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="cUsuario" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['cUsuario']) && $permissoes['cUsuario'] == '1') ? 'checked' : ''; ?> name="cUsuario" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Configurar Usuário</span>
                                         </label>
                                     </td>
                                     <td>
                                         <label>
-                                            <input <?php if (isset($permissoes['cEmitente'])) {
-                                                if ($permissoes['cEmitente'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="cEmitente" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['cEmitente']) && $permissoes['cEmitente'] == '1') ? 'checked' : ''; ?> name="cEmitente" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Configurar Emitente</span>
                                         </label>
                                     </td>
                                     <td>
                                         <label>
-                                            <input <?php if (isset($permissoes['cPermissao'])) {
-                                                if ($permissoes['cPermissao'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="cPermissao" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['cPermissao']) && $permissoes['cPermissao'] == '1') ? 'checked' : ''; ?> name="cPermissao" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Configurar Permissão</span>
                                         </label>
                                     </td>
                                     <td>
                                         <label>
-                                            <input <?php if (isset($permissoes['cBackup'])) {
-                                                if ($permissoes['cBackup'] == '1') {
-                                                    echo 'checked';
-                                                }
-                                            }?> name="cBackup" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['cBackup']) && $permissoes['cBackup'] == '1') ? 'checked' : ''; ?> name="cBackup" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Backup</span>
                                         </label>
                                     </td>
@@ -970,23 +820,142 @@
                                 <tr>
                                     <td>
                                         <label>
-                                            <input <?php echo (isset($permissoes['cAuditoria']) && $permissoes['cAuditoria'] == 1) ? 'checked' : ''; ?> name="cAuditoria" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['cAuditoria']) && $permissoes['cAuditoria'] == '1') ? 'checked' : ''; ?> name="cAuditoria" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Auditoria</span>
                                         </label>
                                     </td>
                                     <td>
                                         <label>
-                                            <input <?php echo (isset($permissoes['cEmail']) && $permissoes['cEmail'] == 1) ? 'checked' : ''; ?> name="cEmail" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['cEmail']) && $permissoes['cEmail'] == '1') ? 'checked' : ''; ?> name="cEmail" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Emails</span>
                                         </label>
                                     </td>
                                     <td>
                                         <label>
-                                            <input <?php echo (isset($permissoes['cSistema']) && $permissoes['cSistema'] == 1) ? 'checked' : ''; ?> name="cSistema" class="marcar" type="checkbox" value="1" />
+                                            <input <?php echo (isset($permissoes['cSistema']) && $permissoes['cSistema'] == '1') ? 'checked' : ''; ?> name="cSistema" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Sistema</span>
                                         </label>
                                     </td>
                                     <td></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Portal do Cliente - Usuários -->
+                <div class="accordion-group widget-box">
+                    <div class="accordion-heading">
+                        <div class="widget-title">
+                            <a data-parent="#collapse-group" href="#collapseGClientePortal" data-toggle="collapse">
+                                <span><i class='bx bx-user-circle icon-cli' ></i></span>
+                                <h5 style="padding-left: 28px">Portal do Cliente - Usuários</h5>
+                                <span><i class='bx bx-chevron-right icon-clic'></i></span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="collapse accordion-body" id="collapseGClientePortal">
+                        <div class="widget-content">
+                        <table class="table table-bordered">
+                            <tr>
+                                <td colspan="4"></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label>
+                                            <input <?php echo (isset($permissoes['vUsuariosCliente']) && $permissoes['vUsuariosCliente'] == '1') ? 'checked' : ''; ?> name="vUsuariosCliente" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> Visualizar Usuários Cliente</span>
+                                        </label>
+                                    </td>
+                                    <td>
+                                        <label>
+                                            <input <?php echo (isset($permissoes['cUsuariosCliente']) && $permissoes['cUsuariosCliente'] == '1') ? 'checked' : ''; ?> name="cUsuariosCliente" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> Adicionar Usuários Cliente</span>
+                                        </label>
+                                    </td>
+                                    <td>
+                                        <label>
+                                            <input <?php echo (isset($permissoes['eUsuariosCliente']) && $permissoes['eUsuariosCliente'] == '1') ? 'checked' : ''; ?> name="eUsuariosCliente" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> Editar Usuários Cliente</span>
+                                        </label>
+                                    </td>
+                                    <td>
+                                        <label>
+                                            <input <?php echo (isset($permissoes['dUsuariosCliente']) && $permissoes['dUsuariosCliente'] == '1') ? 'checked' : ''; ?> name="dUsuariosCliente" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> Remover Usuários Cliente</span>
+                                        </label>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4">
+                                        <label>
+                                            <input <?php echo (isset($permissoes['cPermUsuariosCliente']) && $permissoes['cPermUsuariosCliente'] == '1') ? 'checked' : ''; ?> name="cPermUsuariosCliente" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> Configurar Permissões Usuários Cliente</span>
+                                        </label>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Novas Funcionalidades V5 -->
+                <div class="accordion-group widget-box">
+                    <div class="accordion-heading">
+                        <div class="widget-title">
+                            <a data-parent="#collapse-group" href="#collapseGV5" data-toggle="collapse">
+                                <span><i class='bx bx-rocket icon-cli' ></i></span>
+                                <h5 style="padding-left: 28px">Novas Funcionalidades V5</h5>
+                                <span><i class='bx bx-chevron-right icon-clic'></i></span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="collapse accordion-body" id="collapseGV5">
+                        <div class="widget-content">
+                        <table class="table table-bordered">
+                            <tr>
+                                <td colspan="4"></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label>
+                                            <input <?php echo (isset($permissoes['vCertificado']) && $permissoes['vCertificado'] == '1') ? 'checked' : ''; ?> name="vCertificado" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> Certificado Digital</span>
+                                        </label>
+                                    </td>
+                                <td>
+                                    <label>
+                                            <input <?php echo (isset($permissoes['vImpostos']) && $permissoes['vImpostos'] == '1') ? 'checked' : ''; ?> name="vImpostos" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> Impostos Simples</span>
+                                        </label>
+                                    </td>
+                                <td>
+                                    <label>
+                                            <input <?php echo (isset($permissoes['vDRE']) && $permissoes['vDRE'] == '1') ? 'checked' : ''; ?> name="vDRE" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> DRE Contábil</span>
+                                        </label>
+                                    </td>
+                                <td>
+                                    <label>
+                                            <input <?php echo (isset($permissoes['vRelatorioAtendimentos']) && $permissoes['vRelatorioAtendimentos'] == '1') ? 'checked' : ''; ?> name="vRelatorioAtendimentos" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> Relatório de Atendimentos</span>
+                                        </label>
+                                    </td>
+                                </tr>
+                                <tr>
+                                <td>
+                                    <label>
+                                            <input <?php echo (isset($permissoes['vWebhooks']) && $permissoes['vWebhooks'] == '1') ? 'checked' : ''; ?> name="vWebhooks" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> Webhooks</span>
+                                        </label>
+                                    </td>
+                                <td>
+                                    <label>
+                                            <input <?php echo (isset($permissoes['cDocOs']) && $permissoes['cDocOs'] == '1') ? 'checked' : ''; ?> name="cDocOs" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> Vincular Documentos à OS</span>
+                                        </label>
+                                    </td>
+                                    <td colspan="2"></td>
                                 </tr>
                             </table>
                         </div>

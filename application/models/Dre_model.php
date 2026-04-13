@@ -294,6 +294,11 @@ class Dre_model extends CI_Model
     {
         $totais = [];
 
+        // Verificar se as tabelas existem
+        if (!$this->db->table_exists('dre_lancamentos') || !$this->db->table_exists('dre_contas')) {
+            return $totais;
+        }
+
         $sql = "
             SELECT
                 c.grupo,
@@ -309,7 +314,14 @@ class Dre_model extends CI_Model
             GROUP BY c.grupo, c.sinal
         ";
 
-        $result = $this->db->query($sql, [$data_inicio, $data_fim])->result();
+        $query = $this->db->query($sql, [$data_inicio, $data_fim]);
+
+        // Verificar se a query foi bem sucedida
+        if ($query === false) {
+            return $totais;
+        }
+
+        $result = $query->result();
 
         foreach ($result as $row) {
             $valor = floatval($row->total);

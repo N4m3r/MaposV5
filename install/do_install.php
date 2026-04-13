@@ -226,7 +226,15 @@ if (! empty($_POST)) {
         'rProduto' => '1', 'rServico' => '1',
         'cUsuario' => '1', 'cEmitente' => '1', 'cPermissao' => '1', 'cBackup' => '1',
         'cAuditoria' => '1', 'cEmail' => '1', 'cSistema' => '1', 'cDocOs' => '1',
-        'vCertificado' => '1', 'vImpostos' => '1', 'vDRE' => '1',
+        // Permissões Certificado Digital
+        'vCertificado' => '1', 'cCertificado' => '1', 'eCertificado' => '1', 'dCertificado' => '1',
+        // Permissões Impostos Simples Nacional
+        'vImpostos' => '1', 'cImpostosConfig' => '1', 'eImpostos' => '1',
+        'vImpostosRelatorio' => '1', 'vImpostosExportar' => '1',
+        // Permissões DRE
+        'vDRE' => '1', 'vDRERelatorio' => '1', 'cDREConta' => '1', 'dDREConta' => '1',
+        'cDRELancamento' => '1', 'dDRELancamento' => '1', 'vDRELancamento' => '1',
+        'cDREIntegracao' => '1', 'vDREExportar' => '1', 'vDREAnalise' => '1',
         'vWebhooks' => '1', 'vRelatorioAtendimentos' => '1',
         'vUsuariosCliente' => '1', 'cUsuariosCliente' => '1',
         'eUsuariosCliente' => '1', 'dUsuariosCliente' => '1',
