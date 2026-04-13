@@ -2,7 +2,7 @@
 /**
  * Plano de Contas DRE
  */
-?\u003e
+?>
 
 <style>
 .conta-row {
@@ -53,8 +53,8 @@
 <div class="row-fluid">
     <div class="span12">
         <ul class="breadcrumb">
-            <li><a href="\u003c?= site_url('dashboard') ?\u003e">Dashboard</a> <span class="divider">/</span></li>
-            <li><a href="\u003c?= site_url('dre') ?\u003e">DRE Contábil</a> <span class="divider">/</span></li>
+            <li><a href="<?= site_url('dashboard') ?>">Dashboard</a> <span class="divider">/</span></li>
+            <li><a href="<?= site_url('dre') ?>">DRE Contábil</a> <span class="divider">/</span></li>
             <li class="active">Plano de Contas</li>
         </ul>
     </div>
@@ -68,10 +68,10 @@
                 <span class="icon"><i class="fas fa-list-alt"></i></span>
                 <h5>Plano de Contas DRE</h5>
                 <div class="buttons">
-                    <a href="\u003c?= site_url('dre/conta_form') ?\u003e" class="btn btn-success btn-small">
+                    <a href="<?= site_url('dre/conta_form') ?>" class="btn btn-success btn-small">
                         <i class="fas fa-plus"></i> Nova Conta
                     </a>
-                    <a href="\u003c?= site_url('dre') ?\u003e" class="btn btn-small">
+                    <a href="<?= site_url('dre') ?>" class="btn btn-small">
                         <i class="fas fa-arrow-left"></i> Voltar
                     </a>
                 </div>
@@ -112,26 +112,26 @@
                 </div>
 
                 <!-- Contas -->
-                \u003c?php foreach ($contas as $conta): ?\u003e
-                <div class="conta-row nivel-\u003c?= $conta->nivel ?\u003e">
-                    <div class="conta-codigo">\u003c?= $conta->codigo ?\u003e</div>
-                    <div class="conta-nome">\u003c?= $conta->nome ?\u003e</div>
+                <?php foreach ($contas as $conta): ?>
+                <div class="conta-row nivel-<?= $conta->nivel ?>">
+                    <div class="conta-codigo"><?= $conta->codigo ?></div>
+                    <div class="conta-nome"><?= $conta->nome ?></div>
                     <div class="conta-tipo">
-                        <span class="badge-tipo \u003c?= $conta->tipo ?\u003e">\u003c?= $conta->tipo ?\u003e</span>
+                        <span class="badge-tipo <?= $conta->tipo ?>"><?= $conta->tipo ?></span>
                     </div>
                     <div class="conta-grupo">
-                        \u003c?= str_replace('_', ' ', $conta->grupo) ?\u003e
+                        <?= str_replace('_', ' ', $conta->grupo) ?>
                     </div>
                     <div class="conta-acoes">
-                        <a href="\u003c?= site_url('dre/conta_form/' . $conta->id) ?\u003e" class="btn btn-mini btn-info" title="Editar">
+                        <a href="<?= site_url('dre/conta_form/' . $conta->id) ?>" class="btn btn-mini btn-info" title="Editar">
                             <i class="fas fa-edit"></i>
                         </a>
-                        <a href="\u003c?= site_url('dre/conta_excluir/' . $conta->id) ?\u003e" class="btn btn-mini btn-danger" title="Excluir" onclick="return confirm('Tem certeza que deseja excluir esta conta?')">
+                        <a href="<?= site_url('dre/conta_excluir/' . $conta->id) ?>" class="btn btn-mini btn-danger" title="Excluir" onclick="return confirm('Tem certeza que deseja excluir esta conta?')">
                             <i class="fas fa-trash"></i>
                         </a>
                     </div>
                 </div>
-                \u003c?php endforeach; ?\u003e
+                <?php endforeach; ?>
             </div>
         </div>
     </div>

@@ -162,7 +162,9 @@ class Dre_model extends CI_Model
         // Agrupar contas por grupo
         $contasPorGrupo = [];
         foreach ($contas as $conta) {
-            $contasPorGrupo[$conta->grupo][] = $conta;
+            if (isset($conta->grupo) && $conta->grupo !== null) {
+                $contasPorGrupo[$conta->grupo][] = $conta;
+            }
         }
 
         // Calcular valores por grupo
