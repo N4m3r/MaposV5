@@ -74,59 +74,72 @@ class Relatorioatendimentos extends MY_Controller
             return;
         }
 
-        // Parâmetros
-        $data_inicio = $this->input->post('data_inicio') ?: date('Y-m-01');
-        $data_fim = $this->input->post('data_fim') ?: date('Y-m-d');
-        $usuario_id = $this->input->post('usuario_id') ?: null;
-        $draw = intval($this->input->post('draw'));
-        $start = intval($this->input->post('start'));
-        $length = intval($this->input->post('length')) ?: 25;
+        try {
+            // Parâmetros
+            $data_inicio = $this->input->post('data_inicio') ?: date('Y-m-01');
+            $data_fim = $this->input->post('data_fim') ?: date('Y-m-d');
+            $usuario_id = $this->input->post('usuario_id') ?: null;
+            $draw = intval($this->input->post('draw'));
+            $start = intval($this->input->post('start'));
+            $length = intval($this->input->post('length')) ?: 25;
 
-        // Busca dados
-        $atendimentos = $this->relatorioatendimentos_model->getAtendimentosComFiltros(
-            $data_inicio,
-            $data_fim,
-            $usuario_id,
-            $length,
-            $start
-        );
+            // Busca dados
+            $atendimentos = $this->relatorioatendimentos_model->getAtendimentosComFiltros(
+                $data_inicio,
+                $data_fim,
+                $usuario_id,
+                $length,
+                $start
+            );
 
-        $total = $this->relatorioatendimentos_model->countAtendimentos($data_inicio, $data_fim, $usuario_id);
+            $total = $this->relatorioatendimentos_model->countAtendimentos($data_inicio, $data_fim, $usuario_id);
 
-        // Formata dados para DataTable
-        $data = [];
-        foreach ($atendimentos as $atendimento) {
-            // Calcula tempo de atendimento
-            $tempo = '-';
-            if ($atendimento->data_saida) {
-                $entrada = new DateTime($atendimento->data_entrada);
-                $saida = new DateTime($atendimento->data_saida);
-                $intervalo = $entrada->diff($saida);
-                $tempo = $intervalo->format('%h:%i');
+            // Formata dados para DataTable
+            $data = [];
+            foreach ($atendimentos as $atendimento) {
+                // Calcula tempo de atendimento
+                $tempo = '-';
+                if ($atendimento->data_saida) {
+                    $entrada = new DateTime($atendimento->data_entrada);
+                    $saida = new DateTime($atendimento->data_saida);
+                    $intervalo = $entrada->diff($saida);
+                    $tempo = $intervalo->format('%h:%i');
+                }
+
+                $data[] = [
+                    'idCheckin' => $atendimento->idCheckin,
+                    'os_id' => $atendimento->os_id,
+                    'nome_tecnico' => $atendimento->nome_tecnico,
+                    'data_entrada' => date('d/m/Y H:i', strtotime($atendimento->data_entrada)),
+                    'data_saida' => $atendimento->data_saida ? date('d/m/Y H:i', strtotime($atendimento->data_saida)) : '-',
+                    'tempo' => $tempo,
+                    'status' => $atendimento->data_saida ?
+                        '<span class="label label-success">Finalizado</span>' :
+                        '<span class="label label-warning">Em Andamento</span>',
+                    'acoes' => '<a href="' . site_url('os/visualizar/' . $atendimento->os_id) . '" class="btn btn-mini" title="Ver OS"><i class="bx bx-show"></i></a>'
+                ];
             }
 
-            $data[] = [
-                'idCheckin' => $atendimento->idCheckin,
-                'os_id' => $atendimento->os_id,
-                'nome_tecnico' => $atendimento->nome_tecnico,
-                'data_entrada' => date('d/m/Y H:i', strtotime($atendimento->data_entrada)),
-                'data_saida' => $atendimento->data_saida ? date('d/m/Y H:i', strtotime($atendimento->data_saida)) : '-',
-                'tempo' => $tempo,
-                'status' => $atendimento->data_saida ?
-                    '<span class="label label-success">Finalizado</span>' :
-                    '<span class="label label-warning">Em Andamento</span>',
-                'acoes' => '<a href="' . site_url('os/visualizar/' . $atendimento->os_id) . '" class="btn btn-mini" title="Ver OS"><i class="bx bx-show"></i></a>'
+            $output = [
+                'draw' => $draw,
+                'recordsTotal' => $total,
+                'recordsFiltered' => $total,
+                'data' => $data
             ];
+
+            header('Content-Type: application/json');
+            echo json_encode($output);
+        } catch (Exception $e) {
+            // Em caso de erro, retorna JSON válido para o DataTable
+            header('Content-Type: application/json');
+            echo json_encode([
+                'draw' => intval($this->input->post('draw')),
+                'recordsTotal' => 0,
+                'recordsFiltered' => 0,
+                'data' => [],
+                'error' => 'Erro ao carregar dados: ' . $e->getMessage()
+            ]);
         }
-
-        $output = [
-            'draw' => $draw,
-            'recordsTotal' => $total,
-            'recordsFiltered' => $total,
-            'data' => $data
-        ];
-
-        echo json_encode($output);
     }
 
     /**

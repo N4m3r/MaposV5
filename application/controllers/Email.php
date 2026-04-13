@@ -33,7 +33,7 @@ class Email extends MY_Controller
         $this->scheduler = new EventScheduler();
 
         // Verifica login (exceto para tracking e CLI)
-        $method = $this->router->fetch('method');
+        $method = $this->router->method;
         if (!$this->input->is_cli_request() && !in_array($method, ['track', 'click'])) {
             if (!$this->session->userdata('logado')) {
                 redirect('login');

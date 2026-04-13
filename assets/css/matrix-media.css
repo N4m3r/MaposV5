@@ -36,15 +36,17 @@ body {
 /* Submenu principal - ao lado no desktop */
 #sidebar > ul > li.submenu > ul {
     position: absolute;
-    left: 235px;
-    width: 100%;
+    left: 100%;
+    width: 220px;
     bottom: auto;
     top: 0;
-    background-color: rgb(248 249 250 / 95%);
-    border-radius: 6px;
-    box-shadow: 5px 5px 15px rgb(0 0 0 / 25%);
-    z-index: 1000;
+    background-color: rgb(248 249 250 / 98%);
+    border-radius: 8px;
+    box-shadow: 5px 5px 20px rgb(0 0 0 / 30%);
+    z-index: 100002 !important;
     display: none;
+    max-height: 80vh;
+    overflow-y: auto;
 }
 
 /* Submenu aninhado (nível 2+) - aparece abaixo do item pai */
@@ -54,13 +56,29 @@ body {
     width: auto;
     bottom: auto;
     top: auto;
-    background-color: rgb(240 241 245 / 95%);
+    background-color: rgb(240 241 245 / 98%);
     border-radius: 4px;
     box-shadow: inset 0 2px 4px rgb(0 0 0 / 10%);
-    z-index: 1001;
+    z-index: 100003 !important;
     display: none;
-    margin-left: 25px;
+    margin-left: 15px;
     padding: 5px 0;
+}
+
+/* Ajuste para sidebar fechado - submenu ainda abre ao lado */
+#sidebar.open > ul > li.submenu > ul {
+    left: 80px;
+    width: 220px;
+}
+
+/* Scrollbar para submenus longos */
+#sidebar > ul > li.submenu > ul::-webkit-scrollbar {
+    width: 6px;
+}
+
+#sidebar > ul > li.submenu > ul::-webkit-scrollbar-thumb {
+    background-color: rgba(0,0,0,0.3);
+    border-radius: 3px;
 }
 
 /* Quando o submenu está aberto */

@@ -254,14 +254,23 @@ $(document).ready(function() {
             ajax: {
                 url: baseUrl + 'index.php/relatorioatendimentos/listar',
                 type: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
                 data: function(d) {
                     d.data_inicio = $('#filtro-data-inicio').val();
                     d.data_fim = $('#filtro-data-fim').val();
                     d.usuario_id = $('#filtro-tecnico').val();
+                },
+                error: function(xhr, error, thrown) {
+                    console.error('Erro no DataTable:', xhr.responseText, error, thrown);
+                    alert('Erro ao carregar dados da tabela. Verifique o console para mais detalhes.');
                 }
             },
             language: {
-                url: '//cdn.datatables.net/plug-ins/1.10.21/i18n/Portuguese-Brasil.json'
+                url: '//cdn.datatables.net/plug-ins/1.10.21/i18n/Portuguese-Brasil.json',
+                emptyTable: 'Nenhum atendimento encontrado',
+                zeroRecords: 'Nenhum atendimento encontrado com os filtros selecionados'
             },
             columns: [
                 { data: 'idCheckin', width: '50px' },
