@@ -220,38 +220,6 @@
     }
   </style>
 
-  <script>
-    // Atualizar visual das etapas
-    $(document).on('updateStep', function(e, step) {
-      for (var i = 1; i <= 8; i++) {
-        var $step = $('#step-' + i);
-        $step.removeClass('active completed error');
-
-        if (i < step) {
-          $step.addClass('completed');
-          $step.find('i').removeClass().addClass('fa fa-check-circle');
-        } else if (i === step) {
-          $step.addClass('active');
-          $step.find('i').removeClass().addClass('fa fa-spinner fa-spin');
-        }
-      }
-    });
-
-    // Sobrescrever função updateProgress para também atualizar as etapas
-    var originalUpdateProgress = updateProgress;
-    updateProgress = function(percent, message, step) {
-      originalUpdateProgress(percent, message, step);
-      if (step) {
-        $(document).trigger('updateStep', [step]);
-      }
-    };
-
-    // Mostrar erro na etapa específica
-    $(document).on('showStepError', function(e, step) {
-      $('#step-' + step).addClass('error');
-      $('#step-' + step + ' i').removeClass().addClass('fa fa-times-circle');
-    });
-  </script>
 
   <div class="panel-footer">
     <button type="submit" class="btn btn-info form-next">

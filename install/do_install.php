@@ -17,7 +17,7 @@ if (! file_exists($settings_file)) {
     $settings = json_decode($contents, true);
 }
 
-// Função para retornar progresso
+// Função para retornar progresso (não usada diretamente, apenas via saveProgress)
 function sendProgress($percent, $message, $step) {
     echo json_encode([
         'success' => false,
@@ -26,8 +26,10 @@ function sendProgress($percent, $message, $step) {
         'message' => $message,
         'step' => $step
     ]);
+    if (ob_get_level() > 0) {
+        ob_flush();
+    }
     flush();
-    ob_flush();
 }
 
 // Verificar se é uma requisição de progresso
