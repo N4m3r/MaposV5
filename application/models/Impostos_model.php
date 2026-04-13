@@ -19,8 +19,19 @@ class Impostos_model extends CI_Model
      */
     public function getConfig($chave)
     {
+        // Verificar se a tabela existe
+        if (!$this->db->table_exists('config_sistema_impostos')) {
+            return null;
+        }
+
         $this->db->where('chave', $chave);
-        $result = $this->db->get('config_sistema_impostos')->row();
+        $query = $this->db->get('config_sistema_impostos');
+
+        if ($query === false) {
+            return null;
+        }
+
+        $result = $query->row();
         return $result ? $result->valor : null;
     }
 
@@ -29,8 +40,19 @@ class Impostos_model extends CI_Model
      */
     public function setConfig($chave, $valor)
     {
+        // Verificar se a tabela existe
+        if (!$this->db->table_exists('config_sistema_impostos')) {
+            return false;
+        }
+
         $this->db->where('chave', $chave);
-        $exists = $this->db->get('config_sistema_impostos')->row();
+        $query = $this->db->get('config_sistema_impostos');
+
+        if ($query === false) {
+            return false;
+        }
+
+        $exists = $query->row();
 
         if ($exists) {
             $this->db->where('chave', $chave);
@@ -52,10 +74,22 @@ class Impostos_model extends CI_Model
      */
     public function getAliquotasAnexo($anexo = 'III')
     {
+        // Verificar se a tabela existe
+        if (!$this->db->table_exists('impostos_config')) {
+            return [];
+        }
+
         $this->db->where('anexo', $anexo);
         $this->db->where('ativo', 1);
         $this->db->order_by('faixa', 'ASC');
-        return $this->db->get('impostos_config')->result();
+
+        $query = $this->db->get('impostos_config');
+
+        if ($query === false) {
+            return [];
+        }
+
+        return $query->result();
     }
 
     /**
@@ -63,10 +97,22 @@ class Impostos_model extends CI_Model
      */
     public function getAliquotaFaixa($anexo, $faixa)
     {
+        // Verificar se a tabela existe
+        if (!$this->db->table_exists('impostos_config')) {
+            return null;
+        }
+
         $this->db->where('anexo', $anexo);
         $this->db->where('faixa', $faixa);
         $this->db->where('ativo', 1);
-        return $this->db->get('impostos_config')->row();
+
+        $query = $this->db->get('impostos_config');
+
+        if ($query === false) {
+            return null;
+        }
+
+        return $query->row();
     }
 
     /**
@@ -341,7 +387,15 @@ class Impostos_model extends CI_Model
         }
 
         $this->db->order_by('ir.data_retencao', 'DESC');
-        return $this->db->get()->result();
+
+        $query = $this->db->get();
+
+        // Verificar se a query foi bem sucedida
+        if ($query === false) {
+            return [];
+        }
+
+        return $query->result();
     }
 
     /**
@@ -486,7 +540,13 @@ class Impostos_model extends CI_Model
 
         // Verificar se já existe retenção para esta cobrança
         $this->db->where('cobranca_id', $cobranca_id);
-        if ($this->db->get('impostos_retidos')->num_rows() > 0) {
+        $query_existente = $this->db->get('impostos_retidos');
+
+        if ($query_existente === false) {
+            return false;
+        }
+
+        if ($query_existente->num_rows() > 0) {
             return false; // Já existe retenção
         }
 
@@ -532,7 +592,13 @@ class Impostos_model extends CI_Model
 
         $this->db->where('cobranca_id', $cobranca_id);
         $this->db->where('status', 'Retido');
-        $retencao = $this->db->get('impostos_retidos')->row();
+        $query = $this->db->get('impostos_retidos');
+
+        if ($query === false) {
+            return false;
+        }
+
+        $retencao = $query->row();
 
         if ($retencao) {
             $this->db->where('id', $retencao->id);
