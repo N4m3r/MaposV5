@@ -15,24 +15,39 @@ class Impostos_model extends CI_Model
     // ==================== CONFIGURAÇÕES ====================
 
     /**
+     * Configurações padrão do sistema
+     */
+    private $config_padrao = [
+        'IMPOSTO_RETENCAO_AUTOMATICA' => '0',
+        'IMPOSTO_ANEXO_PADRAO' => 'III',
+        'IMPOSTO_FAIXA_ATUAL' => '1',
+        'IMPOSTO_ISS_MUNICIPAL' => '5.00',
+        'IMPOSTO_DRE_INTEGRACAO' => '0',
+    ];
+
+    /**
      * Obtém configuração do sistema
      */
     public function getConfig($chave)
     {
         // Verificar se a tabela existe
         if (!$this->db->table_exists('config_sistema_impostos')) {
-            return null;
+            return $this->config_padrao[$chave] ?? null;
         }
 
-        $this->db->where('chave', $chave);
-        $query = $this->db->get('config_sistema_impostos');
+        try {
+            $this->db->where('chave', $chave);
+            $query = $this->db->get('config_sistema_impostos');
 
-        if ($query === false) {
-            return null;
+            if ($query === false) {
+                return $this->config_padrao[$chave] ?? null;
+            }
+
+            $result = $query->row();
+            return $result ? $result->valor : ($this->config_padrao[$chave] ?? null);
+        } catch (Exception $e) {
+            return $this->config_padrao[$chave] ?? null;
         }
-
-        $result = $query->row();
-        return $result ? $result->valor : null;
     }
 
     /**
@@ -76,20 +91,49 @@ class Impostos_model extends CI_Model
     {
         // Verificar se a tabela existe
         if (!$this->db->table_exists('impostos_config')) {
-            return [];
+            // Retornar dados padrão se tabela não existe
+            return $this->getAliquotasPadrao($anexo);
         }
 
-        $this->db->where('anexo', $anexo);
-        $this->db->where('ativo', 1);
-        $this->db->order_by('faixa', 'ASC');
+        try {
+            $this->db->where('anexo', $anexo);
+            $this->db->where('ativo', 1);
+            $this->db->order_by('faixa', 'ASC');
 
-        $query = $this->db->get('impostos_config');
+            $query = $this->db->get('impostos_config');
 
-        if ($query === false) {
-            return [];
+            if ($query === false) {
+                return $this->getAliquotasPadrao($anexo);
+            }
+
+            $result = $query->result();
+
+            // Se não houver dados, retornar padrão
+            if (empty($result)) {
+                return $this->getAliquotasPadrao($anexo);
+            }
+
+            return $result;
+        } catch (Exception $e) {
+            return $this->getAliquotasPadrao($anexo);
         }
+    }
 
-        return $query->result();
+    /**
+     * Retorna alíquotas padrão quando não há dados no banco
+     */
+    private function getAliquotasPadrao($anexo = 'III')
+    {
+        // Alíquotas padrão do Anexo III
+        $aliquotas = [
+            (object) ['id' => 1, 'anexo' => 'III', 'faixa' => 1, 'aliquota_nominal' => 6.00, 'irpj' => 0, 'csll' => 0, 'cofins' => 0, 'pis' => 0, 'cpp' => 0, 'iss' => 0, 'ativo' => 1],
+            (object) ['id' => 2, 'anexo' => 'III', 'faixa' => 2, 'aliquota_nominal' => 11.20, 'irpj' => 0, 'csll' => 0, 'cofins' => 0, 'pis' => 0, 'cpp' => 0, 'iss' => 0, 'ativo' => 1],
+            (object) ['id' => 3, 'anexo' => 'III', 'faixa' => 3, 'aliquota_nominal' => 13.95, 'irpj' => 0, 'csll' => 0, 'cofins' => 0, 'pis' => 0, 'cpp' => 0, 'iss' => 0, 'ativo' => 1],
+            (object) ['id' => 4, 'anexo' => 'III', 'faixa' => 4, 'aliquota_nominal' => 16.17, 'irpj' => 0, 'csll' => 0, 'cofins' => 0, 'pis' => 0, 'cpp' => 0, 'iss' => 0, 'ativo' => 1],
+            (object) ['id' => 5, 'anexo' => 'III', 'faixa' => 5, 'aliquota_nominal' => 18.00, 'irpj' => 0, 'csll' => 0, 'cofins' => 0, 'pis' => 0, 'cpp' => 0, 'iss' => 0, 'ativo' => 1],
+        ];
+
+        return $aliquotas;
     }
 
     /**
@@ -99,20 +143,49 @@ class Impostos_model extends CI_Model
     {
         // Verificar se a tabela existe
         if (!$this->db->table_exists('impostos_config')) {
-            return null;
+            return $this->getAliquotaPadrao($anexo, $faixa);
         }
 
-        $this->db->where('anexo', $anexo);
-        $this->db->where('faixa', $faixa);
-        $this->db->where('ativo', 1);
+        try {
+            $this->db->where('anexo', $anexo);
+            $this->db->where('faixa', $faixa);
+            $this->db->where('ativo', 1);
 
-        $query = $this->db->get('impostos_config');
+            $query = $this->db->get('impostos_config');
 
-        if ($query === false) {
-            return null;
+            if ($query === false) {
+                return $this->getAliquotaPadrao($anexo, $faixa);
+            }
+
+            $result = $query->row();
+
+            if (!$result) {
+                return $this->getAliquotaPadrao($anexo, $faixa);
+            }
+
+            return $result;
+        } catch (Exception $e) {
+            return $this->getAliquotaPadrao($anexo, $faixa);
         }
+    }
 
-        return $query->row();
+    /**
+     * Retorna alíquota padrão quando não há dados no banco
+     */
+    private function getAliquotaPadrao($anexo, $faixa)
+    {
+        // Alíquotas padrão do Anexo III
+        $aliquotas = [
+            'III' => [
+                1 => (object) ['id' => 1, 'anexo' => 'III', 'faixa' => 1, 'aliquota_nominal' => 6.00, 'irpj' => 0, 'csll' => 0, 'cofins' => 0, 'pis' => 0, 'cpp' => 0, 'iss' => 0, 'ativo' => 1],
+                2 => (object) ['id' => 2, 'anexo' => 'III', 'faixa' => 2, 'aliquota_nominal' => 11.20, 'irpj' => 0, 'csll' => 0, 'cofins' => 0, 'pis' => 0, 'cpp' => 0, 'iss' => 0, 'ativo' => 1],
+                3 => (object) ['id' => 3, 'anexo' => 'III', 'faixa' => 3, 'aliquota_nominal' => 13.95, 'irpj' => 0, 'csll' => 0, 'cofins' => 0, 'pis' => 0, 'cpp' => 0, 'iss' => 0, 'ativo' => 1],
+                4 => (object) ['id' => 4, 'anexo' => 'III', 'faixa' => 4, 'aliquota_nominal' => 16.17, 'irpj' => 0, 'csll' => 0, 'cofins' => 0, 'pis' => 0, 'cpp' => 0, 'iss' => 0, 'ativo' => 1],
+                5 => (object) ['id' => 5, 'anexo' => 'III', 'faixa' => 5, 'aliquota_nominal' => 18.00, 'irpj' => 0, 'csll' => 0, 'cofins' => 0, 'pis' => 0, 'cpp' => 0, 'iss' => 0, 'ativo' => 1],
+            ]
+        ];
+
+        return $aliquotas[$anexo][$faixa] ?? $aliquotas['III'][1];
     }
 
     /**
@@ -173,23 +246,27 @@ class Impostos_model extends CI_Model
 
         // Verificar se a tabela existe
         if (!$this->db->table_exists('impostos_retidos')) {
-            return 1; // Retorna faixa 1 como padrão
+            return (int)($this->getConfig('IMPOSTO_FAIXA_ATUAL') ?: 1);
         }
 
-        $sql = "
-            SELECT SUM(valor_bruto) as total
-            FROM impostos_retidos
-            WHERE data_competencia BETWEEN ? AND ?
-        ";
+        try {
+            $sql = "
+                SELECT SUM(valor_bruto) as total
+                FROM impostos_retidos
+                WHERE data_competencia BETWEEN ? AND ?
+            ";
 
-        $query = $this->db->query($sql, [$data_inicio, $data_fim]);
+            $query = $this->db->query($sql, [$data_inicio, $data_fim]);
 
-        if ($query === false) {
-            return 1; // Retorna faixa 1 como padrão em caso de erro
+            if ($query === false) {
+                return (int)($this->getConfig('IMPOSTO_FAIXA_ATUAL') ?: 1);
+            }
+
+            $result = $query->row();
+            $faturamento = $result ? ($result->total ?: 0) : 0;
+        } catch (Exception $e) {
+            return (int)($this->getConfig('IMPOSTO_FAIXA_ATUAL') ?: 1);
         }
-
-        $result = $query->row();
-        $faturamento = $result ? ($result->total ?: 0) : 0;
 
         // Definir faixa conforme tabela do Simples Nacional 2024
         // Anexo III - Serviços
