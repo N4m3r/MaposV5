@@ -676,9 +676,29 @@
                                             <td>
                                                 <label>
                                                     <input name="vCertificado" class="marcar" type="checkbox" checked="checked" value="1" />
-                                                    <span class="lbl"> Certificado Digital</span>
+                                                    <span class="lbl"> Visualizar Certificado</span>
                                                 </label>
                                             </td>
+                                            <td>
+                                                <label>
+                                                    <input name="cCertificado" class="marcar" type="checkbox" checked="checked" value="1" />
+                                                    <span class="lbl"> Adicionar Certificado</span>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <label>
+                                                    <input name="eCertificado" class="marcar" type="checkbox" checked="checked" value="1" />
+                                                    <span class="lbl"> Editar Certificado</span>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <label>
+                                                    <input name="dCertificado" class="marcar" type="checkbox" checked="checked" value="1" />
+                                                    <span class="lbl"> Excluir Certificado</span>
+                                                </label>
+                                            </td>
+                                        </tr>
+                                        <tr>
                                             <td>
                                                 <label>
                                                     <input name="vImpostos" class="marcar" type="checkbox" checked="checked" value="1" />

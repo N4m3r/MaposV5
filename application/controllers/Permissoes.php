@@ -144,6 +144,9 @@ class Permissoes extends MY_Controller
 
                 // Permissões Novas Funcionalidades
                 'vCertificado' => $this->input->post('vCertificado'),
+                'cCertificado' => $this->input->post('cCertificado'),
+                'eCertificado' => $this->input->post('eCertificado'),
+                'dCertificado' => $this->input->post('dCertificado'),
                 'vImpostos' => $this->input->post('vImpostos'),
                 'vDRE' => $this->input->post('vDRE'),
                 'vRelatorioAtendimentos' => $this->input->post('vRelatorioAtendimentos'),
@@ -284,6 +287,9 @@ class Permissoes extends MY_Controller
 
                 // Permissões Novas Funcionalidades
                 'vCertificado' => $this->input->post('vCertificado'),
+                'cCertificado' => $this->input->post('cCertificado'),
+                'eCertificado' => $this->input->post('eCertificado'),
+                'dCertificado' => $this->input->post('dCertificado'),
                 'vImpostos' => $this->input->post('vImpostos'),
                 'vDRE' => $this->input->post('vDRE'),
                 'vRelatorioAtendimentos' => $this->input->post('vRelatorioAtendimentos'),

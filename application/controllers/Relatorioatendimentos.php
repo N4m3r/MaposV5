@@ -54,9 +54,7 @@ class Relatorioatendimentos extends MY_Controller
         $this->data['results'] = $dados;
         $this->data['view'] = 'relatorioatendimentos/relatorio';
 
-        $this->load->view('tema/topo', $this->data);
-        $this->load->view($this->data['view'], $this->data);
-        $this->load->view('tema/rodape');
+        return $this->layout();
     }
 
     /**
@@ -281,8 +279,6 @@ class Relatorioatendimentos extends MY_Controller
         $this->data['checkin'] = $checkin;
         $this->data['view'] = 'relatorioatendimentos/visualizar';
 
-        $this->load->view('tema/topo', $this->data);
-        $this->load->view($this->data['view'], $this->data);
-        $this->load->view('tema/rodape');
+        return $this->layout();
     }
 }

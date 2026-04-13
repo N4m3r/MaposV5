@@ -1,3 +1,13 @@
+<!-- Header -->
+<div class="row-fluid">
+    <div class="span12">
+        <ul class="breadcrumb">
+            <li><a href="<?php echo site_url('dashboard'); ?>">Dashboard</a> <span class="divider">/</span></li>
+            <li class="active">Relatório de Atendimentos</li>
+        </ul>
+    </div>
+</div>
+
 <div class="row-fluid" style="margin-top: 0">
     <div class="span12">
         <div class="widget-box">

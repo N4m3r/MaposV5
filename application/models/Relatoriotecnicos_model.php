@@ -72,7 +72,14 @@ class Relatoriotecnicos_model extends CI_Model
             ORDER BY total_os DESC
         ";
 
-        $result = $this->db->query($sql, [$data_inicio . ' 00:00:00', $data_fim . ' 23:59:59'])->result();
+        $query = $this->db->query($sql, [$data_inicio . ' 00:00:00', $data_fim . ' 23:59:59']);
+
+        // Verificar se a query falhou
+        if ($query === false) {
+            return [];
+        }
+
+        $result = $query->result();
 
         // Calcular métricas derivadas
         foreach ($result as $row) {
@@ -122,7 +129,13 @@ class Relatoriotecnicos_model extends CI_Model
             GROUP BY u.idUsuarios, u.nome
         ";
 
-        $result = $this->db->query($sql, [$data_inicio . ' 00:00:00', $data_fim . ' 23:59:59', $tecnico_id])->row();
+        $query = $this->db->query($sql, [$data_inicio . ' 00:00:00', $data_fim . ' 23:59:59', $tecnico_id]);
+
+        if ($query === false) {
+            return null;
+        }
+
+        $result = $query->row();
 
         if ($result) {
             $result->horas_trabalhadas = round($result->tempo_total_minutos / 60, 2);
@@ -194,7 +207,8 @@ class Relatoriotecnicos_model extends CI_Model
             ORDER BY quantidade DESC
         ";
 
-        return $this->db->query($sql, [$data_inicio, $data_fim])->result();
+        $query = $this->db->query($sql, [$data_inicio, $data_fim]);
+        return ($query !== false) ? $query->result() : [];
     }
 
     // ==================== PRODUTIVIDADE ====================

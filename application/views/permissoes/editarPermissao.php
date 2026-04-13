@@ -920,9 +920,29 @@
                                 <td>
                                     <label>
                                             <input <?php echo (isset($permissoes['vCertificado']) && $permissoes['vCertificado'] == '1') ? 'checked' : ''; ?> name="vCertificado" class="marcar" type="checkbox" value="1" />
-                                            <span class="lbl"> Certificado Digital</span>
+                                            <span class="lbl"> Visualizar Certificado</span>
                                         </label>
                                     </td>
+                                <td>
+                                    <label>
+                                            <input <?php echo (isset($permissoes['cCertificado']) && $permissoes['cCertificado'] == '1') ? 'checked' : ''; ?> name="cCertificado" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> Adicionar Certificado</span>
+                                        </label>
+                                    </td>
+                                <td>
+                                    <label>
+                                            <input <?php echo (isset($permissoes['eCertificado']) && $permissoes['eCertificado'] == '1') ? 'checked' : ''; ?> name="eCertificado" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> Editar Certificado</span>
+                                        </label>
+                                    </td>
+                                <td>
+                                    <label>
+                                            <input <?php echo (isset($permissoes['dCertificado']) && $permissoes['dCertificado'] == '1') ? 'checked' : ''; ?> name="dCertificado" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> Excluir Certificado</span>
+                                        </label>
+                                    </td>
+                                </tr>
+                                <tr>
                                 <td>
                                     <label>
                                             <input <?php echo (isset($permissoes['vImpostos']) && $permissoes['vImpostos'] == '1') ? 'checked' : ''; ?> name="vImpostos" class="marcar" type="checkbox" value="1" />
