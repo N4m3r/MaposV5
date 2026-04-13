@@ -17,6 +17,42 @@ if (! file_exists($settings_file)) {
     $settings = json_decode($contents, true);
 }
 
+// Função para retornar progresso
+function sendProgress($percent, $message, $step) {
+    echo json_encode([
+        'success' => false,
+        'progress' => true,
+        'percent' => $percent,
+        'message' => $message,
+        'step' => $step
+    ]);
+    flush();
+    ob_flush();
+}
+
+// Verificar se é uma requisição de progresso
+if (isset($_GET['action']) && $_GET['action'] === 'progress') {
+    // Retorna o estado atual (se houver arquivo de progresso)
+    $progress_file = sys_get_temp_dir() . '/mapos_install_progress.json';
+    if (file_exists($progress_file)) {
+        echo file_get_contents($progress_file);
+    } else {
+        echo json_encode(['percent' => 0, 'message' => 'Aguardando início...', 'step' => 0]);
+    }
+    exit();
+}
+
+// Função para salvar progresso
+function saveProgress($percent, $message, $step) {
+    $progress_file = sys_get_temp_dir() . '/mapos_install_progress.json';
+    file_put_contents($progress_file, json_encode([
+        'percent' => $percent,
+        'message' => $message,
+        'step' => $step,
+        'timestamp' => time()
+    ]));
+}
+
 if (! empty($_POST)) {
     $host = $_POST['host'];
     $dbuser = $_POST['dbuser'];
@@ -28,34 +64,48 @@ if (! empty($_POST)) {
     $login_password = $_POST['password'] ? $_POST['password'] : '';
     $base_url = $_POST['base_url'];
 
+    // ============================================
+    // ETAPA 1: Validação (0-5%)
+    // ============================================
+    saveProgress(2, 'Validando dados de entrada...', 1);
+
     //check required fields
     if (! ($host && $dbuser && $dbname && $full_name && $email && $login_password && $base_url)) {
-        echo json_encode(['success' => false, 'message' => 'Por favor insira todos os campos.']);
+        echo json_encode(['success' => false, 'message' => 'Por favor insira todos os campos.', 'step' => 1]);
         exit();
     }
 
     //check for valid email
     if (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
-        echo json_encode(['success' => false, 'message' => 'Por favor insira um email válido.']);
+        echo json_encode(['success' => false, 'message' => 'Por favor insira um email válido.', 'step' => 1]);
         exit();
     }
+
+    saveProgress(5, 'Dados validados com sucesso!', 1);
+
+    // ============================================
+    // ETAPA 2: Conexão com Banco (5-15%)
+    // ============================================
+    saveProgress(8, 'Conectando ao banco de dados...', 2);
 
     //check for valid database connection
     try {
         $mysqli = @new mysqli($host, $dbuser, $dbpassword, $dbname);
 
         if (mysqli_connect_errno()) {
-            echo json_encode(['success' => false, 'message' => $mysqli->connect_error]);
+            echo json_encode(['success' => false, 'message' => $mysqli->connect_error, 'step' => 2]);
             exit();
         }
     } catch (Exception $e) {
-        echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+        echo json_encode(['success' => false, 'message' => $e->getMessage(), 'step' => 2]);
         exit();
     }
 
-    //all input seems to be ok. check required fiels
+    saveProgress(12, 'Conexão estabelecida!', 2);
+
+    //check required files
     if (! is_file($settings['database_file'])) {
-        echo json_encode(['success' => false, 'message' => 'O arquivo ../banco.sql não foi encontrado na pasta de instalação!']);
+        echo json_encode(['success' => false, 'message' => 'O arquivo ../banco.sql não foi encontrado na pasta de instalação!', 'step' => 2]);
         exit();
     }
 
@@ -66,9 +116,16 @@ if (! empty($_POST)) {
     $is_installed = file_exists('..' . DIRECTORY_SEPARATOR . 'application' . DIRECTORY_SEPARATOR . '.env');
 
     if ($is_installed) {
-        echo json_encode(['success' => false, 'message' => 'Parece que este aplicativo já está instalado! Você não pode reinstalá-lo novamente.']);
+        echo json_encode(['success' => false, 'message' => 'Parece que este aplicativo já está instalado! Você não pode reinstalá-lo novamente.', 'step' => 2]);
         exit();
     }
+
+    saveProgress(15, 'Verificações preliminares concluídas!', 2);
+
+    // ============================================
+    // ETAPA 3: Criação Tabelas Base (15-45%)
+    // ============================================
+    saveProgress(18, 'Criando tabelas do sistema...', 3);
 
     //start installation
     $sql = file_get_contents($settings['database_file']);
@@ -80,18 +137,23 @@ if (! empty($_POST)) {
     $sql = str_replace('admin_password', password_hash($login_password, PASSWORD_DEFAULT), $sql);
     $sql = str_replace('admin_created_at', $now, $sql);
 
-    //create tables in datbase
+    saveProgress(25, 'Executando queries do banco principal...', 3);
+
+    //create tables in database
     $mysqli->multi_query($sql);
     do {
     } while (mysqli_more_results($mysqli) && mysqli_next_result($mysqli));
 
+    saveProgress(45, 'Tabelas base criadas com sucesso!', 3);
+
     // ============================================
-    // CRIAR TABELAS ADICIONAIS V5 (DRE, IMPOSTOS, CERTIFICADO)
-    // Executa após o banco base para garantir integridade
+    // ETAPA 4: Tabelas Adicionais V5 (45-60%)
     // ============================================
+    saveProgress(48, 'Criando tabelas DRE, Impostos e Certificado Digital...', 4);
+
     $mysqli->query("SET FOREIGN_KEY_CHECKS = 0");
 
-    // Tabela: dre_contas (estrutura completa)
+    // Tabela: dre_contas
     $mysqli->query("CREATE TABLE IF NOT EXISTS `dre_contas` (
       `id` INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
       `codigo` VARCHAR(20) NOT NULL,
@@ -109,6 +171,8 @@ if (! empty($_POST)) {
       INDEX `idx_tipo` (`tipo`),
       INDEX `idx_ativo` (`ativo`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+    saveProgress(52, 'Tabela DRE - Contas criada...', 4);
 
     // Tabela: dre_lancamentos
     $mysqli->query("CREATE TABLE IF NOT EXISTS `dre_lancamentos` (
@@ -144,6 +208,8 @@ if (! empty($_POST)) {
       INDEX `idx_tipo` (`tipo`),
       INDEX `idx_conta_dre_id` (`conta_dre_id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+    saveProgress(55, 'Tabelas de configuração DRE criadas...', 4);
 
     // Tabela: impostos_config
     $mysqli->query("CREATE TABLE IF NOT EXISTS `impostos_config` (
@@ -209,6 +275,8 @@ if (! empty($_POST)) {
       INDEX `idx_chave` (`chave`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
+    saveProgress(57, 'Tabelas de impostos criadas...', 4);
+
     // Tabela: certificado_digital
     $mysqli->query("CREATE TABLE IF NOT EXISTS `certificado_digital` (
       `id` INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -269,33 +337,31 @@ if (! empty($_POST)) {
       INDEX `idx_situacao` (`situacao`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
+    saveProgress(60, 'Tabelas V5 (DRE, Impostos, Certificado) criadas com sucesso!', 4);
+
     // ============================================
-    // INSERIR DADOS INICIAIS DRE
+    // ETAPA 5: Dados Iniciais DRE (60-75%)
     // ============================================
+    saveProgress(63, 'Inserindo dados iniciais do DRE...', 5);
+
     $result = $mysqli->query("SELECT COUNT(*) as total FROM dre_contas WHERE codigo = '1'");
     $row = $result->fetch_assoc();
     if ($row['total'] == 0) {
         $now = date('Y-m-d H:i:s');
         $contas_dre = [
-            // RECEITA BRUTA
             ["1", "RECEITA BRUTA", "RECEITA", "RECEITA_BRUTA", 10, null, 1, "POSITIVO", 1, $now, $now],
             ["1.1", "Receita de Serviços", "RECEITA", "RECEITA_BRUTA", 11, null, 2, "POSITIVO", 1, $now, $now],
             ["1.2", "Receita de Vendas", "RECEITA", "RECEITA_BRUTA", 12, null, 2, "POSITIVO", 1, $now, $now],
             ["1.3", "Outras Receitas Operacionais", "RECEITA", "RECEITA_BRUTA", 13, null, 2, "POSITIVO", 1, $now, $now],
-            // DEDUÇÕES
             ["2", "(-) DEDUÇÕES DA RECEITA", "IMPOSTO", "DEDUCOES", 20, null, 1, "NEGATIVO", 1, $now, $now],
             ["2.1", "Impostos Sobre Vendas", "IMPOSTO", "DEDUCOES", 21, null, 2, "NEGATIVO", 1, $now, $now],
             ["2.2", "Devoluções e Abatimentos", "RECEITA", "DEDUCOES", 22, null, 2, "NEGATIVO", 1, $now, $now],
-            // RECEITA LÍQUIDA
             ["3", "= RECEITA LÍQUIDA", "TRANSFERENCIA", "RECEITA_LIQUIDA", 30, null, 1, "POSITIVO", 1, $now, $now],
-            // CUSTOS
             ["4", "(-) CUSTO DOS SERVIÇOS/PRODUTOS", "CUSTO", "CUSTO", 40, null, 1, "NEGATIVO", 1, $now, $now],
             ["4.1", "Materiais Utilizados", "CUSTO", "CUSTO", 41, null, 2, "NEGATIVO", 1, $now, $now],
             ["4.2", "Mão de Obra Direta", "CUSTO", "CUSTO", 42, null, 2, "NEGATIVO", 1, $now, $now],
             ["4.3", "Custos Operacionais Diretos", "CUSTO", "CUSTO", 43, null, 2, "NEGATIVO", 1, $now, $now],
-            // LUCRO BRUTO
             ["5", "= LUCRO BRUTO", "TRANSFERENCIA", "LUCRO_BRUTO", 50, null, 1, "POSITIVO", 1, $now, $now],
-            // DESPESAS OPERACIONAIS
             ["6", "(-) DESPESAS OPERACIONAIS", "DESPESA", "DESPESA_OPERACIONAL", 60, null, 1, "NEGATIVO", 1, $now, $now],
             ["6.1", "Despesas Administrativas", "DESPESA", "DESPESA_OPERACIONAL", 61, null, 2, "NEGATIVO", 1, $now, $now],
             ["6.1.1", "Salários e Encargos Administrativos", "DESPESA", "DESPESA_OPERACIONAL", 611, null, 3, "NEGATIVO", 1, $now, $now],
@@ -307,9 +373,7 @@ if (! empty($_POST)) {
             ["6.2", "Despesas com Vendas", "DESPESA", "DESPESA_OPERACIONAL", 62, null, 2, "NEGATIVO", 1, $now, $now],
             ["6.2.1", "Comissões", "DESPESA", "DESPESA_OPERACIONAL", 621, null, 3, "NEGATIVO", 1, $now, $now],
             ["6.2.2", "Propaganda e Publicidade", "DESPESA", "DESPESA_OPERACIONAL", 622, null, 3, "NEGATIVO", 1, $now, $now],
-            // LUCRO OPERACIONAL
             ["7", "= LUCRO/PREJUÍZO OPERACIONAL", "TRANSFERENCIA", "LUCRO_OPERACIONAL", 70, null, 1, "POSITIVO", 1, $now, $now],
-            // RESULTADO FINANCEIRO
             ["8", "RESULTADO FINANCEIRO", "TRANSFERENCIA", "RESULTADO_FINANCEIRO", 80, null, 1, "POSITIVO", 1, $now, $now],
             ["8.1", "Receitas Financeiras", "RECEITA", "OUTRAS_RECEITAS", 81, null, 2, "POSITIVO", 1, $now, $now],
             ["8.1.1", "Juros Recebidos", "RECEITA", "OUTRAS_RECEITAS", 811, null, 3, "POSITIVO", 1, $now, $now],
@@ -318,14 +382,11 @@ if (! empty($_POST)) {
             ["8.2.1", "Juros Pagos", "DESPESA", "OUTRAS_DESPESAS", 821, null, 3, "NEGATIVO", 1, $now, $now],
             ["8.2.2", "Descontos Concedidos", "DESPESA", "OUTRAS_DESPESAS", 822, null, 3, "NEGATIVO", 1, $now, $now],
             ["8.2.3", "Tarifas Bancárias", "DESPESA", "OUTRAS_DESPESAS", 823, null, 3, "NEGATIVO", 1, $now, $now],
-            // LUCRO ANTES DO IR
             ["9", "= LUCRO/PREJUÍZO ANTES DO IR", "TRANSFERENCIA", "LUCRO_ANTES_IR", 90, null, 1, "POSITIVO", 1, $now, $now],
-            // IMPOSTO DE RENDA
             ["10", "(-) IMPOSTO DE RENDA E CONTRIBUIÇÕES", "IMPOSTO", "IMPOSTO_RENDA", 100, null, 1, "NEGATIVO", 1, $now, $now],
             ["10.1", "IRPJ", "IMPOSTO", "IMPOSTO_RENDA", 101, null, 2, "NEGATIVO", 1, $now, $now],
             ["10.2", "CSLL", "IMPOSTO", "IMPOSTO_RENDA", 102, null, 2, "NEGATIVO", 1, $now, $now],
             ["10.3", "PIS/COFINS", "IMPOSTO", "IMPOSTO_RENDA", 103, null, 2, "NEGATIVO", 1, $now, $now],
-            // LUCRO LÍQUIDO
             ["11", "= LUCRO/PREJUÍZO LÍQUIDO DO EXERCÍCIO", "TRANSFERENCIA", "LUCRO_LIQUIDO", 110, null, 1, "POSITIVO", 1, $now, $now],
         ];
 
@@ -337,15 +398,18 @@ if (! empty($_POST)) {
         $stmt->close();
     }
 
+    saveProgress(70, 'Dados do DRE inseridos com sucesso!', 5);
+
     // ============================================
-    // INSERIR DADOS INICIAIS IMPOSTOS
+    // ETAPA 6: Dados Impostos (75-85%)
     // ============================================
+    saveProgress(75, 'Configurando tabelas de impostos...', 6);
+
     $result = $mysqli->query("SELECT COUNT(*) as total FROM impostos_config WHERE anexo = 'III'");
     $row = $result->fetch_assoc();
     if ($row['total'] == 0) {
         $now = date('Y-m-d H:i:s');
 
-        // Anexo III - Serviços
         $anexo3 = [
             ['III', 1, 6.00, 4.00, 3.50, 12.82, 2.78, 43.40, 33.50, 'Prestação de serviços em geral (Anexo III)', 1, $now],
             ['III', 2, 11.20, 4.00, 3.50, 14.05, 3.05, 38.99, 32.41, 'Prestação de serviços em geral (Anexo III)', 1, $now],
@@ -360,7 +424,6 @@ if (! empty($_POST)) {
             $stmt->execute();
         }
 
-        // Anexo IV - Construção
         $anexo4 = [
             ['IV', 1, 4.50, 0.00, 15.74, 14.68, 3.19, 41.50, 31.00, 'Construção e serviços com ISS próprio (Anexo IV)', 1, $now],
             ['IV', 2, 9.00, 0.00, 15.74, 14.68, 3.19, 41.50, 24.89, 'Construção e serviços com ISS próprio (Anexo IV)', 1, $now],
@@ -375,6 +438,8 @@ if (! empty($_POST)) {
         }
         $stmt->close();
     }
+
+    saveProgress(78, 'Dados de alíquotas inseridos...', 6);
 
     // Configurações de impostos
     $result = $mysqli->query("SELECT COUNT(*) as total FROM config_sistema_impostos WHERE chave = 'IMPOSTO_ANEXO_PADRAO'");
@@ -398,71 +463,49 @@ if (! empty($_POST)) {
 
     $mysqli->query("SET FOREIGN_KEY_CHECKS = 1");
 
-    // ============================================
-    // CRIAR PERMISSÕES PROGRAMATICAMENTE (V5)
-    // Isso evita erros de serialização no SQL
-    // ============================================
+    saveProgress(85, 'Configurações de impostos concluídas!', 6);
 
-    // Array completo de permissões V5 - Administrador tem acesso total a todas as funcionalidades
+    // ============================================
+    // ETAPA 7: Permissões (85-95%)
+    // ============================================
+    saveProgress(88, 'Criando permissões de acesso...', 7);
+
     $permissoes_array = [
-        // Clientes
         'aCliente' => '1', 'eCliente' => '1', 'dCliente' => '1', 'vCliente' => '1',
-        // Produtos
         'aProduto' => '1', 'eProduto' => '1', 'dProduto' => '1', 'vProduto' => '1',
-        // Serviços
         'aServico' => '1', 'eServico' => '1', 'dServico' => '1', 'vServico' => '1',
-        // Ordens de Serviço
         'aOs' => '1', 'eOs' => '1', 'dOs' => '1', 'vOs' => '1',
-        // Permissões de Técnico na OS
         'vBtnAtendimento' => '1', 'vTecnicoOS' => '1', 'eTecnicoCheckin' => '1',
         'eTecnicoCheckout' => '1', 'eTecnicoFotos' => '1',
-        // Vendas
         'aVenda' => '1', 'eVenda' => '1', 'dVenda' => '1', 'vVenda' => '1',
-        // Garantias
         'aGarantia' => '1', 'eGarantia' => '1', 'dGarantia' => '1', 'vGarantia' => '1',
-        // Lançamentos/Financeiro
         'aLancamento' => '1', 'eLancamento' => '1', 'dLancamento' => '1', 'vLancamento' => '1',
-        // Pagamentos
         'aPagamento' => '1', 'ePagamento' => '1', 'dPagamento' => '1', 'vPagamento' => '1',
-        // Arquivos/Anexos
         'aArquivo' => '1', 'eArquivo' => '1', 'dArquivo' => '1', 'vArquivo' => '1',
-        // Categorias
         'categoria_d' => '1', 'categoria_v' => '1', 'categoria_a' => '1', 'categoria_e' => '1',
         'vCategoria' => '1',
-        // Cobranças
         'aCobranca' => '1', 'eCobranca' => '1', 'dCobranca' => '1', 'vCobranca' => '1',
-        // Configurações
         'aConfiguracao' => '1', 'eConfiguracao' => '1', 'dConfiguracao' => '1', 'vConfiguracao' => '1',
-        // Emitente
         'aEmitente' => '1', 'eEmitente' => '1', 'dEmitente' => '1', 'vEmitente' => '1',
-        // Permissões
         'aPermissao' => '1', 'ePermissao' => '1', 'dPermissao' => '1', 'vPermissao' => '1',
-        // Auditoria
         'aAuditoria' => '1', 'eAuditoria' => '1', 'dAuditoria' => '1', 'vAuditoria' => '1',
-        // Emails
         'aEmail' => '1', 'eEmail' => '1', 'dEmail' => '1', 'vEmail' => '1',
-        // Relatórios
         'rContas' => '1', 'rFinanceiro' => '1', 'rProdutos' => '1', 'rServicos' => '1',
         'rVendas' => '1', 'rOs' => '1', 'rClientes' => '1', 'rCliente' => '1',
         'rProduto' => '1', 'rServico' => '1',
-        // Controles de Sistema (cada um permite acesso a uma seção administrativa)
         'cUsuario' => '1', 'cEmitente' => '1', 'cPermissao' => '1', 'cBackup' => '1',
         'cAuditoria' => '1', 'cEmail' => '1', 'cSistema' => '1', 'cDocOs' => '1',
-        // Novas Funcionalidades V5
         'vCertificado' => '1', 'vImpostos' => '1', 'vDRE' => '1',
         'vWebhooks' => '1', 'vRelatorioAtendimentos' => '1',
-        // Usuários Cliente (Multi-CNPJ)
         'vUsuariosCliente' => '1', 'cUsuariosCliente' => '1',
         'eUsuariosCliente' => '1', 'dUsuariosCliente' => '1',
         'cPermUsuariosCliente' => '1',
-        // Dashboard e Relatórios Avançados
         'vDashboard' => '1', 'vRelatorioCompleto' => '1', 'vExportarDados' => '1'
     ];
 
     $permissoes_serializado = serialize($permissoes_array);
     $data_atual = date('Y-m-d');
 
-    // Inserir permissão de Administrador
     $stmt = $mysqli->prepare("INSERT INTO permissoes (idPermissao, nome, permissoes, situacao, data) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE permissoes = ?");
     $idPermissao = 1;
     $nome = 'Administrador';
@@ -472,74 +515,72 @@ if (! empty($_POST)) {
     $stmt->close();
 
     $mysqli->close();
-    // database created
+
+    saveProgress(95, 'Permissões criadas com sucesso!', 7);
 
     // ============================================
-    // CRIAR ARQUIVO .ENV
+    // ETAPA 8: Arquivo .env (95-100%)
     // ============================================
+    saveProgress(97, 'Criando arquivo de configuração (.env)...', 8);
+
     $env_file_path = '..' . DIRECTORY_SEPARATOR . 'application' . DIRECTORY_SEPARATOR . '.env.example';
     $env_output_path = '..' . DIRECTORY_SEPARATOR . 'application' . DIRECTORY_SEPARATOR . '.env';
 
-    // Verificar se o arquivo .env.example existe
     if (!file_exists($env_file_path)) {
-        echo json_encode(['success' => false, 'message' => 'Arquivo .env.example não encontrado em: ' . realpath(dirname($env_file_path))]);
+        echo json_encode(['success' => false, 'message' => 'Arquivo .env.example não encontrado.', 'step' => 8]);
         exit();
     }
 
-    // Verificar se o arquivo .env.example é legível
     if (!is_readable($env_file_path)) {
-        echo json_encode(['success' => false, 'message' => 'Arquivo .env.example não pode ser lido. Verifique as permissões.']);
+        echo json_encode(['success' => false, 'message' => 'Arquivo .env.example não pode ser lido.', 'step' => 8]);
         exit();
     }
 
     $env_file = file_get_contents($env_file_path);
 
-    // Verificar se o conteúdo foi lido corretamente
     if ($env_file === false) {
-        echo json_encode(['success' => false, 'message' => 'Erro ao ler o arquivo .env.example']);
+        echo json_encode(['success' => false, 'message' => 'Erro ao ler o arquivo .env.example', 'step' => 8]);
         exit();
     }
 
-    // Verificar se o diretório de saída é gravável
     $env_dir = dirname($env_output_path);
     if (!is_writable($env_dir)) {
-        echo json_encode(['success' => false, 'message' => 'Diretório application/ não é gravável. Verifique as permissões.']);
+        echo json_encode(['success' => false, 'message' => 'Diretório application/ não é gravável.', 'step' => 8]);
         exit();
     }
 
-    // set the database config file
     $env_file = str_replace('enter_db_hostname', $host, $env_file);
     $env_file = str_replace('enter_db_username', $dbuser, $env_file);
     $env_file = str_replace('enter_db_password', $dbpassword, $env_file);
     $env_file = str_replace('enter_db_name', $dbname, $env_file);
 
-    // set random enter_encryption_key
     $encryption_key = substr(md5(rand()), 0, 15);
     $env_file = str_replace('enter_encryption_key', $encryption_key, $env_file);
     $env_file = str_replace('enter_baseurl', $base_url, $env_file);
 
-    // set random enter_jwt_key
     $env_file = str_replace('enter_jwt_key', base64_encode(openssl_random_pseudo_bytes(32)), $env_file);
     $env_file = str_replace('enter_token_expire_time', '3600', $env_file);
     $env_file = str_replace('enter_api_enabled', 'true', $env_file);
-
-    // set the environment = production
     $env_file = str_replace('pre_installation', 'production', $env_file);
 
-    // Tentar criar o arquivo .env
     $result = file_put_contents($env_output_path, $env_file);
 
     if ($result === false) {
-        echo json_encode(['success' => false, 'message' => 'Erro ao criar arquivo .env. Verifique as permissões de escrita no diretório application/.']);
+        echo json_encode(['success' => false, 'message' => 'Erro ao criar arquivo .env.', 'step' => 8]);
         exit();
     }
 
-    // Verificar se o arquivo foi criado e tem conteúdo
     if (!file_exists($env_output_path) || filesize($env_output_path) === 0) {
-        echo json_encode(['success' => false, 'message' => 'Arquivo .env foi criado mas está vazio ou não pôde ser verificado.']);
+        echo json_encode(['success' => false, 'message' => 'Arquivo .env foi criado mas está vazio.', 'step' => 8]);
         exit();
     }
 
-    echo json_encode(['success' => true, 'message' => 'Instalação bem sucedida.']);
+    // Limpar arquivo de progresso
+    $progress_file = sys_get_temp_dir() . '/mapos_install_progress.json';
+    if (file_exists($progress_file)) {
+        unlink($progress_file);
+    }
+
+    echo json_encode(['success' => true, 'message' => 'Instalação bem sucedida!', 'percent' => 100, 'step' => 8]);
     exit();
 }

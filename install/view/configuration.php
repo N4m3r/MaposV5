@@ -99,10 +99,164 @@
     </div>
   </div>
 
+  <!-- Barra de Progresso da Instalação -->
+  <div id="install-progress-container" class="section clearfix hide">
+    <hr />
+    <div class="form-group">
+      <label><strong>Progresso da Instalação</strong></label>
+      <div class="progress" style="height: 30px; margin-bottom: 10px;">
+        <div id="install-progress-bar" class="progress-bar progress-bar-danger progress-bar-striped active"
+             role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
+          <span id="install-progress-text">0%</span>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <small id="install-progress-message" class="text-muted"><i class="fa fa-hourglass-start"></i> Aguardando início...</small>
+        </div>
+        <div class="col-md-6 text-right">
+          <small id="install-progress-step" class="text-info">Etapa: Aguardando...</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lista de etapas -->
+    <div class="row" style="margin-top: 15px;">
+      <div class="col-md-12">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h5 class="panel-title"><i class="fa fa-list-ol"></i> Etapas da Instalação</h5>
+          </div>
+          <div class="panel-body" style="padding: 10px;">
+            <div class="row text-center">
+              <div class="col-xs-3" id="step-1">
+                <div class="step-item">
+                  <i class="fa fa-check-circle-o" style="font-size: 20px; color: #ccc;"></i>
+                  <div><small>1. Validação</small></div>
+                </div>
+              </div>
+              <div class="col-xs-3" id="step-2">
+                <div class="step-item">
+                  <i class="fa fa-database" style="font-size: 20px; color: #ccc;"></i>
+                  <div><small>2. Conexão DB</small></div>
+                </div>
+              </div>
+              <div class="col-xs-3" id="step-3">
+                <div class="step-item">
+                  <i class="fa fa-table" style="font-size: 20px; color: #ccc;"></i>
+                  <div><small>3. Tabelas Base</small></div>
+                </div>
+              </div>
+              <div class="col-xs-3" id="step-4">
+                <div class="step-item">
+                  <i class="fa fa-plus-square" style="font-size: 20px; color: #ccc;"></i>
+                  <div><small>4. Tabelas V5</small></div>
+                </div>
+              </div>
+            </div>
+            <div class="row text-center" style="margin-top: 10px;">
+              <div class="col-xs-3" id="step-5">
+                <div class="step-item">
+                  <i class="fa fa-bar-chart" style="font-size: 20px; color: #ccc;"></i>
+                  <div><small>5. Dados DRE</small></div>
+                </div>
+              </div>
+              <div class="col-xs-3" id="step-6">
+                <div class="step-item">
+                  <i class="fa fa-percent" style="font-size: 20px; color: #ccc;"></i>
+                  <div><small>6. Impostos</small></div>
+                </div>
+              </div>
+              <div class="col-xs-3" id="step-7">
+                <div class="step-item">
+                  <i class="fa fa-key" style="font-size: 20px; color: #ccc;"></i>
+                  <div><small>7. Permissões</small></div>
+                </div>
+              </div>
+              <div class="col-xs-3" id="step-8">
+                <div class="step-item">
+                  <i class="fa fa-file-text" style="font-size: 20px; color: #ccc;"></i>
+                  <div><small>8. Config .env</small></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .step-item {
+      padding: 8px;
+      border-radius: 5px;
+      transition: all 0.3s ease;
+    }
+    .step-item.active {
+      background-color: #d9edf7;
+    }
+    .step-item.completed {
+      background-color: #dff0d8;
+    }
+    .step-item.error {
+      background-color: #f2dede;
+    }
+    .step-item.active i {
+      color: #31708f !important;
+    }
+    .step-item.completed i {
+      color: #3c763d !important;
+    }
+    .step-item.error i {
+      color: #a94442 !important;
+    }
+    .progress {
+      box-shadow: inset 0 1px 2px rgba(0,0,0,.1);
+      border-radius: 4px;
+      background-color: #f5f5f5;
+    }
+    .progress-bar {
+      transition: width 0.6s ease;
+    }
+  </style>
+
+  <script>
+    // Atualizar visual das etapas
+    $(document).on('updateStep', function(e, step) {
+      for (var i = 1; i <= 8; i++) {
+        var $step = $('#step-' + i);
+        $step.removeClass('active completed error');
+
+        if (i < step) {
+          $step.addClass('completed');
+          $step.find('i').removeClass().addClass('fa fa-check-circle');
+        } else if (i === step) {
+          $step.addClass('active');
+          $step.find('i').removeClass().addClass('fa fa-spinner fa-spin');
+        }
+      }
+    });
+
+    // Sobrescrever função updateProgress para também atualizar as etapas
+    var originalUpdateProgress = updateProgress;
+    updateProgress = function(percent, message, step) {
+      originalUpdateProgress(percent, message, step);
+      if (step) {
+        $(document).trigger('updateStep', [step]);
+      }
+    };
+
+    // Mostrar erro na etapa específica
+    $(document).on('showStepError', function(e, step) {
+      $('#step-' + step).addClass('error');
+      $('#step-' + step + ' i').removeClass().addClass('fa fa-times-circle');
+    });
+  </script>
+
   <div class="panel-footer">
     <button type="submit" class="btn btn-info form-next">
       <span class="loader hide"> Por favor, espere...</span>
-      <span class="button-text"><i class='fa fa-chevron-right'></i> Instalar</span>
+      <span class="button-text"><i class='fa fa-chevron-right'></i> Iniciar Instalação</span>
     </button>
   </div>
 
