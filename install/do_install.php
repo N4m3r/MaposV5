@@ -235,7 +235,9 @@ if (! empty($_POST)) {
         'vDRE' => '1', 'vDRERelatorio' => '1', 'cDREConta' => '1', 'dDREConta' => '1',
         'cDRELancamento' => '1', 'dDRELancamento' => '1', 'vDRELancamento' => '1',
         'cDREIntegracao' => '1', 'vDREExportar' => '1', 'vDREAnalise' => '1',
-        'vWebhooks' => '1', 'vRelatorioAtendimentos' => '1',
+        'vWebhooks' => '1',
+        // Relatório de Atendimentos
+        'vRelatorioAtendimentos' => '1',
         'vUsuariosCliente' => '1', 'cUsuariosCliente' => '1',
         'eUsuariosCliente' => '1', 'dUsuariosCliente' => '1',
         'cPermUsuariosCliente' => '1',

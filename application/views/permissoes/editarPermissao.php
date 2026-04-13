@@ -946,15 +946,55 @@
                                 <td>
                                     <label>
                                             <input <?php echo (isset($permissoes['vImpostos']) && $permissoes['vImpostos'] == '1') ? 'checked' : ''; ?> name="vImpostos" class="marcar" type="checkbox" value="1" />
-                                            <span class="lbl"> Impostos Simples</span>
+                                            <span class="lbl"> Visualizar Impostos</span>
                                         </label>
                                     </td>
                                 <td>
                                     <label>
-                                            <input <?php echo (isset($permissoes['vDRE']) && $permissoes['vDRE'] == '1') ? 'checked' : ''; ?> name="vDRE" class="marcar" type="checkbox" value="1" />
-                                            <span class="lbl"> DRE Contábil</span>
+                                            <input <?php echo (isset($permissoes['cImpostos']) && $permissoes['cImpostos'] == '1') ? 'checked' : ''; ?> name="cImpostos" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> Adicionar Impostos</span>
                                         </label>
                                     </td>
+                                <td>
+                                    <label>
+                                            <input <?php echo (isset($permissoes['eImpostos']) && $permissoes['eImpostos'] == '1') ? 'checked' : ''; ?> name="eImpostos" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> Editar Impostos</span>
+                                        </label>
+                                    </td>
+                                <td>
+                                    <label>
+                                            <input <?php echo (isset($permissoes['dImpostos']) && $permissoes['dImpostos'] == '1') ? 'checked' : ''; ?> name="dImpostos" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> Excluir Impostos</span>
+                                        </label>
+                                    </td>
+                                </tr>
+                                <tr>
+                                <td>
+                                    <label>
+                                            <input <?php echo (isset($permissoes['vDRE']) && $permissoes['vDRE'] == '1') ? 'checked' : ''; ?> name="vDRE" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> Visualizar DRE</span>
+                                        </label>
+                                    </td>
+                                <td>
+                                    <label>
+                                            <input <?php echo (isset($permissoes['cDRE']) && $permissoes['cDRE'] == '1') ? 'checked' : ''; ?> name="cDRE" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> Adicionar DRE</span>
+                                        </label>
+                                    </td>
+                                <td>
+                                    <label>
+                                            <input <?php echo (isset($permissoes['eDRE']) && $permissoes['eDRE'] == '1') ? 'checked' : ''; ?> name="eDRE" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> Editar DRE</span>
+                                        </label>
+                                    </td>
+                                <td>
+                                    <label>
+                                            <input <?php echo (isset($permissoes['dDRE']) && $permissoes['dDRE'] == '1') ? 'checked' : ''; ?> name="dDRE" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> Excluir DRE</span>
+                                        </label>
+                                    </td>
+                                </tr>
+                                <tr>
                                 <td>
                                     <label>
                                             <input <?php echo (isset($permissoes['vRelatorioAtendimentos']) && $permissoes['vRelatorioAtendimentos'] == '1') ? 'checked' : ''; ?> name="vRelatorioAtendimentos" class="marcar" type="checkbox" value="1" />

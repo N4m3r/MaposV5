@@ -121,7 +121,7 @@
                         <div class="controls">
                             <div class="span8" style="background: #f9f9f9; padding: 15px; border: 1px solid #ddd;">
                                 <h5><i class="bx bx-shield"></i> Configurações de Acesso</h5>
-                                <?php foreach ($permissoes_padrao as $chave => $valor_padrao): ?
+                                <?php foreach ($permissoes_padrao as $chave => $valor_padrao): ?>
                                     <?php
                                     $label = '';
                                     switch ($chave) {

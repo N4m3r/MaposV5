@@ -702,15 +702,55 @@
                                             <td>
                                                 <label>
                                                     <input name="vImpostos" class="marcar" type="checkbox" checked="checked" value="1" />
-                                                    <span class="lbl"> Impostos Simples</span>
+                                                    <span class="lbl"> Visualizar Impostos</span>
                                                 </label>
                                             </td>
                                             <td>
                                                 <label>
-                                                    <input name="vDRE" class="marcar" type="checkbox" checked="checked" value="1" />
-                                                    <span class="lbl"> DRE Contábil</span>
+                                                    <input name="cImpostos" class="marcar" type="checkbox" checked="checked" value="1" />
+                                                    <span class="lbl"> Adicionar Impostos</span>
                                                 </label>
                                             </td>
+                                            <td>
+                                                <label>
+                                                    <input name="eImpostos" class="marcar" type="checkbox" checked="checked" value="1" />
+                                                    <span class="lbl"> Editar Impostos</span>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <label>
+                                                    <input name="dImpostos" class="marcar" type="checkbox" checked="checked" value="1" />
+                                                    <span class="lbl"> Excluir Impostos</span>
+                                                </label>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <label>
+                                                    <input name="vDRE" class="marcar" type="checkbox" checked="checked" value="1" />
+                                                    <span class="lbl"> Visualizar DRE</span>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <label>
+                                                    <input name="cDRE" class="marcar" type="checkbox" checked="checked" value="1" />
+                                                    <span class="lbl"> Adicionar DRE</span>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <label>
+                                                    <input name="eDRE" class="marcar" type="checkbox" checked="checked" value="1" />
+                                                    <span class="lbl"> Editar DRE</span>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <label>
+                                                    <input name="dDRE" class="marcar" type="checkbox" checked="checked" value="1" />
+                                                    <span class="lbl"> Excluir DRE</span>
+                                                </label>
+                                            </td>
+                                        </tr>
+                                        <tr>
                                             <td>
                                                 <label>
                                                     <input name="vRelatorioAtendimentos" class="marcar" type="checkbox" checked="checked" value="1" />

@@ -23,7 +23,8 @@ class Usuarios_cliente_model extends CI_Model
     public function getById($id)
     {
         $this->db->where('id', $id);
-        return $this->db->get('usuarios_cliente')->row();
+        $query = $this->db->get('usuarios_cliente');
+        return $query ? $query->row() : null;
     }
 
     /**
@@ -32,7 +33,8 @@ class Usuarios_cliente_model extends CI_Model
     public function getByEmail($email)
     {
         $this->db->where('email', $email);
-        return $this->db->get('usuarios_cliente')->row();
+        $query = $this->db->get('usuarios_cliente');
+        return $query ? $query->row() : null;
     }
 
     /**
@@ -56,7 +58,8 @@ class Usuarios_cliente_model extends CI_Model
             $this->db->limit($limit, $offset);
         }
 
-        return $this->db->get()->result();
+        $query = $this->db->get();
+        return $query ? $query->result() : [];
     }
 
     /**
@@ -179,7 +182,8 @@ class Usuarios_cliente_model extends CI_Model
     {
         $this->db->where('usuario_cliente_id', $usuario_id);
         $this->db->order_by('created_at', 'DESC');
-        return $this->db->get('usuarios_cliente_cnpjs')->result();
+        $query = $this->db->get('usuarios_cliente_cnpjs');
+        return $query ? $query->result() : [];
     }
 
     /**
@@ -230,7 +234,8 @@ class Usuarios_cliente_model extends CI_Model
     {
         $this->db->where('usuario_cliente_id', $usuario_id);
         $this->db->where('chave', $chave);
-        $result = $this->db->get('usuarios_cliente_permissoes')->row();
+        $query = $this->db->get('usuarios_cliente_permissoes');
+        $result = $query ? $query->row() : null;
 
         if ($result) {
             $valor = $result->valor;
@@ -248,7 +253,8 @@ class Usuarios_cliente_model extends CI_Model
     public function getAllPermissoes($usuario_id)
     {
         $this->db->where('usuario_cliente_id', $usuario_id);
-        $results = $this->db->get('usuarios_cliente_permissoes')->result();
+        $query = $this->db->get('usuarios_cliente_permissoes');
+        $results = $query ? $query->result() : [];
 
         $permissoes = [];
         foreach ($results as $r) {
@@ -336,7 +342,8 @@ class Usuarios_cliente_model extends CI_Model
         // Busca clientes com esses CNPJs
         $this->db->select('idClientes, documento');
         $this->db->where_in('documento', $cnpjsList);
-        $clientes = $this->db->get('clientes')->result();
+        $query = $this->db->get('clientes');
+        $clientes = $query ? $query->result() : [];
 
         if (empty($clientes)) {
             return [];
@@ -364,7 +371,8 @@ class Usuarios_cliente_model extends CI_Model
         }
 
         $this->db->order_by('os.idOs', 'DESC');
-        return $this->db->get()->result();
+        $query = $this->db->get();
+        return $query ? $query->result() : [];
     }
 
     /**
@@ -405,7 +413,8 @@ class Usuarios_cliente_model extends CI_Model
     {
         $this->db->where('email', $email);
         $this->db->where('ativo', 1);
-        $usuario = $this->db->get('usuarios_cliente')->row();
+        $query = $this->db->get('usuarios_cliente');
+        $usuario = $query ? $query->row() : null;
 
         if ($usuario && password_verify($senha, $usuario->senha)) {
             // Atualiza último acesso
@@ -448,7 +457,8 @@ class Usuarios_cliente_model extends CI_Model
         $this->db->where('token_reset', $token);
         $this->db->where('token_expira >', date('Y-m-d H:i:s'));
         $this->db->where('ativo', 1);
-        return $this->db->get('usuarios_cliente')->row();
+        $query = $this->db->get('usuarios_cliente');
+        return $query ? $query->row() : null;
     }
 
     /**

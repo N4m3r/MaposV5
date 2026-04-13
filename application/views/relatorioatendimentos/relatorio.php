@@ -12,7 +12,7 @@
     <div class="span12">
         <div class="widget-box">
             <div class="widget-title">
-                <span class="icon"><i class="bx bx-time"></i></span>
+                <span class="icon"><i class="fas fa-time"></i></span>
                 <h5>Relatório de Atendimentos</h5>
             </div>
 
@@ -46,7 +46,7 @@
 
                             <div class="span2" style="padding-top: 25px;">
                                 <button type="button" id="btn-filtrar" class="btn btn-primary span12">
-                                    <i class="bx bx-filter"></i> Filtrar
+                                    <i class="fas fa-filter"></i> Filtrar
                                 </button>
                             </div>
                         </div>
@@ -58,7 +58,7 @@
                     <div class="span3">
                         <div class="card-estatistica" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
                             <div class="icone" style="font-size: 36px; opacity: 0.8; margin-bottom: 10px;">
-                                <i class="bx bx-calendar-check"></i>
+                                <i class="fas fa-calendar-check"></i>
                             </div>
                             <div class="valor" id="card-total" style="font-size: 32px; font-weight: bold; margin-bottom: 5px;">0</div>
                             <div class="label" style="font-size: 14px; opacity: 0.9;">Total de Atendimentos</div>
@@ -68,7 +68,7 @@
                     <div class="span3">
                         <div class="card-estatistica" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
                             <div class="icone" style="font-size: 36px; opacity: 0.8; margin-bottom: 10px;">
-                                <i class="bx bx-time"></i>
+                                <i class="fas fa-time"></i>
                             </div>
                             <div class="valor" id="card-tempo-medio" style="font-size: 32px; font-weight: bold; margin-bottom: 5px;">0h</div>
                             <div class="label" style="font-size: 14px; opacity: 0.9;">Tempo Médio</div>
@@ -78,7 +78,7 @@
                     <div class="span3">
                         <div class="card-estatistica" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
                             <div class="icone" style="font-size: 36px; opacity: 0.8; margin-bottom: 10px;">
-                                <i class="bx bx-check-circle"></i>
+                                <i class="fas fa-check-circle"></i>
                             </div>
                             <div class="valor" id="card-finalizados" style="font-size: 32px; font-weight: bold; margin-bottom: 5px;">0</div>
                             <div class="label" style="font-size: 14px; opacity: 0.9;">Finalizados</div>
@@ -88,7 +88,7 @@
                     <div class="span3">
                         <div class="card-estatistica" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
                             <div class="icone" style="font-size: 36px; opacity: 0.8; margin-bottom: 10px;">
-                                <i class="bx bx-loader"></i>
+                                <i class="fas fa-loader"></i>
                             </div>
                             <div class="valor" id="card-andamento" style="font-size: 32px; font-weight: bold; margin-bottom: 5px;">0</div>
                             <div class="label" style="font-size: 14px; opacity: 0.9;">Em Andamento</div>
@@ -100,7 +100,7 @@
                 <div class="row-fluid" style="margin-bottom: 20px;">
                     <div class="span12" style="text-align: right;">
                         <a href="#" id="btn-exportar" class="btn btn-success">
-                            <i class="bx bx-download"></i> Exportar Excel
+                            <i class="fas fa-download"></i> Exportar Excel
                         </a>
                     </div>
                 </div>
@@ -111,7 +111,7 @@
                     <div class="span6">
                         <div class="widget-box">
                             <div class="widget-title">
-                                <span class="icon"><i class="bx bx-line-chart"></i></span>
+                                <span class="icon"><i class="fas fa-line-chart"></i></span>
                                 <h5>Atendimentos por Dia</h5>
                             </div>
                             <div class="widget-content">
@@ -124,7 +124,7 @@
                     <div class="span6">
                         <div class="widget-box">
                             <div class="widget-title">
-                                <span class="icon"><i class="bx bx-bar-chart"></i></span>
+                                <span class="icon"><i class="fas fa-bar-chart"></i></span>
                                 <h5>Atendimentos por Técnico</h5>
                             </div>
                             <div class="widget-content">
@@ -139,7 +139,7 @@
                     <div class="span6">
                         <div class="widget-box">
                             <div class="widget-title">
-                                <span class="icon"><i class="bx bx-pie-chart-alt"></i></span>
+                                <span class="icon"><i class="fas fa-pie-chart-alt"></i></span>
                                 <h5>Distribuição por Status</h5>
                             </div>
                             <div class="widget-content">
@@ -152,7 +152,7 @@
                     <div class="span6">
                         <div class="widget-box">
                             <div class="widget-title">
-                                <span class="icon"><i class="bx bx-time"></i></span>
+                                <span class="icon"><i class="fas fa-time"></i></span>
                                 <h5>Tempo Médio por Técnico (horas)</h5>
                             </div>
                             <div class="widget-content">
@@ -165,7 +165,7 @@
                 <!-- Tabela de Atendimentos -->
                 <div class="widget-box">
                     <div class="widget-title">
-                        <span class="icon"><i class="bx bx-list-ul"></i></span>
+                        <span class="icon"><i class="fas fa-list-ul"></i></span>
                         <h5>Lista de Atendimentos</h5>
                     </div>
                     <div class="widget-content">
@@ -307,7 +307,7 @@ $(document).ready(function() {
         const usuarioId = $('#filtro-tecnico').val();
 
         // Mostra loading nos cards
-        $('#card-total, #card-tempo-medio, #card-finalizados, #card-andamento').html('<i class="bx bx-loader bx-spin"></i>');
+        $('#card-total, #card-tempo-medio, #card-finalizados, #card-andamento').html('<i class="fas fa-loader bx-spin"></i>');
 
         // Carrega estatísticas
         $.ajax({

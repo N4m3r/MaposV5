@@ -64,6 +64,8 @@ try {
         'cDREIntegracao' => '1',
         'vDREExportar' => '1',
         'vDREAnalise' => '1',
+        // Relatório de Atendimentos
+        'vRelatorioAtendimentos' => '1',
     ];
 
     // Mesclar permissões
