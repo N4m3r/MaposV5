@@ -55,11 +55,18 @@ try {
         'vImpostosExportar' => '1',
         // DRE
         'vDRE' => '1',
+        'vDREDemonstracao' => '1',
+        'vDREContas' => '1',
+        'vDRELancamentos' => '1',
         'cDRE' => '1',
         'eDRE' => '1',
         'dDRE' => '1',
         // Relatório de Atendimentos
         'vRelatorioAtendimentos' => '1',
+        // Email Templates
+        'vEmails' => '1',
+        'vEmailTemplates' => '1',
+        'eEmailTemplates' => '1',
     ];
 
     // Mesclar permissões

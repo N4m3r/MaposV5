@@ -154,7 +154,11 @@ class Permissoes extends MY_Controller
                 'cImpostosConfig' => $this->input->post('cImpostosConfig'),
                 'vImpostosRelatorio' => $this->input->post('vImpostosRelatorio'),
                 'vImpostosExportar' => $this->input->post('vImpostosExportar'),
+                // Permissões DRE Contábil
                 'vDRE' => $this->input->post('vDRE'),
+                'vDREDemonstracao' => $this->input->post('vDREDemonstracao'),
+                'vDREContas' => $this->input->post('vDREContas'),
+                'vDRELancamentos' => $this->input->post('vDRELancamentos'),
                 'cDRE' => $this->input->post('cDRE'),
                 'eDRE' => $this->input->post('eDRE'),
                 'dDRE' => $this->input->post('dDRE'),
@@ -306,7 +310,11 @@ class Permissoes extends MY_Controller
                 'cImpostosConfig' => $this->input->post('cImpostosConfig'),
                 'vImpostosRelatorio' => $this->input->post('vImpostosRelatorio'),
                 'vImpostosExportar' => $this->input->post('vImpostosExportar'),
+                // Permissões DRE Contábil
                 'vDRE' => $this->input->post('vDRE'),
+                'vDREDemonstracao' => $this->input->post('vDREDemonstracao'),
+                'vDREContas' => $this->input->post('vDREContas'),
+                'vDRELancamentos' => $this->input->post('vDRELancamentos'),
                 'cDRE' => $this->input->post('cDRE'),
                 'eDRE' => $this->input->post('eDRE'),
                 'dDRE' => $this->input->post('dDRE'),

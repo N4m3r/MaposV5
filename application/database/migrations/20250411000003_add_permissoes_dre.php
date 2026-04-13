@@ -20,6 +20,9 @@ class Migration_add_permissoes_dre extends CI_Migration {
             // Adicionar permissões DRE se não existirem
             $novas_permissoes = [
                 'vDRE' => 1,
+                'vDREDemonstracao' => 1,
+                'vDREContas' => 1,
+                'vDRELancamentos' => 1,
                 'cDRE' => 1,
                 'eDRE' => 1,
                 'dDRE' => 1,
@@ -54,7 +57,7 @@ class Migration_add_permissoes_dre extends CI_Migration {
 
             if (is_array($permissoes)) {
                 // Remover permissões DRE
-                $permissoes_dre = ['vDRE', 'cDRE', 'eDRE', 'dDRE'];
+                $permissoes_dre = ['vDRE', 'vDREDemonstracao', 'vDREContas', 'vDRELancamentos', 'cDRE', 'eDRE', 'dDRE'];
                 foreach ($permissoes_dre as $key) {
                     unset($permissoes[$key]);
                 }

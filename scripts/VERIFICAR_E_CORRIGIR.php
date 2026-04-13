@@ -96,6 +96,9 @@ $novasPermissoes = [
     'vImpostosExportar' => 'Exportar Impostos',
     // DRE Contábil
     'vDRE' => 'Visualizar DRE',
+    'vDREDemonstracao' => 'Demonstração DRE',
+    'vDREContas' => 'Plano de Contas DRE',
+    'vDRELancamentos' => 'Lançamentos DRE',
     'cDRE' => 'Adicionar DRE',
     'eDRE' => 'Editar DRE',
     'dDRE' => 'Excluir DRE',

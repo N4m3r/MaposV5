@@ -987,10 +987,35 @@
                                             <span class="lbl"> Exportar Impostos</span>
                                         </label>
                                     </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4" style="background-color: #f5f5f5; font-weight: bold; text-align: center;">
+                                        <i class='bx bx-bar-chart-alt-2'></i> DRE Contábil
+                                    </td>
+                                </tr>
+                                <tr>
                                 <td>
                                     <label>
                                             <input <?php echo (isset($permissoes['vDRE']) && $permissoes['vDRE'] == '1') ? 'checked' : ''; ?> name="vDRE" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Visualizar DRE</span>
+                                        </label>
+                                    </td>
+                                <td>
+                                    <label>
+                                            <input <?php echo (isset($permissoes['vDREDemonstracao']) && $permissoes['vDREDemonstracao'] == '1') ? 'checked' : ''; ?> name="vDREDemonstracao" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> Demonstração DRE</span>
+                                        </label>
+                                    </td>
+                                <td>
+                                    <label>
+                                            <input <?php echo (isset($permissoes['vDREContas']) && $permissoes['vDREContas'] == '1') ? 'checked' : ''; ?> name="vDREContas" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> Plano de Contas</span>
+                                        </label>
+                                    </td>
+                                <td>
+                                    <label>
+                                            <input <?php echo (isset($permissoes['vDRELancamentos']) && $permissoes['vDRELancamentos'] == '1') ? 'checked' : ''; ?> name="vDRELancamentos" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> Lançamentos DRE</span>
                                         </label>
                                     </td>
                                 </tr>

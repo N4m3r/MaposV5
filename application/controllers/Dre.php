@@ -24,7 +24,8 @@ class Dre extends MY_Controller
      */
     public function index()
     {
-        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vDRE')) {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vDRE') &&
+            !$this->permission->checkPermission($this->session->userdata('permissao'), 'vDREDemonstracao')) {
             $this->session->set_flashdata('error', 'Você não tem permissão para visualizar o DRE.');
             redirect(base_url());
         }
@@ -59,7 +60,7 @@ class Dre extends MY_Controller
      */
     public function relatorio()
     {
-        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vDRERelatorio')) {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vDRE')) {
             $this->session->set_flashdata('error', 'Sem permissão.');
             redirect('dre');
         }
@@ -88,7 +89,8 @@ class Dre extends MY_Controller
      */
     public function contas()
     {
-        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cDREConta')) {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vDRE') &&
+            !$this->permission->checkPermission($this->session->userdata('permissao'), 'vDREContas')) {
             $this->session->set_flashdata('error', 'Sem permissão.');
             redirect('dre');
         }
@@ -103,7 +105,7 @@ class Dre extends MY_Controller
      */
     public function conta_form($id = null)
     {
-        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cDREConta')) {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cDRE')) {
             $this->session->set_flashdata('error', 'Sem permissão.');
             redirect('dre');
         }
@@ -121,7 +123,7 @@ class Dre extends MY_Controller
      */
     public function conta_salvar()
     {
-        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cDREConta')) {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cDRE')) {
             $this->session->set_flashdata('error', 'Sem permissão.');
             redirect('dre');
         }
@@ -155,7 +157,7 @@ class Dre extends MY_Controller
      */
     public function conta_excluir($id)
     {
-        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'dDREConta')) {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'dDRE')) {
             $this->session->set_flashdata('error', 'Sem permissão.');
             redirect('dre');
         }
@@ -170,7 +172,8 @@ class Dre extends MY_Controller
      */
     public function lancamentos()
     {
-        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vDRELancamento')) {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vDRE') &&
+            !$this->permission->checkPermission($this->session->userdata('permissao'), 'vDRELancamentos')) {
             $this->session->set_flashdata('error', 'Sem permissão.');
             redirect('dre');
         }
@@ -191,7 +194,7 @@ class Dre extends MY_Controller
      */
     public function lancamento_form($id = null)
     {
-        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cDRELancamento')) {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cDRE')) {
             $this->session->set_flashdata('error', 'Sem permissão.');
             redirect('dre');
         }
@@ -218,7 +221,7 @@ class Dre extends MY_Controller
      */
     public function lancamento_salvar()
     {
-        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cDRELancamento')) {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cDRE')) {
             $this->session->set_flashdata('error', 'Sem permissão.');
             redirect('dre');
         }
@@ -249,7 +252,7 @@ class Dre extends MY_Controller
      */
     public function lancamento_excluir($id)
     {
-        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'dDRELancamento')) {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'dDRE')) {
             $this->session->set_flashdata('error', 'Sem permissão.');
             redirect('dre');
         }
@@ -264,7 +267,7 @@ class Dre extends MY_Controller
      */
     public function integrar()
     {
-        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cDREIntegracao')) {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cDRE')) {
             $this->session->set_flashdata('error', 'Sem permissão.');
             redirect('dre');
         }
@@ -283,7 +286,7 @@ class Dre extends MY_Controller
      */
     public function exportar()
     {
-        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vDREExportar')) {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vDRE')) {
             $this->session->set_flashdata('error', 'Sem permissão.');
             redirect('dre');
         }
@@ -340,7 +343,7 @@ class Dre extends MY_Controller
      */
     public function analise()
     {
-        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vDREAnalise')) {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vDRE')) {
             $this->session->set_flashdata('error', 'Sem permissão.');
             redirect('dre');
         }

@@ -743,10 +743,35 @@
                                                     <span class="lbl"> Exportar Impostos</span>
                                                 </label>
                                             </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="4" style="background-color: #f5f5f5; font-weight: bold; text-align: center;">
+                                                <i class='bx bx-bar-chart-alt-2'></i> DRE Contábil
+                                            </td>
+                                        </tr>
+                                        <tr>
                                             <td>
                                                 <label>
                                                     <input name="vDRE" class="marcar" type="checkbox" checked="checked" value="1" />
                                                     <span class="lbl"> Visualizar DRE</span>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <label>
+                                                    <input name="vDREDemonstracao" class="marcar" type="checkbox" checked="checked" value="1" />
+                                                    <span class="lbl"> Demonstração DRE</span>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <label>
+                                                    <input name="vDREContas" class="marcar" type="checkbox" checked="checked" value="1" />
+                                                    <span class="lbl"> Plano de Contas</span>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <label>
+                                                    <input name="vDRELancamentos" class="marcar" type="checkbox" checked="checked" value="1" />
+                                                    <span class="lbl"> Lançamentos DRE</span>
                                                 </label>
                                             </td>
                                         </tr>

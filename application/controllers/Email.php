@@ -328,4 +328,132 @@ class Email extends MY_Controller
     {
         $this->cli_retry();
     }
+
+    /**
+     * Editar template de email
+     */
+    public function editar_template($template = '')
+    {
+        if (empty($template)) {
+            $template = $this->uri->segment(3) ?? '';
+        }
+
+        if (empty($template)) {
+            show_error('Template não especificado');
+            return;
+        }
+
+        // Garante que o template exista
+        $this->templates->createTemplateIfNotExists($template);
+
+        $this->data['template_name'] = $template;
+        $this->data['template_content'] = $this->templates->getTemplateContent($template) ?? '';
+        $this->data['available_tags'] = $this->templates->getAvailableTags();
+        $this->data['menuFerramentasV5'] = true;
+        $this->data['menuEmailQueue'] = true;
+        $this->data['view'] = 'emails/editar_template';
+
+        return $this->layout();
+    }
+
+    /**
+     * Salvar template editado
+     */
+    public function salvar_template()
+    {
+        $template = $this->input->post('template');
+        $content = $this->input->post('content');
+
+        if (empty($template) || $content === null) {
+            $this->session->set_flashdata('error', 'Dados incompletos');
+            redirect('emails');
+            return;
+        }
+
+        try {
+            $this->templates->saveTemplate($template, $content);
+            $this->session->set_flashdata('success', 'Template "' . ucfirst(str_replace('_', ' ', $template)) . '" salvo com sucesso!');
+        } catch (\Exception $e) {
+            $this->session->set_flashdata('error', 'Erro ao salvar template: ' . $e->getMessage());
+        }
+
+        redirect('emails/editar_template/' . $template);
+    }
+
+    /**
+     * Preview de template com dados de exemplo
+     */
+    public function preview($template = '')
+    {
+        if (empty($template)) {
+            $template = $this->uri->segment(3) ?? '';
+        }
+
+        if (empty($template)) {
+            show_404();
+            return;
+        }
+
+        // Dados de exemplo para preview
+        $sampleData = [
+            'titulo' => 'Preview do Template',
+            'cliente_nome' => 'João da Silva',
+            'cliente_email' => 'joao@exemplo.com',
+            'cliente_telefone' => '(11) 98765-4321',
+            'cliente_celular' => '(11) 91234-5678',
+            'cliente_endereco' => 'Rua Exemplo, 123 - São Paulo/SP',
+            'cliente_documento' => '123.456.789-00',
+            'os_id' => '1234',
+            'os_titulo' => 'Manutenção de Computador',
+            'os_descricao' => 'Troca de memória RAM e formatação',
+            'os_status' => 'Em Andamento',
+            'os_data_criacao' => date('d/m/Y'),
+            'os_data_vencimento' => date('d/m/Y', strtotime('+7 days')),
+            'os_valor_total' => '1.250,00',
+            'os_link_visualizar' => base_url('os/visualizar/1234'),
+            'venda_id' => '5678',
+            'venda_data' => date('d/m/Y'),
+            'venda_valor_total' => '2.500,00',
+            'venda_status' => 'Finalizada',
+            'venda_link_visualizar' => base_url('vendas/visualizar/5678'),
+            'usuario_nome' => 'Admin Sistema',
+            'usuario_email' => 'admin@sistema.com',
+            'empresa_nome' => 'Minha Empresa LTDA',
+            'empresa_telefone' => '(11) 3333-4444',
+            'empresa_email' => 'contato@empresa.com',
+            'empresa_endereco' => 'Av. Principal, 1000 - Centro',
+            'data_atual' => date('d/m/Y'),
+            'hora_atual' => date('H:i'),
+            'sistema_url' => base_url(),
+            'ano_atual' => date('Y'),
+            'cobranca_descricao' => 'Fatura Mensal - Abril/2026',
+            'cobranca_valor' => '450,00',
+            'cobranca_data_vencimento' => date('d/m/Y', strtotime('+5 days')),
+            'cobranca_dias_atraso' => '0',
+            'cobranca_link_pagamento' => base_url('pagamento/fatura/123'),
+            'mensagem' => 'Esta é uma mensagem de exemplo para o preview do template.',
+            'conteudo' => 'Conteúdo personalizado de exemplo.',
+            'destinatario' => 'João da Silva',
+            'link' => base_url('cliente/painel'),
+        ];
+
+        $html = $this->templates->preview($template, $sampleData);
+
+        echo $html;
+    }
+
+    /**
+     * AJAX: Listar tags disponíveis
+     */
+    public function api_tags()
+    {
+        $tags = $this->templates->getAvailableTags();
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode([
+                'success' => true,
+                'tags' => $tags
+            ]));
+    }
 }

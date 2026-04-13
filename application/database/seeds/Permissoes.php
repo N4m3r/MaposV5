@@ -27,7 +27,8 @@ class Permissoes extends Seeder
             // Permissões Dashboard
             'vDashboard' => '1', 'vRelatorioCompleto' => '1', 'vExportarDados' => '1',
             // Permissões DRE
-            'vDRE' => '1', 'cDRE' => '1', 'eDRE' => '1', 'dDRE' => '1',
+            'vDRE' => '1', 'vDREDemonstracao' => '1', 'vDREContas' => '1', 'vDRELancamentos' => '1',
+            'cDRE' => '1', 'eDRE' => '1', 'dDRE' => '1',
             // Permissões Certificado
             'vCertificado' => '1', 'cCertificado' => '1', 'eCertificado' => '1', 'dCertificado' => '1',
             // Permissões Impostos

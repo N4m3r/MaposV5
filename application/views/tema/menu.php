@@ -134,8 +134,14 @@
 
                     <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vDRE')) { ?>
                         <li class="menu-divider-sub"><span class="divider-text-sub">DRE Contábil</span></li>
+                    <?php } ?>
+                    <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vDREDemonstracao') || $this->permission->checkPermission($this->session->userdata('permissao'), 'vDRE')) { ?>
                         <li class="<?php if (isset($menuDREDashboard)) { echo 'active'; }; ?>"><a href="<?= site_url('dre') ?>"><i class='bx bx-bar-chart-alt-2 iconX'></i><span class="title">Demonstração DRE</span><span class="title-tooltip">Demonstração</span></a></li>
+                    <?php } ?>
+                    <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vDREContas') || $this->permission->checkPermission($this->session->userdata('permissao'), 'vDRE')) { ?>
                         <li class="<?php if (isset($menuDREContas)) { echo 'active'; }; ?>"><a href="<?= site_url('dre/contas') ?>"><i class='bx bx-list-ul iconX'></i><span class="title">Plano de Contas</span><span class="title-tooltip">Plano Contas</span></a></li>
+                    <?php } ?>
+                    <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vDRELancamentos') || $this->permission->checkPermission($this->session->userdata('permissao'), 'vDRE')) { ?>
                         <li class="<?php if (isset($menuDRELancamentos)) { echo 'active'; }; ?>"><a href="<?= site_url('dre/lancamentos') ?>"><i class='bx bx-book iconX'></i><span class="title">Lançamentos DRE</span><span class="title-tooltip">Lançamentos</span></a></li>
                     <?php } ?>
 
