@@ -78,6 +78,46 @@ if (! empty($_POST)) {
     $mysqli->multi_query($sql);
     do {
     } while (mysqli_more_results($mysqli) && mysqli_next_result($mysqli));
+
+    // ============================================
+    // CRIAR PERMISSÕES PROGRAMATICAMENTE (V5)
+    // Isso evita erros de serialização no SQL
+    // ============================================
+
+    // Array completo de permissões V5
+    $permissoes_array = [
+        'aCliente' => '1', 'eCliente' => '1', 'dCliente' => '1', 'vCliente' => '1',
+        'aProduto' => '1', 'eProduto' => '1', 'dProduto' => '1', 'vProduto' => '1',
+        'aServico' => '1', 'eServico' => '1', 'dServico' => '1', 'vServico' => '1',
+        'aOs' => '1', 'eOs' => '1', 'dOs' => '1', 'vOs' => '1',
+        'aVenda' => '1', 'eVenda' => '1', 'dVenda' => '1', 'vVenda' => '1',
+        'aLancamento' => '1', 'eLancamento' => '1', 'dLancamento' => '1', 'vLancamento' => '1',
+        'aArquivo' => '1', 'dArquivo' => '1', 'vArquivo' => '1',
+        'categoria_d' => '1', 'categoria_v' => '1', 'categoria_a' => '1', 'categoria_e' => '1',
+        'vCategoria' => '1', 'aCobranca' => '1', 'eCobranca' => '1', 'dCobranca' => '1',
+        'vCobranca' => '1', 'aGarantia' => '1', 'eGarantia' => '1', 'dGarantia' => '1',
+        'vGarantia' => '1', 'aConfiguracao' => '1', 'eConfiguracao' => '1', 'dConfiguracao' => '1',
+        'vConfiguracao' => '1', 'aEmitente' => '1', 'eEmitente' => '1', 'dEmitente' => '1',
+        'vEmitente' => '1', 'aPermissao' => '1', 'ePermissao' => '1', 'dPermissao' => '1',
+        'vPermissao' => '1', 'aAuditoria' => '1', 'eAuditoria' => '1', 'dAuditoria' => '1',
+        'vAuditoria' => '1', 'aEmail' => '1', 'eEmail' => '1', 'dEmail' => '1', 'vEmail' => '1',
+        'rContas' => '1', 'rFinanceiro' => '1', 'rProdutos' => '1', 'rServicos' => '1',
+        'rVendas' => '1', 'rOs' => '1', 'rClientes' => '1', 'vCertificado' => '1',
+        'vImpostos' => '1', 'vDRE' => '1', 'vWebhooks' => '1', 'vRelatorioAtendimentos' => '1'
+    ];
+
+    $permissoes_serializado = serialize($permissoes_array);
+    $data_atual = date('Y-m-d');
+
+    // Inserir permissão de Administrador
+    $stmt = $mysqli->prepare("INSERT INTO permissoes (idPermissao, nome, permissoes, situacao, data) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE permissoes = ?");
+    $idPermissao = 1;
+    $nome = 'Administrador';
+    $situacao = 1;
+    $stmt->bind_param("ississ", $idPermissao, $nome, $permissoes_serializado, $situacao, $data_atual, $permissoes_serializado);
+    $stmt->execute();
+    $stmt->close();
+
     $mysqli->close();
     // database created
 
