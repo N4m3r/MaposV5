@@ -597,17 +597,290 @@ DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 -- Table `email_queue`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `email_queue` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `to` varchar(255) NOT NULL,
-  `cc` varchar(255) DEFAULT NULL,
-  `bcc` varchar(255) DEFAULT NULL,
-  `message` text NOT NULL,
-  `status` enum('pending','sending','sent','failed') DEFAULT NULL,
-  `date` datetime DEFAULT NULL,
-  `headers` text,
-  PRIMARY KEY (`id`)
-)ENGINE = InnoDB
-DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+  `id` INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `to_email` VARCHAR(255) NOT NULL,
+  `to_name` VARCHAR(255) NULL,
+  `subject` VARCHAR(500) NOT NULL,
+  `body_html` LONGTEXT NULL,
+  `body_text` LONGTEXT NULL,
+  `template` VARCHAR(100) NULL,
+  `template_data` TEXT NULL,
+  `attachments` TEXT NULL,
+  `priority` TINYINT(1) DEFAULT 3,
+  `status` ENUM('pending', 'processing', 'sent', 'failed', 'cancelled', 'scheduled') DEFAULT 'pending',
+  `attempts` TINYINT(1) DEFAULT 0,
+  `max_retries` TINYINT(1) DEFAULT 3,
+  `tracking_id` VARCHAR(32) NULL,
+  `message_id` VARCHAR(255) NULL,
+  `scheduled_at` DATETIME NULL,
+  `sent_at` DATETIME NULL,
+  `opened_at` DATETIME NULL,
+  `clicked_at` DATETIME NULL,
+  `created_at` DATETIME NOT NULL,
+  `updated_at` DATETIME NOT NULL,
+  `last_attempt` DATETIME NULL,
+  `failed_at` DATETIME NULL,
+  `error_message` TEXT NULL,
+  `ip_address` VARCHAR(45) NULL,
+  `user_agent` TEXT NULL,
+  INDEX `idx_status` (`status`),
+  INDEX `idx_priority` (`priority`),
+  INDEX `idx_scheduled_at` (`scheduled_at`),
+  INDEX `idx_tracking_id` (`tracking_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- -----------------------------------------------------
+-- Table `email_tracking`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `email_tracking` (
+  `id` INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `email_queue_id` INT(11) UNSIGNED NOT NULL,
+  `tracking_id` VARCHAR(64) NOT NULL UNIQUE,
+  `opened` TINYINT(1) DEFAULT 0,
+  `opened_at` DATETIME NULL,
+  `clicked` TINYINT(1) DEFAULT 0,
+  `clicked_at` DATETIME NULL,
+  `clicked_url` TEXT NULL,
+  `created_at` DATETIME NOT NULL,
+  INDEX `idx_tracking_id` (`tracking_id`),
+  INDEX `idx_email_queue_id` (`email_queue_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- -----------------------------------------------------
+-- Table `email_clicks`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `email_clicks` (
+  `id` INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `tracking_id` VARCHAR(32) NOT NULL,
+  `url` TEXT NOT NULL,
+  `clicked_at` DATETIME NOT NULL,
+  `ip_address` VARCHAR(45) NULL,
+  INDEX `idx_tracking_id` (`tracking_id`),
+  INDEX `idx_clicked_at` (`clicked_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- -----------------------------------------------------
+-- Table `scheduled_events`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `scheduled_events` (
+  `id` INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `event_type` VARCHAR(100) NOT NULL,
+  `event_data` JSON NULL,
+  `execute_at` DATETIME NOT NULL,
+  `status` ENUM('pending', 'completed', 'failed') DEFAULT 'pending',
+  `executed_at` DATETIME NULL,
+  `created_at` DATETIME NOT NULL,
+  INDEX `idx_status` (`status`),
+  INDEX `idx_execute_at` (`execute_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- -----------------------------------------------------
+-- Table `webhooks`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `webhooks` (
+  `id` INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `name` VARCHAR(255) NOT NULL,
+  `url` VARCHAR(500) NOT NULL,
+  `secret` VARCHAR(255) NULL,
+  `events` JSON NULL,
+  `is_active` TINYINT(1) DEFAULT 1,
+  `created_at` DATETIME NOT NULL,
+  `updated_at` DATETIME NOT NULL,
+  INDEX `idx_is_active` (`is_active`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- -----------------------------------------------------
+-- Table `webhook_logs`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `webhook_logs` (
+  `id` INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `webhook_id` INT(11) UNSIGNED NOT NULL,
+  `event_type` VARCHAR(100) NOT NULL,
+  `payload` TEXT NULL,
+  `response` TEXT NULL,
+  `status_code` INT NULL,
+  `success` TINYINT(1) DEFAULT 0,
+  `created_at` DATETIME NOT NULL,
+  INDEX `idx_webhook_id` (`webhook_id`),
+  INDEX `idx_created_at` (`created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- -----------------------------------------------------
+-- Table `certificado_config`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `certificado_config` (
+  `id` INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `id_emitente` INT(11) UNSIGNED NOT NULL,
+  `certificado_p12` LONGTEXT NULL,
+  `senha_certificado` VARCHAR(255) NULL,
+  `cnpj_certificado` VARCHAR(14) NULL,
+  `valido_de` DATETIME NULL,
+  `valido_ate` DATETIME NULL,
+  `arquivo_crt` LONGTEXT NULL,
+  `arquivo_key` LONGTEXT NULL,
+  `ambiente` ENUM('homologacao', 'producao') DEFAULT 'homologacao',
+  `created_at` DATETIME NOT NULL,
+  `updated_at` DATETIME NOT NULL,
+  INDEX `idx_id_emitente` (`id_emitente`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- -----------------------------------------------------
+-- Table `nfse_importada`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `nfse_importada` (
+  `id` INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `id_os` INT(11) UNSIGNED NULL,
+  `numero_nfse` VARCHAR(50) NOT NULL,
+  `codigo_verificacao` VARCHAR(50) NULL,
+  `data_emissao` DATETIME NULL,
+  `valor_servico` DECIMAL(10,2) NULL,
+  `valor_liquido` DECIMAL(10,2) NULL,
+  `prestador_cnpj` VARCHAR(14) NULL,
+  `prestador_nome` VARCHAR(255) NULL,
+  `tomador_cnpj` VARCHAR(14) NULL,
+  `tomador_nome` VARCHAR(255) NULL,
+  `status` ENUM('ativa', 'cancelada') DEFAULT 'ativa',
+  `xml_content` LONGTEXT NULL,
+  `pdf_content` LONGTEXT NULL,
+  `created_at` DATETIME NOT NULL,
+  INDEX `idx_id_os` (`id_os`),
+  INDEX `idx_numero_nfse` (`numero_nfse`),
+  INDEX `idx_prestador_cnpj` (`prestador_cnpj`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- -----------------------------------------------------
+-- Table `dre_contas`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `dre_contas` (
+  `id` INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `codigo` VARCHAR(50) NOT NULL,
+  `nome` VARCHAR(255) NOT NULL,
+  `tipo` ENUM('receita', 'custo', 'despesa') NOT NULL,
+  `categoria` VARCHAR(100) NULL,
+  `pai_id` INT(11) UNSIGNED NULL,
+  `ordem` INT DEFAULT 0,
+  `ativo` TINYINT(1) DEFAULT 1,
+  `created_at` DATETIME NOT NULL,
+  `updated_at` DATETIME NOT NULL,
+  INDEX `idx_tipo` (`tipo`),
+  INDEX `idx_ativo` (`ativo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- -----------------------------------------------------
+-- Table `dre_lancamentos`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `dre_lancamentos` (
+  `id` INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `conta_id` INT(11) UNSIGNED NOT NULL,
+  `data_referencia` DATE NOT NULL,
+  `valor` DECIMAL(15,2) NOT NULL,
+  `descricao` TEXT NULL,
+  `id_os` INT(11) UNSIGNED NULL,
+  `id_venda` INT(11) UNSIGNED NULL,
+  `id_lancamento` INT(11) UNSIGNED NULL,
+  `created_at` DATETIME NOT NULL,
+  INDEX `idx_conta_id` (`conta_id`),
+  INDEX `idx_data_referencia` (`data_referencia`),
+  INDEX `idx_id_os` (`id_os`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- -----------------------------------------------------
+-- Table `impostos_config`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `impostos_config` (
+  `id` INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `tipo_regime` ENUM('simples_nacional', 'lucro_presumido', 'lucro_real') DEFAULT 'simples_nacional',
+  `anexo_simples` ENUM('i', 'ii', 'iii', 'iv', 'v') NULL,
+  `aliquota_iss` DECIMAL(5,2) DEFAULT 0,
+  `retem_iss` TINYINT(1) DEFAULT 0,
+  `aliquota_pis` DECIMAL(5,2) DEFAULT 0,
+  `aliquota_cofins` DECIMAL(5,2) DEFAULT 0,
+  `aliquota_csll` DECIMAL(5,2) DEFAULT 0,
+  `aliquota_ir` DECIMAL(5,2) DEFAULT 0,
+  `aliquota_inss` DECIMAL(5,2) DEFAULT 0,
+  `created_at` DATETIME NOT NULL,
+  `updated_at` DATETIME NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- -----------------------------------------------------
+-- Table `impostos_retidos`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `impostos_retidos` (
+  `id` INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `id_os` INT(11) UNSIGNED NULL,
+  `id_venda` INT(11) UNSIGNED NULL,
+  `tipo_imposto` ENUM('iss', 'pis', 'cofins', 'csll', 'ir', 'inss') NOT NULL,
+  `base_calculo` DECIMAL(15,2) NOT NULL,
+  `aliquota` DECIMAL(5,2) NOT NULL,
+  `valor_retido` DECIMAL(15,2) NOT NULL,
+  `created_at` DATETIME NOT NULL,
+  INDEX `idx_id_os` (`id_os`),
+  INDEX `idx_id_venda` (`id_venda`),
+  INDEX `idx_tipo_imposto` (`tipo_imposto`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- -----------------------------------------------------
+-- Table `push_notifications`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `push_notifications` (
+  `id` INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `user_id` INT(11) UNSIGNED NOT NULL,
+  `title` VARCHAR(255) NOT NULL,
+  `message` TEXT NOT NULL,
+  `data` JSON NULL,
+  `is_read` TINYINT(1) DEFAULT 0,
+  `created_at` DATETIME NOT NULL,
+  INDEX `idx_user_id` (`user_id`),
+  INDEX `idx_is_read` (`is_read`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- -----------------------------------------------------
+-- Table `checkin`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `checkin` (
+  `idCheckin` INT NOT NULL AUTO_INCREMENT,
+  `os_id` INT(11) NOT NULL,
+  `tecnico_id` INT(11) NOT NULL,
+  `tipo` ENUM('inicio', 'pausa', 'retorno', 'finalizacao', 'checkin', 'checkout') NOT NULL,
+  `data_hora` DATETIME NOT NULL,
+  `observacao` TEXT NULL,
+  `foto` VARCHAR(255) NULL,
+  `latitude` DECIMAL(10, 8) NULL,
+  `longitude` DECIMAL(11, 8) NULL,
+  `localizacao` VARCHAR(255) NULL,
+  PRIMARY KEY (`idCheckin`),
+  FOREIGN KEY (`os_id`) REFERENCES `os`(`idOs`),
+  FOREIGN KEY (`tecnico_id`) REFERENCES `usuarios`(`idUsuarios`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- -----------------------------------------------------
+-- Table `fotos_atendimento`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `fotos_atendimento` (
+  `id` INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `checkin_id` INT(11) NOT NULL,
+  `os_id` INT(11) NOT NULL,
+  `imagem` LONGBLOB NOT NULL,
+  `tipo` ENUM('antes', 'depois', 'assinatura', 'outro') DEFAULT 'outro',
+  `data` DATETIME NOT NULL,
+  INDEX `idx_checkin_id` (`checkin_id`),
+  INDEX `idx_os_id` (`os_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- -----------------------------------------------------
+-- Table `os_status_history`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `os_status_history` (
+  `id` INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `os_id` INT(11) NOT NULL,
+  `status_antigo` VARCHAR(45) NULL,
+  `status_novo` VARCHAR(45) NOT NULL,
+  `usuario_id` INT(11) NULL,
+  `observacao` TEXT NULL,
+  `created_at` DATETIME NOT NULL,
+  INDEX `idx_os_id` (`os_id`),
+  INDEX `idx_created_at` (`created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- -----------------------------------------------------
 -- Table `anotacaoes_os`
@@ -652,12 +925,25 @@ INSERT IGNORE INTO `configuracoes` (`idConfig`, `config`, `valor`) VALUES
 (15, 'control_2vias', '0');
 
 INSERT IGNORE INTO `permissoes` (`idPermissao`, `nome`, `permissoes`, `situacao`, `data`) VALUES
-(1, 'Administrador', 'a:53:{s:8:"aCliente";s:1:"1";s:8:"eCliente";s:1:"1";s:8:"dCliente";s:1:"1";s:8:"vCliente";s:1:"1";s:8:"aProduto";s:1:"1";s:8:"eProduto";s:1:"1";s:8:"dProduto";s:1:"1";s:8:"vProduto";s:1:"1";s:8:"aServico";s:1:"1";s:8:"eServico";s:1:"1";s:8:"dServico";s:1:"1";s:8:"vServico";s:1:"1";s:3:"aOs";s:1:"1";s:3:"eOs";s:1:"1";s:3:"dOs";s:1:"1";s:3:"vOs";s:1:"1";s:6:"aVenda";s:1:"1";s:6:"eVenda";s:1:"1";s:6:"dVenda";s:1:"1";s:6:"vVenda";s:1:"1";s:9:"aGarantia";s:1:"1";s:9:"eGarantia";s:1:"1";s:9:"dGarantia";s:1:"1";s:9:"vGarantia";s:1:"1";s:8:"aArquivo";s:1:"1";s:8:"eArquivo";s:1:"1";s:8:"dArquivo";s:1:"1";s:8:"vArquivo";s:1:"1";s:10:"aPagamento";N;s:10:"ePagamento";N;s:10:"dPagamento";N;s:10:"vPagamento";N;s:11:"aLancamento";s:1:"1";s:11:"eLancamento";s:1:"1";s:11:"dLancamento";s:1:"1";s:11:"vLancamento";s:1:"1";s:8:"cUsuario";s:1:"1";s:9:"cEmitente";s:1:"1";s:10:"cPermissao";s:1:"1";s:7:"cBackup";s:1:"1";s:10:"cAuditoria";s:1:"1";s:6:"cEmail";s:1:"1";s:8:"cSistema";s:1:"1";s:8:"rCliente";s:1:"1";s:8:"rProduto";s:1:"1";s:8:"rServico";s:1:"1";s:3:"rOs";s:1:"1";s:6:"rVenda";s:1:"1";s:11:"rFinanceiro";s:1:"1";s:9:"aCobranca";s:1:"1";s:9:"eCobranca";s:1:"1";s:9:"dCobranca";s:1:"1";s:9:"vCobranca";s:1:"1";}', 1, 'admin_created_at');
+(1, 'Administrador', 'a:81:{s:8:"aCliente";s:1:"1";s:8:"eCliente";s:1:"1";s:8:"dCliente";s:1:"1";s:8:"vCliente";s:1:"1";s:8:"aProduto";s:1:"1";s:8:"eProduto";s:1:"1";s:8:"dProduto";s:1:"1";s:8:"vProduto";s:1:"1";s:8:"aServico";s:1:"1";s:8:"eServico";s:1:"1";s:8:"dServico";s:1:"1";s:8:"vServico";s:1:"1";s:3:"aOs";s:1:"1";s:3:"eOs";s:1:"1";s:3:"dOs";s:1:"1";s:3:"vOs";s:1:"1";s:6:"aVenda";s:1:"1";s:6:"eVenda";s:1:"1";s:6:"dVenda";s:1:"1";s:6:"vVenda";s:1:"1";s:9:"aLancamento";s:1:"1";s:9:"eLancamento";s:1:"1";s:9:"dLancamento";s:1:"1";s:9:"vLancamento";s:1:"1";s:8:"aArquivo";s:1:"1";s:8:"dArquivo";s:1:"1";s:8:"vArquivo";s:1:"1";s:11:"categoria_d";s:1:"1";s:11:"categoria_v";s:1:"1";s:11:"categoria_a";s:1:"1";s:11:"categoria_e";s:1:"1";s:9:"vCategoria";s:1:"1";s:7:"aCobranca";s:1:"1";s:7:"eCobranca";s:1:"1";s:7:"dCobranca";s:1:"1";s:7:"vCobranca";s:1:"1";s:7:"aGarantia";s:1:"1";s:7:"eGarantia";s:1:"1";s:7:"dGarantia";s:1:"1";s:7:"vGarantia";s:1:"1";s:10:"aConfiguracao";s:1:"1";s:10:"eConfiguracao";s:1:"1";s:10:"dConfiguracao";s:1:"1";s:10:"vConfiguracao";s:1:"1";s:8:"aEmitente";s:1:"1";s:8:"eEmitente";s:1:"1";s:8:"dEmitente";s:1:"1";s:8:"vEmitente";s:1:"1";s:9:"aPermissao";s:1:"1";s:9:"ePermissao";s:1:"1";s:9:"dPermissao";s:1:"1";s:9:"vPermissao";s:1:"1";s:6:"aAuditoria";s:1:"1";s:6:"eAuditoria";s:1:"1";s:6:"dAuditoria";s:1:"1";s:6:"vAuditoria";s:1:"1";s:6:"aEmail";s:1:"1";s:6:"eEmail";s:1:"1";s:6:"dEmail";s:1:"1";s:6:"vEmail";s:1:"1";s:9:"rContas";s:1:"1";s:9:"rFinanceiro";s:1:"1";s:9:"rProdutos";s:1:"1";s:9:"rServicos";s:1:"1";s:6:"rVendas";s:1:"1";s:3:"rOs";s:1:"1";s:8:"rClientes";s:1:"1";s:11:"vCertificado";s:1:"1";s:10:"vImpostos";s:1:"1";s:5:"vDRE";s:1:"1";s:10:"vWebhooks";s:1:"1";s:20:"vRelatorioAtendimentos";s:1:"1";}', 1, 'admin_created_at');
 
 INSERT IGNORE INTO `usuarios` (`idUsuarios`, `nome`, `rg`, `cpf`, `cep`, `rua`, `numero`, `bairro`, `cidade`, `estado`, `email`, `senha`, `telefone`, `celular`, `situacao`, `dataCadastro`, `permissoes_id`,`dataExpiracao`) VALUES
-(1, 'admin_name', 'MG-25.502.560', '600.021.520-87', '70005-115', 'Rua Acima', '12', 'Alvorada', 'Teste', 'MG', 'admin_email', 'admin_password', '000000-0000', '', 1, 'admin_created_at', 1, '3000-01-01');
+(1, 'admin_name', '', '', '', '', '', '', '', '', 'admin_email', 'admin_password', '', '', 1, 'admin_created_at', 1, '3000-01-01');
 
 INSERT IGNORE INTO `migrations`(`version`) VALUES ('20210125173741');
+
+-- Dados iniciais V5
+INSERT IGNORE INTO `dre_contas` (`codigo`, `nome`, `tipo`, `categoria`, `ordem`, `ativo`, `created_at`, `updated_at`) VALUES
+('1', 'RECEITA BRUTA', 'receita', 'Receitas', 1, 1, 'admin_created_at', 'admin_created_at'),
+('1.1', 'Serviços', 'receita', 'Receitas', 2, 1, 'admin_created_at', 'admin_created_at'),
+('1.2', 'Produtos', 'receita', 'Receitas', 3, 1, 'admin_created_at', 'admin_created_at'),
+('2', 'IMPOSTOS', 'despesa', 'Impostos', 10, 1, 'admin_created_at', 'admin_created_at'),
+('2.1', 'ISS', 'despesa', 'Impostos', 11, 1, 'admin_created_at', 'admin_created_at'),
+('3', 'CUSTOS', 'custo', 'Custos', 20, 1, 'admin_created_at', 'admin_created_at'),
+('4', 'DESPESAS OPERACIONAIS', 'despesa', 'Despesas', 30, 1, 'admin_created_at', 'admin_created_at');
+
+INSERT IGNORE INTO `impostos_config` (`tipo_regime`, `anexo_simples`, `aliquota_iss`, `retem_iss`, `created_at`, `updated_at`) VALUES
+('simples_nacional', 'iii', 2.00, 0, 'admin_created_at', 'admin_created_at');
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;

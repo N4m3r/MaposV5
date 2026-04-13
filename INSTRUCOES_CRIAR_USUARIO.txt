@@ -1,0 +1,105 @@
+================================================================================
+CRIAR USUÁRIO ADMINISTRADOR - MAPOS V5
+================================================================================
+
+DADOS DO USUÁRIO:
+-----------------
+Nome:  Thailer Alfaia
+Email: thailer.alfaia@gmail.com
+Senha: @wfm2020
+Nível: Administrador (Todas as permissões)
+
+================================================================================
+MÉTODO 1: Script PHP (MAIS FÁCIL - RECOMENDADO)
+================================================================================
+
+ARQUIVO: adicionar_admin_thailer.php
+
+PASSOS:
+1. Envie o arquivo "adicionar_admin_thailer.php" para a raiz do MAPOS
+   (onde está o index.php)
+
+2. Acesse no navegador:
+   https://jj-ferreiras.com.br/mapos3/adicionar_admin_thailer.php
+
+3. O script vai:
+   ✅ Conectar ao banco automaticamente
+   ✅ Criar o usuário com senha criptografada
+   ✅ Mostrar confirmação
+
+4. DELETE o arquivo após usar!
+   rm adicionar_admin_thailer.php
+
+================================================================================
+MÉTODO 2: Script SQL (PhpMyAdmin ou MySQL)
+================================================================================
+
+ARQUIVO: adicionar_admin_thailer.txt
+
+PASSOS:
+1. Acesse o PhpMyAdmin
+2. Selecione o banco de dados "mapos3"
+3. Clique na aba "SQL"
+4. Cole o conteúdo do arquivo "adicionar_admin_thailer.txt"
+   (apenas a parte do script SQL, sem as instruções)
+
+5. Clique em "Executar"
+
+OU VIA LINHA DE COMANDO:
+mysql -u jj-ferreiras -p mapos3 < adicionar_admin_thailer.txt
+
+================================================================================
+MÉTODO 3: Inserção Direta (SQL Simplificado)
+================================================================================
+
+Execute este SQL no PhpMyAdmin:
+
+-- Inserir permissão de administrador (se não existir)
+INSERT INTO permissoes (idPermissao, nome, permissoes, situacao, data)
+VALUES (1, 'Administrador', 'a:81:{s:8:"aCliente";s:1:"1";s:8:"eCliente";s:1:"1";s:8:"dCliente";s:1:"1";s:8:"vCliente";s:1:"1";s:8:"aProduto";s:1:"1";s:8:"eProduto";s:1:"1";s:8:"dProduto";s:1:"1";s:8:"vProduto";s:1:"1";s:8:"aServico";s:1:"1";s:8:"eServico";s:1:"1";s:8:"dServico";s:1:"1";s:8:"vServico";s:1:"1";s:3:"aOs";s:1:"1";s:3:"eOs";s:1:"1";s:3:"dOs";s:1:"1";s:3:"vOs";s:1:"1";s:6:"aVenda";s:1:"1";s:6:"eVenda";s:1:"1";s:6:"dVenda";s:1:"1";s:6:"vVenda";s:1:"1";s:9:"aLancamento";s:1:"1";s:9:"eLancamento";s:1:"1";s:9:"dLancamento";s:1:"1";s:9:"vLancamento";s:1:"1";s:8:"aArquivo";s:1:"1";s:8:"dArquivo";s:1:"1";s:8:"vArquivo";s:1:"1";s:11:"aCobranca";s:1:"1";s:11:"eCobranca";s:1:"1";s:11:"dCobranca";s:1:"1";s:11:"vCobranca";s:1:"1";s:7:"aGarantia";s:1:"1";s:7:"eGarantia";s:1:"1";s:7:"dGarantia";s:1:"1";s:7:"vGarantia";s:1:"1";s:10:"aConfiguracao";s:1:"1";s:10:"eConfiguracao";s:1:"1";s:10:"dConfiguracao";s:1:"1";s:10:"vConfiguracao";s:1:"1";s:8:"aEmitente";s:1:"1";s:8:"eEmitente";s:1:"1";s:8:"dEmitente";s:1:"1";s:8:"vEmitente";s:1:"1";s:9:"aPermissao";s:1:"1";s:9:"ePermissao";s:1:"1";s:9:"dPermissao";s:1:"1";s:9:"vPermissao";s:1:"1";s:6:"aAuditoria";s:1:"1";s:6:"eAuditoria";s:1:"1";s:6:"dAuditoria";s:1:"1";s:6:"vAuditoria";s:1:"1";s:6:"aEmail";s:1:"1";s:6:"eEmail";s:1:"1";s:6:"dEmail";s:1:"1";s:6:"vEmail";s:1:"1";s:9:"rContas";s:1:"1";s:9:"rFinanceiro";s:1:"1";s:9:"rProdutos";s:1:"1";s:9:"rServicos";s:1:"1";s:6:"rVendas";s:1:"1";s:3:"rOs";s:1:"1";s:8:"rClientes";s:1:"1";s:11:"vCertificado";s:1:"1";s:10:"vImpostos";s:1:"1";s:5:"vDRE";s:1:"1";s:10:"vWebhooks";s:1:"1";s:20:"vRelatorioAtendimentos";s:1:"1";}', 1, NOW())
+ON DUPLICATE KEY UPDATE idPermissao=idPermissao;
+
+-- Inserir usuário (senha em MD5 para compatibilidade)
+INSERT INTO usuarios (nome, email, senha, telefone, situacao, dataCadastro, permissoes_id)
+VALUES ('Thailer Alfaia', 'thailer.alfaia@gmail.com', MD5('@wfm2020'), '', 1, NOW(), 1)
+ON DUPLICATE KEY UPDATE senha=MD5('@wfm2020'), situacao=1, permissoes_id=1;
+
+================================================================================
+VERIFICAÇÃO
+================================================================================
+
+Após criar o usuário, verifique:
+
+1. Acesse: https://jj-ferreiras.com.br/mapos3
+2. Login: thailer.alfaia@gmail.com
+3. Senha: @wfm2020
+4. Deve aparecer:
+   ✅ Menu "Dashboard"
+   ✅ Menu "Fila de Emails"
+   ✅ Menu "Webhooks"
+   ✅ Menu "Certificado Digital"
+   ✅ Todas as permissões de administrador
+
+================================================================================
+SOLUÇÃO DE PROBLEMAS
+================================================================================
+
+Problema: "Usuário não encontrado"
+Solução: Verifique se o banco de dados está correto
+
+Problema: "Senha incorreta"
+Solução: Use o script PHP (método 1) que usa password_hash()
+
+Problema: "Permissão negada"
+Solução: Verifique se a tabela permissoes existe e tem o ID 1
+
+================================================================================
+SEGURANÇA
+================================================================================
+
+⚠️ IMPORTANTE:
+- Mude a senha após o primeiro login
+- Não compartilhe o arquivo de criação de usuário
+- Delete os scripts após usar
+
+================================================================================
