@@ -1384,7 +1384,6 @@ class Os extends MY_Controller
 
         // Capturar filtros
         $filtro = $this->input->get('filtro');
-        $pesquisa = $this->input->get('pesquisa');
         $busca_global = $this->input->get('busca_global');
         $status = $this->input->get('status');
         $tecnico = $this->input->get('tecnico');
@@ -1432,11 +1431,6 @@ class Os extends MY_Controller
         if ($status) {
             $filtros['status'] = $status;
             unset($filtros['excluir_status']);
-        }
-
-        // Filtro de pesquisa (cliente)
-        if ($pesquisa) {
-            $filtros['pesquisa'] = $pesquisa;
         }
 
         // Filtro de data
