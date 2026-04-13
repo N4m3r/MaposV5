@@ -727,6 +727,24 @@
                                         <tr>
                                             <td>
                                                 <label>
+                                                    <input name="cImpostosConfig" class="marcar" type="checkbox" checked="checked" value="1" />
+                                                    <span class="lbl"> Configurar Impostos</span>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <label>
+                                                    <input name="vImpostosRelatorio" class="marcar" type="checkbox" checked="checked" value="1" />
+                                                    <span class="lbl"> Relatório de Impostos</span>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <label>
+                                                    <input name="vImpostosExportar" class="marcar" type="checkbox" checked="checked" value="1" />
+                                                    <span class="lbl"> Exportar Impostos</span>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <label>
                                                     <input name="vDRE" class="marcar" type="checkbox" checked="checked" value="1" />
                                                     <span class="lbl"> Visualizar DRE</span>
                                                 </label>

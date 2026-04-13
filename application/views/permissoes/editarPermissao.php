@@ -971,6 +971,24 @@
                                 <tr>
                                 <td>
                                     <label>
+                                            <input <?php echo (isset($permissoes['cImpostosConfig']) && $permissoes['cImpostosConfig'] == '1') ? 'checked' : ''; ?> name="cImpostosConfig" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> Configurar Impostos</span>
+                                        </label>
+                                    </td>
+                                <td>
+                                    <label>
+                                            <input <?php echo (isset($permissoes['vImpostosRelatorio']) && $permissoes['vImpostosRelatorio'] == '1') ? 'checked' : ''; ?> name="vImpostosRelatorio" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> Relatório de Impostos</span>
+                                        </label>
+                                    </td>
+                                <td>
+                                    <label>
+                                            <input <?php echo (isset($permissoes['vImpostosExportar']) && $permissoes['vImpostosExportar'] == '1') ? 'checked' : ''; ?> name="vImpostosExportar" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> Exportar Impostos</span>
+                                        </label>
+                                    </td>
+                                <td>
+                                    <label>
                                             <input <?php echo (isset($permissoes['vDRE']) && $permissoes['vDRE'] == '1') ? 'checked' : ''; ?> name="vDRE" class="marcar" type="checkbox" value="1" />
                                             <span class="lbl"> Visualizar DRE</span>
                                         </label>

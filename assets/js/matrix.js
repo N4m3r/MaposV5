@@ -171,11 +171,28 @@ $(document).ready(function(){
 			$('#lightbox').slideDown(500);
 		}
 
-		$('#lightbox').live('click', function() { 
+		$('#lightbox').live('click', function() {
 			$('#lightbox').hide(200);
 		});
-	
+
+	});
+
+	// === Salvar e Restaurar posição do scroll do menu lateral === //
+	var menuScrollable = $('.menu-scrollable');
+
+	// Restaurar posição do scroll ao carregar a página
+	var savedScrollPos = localStorage.getItem('menuScrollPosition');
+	if (savedScrollPos && menuScrollable.length) {
+		menuScrollable.scrollTop(parseInt(savedScrollPos));
+	}
+
+	// Salvar posição do scroll antes de navegar para outra página
+	$(document).on('click', '.menu-scrollable a, .menu-links a', function(e) {
+		if (menuScrollable.length) {
+			localStorage.setItem('menuScrollPosition', menuScrollable.scrollTop());
+		}
 	});
 
 });
+</script>
 
