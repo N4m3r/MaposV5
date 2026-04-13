@@ -85,7 +85,7 @@
     <?php } ?>
 
 </script>
-<script src="assets/js/main.js?v=2"></script>
+<script src="assets/js/main.js?v=3"></script>
 
 </body>
 

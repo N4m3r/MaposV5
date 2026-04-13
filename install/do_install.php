@@ -1,12 +1,32 @@
 <?php
 
-// Garantir que erros não quebrem o JSON de resposta
+// Debug: capturar todos os erros
 error_reporting(E_ALL);
-ini_set('display_errors', 0);
+ini_set('display_errors', 1); // Temporariamente habilitar para debug
 ini_set('log_errors', 1);
-ini_set('max_execution_time', 300); //300 seconds
+ini_set('max_execution_time', 300);
+
+// Tentar capturar erros e retornar como JSON
+$jsonError = function($msg) {
+    header('Content-Type: application/json');
+    echo json_encode(['success' => false, 'message' => $msg, 'step' => 0]);
+    exit();
+};
+
+// Verificar se json_encode existe
+if (!function_exists('json_encode')) {
+    $jsonError('Função json_encode não disponível. Verifique a extensão JSON do PHP.');
+}
+
+// Verificar versão do PHP
+if (version_compare(PHP_VERSION, '7.0', '<')) {
+    $jsonError('PHP versão ' . PHP_VERSION . ' não suportada. Requer PHP 7.0+');
+}
 
 header('Content-Type: application/json');
+
+// Desabilitar exibição de erros após verificações iniciais
+ini_set('display_errors', 0);
 
 $settings_file = __DIR__ . DIRECTORY_SEPARATOR . 'settings.json';
 
@@ -30,10 +50,11 @@ function saveProgress($percent, $message, $step) {
 }
 
 if (! empty($_POST)) {
-    $host = $_POST['host'];
-    $dbuser = $_POST['dbuser'];
-    $dbpassword = $_POST['dbpassword'];
-    $dbname = $_POST['dbname'];
+    try {
+        $host = $_POST['host'];
+        $dbuser = $_POST['dbuser'];
+        $dbpassword = $_POST['dbpassword'];
+        $dbname = $_POST['dbname'];
 
     $full_name = $_POST['full_name'];
     $email = $_POST['email'];
@@ -559,4 +580,12 @@ if (! empty($_POST)) {
 
     echo json_encode(['success' => true, 'message' => 'Instalação bem sucedida!', 'percent' => 100, 'step' => 8]);
     exit();
+    } catch (Exception $e) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Erro na instalação: ' . $e->getMessage() . ' (Arquivo: ' . $e->getFile() . ':' . $e->getLine() . ')',
+            'step' => 0
+        ]);
+        exit();
+    }
 }
