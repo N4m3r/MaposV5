@@ -30,12 +30,7 @@ function updateProgress(percent, message, step) {
         var stepNames = {
             1: 'Validação',
             2: 'Conexão DB',
-            3: 'Tabelas Base',
-            4: 'Tabelas V5',
-            5: 'Dados DRE',
-            6: 'Impostos',
-            7: 'Permissões',
-            8: 'Configuração'
+            8: 'Finalização'
         };
         $progressStep.text('Etapa: ' + (stepNames[step] || 'Processando...'));
         updateStepVisual(step);
@@ -75,6 +70,7 @@ function showInstallError(message, step) {
     var stepInfo = step ? ' <strong>(Erro na Etapa ' + step + ')</strong>' : '';
     $("#alert-container").html('<div class="alert alert-danger" role="alert"><i class="fa fa-exclamation-triangle"></i> ' + message + stepInfo + '</div>');
 
+    // Marcar etapa com erro
     if (step) {
         $('#step-' + step).addClass('error');
         $('#step-' + step + ' i').removeClass().addClass('fa fa-times-circle');
