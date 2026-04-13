@@ -1,0 +1,6 @@
+services:
+  maposv5:
+    image: maposv5
+    build:
+      context: .
+      dockerfile: ./Dockerfile

@@ -8,6 +8,14 @@ class Relatorioatendimentos_model extends CI_Model
     }
 
     /**
+     * Verifica se a tabela existe
+     */
+    private function tabelaExiste()
+    {
+        return $this->db->table_exists('os_checkin');
+    }
+
+    /**
      * Obtém atendimentos com filtros
      *
      * @param string $data_inicio Data inicial (Y-m-d)
@@ -19,6 +27,10 @@ class Relatorioatendimentos_model extends CI_Model
      */
     public function getAtendimentosComFiltros($data_inicio, $data_fim, $usuario_id = null, $limit = 25, $offset = 0)
     {
+        if (!$this->tabelaExiste()) {
+            return [];
+        }
+
         $this->db->select('os_checkin.*, usuarios.nome as nome_tecnico');
         $this->db->from('os_checkin');
         $this->db->join('usuarios', 'usuarios.idUsuarios = os_checkin.usuarios_id');
@@ -45,6 +57,10 @@ class Relatorioatendimentos_model extends CI_Model
      */
     public function countAtendimentos($data_inicio, $data_fim, $usuario_id = null)
     {
+        if (!$this->tabelaExiste()) {
+            return 0;
+        }
+
         $this->db->where('DATE(data_entrada) >=', $data_inicio);
         $this->db->where('DATE(data_entrada) <=', $data_fim);
 

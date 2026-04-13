@@ -113,7 +113,8 @@
 
                 <!-- Contas -->
                 <?php foreach ($contas as $conta): ?>
-                <div class="conta-row nivel-<?= $conta->nivel ?>">
+                <?php $nivel = isset($conta->nivel) ? $conta->nivel : 1; ?>
+                <div class="conta-row nivel-<?= $nivel ?>">
                     <div class="conta-codigo"><?= $conta->codigo ?></div>
                     <div class="conta-nome"><?= $conta->nome ?></div>
                     <div class="conta-tipo">
