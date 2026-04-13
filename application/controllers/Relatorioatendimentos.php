@@ -68,11 +68,25 @@ class Relatorioatendimentos extends MY_Controller
 
         // Verifica permissão
         if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vRelatorioAtendimentos')) {
+            header('Content-Type: application/json');
             echo json_encode(['error' => 'Sem permissão']);
             return;
         }
 
         try {
+            // Verifica se a tabela existe
+            if (!$this->db->table_exists('os_checkin')) {
+                header('Content-Type: application/json');
+                echo json_encode([
+                    'draw' => intval($this->input->post('draw')),
+                    'recordsTotal' => 0,
+                    'recordsFiltered' => 0,
+                    'data' => [],
+                    'error' => 'Tabela de atendimentos não encontrada. Execute a migração 20250403000001_add_checkin_tables.php ou o script SQL em updates/update_checkin_tabelas.sql'
+                ]);
+                return;
+            }
+
             // Parâmetros
             $data_inicio = $this->input->post('data_inicio') ?: date('Y-m-01');
             $data_fim = $this->input->post('data_fim') ?: date('Y-m-d');

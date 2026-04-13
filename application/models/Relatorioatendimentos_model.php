@@ -286,6 +286,10 @@ class Relatorioatendimentos_model extends CI_Model
      */
     public function getEstatisticasMensais($meses = 6)
     {
+        if (!$this->tabelaExiste()) {
+            return [];
+        }
+
         $this->db->select('
             DATE_FORMAT(data_entrada, "%Y-%m") as mes,
             DATE_FORMAT(data_entrada, "%m/%Y") as mes_formatado,
@@ -308,6 +312,10 @@ class Relatorioatendimentos_model extends CI_Model
      */
     public function getDetalhesAtendimento($checkin_id)
     {
+        if (!$this->tabelaExiste()) {
+            return null;
+        }
+
         $this->db->select('os_checkin.*, usuarios.nome as nome_tecnico, usuarios.telefone as telefone_tecnico');
         $this->db->from('os_checkin');
         $this->db->join('usuarios', 'usuarios.idUsuarios = os_checkin.usuarios_id');

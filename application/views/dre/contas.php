@@ -148,17 +148,17 @@
             </div>
             <div class="widget-content">
                 <ol>
-                    <li><strong>RECEITA BRUTA</strong> - Total de vendas e serviços</li>
-                    <li><strong>(-) DEDUÇÕES</strong> - Impostos, devoluções e descontos</li>
-                    <li><strong>= RECEITA LÍQUIDA</strong> - Receita menos deduções</li>
-                    <li><strong>(-) CUSTOS</strong> - Custo dos serviços/produtos vendidos</li>
-                    <li><strong>= LUCRO BRUTO</strong> - Margem de contribuição</li>
-                    <li><strong>(-) DESPESAS OPERACIONAIS</strong> - Administrativas, vendas, etc</li>
-                    <li><strong>= LUCRO OPERACIONAL</strong> - Resultado da operação</li>
-                    <li><strong>(+/-) OUTRAS RECEITAS/DESPESAS</strong> - Financeiras, não-operacionais</li>
-                    <li><strong>= LUCRO ANTES DO IR</strong> - Base para cálculo do imposto</li>
-                    <li><strong>(-) IMPOSTO DE RENDA</strong> - IRPJ, CSLL, etc</li>
-                    <li><strong>= LUCRO LÍQUIDO</strong> - Resultado final do exercício</li>
+                    <li><strong>RECEITA BRUTA</strong></li>
+                    <li><strong>(-) DEDUÇÕES</strong></li>
+                    <li><strong>= RECEITA LÍQUIDA</strong></li>
+                    <li><strong>(-) CUSTOS</strong></li>
+                    <li><strong>= LUCRO BRUTO</strong></li>
+                    <li><strong>(-) DESPESAS OPERACIONAIS</strong></li>
+                    <li><strong>= LUCRO OPERACIONAL</strong></li>
+                    <li><strong>(+/-) OUTRAS RECEITAS/DESPESAS</strong></li>
+                    <li><strong>= LUCRO ANTES DO IR</strong></li>
+                    <li><strong>(-) IMPOSTO DE RENDA</strong></li>
+                    <li><strong>= LUCRO LÍQUIDO</strong></li>
                 </ol>
             </div>
         </div>
