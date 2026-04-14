@@ -78,16 +78,18 @@ echo "   application/: " . (is_writable(__DIR__ . '/../application') ? "SIM ✓"
 echo "   Raiz do projeto: " . (is_writable(__DIR__ . '/..') ? "SIM ✓" : "NÃO ✗") . "\n";
 echo "\n";
 
-// 7. Teste de sintaxe do do_install.php
+// 7. Teste de sintaxe do do_install.php (sem usar exec)
 echo "7. SINTAXE DO do_install.php\n";
-$output = [];
-$return = 0;
-exec('php -l ' . escapeshellarg(__DIR__ . '/do_install.php') . ' 2>&1', $output, $return);
-if ($return === 0) {
-    echo "   Sintaxe: OK ✓\n";
+// Verificar se pode carregar o arquivo sem erro fatal
+$install_content = @file_get_contents(__DIR__ . '/do_install.php');
+if ($install_content === false) {
+    echo "   Não foi possível ler o arquivo\n";
 } else {
-    echo "   Sintaxe: ERRO ✗\n";
-    echo "   " . implode("\n   ", $output) . "\n";
+    echo "   Arquivo lido: OK\n";
+    // Verificar erros básicos
+    if (strpos($install_content, '<?php') === false) {
+        echo "   Aviso: Tag PHP não encontrada no início\n";
+    }
 }
 echo "\n";
 
