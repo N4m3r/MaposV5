@@ -1,4 +1,6 @@
 <?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
 /**
  * Controller: NFS-e para OS
  * Gerencia emissão e controle de notas fiscais de serviço vinculadas a ordens de serviço

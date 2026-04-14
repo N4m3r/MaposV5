@@ -1053,6 +1053,325 @@ INSERT IGNORE INTO `dre_contas` (`codigo`, `nome`, `tipo`, `categoria`, `ordem`,
 INSERT IGNORE INTO `impostos_config` (`tipo_regime`, `anexo_simples`, `aliquota_iss`, `retem_iss`, `created_at`, `updated_at`) VALUES
 ('simples_nacional', 'iii', 2.00, 0, 'admin_created_at', 'admin_created_at');
 
+-- -----------------------------------------------------
+-- TABELAS DO SISTEMA DE TÉCNICOS - MapOS v5
+-- Adicionadas em: 2026-04-13
+-- -----------------------------------------------------
+
+-- Adicionar campos na tabela usuarios para técnicos
+ALTER TABLE `usuarios`
+ADD COLUMN IF NOT EXISTS `is_tecnico` TINYINT(1) NOT NULL DEFAULT 0 COMMENT 'Indica se é técnico de campo' AFTER `url_image_user`,
+ADD COLUMN IF NOT EXISTS `nivel_tecnico` ENUM('I','II','III','IV') DEFAULT 'II' COMMENT 'Nível do técnico: I=Aprendiz, II=Técnico, III=Especialista, IV=Coordenador' AFTER `is_tecnico`,
+ADD COLUMN IF NOT EXISTS `especialidades` VARCHAR(255) DEFAULT NULL COMMENT 'Especialidades separadas por vírgula: CFTV,Alarmes,Redes,ControleAcesso' AFTER `nivel_tecnico`,
+ADD COLUMN IF NOT EXISTS `veiculo_placa` VARCHAR(10) DEFAULT NULL AFTER `especialidades`,
+ADD COLUMN IF NOT EXISTS `veiculo_tipo` ENUM('Moto','Carro','Nenhum') DEFAULT 'Nenhum' AFTER `veiculo_placa`,
+ADD COLUMN IF NOT EXISTS `coordenadas_base_lat` DECIMAL(10,8) DEFAULT NULL COMMENT 'Latitude da base/matriz' AFTER `veiculo_tipo`,
+ADD COLUMN IF NOT EXISTS `coordenadas_base_lng` DECIMAL(11,8) DEFAULT NULL COMMENT 'Longitude da base/matriz' AFTER `coordenadas_base_lat`,
+ADD COLUMN IF NOT EXISTS `raio_atuacao_km` INT DEFAULT 50 COMMENT 'Raio máximo de atuação em km' AFTER `coordenadas_base_lng`,
+ADD COLUMN IF NOT EXISTS `plantao_24h` TINYINT(1) DEFAULT 0 AFTER `raio_atuacao_km`,
+ADD COLUMN IF NOT EXISTS `app_tecnico_instalado` TINYINT(1) DEFAULT 0 AFTER `plantao_24h`,
+ADD COLUMN IF NOT EXISTS `token_app` VARCHAR(255) DEFAULT NULL COMMENT 'Token para notificações push' AFTER `app_tecnico_instalado`,
+ADD COLUMN IF NOT EXISTS `token_expira` DATETIME DEFAULT NULL AFTER `token_app`,
+ADD COLUMN IF NOT EXISTS `ultimo_acesso_app` DATETIME DEFAULT NULL AFTER `token_expira`,
+ADD COLUMN IF NOT EXISTS `foto_tecnico` VARCHAR(255) DEFAULT NULL AFTER `ultimo_acesso_app`;
+
+-- -----------------------------------------------------
+-- Table `servicos_catalogo` - Catálogo de serviços técnico
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `servicos_catalogo` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `codigo` VARCHAR(20) UNIQUE,
+  `nome` VARCHAR(255) NOT NULL,
+  `descricao` TEXT,
+  `categoria` VARCHAR(100) DEFAULT 'Geral' COMMENT 'CFTV, Alarme, Rede, ControleAcesso, etc',
+  `especialidade` VARCHAR(50) DEFAULT NULL COMMENT 'Qual técnico pode executar',
+  `tempo_estimado_minutos` INT DEFAULT 60,
+  `checklist_padrao` JSON DEFAULT NULL COMMENT 'Checklist em formato JSON',
+  `ativo` TINYINT(1) DEFAULT 1,
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_categoria` (`categoria`),
+  INDEX `idx_especialidade` (`especialidade`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `os_servicos` - Serviços vinculados à OS
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `os_servicos` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `os_id` INT(11) NOT NULL,
+  `servico_id` INT(11) NOT NULL,
+  `quantidade` INT DEFAULT 1,
+  `observacao` TEXT COMMENT 'Detalhes específicos desta OS',
+  `status` ENUM('Pendente','EmExecucao','Concluido','Cancelado') DEFAULT 'Pendente',
+  `checklist_execucao` JSON DEFAULT NULL COMMENT 'Itens marcados pelo técnico',
+  `checklist_completude` INT DEFAULT 0 COMMENT 'Percentual 0-100',
+  `tecnico_id` INT(11) DEFAULT NULL COMMENT 'Quem executou',
+  `data_inicio` DATETIME DEFAULT NULL,
+  `data_conclusao` DATETIME DEFAULT NULL,
+  `tempo_execucao_minutos` INT DEFAULT NULL,
+  `fotos` JSON DEFAULT NULL COMMENT 'URLs das fotos',
+  `assinatura_cliente` TEXT COMMENT 'Base64 da imagem',
+  `laudo_tecnico` TEXT COMMENT 'Descrição do serviço executado',
+  `ordem_execucao` INT DEFAULT 0 COMMENT 'Ordem na OS',
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`os_id`) REFERENCES `os`(`idOs`) ON DELETE CASCADE,
+  FOREIGN KEY (`servico_id`) REFERENCES `servicos_catalogo`(`id`),
+  FOREIGN KEY (`tecnico_id`) REFERENCES `usuarios`(`idUsuarios`),
+  INDEX `idx_os_id` (`os_id`),
+  INDEX `idx_status` (`status`),
+  INDEX `idx_tecnico` (`tecnico_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `tec_os_execucao` - Execução técnica detalhada
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tec_os_execucao` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `os_id` INT(11) NOT NULL,
+  `tecnico_id` INT(11) NOT NULL,
+  `tipo_servico` ENUM('INS','MP','MC','CT','TR','UP','URG') DEFAULT 'MC' COMMENT 'INS=Instalação, MP=Manut.Prev, MC=Manut.Corr, CT=Consultoria, TR=Treinamento, UP=Upgrade, URG=Urgência',
+  `especialidade` VARCHAR(50) DEFAULT NULL,
+
+  -- Check-in
+  `checkin_horario` DATETIME DEFAULT NULL,
+  `checkin_latitude` DECIMAL(10,8) DEFAULT NULL,
+  `checkin_longitude` DECIMAL(11,8) DEFAULT NULL,
+  `checkin_endereco` VARCHAR(255) DEFAULT NULL,
+  `checkin_foto` VARCHAR(255) DEFAULT NULL,
+  `checkin_distancia_metros` INT DEFAULT NULL COMMENT 'Distância do cliente',
+
+  -- Check-out
+  `checkout_horario` DATETIME DEFAULT NULL,
+  `checkout_latitude` DECIMAL(10,8) DEFAULT NULL,
+  `checkout_longitude` DECIMAL(11,8) DEFAULT NULL,
+  `checkout_endereco` VARCHAR(255) DEFAULT NULL,
+  `checkout_foto` VARCHAR(255) DEFAULT NULL,
+  `checkout_distancia_metros` INT DEFAULT NULL,
+
+  -- Tempos
+  `tempo_atendimento_minutos` INT DEFAULT NULL,
+  `tempo_deslocamento_minutos` INT DEFAULT NULL,
+  `km_deslocamento` DECIMAL(10,2) DEFAULT NULL,
+
+  -- Checklist e fotos
+  `checklist_json` JSON DEFAULT NULL,
+  `checklist_completude` INT DEFAULT 0,
+  `fotos_antes` JSON DEFAULT NULL,
+  `fotos_depois` JSON DEFAULT NULL,
+  `fotos_durante` JSON DEFAULT NULL,
+
+  -- Cliente
+  `assinatura_cliente` TEXT,
+  `nome_responsavel` VARCHAR(255) DEFAULT NULL,
+  `avaliacao` INT DEFAULT NULL COMMENT '1-5 estrelas',
+  `comentario_cliente` TEXT,
+
+  -- Técnico
+  `laudo_tecnico` TEXT,
+  `materiais_utilizados` JSON DEFAULT NULL,
+  `observacoes_tecnico` TEXT,
+  `problema_encontrado` TEXT,
+  `solucao_aplicada` TEXT,
+  `recomendacoes` TEXT,
+  `oportunidade_venda` TINYINT(1) DEFAULT 0,
+  `descricao_oportunidade` TEXT,
+
+  -- Status
+  `status_execucao` ENUM('Agendada','EmDeslocamento','EmAtendimento','Pausada','Concluida','Cancelada') DEFAULT 'Agendada',
+  `aprovada` TINYINT(1) DEFAULT 0,
+  `aprovada_por` INT(11) DEFAULT NULL,
+  `data_aprovacao` DATETIME DEFAULT NULL,
+
+  -- Controle
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`os_id`) REFERENCES `os`(`idOs`) ON DELETE CASCADE,
+  FOREIGN KEY (`tecnico_id`) REFERENCES `usuarios`(`idUsuarios`),
+  INDEX `idx_os_id` (`os_id`),
+  INDEX `idx_tecnico_id` (`tecnico_id`),
+  INDEX `idx_data_execucao` (`checkin_horario`),
+  INDEX `idx_status` (`status_execucao`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `tec_checklist_template` - Templates de checklists
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tec_checklist_template` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `tipo_os` VARCHAR(50) NOT NULL COMMENT 'CFTV, Alarme, Rede, etc',
+  `tipo_servico` ENUM('INS','MP','MC','CT','TR','UP') DEFAULT 'MC',
+  `nome_template` VARCHAR(100),
+  `itens` JSON NOT NULL COMMENT 'Itens do checklist em JSON',
+  `ativo` TINYINT(1) DEFAULT 1,
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_template` (`tipo_os`, `tipo_servico`),
+  INDEX `idx_tipo_os` (`tipo_os`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `tec_estoque_veiculo` - Estoque no veículo do técnico
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tec_estoque_veiculo` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `tecnico_id` INT(11) NOT NULL,
+  `produto_id` INT(11) NOT NULL,
+  `quantidade_disponivel` INT DEFAULT 0,
+  `quantidade_reservada` INT DEFAULT 0 COMMENT 'Para OS agendadas',
+  `localizacao` ENUM('Veiculo','EmUso','Retirado') DEFAULT 'Veiculo',
+  `ultima_movimentacao` DATETIME DEFAULT NULL,
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`tecnico_id`) REFERENCES `usuarios`(`idUsuarios`),
+  FOREIGN KEY (`produto_id`) REFERENCES `produtos`(`idProdutos`),
+  UNIQUE KEY `uk_tecnico_produto` (`tecnico_id`, `produto_id`),
+  INDEX `idx_tecnico` (`tecnico_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `tec_rotas_tracking` - Histórico de rotas
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tec_rotas_tracking` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `tecnico_id` INT(11) NOT NULL,
+  `data` DATE NOT NULL,
+  `pontos_rota` JSON DEFAULT NULL COMMENT 'Array de pontos GPS',
+  `km_total` DECIMAL(10,2) DEFAULT 0,
+  `os_atendidas` INT DEFAULT 0,
+  `tempo_total_horas` DECIMAL(5,2) DEFAULT 0,
+  `combustivel_estimado` DECIMAL(10,2) DEFAULT 0,
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`tecnico_id`) REFERENCES `usuarios`(`idUsuarios`),
+  INDEX `idx_tecnico_data` (`tecnico_id`, `data`),
+  UNIQUE KEY `uk_tecnico_dia` (`tecnico_id`, `data`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `obras` - Cadastro de obras grandes
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `obras` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `codigo` VARCHAR(50) UNIQUE,
+  `nome` VARCHAR(255) NOT NULL,
+  `cliente_id` INT(11) NOT NULL,
+  `tipo_obra` ENUM('Condominio','Comercio','Residencia','Industrial','Publica') DEFAULT 'Condominio',
+  `especialidade_principal` VARCHAR(50) DEFAULT NULL,
+  `endereco` TEXT,
+  `bairro` VARCHAR(100) DEFAULT NULL,
+  `cidade` VARCHAR(100) DEFAULT NULL,
+  `estado` VARCHAR(2) DEFAULT NULL,
+  `cep` VARCHAR(9) DEFAULT NULL,
+  `coordenadas_lat` DECIMAL(10,8) DEFAULT NULL,
+  `coordenadas_lng` DECIMAL(11,8) DEFAULT NULL,
+  `data_inicio_contrato` DATE DEFAULT NULL,
+  `data_fim_prevista` DATE DEFAULT NULL,
+  `data_fim_real` DATE DEFAULT NULL,
+  `prazo_dias` INT DEFAULT NULL,
+  `status` ENUM('Prospeccao','Orcamentacao','Contratada','EmExecucao','Paralisada','Finalizada','Entregue','Garantia') DEFAULT 'Prospeccao',
+  `percentual_concluido` INT DEFAULT 0,
+  `gestor_obra_id` INT(11) DEFAULT NULL,
+  `responsavel_tecnico_id` INT(11) DEFAULT NULL,
+  `responsavel_comercial_id` INT(11) DEFAULT NULL,
+  `contrato_arquivo` VARCHAR(255) DEFAULT NULL,
+  `projeto_arquivo` VARCHAR(255) DEFAULT NULL,
+  `art_arquivo` VARCHAR(255) DEFAULT NULL,
+  `memorial_descritivo` TEXT,
+  `observacoes` TEXT,
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`cliente_id`) REFERENCES `clientes`(`idClientes`),
+  FOREIGN KEY (`gestor_obra_id`) REFERENCES `usuarios`(`idUsuarios`),
+  FOREIGN KEY (`responsavel_tecnico_id`) REFERENCES `usuarios`(`idUsuarios`),
+  INDEX `idx_cliente` (`cliente_id`),
+  INDEX `idx_status` (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `obra_etapas` - Cronograma de obras
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `obra_etapas` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `obra_id` INT(11) NOT NULL,
+  `numero_etapa` INT DEFAULT 1,
+  `nome` VARCHAR(100) NOT NULL,
+  `descricao` TEXT,
+  `especialidade` VARCHAR(50) DEFAULT NULL,
+  `data_inicio_prevista` DATE DEFAULT NULL,
+  `data_fim_prevista` DATE DEFAULT NULL,
+  `data_inicio_real` DATE DEFAULT NULL,
+  `data_fim_real` DATE DEFAULT NULL,
+  `percentual_concluido` INT DEFAULT 0,
+  `status` ENUM('NaoIniciada','EmAndamento','Concluida','Atrasada','Paralisada') DEFAULT 'NaoIniciada',
+  `tecnicos_designados` JSON DEFAULT NULL,
+  `os_ids` JSON DEFAULT NULL COMMENT 'OS vinculadas',
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`obra_id`) REFERENCES `obras`(`id`) ON DELETE CASCADE,
+  INDEX `idx_obra_id` (`obra_id`),
+  INDEX `idx_status` (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `obra_diario` - Diário de obra
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `obra_diario` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `obra_id` INT(11) NOT NULL,
+  `data` DATE NOT NULL,
+  `clima_manha` ENUM('Sol','Nublado','Chuva','Garoa') DEFAULT NULL,
+  `clima_tarde` ENUM('Sol','Nublado','Chuva','Garoa') DEFAULT NULL,
+  `equipe_presente` JSON DEFAULT NULL COMMENT 'Array de técnicos presentes',
+  `atividades_executadas` TEXT,
+  `etapas_avancadas` JSON DEFAULT NULL,
+  `fotos` JSON DEFAULT NULL,
+  `problemas` TEXT,
+  `acoes_corretivas` TEXT,
+  `material_recebido` TEXT,
+  `material_consumido` TEXT,
+  `visitas_cliente` TINYINT(1) DEFAULT 0,
+  `visitas_fiscalizacao` TINYINT(1) DEFAULT 0,
+  `preenchido_por` INT(11) DEFAULT NULL,
+  `preenchido_em` DATETIME DEFAULT NULL,
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`obra_id`) REFERENCES `obras`(`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`preenchido_por`) REFERENCES `usuarios`(`idUsuarios`),
+  UNIQUE KEY `uk_obra_data` (`obra_id`, `data`),
+  INDEX `idx_data` (`data`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Dados Iniciais - Catálogo de Serviços
+-- -----------------------------------------------------
+INSERT IGNORE INTO `servicos_catalogo` (`codigo`, `nome`, `descricao`, `categoria`, `especialidade`, `tempo_estimado_minutos`, `checklist_padrao`, `ativo`) VALUES
+('SRV-CFTV-001', 'Instalação de Câmeras', 'Instalação completa de câmeras de segurança', 'CFTV', 'CFTV', 90, '[{"ordem":1,"desc":"Verificar posição com cliente"},{"ordem":2,"desc":"Instalar suporte"},{"ordem":3,"desc":"Conectar cabos"},{"ordem":4,"desc":"Ajustar ângulo"},{"ordem":5,"desc":"Testar imagem"}]', 1),
+('SRV-CFTV-002', 'Configuração de Sistema CFTV', 'Configuração de gravadores e acesso remoto', 'CFTV', 'CFTV', 60, '[{"ordem":1,"desc":"Configurar rede"},{"ordem":2,"desc":"Configurar gravação"},{"ordem":3,"desc":"Configurar app cliente"},{"ordem":4,"desc":"Testar acesso remoto"}]', 1),
+('SRV-CFTV-003', 'Manutenção Preventiva CFTV', 'Limpeza e verificação de sistema CFTV', 'CFTV', 'CFTV', 45, '[{"ordem":1,"desc":"Limpar lentes"},{"ordem":2,"desc":"Verificar conexões"},{"ordem":3,"desc":"Testar gravação"},{"ordem":4,"desc":"Verificar espaço em disco"}]', 1),
+('SRV-ALM-001', 'Instalação de Alarme', 'Instalação de sensores e central de alarme', 'Alarmes', 'Alarmes', 120, '[{"ordem":1,"desc":"Instalar sensores"},{"ordem":2,"desc":"Instalar sirene"},{"ordem":3,"desc":"Programar zonas"},{"ordem":4,"desc":"Testar disparo"}]', 1),
+('SRV-RED-001', 'Passagem de Cabos de Rede', 'Passagem e organização de cabos estruturados', 'Redes', 'Redes', 90, '[{"ordem":1,"desc":"Identificar pontos"},{"ordem":2,"desc":"Passar cabos"},{"ordem":3,"desc":"Crimpagem"},{"ordem":4,"desc":"Testar conectividade"}]', 1),
+('SRV-ACE-001', 'Instalação de Controle de Acesso', 'Instalação de catracas/leitores/fechaduras', 'ControleAcesso', 'ControleAcesso', 180, '[{"ordem":1,"desc":"Instalar equipamentos"},{"ordem":2,"desc":"Ligar elétrica"},{"ordem":3,"desc":"Configurar usuários"},{"ordem":4,"desc":"Testar liberações"}]', 1);
+
+-- -----------------------------------------------------
+-- Dados Iniciais - Checklists Templates
+-- -----------------------------------------------------
+INSERT IGNORE INTO `tec_checklist_template` (`tipo_os`, `tipo_servico`, `nome_template`, `itens`, `ativo`) VALUES
+('CFTV', 'INS', 'Instalação CFTV Padrão', '[{"ordem":1,"desc":"Verificar integridade dos equipamentos","obrigatorio":true},{"ordem":2,"desc":"Definir posições das câmeras com cliente","obrigatorio":true},{"ordem":3,"desc":"Tirar foto do local antes","obrigatorio":true},{"ordem":4,"desc":"Instalar suportes","obrigatorio":true},{"ordem":5,"desc":"Passar cabeamento","obrigatorio":true},{"ordem":6,"desc":"Conectar câmeras","obrigatorio":true},{"ordem":7,"desc":"Configurar gravação","obrigatorio":true},{"ordem":8,"desc":"Testar acesso remoto","obrigatorio":true},{"ordem":9,"desc":"Orientar cliente","obrigatorio":true}]', 1),
+('CFTV', 'MP', 'Manutenção CFTV Padrão', '[{"ordem":1,"desc":"Verificar funcionamento das câmeras","obrigatorio":true},{"ordem":2,"desc":"Limpar lentes","obrigatorio":true},{"ordem":3,"desc":"Verificar conexões","obrigatorio":true},{"ordem":4,"desc":"Verificar espaço em disco","obrigatorio":true},{"ordem":5,"desc":"Testar gravação","obrigatorio":true}]', 1),
+('Alarme', 'INS', 'Instalação de Alarme', '[{"ordem":1,"desc":"Verificar equipamentos"},{"ordem":2,"desc":"Instalar sensores"},{"ordem":3,"desc":"Instalar sirene"},{"ordem":4,"desc":"Programar central"},{"ordem":5,"desc":"Testar disparo"}]', 1),
+('Rede', 'INS', 'Passagem de Cabos', '[{"ordem":1,"desc":"Identificar pontos"},{"ordem":2,"desc":"Passar cabos"},{"ordem":3,"desc":"Instalar tomadas"},{"ordem":4,"desc":"Testar conectividade"}]', 1);
+
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
