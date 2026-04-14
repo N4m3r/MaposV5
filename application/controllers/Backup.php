@@ -34,7 +34,8 @@ class Backup extends CI_Controller
         }
 
         // Verificar permissão de administrador
-        if (!$this->mapos_model->hasPermission('backup_restore')) {
+        $permissao = $this->session->userdata('permissao');
+        if (!$this->permission->checkPermission($permissao, 'cBackup')) {
             $this->session->set_flashdata('error', 'Você não tem permissão para acessar esta área.');
             redirect('mapos');
         }

@@ -4,20 +4,35 @@ Este documento explica como integrar o sistema de backup no menu do Mapos.
 
 ## 1. Adicionar Permissão
 
-Adicione a permissão `backup_restore` no banco de dados na tabela `permissoes`:
+Adicione a permissão `cBackup` no banco de dados na tabela `permissoes`:
 
+### Via SQL
 ```sql
--- Verificar permissões atuais
+-- Verificar permissões atuais do grupo Administrador
 SELECT * FROM permissoes WHERE nome = 'Administrador';
 
--- Adicionar backup_restore ao JSON de permissões
--- O campo 'permissoes' deve conter: "backup_restore"
+-- O campo 'permissoes' deve ser um JSON/Serialized contendo: "cBackup"
+-- Exemplo de permissões atualizadas (adicionar cBackup aos existentes):
 ```
 
-Ou se houver interface de permissões, adicione:
-- **Código**: `backup_restore`
-- **Nome**: `Backup e Restauração`
-- **Descrição**: `Permitir realizar backup e restaurar banco de dados`
+### Via Interface Web
+Acesse: **Configurações > Permissões > Administrador**
+
+Adicione as permissões:
+| Código | Descrição | Ação |
+|--------|-----------|------|
+| `cBackup` | Cadastrar Backup | Visualizar e criar backups |
+| `vBackup` | Visualizar Backups | Apenas visualizar lista |
+| `eBackup` | Editar Backup | Renomear/excluir backups |
+| `rBackup` | Restaurar Backup | Executar restauração |
+
+**Nota**: Para acesso total, basta ter a permissão `cBackup`.
+
+### Permissão Mínima
+Se quiser apenas visualizar:
+- Código: `vBackup`
+- Nome: Visualizar Backups
+- Descrição: Acesso apenas para visualizar backups existentes
 
 ## 2. Adicionar Menu
 

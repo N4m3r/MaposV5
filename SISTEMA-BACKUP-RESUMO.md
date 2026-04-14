@@ -89,7 +89,7 @@ Sistema completo de backup e restauração de banco de dados via interface web, 
 | Medida | Descrição |
 |--------|-----------|
 | Autenticação | Apenas usuários logados |
-| Permissão | `backup_restore` obrigatória |
+| Permissão | `cBackup` obrigatória |
 | Validação | Extensão (.sql/.gz/.zip) |
 | Tamanho | Máximo 100MB por arquivo |
 | Sanitização | Evita path traversal |
