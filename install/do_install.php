@@ -4,12 +4,49 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 0);
 ini_set('log_errors', 1);
+ini_set('error_log', __DIR__ . '/install_error.log');
 ini_set('max_execution_time', 300);
+
+// Função para log de debug
+function install_log($message, $data = null) {
+    $log_file = __DIR__ . '/install_debug.log';
+    $line = date('Y-m-d H:i:s') . ' - ' . $message;
+    if ($data !== null) {
+        $line .= ': ' . json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
+    file_put_contents($log_file, $line . "\n", FILE_APPEND);
+}
+
+// Capturar todos os erros e exceções
+set_error_handler(function($errno, $errstr, $errfile, $errline) {
+    install_log("ERRO [$errno]", ['msg' => $errstr, 'file' => $errfile, 'line' => $errline]);
+    http_response_code(500);
+    header('Content-Type: application/json');
+    echo json_encode([
+        'success' => false,
+        'message' => 'Erro [' . $errno . ']: ' . $errstr . ' em ' . $errfile . ':' . $errline,
+        'step' => 0
+    ]);
+    exit();
+});
+
+set_exception_handler(function($e) {
+    install_log("EXCEÇÃO", ['msg' => $e->getMessage(), 'file' => $e->getFile(), 'line' => $e->getLine()]);
+    http_response_code(500);
+    header('Content-Type: application/json');
+    echo json_encode([
+        'success' => false,
+        'message' => 'Exceção: ' . $e->getMessage() . ' em ' . $e->getFile() . ':' . $e->getLine(),
+        'step' => 0
+    ]);
+    exit();
+});
 
 // Capturar erros fatais
 register_shutdown_function(function() {
     $error = error_get_last();
-    if ($error !== null && $error['type'] === E_ERROR) {
+    if ($error !== null && in_array($error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR])) {
+        install_log("ERRO FATAL", $error);
         http_response_code(500);
         header('Content-Type: application/json');
         echo json_encode([
@@ -23,6 +60,9 @@ register_shutdown_function(function() {
 
 header('Content-Type: application/json');
 
+install_log("Início da requisição", ['method' => $_SERVER['REQUEST_METHOD'], 'post_keys' => array_keys($_POST)]);
+
+install_log("Verificando settings.json");
 $settings_file = __DIR__ . DIRECTORY_SEPARATOR . 'settings.json';
 
 if (! file_exists($settings_file)) {
@@ -56,6 +96,8 @@ if (empty($_POST)) {
     exit();
 }
 
+install_log("Recebendo dados POST", ['host' => $_POST['host'] ?? 'não definido', 'dbname' => $_POST['dbname'] ?? 'não definido']);
+
 $host = $_POST['host'];
 $dbuser = $_POST['dbuser'];
 $dbpassword = $_POST['dbpassword'];
@@ -66,6 +108,7 @@ $dbname = $_POST['dbname'];
     $login_password = $_POST['password'] ? $_POST['password'] : '';
     $base_url = $_POST['base_url'];
 
+    install_log("Validando campos obrigatórios");
     //check required fields
     if (! ($host && $dbuser && $dbname && $full_name && $email && $login_password && $base_url)) {
         echo json_encode(['success' => false, 'message' => 'Por favor insira todos os campos.', 'step' => 1]);
@@ -80,6 +123,7 @@ $dbname = $_POST['dbname'];
 
     //check for valid database connection
     try {
+        install_log("Conectando ao banco de dados", ['host' => $host, 'dbname' => $dbname]);
         $mysqli = @new mysqli($host, $dbuser, $dbpassword, $dbname);
 
         if (mysqli_connect_errno()) {
@@ -121,9 +165,11 @@ $dbname = $_POST['dbname'];
     $sql = str_replace('admin_created_at', $now, $sql);
 
     //create tables in database
+    install_log("Executando multi_query do banco.sql");
     $mysqli->multi_query($sql);
     do {
     } while (mysqli_more_results($mysqli) && mysqli_next_result($mysqli));
+    install_log("banco.sql executado com sucesso");
 
     // ============================================
     // Criar Tabelas Adicionais (que não estão no banco.sql)
@@ -348,6 +394,7 @@ $dbname = $_POST['dbname'];
 
     $mysqli->query("SET FOREIGN_KEY_CHECKS = 1");
 
+    install_log("Criando permissões do administrador");
     // ============================================
     // Criar Permissões do Administrador
     // ============================================
@@ -409,8 +456,10 @@ $dbname = $_POST['dbname'];
     $stmt->execute();
     $stmt->close();
 
+    install_log("Fechando conexão com banco");
     $mysqli->close();
 
+    install_log("Criando arquivo .env");
     // ============================================
     // Criar Arquivo .env
     // ============================================
@@ -472,5 +521,6 @@ $dbname = $_POST['dbname'];
         exit();
     }
 
+    install_log("Instalação concluída com sucesso");
     echo json_encode(['success' => true, 'message' => 'Instalação bem sucedida!', 'percent' => 100, 'step' => 8]);
     exit();
