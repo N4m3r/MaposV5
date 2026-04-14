@@ -32,7 +32,8 @@
       "Bash(start \"\" \"mockup_dashboard_integrado.html\")",
       "Bash(explorer.exe \"mockup_dashboard_integrado.html\")",
       "Bash(start \"\" \"mockup_dashboard_no_tema_mapos.html\")",
-      "Bash(explorer.exe \"mockup_dashboard_no_tema_mapos.html\")"
+      "Bash(explorer.exe \"mockup_dashboard_no_tema_mapos.html\")",
+      "Bash(wc:*)"
     ]
   }
 }

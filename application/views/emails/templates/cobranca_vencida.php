@@ -8,7 +8,7 @@
 <div class="details" style="border-left: 4px solid #dc3545;">
     <p><strong>Cobrança #:</strong> <?= $cobranca_id ?? '' ?></p>
     <p><strong>Descrição:</strong> <?= htmlspecialchars($cobranca_descricao ?? '') ?></p>
-    <p><strong>Valor:</strong> R$ <?= number_format($cobranca_valor ?? 0, 2, ',', '.') ?></p>
+    <p><strong>Valor:</strong> R$ <?= number_format((float)($cobranca_valor ?? 0), 2, ',', '.') ?></p>
     <p><strong>Vencimento:</strong> <?= $cobranca_vencimento ?? '' ?></p>
     <p><strong>Dias em Atraso:</strong> <?= $dias_atraso ?? '1' ?></p>
 </div>

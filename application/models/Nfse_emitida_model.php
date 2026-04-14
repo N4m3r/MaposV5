@@ -17,6 +17,11 @@ class Nfse_emitida_model extends CI_Model
      */
     public function emitir($os_id, $dados = [])
     {
+        // Verificar se a tabela existe
+        if (!$this->db->table_exists('os_nfse_emitida')) {
+            return ['error' => 'Tabela de NFS-e não existe. Execute as migrations.'];
+        }
+
         // Verificar se já existe NFSe emitida
         $existente = $this->getByOsId($os_id);
         if ($existente && in_array($existente->situacao, ['Emitida', 'Pendente'])) {
@@ -123,6 +128,11 @@ class Nfse_emitida_model extends CI_Model
      */
     public function confirmarEmissao($nfse_id, $dados_nfse)
     {
+        // Verificar se a tabela existe
+        if (!$this->db->table_exists('os_nfse_emitida')) {
+            return ['error' => 'Tabela de NFS-e não existe'];
+        }
+
         $this->db->where('id', $nfse_id);
         $update = [
             'situacao' => 'Emitida',
@@ -138,8 +148,10 @@ class Nfse_emitida_model extends CI_Model
         if ($this->db->update('os_nfse_emitida', $update)) {
             // Atualizar status da OS
             $nfse = $this->getById($nfse_id);
-            $this->db->where('idOs', $nfse->os_id);
-            $this->db->update('os', ['nfse_status' => 'Emitida']);
+            if ($nfse && isset($nfse->os_id)) {
+                $this->db->where('idOs', $nfse->os_id);
+                $this->db->update('os', ['nfse_status' => 'Emitida']);
+            }
 
             return ['success' => true];
         }
@@ -152,6 +164,11 @@ class Nfse_emitida_model extends CI_Model
      */
     public function vincularBoleto($nfse_id, $boleto_id)
     {
+        // Verificar se a tabela existe
+        if (!$this->db->table_exists('os_nfse_emitida')) {
+            return ['error' => 'Tabela de NFS-e não existe'];
+        }
+
         $this->db->where('id', $nfse_id);
         if ($this->db->update('os_nfse_emitida', [
             'cobranca_id' => $boleto_id,
@@ -167,6 +184,11 @@ class Nfse_emitida_model extends CI_Model
      */
     public function cancelar($nfse_id, $motivo = '')
     {
+        // Verificar se a tabela existe
+        if (!$this->db->table_exists('os_nfse_emitida')) {
+            return ['error' => 'Tabela de NFS-e não existe'];
+        }
+
         $this->db->where('id', $nfse_id);
         if ($this->db->update('os_nfse_emitida', [
             'situacao' => 'Cancelada',
@@ -175,8 +197,10 @@ class Nfse_emitida_model extends CI_Model
         ])) {
             // Atualizar status da OS
             $nfse = $this->getById($nfse_id);
-            $this->db->where('idOs', $nfse->os_id);
-            $this->db->update('os', ['nfse_status' => 'Cancelada']);
+            if ($nfse && isset($nfse->os_id)) {
+                $this->db->where('idOs', $nfse->os_id);
+                $this->db->update('os', ['nfse_status' => 'Cancelada']);
+            }
 
             return ['success' => true];
         }
@@ -188,8 +212,15 @@ class Nfse_emitida_model extends CI_Model
      */
     public function getById($id)
     {
+        // Verificar se a tabela existe
+        if (!$this->db->table_exists('os_nfse_emitida')) {
+            return null;
+        }
+
         $this->db->where('id', $id);
-        return $this->db->get('os_nfse_emitida')->row();
+        $query = $this->db->get('os_nfse_emitida');
+
+        return $query ? $query->row() : null;
     }
 
     /**
@@ -197,9 +228,16 @@ class Nfse_emitida_model extends CI_Model
      */
     public function getByOsId($os_id)
     {
+        // Verificar se a tabela existe
+        if (!$this->db->table_exists('os_nfse_emitida')) {
+            return null;
+        }
+
         $this->db->where('os_id', $os_id);
         $this->db->order_by('id', 'DESC');
-        return $this->db->get('os_nfse_emitida')->row();
+        $query = $this->db->get('os_nfse_emitida');
+
+        return $query ? $query->row() : null;
     }
 
     /**
@@ -207,9 +245,16 @@ class Nfse_emitida_model extends CI_Model
      */
     public function getAllByOsId($os_id)
     {
+        // Verificar se a tabela existe
+        if (!$this->db->table_exists('os_nfse_emitida')) {
+            return [];
+        }
+
         $this->db->where('os_id', $os_id);
         $this->db->order_by('id', 'DESC');
-        return $this->db->get('os_nfse_emitida')->result();
+        $query = $this->db->get('os_nfse_emitida');
+
+        return $query ? $query->result() : [];
     }
 
     /**
@@ -217,6 +262,11 @@ class Nfse_emitida_model extends CI_Model
      */
     public function listar($filtros = [], $limit = 50, $offset = 0)
     {
+        // Verificar se a tabela existe
+        if (!$this->db->table_exists('os_nfse_emitida') || !$this->db->table_exists('os') || !$this->db->table_exists('clientes')) {
+            return [];
+        }
+
         $this->db->select('os_nfse_emitida.*, os.idOs, clientes.nomeCliente, os.status as os_status');
         $this->db->from('os_nfse_emitida');
         $this->db->join('os', 'os.idOs = os_nfse_emitida.os_id');
@@ -238,7 +288,8 @@ class Nfse_emitida_model extends CI_Model
         $this->db->order_by('os_nfse_emitida.data_emissao', 'DESC');
         $this->db->limit($limit, $offset);
 
-        return $this->db->get()->result();
+        $query = $this->db->get();
+        return $query ? $query->result() : [];
     }
 
     /**
@@ -246,6 +297,11 @@ class Nfse_emitida_model extends CI_Model
      */
     public function count($filtros = [])
     {
+        // Verificar se a tabela existe
+        if (!$this->db->table_exists('os_nfse_emitida')) {
+            return 0;
+        }
+
         if (!empty($filtros['situacao'])) {
             $this->db->where('situacao', $filtros['situacao']);
         }
@@ -257,6 +313,11 @@ class Nfse_emitida_model extends CI_Model
      */
     public function getResumo($periodo = 'mes_atual')
     {
+        // Verificar se a tabela existe
+        if (!$this->db->table_exists('os_nfse_emitida')) {
+            return [];
+        }
+
         if ($periodo == 'mes_atual') {
             $this->db->where('data_emissao >=', date('Y-m-01'));
             $this->db->where('data_emissao <=', date('Y-m-t'));
@@ -265,6 +326,7 @@ class Nfse_emitida_model extends CI_Model
         $this->db->select('situacao, COUNT(*) as total, SUM(valor_servicos) as valor_total');
         $this->db->group_by('situacao');
 
-        return $this->db->get('os_nfse_emitida')->result();
+        $query = $this->db->get('os_nfse_emitida');
+        return $query ? $query->result() : [];
     }
 }

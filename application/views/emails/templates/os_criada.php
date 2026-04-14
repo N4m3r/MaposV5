@@ -10,7 +10,7 @@
     <p><strong>Descrição:</strong> <?= htmlspecialchars($os_descricao ?? '') ?></p>
     <p><strong>Status:</strong> <?= $os_status ?? 'Em Aberto' ?></p>
     <?php if (!empty($os_valor)): ?>
-    <p><strong>Valor Estimado:</strong> R$ <?= number_format($os_valor, 2, ',', '.') ?></p>
+    <p><strong>Valor Estimado:</strong> R$ <?= number_format((float)$os_valor, 2, ',', '.') ?></p>
     <?php endif; ?>
 </div>
 

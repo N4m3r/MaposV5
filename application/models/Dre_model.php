@@ -17,11 +17,23 @@ class Dre_model extends CI_Model
      */
     public function getContas($ativo = null)
     {
+        // Verificar se a tabela existe
+        if (!$this->db->table_exists('dre_contas')) {
+            return [];
+        }
+
         $this->db->order_by('ordem', 'ASC');
         if ($ativo !== null) {
             $this->db->where('ativo', $ativo);
         }
-        return $this->db->get('dre_contas')->result();
+
+        $query = $this->db->get('dre_contas');
+
+        if ($query === false) {
+            return [];
+        }
+
+        return $query->result();
     }
 
     /**
@@ -29,10 +41,22 @@ class Dre_model extends CI_Model
      */
     public function getContasPorGrupo($grupo)
     {
+        // Verificar se a tabela existe
+        if (!$this->db->table_exists('dre_contas')) {
+            return [];
+        }
+
         $this->db->where('grupo', $grupo);
         $this->db->where('ativo', 1);
         $this->db->order_by('ordem', 'ASC');
-        return $this->db->get('dre_contas')->result();
+
+        $query = $this->db->get('dre_contas');
+
+        if ($query === false) {
+            return [];
+        }
+
+        return $query->result();
     }
 
     /**
@@ -40,8 +64,19 @@ class Dre_model extends CI_Model
      */
     public function getContaById($id)
     {
+        // Verificar se a tabela existe
+        if (!$this->db->table_exists('dre_contas')) {
+            return null;
+        }
+
         $this->db->where('id', $id);
-        return $this->db->get('dre_contas')->row();
+        $query = $this->db->get('dre_contas');
+
+        if ($query === false) {
+            return null;
+        }
+
+        return $query->row();
     }
 
     /**
@@ -69,13 +104,20 @@ class Dre_model extends CI_Model
      */
     public function excluirConta($id)
     {
-        // Verificar se existem lançamentos
-        $this->db->where('conta_id', $id);
-        $lancamentos = $this->db->count_all_results('dre_lancamentos');
+        // Verificar se as tabelas existem
+        if (!$this->db->table_exists('dre_contas')) {
+            return false;
+        }
 
-        if ($lancamentos > 0) {
-            // Desativa em vez de excluir
-            return $this->atualizarConta($id, ['ativo' => 0]);
+        // Verificar se existem lançamentos (se a tabela existir)
+        if ($this->db->table_exists('dre_lancamentos')) {
+            $this->db->where('conta_id', $id);
+            $lancamentos = $this->db->count_all_results('dre_lancamentos');
+
+            if ($lancamentos > 0) {
+                // Desativa em vez de excluir
+                return $this->atualizarConta($id, ['ativo' => 0]);
+            }
         }
 
         return $this->db->delete('dre_contas', ['id' => $id]);
@@ -103,6 +145,11 @@ class Dre_model extends CI_Model
      */
     public function getLancamentos($data_inicio, $data_fim, $conta_id = null)
     {
+        // Verificar se as tabelas existem
+        if (!$this->db->table_exists('dre_lancamentos') || !$this->db->table_exists('dre_contas')) {
+            return [];
+        }
+
         $this->db->select('dre_lancamentos.*, dre_contas.nome as conta_nome, dre_contas.codigo as conta_codigo, dre_contas.grupo');
         $this->db->from('dre_lancamentos');
         $this->db->join('dre_contas', 'dre_contas.id = dre_lancamentos.conta_id');
@@ -114,7 +161,15 @@ class Dre_model extends CI_Model
         }
 
         $this->db->order_by('dre_lancamentos.data', 'DESC');
-        return $this->db->get()->result();
+
+        $query = $this->db->get();
+
+        // Verificar se a consulta foi bem sucedida
+        if ($query === false) {
+            return [];
+        }
+
+        return $query->result();
     }
 
     /**
@@ -122,11 +177,23 @@ class Dre_model extends CI_Model
      */
     public function getTotalPorConta($conta_id, $data_inicio, $data_fim)
     {
+        // Verificar se a tabela existe
+        if (!$this->db->table_exists('dre_lancamentos')) {
+            return 0;
+        }
+
         $this->db->select('SUM(CASE WHEN tipo_movimento = "CREDITO" THEN valor ELSE -valor END) as total');
         $this->db->where('conta_id', $conta_id);
         $this->db->where('data >=', $data_inicio);
         $this->db->where('data <=', $data_fim);
-        $result = $this->db->get('dre_lancamentos')->row();
+
+        $query = $this->db->get('dre_lancamentos');
+
+        if ($query === false) {
+            return 0;
+        }
+
+        $result = $query->row();
 
         return $result ? floatval($result->total) : 0;
     }
