@@ -46,11 +46,20 @@ if (! file_exists($settings_file)) {
     }
 }
 
-if (! empty($_POST)) {
-    $host = $_POST['host'];
-    $dbuser = $_POST['dbuser'];
-    $dbpassword = $_POST['dbpassword'];
-    $dbname = $_POST['dbname'];
+// Se não houver POST, retornar erro informativo (não deixar saída vazia)
+if (empty($_POST)) {
+    echo json_encode([
+        'success' => false,
+        'message' => 'Requisição inválida. Este endpoint deve ser chamado via POST com os dados de instalação.',
+        'step' => 0
+    ]);
+    exit();
+}
+
+$host = $_POST['host'];
+$dbuser = $_POST['dbuser'];
+$dbpassword = $_POST['dbpassword'];
+$dbname = $_POST['dbname'];
 
     $full_name = $_POST['full_name'];
     $email = $_POST['email'];
@@ -465,4 +474,3 @@ if (! empty($_POST)) {
 
     echo json_encode(['success' => true, 'message' => 'Instalação bem sucedida!', 'percent' => 100, 'step' => 8]);
     exit();
-}
