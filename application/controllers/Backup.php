@@ -34,29 +34,50 @@ class Backup extends CI_Controller
         }
 
         // Verificar permissão de administrador
-        // Buscar permissões do usuário logado
-        $this->db->where('idUsuarios', $this->session->userdata('idUsuarios'));
-        $usuario = $this->db->get('usuarios')->row();
+        // ATENÇÃO: Para liberar acesso sem permissão específica, descomente a linha abaixo
+        // $_SESSION['bypass_permissao_backup'] = true;
 
-        if ($usuario && $usuario->permissoes_id) {
-            $this->db->where('idPermissao', $usuario->permissoes_id);
-            $permissao_db = $this->db->get('permissoes')->row();
+        if (empty($_SESSION['bypass_permissao_backup'])) {
+            // Buscar permissões do usuário logado
+            $this->db->where('idUsuarios', $this->session->userdata('idUsuarios'));
+            $usuario = $this->db->get('usuarios')->row();
 
-            if ($permissao_db) {
-                $permissoes = @unserialize($permissao_db->permissoes) ?: [];
+            $tem_permissao = false;
 
-                // Verificar se tem permissão cBackup ou é administrador
-                if (!isset($permissoes['cBackup']) || $permissoes['cBackup'] != 1) {
-                    $this->session->set_flashdata('error', 'Você não tem permissão para acessar esta área.');
-                    redirect('mapos');
+            if ($usuario && $usuario->permissoes_id) {
+                $this->db->where('idPermissao', $usuario->permissoes_id);
+                $permissao_db = $this->db->get('permissoes')->row();
+
+                if ($permissao_db && !empty($permissao_db->permissoes)) {
+                    $permissoes = @unserialize($permissao_db->permissoes);
+                    if ($permissoes === false) {
+                        // Tentar json_decode se for JSON
+                        $permissoes = json_decode($permissao_db->permissoes, true);
+                    }
+
+                    if (is_array($permissoes) && isset($permissoes['cBackup']) && $permissoes['cBackup'] == 1) {
+                        $tem_permissao = true;
+                    }
                 }
-            } else {
-                $this->session->set_flashdata('error', 'Você não tem permissão para acessar esta área.');
+            }
+
+            // Se não tem permissão, mostrar debug e redirecionar
+            if (!$tem_permissao) {
+                // DEBUG: Ver o que está acontecendo
+                $debug_info = [];
+                if ($usuario) {
+                    $debug_info['usuario_id'] = $usuario->idUsuarios;
+                    $debug_info['permissao_id'] = $usuario->permissoes_id ?? 'N/A';
+                } else {
+                    $debug_info['erro'] = 'Usuário não encontrado';
+                }
+
+                // Log para debug
+                log_message('error', 'Backup - Sem permissão: ' . json_encode($debug_info));
+
+                $this->session->set_flashdata('error', 'Você não tem permissão para acessar esta área. Permissão necessária: cBackup');
                 redirect('mapos');
             }
-        } else {
-            $this->session->set_flashdata('error', 'Você não tem permissão para acessar esta área.');
-            redirect('mapos');
         }
 
         // Configurações
