@@ -393,6 +393,14 @@ class Os extends MY_Controller
             $this->data['totalProdutos'] = $return['totalProdutos'];
         }
 
+        // Carregar dados de NFSe e Boleto
+        $this->load->model('nfse_emitida_model');
+        $this->load->model('boleto_os_model');
+        $this->data['nfse_atual'] = $this->nfse_emitida_model->getByOsId($os_id);
+        $this->data['boleto_atual'] = $this->boleto_os_model->getAtivoByOsId($os_id);
+        $this->data['historico_nfse'] = $this->nfse_emitida_model->getAllByOsId($os_id);
+        $this->data['historico_boleto'] = $this->boleto_os_model->getAllByOsId($os_id);
+
         return $this->layout();
     }
 

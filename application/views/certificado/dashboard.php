@@ -158,10 +158,38 @@
                     <a href="<?= site_url('certificado/importar_nfse') ?>" class="btn btn-block btn-warning">
                         <i class="fas fa-file-import"></i> Importar NFS-e
                     </a>
+                    <a href="<?= site_url('impostos/configuracoes') ?>" class="btn btn-block btn-primary">
+                        <i class="fas fa-sliders-h"></i> Configurar Impostos
+                    </a>
                     <?php endif; ?>
                 </div>
             </div>
         </div>
+
+        <!-- Status das Configurações de Impostos -->
+        <?php if ($certificado): ?>
+        <div class="widget-box" style="margin-top: 15px;">
+            <div class="widget-title">
+                <span class="icon"><i class="fas fa-percentage"></i></span>
+                <h5>Status dos Impostos</h5>
+            </div>
+            <div class="widget-content">
+                <?php if ($config_impostos['anexo']): ?>
+                    <div class="alert alert-success" style="margin-bottom: 10px;">
+                        <i class="fas fa-check-circle"></i> <strong>Configurado!</strong><br>
+                        <strong>Anexo:</strong> <?= $config_impostos['anexo'] ?><br>
+                        <strong>Faixa:</strong> <?= $config_impostos['faixa'] ?>ª<br>
+                        <strong>Retenção Automática:</strong> <?= $config_impostos['retencao_automatica'] ? 'Sim' : 'Não' ?>
+                    </div>
+                <?php else: ?>
+                    <div class="alert alert-warning" style="margin-bottom: 10px;">
+                        <i class="fas fa-exclamation-triangle"></i> <strong>Não Configurado</strong><br>
+                        Clique em "Sincronizar Alíquotas" ou configure manualmente em Impostos > Configurações.
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+        <?php endif; ?>
     </div>
 </div>
 

@@ -748,6 +748,16 @@
                             </div>
                         </div>
                         <?php } ?>
+
+                        <!-- SEÇÃO NFS-e + BOLETO -->
+                        <?php $this->load->view('nfse_os/aba_os', [
+                            'result' => $result,
+                            'nfse_atual' => $nfse_atual ?? null,
+                            'boleto_atual' => $boleto_atual ?? null,
+                            'historico_nfse' => $historico_nfse ?? [],
+                            'historico_boleto' => $historico_boleto ?? []
+                        ]); ?>
+
                     </div>
                 </div>
             </div>

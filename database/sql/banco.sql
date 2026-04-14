@@ -230,6 +230,10 @@ CREATE TABLE IF NOT EXISTS `os` (
   `faturado` TINYINT(1) NOT NULL,
   `garantias_id` int(11) NULL,
   `tecnico_responsavel` INT(11) NULL COMMENT 'ID do usuario tecnico responsavel pela OS',
+  `nfse_status` ENUM('Pendente', 'Emitida', 'Cancelada') NOT NULL DEFAULT 'Pendente' COMMENT 'Status da NFS-e vinculada',
+  `boleto_status` ENUM('Pendente', 'Emitido', 'Pago', 'Vencido', 'Cancelado') NOT NULL DEFAULT 'Pendente' COMMENT 'Status do boleto vinculado',
+  `data_vencimento_boleto` DATE NULL DEFAULT NULL COMMENT 'Data de vencimento do boleto',
+  `valor_com_impostos` DECIMAL(15, 2) NULL DEFAULT NULL COMMENT 'Valor liquido apos deducao de impostos',
   PRIMARY KEY (`idOs`),
   INDEX `fk_os_clientes1` (`clientes_id` ASC),
   INDEX `fk_os_usuarios1` (`usuarios_id` ASC),
@@ -942,6 +946,90 @@ INSERT IGNORE INTO `configuracoes` (`idConfig`, `config`, `valor`) VALUES
 (13, 'control_edit_vendas', '1'),
 (14, 'email_automatico', '1'),
 (15, 'control_2vias', '0');
+
+-- -----------------------------------------------------
+-- Table `os_nfse_emitida` - Notas fiscais de serviço emitidas
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `os_nfse_emitida` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `os_id` INT(11) NOT NULL COMMENT 'ID da OS vinculada',
+  `numero_nfse` VARCHAR(20) NULL COMMENT 'Número da NFS-e',
+  `chave_acesso` VARCHAR(50) NULL,
+  `data_emissao` DATETIME NULL,
+  `valor_servicos` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+  `valor_deducoes` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+  `valor_liquido` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+  `aliquota_iss` DECIMAL(5,2) NOT NULL DEFAULT 0.00,
+  `valor_iss` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+  `valor_inss` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+  `valor_irrf` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+  `valor_csll` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+  `valor_pis` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+  `valor_cofins` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+  `valor_total_impostos` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+  `situacao` ENUM('Pendente', 'Emitida', 'Cancelada', 'Substituida') NOT NULL DEFAULT 'Pendente',
+  `codigo_verificacao` VARCHAR(20) NULL,
+  `link_impressao` VARCHAR(500) NULL,
+  `xml_path` VARCHAR(500) NULL,
+  `protocolo` VARCHAR(50) NULL,
+  `mensagem_retorno` TEXT NULL,
+  `cobranca_id` INT(11) NULL COMMENT 'ID da cobrança/boleto vinculado',
+  `emitido_por` INT(11) NULL,
+  `created_at` DATETIME NULL,
+  `updated_at` DATETIME NULL,
+  PRIMARY KEY (`id`),
+  INDEX `idx_os_id` (`os_id`),
+  INDEX `idx_numero_nfse` (`numero_nfse`),
+  CONSTRAINT `fk_nfse_emitida_os`
+    FOREIGN KEY (`os_id`)
+    REFERENCES `os` (`idOs`)
+    ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `os_boleto_emitido` - Boletos gerados para OS
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `os_boleto_emitido` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `os_id` INT(11) NOT NULL,
+  `nfse_id` INT(11) NULL COMMENT 'ID da NFS-e vinculada',
+  `nosso_numero` VARCHAR(50) NULL,
+  `linha_digitavel` VARCHAR(60) NULL,
+  `codigo_barras` VARCHAR(44) NULL,
+  `data_emissao` DATE NULL,
+  `data_vencimento` DATE NULL,
+  `data_pagamento` DATE NULL,
+  `valor_original` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+  `valor_desconto_impostos` DECIMAL(15,2) NOT NULL DEFAULT 0.00 COMMENT 'Valor descontado dos impostos (NFSe)',
+  `valor_liquido` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+  `valor_pago` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+  `multa` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+  `juros` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+  `status` ENUM('Pendente', 'Emitido', 'Pago', 'Vencido', 'Cancelado') NOT NULL DEFAULT 'Pendente',
+  `instrucoes` TEXT NULL,
+  `sacado_nome` VARCHAR(255) NULL,
+  `sacado_documento` VARCHAR(20) NULL,
+  `sacado_endereco` VARCHAR(500) NULL,
+  `pdf_path` VARCHAR(500) NULL,
+  `remessa_id` INT(11) NULL,
+  `retorno_id` INT(11) NULL,
+  `gateway` VARCHAR(50) NULL COMMENT 'Gateway de pagamento usado',
+  `gateway_transaction_id` VARCHAR(100) NULL,
+  `created_at` DATETIME NULL,
+  `updated_at` DATETIME NULL,
+  PRIMARY KEY (`id`),
+  INDEX `idx_os_id` (`os_id`),
+  INDEX `idx_nfse_id` (`nfse_id`),
+  INDEX `idx_status` (`status`),
+  CONSTRAINT `fk_boleto_emitido_os`
+    FOREIGN KEY (`os_id`)
+    REFERENCES `os` (`idOs`)
+    ON DELETE CASCADE,
+  CONSTRAINT `fk_boleto_emitido_nfse`
+    FOREIGN KEY (`nfse_id`)
+    REFERENCES `os_nfse_emitida` (`id`)
+    ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- NOTA: As permissões e usuário administrador são criados pelo instalador (do_install.php)
 -- para evitar problemas de serialização. O instalador usa PHP para gerar os dados corretamente.

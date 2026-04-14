@@ -105,6 +105,13 @@
                     <?php } ?>
                 <?php } ?>
 
+                <!-- NFS-e + Boletos -->
+                <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vNFSe')) { ?>
+                    <li class="menu-divider"><span class="divider-text">NFSe E BOLETOS</span></li>
+                    <li class="<?php if (isset($menuNfseOsDashboard)) { echo 'active'; }; ?>"><a href="<?= site_url('nfse_os') ?>"><i class='bx bx-dashboard iconX'></i><span class="title">Dashboard NFSe</span><span class="title-tooltip">Dashboard NFSe</span></a></li>
+                    <li class="<?php if (isset($menuNfseOsRelatorio)) { echo 'active'; }; ?>"><a href="<?= site_url('nfse_os/relatorio') ?>"><i class='bx bx-chart iconX'></i><span class="title">Relatório NFSe/Boletos</span><span class="title-tooltip">Relatório</span></a></li>
+                <?php } ?>
+
                 <!-- NOVAS FUNCIONALIDADES V5 -->
                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vRelatorioAtendimentos') ||
                           $this->permission->checkPermission($this->session->userdata('permissao'), 'vCertificado') ||

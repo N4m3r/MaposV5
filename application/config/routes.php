@@ -135,5 +135,20 @@ $route['migrate/version/(:num)'] = 'migrate/version/$1';
 $route['migrate/reset'] = 'migrate/reset';
 $route['migrate/status'] = 'migrate/status';
 
+// Rotas do Sistema de NFS-e e Boletos vinculados à OS
+$route['nfse_os'] = 'nfse_os';
+$route['nfse_os/index'] = 'nfse_os/index';
+$route['nfse_os/emitir/(:num)'] = 'nfse_os/emitir/$1';
+$route['nfse_os/gerar_boleto/(:num)'] = 'nfse_os/gerar_boleto/$1';
+$route['nfse_os/gerar_boleto/(:num)/(:num)'] = 'nfse_os/gerar_boleto/$1/$2';
+$route['nfse_os/calcular_impostos'] = 'nfse_os/calcular_impostos';
+$route['nfse_os/visualizar/(:num)'] = 'nfse_os/visualizar/$1';
+$route['nfse_os/cancelar_nfse/(:num)'] = 'nfse_os/cancelar_nfse/$1';
+$route['nfse_os/cancelar_boleto/(:num)'] = 'nfse_os/cancelar_boleto/$1';
+$route['nfse_os/registrar_pagamento/(:num)'] = 'nfse_os/registrar_pagamento/$1';
+$route['nfse_os/relatorio'] = 'nfse_os/relatorio';
+$route['nfse_os/api_get_os_dados/(:num)'] = 'nfse_os/api_get_os_dados/$1';
+$route['nfse_os/enviar_boleto_email/(:num)'] = 'nfse_os/enviar_boleto_email/$1';
+
 /* End of file routes.php */
 /* Location: ./application/config/routes.php */

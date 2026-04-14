@@ -221,6 +221,93 @@ if (! empty($_POST)) {
         $mysqli->query("ALTER TABLE `os` ADD INDEX `idx_tecnico_responsavel` (`tecnico_responsavel`)");
     }
 
+    // Adicionar colunas de NFSe e Boleto na tabela os se não existirem
+    $result = $mysqli->query("SHOW COLUMNS FROM `os` LIKE 'nfse_status'");
+    if ($result->num_rows == 0) {
+        $mysqli->query("ALTER TABLE `os` ADD COLUMN `nfse_status` ENUM('Pendente', 'Emitida', 'Cancelada') NOT NULL DEFAULT 'Pendente' COMMENT 'Status da NFS-e vinculada' AFTER `status`");
+        $mysqli->query("ALTER TABLE `os` ADD COLUMN `boleto_status` ENUM('Pendente', 'Emitido', 'Pago', 'Vencido', 'Cancelado') NOT NULL DEFAULT 'Pendente' COMMENT 'Status do boleto vinculado' AFTER `nfse_status`");
+        $mysqli->query("ALTER TABLE `os` ADD COLUMN `data_vencimento_boleto` DATE NULL DEFAULT NULL COMMENT 'Data de vencimento do boleto' AFTER `boleto_status`");
+        $mysqli->query("ALTER TABLE `os` ADD COLUMN `valor_com_impostos` DECIMAL(15, 2) NULL DEFAULT NULL COMMENT 'Valor liquido apos deducao de impostos' AFTER `valor_desconto`");
+    }
+
+    // Tabela: os_nfse_emitida (Notas fiscais de serviço emitidas)
+    $mysqli->query("CREATE TABLE IF NOT EXISTS `os_nfse_emitida` (
+      `id` INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+      `os_id` INT(11) NOT NULL COMMENT 'ID da OS vinculada',
+      `numero_nfse` VARCHAR(20) NULL COMMENT 'Número da NFS-e',
+      `chave_acesso` VARCHAR(50) NULL,
+      `data_emissao` DATETIME NULL,
+      `valor_servicos` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+      `valor_deducoes` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+      `valor_liquido` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+      `aliquota_iss` DECIMAL(5,2) NOT NULL DEFAULT 0.00,
+      `valor_iss` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+      `valor_inss` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+      `valor_irrf` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+      `valor_csll` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+      `valor_pis` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+      `valor_cofins` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+      `valor_total_impostos` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+      `situacao` ENUM('Pendente', 'Emitida', 'Cancelada', 'Substituida') NOT NULL DEFAULT 'Pendente',
+      `codigo_verificacao` VARCHAR(20) NULL,
+      `link_impressao` VARCHAR(500) NULL,
+      `xml_path` VARCHAR(500) NULL,
+      `protocolo` VARCHAR(50) NULL,
+      `mensagem_retorno` TEXT NULL,
+      `cobranca_id` INT(11) NULL COMMENT 'ID da cobrança/boleto vinculado',
+      `emitido_por` INT(11) NULL,
+      `created_at` DATETIME NULL,
+      `updated_at` DATETIME NULL,
+      INDEX `idx_os_id` (`os_id`),
+      INDEX `idx_numero_nfse` (`numero_nfse`),
+      CONSTRAINT `fk_nfse_emitida_os`
+        FOREIGN KEY (`os_id`)
+        REFERENCES `os` (`idOs`)
+        ON DELETE CASCADE
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+    // Tabela: os_boleto_emitido (Boletos gerados para OS)
+    $mysqli->query("CREATE TABLE IF NOT EXISTS `os_boleto_emitido` (
+      `id` INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+      `os_id` INT(11) NOT NULL,
+      `nfse_id` INT(11) NULL COMMENT 'ID da NFS-e vinculada',
+      `nosso_numero` VARCHAR(50) NULL,
+      `linha_digitavel` VARCHAR(60) NULL,
+      `codigo_barras` VARCHAR(44) NULL,
+      `data_emissao` DATE NULL,
+      `data_vencimento` DATE NULL,
+      `data_pagamento` DATE NULL,
+      `valor_original` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+      `valor_desconto_impostos` DECIMAL(15,2) NOT NULL DEFAULT 0.00 COMMENT 'Valor descontado dos impostos (NFSe)',
+      `valor_liquido` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+      `valor_pago` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+      `multa` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+      `juros` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+      `status` ENUM('Pendente', 'Emitido', 'Pago', 'Vencido', 'Cancelado') NOT NULL DEFAULT 'Pendente',
+      `instrucoes` TEXT NULL,
+      `sacado_nome` VARCHAR(255) NULL,
+      `sacado_documento` VARCHAR(20) NULL,
+      `sacado_endereco` VARCHAR(500) NULL,
+      `pdf_path` VARCHAR(500) NULL,
+      `remessa_id` INT(11) NULL,
+      `retorno_id` INT(11) NULL,
+      `gateway` VARCHAR(50) NULL COMMENT 'Gateway de pagamento usado',
+      `gateway_transaction_id` VARCHAR(100) NULL,
+      `created_at` DATETIME NULL,
+      `updated_at` DATETIME NULL,
+      INDEX `idx_os_id` (`os_id`),
+      INDEX `idx_nfse_id` (`nfse_id`),
+      INDEX `idx_status` (`status`),
+      CONSTRAINT `fk_boleto_emitido_os`
+        FOREIGN KEY (`os_id`)
+        REFERENCES `os` (`idOs`)
+        ON DELETE CASCADE,
+      CONSTRAINT `fk_boleto_emitido_nfse`
+        FOREIGN KEY (`nfse_id`)
+        REFERENCES `os_nfse_emitida` (`id`)
+        ON DELETE SET NULL
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
     $mysqli->query("SET FOREIGN_KEY_CHECKS = 1");
 
     // ============================================
@@ -266,7 +353,11 @@ if (! empty($_POST)) {
         'vUsuariosCliente' => '1', 'cUsuariosCliente' => '1',
         'eUsuariosCliente' => '1', 'dUsuariosCliente' => '1',
         'cPermUsuariosCliente' => '1',
-        'vDashboard' => '1', 'vRelatorioCompleto' => '1', 'vExportarDados' => '1'
+        'vDashboard' => '1', 'vRelatorioCompleto' => '1', 'vExportarDados' => '1',
+        // Permissões NFSe e Boletos vinculados à OS
+        'vNFSe' => '1', 'cNFSe' => '1', 'eNFSe' => '1',
+        'vBoletoOS' => '1', 'cBoletoOS' => '1', 'eBoletoOS' => '1',
+        'rNFSe' => '1'
     ];
 
     $permissoes_serializado = serialize($permissoes_array);

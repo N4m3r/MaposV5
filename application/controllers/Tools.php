@@ -96,6 +96,7 @@ class Tools extends CI_Controller
 
         $seeds = [
             'Permissoes',
+            'PermissoesNfseSeeder',
             'Usuarios',
             'Configuracoes',
         ];

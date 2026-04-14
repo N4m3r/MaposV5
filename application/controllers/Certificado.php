@@ -33,9 +33,19 @@ class Certificado extends MY_Controller
         $validade = $this->certificado_model->verificarValidade();
         $consultas = $this->certificado_model->getConsultas($certificado ? $certificado->id : null, 10);
 
+        // Verificar configuração de impostos
+        $this->load->model('impostos_model');
+        $configImpostos = [
+            'anexo' => $this->impostos_model->getConfig('IMPOSTO_ANEXO_PADRAO') ?: null,
+            'faixa' => $this->impostos_model->getConfig('IMPOSTO_FAIXA_ATUAL') ?: null,
+            'retencao_automatica' => $this->impostos_model->getConfig('IMPOSTO_RETENCAO_AUTOMATICA') == '1',
+            'dre_integracao' => $this->impostos_model->getConfig('IMPOSTO_DRE_INTEGRACAO') == '1',
+        ];
+
         $this->data['certificado'] = $certificado;
         $this->data['validade'] = $validade;
         $this->data['consultas'] = $consultas;
+        $this->data['config_impostos'] = $configImpostos;
         $this->data['view'] = 'certificado/dashboard';
         return $this->layout();
     }
@@ -67,7 +77,25 @@ class Certificado extends MY_Controller
             $resultado = $this->certificado_model->salvarCertificado($dados, $arquivo);
 
             if (isset($resultado['success'])) {
-                $this->session->set_flashdata('success', 'Certificado configurado com sucesso!');
+                // Tentar sincronizar alíquotas automaticamente
+                $sincronizacao = $this->certificado_model->sincronizarAliquotas($dados['cnpj']);
+
+                if (isset($sincronizacao['success'])) {
+                    // Configurar impostos automaticamente
+                    $this->load->model('impostos_model');
+                    $this->impostos_model->setConfig('IMPOSTO_ANEXO_PADRAO', $sincronizacao['configuracao']['anexo_sugerido']);
+                    $this->impostos_model->setConfig('IMPOSTO_FAIXA_ATUAL', '1'); // Faixa padrão
+                    $this->impostos_model->setConfig('IMPOSTO_RETENCAO_AUTOMATICA', '1'); // Habilitar retenção automática
+                    $this->impostos_model->setConfig('IMPOSTO_DRE_INTEGRACAO', '1'); // Integrar com DRE
+
+                    log_info('Configuração de impostos automática aplicada para CNPJ: ' . $dados['cnpj']);
+
+                    $this->session->set_flashdata('success', 'Certificado configurado com sucesso! As configurações de impostos foram aplicadas automaticamente (Anexo ' . $sincronizacao['configuracao']['anexo_sugerido'] . '). Verifique em Impostos > Configurações.');
+                } else {
+                    $this->session->set_flashdata('success', 'Certificado configurado com sucesso! Configure manualmente os impostos em Impostos > Configurações.');
+                    $this->session->set_flashdata('info', 'Não foi possível detectar automaticamente as alíquotas: ' . ($sincronizacao['error'] ?? 'Empresa não é optante do Simples Nacional'));
+                }
+
                 redirect('certificado');
             } else {
                 $this->session->set_flashdata('error', $resultado['error']);
@@ -120,10 +148,16 @@ class Certificado extends MY_Controller
         $resultado = $this->certificado_model->sincronizarAliquotas();
 
         if (isset($resultado['success'])) {
-            $this->session->set_flashdata('success', $resultado['mensagem']);
+            // Aplicar configurações automaticamente
+            $this->load->model('impostos_model');
+            $this->impostos_model->setConfig('IMPOSTO_ANEXO_PADRAO', $resultado['configuracao']['anexo_sugerido']);
+            $this->impostos_model->setConfig('IMPOSTO_FAIXA_ATUAL', '1');
+            $this->impostos_model->setConfig('IMPOSTO_RETENCAO_AUTOMATICA', '1');
+            $this->impostos_model->setConfig('IMPOSTO_DRE_INTEGRACAO', '1');
 
-            // Sugerir configuração
-            $this->session->set_userdata('sincronizacao_aliquotas', $resultado['configuracao']);
+            log_info('Alíquotas sincronizadas manualmente pelo usuário: ' . $this->session->userdata('nome'));
+
+            $this->session->set_flashdata('success', 'Alíquotas sincronizadas e configuradas automaticamente! Anexo identificado: ' . $resultado['configuracao']['anexo_sugerido']);
         } else {
             $this->session->set_flashdata('error', $resultado['error']);
         }

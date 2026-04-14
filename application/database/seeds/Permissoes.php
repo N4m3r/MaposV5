@@ -39,6 +39,10 @@ class Permissoes extends Seeder
             'vUsuariosCliente' => '1', 'cUsuariosCliente' => '1', 'eUsuariosCliente' => '1', 'dUsuariosCliente' => '1', 'cPermUsuariosCliente' => '1',
             'vBtnAtendimento' => '1', 'vTecnicoOS' => '1', 'eTecnicoCheckin' => '1', 'eTecnicoCheckout' => '1', 'eTecnicoFotos' => '1',
             'cDocOs' => '1',
+            // Permissões NFSe e Boletos vinculados à OS
+            'vNFSe' => '1', 'cNFSe' => '1', 'eNFSe' => '1',
+            'vBoletoOS' => '1', 'cBoletoOS' => '1', 'eBoletoOS' => '1',
+            'rNFSe' => '1',
         ];
 
         $data = [
