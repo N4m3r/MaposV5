@@ -54,19 +54,19 @@
 
                         <!-- Botões de Ação -->
                         <div class="btn-group">
-                            <?php if ($nfse_atual->link_impressao): ?
+                            <?php if ($nfse_atual->link_impressao): ?>
                                 <a href="<?= $nfse_atual->link_impressao ?>" target="_blank" class="btn btn-success">
                                     <i class="fas fa-print"></i> Imprimir NFS-e
                                 </a>
                             <?php endif; ?>
 
-                            <?php if ($nfse_atual->xml_path): ?
+                            <?php if ($nfse_atual->xml_path): ?>
                                 <a href="<?= base_url($nfse_atual->xml_path) ?>" target="_blank" class="btn btn-info">
                                     <i class="fas fa-file-code"></i> Download XML
                                 </a>
                             <?php endif; ?>
 
-                            <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eNFSe') && $nfse_atual->situacao != 'Cancelada'): ?
+                            <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eNFSe') && $nfse_atual->situacao != 'Cancelada'): ?>
                                 <button type="button" class="btn btn-danger" onclick="cancelarNFSe(<?= $nfse_atual->id ?>)">
                                     <i class="fas fa-times"></i> Cancelar
                                 </button>
@@ -187,7 +187,7 @@
                                 <div class="span6 text-right">
                                     <strong>Vencimento:</strong> <?= date('d/m/Y', strtotime($boleto_atual->data_vencimento)) ?><br>
                                     <strong>Valor Original:</strong> R$ <?= number_format($boleto_atual->valor_original, 2, ',', '.') ?><br>
-                                    <?php if ($boleto_atual->valor_desconto_impostos > 0): ?
+                                    <?php if ($boleto_atual->valor_desconto_impostos > 0): ?>
                                         <strong>Desconto Impostos:</strong> R$ <?= number_format($boleto_atual->valor_desconto_impostos, 2, ',', '.') ?><br>
                                     <?php endif; ?>
                                     <strong>Valor Líquido:</strong> R$ <?= number_format($boleto_atual->valor_liquido, 2, ',', '.') ?>
@@ -224,13 +224,13 @@
                         <!-- Botões de Ação -->
                         <div class="btn-group">
 
-                            <?php if ($boleto_atual->pdf_path): ?
+                            <?php if ($boleto_atual->pdf_path): ?>
                                 <a href="<?= base_url($boleto_atual->pdf_path) ?>" target="_blank" class="btn btn-success">
                                     <i class="fas fa-file-pdf"></i> Visualizar PDF
                                 </a>
                             <?php endif; ?>
 
-                            <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eBoletoOS')): ?
+                            <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eBoletoOS')): ?>
 
                                 <?php if ($boleto_atual->status != 'Pago' && $boleto_atual->status != 'Cancelado'): ?>
                                     <button type="button" class="btn btn-primary" onclick="registrarPagamento(<?= $boleto_atual->id ?>)">
@@ -337,11 +337,9 @@ function calcularImpostos() {
     const deducoes = parseFloat(document.getElementById('valor-deducoes').value) || 0;
 
     if (valor > 0) {
-        // Mostrar preview
         document.getElementById('preview-calculo').style.display = 'block';
         document.getElementById('preview-conteudo').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Calculando...';
 
-        // Chamar API
         $.ajax({
             url: '<?= site_url("nfse_os/calcular_impostos") ?>',
             type: 'POST',
@@ -430,7 +428,6 @@ function copiarLinhaDigitavel() {
     alert('Linha digitável copiada!');
 }
 
-// Calcular impostos ao carregar
 $(document).ready(function() {
     calcularImpostos();
 });
