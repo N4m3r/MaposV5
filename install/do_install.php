@@ -6,15 +6,44 @@ ini_set('display_errors', 0);
 ini_set('log_errors', 1);
 ini_set('max_execution_time', 300);
 
+// Capturar erros fatais
+register_shutdown_function(function() {
+    $error = error_get_last();
+    if ($error !== null && $error['type'] === E_ERROR) {
+        http_response_code(500);
+        header('Content-Type: application/json');
+        echo json_encode([
+            'success' => false,
+            'message' => 'Erro fatal: ' . $error['message'] . ' em ' . $error['file'] . ':' . $error['line'],
+            'step' => 0
+        ]);
+        exit();
+    }
+});
+
 header('Content-Type: application/json');
 
 $settings_file = __DIR__ . DIRECTORY_SEPARATOR . 'settings.json';
 
 if (! file_exists($settings_file)) {
-    exit('Arquivo de configuração não encontrado!');
+    echo json_encode([
+        'success' => false,
+        'message' => 'Arquivo de configuração não encontrado! Crie o arquivo install/settings.json',
+        'step' => 0,
+        'debug' => ['arquivo_esperado' => $settings_file]
+    ]);
+    exit();
 } else {
     $contents = file_get_contents($settings_file);
     $settings = json_decode($contents, true);
+    if ($settings === null) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Arquivo settings.json está corrompido! Erro: ' . json_last_error_msg(),
+            'step' => 0
+        ]);
+        exit();
+    }
 }
 
 if (! empty($_POST)) {
