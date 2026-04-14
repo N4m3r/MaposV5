@@ -166,15 +166,68 @@ $dbname = $_POST['dbname'];
 
     //create tables in database
     install_log("Executando multi_query do banco.sql");
-    $mysqli->multi_query($sql);
+
+    // Verificar se há erros no multi_query
+    if (!$mysqli->multi_query($sql)) {
+        install_log("Erro no multi_query inicial", ['erro' => $mysqli->error]);
+        echo json_encode(['success' => false, 'message' => 'Erro ao executar banco.sql: ' . $mysqli->error, 'step' => 2]);
+        exit();
+    }
+
+    // Processar todos os resultados e verificar erros
+    $query_num = 0;
     do {
-    } while (mysqli_more_results($mysqli) && mysqli_next_result($mysqli));
+        $query_num++;
+        if ($mysqli->errno) {
+            install_log("Erro na query " . $query_num, ['erro' => $mysqli->error]);
+            // Continuar para ver todos os erros, mas logar
+        }
+        if ($result = $mysqli->store_result()) {
+            $result->free();
+        }
+    } while ($mysqli->more_results() && $mysqli->next_result());
+
+    // Verificar se houve erro em alguma query
+    if ($mysqli->errno) {
+        install_log("Erro final no multi_query", ['erro' => $mysqli->error]);
+        echo json_encode(['success' => false, 'message' => 'Erro ao executar banco.sql: ' . $mysqli->error, 'step' => 2]);
+        exit();
+    }
+
     install_log("banco.sql executado com sucesso");
+
+    // Verificar quais tabelas foram criadas
+    $tables_result = $mysqli->query("SHOW TABLES");
+    $tables = [];
+    while ($row = $tables_result->fetch_array(MYSQLI_NUM)) {
+        $tables[] = $row[0];
+    }
+    install_log("Tabelas existentes após banco.sql", ['count' => count($tables), 'tables' => $tables]);
 
     // ============================================
     // Criar Tabelas Adicionais (que não estão no banco.sql)
     // ============================================
     $mysqli->query("SET FOREIGN_KEY_CHECKS = 0");
+
+    // Verificar se a tabela 'os' existe (necessária para as FKs)
+    $result = $mysqli->query("SHOW TABLES LIKE 'os'");
+    if ($result->num_rows == 0) {
+        install_log("ERRO: Tabela 'os' não existe após executar banco.sql");
+        echo json_encode(['success' => false, 'message' => 'Erro: Tabela os não foi criada pelo banco.sql', 'step' => 2]);
+        exit();
+    }
+    $result->free();
+
+    // Verificar estrutura da tabela os
+    $result = $mysqli->query("SHOW COLUMNS FROM `os` LIKE 'idOs'");
+    if ($result->num_rows == 0) {
+        install_log("ERRO: Coluna idOs não existe na tabela os");
+        echo json_encode(['success' => false, 'message' => 'Erro: Coluna idOs não existe na tabela os', 'step' => 2]);
+        exit();
+    }
+    $col_info = $result->fetch_assoc();
+    install_log("Coluna idOs encontrada", ['tipo' => $col_info['Type']]);
+    $result->free();
 
     // Tabela: dre_config (tabela de configuração do DRE)
     $mysqli->query("CREATE TABLE IF NOT EXISTS `dre_config` (
@@ -284,6 +337,7 @@ $dbname = $_POST['dbname'];
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
     // Tabela: os_tecnico_atribuicao (histórico de atribuições de técnicos às OS)
+    install_log("Criando tabela os_tecnico_atribuicao");
     $mysqli->query("CREATE TABLE IF NOT EXISTS `os_tecnico_atribuicao` (
       `idAtribuicao` INT(11) NOT NULL AUTO_INCREMENT,
       `os_id` INT(11) NOT NULL,
@@ -297,25 +351,13 @@ $dbname = $_POST['dbname'];
       INDEX `idx_os_id` (`os_id`),
       INDEX `idx_tecnico_id` (`tecnico_id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
-
-    // Adicionar coluna tecnico_responsavel na tabela os se não existir
-    $result = $mysqli->query("SHOW COLUMNS FROM `os` LIKE 'tecnico_responsavel'");
-    if ($result->num_rows == 0) {
-        $mysqli->query("ALTER TABLE `os` ADD COLUMN `tecnico_responsavel` INT(11) NULL COMMENT 'ID do usuario tecnico responsavel pela OS'");
-        $mysqli->query("ALTER TABLE `os` ADD INDEX `idx_tecnico_responsavel` (`tecnico_responsavel`)");
-    }
-
-    // Adicionar colunas de NFSe e Boleto na tabela os se não existirem
-    $result = $mysqli->query("SHOW COLUMNS FROM `os` LIKE 'nfse_status'");
-    if ($result->num_rows == 0) {
-        $mysqli->query("ALTER TABLE `os` ADD COLUMN `nfse_status` ENUM('Pendente', 'Emitida', 'Cancelada') NOT NULL DEFAULT 'Pendente' COMMENT 'Status da NFS-e vinculada' AFTER `status`");
-        $mysqli->query("ALTER TABLE `os` ADD COLUMN `boleto_status` ENUM('Pendente', 'Emitido', 'Pago', 'Vencido', 'Cancelado') NOT NULL DEFAULT 'Pendente' COMMENT 'Status do boleto vinculado' AFTER `nfse_status`");
-        $mysqli->query("ALTER TABLE `os` ADD COLUMN `data_vencimento_boleto` DATE NULL DEFAULT NULL COMMENT 'Data de vencimento do boleto' AFTER `boleto_status`");
-        $mysqli->query("ALTER TABLE `os` ADD COLUMN `valor_com_impostos` DECIMAL(15, 2) NULL DEFAULT NULL COMMENT 'Valor liquido apos deducao de impostos' AFTER `valor_desconto`");
+    if ($mysqli->errno) {
+        install_log("Erro ao criar os_tecnico_atribuicao", ['erro' => $mysqli->error]);
     }
 
     // Tabela: os_nfse_emitida (Notas fiscais de serviço emitidas)
-    $mysqli->query("CREATE TABLE IF NOT EXISTS `os_nfse_emitida` (
+    install_log("Criando tabela os_nfse_emitida");
+    $result = $mysqli->query("CREATE TABLE IF NOT EXISTS `os_nfse_emitida` (
       `id` INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
       `os_id` INT(11) NOT NULL COMMENT 'ID da OS vinculada',
       `numero_nfse` VARCHAR(20) NULL COMMENT 'Número da NFS-e',
@@ -349,9 +391,16 @@ $dbname = $_POST['dbname'];
         REFERENCES `os` (`idOs`)
         ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    if ($mysqli->errno) {
+        install_log("Erro ao criar os_nfse_emitida", ['erro' => $mysqli->error]);
+        echo json_encode(['success' => false, 'message' => 'Erro ao criar tabela os_nfse_emitida: ' . $mysqli->error, 'step' => 2]);
+        exit();
+    }
+    install_log("Tabela os_nfse_emitida criada com sucesso");
 
     // Tabela: os_boleto_emitido (Boletos gerados para OS)
-    $mysqli->query("CREATE TABLE IF NOT EXISTS `os_boleto_emitido` (
+    install_log("Criando tabela os_boleto_emitido");
+    $result = $mysqli->query("CREATE TABLE IF NOT EXISTS `os_boleto_emitido` (
       `id` INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
       `os_id` INT(11) NOT NULL,
       `nfse_id` INT(11) NULL COMMENT 'ID da NFS-e vinculada',
@@ -391,6 +440,12 @@ $dbname = $_POST['dbname'];
         REFERENCES `os_nfse_emitida` (`id`)
         ON DELETE SET NULL
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    if ($mysqli->errno) {
+        install_log("Erro ao criar os_boleto_emitido", ['erro' => $mysqli->error]);
+        echo json_encode(['success' => false, 'message' => 'Erro ao criar tabela os_boleto_emitido: ' . $mysqli->error, 'step' => 2]);
+        exit();
+    }
+    install_log("Tabela os_boleto_emitido criada com sucesso");
 
     $mysqli->query("SET FOREIGN_KEY_CHECKS = 1");
 
