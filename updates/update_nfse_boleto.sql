@@ -166,16 +166,18 @@ CREATE TABLE IF NOT EXISTS `dre_lancamentos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- -----------------------------------------------------
--- Inserir permissões do sistema NFSe
+-- REMOVIDO: Permissões agora são controladas via checkboxes
+-- na categoria "NFSe e Boletos" dentro de cada grupo de permissão
+-- As permissões vNFSe, cNFSe, eNFSe, rNFSe, vBoletoOS, cBoletoOS, eBoletoOS, pBoletoOS
+-- devem ser adicionadas manualmente no arquivo editarPermissao.php e adicionarPermissao.php
 -- -----------------------------------------------------
-INSERT IGNORE INTO `permissoes` (`nome`, `data`, `permissoes`, `situacao`) VALUES
-('Visualizar NFSe (OS)', NOW(), 'a:1:{s:5:"vNFSe";s:1:"1";}', 1),
-('Cadastrar NFSe (OS)', NOW(), 'a:1:{s:5:"cNFSe";s:1:"1";}', 1),
-('Editar NFSe (OS)', NOW(), 'a:1:{s:5:"eNFSe";s:1:"1";}', 1),
-('Visualizar Boleto OS', NOW(), 'a:1:{s:9:"vBoletoOS";s:1:"1";}', 1),
-('Cadastrar Boleto OS', NOW(), 'a:1:{s:9:"cBoletoOS";s:1:"1";}', 1),
-('Editar Boleto OS', NOW(), 'a:1:{s:9:"eBoletoOS";s:1:"1";}', 1),
-('Relatório NFSe', NOW(), 'a:1:{s:5:"rNFSe";s:1:"1";}', 1);
+
+-- Remover permissões individuais duplicadas (se existirem)
+-- DESCOMENTE AS LINHAS ABAIXO SE DESEJA REMOVER AS PERMISSÕES ANTIGAS DO BANCO:
+-- DELETE FROM `permissoes` WHERE `nome` IN (
+--     'Visualizar NFSe (OS)', 'Cadastrar NFSe (OS)', 'Editar NFSe (OS)',
+--     'Visualizar Boleto OS', 'Cadastrar Boleto OS', 'Editar Boleto OS', 'Relatório NFSe'
+-- );
 
 -- -----------------------------------------------------
 -- Inserir configurações padrão de impostos
