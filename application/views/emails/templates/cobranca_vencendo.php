@@ -12,7 +12,7 @@
     <p><strong>Vencimento:</strong> <?= $cobranca_vencimento ?? '' ?></p>
 </div>
 
-<?php if (!empty($cobranca_link)): ?
+<?php if (!empty($cobranca_link)): ?>
 <p style="text-align: center;">
     <a href="<?= $cobranca_link ?>" class="button">
         Pagar Agora

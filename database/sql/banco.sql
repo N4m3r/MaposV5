@@ -1353,6 +1353,49 @@ CREATE TABLE IF NOT EXISTS `obra_diario` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- -----------------------------------------------------
+-- Table `obra_equipe` - Equipe de técnicos alocados em obras
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `obra_equipe` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `obra_id` INT(11) NOT NULL,
+  `tecnico_id` INT(11) NOT NULL,
+  `funcao` VARCHAR(50) DEFAULT 'Técnico' COMMENT 'Função na obra: Técnico, Encarregado, Supervisor',
+  `data_entrada` DATE NOT NULL,
+  `data_saida` DATE DEFAULT NULL,
+  `ativo` TINYINT(1) DEFAULT 1,
+  `observacoes` TEXT,
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`obra_id`) REFERENCES `obras`(`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`tecnico_id`) REFERENCES `usuarios`(`idUsuarios`),
+  UNIQUE KEY `uk_obra_tecnico` (`obra_id`, `tecnico_id`, `data_entrada`),
+  INDEX `idx_tecnico` (`tecnico_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `tec_estoque_historico` - Histórico de movimentação de estoque
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tec_estoque_historico` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `tecnico_id` INT(11) NOT NULL,
+  `produto_id` INT(11) NOT NULL,
+  `tipo` ENUM('entrada','saida') NOT NULL COMMENT 'entrada=abastecimento, saida=uso em OS',
+  `quantidade` INT NOT NULL,
+  `os_id` INT(11) DEFAULT NULL COMMENT 'OS relacionada, se aplicável',
+  `observacao` VARCHAR(255) DEFAULT NULL,
+  `data_hora` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `registrado_por` INT(11) DEFAULT NULL COMMENT 'Admin que registrou, se não foi o técnico',
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`tecnico_id`) REFERENCES `usuarios`(`idUsuarios`),
+  FOREIGN KEY (`produto_id`) REFERENCES `produtos`(`idProdutos`),
+  FOREIGN KEY (`os_id`) REFERENCES `os`(`idOs`) ON DELETE SET NULL,
+  INDEX `idx_tecnico` (`tecnico_id`),
+  INDEX `idx_data` (`data_hora`),
+  INDEX `idx_os` (`os_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
 -- Dados Iniciais - Catálogo de Serviços
 -- -----------------------------------------------------
 INSERT IGNORE INTO `servicos_catalogo` (`codigo`, `nome`, `descricao`, `categoria`, `especialidade`, `tempo_estimado_minutos`, `checklist_padrao`, `ativo`) VALUES

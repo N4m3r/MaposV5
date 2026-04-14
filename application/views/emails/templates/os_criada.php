@@ -9,7 +9,7 @@
     <p><strong>Data de Abertura:</strong> <?= $os_data ?? date('d/m/Y') ?></p>
     <p><strong>Descrição:</strong> <?= htmlspecialchars($os_descricao ?? '') ?></p>
     <p><strong>Status:</strong> <?= $os_status ?? 'Em Aberto' ?></p>
-    <?php if (!empty($os_valor)): ?
+    <?php if (!empty($os_valor)): ?>
     <p><strong>Valor Estimado:</strong> R$ <?= number_format($os_valor, 2, ',', '.') ?></p>
     <?php endif; ?>
 </div>

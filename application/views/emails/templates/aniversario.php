@@ -18,7 +18,7 @@
     </ul>
 </div>
 
-<?php if (!empty($cupom_desconto)): ?
+<?php if (!empty($cupom_desconto)): ?>
 <div style="background-color: #d4edda; border: 2px dashed #28a745; border-radius: 8px; padding: 20px; margin: 20px 0; text-align: center;">
     <h3 style="margin-top: 0; color: #155724;">🎁 Presente de Anivers&aacute;rio!</h3>
     <p>Use o cupom abaixo e ganhe <strong><?= $desconto ?? '10%' ?> de desconto</strong> em sua pr&oacute;xima compra:</p>

@@ -5,10 +5,10 @@
 
 <p><?= nl2br(htmlspecialchars($mensagem ?? '')) ?></p>
 
-<?php if (!empty($link)): ?
+<?php if (!empty($link)): ?>
 <p style="text-align: center;">
     <a href="<?= $link ?>" class="button">
-        <?= htmlspecialchars($link_texto ?? 'Acessar') ?
+        <?= htmlspecialchars($link_texto ?? 'Acessar') ?>
     </a>
 </p>
 <?php endif; ?>

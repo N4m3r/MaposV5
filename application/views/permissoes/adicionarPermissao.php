@@ -341,6 +341,86 @@
                         <div class="accordion-group widget-box">
                             <div class="accordion-heading">
                                 <div class="widget-title">
+                                    <a data-parent="#collapse-group" href="#collapseGNFSe" data-toggle="collapse">
+                                      <span><i class='bx bx-receipt icon-cli'></i></span>
+                                      <h5 style="padding-left: 28px">NFS-e e Boletos vinculados à OS</h5>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="collapse accordion-body" id="collapseGNFSe">
+                                <div class="widget-content">
+                                    <table class="table table-bordered">
+                                        <tbody>
+                                        <tr>
+                                            <td colspan="4"><b>NFS-e (Nota Fiscal de Serviço)</b></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <label>
+                                                    <input name="vNFSe" class="marcar" type="checkbox" checked="checked" value="1" />
+                                                    <span class="lbl"> Visualizar NFS-e</span>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <label>
+                                                    <input name="cNFSe" class="marcar" type="checkbox" value="1" />
+                                                    <span class="lbl"> Cadastrar NFS-e</span>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <label>
+                                                    <input name="eNFSe" class="marcar" type="checkbox" value="1" />
+                                                    <span class="lbl"> Editar/Cancelar NFS-e</span>
+                                                </label>
+                                            </td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="4"><b>Boletos vinculados à OS</b></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <label>
+                                                    <input name="vBoletoOS" class="marcar" type="checkbox" checked="checked" value="1" />
+                                                    <span class="lbl"> Visualizar Boleto OS</span>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <label>
+                                                    <input name="cBoletoOS" class="marcar" type="checkbox" value="1" />
+                                                    <span class="lbl"> Cadastrar Boleto OS</span>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <label>
+                                                    <input name="eBoletoOS" class="marcar" type="checkbox" value="1" />
+                                                    <span class="lbl"> Editar/Cancelar Boleto OS</span>
+                                                </label>
+                                            </td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="4"><b>Relatórios</b></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <label>
+                                                    <input name="rNFSe" class="marcar" type="checkbox" checked="checked" value="1" />
+                                                    <span class="lbl"> Relatório NFS-e/Boletos</span>
+                                                </label>
+                                            </td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-group widget-box">
+                            <div class="accordion-heading">
+                                <div class="widget-title">
                                     <a data-parent="#collapse-group" href="#collapseGThree3333" data-toggle="collapse">
                                       <span><i class='bx bx-receipt icon-cli'></i></span>
                                       <h5 style="padding-left: 28px">Garantias</h5>

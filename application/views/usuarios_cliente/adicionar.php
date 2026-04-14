@@ -88,6 +88,31 @@
 
                     <hr>
 
+                    <!-- Buscar Cliente Cadastrado -->
+                    <div class="control-group">
+                        <label class="control-label">Buscar Cliente Cadastrado:</label>
+                        <div class="controls">
+                            <div class="input-append">
+                                <select id="buscar-cliente-cnpj" class="span6">
+                                    <option value="">-- Selecione um cliente para preencher CNPJ --</option>
+                                    <?php foreach ($clientes as $c): ?>
+                                        <?php if (!empty($c->documento)): ?>
+                                            <option value="<?= htmlspecialchars($c->documento) ?>" data-razao="<?= htmlspecialchars($c->nomeCliente) ?>" data-id="<?= $c->idClientes ?>">
+                                                <?= htmlspecialchars($c->nomeCliente) ?> - <?= $c->documento ?>
+                                            </option>
+                                        <?php endif; ?>
+                                    <?php endforeach; ?>
+                                </select>
+                                <button type="button" class="btn btn-info" id="btn-buscar-cliente" title="Adicionar CNPJ do cliente selecionado">
+                                    <i class="bx bx-plus"></i> Adicionar CNPJ
+                                </button>
+                            </div>
+                            <span class="help-inline">Selecione um cliente cadastrado para preencher automaticamente o CNPJ</span>
+                        </div>
+                    </div>
+
+                    <hr>
+
                     <!-- CNPJs Vinculados -->
                     <div class="control-group">
                         <label class="control-label">CNPJs Vinculados:</label>
@@ -96,7 +121,7 @@
                                 <div class="cnpj-row" style="margin-bottom: 10px;">
                                     <div class="input-append">
                                         <input type="text" name="cnpjs[]" class="span4 cnpj-input" placeholder="00.000.000/0000-00" maxlength="18" />
-                                        <button type="button" class="btn btn-info btn-consultar-cnpj" title="Consultar">
+                                        <button type="button" class="btn btn-info btn-consultar-cnpj" title="Consultar na ReceitaWS">
                                             <i class="bx bx-search"></i>
                                         </button>
                                         <button type="button" class="btn btn-danger btn-remover-cnpj" title="Remover" style="display: none;">
@@ -107,7 +132,7 @@
                                 </div>
                             </div>
                             <button type="button" class="btn btn-success btn-mini" id="btn-adicionar-cnpj">
-                                <i class="bx bx-plus"></i> Adicionar CNPJ
+                                <i class="bx bx-plus"></i> Adicionar CNPJ Manual
                             </button>
                             <span class="help-inline">O usuário terá acesso às OS de todos os CNPJs vinculados</span>
                         </div>
@@ -253,6 +278,101 @@ $(document).ready(function() {
                 btn.prop('disabled', false).find('i').removeClass('bx-loader bx-spin').addClass('bx-search');
             }
         });
+    });
+
+    // Buscar cliente cadastrado e adicionar CNPJ
+    $('#btn-buscar-cliente').click(function() {
+        var select = $('#buscar-cliente-cnpj');
+        var selectedOption = select.find('option:selected');
+
+        if (!select.val()) {
+            alert('Selecione um cliente primeiro');
+            return;
+        }
+
+        var cnpj = selectedOption.val();
+        var razaoSocial = selectedOption.data('razao');
+        var clienteId = selectedOption.data('id');
+
+        // Verificar se CNPJ já não está adicionado
+        var cnpjExistente = false;
+        $('.cnpj-input').each(function() {
+            if ($(this).val().replace(/\D/g, '') === cnpj.replace(/\D/g, '')) {
+                cnpjExistente = true;
+                return false;
+            }
+        });
+
+        if (cnpjExistente) {
+            alert('Este CNPJ já foi adicionado!');
+            return;
+        }
+
+        // Formatar CNPJ
+        var cnpjFormatado = cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
+
+        // Verificar se existe uma linha vazia
+        var linhaVazia = null;
+        $('.cnpj-row').each(function() {
+            if ($(this).find('.cnpj-input').val() === '') {
+                linhaVazia = $(this);
+                return false;
+            }
+        });
+
+        if (linhaVazia) {
+            // Usar linha existente
+            linhaVazia.find('.cnpj-input').val(cnpjFormatado);
+            linhaVazia.find('.cnpj-razao').val(razaoSocial);
+        } else {
+            // Criar nova linha
+            var newRow = `
+                <div class="cnpj-row" style="margin-bottom: 10px;">
+                    <div class="input-append">
+                        <input type="text" name="cnpjs[]" class="span4 cnpj-input" placeholder="00.000.000/0000-00" maxlength="18" value="${cnpjFormatado}" />
+                        <button type="button" class="btn btn-info btn-consultar-cnpj" title="Consultar na ReceitaWS">
+                            <i class="bx bx-search"></i>
+                        </button>
+                        <button type="button" class="btn btn-danger btn-remover-cnpj" title="Remover">
+                            <i class="bx bx-trash"></i>
+                        </button>
+                    </div>
+                    <input type="text" name="cnpjs_razao[]" class="span6 cnpj-razao" placeholder="Razão Social (preenchido automaticamente)" readonly style="margin-top: 5px;" value="${razaoSocial}" />
+                </div>
+            `;
+            $('#cnpjs-container').append(newRow);
+        }
+
+        updateRemoveButtons();
+
+        // Limpar seleção
+        select.val('');
+
+        // Feedback visual
+        alert('CNPJ adicionado com sucesso!\n\nCliente: ' + razaoSocial + '\nCNPJ: ' + cnpjFormatado);
+    });
+
+    // Ao selecionar cliente no dropdown principal, sugerir vincular
+    $('select[name="cliente_id"]').change(function() {
+        var clienteId = $(this).val();
+        if (clienteId) {
+            // Buscar o CNPJ do cliente selecionado
+            var clienteOption = $(this).find('option:selected');
+            var texto = clienteOption.text();
+            var match = texto.match(/\(([^)]+)\)/);
+
+            if (match && confirm('Deseja adicionar o CNPJ deste cliente aos CNPJs vinculados?')) {
+                // Preencher o buscar-cliente-cnpj e clicar em adicionar
+                var cnpj = match[1];
+                $('#buscar-cliente-cnpj option').each(function() {
+                    if ($(this).val() === cnpj) {
+                        $(this).prop('selected', true);
+                        $('#btn-buscar-cliente').click();
+                        return false;
+                    }
+                });
+            }
+        }
     });
 });
 </script>

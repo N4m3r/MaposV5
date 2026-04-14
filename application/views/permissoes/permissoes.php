@@ -36,6 +36,10 @@
                                 </tr>';
                     }
                     foreach ($results as $r) {
+                        // Não exibir permissões de ID 2 a 24
+                        if ($r->idPermissao >= 2 && $r->idPermissao <= 24) {
+                            continue;
+                        }
                         if ($r->situacao == 1) {
                             $situacao = 'Ativo';
                         } else {

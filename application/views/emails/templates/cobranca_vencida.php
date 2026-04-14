@@ -15,7 +15,7 @@
 
 <p>Para regularizar sua situação, efetue o pagamento o mais breve possível.</p>
 
-<?php if (!empty($cobranca_link)): ?
+<?php if (!empty($cobranca_link)): ?>
 <p style="text-align: center;">
     <a href="<?= $cobranca_link ?>" class="button" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);">
         Pagar Agora

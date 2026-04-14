@@ -70,26 +70,25 @@
                                         <td><?php echo $migration['version']; ?></td>
                                         <td><?php echo $migration['name']; ?></td>
                                         <td>
-                                            <?php if ($migration['applied']): ?
+                                            <?php if ($migration['applied']): ?>
                                                 <span class="label label-success"><i class="fas fa-check"></i> Aplicada</span>
-                                            <?php else: ?
+                                            <?php else: ?>
                                                 <span class="label label-warning"><i class="fas fa-clock"></i> Pendente</span>
-                                            <?php endif; ?
+                                            <?php endif; ?>
                                         </td>
                                         <td>
-                                            <?php if (!$migration['applied']): ?
+                                            <?php if (!$migration['applied']): ?>
                                                 <button class="btn btn-mini btn-success btn-run-version" data-version="<?php echo $migration['version']; ?>">
                                                     <i class="fas fa-play"></i> Executar
                                                 </button>
-                                            <?php else: ?
+                                            <?php else: ?>
                                                 <button class="btn btn-mini" disabled>
                                                     <i class="fas fa-check"></i> Aplicada
                                                 </button>
-                                            <?php endif; ?
+                                            <?php endif; ?>
                                         </td>
                                     </tr>
-                                <?php endforeach; ?
-003e
+                                <?php endforeach; ?>
                             </tbody>
                         </table>
                     </div>

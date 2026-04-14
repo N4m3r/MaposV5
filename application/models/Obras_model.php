@@ -1,0 +1,234 @@
+<?php
+
+/**
+ * Model de Gestão de Obras
+ */
+class Obras_model extends CI_Model
+{
+    public function __construct()
+    {
+        parent::__construct();
+        $this->load->database();
+    }
+
+    /**
+     * Listar todas as obras
+     */
+    public function getAll($where = [], $limit = null)
+    {
+        if (!empty($where)) {
+            $this->db->where($where);
+        }
+
+        $this->db->order_by('data_criacao', 'DESC');
+
+        if ($limit) {
+            $this->db->limit($limit);
+        }
+
+        return $this->db->get('obras')->result();
+    }
+
+    /**
+     * Buscar obra por ID
+     */
+    public function getById($id)
+    {
+        $this->db->where('id', $id);
+        return $this->db->get('obras')->row();
+    }
+
+    /**
+     * Adicionar obra
+     */
+    public function add($dados)
+    {
+        $data = [
+            'cliente_id' => $dados['cliente_id'],
+            'nome' => $dados['nome'],
+            'descricao' => $dados['descricao'] ?? null,
+            'endereco' => $dados['endereco'] ?? null,
+            'responsavel_id' => $dados['responsavel_id'] ?? null,
+            'data_inicio' => $dados['data_inicio'],
+            'data_previsao_fim' => $dados['data_previsao_fim'] ?? null,
+            'status' => $dados['status'] ?? 'planejamento',
+            'etapa_atual' => 1,
+            'data_criacao' => date('Y-m-d H:i:s'),
+        ];
+
+        $this->db->insert('obras', $data);
+        return $this->db->insert_id();
+    }
+
+    /**
+     * Atualizar obra
+     */
+    public function update($id, $dados)
+    {
+        $this->db->where('id', $id);
+        return $this->db->update('obras', $dados);
+    }
+
+    /**
+     * Atualizar progresso da obra
+     */
+    public function atualizarProgresso($obra_id)
+    {
+        // Calcular progresso baseado nas etapas
+        $this->db->where('obra_id', $obra_id);
+        $total_etapas = $this->db->count_all_results('obra_etapas');
+
+        $this->db->where('obra_id', $obra_id);
+        $this->db->where('status', 'concluida');
+        $etapas_concluidas = $this->db->count_all_results('obra_etapas');
+
+        $progresso = $total_etapas > 0 ? round(($etapas_concluidas / $total_etapas) * 100) : 0;
+
+        $this->db->where('id', $obra_id);
+        $this->db->update('obras', ['percentual_concluido' => $progresso]);
+
+        return $progresso;
+    }
+
+    /**
+     * Buscar etapas da obra
+     */
+    public function getEtapas($obra_id)
+    {
+        $this->db->where('obra_id', $obra_id);
+        $this->db->order_by('ordem', 'ASC');
+        return $this->db->get('obra_etapas')->result();
+    }
+
+    /**
+     * Adicionar etapa
+     */
+    public function adicionarEtapa($obra_id, $dados)
+    {
+        $data = [
+            'obra_id' => $obra_id,
+            'nome' => $dados['nome'],
+            'descricao' => $dados['descricao'] ?? null,
+            'ordem' => $dados['ordem'],
+            'data_previsao' => $dados['data_previsao'] ?? null,
+            'status' => 'pendente',
+            'data_criacao' => date('Y-m-d H:i:s'),
+        ];
+
+        $this->db->insert('obra_etapas', $data);
+        $etapa_id = $this->db->insert_id();
+
+        // Atualizar total de etapas
+        $this->atualizarTotalEtapas($obra_id);
+
+        return $etapa_id;
+    }
+
+    /**
+     * Atualizar total de etapas
+     */
+    private function atualizarTotalEtapas($obra_id)
+    {
+        $this->db->where('obra_id', $obra_id);
+        $total = $this->db->count_all_results('obra_etapas');
+
+        $this->db->where('id', $obra_id);
+        $this->db->update('obras', ['total_etapas' => $total]);
+    }
+
+    /**
+     * Buscar diário de obra
+     */
+    public function getDiario($obra_id, $data = null)
+    {
+        $this->db->where('obra_id', $obra_id);
+
+        if ($data) {
+            $this->db->where('data', $data);
+        }
+
+        $this->db->order_by('data', 'DESC');
+        $this->db->order_by('hora_inicio', 'DESC');
+        return $this->db->get('obra_diario')->result();
+    }
+
+    /**
+     * Adicionar registro no diário
+     */
+    public function adicionarDiario($obra_id, $dados)
+    {
+        $data = [
+            'obra_id' => $obra_id,
+            'tecnico_id' => $dados['tecnico_id'],
+            'data' => $dados['data'],
+            'hora_inicio' => $dados['hora_inicio'],
+            'hora_fim' => $dados['hora_fim'] ?? null,
+            'atividade_realizada' => $dados['atividade_realizada'],
+            'fotos_json' => isset($dados['fotos']) ? json_encode($dados['fotos']) : null,
+            'observacoes' => $dados['observacoes'] ?? null,
+            'etapa_id' => $dados['etapa_id'] ?? null,
+            'clima' => $dados['clima'] ?? null,
+        ];
+
+        $this->db->insert('obra_diario', $data);
+        return $this->db->insert_id();
+    }
+
+    /**
+     * Equipe da obra
+     */
+    public function getEquipe($obra_id)
+    {
+        $this->db->select('oe.*, u.nome as tecnico_nome, u.nivel_tecnico');
+        $this->db->from('obra_equipe oe');
+        $this->db->join('usuarios u', 'u.idUsuarios = oe.tecnico_id');
+        $this->db->where('oe.obra_id', $obra_id);
+        return $this->db->get()->result();
+    }
+
+    /**
+     * Adicionar técnico à equipe
+     */
+    public function adicionarTecnicoEquipe($obra_id, $tecnico_id, $funcao = 'Técnico')
+    {
+        $data = [
+            'obra_id' => $obra_id,
+            'tecnico_id' => $tecnico_id,
+            'funcao' => $funcao,
+            'data_entrada' => date('Y-m-d'),
+        ];
+
+        $this->db->insert('obra_equipe', $data);
+        return $this->db->insert_id();
+    }
+
+    /**
+     * Contar obras por status
+     */
+    public function countByStatus($status)
+    {
+        $this->db->where('status', $status);
+        return $this->db->count_all_results('obras');
+    }
+
+    /**
+     * Buscar obras ativas
+     */
+    public function getAtivas()
+    {
+        $this->db->where_in('status', ['planejamento', 'em_andamento', 'paralisada']);
+        return $this->db->get('obras')->result();
+    }
+
+    /**
+     * Buscar cliente da obra
+     */
+    public function getCliente($obra_id)
+    {
+        $this->db->select('c.*');
+        $this->db->from('obras o');
+        $this->db->join('clientes c', 'c.idClientes = o.cliente_id');
+        $this->db->where('o.id', $obra_id);
+        return $this->db->get()->row();
+    }
+}
