@@ -165,7 +165,18 @@ class Relatorioatendimentos extends MY_Controller
 
         // Verifica permissão
         if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vRelatorioAtendimentos')) {
+            header('Content-Type: application/json');
             echo json_encode(['error' => 'Sem permissão']);
+            return;
+        }
+
+        // Verifica se a tabela existe
+        if (!$this->db->table_exists('os_checkin')) {
+            header('Content-Type: application/json');
+            echo json_encode([
+                'success' => false,
+                'error' => 'Tabela de atendimentos não encontrada. Execute a migração 20250403000001_add_checkin_tables.php ou o script SQL em updates/update_checkin_tabelas.sql'
+            ]);
             return;
         }
 
@@ -189,6 +200,7 @@ class Relatorioatendimentos extends MY_Controller
         // Tempo médio por técnico
         $tempoMedioPorTecnico = $this->relatorioatendimentos_model->getTempoMedioPorTecnico($data_inicio, $data_fim);
 
+        header('Content-Type: application/json');
         echo json_encode([
             'success' => true,
             'estatisticas' => $estatisticas,
@@ -208,6 +220,12 @@ class Relatorioatendimentos extends MY_Controller
         if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vRelatorioAtendimentos')) {
             $this->session->set_flashdata('error', 'Sem permissão.');
             redirect(base_url());
+        }
+
+        // Verifica se a tabela existe
+        if (!$this->db->table_exists('os_checkin')) {
+            $this->session->set_flashdata('error', 'Tabela de atendimentos não encontrada. Execute a migração 20250403000001_add_checkin_tables.php ou o script SQL em updates/update_checkin_tabelas.sql');
+            redirect('relatorioatendimentos');
         }
 
         $data_inicio = $this->input->get('data_inicio') ?: date('Y-m-01');
@@ -281,6 +299,12 @@ class Relatorioatendimentos extends MY_Controller
         if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vRelatorioAtendimentos')) {
             $this->session->set_flashdata('error', 'Sem permissão.');
             redirect(base_url());
+        }
+
+        // Verifica se a tabela existe
+        if (!$this->db->table_exists('os_checkin')) {
+            $this->session->set_flashdata('error', 'Tabela de atendimentos não encontrada. Execute a migração 20250403000001_add_checkin_tables.php ou o script SQL em updates/update_checkin_tabelas.sql');
+            redirect('relatorioatendimentos');
         }
 
         $checkin = $this->checkin_model->getById($checkin_id);

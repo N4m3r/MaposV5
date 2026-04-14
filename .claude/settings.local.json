@@ -28,7 +28,9 @@
       "Bash(awk '{print $9}')",
       "Bash(xargs -n1 basename)",
       "Bash(awk '{print \"   \" $9}')",
-      "Bash(awk '{print $9, \"-\", $5}')"
+      "Bash(awk '{print $9, \"-\", $5}')",
+      "Bash(start \"\" \"mockup_dashboard_integrado.html\")",
+      "Bash(explorer.exe \"mockup_dashboard_integrado.html\")"
     ]
   }
 }

@@ -128,5 +128,12 @@ $route['usuarioscliente/adicionar_cnpj/(:num)'] = 'usuarioscliente/adicionar_cnp
 $route['usuarioscliente/remover_cnpj/(:num)/(:any)'] = 'usuarioscliente/remover_cnpj/$1/$2';
 $route['usuarioscliente/get_cnpjs/(:num)'] = 'usuarioscliente/get_cnpjs/$1';
 
+// Rotas do Gerenciador de Migrações
+$route['migrate'] = 'migrate';
+$route['migrate/latest'] = 'migrate/latest';
+$route['migrate/version/(:num)'] = 'migrate/version/$1';
+$route['migrate/reset'] = 'migrate/reset';
+$route['migrate/status'] = 'migrate/status';
+
 /* End of file routes.php */
 /* Location: ./application/config/routes.php */

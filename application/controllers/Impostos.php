@@ -82,6 +82,7 @@ class Impostos extends MY_Controller
         $this->data['anexos'] = [
             'III' => 'Anexo III - Serviços em Geral',
             'IV' => 'Anexo IV - Construção e Serviços com ISS Próprio',
+            'V' => 'Anexo V - Comércio e Indústria',
         ];
 
         $this->data['aliquotas_iii'] = $this->impostos_model->getAliquotasAnexo('III');
@@ -116,6 +117,7 @@ class Impostos extends MY_Controller
         $this->data['anexos'] = [
             'III' => 'Anexo III - Serviços em Geral',
             'IV' => 'Anexo IV - Construção',
+            'V' => 'Anexo V - Comércio e Indústria',
         ];
         $this->data['aliquotas_iii'] = $this->impostos_model->getAliquotasAnexo('III');
         $this->data['aliquotas_iv'] = $this->impostos_model->getAliquotasAnexo('IV');

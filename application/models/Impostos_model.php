@@ -124,8 +124,8 @@ class Impostos_model extends CI_Model
      */
     private function getAliquotasPadrao($anexo = 'III')
     {
-        // Alíquotas padrão do Anexo III
-        $aliquotas = [
+        // Alíquotas padrão do Anexo III - Serviços
+        $aliquotas_iii = [
             (object) ['id' => 1, 'anexo' => 'III', 'faixa' => 1, 'aliquota_nominal' => 6.00, 'irpj' => 0, 'csll' => 0, 'cofins' => 0, 'pis' => 0, 'cpp' => 0, 'iss' => 0, 'ativo' => 1],
             (object) ['id' => 2, 'anexo' => 'III', 'faixa' => 2, 'aliquota_nominal' => 11.20, 'irpj' => 0, 'csll' => 0, 'cofins' => 0, 'pis' => 0, 'cpp' => 0, 'iss' => 0, 'ativo' => 1],
             (object) ['id' => 3, 'anexo' => 'III', 'faixa' => 3, 'aliquota_nominal' => 13.95, 'irpj' => 0, 'csll' => 0, 'cofins' => 0, 'pis' => 0, 'cpp' => 0, 'iss' => 0, 'ativo' => 1],
@@ -133,7 +133,32 @@ class Impostos_model extends CI_Model
             (object) ['id' => 5, 'anexo' => 'III', 'faixa' => 5, 'aliquota_nominal' => 18.00, 'irpj' => 0, 'csll' => 0, 'cofins' => 0, 'pis' => 0, 'cpp' => 0, 'iss' => 0, 'ativo' => 1],
         ];
 
-        return $aliquotas;
+        // Alíquotas do Anexo IV - Construção
+        $aliquotas_iv = [
+            (object) ['id' => 6, 'anexo' => 'IV', 'faixa' => 1, 'aliquota_nominal' => 4.50, 'irpj' => 0, 'csll' => 0, 'cofins' => 0, 'pis' => 0, 'cpp' => 0, 'iss' => 0, 'ativo' => 1],
+            (object) ['id' => 7, 'anexo' => 'IV', 'faixa' => 2, 'aliquota_nominal' => 9.00, 'irpj' => 0, 'csll' => 0, 'cofins' => 0, 'pis' => 0, 'cpp' => 0, 'iss' => 0, 'ativo' => 1],
+            (object) ['id' => 8, 'anexo' => 'IV', 'faixa' => 3, 'aliquota_nominal' => 11.34, 'irpj' => 0, 'csll' => 0, 'cofins' => 0, 'pis' => 0, 'cpp' => 0, 'iss' => 0, 'ativo' => 1],
+            (object) ['id' => 9, 'anexo' => 'IV', 'faixa' => 4, 'aliquota_nominal' => 12.82, 'irpj' => 0, 'csll' => 0, 'cofins' => 0, 'pis' => 0, 'cpp' => 0, 'iss' => 0, 'ativo' => 1],
+            (object) ['id' => 10, 'anexo' => 'IV', 'faixa' => 5, 'aliquota_nominal' => 14.05, 'irpj' => 0, 'csll' => 0, 'cofins' => 0, 'pis' => 0, 'cpp' => 0, 'iss' => 0, 'ativo' => 1],
+        ];
+
+        // Alíquotas do Anexo V - Comércio (CNAE 4751201 - Materiais de construção)
+        // Alíquotas de 2024 para comércio varejista
+        $aliquotas_v = [
+            (object) ['id' => 11, 'anexo' => 'V', 'faixa' => 1, 'aliquota_nominal' => 4.00, 'irpj' => 0.80, 'csll' => 0.80, 'cofins' => 2.34, 'pis' => 0.50, 'cpp' => 0.00, 'iss' => 0.00, 'ativo' => 1],
+            (object) ['id' => 12, 'anexo' => 'V', 'faixa' => 2, 'aliquota_nominal' => 7.30, 'irpj' => 1.46, 'csll' => 1.46, 'cofins' => 2.67, 'pis' => 0.63, 'cpp' => 0.00, 'iss' => 0.00, 'ativo' => 1],
+            (object) ['id' => 13, 'anexo' => 'V', 'faixa' => 3, 'aliquota_nominal' => 9.50, 'irpj' => 1.90, 'csll' => 1.90, 'cofins' => 3.27, 'pis' => 0.77, 'cpp' => 0.00, 'iss' => 0.00, 'ativo' => 1],
+            (object) ['id' => 14, 'anexo' => 'V', 'faixa' => 4, 'aliquota_nominal' => 10.74, 'irpj' => 2.15, 'csll' => 2.15, 'cofins' => 3.46, 'pis' => 0.82, 'cpp' => 0.00, 'iss' => 0.00, 'ativo' => 1],
+            (object) ['id' => 15, 'anexo' => 'V', 'faixa' => 5, 'aliquota_nominal' => 11.78, 'irpj' => 2.36, 'csll' => 2.36, 'cofins' => 3.67, 'pis' => 0.87, 'cpp' => 0.00, 'iss' => 0.00, 'ativo' => 1],
+        ];
+
+        if ($anexo == 'IV') {
+            return $aliquotas_iv;
+        } elseif ($anexo == 'V') {
+            return $aliquotas_v;
+        }
+
+        return $aliquotas_iii;
     }
 
     /**
@@ -174,7 +199,6 @@ class Impostos_model extends CI_Model
      */
     private function getAliquotaPadrao($anexo, $faixa)
     {
-        // Alíquotas padrão do Anexo III
         $aliquotas = [
             'III' => [
                 1 => (object) ['id' => 1, 'anexo' => 'III', 'faixa' => 1, 'aliquota_nominal' => 6.00, 'irpj' => 0, 'csll' => 0, 'cofins' => 0, 'pis' => 0, 'cpp' => 0, 'iss' => 0, 'ativo' => 1],
@@ -182,7 +206,21 @@ class Impostos_model extends CI_Model
                 3 => (object) ['id' => 3, 'anexo' => 'III', 'faixa' => 3, 'aliquota_nominal' => 13.95, 'irpj' => 0, 'csll' => 0, 'cofins' => 0, 'pis' => 0, 'cpp' => 0, 'iss' => 0, 'ativo' => 1],
                 4 => (object) ['id' => 4, 'anexo' => 'III', 'faixa' => 4, 'aliquota_nominal' => 16.17, 'irpj' => 0, 'csll' => 0, 'cofins' => 0, 'pis' => 0, 'cpp' => 0, 'iss' => 0, 'ativo' => 1],
                 5 => (object) ['id' => 5, 'anexo' => 'III', 'faixa' => 5, 'aliquota_nominal' => 18.00, 'irpj' => 0, 'csll' => 0, 'cofins' => 0, 'pis' => 0, 'cpp' => 0, 'iss' => 0, 'ativo' => 1],
-            ]
+            ],
+            'IV' => [
+                1 => (object) ['id' => 6, 'anexo' => 'IV', 'faixa' => 1, 'aliquota_nominal' => 4.50, 'irpj' => 0, 'csll' => 0, 'cofins' => 0, 'pis' => 0, 'cpp' => 0, 'iss' => 0, 'ativo' => 1],
+                2 => (object) ['id' => 7, 'anexo' => 'IV', 'faixa' => 2, 'aliquota_nominal' => 9.00, 'irpj' => 0, 'csll' => 0, 'cofins' => 0, 'pis' => 0, 'cpp' => 0, 'iss' => 0, 'ativo' => 1],
+                3 => (object) ['id' => 8, 'anexo' => 'IV', 'faixa' => 3, 'aliquota_nominal' => 11.34, 'irpj' => 0, 'csll' => 0, 'cofins' => 0, 'pis' => 0, 'cpp' => 0, 'iss' => 0, 'ativo' => 1],
+                4 => (object) ['id' => 9, 'anexo' => 'IV', 'faixa' => 4, 'aliquota_nominal' => 12.82, 'irpj' => 0, 'csll' => 0, 'cofins' => 0, 'pis' => 0, 'cpp' => 0, 'iss' => 0, 'ativo' => 1],
+                5 => (object) ['id' => 10, 'anexo' => 'IV', 'faixa' => 5, 'aliquota_nominal' => 14.05, 'irpj' => 0, 'csll' => 0, 'cofins' => 0, 'pis' => 0, 'cpp' => 0, 'iss' => 0, 'ativo' => 1],
+            ],
+            'V' => [
+                1 => (object) ['id' => 11, 'anexo' => 'V', 'faixa' => 1, 'aliquota_nominal' => 4.00, 'irpj' => 0.80, 'csll' => 0.80, 'cofins' => 2.34, 'pis' => 0.50, 'cpp' => 0.00, 'iss' => 0.00, 'ativo' => 1],
+                2 => (object) ['id' => 12, 'anexo' => 'V', 'faixa' => 2, 'aliquota_nominal' => 7.30, 'irpj' => 1.46, 'csll' => 1.46, 'cofins' => 2.67, 'pis' => 0.63, 'cpp' => 0.00, 'iss' => 0.00, 'ativo' => 1],
+                3 => (object) ['id' => 13, 'anexo' => 'V', 'faixa' => 3, 'aliquota_nominal' => 9.50, 'irpj' => 1.90, 'csll' => 1.90, 'cofins' => 3.27, 'pis' => 0.77, 'cpp' => 0.00, 'iss' => 0.00, 'ativo' => 1],
+                4 => (object) ['id' => 14, 'anexo' => 'V', 'faixa' => 4, 'aliquota_nominal' => 10.74, 'irpj' => 2.15, 'csll' => 2.15, 'cofins' => 3.46, 'pis' => 0.82, 'cpp' => 0.00, 'iss' => 0.00, 'ativo' => 1],
+                5 => (object) ['id' => 15, 'anexo' => 'V', 'faixa' => 5, 'aliquota_nominal' => 11.78, 'irpj' => 2.36, 'csll' => 2.36, 'cofins' => 3.67, 'pis' => 0.87, 'cpp' => 0.00, 'iss' => 0.00, 'ativo' => 1],
+            ],
         ];
 
         return $aliquotas[$anexo][$faixa] ?? $aliquotas['III'][1];

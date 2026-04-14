@@ -258,6 +258,17 @@ $(document).ready(function() {
      * Inicializa DataTable
      */
     function inicializarTabela() {
+        // Obtém o token CSRF do cookie
+        function getCookie(name) {
+            var value = '; ' + document.cookie;
+            var parts = value.split('; ' + name + '=');
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+
+        // Obtém nomes do CSRF das meta tags
+        var csrfTokenName = $('meta[name="csrf-token-name"]').attr('content') || 'MAPOS_CSRF_TOKEN';
+        var csrfCookieName = $('meta[name="csrf-cookie-name"]').attr('content') || 'MAPOS_CSRF_COOKIE';
+
         tabelaAtendimentos = $('#tabela-atendimentos').DataTable({
             processing: true,
             serverSide: true,
@@ -271,10 +282,13 @@ $(document).ready(function() {
                     d.data_inicio = $('#filtro-data-inicio').val();
                     d.data_fim = $('#filtro-data-fim').val();
                     d.usuario_id = $('#filtro-tecnico').val();
+                    d[csrfTokenName] = getCookie(csrfCookieName);
                 },
                 error: function(xhr, error, thrown) {
                     console.error('Erro no DataTable:', xhr.responseText, error, thrown);
-                    alert('Erro ao carregar dados da tabela. Verifique o console para mais detalhes.');
+                    var response = xhr.responseJSON || {};
+                    var message = response.error || 'Erro ao carregar dados da tabela. Verifique o console para mais detalhes.';
+                    alert(message);
                 }
             },
             language: {
@@ -306,6 +320,18 @@ $(document).ready(function() {
         const dataFim = $('#filtro-data-fim').val();
         const usuarioId = $('#filtro-tecnico').val();
 
+        // Obtém o token CSRF do cookie
+        function getCookie(name) {
+            var value = '; ' + document.cookie;
+            var parts = value.split('; ' + name + '=');
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+
+        // Obtém nomes do CSRF das meta tags
+        var csrfTokenName = $('meta[name="csrf-token-name"]').attr('content') || 'MAPOS_CSRF_TOKEN';
+        var csrfCookieName = $('meta[name="csrf-cookie-name"]').attr('content') || 'MAPOS_CSRF_COOKIE';
+        const csrfToken = getCookie(csrfCookieName);
+
         // Mostra loading nos cards
         $('#card-total, #card-tempo-medio, #card-finalizados, #card-andamento').html('<i class="fas fa-loader bx-spin"></i>');
 
@@ -317,12 +343,16 @@ $(document).ready(function() {
             data: {
                 data_inicio: dataInicio,
                 data_fim: dataFim,
-                usuario_id: usuarioId
+                usuario_id: usuarioId,
+                [csrfTokenName]: csrfToken
             },
             success: function(response) {
                 if (response.success) {
                     atualizarCards(response.estatisticas);
                     atualizarGraficos(response);
+                } else if (response.error) {
+                    console.error('Erro:', response.error);
+                    alert(response.error);
                 }
             },
             error: function(xhr, status, error) {

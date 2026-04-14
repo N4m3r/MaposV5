@@ -257,18 +257,20 @@ class Certificado_model extends CI_Model
             'serviço de construção'
         ];
 
-        // Anexo V - Comércio
+        // Anexo V - Comércio e Indústria
         $comercio = [
             'comércio', 'venda', 'revenda', 'varejo', 'atacado',
-            'loja', 'supermercado'
+            'loja', 'supermercado', 'material', 'construção',
+            'materiais de construção', 'depósito', 'depósito de material'
         ];
+
+        // Verificar Comércio primeiro (prioridade)
+        foreach ($comercio as $termo) {
+            if (strpos($atividade, $termo) !== false) return 'V';
+        }
 
         foreach ($construcao as $termo) {
             if (strpos($atividade, $termo) !== false) return 'IV';
-        }
-
-        foreach ($comercio as $termo) {
-            if (strpos($atividade, $termo) !== false) return 'V';
         }
 
         foreach ($servicos as $termo) {
