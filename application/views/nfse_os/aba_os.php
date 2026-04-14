@@ -3,7 +3,7 @@
  * Aba de NFSe e Boleto na Visualização da OS
  * Incluir no arquivo visualizarOs.php
  */
-?-->
+?>
 
 <!-- Aba de Documentos Fiscais -->
 <div class="tab-pane" id="tab-documentos-fiscais">

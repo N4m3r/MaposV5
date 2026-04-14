@@ -34,8 +34,27 @@ class Backup extends CI_Controller
         }
 
         // Verificar permissão de administrador
-        $permissao = $this->session->userdata('permissao');
-        if (!$this->permission->checkPermission($permissao, 'cBackup')) {
+        // Buscar permissões do usuário logado
+        $this->db->where('idUsuarios', $this->session->userdata('idUsuarios'));
+        $usuario = $this->db->get('usuarios')->row();
+
+        if ($usuario && $usuario->permissoes_id) {
+            $this->db->where('idPermissao', $usuario->permissoes_id);
+            $permissao_db = $this->db->get('permissoes')->row();
+
+            if ($permissao_db) {
+                $permissoes = @unserialize($permissao_db->permissoes) ?: [];
+
+                // Verificar se tem permissão cBackup ou é administrador
+                if (!isset($permissoes['cBackup']) || $permissoes['cBackup'] != 1) {
+                    $this->session->set_flashdata('error', 'Você não tem permissão para acessar esta área.');
+                    redirect('mapos');
+                }
+            } else {
+                $this->session->set_flashdata('error', 'Você não tem permissão para acessar esta área.');
+                redirect('mapos');
+            }
+        } else {
             $this->session->set_flashdata('error', 'Você não tem permissão para acessar esta área.');
             redirect('mapos');
         }
