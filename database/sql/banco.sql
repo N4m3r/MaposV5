@@ -158,6 +158,7 @@ CREATE TABLE IF NOT EXISTS `lancamentos` (
   `contas_id` INT NULL,
   `vendas_id` INT NULL,
   `usuarios_id` INT(11) NOT NULL,
+  `webhook_notificado` TINYINT(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`idLancamentos`),
   INDEX `fk_lancamentos_clientes1` (`clientes_id` ASC),
   INDEX `fk_lancamentos_categorias1_idx` (`categorias_id` ASC),
@@ -234,6 +235,9 @@ CREATE TABLE IF NOT EXISTS `os` (
   `boleto_status` ENUM('Pendente', 'Emitido', 'Pago', 'Vencido', 'Cancelado') NOT NULL DEFAULT 'Pendente' COMMENT 'Status do boleto vinculado',
   `data_vencimento_boleto` DATE NULL DEFAULT NULL COMMENT 'Data de vencimento do boleto',
   `valor_com_impostos` DECIMAL(15, 2) NULL DEFAULT NULL COMMENT 'Valor liquido apos deducao de impostos',
+  `certificado_vinculado` INT(11) UNSIGNED NULL DEFAULT NULL COMMENT 'ID do certificado digital vinculado',
+  `retencao_impostos` TINYINT(1) NOT NULL DEFAULT 0 COMMENT 'Flag de retencao de impostos',
+  `calculo_impostos` TEXT NULL COMMENT 'JSON com detalhes dos impostos calculados',
   PRIMARY KEY (`idOs`),
   INDEX `fk_os_clientes1` (`clientes_id` ASC),
   INDEX `fk_os_usuarios1` (`usuarios_id` ASC),
@@ -399,16 +403,20 @@ CREATE TABLE IF NOT EXISTS `cobrancas` (
   `charge_id` varchar(255) DEFAULT NULL,
   `conditional_discount_date` date DEFAULT NULL,
   `created_at` datetime DEFAULT NULL,
+  `updated_at` DATETIME NULL DEFAULT NULL,
   `custom_id` int(11) DEFAULT NULL,
   `expire_at` date NOT NULL,
-  `message` varchar(255) NOT NULL,
+  `paid_at` DATETIME NULL DEFAULT NULL,
+  `message` TEXT NULL,
   `payment_method` varchar(11) DEFAULT NULL,
   `payment_url` varchar(255) DEFAULT NULL,
   `request_delivery_address` varchar(64) DEFAULT NULL,
   `status` varchar(36) NOT NULL,
   `total` varchar(15) DEFAULT NULL,
   `barcode` varchar(255) NOT NULL,
+  `linha_digitavel` varchar(255) DEFAULT NULL,
   `link` varchar(255) NOT NULL,
+  `pix_code` TEXT NULL,
   `payment_gateway` varchar(255) NULL DEFAULT NULL,
   `payment` varchar(64) NOT NULL,
   `pdf` varchar(255) DEFAULT NULL,
@@ -421,7 +429,9 @@ CREATE TABLE IF NOT EXISTS `cobrancas` (
   INDEX `fk_cobrancas_vendas1` (`vendas_id` ASC),
   CONSTRAINT `fk_cobrancas_vendas1` FOREIGN KEY (`vendas_id`) REFERENCES `vendas` (`idVendas`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   INDEX `fk_cobrancas_clientes1` (`clientes_id` ASC),
-  CONSTRAINT `fk_cobrancas_clientes1` FOREIGN KEY (`clientes_id`) REFERENCES `clientes` (`idClientes`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `fk_cobrancas_clientes1` FOREIGN KEY (`clientes_id`) REFERENCES `clientes` (`idClientes`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  INDEX `idx_cobrancas_charge_id` (`charge_id`),
+  INDEX `idx_cobrancas_status_gateway` (`status`, `payment_gateway`)
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
@@ -884,6 +894,8 @@ CREATE TABLE IF NOT EXISTS `fotos_atendimento` (
   `checkin_id` INT(11) NOT NULL,
   `os_id` INT(11) NOT NULL,
   `imagem` LONGBLOB NOT NULL,
+  `imagem_base64` LONGTEXT NULL,
+  `mime_type` VARCHAR(30) NULL,
   `tipo` ENUM('antes', 'depois', 'assinatura', 'outro') DEFAULT 'outro',
   `data` DATETIME NOT NULL,
   INDEX `idx_checkin_id` (`checkin_id`),
@@ -1038,7 +1050,7 @@ CREATE TABLE IF NOT EXISTS `os_boleto_emitido` (
 INSERT IGNORE INTO `usuarios` (`idUsuarios`, `nome`, `rg`, `cpf`, `cep`, `rua`, `numero`, `bairro`, `cidade`, `estado`, `email`, `senha`, `telefone`, `celular`, `situacao`, `dataCadastro`, `permissoes_id`,`dataExpiracao`) VALUES
 (1, 'admin_name', '', '', '', '', '', '', '', '', 'admin_email', 'admin_password', '', '', 1, 'admin_created_at', 1, '3000-01-01');
 
-INSERT IGNORE INTO `migrations`(`version`) VALUES ('20210125173741');
+INSERT IGNORE INTO `migrations`(`version`) VALUES ('20260413000003');
 
 -- Dados iniciais V5
 INSERT IGNORE INTO `dre_contas` (`codigo`, `nome`, `tipo`, `categoria`, `ordem`, `ativo`, `created_at`, `updated_at`) VALUES
@@ -1052,6 +1064,16 @@ INSERT IGNORE INTO `dre_contas` (`codigo`, `nome`, `tipo`, `categoria`, `ordem`,
 
 INSERT IGNORE INTO `impostos_config` (`tipo_regime`, `anexo_simples`, `aliquota_iss`, `retem_iss`, `created_at`, `updated_at`) VALUES
 ('simples_nacional', 'iii', 2.00, 0, 'admin_created_at', 'admin_created_at');
+
+INSERT IGNORE INTO `config_sistema_impostos` (`chave`, `valor`, `descricao`) VALUES
+('IMPOSTO_ANEXO_PADRAO', 'III', 'Anexo do Simples Nacional padrao'),
+('IMPOSTO_FAIXA_ATUAL', '1', 'Faixa de faturamento atual (1-5)'),
+('IMPOSTO_RETENCAO_AUTOMATICA', '1', 'Habilitar retencao automatica (1=Sim, 0=Nao)'),
+('IMPOSTO_DRE_INTEGRACAO', '1', 'Integrar retencoes com DRE (1=Sim, 0=Nao)'),
+('IMPOSTO_ISS_MUNICIPAL', '5.00', 'Aliquota de ISS municipal (%)'),
+('IMPOSTO_CODIGO_TRIBUTACAO_NACIONAL', '010701', 'Codigo de Tributacao Nacional (LC 116/2003)'),
+('IMPOSTO_CODIGO_TRIBUTACAO_MUNICIPAL', '100', 'Codigo de Tributacao Municipal'),
+('IMPOSTO_DESCRICAO_SERVICO', 'Suporte tecnico em informatica, inclusive instalacao, configuracao e manutencao de programas de computacao e bancos de dados.', 'Descricao do servico para NFS-e');
 
 -- -----------------------------------------------------
 -- TABELAS DO SISTEMA DE TÉCNICOS - MapOS v5
@@ -1414,6 +1436,516 @@ INSERT IGNORE INTO `tec_checklist_template` (`tipo_os`, `tipo_servico`, `nome_te
 ('CFTV', 'MP', 'Manutenção CFTV Padrão', '[{"ordem":1,"desc":"Verificar funcionamento das câmeras","obrigatorio":true},{"ordem":2,"desc":"Limpar lentes","obrigatorio":true},{"ordem":3,"desc":"Verificar conexões","obrigatorio":true},{"ordem":4,"desc":"Verificar espaço em disco","obrigatorio":true},{"ordem":5,"desc":"Testar gravação","obrigatorio":true}]', 1),
 ('Alarme', 'INS', 'Instalação de Alarme', '[{"ordem":1,"desc":"Verificar equipamentos"},{"ordem":2,"desc":"Instalar sensores"},{"ordem":3,"desc":"Instalar sirene"},{"ordem":4,"desc":"Programar central"},{"ordem":5,"desc":"Testar disparo"}]', 1),
 ('Rede', 'INS', 'Passagem de Cabos', '[{"ordem":1,"desc":"Identificar pontos"},{"ordem":2,"desc":"Passar cabos"},{"ordem":3,"desc":"Instalar tomadas"},{"ordem":4,"desc":"Testar conectividade"}]', 1);
+
+-- -----------------------------------------------------
+-- Table `os_checkin`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `os_checkin` (
+  `idCheckin` INT(11) NOT NULL AUTO_INCREMENT,
+  `os_id` INT(11) NOT NULL,
+  `usuarios_id` INT(11) NOT NULL,
+  `data_entrada` DATETIME NULL,
+  `data_saida` DATETIME NULL,
+  `latitude_entrada` DECIMAL(10,8) NULL,
+  `longitude_entrada` DECIMAL(11,8) NULL,
+  `latitude_saida` DECIMAL(10,8) NULL,
+  `longitude_saida` DECIMAL(11,8) NULL,
+  `observacao_entrada` TEXT NULL,
+  `observacao_saida` TEXT NULL,
+  `status` VARCHAR(30) NOT NULL DEFAULT 'Em Andamento',
+  `data_cadastro` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `data_atualizacao` DATETIME NULL,
+  PRIMARY KEY (`idCheckin`),
+  INDEX `idx_os_id` (`os_id`),
+  INDEX `idx_status` (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `os_assinaturas`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `os_assinaturas` (
+  `idAssinatura` INT(11) NOT NULL AUTO_INCREMENT,
+  `os_id` INT(11) NOT NULL,
+  `checkin_id` INT(11) NULL,
+  `tipo` VARCHAR(20) NOT NULL COMMENT 'tecnico_entrada, tecnico_saida, cliente_saida',
+  `assinatura` VARCHAR(255) NOT NULL COMMENT 'Caminho da imagem da assinatura',
+  `nome_assinante` VARCHAR(100) NULL,
+  `documento_assinante` VARCHAR(20) NULL,
+  `data_assinatura` DATETIME NOT NULL,
+  `ip_address` VARCHAR(45) NULL,
+  `data_cadastro` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`idAssinatura`),
+  INDEX `idx_os_id` (`os_id`),
+  INDEX `idx_tipo` (`tipo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `os_fotos_atendimento`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `os_fotos_atendimento` (
+  `idFoto` INT(11) NOT NULL AUTO_INCREMENT,
+  `os_id` INT(11) NOT NULL,
+  `checkin_id` INT(11) NULL,
+  `usuarios_id` INT(11) NOT NULL,
+  `arquivo` VARCHAR(255) NOT NULL,
+  `path` VARCHAR(255) NOT NULL,
+  `url` VARCHAR(255) NOT NULL,
+  `descricao` TEXT NULL,
+  `etapa` VARCHAR(20) NOT NULL DEFAULT 'durante' COMMENT 'entrada, durante, saida',
+  `tamanho` INT(11) NULL,
+  `tipo_arquivo` VARCHAR(10) NULL,
+  `data_upload` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`idFoto`),
+  INDEX `idx_os_id` (`os_id`),
+  INDEX `idx_etapa` (`etapa`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `checklist_templates`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `checklist_templates` (
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `nome` VARCHAR(100) NOT NULL,
+  `descricao` TEXT NULL,
+  `categoria` VARCHAR(50) DEFAULT 'geral',
+  `ativo` TINYINT(1) DEFAULT 1,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `checklist_template_items`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `checklist_template_items` (
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `template_id` INT NOT NULL,
+  `ordem` INT DEFAULT 0,
+  `descricao` VARCHAR(255) NOT NULL,
+  `tipo` VARCHAR(20) DEFAULT 'checkbox',
+  `obrigatorio` TINYINT(1) DEFAULT 0,
+  `opcoes` TEXT NULL,
+  FOREIGN KEY (`template_id`) REFERENCES `checklist_templates`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `os_checklist`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `os_checklist` (
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `os_id` INT NOT NULL,
+  `template_id` INT NULL,
+  `item_id` INT NOT NULL,
+  `descricao` VARCHAR(255) NOT NULL,
+  `status` ENUM('pendente', 'ok', 'nao_aplicavel', 'com_problema') DEFAULT 'pendente',
+  `observacao` TEXT NULL,
+  `evidencia_foto` VARCHAR(255) NULL,
+  `verificado_por` INT NULL,
+  `verificado_at` TIMESTAMP NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX `idx_os` (`os_id`),
+  INDEX `idx_status` (`status`),
+  FOREIGN KEY (`os_id`) REFERENCES `os`(`idOs`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `os_timeline`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `os_timeline` (
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `os_id` INT NOT NULL,
+  `tipo` VARCHAR(50) NOT NULL,
+  `titulo` VARCHAR(255) NOT NULL,
+  `descricao` TEXT NULL,
+  `usuario_id` INT NULL,
+  `usuario_nome` VARCHAR(100) NULL,
+  `metadata` JSON NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX `idx_os` (`os_id`),
+  INDEX `idx_tipo` (`tipo`),
+  INDEX `idx_created` (`created_at`),
+  FOREIGN KEY (`os_id`) REFERENCES `os`(`idOs`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `os_pecas_utilizadas`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `os_pecas_utilizadas` (
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `os_id` INT NOT NULL,
+  `produto_id` INT NULL,
+  `nome_peca` VARCHAR(255) NOT NULL,
+  `codigo` VARCHAR(100) NULL,
+  `quantidade` DECIMAL(10,2) DEFAULT 1,
+  `valor_unitario` DECIMAL(10,2) DEFAULT 0,
+  `valor_total` DECIMAL(10,2) DEFAULT 0,
+  `tipo` ENUM('produto', 'servico', 'insumo', 'outro') DEFAULT 'produto',
+  `instalado_por` INT NULL,
+  `instalado_at` TIMESTAMP NULL,
+  `garantia_dias` INT DEFAULT 0,
+  `observacao` TEXT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX `idx_os` (`os_id`),
+  INDEX `idx_produto` (`produto_id`),
+  FOREIGN KEY (`os_id`) REFERENCES `os`(`idOs`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `os_etapas`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `os_etapas` (
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `os_id` INT NOT NULL,
+  `etapa` VARCHAR(50) NOT NULL,
+  `status` ENUM('pendente', 'em_andamento', 'concluida', 'cancelada') DEFAULT 'pendente',
+  `ordem` INT DEFAULT 0,
+  `tempo_estimado_minutos` INT NULL,
+  `tempo_real_minutos` INT NULL,
+  `iniciado_at` TIMESTAMP NULL,
+  `concluido_at` TIMESTAMP NULL,
+  `responsavel_id` INT NULL,
+  `observacao` TEXT NULL,
+  `checklist` JSON NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX `idx_os` (`os_id`),
+  INDEX `idx_etapa` (`etapa`),
+  INDEX `idx_status` (`status`),
+  FOREIGN KEY (`os_id`) REFERENCES `os`(`idOs`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `tecnico_competencias`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tecnico_competencias` (
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `usuario_id` INT NOT NULL,
+  `competencia` VARCHAR(100) NOT NULL,
+  `nivel` ENUM('basico', 'intermediario', 'avancado', 'especialista') DEFAULT 'basico',
+  `certificado` VARCHAR(255) NULL,
+  `validade_certificado` DATE NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY `uk_usuario_competencia` (`usuario_id`, `competencia`),
+  FOREIGN KEY (`usuario_id`) REFERENCES `usuarios`(`idUsuarios`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `tecnico_avaliacoes`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tecnico_avaliacoes` (
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `os_id` INT NOT NULL,
+  `tecnico_id` INT NOT NULL,
+  `cliente_id` INT NOT NULL,
+  `nota_geral` INT CHECK (nota_geral BETWEEN 1 AND 5),
+  `nota_atendimento` INT CHECK (nota_atendimento BETWEEN 1 AND 5),
+  `nota_solucao` INT CHECK (nota_solucao BETWEEN 1 AND 5),
+  `nota_tempo` INT CHECK (nota_tempo BETWEEN 1 AND 5),
+  `comentario` TEXT NULL,
+  `avaliado_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (`os_id`) REFERENCES `os`(`idOs`) ON DELETE CASCADE,
+  FOREIGN KEY (`tecnico_id`) REFERENCES `usuarios`(`idUsuarios`) ON DELETE CASCADE,
+  FOREIGN KEY (`cliente_id`) REFERENCES `clientes`(`idClientes`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `usuarios_cliente`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `usuarios_cliente` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `cliente_id` INT(11) NULL COMMENT 'ID do cliente vinculado',
+  `nome` VARCHAR(255) NOT NULL,
+  `email` VARCHAR(255) NOT NULL,
+  `senha` VARCHAR(255) NOT NULL,
+  `telefone` VARCHAR(20) NULL,
+  `celular` VARCHAR(20) NULL,
+  `ativo` TINYINT(1) DEFAULT 1,
+  `ultimo_acesso` DATETIME NULL,
+  `token_reset` VARCHAR(255) NULL,
+  `token_expira` DATETIME NULL,
+  `created_at` DATETIME NULL,
+  `updated_at` DATETIME NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_email` (`email`),
+  INDEX `idx_cliente_id` (`cliente_id`),
+  INDEX `idx_token_reset` (`token_reset`),
+  INDEX `idx_ativo` (`ativo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `usuarios_cliente_cnpjs`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `usuarios_cliente_cnpjs` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `usuario_cliente_id` INT(11) NOT NULL,
+  `cnpj` VARCHAR(18) NOT NULL COMMENT 'CNPJ no formato 00.000.000/0000-00',
+  `razao_social` VARCHAR(255) NULL,
+  `nome_fantasia` VARCHAR(255) NULL,
+  `principal` TINYINT(1) DEFAULT 0,
+  `created_at` DATETIME NULL,
+  PRIMARY KEY (`id`),
+  INDEX `idx_usuario_cnpj` (`usuario_cliente_id`, `cnpj`),
+  INDEX `idx_cnpj` (`cnpj`),
+  INDEX `idx_principal` (`principal`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `usuarios_cliente_permissoes`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `usuarios_cliente_permissoes` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `usuario_cliente_id` INT(11) NOT NULL,
+  `chave` VARCHAR(100) NOT NULL COMMENT 'Nome da permissao/configuracao',
+  `valor` TEXT NULL COMMENT 'Valor da configuracao (pode ser serializado)',
+  `created_at` DATETIME NULL,
+  `updated_at` DATETIME NULL,
+  PRIMARY KEY (`id`),
+  INDEX `idx_usuario_chave` (`usuario_cliente_id`, `chave`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `dre_demonstracoes`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `dre_demonstracoes` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(255) NOT NULL,
+  `descricao` TEXT NULL,
+  `data_inicio` DATE NOT NULL,
+  `data_fim` DATE NOT NULL,
+  `tipo` ENUM('mensal', 'trimestral', 'anual') DEFAULT 'mensal',
+  `status` TINYINT(1) DEFAULT 1,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NULL,
+  PRIMARY KEY (`id`),
+  INDEX `idx_data` (`data_inicio`, `data_fim`),
+  INDEX `idx_tipo` (`tipo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `configuracoes_impostos`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `configuracoes_impostos` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `cnpj` VARCHAR(18) NOT NULL,
+  `razao_social` VARCHAR(255) NULL,
+  `anexo_simples` ENUM('I', 'II', 'III', 'IV', 'V') DEFAULT 'III',
+  `faixa_simples` TINYINT(1) DEFAULT 1,
+  `aliquota_simples` DECIMAL(5,2) DEFAULT 6.00,
+  `retencao_iss` TINYINT(1) DEFAULT 0,
+  `aliquota_iss` DECIMAL(5,2) DEFAULT 2.00,
+  `retencao_pis` TINYINT(1) DEFAULT 0,
+  `aliquota_pis` DECIMAL(5,2) DEFAULT 0.65,
+  `retencao_cofins` TINYINT(1) DEFAULT 0,
+  `aliquota_cofins` DECIMAL(5,2) DEFAULT 3.00,
+  `retencao_csll` TINYINT(1) DEFAULT 0,
+  `aliquota_csll` DECIMAL(5,2) DEFAULT 1.00,
+  `retencao_inss` TINYINT(1) DEFAULT 0,
+  `aliquota_inss` DECIMAL(5,2) DEFAULT 11.00,
+  `retencao_ir` TINYINT(1) DEFAULT 0,
+  `aliquota_ir` DECIMAL(5,2) DEFAULT 1.50,
+  `valor_minimo_retencao` DECIMAL(15,2) DEFAULT 0.00,
+  `ativar_retencao_automatica` TINYINT(1) DEFAULT 0,
+  `ativo` TINYINT(1) DEFAULT 1,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NULL,
+  PRIMARY KEY (`id`),
+  INDEX `idx_cnpj` (`cnpj`),
+  INDEX `idx_anexo` (`anexo_simples`),
+  INDEX `idx_ativo` (`ativo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `calculos_impostos`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `calculos_impostos` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `cnpj` VARCHAR(18) NOT NULL,
+  `os_id` INT(11) UNSIGNED NULL,
+  `venda_id` INT(11) UNSIGNED NULL,
+  `cobranca_id` INT(11) UNSIGNED NULL,
+  `valor_bruto` DECIMAL(15,2) NOT NULL,
+  `valor_liquido` DECIMAL(15,2) NOT NULL,
+  `iss` DECIMAL(15,2) DEFAULT 0.00,
+  `pis` DECIMAL(15,2) DEFAULT 0.00,
+  `cofins` DECIMAL(15,2) DEFAULT 0.00,
+  `csll` DECIMAL(15,2) DEFAULT 0.00,
+  `inss` DECIMAL(15,2) DEFAULT 0.00,
+  `ir` DECIMAL(15,2) DEFAULT 0.00,
+  `total_impostos` DECIMAL(15,2) DEFAULT 0.00,
+  `aliquota_efetiva` DECIMAL(5,2) NULL,
+  `competencia` DATE NOT NULL,
+  `status` ENUM('calculado', 'retido', 'recolhido', 'cancelado') DEFAULT 'calculado',
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NULL,
+  PRIMARY KEY (`id`),
+  INDEX `idx_cnpj` (`cnpj`),
+  INDEX `idx_os_id` (`os_id`),
+  INDEX `idx_venda_id` (`venda_id`),
+  INDEX `idx_cobranca_id` (`cobranca_id`),
+  INDEX `idx_competencia` (`competencia`),
+  INDEX `idx_status` (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `os_documentos`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `os_documentos` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `os_id` INT(11) UNSIGNED NOT NULL,
+  `tipo` ENUM('boleto', 'nfse', 'nfe', 'nfce', 'recibo', 'contrato', 'outro') NOT NULL,
+  `descricao` VARCHAR(255) NULL,
+  `numero_documento` VARCHAR(100) NULL,
+  `valor` DECIMAL(15,2) NULL,
+  `data_emissao` DATE NULL,
+  `data_vencimento` DATE NULL,
+  `status` VARCHAR(50) NULL,
+  `arquivo` VARCHAR(500) NULL,
+  `link_externo` TEXT NULL,
+  `gateway_id` VARCHAR(100) NULL COMMENT 'ID do boleto no gateway',
+  `charge_id` VARCHAR(100) NULL COMMENT 'ID da cobranca',
+  `nfse_id` INT(11) UNSIGNED NULL,
+  `observacoes` TEXT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NULL,
+  PRIMARY KEY (`id`),
+  INDEX `idx_os_id` (`os_id`),
+  INDEX `idx_tipo` (`tipo`),
+  INDEX `idx_gateway_id` (`gateway_id`),
+  INDEX `idx_charge_id` (`charge_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `dre_config`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `dre_config` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `tipo` ENUM('MAPEAMENTO_OS', 'MAPEAMENTO_VENDA', 'MAPEAMENTO_LANCAMENTO', 'CONFIG') NOT NULL,
+  `origem_tabela` VARCHAR(50) NULL,
+  `origem_campo` VARCHAR(50) NULL,
+  `conta_dre_id` INT(11) UNSIGNED NOT NULL,
+  `condicao` TEXT NULL,
+  `ativo` TINYINT(1) DEFAULT 1,
+  `created_at` DATETIME NULL,
+  PRIMARY KEY (`id`),
+  INDEX `idx_tipo` (`tipo`),
+  INDEX `idx_conta_dre_id` (`conta_dre_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `config_sistema_impostos`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `config_sistema_impostos` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `chave` VARCHAR(100) NOT NULL,
+  `valor` TEXT NULL,
+  `descricao` VARCHAR(255) NULL,
+  `updated_at` DATETIME NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_chave` (`chave`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `certificado_digital`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `certificado_digital` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `tipo` ENUM('A1', 'A3') DEFAULT 'A1',
+  `cnpj` VARCHAR(14) NOT NULL,
+  `razao_social` VARCHAR(255) NULL,
+  `nome_fantasia` VARCHAR(255) NULL,
+  `arquivo_caminho` VARCHAR(500) NULL,
+  `arquivo_hash` VARCHAR(255) NULL,
+  `senha` TEXT NULL,
+  `data_validade` DATETIME NULL,
+  `data_emissao` DATETIME NULL,
+  `emissor` VARCHAR(100) NULL,
+  `serial_number` VARCHAR(100) NULL,
+  `ativo` TINYINT(1) DEFAULT 0,
+  `ultimo_acesso` DATETIME NULL,
+  `ultimo_erro` TEXT NULL,
+  `created_at` DATETIME NULL,
+  `updated_at` DATETIME NULL,
+  PRIMARY KEY (`id`),
+  INDEX `idx_cnpj` (`cnpj`),
+  INDEX `idx_ativo` (`ativo`),
+  INDEX `idx_data_validade` (`data_validade`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `certificado_consultas`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `certificado_consultas` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `certificado_id` INT(11) UNSIGNED NOT NULL,
+  `tipo_consulta` ENUM('CNPJ', 'SIMPLES_NACIONAL', 'NFE', 'NFSE', 'SITUACAO_CADASTRO') NOT NULL,
+  `data_consulta` DATETIME NOT NULL,
+  `sucesso` TINYINT(1) DEFAULT 0,
+  `dados_retorno` LONGTEXT NULL,
+  `erro` TEXT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `idx_certificado_id` (`certificado_id`),
+  INDEX `idx_tipo_consulta` (`tipo_consulta`),
+  INDEX `idx_data_consulta` (`data_consulta`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `certificado_nfe_importada`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `certificado_nfe_importada` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `certificado_id` INT(11) UNSIGNED NOT NULL,
+  `chave_acesso` VARCHAR(44) NOT NULL,
+  `numero` VARCHAR(20) NULL,
+  `serie` VARCHAR(10) NULL,
+  `data_emissao` DATETIME NULL,
+  `data_importacao` DATETIME NULL,
+  `cnpj_destinatario` VARCHAR(14) NULL,
+  `valor_total` DECIMAL(15,2) NULL,
+  `valor_impostos` DECIMAL(15,2) NULL,
+  `xml_path` VARCHAR(500) NULL,
+  `situacao` ENUM('Autorizada', 'Cancelada', 'Denegada', 'Inutilizada') DEFAULT 'Autorizada',
+  `imposto_integrado` TINYINT(1) DEFAULT 0,
+  `dados_xml` LONGTEXT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `idx_certificado_id` (`certificado_id`),
+  INDEX `idx_chave_acesso` (`chave_acesso`),
+  INDEX `idx_cnpj_destinatario` (`cnpj_destinatario`),
+  INDEX `idx_situacao` (`situacao`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Dados iniciais - Anexo V Impostos
+-- -----------------------------------------------------
+INSERT IGNORE INTO `impostos_config` (`tipo_regime`, `anexo_simples`, `faixa_simples`, `aliquota_iss`, `retem_iss`, `aliquota_pis`, `retem_pis`, `aliquota_cofins`, `retem_cofins`, `aliquota_csll`, `retem_csll`, `aliquota_ir`, `retem_ir`, `aliquota_inss`, `retem_inss`, `created_at`, `updated_at`) VALUES
+('simples_nacional', 'v', 1, 0.00, 0, 0.50, 0, 2.34, 0, 0.80, 0, 0.80, 0, 0.00, 0, NOW(), NOW()),
+('simples_nacional', 'v', 2, 0.00, 0, 0.63, 0, 2.67, 0, 1.46, 0, 1.46, 0, 0.00, 0, NOW(), NOW()),
+('simples_nacional', 'v', 3, 0.00, 0, 0.77, 0, 3.27, 0, 1.90, 0, 1.90, 0, 0.00, 0, NOW(), NOW()),
+('simples_nacional', 'v', 4, 0.00, 0, 0.82, 0, 3.46, 0, 2.15, 0, 2.15, 0, 0.00, 0, NOW(), NOW()),
+('simples_nacional', 'v', 5, 0.00, 0, 0.87, 0, 3.67, 0, 2.36, 0, 2.36, 0, 0.00, 0, NOW(), NOW());
+
+-- -----------------------------------------------------
+-- Dados iniciais - Contas DRE Comercio
+-- -----------------------------------------------------
+INSERT IGNORE INTO `dre_contas` (`codigo`, `nome`, `tipo`, `categoria`, `ordem`, `ativo`, `created_at`, `updated_at`) VALUES
+('1.4', 'Vendas de Materiais de Construcao', 'receita', 'Receitas', 14, 1, NOW(), NOW()),
+('1.4.1', 'Vendas de Cimento e Argamassa', 'receita', 'Receitas', 141, 1, NOW(), NOW()),
+('1.4.2', 'Vendas de Tijolos e Blocos', 'receita', 'Receitas', 142, 1, NOW(), NOW()),
+('1.4.3', 'Vendas de Tintas e Vernizes', 'receita', 'Receitas', 143, 1, NOW(), NOW()),
+('1.4.4', 'Vendas de Ferragens e Metais', 'receita', 'Receitas', 144, 1, NOW(), NOW()),
+('1.4.5', 'Vendas de Materiais Eletricos', 'receita', 'Receitas', 145, 1, NOW(), NOW()),
+('1.4.6', 'Vendas de Madeiras e Esquadrias', 'receita', 'Receitas', 146, 1, NOW(), NOW()),
+('2.4', 'ICMS sobre Vendas', 'despesa', 'Impostos', 24, 1, NOW(), NOW()),
+('2.5', 'PIS/COFINS sobre Vendas', 'despesa', 'Impostos', 25, 1, NOW(), NOW()),
+('4.4', 'Custo das Mercadorias Vendidas', 'custo', 'Custos', 44, 1, NOW(), NOW()),
+('4.4.1', 'Custo - Cimentos e Argamassas', 'custo', 'Custos', 441, 1, NOW(), NOW()),
+('4.4.2', 'Custo - Tijolos e Blocos', 'custo', 'Custos', 442, 1, NOW(), NOW()),
+('4.4.3', 'Custo - Tintas e Vernizes', 'custo', 'Custos', 443, 1, NOW(), NOW()),
+('4.4.4', 'Custo - Ferragens e Metais', 'custo', 'Custos', 444, 1, NOW(), NOW()),
+('4.4.5', 'Custo - Materiais Eletricos', 'custo', 'Custos', 445, 1, NOW(), NOW()),
+('4.4.6', 'Custo - Madeiras e Esquadrias', 'custo', 'Custos', 446, 1, NOW(), NOW()),
+('6.3', 'Despesas com Vendas', 'despesa', 'Despesas', 63, 1, NOW(), NOW()),
+('6.3.1', 'Frete e Carretos', 'despesa', 'Despesas', 631, 1, NOW(), NOW()),
+('6.3.2', 'Comissoes de Vendedores', 'despesa', 'Despesas', 632, 1, NOW(), NOW()),
+('6.3.3', 'Despesas com Armazenagem', 'despesa', 'Despesas', 633, 1, NOW(), NOW()),
+('6.3.4', 'Perdas e Quebras de Estoque', 'despesa', 'Despesas', 634, 1, NOW(), NOW());
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
