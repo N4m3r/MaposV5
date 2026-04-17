@@ -175,7 +175,8 @@
 <script>
 $(document).ready(function() {
     // Upload area click
-    $('#uploadArea').click(function() {
+    $('#uploadArea').click(function(e) {
+        if ($(e.target).is('#arquivo_sql')) return;
         $('#arquivo_sql').click();
     });
 
