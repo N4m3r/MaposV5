@@ -1065,16 +1065,6 @@ INSERT IGNORE INTO `dre_contas` (`codigo`, `nome`, `tipo`, `categoria`, `ordem`,
 INSERT IGNORE INTO `impostos_config` (`tipo_regime`, `anexo_simples`, `aliquota_iss`, `retem_iss`, `created_at`, `updated_at`) VALUES
 ('simples_nacional', 'iii', 2.00, 0, 'admin_created_at', 'admin_created_at');
 
-INSERT IGNORE INTO `config_sistema_impostos` (`chave`, `valor`, `descricao`) VALUES
-('IMPOSTO_ANEXO_PADRAO', 'III', 'Anexo do Simples Nacional padrao'),
-('IMPOSTO_FAIXA_ATUAL', '1', 'Faixa de faturamento atual (1-5)'),
-('IMPOSTO_RETENCAO_AUTOMATICA', '1', 'Habilitar retencao automatica (1=Sim, 0=Nao)'),
-('IMPOSTO_DRE_INTEGRACAO', '1', 'Integrar retencoes com DRE (1=Sim, 0=Nao)'),
-('IMPOSTO_ISS_MUNICIPAL', '5.00', 'Aliquota de ISS municipal (%)'),
-('IMPOSTO_CODIGO_TRIBUTACAO_NACIONAL', '010701', 'Codigo de Tributacao Nacional (LC 116/2003)'),
-('IMPOSTO_CODIGO_TRIBUTACAO_MUNICIPAL', '100', 'Codigo de Tributacao Municipal'),
-('IMPOSTO_DESCRICAO_SERVICO', 'Suporte tecnico em informatica, inclusive instalacao, configuracao e manutencao de programas de computacao e bancos de dados.', 'Descricao do servico para NFS-e');
-
 -- -----------------------------------------------------
 -- TABELAS DO SISTEMA DE TÉCNICOS - MapOS v5
 -- Adicionadas em: 2026-04-13
@@ -1841,6 +1831,17 @@ CREATE TABLE IF NOT EXISTS `config_sistema_impostos` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_chave` (`chave`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Dados padrão para config_sistema_impostos
+INSERT IGNORE INTO `config_sistema_impostos` (`chave`, `valor`, `descricao`) VALUES
+('IMPOSTO_ANEXO_PADRAO', 'III', 'Anexo do Simples Nacional padrao'),
+('IMPOSTO_FAIXA_ATUAL', '1', 'Faixa de faturamento atual (1-5)'),
+('IMPOSTO_RETENCAO_AUTOMATICA', '1', 'Habilitar retencao automatica (1=Sim, 0=Nao)'),
+('IMPOSTO_DRE_INTEGRACAO', '1', 'Integrar retencoes com DRE (1=Sim, 0=Nao)'),
+('IMPOSTO_ISS_MUNICIPAL', '5.00', 'Aliquota de ISS municipal (%)'),
+('IMPOSTO_CODIGO_TRIBUTACAO_NACIONAL', '010701', 'Codigo de Tributacao Nacional (LC 116/2003)'),
+('IMPOSTO_CODIGO_TRIBUTACAO_MUNICIPAL', '100', 'Codigo de Tributacao Municipal'),
+('IMPOSTO_DESCRICAO_SERVICO', 'Suporte tecnico em informatica, inclusive instalacao, configuracao e manutencao de programas de computacao e bancos de dados.', 'Descricao do servico para NFS-e');
 
 -- -----------------------------------------------------
 -- Table `certificado_digital`
