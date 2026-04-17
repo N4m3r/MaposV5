@@ -157,7 +157,7 @@ CREATE TABLE IF NOT EXISTS `lancamentos` (
   `categorias_id` INT NULL,
   `contas_id` INT NULL,
   `vendas_id` INT NULL,
-  `usuarios_id` INT NOT NULL,
+  `usuarios_id` INT(11) NOT NULL,
   PRIMARY KEY (`idLancamentos`),
   INDEX `fk_lancamentos_clientes1` (`clientes_id` ASC),
   INDEX `fk_lancamentos_categorias1_idx` (`categorias_id` ASC),
@@ -354,7 +354,7 @@ DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 -- Table `vendas`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `vendas` (
-  `idVendas` INT NOT NULL AUTO_INCREMENT,
+  `idVendas` INT(11) NOT NULL AUTO_INCREMENT,
   `dataVenda` DATE NULL,
   `valorTotal` DECIMAL(10, 2) NULL DEFAULT 0,
   `desconto` DECIMAL(10, 2) NULL DEFAULT 0,
@@ -992,7 +992,7 @@ CREATE TABLE IF NOT EXISTS `os_nfse_emitida` (
 CREATE TABLE IF NOT EXISTS `os_boleto_emitido` (
   `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   `os_id` INT(11) NOT NULL,
-  `nfse_id` INT(11) NULL COMMENT 'ID da NFS-e vinculada',
+  `nfse_id` INT(11) UNSIGNED NULL COMMENT 'ID da NFS-e vinculada',
   `nosso_numero` VARCHAR(50) NULL,
   `linha_digitavel` VARCHAR(60) NULL,
   `codigo_barras` VARCHAR(44) NULL,

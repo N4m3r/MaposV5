@@ -331,57 +331,51 @@ $(document).ready(function () {
                     response_length: xhr.responseText.length
                 });
 
-                if (xhr.status === 200) {
-                    try {
-                        var result = JSON.parse(xhr.responseText);
-                        InstallFrontendLog.debug('Resposta JSON do servidor', {
-                            success: result.success,
-                            step: result.step,
-                            message: result.message,
-                            log_file: result.log_file || null
-                        });
+                // Tentar parsear JSON da resposta independentemente do status HTTP
+                // O servidor retorna JSON com detalhes do erro mesmo em status 500
+                try {
+                    var result = JSON.parse(xhr.responseText);
+                    InstallFrontendLog.debug('Resposta JSON do servidor', {
+                        success: result.success,
+                        step: result.step,
+                        message: result.message,
+                        log_file: result.log_file || null,
+                        http_status: xhr.status
+                    });
 
-                        if (result.success) {
-                            updateProgress(100, 'Instalação concluída!', 8);
-                            InstallFrontendLog.info('Instalação concluída com sucesso!');
-                            setTimeout(function() {
-                                $configurationTab.removeClass("active");
-                                $("#configuration").find("i").removeClass("fa-circle-o").addClass("fa-check-circle");
-                                $("#finished").find("i").removeClass("fa-circle-o").addClass("fa-check-circle");
-                                $("#finished").addClass("active");
-                                $("#finished-tab").addClass("active");
-                                $("#install-progress-container").addClass("hide");
-                            }, 500);
-                        } else {
-                            InstallFrontendLog.error('Instalação falhou', {
-                                message: result.message,
-                                step: result.step,
-                                log_file: result.log_file || null
-                            });
-                            showInstallError(result.message, result.step, result.log_file);
-                            onSubmitSuccess($form);
-                        }
-                    } catch (e) {
-                        InstallFrontendLog.error('Falha ao parsear resposta do servidor', {
-                            error: e.message,
-                            response_preview: xhr.responseText.substring(0, 500),
+                    if (result.success && xhr.status === 200) {
+                        updateProgress(100, 'Instalação concluída!', 8);
+                        InstallFrontendLog.info('Instalação concluída com sucesso!');
+                        setTimeout(function() {
+                            $configurationTab.removeClass("active");
+                            $("#configuration").find("i").removeClass("fa-circle-o").addClass("fa-check-circle");
+                            $("#finished").find("i").removeClass("fa-circle-o").addClass("fa-check-circle");
+                            $("#finished").addClass("active");
+                            $("#finished-tab").addClass("active");
+                            $("#install-progress-container").addClass("hide");
+                        }, 500);
+                    } else {
+                        InstallFrontendLog.error('Instalação falhou', {
+                            message: result.message,
+                            step: result.step,
+                            log_file: result.log_file || null,
                             http_status: xhr.status
                         });
-
-                        if (xhr.responseText.indexOf('<') === 0) {
-                            showInstallError('Erro no servidor. Verifique o log de erros do PHP em install/logs/.', null, null);
-                        } else {
-                            showInstallError('Erro ao processar resposta: ' + e.message, null, null);
-                        }
+                        showInstallError(result.message, result.step, result.log_file);
                         onSubmitSuccess($form);
                     }
-                } else {
-                    InstallFrontendLog.error('Erro HTTP', {
-                        status: xhr.status,
-                        statusText: xhr.statusText,
-                        response_preview: xhr.responseText ? xhr.responseText.substring(0, 200) : '(vazio)'
+                } catch (e) {
+                    InstallFrontendLog.error('Falha ao parsear resposta do servidor', {
+                        error: e.message,
+                        response_preview: xhr.responseText.substring(0, 500),
+                        http_status: xhr.status
                     });
-                    showInstallError('Erro de comunicação com o servidor. Status: ' + xhr.status, null, null);
+
+                    if (xhr.responseText.indexOf('<') === 0) {
+                        showInstallError('Erro no servidor. Verifique o log de erros do PHP em install/logs/.', null, null);
+                    } else {
+                        showInstallError('Erro ao processar resposta (HTTP ' + xhr.status + '): ' + e.message, null, null);
+                    }
                     onSubmitSuccess($form);
                 }
             }
