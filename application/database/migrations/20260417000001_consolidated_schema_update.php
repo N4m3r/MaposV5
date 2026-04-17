@@ -626,7 +626,7 @@ class Migration_Consolidated_schema_update extends CI_Migration
         $this->_createTableIfNotExists('impostos_config', [
             'id' => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
             'tipo_regime' => ['type' => "ENUM('simples_nacional','lucro_presumido','lucro_real')", 'default' => 'simples_nacional'],
-            'anexo_simples' => ['type' => "ENUM('i','ii','iii','iv','v')", 'null' => true],
+            'anexo_simples' => ['type' => "ENUM('I','II','III','IV','V')", 'null' => true],
             'aliquota_iss' => ['type' => 'DECIMAL', 'constraint' => '5,2', 'default' => 0],
             'retem_iss' => ['type' => 'TINYINT', 'constraint' => 1, 'default' => 0],
             'aliquota_pis' => ['type' => 'DECIMAL', 'constraint' => '5,2', 'default' => 0],
@@ -1127,23 +1127,33 @@ class Migration_Consolidated_schema_update extends CI_Migration
             }
         }
 
-        // Permissões padrão para grupos
+        // Adicionar permissões ao grupo Administrador (ID 1) em vez de criar grupos separados
+        // As permissoes de Tecnico e Dashboard sao categorias na view de edicao, nao grupos separados
         if ($this->db->table_exists('permissoes')) {
-            $this->_insertPermissionGroup('Tecnico', [
-                'vCliente' => 1, 'vProduto' => 1, 'vServico' => 1,
-                'vTecnicoOS' => 1, 'eTecnicoCheckin' => 1, 'eTecnicoCheckout' => 1,
-                'eTecnicoFotos' => 1, 'vTecnicoDashboard' => 1
-            ]);
-            $this->_insertPermissionGroup('Dashboard', [
-                'vDashboard' => 1, 'vRelatorioCompleto' => 1, 'vExportarDados' => 1
-            ]);
+            // Remover grupos criados incorretamente como separados
+            $this->db->where('nome', 'Tecnico')->delete('permissoes');
+            $this->db->where('nome', 'Dashboard')->delete('permissoes');
 
-            // Atualizar admin com permissões DRE
+            // Atualizar admin com todas as permissoes
             $admin = $this->db->where('idPermissao', 1)->get('permissoes')->row();
             if ($admin && !empty($admin->permissoes)) {
                 $perms = @unserialize($admin->permissoes);
                 if (is_array($perms)) {
-                $newPerms = ['vDRE', 'vDREDemonstracao', 'vDREContas', 'vDRELancamentos', 'cDRE', 'eDRE', 'dDRE', 'vDashboard', 'vRelatorioCompleto', 'vExportarDados'];
+                    // Permissoes de Tecnico
+                    $newPerms = [
+                        'vTecnicoOS', 'eTecnicoCheckin', 'eTecnicoCheckout', 'eTecnicoFotos', 'vTecnicoDashboard',
+                        // Permissoes de Dashboard
+                        'vDashboard', 'vRelatorioCompleto', 'vExportarDados',
+                        // Permissoes DRE
+                        'vDRE', 'vDREDemonstracao', 'vDREContas', 'vDRELancamentos', 'cDRE', 'eDRE', 'dDRE',
+                        // Outras permissoes V5
+                        'vRelatorioTecnicos', 'vRelatorioAtendimentos', 'vWebhooks',
+                        'vBtnAtendimento', 'cDocOs',
+                        'vCertificado', 'cCertificado', 'eCertificado', 'dCertificado',
+                        'vImpostos', 'cImpostos', 'eImpostos', 'dImpostos', 'cImpostosConfig', 'vImpostosRelatorio', 'vImpostosExportar',
+                        'vUsuariosCliente', 'cUsuariosCliente', 'eUsuariosCliente', 'dUsuariosCliente', 'cPermUsuariosCliente',
+                        'vNFSe', 'cNFSe', 'eNFSe', 'vBoletoOS', 'cBoletoOS', 'eBoletoOS', 'rNFSe',
+                    ];
                     $changed = false;
                     foreach ($newPerms as $p) {
                         if (!isset($perms[$p])) {
@@ -1188,7 +1198,7 @@ class Migration_Consolidated_schema_update extends CI_Migration
                 $now = date('Y-m-d H:i:s');
                 $this->db->insert('impostos_config', [
                     'tipo_regime' => 'simples_nacional',
-                    'anexo_simples' => 'iii',
+                    'anexo_simples' => 'III',
                     'aliquota_iss' => 2.00,
                     'retem_iss' => 0,
                     'created_at' => $now,
@@ -1264,18 +1274,4 @@ class Migration_Consolidated_schema_update extends CI_Migration
     }
 
     // ============================================================
-    // HELPER: Inserir grupo de permissão se não existir
-    // ============================================================
-    private function _insertPermissionGroup($nome, $permissoes)
-    {
-        $exists = $this->db->where('nome', $nome)->get('permissoes');
-        if ($exists->num_rows() == 0) {
-            $this->db->insert('permissoes', [
-                'nome' => $nome,
-                'permissoes' => serialize($permissoes),
-                'situacao' => 1,
-                'data' => date('Y-m-d')
-            ]);
-        }
-    }
 }

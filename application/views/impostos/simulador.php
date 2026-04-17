@@ -78,7 +78,7 @@
                         <div class="controls">
                             <select name="anexo" class="span8" required>
                                 <?php foreach ($anexos as $key => $nome): ?>
-                                <option value="<?= $key ?>" <?= $this->input->post('anexo') == $key ? 'selected' : '' ?><?= $nome ?></option>
+                                <option value="<?= $key ?>" <?= $this->input->post('anexo') == $key ? 'selected' : '' ?>><?= $nome ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>

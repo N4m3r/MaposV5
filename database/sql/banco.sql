@@ -806,7 +806,7 @@ CREATE TABLE IF NOT EXISTS `dre_lancamentos` (
 CREATE TABLE IF NOT EXISTS `impostos_config` (
   `id` INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `tipo_regime` ENUM('simples_nacional', 'lucro_presumido', 'lucro_real') DEFAULT 'simples_nacional',
-  `anexo_simples` ENUM('i', 'ii', 'iii', 'iv', 'v') NULL,
+  `anexo_simples` ENUM('I', 'II', 'III', 'IV', 'V') NULL,
   `aliquota_iss` DECIMAL(5,2) DEFAULT 0,
   `retem_iss` TINYINT(1) DEFAULT 0,
   `aliquota_pis` DECIMAL(5,2) DEFAULT 0,
@@ -1063,7 +1063,7 @@ INSERT IGNORE INTO `dre_contas` (`codigo`, `nome`, `tipo`, `categoria`, `ordem`,
 ('4', 'DESPESAS OPERACIONAIS', 'despesa', 'Despesas', 30, 1, 'admin_created_at', 'admin_created_at');
 
 INSERT IGNORE INTO `impostos_config` (`tipo_regime`, `anexo_simples`, `aliquota_iss`, `retem_iss`, `created_at`, `updated_at`) VALUES
-('simples_nacional', 'iii', 2.00, 0, 'admin_created_at', 'admin_created_at');
+('simples_nacional', 'III', 2.00, 0, 'admin_created_at', 'admin_created_at');
 
 -- -----------------------------------------------------
 -- TABELAS DO SISTEMA DE TÉCNICOS - MapOS v5

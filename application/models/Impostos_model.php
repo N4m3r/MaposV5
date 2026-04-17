@@ -90,27 +90,45 @@ class Impostos_model extends CI_Model
     public function getAliquotasAnexo($anexo = 'III')
     {
         // Verificar se a tabela existe
-        if (!$this->db->table_exists('impostos_config')) {
+        if (!$this->db->table_exists('configuracoes_impostos')) {
             // Retornar dados padrão se tabela não existe
             return $this->getAliquotasPadrao($anexo);
         }
 
         try {
-            $this->db->where('anexo', $anexo);
+            $this->db->where('anexo_simples', $anexo);
             $this->db->where('ativo', 1);
-            $this->db->order_by('faixa', 'ASC');
+            $this->db->order_by('faixa_simples', 'ASC');
 
-            $query = $this->db->get('impostos_config');
+            $query = $this->db->get('configuracoes_impostos');
 
             if ($query === false) {
                 return $this->getAliquotasPadrao($anexo);
             }
 
-            $result = $query->result();
+            $rows = $query->result();
 
             // Se não houver dados, retornar padrão
-            if (empty($result)) {
+            if (empty($rows)) {
                 return $this->getAliquotasPadrao($anexo);
+            }
+
+            // Mapear colunas para o formato esperado
+            $result = [];
+            foreach ($rows as $row) {
+                $item = new stdClass();
+                $item->id = $row->id;
+                $item->anexo = $row->anexo_simples;
+                $item->faixa = $row->faixa_simples;
+                $item->aliquota_nominal = $row->aliquota_simples;
+                $item->irpj = $row->aliquota_ir;
+                $item->csll = $row->aliquota_csll;
+                $item->cofins = $row->aliquota_cofins;
+                $item->pis = $row->aliquota_pis;
+                $item->cpp = $row->aliquota_inss;
+                $item->iss = $row->aliquota_iss;
+                $item->ativo = $row->ativo;
+                $result[] = $item;
             }
 
             return $result;
@@ -167,26 +185,40 @@ class Impostos_model extends CI_Model
     public function getAliquotaFaixa($anexo, $faixa)
     {
         // Verificar se a tabela existe
-        if (!$this->db->table_exists('impostos_config')) {
+        if (!$this->db->table_exists('configuracoes_impostos')) {
             return $this->getAliquotaPadrao($anexo, $faixa);
         }
 
         try {
-            $this->db->where('anexo', $anexo);
-            $this->db->where('faixa', $faixa);
+            $this->db->where('anexo_simples', $anexo);
+            $this->db->where('faixa_simples', $faixa);
             $this->db->where('ativo', 1);
 
-            $query = $this->db->get('impostos_config');
+            $query = $this->db->get('configuracoes_impostos');
 
             if ($query === false) {
                 return $this->getAliquotaPadrao($anexo, $faixa);
             }
 
-            $result = $query->row();
+            $row = $query->row();
 
-            if (!$result) {
+            if (!$row) {
                 return $this->getAliquotaPadrao($anexo, $faixa);
             }
+
+            // Mapear colunas de configuracoes_impostos para o formato esperado pelo simulador
+            $result = new stdClass();
+            $result->id = $row->id;
+            $result->anexo = $row->anexo_simples;
+            $result->faixa = $row->faixa_simples;
+            $result->aliquota_nominal = $row->aliquota_simples;
+            $result->irpj = $row->aliquota_ir;
+            $result->csll = $row->aliquota_csll;
+            $result->cofins = $row->aliquota_cofins;
+            $result->pis = $row->aliquota_pis;
+            $result->cpp = $row->aliquota_inss;
+            $result->iss = $row->aliquota_iss;
+            $result->ativo = $row->ativo;
 
             return $result;
         } catch (Exception $e) {

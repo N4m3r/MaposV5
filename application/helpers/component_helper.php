@@ -83,17 +83,17 @@ function button(string $text, string $url = '', string $type = 'primary', array 
  */
 function card(string $title = '', string $content = '', array $options = []): string
 {
-    $header = $title ? "<div class='card-header'\u003e<h5 class='card-title mb-0'\u003e{$title}\u003c/h5\u003e</div\u003e" : '';
+    $header = $title ? "<div class='card-header'><h5 class='card-title mb-0'>{$title}</h5></div>" : '';
     $footer = $options['footer'] ?? '';
     $class = $options['class'] ?? '';
 
-    $html = "<div class='card {$class}'\u003e";
+    $html = "<div class='card {$class}'>";
     $html .= $header;
-    $html .= "<div class='card-body'\u003e{$content}\u003c/div\u003e";
+    $html .= "<div class='card-body'>{$content}</div>";
     if ($footer) {
-        $html .= "<div class='card-footer'\u003e{$footer}\u003c/div\u003e";
+        $html .= "<div class='card-footer'>{$footer}</div>";
     }
-    $html .= "</div\u003e";
+    $html .= "</div>";
 
     return $html;
 }
@@ -107,7 +107,7 @@ function card(string $title = '', string $content = '', array $options = []): st
  */
 function badge(string $text, string $type = 'primary'): string
 {
-    return "<span class='badge bg-{$type}'\u003e" . htmlspecialchars($text) . "</span\u003e";
+    return "<span class='badge bg-{$type}'>" . htmlspecialchars($text) . "</span>";
 }
 
 /**
@@ -128,7 +128,7 @@ function alert(string $message, string $type = 'info', bool $dismissible = false
         $dismiss = "<button type='button' class='btn-close' data-bs-dismiss='alert'></button>";
     }
 
-    return "<div class='{$class}' role='alert'\u003e{$message}{$dismiss}\u003c/div\u003e";
+    return "<div class='{$class}' role='alert'>{$message}{$dismiss}</div>";
 }
 
 /**
@@ -148,12 +148,12 @@ function pagination(int $total, int $perPage, int $currentPage, string $baseUrl)
         return '';
     }
 
-    $html = "<ul class='pagination'\u003e";
+    $html = "<ul class='pagination'>";
 
     // Botão anterior
     $prevClass = $currentPage <= 1 ? 'disabled' : '';
     $prevUrl = $currentPage > 1 ? $baseUrl . '?page=' . ($currentPage - 1) : '#';
-    $html .= "<li class='page-item {$prevClass}'\u003e<a class='page-link' href='{$prevUrl}'\u003eAnterior</a\u003e</li\u003e";
+    $html .= "<li class='page-item {$prevClass}'><a class='page-link' href='{$prevUrl}'>Anterior</a></li>";
 
     // Páginas
     $start = max(1, $currentPage - 2);
@@ -162,15 +162,15 @@ function pagination(int $total, int $perPage, int $currentPage, string $baseUrl)
     for ($i = $start; $i <= $end; $i++) {
         $active = $i === $currentPage ? 'active' : '';
         $url = $baseUrl . '?page=' . $i;
-        $html .= "<li class='page-item {$active}'\u003e<a class='page-link' href='{$url}'\u003e{$i}</a\u003e</li\u003e";
+        $html .= "<li class='page-item {$active}'><a class='page-link' href='{$url}'>{$i}</a></li>";
     }
 
     // Botão próximo
     $nextClass = $currentPage >= $totalPages ? 'disabled' : '';
     $nextUrl = $currentPage < $totalPages ? $baseUrl . '?page=' . ($currentPage + 1) : '#';
-    $html .= "<li class='page-item {$nextClass}'\u003e<a class='page-link' href='{$nextUrl}'\u003ePróximo</a\u003e</li\u003e";
+    $html .= "<li class='page-item {$nextClass}'><a class='page-link' href='{$nextUrl}'>Próximo</a></li>";
 
-    $html .= "</ul\u003e";
+    $html .= "</ul>";
 
     return $html;
 }
@@ -187,14 +187,14 @@ function searchForm(string $action, string $placeholder = 'Buscar...', string $v
 {
     $value = htmlspecialchars($value);
     return "
-        <form method='GET' action='{$action}' class='form-search'\u003e
-            <div class='input-group'\u003e
-                <input type='text' name='search' class='form-control' placeholder='{$placeholder}' value='{$value}'\u003e
-                <button type='submit' class='btn btn-primary'\u003e
-                    <i class='fas fa-search'\u003e</i\u003e
-                </button\u003e
-            </div\u003e
-        </form\u003e
+        <form method='GET' action='{$action}' class='form-search'>
+            <div class='input-group'>
+                <input type='text' name='search' class='form-control' placeholder='{$placeholder}' value='{$value}'>
+                <button type='submit' class='btn btn-primary'>
+                    <i class='fas fa-search'></i>
+                </button>
+            </div>
+        </form>
     ";
 }
 
@@ -216,20 +216,20 @@ function modal(string $id, string $title, string $content, array $options = []):
     $sizeClass = $size ? "modal-{$size}" : '';
 
     return "
-        <div class='modal fade' id='{$id}' tabindex='-1' data-bs-backdrop='{$backdrop}'\u003e
-            <div class='modal-dialog {$sizeClass}'\u003e
-                <div class='modal-content'\u003e
-                    <div class='modal-header'\u003e
-                        <h5 class='modal-title'\u003e{$title}</h5\u003e
-                        <button type='button' class='btn-close' data-bs-dismiss='modal'\u003e</button\u003e
-                    </div\u003e
-                    <div class='modal-body'\u003e
+        <div class='modal fade' id='{$id}' tabindex='-1' data-bs-backdrop='{$backdrop}'>
+            <div class='modal-dialog {$sizeClass}'>
+                <div class='modal-content'>
+                    <div class='modal-header'>
+                        <h5 class='modal-title'>{$title}</h5>
+                        <button type='button' class='btn-close' data-bs-dismiss='modal'></button>
+                    </div>
+                    <div class='modal-body'>
                         {$content}
-                    </div\u003e
-                    " . ($footer ? "<div class='modal-footer'\u003e{$footer}</div\u003e" : '') . "
-                </div\u003e
-            </div\u003e
-        </div\u003e
+                    </div>
+                    " . ($footer ? "<div class='modal-footer'>{$footer}</div>" : '') . "
+                </div>
+            </div>
+        </div>
     ";
 }
 
@@ -242,12 +242,12 @@ function modal(string $id, string $title, string $content, array $options = []):
  */
 function starRating(int $rating, int $max = 5): string
 {
-    $html = "<div class='star-rating'\u003e";
+    $html = "<div class='star-rating'>";
     for ($i = 1; $i <= $max; $i++) {
         $class = $i <= $rating ? 'fas fa-star text-warning' : 'far fa-star text-muted';
-        $html .= "<i class='{$class}'\u003e</i\u003e";
+        $html .= "<i class='{$class}'></i>";
     }
-    $html .= "</div\u003e";
+    $html .= "</div>";
     return $html;
 }
 

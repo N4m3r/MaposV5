@@ -43,7 +43,11 @@
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8080/install/assets/js/main.js)",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8080/assets/img/logo.png)",
       "Bash(curl *)",
-      "Bash(start *)"
+      "Bash(start *)",
+      "Bash(xxd)",
+      "Bash(xxd \"C:/Users/thail/Desktop/IVMS-CRUD/MaposV5/application/views/dre/conta_form.php\")",
+      "Bash(perl *)",
+      "Bash(python3 *)"
     ]
   }
 }

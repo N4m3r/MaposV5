@@ -639,12 +639,6 @@
                                                     <span class="lbl"> Configurar Permissão</span>
                                                 </label>
                                             </td>
-                                            <td>
-                                                <label>
-                                                    <input name="cBackup" class="marcar" type="checkbox" value="1" />
-                                                    <span class="lbl"> Backup</span>
-                                                </label>
-                                            </td>
                                         </tr>
                                         <tr>
                                             <td>
@@ -669,6 +663,41 @@
                                         </tbody>
                                     </table>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Backup -->
+                    <div class="accordion-group widget-box">
+                        <div class="accordion-heading">
+                            <div class="widget-title">
+                                <a data-parent="#collapse-group" href="#collapseGBackup" data-toggle="collapse">
+                                    <span><i class="bx bx-data icon-cli"></i></span>
+                                    <h5 style="padding-left: 28px">Backup</h5>
+                                    <span><i class='bx bx-chevron-right icon-clic'></i></span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="collapse accordion-body" id="collapseGBackup">
+                            <div class="widget-content">
+                                <table class="table table-bordered">
+                                    <tbody>
+                                    <tr>
+                                        <td colspan="4"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <label>
+                                                <input name="cBackup" class="marcar" type="checkbox" value="1" />
+                                                <span class="lbl"> Acessar Backup</span>
+                                            </label>
+                                        </td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
