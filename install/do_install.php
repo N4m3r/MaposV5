@@ -100,17 +100,20 @@ install_log("Recebendo dados POST", ['host' => $_POST['host'] ?? 'não definido'
 
 $host = $_POST['host'];
 $dbuser = $_POST['dbuser'];
-$dbpassword = $_POST['dbpassword'];
+$dbpassword = isset($_POST['dbpassword']) ? $_POST['dbpassword'] : '';
 $dbname = $_POST['dbname'];
 
-    $full_name = $_POST['full_name'];
-    $email = $_POST['email'];
-    $login_password = $_POST['password'] ? $_POST['password'] : '';
-    $base_url = $_POST['base_url'];
+$full_name = $_POST['full_name'];
+$email = $_POST['email'];
+$login_password = isset($_POST['password']) ? $_POST['password'] : '';
+$base_url = $_POST['base_url'];
 
-    install_log("Validando campos obrigatórios");
-    //check required fields
-    if (! ($host && $dbuser && $dbname && $full_name && $email && $login_password && $base_url)) {
+$api_enabled = isset($_POST['enter_api_enabled']) ? $_POST['enter_api_enabled'] : 'true';
+$token_expire_time = isset($_POST['enter_token_expire_time']) ? $_POST['enter_token_expire_time'] : '3600';
+
+install_log("Validando campos obrigatórios");
+//check required fields (dbpassword pode ser vazio - MySQL local sem senha)
+if (! ($host && $dbuser && $dbname && $full_name && $email && $login_password && $base_url)) {
         echo json_encode(['success' => false, 'message' => 'Por favor insira todos os campos.', 'step' => 1]);
         exit();
     }
@@ -241,7 +244,7 @@ $dbname = $_POST['dbname'];
       `created_at` DATETIME NULL,
       INDEX `idx_tipo` (`tipo`),
       INDEX `idx_conta_dre_id` (`conta_dre_id`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci");
 
     // Tabela: config_sistema_impostos
     $mysqli->query("CREATE TABLE IF NOT EXISTS `config_sistema_impostos` (
@@ -251,7 +254,7 @@ $dbname = $_POST['dbname'];
       `descricao` VARCHAR(255) NULL,
       `updated_at` DATETIME NULL,
       INDEX `idx_chave` (`chave`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci");
 
     // Inserir configurações de impostos padrão
     $result = $mysqli->query("SELECT COUNT(*) as total FROM config_sistema_impostos WHERE chave = 'IMPOSTO_ANEXO_PADRAO'");
@@ -298,7 +301,7 @@ $dbname = $_POST['dbname'];
       INDEX `idx_cnpj` (`cnpj`),
       INDEX `idx_ativo` (`ativo`),
       INDEX `idx_data_validade` (`data_validade`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci");
 
     // Tabela: certificado_consultas
     $mysqli->query("CREATE TABLE IF NOT EXISTS `certificado_consultas` (
@@ -312,7 +315,7 @@ $dbname = $_POST['dbname'];
       INDEX `idx_certificado_id` (`certificado_id`),
       INDEX `idx_tipo_consulta` (`tipo_consulta`),
       INDEX `idx_data_consulta` (`data_consulta`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci");
 
     // Tabela: certificado_nfe_importada
     $mysqli->query("CREATE TABLE IF NOT EXISTS `certificado_nfe_importada` (
@@ -334,29 +337,13 @@ $dbname = $_POST['dbname'];
       INDEX `idx_chave_acesso` (`chave_acesso`),
       INDEX `idx_cnpj_destinatario` (`cnpj_destinatario`),
       INDEX `idx_situacao` (`situacao`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci");
 
-    // Tabela: os_tecnico_atribuicao (histórico de atribuições de técnicos às OS)
-    install_log("Criando tabela os_tecnico_atribuicao");
-    $mysqli->query("CREATE TABLE IF NOT EXISTS `os_tecnico_atribuicao` (
-      `idAtribuicao` INT(11) NOT NULL AUTO_INCREMENT,
-      `os_id` INT(11) NOT NULL,
-      `tecnico_id` INT(11) NOT NULL COMMENT 'ID do tecnico atribuido',
-      `atribuido_por` INT(11) NOT NULL COMMENT 'ID do usuario que fez a atribuicao',
-      `data_atribuicao` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      `data_remocao` DATETIME NULL,
-      `motivo_remocao` TEXT NULL,
-      `observacao` TEXT NULL,
-      PRIMARY KEY (`idAtribuicao`),
-      INDEX `idx_os_id` (`os_id`),
-      INDEX `idx_tecnico_id` (`tecnico_id`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
-    if ($mysqli->errno) {
-        install_log("Erro ao criar os_tecnico_atribuicao", ['erro' => $mysqli->error]);
-    }
+    // NOTA: As tabelas os_tecnico_atribuicao, os_nfse_emitida e os_boleto_emitido
+    // já são criadas pelo banco.sql, não precisam ser recriadas aqui.
 
     // Tabela: os_nfse_emitida (Notas fiscais de serviço emitidas)
-    install_log("Criando tabela os_nfse_emitida");
+    install_log("Verificando tabela os_nfse_emitida");
     $result = $mysqli->query("CREATE TABLE IF NOT EXISTS `os_nfse_emitida` (
       `id` INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
       `os_id` INT(11) NOT NULL COMMENT 'ID da OS vinculada',
@@ -390,7 +377,7 @@ $dbname = $_POST['dbname'];
         FOREIGN KEY (`os_id`)
         REFERENCES `os` (`idOs`)
         ON DELETE CASCADE
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci");
     if ($mysqli->errno) {
         install_log("Erro ao criar os_nfse_emitida", ['erro' => $mysqli->error]);
         echo json_encode(['success' => false, 'message' => 'Erro ao criar tabela os_nfse_emitida: ' . $mysqli->error, 'step' => 2]);
@@ -399,7 +386,7 @@ $dbname = $_POST['dbname'];
     install_log("Tabela os_nfse_emitida criada com sucesso");
 
     // Tabela: os_boleto_emitido (Boletos gerados para OS)
-    install_log("Criando tabela os_boleto_emitido");
+    install_log("Verificando tabela os_boleto_emitido");
     $result = $mysqli->query("CREATE TABLE IF NOT EXISTS `os_boleto_emitido` (
       `id` INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
       `os_id` INT(11) NOT NULL,
@@ -439,7 +426,7 @@ $dbname = $_POST['dbname'];
         FOREIGN KEY (`nfse_id`)
         REFERENCES `os_nfse_emitida` (`id`)
         ON DELETE SET NULL
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci");
     if ($mysqli->errno) {
         install_log("Erro ao criar os_boleto_emitido", ['erro' => $mysqli->error]);
         echo json_encode(['success' => false, 'message' => 'Erro ao criar tabela os_boleto_emitido: ' . $mysqli->error, 'step' => 2]);
@@ -560,8 +547,8 @@ $dbname = $_POST['dbname'];
         $jwt_key = base64_encode(md5(uniqid(mt_rand(), true)) . md5(uniqid(mt_rand(), true)));
     }
     $env_file = str_replace('enter_jwt_key', $jwt_key, $env_file);
-    $env_file = str_replace('enter_token_expire_time', '3600', $env_file);
-    $env_file = str_replace('enter_api_enabled', 'true', $env_file);
+    $env_file = str_replace('enter_token_expire_time', $token_expire_time, $env_file);
+    $env_file = str_replace('enter_api_enabled', $api_enabled, $env_file);
     $env_file = str_replace('pre_installation', 'production', $env_file);
 
     $result = file_put_contents($env_output_path, $env_file);

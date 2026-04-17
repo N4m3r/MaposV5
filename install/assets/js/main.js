@@ -30,7 +30,12 @@ function updateProgress(percent, message, step) {
         var stepNames = {
             1: 'Validação',
             2: 'Conexão DB',
-            8: 'Finalização'
+            3: 'Tabelas Base',
+            4: 'Tabelas V5',
+            5: 'Dados DRE',
+            6: 'Impostos',
+            7: 'Permissões',
+            8: 'Config .env'
         };
         $progressStep.text('Etapa: ' + (stepNames[step] || 'Processando...'));
         updateStepVisual(step);
@@ -77,6 +82,47 @@ function showInstallError(message, step) {
     }
 }
 
+// Simular progresso durante a requisição (enquanto o servidor processa)
+var progressInterval = null;
+function startSimulatedProgress() {
+    var currentPercent = 5;
+    var currentStep = 1;
+    var steps = [
+        { maxPercent: 10, step: 1, message: 'Validando dados do formulário...' },
+        { maxPercent: 20, step: 2, message: 'Conectando ao banco de dados...' },
+        { maxPercent: 45, step: 3, message: 'Criando tabelas base...' },
+        { maxPercent: 60, step: 4, message: 'Criando tabelas adicionais V5...' },
+        { maxPercent: 70, step: 5, message: 'Inserindo dados DRE...' },
+        { maxPercent: 78, step: 6, message: 'Configurando impostos...' },
+        { maxPercent: 85, step: 7, message: 'Criando permissões do administrador...' },
+        { maxPercent: 92, step: 8, message: 'Gerando arquivo de configuração...' }
+    ];
+
+    var stepIndex = 0;
+    progressInterval = setInterval(function() {
+        if (stepIndex < steps.length && currentPercent >= steps[stepIndex].maxPercent - 5) {
+            currentStep = steps[stepIndex].step;
+            stepIndex++;
+        }
+
+        // Desacelerar conforme aproxima do limite da etapa atual
+        var maxForCurrentStep = stepIndex < steps.length ? steps[stepIndex].maxPercent : 95;
+        var increment = currentPercent > maxForCurrentStep - 10 ? 1 : 2;
+
+        if (currentPercent < maxForCurrentStep) {
+            currentPercent += increment;
+            updateProgress(currentPercent, steps[Math.min(stepIndex, steps.length - 1)].message, currentStep);
+        }
+    }, 800);
+}
+
+function stopSimulatedProgress() {
+    if (progressInterval) {
+        clearInterval(progressInterval);
+        progressInterval = null;
+    }
+}
+
 // Document Ready
 $(document).ready(function () {
     var $preInstallationTab = $("#pre-installation-tab");
@@ -100,6 +146,9 @@ $(document).ready(function () {
         $('.step-item').removeClass('active completed error');
         $('.step-item i').removeClass().addClass('fa fa-check-circle-o');
 
+        // Iniciar progresso simulado
+        startSimulatedProgress();
+
         // Usar XMLHttpRequest
         var formData = $form.serialize();
         var xhr = new XMLHttpRequest();
@@ -109,6 +158,8 @@ $(document).ready(function () {
 
         xhr.onreadystatechange = function() {
             if (xhr.readyState === 4) {
+                stopSimulatedProgress();
+
                 if (xhr.status === 200) {
                     try {
                         var result = JSON.parse(xhr.responseText);
@@ -144,6 +195,7 @@ $(document).ready(function () {
         };
 
         xhr.onerror = function() {
+            stopSimulatedProgress();
             showInstallError('Erro de rede. Verifique sua conexão.', null);
             onSubmitSuccess($form);
         };

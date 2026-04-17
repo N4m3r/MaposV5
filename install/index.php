@@ -45,19 +45,18 @@ foreach ($settings['writeable_directories'] as $value) {
 }
 
 $dashboard_url = $_SERVER['HTTP_HOST'] . $_SERVER['SCRIPT_NAME'];
-$dashboard_url = preg_replace('/install.*/', '', $dashboard_url); //remove everything after index.php
+$dashboard_url = preg_replace('/\/install.*/', '', $dashboard_url); //remove everything after /install
 if (! empty($_SERVER['HTTPS'])) {
     $dashboard_url = 'https://' . $dashboard_url;
 } else {
     $dashboard_url = 'http://' . $dashboard_url;
 }
+$dashboard_url = rtrim($dashboard_url, '/') . '/';
 
 /*
- * check the db config file
- * if db already configured, we'll assume that the installation has completed
+ * check the .env file
+ * if .env already exists, we'll assume that the installation has completed
  */
-$db_file_path = '../application/config/database.php';
-$db_file = file_get_contents($db_file_path);
 $is_installed = file_exists('..' . DIRECTORY_SEPARATOR . 'application' . DIRECTORY_SEPARATOR . '.env');
 
 $installed = null;

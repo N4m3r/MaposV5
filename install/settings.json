@@ -7,7 +7,9 @@
     "zip"
   ],
   "database_file": "../database/sql/banco.sql",
-  "writeable_directories": {
-    "files": "/updates"
-  }
+  "writeable_directories": [
+    "/updates",
+    "/application",
+    "/assets"
+  ]
 }

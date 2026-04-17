@@ -33,7 +33,17 @@
       "Bash(explorer.exe \"mockup_dashboard_integrado.html\")",
       "Bash(start \"\" \"mockup_dashboard_no_tema_mapos.html\")",
       "Bash(explorer.exe \"mockup_dashboard_no_tema_mapos.html\")",
-      "Bash(wc:*)"
+      "Bash(wc:*)",
+      "Bash(mysql --version)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8080/install/index.php)",
+      "Bash(curl -s http://localhost:8080/install/index.php)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8080/install/assets/css/bootstrap.min.css)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8080/install/assets/css/install.css)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8080/install/assets/js/jquery.min.js)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8080/install/assets/js/main.js)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8080/assets/img/logo.png)",
+      "Bash(curl *)",
+      "Bash(start *)"
     ]
   }
 }

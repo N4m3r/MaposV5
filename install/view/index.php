@@ -85,7 +85,7 @@
     <?php } ?>
 
 </script>
-<script src="assets/js/main.js?v=4"></script>
+<script src="<?php echo $dashboard_url; ?>install/assets/js/main.js?v=4"></script>
 
 </body>
 
