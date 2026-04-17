@@ -301,8 +301,7 @@
         $estoque_baixo = array_filter($estoque, function($item) {
             return $item->quantidade <= 2;
         });
-        if (!empty($estoque_baixo)): ?
-003e
+        if (!empty($estoque_baixo)): ?>
         <div class="alert-card">
             <div class="alert-title">
                 ⚠️ Atenção
@@ -320,18 +319,15 @@
                 <span class="card-badge"><?php echo count($estoque); ?> itens</span>
             </div>
 
-            <?php if (empty($estoque)): ?
-003e
+            <?php if (empty($estoque)): ?>
             <div class="empty-state">
                 <div class="empty-icon">📭</div>
                 <h3>Estoque Vazio</h3>
                 <p>Nenhum item em seu veículo</p>
             </div>
-            <?php else: ?
-003e
+            <?php else: ?>003e
             <div id="estoqueList">
-                <?php foreach ($estoque as $item): ?
-003e
+                <?php foreach ($estoque as $item): ?>
                 <div class="stock-item <?php echo $item->quantidade <= 2 ? 'low' : ($item->quantidade <= 5 ? 'warning' : ''); ?>"
                      data-nome="<?php echo strtolower($item->produto_nome); ?>">
                     <div class="stock-info">
@@ -355,15 +351,12 @@
                 <span class="card-title">📜 Histórico (30 dias)</span>
             </div>
 
-            <?php if (empty($historico)): ?
-003e
+            <?php if (empty($historico)): ?>
             <p style="text-align: center; color: #999; padding: 20px;">
                 Nenhum movimento no período
             </p>
-            <?php else: ?
-003e
-                <?php foreach (array_slice($historico, 0, 10) as $mov): ?
-003e
+            <?php else: ?>003e
+                <?php foreach (array_slice($historico, 0, 10) as $mov): ?>
                 <div class="history-item">
                     <div class="history-icon <?php echo $mov->tipo; ?>">
                         <?php echo $mov->tipo == 'entrada' ? '📥' : '📤'; ?>
@@ -371,8 +364,7 @@
                     <div class="history-info">
                         <h4><?php echo htmlspecialchars($mov->produto_nome); ?></h4>
                         <p><?php echo date('d/m/Y H:i', strtotime($mov->data_hora)); ?>
-                            <?php if ($mov->os_id): ?
-003e
+                            <?php if ($mov->os_id): ?>
                             | OS #<?php echo $mov->os_id; ?>
                             <?php endif; ?>
                         </p>

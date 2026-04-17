@@ -62,19 +62,20 @@ class MY_Controller extends CI_Controller
 
     /**
      * Verifica se o usuario logado eh um tecnico
-     * Baseado na permissao ou grupo
+     * Baseado no grupo de permissao (NAO no idPermissao 1 = Administrador)
      */
     protected function isTecnico()
     {
-        // Verifica se tem permissao especifica de tecnico
         $permissao_id = $this->session->userdata('permissao');
 
-        // Grupo Tecnico tipicamente tem permissoes_id = 6 ou similar
-        // Ou verifica se tem a permissao vTecnicoDashboard
-        $this->load->library('permission');
-        $hasTecnicoPerm = $this->permission->checkPermission($permissao_id, 'vTecnicoDashboard');
+        // Administrador (idPermissao 1) NUNCA é técnico
+        if ($permissao_id == 1) {
+            return false;
+        }
 
-        return $hasTecnicoPerm;
+        // Verifica se tem permissao especifica de tecnico
+        $this->load->library('permission');
+        return $this->permission->checkPermission($permissao_id, 'vTecnicoDashboard');
     }
 
     public function layout()

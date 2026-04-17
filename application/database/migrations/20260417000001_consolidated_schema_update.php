@@ -1127,10 +1127,9 @@ class Migration_Consolidated_schema_update extends CI_Migration
             }
         }
 
-        // Adicionar permissões ao grupo Administrador (ID 1) em vez de criar grupos separados
-        // As permissoes de Tecnico e Dashboard sao categorias na view de edicao, nao grupos separados
+        // Gerenciar grupos de permissao
         if ($this->db->table_exists('permissoes')) {
-            // Remover grupos criados incorretamente como separados
+            // Remover grupos criados incorretamente como separados (sem acento)
             $this->db->where('nome', 'Tecnico')->delete('permissoes');
             $this->db->where('nome', 'Dashboard')->delete('permissoes');
 
@@ -1139,14 +1138,10 @@ class Migration_Consolidated_schema_update extends CI_Migration
             if ($admin && !empty($admin->permissoes)) {
                 $perms = @unserialize($admin->permissoes);
                 if (is_array($perms)) {
-                    // Permissoes de Tecnico
                     $newPerms = [
                         'vTecnicoOS', 'eTecnicoCheckin', 'eTecnicoCheckout', 'eTecnicoFotos', 'vTecnicoDashboard',
-                        // Permissoes de Dashboard
                         'vDashboard', 'vRelatorioCompleto', 'vExportarDados',
-                        // Permissoes DRE
                         'vDRE', 'vDREDemonstracao', 'vDREContas', 'vDRELancamentos', 'cDRE', 'eDRE', 'dDRE',
-                        // Outras permissoes V5
                         'vRelatorioTecnicos', 'vRelatorioAtendimentos', 'vWebhooks',
                         'vBtnAtendimento', 'cDocOs',
                         'vCertificado', 'cCertificado', 'eCertificado', 'dCertificado',
@@ -1165,6 +1160,36 @@ class Migration_Consolidated_schema_update extends CI_Migration
                         $this->db->where('idPermissao', 1)->update('permissoes', ['permissoes' => serialize($perms)]);
                     }
                 }
+            }
+
+            // Criar grupo "Técnico" se nao existir
+            $tecnico_exists = $this->db->where('nome', 'Técnico')->get('permissoes')->num_rows();
+            if ($tecnico_exists == 0) {
+                $tecnico_perms = [
+                    // Visualização basica
+                    'vCliente' => '1',
+                    'vProduto' => '1',
+                    'vServico' => '1',
+                    'vOs' => '1',
+                    'vBtnAtendimento' => '1',
+                    // Permissoes especificas de tecnico
+                    'vTecnicoOS' => '1',
+                    'eTecnicoCheckin' => '1',
+                    'eTecnicoCheckout' => '1',
+                    'eTecnicoFotos' => '1',
+                    'vTecnicoDashboard' => '1',
+                    // Relatorios de tecnico
+                    'vRelatorioTecnicos' => '1',
+                    'vRelatorioAtendimentos' => '1',
+                    // Dashboard basico
+                    'vDashboard' => '1',
+                ];
+                $this->db->insert('permissoes', [
+                    'nome' => 'Técnico',
+                    'permissoes' => serialize($tecnico_perms),
+                    'situacao' => 1,
+                    'data' => date('Y-m-d'),
+                ]);
             }
         }
 

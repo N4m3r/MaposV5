@@ -44,13 +44,13 @@ $end = min($totalPages, $currentPage + 2);
             <?php if ($start > 2): ?>
             <li class="page-item disabled"><span class="page-link">...</span></li>
             <?php endif; ?>
-        <?php endif; ?
+        <?php endif; ?>
 
         <?php for ($i = $start; $i <= $end; $i++): ?>
             <li class="page-item <?= $i === $currentPage ? 'active' : '' ?>">
                 <a class="page-link" href="<?= $baseUrl . '?page=' . $i ?>"><?= $i ?></a>
             </li>
-        <?php endfor; ?
+        <?php endfor; ?>
 
         <?php if ($end < $totalPages): ?>
             <?php if ($end < $totalPages - 1): ?>
@@ -59,7 +59,7 @@ $end = min($totalPages, $currentPage + 2);
             <li class="page-item">
                 <a class="page-link" href="<?= $baseUrl . '?page=' . $totalPages ?>"><?= $totalPages ?></a>
             </li>
-        <?php endif; ?
+        <?php endif; ?>
 
         <!-- Botão Próximo -->
         <li class="page-item <?= $currentPage >= $totalPages ? 'disabled' : '' ?>">

@@ -271,7 +271,7 @@
                     </div>
                 </div>
             <?php endforeach; ?>
-        <?php else: ?
+        <?php else: ?>
             <div class="empty-state">
                 <i class='bx bx-inbox'></i>
                 <h3>Nenhuma OS encontrada</h3>

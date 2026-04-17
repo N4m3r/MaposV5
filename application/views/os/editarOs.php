@@ -436,127 +436,115 @@
                         <!-- Check-in -->
                         <div class="tab-pane" id="tab7">
                             <div class="span12" style="padding: 1%; margin-left: 0">
-                                <!-- Status do Atendimento -->
-                                <div id="checkin-status-container" class="span12 well" style="padding: 1%; margin-left: 0">
-                                    <h4><i class="bx bx-time"></i> Status do Atendimento</h4>
-                                    <div id="checkin-status-info">
-                                        <div class="alert alert-info">
-                                            <strong>Status:</strong> <span id="checkin-status-text">Aguardando início</span>
-                                            <br>
-                                            <span id="checkin-info-adicional"></span>
+
+                                <!-- Stepper Visual -->
+                                <div class="span12" style="margin-left: 0; margin-bottom: 20px;">
+                                    <div id="checkin-stepper" style="display: flex; align-items: center; justify-content: center; gap: 0;">
+                                        <div class="checkin-step" id="step-1" style="display: flex; align-items: center; gap: 8px; opacity: 0.4;">
+                                            <span style="width:32px;height:32px;border-radius:50%;background:#5bc0de;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:bold;">1</span>
+                                            <span style="font-weight:600;">Check-in</span>
+                                        </div>
+                                        <div style="flex:0 0 60px;height:2px;background:#ccc;margin:0 8px;" id="step-line-1"></div>
+                                        <div class="checkin-step" id="step-2" style="display: flex; align-items: center; gap: 8px; opacity: 0.4;">
+                                            <span style="width:32px;height:32px;border-radius:50%;background:#f0ad4e;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:bold;">2</span>
+                                            <span style="font-weight:600;">Em Atendimento</span>
+                                        </div>
+                                        <div style="flex:0 0 60px;height:2px;background:#ccc;margin:0 8px;" id="step-line-2"></div>
+                                        <div class="checkin-step" id="step-3" style="display: flex; align-items: center; gap: 8px; opacity: 0.4;">
+                                            <span style="width:32px;height:32px;border-radius:50%;background:#d9534f;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:bold;">3</span>
+                                            <span style="font-weight:600;">Check-out</span>
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- Botões de Ação -->
-                                <div class="span12" style="padding: 1%; margin-left: 0; text-align: center;">
-                                    <button type="button" class="btn btn-success btn-large btn-iniciar-atendimento" id="btn-iniciar-atendimento" style="display: none;">
-                                        <i class="bx bx-play-circle"></i> Iniciar Atendimento
-                                    </button>
-
-                                    <button type="button" class="btn btn-danger btn-large btn-finalizar-atendimento" id="btn-finalizar-atendimento" style="display: none;">
-                                        <i class="bx bx-check-circle"></i> Finalizar Atendimento
-                                    </button>
+                                <!-- Status + Timer -->
+                                <div id="checkin-status-container" class="span12 well" style="padding: 1%; margin-left: 0; text-align: center;">
+                                    <span id="checkin-status-text" style="font-size: 16px; font-weight: bold;">Aguardando início</span>
+                                    <span id="checkin-timer" style="display: none; margin-left: 15px; font-family: monospace; font-size: 18px; color: #f0ad4e;"></span>
+                                    <div id="checkin-info-adicional" style="font-size: 12px; color: #888; margin-top: 4px;"></div>
                                 </div>
 
-                                <!-- Painel de Início (Check-in) -->
-                                <div id="panel-checkin" class="span12" style="display: none;">
-                                    <div class="span12 well" style="padding: 1%; margin-left: 0">
-                                        <h5><i class="bx bx-log-in"></i> Check-in do Técnico</h5>
+                                <!-- ============================================ -->
+                                <!-- ETAPA 1: CHECK-IN (sempre visível quando inativo) -->
+                                <!-- ============================================ -->
+                                <div id="panel-checkin" class="span12" style="margin-left: 0;">
+                                    <div class="span12 well" style="padding: 15px; margin-left: 0; border-left: 4px solid #5bc0de;">
+                                        <h5 style="margin-top: 0;"><i class="bx bx-log-in"></i> Check-in do Técnico</h5>
 
-                                        <!-- Assinatura do Técnico -->
                                         <?php $this->load->view('checkin/assinatura_canvas', [
                                             'id' => 'assinatura-tecnico-entrada',
-                                            'titulo' => 'Assinatura do Técnico (Entrada)',
+                                            'titulo' => 'Assinatura do Técnico *',
                                             'mostrar_campos' => false
                                         ]); ?>
 
-                                        <!-- Fotos da Entrada -->
-                                        <div class="span12" style="margin-left: 0; margin-top: 20px;">
-                                            <h6>Fotos da Entrada:</h6>
+                                        <div class="span12" style="margin-left: 0; margin-top: 15px;">
+                                            <label>Fotos da Entrada (opcional):</label>
                                             <input type="file" id="fotos-entrada" accept="image/*" multiple class="span12">
                                             <div id="fotos-entrada-preview" class="row-fluid" style="margin-top: 10px;"></div>
                                         </div>
 
-                                        <!-- Observação de Entrada -->
                                         <div class="span12" style="margin-left: 0; margin-top: 15px;">
-                                            <label for="observacao-entrada">Observação de Entrada:</label>
-                                            <textarea id="observacao-entrada" class="span12" rows="3" placeholder="Descreva o estado inicial do equipamento, local, etc."></textarea>
+                                            <label for="observacao-entrada">Observação de Entrada (opcional):</label>
+                                            <textarea id="observacao-entrada" class="span12" rows="2" placeholder="Descreva o estado inicial do equipamento, local, etc."></textarea>
                                         </div>
 
                                         <div class="span12" style="margin-left: 0; margin-top: 15px; text-align: center;">
-                                            <button type="button" class="btn btn-primary" id="btn-confirmar-inicio">
-                                                <i class="bx bx-check"></i> Confirmar Início do Atendimento
+                                            <button type="button" class="btn btn-success btn-large" id="btn-confirmar-inicio">
+                                                <i class="bx bx-play-circle"></i> Iniciar Atendimento
                                             </button>
-                                            <button type="button" class="btn btn-default" id="btn-cancelar-inicio">Cancelar</button>
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- Painel de Fotos Durante -->
-                                <div id="panel-fotos-durante" class="span12" style="display: none;">
-                                    <div class="span12 well" style="padding: 1%; margin-left: 0">
-                                        <h5><i class="bx bx-camera"></i> Fotos durante o Atendimento</h5>
-
+                                <!-- ============================================ -->
+                                <!-- ETAPA 2: EM ATENDIMENTO (fotos durante) -->
+                                <!-- ============================================ -->
+                                <div id="panel-fotos-durante" class="span12" style="display: none; margin-left: 0;">
+                                    <div class="span12 well" style="padding: 15px; margin-left: 0; border-left: 4px solid #f0ad4e;">
+                                        <h5 style="margin-top: 0;"><i class="bx bx-camera"></i> Fotos durante o Atendimento (opcional)</h5>
                                         <input type="file" id="fotos-durante" accept="image/*" multiple class="span12">
                                         <div id="fotos-durante-preview" class="row-fluid" style="margin-top: 10px;"></div>
-
                                         <div id="fotos-durante-container"></div>
                                     </div>
                                 </div>
 
-                                <!-- Painel de Finalização (Check-out) -->
-                                <div id="panel-checkout" class="span12" style="display: none;">
-                                    <div class="span12 well" style="padding: 1%; margin-left: 0">
-                                        <h5><i class="bx bx-log-out"></i> Check-out - Finalização</h5>
+                                <!-- ============================================ -->
+                                <!-- ETAPA 3: CHECK-OUT (sempre visível quando ativo) -->
+                                <!-- ============================================ -->
+                                <div id="panel-checkout" class="span12" style="display: none; margin-left: 0;">
+                                    <div class="span12 well" style="padding: 15px; margin-left: 0; border-left: 4px solid #d9534f;">
+                                        <h5 style="margin-top: 0;"><i class="bx bx-log-out"></i> Check-out - Finalização</h5>
 
-                                        <div class="span12" style="margin-left: 0">
-                                            <!-- Assinatura Técnico Saída -->
-                                            <div class="span6">
-                                                <h6>Assinatura do Técnico (Saída):</h6>
-                                                <?php $this->load->view('checkin/assinatura_modal', [
-                                                    'modal_id' => 'modal-assinatura-tecnico-saida',
-                                                    'titulo' => 'Assinatura do Técnico (Saída)',
-                                                    'btn_abrir_id' => 'btn-abrir-assinatura-tecnico-saida',
-                                                    'preview_id' => 'preview-assinatura-tecnico-saida',
-                                                    'input_destino' => 'input-assinatura-tecnico-saida',
-                                                    'mostrar_campos' => false
-                                                ]); ?>
-                                            </div>
+                                        <!-- Assinatura do Técnico Saída (inline) -->
+                                        <?php $this->load->view('checkin/assinatura_canvas', [
+                                            'id' => 'assinatura-tecnico-saida',
+                                            'titulo' => 'Assinatura do Técnico (Saída) *',
+                                            'mostrar_campos' => false
+                                        ]); ?>
 
-                                            <!-- Assinatura Cliente -->
-                                            <div class="span6">
-                                                <h6>Assinatura do Cliente:</h6>
-                                                <?php $this->load->view('checkin/assinatura_modal', [
-                                                    'modal_id' => 'modal-assinatura-cliente',
-                                                    'titulo' => 'Assinatura do Cliente',
-                                                    'btn_abrir_id' => 'btn-abrir-assinatura-cliente',
-                                                    'preview_id' => 'preview-assinatura-cliente',
-                                                    'input_destino' => 'input-assinatura-cliente',
-                                                    'mostrar_campos' => true,
-                                                    'campos' => ['nome' => true, 'documento' => true]
-                                                ]); ?>
-                                            </div>
-                                        </div>
+                                        <!-- Assinatura do Cliente (inline) -->
+                                        <?php $this->load->view('checkin/assinatura_canvas', [
+                                            'id' => 'assinatura-cliente',
+                                            'titulo' => 'Assinatura do Cliente *',
+                                            'mostrar_campos' => true,
+                                            'campos' => ['nome' => true, 'documento' => true]
+                                        ]); ?>
 
-                                        <!-- Fotos da Saída -->
-                                        <div class="span12" style="margin-left: 0; margin-top: 20px;">
-                                            <h6>Fotos da Saída:</h6>
+                                        <div class="span12" style="margin-left: 0; margin-top: 15px;">
+                                            <label>Fotos da Saída (opcional):</label>
                                             <input type="file" id="fotos-saida" accept="image/*" multiple class="span12">
                                             <div id="fotos-saida-preview" class="row-fluid" style="margin-top: 10px;"></div>
                                         </div>
 
-                                        <!-- Observação de Saída -->
                                         <div class="span12" style="margin-left: 0; margin-top: 15px;">
-                                            <label for="observacao-saida">Observação de Saída:</label>
-                                            <textarea id="observacao-saida" class="span12" rows="3" placeholder="Descreva o serviço realizado, estado final, etc."></textarea>
+                                            <label for="observacao-saida">Observação de Saída (opcional):</label>
+                                            <textarea id="observacao-saida" class="span12" rows="2" placeholder="Descreva o serviço realizado, estado final, etc."></textarea>
                                         </div>
 
                                         <div class="span12" style="margin-left: 0; margin-top: 15px; text-align: center;">
-                                            <button type="button" class="btn btn-success" id="btn-confirmar-fim">
-                                                <i class="bx bx-check-double"></i> Confirmar Finalização
+                                            <button type="button" class="btn btn-danger btn-large" id="btn-confirmar-fim">
+                                                <i class="bx bx-check-double"></i> Finalizar Atendimento
                                             </button>
-                                            <button type="button" class="btn btn-default" id="btn-cancelar-fim">Cancelar</button>
                                         </div>
                                     </div>
                                 </div>
@@ -1460,37 +1448,14 @@
         var checkinId = null;
         var fotosEntrada = [];
         var fotosSaida = [];
+        var timerInterval = null;
 
         // Carrega status inicial
         carregarCheckinStatus();
 
-        // Botão Iniciar Atendimento
-        $('#btn-iniciar-atendimento').on('click', function() {
-            $(this).hide();
-            $('#panel-checkin').slideDown();
-        });
-
-        // Botão Cancelar Início
-        $('#btn-cancelar-inicio').on('click', function() {
-            $('#panel-checkin').slideUp();
-            $('#btn-iniciar-atendimento').show();
-        });
-
         // Botão Confirmar Início
         $('#btn-confirmar-inicio').on('click', function() {
             confirmarInicioAtendimento();
-        });
-
-        // Botão Finalizar Atendimento
-        $('#btn-finalizar-atendimento').on('click', function() {
-            $(this).hide();
-            $('#panel-checkout').slideDown();
-        });
-
-        // Botão Cancelar Fim
-        $('#btn-cancelar-fim').on('click', function() {
-            $('#panel-checkout').slideUp();
-            $('#btn-finalizar-atendimento').show();
         });
 
         // Botão Confirmar Fim
@@ -1513,7 +1478,58 @@
             uploadFotosDurante(this);
         });
 
-        // Função para carregar status
+        // === Funções do Stepper ===
+        function ativarStep(numero) {
+            for (var i = 1; i <= 3; i++) {
+                var step = $('#step-' + i);
+                var circle = step.find('span:first');
+                if (i <= numero) {
+                    step.css('opacity', '1');
+                    if (i < numero) {
+                        circle.css('background', '#5cb85c');
+                    } else if (i === numero) {
+                        circle.css('background', i === 1 ? '#5bc0de' : i === 2 ? '#f0ad4e' : '#d9534f');
+                    }
+                } else {
+                    step.css('opacity', '0.4');
+                    circle.css('background', i === 1 ? '#5bc0de' : i === 2 ? '#f0ad4e' : '#d9534f');
+                }
+            }
+            // Linhas conectoras
+            $('#step-line-1').css('background', numero >= 2 ? '#5cb85c' : '#ccc');
+            $('#step-line-2').css('background', numero >= 3 ? '#5cb85c' : '#ccc');
+        }
+
+        // === Timer ===
+        function iniciarTimer(dataEntrada) {
+            pararTimer();
+            var inicio = new Date(dataEntrada).getTime();
+            function atualizar() {
+                var agora = Date.now();
+                var diff = agora - inicio;
+                var h = Math.floor(diff / 3600000);
+                var m = Math.floor((diff % 3600000) / 60000);
+                var s = Math.floor((diff % 60000) / 1000);
+                $('#checkin-timer').text(
+                    String(h).padStart(2, '0') + ':' +
+                    String(m).padStart(2, '0') + ':' +
+                    String(s).padStart(2, '0')
+                );
+            }
+            atualizar();
+            timerInterval = setInterval(atualizar, 1000);
+            $('#checkin-timer').show();
+        }
+
+        function pararTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            $('#checkin-timer').hide();
+        }
+
+        // === Status ===
         function carregarCheckinStatus() {
             $.ajax({
                 url: checkinConfig.baseUrl + 'index.php/checkin/status',
@@ -1528,70 +1544,67 @@
             });
         }
 
-        // Função para atualizar interface
         function atualizarInterfaceCheckin(dados) {
             checkinAtivo = dados.em_atendimento;
             checkinId = dados.checkin ? dados.checkin.idCheckin : null;
 
-            // Atualiza texto de status
             if (checkinAtivo) {
-                $('#checkin-status-text').text('Em Andamento');
-                $('#checkin-status-text').removeClass().addClass('label label-warning');
+                // Etapa 2 ativa
+                ativarStep(2);
+                $('#checkin-status-text').text('Em Atendimento').css('color', '#f0ad4e');
 
-                // Mostra botão de finalizar
-                $('#btn-iniciar-atendimento').hide();
-                $('#btn-finalizar-atendimento').show();
+                var dataEntrada = dados.checkin ? dados.checkin.data_entrada : null;
+                if (dataEntrada) {
+                    iniciarTimer(dataEntrada);
+                    $('#checkin-info-adicional').text('Iniciado em ' + formatarData(dataEntrada));
+                }
 
-                // Esconde panel de início
+                // Mostra check-out + fotos durante
                 $('#panel-checkin').hide();
-
-                // Mostra panel de fotos durante
                 $('#panel-fotos-durante').show();
+                $('#panel-checkout').show();
 
-                // Esconde panel de finalização
-                $('#panel-checkout').hide();
-
-                // Carrega fotos durante
                 carregarFotosDurante();
             } else {
-                $('#checkin-status-text').text('Aguardando Início');
-                $('#checkin-status-text').removeClass().addClass('label label-info');
+                // Etapa 1 ativa
+                ativarStep(1);
+                pararTimer();
+                $('#checkin-status-text').text('Aguardando Início').css('color', '#5bc0de');
+                $('#checkin-info-adicional').text('');
 
-                // Mostra botão de iniciar
-                $('#btn-iniciar-atendimento').show();
-                $('#btn-finalizar-atendimento').hide();
-
-                // Esconde panels
-                $('#panel-checkin').hide();
+                // Mostra check-in, esconde resto
+                $('#panel-checkin').show();
                 $('#panel-fotos-durante').hide();
                 $('#panel-checkout').hide();
             }
 
-            // Renderiza assinaturas salvas
             if (dados.assinaturas) {
                 renderizarAssinaturasSalvas(dados.assinaturas);
             }
-
-            // Renderiza fotos salvas
             if (dados.fotos) {
                 renderizarFotosSalvas(dados.fotos);
             }
         }
 
-        // Confirma início do atendimento
+        function formatarData(dataStr) {
+            if (!dataStr) return '';
+            var d = new Date(dataStr);
+            return String(d.getDate()).padStart(2, '0') + '/' +
+                   String(d.getMonth() + 1).padStart(2, '0') + '/' +
+                   d.getFullYear() + ' ' +
+                   String(d.getHours()).padStart(2, '0') + ':' +
+                   String(d.getMinutes()).padStart(2, '0');
+        }
+
+        // === Check-in (Iniciar) ===
         function confirmarInicioAtendimento() {
             var assinaturaTecnico = AssinaturaManager.obter('assinatura-tecnico-entrada');
 
             if (!assinaturaTecnico || assinaturaTecnico.estaVazio()) {
-                Swal.fire({
-                    type: 'warning',
-                    title: 'Atenção',
-                    text: 'A assinatura do técnico é obrigatória!'
-                });
+                Swal.fire({ type: 'warning', title: 'Atenção', text: 'A assinatura do técnico é obrigatória!' });
                 return;
             }
 
-            // Prepara dados
             var dados = {
                 os_id: checkinConfig.os_id,
                 observacao: $('#observacao-entrada').val(),
@@ -1599,139 +1612,100 @@
                 fotos: fotosEntrada
             };
 
-            // Obtém localização
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function(position) {
-                    dados.latitude = position.coords.latitude;
-                    dados.longitude = position.coords.longitude;
-                    enviarInicio(dados);
-                }, function() {
-                    enviarInicio(dados);
-                });
-            } else {
-                enviarInicio(dados);
-            }
+            obterLocalizacaoESalvar(dados, enviarInicio);
         }
 
         function enviarInicio(dados) {
-            // Usa o novo método com progresso circular para mobile
             CheckinFotos.enviarCheckinComProgresso(
                 checkinConfig.baseUrl + 'index.php/checkin/iniciar',
                 dados,
                 {
                     success: function(response) {
                         if (response.success) {
-                            Swal.fire({
-                                type: 'success',
-                                title: 'Sucesso',
-                                text: 'Atendimento iniciado com sucesso!'
-                            });
+                            Swal.fire({ type: 'success', title: 'Sucesso', text: 'Atendimento iniciado com sucesso!' });
+                            fotosEntrada = [];
                             carregarCheckinStatus();
                         } else {
-                            Swal.fire({
-                                type: 'error',
-                                title: 'Erro',
-                                text: response.message || 'Erro ao iniciar atendimento'
-                            });
+                            Swal.fire({ type: 'error', title: 'Erro', text: response.message || 'Erro ao iniciar atendimento' });
                         }
                     },
-                    error: function(xhr, status, error) {
-                        Swal.fire({
-                            type: 'error',
-                            title: 'Erro',
-                            text: 'Erro na comunicação com o servidor'
-                        });
+                    error: function() {
+                        Swal.fire({ type: 'error', title: 'Erro', text: 'Erro na comunicação com o servidor' });
                     }
                 }
             );
         }
 
-        // Confirma fim do atendimento
+        // === Check-out (Finalizar) ===
         function confirmarFimAtendimento() {
-            // Obtém assinaturas dos inputs hidden (salvas pelos modais)
-            var assinaturaTecnico = $('#input-assinatura-tecnico-saida').val();
-            var assinaturaCliente = $('#input-assinatura-cliente').val();
+            var assinaturaTecnicoSaida = AssinaturaManager.obter('assinatura-tecnico-saida');
+            var assinaturaCliente = AssinaturaManager.obter('assinatura-cliente');
 
-            if (!assinaturaTecnico) {
-                Swal.fire({
-                    type: 'warning',
-                    title: 'Atenção',
-                    text: 'A assinatura do técnico na saída é obrigatória!'
-                });
+            if (!assinaturaTecnicoSaida || assinaturaTecnicoSaida.estaVazio()) {
+                Swal.fire({ type: 'warning', title: 'Atenção', text: 'A assinatura do técnico na saída é obrigatória!' });
                 return;
             }
 
-            if (!assinaturaCliente) {
-                Swal.fire({
-                    type: 'warning',
-                    title: 'Atenção',
-                    text: 'A assinatura do cliente é obrigatória!'
-                });
+            if (!assinaturaCliente || assinaturaCliente.estaVazio()) {
+                Swal.fire({ type: 'warning', title: 'Atenção', text: 'A assinatura do cliente é obrigatória!' });
                 return;
             }
 
-            // Obtém o nome do cliente do campo ou usa o nome da OS (já vinculado)
-            var nomeCliente = $('#modal-assinatura-cliente-nome').val() || $('#assinatura-cliente-nome-hidden').val() || '<?php echo addslashes($result->nomeCliente); ?>' || 'Cliente';
+            var nomeCliente = $('#assinatura-cliente-nome').val() || '<?php echo addslashes($result->nomeCliente); ?>' || 'Cliente';
+            var documentoCliente = $('#assinatura-cliente-documento').val() || '';
 
-            // Prepara dados
             var dados = {
                 os_id: checkinConfig.os_id,
                 observacao: $('#observacao-saida').val(),
-                assinatura_tecnico: assinaturaTecnico,
-                assinatura_cliente: assinaturaCliente,
+                assinatura_tecnico: assinaturaTecnicoSaida.obterImagem(),
+                assinatura_cliente: assinaturaCliente.obterImagem(),
                 nome_cliente: nomeCliente,
-                documento_cliente: $('#modal-assinatura-cliente-documento').val() || $('#assinatura-cliente-documento-hidden').val(),
+                documento_cliente: documentoCliente,
                 fotos: fotosSaida
             };
 
-            // Obtém localização
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function(position) {
-                    dados.latitude = position.coords.latitude;
-                    dados.longitude = position.coords.longitude;
-                    enviarFim(dados);
-                }, function() {
-                    enviarFim(dados);
-                });
-            } else {
-                enviarFim(dados);
-            }
+            obterLocalizacaoESalvar(dados, enviarFim);
         }
 
         function enviarFim(dados) {
-            // Usa o novo método com progresso circular para mobile
             CheckinFotos.enviarCheckinComProgresso(
                 checkinConfig.baseUrl + 'index.php/checkin/finalizar',
                 dados,
                 {
                     success: function(response) {
                         if (response.success) {
-                            Swal.fire({
-                                type: 'success',
-                                title: 'Sucesso',
-                                text: 'Atendimento finalizado com sucesso!'
-                            });
+                            ativarStep(3);
+                            pararTimer();
+                            Swal.fire({ type: 'success', title: 'Sucesso', text: 'Atendimento finalizado com sucesso!' });
+                            fotosSaida = [];
                             carregarCheckinStatus();
                         } else {
-                            Swal.fire({
-                                type: 'error',
-                                title: 'Erro',
-                                text: response.message || 'Erro ao finalizar atendimento'
-                            });
+                            Swal.fire({ type: 'error', title: 'Erro', text: response.message || 'Erro ao finalizar atendimento' });
                         }
                     },
-                    error: function(xhr, status, error) {
-                        Swal.fire({
-                            type: 'error',
-                            title: 'Erro',
-                            text: 'Erro na comunicação com o servidor'
-                        });
+                    error: function() {
+                        Swal.fire({ type: 'error', title: 'Erro', text: 'Erro na comunicação com o servidor' });
                     }
                 }
             );
         }
 
-        // Preview de fotos
+        // === Geolocalização ===
+        function obterLocalizacaoESalvar(dados, callback) {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(pos) {
+                    dados.latitude = pos.coords.latitude;
+                    dados.longitude = pos.coords.longitude;
+                    callback(dados);
+                }, function() {
+                    callback(dados);
+                });
+            } else {
+                callback(dados);
+            }
+        }
+
+        // === Fotos ===
         function previewFotos(input, container, arrayFotos) {
             $(container).empty();
             arrayFotos.length = 0;
@@ -1748,7 +1722,6 @@
             }
         }
 
-        // Upload de fotos durante com progresso circular
         function uploadFotosDurante(input) {
             if (!input.files || input.files.length === 0) return;
 
@@ -1757,7 +1730,6 @@
                 arquivos.push(file);
             });
 
-            // Usa o novo método com progresso circular
             CheckinFotos.uploadMultiplo({
                 os_id: checkinConfig.os_id,
                 checkin_id: checkinId,
@@ -1766,36 +1738,19 @@
             }, {
                 success: function(response) {
                     if (response.success) {
-                        Swal.fire({
-                            type: 'success',
-                            title: 'Sucesso',
-                            text: response.message
-                        });
+                        Swal.fire({ type: 'success', title: 'Sucesso', text: response.message });
                         carregarFotosDurante();
                         $('#fotos-durante').val('');
                     } else {
-                        Swal.fire({
-                            type: 'error',
-                            title: 'Erro',
-                            text: response.message
-                        });
+                        Swal.fire({ type: 'error', title: 'Erro', text: response.message });
                     }
                 },
                 error: function(xhr, status, error) {
-                    var msg = 'Erro ao enviar fotos';
-                    if (error && error.message) {
-                        msg = error.message;
-                    }
-                    Swal.fire({
-                        type: 'error',
-                        title: 'Erro',
-                        text: msg
-                    });
+                    Swal.fire({ type: 'error', title: 'Erro', text: (error && error.message) || 'Erro ao enviar fotos' });
                 }
             });
         }
 
-        // Carrega fotos durante
         function carregarFotosDurante() {
             CheckinFotos.listarFotos(checkinConfig.os_id, 'durante', {
                 success: function(response) {
@@ -1811,10 +1766,9 @@
             });
         }
 
-        // Renderiza assinaturas salvas
+        // === Assinaturas e Fotos salvas ===
         function renderizarAssinaturasSalvas(assinaturas) {
             var html = '';
-
             if (assinaturas.tecnico_entrada) {
                 html += renderizarAssinaturaItem('Técnico (Entrada)', assinaturas.tecnico_entrada);
             }
@@ -1824,7 +1778,6 @@
             if (assinaturas.cliente_saida) {
                 html += renderizarAssinaturaItem('Cliente', assinaturas.cliente_saida);
             }
-
             $('#assinaturas-salvas-conteudo').html(html || '<p class="text-muted">Nenhuma assinatura registrada.</p>');
         }
 
@@ -1836,14 +1789,10 @@
                 '</div>';
         }
 
-        // Renderiza fotos salvas
         function renderizarFotosSalvas(fotos) {
             if (fotos.entrada && fotos.entrada.length > 0) {
                 CheckinFotos.renderizarGaleria(fotos.entrada, '#fotos-entrada-salvas', {
-                    mostrarDescricao: false,
-                    mostrarExcluir: false,
-                    mostrarDownload: true,
-                    colunas: 2
+                    mostrarDescricao: false, mostrarExcluir: false, mostrarDownload: true, colunas: 2
                 });
             } else {
                 $('#fotos-entrada-salvas').html('<p class="text-muted">Nenhuma foto</p>');
@@ -1851,10 +1800,7 @@
 
             if (fotos.durante && fotos.durante.length > 0) {
                 CheckinFotos.renderizarGaleria(fotos.durante, '#fotos-durante-salvas', {
-                    mostrarDescricao: false,
-                    mostrarExcluir: false,
-                    mostrarDownload: true,
-                    colunas: 2
+                    mostrarDescricao: false, mostrarExcluir: false, mostrarDownload: true, colunas: 2
                 });
             } else {
                 $('#fotos-durante-salvas').html('<p class="text-muted">Nenhuma foto</p>');
@@ -1862,10 +1808,7 @@
 
             if (fotos.saida && fotos.saida.length > 0) {
                 CheckinFotos.renderizarGaleria(fotos.saida, '#fotos-saida-salvas', {
-                    mostrarDescricao: false,
-                    mostrarExcluir: false,
-                    mostrarDownload: true,
-                    colunas: 2
+                    mostrarDescricao: false, mostrarExcluir: false, mostrarDownload: true, colunas: 2
                 });
             } else {
                 $('#fotos-saida-salvas').html('<p class="text-muted">Nenhuma foto</p>');

@@ -726,6 +726,32 @@ $affectedRows = $stmt->affected_rows;
 $log->info("Permissões inseridas/atualizadas", ['affected_rows' => $affectedRows]);
 $stmt->close();
 
+// Criar grupo de permissão "Técnico"
+$tecnico_perms_array = [
+    'vCliente' => '1', 'vProduto' => '1', 'vServico' => '1', 'vOs' => '1',
+    'vBtnAtendimento' => '1',
+    'vTecnicoOS' => '1', 'eTecnicoCheckin' => '1', 'eTecnicoCheckout' => '1',
+    'eTecnicoFotos' => '1', 'vTecnicoDashboard' => '1',
+    'vRelatorioTecnicos' => '1', 'vRelatorioAtendimentos' => '1',
+    'vDashboard' => '1',
+];
+$tecnico_perms_serializado = serialize($tecnico_perms_array);
+$tecnico_nome = 'Técnico';
+$tecnico_id = 2;
+
+$stmt2 = $mysqli->prepare("INSERT INTO permissoes (idPermissao, nome, permissoes, situacao, data) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE nome = ?, permissoes = ?");
+if ($stmt2) {
+    $stmt2->bind_param("ississs", $tecnico_id, $tecnico_nome, $tecnico_perms_serializado, $situacao, $data_atual, $tecnico_nome, $tecnico_perms_serializado);
+    if ($stmt2->execute()) {
+        $log->info("Grupo Técnico criado/atualizado", ['affected_rows' => $stmt2->affected_rows]);
+    } else {
+        $log->warn("Falha ao criar grupo Técnico", ['error' => $stmt2->error]);
+    }
+    $stmt2->close();
+} else {
+    $log->warn("Falha ao preparar INSERT Técnico", ['error' => $mysqli->error]);
+}
+
 // Verificar se o usuário admin foi criado
 $result = $mysqli->query("SELECT idUsuarios, nome, email FROM usuarios WHERE idUsuarios = 1");
 if ($result && $row = $result->fetch_assoc()) {

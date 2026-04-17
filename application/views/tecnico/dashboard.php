@@ -294,7 +294,7 @@
                             </div>
                         </div>
                     <?php endforeach; ?>
-                <?php else: ?
+                <?php else: ?>
                     <div class="empty-state">
                         <i class='bx bx-check-circle'></i>
                         <p>Nenhuma OS em andamento</p>
@@ -345,9 +345,8 @@
                                 Ver todas (<?= count($os_pendentes) ?>)
                             </a>
                         </div>
-                    <?php endif; ?
-003e
-                <?php else: ?
+                    <?php endif; ?>
+                <?php else: ?>
                     <div class="empty-state">
                         <i class='bx bx-inbox'></i>
                         <p>Nenhuma OS pendente</p>

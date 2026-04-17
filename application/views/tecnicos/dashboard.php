@@ -421,8 +421,7 @@
                 </div>
 
                 <div class="os-list">
-                    <?php foreach (array_slice($os_pendentes, 0, 3) as $os): ?
-003e
+                    <?php foreach (array_slice($os_pendentes, 0, 3) as $os): ?>
                         <a href="<?php echo site_url('tecnicos/executar_os/' . $os->idOs); ?>" class="os-card">
                             <div class="os-header">
                                 <span class="os-number">#OS <?php echo $os->idOs; ?></span>
@@ -462,15 +461,12 @@
                     <span class="section-badge"><?php echo count($estoque); ?></span>
                 </div>
 
-                <?php if (empty($estoque)): ?
-                    <div class="empty-state">
+                <?php if (empty($estoque)): ?>                    <div class="empty-state">
                         <div class="empty-icon">📭</div>
                         <p>Nenhum item em estoque</p>
                     </div>
-                <?php else: ?
-                    <div style="display: flex; flex-direction: column; gap: 10px;">
-                        <?php foreach (array_slice($estoque, 0, 3) as $item): ?
-003e
+                <?php else: ?>                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <?php foreach (array_slice($estoque, 0, 3) as $item): ?>
                             <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #f8f9fa; border-radius: 8px;">
                                 <div>
                                     <div style="font-weight: 500;"><?php echo htmlspecialchars($item->produto_nome); ?></div>

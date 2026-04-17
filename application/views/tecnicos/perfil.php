@@ -341,11 +341,9 @@
         <!-- Perfil Header -->
         <div class="profile-header">
             <div class="profile-avatar" onclick="abrirCamera()">
-                <?php if ($tecnico->foto_tecnico): ?
-003e
+                <?php if ($tecnico->foto_tecnico): ?>
                     <img src="<?php echo base_url($tecnico->foto_tecnico); ?>" alt="Foto">
-                <?php else: ?
-003e
+                <?php else: ?>003e
                     <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='80'>👤</text></svg>" alt="Foto">
                 <?php endif; ?>
                 <button class="avatar-edit">📷 Alterar</button>
@@ -386,22 +384,19 @@
                 <span class="badge badge-primary">Nível <?php echo $tecnico->nivel_tecnico; ?></span>
             </div>
 
-            <?php if ($tecnico->especialidades): ?
-003e
+            <?php if ($tecnico->especialidades): ?>
             <div class="info-row" style="flex-direction: column; align-items: flex-start;">
                 <span class="info-label" style="margin-bottom: 10px;">Especialidades</span>
                 <div class="specialties">
                     <?php $especialidades = explode(',', $tecnico->especialidades); ?>
-                    <?php foreach ($especialidades as $esp): ?
-003e
+                    <?php foreach ($especialidades as $esp): ?>
                         <span class="specialty-tag"><?php echo trim($esp); ?></span>
                     <?php endforeach; ?>
                 </div>
             </div>
             <?php endif; ?>
 
-            <?php if ($tecnico->veiculo_placa): ?
-003e
+            <?php if ($tecnico->veiculo_placa): ?>
             <div class="info-row">
                 <span class="info-label">Veículo</span>
                 <span class="info-value"><?php echo htmlspecialchars($tecnico->veiculo_tipo . ' - ' . $tecnico->veiculo_placa); ?></span>

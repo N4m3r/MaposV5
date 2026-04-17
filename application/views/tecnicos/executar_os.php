@@ -500,9 +500,8 @@
             <div class="client-info">
                 <h2>🙋 <?php echo htmlspecialchars($cliente->nome); ?></h2>
                 <p>📍 <?php echo htmlspecialchars($cliente->endereco ?? 'Endereço não informado'); ?></p>
-                <?php if ($cliente->telefone): ?
-                <p>📞 <?php echo htmlspecialchars($cliente->telefone); ?></p>
-                <?php endif; ?
+                <?php if ($cliente->telefone): ?>                <p>📞 <?php echo htmlspecialchars($cliente->telefone); ?></p>
+                <?php endif; ?>
             </div>
         </div>
 
@@ -558,10 +557,8 @@
                 </div>
 
                 <div id="checklistContainer">
-                    <?php if (!empty($checklist)): ?
-003e
-                        <?php foreach ($checklist as $index => $item): ?
-003e
+                    <?php if (!empty($checklist)): ?>
+                        <?php foreach ($checklist as $index => $item): ?>
                             <div class="checklist-item" data-item-id="<?php echo $index; ?>" onclick="toggleChecklistItem(<?php echo $index; ?>)">
                                 <div class="checklist-item-header">
                                     <div class="checklist-checkbox">
@@ -569,8 +566,7 @@
                                     </div>
                                     <div class="checklist-text">
                                         <h4><?php echo htmlspecialchars($item['descricao'] ?? $item); ?></h4>
-                                        <?php if (isset($item['servico'])): ?
-                                        <p><?php echo htmlspecialchars($item['servico']); ?></p>
+                                        <?php if (isset($item['servico'])): ?>                                        <p><?php echo htmlspecialchars($item['servico']); ?></p>
                                         <?php endif; ?>
                                     </div>
                                 </div>
@@ -587,8 +583,7 @@
                                 </div>
                             </div>
                         <?php endforeach; ?>
-                    <?php else: ?
-003e
+                    <?php else: ?>003e
                         <p style="text-align: center; color: #999; padding: 20px;">
                             Nenhum item de checklist configurado
                         </p>
@@ -610,12 +605,9 @@
                         <span style="font-size: 0.8rem;">Adicionar</span>
                     </div>
 
-                    <?php if ($execucao && $execucao->fotos_galeria_json): ?
-003e
-                        <?php $fotos = json_decode($execucao->fotos_galeria_json, true); ?
-003e
-                        <?php foreach ($fotos as $foto): ?
-003e
+                    <?php if ($execucao && $execucao->fotos_galeria_json): ?>
+                        <?php $fotos = json_decode($execucao->fotos_galeria_json, true); ?>
+                        <?php foreach ($fotos as $foto): ?>
                             <div class="gallery-item">
                                 <img src="<?php echo base_url($foto['caminho']); ?>" alt="Foto">
                             </div>

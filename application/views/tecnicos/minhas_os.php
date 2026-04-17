@@ -259,16 +259,13 @@
         </div>
 
         <!-- Lista de OS -->
-        <?php if (empty($os_list)): ?
-        <div class="empty-state">
+        <?php if (empty($os_list)): ?>        <div class="empty-state">
             <div class="empty-icon">📋</div>
             <h3>Nenhuma OS encontrada</h3>
             <p>Não há ordens de serviço <?php echo $status_atual != 'todos' ? 'com este status' : ''; ?></p>
         </div>
-        <?php else: ?
-        <div class="os-list">
-            <?php foreach ($os_list as $os): ?
-            <a href="<?php echo site_url('tecnicos/executar_os/' . $os->idOs); ?>" class="os-card">
+        <?php else: ?>        <div class="os-list">
+            <?php foreach ($os_list as $os): ?>            <a href="<?php echo site_url('tecnicos/executar_os/' . $os->idOs); ?>" class="os-card">
                 <div class="os-header">
                     <span class="os-number">#OS <?php echo $os->idOs; ?></span>
                     <span class="os-status <?php echo strtolower(str_replace(' ', '_', $os->status)); ?>">
@@ -278,24 +275,22 @@
 
                 <div class="os-client"><?php echo htmlspecialchars($os->cliente_nome); ?></div>
 
-                <?php if ($os->descricaoProduto): ?
-                <div class="os-info"><?php echo htmlspecialchars(substr($os->descricaoProduto, 0, 100)) . (strlen($os->descricaoProduto) > 100 ? '...' : ''); ?></div>
-                <?php endif; ?
+                <?php if ($os->descricaoProduto): ?>                <div class="os-info"><?php echo htmlspecialchars(substr($os->descricaoProduto, 0, 100)) . (strlen($os->descricaoProduto) > 100 ? '...' : ''); ?></div>
+                <?php endif; ?>
 
                 <div class="os-footer">
                     <div class="os-date">
                         📅 <?php echo date('d/m/Y', strtotime($os->dataInicial)); ?>
                     </div>
                     <div>
-                        <?php if ($os->garantia): ?
-                        🔧 Garantia
-                        <?php endif; ?
+                        <?php if ($os->garantia): ?>                        🔧 Garantia
+                        <?php endif; ?>
                     </div>
                 </div>
             </a>
-            <?php endforeach; ?
+            <?php endforeach; ?>
         </div>
-        <?php endif; ?
+        <?php endif; ?>
     </div>
 
     <nav class="bottom-nav">
