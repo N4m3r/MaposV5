@@ -19,6 +19,12 @@ class Tecnico extends MY_Controller
         $this->load->model('checklist_model');
         $this->load->model('mapos_model');
 
+        // Administrador (idPermissao 1) não acessa a área do técnico
+        // O admin tem acesso total pelo menu principal do MapOS
+        if ($this->session->userdata('permissao') == 1) {
+            redirect(base_url());
+        }
+
         // Verificar se tem permissao para acessar area do tecnico
         if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vTecnicoDashboard')) {
             $this->session->set_flashdata('error', 'Você não tem permissão para acessar a Área do Técnico.');
