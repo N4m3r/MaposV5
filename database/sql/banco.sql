@@ -1913,14 +1913,16 @@ CREATE TABLE IF NOT EXISTS `certificado_nfe_importada` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- -----------------------------------------------------
--- Dados iniciais - Anexo V Impostos
+-- Dados iniciais - Anexo V Impostos (configuracoes_impostos)
 -- -----------------------------------------------------
-INSERT IGNORE INTO `impostos_config` (`tipo_regime`, `anexo_simples`, `faixa_simples`, `aliquota_iss`, `retem_iss`, `aliquota_pis`, `retem_pis`, `aliquota_cofins`, `retem_cofins`, `aliquota_csll`, `retem_csll`, `aliquota_ir`, `retem_ir`, `aliquota_inss`, `retem_inss`, `created_at`, `updated_at`) VALUES
-('simples_nacional', 'v', 1, 0.00, 0, 0.50, 0, 2.34, 0, 0.80, 0, 0.80, 0, 0.00, 0, NOW(), NOW()),
-('simples_nacional', 'v', 2, 0.00, 0, 0.63, 0, 2.67, 0, 1.46, 0, 1.46, 0, 0.00, 0, NOW(), NOW()),
-('simples_nacional', 'v', 3, 0.00, 0, 0.77, 0, 3.27, 0, 1.90, 0, 1.90, 0, 0.00, 0, NOW(), NOW()),
-('simples_nacional', 'v', 4, 0.00, 0, 0.82, 0, 3.46, 0, 2.15, 0, 2.15, 0, 0.00, 0, NOW(), NOW()),
-('simples_nacional', 'v', 5, 0.00, 0, 0.87, 0, 3.67, 0, 2.36, 0, 2.36, 0, 0.00, 0, NOW(), NOW());
+-- NOTA: As aliquotas do Anexo V sao inseridas aqui como configuracao padrao.
+-- A tabela impostos_config ja recebeu seu registro basico acima (linha 1065).
+INSERT IGNORE INTO `configuracoes_impostos` (`cnpj`, `razao_social`, `anexo_simples`, `faixa_simples`, `aliquota_simples`, `retencao_iss`, `aliquota_iss`, `retencao_pis`, `aliquota_pis`, `retencao_cofins`, `aliquota_cofins`, `retencao_csll`, `aliquota_csll`, `retencao_ir`, `aliquota_ir`, `retencao_inss`, `aliquota_inss`, `valor_minimo_retencao`, `ativar_retencao_automatica`, `ativo`, `created_at`) VALUES
+('00000000000000', 'Empresa Padrao', 'V', 1, 6.00, 0, 0.00, 0, 0.50, 0, 2.34, 0, 0.80, 0, 0.80, 0, 0.00, 0.00, 0, 1, NOW()),
+('00000000000000', 'Empresa Padrao', 'V', 2, 8.21, 0, 0.00, 0, 0.63, 0, 2.67, 0, 1.46, 0, 1.46, 0, 0.00, 0.00, 0, 1, NOW()),
+('00000000000000', 'Empresa Padrao', 'V', 3, 10.46, 0, 0.00, 0, 0.77, 0, 3.27, 0, 1.90, 0, 1.90, 0, 0.00, 0.00, 0, 1, NOW()),
+('00000000000000', 'Empresa Padrao', 'V', 4, 11.14, 0, 0.00, 0, 0.82, 0, 3.46, 0, 2.15, 0, 2.15, 0, 0.00, 0.00, 0, 1, NOW()),
+('00000000000000', 'Empresa Padrao', 'V', 5, 12.05, 0, 0.00, 0, 0.87, 0, 3.67, 0, 2.36, 0, 2.36, 0, 0.00, 0.00, 0, 1, NOW());
 
 -- -----------------------------------------------------
 -- Dados iniciais - Contas DRE Comercio
