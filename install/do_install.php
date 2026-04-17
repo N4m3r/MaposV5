@@ -640,7 +640,7 @@ $permissoes_array = [
     'aServico' => '1', 'eServico' => '1', 'dServico' => '1', 'vServico' => '1',
     'aOs' => '1', 'eOs' => '1', 'dOs' => '1', 'vOs' => '1',
     'vBtnAtendimento' => '1', 'vTecnicoOS' => '1', 'eTecnicoCheckin' => '1',
-    'eTecnicoCheckout' => '1', 'eTecnicoFotos' => '1',
+    'eTecnicoCheckout' => '1', 'eTecnicoFotos' => '1', 'vTecnicoDashboard' => '1',
     'aVenda' => '1', 'eVenda' => '1', 'dVenda' => '1', 'vVenda' => '1',
     'aGarantia' => '1', 'eGarantia' => '1', 'dGarantia' => '1', 'vGarantia' => '1',
     'aLancamento' => '1', 'eLancamento' => '1', 'dLancamento' => '1', 'vLancamento' => '1',
@@ -675,6 +675,8 @@ $permissoes_array = [
     'eUsuariosCliente' => '1', 'dUsuariosCliente' => '1',
     'cPermUsuariosCliente' => '1',
     'vDashboard' => '1', 'vRelatorioCompleto' => '1', 'vExportarDados' => '1',
+    // Permissões Relatório de Técnicos
+    'vRelatorioTecnicos' => '1',
     // Permissões NFSe e Boletos vinculados à OS
     'vNFSe' => '1', 'cNFSe' => '1', 'eNFSe' => '1',
     'vBoletoOS' => '1', 'cBoletoOS' => '1', 'eBoletoOS' => '1',
