@@ -40,6 +40,12 @@ class Permission
         if ($idPermissao == null || $atividade == null) {
             return false;
         }
+
+        // Administrador (idPermissao 1) tem acesso total
+        if ($idPermissao == 1) {
+            return true;
+        }
+
         // Se as permissões não estiverem carregadas, requisita o carregamento
         if ($this->permissions == null) {
             // Se não carregar retorna falso

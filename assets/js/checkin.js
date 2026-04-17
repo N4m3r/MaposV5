@@ -168,33 +168,100 @@ const CheckinManager = {
     },
 
     capturarLocalizacao: function(prefix) {
-        if (!navigator.geolocation) {
-            $('#' + prefix + '-geo-status').text('Geolocalização não suportada');
-            return;
-        }
-
         var $status = $('#' + prefix + '-geo-status');
         var $lat = $('#' + prefix + '-latitude');
         var $lng = $('#' + prefix + '-longitude');
+        var $btn = $('#' + prefix + '-geo-btn-text');
+        var self = this;
 
-        $status.text('Capturando localização...');
+        if (!navigator.geolocation) {
+            $status.html('<i class="bx bx-x-circle" style="color:#dc3545"></i> Seu navegador não suporta geolocalização');
+            return;
+        }
+
+        // Verifica estado da permissão via Permissions API
+        if (navigator.permissions && navigator.permissions.query) {
+            navigator.permissions.query({ name: 'geolocation' }).then(function(result) {
+                if (result.state === 'denied') {
+                    $status.html('<i class="bx bx-x-circle" style="color:#dc3545"></i> Permissão negada. Acesse as configurações do navegador para liberar.');
+                    self._mostrarInstrucaoPermissao(prefix);
+                    return;
+                }
+                if (result.state === 'granted') {
+                    $status.html('<i class="bx bx-loader bx-spin" style="color:#3fadf6"></i> Capturando localização...');
+                    self._obterPosicao(prefix, $status, $lat, $lng);
+                    return;
+                }
+                // state === 'prompt' — precisa solicitar
+                self._solicitarPermissao(prefix, $status, $lat, $lng);
+            }).catch(function() {
+                // Permissions API falhou, tenta direto
+                self._solicitarPermissao(prefix, $status, $lat, $lng);
+            });
+        } else {
+            // Sem Permissions API (iOS Safari, etc) — solicita direto
+            self._solicitarPermissao(prefix, $status, $lat, $lng);
+        }
+    },
+
+    _solicitarPermissao: function(prefix, $status, $lat, $lng) {
+        var self = this;
+        $status.html('<i class="bx bx-loader bx-spin" style="color:#3fadf6"></i> Solicitando permissão de localização...');
+
+        // No iOS/Safari o prompt aparece ao chamar getCurrentPosition
+        // Precisa ser chamado a partir de interação do usuário (já é — modal aberto por clique)
+        self._obterPosicao(prefix, $status, $lat, $lng);
+    },
+
+    _obterPosicao: function(prefix, $status, $lat, $lng) {
+        var self = this;
 
         navigator.geolocation.getCurrentPosition(
             function(pos) {
                 $lat.val(pos.coords.latitude);
                 $lng.val(pos.coords.longitude);
-                $status.html('<i class="bx bx-check-circle" style="color:#28a745"></i> Localização capturada');
-                console.log('Localização capturada:', pos.coords.latitude, pos.coords.longitude);
+                var acc = pos.coords.accuracy ? Math.round(pos.coords.accuracy) : '?';
+                $status.html(
+                    '<i class="bx bx-check-circle" style="color:#28a745"></i> ' +
+                    'Localização capturada (precisão: ~' + acc + 'm)'
+                );
+                console.log('Localização capturada:', pos.coords.latitude, pos.coords.longitude, 'accuracy:', acc + 'm');
             },
             function(err) {
                 var msg = 'Erro ao capturar localização';
-                if (err.code === 1) msg = 'Permissão de localização negada';
-                else if (err.code === 2) msg = 'Localização indisponível';
-                else if (err.code === 3) msg = 'Tempo esgotado ao capturar localização';
+                if (err.code === 1) {
+                    msg = 'Permissão negada pelo usuário';
+                    self._mostrarInstrucaoPermissao(prefix);
+                } else if (err.code === 2) {
+                    msg = 'Localização indisponível (GPS desligado?)';
+                } else if (err.code === 3) {
+                    msg = 'Tempo esgotado. Tente novamente.';
+                }
                 $status.html('<i class="bx bx-x-circle" style="color:#dc3545"></i> ' + msg);
-                console.warn('Geo error:', err.message);
+                console.warn('Geo error:', err.code, err.message);
             },
-            { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+            { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 }
+        );
+    },
+
+    _mostrarInstrucaoPermissao: function(prefix) {
+        var $container = $('#' + prefix + '-geo-status').parent();
+        // Evita duplicar
+        if ($container.find('.geo-instrucao').length) return;
+
+        var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        var instrucao = '';
+
+        if (isIOS) {
+            instrucao = 'No Safari iOS: Ajustes > Privacidade > Serviços de Localização > Safari > Ao Usar o App';
+        } else {
+            instrucao = 'No Chrome: clique no ícone de cadeado na barra de endereço > Permissões > Localização > Permitir';
+        }
+
+        $container.append(
+            '<div class="geo-instrucao" style="margin-top:8px; padding:8px; background:#fff3cd; border:1px solid #ffc107; border-radius:4px; font-size:12px; color:#856404;">' +
+            '<i class="bx bx-info-circle"></i> <strong>Como liberar:</strong> ' + instrucao +
+            '</div>'
         );
     },
 
@@ -204,7 +271,8 @@ const CheckinManager = {
         // Limpa os campos do formulário
         $('#checkin-observacao').val('');
         $('#checkin-latitude, #checkin-longitude').val('');
-        $('#checkin-geo-status').text('');
+        $('#checkin-geo-status').html('');
+        $('#checkin-geo-status').parent().find('.geo-instrucao').remove();
 
         // Captura localização automaticamente
         this.capturarLocalizacao('checkin');
@@ -225,7 +293,8 @@ const CheckinManager = {
         // Limpa os campos do formulário (exceto nome/documento que vêm da OS)
         $('#checkout-observacao').val('');
         $('#checkout-latitude, #checkout-longitude').val('');
-        $('#checkout-geo-status').text('');
+        $('#checkout-geo-status').html('');
+        $('#checkout-geo-status').parent().find('.geo-instrucao').remove();
 
         // Captura localização automaticamente
         this.capturarLocalizacao('checkout');

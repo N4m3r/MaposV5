@@ -1381,9 +1381,9 @@ $(document).ready(function() {
                 <input type="hidden" id="checkin-latitude">
                 <input type="hidden" id="checkin-longitude">
                 <button type="button" id="btn-geo-checkin" class="btn btn-small">
-                    <i class="bx bx-map"></i> Capturar Localização
+                    <i class="bx bx-map"></i> <span id="checkin-geo-btn-text">Capturar Localização</span>
                 </button>
-                <span id="checkin-geo-status" class="text-muted" style="margin-left: 10px;"></span>
+                <span id="checkin-geo-status" class="text-muted" style="margin-left: 10px; display: inline-block;"></span>
             </div>
         </form>
     </div>
@@ -1754,9 +1754,9 @@ $(document).ready(function() {
                 <input type="hidden" id="checkout-latitude">
                 <input type="hidden" id="checkout-longitude">
                 <button type="button" id="btn-geo-checkout" class="btn btn-small">
-                    <i class="bx bx-map"></i> Capturar Localização
+                    <i class="bx bx-map"></i> <span id="checkout-geo-btn-text">Capturar Localização</span>
                 </button>
-                <span id="checkout-geo-status" class="text-muted" style="margin-left: 10px;"></span>
+                <span id="checkout-geo-status" class="text-muted" style="margin-left: 10px; display: inline-block;"></span>
             </div>
         </form>
     </div>
@@ -2042,7 +2042,8 @@ $(document).ready(function() {
 
                 // Limpa os campos do formulário (exceto observação que já foi preenchida)
                 $('#checkout-latitude, #checkout-longitude').val('');
-                $('#checkout-geo-status').text('');
+                $('#checkout-geo-status').html('');
+                $('#checkout-geo-status').parent().find('.geo-instrucao').remove();
 
                 // Limpa as assinaturas ao abrir o modal
                 if (typeof AssinaturaManager !== 'undefined') {
