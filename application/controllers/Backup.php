@@ -11,7 +11,7 @@ if (!defined('BASEPATH')) {
  *
  * ATENÇÃO: Apenas usuários com permissão de administrador
  */
-class Backup extends CI_Controller
+class Backup extends MY_Controller
 {
     private $backup_dir;
     private $max_file_size;
@@ -20,26 +20,15 @@ class Backup extends CI_Controller
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('mapos_model');
-        $this->load->library('session');
-        $this->load->library('form_validation');
-        $this->load->helper('url');
-        $this->load->helper('form');
-        $this->load->helper('file');
-        $this->load->database();
 
-        // Verificar autenticação
-        if (!$this->session->userdata('logado')) {
-            redirect('login');
-        }
-
-        // Verificar permissão de administrador
-        $this->load->library('permission');
-        $permissao_id = $this->session->userdata('permissao');
-        if (!$this->permission->checkPermission($permissao_id, 'cBackup')) {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cBackup')) {
             $this->session->set_flashdata('error', 'Você não tem permissão para acessar esta área. Permissão necessária: cBackup');
             redirect('mapos');
         }
+
+        $this->load->model('mapos_model');
+        $this->load->library('form_validation');
+        $this->load->helper('file');
 
         // Configurações
         $this->backup_dir = FCPATH . 'backups/';
@@ -50,6 +39,8 @@ class Backup extends CI_Controller
         if (!is_dir($this->backup_dir)) {
             mkdir($this->backup_dir, 0755, true);
         }
+
+        $this->data['menuConfiguracoes'] = 'Configurações';
     }
 
     /**
@@ -57,11 +48,12 @@ class Backup extends CI_Controller
      */
     public function index()
     {
-        $data['backups'] = $this->listarBackups();
-        $data['database_info'] = $this->obterInfoDatabase();
-        $data['ultimo_backup'] = $this->obterUltimoBackup();
+        $this->data['backups'] = $this->listarBackups();
+        $this->data['database_info'] = $this->obterInfoDatabase();
+        $this->data['ultimo_backup'] = $this->obterUltimoBackup();
+        $this->data['view'] = 'backup/dashboard';
 
-        $this->load->view('backup/dashboard', $data);
+        return $this->layout();
     }
 
     /**
@@ -225,8 +217,10 @@ class Backup extends CI_Controller
         $this->form_validation->set_rules('confirmacao', 'Confirmação', 'required');
 
         if ($this->form_validation->run() === false) {
-            $data['backups_disponiveis'] = $this->listarBackups();
-            $this->load->view('backup/restaurar', $data);
+            $this->data['backups_disponiveis'] = $this->listarBackups();
+            $this->data['view'] = 'backup/restaurar';
+
+            return $this->layout();
         } else {
             // Processo de restauração via upload
             $this->processarRestauracao();

@@ -1,5 +1,3 @@
-<?php $this->load->view('tema/header.php'); ?>
-
 <div class="row-fluid">
     <div class="span12">
         <div class="widget-box">
@@ -250,5 +248,3 @@ function verificarBackup(arquivo) {
     return false;
 }
 </script>
-
-<?php $this->load->view('tema/footer.php'); ?>

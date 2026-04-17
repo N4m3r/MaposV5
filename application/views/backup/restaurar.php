@@ -1,5 +1,3 @@
-<?php $this->load->view('tema/header.php'); ?>
-
 <style>
     .upload-area {
         border: 3px dashed #ddd;
@@ -277,5 +275,3 @@ function formatarTamanho(bytes) {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 </script>
-
-<?php $this->load->view('tema/footer.php'); ?>
