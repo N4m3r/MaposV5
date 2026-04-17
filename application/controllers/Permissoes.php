@@ -131,17 +131,6 @@ class Permissoes extends MY_Controller
                 'vRelatorioCompleto' => $this->input->post('vRelatorioCompleto'),
                 'vExportarDados' => $this->input->post('vExportarDados'),
 
-                // Permissões Pagamentos
-                'aPagamento' => $this->input->post('aPagamento'),
-                'ePagamento' => $this->input->post('ePagamento'),
-                'dPagamento' => $this->input->post('dPagamento'),
-                'vPagamento' => $this->input->post('vPagamento'),
-
-                // Permissões Dashboard
-                'vDashboard' => $this->input->post('vDashboard'),
-                'vRelatorioCompleto' => $this->input->post('vRelatorioCompleto'),
-                'vExportarDados' => $this->input->post('vExportarDados'),
-
                 // Permissões Novas Funcionalidades
                 'vCertificado' => $this->input->post('vCertificado'),
                 'cCertificado' => $this->input->post('cCertificado'),
@@ -168,6 +157,7 @@ class Permissoes extends MY_Controller
 
                 // Permissões Relatório de Técnicos
                 'vRelatorioTecnicos' => $this->input->post('vRelatorioTecnicos'),
+                'vTecnicoDashboard' => $this->input->post('vTecnicoDashboard'),
 
                 // Permissões Portal do Cliente - Usuários
                 'vUsuariosCliente' => $this->input->post('vUsuariosCliente'),
@@ -175,7 +165,24 @@ class Permissoes extends MY_Controller
                 'eUsuariosCliente' => $this->input->post('eUsuariosCliente'),
                 'dUsuariosCliente' => $this->input->post('dUsuariosCliente'),
                 'cPermUsuariosCliente' => $this->input->post('cPermUsuariosCliente'),
+
+                // Permissões NFSe e Boletos
+                'vNFSe' => $this->input->post('vNFSe'),
+                'cNFSe' => $this->input->post('cNFSe'),
+                'eNFSe' => $this->input->post('eNFSe'),
+                'vBoletoOS' => $this->input->post('vBoletoOS'),
+                'cBoletoOS' => $this->input->post('cBoletoOS'),
+                'eBoletoOS' => $this->input->post('eBoletoOS'),
+                'rNFSe' => $this->input->post('rNFSe'),
             ];
+
+            // Converter null para '0' (checkbox desmarcado)
+            foreach ($permissoes as $key => $val) {
+                if ($val === null || $val === false) {
+                    $permissoes[$key] = '0';
+                }
+            }
+
             $permissoes = serialize($permissoes);
 
             $data = [
@@ -236,6 +243,7 @@ class Permissoes extends MY_Controller
                 'eTecnicoCheckin' => $this->input->post('eTecnicoCheckin'),
                 'eTecnicoCheckout' => $this->input->post('eTecnicoCheckout'),
                 'eTecnicoFotos' => $this->input->post('eTecnicoFotos'),
+                'vTecnicoDashboard' => $this->input->post('vTecnicoDashboard'),
 
                 'aVenda' => $this->input->post('aVenda'),
                 'eVenda' => $this->input->post('eVenda'),
@@ -269,6 +277,7 @@ class Permissoes extends MY_Controller
                 'cAuditoria' => $this->input->post('cAuditoria'),
                 'cEmail' => $this->input->post('cEmail'),
                 'cSistema' => $this->input->post('cSistema'),
+                'cDocOs' => $this->input->post('cDocOs'),
 
                 'rCliente' => $this->input->post('rCliente'),
                 'rProduto' => $this->input->post('rProduto'),
@@ -276,29 +285,17 @@ class Permissoes extends MY_Controller
                 'rOs' => $this->input->post('rOs'),
                 'rVenda' => $this->input->post('rVenda'),
                 'rFinanceiro' => $this->input->post('rFinanceiro'),
+                'rNFSe' => $this->input->post('rNFSe'),
 
                 'aCobranca' => $this->input->post('aCobranca'),
                 'eCobranca' => $this->input->post('eCobranca'),
                 'dCobranca' => $this->input->post('dCobranca'),
                 'vCobranca' => $this->input->post('vCobranca'),
 
-                // Permissões Dashboard
                 'vDashboard' => $this->input->post('vDashboard'),
                 'vRelatorioCompleto' => $this->input->post('vRelatorioCompleto'),
                 'vExportarDados' => $this->input->post('vExportarDados'),
 
-                // Permissões Pagamentos
-                'aPagamento' => $this->input->post('aPagamento'),
-                'ePagamento' => $this->input->post('ePagamento'),
-                'dPagamento' => $this->input->post('dPagamento'),
-                'vPagamento' => $this->input->post('vPagamento'),
-
-                // Permissões Dashboard
-                'vDashboard' => $this->input->post('vDashboard'),
-                'vRelatorioCompleto' => $this->input->post('vRelatorioCompleto'),
-                'vExportarDados' => $this->input->post('vExportarDados'),
-
-                // Permissões Novas Funcionalidades
                 'vCertificado' => $this->input->post('vCertificado'),
                 'cCertificado' => $this->input->post('cCertificado'),
                 'eCertificado' => $this->input->post('eCertificado'),
@@ -310,7 +307,7 @@ class Permissoes extends MY_Controller
                 'cImpostosConfig' => $this->input->post('cImpostosConfig'),
                 'vImpostosRelatorio' => $this->input->post('vImpostosRelatorio'),
                 'vImpostosExportar' => $this->input->post('vImpostosExportar'),
-                // Permissões DRE Contábil
+
                 'vDRE' => $this->input->post('vDRE'),
                 'vDREDemonstracao' => $this->input->post('vDREDemonstracao'),
                 'vDREContas' => $this->input->post('vDREContas'),
@@ -320,19 +317,85 @@ class Permissoes extends MY_Controller
                 'dDRE' => $this->input->post('dDRE'),
                 'vRelatorioAtendimentos' => $this->input->post('vRelatorioAtendimentos'),
                 'vWebhooks' => $this->input->post('vWebhooks'),
-                'cDocOs' => $this->input->post('cDocOs'),
 
-                // Permissões Relatório de Técnicos
                 'vRelatorioTecnicos' => $this->input->post('vRelatorioTecnicos'),
 
-                // Permissões Portal do Cliente - Usuários
                 'vUsuariosCliente' => $this->input->post('vUsuariosCliente'),
                 'cUsuariosCliente' => $this->input->post('cUsuariosCliente'),
                 'eUsuariosCliente' => $this->input->post('eUsuariosCliente'),
                 'dUsuariosCliente' => $this->input->post('dUsuariosCliente'),
                 'cPermUsuariosCliente' => $this->input->post('cPermUsuariosCliente'),
 
+                'vNFSe' => $this->input->post('vNFSe'),
+                'cNFSe' => $this->input->post('cNFSe'),
+                'eNFSe' => $this->input->post('eNFSe'),
+                'vBoletoOS' => $this->input->post('vBoletoOS'),
+                'cBoletoOS' => $this->input->post('cBoletoOS'),
+                'eBoletoOS' => $this->input->post('eBoletoOS'),
+
+                'categoria_d' => $this->input->post('categoria_d'),
+                'categoria_v' => $this->input->post('categoria_v'),
+                'categoria_a' => $this->input->post('categoria_a'),
+                'categoria_e' => $this->input->post('categoria_e'),
+                'vCategoria' => $this->input->post('vCategoria'),
+
+                'aConfiguracao' => $this->input->post('aConfiguracao'),
+                'eConfiguracao' => $this->input->post('eConfiguracao'),
+                'dConfiguracao' => $this->input->post('dConfiguracao'),
+                'vConfiguracao' => $this->input->post('vConfiguracao'),
+
+                'aEmitente' => $this->input->post('aEmitente'),
+                'eEmitente' => $this->input->post('eEmitente'),
+                'dEmitente' => $this->input->post('dEmitente'),
+                'vEmitente' => $this->input->post('vEmitente'),
+
+                'aPermissao' => $this->input->post('aPermissao'),
+                'ePermissao' => $this->input->post('ePermissao'),
+                'dPermissao' => $this->input->post('dPermissao'),
+                'vPermissao' => $this->input->post('vPermissao'),
+
+                'aAuditoria' => $this->input->post('aAuditoria'),
+                'eAuditoria' => $this->input->post('eAuditoria'),
+                'dAuditoria' => $this->input->post('dAuditoria'),
+                'vAuditoria' => $this->input->post('vAuditoria'),
+
+                'aEmail' => $this->input->post('aEmail'),
+                'eEmail' => $this->input->post('eEmail'),
+                'dEmail' => $this->input->post('dEmail'),
+                'vEmail' => $this->input->post('vEmail'),
+
+                'rContas' => $this->input->post('rContas'),
+                'rProdutos' => $this->input->post('rProdutos'),
+                'rServicos' => $this->input->post('rServicos'),
+                'rVendas' => $this->input->post('rVendas'),
+                'rClientes' => $this->input->post('rClientes'),
+
             ];
+
+            // Converter null para '0' (checkbox desmarcado) e preservar permissoes extras
+            $current = $this->permissoes_model->getById($this->input->post('idPermissao'));
+            $currentPerms = [];
+            if ($current && !empty($current->permissoes)) {
+                $decoded = @unserialize($current->permissoes);
+                if (is_array($decoded)) {
+                    $currentPerms = $decoded;
+                }
+            }
+
+            // Checkbox desmarcado = null, precisa virar '0'
+            foreach ($permissoes as $key => $val) {
+                if ($val === null || $val === false) {
+                    $permissoes[$key] = '0';
+                }
+            }
+
+            // Preservar permissoes que existiam antes mas nao estao no formulario
+            foreach ($currentPerms as $key => $val) {
+                if (!isset($permissoes[$key])) {
+                    $permissoes[$key] = $val;
+                }
+            }
+
             $permissoes = serialize($permissoes);
 
             $data = [
@@ -372,6 +435,36 @@ class Permissoes extends MY_Controller
             $this->session->set_flashdata('success', 'Permissão desativada com sucesso!');
         } else {
             $this->session->set_flashdata('error', 'Erro ao desativar permissão!');
+        }
+
+        redirect(site_url('permissoes/gerenciar/'));
+    }
+
+    public function excluir()
+    {
+        $id = $this->input->post('id');
+        if (! $id) {
+            $this->session->set_flashdata('error', 'Erro ao tentar excluir permissão.');
+            redirect(site_url('permissoes/gerenciar/'));
+        }
+
+        if ($id == 1) {
+            $this->session->set_flashdata('error', 'O grupo Administrador não pode ser excluído!');
+            redirect(site_url('permissoes/gerenciar/'));
+        }
+
+        $this->db->where('permissoes_id', $id);
+        $usuarios = $this->db->get('usuarios')->num_rows();
+        if ($usuarios > 0) {
+            $this->session->set_flashdata('error', 'Existem ' . $usuarios . ' usuário(s) vinculado(s) a este grupo. Remova ou altere o grupo desses usuários antes de excluir.');
+            redirect(site_url('permissoes/gerenciar/'));
+        }
+
+        if ($this->permissoes_model->delete('permissoes', 'idPermissao', $id)) {
+            log_info('Excluiu uma permissão. ID: ' . $id);
+            $this->session->set_flashdata('success', 'Permissão excluída com sucesso!');
+        } else {
+            $this->session->set_flashdata('error', 'Erro ao excluir permissão!');
         }
 
         redirect(site_url('permissoes/gerenciar/'));

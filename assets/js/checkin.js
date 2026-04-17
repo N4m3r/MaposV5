@@ -117,6 +117,12 @@ const CheckinManager = {
             const assinaturaId = $(this).data('assinatura-id');
             self.removerAssinatura(assinaturaId);
         });
+        $(document).on('click', '#btn-geo-checkin', function() {
+            self.capturarLocalizacao('checkin');
+        });
+        $(document).on('click', '#btn-geo-checkout', function() {
+            self.capturarLocalizacao('checkout');
+        });
     },
 
     carregarStatus: function() {
@@ -161,6 +167,37 @@ const CheckinManager = {
         }
     },
 
+    capturarLocalizacao: function(prefix) {
+        if (!navigator.geolocation) {
+            $('#' + prefix + '-geo-status').text('Geolocalização não suportada');
+            return;
+        }
+
+        var $status = $('#' + prefix + '-geo-status');
+        var $lat = $('#' + prefix + '-latitude');
+        var $lng = $('#' + prefix + '-longitude');
+
+        $status.text('Capturando localização...');
+
+        navigator.geolocation.getCurrentPosition(
+            function(pos) {
+                $lat.val(pos.coords.latitude);
+                $lng.val(pos.coords.longitude);
+                $status.html('<i class="bx bx-check-circle" style="color:#28a745"></i> Localização capturada');
+                console.log('Localização capturada:', pos.coords.latitude, pos.coords.longitude);
+            },
+            function(err) {
+                var msg = 'Erro ao capturar localização';
+                if (err.code === 1) msg = 'Permissão de localização negada';
+                else if (err.code === 2) msg = 'Localização indisponível';
+                else if (err.code === 3) msg = 'Tempo esgotado ao capturar localização';
+                $status.html('<i class="bx bx-x-circle" style="color:#dc3545"></i> ' + msg);
+                console.warn('Geo error:', err.message);
+            },
+            { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+        );
+    },
+
     abrirModalCheckin: function() {
         $('#modal-checkin').modal('show');
 
@@ -168,6 +205,9 @@ const CheckinManager = {
         $('#checkin-observacao').val('');
         $('#checkin-latitude, #checkin-longitude').val('');
         $('#checkin-geo-status').text('');
+
+        // Captura localização automaticamente
+        this.capturarLocalizacao('checkin');
 
         // Limpa a assinatura ao abrir o modal
         if (typeof AssinaturaManager !== 'undefined') {
@@ -186,6 +226,9 @@ const CheckinManager = {
         $('#checkout-observacao').val('');
         $('#checkout-latitude, #checkout-longitude').val('');
         $('#checkout-geo-status').text('');
+
+        // Captura localização automaticamente
+        this.capturarLocalizacao('checkout');
 
         // Limpa as assinaturas ao abrir o modal
         if (typeof AssinaturaManager !== 'undefined') {
