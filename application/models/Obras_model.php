@@ -12,10 +12,22 @@ class Obras_model extends CI_Model
     }
 
     /**
+     * Verificar se a tabela existe
+     */
+    private function tabelaExiste($tabela)
+    {
+        return $this->db->table_exists($tabela);
+    }
+
+    /**
      * Listar todas as obras
      */
     public function getAll($where = [], $limit = null)
     {
+        if (!$this->tabelaExiste('obras')) {
+            return [];
+        }
+
         if (!empty($where)) {
             $this->db->where($where);
         }
@@ -26,7 +38,13 @@ class Obras_model extends CI_Model
             $this->db->limit($limit);
         }
 
-        return $this->db->get('obras')->result();
+        $query = $this->db->get('obras');
+
+        if ($query === false) {
+            return [];
+        }
+
+        return $query->result();
     }
 
     /**
@@ -34,6 +52,10 @@ class Obras_model extends CI_Model
      */
     public function getById($id)
     {
+        if (!$this->tabelaExiste('obras')) {
+            return null;
+        }
+
         $this->db->where('id', $id);
         return $this->db->get('obras')->row();
     }
@@ -43,6 +65,10 @@ class Obras_model extends CI_Model
      */
     public function add($dados)
     {
+        if (!$this->tabelaExiste('obras')) {
+            return false;
+        }
+
         $data = [
             'cliente_id' => $dados['cliente_id'],
             'nome' => $dados['nome'],
@@ -65,6 +91,10 @@ class Obras_model extends CI_Model
      */
     public function update($id, $dados)
     {
+        if (!$this->tabelaExiste('obras')) {
+            return false;
+        }
+
         $this->db->where('id', $id);
         return $this->db->update('obras', $dados);
     }
@@ -74,6 +104,10 @@ class Obras_model extends CI_Model
      */
     public function atualizarProgresso($obra_id)
     {
+        if (!$this->tabelaExiste('obra_etapas')) {
+            return 0;
+        }
+
         // Calcular progresso baseado nas etapas
         $this->db->where('obra_id', $obra_id);
         $total_etapas = $this->db->count_all_results('obra_etapas');
@@ -84,8 +118,10 @@ class Obras_model extends CI_Model
 
         $progresso = $total_etapas > 0 ? round(($etapas_concluidas / $total_etapas) * 100) : 0;
 
-        $this->db->where('id', $obra_id);
-        $this->db->update('obras', ['percentual_concluido' => $progresso]);
+        if ($this->tabelaExiste('obras')) {
+            $this->db->where('id', $obra_id);
+            $this->db->update('obras', ['percentual_concluido' => $progresso]);
+        }
 
         return $progresso;
     }
@@ -95,6 +131,10 @@ class Obras_model extends CI_Model
      */
     public function getEtapas($obra_id)
     {
+        if (!$this->tabelaExiste('obra_etapas')) {
+            return [];
+        }
+
         $this->db->where('obra_id', $obra_id);
         $this->db->order_by('ordem', 'ASC');
         return $this->db->get('obra_etapas')->result();
@@ -105,6 +145,10 @@ class Obras_model extends CI_Model
      */
     public function adicionarEtapa($obra_id, $dados)
     {
+        if (!$this->tabelaExiste('obra_etapas')) {
+            return false;
+        }
+
         $data = [
             'obra_id' => $obra_id,
             'nome' => $dados['nome'],
@@ -129,6 +173,10 @@ class Obras_model extends CI_Model
      */
     private function atualizarTotalEtapas($obra_id)
     {
+        if (!$this->tabelaExiste('obra_etapas') || !$this->tabelaExiste('obras')) {
+            return;
+        }
+
         $this->db->where('obra_id', $obra_id);
         $total = $this->db->count_all_results('obra_etapas');
 
@@ -141,6 +189,10 @@ class Obras_model extends CI_Model
      */
     public function getDiario($obra_id, $data = null)
     {
+        if (!$this->tabelaExiste('obra_diario')) {
+            return [];
+        }
+
         $this->db->where('obra_id', $obra_id);
 
         if ($data) {
@@ -157,6 +209,10 @@ class Obras_model extends CI_Model
      */
     public function adicionarDiario($obra_id, $dados)
     {
+        if (!$this->tabelaExiste('obra_diario')) {
+            return false;
+        }
+
         $data = [
             'obra_id' => $obra_id,
             'tecnico_id' => $dados['tecnico_id'],
@@ -179,6 +235,10 @@ class Obras_model extends CI_Model
      */
     public function getEquipe($obra_id)
     {
+        if (!$this->tabelaExiste('obra_equipe')) {
+            return [];
+        }
+
         $this->db->select('oe.*, u.nome as tecnico_nome, u.nivel_tecnico');
         $this->db->from('obra_equipe oe');
         $this->db->join('usuarios u', 'u.idUsuarios = oe.tecnico_id');
@@ -191,6 +251,10 @@ class Obras_model extends CI_Model
      */
     public function adicionarTecnicoEquipe($obra_id, $tecnico_id, $funcao = 'Técnico')
     {
+        if (!$this->tabelaExiste('obra_equipe')) {
+            return false;
+        }
+
         $data = [
             'obra_id' => $obra_id,
             'tecnico_id' => $tecnico_id,
@@ -207,6 +271,10 @@ class Obras_model extends CI_Model
      */
     public function countByStatus($status)
     {
+        if (!$this->tabelaExiste('obras')) {
+            return 0;
+        }
+
         $this->db->where('status', $status);
         return $this->db->count_all_results('obras');
     }
@@ -216,6 +284,10 @@ class Obras_model extends CI_Model
      */
     public function getAtivas()
     {
+        if (!$this->tabelaExiste('obras')) {
+            return [];
+        }
+
         $this->db->where_in('status', ['planejamento', 'em_andamento', 'paralisada']);
         return $this->db->get('obras')->result();
     }
@@ -225,6 +297,10 @@ class Obras_model extends CI_Model
      */
     public function getCliente($obra_id)
     {
+        if (!$this->tabelaExiste('obras')) {
+            return null;
+        }
+
         $this->db->select('c.*');
         $this->db->from('obras o');
         $this->db->join('clientes c', 'c.idClientes = o.cliente_id');

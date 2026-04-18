@@ -47,7 +47,7 @@
                                 <i class="bx bx-check-square"></i>
                             </div>
                             <div class="checklist-title">
-                                <h6><?= htmlspecialchars($checklist->nome_template ?? 'Sem nome') ?></h6>
+                                <h6><?= htmlspecialchars($checklist->nome_template ?? 'Sem nome', ENT_COMPAT | ENT_HTML5, 'UTF-8') ?></h6>
                                 <span class="checklist-type" style="background: <?= $tipoStyle['bg'] ?>; color: <?= $tipoStyle['color'] ?>;">
                                     <?= $tipoStyle['label'] ?>
                                 </span>
@@ -58,7 +58,7 @@
                             <div class="checklist-info">
                                 <span class="info-item">
                                     <i class="bx bx-folder"></i>
-                                    <?= htmlspecialchars($checklist->tipo_os ?? 'Geral') ?>
+                                    <?= htmlspecialchars($checklist->tipo_os ?? 'Geral', ENT_COMPAT | ENT_HTML5, 'UTF-8') ?>
                                 </span>
                                 <span class="info-item">
                                     <i class="bx bx-list-check"></i>
@@ -73,7 +73,7 @@
                                         <?php if ($count < 4): ?>
                                             <li>
                                                 <i class="bx bx-check"></i>
-                                                <?= htmlspecialchars(is_array($item) ? ($item['desc'] ?? $item['descricao'] ?? '') : $item) ?>
+                                                <?= htmlspecialchars(is_array($item) ? ($item['desc'] ?? $item['descricao'] ?? '') : $item, ENT_COMPAT | ENT_HTML5, 'UTF-8') ?>
                                             </li>
                                             <?php $count++; ?>
                                         <?php endif; ?>
@@ -94,7 +94,7 @@
                             </span>
                             <div class="checklist-actions">
                                 <a href="#" class="btn-icon btn-view" title="Visualizar"
-                                   onclick="verChecklist(<?= $checklist->id ?>, '<?= htmlspecialchars($checklist->nome_template ?? '') ?>')">
+                                   onclick="verChecklist(<?= $checklist->id ?>, '<?= htmlspecialchars($checklist->nome_template ?? '', ENT_COMPAT | ENT_HTML5, 'UTF-8') ?>')"
                                     <i class="bx bx-show"></i>
                                 </a>
                                 <a href="#" class="btn-icon btn-edit" title="Editar"
