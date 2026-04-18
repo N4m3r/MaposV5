@@ -355,7 +355,8 @@ class Tecnicos_admin extends MY_Controller
 
         // Buscar técnicos para o modal de alocação
         $this->db->where('status', 1);
-        $tecnicos = $this->db->get('usuarios')->result();
+        $tecnicos_query = $this->db->get('usuarios');
+        $tecnicos = $tecnicos_query ? $tecnicos_query->result() : [];
 
         $this->data['obra'] = $obra;
         $this->data['etapas'] = $this->obras_model->getEtapas($id);
