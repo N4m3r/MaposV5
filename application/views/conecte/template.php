@@ -34,12 +34,18 @@
     <div class="navebarn" style="margin-top: -60px;height: 25px;margin-bottom: 15px">
         <div id="user-nav" class="navbar navbar-inverse">
             <ul class="nav">
+                <?php
+                // Suporte para ambos os sistemas de login
+                $nomeUsuario = $this->session->userdata('usuario_cliente_nome') ?: $this->session->userdata('nome') ?: 'Usuário';
+                $tipoAcesso = $this->session->userdata('tipo_acesso');
+                $linkSair = ($tipoAcesso == 'usuario_cliente') ? 'mine/sair_usuario' : 'mine/sair';
+                ?>
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class='bx bx-user-circle iconN1'></i> <?= $this->session->userdata('nome') ?> </a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class='bx bx-user-circle iconN1'></i> <?= htmlspecialchars($nomeUsuario) ?> </a>
                     <ul class="dropdown-menu">
                         <li class=""><a title="Meu Perfil" href="<?php echo base_url() ?>index.php/mine/conta"><i class="fas fa-user"></i> <span class="text">Meu Perfil</span></a></li>
                         <li class="divider"></li>
-                        <li class=""><a title="Sair" href="<?php echo base_url() ?>index.php/mine/sair"><i class="fas fa-sign-out-alt"></i> <span class="text">Sair</span></a></li>
+                        <li class=""><a title="Sair" href="<?php echo base_url() ?>index.php/<?= $linkSair ?>"><i class="fas fa-sign-out-alt"></i> <span class="text">Sair</span></a></li>
                     </ul>
                 </li>
             </ul>

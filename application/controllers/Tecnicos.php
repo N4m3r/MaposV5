@@ -160,7 +160,10 @@ class Tecnicos extends CI_Controller
         $data['os_concluidas'] = $this->tec_os_model->getOsConcluidasSemana($tecnico_id);
         $data['estoque'] = $this->tecnicos_model->getEstoqueVeiculo($tecnico_id);
 
+        // Carregar o tema completo do MAPOS
+        $this->load->view('tema/topo');
         $this->load->view('tecnicos/dashboard', $data);
+        $this->load->view('tema/rodape');
     }
 
     /**
@@ -174,7 +177,9 @@ class Tecnicos extends CI_Controller
         $data['os_list'] = $this->tec_os_model->getOsPorTecnico($tecnico_id, $status);
         $data['status_atual'] = $status;
 
+        $this->load->view('tema/topo');
         $this->load->view('tecnicos/minhas_os', $data);
+        $this->load->view('tema/rodape');
     }
 
     /**
@@ -202,7 +207,9 @@ class Tecnicos extends CI_Controller
         $data['execucao'] = $this->tec_os_model->getExecucaoAtual($os_id, $tecnico_id);
         $data['checklist'] = $this->tec_os_model->getChecklistExecucao($os_id);
 
+        $this->load->view('tema/topo');
         $this->load->view('tecnicos/executar_os', $data);
+        $this->load->view('tema/rodape');
     }
 
     /**
@@ -437,7 +444,9 @@ class Tecnicos extends CI_Controller
         $data['estoque'] = $this->tecnicos_model->getEstoqueVeiculo($tecnico_id);
         $data['historico'] = $this->tecnicos_model->getHistoricoEstoque($tecnico_id, 30);
 
+        $this->load->view('tema/topo');
         $this->load->view('tecnicos/meu_estoque', $data);
+        $this->load->view('tema/rodape');
     }
 
     /**
@@ -483,7 +492,10 @@ class Tecnicos extends CI_Controller
     {
         $tecnico_id = $this->session->userdata('tec_id');
         $data['tecnico'] = $this->tecnicos_model->getById($tecnico_id);
+
+        $this->load->view('tema/topo');
         $this->load->view('tecnicos/perfil', $data);
+        $this->load->view('tema/rodape');
     }
 
     /**

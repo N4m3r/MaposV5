@@ -521,12 +521,27 @@ class Mine extends CI_Controller
             $stats = $this->usuarios_cliente_model->countOsByStatus($usuario_id);
             $os = $this->usuarios_cliente_model->getOsByCnpjs($usuario_id, ['limit' => 10]);
 
+            // Garante que stats tenha todas as chaves necessárias
+            $statsPadrao = [
+                'total' => 0,
+                'Aberto' => 0,
+                'Orçamento' => 0,
+                'Negociação' => 0,
+                'Aprovado' => 0,
+                'Em Andamento' => 0,
+                'Aguardando Peças' => 0,
+                'Finalizado' => 0,
+                'Faturado' => 0,
+                'Cancelado' => 0,
+            ];
+            $stats = array_merge($statsPadrao, $stats ?? []);
+
             $data['menuPainel'] = 'painel';
             $data['usuario'] = $usuario;
             $data['stats'] = $stats;
-            $data['os'] = $os;
-            $data['cnpjs'] = $this->session->userdata('usuario_cliente_cnpjs');
-            $data['permissoes'] = $this->session->userdata('usuario_cliente_permissoes');
+            $data['os'] = $os ?? [];
+            $data['cnpjs'] = $this->session->userdata('usuario_cliente_cnpjs') ?? [];
+            $data['permissoes'] = $this->session->userdata('usuario_cliente_permissoes') ?? [];
             $data['output'] = 'conecte/painel_usuario';
 
             $this->load->view('conecte/template', $data);

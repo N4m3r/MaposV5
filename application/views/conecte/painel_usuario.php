@@ -44,7 +44,7 @@
     <div class="span3">
         <div class="widget-box" style="background: #f39c12; color: #fff;">
             <div class="widget-content" style="text-align: center; padding: 20px;">
-                <h1 style="margin: 0; font-size: 48px;"><?= $stats['total'] ?></h1>
+                <h1 style="margin: 0; font-size: 48px;"><?= $stats['total'] ?? 0 ?></h1>
                 <p style="margin: 10px 0 0; font-size: 16px;">Total de OS</p>
             </div>
         </div>
@@ -52,7 +52,7 @@
     <div class="span3">
         <div class="widget-box" style="background: #e74c3c; color: #fff;">
             <div class="widget-content" style="text-align: center; padding: 20px;">
-                <h1 style="margin: 0; font-size: 48px;"><?= $stats['Aberto'] + $stats['Orçamento'] ?></h1>
+                <h1 style="margin: 0; font-size: 48px;"><?= ($stats['Aberto'] ?? 0) + ($stats['Orçamento'] ?? 0) ?></h1>
                 <p style="margin: 10px 0 0; font-size: 16px;">Em Aberto</p>
             </div>
         </div>
@@ -60,7 +60,7 @@
     <div class="span3">
         <div class="widget-box" style="background: #3498db; color: #fff;">
             <div class="widget-content" style="text-align: center; padding: 20px;">
-                <h1 style="margin: 0; font-size: 48px;"><?= $stats['Em Andamento'] ?></h1>
+                <h1 style="margin: 0; font-size: 48px;"><?= $stats['Em Andamento'] ?? 0 ?></h1>
                 <p style="margin: 10px 0 0; font-size: 16px;">Em Andamento</p>
             </div>
         </div>
@@ -68,7 +68,7 @@
     <div class="span3">
         <div class="widget-box" style="background: #2ecc71; color: #fff;">
             <div class="widget-content" style="text-align: center; padding: 20px;">
-                <h1 style="margin: 0; font-size: 48px;"><?= $stats['Finalizado'] ?></h1>
+                <h1 style="margin: 0; font-size: 48px;"><?= $stats['Finalizado'] ?? 0 ?></h1>
                 <p style="margin: 10px 0 0; font-size: 16px;">Finalizadas</p>
             </div>
         </div>
@@ -109,7 +109,7 @@
                                 <td><?= htmlspecialchars($o->nomeCliente) ?></td>
                                 <td><?= $o->documento ?></td>
                                 <td>
-                                    <span class="label" style="background-color: <?= getStatusColor($o->status) ?>">
+                                    <span class="label" style="background-color: <?= getPainelUsuarioStatusColor($o->status) ?>"
                                         <?= $o->status ?>
                                     </span>
                                 </td>
@@ -133,18 +133,21 @@
 </div>
 
 <?php
-function getStatusColor($status) {
-    $colors = [
-        'Aberto' => '#e74c3c',
-        'Orçamento' => '#f39c12',
-        'Negociação' => '#9b59b6',
-        'Aprovado' => '#3498db',
-        'Em Andamento' => '#2ecc71',
-        'Aguardando Peças' => '#e67e22',
-        'Finalizado' => '#27ae60',
-        'Faturado' => '#34495e',
-        'Cancelado' => '#95a5a6'
-    ];
-    return $colors[$status] ?? '#95a5a6';
+// Função helper para cores de status - verifica se já não existe
+if (!function_exists('getPainelUsuarioStatusColor')) {
+    function getPainelUsuarioStatusColor($status) {
+        $colors = [
+            'Aberto' => '#e74c3c',
+            'Orçamento' => '#f39c12',
+            'Negociação' => '#9b59b6',
+            'Aprovado' => '#3498db',
+            'Em Andamento' => '#2ecc71',
+            'Aguardando Peças' => '#e67e22',
+            'Finalizado' => '#27ae60',
+            'Faturado' => '#34495e',
+            'Cancelado' => '#95a5a6'
+        ];
+        return $colors[$status] ?? '#95a5a6';
+    }
 }
 ?>

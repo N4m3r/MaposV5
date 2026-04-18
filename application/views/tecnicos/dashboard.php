@@ -1,8 +1,6 @@
-<?php $this->load->view('tema/header'); ?>
-
-<div class="row-fluid" style="margin-top: 20px;">
+<!-- Dashboard do Técnico - Portal Interno -->
+<div class="row-fluid" style="margin-top: 10px;">
     <div class="span12">
-        <!-- Header -->
         <div class="widget-box">
             <div class="widget-title" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
                 <span class="icon" style="color: white;">
@@ -15,11 +13,11 @@
                     </a>
                 </div>
             </div>
-
             <div class="widget-content" style="padding: 20px;">
+
                 <!-- Perfil do Técnico -->
                 <div class="row-fluid" style="margin-bottom: 20px;">
-                    <div class="span12" style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+                    <div class="span12" style="display: flex; align-items: center; gap: 15px;">
                         <div style="
                             width: 80px;
                             height: 80px;
@@ -91,7 +89,7 @@
                             text-align: center;
                         ">
                             <div style="font-size: 36px; font-weight: 700;">
-                                <?php echo count($os_concluidas ?? []); ?>
+                                <?php echo $os_concluidas ?? 0; ?>
                             </div>
                             <div style="font-size: 14px; opacity: 0.9;">
                                 <i class="bx bx-check-circle"></i> Concluídas (Semana)
@@ -111,42 +109,42 @@
                                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                                 color: white;
                                 border: none;
-                                padding: 20px 30px;
+                                padding: 15px 25px;
                                 display: flex;
                                 flex-direction: column;
                                 align-items: center;
-                                gap: 8px;
-                                border-radius: 12px;
+                                gap: 5px;
+                                border-radius: 8px;
                             ">
-                                <i class="bx bx-clipboard" style="font-size: 28px;"></i>
+                                <i class="bx bx-clipboard" style="font-size: 24px;"></i>
                                 <span>Minhas OS</span>
                             </a>
                             <a href="<?php echo site_url('tecnicos/meu_estoque'); ?>" class="btn btn-large" style="
                                 background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
                                 color: white;
                                 border: none;
-                                padding: 20px 30px;
+                                padding: 15px 25px;
                                 display: flex;
                                 flex-direction: column;
                                 align-items: center;
-                                gap: 8px;
-                                border-radius: 12px;
+                                gap: 5px;
+                                border-radius: 8px;
                             ">
-                                <i class="bx bx-package" style="font-size: 28px;"></i>
+                                <i class="bx bx-package" style="font-size: 24px;"></i>
                                 <span>Meu Estoque</span>
                             </a>
                             <a href="<?php echo site_url('tecnicos/perfil'); ?>" class="btn btn-large" style="
                                 background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
                                 color: white;
                                 border: none;
-                                padding: 20px 30px;
+                                padding: 15px 25px;
                                 display: flex;
                                 flex-direction: column;
                                 align-items: center;
-                                gap: 8px;
-                                border-radius: 12px;
+                                gap: 5px;
+                                border-radius: 8px;
                             ">
-                                <i class="bx bx-user" style="font-size: 28px;"></i>
+                                <i class="bx bx-user" style="font-size: 24px;"></i>
                                 <span>Meu Perfil</span>
                             </a>
                         </div>
@@ -156,7 +154,7 @@
                 <!-- OS de Hoje -->
                 <div class="row-fluid">
                     <div class="span12">
-                        <div class="widget-box" style="border-radius: 12px; overflow: hidden;">
+                        <div class="widget-box" style="border-radius: 8px;">
                             <div class="widget-title" style="background: #f8f9fa;">
                                 <span class="icon"><i class="bx bx-calendar-event" style="color: #667eea;"></i></span>
                                 <h5>OS de Hoje</h5>
@@ -190,20 +188,20 @@
                                                     </td>
                                                     <td style="text-align: center;">
                                                         <?php
-                                                        $statusClass = '';
                                                         $statusLabel = $os->status ?? 'Aberto';
+                                                        $statusClass = 'label';
                                                         switch ($statusLabel) {
                                                             case 'Aberto':
-                                                                $statusClass = 'badge badge-info';
+                                                                $statusClass = 'label label-info';
                                                                 break;
                                                             case 'Em Andamento':
-                                                                $statusClass = 'badge badge-warning';
+                                                                $statusClass = 'label label-warning';
                                                                 break;
-                                                            case 'Finalizado':
-                                                                $statusClass = 'badge badge-success';
+                                                            case 'Finalizada':
+                                                                $statusClass = 'label label-success';
                                                                 break;
                                                             default:
-                                                                $statusClass = 'badge';
+                                                                $statusClass = 'label';
                                                         }
                                                         ?>
                                                         <span class="<?php echo $statusClass; ?>">
@@ -238,7 +236,7 @@
                 <?php if (!empty($estoque)): ?>
                 <div class="row-fluid" style="margin-top: 20px;">
                     <div class="span12">
-                        <div class="widget-box" style="border-radius: 12px; overflow: hidden;">
+                        <div class="widget-box" style="border-radius: 8px;">
                             <div class="widget-title" style="background: #f8f9fa;">
                                 <span class="icon"><i class="bx bx-package" style="color: #11998e;"></i></span>
                                 <h5>Meu Estoque</h5>
@@ -247,27 +245,24 @@
                                 </a>
                             </div>
                             <div class="widget-content" style="padding: 15px;">
-                                <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                                <div class="row-fluid">
                                     <?php
                                     $count = 0;
                                     foreach ($estoque as $item):
-                                        if ($count >= 5) break;
+                                        if ($count >= 6) break;
                                     ?>
-                                        <div style="
-                                            background: #f8f9fa;
-                                            border-radius: 8px;
-                                            padding: 10px 15px;
-                                            display: flex;
-                                            align-items: center;
-                                            gap: 10px;
-                                            min-width: 200px;
-                                        ">
-                                            <i class="bx bx-package" style="font-size: 24px; color: #11998e;"></i>
-                                            <div>
-                                                <div style="font-weight: 600; font-size: 13px;">
+                                        <div class="span2" style="margin-bottom: 10px;">
+                                            <div style="
+                                                background: #f8f9fa;
+                                                border-radius: 8px;
+                                                padding: 15px;
+                                                text-align: center;
+                                            ">
+                                                <i class="bx bx-package" style="font-size: 24px; color: #11998e; margin-bottom: 8px;"></i>
+                                                <div style="font-weight: 600; font-size: 12px; margin-bottom: 4px;">
                                                     <?php echo htmlspecialchars($item->produto_nome ?? 'Produto', ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?>
                                                 </div>
-                                                <div style="font-size: 12px; color: #888;">
+                                                <div style="font-size: 11px; color: #888;">
                                                     Qtd: <?php echo $item->quantidade; ?> <?php echo $item->unidade ?? ''; ?>
                                                 </div>
                                             </div>
@@ -287,5 +282,3 @@
         </div>
     </div>
 </div>
-
-<?php $this->load->view('tema/footer'); ?>
