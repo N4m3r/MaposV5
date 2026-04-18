@@ -521,4 +521,111 @@ class Tecnicos_admin extends MY_Controller
 
         return $itens;
     }
+
+    /**
+     * Adicionar etapa à obra
+     */
+    public function adicionar_etapa()
+    {
+        $obra_id = $this->input->post('obra_id');
+
+        if (!$obra_id) {
+            $this->session->set_flashdata('error', 'ID da obra não informado.');
+            redirect('tecnicos_admin/obras');
+        }
+
+        $this->load->model('obras_model');
+
+        $dados = [
+            'nome' => $this->input->post('nome'),
+            'descricao' => $this->input->post('descricao'),
+            'data_inicio_prevista' => $this->input->post('data_inicio_prevista') ?: null,
+            'data_fim_prevista' => $this->input->post('data_fim_prevista') ?: null,
+        ];
+
+        if ($this->obras_model->adicionarEtapa($obra_id, $dados)) {
+            $this->session->set_flashdata('success', 'Etapa adicionada com sucesso!');
+        } else {
+            $this->session->set_flashdata('error', 'Erro ao adicionar etapa.');
+        }
+
+        redirect('tecnicos_admin/ver_obra/' . $obra_id);
+    }
+
+    /**
+     * Alocar técnico à obra
+     */
+    public function alocar_tecnico()
+    {
+        $obra_id = $this->input->post('obra_id');
+
+        if (!$obra_id) {
+            $this->session->set_flashdata('error', 'ID da obra não informado.');
+            redirect('tecnicos_admin/obras');
+        }
+
+        $this->load->model('obras_model');
+
+        $dados = [
+            'obra_id' => $obra_id,
+            'tecnico_id' => $this->input->post('tecnico_id'),
+            'funcao' => $this->input->post('funcao') ?: 'Técnico',
+            'nivel_tecnico' => $this->input->post('nivel_tecnico') ?: null,
+            'data_alocacao' => date('Y-m-d H:i:s')
+        ];
+
+        if ($this->obras_model->alocarTecnico($dados)) {
+            $this->session->set_flashdata('success', 'Técnico alocado com sucesso!');
+        } else {
+            $this->session->set_flashdata('error', 'Erro ao alocar técnico.');
+        }
+
+        redirect('tecnicos_admin/ver_obra/' . $obra_id);
+    }
+
+    /**
+     * Salvar materiais da obra
+     */
+    public function salvar_materiais()
+    {
+        $obra_id = $this->input->post('obra_id');
+
+        if (!$obra_id) {
+            $this->session->set_flashdata('error', 'ID da obra não informado.');
+            redirect('tecnicos_admin/obras');
+        }
+
+        $this->load->model('obras_model');
+
+        $materiais = $this->input->post('materiais');
+
+        if (!empty($materiais) && is_array($materiais)) {
+            $salvos = 0;
+            foreach ($materiais as $material) {
+                if (!empty($material['nome'])) {
+                    $dados = [
+                        'obra_id' => $obra_id,
+                        'nome' => $material['nome'],
+                        'quantidade' => $material['quantidade'] ?: 1,
+                        'observacao' => $material['observacao'] ?: null,
+                        'created_at' => date('Y-m-d H:i:s')
+                    ];
+
+                    if ($this->obras_model->adicionarMaterial($dados)) {
+                        $salvos++;
+                    }
+                }
+            }
+
+            if ($salvos > 0) {
+                $this->session->set_flashdata('success', $salvos . ' material(is) salvo(s) com sucesso!');
+            } else {
+                $this->session->set_flashdata('error', 'Erro ao salvar materiais.');
+            }
+        } else {
+            $this->session->set_flashdata('error', 'Nenhum material informado.');
+        }
+
+        redirect('tecnicos_admin/ver_obra/' . $obra_id);
+    }
 }

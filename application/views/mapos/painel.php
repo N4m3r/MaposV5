@@ -658,6 +658,22 @@
         background-clip: text;
     }
 
+    /* Tema escuro - garantir visibilidade dos números */
+    .dashboard-modern.tema-escuro .stat-box .number {
+        background: linear-gradient(135deg, #8a9cfe 0%, #a78bfa 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    /* Tema claro padrão */
+    .dashboard-modern.tema-claro .stat-box .number {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
     .stat-box .label {
         font-size: 0.8rem;
         color: #7f8c8d;
@@ -767,11 +783,6 @@
 </style>
 
 <div class="dashboard-modern">
-    <!-- Header -->
-    <div class="dashboard-header">
-        <h1><i class='bx bx-grid-alt'></i> Dashboard</h1>
-        <p>Bem-vindo ao sistema MapOS - Gestão inteligente em tempo real</p>
-    </div>
 
     <!-- Quick Access Cards -->
     <div class="quick-access-grid">

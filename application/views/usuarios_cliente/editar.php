@@ -42,6 +42,21 @@
     </div>
 </div>
 
+<form action="<?= current_url() ?>" method="post" class="form-horizontal" id="form-usuario">
+    <input type="hidden" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>">
+
+    <!-- Debug: Mostrar erros de validação -->
+    <?php if (validation_errors()): ?>
+    <div class="row-fluid" style="margin-top: 20px;">
+        <div class="span12">
+            <div class="alert alert-error">
+                <strong>Erros de validação:</strong>
+                <?= validation_errors() ?>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
+
 <div class="row-fluid" style="margin-top: 20px;">
     <!-- Coluna Esquerda: Dados do Usuário -->
     <div class="span6">
@@ -51,16 +66,6 @@
                 <h5>Dados do Usuário</h5>
             </div>
             <div class="widget-content">
-                <form action="<?= current_url() ?>" method="post" class="form-horizontal" id="form-usuario">
-                    <input type="hidden" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>">
-
-                    <!-- Debug: Mostrar erros de validação -->
-                    <?php if (validation_errors()): ?>
-                    <div class="alert alert-error">
-                        <strong>Erros de validação:</strong>
-                        <?= validation_errors() ?>
-                    </div>
-                    <?php endif; ?>
 
                     <div class="control-group">
                         <label class="control-label">Nome Completo: <span class="required" style="color: #e74c3c;">*</span></label>
@@ -300,8 +305,6 @@
                     </button>
                     <a href="<?= site_url('usuarioscliente') ?>" class="btn btn-large">Cancelar</a>
                 </div>
-
-                </form> <!-- Fechamento do form -->
             </div>
         </div>
 
@@ -321,6 +324,8 @@
         </div>
     </div>
 </div>
+
+</form> <!-- Fechamento do form -->
 
 <script>
 $(document).ready(function() {

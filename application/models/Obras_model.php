@@ -445,4 +445,88 @@ class Obras_model extends CI_Model
             return false;
         }
     }
+
+    /**
+     * Alocar técnico à obra (wrapper para compatibilidade)
+     */
+    public function alocarTecnico($dados)
+    {
+        return $this->adicionarTecnicoEquipe(
+            $dados['obra_id'],
+            $dados['tecnico_id'],
+            $dados['funcao'] ?? 'Técnico'
+        );
+    }
+
+    /**
+     * Adicionar material à obra
+     */
+    public function adicionarMaterial($dados)
+    {
+        if (!$this->tabelaExiste('obra_materiais')) {
+            // Criar tabela se não existir
+            $this->criarTabelaMateriais();
+        }
+
+        try {
+            $data = [
+                'obra_id' => $dados['obra_id'],
+                'nome' => $dados['nome'],
+                'quantidade' => $dados['quantidade'] ?? 1,
+                'quantidade_usada' => 0,
+                'observacao' => $dados['observacao'] ?? null,
+                'status' => 'pendente',
+                'created_at' => date('Y-m-d H:i:s'),
+            ];
+
+            $this->db->insert('obra_materiais', $data);
+            return $this->db->insert_id();
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Criar tabela de materiais se não existir
+     */
+    private function criarTabelaMateriais()
+    {
+        $sql = "CREATE TABLE IF NOT EXISTS obra_materiais (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            obra_id INT NOT NULL,
+            nome VARCHAR(255) NOT NULL,
+            quantidade INT DEFAULT 1,
+            quantidade_usada INT DEFAULT 0,
+            observacao TEXT,
+            status VARCHAR(50) DEFAULT 'pendente',
+            created_at DATETIME,
+            updated_at DATETIME,
+            INDEX idx_obra_id (obra_id)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
+
+        $this->db->query($sql);
+    }
+
+    /**
+     * Listar materiais da obra
+     */
+    public function getMateriais($obra_id)
+    {
+        if (!$this->tabelaExiste('obra_materiais')) {
+            return [];
+        }
+
+        try {
+            $this->db->where('obra_id', $obra_id);
+            $query = $this->db->get('obra_materiais');
+
+            if ($query === false || !is_object($query)) {
+                return [];
+            }
+
+            return $query->result();
+        } catch (Exception $e) {
+            return [];
+        }
+    }
 }

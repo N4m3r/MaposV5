@@ -126,21 +126,37 @@ class Usuarios_cliente_model extends CI_Model
     {
         // Remove formatação do CNPJ para padronizar
         $cnpjLimpo = preg_replace('/[^0-9]/', '', $cnpj);
+
+        // Se CNPJ vazio, retorna erro
+        if (empty($cnpjLimpo)) {
+            return false;
+        }
+
         $cnpjFormatado = $this->formatarCnpj($cnpjLimpo);
 
         // Verifica se já existe
         $this->db->where('usuario_cliente_id', $usuario_id);
         $this->db->where('cnpj', $cnpjFormatado);
-        if ($this->db->get('usuarios_cliente_cnpjs')->num_rows() > 0) {
+        $query = $this->db->get('usuarios_cliente_cnpjs');
+
+        if ($query && $query->num_rows() > 0) {
             return true; // Já existe
         }
 
-        return $this->db->insert('usuarios_cliente_cnpjs', [
+        // Tenta inserir
+        $result = $this->db->insert('usuarios_cliente_cnpjs', [
             'usuario_cliente_id' => $usuario_id,
             'cnpj' => $cnpjFormatado,
             'razao_social' => $razao_social,
             'created_at' => date('Y-m-d H:i:s')
         ]);
+
+        // Se falhou, loga o erro
+        if (!$result) {
+            log_message('error', 'Erro ao inserir CNPJ: ' . $this->db->error()['message']);
+        }
+
+        return $result;
     }
 
     /**

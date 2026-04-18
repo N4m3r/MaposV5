@@ -382,7 +382,228 @@
             </a>
         </div>
     <?php endif; ?>
+
+    <!-- Modal: Adicionar Etapa -->
+    <div id="modal-etapa" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="modalEtapaLabel" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h5 id="modalEtapaLabel"><i class="bx bx-plus-circle"></i> Adicionar Etapa</h5>
+        </div>
+        <form action="<?php echo site_url('tecnicos_admin/adicionar_etapa'); ?>" method="post">
+            <input type="hidden" name="obra_id" value="<?php echo $obra->id; ?>">
+            <div class="modal-body">
+                <div class="row-fluid">
+                    <div class="span12">
+                        <div class="control-group">
+                            <label class="control-label">Nome da Etapa *</label>
+                            <div class="controls">
+                                <input type="text" name="nome" class="span12" placeholder="Ex: Preparação, Instalação, Testes" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="span6">
+                        <div class="control-group">
+                            <label class="control-label">Data Início Prevista</label>
+                            <div class="controls">
+                                <input type="date" name="data_inicio_prevista" class="span12">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="span6">
+                        <div class="control-group">
+                            <label class="control-label">Data Fim Prevista</label>
+                            <div class="controls">
+                                <input type="date" name="data_fim_prevista" class="span12">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="span12">
+                        <div class="control-group">
+                            <label class="control-label">Descrição</label>
+                            <div class="controls">
+                                <textarea name="descricao" class="span12" rows="3" placeholder="Descrição detalhada da etapa"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal" aria-hidden="true">Cancelar</button>
+                <button type="submit" class="btn btn-primary"><i class="bx bx-save"></i> Salvar Etapa</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Modal: Alocar Técnico -->
+    <div id="modal-equipe" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="modalEquipeLabel" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h5 id="modalEquipeLabel"><i class="bx bx-user-plus"></i> Alocar Técnico</h5>
+        </div>
+        <form action="<?php echo site_url('tecnicos_admin/alocar_tecnico'); ?>" method="post">
+            <input type="hidden" name="obra_id" value="<?php echo $obra->id; ?>">
+            <div class="modal-body">
+                <div class="row-fluid">
+                    <div class="span12">
+                        <div class="control-group">
+                            <label class="control-label">Técnico *</label>
+                            <div class="controls">
+                                <select name="tecnico_id" class="span12" required>
+                                    <option value="">-- Selecione o Técnico --</option>
+                                    <?php
+                                    <!-- Buscar técnicos disponíveis -->
+                                    <?php
+                                    $this->db->where('status', 1);
+                                    $tecnicos = $this->db->get('usuarios')->result();
+                                    foreach ($tecnicos as $t): ?>
+                                        <option value="<?php echo $t->idUsuarios; ?>">
+                                            <?php echo htmlspecialchars($t->nome, ENT_QUOTES, 'UTF-8'); ?>
+                                            <?php echo !empty($t->telefone) ? ' - ' . $t->telefone : ''; ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="span6">
+                        <div class="control-group">
+                            <label class="control-label">Função</label>
+                            <div class="controls">
+                                <select name="funcao" class="span12">
+                                    <option value="Técnico">Técnico</option>
+                                    <option value="Encarregado">Encarregado</option>
+                                    <option value="Auxiliar">Auxiliar</option>
+                                    <option value="Responsável Técnico">Responsável Técnico</option>
+                                    <option value="Outro">Outro</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="span6">
+                        <div class="control-group">
+                            <label class="control-label">Nível</label>
+                            <div class="controls">
+                                <select name="nivel_tecnico" class="span12">
+                                    <option value="">-- Selecione --</option>
+                                    <option value="1">Nível 1</option>
+                                    <option value="2">Nível 2</option>
+                                    <option value="3">Nível 3</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal" aria-hidden="true">Cancelar</button>
+                <button type="submit" class="btn btn-success"><i class="bx bx-save"></i> Alocar</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Modal: Gerenciar Materiais -->
+    <div id="modal-materiais" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="modalMateriaisLabel" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h5 id="modalMateriaisLabel"><i class="bx bx-package"></i> Gerenciar Materiais da Obra</h5>
+        </div>
+        <form action="<?php echo site_url('tecnicos_admin/salvar_materiais'); ?>" method="post">
+            <input type="hidden" name="obra_id" value="<?php echo $obra->id; ?>">
+            <div class="modal-body">
+                <div class="row-fluid">
+                    <div class="span12">
+                        <div class="alert alert-info">
+                            <i class="bx bx-info-circle"></i> Adicione os materiais necessários para esta obra.
+                        </div>
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Material</th>
+                                    <th width="100">Qtd</th>
+                                    <th>Observação</th>
+                                    <th width="50">Ação</th>
+                                </tr>
+                            </thead>
+                            <tbody id="materiais-list">
+                                <!-- Linhas dinâmicas serão adicionadas aqui -->
+                                <tr class="material-row">
+                                    <td>
+                                        <input type="text" name="materiais[0][nome]" class="span12" placeholder="Nome do material" required>
+                                    </td>
+                                    <td>
+                                        <input type="number" name="materiais[0][quantidade]" class="span12" value="1" min="1" required>
+                                    </td>
+                                    <td>
+                                        <input type="text" name="materiais[0][observacao]" class="span12" placeholder="Observação">
+                                    </td>
+                                    <td class="text-center">
+                                        <button type="button" class="btn btn-danger btn-mini btn-remover-material" title="Remover">
+                                            <i class="bx bx-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <button type="button" class="btn btn-success btn-mini" id="btn-adicionar-material">
+                            <i class="bx bx-plus"></i> Adicionar Material
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal" aria-hidden="true">Cancelar</button>
+                <button type="submit" class="btn btn-warning"><i class="bx bx-save"></i> Salvar Materiais</button>
+            </div>
+        </form>
+    </div>
 </div>
+
+<script>
+// Script para gerenciar materiais dinâmicos
+$(document).ready(function() {
+    var materialIndex = 1;
+
+    // Adicionar nova linha de material
+    $('#btn-adicionar-material').click(function() {
+        var newRow = `
+            <tr class="material-row">
+                <td>
+                    <input type="text" name="materiais[${materialIndex}][nome]" class="span12" placeholder="Nome do material" required>
+                </td>
+                <td>
+                    <input type="number" name="materiais[${materialIndex}][quantidade]" class="span12" value="1" min="1" required>
+                </td>
+                <td>
+                    <input type="text" name="materiais[${materialIndex}][observacao]" class="span12" placeholder="Observação">
+                </td>
+                <td class="text-center">
+                    <button type="button" class="btn btn-danger btn-mini btn-remover-material" title="Remover">
+                        <i class="bx bx-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+        $('#materiais-list').append(newRow);
+        materialIndex++;
+    });
+
+    // Remover linha de material
+    $(document).on('click', '.btn-remover-material', function() {
+        var rows = $('.material-row');
+        if (rows.length > 1) {
+            $(this).closest('.material-row').remove();
+        } else {
+            alert('Deve haver pelo menos um material na lista.');
+        }
+    });
+});
+</script>
 
 <style>
 .etapa-item {
