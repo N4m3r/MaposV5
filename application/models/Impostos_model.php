@@ -8,8 +8,12 @@ class Impostos_model extends CI_Model
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('dre_model');
-        $this->load->model('certificado_model');
+        if (file_exists(APPPATH . 'models/Dre_model.php')) {
+            $this->load->model('dre_model');
+        }
+        if (file_exists(APPPATH . 'models/Certificado_model.php')) {
+            $this->load->model('certificado_model');
+        }
     }
 
     // ==================== CONFIGURAÇÕES ====================
@@ -142,22 +146,22 @@ class Impostos_model extends CI_Model
      */
     private function getAliquotasPadrao($anexo = 'III')
     {
-        // Alíquotas padrão do Anexo III - Serviços
+        // Alíquotas padrão do Anexo III - Serviços (Simples Nacional 2024)
         $aliquotas_iii = [
-            (object) ['id' => 1, 'anexo' => 'III', 'faixa' => 1, 'aliquota_nominal' => 6.00, 'irpj' => 0, 'csll' => 0, 'cofins' => 0, 'pis' => 0, 'cpp' => 0, 'iss' => 0, 'ativo' => 1],
-            (object) ['id' => 2, 'anexo' => 'III', 'faixa' => 2, 'aliquota_nominal' => 11.20, 'irpj' => 0, 'csll' => 0, 'cofins' => 0, 'pis' => 0, 'cpp' => 0, 'iss' => 0, 'ativo' => 1],
-            (object) ['id' => 3, 'anexo' => 'III', 'faixa' => 3, 'aliquota_nominal' => 13.95, 'irpj' => 0, 'csll' => 0, 'cofins' => 0, 'pis' => 0, 'cpp' => 0, 'iss' => 0, 'ativo' => 1],
-            (object) ['id' => 4, 'anexo' => 'III', 'faixa' => 4, 'aliquota_nominal' => 16.17, 'irpj' => 0, 'csll' => 0, 'cofins' => 0, 'pis' => 0, 'cpp' => 0, 'iss' => 0, 'ativo' => 1],
-            (object) ['id' => 5, 'anexo' => 'III', 'faixa' => 5, 'aliquota_nominal' => 18.00, 'irpj' => 0, 'csll' => 0, 'cofins' => 0, 'pis' => 0, 'cpp' => 0, 'iss' => 0, 'ativo' => 1],
+            (object) ['id' => 1, 'anexo' => 'III', 'faixa' => 1, 'aliquota_nominal' => 6.00, 'irpj' => 0.36, 'csll' => 0.36, 'cofins' => 1.38, 'pis' => 0.30, 'cpp' => 2.40, 'iss' => 0.00, 'ativo' => 1],
+            (object) ['id' => 2, 'anexo' => 'III', 'faixa' => 2, 'aliquota_nominal' => 11.20, 'irpj' => 0.72, 'csll' => 0.72, 'cofins' => 2.76, 'pis' => 0.60, 'cpp' => 4.80, 'iss' => 0.00, 'ativo' => 1],
+            (object) ['id' => 3, 'anexo' => 'III', 'faixa' => 3, 'aliquota_nominal' => 13.95, 'irpj' => 0.90, 'csll' => 0.90, 'cofins' => 3.45, 'pis' => 0.75, 'cpp' => 5.95, 'iss' => 0.00, 'ativo' => 1],
+            (object) ['id' => 4, 'anexo' => 'III', 'faixa' => 4, 'aliquota_nominal' => 16.17, 'irpj' => 1.04, 'csll' => 1.04, 'cofins' => 3.99, 'pis' => 0.87, 'cpp' => 6.89, 'iss' => 0.00, 'ativo' => 1],
+            (object) ['id' => 5, 'anexo' => 'III', 'faixa' => 5, 'aliquota_nominal' => 18.00, 'irpj' => 1.16, 'csll' => 1.16, 'cofins' => 4.45, 'pis' => 0.97, 'cpp' => 7.66, 'iss' => 0.00, 'ativo' => 1],
         ];
 
-        // Alíquotas do Anexo IV - Construção
+        // Alíquotas do Anexo IV - Construção (Simples Nacional 2024)
         $aliquotas_iv = [
-            (object) ['id' => 6, 'anexo' => 'IV', 'faixa' => 1, 'aliquota_nominal' => 4.50, 'irpj' => 0, 'csll' => 0, 'cofins' => 0, 'pis' => 0, 'cpp' => 0, 'iss' => 0, 'ativo' => 1],
-            (object) ['id' => 7, 'anexo' => 'IV', 'faixa' => 2, 'aliquota_nominal' => 9.00, 'irpj' => 0, 'csll' => 0, 'cofins' => 0, 'pis' => 0, 'cpp' => 0, 'iss' => 0, 'ativo' => 1],
-            (object) ['id' => 8, 'anexo' => 'IV', 'faixa' => 3, 'aliquota_nominal' => 11.34, 'irpj' => 0, 'csll' => 0, 'cofins' => 0, 'pis' => 0, 'cpp' => 0, 'iss' => 0, 'ativo' => 1],
-            (object) ['id' => 9, 'anexo' => 'IV', 'faixa' => 4, 'aliquota_nominal' => 12.82, 'irpj' => 0, 'csll' => 0, 'cofins' => 0, 'pis' => 0, 'cpp' => 0, 'iss' => 0, 'ativo' => 1],
-            (object) ['id' => 10, 'anexo' => 'IV', 'faixa' => 5, 'aliquota_nominal' => 14.05, 'irpj' => 0, 'csll' => 0, 'cofins' => 0, 'pis' => 0, 'cpp' => 0, 'iss' => 0, 'ativo' => 1],
+            (object) ['id' => 6, 'anexo' => 'IV', 'faixa' => 1, 'aliquota_nominal' => 4.50, 'irpj' => 0.27, 'csll' => 0.27, 'cofins' => 1.04, 'pis' => 0.23, 'cpp' => 1.95, 'iss' => 0.00, 'ativo' => 1],
+            (object) ['id' => 7, 'anexo' => 'IV', 'faixa' => 2, 'aliquota_nominal' => 9.00, 'irpj' => 0.54, 'csll' => 0.54, 'cofins' => 2.07, 'pis' => 0.45, 'cpp' => 3.90, 'iss' => 0.00, 'ativo' => 1],
+            (object) ['id' => 8, 'anexo' => 'IV', 'faixa' => 3, 'aliquota_nominal' => 11.34, 'irpj' => 0.68, 'csll' => 0.68, 'cofins' => 2.61, 'pis' => 0.57, 'cpp' => 4.91, 'iss' => 0.00, 'ativo' => 1],
+            (object) ['id' => 9, 'anexo' => 'IV', 'faixa' => 4, 'aliquota_nominal' => 12.82, 'irpj' => 0.77, 'csll' => 0.77, 'cofins' => 2.95, 'pis' => 0.64, 'cpp' => 5.55, 'iss' => 0.00, 'ativo' => 1],
+            (object) ['id' => 10, 'anexo' => 'IV', 'faixa' => 5, 'aliquota_nominal' => 14.05, 'irpj' => 0.84, 'csll' => 0.84, 'cofins' => 3.23, 'pis' => 0.71, 'cpp' => 6.09, 'iss' => 0.00, 'ativo' => 1],
         ];
 
         // Alíquotas do Anexo V - Comércio (CNAE 4751201 - Materiais de construção)
@@ -233,18 +237,18 @@ class Impostos_model extends CI_Model
     {
         $aliquotas = [
             'III' => [
-                1 => (object) ['id' => 1, 'anexo' => 'III', 'faixa' => 1, 'aliquota_nominal' => 6.00, 'irpj' => 0, 'csll' => 0, 'cofins' => 0, 'pis' => 0, 'cpp' => 0, 'iss' => 0, 'ativo' => 1],
-                2 => (object) ['id' => 2, 'anexo' => 'III', 'faixa' => 2, 'aliquota_nominal' => 11.20, 'irpj' => 0, 'csll' => 0, 'cofins' => 0, 'pis' => 0, 'cpp' => 0, 'iss' => 0, 'ativo' => 1],
-                3 => (object) ['id' => 3, 'anexo' => 'III', 'faixa' => 3, 'aliquota_nominal' => 13.95, 'irpj' => 0, 'csll' => 0, 'cofins' => 0, 'pis' => 0, 'cpp' => 0, 'iss' => 0, 'ativo' => 1],
-                4 => (object) ['id' => 4, 'anexo' => 'III', 'faixa' => 4, 'aliquota_nominal' => 16.17, 'irpj' => 0, 'csll' => 0, 'cofins' => 0, 'pis' => 0, 'cpp' => 0, 'iss' => 0, 'ativo' => 1],
-                5 => (object) ['id' => 5, 'anexo' => 'III', 'faixa' => 5, 'aliquota_nominal' => 18.00, 'irpj' => 0, 'csll' => 0, 'cofins' => 0, 'pis' => 0, 'cpp' => 0, 'iss' => 0, 'ativo' => 1],
+                1 => (object) ['id' => 1, 'anexo' => 'III', 'faixa' => 1, 'aliquota_nominal' => 6.00, 'irpj' => 0.36, 'csll' => 0.36, 'cofins' => 1.38, 'pis' => 0.30, 'cpp' => 2.40, 'iss' => 0.00, 'ativo' => 1],
+                2 => (object) ['id' => 2, 'anexo' => 'III', 'faixa' => 2, 'aliquota_nominal' => 11.20, 'irpj' => 0.72, 'csll' => 0.72, 'cofins' => 2.76, 'pis' => 0.60, 'cpp' => 4.80, 'iss' => 0.00, 'ativo' => 1],
+                3 => (object) ['id' => 3, 'anexo' => 'III', 'faixa' => 3, 'aliquota_nominal' => 13.95, 'irpj' => 0.90, 'csll' => 0.90, 'cofins' => 3.45, 'pis' => 0.75, 'cpp' => 5.95, 'iss' => 0.00, 'ativo' => 1],
+                4 => (object) ['id' => 4, 'anexo' => 'III', 'faixa' => 4, 'aliquota_nominal' => 16.17, 'irpj' => 1.04, 'csll' => 1.04, 'cofins' => 3.99, 'pis' => 0.87, 'cpp' => 6.89, 'iss' => 0.00, 'ativo' => 1],
+                5 => (object) ['id' => 5, 'anexo' => 'III', 'faixa' => 5, 'aliquota_nominal' => 18.00, 'irpj' => 1.16, 'csll' => 1.16, 'cofins' => 4.45, 'pis' => 0.97, 'cpp' => 7.66, 'iss' => 0.00, 'ativo' => 1],
             ],
             'IV' => [
-                1 => (object) ['id' => 6, 'anexo' => 'IV', 'faixa' => 1, 'aliquota_nominal' => 4.50, 'irpj' => 0, 'csll' => 0, 'cofins' => 0, 'pis' => 0, 'cpp' => 0, 'iss' => 0, 'ativo' => 1],
-                2 => (object) ['id' => 7, 'anexo' => 'IV', 'faixa' => 2, 'aliquota_nominal' => 9.00, 'irpj' => 0, 'csll' => 0, 'cofins' => 0, 'pis' => 0, 'cpp' => 0, 'iss' => 0, 'ativo' => 1],
-                3 => (object) ['id' => 8, 'anexo' => 'IV', 'faixa' => 3, 'aliquota_nominal' => 11.34, 'irpj' => 0, 'csll' => 0, 'cofins' => 0, 'pis' => 0, 'cpp' => 0, 'iss' => 0, 'ativo' => 1],
-                4 => (object) ['id' => 9, 'anexo' => 'IV', 'faixa' => 4, 'aliquota_nominal' => 12.82, 'irpj' => 0, 'csll' => 0, 'cofins' => 0, 'pis' => 0, 'cpp' => 0, 'iss' => 0, 'ativo' => 1],
-                5 => (object) ['id' => 10, 'anexo' => 'IV', 'faixa' => 5, 'aliquota_nominal' => 14.05, 'irpj' => 0, 'csll' => 0, 'cofins' => 0, 'pis' => 0, 'cpp' => 0, 'iss' => 0, 'ativo' => 1],
+                1 => (object) ['id' => 6, 'anexo' => 'IV', 'faixa' => 1, 'aliquota_nominal' => 4.50, 'irpj' => 0.27, 'csll' => 0.27, 'cofins' => 1.04, 'pis' => 0.23, 'cpp' => 1.95, 'iss' => 0.00, 'ativo' => 1],
+                2 => (object) ['id' => 7, 'anexo' => 'IV', 'faixa' => 2, 'aliquota_nominal' => 9.00, 'irpj' => 0.54, 'csll' => 0.54, 'cofins' => 2.07, 'pis' => 0.45, 'cpp' => 3.90, 'iss' => 0.00, 'ativo' => 1],
+                3 => (object) ['id' => 8, 'anexo' => 'IV', 'faixa' => 3, 'aliquota_nominal' => 11.34, 'irpj' => 0.68, 'csll' => 0.68, 'cofins' => 2.61, 'pis' => 0.57, 'cpp' => 4.91, 'iss' => 0.00, 'ativo' => 1],
+                4 => (object) ['id' => 9, 'anexo' => 'IV', 'faixa' => 4, 'aliquota_nominal' => 12.82, 'irpj' => 0.77, 'csll' => 0.77, 'cofins' => 2.95, 'pis' => 0.64, 'cpp' => 5.55, 'iss' => 0.00, 'ativo' => 1],
+                5 => (object) ['id' => 10, 'anexo' => 'IV', 'faixa' => 5, 'aliquota_nominal' => 14.05, 'irpj' => 0.84, 'csll' => 0.84, 'cofins' => 3.23, 'pis' => 0.71, 'cpp' => 6.09, 'iss' => 0.00, 'ativo' => 1],
             ],
             'V' => [
                 1 => (object) ['id' => 11, 'anexo' => 'V', 'faixa' => 1, 'aliquota_nominal' => 4.00, 'irpj' => 0.80, 'csll' => 0.80, 'cofins' => 2.34, 'pis' => 0.50, 'cpp' => 0.00, 'iss' => 0.00, 'ativo' => 1],
@@ -265,21 +269,26 @@ class Impostos_model extends CI_Model
      */
     public function getAliquotaEfetiva($anexo = null, $faixa = null)
     {
-        // Tentar obter do certificado primeiro
-        $certificado = $this->certificado_model->getCertificadoAtivo();
+        // Tentar obter do certificado primeiro (se model existir)
+        $certificado = null;
+        if (isset($this->certificado_model) && method_exists($this->certificado_model, 'getCertificadoAtivo')) {
+            $certificado = $this->certificado_model->getCertificadoAtivo();
+        }
 
         if ($certificado) {
             // Buscar dados do Simples Nacional vinculados ao certificado
-            $this->db->where('certificado_id', $certificado->id);
-            $this->db->where('tipo_consulta', 'SIMPLES_NACIONAL');
-            $this->db->where('sucesso', 1);
-            $this->db->order_by('data_consulta', 'DESC');
-            $consulta = $this->db->get('certificado_consultas', 1)->row();
+            if ($this->db->table_exists('certificado_consultas')) {
+                $this->db->where('certificado_id', $certificado->id);
+                $this->db->where('tipo_consulta', 'SIMPLES_NACIONAL');
+                $this->db->where('sucesso', 1);
+                $this->db->order_by('data_consulta', 'DESC');
+                $consulta = $this->db->get('certificado_consultas', 1)->row();
 
-            if ($consulta && $consulta->dados_retorno) {
-                $dados = json_decode($consulta->dados_retorno, true);
-                if (isset($dados['anexo_sugerido']) && !$anexo) {
-                    $anexo = $dados['anexo_sugerido'];
+                if ($consulta && $consulta->dados_retorno) {
+                    $dados = json_decode($consulta->dados_retorno, true);
+                    if (isset($dados['anexo_sugerido']) && !$anexo) {
+                        $anexo = $dados['anexo_sugerido'];
+                    }
                 }
             }
 
@@ -392,13 +401,24 @@ class Impostos_model extends CI_Model
         $calculos['cofins_valor'] = round($valor_bruto * ($calculos['aliquota_cofins'] / 100), 2);
         $calculos['pis_valor'] = round($valor_bruto * ($calculos['aliquota_pis'] / 100), 2);
         $calculos['iss_valor'] = round($valor_bruto * ($calculos['aliquota_iss'] / 100), 2);
+        $calculos['cpp_valor'] = round($valor_bruto * ($calculos['aliquota_cpp'] / 100), 2);
 
-        // Total de impostos (exceto CPP que é contribuição previdenciária)
+        // Total de impostos para retenção (exceto CPP que é contribuição previdenciária)
         $calculos['total_impostos'] = $calculos['irpj_valor'] + $calculos['csll_valor'] +
                                        $calculos['cofins_valor'] + $calculos['pis_valor'] +
                                        $calculos['iss_valor'];
 
-        $calculos['valor_liquido'] = $valor_bruto - $calculos['total_impostos'];
+        // Total completo incluindo CPP (para NFS-e e display)
+        $calculos['valor_total_impostos'] = $calculos['total_impostos'] + $calculos['cpp_valor'];
+
+        $calculos['valor_liquido'] = $valor_bruto - $calculos['valor_total_impostos'];
+        $calculos['iss'] = $calculos['iss_valor'];
+        $calculos['irpj'] = $calculos['irpj_valor'];
+        $calculos['irrf'] = $calculos['irpj_valor'];
+        $calculos['csll'] = $calculos['csll_valor'];
+        $calculos['cofins'] = $calculos['cofins_valor'];
+        $calculos['pis'] = $calculos['pis_valor'];
+        $calculos['inss'] = $calculos['cpp_valor'];
 
         return $calculos;
     }
@@ -487,6 +507,14 @@ class Impostos_model extends CI_Model
      */
     private function integrarComDRE($retencao, $retencao_id)
     {
+        if (!isset($this->dre_model) || !method_exists($this->dre_model, 'adicionarLancamento')) {
+            return;
+        }
+
+        if (!$this->db->table_exists('dre_contas')) {
+            return;
+        }
+
         // Buscar conta de deduções do DRE
         $this->db->where('codigo', '2.1'); // Impostos Sobre Vendas
         $conta_imposto = $this->db->get('dre_contas')->row();
@@ -756,7 +784,7 @@ class Impostos_model extends CI_Model
             ]);
 
             // Estornar também no DRE
-            if ($retencao->dre_lancamento_id) {
+            if ($retencao->dre_lancamento_id && isset($this->dre_model) && method_exists($this->dre_model, 'excluirLancamento')) {
                 $this->dre_model->excluirLancamento($retencao->dre_lancamento_id);
             }
 

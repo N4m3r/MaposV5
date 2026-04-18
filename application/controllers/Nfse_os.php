@@ -185,17 +185,25 @@ class Nfse_os extends MY_Controller
 
         $valor = floatval($this->input->post('valor'));
         if ($valor <= 0) {
-            echo json_encode(['error' => 'Valor inválido']);
+            echo json_encode(['success' => false, 'message' => 'Valor inválido']);
             return;
         }
 
         $calculo = $this->impostos_model->calcularImpostos($valor);
 
+        if (!$calculo) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Configuração tributária não encontrada. Configure os impostos em Configurações do Sistema.'
+            ]);
+            return;
+        }
+
         header('Content-Type: application/json');
         echo json_encode([
             'success' => true,
             'valor_bruto' => $valor,
-            'valor_liquido' => $valor - $calculo['valor_total_impostos'],
+            'valor_liquido' => $valor - ($calculo['valor_total_impostos'] ?? 0),
             'impostos' => $calculo
         ]);
     }

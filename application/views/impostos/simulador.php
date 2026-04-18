@@ -88,11 +88,11 @@
                         <label class="control-label">Faixa:*</label>
                         <div class="controls">
                             <select name="faixa" class="span8" required>
-                                <option value="1" <?= $this->input->post('faixa') == '1' ? 'selected' : '' ?>1ª Faixa</option>
-                                <option value="2" <?= $this->input->post('faixa') == '2' ? 'selected' : '' ?>2ª Faixa</option>
-                                <option value="3" <?= $this->input->post('faixa') == '3' ? 'selected' : '' ?>3ª Faixa</option>
-                                <option value="4" <?= $this->input->post('faixa') == '4' ? 'selected' : '' ?>4ª Faixa</option>
-                                <option value="5" <?= $this->input->post('faixa') == '5' ? 'selected' : '' ?>5ª Faixa</option>
+                                <option value="1" <?= $this->input->post('faixa') == '1' ? 'selected' : '' ?>>1ª Faixa</option>
+                                <option value="2" <?= $this->input->post('faixa') == '2' ? 'selected' : '' ?>>2ª Faixa</option>
+                                <option value="3" <?= $this->input->post('faixa') == '3' ? 'selected' : '' ?>>3ª Faixa</option>
+                                <option value="4" <?= $this->input->post('faixa') == '4' ? 'selected' : '' ?>>4ª Faixa</option>
+                                <option value="5" <?= $this->input->post('faixa') == '5' ? 'selected' : '' ?>>5ª Faixa</option>
                             </select>
                         </div>
                     </div>

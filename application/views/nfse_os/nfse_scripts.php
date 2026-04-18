@@ -147,18 +147,28 @@ function calcularImpostosWizard() {
                     $('#imp-valor-bruto').text(formatarMoeda(data.valor_bruto));
                     $('#imp-deducoes').text(formatarMoeda(deducoes));
                     $('#imp-base-calculo').text(formatarMoeda(baseCalc));
-                    $('#imp-iss').text(formatarMoeda(imp.iss || 0));
-                    $('#imp-pis').text(formatarMoeda(imp.pis || 0));
-                    $('#imp-cofins').text(formatarMoeda(imp.cofins || 0));
-                    $('#imp-irrf').text(formatarMoeda(imp.irrf || 0));
-                    $('#imp-csll').text(formatarMoeda(imp.csll || 0));
-                    $('#imp-inss').text(formatarMoeda(imp.inss || 0));
+                    $('#imp-iss').text(formatarMoeda(imp.iss || imp.irpj_valor || 0));
+                    $('#imp-pis').text(formatarMoeda(imp.pis || imp.pis_valor || 0));
+                    $('#imp-cofins').text(formatarMoeda(imp.cofins || imp.cofins_valor || 0));
+                    $('#imp-irrf').text(formatarMoeda(imp.irrf || imp.irpj_valor || 0));
+                    $('#imp-csll').text(formatarMoeda(imp.csll || imp.csll_valor || 0));
+                    $('#imp-inss').text(formatarMoeda(imp.inss || imp.cpp_valor || 0));
                     $('#imp-total-impostos').text(formatarMoeda(imp.valor_total_impostos || 0));
                     $('#imp-valor-liquido').text(formatarMoeda(data.valor_liquido - deducoes));
+                } else {
+                    var msg = data.message || 'Erro ao calcular impostos';
+                    $('#impostos-table td.imposto-valor').text('—');
+                    $('#imp-valor-liquido').html('<span style="color:#dc3545">' + msg + '</span>');
                 }
             },
-            error: function() {
-                $('#impostos-table td.imposto-valor').text('Erro');
+            error: function(xhr) {
+                var msg = 'Erro na comunicação com o servidor.';
+                try {
+                    var resp = JSON.parse(xhr.responseText);
+                    if (resp.message) msg = resp.message;
+                } catch(e) {}
+                $('#impostos-table td.imposto-valor').text('—');
+                $('#imp-valor-liquido').html('<span style="color:#dc3545">' + msg + '</span>');
             }
         });
     }, 300);
