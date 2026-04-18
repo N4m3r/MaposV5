@@ -47,7 +47,15 @@
       "Bash(xxd)",
       "Bash(xxd \"C:/Users/thail/Desktop/IVMS-CRUD/MaposV5/application/views/dre/conta_form.php\")",
       "Bash(perl *)",
-      "Bash(python3 *)"
+      "Bash(python3 *)",
+      "Bash(xxd \"C:/Users/thail/Desktop/IVMS-CRUD/MaposV5/application/views/tema/topo.php\")",
+      "Bash(/c/xampp/php/php.exe -l application/controllers/Nfse_os.php)",
+      "Bash(/c/xampp/php/php.exe -l application/models/Os_model.php)",
+      "Bash(/c/xampp/php/php.exe -l application/views/nfse_os/preview_nfse.php)",
+      "Bash(/c/xampp/php/php.exe -l application/views/nfse_os/aba_os.php)",
+      "Bash(/c/xampp/php/php.exe -l application/views/nfse_os/nfse_content.php)",
+      "Bash(/c/xampp/php/php.exe -l application/views/nfse_os/nfse_scripts.php)",
+      "Bash(/c/xampp/php/php.exe -l application/config/routes.php)"
     ]
   }
 }

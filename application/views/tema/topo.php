@@ -71,6 +71,21 @@
     shortcut.add("F12", function() {});
     window.BaseUrl = "<?= base_url() ?>";
   </script>
+  <style>
+    .notif-badge {
+      position: absolute; top: 2px; right: 2px; background: #e74c3c; color: #fff;
+      font-size: 10px; font-weight: bold; border-radius: 50%; min-width: 18px;
+      height: 18px; line-height: 18px; text-align: center; padding: 0 4px;
+    }
+    .notif-item { padding: 8px 12px; border-bottom: 1px solid #eee; cursor: pointer; }
+    .notif-item:hover { background: #f5f5f5; }
+    .notif-item.nao-lida { background: #eef6ff; }
+    .notif-item .notif-titulo { font-weight: 600; font-size: 12px; margin-bottom: 2px; }
+    .notif-item .notif-msg { font-size: 11px; color: #666; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .notif-item .notif-data { font-size: 10px; color: #999; margin-top: 2px; }
+    .notif-item .notif-icone { margin-right: 8px; font-size: 16px; vertical-align: middle; }
+    #theme-toggle-btn a { cursor: pointer; }
+  </style>
 </head>
 
 <body>
@@ -78,6 +93,30 @@
   <div class="navebarn">
     <div id="user-nav" class="navbar navbar-inverse">
       <ul class="nav">
+        <!-- Botão Trocar Tema -->
+        <li class="" id="theme-toggle-btn">
+          <a href="#" class="tip-right" title="Alternar Tema" id="btn-toggle-theme">
+            <i class='bx bx-sun iconN' id="theme-icon"></i>
+          </a>
+        </li>
+
+        <!-- Notificações -->
+        <li class="dropdown" id="notifications-dropdown">
+          <a href="#" class="tip-right dropdown-toggle" data-toggle="dropdown" title="Notificações">
+            <i class='bx bx-bell iconN'></i>
+            <span class="notif-badge" id="notif-count" style="display:none;">0</span>
+          </a>
+          <ul class="dropdown-menu" id="notif-list" style="width:340px;right:0;left:auto;">
+            <li class="notif-header" style="padding:8px 12px;font-weight:bold;border-bottom:1px solid #ddd;">
+              <span>Notificações</span>
+              <a href="#" id="notif-marcar-todas" style="float:right;font-size:11px;font-weight:normal;">Marcar todas como lidas</a>
+            </li>
+            <li id="notif-items" style="max-height:320px;overflow-y:auto;">
+              <div style="padding:15px;text-align:center;color:#888;">Carregando...</div>
+            </li>
+          </ul>
+        </li>
+
         <li class="dropdown">
           <a href="#" class="tip-right dropdown-toggle" data-toggle="dropdown" title="Perfis"><i class='bx bx-user-circle iconN'></i><span class="text"></span></a>
           <ul class="dropdown-menu">

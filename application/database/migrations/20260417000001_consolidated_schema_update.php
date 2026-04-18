@@ -1099,6 +1099,21 @@ class Migration_Consolidated_schema_update extends CI_Migration
         $this->_safeCreateIndex('push_notifications', 'idx_user_id', 'user_id');
         $this->_safeCreateIndex('push_notifications', 'idx_is_read', 'is_read');
         $this->_safeCreateIndex('checkin', 'idx_os_id', 'os_id');
+
+        // --- notificacoes ---
+        $this->_createTableIfNotExists('notificacoes', [
+            'id' => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
+            'usuario_id' => ['type' => 'INT', 'constraint' => 11],
+            'titulo' => ['type' => 'VARCHAR', 'constraint' => 200],
+            'mensagem' => ['type' => 'TEXT'],
+            'url' => ['type' => 'VARCHAR', 'constraint' => 500, 'null' => true],
+            'icone' => ['type' => 'VARCHAR', 'constraint' => 50, 'default' => 'bx-bell'],
+            'tipo' => ['type' => 'VARCHAR', 'constraint' => 30, 'default' => 'info'],
+            'lida' => ['type' => 'TINYINT', 'constraint' => 1, 'default' => 0],
+            'data_notificacao' => ['type' => 'DATETIME'],
+        ]);
+        $this->_safeCreateIndex('notificacoes', 'idx_usuario_lida', ['usuario_id', 'lida']);
+        $this->_safeCreateIndex('notificacoes', 'idx_data', 'data_notificacao');
     }
 
     // ============================================================

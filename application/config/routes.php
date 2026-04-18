@@ -75,6 +75,7 @@ $route['nfse_os/registrar_pagamento/(:num)'] = 'nfse_os/registrar_pagamento/$1';
 $route['nfse_os/relatorio'] = 'nfse_os/relatorio';
 $route['nfse_os/api_get_os_dados/(:num)'] = 'nfse_os/api_get_os_dados/$1';
 $route['nfse_os/enviar_boleto_email/(:num)'] = 'nfse_os/enviar_boleto_email/$1';
+$route['nfse_os/preview/(:num)'] = 'nfse_os/preview/$1';
 
 // Rotas de Impostos
 $route['impostos'] = 'impostos';

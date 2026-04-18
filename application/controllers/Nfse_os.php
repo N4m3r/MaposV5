@@ -201,6 +201,86 @@ class Nfse_os extends MY_Controller
     }
 
     /**
+     * Pré-visualização da NFS-e em PDF
+     * Gera PDF com dados do prestador, tomador, impostos e QR Code PIX
+     */
+    public function preview($os_id = null)
+    {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vNFSe')) {
+            $this->session->set_flashdata('error', 'Sem permissão.');
+            redirect(base_url());
+        }
+
+        if (!$os_id) {
+            redirect('os');
+        }
+
+        $os = $this->os_model->getById($os_id);
+        if (!$os) {
+            $this->session->set_flashdata('error', 'OS não encontrada.');
+            redirect('os');
+        }
+
+        // Parâmetros via GET (preview antes da emissão)
+        $valor_servicos = floatval($this->input->get('valor_servicos')) ?: floatval($os->valorTotal ?? 0);
+        $valor_deducoes = floatval($this->input->get('valor_deducoes')) ?: 0;
+        $descricao_servico = $this->input->get('descricao_servico') ?: '';
+
+        // Calcular impostos
+        $calculo = $this->impostos_model->calcularImpostos($valor_servicos);
+        $valor_liquido = $valor_servicos - $calculo['valor_total_impostos'] - $valor_deducoes;
+
+        // Emitente
+        $this->load->model('mapos_model');
+        $emitente = $this->mapos_model->getEmitente();
+
+        // Tributação
+        $tributacao = $this->impostos_model->getConfiguracaoTributacao();
+
+        // QR Code PIX (valor líquido)
+        $pix_key = $this->data['configuration']['pix_key'] ?? '';
+        $qrCodePix = null;
+        $chaveFormatada = '';
+        if (!empty($pix_key) && !empty($emitente) && $valor_liquido > 0) {
+            $qrCodePix = $this->os_model->getQrCodeCustom($valor_liquido, $os_id, $pix_key, $emitente);
+            $chaveFormatada = $this->formatarChavePix($pix_key);
+        }
+
+        // Dados para a view
+        $data = [
+            'os' => $os,
+            'emitente' => $emitente,
+            'tributacao' => $tributacao,
+            'valor_servicos' => $valor_servicos,
+            'valor_deducoes' => $valor_deducoes,
+            'valor_liquido' => $valor_liquido,
+            'impostos' => $calculo,
+            'descricao_servico' => $descricao_servico ?: $tributacao['descricao_servico'],
+            'qrCodePix' => $qrCodePix,
+            'chaveFormatada' => $chaveFormatada,
+        ];
+
+        $this->load->helper('mpdf');
+        $html = $this->load->view('nfse_os/preview_nfse', $data, true);
+        pdf_create($html, 'NFSe_Preview_OS_' . $os_id, true);
+    }
+
+    /**
+     * Formatar chave PIX para exibição
+     */
+    private function formatarChavePix($chave)
+    {
+        $chave = preg_replace('/\D/', '', $chave);
+        if (strlen($chave) == 14) {
+            return substr($chave, 0, 2) . '.' . substr($chave, 2, 3) . '.' . substr($chave, 5, 3) . '/' . substr($chave, 8, 4) . '-' . substr($chave, 12, 2);
+        }
+        if (strlen($chave) == 11) {
+            return substr($chave, 0, 3) . '.' . substr($chave, 3, 3) . '.' . substr($chave, 6, 3) . '-' . substr($chave, 9, 2);
+        }
+        return $chave ?: $this->data['configuration']['pix_key'] ?? '';
+    }
+
+    /**
      * Visualizar NFS-e
      */
     public function visualizar($nfse_id)

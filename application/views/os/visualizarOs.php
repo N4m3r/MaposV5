@@ -115,6 +115,28 @@
                 </div>
             </div>
             <div class="widget-content" id="printOs">
+                <style>
+                    @media print {
+                        #os-main-tabs { display: none !important; }
+                        #nf-sub-tabs { display: none !important; }
+                        .tab-content > .tab-pane { display: block !important; opacity: 1 !important; }
+                        #tab-notas-fiscais { display: none !important; }
+                    }
+                    @media (max-width: 767px) {
+                        #os-main-tabs > li { display: block; width: 100%; float: none; }
+                        #os-main-tabs > li > a { border: 1px solid #ddd; border-radius: 0; margin-bottom: 2px; }
+                        #nf-sub-tabs > li { display: block; width: 100%; float: none; }
+                        #nf-sub-tabs > li > a { border: 1px solid #ddd; border-radius: 0; margin-bottom: 2px; }
+                    }
+                </style>
+
+                <ul class="nav nav-tabs" id="os-main-tabs">
+                    <li class="active"><a href="#tab-detalhes" data-toggle="tab"><i class='bx bx-file'></i> Detalhes da OS</a></li>
+                    <li><a href="#tab-notas-fiscais" data-toggle="tab"><i class='bx bx-receipt'></i> Notas Fiscais</a></li>
+                </ul>
+
+                <div class="tab-content">
+                    <div class="tab-pane active" id="tab-detalhes">
                 <div class="invoice-content">
                     <div class="invoice-head" style="margin-bottom: 0; margin-top:-30px">
                         <table class="table table-condensed">
@@ -749,27 +771,63 @@
                         </div>
                         <?php } ?>
 
-                        <!-- SEÇÃO NFS-e + BOLETO -->
-                        <?php $this->load->view('nfse_os/aba_os', [
-                            'result' => $result,
-                            'emitente' => $emitente ?? null,
-                            'tributacao' => $tributacao ?? [],
-                            'totalServico' => $totalServico ?? 0,
-                            'totalProdutos' => $totalProdutos ?? 0,
-                            'servicos' => $servicos ?? [],
-                            'produtos' => $produtos ?? [],
-                            'nfse_atual' => $nfse_atual ?? null,
-                            'boleto_atual' => $boleto_atual ?? null,
-                            'historico_nfse' => $historico_nfse ?? [],
-                            'historico_boleto' => $historico_boleto ?? []
-                        ]); ?>
+                        <!-- SEÇÃO NFS-e + BOLETO removida daqui — agora na aba Notas Fiscais -->
 
                     </div>
                 </div>
+                    </div><!-- /tab-pane#tab-detalhes -->
+
+                    <!-- ABA NOTAS FISCAIS -->
+                    <div class="tab-pane" id="tab-notas-fiscais">
+                        <ul class="nav nav-tabs" id="nf-sub-tabs">
+                            <li class="active"><a href="#subtab-nfse" data-toggle="tab"><i class="fas fa-file-invoice"></i> Serviços (NFS-e)</a></li>
+                            <li><a href="#subtab-produtos" data-toggle="tab"><i class="bx bx-box"></i> Produtos</a></li>
+                            <li><a href="#subtab-boletos" data-toggle="tab"><i class="fas fa-barcode"></i> Boletos</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="subtab-nfse">
+                                <?php $this->load->view('nfse_os/nfse_content', [
+                                    'result' => $result,
+                                    'emitente' => $emitente ?? null,
+                                    'tributacao' => $tributacao ?? [],
+                                    'totalServico' => $totalServico ?? 0,
+                                    'totalProdutos' => $totalProdutos ?? 0,
+                                    'servicos' => $servicos ?? [],
+                                    'produtos' => $produtos ?? [],
+                                    'nfse_atual' => $nfse_atual ?? null,
+                                    'historico_nfse' => $historico_nfse ?? []
+                                ]); ?>
+                            </div>
+
+                            <div class="tab-pane" id="subtab-produtos">
+                                <?php $this->load->view('nfse_os/produtos_fiscal_content', [
+                                    'result' => $result,
+                                    'produtos' => $produtos ?? [],
+                                    'totalProdutos' => $totalProdutos ?? 0,
+                                    'tributacao' => $tributacao ?? []
+                                ]); ?>
+                            </div>
+
+                            <div class="tab-pane" id="subtab-boletos">
+                                <?php $this->load->view('nfse_os/boleto_content', [
+                                    'result' => $result,
+                                    'nfse_atual' => $nfse_atual ?? null,
+                                    'boleto_atual' => $boleto_atual ?? null,
+                                    'historico_boleto' => $historico_boleto ?? []
+                                ]); ?>
+                            </div>
+                        </div>
+                    </div><!-- /tab-pane#tab-notas-fiscais -->
+
+                </div><!-- /tab-content -->
+
             </div>
         </div>
     </div>
 </div>
+
+<?php $this->load->view('nfse_os/nfse_scripts'); ?>
 
 <?= $modalGerarPagamento ?>
 

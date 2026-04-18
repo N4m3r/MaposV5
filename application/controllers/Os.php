@@ -11,6 +11,8 @@ class Os extends MY_Controller
         parent::__construct();
         $this->load->helper('form');
         $this->load->model('os_model');
+        $this->load->model('notificacoes_model');
+        $this->notificacoes_model->ensureTableExists();
         $this->data['menuOs'] = 'OS';
     }
 
@@ -174,6 +176,15 @@ class Os extends MY_Controller
 
                 $this->session->set_flashdata('success', 'OS adicionada com sucesso, você pode adicionar produtos ou serviços a essa OS nas abas de Produtos e Serviços!');
                 log_info('Adicionou uma OS. ID: ' . $id);
+
+                $this->notificacoes_model->notificarTodos([
+                    'titulo' => 'Nova OS Criada',
+                    'mensagem' => 'OS #' . $id . ' criada por ' . $this->session->userdata('nome_admin'),
+                    'url' => site_url('os/editar/' . $id),
+                    'icone' => 'bx-file',
+                    'tipo' => 'info',
+                ]);
+
                 redirect(site_url('os/editar/') . $id);
             } else {
                 $this->data['custom_error'] = '<div class="alert">Ocorreu um erro.</div>';
@@ -287,6 +298,19 @@ class Os extends MY_Controller
 
                 $this->session->set_flashdata('success', 'Os editada com sucesso!');
                 log_info('Alterou uma OS. ID: ' . $this->input->post('idOs'));
+
+                $statusAnterior = isset($os->status) ? $os->status : '';
+                $novoStatus = $this->input->post('status');
+                if ($novoStatus && $novoStatus !== $statusAnterior) {
+                    $this->notificacoes_model->notificarTodos([
+                        'titulo' => 'OS - Status Alterado',
+                        'mensagem' => 'OS #' . $this->input->post('idOs') . ': ' . $statusAnterior . ' → ' . $novoStatus,
+                        'url' => site_url('os/editar/' . $this->input->post('idOs')),
+                        'icone' => 'bx-refresh',
+                        'tipo' => 'warning',
+                    ]);
+                }
+
                 redirect(site_url('os/editar/') . $this->input->post('idOs'));
             } else {
                 $this->data['custom_error'] = '<div class="form_error"><p>Ocorreu um erro</p></div>';

@@ -1692,6 +1692,24 @@ CREATE TABLE IF NOT EXISTS `usuarios_cliente_permissoes` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- -----------------------------------------------------
+-- Table `notificacoes`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `notificacoes` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `usuario_id` INT(11) NOT NULL,
+  `titulo` VARCHAR(200) NOT NULL,
+  `mensagem` TEXT NOT NULL,
+  `url` VARCHAR(500) NULL,
+  `icone` VARCHAR(50) DEFAULT 'bx-bell',
+  `tipo` VARCHAR(30) DEFAULT 'info',
+  `lida` TINYINT(1) DEFAULT 0,
+  `data_notificacao` DATETIME NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `idx_usuario_lida` (`usuario_id`, `lida`),
+  INDEX `idx_data` (`data_notificacao`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
 -- Table `dre_demonstracoes`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `dre_demonstracoes` (

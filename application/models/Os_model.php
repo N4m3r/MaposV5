@@ -493,6 +493,26 @@ class Os_model extends CI_Model
     }
 
     /**
+     * Gerar QR Code PIX com valor customizado (para preview NFS-e)
+     */
+    public function getQrCodeCustom($amount, $id, $pixKey, $emitente)
+    {
+        if (empty($amount) || $amount <= 0 || empty($pixKey) || empty($emitente)) {
+            return null;
+        }
+
+        $pix = (new StaticPayload())
+            ->setAmount(round(floatval($amount), 2))
+            ->setTid($id)
+            ->setDescription(sprintf('%s OS %s', substr($emitente->nome, 0, 18), $id), true)
+            ->setPixKey(getPixKeyType($pixKey), $pixKey)
+            ->setMerchantName($emitente->nome)
+            ->setMerchantCity($emitente->cidade);
+
+        return $pix->getQRCode();
+    }
+
+    /**
      * Obter OS sem técnico atribuído (para atribuição)
      */
     public function getOsSemTecnico($limite = 20, $offset = 0)
