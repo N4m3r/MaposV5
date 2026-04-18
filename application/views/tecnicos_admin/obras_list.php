@@ -246,13 +246,15 @@
                             <select name="cliente_id" class="span12" required>
                                 <option value="">Selecione...</option>
                                 <?php
-                                // Buscar clientes
-                                $clientes = $this->db->where('status', 1)->get('clientes')->result();
-                                foreach ($clientes as $cliente): ?>
-                                    <option value="<?= $cliente->idClientes ?>">
-                                        <?= htmlspecialchars($cliente->nomeCliente, ENT_COMPAT | ENT_HTML5, 'UTF-8') ?>
-                                    </option>
-                                <?php endforeach; ?>
+                                // Buscar clientes ativos
+                                $clientes = $this->db->order_by('nomeCliente', 'ASC')->get('clientes')->result();
+                                if ($clientes):
+                                    foreach ($clientes as $cliente): ?>
+                                        <option value="<?= $cliente->idClientes ?>">
+                                            <?= htmlspecialchars($cliente->nomeCliente, ENT_COMPAT | ENT_HTML5, 'UTF-8') ?>
+                                        </option>
+                                    <?php endforeach;
+                                endif; ?>
                             </select>
                         </div>
                     </div>
