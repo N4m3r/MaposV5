@@ -94,7 +94,7 @@
                             <div class="control-group">
                                 <label class="control-label">Data de Início</label>
                                 <div class="controls">
-                                    <input type="date" name="data_inicio" class="span12" value="<?= $obra->data_inicio ?>">
+                                    <input type="date" name="data_inicio" class="span12" value="<?= $obra->data_inicio ?? '' ?>">
                                 </div>
                             </div>
                         </div>
@@ -102,7 +102,7 @@
                             <div class="control-group">
                                 <label class="control-label">Previsão de Término</label>
                                 <div class="controls">
-                                    <input type="date" name="data_previsao_fim" class="span12" value="<?= $obra->data_previsao_fim ?>">
+                                    <input type="date" name="data_previsao_fim" class="span12" value="<?= $obra->data_previsao_fim ?? '' ?>">
                                 </div>
                             </div>
                         </div>
