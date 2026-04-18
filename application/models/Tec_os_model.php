@@ -49,7 +49,15 @@ class Tec_os_model extends CI_Model
 
         $this->db->order_by('os.dataInicial', 'DESC');
         $this->db->order_by('os.dataFinal', 'ASC');
-        return $this->db->get()->result();
+
+        $query = $this->db->get();
+
+        if ($query === false) {
+            log_message('error', 'Erro na query getOsPorTecnico: ' . $this->db->last_query());
+            return [];
+        }
+
+        return $query->result();
     }
 
     /**
@@ -62,12 +70,23 @@ class Tec_os_model extends CI_Model
         $this->db->select('os.*, c.nome as cliente_nome, c.telefone as cliente_telefone');
         $this->db->from('os');
         $this->db->join('clientes c', 'c.idClientes = os.clientes_id');
-        $this->db->where('os.usuarios_id', $tecnico_id);
+
+        if ($tecnico_id !== null) {
+            $this->db->where('os.usuarios_id', $tecnico_id);
+        }
+
         $this->db->where('os.dataInicial', $hoje);
         $this->db->where_in('os.status', ['Aberto', 'Em Andamento', 'Aguardando Peças']);
         $this->db->order_by('os.dataFinal', 'ASC');
 
-        return $this->db->get()->result();
+        $query = $this->db->get();
+
+        if ($query === false) {
+            log_message('error', 'Erro na query getOsDoDia: ' . $this->db->last_query());
+            return [];
+        }
+
+        return $query->result();
     }
 
     /**
@@ -82,7 +101,14 @@ class Tec_os_model extends CI_Model
         $this->db->where_in('os.status', ['Aberto', 'Em Andamento', 'Aguardando Peças']);
         $this->db->order_by('os.dataInicial', 'ASC');
 
-        return $this->db->get()->result();
+        $query = $this->db->get();
+
+        if ($query === false) {
+            log_message('error', 'Erro na query getOsPendentes: ' . $this->db->last_query());
+            return [];
+        }
+
+        return $query->result();
     }
 
     /**
@@ -108,7 +134,15 @@ class Tec_os_model extends CI_Model
         $this->db->from('os_servicos os');
         $this->db->join('servicos_catalogo sc', 'sc.id = os.servico_catalogo_id', 'left');
         $this->db->where('os.os_id', $os_id);
-        return $this->db->get()->result();
+
+        $query = $this->db->get();
+
+        if ($query === false) {
+            log_message('error', 'Erro na query getServicosOs: ' . $this->db->last_query());
+            return [];
+        }
+
+        return $query->result();
     }
 
     /**
@@ -283,7 +317,15 @@ class Tec_os_model extends CI_Model
 
         $this->db->where('ativo', 1);
         $this->db->order_by('nome', 'ASC');
-        return $this->db->get('servicos_catalogo')->result();
+
+        $query = $this->db->get('servicos_catalogo');
+
+        if ($query === false) {
+            log_message('error', 'Erro na query getServicosCatalogo: ' . $this->db->last_query());
+            return [];
+        }
+
+        return $query->result();
     }
 
     /**
@@ -349,7 +391,15 @@ class Tec_os_model extends CI_Model
         }
 
         $this->db->where('ativo', 1);
-        return $this->db->get('tec_checklist_template')->result();
+
+        $query = $this->db->get('tec_checklist_template');
+
+        if ($query === false) {
+            log_message('error', 'Erro na query getChecklistTemplates: ' . $this->db->last_query());
+            return [];
+        }
+
+        return $query->result();
     }
 
     /**
@@ -450,7 +500,14 @@ class Tec_os_model extends CI_Model
         $this->db->order_by('te.data_checkin', 'DESC');
         $this->db->limit($limit);
 
-        return $this->db->get()->result();
+        $query = $this->db->get();
+
+        if ($query === false) {
+            log_message('error', 'Erro na query getHistoricoExecucoes: ' . $this->db->last_query());
+            return [];
+        }
+
+        return $query->result();
     }
 
     /**
@@ -470,7 +527,14 @@ class Tec_os_model extends CI_Model
         $this->db->where_in('os.status', ['Aberto', 'Aprovado']);
         $this->db->order_by('os.dataInicial', 'ASC');
 
-        return $this->db->get()->result();
+        $query = $this->db->get();
+
+        if ($query === false) {
+            log_message('error', 'Erro na query getOsProximas: ' . $this->db->last_query());
+            return [];
+        }
+
+        return $query->result();
     }
 
     /**
@@ -495,7 +559,14 @@ class Tec_os_model extends CI_Model
         $this->db->order_by('os.idOs', 'DESC');
         $this->db->limit(20);
 
-        return $this->db->get()->result();
+        $query = $this->db->get();
+
+        if ($query === false) {
+            log_message('error', 'Erro na query pesquisarOs: ' . $this->db->last_query());
+            return [];
+        }
+
+        return $query->result();
     }
 
     /**
