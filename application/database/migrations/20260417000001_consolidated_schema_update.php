@@ -50,6 +50,49 @@ class Migration_Consolidated_schema_update extends CI_Migration
             if (!$this->db->field_exists('ambiente', 'os_nfse_emitida')) {
                 $this->db->query("ALTER TABLE `os_nfse_emitida` ADD COLUMN `ambiente` ENUM('homologacao','producao') DEFAULT 'homologacao' AFTER `situacao`");
             }
+            // Novas colunas: regime tributário, DAS e retenções do tomador
+            if (!$this->db->field_exists('regime_tributario', 'os_nfse_emitida')) {
+                $this->db->query("ALTER TABLE `os_nfse_emitida` ADD COLUMN `regime_tributario` ENUM('simples_nacional','lucro_presumido','lucro_real') NOT NULL DEFAULT 'simples_nacional' COMMENT 'Regime tributário' AFTER `valor_liquido`");
+            }
+            if (!$this->db->field_exists('valor_das', 'os_nfse_emitida')) {
+                $this->db->query("ALTER TABLE `os_nfse_emitida` ADD COLUMN `valor_das` DECIMAL(15,2) DEFAULT NULL COMMENT 'Valor estimado do DAS' AFTER `regime_tributario`");
+            }
+            if (!$this->db->field_exists('retem_iss', 'os_nfse_emitida')) {
+                $this->db->query("ALTER TABLE `os_nfse_emitida` ADD COLUMN `retem_iss` TINYINT(1) NOT NULL DEFAULT 0 COMMENT 'Tomador retém ISS' AFTER `valor_total_impostos`");
+            }
+            if (!$this->db->field_exists('retem_irrf', 'os_nfse_emitida')) {
+                $this->db->query("ALTER TABLE `os_nfse_emitida` ADD COLUMN `retem_irrf` TINYINT(1) NOT NULL DEFAULT 0 COMMENT 'Tomador retém IRRF' AFTER `retem_iss`");
+            }
+            if (!$this->db->field_exists('retem_pis', 'os_nfse_emitida')) {
+                $this->db->query("ALTER TABLE `os_nfse_emitida` ADD COLUMN `retem_pis` TINYINT(1) NOT NULL DEFAULT 0 COMMENT 'Tomador retém PIS' AFTER `retem_irrf`");
+            }
+            if (!$this->db->field_exists('retem_cofins', 'os_nfse_emitida')) {
+                $this->db->query("ALTER TABLE `os_nfse_emitida` ADD COLUMN `retem_cofins` TINYINT(1) NOT NULL DEFAULT 0 COMMENT 'Tomador retém COFINS' AFTER `retem_pis`");
+            }
+            if (!$this->db->field_exists('retem_csll', 'os_nfse_emitida')) {
+                $this->db->query("ALTER TABLE `os_nfse_emitida` ADD COLUMN `retem_csll` TINYINT(1) NOT NULL DEFAULT 0 COMMENT 'Tomador retém CSLL' AFTER `retem_cofins`");
+            }
+            if (!$this->db->field_exists('valor_retencao_iss', 'os_nfse_emitida')) {
+                $this->db->query("ALTER TABLE `os_nfse_emitida` ADD COLUMN `valor_retencao_iss` DECIMAL(15,2) NOT NULL DEFAULT 0.00 COMMENT 'Valor ISS retido' AFTER `retem_csll`");
+            }
+            if (!$this->db->field_exists('valor_retencao_irrf', 'os_nfse_emitida')) {
+                $this->db->query("ALTER TABLE `os_nfse_emitida` ADD COLUMN `valor_retencao_irrf` DECIMAL(15,2) NOT NULL DEFAULT 0.00 COMMENT 'Valor IRRF retido' AFTER `valor_retencao_iss`");
+            }
+            if (!$this->db->field_exists('valor_retencao_pis', 'os_nfse_emitida')) {
+                $this->db->query("ALTER TABLE `os_nfse_emitida` ADD COLUMN `valor_retencao_pis` DECIMAL(15,2) NOT NULL DEFAULT 0.00 COMMENT 'Valor PIS retido' AFTER `valor_retencao_irrf`");
+            }
+            if (!$this->db->field_exists('valor_retencao_cofins', 'os_nfse_emitida')) {
+                $this->db->query("ALTER TABLE `os_nfse_emitida` ADD COLUMN `valor_retencao_cofins` DECIMAL(15,2) NOT NULL DEFAULT 0.00 COMMENT 'Valor COFINS retido' AFTER `valor_retencao_pis`");
+            }
+            if (!$this->db->field_exists('valor_retencao_csll', 'os_nfse_emitida')) {
+                $this->db->query("ALTER TABLE `os_nfse_emitida` ADD COLUMN `valor_retencao_csll` DECIMAL(15,2) NOT NULL DEFAULT 0.00 COMMENT 'Valor CSLL retido' AFTER `valor_retencao_cofins`");
+            }
+            if (!$this->db->field_exists('valor_total_retencao', 'os_nfse_emitida')) {
+                $this->db->query("ALTER TABLE `os_nfse_emitida` ADD COLUMN `valor_total_retencao` DECIMAL(15,2) NOT NULL DEFAULT 0.00 COMMENT 'Total das retenções' AFTER `valor_retencao_csll`");
+            }
+            if (!$this->db->field_exists('competencia', 'os_nfse_emitida')) {
+                $this->db->query("ALTER TABLE `os_nfse_emitida` ADD COLUMN `competencia` DATE NULL COMMENT 'Mês/ano de competência' AFTER `valor_total_retencao`");
+            }
         }
 
         $this->db->query("SET FOREIGN_KEY_CHECKS = 1");

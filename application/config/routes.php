@@ -82,6 +82,7 @@ $route['nfse_os/imprimir_nfse/(:num)'] = 'nfse_os/imprimir_nfse/$1';
 $route['impostos'] = 'impostos';
 $route['impostos/configuracoes'] = 'impostos/configuracoes';
 $route['impostos/simulador'] = 'impostos/simulador';
+$route['impostos/buscar_certificado'] = 'impostos/buscar_certificado';
 
 // Rotas de DRE
 $route['dre'] = 'dre';

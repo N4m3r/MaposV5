@@ -54,6 +54,41 @@ class Impostos extends MY_Controller
             redirect('impostos');
         }
 
+        // Preenchimento automático via certificado digital
+        $certificado_info = null;
+        if (file_exists(APPPATH . 'models/Certificado_model.php')) {
+            $this->load->model('certificado_model');
+            $certificado = $this->certificado_model->getCertificadoAtivo();
+            if ($certificado) {
+                $certificado_info = [
+                    'razao_social' => $certificado->razao_social ?? '',
+                    'cnpj' => $certificado->cnpj ?? '',
+                    'tipo' => $certificado->tipo ?? 'A1',
+                    'validade' => $certificado->data_validade ?? '',
+                    'anexo_sugerido' => null,
+                ];
+
+                // Buscar última consulta do Simples Nacional
+                if ($this->db->table_exists('certificado_consultas')) {
+                    $this->db->where('certificado_id', $certificado->id);
+                    $this->db->where('tipo_consulta', 'SIMPLES_NACIONAL');
+                    $this->db->where('sucesso', 1);
+                    $this->db->order_by('data_consulta', 'DESC');
+                    $consulta = $this->db->get('certificado_consultas', 1)->row();
+                    if ($consulta && $consulta->dados_retorno) {
+                        $dados = json_decode($consulta->dados_retorno, true);
+                        if ($dados) {
+                            $certificado_info['anexo_sugerido'] = $dados['anexo_sugerido'] ?? null;
+                            $certificado_info['optante_simples'] = $dados['optante_simples'] ?? null;
+                            $certificado_info['cnae_codigo'] = $dados['cnae_codigo'] ?? '';
+                            $certificado_info['cnae_descricao'] = $dados['cnae_descricao'] ?? '';
+                            $certificado_info['data_consulta'] = $consulta->data_consulta ?? '';
+                        }
+                    }
+                }
+            }
+        }
+
         if ($this->input->post()) {
             $this->impostos_model->setConfig('IMPOSTO_ANEXO_PADRAO', $this->input->post('anexo_padrao'));
             $this->impostos_model->setConfig('IMPOSTO_FAIXA_ATUAL', $this->input->post('faixa_atual'));
@@ -87,9 +122,66 @@ class Impostos extends MY_Controller
 
         $this->data['aliquotas_iii'] = $this->impostos_model->getAliquotasAnexo('III');
         $this->data['aliquotas_iv'] = $this->impostos_model->getAliquotasAnexo('IV');
+        $this->data['certificado_info'] = $certificado_info;
 
         $this->data['view'] = 'impostos/configuracoes';
         return $this->layout();
+    }
+
+    /**
+     * Busca dados do certificado digital via AJAX
+     */
+    public function buscar_certificado()
+    {
+        if (!$this->input->is_ajax_request()) {
+            show_404();
+        }
+
+        header('Content-Type: application/json; charset=utf-8');
+
+        if (!file_exists(APPPATH . 'models/Certificado_model.php')) {
+            echo json_encode(['success' => false, 'message' => 'Módulo de certificado digital não instalado']);
+            return;
+        }
+
+        $this->load->model('certificado_model');
+        $certificado = $this->certificado_model->getCertificadoAtivo();
+
+        if (!$certificado) {
+            echo json_encode(['success' => false, 'message' => 'Nenhum certificado digital configurado. Cadastre um certificado em Certificado Digital.']);
+            return;
+        }
+
+        // Buscar dados da última consulta do Simples Nacional
+        $dados_certificado = [
+            'razao_social' => $certificado->razao_social ?? '',
+            'cnpj' => $certificado->cnpj ?? '',
+            'tipo' => $certificado->tipo ?? 'A1',
+            'anexo_sugerido' => null,
+            'optante_simples' => null,
+            'cnae_codigo' => '',
+            'cnae_descricao' => '',
+        ];
+
+        if ($this->db->table_exists('certificado_consultas')) {
+            $this->db->where('certificado_id', $certificado->id);
+            $this->db->where('tipo_consulta', 'SIMPLES_NACIONAL');
+            $this->db->where('sucesso', 1);
+            $this->db->order_by('data_consulta', 'DESC');
+            $consulta = $this->db->get('certificado_consultas', 1)->row();
+
+            if ($consulta && $consulta->dados_retorno) {
+                $dados = json_decode($consulta->dados_retorno, true);
+                if ($dados) {
+                    $dados_certificado['anexo_sugerido'] = $dados['anexo_sugerido'] ?? null;
+                    $dados_certificado['optante_simples'] = $dados['optante_simples'] ?? null;
+                    $dados_certificado['cnae_codigo'] = $dados['cnae_codigo'] ?? '';
+                    $dados_certificado['cnae_descricao'] = $dados['cnae_descricao'] ?? '';
+                }
+            }
+        }
+
+        echo json_encode(['success' => true, 'certificado' => $dados_certificado]);
     }
 
     /**
