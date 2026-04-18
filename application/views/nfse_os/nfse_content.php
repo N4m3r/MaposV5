@@ -91,8 +91,22 @@ if (!function_exists('formatarDocumentoNFSe')) {
 
                 <h6><i class="fas fa-calculator"></i> Detalhamento dos Impostos</h6>
                 <div class="well well-small">
+                    <?php
+                    $nfseRegime = $nfse_atual->regime_tributario ?? 'simples_nacional';
+                    $isNfseSimples = ($nfseRegime === 'simples_nacional');
+                    ?>
+                    <?php if ($isNfseSimples && isset($nfse_atual->valor_das) && $nfse_atual->valor_das > 0): ?>
+                    <div class="row-fluid">
+                        <div class="span12">
+                            <span class="label label-success">Simples Nacional</span>
+                            <strong style="margin-left: 5px;">DAS (Documento de Arrecadação):</strong> R$ <?= number_format($nfse_atual->valor_das, 2, ',', '.') ?><br>
+                            <strong>Total Impostos:</strong> R$ <?= number_format($nfse_atual->valor_total_impostos, 2, ',', '.') ?>
+                        </div>
+                    </div>
+                    <?php else: ?>
                     <div class="row-fluid">
                         <div class="span6">
+                            <span class="label label-info">Lucro Presumido</span><br>
                             <strong>ISS (<?= $nfse_atual->aliquota_iss ?>%):</strong> R$ <?= number_format($nfse_atual->valor_iss, 2, ',', '.') ?><br>
                             <strong>PIS:</strong> R$ <?= number_format($nfse_atual->valor_pis, 2, ',', '.') ?><br>
                             <strong>COFINS:</strong> R$ <?= number_format($nfse_atual->valor_cofins, 2, ',', '.') ?>
@@ -103,6 +117,21 @@ if (!function_exists('formatarDocumentoNFSe')) {
                             <strong>INSS:</strong> R$ <?= number_format($nfse_atual->valor_inss, 2, ',', '.') ?>
                         </div>
                     </div>
+                    <?php endif; ?>
+
+                    <?php if (isset($nfse_atual->valor_total_retencao) && $nfse_atual->valor_total_retencao > 0): ?>
+                    <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #ddd;">
+                        <strong style="color: #e67e22;"><i class="fas fa-hand-holding-usd"></i> Retenções do Tomador:</strong> R$ <?= number_format($nfse_atual->valor_total_retencao, 2, ',', '.') ?>
+                        <small style="color: #888;">(não reduz o valor da NFS-e, registrada para compensação futura)</small>
+                        <div style="font-size: 12px; margin-top: 4px;">
+                            <?php if ($nfse_atual->valor_retencao_iss > 0): ?>ISS: R$ <?= number_format($nfse_atual->valor_retencao_iss, 2, ',', '.'); ?> &nbsp;<?php endif; ?>
+                            <?php if ($nfse_atual->valor_retencao_irrf > 0): ?>IRRF: R$ <?= number_format($nfse_atual->valor_retencao_irrf, 2, ',', '.'); ?> &nbsp;<?php endif; ?>
+                            <?php if ($nfse_atual->valor_retencao_pis > 0): ?>PIS: R$ <?= number_format($nfse_atual->valor_retencao_pis, 2, ',', '.'); ?> &nbsp;<?php endif; ?>
+                            <?php if ($nfse_atual->valor_retencao_cofins > 0): ?>COFINS: R$ <?= number_format($nfse_atual->valor_retencao_cofins, 2, ',', '.'); ?> &nbsp;<?php endif; ?>
+                            <?php if ($nfse_atual->valor_retencao_csll > 0): ?>CSLL: R$ <?= number_format($nfse_atual->valor_retencao_csll, 2, ',', '.'); ?><?php endif; ?>
+                        </div>
+                    </div>
+                    <?php endif; ?>
                 </div>
 
                 <div class="btn-group">

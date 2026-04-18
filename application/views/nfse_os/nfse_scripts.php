@@ -12,7 +12,15 @@ var wizardData = {
     gerarBoleto: true,
     incluirProdutos: false,
     valorApenasServicos: <?= floatval($totalServico) ?>,
-    valorTotalComProdutos: <?= floatval($totalServico + $totalProdutos) ?>
+    valorTotalComProdutos: <?= floatval($totalServico + $totalProdutos) ?>,
+    regimeTributario: '<?= $regimeTributario ?? "simples_nacional" ?>',
+    retemIss: false,
+    retemIrrf: false,
+    retemPis: false,
+    retemCofins: false,
+    retemCsll: false,
+    retencoes: null,
+    valorDas: null
 };
 
 // Máscara monetária para campos de valor
@@ -132,17 +140,31 @@ function calcularImpostosWizard() {
     // Mostra loading
     $('#impostos-table td.imposto-valor').text('...');
     $('#imp-valor-liquido').text('...');
+    if ($('#imp-das').length) $('#imp-das').text('...');
+    if ($('#imp-das-aliquota').length) $('#imp-das-aliquota').text('...');
 
     clearTimeout(calcularTimeout);
     calcularTimeout = setTimeout(function() {
+        // Montar dados de retenção
+        var postData = { valor: valor };
+        if ($('#retem-iss').is(':checked')) postData.retem_iss = 1;
+        if ($('#retem-irrf').is(':checked')) postData.retem_irrf = 1;
+        if ($('#retem-pis').is(':checked')) postData.retem_pis = 1;
+        if ($('#retem-cofins').is(':checked')) postData.retem_cofins = 1;
+        if ($('#retem-csll').is(':checked')) postData.retem_csll = 1;
+
         $.ajax({
             url: '<?= site_url("nfse_os/calcular_impostos") ?>',
             type: 'POST',
-            data: { valor: valor },
+            data: postData,
             dataType: 'json',
             success: function(data) {
                 if (data.success) {
                     wizardData.impostosResult = data;
+                    wizardData.regimeTributario = data.regime_tributario || wizardData.regimeTributario;
+                    wizardData.valorDas = data.valor_das || null;
+                    wizardData.retencoes = data.retencoes || null;
+
                     var imp = data.impostos;
                     var deducoes = wizardData.valorDeducoes || parseMoeda($('#valor-deducoes-wizard').val());
                     var baseCalc = data.valor_bruto - deducoes;
@@ -151,14 +173,53 @@ function calcularImpostosWizard() {
                     $('#imp-valor-bruto').text(formatarMoeda(data.valor_bruto));
                     $('#imp-deducoes').text(formatarMoeda(deducoes));
                     $('#imp-base-calculo').text(formatarMoeda(baseCalc));
-                    $('#imp-iss').text(formatarMoeda(imp.iss || imp.iss_valor || 0));
-                    $('#imp-pis').text(formatarMoeda(imp.pis || imp.pis_valor || 0));
-                    $('#imp-cofins').text(formatarMoeda(imp.cofins || imp.cofins_valor || 0));
-                    $('#imp-irrf').text(formatarMoeda(imp.irrf || imp.irpj_valor || 0));
-                    $('#imp-csll').text(formatarMoeda(imp.csll || imp.csll_valor || 0));
-                    $('#imp-inss').text(formatarMoeda(imp.inss || imp.cpp_valor || 0));
-                    $('#imp-total-impostos').text(formatarMoeda(imp.valor_total_impostos || 0));
-                    $('#imp-valor-liquido').text(formatarMoeda(data.valor_liquido - deducoes));
+
+                    // Regime-specific display
+                    if (wizardData.regimeTributario === 'simples_nacional') {
+                        // Simples Nacional: show DAS instead of individual taxes
+                        if ($('#imp-das').length) {
+                            $('#imp-das').text(formatarMoeda(wizardData.valorDas || data.valor_bruto * 0.06));
+                        }
+                        if ($('#imp-das-aliquota').length) {
+                            var aliquota = wizardData.valorDas ? ((wizardData.valorDas / data.valor_bruto) * 100).toFixed(2) : '6.00';
+                            $('#imp-das-aliquota').text(aliquota + '%');
+                        }
+                    } else {
+                        // Lucro Presumido: show individual taxes
+                        if ($('#imp-iss').length) $('#imp-iss').text(formatarMoeda(imp.iss || imp.iss_valor || 0));
+                        if ($('#imp-pis').length) $('#imp-pis').text(formatarMoeda(imp.pis || imp.pis_valor || 0));
+                        if ($('#imp-cofins').length) $('#imp-cofins').text(formatarMoeda(imp.cofins || imp.cofins_valor || 0));
+                        if ($('#imp-irrf').length) $('#imp-irrf').text(formatarMoeda(imp.irrf || imp.irpj_valor || 0));
+                        if ($('#imp-csll').length) $('#imp-csll').text(formatarMoeda(imp.csll || imp.csll_valor || 0));
+                        if ($('#imp-inss').length) $('#imp-inss').text(formatarMoeda(imp.inss || imp.cpp_valor || 0));
+                    }
+
+                    var totalImpostos = imp.valor_total_impostos || 0;
+                    $('#imp-total-impostos').text(formatarMoeda(totalImpostos));
+
+                    // Retenções do Tomador
+                    var totalRetencao = 0;
+                    if (wizardData.retencoes) {
+                        totalRetencao = parseFloat(wizardData.retencoes.valor_total_retencao || 0);
+                    }
+                    if (totalRetencao > 0) {
+                        $('#retencao-row').show();
+                        $('#imp-retencao-total').text(formatarMoeda(totalRetencao));
+                    } else {
+                        $('#retencao-row').hide();
+                    }
+
+                    // Valor líquido NÃO é reduzido por retenções
+                    var valorLiquido = data.valor_bruto - totalImpostos - deducoes;
+                    $('#imp-valor-liquido').text(formatarMoeda(valorLiquido));
+
+                    // Atualizar DAS display no Step 1
+                    if (wizardData.regimeTributario === 'simples_nacional' && wizardData.valorDas) {
+                        $('#das-valor-display').text(formatarMoeda(wizardData.valorDas));
+                    }
+
+                    // Atualizar resumo de retenções no Step 1
+                    atualizarRetencoesStep1(valor);
                 } else {
                     var msg = data.message || 'Erro ao calcular impostos';
                     $('#impostos-table td.imposto-valor').text('—');
@@ -193,6 +254,34 @@ function calcularImpostosWizard() {
     }, 300);
 }
 
+// Atualizar valores de retenção no Step 1
+function atualizarRetencoesStep1(valorBruto) {
+    var aliquotaIss = parseFloat('<?= $tributacao["aliquota_iss"] ?? "5.00" ?>');
+    var retencaoIss = $('#retem-iss').is(':checked') ? Math.round(valorBruto * aliquotaIss / 100 * 100) / 100 : 0;
+    var retencaoIrrf = $('#retem-irrf').is(':checked') ? Math.round(valorBruto * 1.5 / 100 * 100) / 100 : 0;
+    var retencaoPis = $('#retem-pis').is(':checked') ? Math.round(valorBruto * 0.65 / 100 * 100) / 100 : 0;
+    var retencaoCofins = $('#retem-cofins').is(':checked') ? Math.round(valorBruto * 3.0 / 100 * 100) / 100 : 0;
+    var retencaoCsll = $('#retem-csll').is(':checked') ? Math.round(valorBruto * 1.0 / 100 * 100) / 100 : 0;
+    var totalRetencao = retencaoIss + retencaoIrrf + retencaoPis + retencaoCofins + retencaoCsll;
+
+    wizardData.retemIss = $('#retem-iss').is(':checked');
+    wizardData.retemIrrf = $('#retem-irrf').is(':checked');
+    wizardData.retemPis = $('#retem-pis').is(':checked');
+    wizardData.retemCofins = $('#retem-cofins').is(':checked');
+    wizardData.retemCsll = $('#retem-csll').is(':checked');
+
+    // Atualizar labels
+    $('#retem-iss-valor').text(retencaoIss > 0 ? formatarMoeda(retencaoIss) : '');
+    $('#retem-irrf-valor').text(retencaoIrrf > 0 ? formatarMoeda(retencaoIrrf) : '');
+    $('#retem-pis-valor').text(retencaoPis > 0 ? formatarMoeda(retencaoPis) : '');
+    $('#retem-cofins-valor').text(retencaoCofins > 0 ? formatarMoeda(retencaoCofins) : '');
+    $('#retem-csll-valor').text(retencaoCsll > 0 ? formatarMoeda(retencaoCsll) : '');
+    $('#retem-total-valor').text(formatarMoeda(totalRetencao));
+
+    // Invalidar cache de impostos se retenções mudaram
+    wizardData.impostosResult = null;
+}
+
 // Atualizar valor do boleto no passo 3
 function atualizarValorBoleto() {
     if (wizardData.impostosResult) {
@@ -213,7 +302,34 @@ function atualizarResumo() {
     if (wizardData.impostosResult) {
         var imp = wizardData.impostosResult.impostos;
         var liquido = wizardData.impostosResult.valor_liquido - deducoes;
-        $('#res-total-impostos').text(formatarMoeda(imp.valor_total_impostos || 0));
+        var totalImpostos = imp.valor_total_impostos || 0;
+
+        // Show DAS line for Simples Nacional
+        if (wizardData.regimeTributario === 'simples_nacional') {
+            $('#res-das-linha').show();
+            $('#res-imposto-linha').html('<strong>Total Impostos (DAS):</strong> ');
+            $('#res-total-impostos').text(formatarMoeda(totalImpostos));
+            if (wizardData.valorDas) {
+                $('#res-valor-das').text(formatarMoeda(wizardData.valorDas));
+            }
+        } else {
+            $('#res-das-linha').hide();
+            $('#res-imposto-linha').html('<strong>Total Impostos:</strong> ');
+            $('#res-total-impostos').text(formatarMoeda(totalImpostos));
+        }
+
+        // Show retentions line if any
+        var totalRetencao = 0;
+        if (wizardData.retencoes && wizardData.retencoes.valor_total_retencao) {
+            totalRetencao = parseFloat(wizardData.retencoes.valor_total_retencao);
+        }
+        if (totalRetencao > 0) {
+            $('#res-retencao-linha').show();
+            $('#res-retencao-total').text(formatarMoeda(totalRetencao));
+        } else {
+            $('#res-retencao-linha').hide();
+        }
+
         $('#res-valor-liquido').text(formatarMoeda(liquido));
     }
 
@@ -240,14 +356,26 @@ function emitirNFSeWizard() {
     var gerarBoleto = wizardData.gerarBoleto ? 1 : 0;
 
     // Confirmação final
+    var regimeLabel = wizardData.regimeTributario === 'simples_nacional' ? 'Simples Nacional (DAS)' : 'Lucro Presumido';
     var msg = 'Deseja confirmar a emissão da NFS-e?\n\n';
+    msg += 'Regime Tributário: ' + regimeLabel + '\n';
     msg += 'Valor dos Serviços: ' + formatarMoeda(valor) + '\n';
     if (deducoes > 0) msg += 'Deduções: ' + formatarMoeda(deducoes) + '\n';
     if (wizardData.impostosResult) {
         var imp = wizardData.impostosResult.impostos;
         var liquido = wizardData.impostosResult.valor_liquido - deducoes;
-        msg += 'Total Impostos: ' + formatarMoeda(imp.valor_total_impostos || 0) + '\n';
+        if (wizardData.regimeTributario === 'simples_nacional' && wizardData.valorDas) {
+            msg += 'DAS (Simples Nacional): ' + formatarMoeda(wizardData.valorDas) + '\n';
+        } else {
+            msg += 'Total Impostos: ' + formatarMoeda(imp.valor_total_impostos || 0) + '\n';
+        }
         msg += 'Valor Líquido: ' + formatarMoeda(liquido) + '\n';
+        // Retenções
+        var totalRetencao = 0;
+        if (wizardData.retencoes && wizardData.retencoes.valor_total_retencao) {
+            totalRetencao = parseFloat(wizardData.retencoes.valor_total_retencao);
+            msg += 'Retenções Tomador: ' + formatarMoeda(totalRetencao) + '\n';
+        }
     }
     if (gerarBoleto) {
         msg += '\nBoleto será gerado automaticamente.';
@@ -259,16 +387,53 @@ function emitirNFSeWizard() {
     var btnEmitir = $('#btn-wizard-emitir');
     btnEmitir.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Emitindo...');
 
+    // Montar dados de retenção
+    var emitData = {
+        valor_servicos: valor,
+        valor_deducoes: deducoes,
+        descricao_servico: descricao,
+        gerar_boleto: 0,
+        regime_tributario: wizardData.regimeTributario,
+        competencia: new Date().toISOString().slice(0, 7) + '-01'
+    };
+
+    // DAS (se Simples Nacional)
+    if (wizardData.regimeTributario === 'simples_nacional' && wizardData.valorDas) {
+        emitData.valor_das = wizardData.valorDas;
+    }
+
+    // Retenções do Tomador
+    if ($('#retem-iss').is(':checked')) {
+        emitData.retem_iss = 1;
+        emitData.valor_retencao_iss = wizardData.retencoes ? (wizardData.retencoes.valor_retencao_iss || 0) : 0;
+    }
+    if ($('#retem-irrf').is(':checked')) {
+        emitData.retem_irrf = 1;
+        emitData.valor_retencao_irrf = wizardData.retencoes ? (wizardData.retencoes.valor_retencao_irrf || 0) : 0;
+    }
+    if ($('#retem-pis').is(':checked')) {
+        emitData.retem_pis = 1;
+        emitData.valor_retencao_pis = wizardData.retencoes ? (wizardData.retencoes.valor_retencao_pis || 0) : 0;
+    }
+    if ($('#retem-cofins').is(':checked')) {
+        emitData.retem_cofins = 1;
+        emitData.valor_retencao_cofins = wizardData.retencoes ? (wizardData.retencoes.valor_retencao_cofins || 0) : 0;
+    }
+    if ($('#retem-csll').is(':checked')) {
+        emitData.retem_csll = 1;
+        emitData.valor_retencao_csll = wizardData.retencoes ? (wizardData.retencoes.valor_retencao_csll || 0) : 0;
+    }
+
+    // Total retenções
+    if (wizardData.retencoes && wizardData.retencoes.valor_total_retencao) {
+        emitData.valor_total_retencao = wizardData.retencoes.valor_total_retencao;
+    }
+
     // Emitir NFS-e
     $.ajax({
         url: '<?= site_url("nfse_os/emitir/" . $result->idOs) ?>',
         type: 'POST',
-        data: {
-            valor_servicos: valor,
-            valor_deducoes: deducoes,
-            descricao_servico: descricao,
-            gerar_boleto: 0
-        },
+        data: emitData,
         dataType: 'json',
         success: function(response) {
             if (response.success) {
@@ -332,6 +497,18 @@ function toggleBoleto() {
 // Funções existentes (mantidas)
 // =============================================
 
+function addCsrfTokenToForm(form) {
+    var csrfName = '<?= config_item("csrf_token_name") ?>';
+    var csrfValue = getCookie('<?= config_item("csrf_cookie_name") ?>');
+    if (csrfName && csrfValue) {
+        var csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = csrfName;
+        csrfInput.value = csrfValue;
+        form.appendChild(csrfInput);
+    }
+}
+
 function cancelarNFSe(nfseId) {
     var motivo = prompt('Informe o motivo do cancelamento:');
     if (motivo) {
@@ -343,6 +520,7 @@ function cancelarNFSe(nfseId) {
         input.name = 'motivo';
         input.value = motivo;
         form.appendChild(input);
+        addCsrfTokenToForm(form);
         document.body.appendChild(form);
         form.submit();
     }
@@ -350,7 +528,12 @@ function cancelarNFSe(nfseId) {
 
 function cancelarBoleto(boletoId) {
     if (confirm('Tem certeza que deseja cancelar este boleto?')) {
-        window.location.href = '<?= site_url("nfse_os/cancelar_boleto/") ?>' + boletoId;
+        var form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '<?= site_url("nfse_os/cancelar_boleto/") ?>' + boletoId;
+        addCsrfTokenToForm(form);
+        document.body.appendChild(form);
+        form.submit();
     }
 }
 
@@ -365,6 +548,7 @@ function registrarPagamento(boletoId) {
         inputData.name = 'data_pagamento';
         inputData.value = data;
         form.appendChild(inputData);
+        addCsrfTokenToForm(form);
         document.body.appendChild(form);
         form.submit();
     }
@@ -487,6 +671,17 @@ $(document).ready(function() {
         if (e.which === 13) {
             e.preventDefault();
             $('#btn-confirmar-produtos').click();
+        }
+    });
+
+    // Retenções do Tomador — recalcular ao marcar/desmarcar checkboxes
+    $('#retem-iss, #retem-irrf, #retem-pis, #retem-cofins, #retem-csll').on('change', function() {
+        var valorBruto = wizardData.valorServicos || parseMoeda($('#valor-servicos-wizard').val());
+        atualizarRetencoesStep1(valorBruto);
+        // Se já estamos no passo 2+, invalidar cache para recalcular
+        if (wizardData.currentStep >= 2) {
+            wizardData.impostosResult = null;
+            calcularImpostosWizard();
         }
     });
 });
