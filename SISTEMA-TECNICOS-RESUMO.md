@@ -18,10 +18,10 @@ Este documento resume o sistema completo de gestão de técnicos implementado no
 - `application/models/Obras_model.php` - Gestão de obras
 
 ### Views (Portal do Técnico)
-- `application/views/tecnicos/login.php` - Login com foto e geolocalização
+- `application/views/tecnicos/login.php` - Login com solicitação de geolocalização via popup
 - `application/views/tecnicos/dashboard.php` - Painel do técnico
 - `application/views/tecnicos/minhas_os.php` - Lista de OS
-- `application/views/tecnicos/executar_os.php` - Execução de OS (checklists, fotos, assinatura)
+- `application/views/tecnicos/executar_os.php` - Execução de OS (checklists, fotos do serviço, assinatura)
 - `application/views/tecnicos/meu_estoque.php` - Estoque do veículo
 - `application/views/tecnicos/perfil.php` - Perfil do técnico
 
@@ -56,7 +56,7 @@ Este documento resume o sistema completo de gestão de técnicos implementado no
 - `app_tecnico_instalado` - Flag de instalação
 - `token_app`, `token_expira` - Autenticação mobile
 - `ultimo_acesso_app` - Último login
-- `foto_tecnico` - Foto do perfil
+- `geolocalizacao_ativa` - Flag de permissão de localização
 
 ### Novas Tabelas
 
@@ -69,8 +69,8 @@ Este documento resume o sistema completo de gestão de técnicos implementado no
    - Checklist específico
 
 3. **`tec_os_execucao`** - Execução detalhada
-   - Check-in/check-out com GPS
-   - Fotos (check-in, checkout, galeria)
+   - Check-in/check-out com GPS (solicitado via popup do navegador)
+   - Fotos do serviço (antes/depois)
    - Assinatura digital
    - Tempo total
    - Checklist executado
@@ -89,8 +89,7 @@ Este documento resume o sistema completo de gestão de técnicos implementado no
 
 ### Login
 - ✅ Login com e-mail e senha
-- ✅ Captura de foto do técnico
-- ✅ Geolocalização obrigatória
+- ✅ Solicitação de geolocalização via popup (navegador web/mobile)
 - ✅ Token JWT para sessão
 
 ### Dashboard
@@ -100,7 +99,7 @@ Este documento resume o sistema completo de gestão de técnicos implementado no
 - ✅ Acesso rápido às principais funções
 
 ### Execução de OS
-- ✅ Check-in com GPS e foto
+- ✅ Check-in com GPS (solicitado via popup do navegador)
 - ✅ Checklist passo a passo
 - ✅ Galeria de fotos (antes/depois/problemas)
 - ✅ Registro de materiais utilizados
@@ -114,7 +113,6 @@ Este documento resume o sistema completo de gestão de técnicos implementado no
 
 ### Perfil
 - ✅ Dados pessoais e profissionais
-- ✅ Alteração de foto
 - ✅ Estatísticas de trabalho
 
 ---
@@ -182,7 +180,7 @@ chown -R www-data:www-data assets/tecnicos/fotos/
 1. **Admin** cria OS e atribui ao técnico
 2. **Técnico** recebe notificação (se push configurado)
 3. **Técnico** faz login no portal
-4. **Técnico** inicia execução (check-in com foto+GPS)
+4. **Técnico** inicia execução (check-in com GPS via popup)
 5. **Técnico** executa checklist e tira fotos
 6. **Técnico** registra materiais usados
 7. **Técnico** coleta assinatura do cliente
@@ -214,7 +212,7 @@ O portal do técnico funciona como um app instalável:
 - ✅ Senhas hasheadas (bcrypt)
 - ✅ Tokens com expiração
 - ✅ Validação de GPS (anti-fake)
-- ✅ Fotos com metadados
+- ✅ Geolocalização via API do navegador
 - ✅ Assinatura digital verificável
 - ✅ Permissões granulares
 
@@ -274,8 +272,8 @@ Adicione templates em `tec_checklist_template`
 ### Problema: Fotos não aparecem
 **Solução**: Verifique permissões da pasta `assets/tecnicos/fotos/`
 
-### Problema: Câmera não abre
-**Solução**: Permita acesso à câmera nas configurações do navegador
+### Problema: Geolocalização não é solicitada
+**Solução**: Permita acesso à localização nas configurações do navegador e certifique-se de usar HTTPS
 
 ---
 

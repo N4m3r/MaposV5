@@ -83,65 +83,6 @@
             border-color: #667eea;
         }
 
-        .camera-section {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .camera-preview {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            background: #e0e0e0;
-            margin: 0 auto 15px;
-            overflow: hidden;
-            position: relative;
-            border: 3px solid #667eea;
-        }
-
-        .camera-preview img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .camera-preview .placeholder {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: #999;
-            font-size: 3rem;
-        }
-
-        .btn-camera {
-            background: #667eea;
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 25px;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-camera:hover {
-            background: #5568d3;
-            transform: translateY(-2px);
-        }
-
-        .btn-camera:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: none;
-        }
-
         .location-status {
             display: flex;
             align-items: center;
@@ -233,13 +174,6 @@
             font-size: 0.85rem;
         }
 
-        #video {
-            display: none;
-        }
-
-        #canvas {
-            display: none;
-        }
     </style>
 </head>
 <body>
@@ -261,19 +195,6 @@
         <form id="loginForm" action="<?php echo site_url('tecnicos/autenticar'); ?>" method="POST">
             <input type="hidden" name="latitude" id="latitude" required>
             <input type="hidden" name="longitude" id="longitude" required>
-            <input type="hidden" name="foto_login" id="foto_login">
-
-            <div class="camera-section">
-                <div class="camera-preview" id="cameraPreview">
-                    <span class="placeholder">📷</span>
-                </div>
-                <button type="button" class="btn-camera" id="btnCamera" onclick="capturarFoto()">
-                    <span>📷</span>
-                    <span>Tirar Foto</span>
-                </button>
-                <video id="video" autoplay playsinline></video>
-                <canvas id="canvas" width="400" height="400"></canvas>
-            </div>
 
             <div class="location-status waiting" id="locationStatus">
                 <span>🔄</span>
@@ -302,7 +223,6 @@
     </div>
 
     <script>
-        let fotoCapturada = null;
         let localizacaoObtida = false;
 
         // Solicitar localização ao carregar a página
@@ -339,56 +259,6 @@
             } else {
                 status.className = 'location-status error';
                 status.innerHTML = '<span>❌</span><span>Permita o acesso à localização</span>';
-            }
-        }
-
-        async function capturarFoto() {
-            const video = document.getElementById('video');
-            const canvas = document.getElementById('canvas');
-            const preview = document.getElementById('cameraPreview');
-            const btn = document.getElementById('btnCamera');
-
-            try {
-                btn.disabled = true;
-                btn.innerHTML = '<span>🔄</span><span>Abrindo câmera...</span>';
-
-                const stream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: 'user' }
-                });
-
-                video.srcObject = stream;
-
-                // Aguardar vídeo carregar
-                await new Promise(resolve => {
-                    video.onloadedmetadata = resolve;
-                });
-
-                // Esperar um pouco para a câmera focar
-                await new Promise(r => setTimeout(r, 500));
-
-                // Capturar foto
-                const context = canvas.getContext('2d');
-                context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-                fotoCapturada = canvas.toDataURL('image/jpeg', 0.8);
-                document.getElementById('foto_login').value = fotoCapturada;
-
-                // Mostrar preview
-                preview.innerHTML = `<img src="${fotoCapturada}" alt="Foto capturada">`;
-
-                // Parar câmera
-                stream.getTracks().forEach(track => track.stop());
-
-                btn.innerHTML = '<span>🔄</span><span>Tirar Nova</span>';
-                btn.disabled = false;
-
-                verificarCampos();
-
-            } catch (error) {
-                console.error('Erro ao acessar câmera:', error);
-                alert('Não foi possível acessar a câmera. Verifique as permissões.');
-                btn.disabled = false;
-                btn.innerHTML = '<span>📷</span><span>Tirar Foto</span>';
             }
         }
 
