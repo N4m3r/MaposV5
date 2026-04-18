@@ -86,9 +86,13 @@ if (!function_exists('formatarDocumentoNFSe')) {
                 </div>
 
                 <div class="btn-group">
+                    <a href="<?= site_url('nfse_os/imprimir_nfse/' . $nfse_atual->id) ?>" target="_blank" class="btn btn-primary">
+                        <i class="fas fa-file-pdf"></i> Imprimir NFS-e
+                    </a>
+
                     <?php if ($nfse_atual->link_impressao): ?>
                         <a href="<?= $nfse_atual->link_impressao ?>" target="_blank" class="btn btn-success">
-                            <i class="fas fa-print"></i> Imprimir NFS-e
+                            <i class="fas fa-print"></i> Imprimir (Original)
                         </a>
                     <?php endif; ?>
 

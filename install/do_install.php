@@ -831,7 +831,7 @@ if (!is_writable($env_dir)) {
 }
 
 // Gerar chave de criptografia
-$encryption_key = substr(md5(rand()), 0, 15);
+$encryption_key = substr(md5(rand()), 0, 16);
 $log->debug("Chave de criptografia gerada");
 
 // Gerar chave JWT

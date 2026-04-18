@@ -34,6 +34,9 @@ class Dre extends MY_Controller
         $data_inicio = $this->input->get('data_inicio') ?: date('Y-m-01');
         $data_fim = $this->input->get('data_fim') ?: date('Y-m-t');
 
+        // Auto-integrar dados antes de gerar DRE
+        $this->dre_model->integrarDadosAutomaticos($data_inicio, $data_fim);
+
         // Gerar DRE
         $dre = $this->dre_model->gerarDRE($data_inicio, $data_fim, true);
 
@@ -43,12 +46,20 @@ class Dre extends MY_Controller
         // Evolução mensal (últimos 6 meses)
         $evolucao = $this->dre_model->getEvolucaoMensal(6);
 
+        // Totais por conta (evita N+1 na view)
+        $totaisContas = $this->dre_model->getTotaisPorContas($data_inicio, $data_fim);
+
+        // Resumo de OS no período
+        $resumoOS = $this->dre_model->getResumoOS($data_inicio, $data_fim);
+
         $this->data['results'] = [
             'dre' => $dre,
             'indicadores' => $indicadores,
             'evolucao' => $evolucao,
             'data_inicio' => $data_inicio,
             'data_fim' => $data_fim,
+            'totaisContas' => $totaisContas,
+            'resumoOS' => $resumoOS,
         ];
 
         $this->data['view'] = 'dre/dashboard';
@@ -336,6 +347,47 @@ class Dre extends MY_Controller
 
         header('Content-Type: application/json');
         echo json_encode($response);
+    }
+
+    /**
+     * AJAX: Buscar OS para vincular ao lançamento
+     */
+    public function api_buscar_os()
+    {
+        if (!$this->input->is_ajax_request()) {
+            show_404();
+        }
+
+        $term = $this->input->get('term');
+        $this->db->select('os.idOs, os.valorTotal, os.dataFinal, os.status, clientes.nomeCliente');
+        $this->db->from('os');
+        $this->db->join('clientes', 'clientes.idClientes = os.clientes_id', 'left');
+        $this->db->where('os.status IN (\'Finalizado\', \'Faturado\')');
+
+        if (is_numeric($term)) {
+            $this->db->where('os.idOs', $term);
+        } else {
+            $this->db->like('clientes.nomeCliente', $term);
+        }
+
+        $this->db->limit(10);
+        $query = $this->db->get();
+
+        $results = [];
+        if ($query) {
+            foreach ($query->result() as $row) {
+                $results[] = [
+                    'id' => $row->idOs,
+                    'valor' => $row->valorTotal,
+                    'data' => $row->dataFinal,
+                    'status' => $row->status,
+                    'cliente' => $row->nomeCliente ?? 'Cliente não informado',
+                ];
+            }
+        }
+
+        header('Content-Type: application/json');
+        echo json_encode(['success' => true, 'results' => $results]);
     }
 
     /**

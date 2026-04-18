@@ -772,8 +772,10 @@ CREATE TABLE IF NOT EXISTS `dre_contas` (
   `codigo` VARCHAR(50) NOT NULL,
   `nome` VARCHAR(255) NOT NULL,
   `tipo` ENUM('receita', 'custo', 'despesa') NOT NULL,
-  `categoria` VARCHAR(100) NULL,
-  `pai_id` INT(11) UNSIGNED NULL,
+  `grupo` VARCHAR(100) NULL,
+  `sinal` ENUM('POSITIVO','NEGATIVO') DEFAULT 'POSITIVO',
+  `conta_pai_id` INT(11) UNSIGNED NULL,
+  `nivel` INT DEFAULT 1,
   `ordem` INT DEFAULT 0,
   `ativo` TINYINT(1) DEFAULT 1,
   `created_at` DATETIME NOT NULL,
@@ -788,16 +790,20 @@ CREATE TABLE IF NOT EXISTS `dre_contas` (
 CREATE TABLE IF NOT EXISTS `dre_lancamentos` (
   `id` INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `conta_id` INT(11) UNSIGNED NOT NULL,
-  `data_referencia` DATE NOT NULL,
+  `data` DATE NOT NULL,
   `valor` DECIMAL(15,2) NOT NULL,
+  `tipo_movimento` ENUM('CREDITO','DEBITO') DEFAULT 'CREDITO',
   `descricao` TEXT NULL,
-  `id_os` INT(11) UNSIGNED NULL,
-  `id_venda` INT(11) UNSIGNED NULL,
-  `id_lancamento` INT(11) UNSIGNED NULL,
+  `documento` VARCHAR(100) NULL,
+  `os_id` INT(11) UNSIGNED NULL,
+  `venda_id` INT(11) UNSIGNED NULL,
+  `lancamento_id` INT(11) UNSIGNED NULL,
+  `usuarios_id` INT(11) UNSIGNED NULL,
   `created_at` DATETIME NOT NULL,
+  `updated_at` DATETIME NULL,
   INDEX `idx_conta_id` (`conta_id`),
-  INDEX `idx_data_referencia` (`data_referencia`),
-  INDEX `idx_id_os` (`id_os`)
+  INDEX `idx_data_referencia` (`data`),
+  INDEX `idx_os_id` (`os_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- -----------------------------------------------------
@@ -1053,14 +1059,17 @@ INSERT IGNORE INTO `usuarios` (`idUsuarios`, `nome`, `rg`, `cpf`, `cep`, `rua`, 
 INSERT IGNORE INTO `migrations`(`version`) VALUES ('20260413000003');
 
 -- Dados iniciais V5
-INSERT IGNORE INTO `dre_contas` (`codigo`, `nome`, `tipo`, `categoria`, `ordem`, `ativo`, `created_at`, `updated_at`) VALUES
-('1', 'RECEITA BRUTA', 'receita', 'Receitas', 1, 1, 'admin_created_at', 'admin_created_at'),
-('1.1', 'Serviços', 'receita', 'Receitas', 2, 1, 'admin_created_at', 'admin_created_at'),
-('1.2', 'Produtos', 'receita', 'Receitas', 3, 1, 'admin_created_at', 'admin_created_at'),
-('2', 'IMPOSTOS', 'despesa', 'Impostos', 10, 1, 'admin_created_at', 'admin_created_at'),
-('2.1', 'ISS', 'despesa', 'Impostos', 11, 1, 'admin_created_at', 'admin_created_at'),
-('3', 'CUSTOS', 'custo', 'Custos', 20, 1, 'admin_created_at', 'admin_created_at'),
-('4', 'DESPESAS OPERACIONAIS', 'despesa', 'Despesas', 30, 1, 'admin_created_at', 'admin_created_at');
+INSERT IGNORE INTO `dre_contas` (`codigo`, `nome`, `tipo`, `grupo`, `sinal`, `nivel`, `ordem`, `ativo`, `created_at`, `updated_at`) VALUES
+('1', 'RECEITA BRUTA', 'receita', 'RECEITA_BRUTA', 'POSITIVO', 1, 1, 1, NOW(), NOW()),
+('1.1', 'Receita de Serviços', 'receita', 'RECEITA_BRUTA', 'POSITIVO', 2, 2, 1, NOW(), NOW()),
+('1.2', 'Receita de Produtos', 'receita', 'RECEITA_BRUTA', 'POSITIVO', 2, 3, 1, NOW(), NOW()),
+('1.3', 'Outras Receitas', 'receita', 'OUTRAS_RECEITAS', 'POSITIVO', 2, 4, 1, NOW(), NOW()),
+('2', 'DEDUÇÕES DA RECEITA', 'despesa', 'DEDUCOES', 'NEGATIVO', 1, 5, 1, NOW(), NOW()),
+('2.1', 'ISS', 'despesa', 'DEDUCOES', 'NEGATIVO', 2, 6, 1, NOW(), NOW()),
+('3', 'CUSTO DOS SERVIÇOS', 'custo', 'CUSTO', 'NEGATIVO', 1, 10, 1, NOW(), NOW()),
+('4', 'DESPESAS OPERACIONAIS', 'despesa', 'DESPESA_OPERACIONAL', 'NEGATIVO', 1, 20, 1, NOW(), NOW()),
+('6', 'IMPOSTO DE RENDA E CONTRIBUIÇÕES', 'despesa', 'IMPOSTO_RENDA', 'NEGATIVO', 1, 30, 1, NOW(), NOW()),
+('7', 'OUTRAS DESPESAS', 'despesa', 'OUTRAS_DESPESAS', 'NEGATIVO', 1, 35, 1, NOW(), NOW());
 
 INSERT IGNORE INTO `impostos_config` (`tipo_regime`, `anexo_simples`, `aliquota_iss`, `retem_iss`, `created_at`, `updated_at`) VALUES
 ('simples_nacional', 'III', 2.00, 0, 'admin_created_at', 'admin_created_at');

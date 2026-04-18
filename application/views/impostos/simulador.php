@@ -131,7 +131,7 @@
 
             <hr style="border-color: rgba(255,255,255,0.3); margin: 20px 0;">
 
-            <h4 style="margin-bottom: 15px;">Desconto de Impostos: R$ <?= number_format($resultado['total_impostos'], 2, ',', '.') ?></h4>
+            <h4 style="margin-bottom: 15px;">Desconto de Impostos: R$ <?= number_format($resultado['valor_total_impostos'], 2, ',', '.') ?></h4>
 
             <div class="row-fluid">
                 <div class="span6">
@@ -157,9 +157,13 @@
                         <span>ISS <span class="aliquota-info">(<?= $resultado['aliquota_iss'] ?>%)</span></span>
                         <span>R$ <?= number_format($resultado['iss_valor'], 2, ',', '.') ?></span>
                     </div>
+                    <div class="imposto-item">
+                        <span>INSS/CPP <span class="aliquota-info">(<?= $resultado['aliquota_cpp'] ?>%)</span></span>
+                        <span>R$ <?= number_format($resultado['cpp_valor'], 2, ',', '.') ?></span>
+                    </div>
                     <div class="imposto-item" style="font-weight: bold;">
                         <span>TOTAL</span>
-                        <span>R$ <?= number_format($resultado['total_impostos'], 2, ',', '.') ?></span>
+                        <span>R$ <?= number_format($resultado['valor_total_impostos'], 2, ',', '.') ?></span>
                     </div>
                 </div>
             </div>

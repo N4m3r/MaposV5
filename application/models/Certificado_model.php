@@ -437,7 +437,9 @@ class Certificado_model extends CI_Model
 
     private function getIvCriptografia()
     {
-        return substr($this->getChaveCriptografia(), 0, 16);
+        $iv = substr($this->getChaveCriptografia(), 0, 16);
+        // Garantir exatamente 16 bytes (AES-256-CBC exige IV de 16 bytes)
+        return str_pad($iv, 16, "\0");
     }
 
     /**

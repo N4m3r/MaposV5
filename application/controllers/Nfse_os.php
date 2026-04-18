@@ -179,33 +179,34 @@ class Nfse_os extends MY_Controller
      */
     public function calcular_impostos()
     {
-        if (!$this->input->is_ajax_request()) {
-            show_404();
-        }
+        header('Content-Type: application/json; charset=utf-8');
 
-        $valor = floatval($this->input->post('valor'));
-        if ($valor <= 0) {
-            echo json_encode(['success' => false, 'message' => 'Valor inválido']);
-            return;
-        }
+        try {
+            $valor = floatval($this->input->post('valor') ?: $this->input->get('valor'));
+            if ($valor <= 0) {
+                echo json_encode(['success' => false, 'message' => 'Valor inválido']);
+                return;
+            }
 
-        $calculo = $this->impostos_model->calcularImpostos($valor);
+            $calculo = $this->impostos_model->calcularImpostos($valor);
 
-        if (!$calculo) {
+            if (!$calculo) {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Configuração tributária não encontrada. Configure os impostos em Configurações do Sistema.'
+                ]);
+                return;
+            }
+
             echo json_encode([
-                'success' => false,
-                'message' => 'Configuração tributária não encontrada. Configure os impostos em Configurações do Sistema.'
+                'success' => true,
+                'valor_bruto' => $valor,
+                'valor_liquido' => $valor - ($calculo['valor_total_impostos'] ?? 0),
+                'impostos' => $calculo
             ]);
-            return;
+        } catch (Exception $e) {
+            echo json_encode(['success' => false, 'message' => 'Erro interno: ' . $e->getMessage()]);
         }
-
-        header('Content-Type: application/json');
-        echo json_encode([
-            'success' => true,
-            'valor_bruto' => $valor,
-            'valor_liquido' => $valor - ($calculo['valor_total_impostos'] ?? 0),
-            'impostos' => $calculo
-        ]);
     }
 
     /**
@@ -266,11 +267,86 @@ class Nfse_os extends MY_Controller
             'descricao_servico' => $descricao_servico ?: $tributacao['descricao_servico'],
             'qrCodePix' => $qrCodePix,
             'chaveFormatada' => $chaveFormatada,
+            'is_preview' => true,
         ];
 
         $this->load->helper('mpdf');
         $html = $this->load->view('nfse_os/preview_nfse', $data, true);
         pdf_create($html, 'NFSe_Preview_OS_' . $os_id, true);
+    }
+
+    /**
+     * Imprimir NFS-e já emitida em PDF
+     * Gera PDF com dados do prestador, tomador, impostos e QR Code PIX
+     */
+    public function imprimir_nfse($nfse_id = null)
+    {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vNFSe')) {
+            $this->session->set_flashdata('error', 'Sem permissão.');
+            redirect(base_url());
+        }
+
+        if (!$nfse_id) {
+            redirect('nfse_os');
+        }
+
+        $nfse = $this->nfse_emitida_model->getById($nfse_id);
+        if (!$nfse) {
+            $this->session->set_flashdata('error', 'NFS-e não encontrada.');
+            redirect('nfse_os');
+        }
+
+        $os = $this->os_model->getById($nfse->os_id);
+        if (!$os) {
+            $this->session->set_flashdata('error', 'OS não encontrada.');
+            redirect('nfse_os');
+        }
+
+        // Emitente
+        $this->load->model('mapos_model');
+        $emitente = $this->mapos_model->getEmitente();
+
+        // Tributação
+        $tributacao = $this->impostos_model->getConfiguracaoTributacao();
+
+        // Impostos da NFS-e emitida
+        $impostos = [
+            'iss' => $nfse->valor_iss ?? 0,
+            'pis' => $nfse->valor_pis ?? 0,
+            'cofins' => $nfse->valor_cofins ?? 0,
+            'irrf' => $nfse->valor_irrf ?? 0,
+            'csll' => $nfse->valor_csll ?? 0,
+            'inss' => $nfse->valor_inss ?? 0,
+            'valor_total_impostos' => $nfse->valor_total_impostos ?? 0,
+        ];
+
+        // QR Code PIX (valor líquido)
+        $pix_key = $this->data['configuration']['pix_key'] ?? '';
+        $qrCodePix = null;
+        $chaveFormatada = '';
+        if (!empty($pix_key) && !empty($emitente) && $nfse->valor_liquido > 0) {
+            $qrCodePix = $this->os_model->getQrCodeCustom($nfse->valor_liquido, $nfse->os_id, $pix_key, $emitente);
+            $chaveFormatada = $this->formatarChavePix($pix_key);
+        }
+
+        $data = [
+            'os' => $os,
+            'emitente' => $emitente,
+            'tributacao' => $tributacao,
+            'valor_servicos' => $nfse->valor_servicos ?? 0,
+            'valor_deducoes' => $nfse->valor_deducoes ?? 0,
+            'valor_liquido' => $nfse->valor_liquido ?? 0,
+            'impostos' => $impostos,
+            'descricao_servico' => $tributacao['descricao_servico'],
+            'qrCodePix' => $qrCodePix,
+            'chaveFormatada' => $chaveFormatada,
+            'is_preview' => false,
+            'nfse_numero' => $nfse->numero_nfse ?? null,
+        ];
+
+        $this->load->helper('mpdf');
+        $html = $this->load->view('nfse_os/preview_nfse', $data, true);
+        pdf_create($html, 'NFSe_' . ($nfse->numero_nfse ?? $nfse_id) . '_OS_' . $nfse->os_id, true);
     }
 
     /**

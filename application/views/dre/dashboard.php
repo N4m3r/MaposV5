@@ -9,6 +9,8 @@ $data_inicio = $results['data_inicio'];
 $data_fim = $results['data_fim'];
 $comparativo = isset($dre['comparativo']) ? $dre['comparativo'] : null;
 $periodo_anterior = $dre['periodo_anterior'] ?? null;
+$totaisContas = $results['totaisContas'] ?? [];
+$resumoOS = $results['resumoOS'] ?? ['total_os' => 0, 'valor_total' => 0, 'os_finalizadas' => 0, 'os_faturadas' => 0, 'valor_finalizado' => 0, 'valor_faturado' => 0];
 ?>
 
 <style>
@@ -201,6 +203,52 @@ $periodo_anterior = $dre['periodo_anterior'] ?? null;
     </div>
 </div>
 
+<!-- Resumo de OS no Período -->
+<?php if ($resumoOS['total_os'] > 0): ?>
+<div class="row-fluid" style="margin-top: 15px;">
+    <div class="span12">
+        <div class="widget-box">
+            <div class="widget-title">
+                <span class="icon"><i class="fas fa-tools"></i></span>
+                <h5>Ordens de Serviço no Período</h5>
+                <div class="buttons">
+                    <a href="<?= site_url('os/gerenciar?data=' . date('d/m/Y', strtotime($data_inicio)) . '&data2=' . date('d/m/Y', strtotime($data_fim))) ?>" class="btn btn-small btn-info">
+                        <i class="fas fa-external-link-alt"></i> Ver OS
+                    </a>
+                </div>
+            </div>
+            <div class="widget-content">
+                <div class="row-fluid">
+                    <div class="span2" style="text-align: center;">
+                        <div style="font-size: 28px; font-weight: bold; color: #2c3e50;"><?= $resumoOS['total_os'] ?></div>
+                        <div style="font-size: 11px; color: #888; margin-top: 4px;">Total de OS</div>
+                    </div>
+                    <div class="span2" style="text-align: center;">
+                        <div style="font-size: 28px; font-weight: bold; color: #27ae60;"><?= $resumoOS['os_finalizadas'] + $resumoOS['os_faturadas'] ?></div>
+                        <div style="font-size: 11px; color: #888; margin-top: 4px;">Finalizadas/Faturadas</div>
+                    </div>
+                    <div class="span3" style="text-align: center;">
+                        <div style="font-size: 22px; font-weight: bold; color: #3498db;">R$ <?= number_format($resumoOS['valor_finalizado'], 2, ',', '.') ?></div>
+                        <div style="font-size: 11px; color: #888; margin-top: 4px;">Valor Finalizado</div>
+                    </div>
+                    <div class="span3" style="text-align: center;">
+                        <div style="font-size: 22px; font-weight: bold; color: #2c3e50;">R$ <?= number_format($resumoOS['valor_total'], 2, ',', '.') ?></div>
+                        <div style="font-size: 11px; color: #888; margin-top: 4px;">Valor Total (todas OS)</div>
+                    </div>
+                    <div class="span2" style="text-align: center;">
+                        <?php
+                        $percentual = $resumoOS['valor_total'] > 0 ? round(($resumoOS['valor_finalizado'] / $resumoOS['valor_total']) * 100, 1) : 0;
+                        ?>
+                        <div style="font-size: 28px; font-weight: bold; color: <?= $percentual >= 70 ? '#27ae60' : '#e67e22' ?>;"><?= $percentual ?>%</div>
+                        <div style="font-size: 11px; color: #888; margin-top: 4px;">Conversão</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
+
 <!-- Gráfico de Evolução -->
 <div class="row-fluid">
     <div class="span8">
@@ -297,7 +345,7 @@ $periodo_anterior = $dre['periodo_anterior'] ?? null;
                             <?php if (!$grupo['destaque'] && !empty($grupo['contas'])): ?>
                             <?php foreach ($grupo['contas'] as $conta): ?>
                             <?php
-                                $valor_conta = $this->dre_model->getTotalPorConta($conta->id, $data_inicio, $data_fim);
+                                $valor_conta = isset($totaisContas[$conta->id]) ? $totaisContas[$conta->id]['total'] : 0;
                                 if ($valor_conta != 0):
                             ?>
                             <tr>

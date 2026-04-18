@@ -271,6 +271,13 @@ class Os extends MY_Controller
                 $emitente = $this->mapos_model->getEmitente();
                 $tecnico = $this->usuarios_model->getById($os->usuarios_id);
 
+                // Integrar OS ao DRE automaticamente quando status for Finalizado ou Faturado
+                $novoStatus = strtolower($this->input->post('status'));
+                if (in_array($novoStatus, ['finalizado', 'faturado'])) {
+                    $this->load->model('dre_model');
+                    $this->dre_model->integrarOS($idOs);
+                }
+
                 // Verificar configuração de notificação
                 if ($this->data['configuration']['os_notification'] != 'nenhum' && $this->data['configuration']['email_automatico'] == 1) {
                     $remetentes = [];
@@ -1301,6 +1308,10 @@ class Os extends MY_Controller
                 $this->db->update('os');
 
                 log_info('Faturou uma OS. ID: ' . $os_id);
+
+                // Integrar OS ao DRE automaticamente
+                $this->load->model('dre_model');
+                $this->dre_model->integrarOS($os_id);
 
                 $this->db->trans_complete();
 

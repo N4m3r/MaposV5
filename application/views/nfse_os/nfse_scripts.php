@@ -128,6 +128,7 @@ function calcularImpostosWizard() {
 
     // Mostra loading
     $('#impostos-table td.imposto-valor').text('...');
+    $('#imp-valor-liquido').text('...');
 
     clearTimeout(calcularTimeout);
     calcularTimeout = setTimeout(function() {
@@ -147,7 +148,7 @@ function calcularImpostosWizard() {
                     $('#imp-valor-bruto').text(formatarMoeda(data.valor_bruto));
                     $('#imp-deducoes').text(formatarMoeda(deducoes));
                     $('#imp-base-calculo').text(formatarMoeda(baseCalc));
-                    $('#imp-iss').text(formatarMoeda(imp.iss || imp.irpj_valor || 0));
+                    $('#imp-iss').text(formatarMoeda(imp.iss || imp.iss_valor || 0));
                     $('#imp-pis').text(formatarMoeda(imp.pis || imp.pis_valor || 0));
                     $('#imp-cofins').text(formatarMoeda(imp.cofins || imp.cofins_valor || 0));
                     $('#imp-irrf').text(formatarMoeda(imp.irrf || imp.irpj_valor || 0));
@@ -161,12 +162,27 @@ function calcularImpostosWizard() {
                     $('#imp-valor-liquido').html('<span style="color:#dc3545">' + msg + '</span>');
                 }
             },
-            error: function(xhr) {
+            error: function(xhr, status, error) {
+                console.error('NFSe calcular_impostos AJAX error:', xhr.status, status, error);
+                console.error('Response:', xhr.responseText ? xhr.responseText.substring(0, 500) : '(empty)');
                 var msg = 'Erro na comunicação com o servidor.';
-                try {
-                    var resp = JSON.parse(xhr.responseText);
-                    if (resp.message) msg = resp.message;
-                } catch(e) {}
+                if (xhr.status === 0) {
+                    msg = 'Sem conexão com o servidor. Verifique sua rede.';
+                } else if (xhr.status === 403) {
+                    msg = 'Acesso negado (CSRF). Recarregue a página e tente novamente.';
+                } else if (xhr.status === 500) {
+                    msg = 'Erro interno do servidor (500).';
+                } else {
+                    try {
+                        var resp = JSON.parse(xhr.responseText);
+                        if (resp.message) msg = resp.message;
+                        else if (resp.error) msg = resp.error;
+                    } catch(e) {
+                        if (xhr.responseText) {
+                            msg = msg + ' (HTTP ' + xhr.status + ')';
+                        }
+                    }
+                }
                 $('#impostos-table td.imposto-valor').text('—');
                 $('#imp-valor-liquido').html('<span style="color:#dc3545">' + msg + '</span>');
             }

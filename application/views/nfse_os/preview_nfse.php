@@ -23,6 +23,16 @@ $emitente = $emitente ?? null;
 $os = $os ?? null;
 $tributacao = $tributacao ?? [];
 $impostos = $impostos ?? [];
+$is_preview = $is_preview ?? true;
+
+// Resolver caminho da logo para mPDF (caminho absoluto do servidor)
+$logoPath = '';
+if ($emitente && !empty($emitente->url_logo)) {
+    $fsPath = convertUrlToUploadsPath($emitente->url_logo);
+    if (file_exists($fsPath)) {
+        $logoPath = $fsPath;
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -45,105 +55,122 @@ $impostos = $impostos ?? [];
             padding: 0;
         }
 
+        /* Marca d'água menor e mais discreta */
         .watermark {
             position: absolute;
-            top: 50%;
+            top: 45%;
             left: 50%;
-            transform: translate(-50%, -50%) rotate(-35deg);
-            font-size: 60px;
+            transform: translate(-50%, -50%) rotate(-30deg);
+            font-size: 28px;
             font-weight: bold;
-            color: rgba(200, 50, 50, 0.06);
+            color: rgba(180, 40, 40, 0.07);
             white-space: nowrap;
             pointer-events: none;
-            letter-spacing: 6px;
+            letter-spacing: 8px;
             z-index: 0;
+            text-transform: uppercase;
         }
 
+        /* Cabeçalho com logo e dados */
         .header {
-            background: #f0f0f0;
             border-bottom: 2px solid #333;
-            padding: 12px 20px;
+            padding: 15px 20px 10px 20px;
             overflow: hidden;
         }
 
-        .header-logo {
+        .header-left {
             float: left;
             width: 120px;
-        }
-
-        .header-logo img {
-            width: 100px;
-            max-height: 70px;
-        }
-
-        .header-info {
-            float: right;
-            text-align: right;
-        }
-
-        .header-title {
             text-align: center;
-            padding: 10px 0;
+            padding-right: 15px;
         }
 
-        .header-title h1 {
-            font-size: 16px;
-            margin: 0;
+        .header-left img {
+            width: 100px;
+            max-height: 80px;
+        }
+
+        .header-center {
+            float: left;
+            padding-top: 5px;
+        }
+
+        .header-center h2 {
+            font-size: 14px;
+            margin: 0 0 4px 0;
             color: #333;
             letter-spacing: 1px;
         }
 
-        .header-title small {
+        .header-center .subtitle {
             font-size: 10px;
             color: #d9534f;
             font-weight: bold;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
+            margin: 0;
         }
 
+        .header-center .empresa-nome {
+            font-size: 12px;
+            font-weight: bold;
+            color: #555;
+            margin: 6px 0 2px 0;
+        }
+
+        .header-center .empresa-detail {
+            font-size: 9px;
+            color: #777;
+            margin: 1px 0;
+        }
+
+        .header-right {
+            float: right;
+            text-align: right;
+            font-size: 9px;
+            color: #888;
+            padding-top: 5px;
+        }
+
+        .header-right .os-number {
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        /* Seções */
         .section {
-            border-bottom: 1px solid #999;
+            border-bottom: 1px solid #bbb;
             padding: 10px 20px;
             position: relative;
             z-index: 1;
         }
 
-        .section:last-child {
+        .section:last-of-type {
             border-bottom: none;
         }
 
         .section-title {
-            background: #e8e8e8;
+            background: #f0f0f0;
             padding: 4px 10px;
             font-weight: bold;
-            font-size: 11px;
-            color: #333;
+            font-size: 10px;
+            color: #444;
             margin-bottom: 8px;
             border-left: 3px solid #3a8abf;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .section-title.prestador {
-            border-left-color: #3a8abf;
-        }
-
-        .section-title.tomador {
-            border-left-color: #5cb85c;
-        }
-
-        .section-title.discriminacao {
-            border-left-color: #f0ad4e;
-        }
-
-        .section-title.valores {
-            border-left-color: #d9534f;
-        }
-
-        .section-title.pix-section {
-            border-left-color: #32bcad;
-        }
+        .section-title.prestador { border-left-color: #3a8abf; }
+        .section-title.tomador { border-left-color: #5cb85c; }
+        .section-title.discriminacao { border-left-color: #f0ad4e; }
+        .section-title.valores { border-left-color: #d9534f; }
+        .section-title.pix-section { border-left-color: #32bcad; }
 
         .row {
             overflow: hidden;
-            margin: 3px 0;
+            margin: 2px 0;
         }
 
         .col-left {
@@ -151,12 +178,14 @@ $impostos = $impostos ?? [];
             width: 30%;
             font-weight: bold;
             color: #555;
+            font-size: 10px;
         }
 
         .col-right {
             float: left;
             width: 70%;
             color: #333;
+            font-size: 10px;
         }
 
         .col-half {
@@ -165,6 +194,7 @@ $impostos = $impostos ?? [];
             margin-right: 2%;
         }
 
+        /* Tabela de valores */
         .valores-table {
             width: 100%;
             border-collapse: collapse;
@@ -173,6 +203,7 @@ $impostos = $impostos ?? [];
         .valores-table td {
             padding: 4px 10px;
             border-bottom: 1px solid #eee;
+            font-size: 10px;
         }
 
         .valores-table .label-col {
@@ -187,21 +218,22 @@ $impostos = $impostos ?? [];
         }
 
         .valores-table .deducao-row .value-col {
-            color: #d9534f;
+            color: #c0392b;
         }
 
         .valores-table .total-row td {
             border-top: 2px solid #999;
-            font-size: 12px;
+            font-size: 11px;
         }
 
         .valores-table .liquido-row td {
-            font-size: 14px;
+            font-size: 13px;
             color: #2e7d32;
             background: #e8f5e9;
             border-top: 2px solid #2e7d32;
         }
 
+        /* PIX */
         .pix-area {
             overflow: hidden;
             padding: 10px 0;
@@ -214,8 +246,8 @@ $impostos = $impostos ?? [];
         }
 
         .pix-qr img {
-            width: 120px;
-            height: 120px;
+            width: 110px;
+            height: 110px;
         }
 
         .pix-info {
@@ -225,63 +257,88 @@ $impostos = $impostos ?? [];
         }
 
         .pix-info p {
-            margin: 4px 0;
+            margin: 3px 0;
+            font-size: 10px;
         }
 
         .pix-logo {
-            width: 40px;
+            width: 35px;
             vertical-align: middle;
             margin-right: 5px;
         }
 
+        /* Rodapé */
         .footer {
             background: #f0f0f0;
             border-top: 2px solid #333;
             padding: 8px 20px;
             text-align: center;
-            font-size: 9px;
-            color: #888;
+            font-size: 8px;
+            color: #999;
+            overflow: hidden;
         }
 
-        .os-info {
+        .footer-left {
             float: left;
             text-align: left;
         }
 
-        .os-date {
+        .footer-right {
             float: right;
             text-align: right;
+        }
+
+        .footer-center {
+            text-align: center;
+            color: #d9534f;
+            font-weight: bold;
+            font-size: 9px;
+            letter-spacing: 1px;
         }
     </style>
 </head>
 <body>
 
 <div class="documento">
-    <!-- Marca d'água -->
-    <div class="watermark">PRÉ-VISUALIZAÇÃO</div>
+    <?php if ($is_preview): ?>
+    <!-- Marca d'água discreta -->
+    <div class="watermark">Pré-visualização</div>
+    <?php endif; ?>
 
     <!-- Cabeçalho -->
     <div class="header">
-        <?php if ($emitente && !empty($emitente->url_logo) && file_exists(convertUrlToUploadsPath($emitente->url_logo))): ?>
-            <div class="header-logo">
+        <!-- Logo -->
+        <div class="header-left">
+            <?php if (!empty($logoPath)): ?>
+                <img src="<?= $logoPath ?>" alt="<?= htmlspecialchars($emitente->nome ?? '') ?>">
+            <?php elseif ($emitente && !empty($emitente->url_logo)): ?>
                 <img src="<?= $emitente->url_logo ?>" alt="<?= htmlspecialchars($emitente->nome ?? '') ?>">
-            </div>
-        <?php else: ?>
-            <div class="header-logo"></div>
-        <?php endif; ?>
-
-        <div class="header-info">
-            <?php if ($emitente): ?>
-                <strong><?= htmlspecialchars($emitente->nome ?? '') ?></strong><br>
-                CNPJ: <?= htmlspecialchars($emitente->cnpj ?? '') ?><br>
-                <?= htmlspecialchars(trim(($emitente->rua ?? '') . ', ' . ($emitente->numero ?? '') . ' - ' . ($emitente->bairro ?? '') . ', ' . ($emitente->cidade ?? '') . '/' . ($emitente->uf ?? ''))) ?><br>
-                Tel: <?= htmlspecialchars($emitente->telefone ?? '') ?> | <?= htmlspecialchars($emitente->email ?? '') ?>
             <?php endif; ?>
         </div>
 
-        <div class="header-title">
-            <h1>NOTA FISCAL DE SERVIÇOS ELETRÔNICA</h1>
-            <small>DOCUMENTO DE PRÉ-VISUALIZAÇÃO — SEM VALOR FISCAL</small>
+        <!-- Título + dados empresa -->
+        <div class="header-center">
+            <h2>NOTA FISCAL DE SERVIÇOS ELETRÔNICA</h2>
+            <?php if ($is_preview): ?>
+                <p class="subtitle">PRÉ-VISUALIZAÇÃO — SEM VALOR FISCAL</p>
+            <?php endif; ?>
+            <?php if ($emitente): ?>
+                <p class="empresa-nome"><?= htmlspecialchars($emitente->nome ?? '') ?></p>
+                <p class="empresa-detail">CNPJ: <?= htmlspecialchars($emitente->cnpj ?? '') ?><?php if (!empty($emitente->ie)): ?> | IE: <?= htmlspecialchars($emitente->ie) ?><?php endif; ?></p>
+                <p class="empresa-detail"><?= htmlspecialchars(trim(($emitente->rua ?? '') . ', ' . ($emitente->numero ?? '') . ' - ' . ($emitente->bairro ?? '') . ', ' . ($emitente->cidade ?? '') . '/' . ($emitente->uf ?? '') . ' - CEP: ' . ($emitente->cep ?? ''))) ?></p>
+                <p class="empresa-detail">Tel: <?= htmlspecialchars($emitente->telefone ?? '') ?> | <?= htmlspecialchars($emitente->email ?? '') ?></p>
+            <?php endif; ?>
+        </div>
+
+        <!-- Número da OS -->
+        <div class="header-right">
+            <?php if ($os): ?>
+                <div class="os-number">OS <?= str_pad($os->idOs ?? 0, 6, '0', STR_PAD_LEFT) ?></div>
+            <?php endif; ?>
+            <div><?= date('d/m/Y') ?></div>
+            <?php if (isset($nfse_numero) && $nfse_numero): ?>
+                <div style="margin-top: 4px; font-size: 10px; font-weight: bold; color: #333;">NFS-e <?= htmlspecialchars($nfse_numero) ?></div>
+            <?php endif; ?>
         </div>
     </div>
 
@@ -293,12 +350,10 @@ $impostos = $impostos ?? [];
                 <div class="col-half">
                     <div class="row"><span class="col-left">Nome/Razão Social:</span><span class="col-right"><?= htmlspecialchars($emitente->nome ?? '') ?></span></div>
                     <div class="row"><span class="col-left">CNPJ:</span><span class="col-right"><?= fmtDoc($emitente->cnpj ?? '') ?></span></div>
-                    <div class="row"><span class="col-left">Inscrição Estadual:</span><span class="col-right"><?= htmlspecialchars($emitente->ie ?? '—') ?></span></div>
                 </div>
                 <div class="col-half">
                     <div class="row"><span class="col-left">Endereço:</span><span class="col-right"><?= htmlspecialchars(trim(($emitente->rua ?? '') . ', ' . ($emitente->numero ?? '') . ' - ' . ($emitente->bairro ?? ''))) ?></span></div>
                     <div class="row"><span class="col-left">Cidade/UF:</span><span class="col-right"><?= htmlspecialchars(trim(($emitente->cidade ?? '') . '/' . ($emitente->uf ?? '') . ' - CEP: ' . ($emitente->cep ?? ''))) ?></span></div>
-                    <div class="row"><span class="col-left">Telefone:</span><span class="col-right"><?= htmlspecialchars($emitente->telefone ?? '—') ?></span></div>
                 </div>
             </div>
         <?php endif; ?>
@@ -324,8 +379,8 @@ $impostos = $impostos ?? [];
     <!-- Discriminação -->
     <div class="section">
         <div class="section-title discriminacao">DISCRIMINAÇÃO DOS SERVIÇOS</div>
-        <p style="margin: 5px 0; line-height: 1.5;"><?= htmlspecialchars($descricao_servico ?? $tributacao['descricao_servico'] ?? '') ?></p>
-        <div class="row" style="margin-top: 8px; font-size: 10px; color: #666;">
+        <p style="margin: 5px 0; line-height: 1.5; font-size: 10px;"><?= htmlspecialchars($descricao_servico ?? $tributacao['descricao_servico'] ?? '') ?></p>
+        <div class="row" style="margin-top: 6px; font-size: 9px; color: #777;">
             <div class="col-half">
                 <span class="col-left">Código Trib. LC 116:</span>
                 <span class="col-right"><?= htmlspecialchars($tributacao['codigo_tributacao_nacional'] ?? '—') ?></span>
@@ -335,12 +390,6 @@ $impostos = $impostos ?? [];
                 <span class="col-right"><?= htmlspecialchars($tributacao['codigo_tributacao_municipal'] ?? '—') ?></span>
             </div>
         </div>
-        <?php if ($os): ?>
-            <div class="row" style="margin-top: 5px; font-size: 10px; color: #666;">
-                <span class="col-left">OS Nº:</span>
-                <span class="col-right"><?= str_pad($os->idOs ?? 0, 6, '0', STR_PAD_LEFT) ?></span>
-            </div>
-        <?php endif; ?>
     </div>
 
     <!-- Valores -->
@@ -361,31 +410,31 @@ $impostos = $impostos ?? [];
             </tr>
             <tr class="deducao-row">
                 <td class="label-col">(-) ISS (<?= $tributacao['aliquota_iss'] ?? '5.00' ?>%)</td>
-                <td class="value-col"><?= fmtMoeda($impostos['iss'] ?? 0) ?></td>
+                <td class="value-col"><?= fmtMoeda($impostos['iss'] ?? $impostos['iss_valor'] ?? 0) ?></td>
             </tr>
             <tr class="deducao-row">
                 <td class="label-col">(-) PIS</td>
-                <td class="value-col"><?= fmtMoeda($impostos['pis'] ?? 0) ?></td>
+                <td class="value-col"><?= fmtMoeda($impostos['pis'] ?? $impostos['pis_valor'] ?? 0) ?></td>
             </tr>
             <tr class="deducao-row">
                 <td class="label-col">(-) COFINS</td>
-                <td class="value-col"><?= fmtMoeda($impostos['cofins'] ?? 0) ?></td>
+                <td class="value-col"><?= fmtMoeda($impostos['cofins'] ?? $impostos['cofins_valor'] ?? 0) ?></td>
             </tr>
             <tr class="deducao-row">
                 <td class="label-col">(-) IRRF</td>
-                <td class="value-col"><?= fmtMoeda($impostos['irrf'] ?? 0) ?></td>
+                <td class="value-col"><?= fmtMoeda($impostos['irrf'] ?? $impostos['irpj_valor'] ?? 0) ?></td>
             </tr>
             <tr class="deducao-row">
                 <td class="label-col">(-) CSLL</td>
-                <td class="value-col"><?= fmtMoeda($impostos['csll'] ?? 0) ?></td>
+                <td class="value-col"><?= fmtMoeda($impostos['csll'] ?? $impostos['csll_valor'] ?? 0) ?></td>
             </tr>
             <tr class="deducao-row">
                 <td class="label-col">(-) INSS/CPP</td>
-                <td class="value-col"><?= fmtMoeda($impostos['inss'] ?? 0) ?></td>
+                <td class="value-col"><?= fmtMoeda($impostos['inss'] ?? $impostos['cpp_valor'] ?? 0) ?></td>
             </tr>
             <tr class="total-row">
                 <td class="label-col">Total Impostos</td>
-                <td class="value-col"><?= fmtMoeda($impostos['valor_total_impostos'] ?? 0) ?></td>
+                <td class="value-col"><?= fmtMoeda($impostos['valor_total_impostos'] ?? $impostos['total_impostos'] ?? 0) ?></td>
             </tr>
             <tr class="liquido-row">
                 <td class="label-col">VALOR LÍQUIDO</td>
@@ -403,7 +452,7 @@ $impostos = $impostos ?? [];
                 <img src="<?= $qrCodePix ?>" alt="QR Code PIX">
             </div>
             <div class="pix-info">
-                <p style="font-size: 13px; font-weight: bold; color: #333;">
+                <p style="font-size: 12px; font-weight: bold; color: #333;">
                     <img src="<?= base_url('assets/img/logo_pix.png') ?>" class="pix-logo" alt="PIX">
                     Pagamento via PIX
                 </p>
@@ -419,15 +468,20 @@ $impostos = $impostos ?? [];
 
     <!-- Rodapé -->
     <div class="footer">
-        <div class="os-info">
+        <div class="footer-left">
             <?php if ($os): ?>
                 OS Nº <?= str_pad($os->idOs ?? 0, 6, '0', STR_PAD_LEFT) ?> — <?= htmlspecialchars($os->nomeCliente ?? '') ?>
             <?php endif; ?>
         </div>
-        <div class="os-date">
-            Pré-visualização gerada em <?= date('d/m/Y \à\s H:i:s') ?> — Este documento NÃO possui valor fiscal.
+        <div class="footer-right">
+            Gerado em <?= date('d/m/Y \à\s H:i:s') ?>
         </div>
     </div>
+    <?php if ($is_preview): ?>
+    <div style="text-align: center; padding: 6px 20px; font-size: 9px; color: #d9534f; font-weight: bold; letter-spacing: 1px; border-top: 1px solid #ddd;">
+        PRÉ-VISUALIZAÇÃO — ESTE DOCUMENTO NÃO POSSUI VALOR FISCAL
+    </div>
+    <?php endif; ?>
 </div>
 
 </body>

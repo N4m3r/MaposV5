@@ -216,6 +216,230 @@ class Dre_model extends CI_Model
         return $this->db->delete('dre_lancamentos', ['id' => $id]);
     }
 
+    /**
+     * Obtém totais por todas as contas ativas em uma única query (evita N+1)
+     */
+    public function getTotaisPorContas($data_inicio, $data_fim)
+    {
+        if (!$this->db->table_exists('dre_lancamentos') || !$this->db->table_exists('dre_contas')) {
+            return [];
+        }
+
+        $sql = "
+            SELECT
+                c.id as conta_id,
+                c.grupo,
+                c.sinal,
+                SUM(CASE WHEN dl.tipo_movimento = 'CREDITO' THEN dl.valor ELSE -dl.valor END) as total
+            FROM dre_contas c
+            LEFT JOIN dre_lancamentos dl ON dl.conta_id = c.id AND dl.data BETWEEN ? AND ?
+            WHERE c.ativo = 1
+            GROUP BY c.id, c.grupo, c.sinal
+        ";
+
+        $query = $this->db->query($sql, [$data_inicio, $data_fim]);
+        if ($query === false) {
+            return [];
+        }
+
+        $result = [];
+        foreach ($query->result() as $row) {
+            $valor = floatval($row->total);
+            if ($row->sinal == 'NEGATIVO') {
+                $valor = $valor * -1;
+            }
+            $result[$row->conta_id] = [
+                'total' => $valor,
+                'grupo' => $row->grupo,
+            ];
+        }
+        return $result;
+    }
+
+    /**
+     * Integra uma OS específica ao DRE automaticamente
+     * Chamado quando OS muda para Finalizado/Faturado
+     */
+    public function integrarOS($os_id)
+    {
+        if (!$this->db->table_exists('dre_lancamentos') || !$this->db->table_exists('dre_contas')) {
+            return false;
+        }
+
+        $os = $this->db->where('idOs', $os_id)->get('os')->row();
+        if (!$os) {
+            return false;
+        }
+
+        if (!in_array($os->status, ['Finalizado', 'Faturado'])) {
+            return false;
+        }
+
+        // Verificar se já existe lançamento para esta OS
+        $existe = $this->db->where('os_id', $os_id)->count_all_results('dre_lancamentos');
+        if ($existe > 0) {
+            return false;
+        }
+
+        $data_lanc = $os->dataFinal ?: $os->dataInicial ?: date('Y-m-d');
+        $valor = floatval($os->valorTotal);
+        if ($valor <= 0) {
+            return false;
+        }
+
+        // Buscar totais de produtos e serviços da OS
+        $totalProdutos = $this->db->select('COALESCE(SUM(preco * quantidade), 0) as total')
+            ->where('os_id', $os_id)->get('produtos_os')->row()->total ?? 0;
+        $totalServicos = $this->db->select('COALESCE(SUM(preco * quantidade), 0) as total')
+            ->where('os_id', $os_id)->get('servicos_os')->row()->total ?? 0;
+
+        $inseridos = 0;
+
+        // 1. Receita de Serviços (se houver serviços)
+        if ($totalServicos > 0) {
+            $conta = $this->db->where('codigo', '1.1')->where('ativo', 1)->get('dre_contas')->row();
+            if ($conta) {
+                $this->adicionarLancamento([
+                    'conta_id' => $conta->id,
+                    'data' => $data_lanc,
+                    'valor' => $totalServicos,
+                    'tipo_movimento' => 'CREDITO',
+                    'descricao' => 'Receita de serviços - OS #' . str_pad($os_id, 4, '0', STR_PAD_LEFT),
+                    'documento' => 'OS #' . str_pad($os_id, 4, '0', STR_PAD_LEFT),
+                    'os_id' => $os_id,
+                ]);
+                $inseridos++;
+            }
+        }
+
+        // 2. Receita de Produtos (se houver produtos)
+        if ($totalProdutos > 0) {
+            $conta = $this->db->where('codigo', '1.2')->where('ativo', 1)->get('dre_contas')->row();
+            if ($conta) {
+                $this->adicionarLancamento([
+                    'conta_id' => $conta->id,
+                    'data' => $data_lanc,
+                    'valor' => $totalProdutos,
+                    'tipo_movimento' => 'CREDITO',
+                    'descricao' => 'Receita de produtos - OS #' . str_pad($os_id, 4, '0', STR_PAD_LEFT),
+                    'documento' => 'OS #' . str_pad($os_id, 4, '0', STR_PAD_LEFT),
+                    'os_id' => $os_id,
+                ]);
+                $inseridos++;
+            }
+        }
+
+        // 3. Custo dos produtos (se houver produtos, debitar no grupo CUSTO)
+        if ($totalProdutos > 0) {
+            $conta_custo = $this->db->where('grupo', 'CUSTO')->where('ativo', 1)
+                ->order_by('ordem', 'ASC')->limit(1)->get('dre_contas')->row();
+            if ($conta_custo) {
+                $this->adicionarLancamento([
+                    'conta_id' => $conta_custo->id,
+                    'data' => $data_lanc,
+                    'valor' => $totalProdutos,
+                    'tipo_movimento' => 'DEBITO',
+                    'descricao' => 'Custo de produtos - OS #' . str_pad($os_id, 4, '0', STR_PAD_LEFT),
+                    'documento' => 'OS #' . str_pad($os_id, 4, '0', STR_PAD_LEFT),
+                    'os_id' => $os_id,
+                ]);
+                $inseridos++;
+            }
+        }
+
+        // 4. Impostos (usar Simples Nacional se configurado)
+        if ($this->db->table_exists('impostos_config')) {
+            $config = $this->db->get('impostos_config')->row();
+            if ($config && $config->tipo_regime == 'simples_nacional') {
+                // Buscar faixa do Simples Nacional baseada no faturamento
+                $conta_imposto = $this->db->where('grupo', 'IMPOSTO_RENDA')->where('ativo', 1)
+                    ->order_by('ordem', 'ASC')->limit(1)->get('dre_contas')->row();
+
+                if ($conta_imposto) {
+                    $imposto = $this->calcularImpostoSimples($valor, $config);
+                    if ($imposto > 0) {
+                        $this->adicionarLancamento([
+                            'conta_id' => $conta_imposto->id,
+                            'data' => $data_lanc,
+                            'valor' => $imposto,
+                            'tipo_movimento' => 'DEBITO',
+                            'descricao' => 'Impostos Simples Nacional - OS #' . str_pad($os_id, 4, '0', STR_PAD_LEFT),
+                            'documento' => 'OS #' . str_pad($os_id, 4, '0', STR_PAD_LEFT),
+                            'os_id' => $os_id,
+                        ]);
+                        $inseridos++;
+                    }
+                }
+            }
+        }
+
+        return $inseridos > 0;
+    }
+
+    /**
+     * Calcula imposto estimado pelo Simples Nacional
+     */
+    private function calcularImpostoSimples($valor, $config)
+    {
+        $anexo = $config->anexo_simples ?? 'III';
+        $faixas = [
+            'I'   => [0.06, 0.075, 0.09, 0.0995, 0.1065, 0.1333],
+            'II'  => [0.065, 0.0836, 0.10, 0.1055, 0.1128, 0.1434],
+            'III' => [0.06, 0.08, 0.10, 0.105, 0.1125, 0.14],
+            'IV'  => [0.065, 0.0863, 0.1056, 0.1123, 0.12, 0.14],
+            'V'   => [0.065, 0.0863, 0.1056, 0.1123, 0.12, 0.14],
+        ];
+
+        $limites = [180000, 360000, 720000, 1800000, 3600000, 4800000];
+        $faixa = $faixas[$anexo] ?? $faixas['III'];
+
+        // Usar a primeira faixa como aproximação para uma OS individual
+        $aliquota = $faixa[0];
+        return round($valor * $aliquota, 2);
+    }
+
+    /**
+     * Obtém resumo de OS no período para o dashboard
+     */
+    public function getResumoOS($data_inicio, $data_fim)
+    {
+        $result = [
+            'total_os' => 0,
+            'valor_total' => 0,
+            'os_finalizadas' => 0,
+            'os_faturadas' => 0,
+            'valor_finalizado' => 0,
+            'valor_faturado' => 0,
+        ];
+
+        if (!$this->db->table_exists('os')) {
+            return $result;
+        }
+
+        $this->db->select('
+            COUNT(*) as total_os,
+            COALESCE(SUM(valorTotal), 0) as valor_total,
+            SUM(CASE WHEN status = \'Finalizado\' THEN 1 ELSE 0 END) as os_finalizadas,
+            SUM(CASE WHEN status = \'Faturado\' THEN 1 ELSE 0 END) as os_faturadas,
+            COALESCE(SUM(CASE WHEN status IN (\'Finalizado\', \'Faturado\') THEN valorTotal ELSE 0 END), 0) as valor_finalizado
+        ');
+        $this->db->where('dataFinal >=', $data_inicio);
+        $this->db->where('dataFinal <=', $data_fim);
+
+        $query = $this->db->get('os');
+        if ($query && $query->row()) {
+            $row = $query->row();
+            $result['total_os'] = intval($row->total_os);
+            $result['valor_total'] = floatval($row->valor_total);
+            $result['os_finalizadas'] = intval($row->os_finalizadas);
+            $result['os_faturadas'] = intval($row->os_faturadas);
+            $result['valor_finalizado'] = floatval($row->valor_finalizado);
+            $result['valor_faturado'] = floatval($row->valor_finalizado);
+        }
+
+        return $result;
+    }
+
     // ==================== CÁLCULO DO DRE ====================
 
     /**
@@ -422,7 +646,7 @@ class Dre_model extends CI_Model
                 o.idOs,
                 o.valorTotal as valor,
                 o.dataFinal as data,
-                'OS #' + LPAD(o.idOs, 4, '0') as documento
+                CONCAT('OS #', LPAD(o.idOs, 4, '0')) as documento
             FROM os o
             WHERE o.dataFinal BETWEEN ? AND ?
             AND o.status IN ('Finalizado', 'Faturado')
@@ -459,7 +683,7 @@ class Dre_model extends CI_Model
                 v.idVendas,
                 v.valorTotal as valor,
                 v.dataVenda as data,
-                'VENDA #' + LPAD(v.idVendas, 4, '0') as documento
+                CONCAT('VENDA #', LPAD(v.idVendas, 4, '0')) as documento
             FROM vendas v
             WHERE v.dataVenda BETWEEN ? AND ?
             AND v.valorTotal > 0

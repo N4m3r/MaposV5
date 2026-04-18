@@ -600,13 +600,17 @@ class Migration_Consolidated_schema_update extends CI_Migration
         $this->_createTableIfNotExists('dre_lancamentos', [
             'id' => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
             'conta_id' => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true],
-            'data_referencia' => ['type' => 'DATE'],
+            'data' => ['type' => 'DATE'],
             'valor' => ['type' => 'DECIMAL', 'constraint' => '15,2'],
+            'tipo_movimento' => ['type' => "ENUM('CREDITO','DEBITO')", 'default' => 'CREDITO'],
             'descricao' => ['type' => 'TEXT', 'null' => true],
-            'id_os' => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'null' => true],
-            'id_venda' => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'null' => true],
-            'id_lancamento' => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'null' => true],
+            'documento' => ['type' => 'VARCHAR', 'constraint' => 100, 'null' => true],
+            'os_id' => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'null' => true],
+            'venda_id' => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'null' => true],
+            'lancamento_id' => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'null' => true],
+            'usuarios_id' => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'null' => true],
             'created_at' => ['type' => 'DATETIME'],
+            'updated_at' => ['type' => 'DATETIME', 'null' => true],
         ], ['id']);
 
         // --- dre_demonstracoes ---
@@ -1092,7 +1096,8 @@ class Migration_Consolidated_schema_update extends CI_Migration
         $this->_safeCreateIndex('dre_contas', 'idx_tipo', 'tipo');
         $this->_safeCreateIndex('dre_contas', 'idx_ativo', 'ativo');
         $this->_safeCreateIndex('dre_lancamentos', 'idx_conta_id', 'conta_id');
-        $this->_safeCreateIndex('dre_lancamentos', 'idx_data_referencia', 'data_referencia');
+        $this->_safeCreateIndex('dre_lancamentos', 'idx_data_referencia', 'data');
+        $this->_safeCreateIndex('dre_lancamentos', 'idx_os_id', 'os_id');
         $this->_safeCreateIndex('impostos_retidos', 'idx_id_os', 'id_os');
         $this->_safeCreateIndex('impostos_retidos', 'idx_id_venda', 'id_venda');
         $this->_safeCreateIndex('impostos_retidos', 'idx_tipo_imposto', 'tipo_imposto');
