@@ -106,6 +106,37 @@
             color: #ef6c00;
         }
 
+        .btn-location {
+            width: 100%;
+            padding: 15px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-location:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        }
+
+        .btn-location:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
         .btn-login {
             width: 100%;
             padding: 18px;
@@ -197,9 +228,14 @@
             <input type="hidden" name="longitude" id="longitude" required>
 
             <div class="location-status waiting" id="locationStatus">
-                <span>🔄</span>
-                <span>Obtendo localização...</span>
+                <span>📍</span>
+                <span>Localização não autorizada</span>
             </div>
+
+            <button type="button" class="btn-location" id="btnLocation" onclick="solicitarLocalizacao()">
+                <span>📍</span>
+                <span>Autorizar Localização</span>
+            </button>
 
             <div class="form-group">
                 <label for="email">E-mail</label>
@@ -225,41 +261,60 @@
     <script>
         let localizacaoObtida = false;
 
-        // Solicitar localização ao carregar a página
-        document.addEventListener('DOMContentLoaded', function() {
-            if ('geolocation' in navigator) {
-                navigator.geolocation.getCurrentPosition(
-                    function(position) {
-                        document.getElementById('latitude').value = position.coords.latitude;
-                        document.getElementById('longitude').value = position.coords.longitude;
-                        localizacaoObtida = true;
-                        atualizarStatusLocalizacao(true);
-                        verificarCampos();
-                    },
-                    function(error) {
-                        console.error('Erro ao obter localização:', error);
-                        atualizarStatusLocalizacao(false);
-                    },
-                    {
-                        enableHighAccuracy: true,
-                        timeout: 10000,
-                        maximumAge: 0
-                    }
-                );
-            } else {
-                atualizarStatusLocalizacao(false);
-            }
-        });
-
-        function atualizarStatusLocalizacao(sucesso) {
+        function solicitarLocalizacao() {
+            const btn = document.getElementById('btnLocation');
             const status = document.getElementById('locationStatus');
-            if (sucesso) {
-                status.className = 'location-status';
-                status.innerHTML = '<span>✅</span><span>Localização obtida</span>';
-            } else {
+
+            if (!('geolocation' in navigator)) {
                 status.className = 'location-status error';
-                status.innerHTML = '<span>❌</span><span>Permita o acesso à localização</span>';
+                status.innerHTML = '<span>❌</span><span>Geolocalização não suportada neste dispositivo</span>';
+                return;
             }
+
+            btn.disabled = true;
+            btn.innerHTML = '<span>🔄</span><span>Solicitando...</span>';
+            status.className = 'location-status waiting';
+            status.innerHTML = '<span>🔄</span><span>Aguardando permissão...</span>';
+
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    document.getElementById('latitude').value = position.coords.latitude;
+                    document.getElementById('longitude').value = position.coords.longitude;
+                    localizacaoObtida = true;
+
+                    status.className = 'location-status';
+                    status.innerHTML = '<span>✅</span><span>Localização autorizada</span>';
+
+                    btn.innerHTML = '<span>✅</span><span>Localização OK</span>';
+                    btn.style.background = '#28a745';
+
+                    verificarCampos();
+                },
+                function(error) {
+                    console.error('Erro ao obter localização:', error);
+                    localizacaoObtida = false;
+
+                    let mensagem = 'Permita o acesso à localização';
+                    if (error.code === 1) {
+                        mensagem = 'Permissão negada. Autorize no navegador.';
+                    } else if (error.code === 2) {
+                        mensagem = 'Localização indisponível.';
+                    } else if (error.code === 3) {
+                        mensagem = 'Tempo excedido. Tente novamente.';
+                    }
+
+                    status.className = 'location-status error';
+                    status.innerHTML = '<span>❌</span><span>' + mensagem + '</span>';
+
+                    btn.disabled = false;
+                    btn.innerHTML = '<span>📍</span><span>Tentar Novamente</span>';
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                }
+            );
         }
 
         function verificarCampos() {
@@ -280,8 +335,9 @@
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             if (!localizacaoObtida) {
                 e.preventDefault();
-                document.getElementById('errorMsg').textContent = 'Localização é obrigatória para login';
+                document.getElementById('errorMsg').textContent = 'Clique em "Autorizar Localização" antes de entrar';
                 document.getElementById('errorMsg').classList.add('show');
+                document.getElementById('btnLocation').focus();
                 return;
             }
 
