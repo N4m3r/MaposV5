@@ -186,10 +186,15 @@
                             </h6>
                             <?php foreach ($chaves as $chave):
                                 if (!isset($permissoes_padrao[$chave])) continue;
-                                $valor_atual = isset($permissoes[$chave]) ? $permissoes[$chave] : $permissoes_padrao[$chave];
+                                // Obtém o valor atual da permissão (do banco ou padrão)
+                                $valor_salvo = isset($permissoes[$chave]) ? $permissoes[$chave] : null;
+                                // Se tem valor salvo no banco, usa ele. Senão, usa o padrão
+                                $valor_atual = ($valor_salvo !== null) ? $valor_salvo : $permissoes_padrao[$chave];
+                                // Converte para booleano para garantir que está correto
+                                $valor_atual = ($valor_atual === true || $valor_atual === '1' || $valor_atual === 1);
                             ?>
                                 <label class="checkbox" style="margin-left: 15px; margin-bottom: 8px;">
-                                    <input type="checkbox" name="permissoes[<?= $chave ?>]" value="1" <?= set_checkbox('permissoes[' . $chave . ']', '1', $valor_atual) ?> />
+                                    <input type="checkbox" name="permissoes[<?= $chave ?>]" value="1" <= $valor_atual ? 'checked="checked"' : '' ?> />
                                     <?= $labels[$chave] ?? $chave ?>
                                 </label>
                             <?php endforeach; ?>

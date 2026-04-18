@@ -237,7 +237,18 @@
                         </a>
                     </div>
                     <div class="widget-content" style="padding: 20px;">
-                        <?php if (!empty($os_vinculadas)): ?>
+                        <?php
+                        if (!empty($os_vinculadas)):
+                            $statusColors = [
+                                'Aberto' => '#00cd00',
+                                'Em Andamento' => '#436eee',
+                                'Finalizado' => '#256',
+                                'Cancelado' => '#CD0000',
+                                'Orçamento' => '#CDB380',
+                                'Aprovado' => '#808080',
+                                'Faturado' => '#B266FF'
+                            ];
+                        ?>
                             <div class="os-list" style="display: flex; flex-direction: column; gap: 12px;">
                                 <?php foreach ($os_vinculadas as $os): ?>
                                 <div class="os-item" style="
@@ -271,18 +282,7 @@
                                             <i class="bx bx-calendar"></i> <?= date('d/m/Y', strtotime($os->dataInicial)) ?>
                                             <span style="margin-left: 10px;">
                                                 <span class="badge" style="
-                                                    background: <?php
-                                                    $statusColors = [
-                                                        'Aberto' => '#00cd00',
-                                                        'Em Andamento' => '#436eee',
-                                                        'Finalizado' => '#256',
-                                                        'Cancelado' => '#CD0000',
-                                                        'Orçamento' => '#CDB380',
-                                                        'Aprovado' => '#808080',
-                                                        'Faturado' => '#B266FF'
-                                                    ];
-                                                    echo $statusColors[$os->status] ?? '#888';
-                                                    ?>;
+                                                    background: <?= isset($statusColors[$os->status]) ? $statusColors[$os->status] : '#888' ?>;
                                                     color: white;
                                                     font-size: 0.7rem;
                                                     padding: 3px 8px;
