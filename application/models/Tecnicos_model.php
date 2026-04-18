@@ -85,9 +85,17 @@ class Tecnicos_model extends CI_Model
         $data['is_tecnico'] = 1;
         $data['situacao'] = 1;
 
-        if ($this->db->insert($this->table, $data)) {
+        // Verificar se as colunas existem antes de inserir
+        $campos_existentes = $this->db->list_fields($this->table);
+        $data_filtrado = array_intersect_key($data, array_flip($campos_existentes));
+
+        if ($this->db->insert($this->table, $data_filtrado)) {
             return $this->db->insert_id();
         }
+
+        // Log do erro para debug
+        log_message('error', 'Erro ao cadastrar técnico: ' . $this->db->error()['message']);
+        log_message('error', 'Query: ' . $this->db->last_query());
 
         return false;
     }
@@ -97,8 +105,12 @@ class Tecnicos_model extends CI_Model
      */
     public function update($id, $data)
     {
+        // Verificar se as colunas existem antes de atualizar
+        $campos_existentes = $this->db->list_fields($this->table);
+        $data_filtrado = array_intersect_key($data, array_flip($campos_existentes));
+
         $this->db->where('idUsuarios', $id);
-        return $this->db->update($this->table, $data);
+        return $this->db->update($this->table, $data_filtrado);
     }
 
     /**

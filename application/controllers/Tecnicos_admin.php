@@ -95,11 +95,17 @@ class Tecnicos_admin extends MY_Controller
                 'is_tecnico' => 1,
             ];
 
-            if ($this->tecnicos_model->add($dados)) {
+            $resultado = $this->tecnicos_model->add($dados);
+            if ($resultado) {
                 $this->session->set_flashdata('success', 'Técnico cadastrado com sucesso!');
                 redirect('tecnicos_admin/tecnicos');
             } else {
-                $this->session->set_flashdata('error', 'Erro ao cadastrar técnico.');
+                $error = $this->db->error();
+                $mensagem_erro = 'Erro ao cadastrar técnico.';
+                if (isset($error['message'])) {
+                    $mensagem_erro .= ' Detalhes: ' . $error['message'];
+                }
+                $this->session->set_flashdata('error', $mensagem_erro);
                 $this->data['view'] = 'tecnicos_admin/tecnico_form';
                 return $this->layout();
             }
@@ -275,6 +281,122 @@ class Tecnicos_admin extends MY_Controller
         $this->data['obras'] = $this->obras_model->getAll();
         $this->data['view'] = 'tecnicos_admin/obras_list';
         return $this->layout();
+    }
+
+    /**
+     * Adicionar nova obra
+     */
+    public function adicionar_obra()
+    {
+        $this->form_validation->set_rules('nome', 'Nome da Obra', 'required|trim');
+        $this->form_validation->set_rules('cliente_id', 'Cliente', 'required');
+
+        if ($this->form_validation->run() === false) {
+            $this->session->set_flashdata('error', validation_errors());
+            redirect('tecnicos_admin/obras');
+        }
+
+        $dados = [
+            'nome' => $this->input->post('nome'),
+            'codigo' => $this->input->post('codigo') ?? 'OB-' . date('Y') . '-' . str_pad(rand(1, 999), 3, '0', STR_PAD_LEFT),
+            'cliente_id' => $this->input->post('cliente_id'),
+            'tipo_obra' => $this->input->post('tipo_obra') ?? 'Outro',
+            'endereco' => $this->input->post('endereco'),
+            'data_inicio' => $this->input->post('data_inicio') ?: date('Y-m-d'),
+            'data_previsao_fim' => $this->input->post('data_previsao_fim'),
+            'descricao' => $this->input->post('descricao'),
+            'status' => 'planejamento',
+            'percentual_concluido' => 0,
+        ];
+
+        $this->load->model('obras_model');
+        if ($obra_id = $this->obras_model->add($dados)) {
+            $this->session->set_flashdata('success', 'Obra cadastrada com sucesso!');
+        } else {
+            $this->session->set_flashdata('error', 'Erro ao cadastrar obra.');
+        }
+
+        redirect('tecnicos_admin/obras');
+    }
+
+    /**
+     * Visualizar obra
+     */
+    public function ver_obra($id)
+    {
+        $this->load->model('obras_model');
+        $obra = $this->obras_model->getById($id);
+
+        if (!$obra) {
+            $this->session->set_flashdata('error', 'Obra não encontrada.');
+            redirect('tecnicos_admin/obras');
+        }
+
+        $this->data['obra'] = $obra;
+        $this->data['etapas'] = $this->obras_model->getEtapas($id);
+        $this->data['equipe'] = $this->obras_model->getEquipe($id);
+        $this->data['diario'] = $this->obras_model->getDiario($id);
+        $this->data['view'] = 'tecnicos_admin/obra_view';
+        return $this->layout();
+    }
+
+    /**
+     * Editar obra
+     */
+    public function editar_obra($id)
+    {
+        $this->load->model('obras_model');
+        $obra = $this->obras_model->getById($id);
+
+        if (!$obra) {
+            $this->session->set_flashdata('error', 'Obra não encontrada.');
+            redirect('tecnicos_admin/obras');
+        }
+
+        if ($this->input->post()) {
+            $this->form_validation->set_rules('nome', 'Nome', 'required|trim');
+
+            if ($this->form_validation->run()) {
+                $dados = [
+                    'nome' => $this->input->post('nome'),
+                    'codigo' => $this->input->post('codigo'),
+                    'cliente_id' => $this->input->post('cliente_id'),
+                    'tipo_obra' => $this->input->post('tipo_obra'),
+                    'endereco' => $this->input->post('endereco'),
+                    'data_inicio' => $this->input->post('data_inicio'),
+                    'data_previsao_fim' => $this->input->post('data_previsao_fim'),
+                    'descricao' => $this->input->post('descricao'),
+                    'status' => $this->input->post('status'),
+                ];
+
+                if ($this->obras_model->update($id, $dados)) {
+                    $this->session->set_flashdata('success', 'Obra atualizada com sucesso!');
+                    redirect('tecnicos_admin/obras');
+                } else {
+                    $this->session->set_flashdata('error', 'Erro ao atualizar obra.');
+                }
+            }
+        }
+
+        $this->data['obra'] = $obra;
+        $this->data['clientes'] = $this->db->where('status', 1)->get('clientes')->result();
+        $this->data['view'] = 'tecnicos_admin/obra_form';
+        return $this->layout();
+    }
+
+    /**
+     * Excluir obra
+     */
+    public function excluir_obra($id)
+    {
+        $this->load->model('obras_model');
+        if ($this->obras_model->delete($id)) {
+            $this->session->set_flashdata('success', 'Obra excluída com sucesso!');
+        } else {
+            $this->session->set_flashdata('error', 'Erro ao excluir obra.');
+        }
+
+        redirect('tecnicos_admin/obras');
     }
 
     /**
