@@ -156,5 +156,65 @@ $route['migrate/version/(:num)'] = 'migrate/version/$1';
 $route['migrate/reset'] = 'migrate/reset';
 $route['migrate/status'] = 'migrate/status';
 
+// ============================================
+// ROTAS DO SISTEMA DE TÉCNICOS
+// ============================================
+
+// Portal do Técnico (Mobile/App)
+$route['tecnicos'] = 'tecnicos/dashboard';
+$route['tecnicos/login'] = 'tecnicos/login';
+$route['tecnicos/autenticar'] = 'tecnicos/autenticar';
+$route['tecnicos/logout'] = 'tecnicos/logout';
+$route['tecnicos/dashboard'] = 'tecnicos/dashboard';
+$route['tecnicos/minhas_os'] = 'tecnicos/minhas_os';
+$route['tecnicos/executar_os/(:num)'] = 'tecnicos/executar_os/$1';
+$route['tecnicos/meu_estoque'] = 'tecnicos/meu_estoque';
+$route['tecnicos/perfil'] = 'tecnicos/perfil';
+$route['tecnicos/atualizar_foto'] = 'tecnicos/atualizar_foto';
+
+// APIs do Técnico
+$route['tecnicos/api/login'] = 'tecnicos/api_login';
+$route['tecnicos/api/verificar'] = 'tecnicos/api_verificar';
+$route['tecnicos/iniciar_execucao'] = 'tecnicos/iniciar_execucao';
+$route['tecnicos/finalizar_execucao'] = 'tecnicos/finalizar_execucao';
+$route['tecnicos/adicionar_foto'] = 'tecnicos/adicionar_foto';
+$route['tecnicos/salvar_checklist_item'] = 'tecnicos/salvar_checklist_item';
+$route['tecnicos/registrar_uso_material'] = 'tecnicos/registrar_uso_material';
+
+// Área do Técnico (Integrada ao Sistema)
+$route['tecnico'] = 'tecnico';
+$route['tecnico/os'] = 'tecnico/os';
+$route['tecnico/visualizar/(:num)'] = 'tecnico/visualizar/$1';
+$route['tecnico/checklist/(:num)'] = 'tecnico/checklist/$1';
+$route['tecnico/pecas/(:num)'] = 'tecnico/pecas/$1';
+$route['tecnico/etapas/(:num)'] = 'tecnico/etapas/$1';
+$route['tecnico/timeline/(:num)'] = 'tecnico/timeline/$1';
+$route['tecnico/iniciar_atendimento'] = 'tecnico/iniciar_atendimento';
+$route['tecnico/finalizar_atendimento'] = 'tecnico/finalizar_atendimento';
+$route['tecnico/atualizar_checklist_item'] = 'tecnico/atualizar_checklist_item';
+$route['tecnico/adicionar_checklist_item'] = 'tecnico/adicionar_checklist_item';
+$route['tecnico/adicionar_peca'] = 'tecnico/adicionar_peca';
+$route['tecnico/iniciar_etapa'] = 'tecnico/iniciar_etapa';
+$route['tecnico/concluir_etapa'] = 'tecnico/concluir_etapa';
+$route['tecnico/api/listar_os'] = 'tecnico/api_listar_os';
+$route['tecnico/api/os_detalhes/(:num)'] = 'tecnico/api_os_detalhes/$1';
+
+// Administração de Técnicos
+$route['tecnicos_admin'] = 'tecnicos_admin';
+$route['tecnicos_admin/tecnicos'] = 'tecnicos_admin/tecnicos';
+$route['tecnicos_admin/adicionar_tecnico'] = 'tecnicos_admin/adicionar_tecnico';
+$route['tecnicos_admin/editar_tecnico/(:num)'] = 'tecnicos_admin/editar_tecnico/$1';
+$route['tecnicos_admin/ver_tecnico/(:num)'] = 'tecnicos_admin/ver_tecnico/$1';
+$route['tecnicos_admin/servicos_catalogo'] = 'tecnicos_admin/servicos_catalogo';
+$route['tecnicos_admin/adicionar_servico'] = 'tecnicos_admin/adicionar_servico';
+$route['tecnicos_admin/checklists'] = 'tecnicos_admin/checklists';
+$route['tecnicos_admin/relatorios'] = 'tecnicos_admin/relatorios';
+$route['tecnicos_admin/obras'] = 'tecnicos_admin/obras';
+$route['tecnicos_admin/estoque_tecnico/(:num)'] = 'tecnicos_admin/estoque_tecnico/$1';
+$route['tecnicos_admin/adicionar_estoque'] = 'tecnicos_admin/adicionar_estoque';
+$route['tecnicos_admin/rotas'] = 'tecnicos_admin/rotas';
+$route['tecnicos_admin/rotas/(:num)'] = 'tecnicos_admin/rotas/$1';
+$route['tecnicos_admin/api/dados_dashboard'] = 'tecnicos_admin/api_dados_dashboard';
+
 /* End of file routes.php */
 /* Location: ./application/config/routes.php */

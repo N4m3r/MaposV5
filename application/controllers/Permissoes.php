@@ -158,6 +158,8 @@ class Permissoes extends MY_Controller
                 // Permissões Relatório de Técnicos
                 'vRelatorioTecnicos' => $this->input->post('vRelatorioTecnicos'),
                 'vTecnicoDashboard' => $this->input->post('vTecnicoDashboard'),
+                'cTecnico' => $this->input->post('cTecnico'),
+                'aTecnicoOS' => $this->input->post('aTecnicoOS'),
 
                 // Permissões Portal do Cliente - Usuários
                 'vUsuariosCliente' => $this->input->post('vUsuariosCliente'),
@@ -244,6 +246,8 @@ class Permissoes extends MY_Controller
                 'eTecnicoCheckout' => $this->input->post('eTecnicoCheckout'),
                 'eTecnicoFotos' => $this->input->post('eTecnicoFotos'),
                 'vTecnicoDashboard' => $this->input->post('vTecnicoDashboard'),
+                'cTecnico' => $this->input->post('cTecnico'),
+                'aTecnicoOS' => $this->input->post('aTecnicoOS'),
 
                 'aVenda' => $this->input->post('aVenda'),
                 'eVenda' => $this->input->post('eVenda'),

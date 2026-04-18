@@ -13,7 +13,7 @@ if (!defined('BASEPATH')) {
  * - Relatórios e estatísticas
  * - Gestão de obras
  */
-class Tecnicos_admin extends CI_Controller
+class Tecnicos_admin extends MY_Controller
 {
     public function __construct()
     {
@@ -36,6 +36,8 @@ class Tecnicos_admin extends CI_Controller
             $this->session->set_flashdata('error', 'Você não tem permissão para acessar esta área.');
             redirect('mapos');
         }
+
+        $this->data['menuTecnicosAdmin'] = 'TecnicosAdmin';
     }
 
     /**
@@ -43,11 +45,12 @@ class Tecnicos_admin extends CI_Controller
      */
     public function index()
     {
-        $data['total_tecnicos'] = $this->tecnicos_model->count();
-        $data['os_hoje'] = $this->tec_os_model->getOsDoDia(null); // Todas as OS de hoje
-        $data['execucoes_mes'] = $this->tec_os_model->getEstatisticasExecucao(null, 'mes');
+        $this->data['total_tecnicos'] = $this->tecnicos_model->count();
+        $this->data['os_hoje'] = $this->tec_os_model->getOsDoDia(null);
+        $this->data['execucoes_mes'] = $this->tec_os_model->getEstatisticasExecucao(null, 'mes');
+        $this->data['view'] = 'tecnicos_admin/dashboard';
 
-        $this->load->view('tecnicos_admin/dashboard', $data);
+        return $this->layout();
     }
 
     /**
@@ -55,8 +58,10 @@ class Tecnicos_admin extends CI_Controller
      */
     public function tecnicos()
     {
-        $data['tecnicos'] = $this->tecnicos_model->getAll();
-        $this->load->view('tecnicos_admin/tecnicos_list', $data);
+        $this->data['tecnicos'] = $this->tecnicos_model->getAll();
+        $this->data['view'] = 'tecnicos_admin/tecnicos_list';
+
+        return $this->layout();
     }
 
     /**
@@ -70,7 +75,8 @@ class Tecnicos_admin extends CI_Controller
         $this->form_validation->set_rules('nivel_tecnico', 'Nível', 'required');
 
         if ($this->form_validation->run() === false) {
-            $this->load->view('tecnicos_admin/tecnico_form');
+            $this->data['view'] = 'tecnicos_admin/tecnico_form';
+            return $this->layout();
         } else {
             $dados = [
                 'nome' => $this->input->post('nome'),
@@ -86,6 +92,7 @@ class Tecnicos_admin extends CI_Controller
                 'coordenadas_base_lng' => $this->input->post('coordenadas_base_lng'),
                 'raio_atuacao_km' => $this->input->post('raio_atuacao_km') ?: 0,
                 'plantao_24h' => $this->input->post('plantao_24h') ? 1 : 0,
+                'is_tecnico' => 1,
             ];
 
             if ($this->tecnicos_model->add($dados)) {
@@ -93,7 +100,8 @@ class Tecnicos_admin extends CI_Controller
                 redirect('tecnicos_admin/tecnicos');
             } else {
                 $this->session->set_flashdata('error', 'Erro ao cadastrar técnico.');
-                $this->load->view('tecnicos_admin/tecnico_form');
+                $this->data['view'] = 'tecnicos_admin/tecnico_form';
+                return $this->layout();
             }
         }
     }
@@ -103,9 +111,9 @@ class Tecnicos_admin extends CI_Controller
      */
     public function editar_tecnico($id)
     {
-        $data['tecnico'] = $this->tecnicos_model->getById($id);
+        $this->data['tecnico'] = $this->tecnicos_model->getById($id);
 
-        if (!$data['tecnico']) {
+        if (!$this->data['tecnico']) {
             $this->session->set_flashdata('error', 'Técnico não encontrado.');
             redirect('tecnicos_admin/tecnicos');
         }
@@ -113,7 +121,8 @@ class Tecnicos_admin extends CI_Controller
         $this->form_validation->set_rules('nome', 'Nome', 'required|trim');
 
         if ($this->form_validation->run() === false) {
-            $this->load->view('tecnicos_admin/tecnico_form', $data);
+            $this->data['view'] = 'tecnicos_admin/tecnico_form';
+            return $this->layout();
         } else {
             $dados = [
                 'nome' => $this->input->post('nome'),
@@ -135,7 +144,8 @@ class Tecnicos_admin extends CI_Controller
                 redirect('tecnicos_admin/tecnicos');
             } else {
                 $this->session->set_flashdata('error', 'Erro ao atualizar técnico.');
-                $this->load->view('tecnicos_admin/tecnico_form', $data);
+                $this->data['view'] = 'tecnicos_admin/tecnico_form';
+                return $this->layout();
             }
         }
     }
@@ -145,18 +155,19 @@ class Tecnicos_admin extends CI_Controller
      */
     public function ver_tecnico($id)
     {
-        $data['tecnico'] = $this->tecnicos_model->getById($id);
+        $this->data['tecnico'] = $this->tecnicos_model->getById($id);
 
-        if (!$data['tecnico']) {
+        if (!$this->data['tecnico']) {
             $this->session->set_flashdata('error', 'Técnico não encontrado.');
             redirect('tecnicos_admin/tecnicos');
         }
 
-        $data['estatisticas'] = $this->tecnicos_model->getEstatisticas($id, 'mes');
-        $data['os_recentes'] = $this->tec_os_model->getOsPorTecnico($id, 'todos');
-        $data['estoque'] = $this->tecnicos_model->getEstoqueVeiculo($id);
+        $this->data['estatisticas'] = $this->tecnicos_model->getEstatisticas($id, 'mes');
+        $this->data['os_recentes'] = $this->tec_os_model->getOsPorTecnico($id, 'todos');
+        $this->data['estoque'] = $this->tecnicos_model->getEstoqueVeiculo($id);
+        $this->data['view'] = 'tecnicos_admin/tecnico_view';
 
-        $this->load->view('tecnicos_admin/tecnico_view', $data);
+        return $this->layout();
     }
 
     /**
@@ -164,8 +175,9 @@ class Tecnicos_admin extends CI_Controller
      */
     public function servicos_catalogo()
     {
-        $data['servicos'] = $this->tec_os_model->getServicosCatalogo();
-        $this->load->view('tecnicos_admin/servicos_catalogo', $data);
+        $this->data['servicos'] = $this->tec_os_model->getServicosCatalogo();
+        $this->data['view'] = 'tecnicos_admin/servicos_catalogo';
+        return $this->layout();
     }
 
     /**
@@ -178,8 +190,9 @@ class Tecnicos_admin extends CI_Controller
         $this->form_validation->set_rules('tipo', 'Tipo', 'required');
 
         if ($this->form_validation->run() === false) {
-            $data['tipos'] = ['INS', 'MP', 'MC', 'CT', 'TR', 'UP', 'URG'];
-            $this->load->view('tecnicos_admin/servico_form', $data);
+            $this->data['tipos'] = ['INS', 'MP', 'MC', 'CT', 'TR', 'UP', 'URG'];
+            $this->data['view'] = 'tecnicos_admin/servico_form';
+            return $this->layout();
         } else {
             $dados = [
                 'codigo' => $this->input->post('codigo'),
@@ -206,8 +219,9 @@ class Tecnicos_admin extends CI_Controller
      */
     public function checklists()
     {
-        $data['checklists'] = $this->tec_os_model->getChecklistTemplates();
-        $this->load->view('tecnicos_admin/checklists', $data);
+        $this->data['checklists'] = $this->tec_os_model->getChecklistTemplates();
+        $this->data['view'] = 'tecnicos_admin/checklists';
+        return $this->layout();
     }
 
     /**
@@ -218,17 +232,18 @@ class Tecnicos_admin extends CI_Controller
         $data_inicio = $this->input->get('data_inicio') ?: date('Y-m-01');
         $data_fim = $this->input->get('data_fim') ?: date('Y-m-t');
 
-        $data['data_inicio'] = $data_inicio;
-        $data['data_fim'] = $data_fim;
-        $data['tecnicos'] = $this->tecnicos_model->getAll();
+        $this->data['data_inicio'] = $data_inicio;
+        $this->data['data_fim'] = $data_fim;
+        $this->data['tecnicos'] = $this->tecnicos_model->getAll();
 
         // Estatísticas agregadas
         $this->db->select('COUNT(*) as total_os, AVG(tempo_total_horas) as media_tempo');
         $this->db->where('data_checkin >=', $data_inicio);
         $this->db->where('data_checkin <=', $data_fim . ' 23:59:59');
-        $data['estatisticas'] = $this->db->get('tec_os_execucao')->row();
+        $this->data['estatisticas'] = $this->db->get('tec_os_execucao')->row();
+        $this->data['view'] = 'tecnicos_admin/relatorios';
 
-        $this->load->view('tecnicos_admin/relatorios', $data);
+        return $this->layout();
     }
 
     /**
@@ -237,8 +252,9 @@ class Tecnicos_admin extends CI_Controller
     public function obras()
     {
         $this->load->model('obras_model');
-        $data['obras'] = $this->obras_model->getAll();
-        $this->load->view('tecnicos_admin/obras_list', $data);
+        $this->data['obras'] = $this->obras_model->getAll();
+        $this->data['view'] = 'tecnicos_admin/obras_list';
+        return $this->layout();
     }
 
     /**
@@ -246,11 +262,11 @@ class Tecnicos_admin extends CI_Controller
      */
     public function estoque_tecnico($tecnico_id)
     {
-        $data['tecnico'] = $this->tecnicos_model->getById($tecnico_id);
-        $data['estoque'] = $this->tecnicos_model->getEstoqueVeiculo($tecnico_id);
-        $data['produtos'] = $this->db->get('produtos')->result(); // Produtos disponíveis
-
-        $this->load->view('tecnicos_admin/estoque_tecnico', $data);
+        $this->data['tecnico'] = $this->tecnicos_model->getById($tecnico_id);
+        $this->data['estoque'] = $this->tecnicos_model->getEstoqueVeiculo($tecnico_id);
+        $this->data['produtos'] = $this->db->get('produtos')->result();
+        $this->data['view'] = 'tecnicos_admin/estoque_tecnico';
+        return $this->layout();
     }
 
     /**
@@ -276,16 +292,17 @@ class Tecnicos_admin extends CI_Controller
      */
     public function rotas($tecnico_id = null)
     {
-        $data['tecnico_id'] = $tecnico_id;
-        $data['data'] = $this->input->get('data') ?: date('Y-m-d');
+        $this->data['tecnico_id'] = $tecnico_id;
+        $this->data['data'] = $this->input->get('data') ?: date('Y-m-d');
 
         if ($tecnico_id) {
-            $data['tecnico'] = $this->tecnicos_model->getById($tecnico_id);
-            $data['rotas'] = $this->tecnicos_model->getRotas($tecnico_id, $data['data']);
+            $this->data['tecnico'] = $this->tecnicos_model->getById($tecnico_id);
+            $this->data['rotas'] = $this->tecnicos_model->getRotas($tecnico_id, $this->data['data']);
         }
 
-        $data['tecnicos'] = $this->tecnicos_model->getAll();
-        $this->load->view('tecnicos_admin/rotas', $data);
+        $this->data['tecnicos'] = $this->tecnicos_model->getAll();
+        $this->data['view'] = 'tecnicos_admin/rotas';
+        return $this->layout();
     }
 
     /**

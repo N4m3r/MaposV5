@@ -21,10 +21,10 @@
                                 <th>ID</th>
                                 <th>Nome</th>
                                 <th>E-mail</th>
-                                <th>>N003c/th>
+                                <th>Nível</th>
                                 <th>Veículo</th>
-                                <th>>Status</th>
-                                <th>>Ações</th>
+                                <th>Status</th>
+                                <th>Ações</th>
                             </tr>
                         </thead>
                         <tbody>

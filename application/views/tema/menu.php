@@ -94,6 +94,18 @@
                     <li class="<?php if (isset($menuArquivos)) { echo 'active'; }; ?>"><a class="tip-bottom" href="<?= site_url('arquivos') ?>"><i class='bx bx-box iconX'></i><span class="title">Arquivos</span><span class="title-tooltip">Arquivos</span></a></li>
                 <?php } ?>
 
+                <!-- Sistema de Técnicos -->
+                <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vTecnicoDashboard') ||
+                          $this->permission->checkPermission($this->session->userdata('permissao'), 'cTecnico')) { ?>
+                    <li class="menu-divider"><span class="divider-text">TÉCNICOS</span></li>
+                    <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vTecnicoDashboard')) { ?>
+                        <li class="<?php if (isset($menuTecnicoDashboard)) { echo 'active'; }; ?>"><a href="<?= site_url('tecnico') ?>"><i class='bx bx-home iconX'></i><span class="title">Área do Técnico</span><span class="title-tooltip">Área Técnico</span></a></li>
+                    <?php } ?>
+                    <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cTecnico')) { ?>
+                        <li class="<?php if (isset($menuTecnicosAdmin)) { echo 'active'; }; ?>"><a href="<?= site_url('tecnicos_admin') ?>"><i class='bx bx-hard-hat iconX'></i><span class="title">Gerenciar Técnicos</span><span class="title-tooltip">Gerenciar</span></a></li>
+                    <?php } ?>
+                <?php } ?>
+
                 <!-- Financeiro -->
                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vLancamento') || $this->permission->checkPermission($this->session->userdata('permissao'), 'vCobranca')) { ?>
                     <li class="menu-divider"><span class="divider-text">FINANCEIRO</span></li>
