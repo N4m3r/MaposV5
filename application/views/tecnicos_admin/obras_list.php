@@ -247,11 +247,12 @@
                                 <option value="">Selecione...</option>
                                 <?php
                                 // Buscar clientes ativos
-                                $clientes = $this->db->order_by('nomeCliente', 'ASC')->get('clientes')->result();
-                                if ($clientes):
+                                $clientes_query = $this->db->order_by('nomeCliente', 'ASC')->get('clientes');
+                                $clientes = $clientes_query ? $clientes_query->result() : [];
+                                if (!empty($clientes)):
                                     foreach ($clientes as $cliente): ?>
                                         <option value="<?= $cliente->idClientes ?>">
-                                            <?= htmlspecialchars($cliente->nomeCliente, ENT_COMPAT | ENT_HTML5, 'UTF-8') ?>
+                                            <?= htmlspecialchars($cliente->nomeCliente, ENT_QUOTES, 'UTF-8') ?>
                                         </option>
                                     <?php endforeach;
                                 endif; ?>

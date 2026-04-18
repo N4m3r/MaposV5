@@ -404,6 +404,12 @@ class Mine extends CI_Controller
             $cliente = $this->check_credentials($email);
 
             if ($cliente) {
+                // Verificar se o cliente tem senha definida
+                if (empty($cliente->senha)) {
+                    log_info('Tentativa de login com cliente sem senha definida: ' . $email);
+                    echo json_encode(['result' => false, 'message' => 'Conta sem senha definida. Por favor, use a opção "Esqueceu a senha?" para criar uma senha.', 'MAPOS_TOKEN' => $this->security->get_csrf_hash()]);
+                    return;
+                }
                 // Verificar credenciais do usuário
                 if (password_verify($password, $cliente->senha)) {
                     $session_mine_data = [

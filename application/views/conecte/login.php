@@ -162,7 +162,7 @@ $parse_cpfcnpj = $this->input->get('c');
                                 Swal.fire({
                                     position: 'center',
                                     icon: 'error',
-                                    title: 'Os dados de acesso estão incorretos.\n Por favor tente novamente!',
+                                    title: data.message || 'Os dados de acesso estão incorretos.\n Por favor tente novamente!',
                                     showConfirmButton: false,
                                     timer: 4000
                                 })
