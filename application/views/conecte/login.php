@@ -83,6 +83,9 @@ $parse_cpfcnpj = $this->input->get('c');
 
                                     <button style="margin: 0" class="btn btn-info btn-large"> Acessar</button>
                                     <a href="<?= site_url('mine/cadastrar') ?>" class="btn btn-success btn-large">Cadastrar-me</a>
+                                    <div class="links-uteis"><a href="<?= site_url('mine') ?>">
+                                            <p style="margin:0px 0 18px">← Voltar para Login de Usuário</p>
+                                        </a></div>
                                     <div class="links-uteis"><a href="<?= site_url('mine/resetarSenha') ?>">
                                             <p style="margin:0px 0 18px">Esqueceu a senha?</p>
                                         </a></div>
