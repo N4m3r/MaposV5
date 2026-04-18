@@ -391,9 +391,9 @@ class Tecnicos_admin extends MY_Controller
                     'cliente_id' => $this->input->post('cliente_id'),
                     'tipo_obra' => $this->input->post('tipo_obra'),
                     'endereco' => $this->input->post('endereco'),
-                    'data_inicio' => $this->input->post('data_inicio'),
-                    'data_previsao_fim' => $this->input->post('data_previsao_fim'),
-                    'descricao' => $this->input->post('descricao'),
+                    'data_inicio_contrato' => $this->input->post('data_inicio'),
+                    'data_fim_prevista' => $this->input->post('data_previsao_fim'),
+                    'observacoes' => $this->input->post('descricao'),
                     'status' => $this->input->post('status'),
                 ];
 
