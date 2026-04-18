@@ -96,16 +96,16 @@ $tecnicos = $tecnicos ?? [];
                                     </tbody>
                                 </table>
                             </div>
-                        <?php else: ?
+                        <?php else: ?>
                             <div class="alert alert-info">
                                 <i class="icon-info-sign"></i>
                                 <?php if ($tecnico_id): ?>
                                     Nenhum ponto de rastreamento encontrado para esta data.
-                                <?php else: ?
+                                <?php else: ?>
                                     Selecione um técnico e data para visualizar as rotas.
                                 <?php endif; ?>
                             </div>
-                        <?php endif; ?
+                        <?php endif; ?>
                     </div>
 
                     <!-- Placeholder para Mapa -->

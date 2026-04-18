@@ -307,7 +307,7 @@ class Tec_os_model extends CI_Model
     }
 
     /**
-     * Buscar catálogo de serviços
+     * Buscar catálogo de serviços (usa tabela servicos do sistema)
      */
     public function getServicosCatalogo($where = [])
     {
@@ -315,10 +315,9 @@ class Tec_os_model extends CI_Model
             $this->db->where($where);
         }
 
-        $this->db->where('ativo', 1);
         $this->db->order_by('nome', 'ASC');
 
-        $query = $this->db->get('servicos_catalogo');
+        $query = $this->db->get('servicos');
 
         if ($query === false) {
             log_message('error', 'Erro na query getServicosCatalogo: ' . $this->db->last_query());
@@ -333,29 +332,22 @@ class Tec_os_model extends CI_Model
      */
     public function getServicoCatalogoById($id)
     {
-        $this->db->where('id', $id);
-        return $this->db->get('servicos_catalogo')->row();
+        $this->db->where('idServicos', $id);
+        return $this->db->get('servicos')->row();
     }
 
     /**
-     * Adicionar serviço ao catálogo
+     * Adicionar serviço ao catálogo (tabela servicos)
      */
     public function adicionarServicoCatalogo($dados)
     {
         $data = [
-            'codigo' => $dados['codigo'],
             'nome' => $dados['nome'],
             'descricao' => $dados['descricao'] ?? null,
-            'tipo' => $dados['tipo'],
-            'categoria' => $dados['categoria'] ?? null,
-            'especialidade_requerida' => $dados['especialidade_requerida'] ?? null,
-            'tempo_estimado_horas' => $dados['tempo_estimado_horas'] ?? null,
-            'checklist_padrao' => $dados['checklist_padrao'] ? json_encode($dados['checklist_padrao']) : null,
-            'ativo' => 1,
-            'data_criacao' => date('Y-m-d H:i:s'),
+            'preco' => $dados['preco'] ?? 0,
         ];
 
-        $this->db->insert('servicos_catalogo', $data);
+        $this->db->insert('servicos', $data);
         return $this->db->insert_id();
     }
 
@@ -364,21 +356,17 @@ class Tec_os_model extends CI_Model
      */
     public function atualizarServicoCatalogo($id, $dados)
     {
-        if (isset($dados['checklist_padrao'])) {
-            $dados['checklist_padrao'] = json_encode($dados['checklist_padrao']);
-        }
-
-        $this->db->where('id', $id);
-        return $this->db->update('servicos_catalogo', $dados);
+        $this->db->where('idServicos', $id);
+        return $this->db->update('servicos', $dados);
     }
 
     /**
-     * Excluir serviço do catálogo (soft delete)
+     * Excluir serviço do catálogo
      */
     public function excluirServicoCatalogo($id)
     {
-        $this->db->where('id', $id);
-        return $this->db->update('servicos_catalogo', ['ativo' => 0]);
+        $this->db->where('idServicos', $id);
+        return $this->db->delete('servicos');
     }
 
     /**

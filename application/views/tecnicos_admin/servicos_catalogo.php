@@ -1,6 +1,6 @@
 <?php
 /**
- * Catálogo de Serviços para Técnicos
+ * Catálogo de Serviços - Usa tabela 'servicos' do sistema
  */
 $servicos = $servicos ?? [];
 ?>
@@ -12,7 +12,7 @@ $servicos = $servicos ?? [];
                 <span class="icon"><i class="icon-wrench"></i></span>
                 <h5>Catálogo de Serviços</h5>
                 <div class="buttons">
-                    <a href="<?php echo site_url('tecnicos_admin/adicionar_servico'); ?>" class="btn btn-mini btn-success">
+                    <a href="<?php echo site_url('servicos/adicionar'); ?>" class="btn btn-mini btn-success">
                         <i class="icon-plus icon-white"></i> Novo Serviço
                     </a>
                 </div>
@@ -22,30 +22,28 @@ $servicos = $servicos ?? [];
                     <table class="table table-bordered table-striped table-hover">
                         <thead>
                             <tr>
-                                <th>Código</th>
+                                <th style="width: 80px;">Código</th>
                                 <th>Nome</th>
-                                <th>Tipo</th>
-                                <th>Categoria</th>
-                                <th>Tempo Estimado</th>
-                                <th>Ações</th>
+                                <th>Descrição</th>
+                                <th style="width: 120px;">Preço</th>
+                                <th style="width: 100px;">Ações</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php foreach ($servicos as $servico): ?>
                                 <tr>
-                                    <td><code><?php echo $servico->codigo ?? $servico->id; ?></code></td>
+                                    <td><code>#<?php echo $servico->idServicos; ?></code></td>
                                     <td><?php echo $servico->nome; ?></td>
-                                    <td>
-                                        <span class="badge badge-info"><?php echo $servico->tipo ?? 'Geral'; ?></span>
-                                    </td>
-                                    <td><?php echo $servico->categoria ?? '-'; ?></td>
-                                    <td><?php echo ($servico->tempo_estimado_horas ?? '-') . 'h'; ?></td>
+                                    <td><?php echo $servico->descricao ?: '-'; ?></td>
+                                    <td>R$ <?php echo number_format($servico->preco, 2, ',', '.'); ?></td>
                                     <td class="button-tip">
-                                        <a href="#" class="btn btn-mini btn-info" title="Visualizar">
-                                            <i class="icon-eye-open icon-white"></i>
-                                        </a>
-                                        <a href="#" class="btn btn-mini btn-warning" title="Editar">
+                                        <a href="<?php echo site_url('servicos/editar/' . $servico->idServicos); ?>"
+                                           class="btn btn-mini btn-warning" title="Editar">
                                             <i class="icon-edit icon-white"></i>
+                                        </a>
+                                        <a href="<?php echo site_url('servicos/visualizar/' . $servico->idServicos); ?>"
+                                           class="btn btn-mini btn-info" title="Visualizar">
+                                            <i class="icon-eye-open icon-white"></i>
                                         </a>
                                     </td>
                                 </tr>
@@ -54,8 +52,8 @@ $servicos = $servicos ?? [];
                     </table>
                 <?php else: ?>
                     <div class="alert alert-info" style="margin: 20px;">
-                        <i class="icon-info-sign"></i> Nenhum serviço cadastrado no catálogo.
-                        <a href="<?php echo site_url('tecnicos_admin/adicionar_servico'); ?>" class="btn btn-small btn-success">
+                        <i class="icon-info-sign"></i> Nenhum serviço cadastrado.
+                        <a href="<?php echo site_url('servicos/adicionar'); ?>" class="btn btn-small btn-success">
                             <i class="icon-plus icon-white"></i> Cadastrar primeiro serviço
                         </a>
                     </div>

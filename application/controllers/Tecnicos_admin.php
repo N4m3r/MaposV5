@@ -181,37 +181,11 @@ class Tecnicos_admin extends MY_Controller
     }
 
     /**
-     * Adicionar serviço ao catálogo
+     * Adicionar serviço ao catálogo (redireciona para controller de servicos)
      */
     public function adicionar_servico()
     {
-        $this->form_validation->set_rules('codigo', 'Código', 'required');
-        $this->form_validation->set_rules('nome', 'Nome', 'required');
-        $this->form_validation->set_rules('tipo', 'Tipo', 'required');
-
-        if ($this->form_validation->run() === false) {
-            $this->data['tipos'] = ['INS', 'MP', 'MC', 'CT', 'TR', 'UP', 'URG'];
-            $this->data['view'] = 'tecnicos_admin/servico_form';
-            return $this->layout();
-        } else {
-            $dados = [
-                'codigo' => $this->input->post('codigo'),
-                'nome' => $this->input->post('nome'),
-                'descricao' => $this->input->post('descricao'),
-                'tipo' => $this->input->post('tipo'),
-                'categoria' => $this->input->post('categoria'),
-                'tempo_estimado_horas' => $this->input->post('tempo_estimado_horas'),
-                'checklist_padrao' => $this->preparar_checklist($this->input->post('checklist')),
-            ];
-
-            if ($this->tec_os_model->adicionarServicoCatalogo($dados)) {
-                $this->session->set_flashdata('success', 'Serviço adicionado ao catálogo!');
-                redirect('tecnicos_admin/servicos_catalogo');
-            } else {
-                $this->session->set_flashdata('error', 'Erro ao adicionar serviço.');
-                redirect('tecnicos_admin/adicionar_servico');
-            }
-        }
+        redirect('servicos/adicionar');
     }
 
     /**
@@ -244,6 +218,52 @@ class Tecnicos_admin extends MY_Controller
         $this->data['view'] = 'tecnicos_admin/relatorios';
 
         return $this->layout();
+    }
+
+    /**
+     * Salvar novo template de checklist
+     */
+    public function salvar_checklist()
+    {
+        $this->form_validation->set_rules('nome_template', 'Nome do Template', 'required|trim');
+        $this->form_validation->set_rules('tipo_os', 'Tipo de OS', 'required');
+        $this->form_validation->set_rules('tipo_servico', 'Tipo de Serviço', 'required');
+
+        if ($this->form_validation->run() === false) {
+            $this->session->set_flashdata('error', validation_errors());
+            redirect('tecnicos_admin/checklists');
+        }
+
+        $dados = [
+            'nome_template' => $this->input->post('nome_template'),
+            'tipo_os' => $this->input->post('tipo_os'),
+            'tipo_servico' => $this->input->post('tipo_servico'),
+            'itens' => json_encode([]),
+            'ativo' => 1,
+        ];
+
+        if ($this->db->insert('tec_checklist_template', $dados)) {
+            $this->session->set_flashdata('success', 'Template de checklist criado com sucesso!');
+        } else {
+            $this->session->set_flashdata('error', 'Erro ao criar template.');
+        }
+
+        redirect('tecnicos_admin/checklists');
+    }
+
+    /**
+     * Excluir template de checklist
+     */
+    public function excluir_checklist($id)
+    {
+        $this->db->where('id', $id);
+        if ($this->db->update('tec_checklist_template', ['ativo' => 0])) {
+            $this->session->set_flashdata('success', 'Template excluído com sucesso!');
+        } else {
+            $this->session->set_flashdata('error', 'Erro ao excluir template.');
+        }
+
+        redirect('tecnicos_admin/checklists');
     }
 
     /**
