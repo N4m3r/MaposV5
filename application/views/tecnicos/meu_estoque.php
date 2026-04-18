@@ -1,5 +1,10 @@
 <!-- Meu Estoque - Portal do Técnico -->
-<div class="row-fluid">
+<style>
+.portal-tecnico-content { margin-top: 15px !important; }
+@media (max-width: 768px) { .portal-tecnico-content { margin-top: 10px !important; } }
+</style>
+
+<div class="row-fluid portal-tecnico-content">
     <div class="span12">
 
         <!-- Header -->
