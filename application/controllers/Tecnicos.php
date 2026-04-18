@@ -155,6 +155,8 @@ class Tecnicos extends CI_Controller
             'tec_nivel' => $tecnico->nivel_tecnico,
             'tec_email' => $tecnico->email,
             'tec_foto' => $tecnico->foto_tecnico,
+            'nome_admin' => $tecnico->nome, // Para compatibilidade com o tema
+            'url_image_user_admin' => $tecnico->foto_tecnico, // Para compatibilidade
             'logged_in' => true,
         ];
         $this->session->set_userdata($sessao);
