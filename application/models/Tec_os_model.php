@@ -41,7 +41,7 @@ class Tec_os_model extends CI_Model
         $this->db->select('os.*, c.nome as cliente_nome, c.telefone as cliente_telefone');
         $this->db->from('os');
         $this->db->join('clientes c', 'c.idClientes = os.clientes_id');
-        $this->db->where('os.usuarios_id', $tecnico_id);
+        $this->db->where('os.tecnico_responsavel', $tecnico_id);
 
         if ($status !== 'todos') {
             $this->db->where('os.status', $status);
@@ -72,7 +72,7 @@ class Tec_os_model extends CI_Model
         $this->db->join('clientes c', 'c.idClientes = os.clientes_id');
 
         if ($tecnico_id !== null) {
-            $this->db->where('os.usuarios_id', $tecnico_id);
+            $this->db->where('os.tecnico_responsavel', $tecnico_id);
         }
 
         $this->db->where('os.dataInicial', $hoje);
@@ -97,7 +97,7 @@ class Tec_os_model extends CI_Model
         $this->db->select('os.*, c.nome as cliente_nome');
         $this->db->from('os');
         $this->db->join('clientes c', 'c.idClientes = os.clientes_id');
-        $this->db->where('os.usuarios_id', $tecnico_id);
+        $this->db->where('os.tecnico_responsavel', $tecnico_id);
         $this->db->where_in('os.status', ['Aberto', 'Em Andamento', 'Aguardando Peças']);
         $this->db->order_by('os.dataInicial', 'ASC');
 
@@ -118,7 +118,7 @@ class Tec_os_model extends CI_Model
     {
         $inicio_semana = date('Y-m-d', strtotime('monday this week'));
 
-        $this->db->where('usuarios_id', $tecnico_id);
+        $this->db->where('tecnico_responsavel', $tecnico_id);
         $this->db->where('status', 'Finalizada');
         $this->db->where('dataFinal >=', $inicio_semana);
 
@@ -527,7 +527,7 @@ class Tec_os_model extends CI_Model
         $this->db->select('os.*, c.nome as cliente_nome, c.telefone as cliente_telefone');
         $this->db->from('os');
         $this->db->join('clientes c', 'c.idClientes = os.clientes_id');
-        $this->db->where('os.usuarios_id', $tecnico_id);
+        $this->db->where('os.tecnico_responsavel', $tecnico_id);
         $this->db->where('os.dataInicial >=', $hoje);
         $this->db->where('os.dataInicial <=', $futuro);
         $this->db->where_in('os.status', ['Aberto', 'Aprovado']);
@@ -553,7 +553,7 @@ class Tec_os_model extends CI_Model
         $this->db->join('clientes c', 'c.idClientes = os.clientes_id');
 
         if ($tecnico_id) {
-            $this->db->where('os.usuarios_id', $tecnico_id);
+            $this->db->where('os.tecnico_responsavel', $tecnico_id);
         }
 
         $this->db->group_start();
