@@ -238,21 +238,41 @@
                 </div>
             </div>
 
+            <!-- Busca por CNPJ -->
+            <div class="control-group">
+                <label class="control-label">Buscar por CNPJ</label>
+                <div class="controls">
+                    <div class="input-append span12" style="margin-left: 0;">
+                        <input type="text" id="buscar-cnpj-obra" class="span4" placeholder="00.000.000/0000-00" maxlength="18">
+                        <button type="button" class="btn btn-info" id="btn-buscar-cnpj-obra">
+                            <i class="bx bx-search"></i> Buscar
+                        </button>
+                        <span class="help-inline" id="msg-busca-cnpj" style="color: #666;">
+                            Digite o CNPJ para buscar cliente cadastrado
+                        </span>
+                    </div>
+                </div>
+            </div>
+
             <div class="row-fluid">
                 <div class="span6">
                     <div class="control-group">
                         <label class="control-label">Cliente *</label>
                         <div class="controls">
-                            <select name="cliente_id" class="span12" required>
+                            <select name="cliente_id" id="select-cliente-obra" class="span12" required>
                                 <option value="">Selecione...</option>
                                 <?php
                                 // Buscar clientes ativos
                                 $clientes_query = $this->db->order_by('nomeCliente', 'ASC')->get('clientes');
                                 $clientes = $clientes_query ? $clientes_query->result() : [];
                                 if (!empty($clientes)):
-                                    foreach ($clientes as $cliente): ?>
-                                        <option value="<?= $cliente->idClientes ?>">
+                                    foreach ($clientes as $cliente): ?
+003e
+                                        <option value="<?= $cliente->idClientes ?>"
+                                                data-documento="<?= htmlspecialchars($cliente->documento ?? '', ENT_QUOTES, 'UTF-8') ?>"
+                                                data-endereco="<?= htmlspecialchars($cliente->endereco ?? ($cliente->rua . ', ' . $cliente->numero . ' - ' . $cliente->bairro . ', ' . $cliente->cidade . ' - ' . $cliente->estado) ?? '', ENT_QUOTES, 'UTF-8') ?>">
                                             <?= htmlspecialchars($cliente->nomeCliente, ENT_QUOTES, 'UTF-8') ?>
+                                            <?= !empty($cliente->documento) ? ' (' . $cliente->documento . ')' : '' ?>
                                         </option>
                                     <?php endforeach;
                                 endif; ?>

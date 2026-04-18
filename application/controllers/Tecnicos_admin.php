@@ -78,6 +78,14 @@ class Tecnicos_admin extends MY_Controller
             $this->data['view'] = 'tecnicos_admin/tecnico_form';
             return $this->layout();
         } else {
+            // Buscar permissão de técnico ou criar uma permissão padrão
+            $permissao = $this->db->where('nome', 'Técnico')->get('permissoes')->row();
+            if (!$permissao) {
+                // Usar permissão de funcionário como fallback
+                $permissao = $this->db->where('nome', 'Funcionario')->get('permissoes')->row();
+            }
+            $permissao_id = $permissao ? $permissao->idPermissao : 2; // Fallback para ID 2
+
             $dados = [
                 'nome' => $this->input->post('nome'),
                 'email' => $this->input->post('email'),
@@ -93,6 +101,7 @@ class Tecnicos_admin extends MY_Controller
                 'raio_atuacao_km' => $this->input->post('raio_atuacao_km') ?: 0,
                 'plantao_24h' => $this->input->post('plantao_24h') ? 1 : 0,
                 'is_tecnico' => 1,
+                'permissoes_id' => $permissao_id,
             ];
 
             $resultado = $this->tecnicos_model->add($dados);
