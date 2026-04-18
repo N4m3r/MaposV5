@@ -61,7 +61,9 @@
       "WebFetch(domain:github.com)",
       "WebFetch(domain:www.sintegraws.com.br)",
       "WebFetch(domain:www.gov.br)",
-      "WebFetch(domain:adn.producaorestrita.nfse.gov.br)"
+      "WebFetch(domain:adn.producaorestrita.nfse.gov.br)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)"
     ]
   }
 }
