@@ -76,10 +76,12 @@ class Usuarioscliente extends MY_Controller
         if ($usuario_id) {
             // Vincular CNPJs
             $cnpjs = $this->input->post('cnpjs');
+            $cnpjs_razao = $this->input->post('cnpjs_razao');
             if (!empty($cnpjs) && is_array($cnpjs)) {
-                foreach ($cnpjs as $cnpj) {
+                foreach ($cnpjs as $index => $cnpj) {
                     if (!empty($cnpj)) {
-                        $this->usuarios_cliente_model->addCnpj($usuario_id, $cnpj);
+                        $razao = isset($cnpjs_razao[$index]) ? $cnpjs_razao[$index] : null;
+                        $this->usuarios_cliente_model->addCnpj($usuario_id, $cnpj, $razao);
                     }
                 }
             }
