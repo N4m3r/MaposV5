@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Técnicos - MAPOS</title>
+    <link rel="stylesheet" href="assets/css/bootstrap5.3.2.min.css">
+    <link rel="stylesheet" href="assets/css/tema.css">
+    <link rel="stylesheet" href="assets/font-awesome/css/font-awesome.css">
+    <style>
+        :root {
+            --primary: #2c88ff;
+            --success: #4caf50;
+            --warning: #f57c00;
+            --danger: #e74c3c;
+            --info: #3498db;
+            --bg-body: #f5f6fa;
+            --bg-card: #ffffff;
+            --text-primary: #2c3e50;
+            --text-secondary: #7f8c8d;
+            --border: rgba(0,0,0,0.08);
+            --shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-body);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .header p { opacity: 0.9; font-size: 1rem; }
+
+        .container-docs { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; }
+
+        .card-mapos {
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card-mapos:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--bg-body);
+        }
+
+        .card-header h2 { font-size: 1.25rem; font-weight: 600; }
+        .card-header i { font-size: 1.25rem; color: var(--primary); }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover { border-color: var(--primary); transform: translateY(-2px); }
+        .stat-icon { font-size: 2.5rem; margin-bottom: 0.5rem; color: var(--primary); }
+        .stat-number { font-size: 2rem; font-weight: 700; }
+        .stat-label { font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.25rem; }
+
+        .table-mapos { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        .table-mapos th, .table-mapos td { padding: 0.75rem; text-align: left; border-bottom: 1px solid var(--border); }
+        .table-mapos th { background: var(--bg-body); font-weight: 600; }
+        .table-mapos tr:hover { background: rgba(44, 136, 255, 0.05); }
+
+        pre {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 0.875rem;
+        }
+
+        code { font-family: 'Consolas', 'Monaco', monospace; }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-success { background: #e8f5e9; color: #388e3c; }
+        .badge-info { background: #e3f2fd; color: #1976d2; }
+        .badge-warning { background: #fff3e0; color: #f57c00; }
+        .badge-danger { background: #ffebee; color: #c62828; }
+
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .color-item {
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            color: white;
+            font-weight: 600;
+            box-shadow: var(--shadow);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--border);
+            margin-top: 3rem;
+        }
+
+        .footer img { max-width: 120px; margin-bottom: 1rem; }
+
+        .quick-nav {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--bg-card);
+            border-radius: 10px;
+            padding: 0.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            z-index: 1000;
+            display: none;
+        }
+
+        .quick-nav a {
+            display: block;
+            padding: 0.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        .quick-nav a:hover { background: var(--primary); color: white; }
+
+        @media (min-width: 1200px) { .quick-nav { display: block; } }
+
+        html { scroll-behavior: smooth; }
+
+        @media (max-width: 768px) {
+            .header h1 { font-size: 1.5rem; }
+            .card-mapos { padding: 1rem; }
+            .table-mapos { font-size: 0.875rem; }
+            .table-mapos th, .table-mapos td { padding: 0.5rem; }
+        }
+
+        @media print {
+            .header { background: white !important; color: black !important; }
+            .quick-nav { display: none; }
+            .card-mapos { box-shadow: none; border: 1px solid #ddd; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="quick-nav">
+        <a href="#visao-geral" title="Visao Geral"><i class="fa fa-home"></i></a>
+        <a href="#estilos" title="Estilos"><i class="fa fa-paint-brush"></i></a>
+        <a href="#estrutura" title="Estrutura"><i class="fa fa-folder"></i></a>
+        <a href="#permissoes" title="Permissoes"><i class="fa fa-lock"></i></a>
+        <a href="#api" title="API"><i class="fa fa-code"></i></a>
+        <a href="#status" title="Status"><i class="fa fa-tasks"></i></a>
+    </nav>
+
+    <header class="header">
+        <h1><i class="fa fa-users-cog"></i> Sistema de Tecnicos</h1>
+        <p>Documentacao resumida do modulo de gestao de tecnicos do MAPOS</p>
+    </header>
+
+    <div class="container-docs">
+        <section id="visao-geral" class="card-mapos">
+            <div class="card-header">
+                <i class="fa fa-info-circle"></i>
+                <h2>Visao Geral</h2>
+            </div>
+            <p>O <strong>Sistema de Tecnicos</strong> e um modulo do MAPOS que permite gerenciar tecnicos de campo, suas ordens de servico, estoque e performance.</p>
+
+            <div class="stats-grid" style="margin-top: 1.5rem;">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fa fa-chart-line"></i></div>
+                    <div class="stat-label">Dashboard Tecnico</div>
+                    <span class="badge badge-success">Ativo</span>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fa fa-clipboard-list"></i></div>
+                    <div class="stat-label">Minhas OS</div>
+                    <span class="badge badge-success">Ativo</span>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fa fa-box"></i></div>
+                    <div class="stat-label">Meu Estoque</div>
+                    <span class="badge badge-success">Ativo</span>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fa fa-user-circle"></i></div>
+                    <div class="stat-label">Perfil</div>
+                    <span class="badge badge-success">Ativo</span>
+                </div>
+            </div>
+        </section>
+
+        <section id="estilos" class="card-mapos">
+            <div class="card-header">
+                <i class="fa fa-paint-brush"></i>
+                <h2>Guia de Estilos (Tema MAPOS)</h2>
+            </div>
+
+            <h4>Cores Principais</h4>
+            <div class="color-grid">
+                <div class="color-item" style="background: #2c88ff;">Primary #2c88ff</div>
+                <div class="color-item" style="background: #4caf50;">Success #4caf50</div>
+                <div class="color-item" style="background: #f57c00;">Warning #f57c00</div>
+                <div class="color-item" style="background: #e74c3c;">Danger #e74c3c</div>
+                <div class="color-item" style="background: #3498db;">Info #3498db</div>
+                <div class="color-item" style="background: #2c3e50;">Text #2c3e50</div>
+            </div>
+
+            <h4 style="margin-top: 1.5rem;">Tipografia</h4>
+            <table class="table-mapos">
+                <thead>
+                    <tr><th>Elemento</th><th>Tamanho</th><th>Peso</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>H1</td><td>1.8rem</td><td>700</td></tr>
+                    <tr><td>H2</td><td>1.5rem</td><td>600</td></tr>
+                    <tr><td>H3</td><td>1.2rem</td><td>600</td></tr>
+                    <tr><td>Body</td><td>0.9rem</td><td>400</td></tr>
+                    <tr><td>Small</td><td>0.75rem</td><td>500</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="estrutura" class="card-mapos">
+            <div class="card-header">
+                <i class="fa fa-folder-open"></i>
+                <h2>Estrutura de Arquivos</h2>
+            </div>
+<pre><code>application/
+├── controllers/
+│   └── Tecnicos.php              # Controller principal
+├── models/
+│   └── Tecnicos_model.php        # Model de dados
+└── views/
+    ├── tecnicos/
+    │   ├── dashboard.php         # Painel do tecnico
+    │   ├── login.php             # Login exclusivo
+    │   ├── minhas_os.php         # Lista de OS
+    │   ├── executar_os.php       # Execucao de OS
+    │   ├── meu_estoque.php       # Estoque no veiculo
+    │   └── perfil.php            # Perfil do tecnico
+    ├── tecnicos_admin/
+    │   ├── dashboard.php         # Dashboard admin
+    │   ├── tecnicos_list.php     # Lista de tecnicos
+    │   └── tecnico_form.php      # Form de cadastro
+    └── tema/
+        └── menu_tecnico.php      # Menu lateral</code></pre>
+        </section>
+
+        <section id="permissoes" class="card-mapos">
+            <div class="card-header">
+                <i class="fa fa-lock"></i>
+                <h2>Permissoes</h2>
+            </div>
+            <table class="table-mapos">
+                <thead>
+                    <tr><th>Permissao</th><th>Descricao</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>vTecnicoDashboard</code></td><td>Visualizar Dashboard</td></tr>
+                    <tr><td><code>vTecnicoOS</code></td><td>Visualizar Minhas OS</td></tr>
+                    <tr><td><code>aTecnicoOS</code></td><td>Executar OS</td></tr>
+                    <tr><td><code>vTecnicoEstoque</code></td><td>Visualizar Estoque</td></tr>
+                    <tr><td><code>eTecnicoEstoque</code></td><td>Editar Estoque</td></tr>
+                    <tr><td><code>vRelatorioTecnicos</code></td><td>Relatorio de Performance</td></tr>
+                    <tr><td><code>vRelatorioAtendimentos</code></td><td>Relatorio de Atendimentos</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="api" class="card-mapos">
+            <div class="card-header">
+                <i class="fa fa-code"></i>
+                <h2>API Endpoints</h2>
+            </div>
+
+            <h4>Tecnico (Portal/Mobile)</h4>
+            <table class="table-mapos">
+                <thead>
+                    <tr><th>Metodo</th><th>Endpoint</th><th>Descricao</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><span class="badge badge-info">GET</span></td><td>/tecnicos/dashboard</td><td>Dashboard do tecnico</td></tr>
+                    <tr><td><span class="badge badge-info">GET</span></td><td>/tecnicos/minhas_os</td><td>Listar minhas OS</td></tr>
+                    <tr><td><span class="badge badge-info">GET</span></td><td>/tecnicos/executar_os/{id}</td><td>Executar OS</td></tr>
+                    <tr><td><span class="badge badge-success">POST</span></td><td>/tecnicos/atualizar_os/{id}</td><td>Atualizar OS</td></tr>
+                    <tr><td><span class="badge badge-info">GET</span></td><td>/tecnicos/meu_estoque</td><td>Ver estoque</td></tr>
+                    <tr><td><span class="badge badge-success">POST</span></td><td>/tecnicos/atualizar_estoque</td><td>Atualizar estoque</td></tr>
+                </tbody>
+            </table>
+
+            <h4 style="margin-top: 1.5rem;">Admin</h4>
+            <table class="table-mapos">
+                <thead>
+                    <tr><th>Metodo</th><th>Endpoint</th><th>Descricao</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><span class="badge badge-info">GET</span></td><td>/tecnicos_admin</td><td>Dashboard admin</td></tr>
+                    <tr><td><span class="badge badge-info">GET</span></td><td>/tecnicos_admin/listar</td><td>Listar tecnicos</td></tr>
+                    <tr><td><span class="badge badge-success">POST</span></td><td>/tecnicos_admin/adicionar</td><td>Cadastrar tecnico</td></tr>
+                    <tr><td><span class="badge badge-success">POST</span></td><td>/tecnicos_admin/editar/{id}</td><td>Editar tecnico</td></tr>
+                    <tr><td><span class="badge badge-danger">POST</span></td><td>/tecnicos_admin/excluir/{id}</td><td>Excluir tecnico</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="status" class="card-mapos">
+            <div class="card-header">
+                <i class="fa fa-tasks"></i>
+                <h2>Status das OS</h2>
+            </div>
+            <table class="table-mapos">
+                <thead>
+                    <tr><th>Status</th><th>Cor</th><th>Classe CSS</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Aberto</td><td><span class="badge badge-info">Azul</span></td><td><code>.os-status.aberto</code></td></tr>
+                    <tr><td>Em Andamento</td><td><span class="badge badge-success">Verde</span></td><td><code>.os-status.em_andamento</code></td></tr>
+                    <tr><td>Aguardando Pecoas</td><td><span class="badge badge-warning">Laranja</span></td><td><code>.os-status.aguardando</code></td></tr>
+                    <tr><td>Aguardando Cliente</td><td><span class="badge badge-warning">Amarelo</span></td><td><code>.os-status.aguardando</code></td></tr>
+                    <tr><td>Finalizado</td><td><span class="badge" style="background:#ecf0f1;color:#7f8c8d">Cinza</span></td><td><code>.os-status.finalizado</code></td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="card-mapos">
+            <div class="card-header">
+                <i class="fa fa-bolt"></i>
+                <h2>Performance - Otimizacoes</h2>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fa fa-bolt"></i></div>
+                    <div class="stat-label">Cache</div>
+                    <p style="font-size: 0.8rem; color: var(--text-secondary);">Service Worker, consultas cacheadas</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fa fa-mobile-alt"></i></div>
+                    <div class="stat-label">Responsivo</div>
+                    <p style="font-size: 0.8rem; color: var(--text-secondary);">Mobile-first, touch-friendly</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fa fa-image"></i></div>
+                    <div class="stat-label">Imagens</div>
+                    <p style="font-size: 0.8rem; color: var(--text-secondary);">WebP, lazy loading</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fa fa-database"></i></div>
+                    <div class="stat-label">Database</div>
+                    <p style="font-size: 0.8rem; color: var(--text-secondary);">Indices otimizados</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer class="footer">
+        <img src="assets/img/logo-mapos.png" alt="MAPOS Logo">
+        <p><strong>MAPOS - Sistema de Ordens de Servico</strong></p>
+        <p>Versao 5.0 | 2024</p>
+    </footer>
+
+    <script>
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+    </script>
+</body>
+</html>
