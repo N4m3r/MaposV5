@@ -58,12 +58,14 @@
     <?php if (!empty($obras)): ?>
         <div class="row-fluid">
             <?php foreach ($obras as $obra):
-                $statusConfig = [
+                $statusConfigArray = [
                     'planejamento' => ['label' => 'Planejada', 'class' => 'planejada', 'icon' => 'bx-calendar'],
                     'em_andamento' => ['label' => 'Em Andamento', 'class' => 'andamento', 'icon' => 'bx-rocket'],
                     'paralisada' => ['label' => 'Paralisada', 'class' => 'paralisada', 'icon' => 'bx-pause-circle'],
                     'concluida' => ['label' => 'Concluída', 'class' => 'concluida', 'icon' => 'bx-check-circle'],
-                ][$obra->status ?? 'planejamento'] ?? $statusConfig['planejamento'];
+                ];
+                $statusKey = $obra->status ?? 'planejamento';
+                $statusConfig = $statusConfigArray[$statusKey] ?? $statusConfigArray['planejamento'];
 
                 $progresso = $obra->percentual_concluido ?? $obra->progresso ?? 0;
                 $tipoObra = $obra->tipo_obra ?? 'Outro';

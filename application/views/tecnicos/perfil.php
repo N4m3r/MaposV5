@@ -341,15 +341,15 @@
         <!-- Perfil Header -->
         <div class="profile-header">
             <div class="profile-avatar" onclick="abrirCamera()">
-                <?php if ($tecnico->foto_tecnico): ?>
-                    <img src="<?php echo base_url($tecnico->foto_tecnico); ?>" alt="Foto">
-                <?php else: ?>003e
-                    <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='80'>👤</text></svg>" alt="Foto">
+                <?php if (!empty($tecnico->foto_tecnico) && file_exists(FCPATH . $tecnico->foto_tecnico)): ?>
+                    <img src="<?php echo base_url($tecnico->foto_tecnico); ?>?v=<?php echo time(); ?>" alt="Foto">
+                <?php else: ?>
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='80'%3E👤%3C/text%3E%3C/svg%3E" alt="Foto">
                 <?php endif; ?>
                 <button class="avatar-edit">📷 Alterar</button>
             </div>
 
-            <div class="profile-name"><?php echo htmlspecialchars($tecnico->nome); ?></div>
+            <div class="profile-name"><?php echo htmlspecialchars($tecnico->nome ?? '', ENT_QUOTES, 'UTF-8'); ?></div>
             <div class="profile-level">
                 Técnico Nível <?php echo $tecnico->nivel_tecnico; ?>
             </div>
