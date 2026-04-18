@@ -227,15 +227,98 @@
 
                 <!-- OS Vinculadas -->
                 <div class="widget-box" style="border-radius: 16px; overflow: hidden;">
-                    <div class="widget-title" style="background: #f8f9fa;">
-                        <span class="icon"><i class="bx bx-clipboard"></i></span>
-                        <h5>Ordens de Serviço Vinculadas</h5>
+                    <div class="widget-title" style="background: #f8f9fa; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <span class="icon"><i class="bx bx-clipboard"></i></span>
+                            <h5>Ordens de Serviço Vinculadas <span class="badge badge-info"><?= count($os_vinculadas ?? []) ?></span></h5>
+                        </div>
+                        <a href="#modal-vincular-os" data-toggle="modal" class="btn btn-mini btn-success">
+                            <i class="bx bx-plus"></i> Vincular OS
+                        </a>
                     </div>
                     <div class="widget-content" style="padding: 20px;">
-                        <div class="empty-state" style="text-align: center; padding: 40px; color: #888;">
-                            <div style="font-size: 3rem; margin-bottom: 15px;"><i class="bx bx-clipboard"></i></div>
-                            <p>As OS vinculadas a esta obra aparecerão aqui</p>
-                        </div>
+                        <?php if (!empty($os_vinculadas)): ?>
+                            <div class="os-list" style="display: flex; flex-direction: column; gap: 12px;">
+                                <?php foreach ($os_vinculadas as $os): ?
+                                <div class="os-item" style="
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 12px;
+                                    padding: 15px;
+                                    background: #f8f9fa;
+                                    border-radius: 12px;
+                                    transition: all 0.2s;
+                                " onmouseover="this.style.background='#e3f2fd'" onmouseout="this.style.background='#f8f9fa'">
+                                    <div style="
+                                        width: 45px;
+                                        height: 45px;
+                                        border-radius: 12px;
+                                        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+                                        color: white;
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                        font-weight: 600;
+                                        font-size: 0.9rem;
+                                    ">
+                                        #<?= $os->idOs ?>
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <div style="font-weight: 600; color: #333;">
+                                            <?= htmlspecialchars($os->nomeCliente ?? 'Cliente', ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?>
+                                        </div>
+                                        <div style="font-size: 0.8rem; color: #888;">
+                                            <i class="bx bx-calendar"></i> <?= date('d/m/Y', strtotime($os->dataInicial)) ?>
+                                            <span style="margin-left: 10px;">
+                                                <span class="badge" style="
+                                                    background: <?php
+                                                    $statusColors = [
+                                                        'Aberto' => '#00cd00',
+                                                        'Em Andamento' => '#436eee',
+                                                        'Finalizado' => '#256',
+                                                        'Cancelado' => '#CD0000',
+                                                        'Orçamento' => '#CDB380',
+                                                        'Aprovado' => '#808080',
+                                                        'Faturado' => '#B266FF'
+                                                    ];
+                                                    echo $statusColors[$os->status] ?? '#888';
+                                                    ?>;
+                                                    color: white;
+                                                    font-size: 0.7rem;
+                                                    padding: 3px 8px;
+                                                ">
+                                                    <?= $os->status ?>
+                                                </span>
+                                            </span>
+                                        </div>
+                                        <?php if (!empty($os->valorTotal)): ?>
+                                        <div style="font-size: 0.8rem; color: #666; margin-top: 4px;">
+                                            <i class="bx bx-money"></i> R$ <?= number_format($os->valorTotal, 2, ',', '.') ?>
+                                        </div>
+                                        <?php endif; ?>
+                                    </div>
+                                    <div style="display: flex; gap: 5px;">
+                                        <a href="<?= site_url('os/visualizar/' . $os->idOs) ?>" class="btn btn-mini btn-info" title="Visualizar OS">
+                                            <i class="bx bx-show"></i>
+                                        </a>
+                                        <form method="post" action="<?= site_url('tecnicos_admin/desvincular_os_obra') ?>" style="display: inline;" onsubmit="return confirm('Deseja realmente desvincular esta OS da obra?');">
+                                            <input type="hidden" name="obra_id" value="<?= $obra->id ?>">
+                                            <input type="hidden" name="os_id" value="<?= $os->idOs ?>">
+                                            <button type="submit" class="btn btn-mini btn-danger" title="Desvincular OS">
+                                                <i class="bx bx-unlink"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php else: ?>
+                            <div class="empty-state" style="text-align: center; padding: 40px; color: #888;">
+                                <div style="font-size: 3rem; margin-bottom: 15px;"><i class="bx bx-clipboard"></i></div>
+                                <p>Nenhuma OS vinculada a esta obra</p>
+                                <p style="font-size: 0.85rem; margin-top: 10px;">Clique em "Vincular OS" para adicionar ordens de serviço</p>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
@@ -505,6 +588,116 @@
             </div>
         </form>
     </div>
+
+    <!-- Modal: Vincular OS -->
+    <div id="modal-vincular-os" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="modalVincularOSLabel" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h5 id="modalVincularOSLabel"><i class="bx bx-link"></i> Vincular Ordem de Serviço</h5>
+        </div>
+        <form action="<?php echo site_url('tecnicos_admin/vincular_os_obra'); ?>" method="post">
+            <input type="hidden" name="obra_id" value="<?php echo $obra->id; ?>">
+            <div class="modal-body">
+                <div class="alert alert-info">
+                    <i class="bx bx-info-circle"></i> Selecione uma OS do cliente <strong><?= htmlspecialchars($obra->cliente_nome ?? '') ?></strong> para vincular a esta obra.
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">Buscar OS *</label>
+                    <div class="controls">
+                        <select name="os_id" id="select-os-vincular" class="span12" required>
+                            <option value="">-- Carregando OS disponíveis... --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="os-detalhes" style="margin-top: 15px; display: none;">
+                    <div class="well well-small" style="background: #f8f9fa; border-radius: 8px;">
+                        <h6 style="margin-top: 0;">Detalhes da OS</h6>
+                        <div id="os-info"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal" aria-hidden="true">Cancelar</button>
+                <button type="submit" class="btn btn-success" id="btn-vincular-os" disabled>
+                    <i class="bx bx-link"></i> Vincular OS
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+    // Carregar OS disponíveis ao abrir o modal
+    $('#modal-vincular-os').on('show', function() {
+        carregarOsDisponiveis();
+    });
+
+    function carregarOsDisponiveis() {
+        var obraId = <?= $obra->id ?>;
+        var clienteId = <?= $obra->cliente_id ?? 'null' ?>;
+
+        $.ajax({
+            url: '<?= site_url("tecnicos_admin/buscar_os_disponiveis") ?>',
+            type: 'GET',
+            data: {
+                obra_id: obraId,
+                cliente_id: clienteId
+            },
+            dataType: 'json',
+            success: function(response) {
+                var select = $('#select-os-vincular');
+                select.empty();
+                select.append('<option value="">-- Selecione uma OS --</option>');
+
+                if (response.success && response.os && response.os.length > 0) {
+                    response.os.forEach(function(os) {
+                        select.append('<option value="' + os.idOs + '" data-status="' + os.status + '" data-data="' + os.dataInicial + '" data-cliente="' + os.nomeCliente + '"\u003e' +
+                            '#' + os.idOs + ' - ' + os.nomeCliente + ' (' + os.status + ' - ' + formatarData(os.dataInicial) + ')' +
+                        '</option>');
+                    });
+                } else {
+                    select.append('<option value="" disabled>Nenhuma OS disponível para vincular</option>');
+                }
+            },
+            error: function() {
+                var select = $('#select-os-vincular');
+                select.empty();
+                select.append('<option value="" disabled>Erro ao carregar OS</option>');
+            }
+        });
+    }
+
+    function formatarData(dataStr) {
+        if (!dataStr) return '-';
+        var data = new Date(dataStr);
+        return data.toLocaleDateString('pt-BR');
+    }
+
+    // Mostrar detalhes ao selecionar OS
+    $('#select-os-vincular').on('change', function() {
+        var selected = $(this).find('option:selected');
+        var osId = $(this).val();
+
+        if (osId) {
+            var status = selected.data('status');
+            var data = selected.data('data');
+            var cliente = selected.data('cliente');
+
+            $('#os-info').html(
+                '<p><strong>OS #:</strong> ' + osId + '</p>' +
+                '<p><strong>Cliente:</strong> ' + cliente + '</p>' +
+                '<p><strong>Status:</strong> <span class="badge">' + status + '</span></p>' +
+                '<p><strong>Data:</strong> ' + formatarData(data) + '</p>'
+            );
+            $('#os-detalhes').show();
+            $('#btn-vincular-os').prop('disabled', false);
+        } else {
+            $('#os-detalhes').hide();
+            $('#btn-vincular-os').prop('disabled', true);
+        }
+    });
+    </script>
 
     <!-- Modal: Gerenciar Materiais -->
     <div id="modal-materiais" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="modalMateriaisLabel" aria-hidden="true">

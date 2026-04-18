@@ -40,7 +40,7 @@ $podeVerOS = clienteHasPermission('visualizar_os');
 $podeVerCompras = clienteHasPermission('visualizar_compras');
 $podeVerCobrancas = clienteHasPermission('visualizar_cobrancas');
 $podeEditarPerfil = clienteHasPermission('editar_perfil');
-?\>
+?>
 
 <!--top-Header-menu-->
     <div class="navebarn" style="margin-top: -60px;height: 25px;margin-bottom: 15px">

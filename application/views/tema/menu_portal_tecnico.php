@@ -63,17 +63,6 @@
                     </a>
                 </li>
 
-                <li class="menu-divider"><span class="divider-text">SISTEMA</span></li>
-
-                <!-- Voltar ao Sistema Principal -->
-                <li>
-                    <a class="tip-bottom" title="" href="<?= site_url('mapos') ?>">
-                        <i class='bx bx-arrow-back iconX'></i>
-                        <span class="title">Voltar ao Sistema</span>
-                        <span class="title-tooltip">Voltar</span>
-                    </a>
-                </li>
-
                 <!-- Sair -->
                 <li>
                     <a class="tip-bottom" title="" href="<?= site_url('tecnicos/logout') ?>">

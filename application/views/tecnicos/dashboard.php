@@ -1,5 +1,24 @@
 <!-- Dashboard do Técnico - Portal Interno -->
-<div class="row-fluid">
+<style>
+/* Fix para espaçamento do topo no portal do técnico */
+.portal-tecnico-content {
+    margin-top: 15px !important;
+}
+
+/* Ajuste específico para a view do técnico */
+body .portal-tecnico-content .widget-box:first-child {
+    margin-top: 0;
+}
+
+/* Fix para mobile */
+@media (max-width: 768px) {
+    .portal-tecnico-content {
+        margin-top: 10px !important;
+    }
+}
+</style>
+
+<div class="row-fluid portal-tecnico-content">
     <div class="span12">
 
         <!-- Perfil do Técnico -->

@@ -334,6 +334,8 @@ class Tecnicos_admin extends MY_Controller
     public function ver_obra($id)
     {
         $this->load->model('obras_model');
+        $this->load->model('os_model');
+
         $obra = $this->obras_model->getById($id);
 
         if (!$obra) {
@@ -341,10 +343,26 @@ class Tecnicos_admin extends MY_Controller
             redirect('tecnicos_admin/obras');
         }
 
+        // Buscar OS vinculadas à obra
+        $this->db->select('os.idOs, os.dataInicial, os.dataFinal, os.status, os.garantia, os.valorTotal, c.nomeCliente, u.nome as responsavel');
+        $this->db->from('os');
+        $this->db->join('clientes c', 'c.idClientes = os.clientes_id');
+        $this->db->join('usuarios u', 'u.idUsuarios = os.usuarios_id', 'left');
+        $this->db->where('os.obra_id', $id);
+        $this->db->order_by('os.dataInicial', 'DESC');
+        $query = $this->db->get();
+        $os_vinculadas = $query ? $query->result() : [];
+
+        // Buscar técnicos para o modal de alocação
+        $this->db->where('status', 1);
+        $tecnicos = $this->db->get('usuarios')->result();
+
         $this->data['obra'] = $obra;
         $this->data['etapas'] = $this->obras_model->getEtapas($id);
         $this->data['equipe'] = $this->obras_model->getEquipe($id);
         $this->data['diario'] = $this->obras_model->getDiario($id);
+        $this->data['os_vinculadas'] = $os_vinculadas;
+        $this->data['tecnicos'] = $tecnicos;
         $this->data['view'] = 'tecnicos_admin/obra_view';
         return $this->layout();
     }
@@ -638,6 +656,116 @@ class Tecnicos_admin extends MY_Controller
             $this->session->set_flashdata('error', 'Nenhum material informado.');
         }
 
+        redirect('tecnicos_admin/ver_obra/' . $obra_id);
+    }
+
+    /**
+     * Buscar OS disponíveis para vincular à obra
+     */
+    public function buscar_os_disponiveis()
+    {
+        $this->load->model('os_model');
+        $this->load->model('obras_model');
+
+        $obra_id = $this->input->get('obra_id');
+        $cliente_id = $this->input->get('cliente_id');
+        $termo = $this->input->get('termo');
+
+        if (!$obra_id) {
+            echo json_encode(['success' => false, 'message' => 'Obra não informada']);
+            return;
+        }
+
+        // Buscar obra para verificar o cliente
+        $obra = $this->obras_model->getById($obra_id);
+        if (!$obra) {
+            echo json_encode(['success' => false, 'message' => 'Obra não encontrada']);
+            return;
+        }
+
+        // Buscar OS do cliente que não estão vinculadas a nenhuma obra
+        $this->db->select('os.idOs, os.dataInicial, os.dataFinal, os.status, c.nomeCliente, os.obra_id');
+        $this->db->from('os');
+        $this->db->join('clientes c', 'c.idClientes = os.clientes_id');
+        $this->db->where('os.clientes_id', $obra->cliente_id);
+        $this->db->where('(os.obra_id IS NULL OR os.obra_id = 0)');
+
+        if ($termo) {
+            $this->db->like('os.idOs', $termo);
+        }
+
+        $this->db->order_by('os.dataInicial', 'DESC');
+        $this->db->limit(20);
+        $query = $this->db->get();
+        $os = $query ? $query->result() : [];
+
+        echo json_encode(['success' => true, 'os' => $os]);
+    }
+
+    /**
+     * Vincular OS à obra
+     */
+    public function vincular_os_obra()
+    {
+        $obra_id = $this->input->post('obra_id');
+        $os_id = $this->input->post('os_id');
+
+        if (!$obra_id || !$os_id) {
+            $this->session->set_flashdata('error', 'Dados incompletos.');
+            redirect('tecnicos_admin/obras');
+        }
+
+        $this->load->model('os_model');
+        $this->load->model('obras_model');
+
+        // Verificar se a obra existe
+        $obra = $this->obras_model->getById($obra_id);
+        if (!$obra) {
+            $this->session->set_flashdata('error', 'Obra não encontrada.');
+            redirect('tecnicos_admin/obras');
+        }
+
+        // Verificar se a OS existe
+        $os = $this->os_model->getById($os_id);
+        if (!$os) {
+            $this->session->set_flashdata('error', 'Ordem de Serviço não encontrada.');
+            redirect('tecnicos_admin/ver_obra/' . $obra_id);
+        }
+
+        // Verificar se OS já está vinculada a outra obra
+        if (!empty($os->obra_id) && $os->obra_id != $obra_id) {
+            $this->session->set_flashdata('error', 'Esta OS já está vinculada a outra obra.');
+            redirect('tecnicos_admin/ver_obra/' . $obra_id);
+        }
+
+        // Vincular OS à obra
+        $this->db->where('idOs', $os_id);
+        $this->db->update('os', ['obra_id' => $obra_id]);
+
+        $this->session->set_flashdata('success', 'Ordem de Serviço vinculada com sucesso!');
+        redirect('tecnicos_admin/ver_obra/' . $obra_id);
+    }
+
+    /**
+     * Desvincular OS da obra
+     */
+    public function desvincular_os_obra()
+    {
+        $obra_id = $this->input->post('obra_id');
+        $os_id = $this->input->post('os_id');
+
+        if (!$obra_id || !$os_id) {
+            $this->session->set_flashdata('error', 'Dados incompletos.');
+            redirect('tecnicos_admin/obras');
+        }
+
+        $this->load->model('os_model');
+
+        // Desvincular OS (setar obra_id como NULL)
+        $this->db->where('idOs', $os_id);
+        $this->db->update('os', ['obra_id' => null]);
+
+        $this->session->set_flashdata('success', 'Ordem de Serviço desvinculada com sucesso!');
         redirect('tecnicos_admin/ver_obra/' . $obra_id);
     }
 }
