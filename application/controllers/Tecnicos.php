@@ -105,7 +105,7 @@ class Tecnicos extends CI_Controller
             );
 
             if ($distancia > $tecnico->raio_atuacao_km) {
-                log_message('warning', "Técnico {$tecnico->id} tentou login fora do raio de atuação. Distância: {$distancia}km");
+                log_message('warning', "Técnico {$tecnico->idUsuarios} tentou login fora do raio de atuação. Distância: {$distancia}km");
                 // Opcional: bloquear login ou apenas alertar
                 // $this->session->set_flashdata('warning', 'Você está fora do raio de atuação configurado.');
             }
@@ -114,15 +114,15 @@ class Tecnicos extends CI_Controller
         // Salvar foto de login se fornecida
         $caminho_foto = null;
         if ($foto_login) {
-            $caminho_foto = $this->_salvar_foto_base64($foto_login, 'logins', $tecnico->id);
+            $caminho_foto = $this->_salvar_foto_base64($foto_login, 'logins', $tecnico->idUsuarios);
         }
 
         // Registrar acesso
-        $this->tecnicos_model->registrar_acesso($tecnico->id, $latitude, $longitude, $caminho_foto);
+        $this->tecnicos_model->registrar_acesso($tecnico->idUsuarios, $latitude, $longitude, $caminho_foto);
 
         // Criar sessão
         $sessao = [
-            'tec_id' => $tecnico->id,
+            'tec_id' => $tecnico->idUsuarios,
             'tec_nome' => $tecnico->nome,
             'tec_nivel' => $tecnico->nivel_tecnico,
             'tec_email' => $tecnico->email,
@@ -133,7 +133,7 @@ class Tecnicos extends CI_Controller
 
         // Atualizar token
         $token = bin2hex(random_bytes(32));
-        $this->tecnicos_model->atualizar_token($tecnico->id, $token);
+        $this->tecnicos_model->atualizar_token($tecnico->idUsuarios, $token);
 
         redirect('tecnicos/dashboard');
     }
@@ -544,7 +544,7 @@ class Tecnicos extends CI_Controller
         $token = bin2hex(random_bytes(32));
         $token_expira = date('Y-m-d H:i:s', strtotime('+7 days'));
 
-        $this->tecnicos_model->update($tecnico->id, [
+        $this->tecnicos_model->update($tecnico->idUsuarios, [
             'token_app' => $token,
             'token_expira' => $token_expira,
             'push_token' => $push_token,
@@ -555,7 +555,7 @@ class Tecnicos extends CI_Controller
             'success' => true,
             'token' => $token,
             'tecnico' => [
-                'id' => $tecnico->id,
+                'id' => $tecnico->idUsuarios,
                 'nome' => $tecnico->nome,
                 'email' => $tecnico->email,
                 'nivel' => $tecnico->nivel_tecnico,
@@ -588,7 +588,7 @@ class Tecnicos extends CI_Controller
             return;
         }
 
-        echo json_encode(['success' => true, 'tecnico_id' => $tecnico->id]);
+        echo json_encode(['success' => true, 'tecnico_id' => $tecnico->idUsuarios]);
     }
 
     /**

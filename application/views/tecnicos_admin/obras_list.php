@@ -266,8 +266,7 @@
                                 $clientes_query = $this->db->order_by('nomeCliente', 'ASC')->get('clientes');
                                 $clientes = $clientes_query ? $clientes_query->result() : [];
                                 if (!empty($clientes)):
-                                    foreach ($clientes as $cliente): ?
-003e
+                                    foreach ($clientes as $cliente): ?>
                                         <option value="<?= $cliente->idClientes ?>"
                                                 data-documento="<?= htmlspecialchars($cliente->documento ?? '', ENT_QUOTES, 'UTF-8') ?>"
                                                 data-endereco="<?= htmlspecialchars($cliente->endereco ?? ($cliente->rua . ', ' . $cliente->numero . ' - ' . $cliente->bairro . ', ' . $cliente->cidade . ' - ' . $cliente->estado) ?? '', ENT_QUOTES, 'UTF-8') ?>">
