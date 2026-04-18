@@ -144,11 +144,11 @@
                                         </div>
                                         <div>
                                             <div style="font-weight: 600; color: #333; font-size: 14px;">
-                                                <?= htmlspecialchars($tecnico->nome) ?>
+                                                <?= htmlspecialchars($tecnico->nome, ENT_COMPAT | ENT_HTML5, 'UTF-8') ?>
                                             </div>
                                             <div style="font-size: 12px; color: #888; display: flex; align-items: center; gap: 4px;">
                                                 <i class="bx bx-envelope" style="font-size: 11px;"></i>
-                                                <?= htmlspecialchars($tecnico->email) ?>
+                                                <?= htmlspecialchars($tecnico->email, ENT_COMPAT | ENT_HTML5, 'UTF-8') ?>
                                             </div>
                                         </div>
                                     </div>
@@ -175,10 +175,10 @@
                                             <i class="bx bx-car" style="font-size: 18px; color: #667eea;"></i>
                                             <div>
                                                 <div style="font-weight: 500; color: #333; font-size: 13px;">
-                                                    <?= htmlspecialchars($veiculoTipo) ?>
+                                                    <?= htmlspecialchars($veiculoTipo, ENT_COMPAT | ENT_HTML5, 'UTF-8') ?>
                                                 </div>
                                                 <div style="font-size: 12px; color: #888; font-family: monospace; letter-spacing: 1px;">
-                                                    <?= htmlspecialchars($veiculoPlaca ?: 'Sem placa') ?>
+                                                    <?= htmlspecialchars($veiculoPlaca ?: 'Sem placa', ENT_COMPAT | ENT_HTML5, 'UTF-8') ?>
                                                 </div>
                                             </div>
                                         </div>
