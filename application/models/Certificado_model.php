@@ -84,6 +84,7 @@ class Certificado_model extends CI_Model
 
         // Inserir novo
         $dados['ativo'] = 1;
+        $dados['ambiente'] = $dados['ambiente'] ?? 'homologacao';
         $dados['created_at'] = date('Y-m-d H:i:s');
         $dados['updated_at'] = date('Y-m-d H:i:s');
 

@@ -21,6 +21,7 @@ $produtos = $produtos ?? [];
 $valorTotalOS = floatval($totalServico) + floatval($totalProdutos);
 $descontoTomador = floatval($result->valor_desconto ?? 0);
 $valorServicosNFSe = $descontoTomador > 0 ? $descontoTomador : $valorTotalOS;
+$ambiente = $ambiente ?? 'homologacao';
 
 if (!function_exists('formatarMoedaNFSe')) {
     function formatarMoedaNFSe($valor) {
@@ -44,6 +45,17 @@ if (!function_exists('formatarDocumentoNFSe')) {
 
 <div class="row-fluid" style="margin-top: 20px;">
 
+    <?php if ($ambiente == 'homologacao'): ?>
+    <div class="alert alert-warning" style="margin-bottom: 15px;">
+        <i class="fas fa-flask"></i> <strong>Ambiente de Homologação</strong> — As NFS-e emitidas serão de teste, sem valor fiscal.
+        <a href="<?= site_url('certificado/configurar') ?>" style="text-decoration: underline;">Alterar para Produção</a>
+    </div>
+    <?php else: ?>
+    <div class="alert alert-success" style="margin-bottom: 15px;">
+        <i class="fas fa-shield-alt"></i> <strong>Ambiente de Produção</strong> — NFS-e emitidas com valor fiscal real.
+    </div>
+    <?php endif; ?>
+
     <?php if ($nfse_atual): ?>
     <!-- NFS-e JÁ EMITIDA - Card de status -->
     <div class="span12">
@@ -57,7 +69,11 @@ if (!function_exists('formatarDocumentoNFSe')) {
                 <div class="alert alert-<?= $nfse_atual->situacao == 'Emitida' ? 'success' : ($nfse_atual->situacao == 'Pendente' ? 'warning' : 'danger') ?>">
                     <div class="row-fluid">
                         <div class="span6">
-                            <strong>Status:</strong> <span class="label label-<?= $nfse_atual->situacao == 'Emitida' ? 'success' : ($nfse_atual->situacao == 'Pendente' ? 'warning' : 'danger') ?>"><?= $nfse_atual->situacao ?></span><br>
+                            <strong>Status:</strong> <span class="label label-<?= $nfse_atual->situacao == 'Emitida' ? 'success' : ($nfse_atual->situacao == 'Pendente' ? 'warning' : 'danger') ?>"><?= $nfse_atual->situacao ?></span>
+                            <?php if (isset($nfse_atual->ambiente) && $nfse_atual->ambiente): ?>
+                                <span class="label label-<?= $nfse_atual->ambiente == 'producao' ? 'success' : 'warning' ?>"><?= $nfse_atual->ambiente == 'producao' ? 'Produção' : 'Homologação' ?></span>
+                            <?php endif; ?>
+                            <br>
                             <strong>Número:</strong> <?= $nfse_atual->numero_nfse ?: 'Pendente' ?><br>
                             <strong>Data Emissão:</strong> <?= $nfse_atual->data_emissao ? date('d/m/Y H:i', strtotime($nfse_atual->data_emissao)) : '---' ?>
                         </div>
@@ -448,6 +464,9 @@ if (!function_exists('formatarDocumentoNFSe')) {
                                 <h6><i class="fas fa-exclamation-triangle"></i> Atenção</h6>
                                 <p>Após confirmar, a NFS-e será emitida junto com o boleto (se selecionado).</p>
                                 <p>Esta ação não pode ser desfeita facilmente.</p>
+                                <?php if ($ambiente == 'homologacao'): ?>
+                                <p style="color: #856404; font-weight: bold;"><i class="fas fa-flask"></i> Modo Homologação: a NFS-e será de teste, sem valor fiscal.</p>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>

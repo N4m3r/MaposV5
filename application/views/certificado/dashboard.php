@@ -96,6 +96,11 @@
                             CNPJ: <?= maskCnpj($certificado->cnpj) ?> <br>
                             Tipo: <?= $certificado->tipo ?>
                             <?= $certificado->emissor ? ' • ' . $certificado->emissor : '' ?>
+                            <?php if (isset($certificado->ambiente)): ?>
+                                <span class="status-badge" style="background: <?= $certificado->ambiente == 'producao' ? '#28a745' : '#f0ad4e' ?>; color: white; margin-left: 8px;">
+                                    <?= $certificado->ambiente == 'producao' ? 'PRODUÇÃO' : 'HOMOLOGAÇÃO' ?>
+                                </span>
+                            <?php endif; ?>
                         </div>
                     </div>
                     <div class="span4 text-right">

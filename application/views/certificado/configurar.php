@@ -101,6 +101,24 @@
                         </div>
                     </div>
 
+                    <div class="control-group">
+                        <label class="control-label">Ambiente:</label>
+                        <div class="controls">
+                            <select name="ambiente" class="span6">
+                                <option value="homologacao" <?= (!$certificado || $certificado->ambiente == 'homologacao') ? 'selected' : '' ?>>
+                                    Homologação (Testes)
+                                </option>
+                                <option value="producao" <?= ($certificado && $certificado->ambiente == 'producao') ? 'selected' : '' ?>>
+                                    Produção
+                                </option>
+                            </select>
+                            <span class="help-inline">
+                                <i class="fas fa-info-circle"></i>
+                                Use <strong>Homologação</strong> para testes. <strong>Produção</strong> emite notas reais.
+                            </span>
+                        </div>
+                    </div>
+
                     <div class="form-actions">
                         <button type="submit" class="btn btn-success">
                             <i class="fas fa-save"></i> Salvar Certificado

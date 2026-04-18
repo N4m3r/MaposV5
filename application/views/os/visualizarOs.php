@@ -796,7 +796,8 @@
                                     'servicos' => $servicos ?? [],
                                     'produtos' => $produtos ?? [],
                                     'nfse_atual' => $nfse_atual ?? null,
-                                    'historico_nfse' => $historico_nfse ?? []
+                                    'historico_nfse' => $historico_nfse ?? [],
+                                    'ambiente' => $ambiente_nfse ?? 'homologacao'
                                 ]); ?>
                             </div>
 

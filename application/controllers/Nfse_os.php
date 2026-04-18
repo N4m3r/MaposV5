@@ -81,6 +81,11 @@ class Nfse_os extends MY_Controller
             'valor_deducoes' => $this->input->post('valor_deducoes') ?? 0
         ];
 
+        // Ambiente (homologação/produção) do certificado ativo
+        $this->load->model('certificado_model');
+        $certificado = $this->certificado_model->getCertificadoAtivo();
+        $dados['ambiente'] = $certificado->ambiente ?? 'homologacao';
+
         // Emitir NFSe
         $resultado = $this->nfse_emitida_model->emitir($os_id, $dados);
 
@@ -184,16 +189,24 @@ class Nfse_os extends MY_Controller
         try {
             $valor = floatval($this->input->post('valor') ?: $this->input->get('valor'));
             if ($valor <= 0) {
-                echo json_encode(['success' => false, 'message' => 'Valor inválido']);
+                echo json_encode(['success' => false, 'message' => 'Valor inválido: ' . $valor]);
+                return;
+            }
+
+            // Verificar se o model está carregado
+            if (!isset($this->impostos_model) || !is_object($this->impostos_model)) {
+                log_message('error', 'NFSe: impostos_model nao esta carregado');
+                echo json_encode(['success' => false, 'message' => 'Modelo de impostos nao carregado. Contate o administrador.']);
                 return;
             }
 
             $calculo = $this->impostos_model->calcularImpostos($valor);
 
             if (!$calculo) {
+                log_message('error', 'NFSe: calcularImpostos retornou false para valor=' . $valor);
                 echo json_encode([
                     'success' => false,
-                    'message' => 'Configuração tributária não encontrada. Configure os impostos em Configurações do Sistema.'
+                    'message' => 'Configuração tributária não encontrada. Execute a migration SQL ou configure os impostos em Configurações do Sistema.'
                 ]);
                 return;
             }
@@ -205,6 +218,7 @@ class Nfse_os extends MY_Controller
                 'impostos' => $calculo
             ]);
         } catch (Exception $e) {
+            log_message('error', 'NFSe calcular_impostos exception: ' . $e->getMessage());
             echo json_encode(['success' => false, 'message' => 'Erro interno: ' . $e->getMessage()]);
         }
     }
@@ -246,6 +260,11 @@ class Nfse_os extends MY_Controller
         // Tributação
         $tributacao = $this->impostos_model->getConfiguracaoTributacao();
 
+        // Ambiente do certificado ativo
+        $this->load->model('certificado_model');
+        $certificado = $this->certificado_model->getCertificadoAtivo();
+        $ambiente = $certificado->ambiente ?? 'homologacao';
+
         // QR Code PIX (valor líquido)
         $pix_key = $this->data['configuration']['pix_key'] ?? '';
         $qrCodePix = null;
@@ -268,6 +287,7 @@ class Nfse_os extends MY_Controller
             'qrCodePix' => $qrCodePix,
             'chaveFormatada' => $chaveFormatada,
             'is_preview' => true,
+            'ambiente' => $ambiente,
         ];
 
         $this->load->helper('mpdf');
@@ -309,6 +329,11 @@ class Nfse_os extends MY_Controller
         // Tributação
         $tributacao = $this->impostos_model->getConfiguracaoTributacao();
 
+        // Ambiente do certificado ativo
+        $this->load->model('certificado_model');
+        $certificado = $this->certificado_model->getCertificadoAtivo();
+        $ambiente = $certificado->ambiente ?? 'homologacao';
+
         // Impostos da NFS-e emitida
         $impostos = [
             'iss' => $nfse->valor_iss ?? 0,
@@ -342,6 +367,7 @@ class Nfse_os extends MY_Controller
             'chaveFormatada' => $chaveFormatada,
             'is_preview' => false,
             'nfse_numero' => $nfse->numero_nfse ?? null,
+            'ambiente' => $ambiente,
         ];
 
         $this->load->helper('mpdf');

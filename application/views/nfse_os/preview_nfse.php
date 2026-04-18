@@ -24,6 +24,7 @@ $os = $os ?? null;
 $tributacao = $tributacao ?? [];
 $impostos = $impostos ?? [];
 $is_preview = $is_preview ?? true;
+$ambiente = $ambiente ?? 'homologacao';
 
 // Resolver caminho da logo para mPDF (caminho absoluto do servidor)
 $logoPath = '';
@@ -67,6 +68,21 @@ if ($emitente && !empty($emitente->url_logo)) {
             white-space: nowrap;
             pointer-events: none;
             letter-spacing: 8px;
+            z-index: 0;
+            text-transform: uppercase;
+        }
+
+        .watermark-homolog {
+            position: absolute;
+            top: 55%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-30deg);
+            font-size: 22px;
+            font-weight: bold;
+            color: rgba(200, 150, 0, 0.08);
+            white-space: nowrap;
+            pointer-events: none;
+            letter-spacing: 6px;
             z-index: 0;
             text-transform: uppercase;
         }
@@ -304,6 +320,9 @@ if ($emitente && !empty($emitente->url_logo)) {
     <!-- Marca d'água discreta -->
     <div class="watermark">Pré-visualização</div>
     <?php endif; ?>
+    <?php if ($ambiente == 'homologacao'): ?>
+    <div class="watermark-homolog">AMBIENTE DE HOMOLOGAÇÃO</div>
+    <?php endif; ?>
 
     <!-- Cabeçalho -->
     <div class="header">
@@ -480,6 +499,11 @@ if ($emitente && !empty($emitente->url_logo)) {
     <?php if ($is_preview): ?>
     <div style="text-align: center; padding: 6px 20px; font-size: 9px; color: #d9534f; font-weight: bold; letter-spacing: 1px; border-top: 1px solid #ddd;">
         PRÉ-VISUALIZAÇÃO — ESTE DOCUMENTO NÃO POSSUI VALOR FISCAL
+    </div>
+    <?php endif; ?>
+    <?php if ($ambiente == 'homologacao'): ?>
+    <div style="text-align: center; padding: 6px 20px; background: #fff3cd; color: #856404; font-weight: bold; font-size: 10px; letter-spacing: 1px;">
+        AMBIENTE DE HOMOLOGAÇÃO — SEM VALOR FISCAL
     </div>
     <?php endif; ?>
 </div>

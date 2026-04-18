@@ -66,6 +66,7 @@ class Certificado extends MY_Controller
                 'razao_social' => $this->input->post('razao_social'),
                 'nome_fantasia' => $this->input->post('nome_fantasia'),
                 'senha' => $this->input->post('senha'),
+                'ambiente' => $this->input->post('ambiente') ?: 'homologacao',
             ];
 
             // Upload do arquivo se for A1

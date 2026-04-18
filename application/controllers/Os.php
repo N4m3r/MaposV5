@@ -436,6 +436,11 @@ class Os extends MY_Controller
         $this->load->model('impostos_model');
         $this->data['tributacao'] = $this->impostos_model->getConfiguracaoTributacao();
 
+        // Ambiente do certificado (homologação/produção)
+        $this->load->model('certificado_model');
+        $certificado_ativo = $this->certificado_model->getCertificadoAtivo();
+        $this->data['ambiente_nfse'] = $certificado_ativo->ambiente ?? 'homologacao';
+
         return $this->layout();
     }
 

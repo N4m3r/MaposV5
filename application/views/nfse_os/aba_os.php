@@ -53,6 +53,7 @@ $nfse_vars = [
     'produtos' => $produtos,
     'nfse_atual' => $nfse_atual ?? null,
     'historico_nfse' => $historico_nfse ?? [],
+    'ambiente' => $ambiente ?? 'homologacao',
 ];
 
 $boleto_vars = [

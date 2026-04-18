@@ -65,6 +65,7 @@ class Nfse_emitida_model extends CI_Model
             'valor_cofins' => $calculo_impostos['cofins'] ?? 0,
             'valor_total_impostos' => $calculo_impostos['valor_total_impostos'],
             'situacao' => 'Pendente',
+            'ambiente' => $dados['ambiente'] ?? 'homologacao',
             'emitido_por' => $this->session->userdata('idUsuarios'),
             'created_at' => date('Y-m-d H:i:s')
         ];

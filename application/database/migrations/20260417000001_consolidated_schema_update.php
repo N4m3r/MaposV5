@@ -32,6 +32,26 @@ class Migration_Consolidated_schema_update extends CI_Migration
         // ========================================================
         $this->_insertMissingData();
 
+        // ========================================================
+        // 4. ATUALIZAR SCHEMA DRE (colunas grupo/sinal/data etc.)
+        // ========================================================
+        $this->_upgradeDreTables();
+
+        // ========================================================
+        // 5. AMBIENTE (Homologação/Produção) para NFS-e
+        // ========================================================
+        if ($this->db->table_exists('certificado_digital')) {
+            if (!$this->db->field_exists('ambiente', 'certificado_digital')) {
+                $this->db->query("ALTER TABLE `certificado_digital` ADD COLUMN `ambiente` ENUM('homologacao','producao') DEFAULT 'homologacao' AFTER `ativo`");
+            }
+        }
+
+        if ($this->db->table_exists('os_nfse_emitida')) {
+            if (!$this->db->field_exists('ambiente', 'os_nfse_emitida')) {
+                $this->db->query("ALTER TABLE `os_nfse_emitida` ADD COLUMN `ambiente` ENUM('homologacao','producao') DEFAULT 'homologacao' AFTER `situacao`");
+            }
+        }
+
         $this->db->query("SET FOREIGN_KEY_CHECKS = 1");
 
         log_message('info', 'Migration consolidada executada com sucesso.');
@@ -588,8 +608,10 @@ class Migration_Consolidated_schema_update extends CI_Migration
             'codigo' => ['type' => 'VARCHAR', 'constraint' => 50],
             'nome' => ['type' => 'VARCHAR', 'constraint' => 255],
             'tipo' => ['type' => "ENUM('receita','custo','despesa')"],
-            'categoria' => ['type' => 'VARCHAR', 'constraint' => 100, 'null' => true],
-            'pai_id' => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'null' => true],
+            'grupo' => ['type' => 'VARCHAR', 'constraint' => 100, 'null' => true],
+            'sinal' => ['type' => "ENUM('POSITIVO','NEGATIVO')", 'default' => 'POSITIVO'],
+            'conta_pai_id' => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'null' => true],
+            'nivel' => ['type' => 'INT', 'default' => 1],
             'ordem' => ['type' => 'INT', 'default' => 0],
             'ativo' => ['type' => 'TINYINT', 'constraint' => 1, 'default' => 1],
             'created_at' => ['type' => 'DATETIME'],
@@ -1216,13 +1238,16 @@ class Migration_Consolidated_schema_update extends CI_Migration
         // Dados DRE padrão
         if ($this->db->table_exists('dre_contas')) {
             $contas = [
-                ['codigo' => '1', 'nome' => 'RECEITA BRUTA', 'tipo' => 'receita', 'categoria' => 'Receitas', 'ordem' => 1],
-                ['codigo' => '1.1', 'nome' => 'Servicos', 'tipo' => 'receita', 'categoria' => 'Receitas', 'ordem' => 2],
-                ['codigo' => '1.2', 'nome' => 'Produtos', 'tipo' => 'receita', 'categoria' => 'Receitas', 'ordem' => 3],
-                ['codigo' => '2', 'nome' => 'IMPOSTOS', 'tipo' => 'despesa', 'categoria' => 'Impostos', 'ordem' => 10],
-                ['codigo' => '2.1', 'nome' => 'ISS', 'tipo' => 'despesa', 'categoria' => 'Impostos', 'ordem' => 11],
-                ['codigo' => '3', 'nome' => 'CUSTOS', 'tipo' => 'custo', 'categoria' => 'Custos', 'ordem' => 20],
-                ['codigo' => '4', 'nome' => 'DESPESAS OPERACIONAIS', 'tipo' => 'despesa', 'categoria' => 'Despesas', 'ordem' => 30],
+                ['codigo' => '1', 'nome' => 'RECEITA BRUTA', 'tipo' => 'receita', 'grupo' => 'RECEITA_BRUTA', 'sinal' => 'POSITIVO', 'nivel' => 1, 'ordem' => 1],
+                ['codigo' => '1.1', 'nome' => 'Receita de Serviços', 'tipo' => 'receita', 'grupo' => 'RECEITA_BRUTA', 'sinal' => 'POSITIVO', 'nivel' => 2, 'ordem' => 2],
+                ['codigo' => '1.2', 'nome' => 'Receita de Produtos', 'tipo' => 'receita', 'grupo' => 'RECEITA_BRUTA', 'sinal' => 'POSITIVO', 'nivel' => 2, 'ordem' => 3],
+                ['codigo' => '1.3', 'nome' => 'Outras Receitas', 'tipo' => 'receita', 'grupo' => 'OUTRAS_RECEITAS', 'sinal' => 'POSITIVO', 'nivel' => 2, 'ordem' => 4],
+                ['codigo' => '2', 'nome' => 'DEDUÇÕES DA RECEITA', 'tipo' => 'despesa', 'grupo' => 'DEDUCOES', 'sinal' => 'NEGATIVO', 'nivel' => 1, 'ordem' => 5],
+                ['codigo' => '2.1', 'nome' => 'ISS', 'tipo' => 'despesa', 'grupo' => 'DEDUCOES', 'sinal' => 'NEGATIVO', 'nivel' => 2, 'ordem' => 6],
+                ['codigo' => '3', 'nome' => 'CUSTO DOS SERVIÇOS', 'tipo' => 'custo', 'grupo' => 'CUSTO', 'sinal' => 'NEGATIVO', 'nivel' => 1, 'ordem' => 10],
+                ['codigo' => '4', 'nome' => 'DESPESAS OPERACIONAIS', 'tipo' => 'despesa', 'grupo' => 'DESPESA_OPERACIONAL', 'sinal' => 'NEGATIVO', 'nivel' => 1, 'ordem' => 20],
+                ['codigo' => '6', 'nome' => 'IMPOSTO DE RENDA E CONTRIBUIÇÕES', 'tipo' => 'despesa', 'grupo' => 'IMPOSTO_RENDA', 'sinal' => 'NEGATIVO', 'nivel' => 1, 'ordem' => 30],
+                ['codigo' => '7', 'nome' => 'OUTRAS DESPESAS', 'tipo' => 'despesa', 'grupo' => 'OUTRAS_DESPESAS', 'sinal' => 'NEGATIVO', 'nivel' => 1, 'ordem' => 35],
             ];
             $now = date('Y-m-d H:i:s');
             foreach ($contas as $c) {
@@ -1319,4 +1344,74 @@ class Migration_Consolidated_schema_update extends CI_Migration
     }
 
     // ============================================================
+
+    /**
+     * Add missing columns to existing dre_contas and dre_lancamentos tables
+     */
+    private function _upgradeDreTables()
+    {
+        // dre_contas: add grupo, sinal, nivel, conta_pai_id if missing; drop categoria, pai_id if present
+        if ($this->db->table_exists('dre_contas')) {
+            $fields = $this->db->list_fields('dre_contas');
+
+            if (!in_array('grupo', $fields)) {
+                $this->db->query("ALTER TABLE `dre_contas` ADD COLUMN `grupo` VARCHAR(100) NULL AFTER `tipo`");
+            }
+            if (!in_array('sinal', $fields)) {
+                $this->db->query("ALTER TABLE `dre_contas` ADD COLUMN `sinal` ENUM('POSITIVO','NEGATIVO') DEFAULT 'POSITIVO' AFTER `grupo`");
+            }
+            if (!in_array('nivel', $fields)) {
+                $this->db->query("ALTER TABLE `dre_contas` ADD COLUMN `nivel` INT DEFAULT 1 AFTER `sinal`");
+            }
+            if (!in_array('conta_pai_id', $fields)) {
+                $this->db->query("ALTER TABLE `dre_contas` ADD COLUMN `conta_pai_id` INT(11) UNSIGNED NULL AFTER `nivel`");
+            }
+            // Update existing rows that still have categoria instead of grupo
+            if (in_array('categoria', $fields)) {
+                // Migrate categoria values to grupo
+                $this->db->query("UPDATE `dre_contas` SET `grupo` = 'RECEITA_BRUTA' WHERE `categoria` = 'Receitas' AND (`grupo` IS NULL OR `grupo` = '')");
+                $this->db->query("UPDATE `dre_contas` SET `grupo` = 'DEDUCOES' WHERE `categoria` = 'Impostos' AND (`grupo` IS NULL OR `grupo` = '')");
+                $this->db->query("UPDATE `dre_contas` SET `grupo` = 'CUSTO' WHERE `categoria` = 'Custos' AND (`grupo` IS NULL OR `grupo` = '')");
+                $this->db->query("UPDATE `dre_contas` SET `grupo` = 'DESPESA_OPERACIONAL' WHERE `categoria` = 'Despesas' AND (`grupo` IS NULL OR `grupo` = '')");
+            }
+        }
+
+        // dre_lancamentos: add missing columns if table uses old schema
+        if ($this->db->table_exists('dre_lancamentos')) {
+            $fields = $this->db->list_fields('dre_lancamentos');
+
+            // Rename data_referencia -> data if needed
+            if (in_array('data_referencia', $fields) && !in_array('data', $fields)) {
+                $this->db->query("ALTER TABLE `dre_lancamentos` CHANGE COLUMN `data_referencia` `data` DATE NOT NULL");
+            }
+            // Rename id_os -> os_id if needed
+            if (in_array('id_os', $fields) && !in_array('os_id', $fields)) {
+                $this->db->query("ALTER TABLE `dre_lancamentos` CHANGE COLUMN `id_os` `os_id` INT(11) UNSIGNED NULL");
+            }
+            // Rename id_venda -> venda_id if needed
+            if (in_array('id_venda', $fields) && !in_array('venda_id', $fields)) {
+                $this->db->query("ALTER TABLE `dre_lancamentos` CHANGE COLUMN `id_venda` `venda_id` INT(11) UNSIGNED NULL");
+            }
+            // Rename id_lancamento -> lancamento_id if needed
+            if (in_array('id_lancamento', $fields) && !in_array('lancamento_id', $fields)) {
+                $this->db->query("ALTER TABLE `dre_lancamentos` CHANGE COLUMN `id_lancamento` `lancamento_id` INT(11) UNSIGNED NULL");
+            }
+            // Add missing columns
+            if (!in_array('tipo_movimento', $fields)) {
+                $this->db->query("ALTER TABLE `dre_lancamentos` ADD COLUMN `tipo_movimento` ENUM('CREDITO','DEBITO') DEFAULT 'CREDITO' AFTER `valor`");
+            }
+            if (!in_array('documento', $fields)) {
+                $this->db->query("ALTER TABLE `dre_lancamentos` ADD COLUMN `documento` VARCHAR(100) NULL AFTER `tipo_movimento`");
+            }
+            if (!in_array('usuarios_id', $fields)) {
+                $this->db->query("ALTER TABLE `dre_lancamentos` ADD COLUMN `usuarios_id` INT(11) UNSIGNED NULL AFTER `lancamento_id`");
+            }
+            if (!in_array('updated_at', $fields)) {
+                $this->db->query("ALTER TABLE `dre_lancamentos` ADD COLUMN `updated_at` DATETIME NULL AFTER `created_at`");
+            }
+            // Add os_id index if not exists
+            $this->_safeCreateIndex('dre_lancamentos', 'idx_os_id', 'os_id');
+        }
+    }
+
 }
