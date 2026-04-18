@@ -683,5 +683,62 @@ $(document).ready(function() {
     $('.status-card.paralisada .status-number').text(counts.paralisada);
     $('.status-card.concluida .status-number').text(counts.concluida);
     $('.status-card.progresso .status-number').text(counts.totalObras > 0 ? Math.round(counts.totalProgresso / counts.totalObras) + '%' : '0%');
+
+    // Buscar cliente por CNPJ no modal de obra
+    $('#buscar-cnpj-obra').on('input', function() {
+        var value = $(this).val().replace(/\D/g, '');
+        if (value.length <= 14) {
+            value = value.replace(/^(\d{2})(\d)/, '$1.$2');
+            value = value.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
+            value = value.replace(/\.(\d{3})(\d)/, '.$1/$2');
+            value = value.replace(/(\d{4})(\d)/, '$1-$2');
+            $(this).val(value);
+        }
+    });
+
+    $('#btn-buscar-cnpj-obra').click(function() {
+        var cnpj = $('#buscar-cnpj-obra').val().replace(/\D/g, '');
+        var msgElement = $('#msg-busca-cnpj');
+
+        if (cnpj.length !== 14) {
+            msgElement.html('<span style="color: #f44336;">CNPJ inválido. Digite 14 números.</span>');
+            return;
+        }
+
+        msgElement.html('<span style="color: #2196f3;"><i class="bx bx-loader bx-spin"></i> Buscando...</span>');
+
+        // Buscar no select de clientes
+        var encontrado = false;
+        $('#select-cliente-obra option').each(function() {
+            var doc = $(this).data('documento');
+            if (doc) {
+                var docLimpo = doc.toString().replace(/\D/g, '');
+                if (docLimpo === cnpj) {
+                    $('#select-cliente-obra').val($(this).val()).trigger('change');
+                    encontrado = true;
+
+                    // Preencher endereço automaticamente
+                    var endereco = $(this).data('endereco');
+                    if (endereco && endereco !== 'null, null - null, null - null') {
+                        $('input[name="endereco"]').val(endereco);
+                    }
+
+                    msgElement.html('<span style="color: #4caf50;"><i class="bx bx-check"></i> Cliente encontrado!</span>');
+                    return false;
+                }
+            }
+        });
+
+        if (!encontrado) {
+            msgElement.html('<span style="color: #ff9800;"><i class="bx bx-error"></i> Cliente não encontrado. Cadastre-o primeiro.</span>');
+        }
+    });
+
+    // Limpar mensagem ao digitar
+    $('#buscar-cnpj-obra').on('keyup', function() {
+        if ($(this).val().length === 0) {
+            $('#msg-busca-cnpj').text('Digite o CNPJ para buscar cliente cadastrado');
+        }
+    });
 });
 </script>
