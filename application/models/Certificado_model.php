@@ -84,9 +84,15 @@ class Certificado_model extends CI_Model
 
         // Inserir novo
         $dados['ativo'] = 1;
-        $dados['ambiente'] = $dados['ambiente'] ?? 'homologacao';
         $dados['created_at'] = date('Y-m-d H:i:s');
         $dados['updated_at'] = date('Y-m-d H:i:s');
+
+        // Só incluir 'ambiente' se a coluna existir no banco
+        if ($this->db->field_exists('ambiente', 'certificado_digital')) {
+            $dados['ambiente'] = $dados['ambiente'] ?? 'homologacao';
+        } else {
+            unset($dados['ambiente']);
+        }
 
         if ($this->db->insert('certificado_digital', $dados)) {
             return ['success' => true, 'id' => $this->db->insert_id()];

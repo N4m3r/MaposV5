@@ -9,7 +9,10 @@ var wizardData = {
     impostosResult: null,
     valorServicos: 0,
     valorDeducoes: 0,
-    gerarBoleto: true
+    gerarBoleto: true,
+    incluirProdutos: false,
+    valorApenasServicos: <?= floatval($totalServico) ?>,
+    valorTotalComProdutos: <?= floatval($totalServico + $totalProdutos) ?>
 };
 
 // Máscara monetária para campos de valor
@@ -420,6 +423,55 @@ $(document).ready(function() {
     // Toggle boleto
     $('#gerar-boleto-wizard').change(function() {
         toggleBoleto();
+    });
+
+    // Checkbox para incluir produtos na NFSe
+    $('#incluir-produtos-nfse').on('click', function(e) {
+        var checkbox = $(this);
+        // Se já está marcado, permite desmarcar normalmente
+        if (checkbox.prop('checked') && !checkbox.prop('disabled')) {
+            return true;
+        }
+        // Tentando marcar — requer confirmação
+        e.preventDefault();
+        e.stopPropagation();
+        $('#modal-confirmar-produtos').modal('show');
+        $('#input-confirmar-produtos').val('').focus();
+        $('#msg-erro-confirmar').hide();
+    });
+
+    // Confirmar inclusão de produtos
+    $('#btn-confirmar-produtos').on('click', function() {
+        var texto = $('#input-confirmar-produtos').val().trim().toLowerCase();
+        if (texto !== 'confirmar') {
+            $('#msg-erro-confirmar').text('Digite "confirmar" para prosseguir.').show();
+            return;
+        }
+        // Confirmado — marcar checkbox e atualizar valor
+        $('#incluir-produtos-nfse').prop('checked', true).prop('disabled', false);
+        wizardData.incluirProdutos = true;
+        var novoValor = wizardData.valorTotalComProdutos;
+        var desconto = parseFloat('<?= floatval($result->valor_desconto ?? 0) ?>') || 0;
+        var valorNFSe = desconto > 0 ? desconto : novoValor;
+        $('#valor-servicos-wizard').val(valorNFSe.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
+        wizardData.valorServicos = valorNFSe;
+        wizardData.impostosResult = null;
+        $('#valor-servicos-help').text('Valor total (serviços + produtos) para a NFS-e');
+        $('#modal-confirmar-produtos').modal('hide');
+    });
+
+    // Desmarcar checkbox — voltar ao valor de serviços apenas
+    $('#incluir-produtos-nfse').on('change', function() {
+        if (!$(this).is(':checked')) {
+            wizardData.incluirProdutos = false;
+            var novoValor = wizardData.valorApenasServicos;
+            var desconto = parseFloat('<?= floatval($result->valor_desconto ?? 0) ?>') || 0;
+            var valorNFSe = desconto > 0 ? desconto : novoValor;
+            $('#valor-servicos-wizard').val(valorNFSe.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
+            wizardData.valorServicos = valorNFSe;
+            wizardData.impostosResult = null;
+            $('#valor-servicos-help').text('Valor dos serviços prestados (produtos não inclusos)');
+        }
     });
 });
 </script>

@@ -20,7 +20,7 @@ $produtos = $produtos ?? [];
 
 $valorTotalOS = floatval($totalServico) + floatval($totalProdutos);
 $descontoTomador = floatval($result->valor_desconto ?? 0);
-$valorServicosNFSe = $descontoTomador > 0 ? $descontoTomador : $valorTotalOS;
+$valorServicosNFSe = $descontoTomador > 0 ? $descontoTomador : floatval($totalServico);
 
 // Formatação para exibição (usado no dashboard/relatório)
 if (!function_exists('formatarMoeda')) {
@@ -54,6 +54,7 @@ $nfse_vars = [
     'nfse_atual' => $nfse_atual ?? null,
     'historico_nfse' => $historico_nfse ?? [],
     'ambiente' => $ambiente ?? 'homologacao',
+    'valorServicosNFSe' => $valorServicosNFSe,
 ];
 
 $boleto_vars = [

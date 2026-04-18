@@ -20,7 +20,8 @@ $produtos = $produtos ?? [];
 
 $valorTotalOS = floatval($totalServico) + floatval($totalProdutos);
 $descontoTomador = floatval($result->valor_desconto ?? 0);
-$valorServicosNFSe = $descontoTomador > 0 ? $descontoTomador : $valorTotalOS;
+// Padrão: NFSe com valor de serviços apenas
+$valorServicosNFSe = $descontoTomador > 0 ? $descontoTomador : floatval($totalServico);
 $ambiente = $ambiente ?? 'homologacao';
 
 if (!function_exists('formatarMoedaNFSe')) {
@@ -239,6 +240,42 @@ if (!function_exists('formatarDocumentoNFSe')) {
                     </table>
                     <?php endif; ?>
 
+                    <!-- Checkbox para incluir produtos na NFSe -->
+                    <?php if ($totalProdutos > 0): ?>
+                    <div class="alert alert-warning" style="margin-top: 10px; margin-bottom: 10px;">
+                        <label class="checkbox" style="margin: 0;">
+                            <input type="checkbox" id="incluir-produtos-nfse" value="1" disabled>
+                            <strong>Incluir Produtos no Valor da NFS-e</strong>
+                        </label>
+                        <p style="margin-top: 5px; margin-bottom: 0; font-size: 12px; color: #666;">
+                            <i class="fas fa-info-circle"></i> Por padrão, a NFS-e contabiliza apenas os <strong>serviços</strong> (R$ <?= number_format($totalServico, 2, ',', '.') ?>).
+                            Ao incluir produtos, o valor total será <strong>R$ <?= number_format($valorTotalOS, 2, ',', '.') ?></strong> (serviços + produtos).
+                            <br><i class="fas fa-exclamation-triangle" style="color: #e67e22;"></i> Atente-se à legislação municipal — nem todos os municípios permitem incluir produtos na NFS-e de serviços.
+                        </p>
+                    </div>
+
+                    <!-- Modal de Confirmação -->
+                    <div id="modal-confirmar-produtos" class="modal hide fade" tabindex="-1" role="dialog" style="display: none;">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h5><i class="fas fa-exclamation-triangle" style="color: #e67e22;"></i> Confirmar Inclusão de Produtos na NFS-e</h5>
+                        </div>
+                        <div class="modal-body">
+                            <p>Você está prestes a incluir <strong>produtos</strong> no valor da NFS-e de serviços.</p>
+                            <p>Valor atual (apenas serviços): <strong>R$ <?= number_format($totalServico, 2, ',', '.') ?></strong></p>
+                            <p>Novo valor (serviços + produtos): <strong style="color: #e67e22;">R$ <?= number_format($valorTotalOS, 2, ',', '.') ?></strong></p>
+                            <br>
+                            <p><strong>Digite "confirmar" para prosseguir:</strong></p>
+                            <input type="text" id="input-confirmar-produtos" class="span4" placeholder="confirmar" autocomplete="off" />
+                            <span id="msg-erro-confirmar" style="color: #e74c3c; display: none; margin-left: 10px;"></span>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn" data-dismiss="modal" aria-hidden="true">Cancelar</button>
+                            <button class="btn btn-warning" id="btn-confirmar-produtos"><i class="fas fa-check"></i> Confirmar</button>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+
                     <!-- Desconto do Tomador -->
                     <?php if ($descontoTomador > 0): ?>
                     <div class="discount-badge">
@@ -260,7 +297,7 @@ if (!function_exists('formatarDocumentoNFSe')) {
                                                class="span8" value="<?= number_format($valorServicosNFSe, 2, ',', '.') ?>"
                                                placeholder="0,00">
                                     </div>
-                                    <span class="help-block">Valor total dos serviços prestados</span>
+                                    <span class="help-block" id="valor-servicos-help">Valor dos serviços prestados (produtos não inclusos)</span>
                                 </div>
                             </div>
                         </div>
