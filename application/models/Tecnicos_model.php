@@ -60,7 +60,8 @@ class Tecnicos_model extends CI_Model
         }
 
         $this->db->order_by('nome', 'ASC');
-        return $this->db->get($this->table)->result();
+        $query = $this->db->get($this->table);
+        return $query ? $query->result() : [];
     }
 
     /**
@@ -176,7 +177,8 @@ class Tecnicos_model extends CI_Model
         $this->db->where('ev.quantidade >', 0);
         $this->db->order_by('p.nome', 'ASC');
 
-        return $this->db->get()->result();
+        $query = $this->db->get();
+        return $query ? $query->result() : [];
     }
 
     /**
@@ -258,7 +260,8 @@ class Tecnicos_model extends CI_Model
         $this->db->where('eh.data_hora >=', date('Y-m-d H:i:s', strtotime("-{$dias} days")));
         $this->db->order_by('eh.data_hora', 'DESC');
 
-        return $this->db->get()->result();
+        $query = $this->db->get();
+        return $query ? $query->result() : [];
     }
 
     /**
@@ -273,7 +276,8 @@ class Tecnicos_model extends CI_Model
         }
 
         $this->db->order_by('data_hora', 'ASC');
-        return $this->db->get($this->rotas_table)->result();
+        $query = $this->db->get($this->rotas_table);
+        return $query ? $query->result() : [];
     }
 
     /**
@@ -332,7 +336,8 @@ class Tecnicos_model extends CI_Model
         $this->db->where('is_tecnico', 1);
         $this->db->where('plantao_24h', 1);
         $this->db->where('situacao', 1);
-        return $this->db->get($this->table)->result();
+        $query = $this->db->get($this->table);
+        return $query ? $query->result() : [];
     }
 
     /**
@@ -343,7 +348,8 @@ class Tecnicos_model extends CI_Model
         $this->db->where('is_tecnico', 1);
         $this->db->where('situacao', 1);
         $this->db->like('especialidades', $especialidade);
-        return $this->db->get($this->table)->result();
+        $query = $this->db->get($this->table);
+        return $query ? $query->result() : [];
     }
 
     /**
@@ -356,7 +362,8 @@ class Tecnicos_model extends CI_Model
         $this->db->where('dataInicial', $data);
         $this->db->where_in('status', ['Aberto', 'Em Andamento']);
 
-        $os_existentes = $this->db->get('os')->result();
+        $query = $this->db->get('os');
+        $os_existentes = $query ? $query->result() : [];
 
         foreach ($os_existentes as $os) {
             // Verificar conflito de horário (simplificado)
