@@ -30,7 +30,19 @@
     </div>
     <!--close-Header-part-->
 
-    <!--top-Header-menu-->
+    <?php
+// Carregar helper de permissões
+$CI =& get_instance();
+$CI->load->helper('cliente_permissions');
+
+// Verificar permissões do usuário
+$podeVerOS = clienteHasPermission('visualizar_os');
+$podeVerCompras = clienteHasPermission('visualizar_compras');
+$podeVerCobrancas = clienteHasPermission('visualizar_cobrancas');
+$podeEditarPerfil = clienteHasPermission('editar_perfil');
+?\>
+
+<!--top-Header-menu-->
     <div class="navebarn" style="margin-top: -60px;height: 25px;margin-bottom: 15px">
         <div id="user-nav" class="navbar navbar-inverse">
             <ul class="nav">
@@ -43,8 +55,10 @@
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class='bx bx-user-circle iconN1'></i> <?= htmlspecialchars($nomeUsuario) ?> </a>
                     <ul class="dropdown-menu">
+                        <?php if ($podeEditarPerfil): ?>
                         <li class=""><a title="Meu Perfil" href="<?php echo base_url() ?>index.php/mine/conta"><i class="fas fa-user"></i> <span class="text">Meu Perfil</span></a></li>
                         <li class="divider"></li>
+                        <?php endif; ?>
                         <li class=""><a title="Sair" href="<?php echo base_url() ?>index.php/<?= $linkSair ?>"><i class="fas fa-sign-out-alt"></i> <span class="text">Sair</span></a></li>
                     </ul>
                 </li>
@@ -73,21 +87,23 @@
         <div class="menu-bar">
             <div class="menu">
                 <ul class="menu-links" style="position: relative;">
-                    <li class="<?php if (isset($menuPainel)) {
-                                    echo 'active';
-                                }; ?>"><a class="tip-bottom" title="" href="<?php echo base_url() ?>index.php/mine/painel"><i class='bx bx-home-alt iconX'></i> <span class="title">Painel</span></a></li>
-                    <li class="<?php if (isset($menuConta)) {
-                                    echo 'active';
-                                }; ?>"><a class="tip-bottom" title="" href="<?php echo base_url() ?>index.php/mine/conta"><i class="bx bx-user-circle iconX"></i> <span class="title">Minha Contas</span></a></li>
-                    <li class="<?php if (isset($menuOs)) {
-                                    echo 'active';
-                                }; ?>"><a class="tip-bottom" title="" href="<?php echo base_url() ?>index.php/mine/os"><i class='bx bx-spreadsheet iconX'></i> <span class="title">Ordens de Serviço</span></a></li>
-                    <li class="<?php if (isset($menuVendas)) {
-                                    echo 'active';
-                                }; ?>"><a class="tip-bottom" title="" href="<?php echo base_url() ?>index.php/mine/compras"><i class='bx bx-cart-alt iconX'></i> <span class="title">Compras</span></a></li>
-                    <li class="<?php if (isset($menuCobrancas)) {
-                                    echo 'active';
-                                }; ?>"><a class="tip-bottom" title="" href="<?php echo base_url() ?>index.php/mine/cobrancas"><i class='bx bx-credit-card-front iconX'></i> <span class="title">Cobranças</span></a></li>
+                    <li class="<?php if (isset($menuPainel)) { echo 'active'; } ?>"><a class="tip-bottom" title="" href="<?php echo base_url() ?>index.php/mine/painel"><i class='bx bx-home-alt iconX'></i> <span class="title">Painel</span></a></li>
+
+                    <?php if ($podeEditarPerfil): ?>
+                    <li class="<?php if (isset($menuConta)) { echo 'active'; } ?>"><a class="tip-bottom" title="" href="<?php echo base_url() ?>index.php/mine/conta"><i class="bx bx-user-circle iconX"></i> <span class="title">Minha Conta</span></a></li>
+                    <?php endif; ?>
+
+                    <?php if ($podeVerOS): ?>
+                    <li class="<?php if (isset($menuOs)) { echo 'active'; } ?>"><a class="tip-bottom" title="" href="<?php echo base_url() ?>index.php/mine/os"><i class='bx bx-spreadsheet iconX'></i> <span class="title">Ordens de Serviço</span></a></li>
+                    <?php endif; ?>
+
+                    <?php if ($podeVerCompras): ?>
+                    <li class="<?php if (isset($menuVendas)) { echo 'active'; } ?>"><a class="tip-bottom" title="" href="<?php echo base_url() ?>index.php/mine/compras"><i class='bx bx-cart-alt iconX'></i> <span class="title">Compras</span></a></li>
+                    <?php endif; ?>
+
+                    <?php if ($podeVerCobrancas): ?>
+                    <li class="<?php if (isset($menuCobrancas)) { echo 'active'; } ?>"><a class="tip-bottom" title="" href="<?php echo base_url() ?>index.php/mine/cobrancas"><i class='bx bx-credit-card-front iconX'></i> <span class="title">Cobranças</span></a></li>
+                    <?php endif; ?>
                 </ul>
             </div>
 
