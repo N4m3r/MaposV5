@@ -307,7 +307,7 @@
                     </div>
                     <div class="widget-content" style="padding: 20px;">
                         <div style="display: flex; flex-direction: column; gap: 10px;">
-                            <a href="#" class="quick-action" style="
+                            <a href="#modal-etapa" data-toggle="modal" class="quick-action" style="
                                 display: flex;
                                 align-items: center;
                                 gap: 12px;
@@ -321,7 +321,7 @@
                                 <i class="bx bx-plus-circle" style="font-size: 1.3rem;"></i>
                                 <span style="font-weight: 600;">Adicionar Etapa</span>
                             </a>
-                            <a href="#" class="quick-action" style="
+                            <a href="#modal-equipe" data-toggle="modal" class="quick-action" style="
                                 display: flex;
                                 align-items: center;
                                 gap: 12px;
@@ -335,7 +335,7 @@
                                 <i class="bx bx-user-plus" style="font-size: 1.3rem;"></i>
                                 <span style="font-weight: 600;">Alocar Técnico</span>
                             </a>
-                            <a href="#" class="quick-action" style="
+                            <a href="#modal-materiais" data-toggle="modal" class="quick-action" style="
                                 display: flex;
                                 align-items: center;
                                 gap: 12px;
@@ -349,7 +349,7 @@
                                 <i class="bx bx-package" style="font-size: 1.3rem;"></i>
                                 <span style="font-weight: 600;">Gerenciar Materiais</span>
                             </a>
-                            <a href="#" class="quick-action" style="
+                            <a href="<?php echo site_url('os/adicionar?obra_id=' . $obra->id); ?>" class="quick-action" style="
                                 display: flex;
                                 align-items: center;
                                 gap: 12px;

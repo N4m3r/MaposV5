@@ -26,12 +26,429 @@
 
 <!-- Dashboard Moderno - Estilos Inline para melhor performance -->
 <style>
-    /* Reset e Base */
+    /* ===========================================
+       RESET E BASE - COM SUPORTE A TEMAS
+       =========================================== */
     .dashboard-modern {
         font-family: 'Roboto', sans-serif;
         padding: 15px;
         background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
         min-height: calc(100vh - 120px);
+    }
+
+    /* ===========================================
+       SUPORTE A TEMAS ESCUROS DO MAPOS
+       =========================================== */
+
+    /* ===========================================
+       CLASSES PARA SUPORTE VIA JAVASCRIPT
+       (compatibilidade cross-browser)
+       =========================================== */
+
+    /* Tema Escuro - via classe */
+    .dashboard-modern.tema-escuro {
+        background: var(--dark-1, #14141a) !important;
+    }
+
+    .dashboard-modern.tema-escuro .dashboard-header {
+        background: linear-gradient(135deg, #1e3a5f 0%, #2d4a6f 100%) !important;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.4) !important;
+    }
+
+    .dashboard-modern.tema-escuro .dashboard-header h1 {
+        color: var(--branco, #caced8) !important;
+    }
+
+    .dashboard-modern.tema-escuro .dashboard-header p {
+        color: var(--cinza0, #9aa6b3) !important;
+    }
+
+    .dashboard-modern.tema-escuro .quick-card {
+        background: var(--wid-dark, #1c1d26) !important;
+        border-color: var(--dark-1, #14141a) !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
+    }
+
+    .dashboard-modern.tema-escuro .quick-card .title {
+        color: var(--branco, #caced8) !important;
+    }
+
+    .dashboard-modern.tema-escuro .quick-card .shortcut {
+        color: var(--cinza0, #9aa6b3) !important;
+    }
+
+    .dashboard-modern.tema-escuro .widget-card {
+        background: var(--wid-dark, #1c1d26) !important;
+        border-color: var(--dark-1, #14141a) !important;
+    }
+
+    .dashboard-modern.tema-escuro .widget-header {
+        border-bottom-color: var(--dark-1, #14141a) !important;
+    }
+
+    .dashboard-modern.tema-escuro .widget-header h5 {
+        color: var(--branco, #caced8) !important;
+    }
+
+    .dashboard-modern.tema-escuro .widget-header h5 i {
+        color: #667eea !important;
+    }
+
+    .dashboard-modern.tema-escuro .stat-box {
+        background: var(--wid-dark, #1c1d26) !important;
+        border-color: var(--dark-1, #14141a) !important;
+    }
+
+    .dashboard-modern.tema-escuro .stat-box .label {
+        color: var(--cinza0, #9aa6b3) !important;
+    }
+
+    .dashboard-modern.tema-escuro .modern-table thead th {
+        background: var(--dark-2, #272835) !important;
+        color: var(--branco, #caced8) !important;
+        border-bottom-color: var(--dark-1, #14141a) !important;
+    }
+
+    .dashboard-modern.tema-escuro .modern-table tbody tr:hover {
+        background: var(--dark-2, #272835) !important;
+    }
+
+    .dashboard-modern.tema-escuro .modern-table td {
+        color: var(--cinza0, #9aa6b3) !important;
+        border-bottom-color: var(--dark-1, #14141a) !important;
+    }
+
+    .dashboard-modern.tema-escuro .calendar-wrapper {
+        background: var(--dark-2, #272835) !important;
+    }
+
+    .dashboard-modern.tema-escuro .custom-scroll::-webkit-scrollbar-track {
+        background: var(--dark-2, #272835) !important;
+    }
+
+    .dashboard-modern.tema-escuro .custom-scroll::-webkit-scrollbar-thumb {
+        background: var(--cinza0, #4a5568) !important;
+    }
+
+    /* Ações rápidas em tema escuro */
+    .dashboard-modern.tema-escuro .widget-body .btn.btn-block:not(.btn-info):not(.btn-danger):not(.btn-success):not(.btn-warning) {
+        background: var(--dark-2, #272835) !important;
+        border-color: var(--dark-1, #14141a) !important;
+        color: var(--branco, #caced8) !important;
+    }
+
+    /* Modal em tema escuro */
+    body.dashboard-dark-mode .modal-header {
+        background: var(--wid-dark, #1c1d26) !important;
+        border-bottom-color: var(--dark-1, #14141a) !important;
+    }
+
+    body.dashboard-dark-mode .modal-header h3 {
+        color: var(--branco, #caced8) !important;
+    }
+
+    body.dashboard-dark-mode .modal-body {
+        background: var(--dark-2, #272835) !important;
+        color: var(--cinza0, #9aa6b3) !important;
+    }
+
+    body.dashboard-dark-mode .modal-body p {
+        color: var(--cinza0, #9aa6b3) !important;
+    }
+
+    body.dashboard-dark-mode .modal-footer {
+        background: var(--dark-2, #272835) !important;
+        border-top-color: var(--dark-1, #14141a) !important;
+    }
+
+    /* FullCalendar em tema escuro */
+    .dashboard-modern.tema-escuro .fc-theme-standard .fc-scrollgrid,
+    .dashboard-modern.tema-escuro .fc-theme-standard td,
+    .dashboard-modern.tema-escuro .fc-theme-standard th {
+        border-color: var(--dark-1, #14141a) !important;
+    }
+
+    .dashboard-modern.tema-escuro .fc .fc-daygrid-day.fc-day-today {
+        background: rgba(102, 126, 234, 0.2) !important;
+    }
+
+    .dashboard-modern.tema-escuro .fc-toolbar-title {
+        color: var(--branco, #caced8) !important;
+    }
+
+    .dashboard-modern.tema-escuro .fc-button {
+        background: var(--dark-2, #272835) !important;
+        border-color: var(--dark-1, #14141a) !important;
+        color: var(--branco, #caced8) !important;
+    }
+
+    .dashboard-modern.tema-escuro .fc-button:hover {
+        background: var(--dark-1, #14141a) !important;
+    }
+
+    /* FullCalendar - tema escuro - células do calendário */
+    .dashboard-modern.tema-escuro .fc-theme-standard td,
+    .dashboard-modern.tema-escuro .fc-theme-standard th {
+        border-color: var(--dark-1, #14141a) !important;
+    }
+
+    .dashboard-modern.tema-escuro .fc-col-header-cell {
+        background: var(--dark-2, #272835) !important;
+    }
+
+    .dashboard-modern.tema-escuro .fc-col-header-cell-cushion {
+        color: var(--branco, #caced8) !important;
+    }
+
+    .dashboard-modern.tema-escuro .fc-daygrid-day-number {
+        color: var(--cinza0, #9aa6b3) !important;
+    }
+
+    .dashboard-modern.tema-escuro .fc-day-today .fc-daygrid-day-number {
+        color: var(--branco, #caced8) !important;
+        font-weight: bold;
+    }
+
+    .dashboard-modern.tema-escuro .fc-day-other .fc-daygrid-day-number {
+        opacity: 0.5;
+    }
+
+    /* Tema escuro: ajusta background quando tema escuro está ativo */
+    body:has(link[href*="tema-pure-dark"]) .dashboard-modern,
+    body:has(link[href*="tema-dark-violet"]) .dashboard-modern,
+    body:has(link[href*="tema-dark-orange"]) .dashboard-modern {
+        background: var(--dark-1, #14141a);
+    }
+
+    /* Header em tema escuro */
+    body:has(link[href*="tema-pure-dark"]) .dashboard-header,
+    body:has(link[href*="tema-dark-violet"]) .dashboard-header,
+    body:has(link[href*="tema-dark-orange"]) .dashboard-header {
+        background: linear-gradient(135deg, #1e3a5f 0%, #2d4a6f 100%) !important;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.4) !important;
+    }
+
+    body:has(link[href*="tema-pure-dark"]) .dashboard-header h1,
+    body:has(link[href*="tema-dark-violet"]) .dashboard-header h1,
+    body:has(link[href*="tema-dark-orange"]) .dashboard-header h1 {
+        color: var(--branco, #caced8) !important;
+    }
+
+    body:has(link[href*="tema-pure-dark"]) .dashboard-header p,
+    body:has(link[href*="tema-dark-violet"]) .dashboard-header p,
+    body:has(link[href*="tema-dark-orange"]) .dashboard-header p {
+        color: var(--cinza0, #9aa6b3) !important;
+    }
+
+    /* Quick Cards em tema escuro */
+    body:has(link[href*="tema-pure-dark"]) .quick-card,
+    body:has(link[href*="tema-dark-violet"]) .quick-card,
+    body:has(link[href*="tema-dark-orange"]) .quick-card {
+        background: var(--wid-dark, #1c1d26) !important;
+        border-color: var(--dark-1, #14141a) !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
+    }
+
+    body:has(link[href*="tema-pure-dark"]) .quick-card .title,
+    body:has(link[href*="tema-dark-violet"]) .quick-card .title,
+    body:has(link[href*="tema-dark-orange"]) .quick-card .title {
+        color: var(--branco, #caced8) !important;
+    }
+
+    body:has(link[href*="tema-pure-dark"]) .quick-card .shortcut,
+    body:has(link[href*="tema-dark-violet"]) .quick-card .shortcut,
+    body:has(link[href*="tema-dark-orange"]) .quick-card .shortcut {
+        color: var(--cinza0, #9aa6b3) !important;
+    }
+
+    /* Widget Cards em tema escuro */
+    body:has(link[href*="tema-pure-dark"]) .widget-card,
+    body:has(link[href*="tema-dark-violet"]) .widget-card,
+    body:has(link[href*="tema-dark-orange"]) .widget-card {
+        background: var(--wid-dark, #1c1d26) !important;
+        border-color: var(--dark-1, #14141a) !important;
+    }
+
+    body:has(link[href*="tema-pure-dark"]) .widget-header,
+    body:has(link[href*="tema-dark-violet"]) .widget-header,
+    body:has(link[href*="tema-dark-orange"]) .widget-header {
+        border-bottom-color: var(--dark-1, #14141a) !important;
+    }
+
+    body:has(link[href*="tema-pure-dark"]) .widget-header h5,
+    body:has(link[href*="tema-dark-violet"]) .widget-header h5,
+    body:has(link[href*="tema-dark-orange"]) .widget-header h5 {
+        color: var(--branco, #caced8) !important;
+    }
+
+    /* Stat Boxes em tema escuro */
+    body:has(link[href*="tema-pure-dark"]) .stat-box,
+    body:has(link[href*="tema-dark-violet"]) .stat-box,
+    body:has(link[href*="tema-dark-orange"]) .stat-box {
+        background: var(--wid-dark, #1c1d26) !important;
+        border-color: var(--dark-1, #14141a) !important;
+    }
+
+    body:has(link[href*="tema-pure-dark"]) .stat-box .label,
+    body:has(link[href*="tema-dark-violet"]) .stat-box .label,
+    body:has(link[href*="tema-dark-orange"]) .stat-box .label {
+        color: var(--cinza0, #9aa6b3) !important;
+    }
+
+    /* Tabela moderna em tema escuro */
+    body:has(link[href*="tema-pure-dark"]) .modern-table thead th,
+    body:has(link[href*="tema-dark-violet"]) .modern-table thead th,
+    body:has(link[href*="tema-dark-orange"]) .modern-table thead th {
+        background: var(--dark-2, #272835) !important;
+        color: var(--branco, #caced8) !important;
+        border-bottom-color: var(--dark-1, #14141a) !important;
+    }
+
+    body:has(link[href*="tema-pure-dark"]) .modern-table tbody tr:hover,
+    body:has(link[href*="tema-dark-violet"]) .modern-table tbody tr:hover,
+    body:has(link[href*="tema-dark-orange"]) .modern-table tbody tr:hover {
+        background: var(--dark-2, #272835) !important;
+    }
+
+    body:has(link[href*="tema-pure-dark"]) .modern-table td,
+    body:has(link[href*="tema-dark-violet"]) .modern-table td,
+    body:has(link[href*="tema-dark-orange"]) .modern-table td {
+        color: var(--cinza0, #9aa6b3) !important;
+        border-bottom-color: var(--dark-1, #14141a) !important;
+    }
+
+    /* Calendário em tema escuro */
+    body:has(link[href*="tema-pure-dark"]) .calendar-wrapper,
+    body:has(link[href*="tema-dark-violet"]) .calendar-wrapper,
+    body:has(link[href*="tema-dark-orange"]) .calendar-wrapper {
+        background: var(--dark-2, #272835) !important;
+    }
+
+    /* Scrollbar em tema escuro */
+    body:has(link[href*="tema-pure-dark"]) .custom-scroll::-webkit-scrollbar-track,
+    body:has(link[href*="tema-dark-violet"]) .custom-scroll::-webkit-scrollbar-track,
+    body:has(link[href*="tema-dark-orange"]) .custom-scroll::-webkit-scrollbar-track {
+        background: var(--dark-2, #272835) !important;
+    }
+
+    body:has(link[href*="tema-pure-dark"]) .custom-scroll::-webkit-scrollbar-thumb,
+    body:has(link[href*="tema-dark-violet"]) .custom-scroll::-webkit-scrollbar-thumb,
+    body:has(link[href*="tema-dark-orange"]) .custom-scroll::-webkit-scrollbar-thumb {
+        background: var(--cinza0, #4a5568) !important;
+    }
+
+    /* Botões de ação em tema escuro */
+    body:has(link[href*="tema-pure-dark"]) .widget-body .btn:not(.btn-info):not(.btn-danger):not(.btn-success),
+    body:has(link[href*="tema-dark-violet"]) .widget-body .btn:not(.btn-info):not(.btn-danger):not(.btn-success),
+    body:has(link[href*="tema-dark-orange"]) .widget-body .btn:not(.btn-info):not(.btn-danger):not(.btn-success) {
+        background: var(--dark-2, #272835) !important;
+        border-color: var(--dark-1, #14141a) !important;
+        color: var(--branco, #caced8) !important;
+    }
+
+    /* Modal em tema escuro */
+    body:has(link[href*="tema-pure-dark"]) .modal-header,
+    body:has(link[href*="tema-dark-violet"]) .modal-header,
+    body:has(link[href*="tema-dark-orange"]) .modal-header {
+        background: var(--wid-dark, #1c1d26) !important;
+        border-bottom-color: var(--dark-1, #14141a) !important;
+    }
+
+    body:has(link[href*="tema-pure-dark"]) .modal-body,
+    body:has(link[href*="tema-dark-violet"]) .modal-body,
+    body:has(link[href*="tema-dark-orange"]) .modal-body {
+        background: var(--dark-2, #272835) !important;
+        color: var(--cinza0, #9aa6b3) !important;
+    }
+
+    body:has(link[href*="tema-pure-dark"]) .modal-footer,
+    body:has(link[href*="tema-dark-violet"]) .modal-footer,
+    body:has(link[href*="tema-dark-orange"]) .modal-footer {
+        background: var(--dark-2, #272835) !important;
+        border-top-color: var(--dark-1, #14141a) !important;
+    }
+
+    /* ===========================================
+       TEMAS ESCUROS ESPECÍFICOS
+       =========================================== */
+
+    /* Dark Violet */
+    .dashboard-modern.tema-darkviolet .dashboard-header {
+        background: linear-gradient(135deg, #5b247a 0%, #7b3fa0 100%) !important;
+    }
+
+    .dashboard-modern.tema-darkviolet .widget-header h5 i,
+    .dashboard-modern.tema-darkviolet .quick-card .icon-wrapper {
+        background: linear-gradient(135deg, #9d50bb 0%, #6e48aa 100%) !important;
+    }
+
+    .dashboard-modern.tema-darkviolet .stat-box .number {
+        background: linear-gradient(135deg, #9d50bb 0%, #6e48aa 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    /* Dark Orange */
+    .dashboard-modern.tema-darkorange .dashboard-header {
+        background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%) !important;
+    }
+
+    .dashboard-modern.tema-darkorange .widget-header h5 i,
+    .dashboard-modern.tema-darkorange .quick-card .icon-wrapper {
+        background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%) !important;
+    }
+
+    .dashboard-modern.tema-darkorange .stat-box .number {
+        background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    /* Pure Dark */
+    .dashboard-modern.tema-puredark .dashboard-header {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%) !important;
+    }
+
+    /* ===========================================
+       TEMAS CLAROS ALTERNATIVOS (whitegreen, whiteblack)
+       =========================================== */
+    body:has(link[href*="tema-white-green"]) .dashboard-modern,
+    body:has(link[href*="tema-white-black"]) .dashboard-modern,
+    .dashboard-modern.tema-whitegreen,
+    .dashboard-modern.tema-whiteblack {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    }
+
+    body:has(link[href*="tema-white-green"]) .quick-card,
+    body:has(link[href*="tema-white-black"]) .quick-card,
+    .dashboard-modern.tema-whitegreen .quick-card,
+    .dashboard-modern.tema-whiteblack .quick-card {
+        background: #ffffff;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+    }
+
+    /* Tema White Green - ajuste de cores */
+    body:has(link[href*="tema-white-green"]) .quick-card .icon-wrapper,
+    .dashboard-modern.tema-whitegreen .quick-card .icon-wrapper {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
+    }
+
+    body:has(link[href*="tema-white-green"]) .widget-header h5 i,
+    .dashboard-modern.tema-whitegreen .widget-header h5 i {
+        color: #11998e !important;
+    }
+
+    /* Tema White Black - ajuste de cores */
+    body:has(link[href*="tema-white-black"]) .quick-card .icon-wrapper,
+    .dashboard-modern.tema-whiteblack .quick-card .icon-wrapper {
+        background: linear-gradient(135deg, #232526 0%, #414345 100%) !important;
+    }
+
+    body:has(link[href*="tema-white-black"]) .widget-header h5 i,
+    .dashboard-modern.tema-whiteblack .widget-header h5 i {
+        color: #232526 !important;
     }
 
     /* Header Moderno */
@@ -721,6 +1138,75 @@
 <script src="<?php echo base_url() ?>assets/js/jquery.validate.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
+    // ==========================================
+    // DETECÇÃO E APLICAÇÃO DE TEMA
+    // ==========================================
+    function detectarEAplicarTema() {
+        // Tentar pegar do body data attribute (mais confiável)
+        var temaAtual = $('body').attr('data-theme') || '<?= isset($configuration["app_theme"]) ? $configuration["app_theme"] : "default" ?>';
+        var temasEscuros = ['puredark', 'darkviolet', 'darkorange'];
+        var $dashboard = $('.dashboard-modern');
+
+        // Adicionar classe específica do tema
+        $dashboard.addClass('tema-' + temaAtual);
+
+        if (temasEscuros.includes(temaAtual)) {
+            $dashboard.addClass('tema-escuro');
+            $('body').addClass('dashboard-dark-mode');
+
+            // Ajustar gráficos para tema escuro
+            if (typeof Chart !== 'undefined') {
+                Chart.defaults.color = '#9aa6b3';
+                Chart.defaults.borderColor = '#272835';
+            }
+        } else {
+            $dashboard.addClass('tema-claro');
+        }
+
+        // Salvar tema para uso em outras funções
+        window.dashboardTema = temaAtual;
+    }
+
+    // Detectar mudanças de tema via o botão do topo
+    $(document).on('themeChanged', function(e, novoTema) {
+        var temasEscuros = ['puredark', 'darkviolet', 'darkorange'];
+        var temasClaros = ['white', 'whitegreen', 'whiteblack', 'default'];
+        var $dashboard = $('.dashboard-modern');
+
+        // Remover classes antigas
+        $dashboard.removeClass('tema-escuro tema-claro tema-puredark tema-darkviolet tema-darkorange tema-white tema-whitegreen tema-whiteblack');
+
+        // Adicionar nova classe específica
+        $dashboard.addClass('tema-' + novoTema);
+
+        if (temasEscuros.includes(novoTema)) {
+            $dashboard.addClass('tema-escuro');
+            $('body').addClass('dashboard-dark-mode');
+        } else {
+            $dashboard.addClass('tema-claro');
+            $('body').removeClass('dashboard-dark-mode');
+        }
+        window.dashboardTema = novoTema;
+
+        // Forçar atualização visual dos componentes
+        atualizarCoresTema();
+    });
+
+    // Função para atualizar cores dinamicamente
+    function atualizarCoresTema() {
+        var isDark = $('.dashboard-modern').hasClass('tema-escuro');
+        var textColor = isDark ? '#9aa6b3' : '#666';
+
+        // Atualizar Chart.js defaults
+        if (typeof Chart !== 'undefined') {
+            Chart.defaults.color = textColor;
+            Chart.defaults.borderColor = isDark ? '#272835' : '#e0e0e0';
+        }
+    }
+
+    // Inicializar tema
+    detectarEAplicarTema();
+
     // Inicializar Calendário
     var srcCalendarEl = document.getElementById('source-calendar');
     if (srcCalendarEl) {
@@ -789,6 +1275,9 @@ $(document).ready(function() {
     // Gráfico de OS por Status (Doughnut)
     var statusCtx = document.getElementById('statusOsChart');
     if (statusCtx) {
+        var isDarkMode = $('.dashboard-modern').hasClass('tema-escuro');
+        var textColor = isDarkMode ? '#9aa6b3' : '#666';
+
         new Chart(statusCtx, {
             type: 'doughnut',
             data: {
@@ -819,7 +1308,8 @@ $(document).ready(function() {
                         position: 'bottom',
                         labels: {
                             usePointStyle: true,
-                            padding: 15
+                            padding: 15,
+                            color: textColor
                         }
                     }
                 }
@@ -830,6 +1320,10 @@ $(document).ready(function() {
     // Gráfico Financeiro
     var financeCtx = document.getElementById('financeChart');
     if (financeCtx) {
+        var isDarkModeFin = $('.dashboard-modern').hasClass('tema-escuro');
+        var textColorFin = isDarkModeFin ? '#9aa6b3' : '#666';
+        var gridColorFin = isDarkModeFin ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+
         new Chart(financeCtx, {
             type: 'bar',
             data: {
@@ -881,16 +1375,31 @@ $(document).ready(function() {
                 plugins: {
                     legend: {
                         position: 'top',
-                        align: 'end'
+                        align: 'end',
+                        labels: {
+                            color: textColorFin
+                        }
                     }
                 },
                 scales: {
+                    x: {
+                        ticks: {
+                            color: textColorFin
+                        },
+                        grid: {
+                            color: gridColorFin
+                        }
+                    },
                     y: {
                         beginAtZero: true,
                         ticks: {
+                            color: textColorFin,
                             callback: function(value) {
                                 return 'R$ ' + value.toLocaleString('pt-BR');
                             }
+                        },
+                        grid: {
+                            color: gridColorFin
                         }
                     }
                 }

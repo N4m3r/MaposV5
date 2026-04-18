@@ -54,6 +54,14 @@
                 <form action="<?= current_url() ?>" method="post" class="form-horizontal" id="form-usuario">
                     <input type="hidden" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>">
 
+                    <!-- Debug: Mostrar erros de validação -->
+                    <?php if (validation_errors()): ?>
+                    <div class="alert alert-error">
+                        <strong>Erros de validação:</strong>
+                        <?= validation_errors() ?>
+                    </div>
+                    <?php endif; ?>
+
                     <div class="control-group">
                         <label class="control-label">Nome Completo: <span class="required" style="color: #e74c3c;">*</span></label>
                         <div class="controls">

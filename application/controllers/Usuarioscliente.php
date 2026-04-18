@@ -130,7 +130,7 @@ class Usuarioscliente extends MY_Controller
         $this->load->library('form_validation');
 
         $this->form_validation->set_rules('nome', 'Nome', 'required|trim');
-        $this->form_validation->set_rules('email', 'Email', 'required|trim|valid_email');
+        $this->form_validation->set_rules('email', 'Email', 'required|trim|valid_email|callback__check_email_unico[' . $id . ']');
 
         // Validação de senha apenas se preenchida
         if ($this->input->post('senha')) {
@@ -175,6 +175,7 @@ class Usuarioscliente extends MY_Controller
 
         $cnpjs = $this->input->post('cnpjs');
         $cnpjs_razao = $this->input->post('cnpjs_razao');
+
         if (!empty($cnpjs) && is_array($cnpjs)) {
             foreach ($cnpjs as $index => $cnpj) {
                 if (!empty($cnpj)) {
@@ -194,7 +195,32 @@ class Usuarioscliente extends MY_Controller
 
         $this->session->set_flashdata('success', 'Usuário atualizado com sucesso!');
         log_info('Editou usuário do cliente: ' . $data['email']);
+
+        // Atualizar sessão do usuário se ele estiver logado
+        $this->_atualizar_sessao_usuario($id);
+
         redirect('usuarioscliente');
+    }
+
+    /**
+     * Atualizar sessão do usuário quando dados são alterados
+     */
+    private function _atualizar_sessao_usuario($usuario_id)
+    {
+        // Verifica se o usuário está logado
+        if ($this->session->userdata('usuario_cliente_id') == $usuario_id) {
+            // Busca dados atualizados
+            $cnpjs = $this->usuarios_cliente_model->getCnpjs($usuario_id);
+            $permissoes = $this->usuarios_cliente_model->getAllPermissoes($usuario_id);
+
+            // Atualiza sessão
+            $this->session->set_userdata([
+                'usuario_cliente_cnpjs' => $cnpjs,
+                'usuario_cliente_permissoes' => $permissoes,
+            ]);
+
+            log_message('debug', 'Sessão do usuário cliente atualizada: ' . $usuario_id);
+        }
     }
 
     /**
@@ -258,6 +284,22 @@ class Usuarioscliente extends MY_Controller
         $this->data['view'] = 'usuarios_cliente/visualizar';
 
         return $this->layout();
+    }
+
+    /**
+     * Callback: Verificar se email é único (excluindo o usuário atual)
+     */
+    public function _check_email_unico($email, $usuario_id)
+    {
+        $this->db->where('email', $email);
+        $this->db->where('id !=', $usuario_id);
+        $query = $this->db->get('usuarios_cliente');
+
+        if ($query->num_rows() > 0) {
+            $this->form_validation->set_message('_check_email_unico', 'Este email já está em uso por outro usuário.');
+            return false;
+        }
+        return true;
     }
 
     /**

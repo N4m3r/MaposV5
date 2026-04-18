@@ -88,7 +88,7 @@
   </style>
 </head>
 
-<body>
+<body data-theme="<?= isset($configuration['app_theme']) ? $configuration['app_theme'] : 'default' ?>">
   <!--top-Header-menu-->
   <div class="navebarn">
     <div id="user-nav" class="navbar navbar-inverse">

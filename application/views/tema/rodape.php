@@ -139,6 +139,12 @@ $('#btn-toggle-theme').on('click', function(e) {
     temaAtual = novoTema;
     atualizarIconeTema();
 
+    // Atualizar data attribute no body
+    $('body').attr('data-theme', novoTema);
+
+    // Notificar painel e outros componentes sobre a mudança de tema
+    $(document).trigger('themeChanged', [novoTema]);
+
     // Salvar no servidor
     $.post(notifBaseUrl + '/trocar_tema', { tema: novoTema });
 });
