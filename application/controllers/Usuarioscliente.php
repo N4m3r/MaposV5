@@ -186,11 +186,16 @@ class Usuarioscliente extends MY_Controller
         }
 
         // Atualizar permissões
-        $permissoes = $this->input->post('permissoes');
-        if (!empty($permissoes) && is_array($permissoes)) {
-            foreach ($permissoes as $chave => $valor) {
-                $this->usuarios_cliente_model->setPermissao($id, $chave, $valor ? true : false);
-            }
+        // Primeiro, obtém todas as permissões padrão
+        $permissoes_padrao = $this->usuarios_cliente_model->getPermissoesPadrao();
+        $permissoes_enviadas = $this->input->post('permissoes') ?: [];
+
+        // Para cada permissão padrão, verifica se foi marcada ou não
+        foreach ($permissoes_padrao as $chave => $valor_padrao) {
+            // Se a permissão foi enviada no POST (checkbox marcado), valor = true
+            // Se não foi enviada (checkbox desmarcado), valor = false
+            $valor_permissao = isset($permissoes_enviadas[$chave]) ? true : false;
+            $this->usuarios_cliente_model->setPermissao($id, $chave, $valor_permissao);
         }
 
         $this->session->set_flashdata('success', 'Usuário atualizado com sucesso!');

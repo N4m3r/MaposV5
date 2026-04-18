@@ -239,7 +239,7 @@
                     <div class="widget-content" style="padding: 20px;">
                         <?php if (!empty($os_vinculadas)): ?>
                             <div class="os-list" style="display: flex; flex-direction: column; gap: 12px;">
-                                <?php foreach ($os_vinculadas as $os): ?
+                                <?php foreach ($os_vinculadas as $os): ?>
                                 <div class="os-item" style="
                                     display: flex;
                                     align-items: center;
