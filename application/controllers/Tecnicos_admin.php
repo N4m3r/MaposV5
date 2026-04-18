@@ -388,7 +388,8 @@ class Tecnicos_admin extends MY_Controller
         }
 
         $this->data['obra'] = $obra;
-        $this->data['clientes'] = $this->db->where('status', 1)->get('clientes')->result();
+        $clientes_query = $this->db->where('status', 1)->get('clientes');
+        $this->data['clientes'] = $clientes_query ? $clientes_query->result() : [];
         $this->data['view'] = 'tecnicos_admin/obra_form';
         return $this->layout();
     }

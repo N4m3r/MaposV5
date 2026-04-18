@@ -361,17 +361,17 @@
 
             <div class="info-row">
                 <span class="info-label">E-mail</span>
-                <span class="info-value"><?php echo htmlspecialchars($tecnico->email); ?></span>
+                <span class="info-value"><?php echo htmlspecialchars($tecnico->email ?? '', ENT_QUOTES, 'UTF-8'); ?></span>
             </div>
 
             <div class="info-row">
                 <span class="info-label">Telefone</span>
-                <span class="info-value"><?php echo htmlspecialchars($tecnico->telefone ?? 'Não informado'); ?></span>
+                <span class="info-value"><?php echo htmlspecialchars($tecnico->telefone ?? 'Não informado', ENT_QUOTES, 'UTF-8'); ?></span>
             </div>
 
             <div class="info-row">
                 <span class="info-label">CPF</span>
-                <span class="info-value"><?php echo htmlspecialchars($tecnico->cpf ?? 'Não informado'); ?></span>
+                <span class="info-value"><?php echo htmlspecialchars($tecnico->cpf ?? 'Não informado', ENT_QUOTES, 'UTF-8'); ?></span>
             </div>
         </div>
 
@@ -399,7 +399,7 @@
             <?php if ($tecnico->veiculo_placa): ?>
             <div class="info-row">
                 <span class="info-label">Veículo</span>
-                <span class="info-value"><?php echo htmlspecialchars($tecnico->veiculo_tipo . ' - ' . $tecnico->veiculo_placa); ?></span>
+                <span class="info-value"><?php echo htmlspecialchars(($tecnico->veiculo_tipo ?? '') . ' - ' . ($tecnico->veiculo_placa ?? ''), ENT_QUOTES, 'UTF-8'); ?></span>
             </div>
             <?php endif; ?>
 
@@ -500,6 +500,7 @@
             // Enviar para o servidor
             const formData = new FormData();
             formData.append('foto', foto);
+            formData.append('<?php echo $this->security->get_csrf_token_name(); ?>', '<?php echo $this->security->get_csrf_hash(); ?>');
 
             try {
                 const response = await fetch('<?php echo site_url("tecnicos/atualizar_foto"); ?>', {
