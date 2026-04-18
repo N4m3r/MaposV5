@@ -1287,9 +1287,14 @@ class Migration_Consolidated_schema_update extends CI_Migration
                 ['codigo' => '1.3', 'nome' => 'Outras Receitas', 'tipo' => 'receita', 'grupo' => 'OUTRAS_RECEITAS', 'sinal' => 'POSITIVO', 'nivel' => 2, 'ordem' => 4],
                 ['codigo' => '2', 'nome' => 'DEDUÇÕES DA RECEITA', 'tipo' => 'despesa', 'grupo' => 'DEDUCOES', 'sinal' => 'NEGATIVO', 'nivel' => 1, 'ordem' => 5],
                 ['codigo' => '2.1', 'nome' => 'ISS', 'tipo' => 'despesa', 'grupo' => 'DEDUCOES', 'sinal' => 'NEGATIVO', 'nivel' => 2, 'ordem' => 6],
+                ['codigo' => '2.2', 'nome' => 'ISS Retido na Fonte', 'tipo' => 'despesa', 'grupo' => 'DEDUCOES', 'sinal' => 'NEGATIVO', 'nivel' => 2, 'ordem' => 7],
                 ['codigo' => '3', 'nome' => 'CUSTO DOS SERVIÇOS', 'tipo' => 'custo', 'grupo' => 'CUSTO', 'sinal' => 'NEGATIVO', 'nivel' => 1, 'ordem' => 10],
                 ['codigo' => '4', 'nome' => 'DESPESAS OPERACIONAIS', 'tipo' => 'despesa', 'grupo' => 'DESPESA_OPERACIONAL', 'sinal' => 'NEGATIVO', 'nivel' => 1, 'ordem' => 20],
                 ['codigo' => '6', 'nome' => 'IMPOSTO DE RENDA E CONTRIBUIÇÕES', 'tipo' => 'despesa', 'grupo' => 'IMPOSTO_RENDA', 'sinal' => 'NEGATIVO', 'nivel' => 1, 'ordem' => 30],
+                ['codigo' => '6.1', 'nome' => 'DAS - Simples Nacional', 'tipo' => 'despesa', 'grupo' => 'IMPOSTO_RENDA', 'sinal' => 'NEGATIVO', 'nivel' => 2, 'ordem' => 31],
+                ['codigo' => '6.2', 'nome' => 'IRRF Retido na Fonte', 'tipo' => 'despesa', 'grupo' => 'IMPOSTO_RENDA', 'sinal' => 'NEGATIVO', 'nivel' => 2, 'ordem' => 32],
+                ['codigo' => '6.3', 'nome' => 'PIS/COFINS Retidos', 'tipo' => 'despesa', 'grupo' => 'IMPOSTO_RENDA', 'sinal' => 'NEGATIVO', 'nivel' => 2, 'ordem' => 33],
+                ['codigo' => '6.4', 'nome' => 'CSLL Retido', 'tipo' => 'despesa', 'grupo' => 'IMPOSTO_RENDA', 'sinal' => 'NEGATIVO', 'nivel' => 2, 'ordem' => 34],
                 ['codigo' => '7', 'nome' => 'OUTRAS DESPESAS', 'tipo' => 'despesa', 'grupo' => 'OUTRAS_DESPESAS', 'sinal' => 'NEGATIVO', 'nivel' => 1, 'ordem' => 35],
             ];
             $now = date('Y-m-d H:i:s');

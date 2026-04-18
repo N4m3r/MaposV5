@@ -43,6 +43,8 @@ if (!function_exists('formatarDocumento')) {
 }
 
 // Variáveis para as sub-views
+$regimeTributario = $tributacao['regime'] ?? 'simples_nacional';
+
 $nfse_vars = [
     'result' => $result,
     'emitente' => $emitente,
@@ -55,6 +57,7 @@ $nfse_vars = [
     'historico_nfse' => $historico_nfse ?? [],
     'ambiente' => $ambiente ?? 'homologacao',
     'valorServicosNFSe' => $valorServicosNFSe,
+    'regimeTributario' => $regimeTributario,
 ];
 
 $boleto_vars = [

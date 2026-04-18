@@ -1083,9 +1083,14 @@ INSERT IGNORE INTO `dre_contas` (`codigo`, `nome`, `tipo`, `grupo`, `sinal`, `ni
 ('1.3', 'Outras Receitas', 'receita', 'OUTRAS_RECEITAS', 'POSITIVO', 2, 4, 1, NOW(), NOW()),
 ('2', 'DEDUÇÕES DA RECEITA', 'despesa', 'DEDUCOES', 'NEGATIVO', 1, 5, 1, NOW(), NOW()),
 ('2.1', 'ISS', 'despesa', 'DEDUCOES', 'NEGATIVO', 2, 6, 1, NOW(), NOW()),
+('2.2', 'ISS Retido na Fonte', 'despesa', 'DEDUCOES', 'NEGATIVO', 2, 7, 1, NOW(), NOW()),
 ('3', 'CUSTO DOS SERVIÇOS', 'custo', 'CUSTO', 'NEGATIVO', 1, 10, 1, NOW(), NOW()),
 ('4', 'DESPESAS OPERACIONAIS', 'despesa', 'DESPESA_OPERACIONAL', 'NEGATIVO', 1, 20, 1, NOW(), NOW()),
 ('6', 'IMPOSTO DE RENDA E CONTRIBUIÇÕES', 'despesa', 'IMPOSTO_RENDA', 'NEGATIVO', 1, 30, 1, NOW(), NOW()),
+('6.1', 'DAS - Simples Nacional', 'despesa', 'IMPOSTO_RENDA', 'NEGATIVO', 2, 31, 1, NOW(), NOW()),
+('6.2', 'IRRF Retido na Fonte', 'despesa', 'IMPOSTO_RENDA', 'NEGATIVO', 2, 32, 1, NOW(), NOW()),
+('6.3', 'PIS/COFINS Retidos', 'despesa', 'IMPOSTO_RENDA', 'NEGATIVO', 2, 33, 1, NOW(), NOW()),
+('6.4', 'CSLL Retido', 'despesa', 'IMPOSTO_RENDA', 'NEGATIVO', 2, 34, 1, NOW(), NOW()),
 ('7', 'OUTRAS DESPESAS', 'despesa', 'OUTRAS_DESPESAS', 'NEGATIVO', 1, 35, 1, NOW(), NOW());
 
 INSERT IGNORE INTO `impostos_config` (`tipo_regime`, `anexo_simples`, `aliquota_iss`, `retem_iss`, `created_at`, `updated_at`) VALUES

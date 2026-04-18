@@ -229,8 +229,48 @@
                         <strong><?= str_replace('_', ' ', $c->tipo_consulta) ?></strong><br>
                         <small class="text-muted">
                             <?= date('d/m/Y H:i', strtotime($c->data_consulta)) ?>
-                            <?= !empty($c->erro) ? ' • Erro: ' . substr($c->erro, 0, 50) : '' ?>
+                            <?= !empty($c->erro) ? ' • Erro: ' . substr($c->erro, 0, 80) : '' ?>
                         </small>
+                        <?php if ($c->sucesso && $c->dados_retorno): ?>
+                        <?php
+                        $dadosConsulta = json_decode($c->dados_retorno, true);
+                        if ($c->tipo_consulta === 'SIMPLES_NACIONAL' && is_array($dadosConsulta)):
+                        ?>
+                        <div style="margin-top: 5px; padding: 5px 8px; background: #f8f9fa; border-radius: 3px; font-size: 11px;">
+                            <?php if (!empty($dadosConsulta['optante_simples'])): ?>
+                                <span class="label label-success">Optante Simples Nacional</span>
+                                <?php if (!empty($dadosConsulta['anexo_sugerido'])): ?>
+                                    <span class="label label-info">Anexo <?= htmlspecialchars($dadosConsulta['anexo_sugerido']) ?></span>
+                                <?php endif; ?>
+                                <?php if (!empty($dadosConsulta['simei'])): ?>
+                                    <span class="label label-warning">MEI</span>
+                                <?php endif; ?>
+                            <?php else: ?>
+                                <span class="label label-important" style="background: #d9534f; color: white;">Não Optante Simples</span>
+                                <span class="label label-info">Lucro Presumido</span>
+                            <?php endif; ?>
+                            <?php if (!empty($dadosConsulta['cnae_descricao'])): ?>
+                                <br><strong>CNAE:</strong> <small><?= htmlspecialchars(substr($dadosConsulta['cnae_descricao'], 0, 80)) ?></small>
+                            <?php endif; ?>
+                            <?php if (!empty($dadosConsulta['razao_social'])): ?>
+                                <br><strong>Razão Social:</strong> <small><?= htmlspecialchars($dadosConsulta['razao_social']) ?></small>
+                            <?php endif; ?>
+                        </div>
+                        <?php elseif ($c->tipo_consulta === 'CNPJ' && is_array($dadosConsulta)): ?>
+                        <div style="margin-top: 5px; padding: 5px 8px; background: #f8f9fa; border-radius: 3px; font-size: 11px;">
+                            <?php if (!empty($dadosConsulta['nome'])): ?>
+                                <strong>Razão Social:</strong> <small><?= htmlspecialchars($dadosConsulta['nome']) ?></small><br>
+                            <?php endif; ?>
+                            <?php if (!empty($dadosConsulta['situacao'])): ?>
+                                <strong>Situação:</strong>
+                                <span class="label label-<?= $dadosConsulta['situacao'] === 'ATIVA' ? 'success' : 'important' ?>" style="font-size: 10px;"><?= htmlspecialchars($dadosConsulta['situacao']) ?></span>
+                            <?php endif; ?>
+                            <?php if (!empty($dadosConsulta['porte'])): ?>
+                                <span class="label" style="font-size: 10px;"><?= htmlspecialchars($dadosConsulta['porte']) ?></span>
+                            <?php endif; ?>
+                        </div>
+                        <?php endif; ?>
+                        <?php endif; ?>
                     </div>
                 </div>
                 <?php endforeach; ?>
@@ -249,11 +289,31 @@
                 <p><strong>O que é integrado automaticamente:</strong></p>
                 <ul>
                     <li>Consulta de CNPJ na Receita Federal</li>
-                    <li>Consulta Simples Nacional (anexo e situação)</li>
+                    <li>Consulta Simples Nacional (regime tributário, anexo e situação)</li>
                     <li>Sincronização de alíquotas fiscais</li>
                     <li>Importação de notas fiscais de serviço (NFS-e)</li>
                     <li>Cálculo automático de impostos retidos</li>
                 </ul>
+
+                <?php
+                $regime = $config_impostos['regime'] ?? 'simples_nacional';
+                $issMunicipal = $this->impostos_model->getConfig('IMPOSTO_ISS_MUNICIPAL') ?: '5.00';
+                ?>
+                <div class="alert alert-<?= $regime === 'lucro_presumido' ? 'info' : 'success' ?>" style="margin-top: 10px;">
+                    <i class="fas fa-<?= $regime === 'lucro_presumido' ? 'building' : 'check-circle' ?>"></i>
+                    <strong>Regime Tributário Detectado:</strong><br>
+                    <?php if ($regime === 'lucro_presumido'): ?>
+                        <strong>Lucro Presumido</strong><br>
+                        <small>IRPJ 1,5% • CSLL 1,0% • COFINS 3,0% • PIS 0,65% • ISS <?= htmlspecialchars($issMunicipal) ?>%</small>
+                    <?php else: ?>
+                        <strong>Simples Nacional</strong>
+                        <?php if ($config_impostos['anexo']): ?>
+                            — Anexo <?= htmlspecialchars($config_impostos['anexo']) ?>, Faixa <?= $config_impostos['faixa'] ?>
+                        <?php endif; ?>
+                        <br>
+                        <small>ISS Municipal: <?= htmlspecialchars($issMunicipal) ?>%</small>
+                    <?php endif; ?>
+                </div>
 
                 <div class="alert alert-info">
                     <i class="fas fa-shield-alt"></i> <strong>Segurança:</strong><br>

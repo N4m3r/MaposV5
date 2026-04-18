@@ -23,6 +23,9 @@ $descontoTomador = floatval($result->valor_desconto ?? 0);
 // Padrão: NFSe com valor de serviços apenas
 $valorServicosNFSe = $descontoTomador > 0 ? $descontoTomador : floatval($totalServico);
 $ambiente = $ambiente ?? 'homologacao';
+$regimeTributario = $regimeTributario ?? ($tributacao['regime'] ?? 'simples_nacional');
+$isSimplesNacional = ($regimeTributario === 'simples_nacional');
+$regimeLabel = $isSimplesNacional ? 'Simples Nacional' : 'Lucro Presumido';
 
 if (!function_exists('formatarMoedaNFSe')) {
     function formatarMoedaNFSe($valor) {
@@ -310,6 +313,92 @@ if (!function_exists('formatarDocumentoNFSe')) {
                     </div>
                     <?php endif; ?>
 
+                    <!-- Regime Tributário & Retenções -->
+                    <div id="regime-retencoes-section" style="margin-top: 12px; margin-bottom: 10px; border: 2px solid <?= $isSimplesNacional ? '#27ae60' : '#3498db' ?>; border-radius: 6px; padding: 12px 15px; background: <?= $isSimplesNacional ? '#eafaf1' : '#ebf5fb' ?>;">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+                            <i class="fas fa-landmark" style="font-size: 16px; color: <?= $isSimplesNacional ? '#27ae60' : '#3498db' ?>;"></i>
+                            <strong style="font-size: 14px;">Regime Tributário: <?= $regimeLabel ?></strong>
+                            <span class="label label-<?= $isSimplesNacional ? 'success' : 'info' ?>"><?= $isSimplesNacional ? 'DAS' : 'Impostos Individuais' ?></span>
+                        </div>
+
+                        <?php if ($isSimplesNacional): ?>
+                        <div id="das-info" style="padding: 8px 12px; background: #fff; border: 1px solid #c8e6c9; border-radius: 4px; margin-bottom: 10px;">
+                            <table style="width: 100%; font-size: 13px;">
+                                <tr>
+                                    <td style="padding: 2px 0;"><i class="fas fa-receipt" style="color: #27ae60; width: 16px;"></i> <strong>DAS (Documento de Arrecadação):</strong></td>
+                                    <td style="text-align: right; font-weight: bold; color: #27ae60; padding: 2px 0;" id="das-valor-display">—</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" style="padding: 4px 0 0 0; font-size: 11px; color: #666;">
+                                        <i class="fas fa-info-circle" style="color: #27ae60;"></i>
+                                        No Simples Nacional, o imposto é recolhido via DAS mensal. O valor estimado será calculado no Passo 2.
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <?php else: ?>
+                        <div id="lucro-presumido-info" style="padding: 8px 12px; background: #fff; border: 1px solid #b3d9f2; border-radius: 4px; margin-bottom: 10px; font-size: 12px; color: #555;">
+                            <i class="fas fa-info-circle" style="color: #3498db;"></i>
+                            No Lucro Presumido, os impostos são calculados individualmente (ISS, IRRF, PIS, COFINS, CSLL).
+                        </div>
+                        <?php endif; ?>
+
+                        <!-- Retenções do Tomador -->
+                        <div style="padding: 8px 12px; background: #fff; border: 1px solid #e0e0e0; border-radius: 4px;">
+                            <div style="margin-bottom: 6px;">
+                                <strong style="font-size: 13px;"><i class="fas fa-hand-holding-usd" style="color: #e67e22;"></i> Retenções do Tomador</strong>
+                                <span style="font-size: 11px; color: #888; margin-left: 5px;">(impostos retidos na fonte pelo cliente)</span>
+                            </div>
+                            <div class="row-fluid">
+                                <div class="span4">
+                                    <label class="checkbox" style="font-size: 12px; margin-bottom: 5px;">
+                                        <input type="checkbox" id="retem-iss" name="retem_iss" value="1" style="margin-right: 3px;">
+                                        ISS (<span id="aliquota-iss-display"><?= $tributacao['aliquota_iss'] ?? '5.00' ?>%</span>)
+                                        <span id="retem-iss-valor" style="color: #e67e22; font-weight: bold; margin-left: 5px;"></span>
+                                    </label>
+                                </div>
+                                <div class="span4">
+                                    <label class="checkbox" style="font-size: 12px; margin-bottom: 5px;">
+                                        <input type="checkbox" id="retem-irrf" name="retem_irrf" value="1" style="margin-right: 3px;">
+                                        IRRF (1,5%)
+                                        <span id="retem-irrf-valor" style="color: #e67e22; font-weight: bold; margin-left: 5px;"></span>
+                                    </label>
+                                </div>
+                                <div class="span4">
+                                    <label class="checkbox" style="font-size: 12px; margin-bottom: 5px;">
+                                        <input type="checkbox" id="retem-pis" name="retem_pis" value="1" style="margin-right: 3px;">
+                                        PIS (0,65%)
+                                        <span id="retem-pis-valor" style="color: #e67e22; font-weight: bold; margin-left: 5px;"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row-fluid">
+                                <div class="span4">
+                                    <label class="checkbox" style="font-size: 12px; margin-bottom: 5px;">
+                                        <input type="checkbox" id="retem-cofins" name="retem_cofins" value="1" style="margin-right: 3px;">
+                                        COFINS (3,0%)
+                                        <span id="retem-cofins-valor" style="color: #e67e22; font-weight: bold; margin-left: 5px;"></span>
+                                    </label>
+                                </div>
+                                <div class="span4">
+                                    <label class="checkbox" style="font-size: 12px; margin-bottom: 5px;">
+                                        <input type="checkbox" id="retem-csll" name="retem_csll" value="1" style="margin-right: 3px;">
+                                        CSLL (1,0%)
+                                        <span id="retem-csll-valor" style="color: #e67e22; font-weight: bold; margin-left: 5px;"></span>
+                                    </label>
+                                </div>
+                                <div class="span4">
+                                    <strong style="font-size: 13px;">Total Retido:</strong>
+                                    <span id="retem-total-valor" style="color: #e67e22; font-weight: bold; font-size: 14px;">R$ 0,00</span>
+                                </div>
+                            </div>
+                            <p style="margin: 4px 0 0 0; font-size: 11px; color: #888;">
+                                <i class="fas fa-exclamation-circle" style="color: #e67e22;"></i>
+                                As retenções NÃO reduzem o valor da NFS-e. Elas são registradas para controle e serão deduzidas no DRE como crédito a compensar.
+                            </p>
+                        </div>
+                    </div>
+
                     <!-- Campos de Emissão -->
                     <div class="row-fluid" style="margin-top: 15px;">
                         <div class="span6">
@@ -374,7 +463,9 @@ if (!function_exists('formatarDocumentoNFSe')) {
                     <div class="row-fluid">
                         <!-- Tabela de Impostos -->
                         <div class="span5">
-                            <h6><i class="fas fa-calculator"></i> Cálculo de Impostos</h6>
+                            <h6><i class="fas fa-calculator"></i> Cálculo de Impostos
+                                <span class="label label-<?= $isSimplesNacional ? 'success' : 'info' ?>" style="font-size: 11px; margin-left: 5px;"><?= $regimeLabel ?></span>
+                            </h6>
                             <table class="impostos-table" id="impostos-table">
                                 <tbody>
                                     <tr>
@@ -389,6 +480,18 @@ if (!function_exists('formatarDocumentoNFSe')) {
                                         <td class="imposto-nome">Base de Cálculo</td>
                                         <td class="imposto-valor" id="imp-base-calculo">-</td>
                                     </tr>
+                                    <?php if ($isSimplesNacional): ?>
+                                    <!-- Simples Nacional: DAS -->
+                                    <tr style="background: #e8f5e9;">
+                                        <td class="imposto-nome"><strong><i class="fas fa-receipt" style="color: #27ae60;"></i> DAS (Simples Nacional)</strong></td>
+                                        <td class="imposto-valor" id="imp-das"><strong>-</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="imposto-nome" style="font-size: 11px; color: #888; padding-left: 20px;">Alíquota efetiva: <span id="imp-das-aliquota">-</span></td>
+                                        <td></td>
+                                    </tr>
+                                    <?php else: ?>
+                                    <!-- Lucro Presumido: impostos individuais -->
                                     <tr>
                                         <td class="imposto-nome">ISS (<?= $tributacao['aliquota_iss'] ?>%)</td>
                                         <td class="imposto-valor" id="imp-iss">-</td>
@@ -413,9 +516,15 @@ if (!function_exists('formatarDocumentoNFSe')) {
                                         <td class="imposto-nome">INSS/CPP</td>
                                         <td class="imposto-valor" id="imp-inss">-</td>
                                     </tr>
+                                    <?php endif; ?>
                                     <tr class="total-row">
                                         <td class="imposto-nome">Total Impostos</td>
                                         <td class="imposto-valor" id="imp-total-impostos">-</td>
+                                    </tr>
+                                    <!-- Retenções do Tomador -->
+                                    <tr id="retencao-row" style="display: none;">
+                                        <td class="imposto-nome" style="color: #e67e22;"><i class="fas fa-hand-holding-usd"></i> (-) Retenções Tomador</td>
+                                        <td class="imposto-valor" id="imp-retencao-total" style="color: #e67e22;">-</td>
                                     </tr>
                                     <tr class="liquido-row">
                                         <td class="imposto-nome">Valor Líquido</td>
@@ -423,6 +532,13 @@ if (!function_exists('formatarDocumentoNFSe')) {
                                     </tr>
                                 </tbody>
                             </table>
+                            <p style="font-size: 11px; color: #888; margin-top: 5px;" id="imposto-regime-note">
+                                <?php if ($isSimplesNacional): ?>
+                                <i class="fas fa-info-circle" style="color: #27ae60;"></i> Simples Nacional: imposto recolhido via DAS mensal. O valor líquido NÃO é reduzido pelas retenções do tomador.
+                                <?php else: ?>
+                                <i class="fas fa-info-circle" style="color: #3498db;"></i> Lucro Presumido: impostos calculados individualmente. O valor líquido NÃO é reduzido pelas retenções do tomador.
+                                <?php endif; ?>
+                            </p>
                         </div>
 
                         <!-- Pré-visualização do Documento NFS-e (PDF) -->
@@ -507,13 +623,18 @@ if (!function_exists('formatarDocumentoNFSe')) {
                     <div class="row-fluid">
                         <div class="span6">
                             <div class="wizard-summary-section">
-                                <h6><i class="fas fa-file-invoice"></i> NFS-e</h6>
+                                <h6><i class="fas fa-file-invoice"></i> NFS-e
+                                    <span class="label label-<?= $isSimplesNacional ? 'success' : 'info' ?>" style="font-size: 11px; margin-left: 5px;"><?= $regimeLabel ?></span>
+                                </h6>
                                 <p><strong>Prestador:</strong> <span id="res-prestador"><?= htmlspecialchars($emitente->nome ?? $emitente->razaosocial ?? '—') ?></span></p>
                                 <p><strong>Tomador:</strong> <span id="res-tomador"><?= htmlspecialchars($result->nomeCliente ?? '—') ?></span></p>
                                 <p><strong>Valor dos Serviços:</strong> <span id="res-valor-servicos">—</span></p>
                                 <p><strong>Deduções:</strong> <span id="res-deducoes">—</span></p>
-                                <p><strong>Total Impostos:</strong> <span id="res-total-impostos">—</span></p>
+                                <p id="res-imposto-linha"><strong>Total Impostos:</strong> <span id="res-total-impostos">—</span></p>
+                                <p id="res-das-linha" style="display: <?= $isSimplesNacional ? 'block' : 'none' ?>;"><strong style="color: #27ae60;"><i class="fas fa-receipt"></i> DAS (Simples Nacional):</strong> <span id="res-valor-das" style="color: #27ae60; font-weight: bold;">—</span></p>
+                                <p id="res-retencao-linha" style="display: none;"><strong style="color: #e67e22;"><i class="fas fa-hand-holding-usd"></i> Retenções Tomador:</strong> <span id="res-retencao-total" style="color: #e67e22; font-weight: bold;">—</span></p>
                                 <p><strong style="color: #2e7d32; font-size: 14px;">Valor Líquido:</strong> <span id="res-valor-liquido" style="color: #2e7d32; font-size: 14px; font-weight: bold;">—</span></p>
+                                <p style="font-size: 11px; color: #888;" id="res-liquido-note">Valor líquido = Serviços - Impostos. Retenções NÃO reduzem este valor.</p>
                             </div>
                         </div>
                         <div class="span6">

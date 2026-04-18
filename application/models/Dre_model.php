@@ -399,6 +399,110 @@ class Dre_model extends CI_Model
     }
 
     /**
+     * Integra uma NFS-e ao DRE após emissão
+     * Lança DAS (Simples Nacional) ou impostos individuais (Lucro Presumido)
+     * Lança retenções do tomador como deduções
+     */
+    public function integrarNFSe($nfse_id, $nfse_data)
+    {
+        if (!$this->db->table_exists('dre_lancamentos') || !$this->db->table_exists('dre_contas')) {
+            return false;
+        }
+
+        $regime = $nfse_data['regime_tributario'] ?? 'simples_nacional';
+        $valor_servicos = floatval($nfse_data['valor_servicos'] ?? 0);
+        $os_id = $nfse_data['os_id'] ?? null;
+        $data_lanc = $nfse_data['data_emissao'] ?? date('Y-m-d');
+        $inseridos = 0;
+
+        // 1. Impostos - DAS (Simples Nacional) ou individuais (Lucro Presumido)
+        $conta_imposto = $this->db->where('grupo', 'IMPOSTO_RENDA')->where('ativo', 1)
+            ->order_by('ordem', 'ASC')->limit(1)->get('dre_contas')->row();
+
+        if ($conta_imposto) {
+            if ($regime === 'simples_nacional') {
+                // DAS - valor único que engloba todos os impostos
+                $valor_das = floatval($nfse_data['valor_das'] ?? $nfse_data['valor_total_impostos'] ?? 0);
+                if ($valor_das > 0) {
+                    $this->adicionarLancamento([
+                        'conta_id' => $conta_imposto->id,
+                        'data' => $data_lanc,
+                        'valor' => $valor_das,
+                        'tipo_movimento' => 'DEBITO',
+                        'descricao' => 'DAS - Simples Nacional (NFSe #' . $nfse_id . ')',
+                        'documento' => 'NFSe #' . $nfse_id,
+                        'os_id' => $os_id,
+                    ]);
+                    $inseridos++;
+                }
+            } else {
+                // Lucro Presumido - impostos individuais já calculados
+                $total_impostos = floatval($nfse_data['valor_total_impostos'] ?? 0);
+                if ($total_impostos > 0) {
+                    $this->adicionarLancamento([
+                        'conta_id' => $conta_imposto->id,
+                        'data' => $data_lanc,
+                        'valor' => $total_impostos,
+                        'tipo_movimento' => 'DEBITO',
+                        'descricao' => 'Impostos Lucro Presumido (NFSe #' . $nfse_id . ')',
+                        'documento' => 'NFSe #' . $nfse_id,
+                        'os_id' => $os_id,
+                    ]);
+                    $inseridos++;
+                }
+            }
+        }
+
+        // 2. Retenções do tomador - deduções na receita
+        $valor_total_retencao = floatval($nfse_data['valor_total_retencao'] ?? 0);
+        if ($valor_total_retencao > 0) {
+            // ISS retido -> Deduções da Receita
+            $valor_ret_iss = floatval($nfse_data['valor_retencao_iss'] ?? 0);
+            if ($valor_ret_iss > 0) {
+                $conta_iss_ret = $this->db->where('codigo', '2.1')->where('ativo', 1)->get('dre_contas')->row();
+                if (!$conta_iss_ret) {
+                    $conta_iss_ret = $this->db->where('grupo', 'DEDUCOES')->where('ativo', 1)
+                        ->order_by('ordem', 'ASC')->limit(1)->get('dre_contas')->row();
+                }
+                if ($conta_iss_ret) {
+                    $this->adicionarLancamento([
+                        'conta_id' => $conta_iss_ret->id,
+                        'data' => $data_lanc,
+                        'valor' => $valor_ret_iss,
+                        'tipo_movimento' => 'DEBITO',
+                        'descricao' => 'ISS retido na fonte (NFSe #' . $nfse_id . ')',
+                        'documento' => 'NFSe #' . $nfse_id,
+                        'os_id' => $os_id,
+                    ]);
+                    $inseridos++;
+                }
+            }
+
+            // IRRF, PIS/COFINS, CSLL retidos -> Imposto de Renda
+            $valor_ret_irrf = floatval($nfse_data['valor_retencao_irrf'] ?? 0);
+            $valor_ret_pis = floatval($nfse_data['valor_retencao_pis'] ?? 0);
+            $valor_ret_cofins = floatval($nfse_data['valor_retencao_cofins'] ?? 0);
+            $valor_ret_csll = floatval($nfse_data['valor_retencao_csll'] ?? 0);
+
+            $retencoes_federais = $valor_ret_irrf + $valor_ret_pis + $valor_ret_cofins + $valor_ret_csll;
+            if ($retencoes_federais > 0 && $conta_imposto) {
+                $this->adicionarLancamento([
+                    'conta_id' => $conta_imposto->id,
+                    'data' => $data_lanc,
+                    'valor' => $retencoes_federais,
+                    'tipo_movimento' => 'DEBITO',
+                    'descricao' => 'Retenções federais (IRRF/PIS/COFINS/CSLL) - NFSe #' . $nfse_id,
+                    'documento' => 'NFSe #' . $nfse_id,
+                    'os_id' => $os_id,
+                ]);
+                $inseridos++;
+            }
+        }
+
+        return $inseridos > 0;
+    }
+
+    /**
      * Obtém resumo de OS no período para o dashboard
      */
     public function getResumoOS($data_inicio, $data_fim)

@@ -59,7 +59,9 @@
       "WebFetch(domain:www.receitaws.com.br)",
       "WebFetch(domain:receitaws.com.br)",
       "WebFetch(domain:github.com)",
-      "WebFetch(domain:www.sintegraws.com.br)"
+      "WebFetch(domain:www.sintegraws.com.br)",
+      "WebFetch(domain:www.gov.br)",
+      "WebFetch(domain:adn.producaorestrita.nfse.gov.br)"
     ]
   }
 }

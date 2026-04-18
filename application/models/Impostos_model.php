@@ -881,11 +881,74 @@ class Impostos_model extends CI_Model
     public function getConfiguracaoTributacao()
     {
         return [
+            'regime' => $this->getConfig('IMPOSTO_REGIME_TRIBUTARIO') ?: 'simples_nacional',
+            'anexo' => $this->getConfig('IMPOSTO_ANEXO_PADRAO') ?: 'III',
+            'faixa' => $this->getConfig('IMPOSTO_FAIXA_ATUAL') ?: '1',
             'codigo_tributacao_nacional' => $this->getConfig('IMPOSTO_CODIGO_TRIBUTACAO_NACIONAL') ?: '010701',
             'codigo_tributacao_municipal' => $this->getConfig('IMPOSTO_CODIGO_TRIBUTACAO_MUNICIPAL') ?: '100',
             'descricao_servico' => $this->getConfig('IMPOSTO_DESCRICAO_SERVICO') ?: 'Suporte técnico em informática, inclusive instalação, configuração e manutenção de programas de computação e bancos de dados.',
             'aliquota_iss' => $this->getConfig('IMPOSTO_ISS_MUNICIPAL') ?: '5.00',
         ];
+    }
+
+    /**
+     * Retorna o regime tributário ativo
+     */
+    public function getRegimeTributario()
+    {
+        return $this->getConfig('IMPOSTO_REGIME_TRIBUTARIO') ?: 'simples_nacional';
+    }
+
+    /**
+     * Calcula alíquotas de retenção para Lucro Presumido
+     * Usado quando o tomador retém impostos na fonte
+     */
+    public function calcularRetencoes($valor_bruto, $retencoes = [])
+    {
+        $result = [
+            'valor_retencao_iss' => 0,
+            'valor_retencao_irrf' => 0,
+            'valor_retencao_pis' => 0,
+            'valor_retencao_cofins' => 0,
+            'valor_retencao_csll' => 0,
+            'valor_total_retencao' => 0,
+        ];
+
+        // Alíquotas padrão de retenção na fonte (Lucro Presumido)
+        $aliquotas = [
+            'iss' => floatval($this->getConfig('IMPOSTO_ISS_MUNICIPAL') ?: 5.00),
+            'irrf' => 1.5,
+            'pis' => 0.65,
+            'cofins' => 3.0,
+            'csll' => 1.0,
+        ];
+
+        if (!empty($retencoes['iss'])) {
+            $result['valor_retencao_iss'] = round($valor_bruto * ($aliquotas['iss'] / 100), 2);
+        }
+        if (!empty($retencoes['irrf'])) {
+            $result['valor_retencao_irrf'] = round($valor_bruto * ($aliquotas['irrf'] / 100), 2);
+        }
+        if (!empty($retencoes['pis'])) {
+            $result['valor_retencao_pis'] = round($valor_bruto * ($aliquotas['pis'] / 100), 2);
+        }
+        if (!empty($retencoes['cofins'])) {
+            $result['valor_retencao_cofins'] = round($valor_bruto * ($aliquotas['cofins'] / 100), 2);
+        }
+        if (!empty($retencoes['csll'])) {
+            $result['valor_retencao_csll'] = round($valor_bruto * ($aliquotas['csll'] / 100), 2);
+        }
+
+        $result['valor_total_retencao'] = round(
+            $result['valor_retencao_iss'] +
+            $result['valor_retencao_irrf'] +
+            $result['valor_retencao_pis'] +
+            $result['valor_retencao_cofins'] +
+            $result['valor_retencao_csll'],
+            2
+        );
+
+        return $result;
     }
 
     /**

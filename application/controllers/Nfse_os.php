@@ -78,7 +78,22 @@ class Nfse_os extends MY_Controller
         // Dados do POST
         $dados = [
             'valor_servicos' => $this->input->post('valor_servicos') ?? $os->valorTotal,
-            'valor_deducoes' => $this->input->post('valor_deducoes') ?? 0
+            'valor_deducoes' => $this->input->post('valor_deducoes') ?? 0,
+            'descricao_servico' => $this->input->post('descricao_servico') ?? '',
+            'regime_tributario' => $this->input->post('regime_tributario') ?? 'simples_nacional',
+            'valor_das' => $this->input->post('valor_das') ?? null,
+            'retem_iss' => $this->input->post('retem_iss') ? 1 : 0,
+            'retem_irrf' => $this->input->post('retem_irrf') ? 1 : 0,
+            'retem_pis' => $this->input->post('retem_pis') ? 1 : 0,
+            'retem_cofins' => $this->input->post('retem_cofins') ? 1 : 0,
+            'retem_csll' => $this->input->post('retem_csll') ? 1 : 0,
+            'valor_retencao_iss' => $this->input->post('valor_retencao_iss') ?? 0,
+            'valor_retencao_irrf' => $this->input->post('valor_retencao_irrf') ?? 0,
+            'valor_retencao_pis' => $this->input->post('valor_retencao_pis') ?? 0,
+            'valor_retencao_cofins' => $this->input->post('valor_retencao_cofins') ?? 0,
+            'valor_retencao_csll' => $this->input->post('valor_retencao_csll') ?? 0,
+            'valor_total_retencao' => $this->input->post('valor_total_retencao') ?? 0,
+            'competencia' => $this->input->post('competencia') ?: date('Y-m-01'),
         ];
 
         // Ambiente (homologação/produção) do certificado ativo
@@ -211,11 +226,37 @@ class Nfse_os extends MY_Controller
                 return;
             }
 
+            // Detectar regime tributário
+            $regime = $this->impostos_model->getConfiguracaoTributaria();
+            $regime_tributario = $regime['regime'] ?? 'simples_nacional';
+
+            // Calcular DAS se Simples Nacional
+            $valor_das = null;
+            if ($regime_tributario === 'simples_nacional') {
+                $valor_das = $calculo['valor_total_impostos'] ?? ($valor * 0.06);
+            }
+
+            // Calcular retenções se solicitado
+            $retencoes = [];
+            $retem = [
+                'iss' => $this->input->post('retem_iss') ? true : false,
+                'irrf' => $this->input->post('retem_irrf') ? true : false,
+                'pis' => $this->input->post('retem_pis') ? true : false,
+                'cofins' => $this->input->post('retem_cofins') ? true : false,
+                'csll' => $this->input->post('retem_csll') ? true : false,
+            ];
+            if (array_filter($retem)) {
+                $retencoes = $this->impostos_model->calcularRetencoes($valor, $retem);
+            }
+
             echo json_encode([
                 'success' => true,
                 'valor_bruto' => $valor,
                 'valor_liquido' => $valor - ($calculo['valor_total_impostos'] ?? 0),
-                'impostos' => $calculo
+                'impostos' => $calculo,
+                'regime_tributario' => $regime_tributario,
+                'valor_das' => $valor_das,
+                'retencoes' => $retencoes,
             ]);
         } catch (Exception $e) {
             log_message('error', 'NFSe calcular_impostos exception: ' . $e->getMessage());

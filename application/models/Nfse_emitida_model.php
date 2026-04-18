@@ -56,6 +56,8 @@ class Nfse_emitida_model extends CI_Model
             'valor_servicos' => $valor_servicos,
             'valor_deducoes' => $valor_deducoes,
             'valor_liquido' => $valor_liquido,
+            'regime_tributario' => $dados['regime_tributario'] ?? 'simples_nacional',
+            'valor_das' => $dados['valor_das'] ?? null,
             'aliquota_iss' => $calculo_impostos['aliquota_iss'],
             'valor_iss' => $calculo_impostos['iss'],
             'valor_inss' => $calculo_impostos['inss'] ?? 0,
@@ -64,6 +66,18 @@ class Nfse_emitida_model extends CI_Model
             'valor_pis' => $calculo_impostos['pis'] ?? 0,
             'valor_cofins' => $calculo_impostos['cofins'] ?? 0,
             'valor_total_impostos' => $calculo_impostos['valor_total_impostos'],
+            'retem_iss' => $dados['retem_iss'] ?? 0,
+            'retem_irrf' => $dados['retem_irrf'] ?? 0,
+            'retem_pis' => $dados['retem_pis'] ?? 0,
+            'retem_cofins' => $dados['retem_cofins'] ?? 0,
+            'retem_csll' => $dados['retem_csll'] ?? 0,
+            'valor_retencao_iss' => $dados['valor_retencao_iss'] ?? 0,
+            'valor_retencao_irrf' => $dados['valor_retencao_irrf'] ?? 0,
+            'valor_retencao_pis' => $dados['valor_retencao_pis'] ?? 0,
+            'valor_retencao_cofins' => $dados['valor_retencao_cofins'] ?? 0,
+            'valor_retencao_csll' => $dados['valor_retencao_csll'] ?? 0,
+            'valor_total_retencao' => $dados['valor_total_retencao'] ?? 0,
+            'competencia' => $dados['competencia'] ?? date('Y-m-01'),
             'situacao' => 'Pendente',
             'emitido_por' => $this->session->userdata('idUsuarios'),
             'created_at' => date('Y-m-d H:i:s')
@@ -86,6 +100,10 @@ class Nfse_emitida_model extends CI_Model
             ]);
 
             log_info('NFS-e criada para OS #' . $os_id . ' - ID: ' . $nfse_id);
+
+            // Integrar com DRE
+            $this->load->model('dre_model');
+            $this->dre_model->integrarNFSe($nfse_id, $nfse_data);
 
             return [
                 'success' => true,
