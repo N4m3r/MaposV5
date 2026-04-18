@@ -14,6 +14,8 @@
     <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/matrix-login.css" />
     <link rel="stylesheet" href="<?php echo base_url(); ?>assets/font-awesome/css/font-awesome.css" />
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <script src="<?php echo base_url() ?>assets/js/jquery-1.12.4.min.js"></script>
+    <script src="<?php echo base_url() ?>assets/js/sweetalert2.all.min.js"></script>
     <style>
         body {
             background: #2d335b;
@@ -152,7 +154,8 @@
             </div>
         <?php endif; ?>
 
-        <form action="<?php echo site_url('mine/login_usuario'); ?>" method="post">
+        <form id="formLogin" action="<?php echo site_url('mine/login_usuario'); ?>" method="post">
+            <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>">
             <div class="form-group">
                 <label for="email"><i class="bx bx-envelope"></i> E-mail</label>
                 <input type="email" name="email" id="email" placeholder="seu@email.com" required autofocus>
@@ -163,25 +166,71 @@
                 <input type="password" name="senha" id="senha" placeholder="••••••" required>
             </div>
 
-            <button type="submit" class="btn-login">
+            <button type="submit" class="btn-login" id="btnLogin">
                 <i class="bx bx-log-in"></i> Entrar
             </button>
         </form>
 
         <div class="login-footer">
             <p><a href="<?php echo site_url('mine/recuperar_senha'); ?>">Esqueceu a senha?</a></p>
+            <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;">
+                <p style="font-size: 12px; color: #666; margin-bottom: 5px;">Não tem uma conta de usuário?</p>
+                <a href="<?php echo site_url('mine/cadastrar'); ?>" class="btn btn-success" style="width: 100%; margin-top: 5px;">
+                    <i class="bx bx-user-plus"></i> Cadastrar-se como Cliente
+                </a>
+            </div>
             <p style="margin-top: 15px; font-size: 12px; color: #999;">
-                <a href="<?php echo site_url('mine'); ?>">← Acesso por Token</a>
+                <a href="<?php echo site_url('mine/login_token'); ?>">← Login com Token (acesso antigo)</a>
             </p>
         </div>
     </div>
 
-    <script src="<?php echo base_url(); ?>assets/js/jquery.min.js"></script>
     <script>
         // Auto-hide alerts after 5 seconds
         setTimeout(function() {
             $('.alert').fadeOut();
         }, 5000);
+
+        // AJAX Login com tratamento de CSRF
+        $('#formLogin').on('submit', function(e) {
+            e.preventDefault();
+            var $btn = $('#btnLogin');
+            $btn.prop('disabled', true).html('<i class="bx bx-loader bx-spin"></i> Entrando...');
+
+            $.ajax({
+                type: 'POST',
+                url: $(this).attr('action'),
+                data: $(this).serialize(),
+                dataType: 'json',
+                success: function(data) {
+                    if (data.result === true) {
+                        window.location.href = data.redirect || '<?php echo site_url("mine/painel"); ?>';
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Erro no login',
+                            text: data.message || 'E-mail ou senha incorretos.',
+                            confirmButtonColor: '#2d335b'
+                        });
+                        // Atualiza token CSRF
+                        if (data.MAPOS_TOKEN) {
+                            $('input[name=<?php echo $this->security->get_csrf_token_name(); ?>]').val(data.MAPOS_TOKEN);
+                        }
+                    }
+                },
+                error: function() {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro',
+                        text: 'Erro ao processar login. Tente novamente.',
+                        confirmButtonColor: '#2d335b'
+                    });
+                },
+                complete: function() {
+                    $btn.prop('disabled', false).html('<i class="bx bx-log-in"></i> Entrar');
+                }
+            });
+        });
     </script>
 </body>
 </html>

@@ -1,4 +1,7 @@
 <?php
+if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
 
 /**
  * Model de Gestão de Obras
@@ -16,7 +19,11 @@ class Obras_model extends CI_Model
      */
     private function tabelaExiste($tabela)
     {
-        return $this->db->table_exists($tabela);
+        try {
+            return $this->db->table_exists($tabela);
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
     /**
@@ -28,23 +35,27 @@ class Obras_model extends CI_Model
             return [];
         }
 
-        if (!empty($where)) {
-            $this->db->where($where);
-        }
+        try {
+            if (!empty($where)) {
+                $this->db->where($where);
+            }
 
-        $this->db->order_by('data_criacao', 'DESC');
+            $this->db->order_by('created_at', 'DESC');
 
-        if ($limit) {
-            $this->db->limit($limit);
-        }
+            if ($limit) {
+                $this->db->limit($limit);
+            }
 
-        $query = $this->db->get('obras');
+            $query = $this->db->get('obras');
 
-        if ($query === false) {
+            if ($query === false || !is_object($query)) {
+                return [];
+            }
+
+            return $query->result();
+        } catch (Exception $e) {
             return [];
         }
-
-        return $query->result();
     }
 
     /**
@@ -56,8 +67,18 @@ class Obras_model extends CI_Model
             return null;
         }
 
-        $this->db->where('id', $id);
-        return $this->db->get('obras')->row();
+        try {
+            $this->db->where('id', $id);
+            $query = $this->db->get('obras');
+
+            if ($query === false || !is_object($query)) {
+                return null;
+            }
+
+            return $query->row();
+        } catch (Exception $e) {
+            return null;
+        }
     }
 
     /**
@@ -69,21 +90,32 @@ class Obras_model extends CI_Model
             return false;
         }
 
-        $data = [
-            'cliente_id' => $dados['cliente_id'],
-            'nome' => $dados['nome'],
-            'descricao' => $dados['descricao'] ?? null,
-            'endereco' => $dados['endereco'] ?? null,
-            'responsavel_id' => $dados['responsavel_id'] ?? null,
-            'data_inicio' => $dados['data_inicio'],
-            'data_previsao_fim' => $dados['data_previsao_fim'] ?? null,
-            'status' => $dados['status'] ?? 'planejamento',
-            'etapa_atual' => 1,
-            'data_criacao' => date('Y-m-d H:i:s'),
-        ];
+        try {
+            // Se não tiver código, gerar um
+            if (empty($dados['codigo'])) {
+                $dados['codigo'] = 'OB-' . date('Y') . '-' . str_pad(mt_rand(1, 999), 3, '0', STR_PAD_LEFT);
+            }
 
-        $this->db->insert('obras', $data);
-        return $this->db->insert_id();
+            $data = [
+                'codigo' => $dados['codigo'],
+                'nome' => $dados['nome'],
+                'cliente_id' => $dados['cliente_id'],
+                'tipo_obra' => $dados['tipo_obra'] ?? 'Outro',
+                'endereco' => $dados['endereco'] ?? null,
+                'data_inicio_contrato' => $dados['data_inicio'] ?? date('Y-m-d'),
+                'data_fim_prevista' => $dados['data_previsao_fim'] ?? null,
+                'observacoes' => $dados['descricao'] ?? null,
+                'status' => $dados['status'] ?? 'Prospeccao',
+                'percentual_concluido' => 0,
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s'),
+            ];
+
+            $this->db->insert('obras', $data);
+            return $this->db->insert_id();
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
     /**
@@ -95,8 +127,12 @@ class Obras_model extends CI_Model
             return false;
         }
 
-        $this->db->where('id', $id);
-        return $this->db->update('obras', $dados);
+        try {
+            $this->db->where('id', $id);
+            return $this->db->update('obras', $dados);
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
     /**
@@ -108,22 +144,26 @@ class Obras_model extends CI_Model
             return 0;
         }
 
-        // Calcular progresso baseado nas etapas
-        $this->db->where('obra_id', $obra_id);
-        $total_etapas = $this->db->count_all_results('obra_etapas');
+        try {
+            // Calcular progresso baseado nas etapas
+            $this->db->where('obra_id', $obra_id);
+            $total_etapas = $this->db->count_all_results('obra_etapas');
 
-        $this->db->where('obra_id', $obra_id);
-        $this->db->where('status', 'concluida');
-        $etapas_concluidas = $this->db->count_all_results('obra_etapas');
+            $this->db->where('obra_id', $obra_id);
+            $this->db->where('status', 'concluida');
+            $etapas_concluidas = $this->db->count_all_results('obra_etapas');
 
-        $progresso = $total_etapas > 0 ? round(($etapas_concluidas / $total_etapas) * 100) : 0;
+            $progresso = $total_etapas > 0 ? round(($etapas_concluidas / $total_etapas) * 100) : 0;
 
-        if ($this->tabelaExiste('obras')) {
-            $this->db->where('id', $obra_id);
-            $this->db->update('obras', ['percentual_concluido' => $progresso]);
+            if ($this->tabelaExiste('obras')) {
+                $this->db->where('id', $obra_id);
+                $this->db->update('obras', ['percentual_concluido' => $progresso]);
+            }
+
+            return $progresso;
+        } catch (Exception $e) {
+            return 0;
         }
-
-        return $progresso;
     }
 
     /**
@@ -135,9 +175,19 @@ class Obras_model extends CI_Model
             return [];
         }
 
-        $this->db->where('obra_id', $obra_id);
-        $this->db->order_by('ordem', 'ASC');
-        return $this->db->get('obra_etapas')->result();
+        try {
+            $this->db->where('obra_id', $obra_id);
+            $this->db->order_by('numero_etapa', 'ASC');
+            $query = $this->db->get('obra_etapas');
+
+            if ($query === false || !is_object($query)) {
+                return [];
+            }
+
+            return $query->result();
+        } catch (Exception $e) {
+            return [];
+        }
     }
 
     /**
@@ -149,23 +199,29 @@ class Obras_model extends CI_Model
             return false;
         }
 
-        $data = [
-            'obra_id' => $obra_id,
-            'nome' => $dados['nome'],
-            'descricao' => $dados['descricao'] ?? null,
-            'ordem' => $dados['ordem'],
-            'data_previsao' => $dados['data_previsao'] ?? null,
-            'status' => 'pendente',
-            'data_criacao' => date('Y-m-d H:i:s'),
-        ];
+        try {
+            $data = [
+                'obra_id' => $obra_id,
+                'numero_etapa' => $dados['numero_etapa'] ?? 1,
+                'nome' => $dados['nome'],
+                'descricao' => $dados['descricao'] ?? null,
+                'especialidade' => $dados['especialidade'] ?? null,
+                'data_inicio_prevista' => $dados['data_inicio_prevista'] ?? null,
+                'data_fim_prevista' => $dados['data_fim_prevista'] ?? null,
+                'status' => 'pendente',
+                'created_at' => date('Y-m-d H:i:s'),
+            ];
 
-        $this->db->insert('obra_etapas', $data);
-        $etapa_id = $this->db->insert_id();
+            $this->db->insert('obra_etapas', $data);
+            $etapa_id = $this->db->insert_id();
 
-        // Atualizar total de etapas
-        $this->atualizarTotalEtapas($obra_id);
+            // Atualizar total de etapas
+            $this->atualizarTotalEtapas($obra_id);
 
-        return $etapa_id;
+            return $etapa_id;
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
     /**
@@ -177,11 +233,18 @@ class Obras_model extends CI_Model
             return;
         }
 
-        $this->db->where('obra_id', $obra_id);
-        $total = $this->db->count_all_results('obra_etapas');
+        try {
+            $this->db->where('obra_id', $obra_id);
+            $total = $this->db->count_all_results('obra_etapas');
 
-        $this->db->where('id', $obra_id);
-        $this->db->update('obras', ['total_etapas' => $total]);
+            $this->db->where('id', $obra_id);
+            $this->db->update('obras', [
+                'total_etapas' => $total,
+                'updated_at' => date('Y-m-d H:i:s')
+            ]);
+        } catch (Exception $e) {
+            // Silenciar erro
+        }
     }
 
     /**
@@ -193,15 +256,25 @@ class Obras_model extends CI_Model
             return [];
         }
 
-        $this->db->where('obra_id', $obra_id);
+        try {
+            $this->db->where('obra_id', $obra_id);
 
-        if ($data) {
-            $this->db->where('data', $data);
+            if ($data) {
+                $this->db->where('data', $data);
+            }
+
+            $this->db->order_by('data', 'DESC');
+            $this->db->order_by('hora_inicio', 'DESC');
+            $query = $this->db->get('obra_diario');
+
+            if ($query === false || !is_object($query)) {
+                return [];
+            }
+
+            return $query->result();
+        } catch (Exception $e) {
+            return [];
         }
-
-        $this->db->order_by('data', 'DESC');
-        $this->db->order_by('hora_inicio', 'DESC');
-        return $this->db->get('obra_diario')->result();
     }
 
     /**
@@ -213,21 +286,26 @@ class Obras_model extends CI_Model
             return false;
         }
 
-        $data = [
-            'obra_id' => $obra_id,
-            'tecnico_id' => $dados['tecnico_id'],
-            'data' => $dados['data'],
-            'hora_inicio' => $dados['hora_inicio'],
-            'hora_fim' => $dados['hora_fim'] ?? null,
-            'atividade_realizada' => $dados['atividade_realizada'],
-            'fotos_json' => isset($dados['fotos']) ? json_encode($dados['fotos']) : null,
-            'observacoes' => $dados['observacoes'] ?? null,
-            'etapa_id' => $dados['etapa_id'] ?? null,
-            'clima' => $dados['clima'] ?? null,
-        ];
+        try {
+            $data = [
+                'obra_id' => $obra_id,
+                'tecnico_id' => $dados['tecnico_id'],
+                'data' => $dados['data'],
+                'hora_inicio' => $dados['hora_inicio'],
+                'hora_fim' => $dados['hora_fim'] ?? null,
+                'atividade_realizada' => $dados['atividade_realizada'],
+                'fotos_json' => isset($dados['fotos']) ? json_encode($dados['fotos']) : null,
+                'observacoes' => $dados['observacoes'] ?? null,
+                'etapa_id' => $dados['etapa_id'] ?? null,
+                'clima' => $dados['clima'] ?? null,
+                'created_at' => date('Y-m-d H:i:s'),
+            ];
 
-        $this->db->insert('obra_diario', $data);
-        return $this->db->insert_id();
+            $this->db->insert('obra_diario', $data);
+            return $this->db->insert_id();
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
     /**
@@ -239,11 +317,22 @@ class Obras_model extends CI_Model
             return [];
         }
 
-        $this->db->select('oe.*, u.nome as tecnico_nome, u.nivel_tecnico');
-        $this->db->from('obra_equipe oe');
-        $this->db->join('usuarios u', 'u.idUsuarios = oe.tecnico_id');
-        $this->db->where('oe.obra_id', $obra_id);
-        return $this->db->get()->result();
+        try {
+            $this->db->select('oe.*, u.nome as tecnico_nome, u.nivel_tecnico');
+            $this->db->from('obra_equipe oe');
+            $this->db->join('usuarios u', 'u.idUsuarios = oe.tecnico_id', 'left');
+            $this->db->where('oe.obra_id', $obra_id);
+            $this->db->where('oe.ativo', 1);
+            $query = $this->db->get();
+
+            if ($query === false || !is_object($query)) {
+                return [];
+            }
+
+            return $query->result();
+        } catch (Exception $e) {
+            return [];
+        }
     }
 
     /**
@@ -255,15 +344,20 @@ class Obras_model extends CI_Model
             return false;
         }
 
-        $data = [
-            'obra_id' => $obra_id,
-            'tecnico_id' => $tecnico_id,
-            'funcao' => $funcao,
-            'data_entrada' => date('Y-m-d'),
-        ];
+        try {
+            $data = [
+                'obra_id' => $obra_id,
+                'tecnico_id' => $tecnico_id,
+                'funcao' => $funcao,
+                'data_entrada' => date('Y-m-d'),
+                'ativo' => 1,
+            ];
 
-        $this->db->insert('obra_equipe', $data);
-        return $this->db->insert_id();
+            $this->db->insert('obra_equipe', $data);
+            return $this->db->insert_id();
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
     /**
@@ -275,8 +369,12 @@ class Obras_model extends CI_Model
             return 0;
         }
 
-        $this->db->where('status', $status);
-        return $this->db->count_all_results('obras');
+        try {
+            $this->db->where('status', $status);
+            return $this->db->count_all_results('obras');
+        } catch (Exception $e) {
+            return 0;
+        }
     }
 
     /**
@@ -288,8 +386,18 @@ class Obras_model extends CI_Model
             return [];
         }
 
-        $this->db->where_in('status', ['planejamento', 'em_andamento', 'paralisada']);
-        return $this->db->get('obras')->result();
+        try {
+            $this->db->where_in('status', ['Contratada', 'EmExecucao', 'Paralisada']);
+            $query = $this->db->get('obras');
+
+            if ($query === false || !is_object($query)) {
+                return [];
+            }
+
+            return $query->result();
+        } catch (Exception $e) {
+            return [];
+        }
     }
 
     /**
@@ -297,14 +405,44 @@ class Obras_model extends CI_Model
      */
     public function getCliente($obra_id)
     {
-        if (!$this->tabelaExiste('obras')) {
+        if (!$this->tabelaExiste('obras') || !$this->tabelaExiste('clientes')) {
             return null;
         }
 
-        $this->db->select('c.*');
-        $this->db->from('obras o');
-        $this->db->join('clientes c', 'c.idClientes = o.cliente_id');
-        $this->db->where('o.id', $obra_id);
-        return $this->db->get()->row();
+        try {
+            $this->db->select('c.*');
+            $this->db->from('obras o');
+            $this->db->join('clientes c', 'c.idClientes = o.cliente_id', 'left');
+            $this->db->where('o.id', $obra_id);
+            $query = $this->db->get();
+
+            if ($query === false || !is_object($query)) {
+                return null;
+            }
+
+            return $query->row();
+        } catch (Exception $e) {
+            return null;
+        }
+    }
+
+    /**
+     * Excluir obra (soft delete)
+     */
+    public function delete($id)
+    {
+        if (!$this->tabelaExiste('obras')) {
+            return false;
+        }
+
+        try {
+            $this->db->where('id', $id);
+            return $this->db->update('obras', [
+                'ativo' => 0,
+                'updated_at' => date('Y-m-d H:i:s')
+            ]);
+        } catch (Exception $e) {
+            return false;
+        }
     }
 }

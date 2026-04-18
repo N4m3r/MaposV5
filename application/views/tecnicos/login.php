@@ -170,6 +170,7 @@
         <div class="error-message" id="errorMsg"></div>
 
         <form id="loginForm" action="<?php echo site_url('tecnicos/autenticar'); ?>" method="POST">
+            <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>" />
             <div class="form-group">
                 <label for="email">E-mail</label>
                 <input type="email" name="email" id="email" placeholder="seu@email.com" required>

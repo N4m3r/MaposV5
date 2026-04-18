@@ -15,7 +15,18 @@ class Mine extends CI_Controller
 
     public function index()
     {
-        $this->load->view('conecte/login');
+        // Se já está logado como usuário do portal, redireciona para painel
+        if ($this->session->userdata('usuario_cliente_id')) {
+            redirect('mine/painel');
+        }
+        // Se já está logado como cliente tradicional, redireciona para painel
+        if ($this->session->userdata('conectado')) {
+            redirect('mine/painel');
+        }
+        // Carrega a nova tela de login do portal do cliente
+        $this->load->model('mapos_model');
+        $data['emitente'] = $this->mapos_model->getEmitente();
+        $this->load->view('conecte/login_usuario', $data);
     }
 
     public function sair()
@@ -236,9 +247,29 @@ class Mine extends CI_Controller
             $email = $this->input->post('email');
             $senha = $this->input->post('senha');
 
+            // Validação básica
+            if (empty($email) || empty($senha)) {
+                if ($this->input->is_ajax_request()) {
+                    echo json_encode(['result' => false, 'message' => 'E-mail e senha são obrigatórios.', 'MAPOS_TOKEN' => $this->security->get_csrf_hash()]);
+                    return;
+                }
+                $this->session->set_flashdata('error', 'E-mail e senha são obrigatórios.');
+                redirect('mine');
+            }
+
             $usuario = $this->usuarios_cliente_model->login($email, $senha);
 
             if ($usuario) {
+                // Verifica se usuário está ativo
+                if (!$usuario->ativo) {
+                    if ($this->input->is_ajax_request()) {
+                        echo json_encode(['result' => false, 'message' => 'Usuário desativado. Contate o administrador.', 'MAPOS_TOKEN' => $this->security->get_csrf_hash()]);
+                        return;
+                    }
+                    $this->session->set_flashdata('error', 'Usuário desativado. Contate o administrador.');
+                    redirect('mine');
+                }
+
                 // Busca CNPJs do usuário
                 $cnpjs = $this->usuarios_cliente_model->getCnpjs($usuario->id);
                 $permissoes = $this->usuarios_cliente_model->getAllPermissoes($usuario->id);
@@ -262,10 +293,19 @@ class Mine extends CI_Controller
                 $this->session->set_userdata($session_data);
                 log_info('Usuário do cliente efetuou login: ' . $usuario->email);
 
+                // Resposta AJAX ou redirect
+                if ($this->input->is_ajax_request()) {
+                    echo json_encode(['result' => true, 'redirect' => site_url('mine/painel')]);
+                    return;
+                }
                 redirect('mine/painel');
             } else {
+                if ($this->input->is_ajax_request()) {
+                    echo json_encode(['result' => false, 'message' => 'E-mail ou senha incorretos.', 'MAPOS_TOKEN' => $this->security->get_csrf_hash()]);
+                    return;
+                }
                 $this->session->set_flashdata('error', 'E-mail ou senha incorretos.');
-                redirect('mine/login_usuario');
+                redirect('mine');
             }
         }
 
