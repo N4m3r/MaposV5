@@ -240,18 +240,40 @@ if (!function_exists('formatarDocumentoNFSe')) {
                     </table>
                     <?php endif; ?>
 
-                    <!-- Checkbox para incluir produtos na NFSe -->
                     <?php if ($totalProdutos > 0): ?>
-                    <div class="alert alert-warning" style="margin-top: 10px; margin-bottom: 10px;">
-                        <label class="checkbox" style="margin: 0;">
-                            <input type="checkbox" id="incluir-produtos-nfse" value="1" disabled>
-                            <strong>Incluir Produtos no Valor da NFS-e</strong>
-                        </label>
-                        <p style="margin-top: 5px; margin-bottom: 0; font-size: 12px; color: #666;">
-                            <i class="fas fa-info-circle"></i> Por padrão, a NFS-e contabiliza apenas os <strong>serviços</strong> (R$ <?= number_format($totalServico, 2, ',', '.') ?>).
-                            Ao incluir produtos, o valor total será <strong>R$ <?= number_format($valorTotalOS, 2, ',', '.') ?></strong> (serviços + produtos).
-                            <br><i class="fas fa-exclamation-triangle" style="color: #e67e22;"></i> Atente-se à legislação municipal — nem todos os municípios permitem incluir produtos na NFS-e de serviços.
-                        </p>
+                    <!-- Painel persistente: inclusão de produtos na NFS-e -->
+                    <div id="painel-incluir-produtos" style="margin-top: 12px; margin-bottom: 10px; border: 2px solid #f0ad4e; border-radius: 6px; background: #fdf8ed; padding: 12px 15px;">
+                        <div style="display: flex; align-items: flex-start; gap: 10px;">
+                            <div style="flex: 1;">
+                                <label style="margin: 0; font-size: 14px; cursor: pointer;" for="incluir-produtos-nfse">
+                                    <input type="checkbox" id="incluir-produtos-nfse" value="1" style="margin-right: 5px; transform: scale(1.2); vertical-align: middle;">
+                                    <strong>Incluir Produtos no Valor da NFS-e</strong>
+                                </label>
+                                <div id="nfse-valor-info" style="margin-top: 8px; padding: 8px 12px; background: #fff; border: 1px solid #e0e0e0; border-radius: 4px;">
+                                    <table style="width: 100%; font-size: 13px;">
+                                        <tr>
+                                            <td style="padding: 2px 0;"><i class="fas fa-wrench" style="color: #3498db; width: 16px;"></i> Total Serviços:</td>
+                                            <td style="text-align: right; font-weight: bold; color: #27ae60; padding: 2px 0;"><?= formatarMoedaNFSe($totalServico) ?></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding: 2px 0;"><i class="fas fa-box" style="color: #e67e22; width: 16px;"></i> Total Produtos:</td>
+                                            <td style="text-align: right; font-weight: bold; color: #e67e22; padding: 2px 0;"><?= formatarMoedaNFSe($totalProdutos) ?></td>
+                                        </tr>
+                                        <tr style="border-top: 1px solid #ddd;">
+                                            <td style="padding: 4px 0;"><strong><i class="fas fa-calculator" style="width: 16px;"></i> Valor da NFS-e:</strong></td>
+                                            <td style="text-align: right; font-weight: bold; font-size: 14px; padding: 4px 0;" id="nfse-valor-display">
+                                                <span id="nfse-valor-servicos" style="color: #27ae60;"><?= formatarMoedaNFSe($totalServico) ?></span>
+                                                <span id="nfse-valor-total" style="color: #e67e22; display: none;"><?= formatarMoedaNFSe($valorTotalOS) ?></span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <p style="margin: 6px 0 0 0; font-size: 11px; color: #888;">
+                                    <i class="fas fa-exclamation-triangle" style="color: #e67e22;"></i>
+                                    Atente-se à legislação municipal — nem todos os municípios permitem incluir produtos na NFS-e de serviços.
+                                </p>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Modal de Confirmação -->
@@ -262,11 +284,14 @@ if (!function_exists('formatarDocumentoNFSe')) {
                         </div>
                         <div class="modal-body">
                             <p>Você está prestes a incluir <strong>produtos</strong> no valor da NFS-e de serviços.</p>
-                            <p>Valor atual (apenas serviços): <strong>R$ <?= number_format($totalServico, 2, ',', '.') ?></strong></p>
-                            <p>Novo valor (serviços + produtos): <strong style="color: #e67e22;">R$ <?= number_format($valorTotalOS, 2, ',', '.') ?></strong></p>
+                            <table class="table table-bordered" style="margin-top: 10px;">
+                                <tr><td>Valor atual (apenas serviços):</td><td style="text-align: right; font-weight: bold; color: #27ae60;"><?= formatarMoedaNFSe($totalServico) ?></td></tr>
+                                <tr><td>Produtos a incluir:</td><td style="text-align: right; font-weight: bold; color: #e67e22;"><?= formatarMoedaNFSe($totalProdutos) ?></td></tr>
+                                <tr><td><strong>Novo valor total:</strong></td><td style="text-align: right; font-weight: bold; font-size: 16px; color: #e67e22;"><?= formatarMoedaNFSe($valorTotalOS) ?></td></tr>
+                            </table>
                             <br>
                             <p><strong>Digite "confirmar" para prosseguir:</strong></p>
-                            <input type="text" id="input-confirmar-produtos" class="span4" placeholder="confirmar" autocomplete="off" />
+                            <input type="text" id="input-confirmar-produtos" class="span4" placeholder="confirmar" autocomplete="off" style="font-size: 16px; height: 30px;" />
                             <span id="msg-erro-confirmar" style="color: #e74c3c; display: none; margin-left: 10px;"></span>
                         </div>
                         <div class="modal-footer">

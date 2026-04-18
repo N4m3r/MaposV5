@@ -429,10 +429,10 @@ $(document).ready(function() {
     $('#incluir-produtos-nfse').on('click', function(e) {
         var checkbox = $(this);
         // Se já está marcado, permite desmarcar normalmente
-        if (checkbox.prop('checked') && !checkbox.prop('disabled')) {
+        if (checkbox.prop('checked')) {
             return true;
         }
-        // Tentando marcar — requer confirmação
+        // Tentando marcar — requer confirmação via modal
         e.preventDefault();
         e.stopPropagation();
         $('#modal-confirmar-produtos').modal('show');
@@ -448,7 +448,7 @@ $(document).ready(function() {
             return;
         }
         // Confirmado — marcar checkbox e atualizar valor
-        $('#incluir-produtos-nfse').prop('checked', true).prop('disabled', false);
+        $('#incluir-produtos-nfse').prop('checked', true);
         wizardData.incluirProdutos = true;
         var novoValor = wizardData.valorTotalComProdutos;
         var desconto = parseFloat('<?= floatval($result->valor_desconto ?? 0) ?>') || 0;
@@ -457,6 +457,10 @@ $(document).ready(function() {
         wizardData.valorServicos = valorNFSe;
         wizardData.impostosResult = null;
         $('#valor-servicos-help').text('Valor total (serviços + produtos) para a NFS-e');
+        // Atualizar painel visual
+        $('#nfse-valor-servicos').hide();
+        $('#nfse-valor-total').show();
+        $('#painel-incluir-produtos').css('border-color', '#27ae60').css('background', '#eafaf1');
         $('#modal-confirmar-produtos').modal('hide');
     });
 
@@ -471,6 +475,18 @@ $(document).ready(function() {
             wizardData.valorServicos = valorNFSe;
             wizardData.impostosResult = null;
             $('#valor-servicos-help').text('Valor dos serviços prestados (produtos não inclusos)');
+            // Atualizar painel visual
+            $('#nfse-valor-servicos').show();
+            $('#nfse-valor-total').hide();
+            $('#painel-incluir-produtos').css('border-color', '#f0ad4e').css('background', '#fdf8ed');
+        }
+    });
+
+    // Fechar modal ao pressionar Enter no campo de confirmação
+    $('#input-confirmar-produtos').on('keypress', function(e) {
+        if (e.which === 13) {
+            e.preventDefault();
+            $('#btn-confirmar-produtos').click();
         }
     });
 });

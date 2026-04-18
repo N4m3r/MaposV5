@@ -219,7 +219,7 @@
                         <strong><?= str_replace('_', ' ', $c->tipo_consulta) ?></strong><br>
                         <small class="text-muted">
                             <?= date('d/m/Y H:i', strtotime($c->data_consulta)) ?>
-                            <?= $c->error ? ' • Erro: ' . substr($c->erro, 0, 50) : '' ?>
+                            <?= !empty($c->erro) ? ' • Erro: ' . substr($c->erro, 0, 50) : '' ?>
                         </small>
                     </div>
                 </div>
