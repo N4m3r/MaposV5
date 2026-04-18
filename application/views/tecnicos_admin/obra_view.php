@@ -455,8 +455,6 @@
                                 <select name="tecnico_id" class="span12" required>
                                     <option value="">-- Selecione o Técnico --</option>
                                     <?php
-                                    <!-- Buscar técnicos disponíveis -->
-                                    <?php
                                     $this->db->where('status', 1);
                                     $tecnicos = $this->db->get('usuarios')->result();
                                     foreach ($tecnicos as $t): ?>
