@@ -529,4 +529,43 @@ class Obras_model extends CI_Model
             return [];
         }
     }
+
+    /**
+     * Buscar OS vinculadas à obra
+     */
+    public function getOsVinculadas($obra_id)
+    {
+        $this->db->select('os.idOs, os.dataInicial, os.dataFinal, os.status, os.garantia, os.valorTotal, c.nomeCliente, u.nome as responsavel');
+        $this->db->from('os');
+        $this->db->join('clientes c', 'c.idClientes = os.clientes_id');
+        $this->db->join('usuarios u', 'u.idUsuarios = os.usuarios_id', 'left');
+        $this->db->where('os.obra_id', $obra_id);
+        $this->db->order_by('os.dataInicial', 'DESC');
+
+        $query = $this->db->get();
+        return $query ? $query->result() : [];
+    }
+
+    /**
+     * Buscar OS disponíveis para vincular (do mesmo cliente, não vinculadas)
+     */
+    public function getOsDisponiveis($cliente_id, $obra_id = null)
+    {
+        $this->db->select('os.idOs, os.dataInicial, os.dataFinal, os.status, c.nomeCliente');
+        $this->db->from('os');
+        $this->db->join('clientes c', 'c.idClientes = os.clientes_id');
+        $this->db->where('os.clientes_id', $cliente_id);
+        $this->db->where('(os.obra_id IS NULL OR os.obra_id = 0)');
+
+        // Se for atualizar uma obra específica, excluir as já vinculadas a ela
+        if ($obra_id) {
+            $this->db->where('os.obra_id !=', $obra_id);
+        }
+
+        $this->db->order_by('os.dataInicial', 'DESC');
+        $this->db->limit(50);
+
+        $query = $this->db->get();
+        return $query ? $query->result() : [];
+    }
 }
