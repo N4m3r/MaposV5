@@ -29,6 +29,19 @@ class Mine extends CI_Controller
         $this->load->view('conecte/login_usuario', $data);
     }
 
+    /**
+     * Login tradicional por email/senha do cliente (sistema antigo)
+     * Mantido para compatibilidade
+     */
+    public function login_token()
+    {
+        // Se já está logado, redireciona
+        if ($this->session->userdata('conectado')) {
+            redirect('mine/painel');
+        }
+        $this->load->view('conecte/login');
+    }
+
     public function sair()
     {
         $this->session->sess_destroy();
