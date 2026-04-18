@@ -78,11 +78,11 @@
                         <label class="control-label">Faixa Atual:*</label>
                         <div class="controls">
                             <select name="faixa_atual" class="span4" required>
-                                <option value="1" <?= $configs['faixa_atual'] == '1' ? 'selected' : '' ?>1ª Faixa (até R$ 180k)</option>
-                                <option value="2" <?= $configs['faixa_atual'] == '2' ? 'selected' : '' ?>2ª Faixa (até R$ 360k)</option>
-                                <option value="3" <?= $configs['faixa_atual'] == '3' ? 'selected' : '' ?>3ª Faixa (até R$ 720k)</option>
-                                <option value="4" <?= $configs['faixa_atual'] == '4' ? 'selected' : '' ?>4ª Faixa (até R$ 1,8M)</option>
-                                <option value="5" <?= $configs['faixa_atual'] == '5' ? 'selected' : '' ?>5ª Faixa (até R$ 4,8M)</option>
+                                <option value="1" <?= $configs['faixa_atual'] == '1' ? 'selected' : '' ?>>1ª Faixa (até R$ 180.000)</option>
+                                <option value="2" <?= $configs['faixa_atual'] == '2' ? 'selected' : '' ?>>2ª Faixa (até R$ 360.000)</option>
+                                <option value="3" <?= $configs['faixa_atual'] == '3' ? 'selected' : '' ?>>3ª Faixa (até R$ 720.000)</option>
+                                <option value="4" <?= $configs['faixa_atual'] == '4' ? 'selected' : '' ?>>4ª Faixa (até R$ 1.800.000)</option>
+                                <option value="5" <?= $configs['faixa_atual'] == '5' ? 'selected' : '' ?>>5ª Faixa (até R$ 4.800.000)</option>
                             </select>
                             <span class="help-inline">Faixa de faturamento atual</span>
                         </div>
@@ -92,7 +92,7 @@
                         <label class="control-label">ISS Municipal:*</label>
                         <div class="controls">
                             <div class="input-append">
-                                <input type="number" name="iss_municipal" class="span3" step="0.01" min="0" max="99" value="<?= $configs['iss_municipal'] ?>" required />
+                                <input type="number" name="iss_municipal" class="span3" step="0.01" min="0" max="99" value="<?= htmlspecialchars($configs['iss_municipal']) ?>" required />
                                 <span class="add-on">%</span>
                             </div>
                             <span class="help-inline">Alíquota de ISS da cidade</span>

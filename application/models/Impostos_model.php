@@ -27,6 +27,7 @@ class Impostos_model extends CI_Model
         'IMPOSTO_FAIXA_ATUAL' => '1',
         'IMPOSTO_ISS_MUNICIPAL' => '5.00',
         'IMPOSTO_DRE_INTEGRACAO' => '0',
+        'IMPOSTO_REGIME_TRIBUTARIO' => 'simples_nacional',
     ];
 
     /**
@@ -370,6 +371,14 @@ class Impostos_model extends CI_Model
      */
     public function calcularImpostos($valor_bruto, $anexo = null, $faixa = null)
     {
+        // Verificar regime tributário
+        $regime = $this->getConfig('IMPOSTO_REGIME_TRIBUTARIO') ?: 'simples_nacional';
+
+        if ($regime === 'lucro_presumido') {
+            return $this->calcularImpostosLucroPresumido($valor_bruto);
+        }
+
+        // Simples Nacional (padrão)
         $aliquota = $this->getAliquotaEfetiva($anexo, $faixa);
 
         if (!$aliquota) {
@@ -421,6 +430,56 @@ class Impostos_model extends CI_Model
         $calculos['inss'] = $calculos['cpp_valor'];
 
         return $calculos;
+    }
+
+    /**
+     * Calcula impostos para Lucro Presumido
+     * Alíquotas fixas de retenção na fonte para prestadores de serviço
+     */
+    public function calcularImpostosLucroPresumido($valor_bruto)
+    {
+        // Alíquotas de retenção na fonte para serviços (Lucro Presumido)
+        // IRPJ: 4,8% (sobre 32% da base = 1,536% efetivo, mas retenção direta é 1,5%)
+        // CSLL: 2,88% (sobre 32% da base), retenção 1%
+        // PIS: 0,65%
+        // COFINS: 3%
+        // ISS: variável por município (padrão 5%)
+        $aliquota_iss = floatval($this->getConfig('IMPOSTO_ISS_MUNICIPAL')) ?: 5.00;
+
+        $irpj_valor = round($valor_bruto * 1.5 / 100, 2);    // 1,5% sobre serviços
+        $csll_valor = round($valor_bruto * 1.0 / 100, 2);    // 1,0% sobre serviços
+        $cofins_valor = round($valor_bruto * 3.0 / 100, 2);   // 3,0%
+        $pis_valor = round($valor_bruto * 0.65 / 100, 2);     // 0,65%
+        $iss_valor = round($valor_bruto * $aliquota_iss / 100, 2);
+
+        $total_impostos = $irpj_valor + $csll_valor + $cofins_valor + $pis_valor + $iss_valor;
+
+        return [
+            'regime' => 'lucro_presumido',
+            'aliquota_nominal' => round(($total_impostos / max($valor_bruto, 0.01)) * 100, 2),
+            'aliquota_irpj' => 1.5,
+            'aliquota_csll' => 1.0,
+            'aliquota_cofins' => 3.0,
+            'aliquota_pis' => 0.65,
+            'aliquota_cpp' => 0,
+            'aliquota_iss' => $aliquota_iss,
+            'irpj_valor' => $irpj_valor,
+            'irpj' => $irpj_valor,
+            'irrf' => $irpj_valor,
+            'csll_valor' => $csll_valor,
+            'csll' => $csll_valor,
+            'cofins_valor' => $cofins_valor,
+            'cofins' => $cofins_valor,
+            'pis_valor' => $pis_valor,
+            'pis' => $pis_valor,
+            'iss_valor' => $iss_valor,
+            'iss' => $iss_valor,
+            'cpp_valor' => 0,
+            'inss' => 0,
+            'total_impostos' => $total_impostos,
+            'valor_total_impostos' => $total_impostos,
+            'valor_liquido' => $valor_bruto - $total_impostos,
+        ];
     }
 
     /**

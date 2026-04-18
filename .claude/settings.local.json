@@ -55,7 +55,11 @@
       "Bash(/c/xampp/php/php.exe -l application/views/nfse_os/aba_os.php)",
       "Bash(/c/xampp/php/php.exe -l application/views/nfse_os/nfse_content.php)",
       "Bash(/c/xampp/php/php.exe -l application/views/nfse_os/nfse_scripts.php)",
-      "Bash(/c/xampp/php/php.exe -l application/config/routes.php)"
+      "Bash(/c/xampp/php/php.exe -l application/config/routes.php)",
+      "WebFetch(domain:www.receitaws.com.br)",
+      "WebFetch(domain:receitaws.com.br)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:www.sintegraws.com.br)"
     ]
   }
 }

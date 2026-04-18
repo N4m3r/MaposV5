@@ -1869,7 +1869,8 @@ INSERT IGNORE INTO `config_sistema_impostos` (`chave`, `valor`, `descricao`) VAL
 ('IMPOSTO_ISS_MUNICIPAL', '5.00', 'Aliquota de ISS municipal (%)'),
 ('IMPOSTO_CODIGO_TRIBUTACAO_NACIONAL', '010701', 'Codigo de Tributacao Nacional (LC 116/2003)'),
 ('IMPOSTO_CODIGO_TRIBUTACAO_MUNICIPAL', '100', 'Codigo de Tributacao Municipal'),
-('IMPOSTO_DESCRICAO_SERVICO', 'Suporte tecnico em informatica, inclusive instalacao, configuracao e manutencao de programas de computacao e bancos de dados.', 'Descricao do servico para NFS-e');
+('IMPOSTO_DESCRICAO_SERVICO', 'Suporte tecnico em informatica, inclusive instalacao, configuracao e manutencao de programas de computacao e bancos de dados.', 'Descricao do servico para NFS-e'),
+('IMPOSTO_REGIME_TRIBUTARIO', 'simples_nacional', 'Regime tributario: simples_nacional ou lucro_presumido');
 
 -- -----------------------------------------------------
 -- Table `certificado_digital`

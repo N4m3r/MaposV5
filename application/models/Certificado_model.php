@@ -149,7 +149,7 @@ class Certificado_model extends CI_Model
 
     /**
      * Consulta CNPJ na Receita Federal
-     * Usando API gratuita ou scraping com certificado
+     * Extrai dados cadastrais e regime tributário
      */
     public function consultarCNPJ($cnpj)
     {
@@ -158,9 +158,8 @@ class Certificado_model extends CI_Model
             return ['error' => 'Nenhum certificado configurado'];
         }
 
-        // Usar API gratuita de consulta CNPJ (sem necessidade de certificado)
-        // Em produção, implementar consulta real via webservice da Receita
-        $url = "https://www.receitaws.com.br/v1/cnpj/" . preg_replace('/[^0-9]/', '', $cnpj);
+        $cnpj = preg_replace('/[^0-9]/', '', $cnpj);
+        $url = "https://www.receitaws.com.br/v1/cnpj/" . $cnpj;
 
         try {
             $ch = curl_init();
@@ -168,14 +167,26 @@ class Certificado_model extends CI_Model
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
             curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Em produção, verificar!
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 
             $response = curl_exec($ch);
             $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             curl_close($ch);
 
-            if ($httpCode == 200) {
+            if ($httpCode == 200 && !empty($response)) {
                 $dados = json_decode($response, true);
+
+                if (!$dados || (isset($dados['status']) && $dados['status'] == 'error')) {
+                    return ['error' => $dados['message'] ?? 'CNPJ não encontrado'];
+                }
+
+                // Atualizar dados do certificado com os dados do CNPJ
+                $updateData = ['updated_at' => date('Y-m-d H:i:s')];
+                if (!empty($dados['nome'])) $updateData['razao_social'] = $dados['nome'];
+                if (!empty($dados['fantasia'])) $updateData['nome_fantasia'] = $dados['fantasia'];
+
+                $this->db->where('id', $certificado->id);
+                $this->db->update('certificado_digital', $updateData);
 
                 // Registrar consulta
                 $this->registrarConsulta($certificado->id, 'CNPJ', true, $dados);
@@ -186,7 +197,11 @@ class Certificado_model extends CI_Model
                 ];
             }
 
-            return ['error' => 'CNPJ não encontrado ou serviço indisponível'];
+            if ($httpCode == 429) {
+                return ['error' => 'Limite de requisições atingido. Aguarde 1 minuto e tente novamente.'];
+            }
+
+            return ['error' => 'CNPJ não encontrado ou serviço indisponível (HTTP ' . $httpCode . ')'];
 
         } catch (Exception $e) {
             $this->registrarConsulta($certificado->id, 'CNPJ', false, null, $e->getMessage());
@@ -196,6 +211,7 @@ class Certificado_model extends CI_Model
 
     /**
      * Consulta Simples Nacional via API Receita
+     * Verifica regime tributário e extrai dados do certificado
      */
     public function consultarSimplesNacional($cnpj)
     {
@@ -204,7 +220,7 @@ class Certificado_model extends CI_Model
             return ['error' => 'Nenhum certificado configurado'];
         }
 
-        // API da Receita para consulta Simples
+        // API da Receita para consulta CNPJ (inclui dados do Simples)
         $url = "https://www.receitaws.com.br/v1/cnpj/" . preg_replace('/[^0-9]/', '', $cnpj);
 
         try {
@@ -215,22 +231,73 @@ class Certificado_model extends CI_Model
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 
             $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $curlError = curl_error($ch);
             curl_close($ch);
+
+            if ($httpCode != 200 || empty($response)) {
+                $errorMsg = $httpCode == 429 ? 'Limite de requisições atingido. Aguarde 1 minuto e tente novamente.' : 'Não foi possível consultar o CNPJ (HTTP ' . $httpCode . ')';
+                $this->registrarConsulta($certificado->id, 'SIMPLES_NACIONAL', false, null, $errorMsg);
+                return ['error' => $errorMsg];
+            }
 
             $dados = json_decode($response, true);
 
-            // Extrair dados do Simples
+            if (!$dados || isset($dados['status']) && $dados['status'] == 'error') {
+                $errorMsg = $dados['message'] ?? 'CNPJ não encontrado na Receita Federal';
+                $this->registrarConsulta($certificado->id, 'SIMPLES_NACIONAL', false, null, $errorMsg);
+                return ['error' => $errorMsg];
+            }
+
+            // ReceitaWS retorna "Sim"/"Nao"/"SIM"/"NAO"/true/false — normalizar
+            $opcaoSimples = $dados['opcao_pelo_simples'] ?? null;
+            $opcaoMei = $dados['opcao_pelo_mei'] ?? null;
+
+            // Converter para booleano de forma robusta
+            $isOptanteSimples = $this->normalizarBooleano($opcaoSimples);
+            $isMei = $this->normalizarBooleano($opcaoMei);
+
+            // Extrair dados do certificado (informações do CNPJ)
+            $razaoSocial = $dados['nome'] ?? ($certificado->razao_social ?? '');
+            $cnaePrincipal = $dados['cnae_fiscal'] ?? '';
+            $cnaeDescricao = $dados['cnae_fiscal_descricao'] ?? ($dados['atividade_principal'][0]['text'] ?? '');
+            $porte = $dados['porte'] ?? '';
+            $situacao = $dados['situacao'] ?? '';
+            $naturezaJuridica = $dados['natureza_juridica'] ?? '';
+
+            // Extrair dados do Simples Nacional
             $simplesData = [
-                'optante_simples' => $dados['opcao_pelo_simples'] ?? false,
+                'optante_simples' => $isOptanteSimples,
                 'data_opcao' => $dados['data_opcao_pelo_simples'] ?? null,
                 'data_exclusao' => $dados['data_exclusao_do_simples'] ?? null,
-                'simei' => $dados['opcao_pelo_mei'] ?? false,
+                'simei' => $isMei,
+                'cnae_descricao' => $cnaeDescricao,
+                'cnae_codigo' => $cnaePrincipal,
+                'razao_social' => $razaoSocial,
+                'porte' => $porte,
+                'situacao' => $situacao,
+                'natureza_juridica' => $naturezaJuridica,
             ];
 
-            // Se tem optante_simples, tentar identificar anexo
-            if ($simplesData['optante_simples']) {
-                $simplesData['anexo_sugerido'] = $this->identificarAnexo($dados['cnae_fiscal_descricao'] ?? '');
+            // Determinar regime tributário
+            if ($isOptanteSimples) {
+                $simplesData['anexo_sugerido'] = $this->identificarAnexo($cnaeDescricao);
+                $simplesData['regime'] = 'simples_nacional';
+            } elseif ($isMei) {
+                $simplesData['anexo_sugerido'] = 'MEI';
+                $simplesData['regime'] = 'simples_nacional';
+            } else {
+                // NÃO é optante do Simples Nacional
+                $simplesData['anexo_sugerido'] = null;
+                $simplesData['regime'] = 'lucro_presumido';
             }
+
+            // Atualizar dados do certificado com informações do CNPJ
+            $this->db->where('id', $certificado->id);
+            $this->db->update('certificado_digital', [
+                'razao_social' => $razaoSocial,
+                'updated_at' => date('Y-m-d H:i:s')
+            ]);
 
             $this->registrarConsulta($certificado->id, 'SIMPLES_NACIONAL', true, $simplesData);
 
@@ -243,6 +310,25 @@ class Certificado_model extends CI_Model
             $this->registrarConsulta($certificado->id, 'SIMPLES_NACIONAL', false, null, $e->getMessage());
             return ['error' => $e->getMessage()];
         }
+    }
+
+    /**
+     * Normaliza valores booleanos da API ReceitaWS
+     * ReceitaWS pode retornar: true, false, "Sim", "Nao", "SIM", "NAO", "Yes", "No", null
+     */
+    private function normalizarBooleano($valor)
+    {
+        if (is_bool($valor)) {
+            return $valor;
+        }
+        if ($valor === null || $valor === '') {
+            return false;
+        }
+        if (is_string($valor)) {
+            $v = strtolower(trim($valor));
+            return in_array($v, ['sim', 's', 'yes', 'y', 'true', '1']);
+        }
+        return (bool)$valor;
     }
 
     /**
@@ -309,12 +395,28 @@ class Certificado_model extends CI_Model
         $dados = $resultado['data'];
 
         if (!$dados['optante_simples']) {
-            return ['error' => 'Empresa não é optante do Simples Nacional'];
+            // Empresa NÃO é optante do Simples Nacional
+            // Sugerir configuração para Lucro Presumido
+            $config = [
+                'optante_simples' => false,
+                'regime' => 'lucro_presumido',
+                'anexo_sugerido' => null,
+                'data_opcao' => null,
+                'simei' => false,
+            ];
+
+            return [
+                'success' => true,
+                'configuracao' => $config,
+                'mensagem' => 'Empresa NÃO optante do Simples Nacional. Regime tributário detectado: Lucro Presumido. As alíquotas de retenção (IRPJ, CSLL, PIS, COFINS, ISS) foram configuradas automaticamente.',
+                'regime' => 'lucro_presumido'
+            ];
         }
 
-        // Sugerir configuração
+        // Sugerir configuração para optantes do Simples
         $config = [
             'optante_simples' => true,
+            'regime' => 'simples_nacional',
             'anexo_sugerido' => $dados['anexo_sugerido'],
             'data_opcao' => $dados['data_opcao'],
             'simei' => $dados['simei']

@@ -179,9 +179,19 @@
                 <h5>Status dos Impostos</h5>
             </div>
             <div class="widget-content">
-                <?php if ($config_impostos['anexo']): ?>
+                <?php
+                $regime = $config_impostos['regime'] ?? $this->impostos_model->getConfig('IMPOSTO_REGIME_TRIBUTARIO') ?: 'simples_nacional';
+                ?>
+                <?php if ($regime === 'lucro_presumido'): ?>
+                    <div class="alert alert-info" style="margin-bottom: 10px;">
+                        <i class="fas fa-building"></i> <strong>Lucro Presumido</strong><br>
+                        Alíquotas de retenção configuradas automaticamente.<br>
+                        <strong>Retenção Automática:</strong> <?= $config_impostos['retencao_automatica'] ? 'Sim' : 'Não' ?>
+                    </div>
+                <?php elseif ($config_impostos['anexo']): ?>
                     <div class="alert alert-success" style="margin-bottom: 10px;">
                         <i class="fas fa-check-circle"></i> <strong>Configurado!</strong><br>
+                        <strong>Regime:</strong> Simples Nacional<br>
                         <strong>Anexo:</strong> <?= $config_impostos['anexo'] ?><br>
                         <strong>Faixa:</strong> <?= $config_impostos['faixa'] ?>ª<br>
                         <strong>Retenção Automática:</strong> <?= $config_impostos['retencao_automatica'] ? 'Sim' : 'Não' ?>
