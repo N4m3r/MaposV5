@@ -456,7 +456,8 @@
                                     <option value="">-- Selecione o Técnico --</option>
                                     <?php
                                     $this->db->where('status', 1);
-                                    $tecnicos = $this->db->get('usuarios')->result();
+                                    $tecnicos_query = $this->db->get('usuarios');
+                                    $tecnicos = $tecnicos_query ? $tecnicos_query->result() : [];
                                     foreach ($tecnicos as $t): ?>
                                         <option value="<?php echo $t->idUsuarios; ?>">
                                             <?php echo htmlspecialchars($t->nome, ENT_QUOTES, 'UTF-8'); ?>
