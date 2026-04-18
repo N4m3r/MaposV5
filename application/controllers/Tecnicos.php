@@ -70,18 +70,16 @@ class Tecnicos extends CI_Controller
     {
         $this->form_validation->set_rules('email', 'E-mail', 'required|valid_email');
         $this->form_validation->set_rules('senha', 'Senha', 'required');
-        $this->form_validation->set_rules('latitude', 'Latitude', 'required');
-        $this->form_validation->set_rules('longitude', 'Longitude', 'required');
 
         if ($this->form_validation->run() == false) {
-            $this->session->set_flashdata('error', 'Dados incompletos. Verifique e-mail, senha e permita acesso à localização.');
+            $this->session->set_flashdata('error', 'Dados incompletos. Verifique e-mail e senha.');
             redirect('tecnicos/login');
         }
 
         $email = $this->input->post('email');
         $senha = $this->input->post('senha');
-        $latitude = $this->input->post('latitude');
-        $longitude = $this->input->post('longitude');
+        $latitude = $this->input->post('latitude') ?: null;
+        $longitude = $this->input->post('longitude') ?: null;
         $foto_login = $this->input->post('foto_login');
 
         // Buscar técnico
@@ -98,7 +96,7 @@ class Tecnicos extends CI_Controller
         }
 
         // Verificar se técnico está dentro do raio de atuação (se configurado)
-        if ($tecnico->raio_atuacao_km > 0 && $tecnico->coordenadas_base_lat && $tecnico->coordenadas_base_lng) {
+        if ($tecnico->raio_atuacao_km > 0 && $tecnico->coordenadas_base_lat && $tecnico->coordenadas_base_lng && $latitude && $longitude) {
             $distancia = $this->_calcular_distancia(
                 $tecnico->coordenadas_base_lat,
                 $tecnico->coordenadas_base_lng,

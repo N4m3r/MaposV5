@@ -83,60 +83,6 @@
             border-color: #667eea;
         }
 
-        .location-status {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 12px;
-            background: #e8f5e9;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            color: #2e7d32;
-            font-size: 0.9rem;
-        }
-
-        .location-status.error {
-            background: #ffebee;
-            color: #c62828;
-        }
-
-        .location-status.waiting {
-            background: #fff3e0;
-            color: #ef6c00;
-        }
-
-        .btn-location {
-            width: 100%;
-            padding: 15px;
-            background: #28a745;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .btn-location:hover {
-            background: #218838;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
-        }
-
-        .btn-location:disabled {
-            background: #6c757d;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
         .btn-login {
             width: 100%;
             padding: 18px;
@@ -224,19 +170,6 @@
         <div class="error-message" id="errorMsg"></div>
 
         <form id="loginForm" action="<?php echo site_url('tecnicos/autenticar'); ?>" method="POST">
-            <input type="hidden" name="latitude" id="latitude" required>
-            <input type="hidden" name="longitude" id="longitude" required>
-
-            <div class="location-status waiting" id="locationStatus">
-                <span>📍</span>
-                <span>Localização não autorizada</span>
-            </div>
-
-            <button type="button" class="btn-location" id="btnLocation" onclick="solicitarLocalizacao()">
-                <span>📍</span>
-                <span>Autorizar Localização</span>
-            </button>
-
             <div class="form-group">
                 <label for="email">E-mail</label>
                 <input type="email" name="email" id="email" placeholder="seu@email.com" required>
@@ -247,7 +180,7 @@
                 <input type="password" name="senha" id="senha" placeholder="••••••••" required>
             </div>
 
-            <button type="submit" class="btn-login" id="btnLogin" disabled>
+            <button type="submit" class="btn-login" id="btnLogin">
                 <span class="spinner"></span>
                 <span class="text">Entrar</span>
             </button>
@@ -259,88 +192,7 @@
     </div>
 
     <script>
-        let localizacaoObtida = false;
-
-        function solicitarLocalizacao() {
-            const btn = document.getElementById('btnLocation');
-            const status = document.getElementById('locationStatus');
-
-            if (!('geolocation' in navigator)) {
-                status.className = 'location-status error';
-                status.innerHTML = '<span>❌</span><span>Geolocalização não suportada neste dispositivo</span>';
-                return;
-            }
-
-            btn.disabled = true;
-            btn.innerHTML = '<span>🔄</span><span>Solicitando...</span>';
-            status.className = 'location-status waiting';
-            status.innerHTML = '<span>🔄</span><span>Aguardando permissão...</span>';
-
-            navigator.geolocation.getCurrentPosition(
-                function(position) {
-                    document.getElementById('latitude').value = position.coords.latitude;
-                    document.getElementById('longitude').value = position.coords.longitude;
-                    localizacaoObtida = true;
-
-                    status.className = 'location-status';
-                    status.innerHTML = '<span>✅</span><span>Localização autorizada</span>';
-
-                    btn.innerHTML = '<span>✅</span><span>Localização OK</span>';
-                    btn.style.background = '#28a745';
-
-                    verificarCampos();
-                },
-                function(error) {
-                    console.error('Erro ao obter localização:', error);
-                    localizacaoObtida = false;
-
-                    let mensagem = 'Permita o acesso à localização';
-                    if (error.code === 1) {
-                        mensagem = 'Permissão negada. Autorize no navegador.';
-                    } else if (error.code === 2) {
-                        mensagem = 'Localização indisponível.';
-                    } else if (error.code === 3) {
-                        mensagem = 'Tempo excedido. Tente novamente.';
-                    }
-
-                    status.className = 'location-status error';
-                    status.innerHTML = '<span>❌</span><span>' + mensagem + '</span>';
-
-                    btn.disabled = false;
-                    btn.innerHTML = '<span>📍</span><span>Tentar Novamente</span>';
-                },
-                {
-                    enableHighAccuracy: true,
-                    timeout: 10000,
-                    maximumAge: 0
-                }
-            );
-        }
-
-        function verificarCampos() {
-            const email = document.getElementById('email').value;
-            const senha = document.getElementById('senha').value;
-            const btn = document.getElementById('btnLogin');
-
-            if (email && senha && localizacaoObtida) {
-                btn.disabled = false;
-            } else {
-                btn.disabled = true;
-            }
-        }
-
-        document.getElementById('email').addEventListener('input', verificarCampos);
-        document.getElementById('senha').addEventListener('input', verificarCampos);
-
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            if (!localizacaoObtida) {
-                e.preventDefault();
-                document.getElementById('errorMsg').textContent = 'Clique em "Autorizar Localização" antes de entrar';
-                document.getElementById('errorMsg').classList.add('show');
-                document.getElementById('btnLocation').focus();
-                return;
-            }
-
+        document.getElementById('loginForm').addEventListener('submit', function() {
             document.getElementById('btnLogin').classList.add('loading');
         });
     </script>
