@@ -32,8 +32,7 @@ class Tecnicos_admin extends CI_Controller
         }
 
         // Verificar se é admin ou tem permissão
-        $permissao = $this->mapos_model->hasPermission('tec_admin');
-        if (!$permissao) {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cTecnico')) {
             $this->session->set_flashdata('error', 'Você não tem permissão para acessar esta área.');
             redirect('mapos');
         }
