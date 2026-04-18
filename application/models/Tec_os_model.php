@@ -434,6 +434,15 @@ class Tec_os_model extends CI_Model
      */
     public function getEstatisticasExecucao($tecnico_id = null, $periodo = 'mes')
     {
+        // Verificar se a tabela existe
+        if (!$this->db->table_exists('tec_os_execucao')) {
+            log_message('error', 'Tabela tec_os_execucao não existe');
+            return [
+                'total_execucoes' => 0,
+                'media_tempo_horas' => 0,
+            ];
+        }
+
         switch ($periodo) {
             case 'semana':
                 $inicio = date('Y-m-d', strtotime('-7 days'));
@@ -455,8 +464,14 @@ class Tec_os_model extends CI_Model
             $this->db->where('tecnico_id', $tecnico_id);
         }
 
-        $result = $this->db->get('tec_os_execucao')->row();
-        $total = $result->total ?? 0;
+        $query = $this->db->get('tec_os_execucao');
+        if ($query === false) {
+            log_message('error', 'Erro na query getEstatisticasExecucao (count): ' . $this->db->last_query());
+            $total = 0;
+        } else {
+            $result = $query->row();
+            $total = $result->total ?? 0;
+        }
 
         // Média de tempo
         $this->db->select_avg('tempo_total_horas');
@@ -467,11 +482,14 @@ class Tec_os_model extends CI_Model
             $this->db->where('tecnico_id', $tecnico_id);
         }
 
-        $result = $this->db->get('tec_os_execucao')->row();
-        $media_tempo = $result->tempo_total_horas ?? 0;
-
-        // Concluídas no prazo (onde prazo foi cumprido)
-        // Aqui você pode adicionar lógica específica baseada nos requisitos
+        $query = $this->db->get('tec_os_execucao');
+        if ($query === false) {
+            log_message('error', 'Erro na query getEstatisticasExecucao (avg): ' . $this->db->last_query());
+            $media_tempo = 0;
+        } else {
+            $result = $query->row();
+            $media_tempo = $result->tempo_total_horas ?? 0;
+        }
 
         return [
             'total_execucoes' => $total,
