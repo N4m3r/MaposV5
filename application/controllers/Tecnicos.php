@@ -27,11 +27,39 @@ class Tecnicos extends CI_Controller
         $this->load->helper('url');
         $this->load->helper('form');
         $this->load->helper('date');
+        $this->load->database();
+
+        // Carregar configurações do sistema
+        $this->_load_configuration();
 
         // Verificar autenticação para métodos protegidos
         $metodos_publicos = ['login', 'autenticar', 'logout', 'api_login', 'api_verificar'];
         if (!in_array($this->router->method, $metodos_publicos)) {
             $this->_verificar_autenticacao();
+        }
+    }
+
+    /**
+     * Carregar configurações do sistema
+     */
+    private function _load_configuration()
+    {
+        // Configurações padrão
+        $this->data['configuration'] = [
+            'app_name' => 'Map-OS',
+            'app_theme' => 'default',
+            'per_page' => 10,
+            'control_datatable' => '1',
+        ];
+
+        // Buscar configurações do banco
+        try {
+            $configuracoes = $this->db->get('configuracoes')->result();
+            foreach ($configuracoes as $c) {
+                $this->data['configuration'][$c->config] = $c->valor;
+            }
+        } catch (Exception $e) {
+            // Se falhar, mantém configurações padrão
         }
     }
 
@@ -154,16 +182,16 @@ class Tecnicos extends CI_Controller
     {
         $tecnico_id = $this->session->userdata('tec_id');
 
-        $data['tecnico'] = $this->tecnicos_model->getById($tecnico_id);
-        $data['os_hoje'] = $this->tec_os_model->getOsDoDia($tecnico_id);
-        $data['os_pendentes'] = $this->tec_os_model->getOsPendentes($tecnico_id);
-        $data['os_concluidas'] = $this->tec_os_model->getOsConcluidasSemana($tecnico_id);
-        $data['estoque'] = $this->tecnicos_model->getEstoqueVeiculo($tecnico_id);
+        $this->data['tecnico'] = $this->tecnicos_model->getById($tecnico_id);
+        $this->data['os_hoje'] = $this->tec_os_model->getOsDoDia($tecnico_id);
+        $this->data['os_pendentes'] = $this->tec_os_model->getOsPendentes($tecnico_id);
+        $this->data['os_concluidas'] = $this->tec_os_model->getOsConcluidasSemana($tecnico_id);
+        $this->data['estoque'] = $this->tecnicos_model->getEstoqueVeiculo($tecnico_id);
 
-        // Carregar o tema completo do MAPOS
-        $this->load->view('tema/topo');
-        $this->load->view('tecnicos/dashboard', $data);
-        $this->load->view('tema/rodape');
+        $this->load->view('tema/topo', $this->data);
+        $this->load->view('tema/menu_portal_tecnico', $this->data);
+        $this->load->view('tecnicos/dashboard', $this->data);
+        $this->load->view('tema/rodape', $this->data);
     }
 
     /**
@@ -174,12 +202,13 @@ class Tecnicos extends CI_Controller
         $tecnico_id = $this->session->userdata('tec_id');
         $status = $this->input->get('status') ?: 'todos';
 
-        $data['os_list'] = $this->tec_os_model->getOsPorTecnico($tecnico_id, $status);
-        $data['status_atual'] = $status;
+        $this->data['os_list'] = $this->tec_os_model->getOsPorTecnico($tecnico_id, $status);
+        $this->data['status_atual'] = $status;
 
-        $this->load->view('tema/topo');
-        $this->load->view('tecnicos/minhas_os', $data);
-        $this->load->view('tema/rodape');
+        $this->load->view('tema/topo', $this->data);
+        $this->load->view('tema/menu_portal_tecnico', $this->data);
+        $this->load->view('tecnicos/minhas_os', $this->data);
+        $this->load->view('tema/rodape', $this->data);
     }
 
     /**
@@ -201,15 +230,16 @@ class Tecnicos extends CI_Controller
             redirect('tecnicos/minhas_os');
         }
 
-        $data['os'] = $os;
-        $data['cliente'] = $this->tec_os_model->getClienteByOs($os_id);
-        $data['servicos'] = $this->tec_os_model->getServicosOs($os_id);
-        $data['execucao'] = $this->tec_os_model->getExecucaoAtual($os_id, $tecnico_id);
-        $data['checklist'] = $this->tec_os_model->getChecklistExecucao($os_id);
+        $this->data['os'] = $os;
+        $this->data['cliente'] = $this->tec_os_model->getClienteByOs($os_id);
+        $this->data['servicos'] = $this->tec_os_model->getServicosOs($os_id);
+        $this->data['execucao'] = $this->tec_os_model->getExecucaoAtual($os_id, $tecnico_id);
+        $this->data['checklist'] = $this->tec_os_model->getChecklistExecucao($os_id);
 
-        $this->load->view('tema/topo');
-        $this->load->view('tecnicos/executar_os', $data);
-        $this->load->view('tema/rodape');
+        $this->load->view('tema/topo', $this->data);
+        $this->load->view('tema/menu_portal_tecnico', $this->data);
+        $this->load->view('tecnicos/executar_os', $this->data);
+        $this->load->view('tema/rodape', $this->data);
     }
 
     /**
@@ -441,12 +471,13 @@ class Tecnicos extends CI_Controller
     {
         $tecnico_id = $this->session->userdata('tec_id');
 
-        $data['estoque'] = $this->tecnicos_model->getEstoqueVeiculo($tecnico_id);
-        $data['historico'] = $this->tecnicos_model->getHistoricoEstoque($tecnico_id, 30);
+        $this->data['estoque'] = $this->tecnicos_model->getEstoqueVeiculo($tecnico_id);
+        $this->data['historico'] = $this->tecnicos_model->getHistoricoEstoque($tecnico_id, 30);
 
-        $this->load->view('tema/topo');
-        $this->load->view('tecnicos/meu_estoque', $data);
-        $this->load->view('tema/rodape');
+        $this->load->view('tema/topo', $this->data);
+        $this->load->view('tema/menu_portal_tecnico', $this->data);
+        $this->load->view('tecnicos/meu_estoque', $this->data);
+        $this->load->view('tema/rodape', $this->data);
     }
 
     /**
@@ -491,11 +522,12 @@ class Tecnicos extends CI_Controller
     public function perfil()
     {
         $tecnico_id = $this->session->userdata('tec_id');
-        $data['tecnico'] = $this->tecnicos_model->getById($tecnico_id);
+        $this->data['tecnico'] = $this->tecnicos_model->getById($tecnico_id);
 
-        $this->load->view('tema/topo');
-        $this->load->view('tecnicos/perfil', $data);
-        $this->load->view('tema/rodape');
+        $this->load->view('tema/topo', $this->data);
+        $this->load->view('tema/menu_portal_tecnico', $this->data);
+        $this->load->view('tecnicos/perfil', $this->data);
+        $this->load->view('tema/rodape', $this->data);
     }
 
     /**
