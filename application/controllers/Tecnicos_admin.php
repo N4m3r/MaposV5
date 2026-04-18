@@ -667,9 +667,9 @@ class Tecnicos_admin extends MY_Controller
     {
         $this->load->model('os_model');
         $this->load->model('obras_model');
+        $this->load->model('clientes_model');
 
         $obra_id = $this->input->get('obra_id');
-        $cliente_id = $this->input->get('cliente_id');
         $termo = $this->input->get('termo');
 
         if (!$obra_id) {
@@ -684,11 +684,36 @@ class Tecnicos_admin extends MY_Controller
             return;
         }
 
-        // Buscar OS do cliente que não estão vinculadas a nenhuma obra
-        $this->db->select('os.idOs, os.dataInicial, os.dataFinal, os.status, c.nomeCliente, os.obra_id');
+        // Buscar o cliente da obra para obter o CNPJ
+        $cliente = $this->clientes_model->getById($obra->cliente_id);
+        if (!$cliente || empty($cliente->documento)) {
+            echo json_encode(['success' => false, 'message' => 'Cliente da obra não possui CNPJ cadastrado']);
+            return;
+        }
+
+        // Limpar o CNPJ para busca (remover pontuação)
+        $cnpj_limpo = preg_replace('/[^0-9]/', '', $cliente->documento);
+
+        // Buscar todos os clientes com o mesmo CNPJ
+        $this->db->where('REPLACE(REPLACE(REPLACE(documento, ".", ""), "/", ""), "-", "") =', $cnpj_limpo);
+        $clientes_query = $this->db->get('clientes');
+        $clientes_ids = [];
+        if ($clientes_query) {
+            foreach ($clientes_query->result() as $c) {
+                $clientes_ids[] = $c->idClientes;
+            }
+        }
+
+        // Se não encontrou clientes pelo CNPJ, usar o cliente_id da obra
+        if (empty($clientes_ids)) {
+            $clientes_ids = [$obra->cliente_id];
+        }
+
+        // Buscar OS dos clientes com o mesmo CNPJ que não estão vinculadas a nenhuma obra
+        $this->db->select('os.idOs, os.dataInicial, os.dataFinal, os.status, c.nomeCliente, c.documento, os.obra_id');
         $this->db->from('os');
         $this->db->join('clientes c', 'c.idClientes = os.clientes_id');
-        $this->db->where('os.clientes_id', $obra->cliente_id);
+        $this->db->where_in('os.clientes_id', $clientes_ids);
         $this->db->where('(os.obra_id IS NULL OR os.obra_id = 0)');
 
         if ($termo) {
@@ -700,7 +725,7 @@ class Tecnicos_admin extends MY_Controller
         $query = $this->db->get();
         $os = $query ? $query->result() : [];
 
-        echo json_encode(['success' => true, 'os' => $os]);
+        echo json_encode(['success' => true, 'os' => $os, 'cnpj' => $cliente->documento]);
     }
 
     /**

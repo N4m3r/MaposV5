@@ -599,21 +599,28 @@
             <input type="hidden" name="obra_id" value="<?php echo $obra->id; ?>">
             <div class="modal-body">
                 <div class="alert alert-info">
-                    <i class="bx bx-info-circle"></i> Selecione uma OS do cliente <strong><?= htmlspecialchars($obra->cliente_nome ?? '') ?></strong> para vincular a esta obra.
+                    <i class="bx bx-info-circle"></i>
+                    Selecione uma OS do cliente <strong><?= htmlspecialchars($obra->cliente_nome ?? '') ?></strong>
+                    <?php if (!empty($obra->cliente_documento)): ?>
+                        <br><small><i class="bx bx-id-card"></i> CNPJ: <?= $obra->cliente_documento ?></small>
+                    <?php endif; ?>
                 </div>
 
                 <div class="control-group">
-                    <label class="control-label">Buscar OS *</label>
+                    <label class="control-label">Buscar OS do CNPJ *</label>
                     <div class="controls">
                         <select name="os_id" id="select-os-vincular" class="span12" required>
                             <option value="">-- Carregando OS disponíveis... --</option>
                         </select>
                     </div>
+                    <span class="help-block">
+                        <i class="bx bx-filter"></i> Buscando OS de todos os cadastros com o mesmo CNPJ
+                    </span>
                 </div>
 
                 <div id="os-detalhes" style="margin-top: 15px; display: none;">
                     <div class="well well-small" style="background: #f8f9fa; border-radius: 8px;">
-                        <h6 style="margin-top: 0;">Detalhes da OS</h6>
+                        <h6 style="margin-top: 0;"><i class="bx bx-detail"></i> Detalhes da OS</h6>
                         <div id="os-info"></div>
                     </div>
                 </div>
@@ -652,12 +659,14 @@
 
                 if (response.success && response.os && response.os.length > 0) {
                     response.os.forEach(function(os) {
-                        select.append('<option value="' + os.idOs + '" data-status="' + os.status + '" data-data="' + os.dataInicial + '" data-cliente="' + os.nomeCliente + '"\u003e' +
-                            '#' + os.idOs + ' - ' + os.nomeCliente + ' (' + os.status + ' - ' + formatarData(os.dataInicial) + ')' +
+                        var documento = os.documento ? os.documento.replace(/[^0-9]/g, '').replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5') : '';
+                        select.append('<option value="' + os.idOs + '" data-status="' + os.status + '" data-data="' + os.dataInicial + '" data-cliente="' + os.nomeCliente + '" data-documento="' + documento + '"\u003e' +
+                            '#' + os.idOs + ' - ' + os.nomeCliente + ' [' + documento + '] (' + os.status + ')' +
                         '</option>');
                     });
                 } else {
-                    select.append('<option value="" disabled>Nenhuma OS disponível para vincular</option>');
+                    var msg = response.message || 'Nenhuma OS disponível para vincular';
+                    select.append('<option value="" disabled>' + msg + '</option>');
                 }
             },
             error: function() {
@@ -683,12 +692,14 @@
             var status = selected.data('status');
             var data = selected.data('data');
             var cliente = selected.data('cliente');
+            var documento = selected.data('documento');
 
             $('#os-info').html(
-                '<p><strong>OS #:</strong> ' + osId + '</p>' +
-                '<p><strong>Cliente:</strong> ' + cliente + '</p>' +
-                '<p><strong>Status:</strong> <span class="badge">' + status + '</span></p>' +
-                '<p><strong>Data:</strong> ' + formatarData(data) + '</p>'
+                '<p><strong><i class="bx bx-hash"></i> OS #:</strong> ' + osId + '</p>' +
+                '<p><strong><i class="bx bx-user"></i> Cliente:</strong> ' + cliente + '</p>' +
+                '<p><strong><i class="bx bx-id-card"></i> CNPJ:</strong> ' + documento + '</p>' +
+                '<p><strong><i class="bx bx-flag"></i> Status:</strong> <span class="badge" style="background: #667eea; color: white; padding: 3px 8px; border-radius: 4px;">' + status + '</span></p>' +
+                '<p><strong><i class="bx bx-calendar"></i> Data:</strong> ' + formatarData(data) + '</p>'
             );
             $('#os-detalhes').show();
             $('#btn-vincular-os').prop('disabled', false);

@@ -63,7 +63,9 @@
       "WebFetch(domain:www.gov.br)",
       "WebFetch(domain:adn.producaorestrita.nfse.gov.br)",
       "Bash(git add *)",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(sed -i '322s/\\\\\\\\n003e/>/' application/views/conecte/visualizar_os.php)",
+      "Bash(sed -n '322p' application/views/conecte/visualizar_os.php)"
     ]
   }
 }

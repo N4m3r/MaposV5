@@ -319,7 +319,7 @@ $totalProdutos = 0; ?>
                                                     <strong>Prestador:</strong> <?= $doc['prestador'] ?>
                                                 </p>
                                             <?php } ?>
-                                        <?php } elseif ($doc['tipo'] == 'imposto') { ?\n003e
+                                        <?php } elseif ($doc['tipo'] == 'imposto') { ?>
                                             <p style="margin-top: 5px; font-size: 11px;">
                                                 <strong>Valor Bruto:</strong> R$ <?= number_format($doc['valor_bruto'], 2, ',', '.') ?><br>
                                                 <strong>Alíquota:</strong> <?= $doc['aliquota'] ?>%
