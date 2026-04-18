@@ -134,6 +134,40 @@
 
     <script src="<?= base_url(); ?>assets/js/bootstrap.min.js"></script>
     <script src="<?= base_url(); ?>assets/js/matrix.js"></script>
+
+    <style>
+        /* Fix para modal-backdrop bloqueando a tela */
+        .modal-backdrop {
+            display: none !important;
+        }
+        body.modal-open {
+            overflow: auto !important;
+            padding-right: 0 !important;
+        }
+        /* Remove overlay do SweetAlert se ficar preso */
+        .swal-overlay, .swal2-container {
+            z-index: 99999 !important;
+        }
+    </style>
+
+    <script>
+        // Remove qualquer modal-backdrop ou overlay que possa estar bloqueando a tela
+        $(document).ready(function() {
+            $('.modal-backdrop').remove();
+            $('body').removeClass('modal-open').css('overflow', 'auto');
+            $('.swal-overlay, .swal2-container').remove();
+        });
+
+        // Corrige problema de overlay do SweetAlert após redirecionamentos
+        $(window).on('load', function() {
+            setTimeout(function() {
+                $('.modal-backdrop').fadeOut(300, function() {
+                    $(this).remove();
+                });
+                $('body').css('padding-right', '').removeClass('modal-open');
+            }, 500);
+        });
+    </script>
 </body>
 
 </html>
