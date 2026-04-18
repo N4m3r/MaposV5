@@ -67,13 +67,13 @@
                     </div>
 
                     <div class="control-group">
-                        <label class="control-label">Cliente Vinculado:</label>
+                        <label class="control-label">Cliente / Fornecedor Vinculado:</label>
                         <div class="controls">
                             <select name="cliente_id" class="span6">
                                 <option value="">-- Nenhum --</option>
                                 <?php foreach ($clientes as $c): ?>
                                     <option value="<?= $c->idClientes ?>" <?= set_select('cliente_id', $c->idClientes, $usuario->cliente_id == $c->idClientes) ?>>
-                                        <?= htmlspecialchars($c->nomeCliente) ?> <?= $c->documento ? '(' . $c->documento . ')' : '' ?>
+                                        <?= htmlspecialchars($c->nomeCliente) ?> <?= $c->documento ? '(' . $c->documento . ')' : '' ?> <?= isset($c->fornecedor) && $c->fornecedor ? '[Fornecedor]' : '' ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>
@@ -87,6 +87,31 @@
                                 <input type="checkbox" name="ativo" value="1" <?= set_checkbox('ativo', '1', $usuario->ativo == 1) ?> />
                                 Usuário ativo pode fazer login
                             </label>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- Buscar Cliente/Fornecedor Cadastrado -->
+                    <div class="control-group">
+                        <label class="control-label">Buscar Cliente / Fornecedor Cadastrado:</label>
+                        <div class="controls">
+                            <div class="input-append">
+                                <select id="buscar-cliente-cnpj" class="span6">
+                                    <option value="">-- Selecione para preencher CNPJ --</option>
+                                    <?php foreach ($clientes as $c): ?>
+                                        <?php if (!empty($c->documento)): ?>
+                                            <option value="<?= htmlspecialchars($c->documento) ?>" data-razao="<?= htmlspecialchars($c->nomeCliente) ?>" data-id="<?= $c->idClientes ?>">
+                                                <?= htmlspecialchars($c->nomeCliente) ?> - <?= $c->documento ?> <?= isset($c->fornecedor) && $c->fornecedor ? '[Fornecedor]' : '' ?>
+                                            </option>
+                                        <?php endif; ?>
+                                    <?php endforeach; ?>
+                                </select>
+                                <button type="button" class="btn btn-info" id="btn-buscar-cliente" title="Adicionar CNPJ do cliente selecionado">
+                                    <i class="bx bx-plus"></i> Adicionar CNPJ
+                                </button>
+                            </div>
+                            <span class="help-inline">Selecione um cliente/fornecedor cadastrado para preencher automaticamente o CNPJ</span>
                         </div>
                     </div>
 
@@ -274,6 +299,74 @@ $(document).ready(function() {
                 btn.prop('disabled', false).find('i').removeClass('bx-loader bx-spin').addClass('bx-search');
             }
         });
+    });
+
+    // Buscar cliente cadastrado e adicionar CNPJ
+    $('#btn-buscar-cliente').click(function() {
+        var select = $('#buscar-cliente-cnpj');
+        var selectedOption = select.find('option:selected');
+
+        if (!select.val()) {
+            alert('Selecione um cliente/fornecedor primeiro');
+            return;
+        }
+
+        var cnpj = selectedOption.val();
+        var razaoSocial = selectedOption.data('razao');
+
+        var cnpjExistente = false;
+        $('.cnpj-input').each(function() {
+            if ($(this).val().replace(/\D/g, '') === cnpj.replace(/\D/g, '')) {
+                cnpjExistente = true;
+                return false;
+            }
+        });
+
+        if (cnpjExistente) {
+            alert('Este CNPJ já está vinculado!');
+            return;
+        }
+
+        var cnpjFormatado = cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
+
+        var newRow = `
+            <div class="cnpj-row" style="margin-bottom: 10px;">
+                <div class="input-append">
+                    <input type="text" name="cnpjs[]" class="span4 cnpj-input" placeholder="00.000.000/0000-00" maxlength="18" value="${cnpjFormatado}" />
+                    <button type="button" class="btn btn-info btn-consultar-cnpj" title="Consultar">
+                        <i class="bx bx-search"></i>
+                    </button>
+                    <button type="button" class="btn btn-danger btn-remover-cnpj" title="Remover">
+                        <i class="bx bx-trash"></i>
+                    </button>
+                </div>
+                <input type="text" name="cnpjs_razao[]" class="span6 cnpj-razao" placeholder="Razão Social" readonly style="margin-top: 5px;" value="${razaoSocial}" />
+            </div>
+        `;
+        $('#cnpjs-container').append(newRow);
+        updateRemoveButtons();
+        select.val('');
+    });
+
+    // Ao selecionar cliente no dropdown principal, sugerir vincular
+    $('select[name="cliente_id"]').change(function() {
+        var clienteId = $(this).val();
+        if (clienteId) {
+            var clienteOption = $(this).find('option:selected');
+            var texto = clienteOption.text();
+            var match = texto.match(/\(([^)]+)\)/;
+
+            if (match && confirm('Deseja adicionar o CNPJ deste cliente/fornecedor aos CNPJs vinculados?')) {
+                var cnpj = match[1];
+                $('#buscar-cliente-cnpj option').each(function() {
+                    if ($(this).val() === cnpj) {
+                        $(this).prop('selected', true);
+                        $('#btn-buscar-cliente').click();
+                        return false;
+                    }
+                });
+            }
+        }
     });
 });
 </script>

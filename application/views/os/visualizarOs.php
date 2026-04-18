@@ -752,6 +752,12 @@
                         <!-- SEÇÃO NFS-e + BOLETO -->
                         <?php $this->load->view('nfse_os/aba_os', [
                             'result' => $result,
+                            'emitente' => $emitente ?? null,
+                            'tributacao' => $tributacao ?? [],
+                            'totalServico' => $totalServico ?? 0,
+                            'totalProdutos' => $totalProdutos ?? 0,
+                            'servicos' => $servicos ?? [],
+                            'produtos' => $produtos ?? [],
                             'nfse_atual' => $nfse_atual ?? null,
                             'boleto_atual' => $boleto_atual ?? null,
                             'historico_nfse' => $historico_nfse ?? [],

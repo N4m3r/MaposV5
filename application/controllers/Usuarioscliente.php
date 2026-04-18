@@ -51,7 +51,7 @@ class Usuarioscliente extends MY_Controller
         $this->form_validation->set_rules('confirmar_senha', 'Confirmar Senha', 'required|matches[senha]');
 
         if ($this->form_validation->run() == false) {
-            $this->data['clientes'] = $this->clientes_model->get('clientes', 'idClientes, nomeCliente, documento', '', 0, 0, false, 'array');
+            $this->data['clientes'] = $this->clientes_model->get('clientes', 'idClientes, nomeCliente, documento, fornecedor', '', 0, 0);
             $this->data['permissoes_padrao'] = $this->usuarios_cliente_model->getPermissoesPadrao();
             $this->data['view'] = 'usuarios_cliente/adicionar';
             return $this->layout();
@@ -138,7 +138,7 @@ class Usuarioscliente extends MY_Controller
 
         if ($this->form_validation->run() == false) {
             $this->data['usuario'] = $usuario;
-            $this->data['clientes'] = $this->clientes_model->get('clientes', 'idClientes, nomeCliente, documento', '', 0, 0, false, 'array');
+            $this->data['clientes'] = $this->clientes_model->get('clientes', 'idClientes, nomeCliente, documento, fornecedor', '', 0, 0);
             $this->data['cnpjs'] = $this->usuarios_cliente_model->getCnpjs($id);
             $this->data['permissoes'] = $this->usuarios_cliente_model->getAllPermissoes($id);
             $this->data['permissoes_padrao'] = $this->usuarios_cliente_model->getPermissoesPadrao();

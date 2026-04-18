@@ -159,56 +159,73 @@ class Relatorioatendimentos extends MY_Controller
      */
     public function estatisticas()
     {
-        if (!$this->input->is_ajax_request()) {
-            redirect(base_url());
-        }
+        header('Content-Type: application/json');
 
-        // Verifica permissão
-        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vRelatorioAtendimentos')) {
-            header('Content-Type: application/json');
-            echo json_encode(['error' => 'Sem permissão']);
-            return;
-        }
+        try {
+            if (!$this->input->is_ajax_request()) {
+                echo json_encode(['error' => 'Requisição inválida']);
+                return;
+            }
 
-        // Verifica se a tabela existe
-        if (!$this->db->table_exists('os_checkin')) {
-            header('Content-Type: application/json');
+            // Verifica permissão
+            if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vRelatorioAtendimentos')) {
+                echo json_encode(['error' => 'Sem permissão']);
+                return;
+            }
+
+            // Verifica se a tabela existe
+            if (!$this->db->table_exists('os_checkin')) {
+                echo json_encode([
+                    'success' => true,
+                    'estatisticas' => [
+                        'total_atendimentos' => 0,
+                        'finalizados' => 0,
+                        'em_andamento' => 0,
+                        'tempo_medio_minutos' => 0,
+                        'tempo_medio_horas' => 0,
+                    ],
+                    'atendimentosPorDia' => [],
+                    'atendimentosPorTecnico' => [],
+                    'atendimentosPorStatus' => [],
+                    'tempoMedioPorTecnico' => [],
+                ]);
+                return;
+            }
+
+            // Parâmetros
+            $data_inicio = $this->input->post('data_inicio') ?: date('Y-m-01');
+            $data_fim = $this->input->post('data_fim') ?: date('Y-m-d');
+            $usuario_id = $this->input->post('usuario_id') ?: null;
+
+            // Estatísticas gerais
+            $estatisticas = $this->relatorioatendimentos_model->getEstatisticas($data_inicio, $data_fim, $usuario_id);
+
+            // Atendimentos por dia
+            $atendimentosPorDia = $this->relatorioatendimentos_model->getAtendimentosPorDia($data_inicio, $data_fim, $usuario_id);
+
+            // Atendimentos por técnico
+            $atendimentosPorTecnico = $this->relatorioatendimentos_model->getAtendimentosPorTecnico($data_inicio, $data_fim);
+
+            // Atendimentos por status
+            $atendimentosPorStatus = $this->relatorioatendimentos_model->getAtendimentosPorStatus($data_inicio, $data_fim, $usuario_id);
+
+            // Tempo médio por técnico
+            $tempoMedioPorTecnico = $this->relatorioatendimentos_model->getTempoMedioPorTecnico($data_inicio, $data_fim);
+
+            echo json_encode([
+                'success' => true,
+                'estatisticas' => $estatisticas,
+                'atendimentosPorDia' => $atendimentosPorDia,
+                'atendimentosPorTecnico' => $atendimentosPorTecnico,
+                'atendimentosPorStatus' => $atendimentosPorStatus,
+                'tempoMedioPorTecnico' => $tempoMedioPorTecnico,
+            ]);
+        } catch (Exception $e) {
             echo json_encode([
                 'success' => false,
-                'error' => 'Tabela de atendimentos não encontrada. Execute a migração 20250403000001_add_checkin_tables.php ou o script SQL em updates/update_checkin_tabelas.sql'
+                'error' => $e->getMessage(),
             ]);
-            return;
         }
-
-        // Parâmetros
-        $data_inicio = $this->input->post('data_inicio') ?: date('Y-m-01');
-        $data_fim = $this->input->post('data_fim') ?: date('Y-m-d');
-        $usuario_id = $this->input->post('usuario_id') ?: null;
-
-        // Estatísticas gerais
-        $estatisticas = $this->relatorioatendimentos_model->getEstatisticas($data_inicio, $data_fim, $usuario_id);
-
-        // Atendimentos por dia
-        $atendimentosPorDia = $this->relatorioatendimentos_model->getAtendimentosPorDia($data_inicio, $data_fim, $usuario_id);
-
-        // Atendimentos por técnico
-        $atendimentosPorTecnico = $this->relatorioatendimentos_model->getAtendimentosPorTecnico($data_inicio, $data_fim);
-
-        // Atendimentos por status
-        $atendimentosPorStatus = $this->relatorioatendimentos_model->getAtendimentosPorStatus($data_inicio, $data_fim, $usuario_id);
-
-        // Tempo médio por técnico
-        $tempoMedioPorTecnico = $this->relatorioatendimentos_model->getTempoMedioPorTecnico($data_inicio, $data_fim);
-
-        header('Content-Type: application/json');
-        echo json_encode([
-            'success' => true,
-            'estatisticas' => $estatisticas,
-            'atendimentosPorDia' => $atendimentosPorDia,
-            'atendimentosPorTecnico' => $atendimentosPorTecnico,
-            'atendimentosPorStatus' => $atendimentosPorStatus,
-            'tempoMedioPorTecnico' => $tempoMedioPorTecnico
-        ]);
     }
 
     /**

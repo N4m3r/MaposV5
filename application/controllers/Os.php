@@ -401,6 +401,10 @@ class Os extends MY_Controller
         $this->data['historico_nfse'] = $this->nfse_emitida_model->getAllByOsId($os_id);
         $this->data['historico_boleto'] = $this->boleto_os_model->getAllByOsId($os_id);
 
+        // Carregar dados tributários para wizard NFS-e
+        $this->load->model('impostos_model');
+        $this->data['tributacao'] = $this->impostos_model->getConfiguracaoTributacao();
+
         return $this->layout();
     }
 

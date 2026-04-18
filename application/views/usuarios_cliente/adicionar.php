@@ -62,17 +62,17 @@
                     </div>
 
                     <div class="control-group">
-                        <label class="control-label">Cliente Vinculado:</label>
+                        <label class="control-label">Cliente / Fornecedor Vinculado:</label>
                         <div class="controls">
                             <select name="cliente_id" class="span6">
                                 <option value="">-- Selecione (opcional) --</option>
                                 <?php foreach ($clientes as $c): ?>
                                     <option value="<?= $c->idClientes ?>" <?= set_select('cliente_id', $c->idClientes) ?>>
-                                        <?= htmlspecialchars($c->nomeCliente) ?> <?= $c->documento ? '(' . $c->documento . ')' : '' ?>
+                                        <?= htmlspecialchars($c->nomeCliente) ?> <?= $c->documento ? '(' . $c->documento . ')' : '' ?> <?= isset($c->fornecedor) && $c->fornecedor ? '[Fornecedor]' : '' ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>
-                            <span class="help-inline">Vincula automaticamente as OS deste cliente</span>
+                            <span class="help-inline">Vincula automaticamente as OS deste cliente/fornecedor</span>
                         </div>
                     </div>
 
@@ -90,15 +90,15 @@
 
                     <!-- Buscar Cliente Cadastrado -->
                     <div class="control-group">
-                        <label class="control-label">Buscar Cliente Cadastrado:</label>
+                        <label class="control-label">Buscar Cliente / Fornecedor Cadastrado:</label>
                         <div class="controls">
                             <div class="input-append">
                                 <select id="buscar-cliente-cnpj" class="span6">
-                                    <option value="">-- Selecione um cliente para preencher CNPJ --</option>
+                                    <option value="">-- Selecione para preencher CNPJ --</option>
                                     <?php foreach ($clientes as $c): ?>
                                         <?php if (!empty($c->documento)): ?>
                                             <option value="<?= htmlspecialchars($c->documento) ?>" data-razao="<?= htmlspecialchars($c->nomeCliente) ?>" data-id="<?= $c->idClientes ?>">
-                                                <?= htmlspecialchars($c->nomeCliente) ?> - <?= $c->documento ?>
+                                                <?= htmlspecialchars($c->nomeCliente) ?> - <?= $c->documento ?> <?= isset($c->fornecedor) && $c->fornecedor ? '[Fornecedor]' : '' ?>
                                             </option>
                                         <?php endif; ?>
                                     <?php endforeach; ?>

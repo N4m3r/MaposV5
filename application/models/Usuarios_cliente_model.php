@@ -42,7 +42,7 @@ class Usuarios_cliente_model extends CI_Model
      */
     public function getAll($where = [], $limit = 0, $offset = 0)
     {
-        $this->db->select('uc.*, c.nomeCliente as cliente_nome');
+        $this->db->select('uc.*, c.nomeCliente as cliente_nome, (SELECT COUNT(*) FROM usuarios_cliente_cnpjs ucj WHERE ucj.usuario_cliente_id = uc.id) as total_cnpjs');
         $this->db->from('usuarios_cliente uc');
         $this->db->join('clientes c', 'c.idClientes = uc.cliente_id', 'left');
 

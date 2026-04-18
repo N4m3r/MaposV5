@@ -38,11 +38,7 @@
                                     <td><?= $u->telefone ? htmlspecialchars($u->telefone) : '-' ?></td>
                                     <td><?= $u->cliente_nome ? htmlspecialchars($u->cliente_nome) : '-' ?></td>
                                     <td>
-                                        <?php
-                                        $this->db->where('usuario_cliente_id', $u->id);
-                                        $cnpjs = $this->db->get('usuarios_cliente_cnpjs')->num_rows();
-                                        echo $cnpjs > 0 ? $cnpjs . ' CNPJ(s)' : '-';
-                                        ?>
+                                        <?= isset($u->total_cnpjs) && $u->total_cnpjs > 0 ? $u->total_cnpjs . ' CNPJ(s)' : '-' ?>
                                     </td>
                                     <td>
                                         <?php if ($u->ativo): ?>
