@@ -416,7 +416,8 @@ class Tecnicos_admin extends MY_Controller
     {
         $this->data['tecnico'] = $this->tecnicos_model->getById($tecnico_id);
         $this->data['estoque'] = $this->tecnicos_model->getEstoqueVeiculo($tecnico_id);
-        $this->data['produtos'] = $this->db->get('produtos')->result();
+        $produtos_query = $this->db->get('produtos');
+        $this->data['produtos'] = $produtos_query ? $produtos_query->result() : [];
         $this->data['view'] = 'tecnicos_admin/estoque_tecnico';
         return $this->layout();
     }
@@ -482,13 +483,15 @@ class Tecnicos_admin extends MY_Controller
         $this->db->where('data_checkin >=', $inicio);
         $this->db->group_by('DATE(data_checkin)');
         $this->db->order_by('dia', 'ASC');
-        $os_por_dia = $this->db->get('tec_os_execucao')->result();
+        $os_por_dia_query = $this->db->get('tec_os_execucao');
+        $os_por_dia = $os_por_dia_query ? $os_por_dia_query->result() : [];
 
         // OS por técnico
         $this->db->select('tecnico_id, COUNT(*) as total');
         $this->db->where('data_checkin >=', $inicio);
         $this->db->group_by('tecnico_id');
-        $os_por_tecnico = $this->db->get('tec_os_execucao')->result();
+        $os_por_tecnico_query = $this->db->get('tec_os_execucao');
+        $os_por_tecnico = $os_por_tecnico_query ? $os_por_tecnico_query->result() : [];
 
         echo json_encode([
             'os_por_dia' => $os_por_dia,
