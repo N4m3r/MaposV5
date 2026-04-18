@@ -203,8 +203,13 @@ class Migration_Consolidated_schema_update extends CI_Migration
                 'type' => 'TEXT', 'null' => true,
                 'comment' => 'JSON com detalhes dos impostos calculados'
             ]);
+            $this->_addColumnIfNotExists('os', 'obra_id', [
+                'type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'null' => true,
+                'comment' => 'ID da obra vinculada'
+            ]);
 
             $this->_safeCreateIndex('os', 'idx_tecnico_responsavel', 'tecnico_responsavel');
+            $this->_safeCreateIndex('os', 'idx_obra_id', 'obra_id');
         }
 
         // --- lancamentos ---

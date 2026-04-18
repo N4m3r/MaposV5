@@ -53,11 +53,18 @@
                                     <select name="cliente_id" class="span12" required>
                                         <option value="">Selecione...</option>
                                         <?php foreach ($clientes as $cliente): ?>
-                                            <option value="<?= $cliente->idClientes ?>" <?= ($obra->cliente_id == $cliente->idClientes) ? 'selected' : '' ?>>
-                                                <?= htmlspecialchars($cliente->nomeCliente, ENT_QUOTES, 'UTF-8') ?>
+                                            <?php $selected = ((int)$obra->cliente_id === (int)$cliente->idClientes) ? 'selected="selected"' : ''; ?>
+                                            <option value="<?= $cliente->idClientes ?>" <?= $selected ?>>
+                                                <?= htmlspecialchars($cliente->nomeCliente, ENT_QUOTES, 'UTF-8') ?> - <?= htmlspecialchars($cliente->documento ?? '', ENT_QUOTES, 'UTF-8') ?>
                                             </option>
                                         <?php endforeach; ?>
                                     </select>
+                                    <?php if (isset($cliente_atual) && $cliente_atual): ?>
+                                        <span class="help-block">
+                                            <i class="bx bx-user-check" style="color: #4caf50;"></i>
+                                            Cliente atual: <strong><?= htmlspecialchars($cliente_atual->nomeCliente, ENT_QUOTES, 'UTF-8') ?></strong>
+                                        </span>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>

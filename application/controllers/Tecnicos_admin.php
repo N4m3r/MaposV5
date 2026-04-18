@@ -388,8 +388,20 @@ class Tecnicos_admin extends MY_Controller
         }
 
         $this->data['obra'] = $obra;
-        $clientes_query = $this->db->where('status', 1)->get('clientes');
+
+        // Carregar informações do cliente atual da obra
+        if ($obra->cliente_id) {
+            $this->load->model('clientes_model');
+            $this->data['cliente_atual'] = $this->clientes_model->getById($obra->cliente_id);
+        } else {
+            $this->data['cliente_atual'] = null;
+        }
+
+        // Carregar lista de clientes ativos
+        $this->db->order_by('nomeCliente', 'ASC');
+        $clientes_query = $this->db->get('clientes');
         $this->data['clientes'] = $clientes_query ? $clientes_query->result() : [];
+
         $this->data['view'] = 'tecnicos_admin/obra_form';
         return $this->layout();
     }
