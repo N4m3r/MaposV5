@@ -636,4 +636,427 @@ class Nfse_os extends MY_Controller
 
         redirect('os/visualizar/' . $boleto->os_id);
     }
+
+    // ==================== API NFS-e NACIONAL ====================
+
+    /**
+     * Emitir NFS-e via API Nacional (Sistema Nacional NFS-e)
+     * Chamado via AJAX pelo wizard
+     */
+    public function emitir_nfse_api($os_id = null)
+    {
+        header('Content-Type: application/json; charset=utf-8');
+
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cNFSe')) {
+            echo json_encode(['success' => false, 'message' => 'Sem permissão para emitir NFS-e.']);
+            return;
+        }
+
+        if (!$os_id) {
+            echo json_encode(['success' => false, 'message' => 'OS não informada.']);
+            return;
+        }
+
+        // Buscar OS
+        $os = $this->os_model->getById($os_id);
+        if (!$os) {
+            echo json_encode(['success' => false, 'message' => 'OS não encontrada.']);
+            return;
+        }
+
+        // Carregar certificado digital
+        $this->load->model('certificado_model');
+        $pemPaths = $this->certificado_model->extrairCertificadoPem();
+
+        if (!$pemPaths || isset($pemPaths['error'])) {
+            $msg = isset($pemPaths['error']) ? $pemPaths['error'] : 'Certificado digital não configurado. Cadastre um certificado em Certificado Digital.';
+            echo json_encode(['success' => false, 'message' => $msg]);
+            return;
+        }
+
+        try {
+            // Carregar config
+            $this->config->load('nfse_nacional', true);
+            $nfseConfig = $this->config->item('nfse_nacional');
+
+            // Instanciar bibliotecas NFS-e Nacional
+            $this->load->library('Nfse/NfseConfig');
+            $this->load->library('Nfse/DpsXmlBuilder');
+            $this->load->library('Nfse/XmlSigner');
+            $this->load->library('Nfse/NfseNacional');
+
+            // Carregar dados do emitente
+            $this->load->model('mapos_model');
+            $emitente = $this->mapos_model->getEmitente();
+
+            // Montar dados do prestador
+            $prestador = [
+                'cnpj' => $pemPaths['cnpj'],
+                'razao_social' => $pemPaths['razao_social'] ?? ($emitente->nome ?? ''),
+                'im' => $emitente->im ?? '',
+                'cnae' => $this->impostos_model->getConfig('IMPOSTO_CODIGO_TRIBUTACAO_NACIONAL') ?: '010701',
+                'email' => $emitente->email ?? '',
+                'telefone' => $emitente->telefone ?? '',
+                'endereco' => [
+                    'logradouro' => $emitente->rua ?? '',
+                    'numero' => $emitente->numero ?? '',
+                    'complemento' => $emitente->complemento ?? '',
+                    'bairro' => $emitente->bairro ?? '',
+                    'codigo_municipio' => $nfseConfig['nfse_codigo_municipio'] ?? '1302603',
+                    'uf' => 'AM',
+                    'cep' => preg_replace('/\D/', '', $emitente->cep ?? ''),
+                ],
+            ];
+
+            // Montar dados do tomador (cliente da OS)
+            $this->load->model('clientes_model');
+            $cliente = $this->clientes_model->getById($os->clientes_id ?? 0);
+
+            $tomador = [];
+            if ($cliente) {
+                $cpfCnpj = preg_replace('/\D/', '', $cliente->cpfCnpj ?? ($cliente->cnpj ?? ''));
+                $tomador = [
+                    'cpf_cnpj' => $cpfCnpj,
+                    'razao_social' => $cliente->nomeCliente ?? '',
+                    'email' => $cliente->email ?? '',
+                    'telefone' => $cliente->telefone ?? '',
+                    'endereco' => [
+                        'logradouro' => $cliente->rua ?? '',
+                        'numero' => $cliente->numero ?? '',
+                        'complemento' => $cliente->complemento ?? '',
+                        'bairro' => $cliente->bairro ?? '',
+                        'codigo_municipio' => $cliente->codigo_municipio_ibge ?? '1302603',
+                        'uf' => $cliente->estado ?? 'AM',
+                        'cep' => preg_replace('/\D/', '', $cliente->cep ?? ''),
+                    ],
+                ];
+            }
+
+            // Montar dados do serviço
+            $valorServicos = floatval($this->input->post('valor_servicos') ?: $os->valorTotal);
+            $valorDeducoes = floatval($this->input->post('valor_deducoes') ?: 0);
+            $descricaoServico = $this->input->post('descricao_servico') ?: ($this->impostos_model->getConfig('IMPOSTO_DESCRICAO_SERVICO') ?: 'Serviços de informática');
+
+            // Calcular impostos
+            $calculo = $this->impostos_model->calcularImpostos($valorServicos);
+
+            $servico = [
+                'descricao' => $descricaoServico,
+                'cnae' => $this->impostos_model->getConfig('IMPOSTO_CODIGO_TRIBUTACAO_NACIONAL') ?: '010701',
+                'codigo_tributacao_nacional' => $this->impostos_model->getConfig('IMPOSTO_CODIGO_TRIBUTACAO_NACIONAL') ?: '010701',
+                'codigo_tributacao_municipal' => $this->impostos_model->getConfig('IMPOSTO_CODIGO_TRIBUTACAO_MUNICIPAL') ?: '100',
+                'valor_servicos' => $valorServicos,
+                'valor_deducoes' => $valorDeducoes,
+                'valor_iss' => $calculo['iss'] ?? 0,
+                'aliquota_iss' => floatval($this->impostos_model->getConfig('IMPOSTO_ISS_MUNICIPAL') ?: 5.00),
+                'valor_pis' => $calculo['pis'] ?? 0,
+                'valor_cofins' => $calculo['cofins'] ?? 0,
+                'valor_irrf' => $calculo['irpj'] ?? 0,
+                'valor_csll' => $calculo['csll'] ?? 0,
+                'valor_inss' => $calculo['inss'] ?? 0,
+                'valor_liquido' => $valorServicos - ($calculo['valor_total_impostos'] ?? 0) - $valorDeducoes,
+                'iss_retido' => $this->input->post('retem_iss') ? true : false,
+                'pis_retido' => $this->input->post('retem_pis') ? true : false,
+                'cofins_retido' => $this->input->post('retem_cofins') ? true : false,
+                'irrf_retido' => $this->input->post('retem_irrf') ? true : false,
+                'csll_retido' => $this->input->post('retem_csll') ? true : false,
+                'inss_retido' => false,
+            ];
+
+            // Valores de retenção
+            if ($servico['iss_retido']) {
+                $servico['valor_iss_retido'] = floatval($this->input->post('valor_retencao_iss') ?: 0);
+            }
+
+            // Tributação
+            $tributacao = [
+                'natureza_operacao' => $nfseConfig['nfse_natureza_operacao'] ?? '1',
+                'optante_simples' => $nfseConfig['nfse_optante_simples'] ?? true,
+                'regime_especial' => $nfseConfig['nfse_regime_especial'] ?? '0',
+                'incentivador_cultural' => $nfseConfig['nfse_incentivador_cultural'] ?? '0',
+                'aliquota_iss' => floatval($this->impostos_model->getConfig('IMPOSTO_ISS_MUNICIPAL') ?: 5.00),
+            ];
+
+            // Competência
+            $competencia = $this->input->post('competencia') ?: date('Y-m-d');
+
+            // Gerar XML DPS
+            $xmlBuilder = new DpsXmlBuilder([
+                'codigo_municipio' => $nfseConfig['nfse_codigo_municipio'] ?? '1302603',
+                'codigo_uf' => $nfseConfig['nfse_codigo_uf'] ?? '13',
+            ]);
+
+            $dadosDps = [
+                'prestador' => $prestador,
+                'tomador' => $tomador,
+                'servico' => $servico,
+                'tributacao' => $tributacao,
+                'competencia' => $competencia,
+            ];
+
+            $xmlDps = $xmlBuilder->gerarDps($dadosDps);
+
+            if (!$xmlDps) {
+                echo json_encode(['success' => false, 'message' => 'Erro ao gerar XML DPS.']);
+                $this->certificado_model->limparPemTemporarios($pemPaths);
+                return;
+            }
+
+            // Assinar XML DPS
+            $xmlSigner = new XmlSigner();
+            $xmlAssinado = $xmlSigner->assinarXml($xmlDps, $pemPaths['cert'], $pemPaths['key']);
+
+            if (!$xmlAssinado) {
+                echo json_encode(['success' => false, 'message' => 'Erro ao assinar XML DPS. Verifique o certificado digital.']);
+                $this->certificado_model->limparPemTemporarios($pemPaths);
+                return;
+            }
+
+            // Enviar para API Nacional
+            $nfseApi = new NfseNacional([
+                'ambiente' => $pemPaths['ambiente'] ?? 'homologacao',
+                'cert_pem' => $pemPaths['cert'],
+                'key_pem' => $pemPaths['key'],
+                'ca_path' => $nfseConfig['nfse_ca_path'] ?? FCPATH . 'assets/certs/ac-icp-brasil.pem',
+                'cnpj' => $pemPaths['cnpj'],
+                'timeout' => $nfseConfig['nfse_timeout'] ?? 60,
+            ]);
+
+            $resultado = $nfseApi->emitir($xmlAssinado);
+
+            // Limpar arquivos PEM temporários
+            $this->certificado_model->limparPemTemporarios($pemPaths);
+
+            if ($resultado['success']) {
+                // Salvar NFS-e no banco
+                $dadosNfse = [
+                    'valor_servicos' => $valorServicos,
+                    'valor_deducoes' => $valorDeducoes,
+                    'valor_liquido' => $servico['valor_liquido'],
+                    'descricao_servico' => $descricaoServico,
+                    'regime_tributario' => $this->input->post('regime_tributario') ?: 'simples_nacional',
+                    'competencia' => $competencia,
+                    'retem_iss' => $servico['iss_retido'] ? 1 : 0,
+                    'retem_irrf' => $servico['irrf_retido'] ? 1 : 0,
+                    'retem_pis' => $servico['pis_retido'] ? 1 : 0,
+                    'retem_cofins' => $servico['cofins_retido'] ? 1 : 0,
+                    'retem_csll' => $servico['csll_retido'] ? 1 : 0,
+                    'ambiente' => $pemPaths['ambiente'] ?? 'homologacao',
+                ];
+
+                $emitirResult = $this->nfse_emitida_model->emitir($os_id, $dadosNfse);
+
+                if (isset($emitirResult['success']) && $emitirResult['success']) {
+                    // Confirmar emissão com dados da API
+                    $dadosConfirmar = [
+                        'numero' => $resultado['numero'] ?? '',
+                        'chave' => $resultado['chave_acesso'] ?? '',
+                        'codigo_verificacao' => $resultado['codigo_verificacao'] ?? '',
+                        'protocolo' => $resultado['protocolo'] ?? '',
+                        'link_impressao' => $resultado['url_danfe'] ?? '',
+                        'xml_path' => null,
+                    ];
+
+                    $this->nfse_emitida_model->confirmarEmissaoApi($emitirResult['nfse_id'], $dadosConfirmar, $xmlAssinado, $resultado['xml_nfse'] ?? '');
+                }
+
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'NFS-e emitida com sucesso via API Nacional!',
+                    'chave_acesso' => $resultado['chave_acesso'] ?? '',
+                    'numero' => $resultado['numero'] ?? '',
+                    'protocolo' => $resultado['protocolo'] ?? '',
+                    'url_danfe' => $resultado['url_danfe'] ?? '',
+                    'ambiente' => $pemPaths['ambiente'] ?? 'homologacao',
+                    'nfse_id' => $emitirResult['nfse_id'] ?? null,
+                ]);
+            } else {
+                echo json_encode([
+                    'success' => false,
+                    'message' => $resultado['message'] ?? 'Erro ao emitir NFS-e na API Nacional.',
+                    'httpCode' => $resultado['httpCode'] ?? 0,
+                ]);
+            }
+
+        } catch (Exception $e) {
+            log_message('error', 'NFS-e Nacional emitir_nfse_api exception: ' . $e->getMessage());
+            // Limpar PEM temporários em caso de erro
+            if (isset($pemPaths)) {
+                $this->certificado_model->limparPemTemporarios($pemPaths);
+            }
+            echo json_encode(['success' => false, 'message' => 'Erro interno: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Cancelar NFS-e via API Nacional
+     */
+    public function cancelar_nfse_api($nfse_id = null)
+    {
+        header('Content-Type: application/json; charset=utf-8');
+
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'eNFSe')) {
+            echo json_encode(['success' => false, 'message' => 'Sem permissão.']);
+            return;
+        }
+
+        if (!$nfse_id) {
+            echo json_encode(['success' => false, 'message' => 'ID da NFS-e não informado.']);
+            return;
+        }
+
+        // Buscar NFS-e no banco
+        $nfse = $this->nfse_emitida_model->getById($nfse_id);
+        if (!$nfse) {
+            echo json_encode(['success' => false, 'message' => 'NFS-e não encontrada.']);
+            return;
+        }
+
+        if (empty($nfse->chave_acesso)) {
+            echo json_encode(['success' => false, 'message' => 'NFS-e não possui chave de acesso. Não foi emitida via API Nacional.']);
+            return;
+        }
+
+        if ($nfse->situacao === 'Cancelada') {
+            echo json_encode(['success' => false, 'message' => 'NFS-e já está cancelada.']);
+            return;
+        }
+
+        $motivo = $this->input->post('motivo') ?: 'Cancelamento solicitado pelo prestador';
+
+        // Carregar certificado
+        $this->load->model('certificado_model');
+        $pemPaths = $this->certificado_model->extrairCertificadoPem();
+
+        if (!$pemPaths || isset($pemPaths['error'])) {
+            $msg = isset($pemPaths['error']) ? $pemPaths['error'] : 'Certificado digital não configurado.';
+            echo json_encode(['success' => false, 'message' => $msg]);
+            return;
+        }
+
+        try {
+            // Config e instanciar API
+            $this->config->load('nfse_nacional', true);
+            $nfseConfig = $this->config->item('nfse_nacional');
+
+            $this->load->library('Nfse/NfseNacional');
+            $this->load->library('Nfse/XmlSigner');
+
+            $nfseApi = new NfseNacional([
+                'ambiente' => $nfse->ambiente ?? 'homologacao',
+                'cert_pem' => $pemPaths['cert'],
+                'key_pem' => $pemPaths['key'],
+                'ca_path' => $nfseConfig['nfse_ca_path'] ?? FCPATH . 'assets/certs/ac-icp-brasil.pem',
+                'cnpj' => $pemPaths['cnpj'],
+                'timeout' => $nfseConfig['nfse_timeout'] ?? 60,
+            ]);
+
+            // Gerar XML de cancelamento
+            $xmlEvento = $nfseApi->gerarXmlCancelamento($nfse->chave_acesso, $motivo);
+
+            // Assinar evento
+            $xmlSigner = new XmlSigner();
+            $xmlAssinado = $xmlSigner->assinarEventoCancelamento($xmlEvento, $pemPaths['cert'], $pemPaths['key']);
+
+            if (!$xmlAssinado) {
+                echo json_encode(['success' => false, 'message' => 'Erro ao assinar XML de cancelamento.']);
+                $this->certificado_model->limparPemTemporarios($pemPaths);
+                return;
+            }
+
+            // Enviar cancelamento
+            $resultado = $nfseApi->cancelar($nfse->chave_acesso, $motivo, $xmlAssinado);
+
+            // Limpar PEM temporários
+            $this->certificado_model->limparPemTemporarios($pemPaths);
+
+            if ($resultado['success']) {
+                // Atualizar no banco
+                $this->nfse_emitida_model->registrarCancelamentoApi($nfse_id, $motivo, $resultado['data_cancelamento'] ?? date('Y-m-d H:i:s'));
+
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'NFS-e cancelada com sucesso na API Nacional.',
+                    'protocolo' => $resultado['protocolo'] ?? '',
+                    'data_cancelamento' => $resultado['data_cancelamento'] ?? '',
+                ]);
+            } else {
+                echo json_encode([
+                    'success' => false,
+                    'message' => $resultado['message'] ?? 'Erro ao cancelar NFS-e na API Nacional.',
+                ]);
+            }
+
+        } catch (Exception $e) {
+            log_message('error', 'NFS-e Nacional cancelar_nfse_api exception: ' . $e->getMessage());
+            if (isset($pemPaths)) {
+                $this->certificado_model->limparPemTemporarios($pemPaths);
+            }
+            echo json_encode(['success' => false, 'message' => 'Erro interno: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Consultar NFS-e via API Nacional
+     */
+    public function consultar_nfse($nfse_id = null)
+    {
+        header('Content-Type: application/json; charset=utf-8');
+
+        if (!$nfse_id) {
+            echo json_encode(['success' => false, 'message' => 'ID da NFS-e não informado.']);
+            return;
+        }
+
+        $nfse = $this->nfse_emitida_model->getById($nfse_id);
+        if (!$nfse) {
+            echo json_encode(['success' => false, 'message' => 'NFS-e não encontrada.']);
+            return;
+        }
+
+        if (empty($nfse->chave_acesso)) {
+            echo json_encode(['success' => false, 'message' => 'NFS-e não possui chave de acesso.']);
+            return;
+        }
+
+        // Carregar certificado
+        $this->load->model('certificado_model');
+        $pemPaths = $this->certificado_model->extrairCertificadoPem();
+
+        if (!$pemPaths || isset($pemPaths['error'])) {
+            $msg = isset($pemPaths['error']) ? $pemPaths['error'] : 'Certificado digital não configurado.';
+            echo json_encode(['success' => false, 'message' => $msg]);
+            return;
+        }
+
+        try {
+            $this->config->load('nfse_nacional', true);
+            $nfseConfig = $this->config->item('nfse_nacional');
+
+            $this->load->library('Nfse/NfseNacional');
+
+            $nfseApi = new NfseNacional([
+                'ambiente' => $nfse->ambiente ?? 'homologacao',
+                'cert_pem' => $pemPaths['cert'],
+                'key_pem' => $pemPaths['key'],
+                'ca_path' => $nfseConfig['nfse_ca_path'] ?? FCPATH . 'assets/certs/ac-icp-brasil.pem',
+                'cnpj' => $pemPaths['cnpj'],
+                'timeout' => $nfseConfig['nfse_timeout'] ?? 60,
+            ]);
+
+            $resultado = $nfseApi->consultar($nfse->chave_acesso);
+
+            // Limpar PEM
+            $this->certificado_model->limparPemTemporarios($pemPaths);
+
+            echo json_encode($resultado);
+
+        } catch (Exception $e) {
+            log_message('error', 'NFS-e Nacional consultar_nfse exception: ' . $e->getMessage());
+            if (isset($pemPaths)) {
+                $this->certificado_model->limparPemTemporarios($pemPaths);
+            }
+            echo json_encode(['success' => false, 'message' => 'Erro interno: ' . $e->getMessage()]);
+        }
+    }
 }

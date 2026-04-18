@@ -27,6 +27,9 @@ $regimeTributario = $regimeTributario ?? ($tributacao['regime'] ?? 'simples_naci
 $isSimplesNacional = ($regimeTributario === 'simples_nacional');
 $regimeLabel = $isSimplesNacional ? 'Simples Nacional' : 'Lucro Presumido';
 
+// Se NFS-e está cancelada, permitir nova emissão mostrando o wizard
+$mostrarWizard = !$nfse_atual || (isset($nfse_atual->situacao) && $nfse_atual->situacao == 'Cancelada');
+
 if (!function_exists('formatarMoedaNFSe')) {
     function formatarMoedaNFSe($valor) {
         return 'R$ ' . number_format(floatval($valor), 2, ',', '.');
@@ -60,7 +63,7 @@ if (!function_exists('formatarDocumentoNFSe')) {
     </div>
     <?php endif; ?>
 
-    <?php if ($nfse_atual): ?>
+    <?php if ($nfse_atual && !$mostrarWizard): ?>
     <!-- NFS-e JÁ EMITIDA - Card de status -->
     <div class="span12">
         <div class="widget-box">
@@ -80,6 +83,12 @@ if (!function_exists('formatarDocumentoNFSe')) {
                             <br>
                             <strong>Número:</strong> <?= $nfse_atual->numero_nfse ?: 'Pendente' ?><br>
                             <strong>Data Emissão:</strong> <?= $nfse_atual->data_emissao ? date('d/m/Y H:i', strtotime($nfse_atual->data_emissao)) : '---' ?>
+                            <?php if (!empty($nfse_atual->chave_acesso)): ?>
+                                <br><strong>Chave de Acesso:</strong> <small style="font-family: monospace; word-break: break-all;"><?= $nfse_atual->chave_acesso ?></small>
+                            <?php endif; ?>
+                            <?php if (!empty($nfse_atual->protocolo)): ?>
+                                <br><strong>Protocolo:</strong> <?= $nfse_atual->protocolo ?>
+                            <?php endif; ?>
                         </div>
                         <div class="span6 text-right">
                             <strong>Valor Serviços:</strong> R$ <?= number_format($nfse_atual->valor_servicos, 2, ',', '.') ?><br>
@@ -139,6 +148,12 @@ if (!function_exists('formatarDocumentoNFSe')) {
                         <i class="fas fa-file-pdf"></i> Imprimir NFS-e
                     </a>
 
+                    <?php if (!empty($nfse_atual->url_danfe)): ?>
+                        <a href="<?= $nfse_atual->url_danfe ?>" target="_blank" class="btn btn-success">
+                            <i class="fas fa-external-link-alt"></i> DANFSe (Nacional)
+                        </a>
+                    <?php endif; ?>
+
                     <?php if ($nfse_atual->link_impressao): ?>
                         <a href="<?= $nfse_atual->link_impressao ?>" target="_blank" class="btn btn-success">
                             <i class="fas fa-print"></i> Imprimir (Original)
@@ -151,11 +166,28 @@ if (!function_exists('formatarDocumentoNFSe')) {
                         </a>
                     <?php endif; ?>
 
-                    <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eNFSe') && $nfse_atual->situacao != 'Cancelada'): ?>
-                        <button type="button" class="btn btn-danger" onclick="cancelarNFSe(<?= $nfse_atual->id ?>)">
-                            <i class="fas fa-times"></i> Cancelar
+                    <?php if (!empty($nfse_atual->chave_acesso)): ?>
+                        <button type="button" class="btn btn-info" onclick="consultarNFSeNacional(<?= $nfse_atual->id ?>)" title="Consultar status na API Nacional">
+                            <i class="fas fa-sync-alt"></i> Consultar
                         </button>
                     <?php endif; ?>
+
+                    <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eNFSe') && $nfse_atual->situacao != 'Cancelada'): ?>
+                        <?php if (!empty($nfse_atual->chave_acesso)): ?>
+                            <button type="button" class="btn btn-danger" onclick="cancelarNFSeNacional(<?= $nfse_atual->id ?>)">
+                                <i class="fas fa-times"></i> Cancelar (Nacional)
+                            </button>
+                        <?php else: ?>
+                            <button type="button" class="btn btn-danger" onclick="cancelarNFSe(<?= $nfse_atual->id ?>)">
+                                <i class="fas fa-times"></i> Cancelar
+                            </button>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                </div>
+
+                <!-- Resultado da consulta nacional -->
+                <div id="nfse-consulta-resultado" style="display:none; margin-top: 10px;">
+                    <div class="alert alert-info" id="nfse-consulta-conteudo"></div>
                 </div>
             </div>
         </div>
@@ -693,7 +725,7 @@ if (!function_exists('formatarDocumentoNFSe')) {
                         Próximo <i class="fas fa-arrow-right"></i>
                     </button>
                     <button type="button" class="btn btn-success" id="btn-wizard-emitir" style="display: none;">
-                        <i class="fas fa-check-circle"></i> Confirmar & Emitir NFS-e
+                        <i class="fas fa-check-circle"></i> Emitir NFS-e (API Nacional)
                     </button>
                 </div>
             </div>

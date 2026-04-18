@@ -352,4 +352,86 @@ class Nfse_emitida_model extends CI_Model
         $query = $this->db->get('os_nfse_emitida');
         return $query ? $query->result() : [];
     }
+
+    /**
+     * Confirmar emissão com dados retornados pela API Nacional
+     * Atualiza registro local com chave de acesso, protocolo, número, etc.
+     */
+    public function confirmarEmissaoApi($nfse_id, $dados_nfse, $xml_dps = null, $xml_nfse = null)
+    {
+        if (!$this->db->table_exists('os_nfse_emitida')) {
+            return ['error' => 'Tabela de NFS-e não existe'];
+        }
+
+        $update = [
+            'situacao' => 'Emitida',
+            'numero_nfse' => $dados_nfse['numero'] ?? null,
+            'chave_acesso' => $dados_nfse['chave'] ?? null,
+            'codigo_verificacao' => $dados_nfse['codigo_verificacao'] ?? null,
+            'protocolo' => $dados_nfse['protocolo'] ?? null,
+            'link_impressao' => $dados_nfse['link_impressao'] ?? null,
+            'url_danfe' => $dados_nfse['url_danfe'] ?? null,
+            'data_emissao_api' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s'),
+        ];
+
+        // Adicionar XMLs se as colunas existirem
+        if ($xml_dps && $this->db->field_exists('xml_dps', 'os_nfse_emitida')) {
+            $update['xml_dps'] = $xml_dps;
+        }
+        if ($xml_nfse && $this->db->field_exists('xml_nfse', 'os_nfse_emitida')) {
+            $update['xml_nfse'] = $xml_nfse;
+        }
+
+        $this->db->where('id', $nfse_id);
+        if ($this->db->update('os_nfse_emitida', $update)) {
+            // Atualizar status da OS
+            $nfse = $this->getById($nfse_id);
+            if ($nfse && isset($nfse->os_id)) {
+                $this->db->where('idOs', $nfse->os_id);
+                $this->db->update('os', ['nfse_status' => 'Emitida']);
+            }
+
+            log_message('info', 'NFS-e Nacional: Emissão confirmada. ID=' . $nfse_id . ' Chave=' . ($dados_nfse['chave'] ?? ''));
+            return ['success' => true];
+        }
+
+        return ['error' => 'Erro ao atualizar NFS-e'];
+    }
+
+    /**
+     * Registrar cancelamento via API Nacional
+     */
+    public function registrarCancelamentoApi($nfse_id, $motivo = '', $data_cancelamento = null)
+    {
+        if (!$this->db->table_exists('os_nfse_emitida')) {
+            return ['error' => 'Tabela de NFS-e não existe'];
+        }
+
+        $update = [
+            'situacao' => 'Cancelada',
+            'updated_at' => date('Y-m-d H:i:s'),
+        ];
+
+        if ($this->db->field_exists('motivo_cancelamento', 'os_nfse_emitida')) {
+            $update['motivo_cancelamento'] = $motivo;
+        } else {
+            $update['mensagem_retorno'] = 'Cancelada via API Nacional: ' . $motivo;
+        }
+
+        $this->db->where('id', $nfse_id);
+        if ($this->db->update('os_nfse_emitida', $update)) {
+            // Atualizar status da OS
+            $nfse = $this->getById($nfse_id);
+            if ($nfse && isset($nfse->os_id)) {
+                $this->db->where('idOs', $nfse->os_id);
+                $this->db->update('os', ['nfse_status' => 'Cancelada']);
+            }
+
+            log_message('info', 'NFS-e Nacional: Cancelamento registrado. ID=' . $nfse_id . ' Motivo=' . $motivo);
+            return ['success' => true];
+        }
+
+        return ['error' => 'Erro ao registrar cancelamento'];
+    }
 }

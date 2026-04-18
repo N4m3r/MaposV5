@@ -781,7 +781,7 @@
                     <div class="tab-pane" id="tab-notas-fiscais">
                         <ul class="nav nav-tabs" id="nf-sub-tabs">
                             <li class="active"><a href="#subtab-nfse" data-toggle="tab"><i class="fas fa-file-invoice"></i> Serviços (NFS-e)</a></li>
-                            <li><a href="#subtab-produtos" data-toggle="tab"><i class="bx bx-box"></i> Produtos</a></li>
+                            <li><a href="#subtab-produtos" data-toggle="tab"><i class="bx bx-box"></i> Produtos NF-e</a></li>
                             <li><a href="#subtab-boletos" data-toggle="tab"><i class="fas fa-barcode"></i> Boletos</a></li>
                         </ul>
 

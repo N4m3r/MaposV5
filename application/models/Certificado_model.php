@@ -589,4 +589,136 @@ class Certificado_model extends CI_Model
 
         return $this->db->get()->result();
     }
+
+    // ==================== EXTRAÇÃO PEM PARA NFS-e NACIONAL ====================
+
+    /**
+     * Extrai certificado e chave privada no formato PEM para uso com mTLS
+     * Necessário para comunicação com a API NFS-e Nacional
+     *
+     * @param int|null $id ID do certificado (null = ativo)
+     * @return array|false ['cert' => caminho_pem, 'key' => caminho_key, 'senha' => senha_descriptografada]
+     *                      ou false em caso de erro
+     */
+    public function extrairCertificadoPem($id = null)
+    {
+        if ($id) {
+            $this->db->where('id', $id);
+        } else {
+            $this->db->where('ativo', 1);
+            $this->db->order_by('id', 'DESC');
+        }
+        $certificado = $this->db->get('certificado_digital')->row();
+
+        if (!$certificado) {
+            log_message('error', 'NFS-e Nacional: Nenhum certificado encontrado');
+            return false;
+        }
+
+        if (!isset($certificado->arquivo_caminho) || !file_exists($certificado->arquivo_caminho)) {
+            log_message('error', 'NFS-e Nacional: Arquivo do certificado não encontrado: ' . ($certificado->arquivo_caminho ?? 'vazio'));
+            return false;
+        }
+
+        // Descriptografar senha
+        $senha = $this->descriptografarSenha($certificado->senha);
+
+        // Ler conteúdo do .pfx
+        $pfxContent = file_get_contents($certificado->arquivo_caminho);
+        if ($pfxContent === false) {
+            log_message('error', 'NFS-e Nacional: Erro ao ler arquivo .pfx');
+            return false;
+        }
+
+        // Extrair certificado e chave privada do PKCS12
+        $certs = [];
+        if (!openssl_pkcs12_read($pfxContent, $certs, $senha)) {
+            $sslError = openssl_error_string();
+            log_message('error', 'NFS-e Nacional: Erro ao ler PKCS12: ' . $sslError);
+            return false;
+        }
+
+        // Verificar se tem certificado e chave
+        if (empty($certs['cert']) || empty($certs['pkey'])) {
+            log_message('error', 'NFS-e Nacional: Certificado ou chave privada não encontrados no PKCS12');
+            return false;
+        }
+
+        // Criar diretório temporário se não existir
+        $tempDir = $this->tempDir;
+        if (!is_dir($tempDir)) {
+            mkdir($tempDir, 0755, true);
+        }
+
+        // Gerar nomes de arquivo únicos
+        $prefix = 'nfse_' . $certificado->id . '_' . time();
+
+        $certPemPath = $tempDir . $prefix . '_cert.pem';
+        $keyPemPath = $tempDir . $prefix . '_key.pem';
+
+        // Salvar certificado PEM
+        if (file_put_contents($certPemPath, $certs['cert']) === false) {
+            log_message('error', 'NFS-e Nacional: Erro ao salvar certificado PEM');
+            return false;
+        }
+
+        // Salvar chave privada PEM (sem senha para cURL mTLS)
+        $keyPem = $certs['pkey'];
+        if (file_put_contents($keyPemPath, $keyPem) === false) {
+            @unlink($certPemPath);
+            log_message('error', 'NFS-e Nacional: Erro ao salvar chave privada PEM');
+            return false;
+        }
+
+        // Verificar validade do certificado
+        $certInfo = openssl_x509_parse($certs['cert']);
+        if ($certInfo) {
+            $validade = $certInfo['validTo_time_t'];
+            if ($validade < time()) {
+                @unlink($certPemPath);
+                @unlink($keyPemPath);
+                log_message('error', 'NFS-e Nacional: Certificado expirado em ' . date('Y-m-d H:i:s', $validade));
+                return ['error' => 'Certificado digital expirado em ' . date('d/m/Y', $validade)];
+            }
+        }
+
+        // Extrair cadeia completa (certificados extras no PKCS12)
+        if (!empty($certs['extracerts'])) {
+            $chainPem = '';
+            foreach ($certs['extracerts'] as $extraCert) {
+                $chainPem .= $extraCert . "\n";
+            }
+            // Anexar cadeia ao certificado PEM
+            file_put_contents($certPemPath, "\n" . $chainPem, FILE_APPEND);
+        }
+
+        log_message('info', 'NFS-e Nacional: Certificado PEM extraído com sucesso. CNPJ: ' . $certificado->cnpj);
+
+        return [
+            'cert' => $certPemPath,
+            'key' => $keyPemPath,
+            'senha' => $senha,
+            'cnpj' => preg_replace('/\D/', '', $certificado->cnpj),
+            'razao_social' => $certificado->razao_social ?? '',
+            'ambiente' => $certificado->ambiente ?? 'homologacao',
+            'validade' => $certInfo ? date('Y-m-d H:i:s', $certInfo['validTo_time_t']) : null,
+        ];
+    }
+
+    /**
+     * Limpa arquivos PEM temporários após uso
+     *
+     * @param array $pemPaths Array retornado por extrairCertificadoPem
+     */
+    public function limparPemTemporarios($pemPaths)
+    {
+        if (!$pemPaths) return;
+
+        if (!empty($pemPaths['cert']) && file_exists($pemPaths['cert'])) {
+            @unlink($pemPaths['cert']);
+        }
+        if (!empty($pemPaths['key']) && file_exists($pemPaths['key'])) {
+            @unlink($pemPaths['key']);
+        }
+    }
 }

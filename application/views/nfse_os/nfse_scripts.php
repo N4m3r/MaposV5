@@ -429,15 +429,22 @@ function emitirNFSeWizard() {
         emitData.valor_total_retencao = wizardData.retencoes.valor_total_retencao;
     }
 
-    // Emitir NFS-e
+    // Emitir NFS-e via API Nacional
     $.ajax({
-        url: '<?= site_url("nfse_os/emitir/" . $result->idOs) ?>',
+        url: '<?= site_url("nfse_os/emitir_nfse_api/" . $result->idOs) ?>',
         type: 'POST',
         data: emitData,
         dataType: 'json',
         success: function(response) {
             if (response.success) {
                 var nfseId = response.nfse_id || response.id;
+                var ambiente = response.ambiente || 'homologacao';
+                var msg = 'NFS-e emitida com sucesso via API Nacional!\n\n';
+                if (response.chave_acesso) msg += 'Chave de Acesso: ' + response.chave_acesso + '\n';
+                if (response.numero) msg += 'Número: ' + response.numero + '\n';
+                if (response.protocolo) msg += 'Protocolo: ' + response.protocolo + '\n';
+                msg += 'Ambiente: ' + (ambiente === 'producao' ? 'Produção' : 'Homologação') + '\n';
+                if (response.url_danfe) msg += '\nDANFSe: ' + response.url_danfe;
 
                 if (gerarBoleto && nfseId) {
                     // Gerar boleto encadeado
@@ -451,21 +458,21 @@ function emitirNFSeWizard() {
                         },
                         dataType: 'json',
                         success: function(respBoleto) {
-                            alert('NFS-e e Boleto emitidos com sucesso!');
+                            alert(msg + '\n\nBoleto gerado com sucesso!');
                             location.reload();
                         },
                         error: function() {
-                            alert('NFS-e emitida com sucesso! Erro ao gerar boleto. Tente gerar separadamente.');
+                            alert(msg + '\n\nNFS-e emitida! Erro ao gerar boleto. Tente gerar separadamente.');
                             location.reload();
                         }
                     });
                 } else {
-                    alert('NFS-e emitida com sucesso!');
+                    alert(msg);
                     location.reload();
                 }
             } else {
                 alert('Erro ao emitir NFS-e: ' + (response.message || response.error || 'Erro desconhecido'));
-                btnEmitir.prop('disabled', false).html('<i class="fas fa-check-circle"></i> Confirmar & Emitir NFS-e');
+                btnEmitir.prop('disabled', false).html('<i class="fas fa-check-circle"></i> Emitir NFS-e (API Nacional)');
             }
         },
         error: function(xhr) {
@@ -475,7 +482,7 @@ function emitirNFSeWizard() {
                 msg = resp.message || resp.error || msg;
             } catch(e) {}
             alert(msg);
-            btnEmitir.prop('disabled', false).html('<i class="fas fa-check-circle"></i> Confirmar & Emitir NFS-e');
+            btnEmitir.prop('disabled', false).html('<i class="fas fa-check-circle"></i> Emitir NFS-e (API Nacional)');
         }
     });
 }
@@ -524,6 +531,79 @@ function cancelarNFSe(nfseId) {
         document.body.appendChild(form);
         form.submit();
     }
+}
+
+// Cancelar NFS-e via API Nacional
+function cancelarNFSeNacional(nfseId) {
+    var motivo = prompt('Informe o motivo do cancelamento (mín. 15 caracteres):');
+    if (!motivo) return;
+    if (motivo.length < 15) {
+        alert('O motivo do cancelamento deve ter pelo menos 15 caracteres (requisito da API Nacional).');
+        return;
+    }
+    if (!confirm('Confirma o cancelamento desta NFS-e na API Nacional?\n\nEsta ação é irreversível.')) return;
+
+    var btn = event.target.closest('button');
+    if (btn) btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Cancelando...');
+
+    $.ajax({
+        url: '<?= site_url("nfse_os/cancelar_nfse_api/") ?>' + nfseId,
+        type: 'POST',
+        data: { motivo: motivo },
+        dataType: 'json',
+        success: function(response) {
+            if (response.success) {
+                alert('NFS-e cancelada com sucesso na API Nacional!' +
+                    (response.protocolo ? '\nProtocolo: ' + response.protocolo : ''));
+                location.reload();
+            } else {
+                alert('Erro ao cancelar NFS-e: ' + (response.message || 'Erro desconhecido'));
+                if (btn) btn.prop('disabled', false).html('<i class="fas fa-times"></i> Cancelar (Nacional)');
+            }
+        },
+        error: function(xhr) {
+            var msg = 'Erro na comunicação com o servidor.';
+            try {
+                var resp = JSON.parse(xhr.responseText);
+                msg = resp.message || resp.error || msg;
+            } catch(e) {}
+            alert(msg);
+            if (btn) btn.prop('disabled', false).html('<i class="fas fa-times"></i> Cancelar (Nacional)');
+        }
+    });
+}
+
+// Consultar NFS-e na API Nacional
+function consultarNFSeNacional(nfseId) {
+    var resultDiv = $('#nfse-consulta-resultado');
+    var contentDiv = $('#nfse-consulta-conteudo');
+
+    resultDiv.show();
+    contentDiv.html('<i class="fas fa-spinner fa-spin"></i> Consultando NFS-e na API Nacional...');
+
+    $.ajax({
+        url: '<?= site_url("nfse_os/consultar_nfse/") ?>' + nfseId,
+        type: 'GET',
+        dataType: 'json',
+        success: function(response) {
+            if (response.success) {
+                var data = response.data || {};
+                var html = '<strong>Consulta Realizada com Sucesso</strong><br>';
+                html += '<strong>Situação:</strong> ' + (data.situacaoNfse || data.situacao || '---') + '<br>';
+                html += '<strong>Chave de Acesso:</strong> ' + (data.chaveAcesso || response.chave_acesso || '---') + '<br>';
+                if (data.numero) html += '<strong>Número:</strong> ' + data.numero + '<br>';
+                if (data.dataHoraEmissao) html += '<strong>Data/Hora:</strong> ' + data.dataHoraEmissao + '<br>';
+                contentDiv.html(html).removeClass('alert-info').addClass('alert-success');
+            } else {
+                contentDiv.html('<strong>Erro na consulta:</strong> ' + (response.message || 'Erro desconhecido'))
+                    .removeClass('alert-info').addClass('alert-danger');
+            }
+        },
+        error: function(xhr) {
+            contentDiv.html('<strong>Erro na comunicação com o servidor.</strong>')
+                .removeClass('alert-info').addClass('alert-danger');
+        }
+    });
 }
 
 function cancelarBoleto(boletoId) {

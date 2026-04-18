@@ -8,8 +8,9 @@ CREATE TABLE IF NOT EXISTS `os_nfse_emitida` (
   `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   `os_id` INT(11) NOT NULL COMMENT 'ID da OS vinculada',
   `numero_nfse` VARCHAR(20) NULL COMMENT 'Número da NFS-e',
-  `chave_acesso` VARCHAR(50) NULL,
+  `chave_acesso` VARCHAR(81) NULL COMMENT 'Chave de acesso NFS-e Nacional (44+digitos)',
   `data_emissao` DATETIME NULL,
+  `data_emissao_api` DATETIME NULL COMMENT 'Data/hora de emissão retornada pela API Nacional',
   `valor_servicos` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
   `valor_deducoes` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
   `valor_liquido` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
@@ -21,11 +22,16 @@ CREATE TABLE IF NOT EXISTS `os_nfse_emitida` (
   `valor_pis` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
   `valor_cofins` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
   `valor_total_impostos` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
-  `situacao` ENUM('Pendente', 'Emitida', 'Cancelada', 'Substituida') NOT NULL DEFAULT 'Pendente',
+  `situacao` ENUM('Pendente', 'Emitida', 'Cancelada', 'Substituida', 'Rejeitada') NOT NULL DEFAULT 'Pendente',
   `codigo_verificacao` VARCHAR(20) NULL,
   `link_impressao` VARCHAR(500) NULL,
+  `url_danfe` VARCHAR(500) NULL COMMENT 'URL do DANFSe na API Nacional',
   `xml_path` VARCHAR(500) NULL,
+  `xml_dps` LONGTEXT NULL COMMENT 'XML DPS assinado enviado à API Nacional',
+  `xml_nfse` LONGTEXT NULL COMMENT 'XML NFS-e retornado pela API Nacional',
   `protocolo` VARCHAR(50) NULL,
+  `ambiente` ENUM('homologacao','producao') NOT NULL DEFAULT 'homologacao' COMMENT 'Ambiente de emissão',
+  `motivo_cancelamento` TEXT NULL COMMENT 'Motivo do cancelamento',
   `mensagem_retorno` TEXT NULL,
   `cobranca_id` INT(11) NULL COMMENT 'ID da cobrança/boleto vinculado',
   `emitido_por` INT(11) NULL,
@@ -33,8 +39,25 @@ CREATE TABLE IF NOT EXISTS `os_nfse_emitida` (
   `updated_at` DATETIME NULL,
   PRIMARY KEY (`id`),
   INDEX `idx_os_id` (`os_id`),
-  INDEX `idx_numero_nfse` (`numero_nfse`)
+  INDEX `idx_numero_nfse` (`numero_nfse`),
+  INDEX `idx_chave_acesso` (`chave_acesso`),
+  INDEX `idx_situacao` (`situacao`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- =============================================
+-- ALTER TABLE: Adicionar colunas NFS-e Nacional em tabela existente
+-- Execute APENAS se a tabela já existir sem estas colunas
+-- =============================================
+-- ALTER TABLE `os_nfse_emitida` ADD COLUMN `chave_acesso` VARCHAR(81) NULL COMMENT 'Chave de acesso NFS-e Nacional' AFTER `numero_nfse`;
+-- ALTER TABLE `os_nfse_emitida` ADD COLUMN `data_emissao_api` DATETIME NULL COMMENT 'Data/hora emissão API Nacional' AFTER `data_emissao`;
+-- ALTER TABLE `os_nfse_emitida` ADD COLUMN `url_danfe` VARCHAR(500) NULL COMMENT 'URL DANFSe API Nacional' AFTER `link_impressao`;
+-- ALTER TABLE `os_nfse_emitida` ADD COLUMN `xml_dps` LONGTEXT NULL COMMENT 'XML DPS assinado' AFTER `xml_path`;
+-- ALTER TABLE `os_nfse_emitida` ADD COLUMN `xml_nfse` LONGTEXT NULL COMMENT 'XML NFS-e retornado' AFTER `xml_dps`;
+-- ALTER TABLE `os_nfse_emitida` ADD COLUMN `ambiente` ENUM('homologacao','producao') NOT NULL DEFAULT 'homologacao' COMMENT 'Ambiente emissão' AFTER `xml_nfse`;
+-- ALTER TABLE `os_nfse_emitida` ADD COLUMN `motivo_cancelamento` TEXT NULL COMMENT 'Motivo cancelamento' AFTER `ambiente`;
+-- ALTER TABLE `os_nfse_emitida` MODIFY COLUMN `situacao` ENUM('Pendente','Emitida','Cancelada','Substituida','Rejeitada') NOT NULL DEFAULT 'Pendente';
+-- ALTER TABLE `os_nfse_emitida` ADD INDEX `idx_chave_acesso` (`chave_acesso`);
+-- ALTER TABLE `os_nfse_emitida` ADD INDEX `idx_situacao` (`situacao`);
 
 -- Tabela: Boletos Emitidos para OS
 CREATE TABLE IF NOT EXISTS `os_boleto_emitido` (

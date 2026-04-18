@@ -77,6 +77,9 @@ $route['nfse_os/api_get_os_dados/(:num)'] = 'nfse_os/api_get_os_dados/$1';
 $route['nfse_os/enviar_boleto_email/(:num)'] = 'nfse_os/enviar_boleto_email/$1';
 $route['nfse_os/preview/(:num)'] = 'nfse_os/preview/$1';
 $route['nfse_os/imprimir_nfse/(:num)'] = 'nfse_os/imprimir_nfse/$1';
+$route['nfse_os/emitir_nfse_api/(:num)'] = 'nfse_os/emitir_nfse_api/$1';
+$route['nfse_os/cancelar_nfse_api/(:num)'] = 'nfse_os/cancelar_nfse_api/$1';
+$route['nfse_os/consultar_nfse/(:num)'] = 'nfse_os/consultar_nfse/$1';
 
 // Rotas de Impostos
 $route['impostos'] = 'impostos';
