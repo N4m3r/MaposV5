@@ -9,7 +9,7 @@
         <ul class="breadcrumb">
             <li><a href="<?= site_url('dashboard') ?>">Dashboard</a> <span class="divider">/</span></li>
             <li><a href="<?= site_url('usuarioscliente') ?>">Usuários Cliente</a> <span class="divider">/</span></li>
-            <li class="active">Editar: <?= htmlspecialchars($usuario->nome) ?></li>
+            <li class="active">Editar: <?= htmlspecialchars($usuario->nome, ENT_QUOTES, 'UTF-8') ?></li>
         </ul>
     </div>
 </div>
@@ -73,7 +73,7 @@
                                 <option value="">-- Nenhum --</option>
                                 <?php foreach ($clientes as $c): ?>
                                     <option value="<?= $c->idClientes ?>" <?= set_select('cliente_id', $c->idClientes, $usuario->cliente_id == $c->idClientes) ?>>
-                                        <?= htmlspecialchars($c->nomeCliente) ?> <?= $c->documento ? '(' . $c->documento . ')' : '' ?> <?= isset($c->fornecedor) && $c->fornecedor ? '[Fornecedor]' : '' ?>
+                                        <?= htmlspecialchars($c->nomeCliente, ENT_QUOTES, 'UTF-8') ?> <?= $c->documento ? '(' . $c->documento . ')' : '' ?> <?= isset($c->fornecedor) && $c->fornecedor ? '[Fornecedor]' : '' ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>
@@ -101,8 +101,8 @@
                                     <option value="">-- Selecione para preencher CNPJ --</option>
                                     <?php foreach ($clientes as $c): ?>
                                         <?php if (!empty($c->documento)): ?>
-                                            <option value="<?= htmlspecialchars($c->documento) ?>" data-razao="<?= htmlspecialchars($c->nomeCliente) ?>" data-id="<?= $c->idClientes ?>">
-                                                <?= htmlspecialchars($c->nomeCliente) ?> - <?= $c->documento ?> <?= isset($c->fornecedor) && $c->fornecedor ? '[Fornecedor]' : '' ?>
+                                            <option value="<?= htmlspecialchars($c->documento, ENT_QUOTES, 'UTF-8') ?>" data-razao="<?= htmlspecialchars($c->nomeCliente, ENT_QUOTES, 'UTF-8') ?>" data-id="<?= $c->idClientes ?>">
+                                                <?= htmlspecialchars($c->nomeCliente, ENT_QUOTES, 'UTF-8') ?> - <?= $c->documento ?> <?= isset($c->fornecedor) && $c->fornecedor ? '[Fornecedor]' : '' ?>
                                             </option>
                                         <?php endif; ?>
                                     <?php endforeach; ?>
@@ -134,7 +134,7 @@
                                                 <i class="bx bx-trash"></i>
                                             </button>
                                         </div>
-                                        <input type="text" name="cnpjs_razao[]" class="span6 cnpj-razao" value="<?= htmlspecialchars($cnpj->razao_social ?? '') ?>" placeholder="Razão Social" readonly style="margin-top: 5px;" />
+                                        <input type="text" name="cnpjs_razao[]" class="span6 cnpj-razao" value="<?= htmlspecialchars($cnpj->razao_social ?? '', ENT_QUOTES, 'UTF-8') ?>" placeholder="Razão Social" readonly style="margin-top: 5px;" />
                                     </div>
                                     <?php endforeach; ?>
                                 <?php else: ?>
