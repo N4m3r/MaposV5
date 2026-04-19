@@ -1815,8 +1815,10 @@ async function salvarFotoServico() {
         console.error('Erro completo:', err);
         alert('Erro ao enviar foto: ' + err.message);
     } finally {
-        btn.innerHTML = btnOriginalText;
-        btn.disabled = false;
+        if (btn) {
+            btn.innerHTML = btnOriginalText;
+            btn.disabled = false;
+        }
     }
 }
 
