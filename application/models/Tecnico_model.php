@@ -193,17 +193,25 @@ class Tecnico_model extends CI_Model
      */
     public function atribuirTecnico($os_id, $tecnico_id, $atribuido_por, $observacao = null)
     {
-        // Verificar se ja existe atribuicao ativa
+        // Verificar se ja existe atribuicao ativa para o MESMO tecnico
         $this->db->where('os_id', $os_id);
         $this->db->where('tecnico_id', $tecnico_id);
         $this->db->where('data_remocao IS NULL');
         $existe = $this->db->get('os_tecnico_atribuicao');
 
         if ($existe && $existe->num_rows() > 0) {
-            return false; // Ja esta atribuido
+            return false; // Ja esta atribuido a este mesmo tecnico
         }
 
-        // Registrar atribuicao no historico
+        // Remover atribuicao ativa anterior (se existir)
+        $this->db->where('os_id', $os_id);
+        $this->db->where('data_remocao IS NULL');
+        $this->db->update('os_tecnico_atribuicao', [
+            'data_remocao' => date('Y-m-d H:i:s'),
+            'motivo_remocao' => 'Troca de tecnico - novo atribuido'
+        ]);
+
+        // Registrar nova atribuicao no historico
         $this->db->insert('os_tecnico_atribuicao', [
             'os_id' => $os_id,
             'tecnico_id' => $tecnico_id,
@@ -240,10 +248,14 @@ class Tecnico_model extends CI_Model
      */
     public function getTecnicosDisponiveis()
     {
-        // Buscar usuarios do grupo Tecnico (permissoes_id = 6 tipicamente)
+        // Buscar usuarios que sao tecnicos (is_tecnico = 1 ou app_tecnico_instalado = 1)
         $this->db->select('usuarios.*');
         $this->db->from('usuarios');
         $this->db->where('usuarios.situacao', 1); // Ativo
+        $this->db->group_start();
+        $this->db->where('usuarios.is_tecnico', 1);
+        $this->db->or_where('usuarios.app_tecnico_instalado', 1);
+        $this->db->group_end();
         $this->db->order_by('usuarios.nome', 'ASC');
 
         $query = $this->db->get();

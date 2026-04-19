@@ -225,5 +225,11 @@ $route['tecnicos_admin/api/dados_dashboard'] = 'tecnicos_admin/api_dados_dashboa
 $route['tecnicos_admin/execucao'] = 'tecnicos_admin/execucao_obras';
 $route['tecnicos_admin/buscar_os_por_obra'] = 'tecnicos_admin/buscar_os_por_obra';
 
+// Rotas para atribuir técnico às OS
+$route['os/atribuir'] = 'os/atribuir';
+$route['os/atribuirTecnicoAction'] = 'os/atribuirTecnicoAction';
+$route['os/removerTecnicoAction'] = 'os/removerTecnicoAction';
+$route['os/historicoAtribuicoes/(:num)'] = 'os/historicoAtribuicoes/$1';
+
 /* End of file routes.php */
 /* Location: ./application/config/routes.php */
