@@ -1396,30 +1396,6 @@ class Tecnicos_admin extends MY_Controller
     }
 
     /**
-     * Criar tabela de atividades se não existir
-     */
-    private function criarTabelaAtividades()
-    {
-        try {
-            $sql = "CREATE TABLE IF NOT EXISTS obra_atividades (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                obra_id INT NOT NULL,
-                usuario_id INT NOT NULL,
-                usuario_nome VARCHAR(255) NOT NULL,
-                tipo VARCHAR(50) DEFAULT 'comentario',
-                descricao TEXT NOT NULL,
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                INDEX idx_obra_id (obra_id),
-                INDEX idx_created_at (created_at)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
-
-            $this->db->query($sql);
-        } catch (Exception $e) {
-            // Silenciar erro
-        }
-    }
-
-    /**
      * Criar tabela de progresso de etapas se não existir
      */
     private function criarTabelaEtapaProgresso()
