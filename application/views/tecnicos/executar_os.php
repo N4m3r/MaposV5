@@ -2394,12 +2394,20 @@
 </style>
 
 <script>
+// Inicializar variaveis globais antes de qualquer codigo
 window.execucaoId = <?php echo $execucao ? $execucao->id : 'null'; ?>;
 window.osId = <?php echo $os->idOs; ?>;
 window.latitude = undefined;
 window.longitude = undefined;
 window.fotoCheckin = null;
 window.stream = null;
+
+// Inicializar variaveis do wizard ANTES de qualquer funcao
+window.wizardStepAtual = 1;
+window.wizardTotalSteps = 5;
+window.wizardServicosStatus = {};
+window.wizardFotos = [];
+window.wizardSignaturePad = null;
 
 // Obter localização (opcional - silencia erros de permissão)
 if ('geolocation' in navigator) {
@@ -2475,12 +2483,13 @@ async function verificarPermissoes() {
 // Verificar permissões ao carregar
 verificarPermissoes();
 
-// Canvas de assinatura
+// Canvas de assinatura (verificar se existe)
 const canvas = document.getElementById('signaturePad');
-const ctx = canvas.getContext('2d');
+const ctx = canvas ? canvas.getContext('2d') : null;
 let isDrawing = false;
 
 function resizeCanvas() {
+    if (!canvas || !ctx) return;
     const rect = canvas.getBoundingClientRect();
     canvas.width = rect.width;
     canvas.height = rect.height;
@@ -2489,25 +2498,28 @@ function resizeCanvas() {
     ctx.lineCap = 'round';
 }
 
-window.addEventListener('load', resizeCanvas);
-window.addEventListener('resize', resizeCanvas);
+if (canvas) {
+    window.addEventListener('load', resizeCanvas);
+    window.addEventListener('resize', resizeCanvas);
 
-canvas.addEventListener('mousedown', startDrawing);
-canvas.addEventListener('mousemove', draw);
-canvas.addEventListener('mouseup', stopDrawing);
-canvas.addEventListener('mouseout', stopDrawing);
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', stopDrawing);
+    canvas.addEventListener('mouseout', stopDrawing);
 
-canvas.addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    startDrawing(e.touches[0]);
-});
-canvas.addEventListener('touchmove', (e) => {
-    e.preventDefault();
-    draw(e.touches[0]);
-});
-canvas.addEventListener('touchend', stopDrawing);
+    canvas.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        startDrawing(e.touches[0]);
+    });
+    canvas.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        draw(e.touches[0]);
+    });
+    canvas.addEventListener('touchend', stopDrawing);
+}
 
 function startDrawing(e) {
+    if (!canvas || !ctx) return;
     isDrawing = true;
     const rect = canvas.getBoundingClientRect();
     ctx.beginPath();
@@ -2515,7 +2527,7 @@ function startDrawing(e) {
 }
 
 function draw(e) {
-    if (!isDrawing) return;
+    if (!isDrawing || !canvas || !ctx) return;
     const rect = canvas.getBoundingClientRect();
     ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
     ctx.stroke();
@@ -2526,7 +2538,9 @@ function stopDrawing() {
 }
 
 function limparAssinatura() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (ctx && canvas) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
 }
 
 // Canvas de assinatura do Técnico (para check-in)
@@ -3362,11 +3376,19 @@ document.addEventListener('DOMContentLoaded', function() {
 // ============================================
 // WIZARD DE ATENDIMENTO
 // ============================================
-let wizardStepAtual = 1;
-const wizardTotalSteps = 5;
-let wizardServicosStatus = {};
-let wizardFotos = [];
-let wizardSignaturePad = null;
+// Inicializar variaveis do wizard no escopo global
+window.wizardStepAtual = window.wizardStepAtual || 1;
+window.wizardTotalSteps = 5;
+window.wizardServicosStatus = window.wizardServicosStatus || {};
+window.wizardFotos = window.wizardFotos || [];
+window.wizardSignaturePad = window.wizardSignaturePad || null;
+
+// Manter compatibilidade com codigo existente
+var wizardStepAtual = window.wizardStepAtual;
+var wizardTotalSteps = window.wizardTotalSteps;
+var wizardServicosStatus = window.wizardServicosStatus;
+var wizardFotos = window.wizardFotos;
+var wizardSignaturePad = window.wizardSignaturePad;
 
 // Inicializar Wizard quando DOM estiver pronto
 document.addEventListener('DOMContentLoaded', function() {
@@ -3384,31 +3406,31 @@ function inicializarWizard() {
     atualizarResumoServicos();
 }
 
-// Navegação do Wizard
+// Navegacao do Wizard
 function wizardProximo() {
-    if (wizardStepAtual < wizardTotalSteps) {
+    if (window.wizardStepAtual < window.wizardTotalSteps) {
         // Validar etapa atual
-        if (!validarEtapa(wizardStepAtual)) {
+        if (!validarEtapa(window.wizardStepAtual)) {
             return;
         }
 
-        wizardStepAtual++;
+        window.wizardStepAtual++;
         atualizarWizardView();
     }
 }
 window.wizardProximo = wizardProximo;
 
 function wizardAnterior() {
-    if (wizardStepAtual > 1) {
-        wizardStepAtual--;
+    if (window.wizardStepAtual > 1) {
+        window.wizardStepAtual--;
         atualizarWizardView();
     }
 }
 window.wizardAnterior = wizardAnterior;
 
 function irParaEtapa(etapa) {
-    if (etapa >= 1 && etapa <= wizardTotalSteps) {
-        wizardStepAtual = etapa;
+    if (etapa >= 1 && etapa <= window.wizardTotalSteps) {
+        window.wizardStepAtual = etapa;
         atualizarWizardView();
     }
 }
@@ -3467,12 +3489,15 @@ window.validarEtapa = validarEtapa;
 
 function atualizarWizardView() {
     // Atualizar indicador
-    document.getElementById('stepIndicator').textContent = 'Etapa ' + wizardStepAtual + ' de ' + wizardTotalSteps;
+    const stepIndicator = document.getElementById('stepIndicator');
+    if (stepIndicator) {
+        stepIndicator.textContent = 'Etapa ' + window.wizardStepAtual + ' de ' + window.wizardTotalSteps;
+    }
 
     // Atualizar progress bar
     const progressBar = document.getElementById('wizardProgressBar');
     if (progressBar) {
-        progressBar.className = 'wizard-progress-bar step-' + wizardStepAtual;
+        progressBar.className = 'wizard-progress-bar step-' + window.wizardStepAtual;
     }
 
     // Atualizar steps visuais
@@ -3480,23 +3505,23 @@ function atualizarWizardView() {
         const stepNum = parseInt(step.getAttribute('data-step'));
         step.classList.remove('active', 'completed');
 
-        if (stepNum === wizardStepAtual) {
+        if (stepNum === window.wizardStepAtual) {
             step.classList.add('active');
-        } else if (stepNum < wizardStepAtual) {
+        } else if (stepNum < window.wizardStepAtual) {
             step.classList.add('completed');
         }
     });
 
-    // Mostrar conteúdo da etapa atual
+    // Mostrar conteudo da etapa atual
     document.querySelectorAll('.wizard-step-content').forEach(content => {
         content.classList.remove('active');
-        if (parseInt(content.getAttribute('data-step')) === wizardStepAtual) {
+        if (parseInt(content.getAttribute('data-step')) === window.wizardStepAtual) {
             content.classList.add('active');
         }
     });
 
     // Se estiver na etapa 5, atualizar resumo e inicializar assinatura
-    if (wizardStepAtual === 5) {
+    if (window.wizardStepAtual === 5) {
         atualizarResumoFinal();
         inicializarAssinaturaWizard();
     }
