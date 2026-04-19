@@ -58,6 +58,8 @@ CREATE TABLE IF NOT EXISTS `os_fotos_atendimento` (
     `etapa` VARCHAR(50) NOT NULL DEFAULT 'durante' COMMENT 'entrada, durante, saida',
     `tamanho` INT(11) NULL DEFAULT NULL,
     `tipo_arquivo` VARCHAR(10) NULL DEFAULT NULL COMMENT 'jpg, png, gif',
+    `imagem_base64` LONGTEXT NULL COMMENT 'imagem em base64 para storage no banco',
+    `mime_type` VARCHAR(30) NULL DEFAULT NULL COMMENT 'tipo MIME da imagem',
     `data_upload` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`idFoto`),
     KEY `os_id` (`os_id`),
@@ -68,3 +70,12 @@ CREATE TABLE IF NOT EXISTS `os_fotos_atendimento` (
     CONSTRAINT `fk_foto_checkin` FOREIGN KEY (`checkin_id`) REFERENCES `os_checkin` (`idCheckin`) ON DELETE CASCADE,
     CONSTRAINT `fk_foto_usuario` FOREIGN KEY (`usuarios_id`) REFERENCES `usuarios` (`idUsuarios`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+-- Adicionar campos imagem_base64 e mime_type em tabelas existentes (caso já existam)
+ALTER TABLE `os_fotos_atendimento`
+    ADD COLUMN IF NOT EXISTS `imagem_base64` LONGTEXT NULL COMMENT 'imagem em base64 para storage no banco' AFTER `tipo_arquivo`,
+    ADD COLUMN IF NOT EXISTS `mime_type` VARCHAR(30) NULL DEFAULT NULL COMMENT 'tipo MIME da imagem' AFTER `imagem_base64`;
+
+ALTER TABLE `os_assinaturas`
+    ADD COLUMN IF NOT EXISTS `imagem_base64` LONGTEXT NULL COMMENT 'assinatura em base64' AFTER `assinatura`,
+    ADD COLUMN IF NOT EXISTS `is_base64` TINYINT(1) NULL DEFAULT 0 COMMENT 'flag se usa base64' AFTER `imagem_base64`;

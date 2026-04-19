@@ -300,6 +300,16 @@ class Migration_Consolidated_schema_update extends CI_Migration
             ]);
         }
 
+        // --- os_fotos_atendimento ---
+        if ($this->db->table_exists('os_fotos_atendimento')) {
+            $this->_addColumnIfNotExists('os_fotos_atendimento', 'imagem_base64', [
+                'type' => 'LONGTEXT', 'null' => true
+            ]);
+            $this->_addColumnIfNotExists('os_fotos_atendimento', 'mime_type', [
+                'type' => 'VARCHAR', 'constraint' => 30, 'null' => true
+            ]);
+        }
+
         // --- configuracoes - garantir campo config como VARCHAR(20) utf8mb4 ---
         if ($this->db->table_exists('configuracoes')) {
             $row = $this->db->query("SHOW COLUMNS FROM configuracoes LIKE 'config'")->row();
@@ -537,12 +547,14 @@ class Migration_Consolidated_schema_update extends CI_Migration
             'checkin_id' => ['type' => 'INT', 'constraint' => 11, 'null' => true],
             'usuarios_id' => ['type' => 'INT', 'constraint' => 11],
             'arquivo' => ['type' => 'VARCHAR', 'constraint' => 255],
-            'path' => ['type' => 'VARCHAR', 'constraint' => 255],
-            'url' => ['type' => 'VARCHAR', 'constraint' => 255],
+            'path' => ['type' => 'VARCHAR', 'constraint' => 500],
+            'url' => ['type' => 'VARCHAR', 'constraint' => 500],
             'descricao' => ['type' => 'TEXT', 'null' => true],
             'etapa' => ['type' => 'VARCHAR', 'constraint' => 20, 'default' => 'durante'],
             'tamanho' => ['type' => 'INT', 'constraint' => 11, 'null' => true],
             'tipo_arquivo' => ['type' => 'VARCHAR', 'constraint' => 10, 'null' => true],
+            'imagem_base64' => ['type' => 'LONGTEXT', 'null' => true],
+            'mime_type' => ['type' => 'VARCHAR', 'constraint' => 30, 'null' => true],
             'data_upload' => ['type' => 'TIMESTAMP', 'default' => 'CURRENT_TIMESTAMP'],
         ], ['idFoto']);
 

@@ -330,7 +330,7 @@ class Fotosatendimento_model extends CI_Model
             return null;
         }
 
-        $this->db->select('imagem_base64, mime_type, arquivo');
+        $this->db->select('imagem_base64, mime_type, arquivo, path');
         $this->db->from('os_fotos_atendimento');
         $this->db->where('idFoto', $foto_id);
         $this->db->limit(1);

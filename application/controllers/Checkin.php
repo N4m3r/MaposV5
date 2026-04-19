@@ -788,8 +788,34 @@ class Checkin extends MY_Controller
 
         $foto = $this->fotosatendimento_model->getImagemBase64($foto_id);
 
-        if (!$foto || empty($foto->imagem_base64)) {
-            log_message('error', 'verFotoDB: Foto nao encontrada ou vazia. ID: ' . $foto_id);
+        if (!$foto) {
+            log_message('error', 'verFotoDB: Foto nao encontrada. ID: ' . $foto_id);
+            show_404();
+            return;
+        }
+
+        // Se nao tem imagem_base64, tenta ler do arquivo fisico
+        if (empty($foto->imagem_base64)) {
+            log_message('debug', 'verFotoDB: imagem_base64 vazia, tentando arquivo fisico. ID: ' . $foto_id);
+
+            // Tenta ler o arquivo fisico
+            $path = !empty($foto->path) ? $foto->path : null;
+
+            // Se path eh relativo, converte para absoluto
+            if ($path && !file_exists($path)) {
+                $path = FCPATH . $path;
+            }
+
+            if ($path && file_exists($path)) {
+                $mime = $foto->mime_type ?: mime_content_type($path) ?: 'image/jpeg';
+                header('Content-Type: ' . $mime);
+                header('Content-Length: ' . filesize($path));
+                header('Cache-Control: public, max-age=86400');
+                readfile($path);
+                exit;
+            }
+
+            log_message('error', 'verFotoDB: Arquivo fisico nao encontrado. ID: ' . $foto_id . ', Path: ' . ($foto->path ?? 'null'));
             show_404();
             return;
         }

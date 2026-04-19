@@ -87,25 +87,31 @@
                         // Verifica se as variáveis existem, caso contrário inicializa com valores padrão
                         $checkinAtivo = isset($checkinAtivo) ? $checkinAtivo : null;
                         $checkins = isset($checkins) ? $checkins : array();
+                        $execucoesTecnicas = isset($execucoesTecnicas) ? $execucoesTecnicas : array();
 
-                        // Usa a variável checkinAtivo passada pelo controller
-                        if (!$checkinAtivo) {
-                            // Não há atendimento em andamento - mostrar botão Iniciar
-                            echo '<button type="button" id="btn-iniciar-atendimento" class="button btn btn-mini" style="background-color: #28a745; border-color: #28a745; color: white;">';
-                            echo '<span class="button__icon"><i class="bx bx-log-in"></i></span>';
-                            echo '<span class="button__text">Iniciar Atendimento</span>';
-                            echo '</button>';
-                        } else {
-                            // Há atendimento em andamento - mostrar botão Finalizar
-                            echo '<button type="button" id="btn-finalizar-atendimento" class="button btn btn-mini" style="background-color: #dc3545; border-color: #dc3545; color: white;">';
-                            echo '<span class="button__icon"><i class="bx bx-log-out"></i></span>';
-                            echo '<span class="button__text">Finalizar Atendimento</span>';
-                            echo '</button>';
+                        // Verifica se OS já está finalizada (não permite iniciar/finalizar atendimento)
+                        $osFinalizada = in_array($result->status, ['Finalizada', 'Finalizado']);
+
+                        // Só mostra botões Iniciar/Finalizar se a OS não estiver finalizada
+                        if (!$osFinalizada) {
+                            // Usa a variável checkinAtivo passada pelo controller
+                            if (!$checkinAtivo) {
+                                // Não há atendimento em andamento - mostrar botão Iniciar
+                                echo '<button type="button" id="btn-iniciar-atendimento" class="button btn btn-mini" style="background-color: #28a745; border-color: #28a745; color: white;">';
+                                echo '<span class="button__icon"><i class="bx bx-log-in"></i></span>';
+                                echo '<span class="button__text">Iniciar Atendimento</span>';
+                                echo '</button>';
+                            } else {
+                                // Há atendimento em andamento - mostrar botão Finalizar
+                                echo '<button type="button" id="btn-finalizar-atendimento" class="button btn btn-mini" style="background-color: #dc3545; border-color: #dc3545; color: white;">';
+                                echo '<span class="button__icon"><i class="bx bx-log-out"></i></span>';
+                                echo '<span class="button__text">Finalizar Atendimento</span>';
+                                echo '</button>';
+                            }
                         }
 
                         // Botão de impressão do relatório de atendimento
                         // Mostra se houver checkins tradicionais OU execuções do portal do técnico
-                        $execucoesTecnicas = isset($execucoesTecnicas) ? $execucoesTecnicas : array();
                         if (!empty($checkins) || !empty($execucoesTecnicas)) {
                             echo '<a target="_blank" title="Imprimir Relatório de Atendimento" class="button btn btn-mini" style="background-color: #6c757d; border-color: #6c757d; color: white;" href="' . site_url('checkin/imprimir/' . $result->idOs) . '">';
                             echo '<span class="button__icon"><i class="bx bx-file-report"></i></span>';
