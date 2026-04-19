@@ -41,7 +41,7 @@ class Tec_os_model extends CI_Model
 
         // Se não tem cliente vinculado, retorna objeto com nome genérico
         if (empty($os->clientes_id)) {
-            log_message('warning', 'OS ' . $os_id . ' não tem cliente vinculado');
+            log_message('error', 'OS ' . $os_id . ' não tem cliente vinculado');
             $cliente = new stdClass();
             $cliente->idClientes = null;
             $cliente->nomeCliente = 'Cliente não vinculado';
@@ -58,7 +58,7 @@ class Tec_os_model extends CI_Model
         $query = $this->db->get();
 
         if (!$query || !$query->row()) {
-            log_message('warning', 'Cliente não encontrado para OS ' . $os_id . ', clientes_id: ' . $os->clientes_id);
+            log_message('error', 'Cliente não encontrado para OS ' . $os_id . ', clientes_id: ' . $os->clientes_id);
             $cliente = new stdClass();
             $cliente->idClientes = $os->clientes_id;
             $cliente->nomeCliente = 'Cliente não encontrado (ID: ' . $os->clientes_id . ')';

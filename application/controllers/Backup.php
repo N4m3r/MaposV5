@@ -357,7 +357,7 @@ class Backup extends MY_Controller
 
             if (!empty($erros)) {
                 $resultado['mensagem'] .= ", Erros: " . count($erros);
-                log_message('warning', 'Erros na restauração: ' . implode("\n", $erros));
+                log_message('error', 'Erros na restauração: ' . implode("\n", $erros));
             }
 
         } catch (Exception $e) {

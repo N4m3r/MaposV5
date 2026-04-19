@@ -133,7 +133,7 @@ class Tecnicos extends CI_Controller
             );
 
             if ($distancia > $tecnico->raio_atuacao_km) {
-                log_message('warning', "Técnico {$tecnico->idUsuarios} tentou login fora do raio de atuação. Distância: {$distancia}km");
+                log_message('error', "Técnico {$tecnico->idUsuarios} tentou login fora do raio de atuação. Distância: {$distancia}km");
                 // Opcional: bloquear login ou apenas alertar
                 // $this->session->set_flashdata('warning', 'Você está fora do raio de atuação configurado.');
             }

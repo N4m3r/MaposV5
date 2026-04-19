@@ -305,7 +305,7 @@ class Assinaturas_model extends CI_Model
 
         // Tentativa 3: Se o tamanho mudou muito após regex, tentar o original
         if (strlen($base64_regex) < strlen($base64_limpo) * 0.9) {
-            log_message('warning', 'Assinaturas_model::salvarImagem - Muitos caracteres removidos pelo regex');
+            log_message('debug', 'Assinaturas_model::salvarImagem - Muitos caracteres removidos pelo regex');
             $base64_regex = $base64_limpo;
         }
 
