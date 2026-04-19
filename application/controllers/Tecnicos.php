@@ -118,7 +118,7 @@ class Tecnicos extends CI_Controller
             redirect('tecnicos/login');
         }
 
-        if (!$tecnico->is_tecnico) {
+        if (!$tecnico->is_tecnico && !$tecnico->app_tecnico_instalado) {
             $this->session->set_flashdata('error', 'Usuário não possui permissão de técnico.');
             redirect('tecnicos/login');
         }

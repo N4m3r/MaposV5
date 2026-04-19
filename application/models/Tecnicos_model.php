@@ -34,6 +34,10 @@ class Tecnicos_model extends CI_Model
     public function getByEmail($email)
     {
         $this->db->where('email', $email);
+        $this->db->group_start();
+        $this->db->where('is_tecnico', 1);
+        $this->db->or_where('app_tecnico_instalado', 1);
+        $this->db->group_end();
         return $this->db->get($this->table)->row();
     }
 
@@ -345,7 +349,10 @@ class Tecnicos_model extends CI_Model
      */
     public function getTecnicosPlantao()
     {
+        $this->db->group_start();
         $this->db->where('is_tecnico', 1);
+        $this->db->or_where('app_tecnico_instalado', 1);
+        $this->db->group_end();
         $this->db->where('plantao_24h', 1);
         $this->db->where('situacao', 1);
         $query = $this->db->get($this->table);
@@ -357,7 +364,10 @@ class Tecnicos_model extends CI_Model
      */
     public function getByEspecialidade($especialidade)
     {
+        $this->db->group_start();
         $this->db->where('is_tecnico', 1);
+        $this->db->or_where('app_tecnico_instalado', 1);
+        $this->db->group_end();
         $this->db->where('situacao', 1);
         $this->db->like('especialidades', $especialidade);
         $query = $this->db->get($this->table);
@@ -369,8 +379,8 @@ class Tecnicos_model extends CI_Model
      */
     public function verificarDisponibilidade($tecnico_id, $data, $hora_inicio, $hora_fim)
     {
-        // Verificar se técnico já tem OS agendada no período
-        $this->db->where('usuarios_id', $tecnico_id);
+        // Verificar se técnico já tem OS agendada no período (campo tecnico_responsavel)
+        $this->db->where('tecnico_responsavel', $tecnico_id);
         $this->db->where('dataInicial', $data);
         $this->db->where_in('status', ['Aberto', 'Em Andamento']);
 

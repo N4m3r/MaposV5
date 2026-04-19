@@ -167,8 +167,8 @@ $etapaStatusColors = [
                                             <?php endif; ?>
                                         </div>
                                         <div style="display: flex; gap: 5px;">
-                                            <span class="etapa-status" style="padding: 4px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; background: <?= $etapaStatusColors[$etapaStatus]['bg'] ?>; color: <?= $etapaStatusColors[$etapaStatus]['color'] ?>;">
-                                                <?= $etapaStatusLabels[$etapaStatus] ?>
+                                            <span class="etapa-status" style="padding: 4px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; background: <?= $etapaStatusColors[$etapaStatus]['bg'] ?? '#f5f5f5' ?>; color: <?= $etapaStatusColors[$etapaStatus]['color'] ?? '#666' ?>;">
+                                                <?= $etapaStatusLabels[$etapaStatus] ?? ucfirst($etapaStatus) ?>
                                             </span>
                                             <button type="button" class="btn btn-mini" onclick="editarEtapa(<?= $etapa->id ?>)"><i class="bx bx-edit"></i></button>
                                             <button type="button" class="btn btn-mini btn-danger" onclick="excluirEtapa(<?= $etapa->id ?>)"><i class="bx bx-trash"></i></button>
