@@ -201,7 +201,7 @@
                                 $valor_atual = ($valor_atual === true || $valor_atual === '1' || $valor_atual === 1);
                             ?>
                                 <label class="checkbox" style="margin-left: 15px; margin-bottom: 8px;">
-                                    <input type="checkbox" name="permissoes[<?= $chave ?>]" value="1" <= $valor_atual ? 'checked="checked"' : '' ?> />
+                                    <input type="checkbox" name="permissoes[<?= $chave ?>]" value="1" <?= $valor_atual ? 'checked="checked"' : '' ?> />
                                     <?= $labels[$chave] ?? $chave ?>
                                 </label>
                             <?php endforeach; ?>
