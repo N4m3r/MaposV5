@@ -305,7 +305,7 @@
                                     <h4><i class="bx bx-wrench"></i> Execução dos Serviços</h4>
                                     <p>Marque o status de cada serviço executado:</p>
 
-                                    <?php if (!empty($servicos)): ?
+                                    <?php if (!empty($servicos)): ?>
                                         <div class="wizard-servicos-list">
                                             <?php foreach ($servicos as $index => $servico): ?>
                                                 <?php $servico_id = intval($servico->idServicos_os ?? $index); ?>
