@@ -2148,16 +2148,32 @@
 .wizard-observacoes textarea {
     width: 100%;
     padding: 15px;
-    border: 2px solid #e0e0e0;
+    border: 2px solid #4a5568;
     border-radius: 10px;
     font-size: 1rem;
+    color: #1a202c;
+    background-color: #ffffff;
     resize: vertical;
     min-height: 120px;
 }
 
+.wizard-observacoes textarea::placeholder {
+    color: #4a5568;
+    font-weight: 500;
+    opacity: 1;
+}
+
 .wizard-observacoes textarea:focus {
     border-color: #667eea;
+    background-color: #ffffff;
+    color: #1a202c;
     outline: none;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+}
+
+.wizard-step-content p {
+    color: #2d3748;
+    font-weight: 500;
 }
 
 .observacoes-checklist {
