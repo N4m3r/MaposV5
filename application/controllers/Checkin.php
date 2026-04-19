@@ -1039,11 +1039,14 @@ class Checkin extends MY_Controller
      */
     public function verAssinatura($assinatura_id = null)
     {
+        log_message('info', 'verAssinatura: Endpoint chamado. ID recebido: ' . ($assinatura_id ?? 'null'));
+
         if (!$assinatura_id) {
             $assinatura_id = $this->input->get('id');
         }
 
         if (!$assinatura_id) {
+            log_message('error', 'verAssinatura: ID nao fornecido');
             show_404();
             return;
         }

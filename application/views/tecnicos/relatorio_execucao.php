@@ -568,6 +568,13 @@
                         <?php else: ?>
                             <strong style="color: #d32f2f;">⚠️ Nenhum serviço encontrado na variável \$servicos</strong>
                         <?php endif; ?>
+                        <hr style="margin: 10px 0; border: none; border-top: 1px dashed #2196f3;">
+                        <strong>Query direta (servicos_raw):</strong> <?php echo count($servicos_raw); ?> registros<br>
+                        <?php if (!empty($servicos_raw)): ?
+                            <pre style="background: #f5f5f5; padding: 8px; border-radius: 4px; margin-top: 8px; max-height: 150px; overflow: auto; font-size: 10px;">
+<?php print_r($servicos_raw); ?>
+                            </pre>
+                        <?php endif; ?
                     </div>
                     <?php
                     // Se encontrou serviços via query direta, usar esses dados
@@ -842,9 +849,10 @@
                     <strong style="color: #856404;">🔍 DEBUG - Assinaturas:</strong><br>
                     <strong>Total de assinaturas:</strong> <?php echo count($assinaturas ?? []); ?><br>
                     <?php if (!empty($assinaturas)): ?>
-                        <?php foreach ($assinaturas as $a): ?>
+                        <?php foreach ($assinaturas as $a): ?
                             <strong>- ID <?php echo $a->idAssinatura; ?>:</strong> <?php echo $a->tipo; ?> | Path: <?php echo substr($a->assinatura, 0, 40); ?>...<br>
-                            <strong>  URL:</strong> <?php echo $a->url_visualizacao ?? 'N/A'; ?><br>
+                            <strong>  URL:</strong> <a href="<?php echo $a->url_visualizacao; ?>" target="_blank"><?php echo $a->url_visualizacao; ?></a><br>
+                            <strong>  Teste direto:</strong> <a href="<?php echo base_url('index.php/checkin/verAssinatura/' . $a->idAssinatura); ?>" target="_blank">Clique aqui para testar</a><br>
                         <?php endforeach; ?>
                     <?php else: ?>
                         <strong style="color: #d32f2f;">⚠️ Nenhuma assinatura encontrada</strong>
