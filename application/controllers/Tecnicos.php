@@ -508,6 +508,11 @@ class Tecnicos extends CI_Controller
         // Atualizar OS para Finalizada
         $this->os_model->edit('os', ['status' => 'Finalizada'], 'idOs', $execucao->os_id);
 
+        // Atualizar status dos serviços da OS para Executado
+        $this->db->where('os_id', $execucao->os_id);
+        $this->db->update('servicos_os', ['status' => 'Executado']);
+        log_message('info', 'Tecnicos::finalizar_execucao - OS ' . $execucao->os_id . ' - Serviços atualizados para Executado');
+
         // Finalizar checkin na tabela os_checkin (integração com painel admin)
         $this->load->model('checkin_model');
         $checkin_ativo = $this->checkin_model->getCheckinAtivo($execucao->os_id);

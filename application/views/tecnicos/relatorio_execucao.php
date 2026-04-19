@@ -570,11 +570,11 @@
                         <?php endif; ?>
                         <hr style="margin: 10px 0; border: none; border-top: 1px dashed #2196f3;">
                         <strong>Query direta (servicos_raw):</strong> <?php echo count($servicos_raw); ?> registros<br>
-                        <?php if (!empty($servicos_raw)): ?
+                        <?php if (!empty($servicos_raw)): ?>
                             <pre style="background: #f5f5f5; padding: 8px; border-radius: 4px; margin-top: 8px; max-height: 150px; overflow: auto; font-size: 10px;">
 <?php print_r($servicos_raw); ?>
                             </pre>
-                        <?php endif; ?
+                        <?php endif; ?>
                     </div>
                     <?php
                     // Se encontrou serviços via query direta, usar esses dados
