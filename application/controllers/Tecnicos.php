@@ -620,6 +620,11 @@ class Tecnicos extends CI_Controller
         $assinaturas = $this->assinaturas_model->getByOs($os_id);
         $this->data['assinaturas'] = $assinaturas;
 
+        log_message('info', 'Tecnicos::relatorio_execucao - Total assinaturas: ' . count($assinaturas));
+        foreach ($assinaturas as $a) {
+            log_message('info', 'Tecnicos::relatorio_execucao - Assinatura ID: ' . $a->idAssinatura . ', Tipo: ' . $a->tipo . ', Path: ' . substr($a->assinatura, 0, 50));
+        }
+
         // Organizar assinaturas por tipo (igual ao checkin/imprimir)
         $this->data['assinaturasPorTipo'] = [];
         if (!empty($assinaturas)) {

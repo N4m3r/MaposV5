@@ -545,6 +545,23 @@
                 <!-- Serviços Executados -->
                 <div class="relatorio-card">
                     <h5><i class="bx bx-wrench"></i> Serviços da OS</h5>
+                    <!-- DEBUG: Validar dados dos serviços -->
+                    <div style="background: #e3f2fd; border: 2px solid #2196f3; border-radius: 8px; padding: 15px; margin-bottom: 15px; font-family: monospace; font-size: 13px;">
+                        <strong style="color: #1976d2;">🔍 DEBUG - Serviços:</strong><br>
+                        <strong>OS ID:</strong> <?php echo $os->idOs ?? 'N/A'; ?><br>
+                        <strong>Variável \$servicos existe:</strong> <?php echo isset($servicos) ? 'SIM' : 'NÃO'; ?><br>
+                        <strong>\$servicos vazio:</strong> <?php echo empty($servicos) ? 'SIM' : 'NÃO'; ?><br>
+                        <strong>Count \$servicos:</strong> <?php echo isset($servicos) ? count($servicos) : 'N/A'; ?><br>
+                        <strong>Tipo:</strong> <?php echo isset($servicos) ? gettype($servicos) : 'N/A'; ?><br>
+                        <?php if (!empty($servicos)): ?>
+                            <strong>Primeiro item:</strong><br>
+                            <pre style="background: #f5f5f5; padding: 10px; border-radius: 4px; margin-top: 10px; max-height: 200px; overflow: auto;">
+<?php print_r($servicos[0]); ?>
+                            </pre>
+                        <?php else: ?>
+                            <strong style="color: #d32f2f;">⚠️ Nenhum serviço encontrado na variável \$servicos</strong>
+                        <?php endif; ?
+                    </div>
                     <?php if (!empty($servicos)): ?>
                         <table class="table table-bordered">
                             <thead>
@@ -801,6 +818,7 @@
                 <?php endif; ?>
 
                 <!-- Assinaturas -->
+                <?php log_info('View relatorio_execucao - Assinaturas recebidas: ' . count($assinaturas ?? [])); ?>
                 <?php if (!empty($assinaturas) || !empty($execucoes)): ?>
 
                 <div class="relatorio-card">
@@ -831,7 +849,9 @@
                                             <?php
                                             // Sempre usar url_visualizacao que aponta para verAssinatura
                                             $img_src = $assinatura->url_visualizacao ?? base_url('index.php/checkin/verAssinatura/' . $assinatura->idAssinatura);
+                                            log_info('View relatorio_execucao - Assinatura ID: ' . $assinatura->idAssinatura . ' - URL: ' . $img_src);
                                             ?>
+                                            <!-- DEBUG URL: <?php echo $img_src; ?> -->
                                             <img src="<?php echo $img_src; ?>" alt="Assinatura <?php echo $tipo_label; ?>" class="assinatura-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                                             <div style="display: none; padding: 20px; background: #f8f9fa; border-radius: 8px; text-align: center; color: #666;">
                                                 <i class="bx bx-image-alt" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
