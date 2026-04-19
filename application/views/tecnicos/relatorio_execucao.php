@@ -574,7 +574,7 @@
                             </thead>
                             <tbody>
                                 <!-- DEBUG: Total servicos no relatorio: <?php echo count($servicos); ?> -->
-                                <?php foreach ($servicos as $i => $servico): ?
+                                <?php foreach ($servicos as $i => $servico): ?>
                                     <!-- DEBUG Servico <?php echo $i; ?>: id=<?php echo $servico->idServicos_os ?? 'NULL'; ?>, status_bruto=<?php echo $servico->status ?? 'NULL'; ?> -->
                                     <tr>
                                         <td>

@@ -524,7 +524,9 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach ($servicos as $servico) { ?>
+                            <!-- DEBUG imprimirCheckin: Total servicos: <?php echo count($servicos); ?> -->
+                            <?php foreach ($servicos as $i => $servico) { ?>
+                                <!-- DEBUG servico <?php echo $i; ?>: id=<?php echo $servico->idServicos_os ?? 'NULL'; ?>, status_bruto=<?php echo $servico->status ?? 'NULL'; ?> -->
                                 <tr>
                                     <td><?php echo $servico->nome; ?></td>
                                     <td style="text-align: center;"><?php echo $servico->quantidade ?? 1; ?></td>
