@@ -1381,7 +1381,7 @@ class Tecnicos_admin extends MY_Controller
 
         try {
             // Usar o Tecnicos_model para buscar técnicos (mesma lógica de tecnicos())
-            $tecnicos = $this->usuarios_model->getAll();
+            $tecnicos = $this->tecnicos_model->getAll();
 
             // Se não encontrou pelo model, busca todos os usuários ativos
             if (empty($tecnicos)) {
