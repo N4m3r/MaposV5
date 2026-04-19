@@ -1,4 +1,5 @@
 <!-- Minhas OS - Portal do Técnico -->
+<div id="content">
 <style>
 .portal-tecnico-content { margin-top: 15px !important; }
 @media (max-width: 768px) { .portal-tecnico-content { margin-top: 10px !important; } }
@@ -298,3 +299,4 @@
     }
 }
 </style>
+</div>

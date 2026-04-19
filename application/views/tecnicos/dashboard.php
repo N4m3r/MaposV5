@@ -5,6 +5,7 @@
  */
 ?>
 
+<div id="content">
 <!-- Header do Técnico -->
 <div class="row-fluid">
     <div class="span12">
@@ -306,4 +307,5 @@
             </div>
         </div>
     </div>
+</div>
 </div>
