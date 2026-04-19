@@ -3400,6 +3400,7 @@ function adicionarFotoWizard(imagemBase64, tipo) {
     wizardFotos.push(foto);
     renderizarFotosWizard();
 }
+window.adicionarFotoWizard = adicionarFotoWizard;
 
 function traduzirTipoFoto(tipo) {
     const tipos = {
@@ -3432,6 +3433,7 @@ function removerFotoWizard(fotoId) {
     wizardFotos = wizardFotos.filter(f => f.id !== fotoId);
     renderizarFotosWizard();
 }
+window.removerFotoWizard = removerFotoWizard;
 
 // Assinatura no Wizard
 function limparAssinaturaWizard() {
