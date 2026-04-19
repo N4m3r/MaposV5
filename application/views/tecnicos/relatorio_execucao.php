@@ -354,7 +354,12 @@
                     <div class="fotos-grid">
                         <?php foreach ($fotosAtendimento as $foto): ?>
                             <div class="foto-item">
-                                <img src="<?php echo $foto->url; ?>" alt="Foto de atendimento">
+                                <img src="<?php echo $foto->url . (strpos($foto->url, '?') === false ? '?' : '&') . '_t=' . time(); ?>"
+                                     alt="Foto de atendimento"
+                                     loading="eager"
+                                     decoding="async"
+                                     onerror="this.onerror=null; this.src='<?php echo base_url('assets/img/sem_imagem.png'); ?>';"
+                                     style="display: block;">
                                 <div class="foto-tipo">
                                     <?php
                                     $etapa = $foto->etapa ?? 'foto';
