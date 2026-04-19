@@ -251,12 +251,14 @@ class Tecnicos extends CI_Controller
 
         // Carregar serviços - usando o mesmo método do relatório para garantir consistência
         $this->data['servicos'] = $this->os_model->getServicos($os_id);
+        log_message('debug', 'Tecnicos::executar_os - OS ' . $os_id . ' - servicos carregados: ' . print_r($this->data['servicos'], true));
 
         // Se não encontrou serviços, tentar método alternativo (igual ao relatorio_execucao)
         if (empty($this->data['servicos'])) {
             $servicos_alt = $this->tec_os_model->getServicosOs($os_id);
             if (!empty($servicos_alt)) {
                 $this->data['servicos'] = $servicos_alt;
+                log_message('debug', 'Tecnicos::executar_os - OS ' . $os_id . ' - servicos carregados via getServicosOs: ' . print_r($servicos_alt, true));
             }
         }
 
@@ -510,8 +512,10 @@ class Tecnicos extends CI_Controller
 
         // Atualizar status individual de cada serviço conforme marcado no wizard
         $servicos_json = $this->input->post('servicos');
+        log_message('debug', 'Tecnicos::finalizar_execucao - servicos_json recebido: ' . $servicos_json);
         if ($servicos_json) {
             $servicos_status = json_decode($servicos_json, true);
+            log_message('debug', 'Tecnicos::finalizar_execucao - servicos_status decodificado: ' . print_r($servicos_status, true));
             if (is_array($servicos_status)) {
                 foreach ($servicos_status as $servico_id => $status) {
                     // Converter status do wizard para status do banco
@@ -529,12 +533,21 @@ class Tecnicos extends CI_Controller
                             break;
                     }
 
+                    log_message('debug', 'Tecnicos::finalizar_execucao - Atualizando servico_id: ' . $servico_id . ' para status: ' . $status_db);
                     $this->db->where('idServicos_os', $servico_id);
                     $this->db->where('os_id', $execucao->os_id);
                     $this->db->update('servicos_os', ['status' => $status_db]);
+                    $affected = $this->db->affected_rows();
+                    $error = $this->db->error();
+                    log_message('debug', 'Tecnicos::finalizar_execucao - Query: ' . $this->db->last_query());
+                    log_message('debug', 'Tecnicos::finalizar_execucao - Affected rows: ' . $affected . ' Error: ' . print_r($error, true));
                     log_message('info', 'Tecnicos::finalizar_execucao - OS ' . $execucao->os_id . ' - Serviço ' . $servico_id . ' atualizado para ' . $status_db);
                 }
+            } else {
+                log_message('error', 'Tecnicos::finalizar_execucao - servicos_status não é array: ' . gettype($servicos_status));
             }
+        } else {
+            log_message('error', 'Tecnicos::finalizar_execucao - servicos_json vazio ou nao recebido');
         }
 
         // Finalizar checkin na tabela os_checkin (integração com painel admin)
