@@ -457,6 +457,8 @@ $config['csrf_exclude_uris'] = [
     'checkin/uploadMultiplo',
     'notificacoes/listar',
     'notificacoes/marcar_lida',
+    'tecnicos/finalizar_execucao',
+    'tecnicos/adicionar_foto',
 ];
 
 /*

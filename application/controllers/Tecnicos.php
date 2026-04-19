@@ -22,7 +22,6 @@ class Tecnicos extends CI_Controller
         // Headers de seguranca para permitir geolocalizacao em iframes cross-origin
         // https://www.chromium.org/Home/chromium-security/deprecating-permissions-in-cross-origin-iframes/
         header('Permissions-Policy: geolocation=(self)');
-        header('Feature-Policy: geolocation *');
 
         $this->load->model('tecnicos_model');
         $this->load->model('tec_os_model');

@@ -356,32 +356,50 @@
                                     </div>
                                 </div>
 
-                                <!-- Etapa 3: Fotos do Serviço -->
+                                <!-- Etapa 3: Fotos do Servico -->
                                 <div class="wizard-step-content" data-step="3">
-                                    <h4><i class="bx bx-camera"></i> Registro Fotográfico</h4>
-                                    <p>Adicione fotos do serviço realizado:</p>
+                                    <h4><i class="bx bx-camera"></i> Registro Fotografico</h4>
+                                    <p>Adicione fotos do servico realizado:</p>
 
-                                    <div class="wizard-fotos-section">
-                                        <div class="foto-tipo-selector">
-                                            <label>Tipo da foto:</label>
-                                            <select id="tipoFotoWizard" class="span12">
-                                                <option value="antes">Antes do serviço</option>
-                                                <option value="durante">Durante o serviço</option>
-                                                <option value="depois">Depois do serviço</option>
-                                                <option value="detalhe">Detalhe/Documentação</option>
-                                            </select>
+                                    <div class="wizard-fotos-container">
+                                        <!-- Tabs de tipo de foto -->
+                                        <div class="foto-tabs">
+                                            <button type="button" class="foto-tab active" data-tipo="antes" onclick="selecionarTipoFoto('antes')">
+                                                <i class="bx bx-time-before"></i> Antes
+                                            </button>
+                                            <button type="button" class="foto-tab" data-tipo="durante" onclick="selecionarTipoFoto('durante')">
+                                                <i class="bx bx-loader"></i> Durante
+                                            </button>
+                                            <button type="button" class="foto-tab" data-tipo="depois" onclick="selecionarTipoFoto('depois')">
+                                                <i class="bx bx-check-circle"></i> Depois
+                                            </button>
+                                            <button type="button" class="foto-tab" data-tipo="detalhe" onclick="selecionarTipoFoto('detalhe')">
+                                                <i class="bx bx-detail"></i> Detalhe
+                                            </button>
                                         </div>
 
-                                        <div class="camera-section-wizard">
-                                            <div class="camera-preview-wizard" id="wizardCameraPreview" onclick="abrirCameraWizard()">
-                                                <i class="bx bx-camera"></i>
-                                                <span>Clique para tirar foto</span>
+                                        <input type="hidden" id="tipoFotoWizard" value="antes">
+
+                                        <!-- Area de upload moderna -->
+                                        <div class="upload-area-modern" id="uploadAreaModern" onclick="abrirSeletorFoto()">
+                                            <div class="upload-content">
+                                                <i class="bx bx-cloud-upload"></i>
+                                                <span class="upload-title">Adicionar Foto</span>
+                                                <span class="upload-subtitle">Toque para camera ou escolher arquivo</span>
                                             </div>
-                                            <input type="file" id="wizardFotoInput" accept="image/*" capture="environment" style="display: none;" onchange="processarFotoWizard(this)">
                                         </div>
 
-                                        <div class="fotos-preview-grid" id="wizardFotosPreview">
-                                            <!-- Fotos serão adicionadas aqui via JS -->
+                                        <!-- Input file escondido -->
+                                        <input type="file" id="wizardFotoInput" accept="image/*" style="display: none;" onchange="processarFotoWizard(this)">
+
+                                        <!-- Galeria de fotos -->
+                                        <div class="fotos-galeria-modern" id="wizardFotosPreview">
+                                            <!-- Fotos serao adicionadas aqui via JS -->
+                                        </div>
+
+                                        <!-- Contador de fotos -->
+                                        <div class="fotos-contador" id="fotosContador">
+                                            <i class="bx bx-images"></i> <span id="contadorTexto">0 fotos</span>
                                         </div>
                                     </div>
 
@@ -450,10 +468,20 @@
 
                                     <div class="wizard-assinatura-section">
                                         <h6><i class="bx bx-pencil"></i> Assinatura do Cliente</h6>
-                                        <canvas id="wizardSignaturePad" class="signature-pad-wizard"></canvas>
-                                        <button type="button" class="btn btn-mini" onclick="limparAssinaturaWizard()">
-                                            <i class="bx bx-trash"></i> Limpar Assinatura
-                                        </button>
+                                        <div class="assinatura-container" id="assinaturaContainer">
+                                            <canvas id="wizardSignaturePad" class="signature-pad-wizard"></canvas>
+                                            <button type="button" class="btn-fullscreen" onclick="toggleFullscreenAssinatura()" title="Tela Cheia">
+                                                <i class="bx bx-fullscreen"></i>
+                                            </button>
+                                        </div>
+                                        <div class="assinatura-botoes">
+                                            <button type="button" class="btn btn-mini" onclick="limparAssinaturaWizard()">
+                                                <i class="bx bx-trash"></i> Limpar Assinatura
+                                            </button>
+                                            <button type="button" class="btn btn-mini btn-info" onclick="toggleFullscreenAssinatura()">
+                                                <i class="bx bx-fullscreen"></i> Tela Cheia
+                                            </button>
+                                        </div>
 
                                         <div class="control-group" style="margin-top: 15px;">
                                             <label>Nome de quem assina:</label>
@@ -478,94 +506,6 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Serviços da OS -->
-                    <div class="widget-box">
-                        <div class="widget-title">
-                            <span class="icon"><i class="bx bx-wrench"></i></span>
-                            <h5>Serviços da OS - Checklist</h5>
-                        </div>
-                        <div class="widget-content">
-                            <div id="servicosContainer">
-                                <?php if (!empty($servicos)): ?>
-                                    <div class="servicos-list">
-                                        <?php foreach ($servicos as $index => $servico): ?>
-                                            <div class="servico-item checklist-item pendente" data-servico-id="<?php echo $servico->idServicos_os ?? $index; ?>">
-                                                <div class="servico-info">
-                                                    <div class="servico-header">
-                                                        <div class="checklist-checkbox" onclick="toggleServicoStatus(<?php echo $servico->idServicos_os ?? $index; ?>)">
-                                                            <i class="bx bx-circle"></i>
-                                                        </div>
-                                                        <div class="servico-nome">
-                                                            <?php echo htmlspecialchars($servico->servico_nome ?? $servico->nome ?? 'Serviço', ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?>
-                                                        </div>
-                                                    </div>
-                                                    <?php if (!empty($servico->servico_codigo) || !empty($servico->codigo)): ?>
-                                                        <div class="servico-codigo">Código: <?php echo htmlspecialchars($servico->servico_codigo ?? $servico->codigo ?? '', ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></div>
-                                                    <?php endif; ?>
-                                                </div>
-                                                <div class="servico-actions">
-                                                    <button type="button" class="btn btn-mini" data-status="pendente"
-                                                            onclick="setServicoStatus(<?php echo $servico->idServicos_os ?? $index; ?>, 'pendente')">
-                                                        <i class="bx bx-circle"></i> Pendente
-                                                    </button>
-                                                    <button type="button" class="btn btn-mini btn-success" data-status="conforme"
-                                                            onclick="setServicoStatus(<?php echo $servico->idServicos_os ?? $index; ?>, 'conforme')">
-                                                        <i class="bx bx-check"></i> OK
-                                                    </button>
-                                                    <button type="button" class="btn btn-mini btn-danger" data-status="nao_conforme"
-                                                            onclick="setServicoStatus(<?php echo $servico->idServicos_os ?? $index; ?>, 'nao_conforme')">
-                                                        <i class="bx bx-x"></i> Não OK
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        <?php endforeach; ?>
-                                    </div>
-                                <?php else: ?>
-                                    <div class="empty-state">
-                                        <div class="empty-text">Nenhum serviço cadastrado nesta OS</div>
-                                    </div>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Assinatura -->
-                    <div class="widget-box">
-                        <div class="widget-title">
-                            <span class="icon"><i class="bx bx-pencil"></i></span>
-                            <h5>Assinatura do Cliente</h5>
-                        </div>
-                        <div class="widget-content">
-                            <canvas id="signaturePad" class="signature-pad"></canvas>
-
-                            <div class="row-fluid">
-                                <div class="span6">
-                                    <button type="button" class="btn btn-block" onclick="limparAssinatura()">
-                                        <i class="bx bx-trash"></i> Limpar
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="control-group" style="margin-top: 15px;">
-                                <label class="control-label">Nome de quem assina</label>
-                                <div class="controls">
-                                    <input type="text" id="nomeAssinante" placeholder="Nome completo" class="span12">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Observações -->
-                    <div class="widget-box">
-                        <div class="widget-title">
-                            <span class="icon"><i class="bx bx-note"></i></span>
-                            <h5>Observações do Técnico</h5>
-                        </div>
-                        <div class="widget-content">
-                            <textarea id="observacoes" rows="4" class="span12" placeholder="Descreva o que foi realizado, problemas encontrados, recomendações..."></textarea>
-                        </div>
-                    </div>
-
                     <!-- Finalização -->
                     <div class="action-card">
                         <button type="button" class="btn btn-success btn-large btn-block" onclick="finalizarExecucao()" id="btnFinalizar">
@@ -1933,7 +1873,177 @@
     color: #2e7d32;
 }
 
-/* Fotos no Wizard */
+/* Fotos no Wizard - Design Moderno */
+.wizard-fotos-container {
+    margin: 20px 0;
+}
+
+/* Tabs de tipo de foto */
+.foto-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.foto-tab {
+    flex: 1;
+    min-width: 70px;
+    padding: 12px 8px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    background: white;
+    color: #666;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.foto-tab i {
+    font-size: 1.3rem;
+}
+
+.foto-tab:hover {
+    border-color: #667eea;
+    color: #667eea;
+}
+
+.foto-tab.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: transparent;
+    color: white;
+}
+
+/* Area de upload moderna */
+.upload-area-modern {
+    border: 2px dashed #ccc;
+    border-radius: 16px;
+    padding: 30px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: #fafafa;
+    margin-bottom: 20px;
+}
+
+.upload-area-modern:hover {
+    border-color: #667eea;
+    background: #f0f4ff;
+}
+
+.upload-area-modern:active {
+    transform: scale(0.98);
+}
+
+.upload-content i {
+    font-size: 3rem;
+    color: #667eea;
+    margin-bottom: 10px;
+}
+
+.upload-title {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.upload-subtitle {
+    display: block;
+    font-size: 0.85rem;
+    color: #888;
+}
+
+/* Galeria de fotos moderna */
+.fotos-galeria-modern {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 12px;
+    margin: 20px 0;
+}
+
+.foto-card-modern {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    aspect-ratio: 1;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+
+.foto-card-modern:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.foto-card-modern img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.foto-card-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    padding: 4px 8px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: white;
+}
+
+.foto-card-badge.antes { background: #ff9800; }
+.foto-card-badge.durante { background: #2196f3; }
+.foto-card-badge.depois { background: #4caf50; }
+.foto-card-badge.detalhe { background: #9c27b0; }
+
+.foto-card-remove {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(244, 67, 54, 0.9);
+    color: white;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.2s;
+}
+
+.foto-card-remove:hover {
+    background: #f44336;
+    transform: scale(1.1);
+}
+
+/* Contador de fotos */
+.fotos-contador {
+    text-align: center;
+    padding: 15px;
+    background: #f5f5f5;
+    border-radius: 10px;
+    color: #666;
+    font-size: 0.95rem;
+}
+
+.fotos-contador i {
+    color: #667eea;
+    margin-right: 5px;
+}
+
+/* CSS antigo mantido para compatibilidade */
 .wizard-fotos-section {
     margin: 20px 0;
 }
@@ -2150,6 +2260,79 @@
     color: #999;
     font-size: 14px;
     pointer-events: none;
+}
+
+/* Container da assinatura */
+.assinatura-container {
+    position: relative;
+    margin-bottom: 10px;
+}
+
+.assinatura-container .btn-fullscreen {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(102, 126, 234, 0.9);
+    color: white;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.2rem;
+    z-index: 10;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.assinatura-container .btn-fullscreen:hover {
+    background: rgba(102, 126, 234, 1);
+    transform: scale(1.1);
+}
+
+/* Botões da assinatura */
+.assinatura-botoes {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* Modo Fullscreen */
+.assinatura-container.fullscreen {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 99999;
+    background: white;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.assinatura-container.fullscreen .signature-pad-wizard {
+    flex: 1;
+    height: calc(100vh - 100px) !important;
+    border: 3px solid #667eea;
+    border-radius: 15px;
+}
+
+.assinatura-container.fullscreen .btn-fullscreen {
+    top: 30px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem;
+    background: #667eea;
+}
+
+.assinatura-container.fullscreen .btn-fullscreen i::before {
+    content: "\\ec0e"; /* bx-exit-fullscreen */
 }
 
 /* Ações do Wizard */
@@ -3450,19 +3633,53 @@ function renderizarFotosWizard() {
     const container = document.getElementById('wizardFotosPreview');
     if (!container) return;
 
+    // Atualizar contador
+    const contadorTexto = document.getElementById('contadorTexto');
+    if (contadorTexto) {
+        const total = wizardFotos.length;
+        contadorTexto.textContent = total + ' foto' + (total !== 1 ? 's' : '');
+    }
+
     let html = '';
     wizardFotos.forEach(foto => {
-        html += '<div class="foto-preview-item">' +
+        html += '<div class="foto-card-modern">' +
             '<img src="' + foto.imagem + '" alt="Foto">' +
-            '<div class="foto-tipo-tag">' + traduzirTipoFoto(foto.tipo) + '</div>' +
-            '<button type="button" class="btn-remover-foto" onclick="removerFotoWizard(' + foto.id + ')">' +
-                '<i class="bx bx-x"></i>' +
+            '<span class="foto-card-badge ' + foto.tipo + '" style="font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 80%;">' + traduzirTipoFoto(foto.tipo) + '</span>' +
+            '<button type="button" class="foto-card-remove" onclick="removerFotoWizard(' + foto.id + ')">' +
+                '<i class="bx bx-trash"></i>' +
             '</button>' +
         '</div>';
     });
     container.innerHTML = html;
 }
 window.renderizarFotosWizard = renderizarFotosWizard;
+
+// Nova funcao para selecionar tipo de foto
+function selecionarTipoFoto(tipo) {
+    document.getElementById('tipoFotoWizard').value = tipo;
+
+    // Atualizar tabs visuais
+    document.querySelectorAll('.foto-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    document.querySelector('.foto-tab[data-tipo="' + tipo + '"]').classList.add('active');
+}
+window.selecionarTipoFoto = selecionarTipoFoto;
+
+// Nova funcao para abrir seletor de foto
+function abrirSeletorFoto() {
+    const input = document.getElementById('wizardFotoInput');
+
+    // Em mobile, tentar usar camera diretamente
+    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        input.setAttribute('capture', 'environment');
+    } else {
+        input.removeAttribute('capture');
+    }
+
+    input.click();
+}
+window.abrirSeletorFoto = abrirSeletorFoto;
 
 function removerFotoWizard(fotoId) {
     wizardFotos = wizardFotos.filter(f => f.id !== fotoId);
@@ -3477,6 +3694,53 @@ function limparAssinaturaWizard() {
     }
 }
 window.limparAssinaturaWizard = limparAssinaturaWizard;
+
+// Toggle Fullscreen para assinatura
+function toggleFullscreenAssinatura() {
+    const container = document.getElementById('assinaturaContainer');
+    if (!container) return;
+
+    const isFullscreen = container.classList.contains('fullscreen');
+
+    if (isFullscreen) {
+        // Sair do fullscreen
+        container.classList.remove('fullscreen');
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        }
+    } else {
+        // Entrar em fullscreen
+        container.classList.add('fullscreen');
+        if (container.requestFullscreen) {
+            container.requestFullscreen();
+        } else if (container.webkitRequestFullscreen) {
+            container.webkitRequestFullscreen();
+        } else if (container.msRequestFullscreen) {
+            container.msRequestFullscreen();
+        }
+    }
+
+    // Aguardar transição e re-inicializar o canvas
+    setTimeout(() => {
+        inicializarAssinaturaWizard();
+    }, 300);
+}
+window.toggleFullscreenAssinatura = toggleFullscreenAssinatura;
+
+// Listener para sair do fullscreen quando pressionar ESC
+document.addEventListener('fullscreenchange', function() {
+    const container = document.getElementById('assinaturaContainer');
+    if (container && !document.fullscreenElement) {
+        container.classList.remove('fullscreen');
+        setTimeout(() => {
+            inicializarAssinaturaWizard();
+        }, 100);
+    }
+});
 
 // Resumo Final
 function atualizarResumoFinal() {
@@ -3607,6 +3871,8 @@ function finalizarWizardAtendimento() {
     // 1. Salvar todas as fotos primeiro
     const salvarFotos = async () => {
         const fotosSalvas = [];
+        const csrf = getCsrfToken();
+
         for (const foto of wizardFotos) {
             try {
                 const formData = new FormData();
@@ -3614,7 +3880,7 @@ function finalizarWizardAtendimento() {
                 formData.append('foto', foto.imagem);
                 formData.append('descricao', foto.tipo ? 'Foto: ' + traduzirTipoFoto(foto.tipo) : 'Foto do atendimento');
                 formData.append('tipo', foto.tipo || 'durante');
-                formData.append('<?php echo $this->security->get_csrf_token_name(); ?>', '<?php echo $this->security->get_csrf_hash(); ?>');
+                formData.append(csrf.name, csrf.value);
 
                 const response = await fetch('<?php echo site_url('tecnicos/adicionar_foto'); ?>', {
                     method: 'POST',
@@ -3631,8 +3897,9 @@ function finalizarWizardAtendimento() {
         return fotosSalvas;
     };
 
-    // 2. Finalizar execução
+    // 2. Finalizar execucao
     const finalizarExecucao = async () => {
+        const csrf = getCsrfToken();
         const formData = new FormData();
         formData.append('execucao_id', execucaoId);
         formData.append('assinatura_cliente', assinatura);
@@ -3641,13 +3908,27 @@ function finalizarWizardAtendimento() {
         formData.append('servicos', JSON.stringify(servicosExecutados));
         formData.append('latitude', '0');
         formData.append('longitude', '0');
-        formData.append('<?php echo $this->security->get_csrf_token_name(); ?>', '<?php echo $this->security->get_csrf_hash(); ?>');
+        formData.append(csrf.name, csrf.value);
 
         const response = await fetch('<?php echo site_url('tecnicos/finalizar_execucao'); ?>', {
             method: 'POST',
             body: formData
         });
-        return await response.json();
+
+        if (!response.ok) {
+            if (response.status === 403) {
+                throw new Error('Sessao expirada. Por favor, recarregue a pagina.');
+            }
+            throw new Error('Erro HTTP: ' + response.status);
+        }
+
+        const responseText = await response.text();
+        try {
+            return JSON.parse(responseText);
+        } catch (e) {
+            console.error('Resposta nao e JSON:', responseText);
+            throw new Error('Erro no servidor. Resposta invalida.');
+        }
     };
 
     // Executar sequência

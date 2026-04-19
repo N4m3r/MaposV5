@@ -154,6 +154,76 @@
 .empty-text {
     margin: 0;
 }
+
+/* Client Card Responsive */
+.client-card {
+    display: flex;
+    gap: 15px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+.client-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #667eea;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+.client-info {
+    flex: 1;
+    min-width: 250px;
+}
+.client-info h4 {
+    margin: 0 0 10px 0;
+    color: #333;
+    font-size: 1.1rem;
+    word-break: break-word;
+}
+.client-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 20px;
+    margin-bottom: 8px;
+}
+.client-meta .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #666;
+    font-size: 0.9rem;
+    word-break: break-word;
+}
+.client-meta .meta-item i {
+    color: #667eea;
+    font-size: 1rem;
+}
+.client-divider {
+    color: #ccc;
+    margin: 0 5px;
+}
+
+@media (max-width: 768px) {
+    .client-card {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    .client-info {
+        min-width: 100%;
+    }
+    .client-meta {
+        justify-content: center;
+    }
+    .client-meta .meta-item {
+        flex: 1 1 100%;
+        justify-content: center;
+    }
+}
 </style>
 
 <div class="row-fluid portal-tecnico-content">
@@ -202,20 +272,55 @@
                 <!-- Informações do Cliente -->
                 <div class="relatorio-card">
                     <h5><i class="bx bx-user"></i> Cliente</h5>
-                    <div class="info-row">
-                        <div class="info-item">
-                            <span class="info-label">Nome</span>
-                            <span class="info-value"><?php echo htmlspecialchars($cliente->nomeCliente ?? 'Não informado', ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></span>
+                    <div class="client-card">
+                        <div class="client-avatar">
+                            <i class="bx bx-user"></i>
+                        </div>
+                        <div class="client-info">
+                            <h4><?php echo htmlspecialchars($cliente->nomeCliente ?? 'Não informado', ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></h4>
+
+                            <?php if (!empty($cliente->endereco)): ?>
+                                <div class="client-meta">
+                                    <span class="meta-item">
+                                        <i class="bx bx-map"></i>
+                                        <?php echo htmlspecialchars($cliente->endereco, ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?>
+                                    </span>
+                                </div>
+                            <?php endif; ?>
+
+                            <?php if (!empty($cliente->telefone) || !empty($cliente->email)): ?>
+                                <div class="client-meta">
+                                    <?php if (!empty($cliente->telefone)): ?>
+                                        <span class="meta-item">
+                                            <i class="bx bx-phone"></i>
+                                            <?php echo htmlspecialchars($cliente->telefone, ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?>
+                                        </span>
+                                    <?php endif; ?>
+                                    <?php if (!empty($cliente->telefone) && !empty($cliente->email)): ?>
+                                        <span class="client-divider">|</span>
+                                    <?php endif; ?>
+                                    <?php if (!empty($cliente->email)): ?>
+                                        <span class="meta-item">
+                                            <i class="bx bx-envelope"></i>
+                                            <?php echo htmlspecialchars($cliente->email, ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?>
+                                        </span>
+                                    <?php endif; ?>
+                                </div>
+                            <?php endif; ?>
+
+                            <?php if (!empty($cliente->documento) || !empty($cliente->cpf) || !empty($cliente->cnpj)): ?>
+                                <div class="client-meta">
+                                    <span class="meta-item">
+                                        <i class="bx bx-id-card"></i>
+                                        <?php
+                                        $doc = $cliente->documento ?? $cliente->cpf ?? $cliente->cnpj ?? '';
+                                        echo 'CPF/CNPJ: ' . htmlspecialchars($doc, ENT_COMPAT | ENT_HTML5, 'UTF-8');
+                                        ?>
+                                    </span>
+                                </div>
+                            <?php endif; ?>
                         </div>
                     </div>
-                    <?php if (!empty($cliente->endereco)): ?>
-                        <div class="info-row">
-                            <div class="info-item">
-                                <span class="info-label">Endereço</span>
-                                <span class="info-value"><?php echo htmlspecialchars($cliente->endereco, ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></span>
-                            </div>
-                        </div>
-                    <?php endif; ?>
                 </div>
 
                 <!-- Execuções -->
@@ -338,9 +443,13 @@
                             <div class="foto-item">
                                 <img src="<?php echo base_url($foto->caminho); ?>"
                                      alt="Foto do técnico"
-                                     loading="eager"
+                                     loading="lazy"
                                      decoding="async"
-                                     onerror="console.error('Erro ao carregar foto:', this.src); this.style.border='2px dashed #f00';">
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div style="display: none; width: 100%; height: 150px; background: #f8f9fa; border: 2px dashed #ddd; border-radius: 8px; align-items: center; justify-content: center; flex-direction: column; color: #666;">
+                                    <i class="bx bx-image" style="font-size: 2rem; margin-bottom: 8px;"></i>
+                                    <span>Foto não disponível</span>
+                                </div>
                                 <div class="foto-tipo">
                                     <?php
                                     $tipo = $foto->tipo ?? 'foto';
@@ -375,9 +484,13 @@
                             <div class="foto-item">
                                 <img src="<?php echo $foto->url; ?>"
                                      alt="Foto de atendimento"
-                                     loading="eager"
+                                     loading="lazy"
                                      decoding="async"
-                                     onerror="console.error('Erro ao carregar foto:', this.src); this.style.border='2px dashed #f00';">
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div style="display: none; width: 100%; height: 150px; background: #f8f9fa; border: 2px dashed #ddd; border-radius: 8px; align-items: center; justify-content: center; flex-direction: column; color: #666;">
+                                    <i class="bx bx-image" style="font-size: 2rem; margin-bottom: 8px;"></i>
+                                    <span>Foto não disponível</span>
+                                </div>
                                 <div class="foto-tipo">
                                     <?php
                                     $etapa = $foto->etapa ?? 'foto';
@@ -427,11 +540,20 @@
                                         <h6><?php echo $tipo_label; ?></h6>
                                         <?php if (!empty($assinatura->assinatura)): ?>
                                             <?php
-                                            $img_src = (isset($assinatura->is_base64) && $assinatura->is_base64)
-                                                ? $assinatura->url_visualizacao
-                                                : base_url($assinatura->assinatura);
+                                            if (isset($assinatura->is_base64) && $assinatura->is_base64) {
+                                                $img_src = $assinatura->url_visualizacao;
+                                            } else {
+                                                // Se já é URL completa, usar direto, senão adicionar base_url
+                                                $img_src = (strpos($assinatura->assinatura, 'http') === 0)
+                                                    ? $assinatura->assinatura
+                                                    : base_url($assinatura->assinatura);
+                                            }
                                             ?>
-                                            <img src="<?php echo $img_src; ?>" alt="Assinatura <?php echo $tipo_label; ?>" class="assinatura-img">
+                                            <img src="<?php echo $img_src; ?>" alt="Assinatura <?php echo $tipo_label; ?>" class="assinatura-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                            <div style="display: none; padding: 20px; background: #f8f9fa; border-radius: 8px; text-align: center; color: #666;">
+                                                <i class="bx bx-image-alt" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+                                                Assinatura salva (erro ao carregar imagem)
+                                            </div>
                                         <?php endif; ?>
                                         <?php if (!empty($assinatura->nome_assinante)): ?>
                                             <p style="margin-top: 10px; font-size: 0.9rem;">
@@ -456,7 +578,16 @@
                                 <div class="span6">
                                     <div class="assinatura-box">
                                         <h6>Assinatura do Cliente (Portal)</h6>
-                                        <img src="<?php echo $exec->assinatura_cliente; ?>" alt="Assinatura" class="assinatura-img">
+                                        <?php
+                                        $img_src_portal = (strpos($exec->assinatura_cliente, 'http') === 0)
+                                            ? $exec->assinatura_cliente
+                                            : base_url($exec->assinatura_cliente);
+                                        ?>
+                                        <img src="<?php echo $img_src_portal; ?>" alt="Assinatura" class="assinatura-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                        <div style="display: none; padding: 20px; background: #f8f9fa; border-radius: 8px; text-align: center; color: #666;">
+                                            <i class="bx bx-image-alt" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+                                            Assinatura salva (erro ao carregar imagem)
+                                        </div>
                                         <?php if (!empty($exec->nome_responsavel)): ?>
                                             <p style="margin-top: 10px; font-size: 0.9rem;">
                                                 <strong>Assinado por:</strong> <?php echo htmlspecialchars($exec->nome_responsavel, ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?>
