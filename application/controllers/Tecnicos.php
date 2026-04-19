@@ -510,10 +510,8 @@ class Tecnicos extends CI_Controller
 
         // Atualizar status individual de cada serviço conforme marcado no wizard
         $servicos_json = $this->input->post('servicos');
-        log_message('error', 'DEBUG finalizar_execucao - servicos_json recebido: ' . ($servicos_json ?: 'VAZIO'));
         if ($servicos_json) {
             $servicos_status = json_decode($servicos_json, true);
-            log_message('error', 'DEBUG finalizar_execucao - servicos_status decodificado: ' . print_r($servicos_status, true));
             if (is_array($servicos_status) && count($servicos_status) > 0) {
                 foreach ($servicos_status as $servico_id => $status) {
                     // Converter status do wizard para status do banco
@@ -533,19 +531,12 @@ class Tecnicos extends CI_Controller
 
                     // Converter ID para inteiro (o JavaScript envia como string)
                     $servico_id_int = intval($servico_id);
-                    log_message('error', 'DEBUG finalizar_execucao - Atualizando servico_id: ' . $servico_id_int . ' para status: ' . $status_db);
 
                     $this->db->where('idServicos_os', $servico_id_int);
                     $this->db->where('os_id', $execucao->os_id);
                     $this->db->update('servicos_os', ['status' => $status_db]);
-                    log_message('error', 'DEBUG finalizar_execucao - Query executada: ' . $this->db->last_query());
-                    log_message('error', 'DEBUG finalizar_execucao - Linhas afetadas: ' . $this->db->affected_rows());
                 }
-            } else {
-                log_message('error', 'DEBUG finalizar_execucao - servicos_status vazio ou nao e array');
             }
-        } else {
-            log_message('error', 'DEBUG finalizar_execucao - Nenhum dado de servicos recebido no POST');
         }
 
         // Finalizar checkin na tabela os_checkin (integração com painel admin)
@@ -619,10 +610,6 @@ class Tecnicos extends CI_Controller
 
         // Buscar serviços
         $this->data['servicos'] = $this->tec_os_model->getServicosOs($os_id);
-        log_message('error', 'DEBUG relatorio_execucao - Servicos encontrados: ' . count($this->data['servicos']));
-        foreach ($this->data['servicos'] as $s) {
-            log_message('error', 'DEBUG relatorio_execucao - Servico: id=' . ($s->idServicos_os ?? 'NULL') . ', status=' . ($s->status ?? 'NULL'));
-        }
 
         // Se não encontrou serviços, tenta buscar pelo model padrão
         if (empty($this->data['servicos'])) {

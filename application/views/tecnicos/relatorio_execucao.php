@@ -548,22 +548,14 @@
                 <!-- Serviços Executados -->
                 <div class="relatorio-card">
                     <h5><i class="bx bx-wrench"></i> Serviços da OS</h5>
-                <?php
-                // CORREÇÃO: Buscar serviços diretamente se a variável estiver vazia
-                // Incluir campo status para mostrar o status correto no relatório
-                if (empty($servicos)) {
-                    $CI = &get_instance();
-                    $CI->db->select('servicos_os.*, servicos.nome as servico_nome, servicos.codigo as servico_codigo');
-                    $CI->db->from('servicos_os');
-                    $CI->db->join('servicos', 'servicos.idServicos = servicos_os.servicos_id', 'left');
-                    $CI->db->where('servicos_os.os_id', $os->idOs);
-                    $query_servicos = $CI->db->get();
-                    $servicos = $query_servicos ? $query_servicos->result() : [];
-                }
-                ?>
-                    </div>
 
-                    <?php if (!empty($servicos)): ?>
+                    <?php if (!empty($servicos)): ?
+                        <div style="background: #fff3cd; padding: 10px; margin-bottom: 10px; border: 1px solid #856404;">
+                            <strong>DEBUG:</strong> Total servicos: <?php echo count($servicos); ?><br>
+                            <?php foreach ($servicos as $i => $servico_debug): ?>
+                                Servico <?php echo $i; ?>: id=<?php echo $servico_debug->idServicos_os ?? 'NULL'; ?>, status=<?php echo $servico_debug->status ?? 'NULL'; ?><br>
+                            <?php endforeach; ?>
+                        </div>
                         <table class="table table-bordered">
                             <thead>
                                 <tr>
@@ -573,9 +565,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- DEBUG: Total servicos no relatorio: <?php echo count($servicos); ?> -->
-                                <?php foreach ($servicos as $i => $servico): ?>
-                                    <!-- DEBUG Servico <?php echo $i; ?>: id=<?php echo $servico->idServicos_os ?? 'NULL'; ?>, status_bruto=<?php echo $servico->status ?? 'NULL'; ?> -->
+                                <?php foreach ($servicos as $servico): ?>
                                     <tr>
                                         <td>
                                             <?php echo htmlspecialchars($servico->servico_nome ?? $servico->nome ?? 'Serviço', ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?>

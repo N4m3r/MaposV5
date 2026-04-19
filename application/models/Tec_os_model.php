@@ -243,20 +243,14 @@ class Tec_os_model extends CI_Model
         $query = $this->db->get();
 
         if ($query === false) {
-            log_message('error', 'DEBUG getServicosOs - Erro na query: ' . $this->db->last_query());
+            log_message('error', 'Tec_os_model::getServicosOs - Erro na query: ' . $this->db->last_query());
             return [];
         }
 
         $result = $query->result();
-        log_message('error', 'DEBUG getServicosOs - OS ' . $os_id . ' - Query: ' . $this->db->last_query());
-        log_message('error', 'DEBUG getServicosOs - OS ' . $os_id . ' - ' . count($result) . ' serviços encontrados');
-        foreach ($result as $r) {
-            log_message('error', 'DEBUG getServicosOs - Servico retornado: id=' . $r->idServicos_os . ', status=' . ($r->status ?? 'NULL') . ', servico_nome=' . ($r->servico_nome ?? 'NULL'));
-        }
 
         // Se não encontrou nada, tenta buscar da tabela os_servicos (portal do técnico)
         if (empty($result) && $this->db->table_exists('os_servicos')) {
-            log_message('error', 'DEBUG getServicosOs - Tentando buscar em os_servicos');
             $this->db->reset_query();
             $this->db->select('os_servicos.id as idServicos_os, os_servicos.servico_id as servicos_id, os_servicos.quantidade, os_servicos.status, os_servicos.observacao, servicos.nome as servico_nome, servicos.preco as servico_preco');
             $this->db->from('os_servicos');
@@ -266,17 +260,15 @@ class Tec_os_model extends CI_Model
             $query2 = $this->db->get();
             if ($query2 !== false) {
                 $result = $query2->result();
-                log_message('error', 'DEBUG getServicosOs - OS ' . $os_id . ' - ' . count($result) . ' serviços encontrados em os_servicos');
             }
         }
 
-        // DEBUG: Se ainda não encontrou, tenta buscar sem JOIN para verificar se existe registro
+        // Se ainda não encontrou, tenta buscar sem JOIN para verificar se existe registro
         if (empty($result)) {
             $this->db->reset_query();
             $this->db->where('os_id', $os_id);
             $simple_query = $this->db->get('servicos_os');
             if ($simple_query && $simple_query->num_rows() > 0) {
-                log_message('error', 'DEBUG getServicosOs - OS ' . $os_id . ' tem ' . $simple_query->num_rows() . ' serviços, mas JOIN falhou. Verifique se os IDs de servico existem na tabela servicos.');
                 // Retorna os dados sem o nome do serviço
                 $result = $simple_query->result();
                 foreach ($result as $r) {

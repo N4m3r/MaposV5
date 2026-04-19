@@ -305,18 +305,10 @@
                                     <h4><i class="bx bx-wrench"></i> Execução dos Serviços</h4>
                                     <p>Marque o status de cada serviço executado:</p>
 
-                                    <?php
-                                    // DEBUG: Mostrar informações sobre serviços
-                                    $debug_servicos = isset($servicos) ? (is_array($servicos) ? count($servicos) : 'nao-array') : 'nao-definido';
-                                    ?>
-                                    <!-- <?php echo htmlspecialchars('DEBUG - servicos: ' . $debug_servicos); ?> -->
-
-                                    <?php if (!empty($servicos)): ?>
-                                        <!-- DEBUG executar_os: Total servicos: <?php echo count($servicos); ?> -->
+                                    <?php if (!empty($servicos)): ?
                                         <div class="wizard-servicos-list">
                                             <?php foreach ($servicos as $index => $servico): ?>
                                                 <?php $servico_id = intval($servico->idServicos_os ?? $index); ?>
-                                                <!-- DEBUG servico: idServicos_os=<?php echo $servico->idServicos_os ?? 'NULL'; ?>, id_convertido=<?php echo $servico_id; ?>, status=<?php echo $servico->status ?? 'NULL'; ?> -->
                                                 <div class="wizard-servico-item" data-servico-id="<?php echo $servico_id; ?>">
                                                     <div class="servico-info-wizard">
                                                         <div class="servico-nome-wizard">
@@ -4061,7 +4053,6 @@ function finalizarWizardAtendimento() {
     Object.entries(wizardServicosStatus).forEach(([id, status]) => {
         servicosComStatus[id] = status;
     });
-    console.log('DEBUG - servicosComStatus:', servicosComStatus);
 
     // 1. Salvar todas as fotos primeiro
     const salvarFotos = async () => {

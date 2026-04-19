@@ -1445,6 +1445,89 @@ class Mine extends CI_Controller
         return $this->email_model->add('email_queue', $email);
     }
 
+    /**
+     * Visualizar relatório de atendimento/execução da OS (Cliente)
+     */
+    public function relatorioAtendimento($os_id = null)
+    {
+        if (!session_id() || !$this->session->userdata('conectado')) {
+            redirect('mine');
+        }
+
+        if (!$os_id) {
+            $this->session->set_flashdata('error', 'OS não informada.');
+            redirect('mine/painel');
+        }
+
+        $this->load->model('os_model');
+        $this->load->model('tec_os_model');
+        $this->load->model('mapos_model');
+        $this->load->model('clientes_model');
+        $this->load->model('checkin_model');
+        $this->load->model('fotosatendimento_model');
+        $this->load->model('assinaturas_model');
+
+        // Buscar OS
+        $os = $this->os_model->getById($os_id);
+        if (!$os) {
+            $this->session->set_flashdata('error', 'OS não encontrada.');
+            redirect('mine/painel');
+        }
+
+        // Verificar se a OS pertence ao cliente logado
+        $cliente_id = $this->session->userdata('cliente_id');
+        if ($os->clientes_id != $cliente_id) {
+            $this->session->set_flashdata('error', 'Esta OS não pertence ao cliente logado.');
+            redirect('mine/painel');
+        }
+
+        // Verificar se OS está finalizada (só mostrar relatório para OS finalizadas)
+        if ($os->status != 'Finalizado' && $os->status != 'Finalizada') {
+            $this->session->set_flashdata('warning', 'O relatório de atendimento estará disponível após a finalização da OS.');
+            redirect('mine/visualizarOs/' . $os_id);
+        }
+
+        // Preparar dados para o relatório
+        $data['os'] = $os;
+        $data['cliente'] = $this->clientes_model->getById($os->clientes_id);
+        $data['produtos'] = $this->os_model->getProdutos($os_id);
+        $data['servicos'] = $this->os_model->getServicos($os_id);
+        $data['emitente'] = $this->mapo_model->getEmitente();
+
+        // Buscar execuções do técnico
+        $data['execucoes'] = $this->tec_os_model->getExecucoesByOs($os_id);
+
+        // Buscar checkins
+        $data['checkins'] = $this->checkin_model->getAllByOs($os_id);
+
+        // Buscar fotos do atendimento
+        $fotos = $this->fotosatendimento_model->getByOs($os_id);
+        $data['fotosPorEtapa'] = [
+            'entrada' => [],
+            'durante' => [],
+            'saida' => []
+        ];
+        foreach ($fotos as $foto) {
+            $data['fotosPorEtapa'][$foto->etapa][] = $foto;
+        }
+
+        // Buscar assinaturas
+        $assinaturas = $this->assinaturas_model->getByOs($os_id);
+        $data['assinaturasPorTipo'] = [];
+        if (!empty($assinaturas)) {
+            foreach ($assinaturas as $assinatura) {
+                $data['assinaturasPorTipo'][$assinatura->tipo] = $assinatura;
+            }
+        }
+
+        // Fotos do portal do técnico
+        $data['fotosTecnico'] = $this->tec_os_model->getFotosByOs($os_id);
+
+        $data['menuOs'] = 'os';
+        $data['output'] = 'conecte/relatorio_atendimento';
+        $this->load->view('conecte/template', $data);
+    }
+
 }
 
 /* End of file conecte.php */

@@ -170,13 +170,7 @@ class Os_model extends CI_Model
             return [];
         }
 
-        $result = $query->result();
-        log_message('error', 'DEBUG Os_model::getServicos - OS ' . $id . ' - Query: ' . $this->db->last_query());
-        log_message('error', 'DEBUG Os_model::getServicos - OS ' . $id . ' - ' . count($result) . ' serviços encontrados');
-        foreach ($result as $r) {
-            log_message('error', 'DEBUG Os_model::getServicos - Servico: id=' . $r->idServicos_os . ', status=' . ($r->status ?? 'NULL') . ', nome=' . ($r->nome ?? 'NULL'));
-        }
-        return $result;
+        return $query->result();
     }
 
     public function add($table, $data, $returnId = false)
