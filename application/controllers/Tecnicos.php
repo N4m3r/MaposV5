@@ -510,8 +510,10 @@ class Tecnicos extends CI_Controller
 
         // Atualizar status individual de cada serviço conforme marcado no wizard
         $servicos_json = $this->input->post('servicos');
+        log_message('error', 'FINALIZAR - OS ' . $execucao->os_id . ' - servicos_json: ' . ($servicos_json ?: 'VAZIO'));
         if ($servicos_json) {
             $servicos_status = json_decode($servicos_json, true);
+            log_message('error', 'FINALIZAR - OS ' . $execucao->os_id . ' - decodificado: ' . print_r($servicos_status, true));
             if (is_array($servicos_status) && count($servicos_status) > 0) {
                 foreach ($servicos_status as $servico_id => $status) {
                     // Converter status do wizard para status do banco
@@ -531,10 +533,12 @@ class Tecnicos extends CI_Controller
 
                     // Converter ID para inteiro (o JavaScript envia como string)
                     $servico_id_int = intval($servico_id);
+                    log_message('error', 'FINALIZAR - Atualizando servico_id: ' . $servico_id_int . ' para status: ' . $status_db);
 
                     $this->db->where('idServicos_os', $servico_id_int);
                     $this->db->where('os_id', $execucao->os_id);
                     $this->db->update('servicos_os', ['status' => $status_db]);
+                    log_message('error', 'FINALIZAR - Query: ' . $this->db->last_query() . ' | Affected: ' . $this->db->affected_rows());
                 }
             }
         }
