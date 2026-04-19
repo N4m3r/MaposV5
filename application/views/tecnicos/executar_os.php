@@ -3527,3 +3527,6 @@ function finalizarWizardAtendimento() {
         window.location.reload();
     });
 }
+
+});
+</script></div>
