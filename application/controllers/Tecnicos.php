@@ -334,6 +334,20 @@ class Tecnicos extends CI_Controller
         // Atualizar status da OS
         $this->os_model->edit('os', ['status' => 'Em Andamento'], 'idOs', $os_id);
 
+        // Criar checkin na tabela os_checkin (integração com painel admin)
+        $this->load->model('checkin_model');
+        $data_checkin = [
+            'os_id' => $os_id,
+            'usuarios_id' => $tecnico_id,
+            'data_entrada' => date('Y-m-d H:i:s'),
+            'latitude_entrada' => $latitude ?: null,
+            'longitude_entrada' => $longitude ?: null,
+            'observacao_entrada' => 'Iniciado via portal do técnico',
+            'status' => 'Em Andamento'
+        ];
+        $this->checkin_model->add($data_checkin);
+        log_info('Checkin criado via portal do técnico - OS: ' . $os_id);
+
         echo json_encode([
             'success' => true,
             'execucao_id' => $execucao_id,
@@ -418,6 +432,22 @@ class Tecnicos extends CI_Controller
 
         // Atualizar OS para Finalizada
         $this->os_model->edit('os', ['status' => 'Finalizada'], 'idOs', $execucao->os_id);
+
+        // Finalizar checkin na tabela os_checkin (integração com painel admin)
+        $this->load->model('checkin_model');
+        $checkin_ativo = $this->checkin_model->getCheckinAtivo($execucao->os_id);
+        if ($checkin_ativo) {
+            $data_checkout = [
+                'data_saida' => date('Y-m-d H:i:s'),
+                'latitude_saida' => $latitude ?: null,
+                'longitude_saida' => $longitude ?: null,
+                'observacao_saida' => $observacoes,
+                'status' => 'Finalizado',
+                'data_atualizacao' => date('Y-m-d H:i:s')
+            ];
+            $this->checkin_model->finalizarAtendimento($checkin_ativo->idCheckin, $data_checkout);
+            log_info('Checkin finalizado via portal do técnico - OS: ' . $execucao->os_id);
+        }
 
         echo json_encode([
             'success' => true,
