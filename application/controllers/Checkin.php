@@ -1051,6 +1051,28 @@ class Checkin extends MY_Controller
             return;
         }
 
+        // Verificar permissão - admin com vOs OU técnico logado
+        $permissao = $this->session->userdata('permissao');
+        $logado = $this->session->userdata('logado');
+        $isTecnico = $this->session->userdata('tec_id') ? true : false;
+
+        log_message('info', 'verAssinatura: Sessao - logado=' . ($logado ? 'sim' : 'nao') . ', permissao=' . ($permissao ?? 'null') . ', isTecnico=' . ($isTecnico ? 'sim' : 'nao'));
+
+        // Se não está logado, retornar 404
+        if (!$logado) {
+            log_message('error', 'verAssinatura: Usuario nao logado');
+            show_404();
+            return;
+        }
+
+        // Permitir acesso se tem permissão vOs OU é técnico logado
+        $temPermissao = $this->permission->checkPermission($permissao, 'vOs') || $isTecnico;
+        if (!$temPermissao) {
+            log_message('error', 'verAssinatura: Sem permissao. Permissao=' . ($permissao ?? 'null'));
+            show_404();
+            return;
+        }
+
         $assinatura = $this->assinaturas_model->getById($assinatura_id);
 
         if (!$assinatura) {
