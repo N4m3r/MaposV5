@@ -71,8 +71,11 @@
                     <?php } ?>
                 <?php } ?>
 
-                <!-- ÁREA DO TÉCNICO - Destaque especial -->
-                <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vTecnicoDashboard')) { ?>
+                <!-- ÁREA DO TÉCNICO - Só aparece para técnicos, não para administradores -->
+                <?php if (
+                    $this->permission->checkPermission($this->session->userdata('permissao'), 'vTecnicoDashboard') &&
+                    !$this->permission->checkPermission($this->session->userdata('permissao'), 'cPermissao')
+                ) { ?>
                     <li class="menu-divider"><span class="divider-text">ÁREA DO TÉCNICO</span></li>
                     <li class="<?php if (isset($menuTecnicoDashboard)) { echo 'active'; }; ?>">
                         <a href="<?= site_url('tecnico') ?>" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; margin: 5px 10px;">
