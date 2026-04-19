@@ -2431,19 +2431,19 @@ function limparAssinatura() {
 }
 
 // Canvas de assinatura do Técnico (para check-in)
-let canvasTecnico = null;
-let ctxTecnico = null;
-let isDrawingTecnico = false;
+window.canvasTecnico = null;
+window.ctxTecnico = null;
+window.isDrawingTecnico = false;
 
 function initCanvasTecnico() {
-    canvasTecnico = document.getElementById('assinaturaTecnico');
-    if (!canvasTecnico) {
+    window.canvasTecnico = document.getElementById('assinaturaTecnico');
+    if (!window.canvasTecnico) {
         console.error('Canvas assinaturaTecnico não encontrado');
         return;
     }
 
-    ctxTecnico = canvasTecnico.getContext('2d');
-    console.log('Canvas técnico inicializado:', canvasTecnico);
+    window.ctxTecnico = window.canvasTecnico.getContext('2d');
+    console.log('Canvas técnico inicializado:', window.canvasTecnico);
 
     // Configurar dimensões
     const resizeCanvasTecnico = function() {
@@ -2912,13 +2912,13 @@ function getCsrfToken() {
     return { name: tokenName, value: '' };
 }
 
-// Execução
-async function iniciarExecucao() {
+// Execução - Garantir que está no escopo global
+window.iniciarExecucao = async function() {
     console.log('iniciarExecucao chamada');
 
     // Validar assinatura do técnico
-    if (!canvasTecnico || !ctxTecnico) {
-        console.error('Canvas não inicializado:', { canvasTecnico, ctxTecnico });
+    if (!window.canvasTecnico || !window.ctxTecnico) {
+        console.error('Canvas não inicializado:', { canvasTecnico: window.canvasTecnico, ctxTecnico: window.ctxTecnico });
         alert('Erro: Canvas de assinatura não encontrado. Recarregue a página.');
         return;
     }
@@ -2926,8 +2926,8 @@ async function iniciarExecucao() {
     // Verificar se o canvas tem desenho (assinatura)
     let hasDrawing = false;
     try {
-        const pixelData = ctxTecnico.getImageData(0, 0, canvasTecnico.width, canvasTecnico.height).data;
-        hasDrawing = pixelData.some((pixel, index) => index % 4 === 3 && pixel > 0);
+        const pixelData = window.ctxTecnico.getImageData(0, 0, window.canvasTecnico.width, window.canvasTecnico.height).data;
+        hasDrawing = pixelData.some(function(pixel, index) { return index % 4 === 3 && pixel > 0; });
     } catch (e) {
         console.error('Erro ao verificar assinatura:', e);
     }
@@ -2938,8 +2938,8 @@ async function iniciarExecucao() {
     }
 
     // Localização é opcional - usa valores padrão se não disponível
-    const lat = latitude || 0;
-    const lng = longitude || 0;
+    const lat = window.latitude || 0;
+    const lng = window.longitude || 0;
 
     const btn = document.getElementById('btnIniciar');
     if (!btn) {
@@ -2951,19 +2951,19 @@ async function iniciarExecucao() {
     btn.disabled = true;
 
     // Coletar assinatura do técnico
-    const assinaturaTecnico = canvasTecnico.toDataURL('image/png');
+    const assinaturaTecnico = window.canvasTecnico.toDataURL('image/png');
 
     const csrf = getCsrfToken();
     const formData = new FormData();
-    formData.append('os_id', osId);
+    formData.append('os_id', window.osId);
     formData.append('latitude', lat);
     formData.append('longitude', lng);
-    formData.append('foto_checkin', fotoCheckin || '');
+    formData.append('foto_checkin', window.fotoCheckin || '');
     formData.append('assinatura_tecnico', assinaturaTecnico);
     formData.append('tipo', 'inicio_local');
     formData.append(csrf.name, csrf.value);
 
-    console.log('Enviando requisição...', { os_id: osId, lat, lng, csrf_name: csrf.name });
+    console.log('Enviando requisição...', { os_id: window.osId, lat, lng, csrf_name: csrf.name });
 
     try {
         const response = await fetch('<?php echo site_url("tecnicos/iniciar_execucao"); ?>', {
