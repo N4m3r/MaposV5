@@ -151,7 +151,7 @@ class Os_model extends CI_Model
 
     public function getServicos($id = null)
     {
-        $this->db->select('servicos_os.*, servicos.nome, servicos.preco as precoVenda');
+        $this->db->select('servicos_os.*, servicos.nome, servicos.preco as precoVenda, servicos.codigo');
         $this->db->from('servicos_os');
         $this->db->join('servicos', 'servicos.idServicos = servicos_os.servicos_id');
         $this->db->where('os_id', $id);

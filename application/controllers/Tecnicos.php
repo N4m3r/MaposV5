@@ -429,19 +429,22 @@ class Tecnicos extends CI_Controller
             $caminho_foto = $this->_salvar_foto_base64($foto_checkout, 'checkout', $tecnico_id);
         }
 
-        // Salvar assinatura no sistema de fotos do técnico (caminho local)
+        // Salvar assinatura do cliente na tabela assinaturas (mesmo padrão do técnico)
         $caminho_assinatura = null;
         if ($assinatura_cliente) {
-            $caminho_assinatura = $this->_salvar_foto_base64($assinatura_cliente, 'assinatura', $tecnico_id);
-        }
+            log_message('info', '[DEBUG] Processando assinatura_cliente - tamanho: ' . strlen($assinatura_cliente));
+            log_message('info', '[DEBUG] Primeiros 100 chars: ' . substr($assinatura_cliente, 0, 100));
 
-        // Salvar assinatura na tabela assinaturas (integração com relatório de atendimento)
-        if ($assinatura_cliente) {
+            // Usar apenas assinaturas_model (igual ao técnico) - remover duplicação
             $imagem = $this->assinaturas_model->salvarImagem($assinatura_cliente, $execucao->os_id, 'cliente_saida');
+
             if ($imagem) {
+                $caminho_assinatura = $imagem['path']; // Usar path retornado
+                log_message('info', '[DEBUG] Assinatura salva com sucesso: ' . print_r($imagem, true));
+
                 $data_assinatura = [
                     'os_id' => $execucao->os_id,
-                    'checkin_id' => null, // Portal do técnico não usa checkin_id
+                    'checkin_id' => null,
                     'tipo' => 'cliente_saida',
                     'assinatura' => $imagem['path'],
                     'nome_assinante' => $nome_cliente_assina,
@@ -449,16 +452,17 @@ class Tecnicos extends CI_Controller
                     'ip_address' => $this->input->ip_address()
                 ];
                 $result = $this->assinaturas_model->add($data_assinatura);
+
                 if ($result) {
-                    log_info('Assinatura do cliente salva via portal do técnico - OS: ' . $execucao->os_id . ' - Path: ' . $imagem['path']);
+                    log_info('[DEBUG] Assinatura do cliente salva no banco - OS: ' . $execucao->os_id . ' - Path: ' . $imagem['path']);
                 } else {
-                    log_message('error', 'Falha ao salvar assinatura no banco - OS: ' . $execucao->os_id);
+                    log_message('error', '[DEBUG] Falha ao salvar assinatura no banco - OS: ' . $execucao->os_id);
                 }
             } else {
-                log_message('error', 'Falha ao processar imagem da assinatura - OS: ' . $execucao->os_id);
+                log_message('error', '[DEBUG] Falha ao processar imagem da assinatura - OS: ' . $execucao->os_id);
             }
         } else {
-            log_message('error', 'Assinatura do cliente vazia - OS: ' . $execucao->os_id);
+            log_message('error', '[DEBUG] Assinatura do cliente vazia - OS: ' . $execucao->os_id);
         }
 
         // Calcular tempo total

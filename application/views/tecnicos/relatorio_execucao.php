@@ -545,15 +545,6 @@
                 <!-- Serviços Executados -->
                 <div class="relatorio-card">
                     <h5><i class="bx bx-wrench"></i> Serviços da OS</h5>
-                    <!-- DEBUG: Remover após teste -->
-                    <div style="background: #fff3cd; padding: 10px; margin-bottom: 10px; border: 1px solid #ffc107; border-radius: 4px;">
-                        <strong>Debug:</strong> OS ID: <?php echo $os->idOs; ?> | Serviços encontrados: <?php echo count($servicos ?? []); ?>
-                        <?php if (empty($servicos)): ?>
-                            <br><small>Nenhum serviço retornado do banco de dados.</small>
-                        <?php else: ?>
-                            <br><small>Estrutura: <?php echo print_r($servicos[0], true); ?></small>
-                        <?php endif; ?>
-                    </div>
                     <?php if (!empty($servicos)): ?>
                         <table class="table table-bordered">
                             <thead>
@@ -867,36 +858,7 @@
                             <?php endforeach; ?>
                         <?php endif; ?>
 
-                        <!-- Assinatura do Portal do Técnico (execução) -->
-                        <?php if (!empty($execucoes)): ?>
-                            <?php foreach ($execucoes as $exec):
-                                if (!empty($exec->assinatura_cliente)):
-                            ?>
-                                <div class="span6">
-                                    <div class="assinatura-box">
-                                        <h6>Assinatura do Cliente (Portal)</h6>
-                                        <?php
-                                        $img_src_portal = (strpos($exec->assinatura_cliente, 'http') === 0)
-                                            ? $exec->assinatura_cliente
-                                            : base_url($exec->assinatura_cliente);
-                                        ?>
-                                        <img src="<?php echo $img_src_portal; ?>" alt="Assinatura" class="assinatura-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                        <div style="display: none; padding: 20px; background: #f8f9fa; border-radius: 8px; text-align: center; color: #666;">
-                                            <i class="bx bx-image-alt" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
-                                            Assinatura salva (erro ao carregar imagem)
-                                        </div>
-                                        <?php if (!empty($exec->nome_responsavel)): ?>
-                                            <p style="margin-top: 10px; font-size: 0.9rem;">
-                                                <strong>Assinado por:</strong> <?php echo htmlspecialchars($exec->nome_responsavel, ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?>
-                                            </p>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                            <?php
-                                endif;
-                            endforeach;
-                        ?>
-                        <?php endif; ?>
+                        <!-- DEBUG: Removido display duplicado do execucoes - assinatura agora vem apenas de $assinaturas -->
                     </div>
                 </div>
                 <?php endif; ?>

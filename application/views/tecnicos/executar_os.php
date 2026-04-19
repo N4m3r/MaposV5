@@ -510,15 +510,6 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Finalização -->
-                    <div class="action-card">
-                        <button type="button" class="btn btn-success btn-large btn-block" onclick="finalizarExecucao()" id="btnFinalizar">
-                            <span class="spinner"></span>
-                            <i class="bx bx-check-circle"></i>
-                            <span class="text">Finalizar OS</span>
-                        </button>
-                    </div>
-
                 </div>
 
             </div>
@@ -3815,12 +3806,8 @@ window.selecionarTipoFoto = selecionarTipoFoto;
 function abrirSeletorFoto() {
     const input = document.getElementById('wizardFotoInput');
 
-    // Em mobile, tentar usar camera diretamente
-    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-        input.setAttribute('capture', 'environment');
-    } else {
-        input.removeAttribute('capture');
-    }
+    // Remover capture para permitir escolher entre camera e galeria
+    input.removeAttribute('capture');
 
     input.click();
 }
@@ -4109,24 +4096,33 @@ function finalizarWizardAtendimento() {
         formData.append('longitude', '0');
         formData.append(csrf.name, csrf.value);
 
+        console.log('[DEBUG] Enviando finalizar_execucao:', {
+            execucao_id: execucaoId,
+            assinatura_tamanho: assinatura.length,
+            assinatura_preview: assinatura.substring(0, 50) + '...',
+            nome_cliente_assina: nomeAssinante
+        });
+
         const response = await fetch('<?php echo site_url('tecnicos/finalizar_execucao'); ?>', {
             method: 'POST',
             body: formData
         });
 
-        if (!response.ok) {
-            if (response.status === 403) {
-                throw new Error('Sessao expirada. Por favor, recarregue a pagina.');
-            }
-            throw new Error('Erro HTTP: ' + response.status);
-        }
+        console.log('[DEBUG] Response status:', response.status);
 
         const responseText = await response.text();
+        console.log('[DEBUG] Response text:', responseText.substring(0, 500));
+
+        if (!response.ok) {
+            console.error('[DEBUG] Erro HTTP:', response.status, responseText);
+            throw new Error('Erro HTTP ' + response.status + ': ' + responseText);
+        }
+
         try {
             return JSON.parse(responseText);
         } catch (e) {
-            console.error('Resposta nao e JSON:', responseText);
-            throw new Error('Erro no servidor. Resposta invalida.');
+            console.error('[DEBUG] Resposta não é JSON válido:', responseText);
+            throw new Error('Erro no servidor. Resposta invalida: ' + responseText.substring(0, 200));
         }
     };
 

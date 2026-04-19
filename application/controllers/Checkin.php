@@ -1084,15 +1084,26 @@ class Checkin extends MY_Controller
         }
 
         // Se é arquivo no disco
-        if (file_exists($assinatura->assinatura)) {
-            $mime = mime_content_type($assinatura->assinatura);
+        $caminho_arquivo = $assinatura->assinatura;
+
+        // Se o caminho for relativo, converte para absoluto usando FCPATH
+        if (!file_exists($caminho_arquivo)) {
+            $caminho_absoluto = FCPATH . $caminho_arquivo;
+            if (file_exists($caminho_absoluto)) {
+                $caminho_arquivo = $caminho_absoluto;
+            }
+        }
+
+        if (file_exists($caminho_arquivo)) {
+            $mime = mime_content_type($caminho_arquivo);
             header('Content-Type: ' . $mime);
-            header('Content-Length: ' . filesize($assinatura->assinatura));
+            header('Content-Length: ' . filesize($caminho_arquivo));
             header('Cache-Control: public, max-age=86400');
-            readfile($assinatura->assinatura);
+            readfile($caminho_arquivo);
             exit;
         }
 
+        log_message('error', 'verAssinatura: Arquivo nao encontrado. ID: ' . $assinatura_id . ', Path: ' . $assinatura->assinatura);
         show_404();
     }
 

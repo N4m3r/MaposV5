@@ -37,12 +37,11 @@ class Assinaturas_model extends CI_Model
 
         $resultado = $query->row();
 
-        // Adicionar URL de visualização se for base64
+        // Adicionar URL de visualização - sempre usar verAssinatura para consistência
+        $resultado->url_visualizacao = base_url('index.php/checkin/verAssinatura/' . $resultado->idAssinatura);
         if (isset($resultado->assinatura) && strpos($resultado->assinatura, 'BASE64:') === 0) {
-            $resultado->url_visualizacao = base_url('index.php/checkin/verAssinatura/' . $resultado->idAssinatura);
             $resultado->is_base64 = true;
         } else {
-            $resultado->url_visualizacao = base_url($resultado->assinatura);
             $resultado->is_base64 = false;
         }
 
@@ -75,13 +74,12 @@ class Assinaturas_model extends CI_Model
 
         $resultados = $query->result();
 
-        // Adicionar URLs de visualização
+        // Adicionar URLs de visualização - sempre usar verAssinatura para consistência
         foreach ($resultados as $resultado) {
+            $resultado->url_visualizacao = base_url('index.php/checkin/verAssinatura/' . $resultado->idAssinatura);
             if (isset($resultado->assinatura) && strpos($resultado->assinatura, 'BASE64:') === 0) {
-                $resultado->url_visualizacao = base_url('index.php/checkin/verAssinatura/' . $resultado->idAssinatura);
                 $resultado->is_base64 = true;
             } else {
-                $resultado->url_visualizacao = base_url($resultado->assinatura);
                 $resultado->is_base64 = false;
             }
         }
