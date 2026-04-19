@@ -257,10 +257,15 @@ class Tecnicos extends CI_Controller
         $foto_checkin = $this->input->post('foto_checkin');
         $tipo = $this->input->post('tipo'); // 'inicio_dia' ou 'inicio_local'
 
-        if (!$os_id || !$latitude || !$longitude) {
-            echo json_encode(['success' => false, 'message' => 'Dados incompletos']);
+        // Apenas OS é obrigatório - latitude/longitude podem ser 0 (GPS opcional)
+        if (!$os_id) {
+            echo json_encode(['success' => false, 'message' => 'OS não informada']);
             return;
         }
+
+        // Garantir que latitude/longitude sejam numéricos (padrão 0 se não enviado)
+        $latitude = is_numeric($latitude) ? (float)$latitude : 0;
+        $longitude = is_numeric($longitude) ? (float)$longitude : 0;
 
         $tecnico_id = $this->session->userdata('tec_id');
 
@@ -330,10 +335,15 @@ class Tecnicos extends CI_Controller
         $observacoes = $this->input->post('observacoes');
         $servicos_executados = $this->input->post('servicos'); // array de IDs
 
-        if (!$execucao_id || !$latitude || !$longitude) {
-            echo json_encode(['success' => false, 'message' => 'Dados incompletos']);
+        // Apenas execucao_id é obrigatório - GPS é opcional
+        if (!$execucao_id) {
+            echo json_encode(['success' => false, 'message' => 'Execução não informada']);
             return;
         }
+
+        // Garantir que latitude/longitude sejam numéricos (padrão 0 se não enviado)
+        $latitude = is_numeric($latitude) ? (float)$latitude : 0;
+        $longitude = is_numeric($longitude) ? (float)$longitude : 0;
 
         $tecnico_id = $this->session->userdata('tec_id');
 

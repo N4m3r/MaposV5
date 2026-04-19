@@ -42,7 +42,7 @@
                                 <div class="os-detail-row full-width">
                                     <div class="os-detail-item block">
                                         <span class="detail-label"><i class="bx bx-detail"></i> Descrição</span>
-                                        <span class="detail-value descricao-texto"><?php echo htmlspecialchars($os->descricaoProduto, ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></span>
+                                        <span class="detail-value descricao-texto"><?php echo $os->descricaoProduto; ?></span>
                                     </div>
                                 </div>
                             <?php endif; ?>
@@ -50,7 +50,7 @@
                                 <div class="os-detail-row full-width">
                                     <div class="os-detail-item block alert-item">
                                         <span class="detail-label"><i class="bx bx-error-circle"></i> Problema Relatado</span>
-                                        <span class="detail-value"><?php echo htmlspecialchars($os->defeito, ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></span>
+                                        <span class="detail-value"><?php echo $os->defeito; ?></span>
                                     </div>
                                 </div>
                             <?php endif; ?>
@@ -58,7 +58,7 @@
                                 <div class="os-detail-row full-width">
                                     <div class="os-detail-item block observacao-item">
                                         <span class="detail-label"><i class="bx bx-note"></i> Observações</span>
-                                        <span class="detail-value"><?php echo htmlspecialchars($os->observacoes, ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></span>
+                                        <span class="detail-value"><?php echo $os->observacoes; ?></span>
                                     </div>
                                 </div>
                             <?php endif; ?>
@@ -66,7 +66,7 @@
                                 <div class="os-detail-row full-width">
                                     <div class="os-detail-item block laudo-item">
                                         <span class="detail-label"><i class="bx bx-wrench"></i> Laudo Técnico</span>
-                                        <span class="detail-value"><?php echo htmlspecialchars($os->laudoTecnico, ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></span>
+                                        <span class="detail-value"><?php echo $os->laudoTecnico; ?></span>
                                     </div>
                                 </div>
                             <?php endif; ?>
@@ -463,8 +463,22 @@
 
 .detail-value.descricao-texto {
     font-weight: normal;
-    line-height: 1.5;
+    line-height: 1.6;
     color: #555;
+}
+
+.detail-value p {
+    margin: 0 0 10px 0;
+}
+
+.detail-value p:last-child {
+    margin-bottom: 0;
+}
+
+.detail-value br {
+    display: block;
+    content: "";
+    margin-top: 5px;
 }
 
 .status-badge {
