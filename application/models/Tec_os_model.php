@@ -191,7 +191,7 @@ class Tec_os_model extends CI_Model
      */
     public function getServicosOs($os_id)
     {
-        $this->db->select('servicos_os.*, servicos.nome as servico_nome, servicos.preco as servico_preco, servicos.checklist_padrao');
+        $this->db->select('servicos_os.*, servicos.nome as servico_nome, servicos.preco as servico_preco, servicos.codigo as servico_codigo, servicos.checklist_padrao');
         $this->db->from('servicos_os');
         $this->db->join('servicos', 'servicos.idServicos = servicos_os.servicos_id', 'left');
         $this->db->where('servicos_os.os_id', $os_id);
