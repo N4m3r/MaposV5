@@ -251,6 +251,8 @@ class Tecnicos extends CI_Controller
      */
     public function iniciar_execucao()
     {
+        header('Content-Type: application/json');
+
         $os_id = $this->input->post('os_id');
         $latitude = $this->input->post('latitude');
         $longitude = $this->input->post('longitude');
@@ -326,6 +328,8 @@ class Tecnicos extends CI_Controller
      */
     public function finalizar_execucao()
     {
+        header('Content-Type: application/json');
+
         $execucao_id = $this->input->post('execucao_id');
         $latitude = $this->input->post('latitude');
         $longitude = $this->input->post('longitude');

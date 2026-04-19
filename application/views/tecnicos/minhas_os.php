@@ -68,7 +68,11 @@
 
                                 <?php if ($os->descricaoProduto): ?>
                                     <div class="os-desc">
-                                        <?php echo htmlspecialchars(substr($os->descricaoProduto, 0, 100), ENT_COMPAT | ENT_HTML5, 'UTF-8') . (strlen($os->descricaoProduto) > 100 ? '...' : ''); ?>
+                                        <?php
+                                        // Remover tags HTML para exibir texto limpo na listagem
+                                        $descricao = strip_tags($os->descricaoProduto);
+                                        echo substr($descricao, 0, 100) . (strlen($descricao) > 100 ? '...' : '');
+                                        ?>
                                     </div>
                                 <?php endif; ?>
 

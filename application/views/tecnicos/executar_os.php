@@ -1198,13 +1198,25 @@ async function iniciarExecucao() {
     formData.append('tipo', 'inicio_local');
     formData.append(csrf.name, csrf.value);
 
+    console.log('Enviando requisição...', { os_id: osId, lat, lng, csrf_name: csrf.name });
+
     try {
         const response = await fetch('<?php echo site_url("tecnicos/iniciar_execucao"); ?>', {
             method: 'POST',
             body: formData
         });
 
-        const data = await response.json();
+        const responseText = await response.text();
+        console.log('Resposta raw:', responseText.substring(0, 500));
+
+        let data;
+        try {
+            data = JSON.parse(responseText);
+        } catch (e) {
+            console.error('Resposta não é JSON válido:', responseText);
+            alert('Erro no servidor. Verifique o console para detalhes.');
+            return;
+        }
 
         if (data.success) {
             execucaoId = data.execucao_id;
@@ -1216,6 +1228,7 @@ async function iniciarExecucao() {
         }
     } catch (err) {
         alert('Erro ao iniciar execução: ' + err.message);
+        console.error('Erro:', err);
     } finally {
         btn.classList.remove('loading');
         btn.disabled = false;
