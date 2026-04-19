@@ -585,6 +585,7 @@
 
 <!-- SweetAlert2 para o Wizard -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
 
 <style>
 /* OS Details Card */
@@ -2137,6 +2138,18 @@
     background: white;
     cursor: crosshair;
     margin-bottom: 10px;
+    position: relative;
+}
+
+.signature-pad-wizard:empty::before {
+    content: 'Clique e arraste para assinar';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #999;
+    font-size: 14px;
+    pointer-events: none;
 }
 
 /* Ações do Wizard */
@@ -3178,27 +3191,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function inicializarWizard() {
-    // Inicializar canvas de assinatura do wizard
-    const canvas = document.getElementById('wizardSignaturePad');
-    if (canvas && typeof SignaturePad !== 'undefined') {
-        wizardSignaturePad = new SignaturePad(canvas, {
-            backgroundColor: 'rgba(255, 255, 255, 0)',
-            penColor: 'rgb(0, 0, 0)'
-        });
-
-        // Redimensionar canvas
-        function resizeCanvas() {
-            const ratio = Math.max(window.devicePixelRatio || 1, 1);
-            canvas.width = canvas.offsetWidth * ratio;
-            canvas.height = canvas.offsetHeight * ratio;
-            canvas.getContext('2d').scale(ratio, ratio);
-            if (wizardSignaturePad) wizardSignaturePad.clear();
-        }
-
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
-    }
-
     // Inicializar status dos serviços
     const servicosItems = document.querySelectorAll('.wizard-servico-item');
     servicosItems.forEach(item => {
@@ -3320,12 +3312,47 @@ function atualizarWizardView() {
         }
     });
 
-    // Se estiver na etapa 5, atualizar resumo
+    // Se estiver na etapa 5, atualizar resumo e inicializar assinatura
     if (wizardStepAtual === 5) {
         atualizarResumoFinal();
+        inicializarAssinaturaWizard();
     }
 }
 window.atualizarWizardView = atualizarWizardView;
+
+// Inicializar/re-inicializar canvas de assinatura do wizard
+function inicializarAssinaturaWizard() {
+    const canvas = document.getElementById('wizardSignaturePad');
+    if (!canvas) return;
+
+    // Aguardar um momento para o canvas estar visível
+    setTimeout(() => {
+        if (typeof SignaturePad !== 'undefined') {
+            // Se já existe, destruir e recriar para garantir dimensões corretas
+            if (wizardSignaturePad) {
+                wizardSignaturePad.off();
+            }
+
+            const ratio = Math.max(window.devicePixelRatio || 1, 1);
+            const rect = canvas.getBoundingClientRect();
+
+            canvas.width = rect.width * ratio;
+            canvas.height = rect.height * ratio;
+
+            const ctx = canvas.getContext('2d');
+            ctx.scale(ratio, ratio);
+
+            wizardSignaturePad = new SignaturePad(canvas, {
+                backgroundColor: 'rgba(255, 255, 255, 0)',
+                penColor: 'rgb(0, 0, 0)',
+                minWidth: 1,
+                maxWidth: 3,
+                throttle: 0
+            });
+        }
+    }, 100);
+}
+window.inicializarAssinaturaWizard = inicializarAssinaturaWizard;
 
 // Controle de Serviços no Wizard
 function setWizardServicoStatus(servicoId, status) {
@@ -3445,7 +3472,7 @@ window.removerFotoWizard = removerFotoWizard;
 
 // Assinatura no Wizard
 function limparAssinaturaWizard() {
-    if (wizardSignaturePad) {
+    if (wizardSignaturePad && typeof wizardSignaturePad.clear === 'function') {
         wizardSignaturePad.clear();
     }
 }
