@@ -26,6 +26,9 @@ class Tec_os_model extends CI_Model
      */
     public function getClienteByOs($os_id)
     {
+        // Reset query builder
+        $this->db->reset_query();
+
         // Buscar primeiro a OS para obter o clientes_id
         $this->db->where('idOs', $os_id);
         $os_query = $this->db->get('os');
@@ -50,6 +53,9 @@ class Tec_os_model extends CI_Model
             $cliente->documento = '';
             return $cliente;
         }
+
+        // Reset query builder antes da próxima query
+        $this->db->reset_query();
 
         // Buscar o cliente diretamente na tabela clientes
         $this->db->where('idClientes', $os->clientes_id);
@@ -226,6 +232,8 @@ class Tec_os_model extends CI_Model
      */
     public function getServicosOs($os_id)
     {
+        $this->db->reset_query();
+
         $this->db->select('servicos_os.*, servicos.nome as servico_nome, servicos.preco as servico_preco, servicos.codigo as servico_codigo, servicos.checklist_padrao');
         $this->db->from('servicos_os');
         $this->db->join('servicos', 'servicos.idServicos = servicos_os.servicos_id', 'left');
@@ -238,7 +246,10 @@ class Tec_os_model extends CI_Model
             return [];
         }
 
-        return $query->result();
+        $result = $query->result();
+        log_message('debug', 'getServicosOs: OS ' . $os_id . ' - ' . count($result) . ' serviços encontrados');
+
+        return $result;
     }
 
     /**

@@ -221,6 +221,9 @@
                                             <a href="<?php echo $foto->url; ?>" target="_blank" class="foto-link">
                                                 <img src="<?php echo $foto->url; ?>" alt="<?php echo htmlspecialchars($foto->descricao ?? 'Foto'); ?>">
                                             </a>
+                                            <button type="button" class="btn-remover-foto" onclick="removerFoto(<?php echo $foto->idFoto; ?>)" title="Remover foto">
+                                                <i class="bx bx-trash"></i>
+                                            </button>
                                         </div>
                                     <?php endforeach; ?>
                                 <?php endif; ?>
@@ -351,24 +354,6 @@
 
                     <!-- Finalização -->
                     <div class="action-card">
-                        <h5><i class="bx bx-camera"></i> Foto de Finalização (opcional)</h5>
-                        <div class="camera-section">
-                            <div class="camera-preview" id="checkoutPreview">
-                                <i class="bx bx-camera"></i>
-                                <span>Foto de Check-out</span>
-                            </div>
-                            <div class="foto-options" style="display: flex; gap: 10px; justify-content: center;">
-                                <button type="button" class="btn btn-info" onclick="capturarFotoCheckout()" id="btnFotoCheckout">
-                                    <i class="bx bx-camera"></i> Tirar Foto
-                                </button>
-                                <label class="btn btn-default" style="cursor: pointer;">
-                                    <i class="bx bx-upload"></i> Selecionar Arquivo
-                                    <input type="file" id="fileCheckout" accept="image/*" style="display: none;" onchange="uploadFotoCheckout(this)">
-                                </label>
-                            </div>
-                            <small style="display: block; margin-top: 5px; color: #666; text-align: center;">A foto é opcional - você pode finalizar sem ela</small>
-                        </div>
-
                         <button type="button" class="btn btn-success btn-large btn-block" onclick="finalizarExecucao()" id="btnFinalizar">
                             <span class="spinner"></span>
                             <i class="bx bx-check-circle"></i>
@@ -767,6 +752,39 @@
 
 .gallery-item:hover img {
     transform: scale(1.05);
+}
+
+/* Botão remover foto */
+.gallery-item {
+    position: relative;
+}
+
+.btn-remover-foto {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(244, 67, 54, 0.9);
+    border: none;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: all 0.3s;
+    z-index: 10;
+}
+
+.gallery-item:hover .btn-remover-foto {
+    opacity: 1;
+}
+
+.btn-remover-foto:hover {
+    background: #d32f2f;
+    transform: scale(1.1);
 }
 
 .gallery-add {
@@ -1450,7 +1468,6 @@ let execucaoId = <?php echo $execucao ? $execucao->id : 'null'; ?>;
 let osId = <?php echo $os->idOs; ?>;
 let latitude, longitude;
 let fotoCheckin = null;
-let fotoCheckout = null;
 let stream = null;
 
 // Obter localização (opcional - silencia erros de permissão)
@@ -1808,6 +1825,42 @@ function previewArquivoServico(input) {
     reader.readAsDataURL(file);
 }
 
+// Função para remover foto
+async function removerFoto(fotoId) {
+    if (!confirm('Tem certeza que deseja remover esta foto?')) {
+        return;
+    }
+
+    const csrf = getCsrfToken();
+    const formData = new FormData();
+    formData.append('foto_id', fotoId);
+    formData.append(csrf.name, csrf.value);
+
+    try {
+        const response = await fetch('<?php echo site_url("tecnicos/remover_foto"); ?>', {
+            method: 'POST',
+            body: formData
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            // Remove o elemento da galeria
+            const fotoElement = document.getElementById('foto-item-' + fotoId);
+            if (fotoElement) {
+                fotoElement.remove();
+            }
+            // Opcional: mostrar mensagem de sucesso
+            console.log('Foto removida com sucesso');
+        } else {
+            alert('Erro ao remover foto: ' + (data.message || 'Erro desconhecido'));
+        }
+    } catch (err) {
+        console.error('Erro ao remover foto:', err);
+        alert('Erro ao remover foto. Tente novamente.');
+    }
+}
+
 async function salvarFotoServico() {
     // Debug info
     console.log('execucaoId:', execucaoId);
@@ -1873,9 +1926,11 @@ async function salvarFotoServico() {
             const grid = document.getElementById('galleryGrid');
             const item = document.createElement('div');
             item.className = 'gallery-item';
+            item.id = 'foto-item-' + data.foto_id;
             // Usa a URL do servidor (mesmo padrão do sistema de atendimento)
             const fotoUrl = data.url || fotoServicoBase64;
-            item.innerHTML = `<a href="${fotoUrl}" target="_blank" class="foto-link"><img src="${fotoUrl}" alt="Foto"></a>`;
+            item.innerHTML = `<a href="${fotoUrl}" target="_blank" class="foto-link"><img src="${fotoUrl}" alt="Foto"></a>
+                <button type="button" class="btn-remover-foto" onclick="removerFoto(${data.foto_id})" title="Remover foto"><i class="bx bx-trash"></i></button>`;
             grid.insertBefore(item, grid.children[1]);
 
             fecharCamera();
@@ -1895,45 +1950,6 @@ async function salvarFotoServico() {
     }
 }
 
-async function capturarFotoCheckout() {
-    const preview = document.getElementById('checkoutPreview');
-
-    // Verificar se a API de câmera está disponível
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        alert('Câmera não disponível neste dispositivo. Você pode continuar sem foto.');
-        return;
-    }
-
-    try {
-        const mediaStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
-        const video = document.createElement('video');
-        video.srcObject = mediaStream;
-        video.autoplay = true;
-
-        await new Promise(resolve => video.onloadedmetadata = resolve);
-        await new Promise(r => setTimeout(r, 500));
-
-        const tempCanvas = document.createElement('canvas');
-        tempCanvas.width = video.videoWidth;
-        tempCanvas.height = video.videoHeight;
-        const tempCtx = tempCanvas.getContext('2d');
-        tempCtx.drawImage(video, 0, 0);
-
-        fotoCheckout = tempCanvas.toDataURL('image/jpeg', 0.8);
-        preview.innerHTML = `<img src="${fotoCheckout}">`;
-
-        mediaStream.getTracks().forEach(track => track.stop());
-    } catch (err) {
-        // Foto opcional - mostra mensagem amigável
-        if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-            alert('Permissão de câmera negada. A foto é opcional - você pode continuar sem ela.');
-        } else {
-            alert('Câmera não disponível. Você pode continuar sem foto.');
-        }
-        console.log('Câmera opcional - erro silenciado:', err.message);
-    }
-}
-
 // Upload de arquivo para Check-in
 function uploadFotoCheckin(input) {
     const preview = document.getElementById('checkinPreview');
@@ -1950,26 +1966,6 @@ function uploadFotoCheckin(input) {
     reader.onload = function(e) {
         fotoCheckin = e.target.result;
         preview.innerHTML = `<img src="${fotoCheckin}" style="max-width: 100%; max-height: 100%;">`;
-    };
-    reader.readAsDataURL(file);
-}
-
-// Upload de arquivo para Check-out
-function uploadFotoCheckout(input) {
-    const preview = document.getElementById('checkoutPreview');
-    const file = input.files[0];
-
-    if (!file) return;
-
-    if (!file.type.startsWith('image/')) {
-        alert('Por favor, selecione uma imagem válida.');
-        return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        fotoCheckout = e.target.result;
-        preview.innerHTML = `<img src="${fotoCheckout}" style="max-width: 100%; max-height: 100%;">`;
     };
     reader.readAsDataURL(file);
 }

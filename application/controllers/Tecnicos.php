@@ -557,6 +557,49 @@ class Tecnicos extends CI_Controller
     }
 
     /**
+     * Remover foto do atendimento
+     */
+    public function remover_foto()
+    {
+        header('Content-Type: application/json');
+
+        $foto_id = $this->input->post('foto_id');
+
+        if (!$foto_id) {
+            echo json_encode(['success' => false, 'message' => 'ID da foto não informado']);
+            return;
+        }
+
+        $tecnico_id = $this->session->userdata('tec_id');
+
+        // Buscar a foto para verificar se pertence a uma OS do técnico
+        $this->load->model('fotosatendimento_model');
+        $foto = $this->fotosatendimento_model->getById($foto_id);
+
+        if (!$foto) {
+            echo json_encode(['success' => false, 'message' => 'Foto não encontrada']);
+            return;
+        }
+
+        // Verificar se a OS pertence ao técnico
+        $os = $this->tec_os_model->getOsById($foto->os_id);
+        if (!$os || $os->tecnico_responsavel != $tecnico_id) {
+            echo json_encode(['success' => false, 'message' => 'Você não tem permissão para remover esta foto']);
+            return;
+        }
+
+        // Remover a foto
+        $resultado = $this->fotosatendimento_model->delete($foto_id);
+
+        if ($resultado) {
+            log_message('info', 'Tecnicos::remover_foto - Foto ' . $foto_id . ' removida pelo tecnico ' . $tecnico_id);
+            echo json_encode(['success' => true, 'message' => 'Foto removida com sucesso']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Erro ao remover foto']);
+        }
+    }
+
+    /**
      * Salvar item de checklist
      */
     public function salvar_checklist_item()
