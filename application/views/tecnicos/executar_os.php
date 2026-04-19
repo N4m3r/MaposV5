@@ -2212,7 +2212,6 @@ async function finalizarExecucao() {
     formData.append('execucao_id', execucaoId);
     formData.append('latitude', lat);
     formData.append('longitude', lng);
-    formData.append('foto_checkout', fotoCheckout || '');
     formData.append('assinatura_cliente', assinatura);
     formData.append('nome_cliente_assina', nomeAssinante);
     formData.append('observacoes', observacoes);
