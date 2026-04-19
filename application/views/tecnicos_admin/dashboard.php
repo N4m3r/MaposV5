@@ -192,8 +192,18 @@
                         </div>
                         <i class="bx bx-chevron-right arrow"></i>
                     </a>
-                    <a href="<?php echo site_url('tecnicos_admin/obras'); ?>" class="quick-link">
+                    <a href="<?php echo site_url('tecnicos_admin/execucao'); ?>" class="quick-link">
                         <div class="quick-link-icon bg-dark">
+                            <i class="bx bx-rocket"></i>
+                        </div>
+                        <div class="quick-link-text">
+                            <span class="title">Execução de Obras</span>
+                            <span class="desc">Acompanhamento em tempo real</span>
+                        </div>
+                        <i class="bx bx-chevron-right arrow"></i>
+                    </a>
+                    <a href="<?php echo site_url('tecnicos_admin/obras'); ?>" class="quick-link">
+                        <div class="quick-link-icon bg-secondary">
                             <i class="bx bx-building"></i>
                         </div>
                         <div class="quick-link-text">

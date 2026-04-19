@@ -806,4 +806,73 @@ class Tecnicos_admin extends MY_Controller
         $this->session->set_flashdata('success', 'Ordem de Serviço desvinculada com sucesso!');
         redirect('tecnicos_admin/ver_obra/' . $obra_id);
     }
+
+    /**
+     * Visão de Execução das Obras - Dashboard simplificado
+     */
+    public function execucao_obras()
+    {
+        $this->load->model('obras_model');
+        $this->load->model('os_model');
+
+        // Buscar todas as obras ativas com seus dados
+        $this->db->select('o.*, c.nomeCliente as cliente_nome, c.documento as cliente_documento');
+        $this->db->from('obras o');
+        $this->db->join('clientes c', 'c.idClientes = o.cliente_id', 'left');
+        $this->db->where_in('o.status', ['Contratada', 'EmExecucao', 'Paralisada', 'Orcamentacao']);
+        $this->db->order_by('o.percentual_concluido', 'DESC');
+        $obras = $this->db->get()->result();
+
+        // Enriquecer dados das obras
+        foreach ($obras as $obra) {
+            // Contar OS vinculadas
+            $this->db->where('obra_id', $obra->id);
+            $obra->total_os = $this->db->count_all_results('os');
+
+            // Contar etapas
+            $obra->total_etapas = $this->obras_model->getEtapas($obra->id) ? count($this->obras_model->getEtapas($obra->id)) : 0;
+
+            // Contar equipe
+            $obra->total_equipe = $this->obras_model->getEquipe($obra->id) ? count($this->obras_model->getEquipe($obra->id)) : 0;
+
+            // Buscar OS recentes da obra
+            $this->db->select('os.idOs, os.status, os.dataInicial, c.nomeCliente');
+            $this->db->from('os');
+            $this->db->join('clientes c', 'c.idClientes = os.clientes_id');
+            $this->db->where('os.obra_id', $obra->id);
+            $this->db->order_by('os.dataInicial', 'DESC');
+            $this->db->limit(5);
+            $obra->os_recentes = $this->db->get()->result();
+        }
+
+        $this->data['obras'] = $obras;
+        $this->data['view'] = 'tecnicos_admin/execucao_obras';
+        return $this->layout();
+    }
+
+    /**
+     * Buscar OS disponíveis simplificado - apenas por obra
+     */
+    public function buscar_os_por_obra()
+    {
+        $this->load->model('os_model');
+        $obra_id = $this->input->get('obra_id');
+
+        if (!$obra_id) {
+            echo json_encode(['success' => false, 'message' => 'Obra não informada']);
+            return;
+        }
+
+        // Buscar OS que não estão vinculadas a nenhuma obra
+        $this->db->select('os.idOs, os.dataInicial, os.dataFinal, os.status, c.nomeCliente, c.documento');
+        $this->db->from('os');
+        $this->db->join('clientes c', 'c.idClientes = os.clientes_id');
+        $this->db->where('(os.obra_id IS NULL OR os.obra_id = 0)');
+        $this->db->order_by('os.dataInicial', 'DESC');
+        $this->db->limit(50);
+        $query = $this->db->get();
+        $os = $query ? $query->result() : [];
+
+        echo json_encode(['success' => true, 'os' => $os, 'total' => count($os)]);
+    }
 }

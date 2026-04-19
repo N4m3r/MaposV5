@@ -222,6 +222,8 @@ $route['tecnicos_admin/adicionar_estoque'] = 'tecnicos_admin/adicionar_estoque';
 $route['tecnicos_admin/rotas'] = 'tecnicos_admin/rotas';
 $route['tecnicos_admin/rotas/(:num)'] = 'tecnicos_admin/rotas/$1';
 $route['tecnicos_admin/api/dados_dashboard'] = 'tecnicos_admin/api_dados_dashboard';
+$route['tecnicos_admin/execucao'] = 'tecnicos_admin/execucao_obras';
+$route['tecnicos_admin/buscar_os_por_obra'] = 'tecnicos_admin/buscar_os_por_obra';
 
 /* End of file routes.php */
 /* Location: ./application/config/routes.php */
