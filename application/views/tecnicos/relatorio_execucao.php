@@ -321,7 +321,11 @@
                     <div class="fotos-grid">
                         <?php foreach ($fotosTecnico as $foto): ?>
                             <div class="foto-item">
-                                <img src="<?php echo base_url($foto->caminho); ?>" alt="Foto do técnico">
+                                <img src="<?php echo base_url($foto->caminho); ?>"
+                                     alt="Foto do técnico"
+                                     loading="eager"
+                                     decoding="async"
+                                     onerror="this.style.display='none'; this.parentElement.innerHTML+='Erro ao carregar';">
                                 <div class="foto-tipo">
                                     <?php
                                     $tipo = $foto->tipo ?? 'foto';
@@ -354,12 +358,11 @@
                     <div class="fotos-grid">
                         <?php foreach ($fotosAtendimento as $foto): ?>
                             <div class="foto-item">
-                                <img src="<?php echo $foto->url . (strpos($foto->url, '?') === false ? '?' : '&') . '_t=' . time(); ?>"
+                                <img src="<?php echo $foto->url; ?>"
                                      alt="Foto de atendimento"
                                      loading="eager"
                                      decoding="async"
-                                     onerror="this.onerror=null; this.src='<?php echo base_url('assets/img/sem_imagem.png'); ?>';"
-                                     style="display: block;">
+                                     onerror="this.style.display='none'; this.parentElement.innerHTML+='Erro ao carregar';">
                                 <div class="foto-tipo">
                                     <?php
                                     $etapa = $foto->etapa ?? 'foto';
