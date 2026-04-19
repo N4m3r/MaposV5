@@ -1206,6 +1206,7 @@ CREATE TABLE IF NOT EXISTS `tec_os_execucao` (
   `fotos_antes` JSON DEFAULT NULL,
   `fotos_depois` JSON DEFAULT NULL,
   `fotos_durante` JSON DEFAULT NULL,
+  `fotos_galeria_json` JSON DEFAULT NULL,
 
   -- Cliente
   `assinatura_cliente` TEXT,

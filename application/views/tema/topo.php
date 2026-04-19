@@ -85,6 +85,9 @@
     .notif-item .notif-data { font-size: 10px; color: #999; margin-top: 2px; }
     .notif-item .notif-icone { margin-right: 8px; font-size: 16px; vertical-align: middle; }
     #theme-toggle-btn a { cursor: pointer; }
+    /* Notificações sempre por cima */
+    #notifications-dropdown { position: relative; z-index: 99999 !important; }
+    #notifications-dropdown .dropdown-menu { z-index: 99999 !important; }
   </style>
 </head>
 
@@ -231,12 +234,12 @@
         </li>
 
         <!-- Notificações -->
-        <li class="dropdown" id="notifications-dropdown">
+        <li class="dropdown" id="notifications-dropdown" style="position:relative;z-index:99999;">
           <a href="#" class="tip-right dropdown-toggle" data-toggle="dropdown" title="Notificações">
             <i class='bx bx-bell iconN'></i>
             <span class="notif-badge" id="notif-count" style="display:none;">0</span>
           </a>
-          <ul class="dropdown-menu" id="notif-list" style="width:340px;right:0;left:auto;">
+          <ul class="dropdown-menu" id="notif-list" style="width:340px;right:0;left:auto;z-index:99999;position:absolute;">
             <li class="notif-header" style="padding:8px 12px;font-weight:bold;border-bottom:1px solid #ddd;">
               <span>Notificações</span>
               <a href="#" id="notif-marcar-todas" style="float:right;font-size:11px;font-weight:normal;">Marcar todas como lidas</a>

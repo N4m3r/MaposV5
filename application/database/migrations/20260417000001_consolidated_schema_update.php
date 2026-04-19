@@ -998,6 +998,7 @@ class Migration_Consolidated_schema_update extends CI_Migration
             'fotos_antes' => ['type' => 'JSON', 'null' => true],
             'fotos_depois' => ['type' => 'JSON', 'null' => true],
             'fotos_durante' => ['type' => 'JSON', 'null' => true],
+            'fotos_galeria_json' => ['type' => 'JSON', 'null' => true],
             'assinatura_cliente' => ['type' => 'TEXT', 'null' => true],
             'nome_responsavel' => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true],
             'avaliacao' => ['type' => 'INT', 'null' => true],

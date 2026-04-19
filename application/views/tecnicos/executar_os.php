@@ -230,13 +230,15 @@
                                     <span>Adicionar</span>
                                 </div>
 
-                                <?php if ($execucao && $execucao->fotos_galeria_json): ?>
+                                <?php if ($execucao && isset($execucao->fotos_galeria_json) && $execucao->fotos_galeria_json): ?>
                                     <?php $fotos = json_decode($execucao->fotos_galeria_json, true); ?>
-                                    <?php foreach ($fotos as $foto): ?>
-                                        <div class="gallery-item">
-                                            <img src="<?php echo base_url($foto['caminho']); ?>" alt="Foto">
-                                        </div>
-                                    <?php endforeach; ?>
+                                    <?php if ($fotos): ?>
+                                        <?php foreach ($fotos as $foto): ?>
+                                            <div class="gallery-item">
+                                                <img src="<?php echo base_url($foto['caminho'] ?? ''); ?>" alt="Foto">
+                                            </div>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
                                 <?php endif; ?>
                             </div>
                         </div>
