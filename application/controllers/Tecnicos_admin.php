@@ -1589,4 +1589,450 @@ class Tecnicos_admin extends MY_Controller
             // Silenciar erro
         }
     }
+
+    // ============================================
+    // SISTEMA DE TAREFAS DE EXECUÇÃO DAS OBRAS
+    // ============================================
+
+    /**
+     * Gerenciar tarefas de uma obra
+     */
+    public function tarefas_obra($obra_id)
+    {
+        $this->load->model('obras_model');
+
+        $obra = $this->obras_model->getById($obra_id);
+        if (!$obra) {
+            $this->session->set_flashdata('error', 'Obra não encontrada.');
+            redirect('tecnicos_admin/obras');
+        }
+
+        // Buscar tarefas da obra
+        $this->db->select('t.*, u.nome as tecnico_nome');
+        $this->db->from('obra_tarefas t');
+        $this->db->join('usuarios u', 'u.idUsuarios = t.tecnico_id', 'left');
+        $this->db->where('t.obra_id', $obra_id);
+        $this->db->order_by('t.prioridade DESC, t.data_fim_prevista ASC');
+        $tarefas = $this->db->get()->result();
+
+        // Buscar técnicos disponíveis
+        $this->db->where('is_tecnico', 1);
+        $this->db->where('status', 1);
+        $tecnicos = $this->db->get('usuarios')->result();
+
+        // Estatísticas
+        $stats = [
+            'total' => count($tarefas),
+            'pendentes' => count(array_filter($tarefas, fn($t) => $t->status === 'pendente')),
+            'em_andamento' => count(array_filter($tarefas, fn($t) => $t->status === 'em_andamento')),
+            'concluidas' => count(array_filter($tarefas, fn($t) => $t->status === 'concluida')),
+        ];
+
+        $this->data['obra'] = $obra;
+        $this->data['tarefas'] = $tarefas;
+        $this->data['tecnicos'] = $tecnicos;
+        $this->data['stats'] = $stats;
+        $this->data['view'] = 'tecnicos_admin/tarefas_obra';
+        return $this->layout();
+    }
+
+    /**
+     * Salvar nova tarefa (AJAX ou form)
+     */
+    public function salvar_tarefa()
+    {
+        $obra_id = $this->input->post('obra_id');
+
+        if (!$obra_id) {
+            $this->session->set_flashdata('error', 'Obra não informada.');
+            redirect('tecnicos_admin/obras');
+        }
+
+        $this->form_validation->set_rules('titulo', 'Título', 'required|trim');
+        $this->form_validation->set_rules('tecnico_id', 'Técnico', 'required');
+        $this->form_validation->set_rules('data_fim_prevista', 'Data de Término', 'required');
+
+        if ($this->form_validation->run() === false) {
+            $this->session->set_flashdata('error', validation_errors());
+            redirect('tecnicos_admin/tarefas_obra/' . $obra_id);
+        }
+
+        // Verificar se tabela existe
+        if (!$this->db->table_exists('obra_tarefas')) {
+            $this->criarTabelaTarefas();
+        }
+
+        $dados = [
+            'obra_id' => $obra_id,
+            'tecnico_id' => $this->input->post('tecnico_id'),
+            'titulo' => $this->input->post('titulo'),
+            'descricao' => $this->input->post('descricao'),
+            'prioridade' => $this->input->post('prioridade') ?: 'normal',
+            'status' => $this->input->post('status') ?: 'pendente',
+            'data_inicio' => $this->input->post('data_inicio') ?: date('Y-m-d'),
+            'data_fim_prevista' => $this->input->post('data_fim_prevista'),
+            'criado_por' => $this->session->userdata('id_admin'),
+            'created_at' => date('Y-m-d H:i:s'),
+            'percentual_concluido' => 0
+        ];
+
+        $tarefa_id = $this->input->post('tarefa_id');
+
+        if ($tarefa_id) {
+            // Atualizar
+            $this->db->where('id', $tarefa_id);
+            $this->db->update('obra_tarefas', $dados);
+            $this->session->set_flashdata('success', 'Tarefa atualizada com sucesso!');
+        } else {
+            // Inserir
+            $this->db->insert('obra_tarefas', $dados);
+            $this->session->set_flashdata('success', 'Tarefa criada e atribuída ao técnico!');
+        }
+
+        redirect('tecnicos_admin/tarefas_obra/' . $obra_id);
+    }
+
+    /**
+     * Atualizar status da tarefa (AJAX)
+     */
+    public function atualizar_status_tarefa()
+    {
+        header('Content-Type: application/json');
+
+        $tarefa_id = $this->input->post('tarefa_id');
+        $status = $this->input->post('status');
+        $percentual = $this->input->post('percentual');
+        $observacao = $this->input->post('observacao');
+        $horas_trabalhadas = $this->input->post('horas_trabalhadas');
+
+        if (!$tarefa_id || !$status) {
+            echo json_encode(['success' => false, 'message' => 'Dados incompletos']);
+            return;
+        }
+
+        // Buscar tarefa atual
+        $this->db->where('id', $tarefa_id);
+        $tarefa = $this->db->get('obra_tarefas')->row();
+
+        if (!$tarefa) {
+            echo json_encode(['success' => false, 'message' => 'Tarefa não encontrada']);
+            return;
+        }
+
+        $dados = [
+            'status' => $status,
+            'percentual_concluido' => $percentual ?: 0,
+            'updated_at' => date('Y-m-d H:i:s')
+        ];
+
+        if ($status === 'concluida') {
+            $dados['data_fim_real'] = date('Y-m-d');
+            $dados['percentual_concluido'] = 100;
+        }
+
+        $this->db->where('id', $tarefa_id);
+        if ($this->db->update('obra_tarefas', $dados)) {
+            // Registrar no histórico
+            $this->registrarHistoricoTarefa($tarefa_id, $tarefa->status, $status, $tarefa->percentual_concluido, $percentual, $observacao, $horas_trabalhadas);
+
+            echo json_encode(['success' => true, 'message' => 'Status atualizado!']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Erro ao atualizar']);
+        }
+    }
+
+    /**
+     * Registrar histórico da tarefa
+     */
+    private function registrarHistoricoTarefa($tarefa_id, $status_anterior, $status_novo, $percentual_anterior, $percentual_novo, $descricao = '', $horas = 0)
+    {
+        if (!$this->db->table_exists('obra_tarefas_historico')) {
+            return;
+        }
+
+        $dados = [
+            'tarefa_id' => $tarefa_id,
+            'tecnico_id' => $this->session->userdata('id_admin'),
+            'tipo' => 'atualizacao_status',
+            'descricao' => $descricao ?: "Status alterado de '{$status_anterior}' para '{$status_novo}'",
+            'percentual_anterior' => $percentual_anterior ?: 0,
+            'percentual_novo' => $percentual_novo ?: 0,
+            'horas_trabalhadas' => $horas ?: 0,
+            'data_registro' => date('Y-m-d H:i:s')
+        ];
+
+        $this->db->insert('obra_tarefas_historico', $dados);
+    }
+
+    /**
+     * Excluir tarefa
+     */
+    public function excluir_tarefa($tarefa_id)
+    {
+        $this->db->where('id', $tarefa_id);
+        $tarefa = $this->db->get('obra_tarefas')->row();
+
+        if (!$tarefa) {
+            $this->session->set_flashdata('error', 'Tarefa não encontrada.');
+            redirect('tecnicos_admin/obras');
+        }
+
+        $this->db->where('id', $tarefa_id);
+        if ($this->db->delete('obra_tarefas')) {
+            $this->session->set_flashdata('success', 'Tarefa excluída com sucesso!');
+        } else {
+            $this->session->set_flashdata('error', 'Erro ao excluir tarefa.');
+        }
+
+        redirect('tecnicos_admin/tarefas_obra/' . $tarefa->obra_id);
+    }
+
+    /**
+     * Buscar tarefas do técnico (para portal do técnico)
+     */
+    public function buscar_tarefas_tecnico($tecnico_id = null)
+    {
+        header('Content-Type: application/json');
+
+        if (!$tecnico_id) {
+            $tecnico_id = $this->session->userdata('id_admin');
+        }
+
+        $obra_id = $this->input->get('obra_id');
+        $status = $this->input->get('status');
+
+        $this->db->select('t.*, o.nome as obra_nome, o.codigo as obra_codigo, c.nomeCliente as cliente_nome');
+        $this->db->from('obra_tarefas t');
+        $this->db->join('obras o', 'o.id = t.obra_id');
+        $this->db->join('clientes c', 'c.idClientes = o.cliente_id', 'left');
+        $this->db->where('t.tecnico_id', $tecnico_id);
+
+        if ($obra_id) {
+            $this->db->where('t.obra_id', $obra_id);
+        }
+
+        if ($status) {
+            $this->db->where('t.status', $status);
+        } else {
+            $this->db->where_in('t.status', ['pendente', 'em_andamento']);
+        }
+
+        $this->db->order_by('t.prioridade DESC, t.data_fim_prevista ASC');
+        $tarefas = $this->db->get()->result();
+
+        echo json_encode(['success' => true, 'tarefas' => $tarefas]);
+    }
+
+    /**
+     * Ver detalhes da tarefa
+     */
+    public function ver_tarefa($tarefa_id)
+    {
+        header('Content-Type: application/json');
+
+        $this->db->select('t.*, u.nome as tecnico_nome, o.nome as obra_nome, o.codigo as obra_codigo');
+        $this->db->from('obra_tarefas t');
+        $this->db->join('usuarios u', 'u.idUsuarios = t.tecnico_id', 'left');
+        $this->db->join('obras o', 'o.id = t.obra_id');
+        $this->db->where('t.id', $tarefa_id);
+        $tarefa = $this->db->get()->row();
+
+        if (!$tarefa) {
+            echo json_encode(['success' => false, 'message' => 'Tarefa não encontrada']);
+            return;
+        }
+
+        // Buscar histórico
+        $this->db->where('tarefa_id', $tarefa_id);
+        $this->db->order_by('data_registro', 'DESC');
+        $historico = $this->db->get('obra_tarefas_historico')->result();
+
+        echo json_encode(['success' => true, 'tarefa' => $tarefa, 'historico' => $historico]);
+    }
+
+    /**
+     * Relatório de atividades do dia
+     */
+    public function relatorio_atividades_dia()
+    {
+        $data = $this->input->get('data') ?: date('Y-m-d');
+        $tecnico_id = $this->input->get('tecnico_id');
+        $obra_id = $this->input->get('obra_id');
+
+        // Buscar atividades do histórico
+        $this->db->select('h.*, t.titulo as tarefa_titulo, o.nome as obra_nome, o.codigo as obra_codigo, u.nome as tecnico_nome');
+        $this->db->from('obra_tarefas_historico h');
+        $this->db->join('obra_tarefas t', 't.id = h.tarefa_id');
+        $this->db->join('obras o', 'o.id = t.obra_id');
+        $this->db->join('usuarios u', 'u.idUsuarios = h.tecnico_id', 'left');
+        $this->db->where('DATE(h.data_registro)', $data);
+
+        if ($tecnico_id) {
+            $this->db->where('h.tecnico_id', $tecnico_id);
+        }
+
+        if ($obra_id) {
+            $this->db->where('t.obra_id', $obra_id);
+        }
+
+        $this->db->order_by('h.data_registro', 'DESC');
+        $atividades = $this->db->get()->result();
+
+        // Calcular total de horas
+        $total_horas = array_sum(array_map(fn($a) => $a->horas_trabalhadas, $atividades));
+
+        // Buscar técnicos para filtro
+        $this->db->where('is_tecnico', 1);
+        $this->db->where('status', 1);
+        $tecnicos = $this->db->get('usuarios')->result();
+
+        // Buscar obras para filtro
+        $this->db->where_in('status', ['Contratada', 'EmExecucao']);
+        $obras = $this->db->get('obras')->result();
+
+        $this->data['atividades'] = $atividades;
+        $this->data['total_horas'] = $total_horas;
+        $this->data['data'] = $data;
+        $this->data['tecnicos'] = $tecnicos;
+        $this->data['obras'] = $obras;
+        $this->data['tecnico_id'] = $tecnico_id;
+        $this->data['obra_id'] = $obra_id;
+        $this->data['view'] = 'tecnicos_admin/relatorio_atividades_dia';
+        return $this->layout();
+    }
+
+    /**
+     * Criar tabela de tarefas se não existir
+     */
+    private function criarTabelaTarefas()
+    {
+        try {
+            $sql = "CREATE TABLE IF NOT EXISTS obra_tarefas (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                obra_id INT NOT NULL,
+                tecnico_id INT,
+                titulo VARCHAR(255) NOT NULL,
+                descricao TEXT,
+                status ENUM('pendente', 'em_andamento', 'pausada', 'concluida', 'cancelada') DEFAULT 'pendente',
+                prioridade ENUM('baixa', 'normal', 'alta', 'urgente') DEFAULT 'normal',
+                data_inicio DATE,
+                data_fim_prevista DATE,
+                data_fim_real DATE,
+                percentual_concluido INT DEFAULT 0,
+                observacoes TEXT,
+                criado_por INT,
+                created_at DATETIME,
+                updated_at DATETIME,
+                INDEX idx_obra_id (obra_id),
+                INDEX idx_tecnico_id (tecnico_id),
+                INDEX idx_status (status)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
+
+            $this->db->query($sql);
+
+            $sql2 = "CREATE TABLE IF NOT EXISTS obra_tarefas_historico (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                tarefa_id INT NOT NULL,
+                tecnico_id INT,
+                tipo VARCHAR(50) NOT NULL,
+                descricao TEXT NOT NULL,
+                percentual_anterior INT DEFAULT 0,
+                percentual_novo INT DEFAULT 0,
+                horas_trabalhadas DECIMAL(5,2) DEFAULT 0.00,
+                data_registro DATETIME,
+                localizacao_lat DECIMAL(10,8),
+                localizacao_lng DECIMAL(11,8),
+                INDEX idx_tarefa_id (tarefa_id),
+                INDEX idx_tecnico_id (tecnico_id)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
+
+            $this->db->query($sql2);
+        } catch (Exception $e) {
+            // Silenciar erro
+        }
+    }
+
+    /**
+     * API - Atualizar progresso da tarefa pelo técnico
+     */
+    public function api_atualizar_tarefa_tecnico()
+    {
+        header('Content-Type: application/json');
+
+        $tarefa_id = $this->input->post('tarefa_id');
+        $percentual = $this->input->post('percentual');
+        $observacao = $this->input->post('observacao');
+        $horas_trabalhadas = $this->input->post('horas_trabalhadas');
+        $lat = $this->input->post('latitude');
+        $lng = $this->input->post('longitude');
+
+        if (!$tarefa_id || $percentual === null) {
+            echo json_encode(['success' => false, 'message' => 'Dados incompletos']);
+            return;
+        }
+
+        $tecnico_id = $this->session->userdata('id_admin');
+
+        // Verificar se tarefa existe e pertence ao técnico
+        $this->db->where('id', $tarefa_id);
+        $tarefa = $this->db->get('obra_tarefas')->row();
+
+        if (!$tarefa) {
+            echo json_encode(['success' => false, 'message' => 'Tarefa não encontrada']);
+            return;>
+        }
+
+        if ($tarefa->technico_id != $tecnico_id) {
+            echo json_encode(['success' => false, 'message' => 'Tarefa não atribuída a você']);
+            return;
+        }
+
+        // Determinar novo status
+        $status = $tarefa->status;
+        if ($percentual == 0) {
+            $status = 'pendente';
+        } elseif ($percentual >= 100) {
+            $status = 'concluida';
+            $percentual = 100;
+        } elseif ($percentual > 0) {
+            $status = 'em_andamento';
+        }
+
+        $dados = [
+            'percentual_concluido' => $percentual,
+            'status' => $status,
+            'updated_at' => date('Y-m-d H:i:s')
+        ];
+
+        if ($status === 'concluida') {
+            $dados['data_fim_real'] = date('Y-m-d');
+        }
+
+        $this->db->where('id', $tarefa_id);
+        if ($this->db->update('obra_tarefas', $dados)) {
+            // Registrar histórico
+            $dados_historico = [
+                'tarefa_id' => $tarefa_id,
+                'tecnico_id' => $tecnico_id,
+                'tipo' => 'atualizacao_progresso',
+                'descricao' => $observacao ?: 'Progresso atualizado pelo técnico',
+                'percentual_anterior' => $tarefa->percentual_concluido ?: 0,
+                'percentual_novo' => $percentual,
+                'horas_trabalhadas' => $horas_trabalhadas ?: 0,
+                'data_registro' => date('Y-m-d H:i:s'),
+                'localizacao_lat' => $lat,
+                'localizacao_lng' => $lng
+            ];
+            $this->db->insert('obra_tarefas_historico', $dados_historico);
+
+            echo json_encode([
+                'success' => true,
+                'message' => 'Tarefa atualizada com sucesso!',
+                'status' => $status,
+                'percentual' => $percentual
+            ]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Erro ao atualizar tarefa']);
+        }
+    }
 }

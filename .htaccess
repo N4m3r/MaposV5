@@ -3,6 +3,13 @@
     Deny from all
 </FilesMatch>
 
+# Headers para permitir geolocalizacao em iframes cross-origin
+# https://www.chromium.org/Home/chromium-security/deprecating-permissions-in-cross-origin-iframes/
+<IfModule mod_headers.c>
+    Header always set Permissions-Policy "geolocation=(self)"
+    Header always set Feature-Policy "geolocation *"
+</IfModule>
+
 RewriteEngine On
 RewriteCond %{HTTP:Authorization} ^(.+)$
 RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]

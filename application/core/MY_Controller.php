@@ -39,6 +39,11 @@ class MY_Controller extends CI_Controller
     {
         parent::__construct();
 
+        // Headers de seguranca para permitir geolocalizacao em iframes cross-origin
+        // https://www.chromium.org/Home/chromium-security/deprecating-permissions-in-cross-origin-iframes/
+        header('Permissions-Policy: geolocation=(self)');
+        header('Feature-Policy: geolocation *');
+
         if ((! session_id()) || (! $this->session->userdata('logado'))) {
             redirect('login');
         }

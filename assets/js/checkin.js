@@ -230,7 +230,12 @@ const CheckinManager = {
             function(err) {
                 var msg = 'Erro ao capturar localização';
                 if (err.code === 1) {
-                    msg = 'Permissão negada pelo usuário';
+                    // Verifica se esta em iframe cross-origin
+                    if (window.self !== window.top) {
+                        msg = 'Permissão negada. Se o sistema estiver em um iframe, verifique as configurações de permissões do navegador.';
+                    } else {
+                        msg = 'Permissão negada pelo usuário';
+                    }
                     self._mostrarInstrucaoPermissao(prefix);
                 } else if (err.code === 2) {
                     msg = 'Localização indisponível (GPS desligado?)';
