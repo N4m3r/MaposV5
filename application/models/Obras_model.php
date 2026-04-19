@@ -36,17 +36,21 @@ class Obras_model extends CI_Model
         }
 
         try {
+            $this->db->select('o.*, c.nomeCliente as cliente_nome, c.documento as cliente_documento');
+            $this->db->from('obras o');
+            $this->db->join('clientes c', 'c.idClientes = o.cliente_id', 'left');
+
             if (!empty($where)) {
                 $this->db->where($where);
             }
 
-            $this->db->order_by('created_at', 'DESC');
+            $this->db->order_by('o.created_at', 'DESC');
 
             if ($limit) {
                 $this->db->limit($limit);
             }
 
-            $query = $this->db->get('obras');
+            $query = $this->db->get();
 
             if ($query === false || !is_object($query)) {
                 return [];
@@ -68,8 +72,11 @@ class Obras_model extends CI_Model
         }
 
         try {
-            $this->db->where('id', $id);
-            $query = $this->db->get('obras');
+            $this->db->select('o.*, c.nomeCliente as cliente_nome, c.documento as cliente_documento, c.idClientes as cliente_id');
+            $this->db->from('obras o');
+            $this->db->join('clientes c', 'c.idClientes = o.cliente_id', 'left');
+            $this->db->where('o.id', $id);
+            $query = $this->db->get();
 
             if ($query === false || !is_object($query)) {
                 return null;

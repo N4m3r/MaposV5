@@ -226,9 +226,9 @@ class Tecnicos extends CI_Controller
 
         $tecnico_id = $this->session->userdata('tec_id');
 
-        // Verificar se OS pertence ao técnico
+        // Verificar se OS pertence ao técnico (campo tecnico_responsavel)
         $os = $this->tec_os_model->getOsById($os_id);
-        if (!$os || $os->usuarios_id != $tecnico_id) {
+        if (!$os || $os->tecnico_responsavel != $tecnico_id) {
             $this->session->set_flashdata('error', 'Você não tem permissão para executar esta OS.');
             redirect('tecnicos/minhas_os');
         }
