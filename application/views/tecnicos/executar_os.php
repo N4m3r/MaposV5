@@ -3563,7 +3563,7 @@ function finalizarWizardAtendimento() {
     // Aqui você faria o envio para o servidor
     // Por enquanto, mostra mensagem de sucesso
     Swal.fire({
-        type: 'success',
+        icon: 'success',
         title: 'Atendimento Finalizado!',
         text: 'Todos os dados foram registrados com sucesso.',
         timer: 2000,
@@ -3573,5 +3573,6 @@ function finalizarWizardAtendimento() {
         window.location.reload();
     });
 }
+window.finalizarWizardAtendimento = finalizarWizardAtendimento;
 
 </script></div>
