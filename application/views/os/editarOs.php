@@ -217,6 +217,15 @@
                                 </form>
                             </div>
                             <div class="widget-box" id="divProdutos">
+                                <div class="widget-title" style="padding: 10px;">
+                                    <span class="icon"><i class="bx bx-package"></i></span>
+                                    <h5 style="display: inline-block; margin: 0;">Produtos Adicionados</h5>
+                                    <div class="buttons" style="float: right;">
+                                        <button type="button" class="btn btn-warning btn-mini" id="btnZerarPrecosProdutos" title="Zerar preço unit. e sub-total de todos os produtos">
+                                            <i class="bx bx-reset"></i> Zerar Preços
+                                        </button>
+                                    </div>
+                                </div>
                                 <div class="widget_content nopadding">
                                     <table width="100%" class="table table-bordered" id="tblProdutos">
                                         <thead>
@@ -2208,6 +2217,60 @@
 
         // Inicializar máscara de dinheiro nos campos do modal
         $('.money').maskMoney();
+
+        // Botão para zerar preços de todos os produtos
+        $('#btnZerarPrecosProdutos').on('click', function() {
+            var idOs = $('#idOsProduto').val();
+
+            Swal.fire({
+                title: 'Zerar Preços?',
+                text: 'Isso definirá o preço unitário e sub-total de TODOS os produtos para ZERO. Deseja continuar?',
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sim, zerar!',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.value) {
+                    $.ajax({
+                        type: "POST",
+                        url: "<?php echo base_url(); ?>index.php/os/zerarPrecosProdutos",
+                        data: {
+                            idOs: idOs,
+                            '<?php echo $this->security->get_csrf_token_name(); ?>': '<?php echo $this->security->get_csrf_hash(); ?>'
+                        },
+                        dataType: 'json',
+                        success: function(data) {
+                            if (data.result == true) {
+                                Swal.fire({
+                                    type: 'success',
+                                    title: 'Sucesso',
+                                    text: 'Preços dos produtos zerados com sucesso!',
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
+                                loadContentAsync("#divProdutos", "<?php echo current_url(); ?>", "#divProdutos");
+                                loadContentAsync("#divValorTotal", "<?php echo current_url(); ?>", "#divValorTotal");
+                            } else {
+                                Swal.fire({
+                                    type: 'error',
+                                    title: 'Erro',
+                                    text: data.message || 'Ocorreu um erro ao tentar zerar os preços.'
+                                });
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            Swal.fire({
+                                type: 'error',
+                                title: 'Erro',
+                                text: 'Erro na comunicação com o servidor'
+                            });
+                        }
+                    });
+                }
+            });
+        });
     });
 </script>
 
