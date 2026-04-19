@@ -8,7 +8,39 @@ class Checkin extends MY_Controller
 {
     public function __construct()
     {
-        parent::__construct();
+        // Verifica se o método atual é de visualização pública (fotos/assinaturas)
+        // Estes métodos podem ser acessados por técnicos logados (tec_id) sem permissão admin
+        // Usa o URI segment para determinar o método
+        $uri_path = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH);
+        $uri_segments = explode('/', trim($uri_path, '/'));
+
+        // Procura pelo nome do controller e pega o próximo segmento (método)
+        // Também verifica se o segmento contém 'checkin' (para URLs como index.php/checkin/...)
+        $metodo_atual = '';
+        foreach ($uri_segments as $index => $segment) {
+            if (strpos($segment, 'checkin') !== false && isset($uri_segments[$index + 1])) {
+                $metodo_atual = $uri_segments[$index + 1];
+                break;
+            }
+        }
+
+        $metodos_visualizacao_publica = ['verFotoDB', 'verAssinatura', 'verFoto'];
+
+        if (!in_array($metodo_atual, $metodos_visualizacao_publica)) {
+            // Para outros métodos, requer autenticação admin normal
+            parent::__construct();
+        } else {
+            // Para métodos de visualização, chama apenas o construtor base CI_Controller
+            // sem a verificação de login do MY_Controller
+            CI_Controller::__construct();
+            $this->load->library('session');
+            $this->load->library('permission');
+            $this->load->database();
+
+            // Log para debug
+            log_message('debug', 'Checkin: Método de visualização público detectado: ' . $metodo_atual);
+        }
+
         $this->load->model('checkin_model');
         $this->load->model('assinaturas_model');
         $this->load->model('fotosatendimento_model');
@@ -790,11 +822,15 @@ class Checkin extends MY_Controller
         $permissao = $this->session->userdata('permissao');
         $isTecnico = $this->session->userdata('tec_id') ? true : false;
 
+        // Log para debug
+        log_message('debug', 'verFotoDB: Acesso - foto_id=' . $foto_id . ', isTecnico=' . ($isTecnico ? 'sim' : 'nao') . ', permissao=' . $permissao);
+
         // Permitir acesso se tem permissão vOs OU permissão vTecnicoFotos OU é técnico logado
         $temPermissao = $this->permission->checkPermission($permissao, 'vOs') ||
                         $this->permission->checkPermission($permissao, 'vTecnicoFotos') ||
                         $isTecnico;
         if (!$temPermissao) {
+            log_message('error', 'verFotoDB: Acesso negado - foto_id=' . $foto_id);
             show_404();
             return;
         }
@@ -1065,11 +1101,15 @@ class Checkin extends MY_Controller
         $permissao = $this->session->userdata('permissao');
         $isTecnico = $this->session->userdata('tec_id') ? true : false;
 
+        // Log para debug
+        log_message('debug', 'verAssinatura: Acesso - assinatura_id=' . $assinatura_id . ', isTecnico=' . ($isTecnico ? 'sim' : 'nao') . ', permissao=' . $permissao);
+
         // Permitir acesso se tem permissão vOs OU permissão vTecnicoAssinaturas OU é técnico logado
         $temPermissao = $this->permission->checkPermission($permissao, 'vOs') ||
                         $this->permission->checkPermission($permissao, 'vTecnicoAssinaturas') ||
                         $isTecnico;
         if (!$temPermissao) {
+            log_message('error', 'verAssinatura: Acesso negado - assinatura_id=' . $assinatura_id);
             show_404();
             return;
         }
