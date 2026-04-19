@@ -354,12 +354,7 @@
                     <div class="fotos-grid">
                         <?php foreach ($fotosAtendimento as $foto): ?>
                             <div class="foto-item">
-                                <?php
-                                $imgUrl = !empty($foto->imagem_base64)
-                                    ? base_url('index.php/checkin/verFotoDB/' . $foto->idFoto)
-                                    : $foto->url;
-                                ?>
-                                <img src="<?php echo $imgUrl; ?>" alt="Foto de atendimento">
+                                <img src="<?php echo $foto->url; ?>" alt="Foto de atendimento">
                                 <div class="foto-tipo">
                                     <?php
                                     $etapa = $foto->etapa ?? 'foto';
@@ -433,23 +428,20 @@
                         <!-- Assinatura do Portal do Técnico (execução) -->
                         <?php if (!empty($execucoes)): ?>
                             <?php foreach ($execucoes as $exec):
-                                if (!empty($exec->checklist_json)):
-                                    $checklist = json_decode($exec->checklist_json, true);
-                                    if (!empty($checklist['assinatura_cliente'])):
+                                if (!empty($exec->assinatura_cliente)):
                             ?>
                                 <div class="span6">
                                     <div class="assinatura-box">
                                         <h6>Assinatura do Cliente (Portal)</h6>
-                                        <img src="<?php echo $checklist['assinatura_cliente']; ?>" alt="Assinatura" class="assinatura-img">
-                                        <?php if (!empty($checklist['nome_cliente_assina'])): ?>
+                                        <img src="<?php echo $exec->assinatura_cliente; ?>" alt="Assinatura" class="assinatura-img">
+                                        <?php if (!empty($exec->nome_responsavel)): ?>
                                             <p style="margin-top: 10px; font-size: 0.9rem;">
-                                                <strong>Assinado por:</strong> <?php echo htmlspecialchars($checklist['nome_cliente_assina'], ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?>
+                                                <strong>Assinado por:</strong> <?php echo htmlspecialchars($exec->nome_responsavel, ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?>
                                             </p>
                                         <?php endif; ?>
                                     </div>
                                 </div>
                             <?php
-                                    endif;
                                 endif;
                             endforeach;
                         ?>
