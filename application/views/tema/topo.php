@@ -131,8 +131,8 @@
     <!-- New User - Técnico -->
     <div id="userr" style="padding-right:45px;display:flex;flex-direction:column;align-items:flex-end;justify-content:center;">
 
-      <!-- Notificações no canto direito -->
-      <div class="notificacoes-header" style="position:absolute;right:65px;top:50%;transform:translateY(-50%);">
+      <!-- Notificações ao lado da foto -->
+      <div class="notificacoes-header" style="position:absolute;right:45px;top:50%;transform:translateY(-50%);z-index:1000;">
         <ul class="nav" style="margin:0;">
           <li class="dropdown" id="notifications-dropdown" style="list-style:none;">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Notificações" style="padding:10px;display:block;position:relative;">
@@ -261,8 +261,8 @@
       </div>
       <div class="userT"><?= $this->session->userdata('nome_admin') ?></div>
 
-      <!-- Notificações no canto direito -->
-      <div class="notificacoes-header" style="position:absolute;right:65px;top:50%;transform:translateY(-50%);">
+      <!-- Notificações ao lado da foto -->
+      <div class="notificacoes-header" style="position:absolute;right:45px;top:50%;transform:translateY(-50%);z-index:1000;">
         <ul class="nav" style="margin:0;">
           <li class="dropdown" id="notifications-dropdown" style="list-style:none;">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Notificações" style="padding:10px;display:block;position:relative;">
