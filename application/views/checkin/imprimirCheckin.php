@@ -483,6 +483,66 @@
             </div>
         </div>
 
+        <!-- Produtos Utilizados -->
+        <?php if (!empty($produtos)) { ?>
+            <div class="section">
+                <div class="section-header">Produtos Utilizados</div>
+                <div class="section-content">
+                    <table class="checkin-table">
+                        <thead>
+                            <tr>
+                                <th>Produto</th>
+                                <th>Quantidade</th>
+                                <th>Unidade</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($produtos as $produto) { ?>
+                                <tr>
+                                    <td><?php echo $produto->descricao; ?></td>
+                                    <td style="text-align: center;"><?php echo $produto->quantidade; ?></td>
+                                    <td style="text-align: center;"><?php echo $produto->unidade ?? 'un'; ?></td>
+                                </tr>
+                            <?php } ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        <?php } ?>
+
+        <!-- Serviços Executados -->
+        <?php if (!empty($servicos)) { ?>
+            <div class="section">
+                <div class="section-header">Serviços Executados</div>
+                <div class="section-content">
+                    <table class="checkin-table">
+                        <thead>
+                            <tr>
+                                <th>Serviço</th>
+                                <th>Quantidade</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($servicos as $servico) { ?>
+                                <tr>
+                                    <td><?php echo $servico->nome; ?></td>
+                                    <td style="text-align: center;"><?php echo $servico->quantidade ?? 1; ?></td>
+                                    <td style="text-align: center;">
+                                        <?php
+                                        $status = $servico->status ?? 'Pendente';
+                                        $badge_class = ($status == 'Executado') ? 'badge-success' : 'badge-warning';
+                                        ?>
+                                        <span class="badge <?php echo $badge_class; ?>"><?php echo $status; ?></span>
+                                    </td>
+                                </tr>
+                            <?php } ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        <?php } ?>
+
         <!-- Histórico de Atendimentos -->
         <div class="section">
             <div class="section-header">Histórico de Atendimentos</div>

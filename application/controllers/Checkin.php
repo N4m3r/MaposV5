@@ -786,12 +786,14 @@ class Checkin extends MY_Controller
             return;
         }
 
-        // Verificar permissão - admin com vOs OU permissão de técnico para visualizar fotos
+        // Verificar permissão - admin com vOs OU permissão vTecnicoFotos OU técnico logado (tec_id)
         $permissao = $this->session->userdata('permissao');
+        $isTecnico = $this->session->userdata('tec_id') ? true : false;
 
-        // Permitir acesso se tem permissão vOs OU permissão vTecnicoFotos
+        // Permitir acesso se tem permissão vOs OU permissão vTecnicoFotos OU é técnico logado
         $temPermissao = $this->permission->checkPermission($permissao, 'vOs') ||
-                        $this->permission->checkPermission($permissao, 'vTecnicoFotos');
+                        $this->permission->checkPermission($permissao, 'vTecnicoFotos') ||
+                        $isTecnico;
         if (!$temPermissao) {
             show_404();
             return;
@@ -1059,12 +1061,14 @@ class Checkin extends MY_Controller
             return;
         }
 
-        // Verificar permissão - admin com vOs OU permissão de técnico para visualizar assinaturas
+        // Verificar permissão - admin com vOs OU permissão vTecnicoAssinaturas OU técnico logado (tec_id)
         $permissao = $this->session->userdata('permissao');
+        $isTecnico = $this->session->userdata('tec_id') ? true : false;
 
-        // Permitir acesso se tem permissão vOs OU permissão vTecnicoAssinaturas
+        // Permitir acesso se tem permissão vOs OU permissão vTecnicoAssinaturas OU é técnico logado
         $temPermissao = $this->permission->checkPermission($permissao, 'vOs') ||
-                        $this->permission->checkPermission($permissao, 'vTecnicoAssinaturas');
+                        $this->permission->checkPermission($permissao, 'vTecnicoAssinaturas') ||
+                        $isTecnico;
         if (!$temPermissao) {
             show_404();
             return;
@@ -1208,6 +1212,10 @@ class Checkin extends MY_Controller
         $execucoesTecnicas = $this->tec_os_model->getExecucoesByOs($os_id);
         $fotosTecnico = $this->tec_os_model->getFotosByOs($os_id);
 
+        // Produtos e Serviços da OS
+        $produtos = $this->os_model->getProdutos($os_id);
+        $servicos = $this->os_model->getServicos($os_id);
+
         // Prepara dados para a view
         $data = [
             'os' => $os,
@@ -1218,6 +1226,8 @@ class Checkin extends MY_Controller
             'fotosPorEtapa' => $fotosPorEtapa,
             'execucoesTecnicas' => $execucoesTecnicas,
             'fotosTecnico' => $fotosTecnico,
+            'produtos' => $produtos,
+            'servicos' => $servicos,
             'titulo' => 'Relatório de Atendimento - OS #' . sprintf('%04d', $os_id)
         ];
 
