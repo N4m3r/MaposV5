@@ -264,6 +264,7 @@
                                 <tr>
                                     <th>Serviço</th>
                                     <th>Quantidade</th>
+                                    <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -276,6 +277,20 @@
                                             <?php endif; ?>
                                         </td>
                                         <td><?php echo $servico->quantidade ?? 1; ?></td>
+                                        <td>
+                                            <?php
+                                            $status = $servico->status ?? 'Pendente';
+                                            $status_class = [
+                                                'Pendente' => 'label label-warning',
+                                                'EmExecucao' => 'label label-info',
+                                                'Concluido' => 'label label-success',
+                                                'Cancelado' => 'label label-important',
+                                                'Executado' => 'label label-success',
+                                                'NaoExecutado' => 'label label-important'
+                                            ][$status] ?? 'label';
+                                            ?>
+                                            <span class="<?php echo $status_class; ?>"><?php echo $status; ?></span>
+                                        </td>
                                     </tr>
                                 <?php endforeach; ?>
                             </tbody>

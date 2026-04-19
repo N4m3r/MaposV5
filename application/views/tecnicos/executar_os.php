@@ -3218,6 +3218,7 @@ function wizardProximo() {
         atualizarWizardView();
     }
 }
+window.wizardProximo = wizardProximo;
 
 function wizardAnterior() {
     if (wizardStepAtual > 1) {
@@ -3225,6 +3226,7 @@ function wizardAnterior() {
         atualizarWizardView();
     }
 }
+window.wizardAnterior = wizardAnterior;
 
 function irParaEtapa(etapa) {
     if (etapa >= 1 && etapa <= wizardTotalSteps) {
@@ -3346,6 +3348,7 @@ function setWizardServicoStatus(servicoId, status) {
 
     atualizarResumoServicos();
 }
+window.setWizardServicoStatus = setWizardServicoStatus;
 
 function atualizarResumoServicos() {
     const total = Object.keys(wizardServicosStatus).length;
@@ -3370,6 +3373,7 @@ function atualizarResumoServicos() {
 function abrirCameraWizard() {
     document.getElementById('wizardFotoInput').click();
 }
+window.abrirCameraWizard = abrirCameraWizard;
 
 function processarFotoWizard(input) {
     if (input.files && input.files[0]) {
@@ -3383,6 +3387,7 @@ function processarFotoWizard(input) {
         reader.readAsDataURL(file);
     }
 }
+window.processarFotoWizard = processarFotoWizard;
 
 function adicionarFotoWizard(imagemBase64, tipo) {
     const foto = {

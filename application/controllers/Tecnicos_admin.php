@@ -1978,8 +1978,8 @@ class Tecnicos_admin extends MY_Controller
         $tarefa = $this->db->get('obra_tarefas')->row();
 
         if (!$tarefa) {
-            echo json_encode(['success' => false, 'message' => 'Tarefa não encontrada']);
-            return;>
+            echo json_encode(['success' => false, 'message' => 'Tarefa nao encontrada']);
+            return;
         }
 
         if ($tarefa->technico_id != $tecnico_id) {
