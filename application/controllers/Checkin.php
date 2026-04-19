@@ -786,12 +786,12 @@ class Checkin extends MY_Controller
             return;
         }
 
-        // Verificar permissão - admin com vOs OU técnico logado
+        // Verificar permissão - admin com vOs OU permissão de técnico para visualizar fotos
         $permissao = $this->session->userdata('permissao');
-        $isTecnico = $this->session->userdata('tec_id') ? true : false;
 
-        // Permitir acesso se tem permissão vOs OU é técnico logado
-        $temPermissao = $this->permission->checkPermission($permissao, 'vOs') || $isTecnico;
+        // Permitir acesso se tem permissão vOs OU permissão vTecnicoFotos
+        $temPermissao = $this->permission->checkPermission($permissao, 'vOs') ||
+                        $this->permission->checkPermission($permissao, 'vTecnicoFotos');
         if (!$temPermissao) {
             show_404();
             return;
@@ -1059,12 +1059,12 @@ class Checkin extends MY_Controller
             return;
         }
 
-        // Verificar permissão - admin com vOs OU técnico logado
+        // Verificar permissão - admin com vOs OU permissão de técnico para visualizar assinaturas
         $permissao = $this->session->userdata('permissao');
-        $isTecnico = $this->session->userdata('tec_id') ? true : false;
 
-        // Permitir acesso se tem permissão vOs OU é técnico logado
-        $temPermissao = $this->permission->checkPermission($permissao, 'vOs') || $isTecnico;
+        // Permitir acesso se tem permissão vOs OU permissão vTecnicoAssinaturas
+        $temPermissao = $this->permission->checkPermission($permissao, 'vOs') ||
+                        $this->permission->checkPermission($permissao, 'vTecnicoAssinaturas');
         if (!$temPermissao) {
             show_404();
             return;

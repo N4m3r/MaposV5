@@ -382,7 +382,18 @@
                                         <span class="lbl"> Adicionar Fotos ao Atendimento</span>
                                     </label>
                                 </td>
-                                <td colspan="2"></td>
+                                <td>
+                                    <label>
+                                        <input <?php echo (isset($permissoes['vTecnicoFotos']) && $permissoes['vTecnicoFotos'] == '1') ? 'checked' : ''; ?> name="vTecnicoFotos" class="marcar" type="checkbox" value="1" />
+                                        <span class="lbl"> Visualizar Fotos do Atendimento</span>
+                                    </label>
+                                </td>
+                                <td>
+                                    <label>
+                                        <input <?php echo (isset($permissoes['vTecnicoAssinaturas']) && $permissoes['vTecnicoAssinaturas'] == '1') ? 'checked' : ''; ?> name="vTecnicoAssinaturas" class="marcar" type="checkbox" value="1" />
+                                        <span class="lbl"> Visualizar Assinaturas</span>
+                                    </label>
+                                </td>
                             </tr>
                         </table>
                         </div>

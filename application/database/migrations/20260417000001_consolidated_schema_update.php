@@ -1243,6 +1243,7 @@ class Migration_Consolidated_schema_update extends CI_Migration
                 if (is_array($perms)) {
                     $newPerms = [
                         'vTecnicoOS', 'eTecnicoCheckin', 'eTecnicoCheckout', 'eTecnicoFotos', 'vTecnicoDashboard',
+                        'vTecnicoFotos', 'vTecnicoAssinaturas',
                         'vDashboard', 'vRelatorioCompleto', 'vExportarDados',
                         'vDRE', 'vDREDemonstracao', 'vDREContas', 'vDRELancamentos', 'cDRE', 'eDRE', 'dDRE',
                         'vRelatorioTecnicos', 'vRelatorioAtendimentos', 'vWebhooks',
@@ -1281,6 +1282,9 @@ class Migration_Consolidated_schema_update extends CI_Migration
                     'eTecnicoCheckout' => '1',
                     'eTecnicoFotos' => '1',
                     'vTecnicoDashboard' => '1',
+                    // Permissoes de visualização de fotos e assinaturas
+                    'vTecnicoFotos' => '1',
+                    'vTecnicoAssinaturas' => '1',
                     // Relatorios de tecnico
                     'vRelatorioTecnicos' => '1',
                     'vRelatorioAtendimentos' => '1',
