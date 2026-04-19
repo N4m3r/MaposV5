@@ -113,6 +113,21 @@ class Cobrancas_model extends CI_Model
         return $this->db->get()->result();
     }
 
+    /**
+     * Buscar boletos por cliente (cobranças do tipo boleto)
+     */
+    public function getBoletosByCliente($cliente_id, $perpage = 10, $start = 0)
+    {
+        $this->db->select('cobrancas.*, clientes.nomeCliente');
+        $this->db->from('cobrancas');
+        $this->db->join('clientes', 'clientes.idClientes = cobrancas.clientes_id');
+        $this->db->where('cobrancas.clientes_id', $cliente_id);
+        $this->db->where_in('cobrancas.payment_gateway', ['gerencianet_boleto', 'boleto', 'cora_boleto']);
+        $this->db->order_by('cobrancas.idCobranca', 'desc');
+        $this->db->limit($perpage, $start);
+        return $this->db->get()->result();
+    }
+
     public function atualizarStatus($idCobranca)
     {
         $cobranca = $this->getById($idCobranca);

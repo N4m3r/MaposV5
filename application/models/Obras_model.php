@@ -409,6 +409,50 @@ class Obras_model extends CI_Model
     }
 
     /**
+     * Buscar obras por cliente
+     */
+    public function getByCliente($cliente_id, $perpage = 10, $start = 0)
+    {
+        if (!$this->tabelaExiste('obras')) {
+            return [];
+        }
+
+        try {
+            $this->db->where('cliente_id', $cliente_id);
+            $this->db->where('ativo', 1);
+            $this->db->order_by('created_at', 'DESC');
+            $this->db->limit($perpage, $start);
+            $query = $this->db->get('obras');
+
+            if ($query === false || !is_object($query)) {
+                return [];
+            }
+
+            return $query->result();
+        } catch (Exception $e) {
+            return [];
+        }
+    }
+
+    /**
+     * Contar obras por cliente
+     */
+    public function countByCliente($cliente_id)
+    {
+        if (!$this->tabelaExiste('obras')) {
+            return 0;
+        }
+
+        try {
+            $this->db->where('cliente_id', $cliente_id);
+            $this->db->where('ativo', 1);
+            return $this->db->count_all_results('obras');
+        } catch (Exception $e) {
+            return 0;
+        }
+    }
+
+    /**
      * Buscar cliente da obra
      */
     public function getCliente($obra_id)

@@ -454,7 +454,7 @@ $osFinalizadas = count(array_filter($os ?? [], function($o) { return $o->status 
     <!-- Grid Principal -->
     <div class="dashboard-grid">
 
-        <?php if ($podeVerOS): ?
+        <?php if ($podeVerOS): ?>
         <!-- Coluna Esquerda - Últimas OS -->
         <div class="dashboard-col-8">
             <div class="widget-card">
@@ -530,7 +530,7 @@ $osFinalizadas = count(array_filter($os ?? [], function($o) { return $o->status 
         </div>
         <?php endif; ?>
 
-        <?php if ($podeVerCompras): ?
+        <?php if ($podeVerCompras): ?>
         <!-- Coluna Direita - Últimas Compras -->
         <div class="<?= $podeVerOS ? 'dashboard-col-4' : 'dashboard-col-12' ?>">
             <div class="widget-card">

@@ -332,6 +332,49 @@ class Nfse_emitida_model extends CI_Model
     }
 
     /**
+     * Buscar NFS-e por cliente
+     */
+    public function getByCliente($cliente_id, $perpage = 10, $start = 0)
+    {
+        // Verificar se a tabela existe
+        if (!$this->db->table_exists('os_nfse_emitida') || !$this->db->table_exists('os')) {
+            return [];
+        }
+
+        $this->db->select('os_nfse_emitida.*, os.idOs');
+        $this->db->from('os_nfse_emitida');
+        $this->db->join('os', 'os.idOs = os_nfse_emitida.os_id');
+        $this->db->where('os.clientes_id', $cliente_id);
+        $this->db->order_by('os_nfse_emitida.data_emissao', 'DESC');
+        $this->db->limit($perpage, $start);
+
+        $query = $this->db->get();
+        return $query ? $query->result() : [];
+    }
+
+    /**
+     * Contar NFS-e por cliente
+     */
+    public function countByCliente($cliente_id)
+    {
+        // Verificar se a tabela existe
+        if (!$this->db->table_exists('os_nfse_emitida') || !$this->db->table_exists('os')) {
+            return 0;
+        }
+
+        $this->db->select('COUNT(*) as total');
+        $this->db->from('os_nfse_emitida');
+        $this->db->join('os', 'os.idOs = os_nfse_emitida.os_id');
+        $this->db->where('os.clientes_id', $cliente_id);
+
+        $query = $this->db->get();
+        if ($query && $query->num_rows() > 0) {
+            return $query->row()->total;
+        }
+        return 0;
+    }
+
+    /**
      * Obter resumo para dashboard
      */
     public function getResumo($periodo = 'mes_atual')

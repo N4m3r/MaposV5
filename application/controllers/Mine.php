@@ -536,12 +536,50 @@ class Mine extends CI_Controller
             ];
             $stats = array_merge($statsPadrao, $stats ?? []);
 
+            // Carrega permissões do usuário
+            $permissoes = $this->usuarios_cliente_model->getAllPermissoes($usuario_id);
+            $cliente_id = $this->session->userdata('cliente_id');
+
+            // Carrega dados financeiros e obras conforme permissões
+            $cobrancas = [];
+            $boletos = [];
+            $notasFiscais = [];
+            $obras = [];
+
+            // Carrega cobranças se tiver permissão
+            if ($this->usuarios_cliente_model->hasPermissao($usuario_id, 'visualizar_cobrancas') && $cliente_id) {
+                $this->load->model('cobrancas_model');
+                $cobrancas = $this->cobrancas_model->getByCliente($cliente_id, 5, 0);
+            }
+
+            // Carrega boletos se tiver permissão
+            if ($this->usuarios_cliente_model->hasPermissao($usuario_id, 'visualizar_boletos') && $cliente_id) {
+                $this->load->model('cobrancas_model');
+                $boletos = $this->cobrancas_model->getBoletosByCliente($cliente_id, 5, 0);
+            }
+
+            // Carrega notas fiscais se tiver permissão
+            if ($this->usuarios_cliente_model->hasPermissao($usuario_id, 'visualizar_notas_fiscais') && $cliente_id) {
+                $this->load->model('nfse_emitida_model');
+                $notasFiscais = $this->nfse_emitida_model->getByCliente($cliente_id, 5, 0);
+            }
+
+            // Carrega obras se tiver permissão
+            if ($this->usuarios_cliente_model->hasPermissao($usuario_id, 'visualizar_obras') && $cliente_id) {
+                $this->load->model('obras_model');
+                $obras = $this->obras_model->getByCliente($cliente_id, 5, 0);
+            }
+
             $data['menuPainel'] = 'painel';
             $data['usuario'] = $usuario;
             $data['stats'] = $stats;
             $data['os'] = $os ?? [];
             $data['cnpjs'] = $this->session->userdata('usuario_cliente_cnpjs') ?? [];
-            $data['permissoes'] = $this->session->userdata('usuario_cliente_permissoes') ?? [];
+            $data['permissoes'] = $permissoes;
+            $data['cobrancas'] = $cobrancas;
+            $data['boletos'] = $boletos;
+            $data['notasFiscais'] = $notasFiscais;
+            $data['obras'] = $obras;
             $data['output'] = 'conecte/painel_usuario';
 
             $this->load->view('conecte/template', $data);
@@ -1567,7 +1605,7 @@ class Mine extends CI_Controller
 
         $this->pagination->initialize($config);
 
-        $data['results'] = $this->cobrancas_model->getByCliente($cliente_id, $config['per_page'], $this->uri->segment(3));
+        $data['results'] = $this->cobrancas_model->getBoletosByCliente($cliente_id, $config['per_page'], $this->uri->segment(3));
         $data['output'] = 'conecte/boletos';
 
         $this->load->view('conecte/template', $data);
@@ -1586,14 +1624,14 @@ class Mine extends CI_Controller
         clienteCheckPermission('visualizar_notas_fiscais');
 
         $this->load->library('pagination');
-        $this->load->model('nfse_os_model');
+        $this->load->model('nfse_emitida_model');
 
         $data['menuNotas'] = 'notas';
 
         $cliente_id = $this->session->userdata('cliente_id');
 
         $config['base_url'] = base_url() . 'index.php/mine/notasfiscais/';
-        $config['total_rows'] = $this->nfse_os_model->countByCliente($cliente_id);
+        $config['total_rows'] = $this->nfse_emitida_model->countByCliente($cliente_id);
         $config['per_page'] = 10;
         $config['next_link'] = 'Próxima';
         $config['prev_link'] = 'Anterior';
@@ -1612,7 +1650,7 @@ class Mine extends CI_Controller
 
         $this->pagination->initialize($config);
 
-        $data['results'] = $this->nfse_os_model->getByCliente($cliente_id, $config['per_page'], $this->uri->segment(3));
+        $data['results'] = $this->nfse_emitida_model->getByCliente($cliente_id, $config['per_page'], $this->uri->segment(3));
         $data['output'] = 'conecte/notasfiscais';
 
         $this->load->view('conecte/template', $data);
@@ -1659,6 +1697,64 @@ class Mine extends CI_Controller
 
         $data['results'] = $this->obras_model->getByCliente($cliente_id, $config['per_page'], $this->uri->segment(3));
         $data['output'] = 'conecte/obras';
+
+        $this->load->view('conecte/template', $data);
+    }
+
+    /**
+     * Visualizar obra do cliente
+     */
+    public function visualizarObra($id = null)
+    {
+        if (!session_id() || !$this->session->userdata('conectado')) {
+            redirect('mine');
+        }
+
+        if (!$id || !is_numeric($id)) {
+            $this->session->set_flashdata('error', 'Obra não encontrada.');
+            redirect('mine/obras');
+        }
+
+        $this->load->helper('cliente_permissions');
+        clienteCheckPermission('visualizar_obras');
+
+        $this->load->model('obras_model');
+        $this->load->model('mapos_model');
+
+        $obra = $this->obras_model->getById($id);
+
+        if (!$obra) {
+            $this->session->set_flashdata('error', 'Obra não encontrada.');
+            redirect('mine/obras');
+        }
+
+        // Verificar se a obra pertence ao cliente logado
+        $cliente_id = $this->session->userdata('cliente_id');
+        if ($obra->cliente_id != $cliente_id) {
+            $this->session->set_flashdata('error', 'Esta obra não pertence ao cliente logado.');
+            redirect('mine/obras');
+        }
+
+        // Carregar OS vinculadas
+        $os_vinculadas = $this->obras_model->getOsVinculadas($id);
+
+        // Carregar etapas
+        $etapas = $this->obras_model->getEtapas($id);
+
+        // Carregar diário
+        $diario = $this->obras_model->getDiario($id);
+
+        // Carregar equipe
+        $equipe = $this->obras_model->getEquipe($id);
+
+        $data['menuObras'] = 'obras';
+        $data['obra'] = $obra;
+        $data['os_vinculadas'] = $os_vinculadas;
+        $data['etapas'] = $etapas;
+        $data['diario'] = $diario;
+        $data['equipe'] = $equipe;
+        $data['emitente'] = $this->mapo_model->getEmitente();
+        $data['output'] = 'conecte/visualizar_obra';
 
         $this->load->view('conecte/template', $data);
     }
