@@ -146,7 +146,14 @@ class Os_model extends CI_Model
         $this->db->join('produtos', 'produtos.idProdutos = produtos_os.produtos_id');
         $this->db->where('os_id', $id);
 
-        return $this->db->get()->result();
+        $query = $this->db->get();
+
+        if ($query === false) {
+            log_message('error', 'Erro ao buscar produtos da OS ' . $id . ': ' . print_r($this->db->error(), true));
+            return [];
+        }
+
+        return $query->result();
     }
 
     public function getServicos($id = null)
@@ -156,7 +163,14 @@ class Os_model extends CI_Model
         $this->db->join('servicos', 'servicos.idServicos = servicos_os.servicos_id');
         $this->db->where('os_id', $id);
 
-        return $this->db->get()->result();
+        $query = $this->db->get();
+
+        if ($query === false) {
+            log_message('error', 'Erro ao buscar serviços da OS ' . $id . ': ' . print_r($this->db->error(), true));
+            return [];
+        }
+
+        return $query->result();
     }
 
     public function add($table, $data, $returnId = false)
