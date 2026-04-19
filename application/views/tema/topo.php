@@ -118,6 +118,13 @@
             <li class=""><a title="Sair" href="<?= site_url('tecnicos/logout'); ?>"><i class='bx bx-log-out-circle'></i> <span class="text">Sair</span></a></li>
           </ul>
         </li>
+
+        <!-- Botão Sair Direto -->
+        <li>
+          <a href="<?= site_url('tecnicos/logout') ?>" class="tip-right" title="Sair do Sistema">
+            <i class='bx bx-log-out-circle iconN'></i><span class="text"></span>
+          </a>
+        </li>
       </ul>
     </div>
 
@@ -216,6 +223,13 @@
             <li><a href="<?= site_url('mapos/emails') ?>">Emails</a></li>
             <li><a href="<?= site_url('menu_backup') ?>">Backup</a></li>
           </ul>
+        </li>
+
+        <!-- Botão Sair Direto -->
+        <li>
+          <a href="<?= site_url('login/sair') ?>" class="tip-right" title="Sair do Sistema">
+            <i class='bx bx-log-out-circle iconN'></i><span class="text"></span>
+          </a>
         </li>
       </ul>
     </div>

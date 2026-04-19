@@ -980,28 +980,76 @@ class Tecnicos_admin extends MY_Controller
      */
     public function buscar_atividades_obra($obra_id)
     {
+        header('Content-Type: application/json');
+
         if (!$obra_id) {
             echo json_encode(['success' => false, 'atividades' => []]);
             return;
         }
 
-        // Buscar comentários/atividades
-        $this->db->where('obra_id', $obra_id);
-        $this->db->order_by('created_at', 'DESC');
-        $atividades = $this->db->get('obra_atividades')->result();
+        try {
+            // Verificar se tabela existe, se não, criar
+            if (!$this->db->table_exists('obra_atividades')) {
+                $this->criarTabelaAtividades();
+            }
 
-        // Buscar etapas concluídas recentemente
-        $this->db->where('obra_id', $obra_id);
-        $this->db->where('status', 'concluida');
-        $this->db->order_by('data_fim_real', 'DESC');
-        $this->db->limit(10);
-        $etapas = $this->db->get('obra_etapas')->result();
+            // Buscar comentários/atividades
+            $atividades = [];
+            if ($this->db->table_exists('obra_atividades')) {
+                $this->db->where('obra_id', $obra_id);
+                $this->db->order_by('created_at', 'DESC');
+                $query = $this->db->get('obra_atividades');
+                $atividades = $query ? $query->result() : [];
+            }
 
-        echo json_encode([
-            'success' => true,
-            'atividades' => $atividades,
-            'etapas_concluidas' => $etapas
-        ]);
+            // Buscar etapas concluídas recentemente
+            $etapas = [];
+            if ($this->db->table_exists('obra_etapas')) {
+                $this->db->where('obra_id', $obra_id);
+                $this->db->where('status', 'concluida');
+                $this->db->order_by('data_fim_real', 'DESC');
+                $this->db->limit(10);
+                $query = $this->db->get('obra_etapas');
+                $etapas = $query ? $query->result() : [];
+            }
+
+            echo json_encode([
+                'success' => true,
+                'atividades' => $atividades,
+                'etapas_concluidas' => $etapas
+            ]);
+        } catch (Exception $e) {
+            echo json_encode([
+                'success' => false,
+                'atividades' => [],
+                'etapas_concluidas' => [],
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Criar tabela de atividades se não existir
+     */
+    private function criarTabelaAtividades()
+    {
+        try {
+            $sql = "CREATE TABLE IF NOT EXISTS obra_atividades (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                obra_id INT NOT NULL,
+                usuario_id INT NOT NULL,
+                usuario_nome VARCHAR(255) NOT NULL,
+                tipo VARCHAR(50) DEFAULT 'comentario',
+                descricao TEXT NOT NULL,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                INDEX idx_obra_id (obra_id),
+                INDEX idx_created_at (created_at)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
+
+            $this->db->query($sql);
+        } catch (Exception $e) {
+            // Silenciar erro
+        }
     }
 
     /**
@@ -1088,6 +1136,11 @@ class Tecnicos_admin extends MY_Controller
         if (!$etapa_id || $percentual === null) {
             echo json_encode(['success' => false, 'message' => 'Dados incompletos']);
             return;
+        }
+
+        // Verificar/criar tabela
+        if (!$this->db->table_exists('obra_etapa_progresso')) {
+            $this->criarTabelaEtapaProgresso();
         }
 
         // Registrar progresso
@@ -1239,9 +1292,13 @@ class Tecnicos_admin extends MY_Controller
         }
 
         // Progresso ao longo do tempo
-        $this->db->where('obra_id', $obra_id);
-        $this->db->order_by('data_registro', 'ASC');
-        $progresso_historico = $this->db->get('obra_etapa_progresso')->result();
+        $progresso_historico = [];
+        if ($this->db->table_exists('obra_etapa_progresso')) {
+            $this->db->where('obra_id', $obra_id);
+            $this->db->order_by('data_registro', 'ASC');
+            $query = $this->db->get('obra_etapa_progresso');
+            $progresso_historico = $query ? $query->result() : [];
+        }
 
         echo json_encode([
             'success' => true,
@@ -1254,7 +1311,6 @@ class Tecnicos_admin extends MY_Controller
             'os_por_status' => $os_por_status,
             'progresso_historico' => $progresso_historico
         ]);
-        return $this->layout();
     }
 
     /**
@@ -1336,6 +1392,53 @@ class Tecnicos_admin extends MY_Controller
                 'tecnicos' => [],
                 'total' => 0
             ]);
+        }
+    }
+
+    /**
+     * Criar tabela de atividades se não existir
+     */
+    private function criarTabelaAtividades()
+    {
+        try {
+            $sql = "CREATE TABLE IF NOT EXISTS obra_atividades (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                obra_id INT NOT NULL,
+                usuario_id INT NOT NULL,
+                usuario_nome VARCHAR(255) NOT NULL,
+                tipo VARCHAR(50) DEFAULT 'comentario',
+                descricao TEXT NOT NULL,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                INDEX idx_obra_id (obra_id),
+                INDEX idx_created_at (created_at)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
+
+            $this->db->query($sql);
+        } catch (Exception $e) {
+            // Silenciar erro
+        }
+    }
+
+    /**
+     * Criar tabela de progresso de etapas se não existir
+     */
+    private function criarTabelaEtapaProgresso()
+    {
+        try {
+            $sql = "CREATE TABLE IF NOT EXISTS obra_etapa_progresso (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                etapa_id INT NOT NULL,
+                tecnico_id INT NOT NULL,
+                percentual_concluido INT DEFAULT 0,
+                observacao TEXT,
+                data_registro DATETIME DEFAULT CURRENT_TIMESTAMP,
+                INDEX idx_etapa_id (etapa_id),
+                INDEX idx_tecnico_id (tecnico_id)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
+
+            $this->db->query($sql);
+        } catch (Exception $e) {
+            // Silenciar erro
         }
     }
 }

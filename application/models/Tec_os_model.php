@@ -40,24 +40,23 @@ class Tec_os_model extends CI_Model
     {
         log_message('debug', 'Buscando OS para tecnico_id: ' . $tecnico_id . ', status: ' . $status);
 
-        $this->db->select('os.*, c.nome as cliente_nome, c.telefone as cliente_telefone');
-        $this->db->from('os');
-        $this->db->join('clientes c', 'c.idClientes = os.clientes_id');
-        $this->db->where('os.tecnico_responsavel', $tecnico_id);
+        // Query simples sem join - funciona mais confiavel
+        $sql = "SELECT os.*, c.nome as cliente_nome, c.telefone as cliente_telefone
+                FROM os
+                LEFT JOIN clientes c ON c.idClientes = os.clientes_id
+                WHERE os.tecnico_responsavel = ?";
 
         if ($status !== 'todos') {
-            $this->db->where('os.status', $status);
+            $sql .= " AND os.status = ?";
+            $query = $this->db->query($sql, [$tecnico_id, $status]);
+        } else {
+            $query = $this->db->query($sql, [$tecnico_id]);
         }
 
-        $this->db->order_by('os.dataInicial', 'DESC');
-        $this->db->order_by('os.dataFinal', 'ASC');
+        log_message('debug', 'Query SQL: ' . $sql);
 
-        $query = $this->db->get();
-
-        log_message('debug', 'Query executada: ' . $this->db->last_query());
-
-        if ($query === false) {
-            log_message('error', 'Erro na query getOsPorTecnico: ' . $this->db->last_query());
+        if (!$query) {
+            log_message('error', 'Erro na query getOsPorTecnico');
             return [];
         }
 
