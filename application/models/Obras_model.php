@@ -446,7 +446,8 @@ class Obras_model extends CI_Model
         try {
             $this->db->where('cliente_id', $cliente_id);
             $this->db->where('ativo', 1);
-            return $this->db->count_all_results('obras');
+            $count = $this->db->count_all_results('obras');
+            return is_numeric($count) ? (int) $count : 0;
         } catch (Exception $e) {
             return 0;
         }

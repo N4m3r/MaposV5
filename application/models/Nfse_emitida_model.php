@@ -362,16 +362,11 @@ class Nfse_emitida_model extends CI_Model
             return 0;
         }
 
-        $this->db->select('COUNT(*) as total');
-        $this->db->from('os_nfse_emitida');
-        $this->db->join('os', 'os.idOs = os_nfse_emitida.os_id');
         $this->db->where('os.clientes_id', $cliente_id);
+        $this->db->join('os', 'os.idOs = os_nfse_emitida.os_id', 'inner');
 
-        $query = $this->db->get();
-        if ($query && $query->num_rows() > 0) {
-            return $query->row()->total;
-        }
-        return 0;
+        $count = $this->db->count_all_results('os_nfse_emitida');
+        return is_numeric($count) ? (int) $count : 0;
     }
 
     /**

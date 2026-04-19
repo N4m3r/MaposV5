@@ -96,7 +96,8 @@ class Cobrancas_model extends CI_Model
     public function countByCliente($cliente_id)
     {
         $this->db->where('clientes_id', $cliente_id);
-        return $this->db->count_all_results('cobrancas');
+        $count = $this->db->count_all_results('cobrancas');
+        return is_numeric($count) ? (int) $count : 0;
     }
 
     /**
