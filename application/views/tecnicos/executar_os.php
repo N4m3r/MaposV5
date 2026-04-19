@@ -3690,5 +3690,4 @@ function finalizarWizardAtendimento() {
     });
 }
 
-});
 </script></div>

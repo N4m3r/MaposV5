@@ -760,7 +760,8 @@ class Dre_model extends CI_Model
             )
         ";
 
-        $os_result = $this->db->query($sql_os, [$data_inicio, $data_fim])->result();
+        $query_os = $this->db->query($sql_os, [$data_inicio, $data_fim]);
+        $os_result = ($query_os !== false) ? $query_os->result() : [];
 
         // Buscar conta de Receita de Serviços
         $this->db->where('codigo', '1.1');
@@ -796,7 +797,8 @@ class Dre_model extends CI_Model
             )
         ";
 
-        $vendas_result = $this->db->query($sql_vendas, [$data_inicio, $data_fim])->result();
+        $query_vendas = $this->db->query($sql_vendas, [$data_inicio, $data_fim]);
+        $vendas_result = ($query_vendas !== false) ? $query_vendas->result() : [];
 
         // Buscar conta de Receita de Vendas
         $this->db->where('codigo', '1.2');
@@ -833,7 +835,8 @@ class Dre_model extends CI_Model
             )
         ";
 
-        $lanc_result = $this->db->query($sql_lanc, [$data_inicio, $data_fim])->result();
+        $query_lanc = $this->db->query($sql_lanc, [$data_inicio, $data_fim]);
+        $lanc_result = ($query_lanc !== false) ? $query_lanc->result() : [];
 
         // Mapear tipos de lançamento para contas DRE
         $mapeamento = [
