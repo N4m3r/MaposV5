@@ -531,9 +531,26 @@
                                     <td style="text-align: center;">
                                         <?php
                                         $status = $servico->status ?? 'Pendente';
-                                        $badge_class = ($status == 'Executado') ? 'badge-success' : 'badge-warning';
+                                        $status_labels = [
+                                            'Pendente' => 'Pendente',
+                                            'EmExecucao' => 'Em Execução',
+                                            'Concluido' => 'Concluído',
+                                            'Cancelado' => 'Cancelado',
+                                            'Executado' => 'Executado',
+                                            'NaoExecutado' => 'Não Executado'
+                                        ];
+                                        $status_classes = [
+                                            'Pendente' => 'badge-warning',
+                                            'EmExecucao' => 'badge-info',
+                                            'Concluido' => 'badge-success',
+                                            'Cancelado' => 'badge-danger',
+                                            'Executado' => 'badge-success',
+                                            'NaoExecutado' => 'badge-danger'
+                                        ];
+                                        $badge_class = $status_classes[$status] ?? 'badge-warning';
+                                        $status_label = $status_labels[$status] ?? $status;
                                         ?>
-                                        <span class="badge <?php echo $badge_class; ?>"><?php echo $status; ?></span>
+                                        <span class="badge <?php echo $badge_class; ?>"><?php echo $status_label; ?></span>
                                     </td>
                                 </tr>
                             <?php } ?>

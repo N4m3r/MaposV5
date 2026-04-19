@@ -4052,12 +4052,11 @@ function finalizarWizardAtendimento() {
         }
     });
 
-    // Preparar serviços executados (apenas os marcados como conforme)
-    const servicosExecutados = [];
+    // Preparar serviços executados com seus status completos
+    // Enviar todos os serviços com seus respectivos status: conforme, nao_conforme, pendente
+    const servicosComStatus = {};
     Object.entries(wizardServicosStatus).forEach(([id, status]) => {
-        if (status === 'conforme') {
-            servicosExecutados.push(id);
-        }
+        servicosComStatus[id] = status;
     });
 
     // 1. Salvar todas as fotos primeiro
@@ -4097,7 +4096,7 @@ function finalizarWizardAtendimento() {
         formData.append('assinatura_cliente', assinatura);
         formData.append('nome_cliente_assina', nomeAssinante);
         formData.append('observacoes', observacoes);
-        formData.append('servicos', JSON.stringify(servicosExecutados));
+        formData.append('servicos', JSON.stringify(servicosComStatus));
         formData.append('latitude', '0');
         formData.append('longitude', '0');
         formData.append(csrf.name, csrf.value);

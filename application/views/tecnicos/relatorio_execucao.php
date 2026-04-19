@@ -289,6 +289,9 @@
                 <span class="icon"><i class="bx bx-file"></i></span>
                 <h5>Relatório de Execução - OS #<?php echo $os->idOs; ?></h5>
                 <div class="buttons">
+                    <button type="button" class="btn btn-mini btn-success" onclick="abrirModalWhatsApp()">
+                        <i class="bx bxl-whatsapp"></i> Enviar PDF
+                    </button>
                     <a href="<?php echo site_url('tecnicos/minhas_os'); ?>" class="btn btn-mini">
                         <i class="bx bx-arrow-back"></i> Voltar
                     </a>
@@ -547,9 +550,10 @@
                     <h5><i class="bx bx-wrench"></i> Serviços da OS</h5>
                 <?php
                 // CORREÇÃO: Buscar serviços diretamente se a variável estiver vazia
+                // Incluir campo status para mostrar o status correto no relatório
                 if (empty($servicos)) {
                     $CI = &get_instance();
-                    $CI->db->select('servicos_os.*, servicos.nome as servico_nome');
+                    $CI->db->select('servicos_os.*, servicos.nome as servico_nome, servicos.codigo as servico_codigo');
                     $CI->db->from('servicos_os');
                     $CI->db->join('servicos', 'servicos.idServicos = servicos_os.servicos_id', 'left');
                     $CI->db->where('servicos_os.os_id', $os->idOs);
@@ -581,6 +585,14 @@
                                         <td>
                                             <?php
                                             $status = $servico->status ?? 'Pendente';
+                                            $status_labels = [
+                                                'Pendente' => 'Pendente',
+                                                'EmExecucao' => 'Em Execução',
+                                                'Concluido' => 'Concluído',
+                                                'Cancelado' => 'Cancelado',
+                                                'Executado' => 'Executado',
+                                                'NaoExecutado' => 'Não Executado'
+                                            ];
                                             $status_class = [
                                                 'Pendente' => 'label label-warning',
                                                 'EmExecucao' => 'label label-info',
@@ -589,8 +601,9 @@
                                                 'Executado' => 'label label-success',
                                                 'NaoExecutado' => 'label label-important'
                                             ][$status] ?? 'label';
+                                            $status_label = $status_labels[$status] ?? $status;
                                             ?>
-                                            <span class="<?php echo $status_class; ?>"><?php echo $status; ?></span>
+                                            <span class="<?php echo $status_class; ?>"><?php echo $status_label; ?></span>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -885,3 +898,94 @@
     </div>
 </div>
 </div>
+
+<!-- Modal WhatsApp -->
+<div id="modalWhatsApp" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="modalWhatsAppLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="modalWhatsAppLabel"><i class="bx bxl-whatsapp"></i> Enviar Relatório por WhatsApp</h3>
+    </div>
+    <div class="modal-body">
+        <div class="control-group">
+            <label class="control-label" for="telefone_whatsapp">Número do WhatsApp:</label>
+            <div class="controls">
+                <input type="text" id="telefone_whatsapp" name="telefone_whatsapp" class="span12" placeholder="(00) 00000-0000">
+                <span class="help-inline">Informe o número com DDD. Ex: (11) 98765-4321</span>
+            </div>
+        </div>
+        <div id="mensagem_status" style="display: none; margin-top: 15px;"></divdiv>
+    </div>
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Cancelar</button>
+        <button class="btn btn-success" id="btnEnviarWhatsApp" onclick="enviarPdfWhatsApp()">
+            <i class="bx bxl-whatsapp"></i> Enviar
+        </button>
+    </div>
+</div>
+
+<script>
+function abrirModalWhatsApp() {
+    // Preencher com o telefone do cliente se disponível
+    var telefoneCliente = '<?php echo preg_replace("/[^0-9]/", "", $cliente->telefone ?? $cliente->celular ?? ""); ?>';
+    if (telefoneCliente && telefoneCliente.length >= 10) {
+        // Formatar o número
+        telefoneCliente = telefoneCliente.replace(/(\d{2})(\d{4,5})(\d{4})/, "($1) $2-$3");
+        $('#telefone_whatsapp').val(telefoneCliente);
+    }
+    $('#modalWhatsApp').modal('show');
+}
+
+function enviarPdfWhatsApp() {
+    var telefone = $('#telefone_whatsapp').val().replace(/\D/g, '');
+
+    if (telefone.length < 10) {
+        $('#mensagem_status').html('<div class="alert alert-error">Número de telefone inválido. Informe o DDD e o número completo.</div>').show();
+        return;
+    }
+
+    $('#btnEnviarWhatsApp').prop('disabled', true).html('<i class="bx bx-loader bx-spin"></i> Enviando...');
+
+    $.ajax({
+        url: '<?php echo site_url("tecnicos/enviar_pdf_whatsapp/" . $os->idOs); ?>',
+        type: 'POST',
+        data: {
+            telefone: telefone,
+            '<?php echo $this->security->get_csrf_token_name(); ?>': '<?php echo $this->security->get_csrf_hash(); ?>'
+        },
+        dataType: 'json',
+        success: function(response) {
+            if (response.success) {
+                $('#mensagem_status').html('<div class="alert alert-success"><i class="bx bx-check"></i> ' + response.message + '</div>').show();
+                setTimeout(function() {
+                    $('#modalWhatsApp').modal('hide');
+                    $('#mensagem_status').hide();
+                }, 3000);
+            } else {
+                $('#mensagem_status').html('<div class="alert alert-error"><i class="bx bx-error"></i> ' + response.message + '</div>').show();
+            }
+        },
+        error: function(xhr, status, error) {
+            $('#mensagem_status').html('<div class="alert alert-error"><i class="bx bx-error"></i> Erro ao enviar: ' + error + '</div>').show();
+        },
+        complete: function() {
+            $('#btnEnviarWhatsApp').prop('disabled', false).html('<i class="bx bxl-whatsapp"></i> Enviar');
+        }
+    });
+}
+
+// Máscara para o campo de telefone
+$('#telefone_whatsapp').on('input', function() {
+    var valor = $(this).val().replace(/\D/g, '');
+    if (valor.length > 11) valor = valor.substring(0, 11);
+
+    if (valor.length >= 2) {
+        valor = '(' + valor.substring(0, 2) + ') ' + valor.substring(2);
+    }
+    if (valor.length >= 10) {
+        var pos = valor.indexOf(') ') + 2;
+        valor = valor.substring(0, pos + 5) + '-' + valor.substring(pos + 5);
+    }
+
+    $(this).val(valor);
+});
+</script>

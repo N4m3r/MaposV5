@@ -508,10 +508,34 @@ class Tecnicos extends CI_Controller
         // Atualizar OS para Finalizada
         $this->os_model->edit('os', ['status' => 'Finalizada'], 'idOs', $execucao->os_id);
 
-        // Atualizar status dos serviços da OS para Executado
-        $this->db->where('os_id', $execucao->os_id);
-        $this->db->update('servicos_os', ['status' => 'Executado']);
-        log_message('info', 'Tecnicos::finalizar_execucao - OS ' . $execucao->os_id . ' - Serviços atualizados para Executado');
+        // Atualizar status individual de cada serviço conforme marcado no wizard
+        $servicos_json = $this->input->post('servicos');
+        if ($servicos_json) {
+            $servicos_status = json_decode($servicos_json, true);
+            if (is_array($servicos_status)) {
+                foreach ($servicos_status as $servico_id => $status) {
+                    // Converter status do wizard para status do banco
+                    $status_db = 'Pendente';
+                    switch ($status) {
+                        case 'conforme':
+                            $status_db = 'Executado';
+                            break;
+                        case 'nao_conforme':
+                            $status_db = 'NaoExecutado';
+                            break;
+                        case 'pendente':
+                        default:
+                            $status_db = 'Pendente';
+                            break;
+                    }
+
+                    $this->db->where('idServicos_os', $servico_id);
+                    $this->db->where('os_id', $execucao->os_id);
+                    $this->db->update('servicos_os', ['status' => $status_db]);
+                    log_message('info', 'Tecnicos::finalizar_execucao - OS ' . $execucao->os_id . ' - Serviço ' . $servico_id . ' atualizado para ' . $status_db);
+                }
+            }
+        }
 
         // Finalizar checkin na tabela os_checkin (integração com painel admin)
         $this->load->model('checkin_model');
@@ -1033,6 +1057,152 @@ class Tecnicos extends CI_Controller
         $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
 
         return $raio_terra * $c;
+    }
+
+    /**
+     * Enviar relatório de execução via WhatsApp
+     */
+    public function enviar_pdf_whatsapp($os_id = null)
+    {
+        header('Content-Type: application/json');
+
+        if (!$os_id) {
+            echo json_encode(['success' => false, 'message' => 'OS não informada']);
+            return;
+        }
+
+        $telefone = $this->input->post('telefone');
+        if (!$telefone) {
+            echo json_encode(['success' => false, 'message' => 'Número de telefone não informado']);
+            return;
+        }
+
+        // Limpar telefone (remover caracteres não numéricos)
+        $telefone = preg_replace('/[^0-9]/', '', $telefone);
+        if (strlen($telefone) < 10) {
+            echo json_encode(['success' => false, 'message' => 'Número de telefone inválido']);
+            return;
+        }
+
+        $tecnico_id = $this->session->userdata('tec_id');
+        $permissao = $this->session->userdata('permissao');
+
+        // Verificar se OS existe
+        $os = $this->tec_os_model->getOsById($os_id);
+        if (!$os) {
+            echo json_encode(['success' => false, 'message' => 'OS não encontrada']);
+            return;
+        }
+
+        // Verificar permissão
+        $isTecnicoDono = ($tecnico_id && $os->tecnico_responsavel == $tecnico_id);
+        $isAdmin = $this->permission->checkPermission($permissao, 'vOs');
+
+        if (!$isTecnicoDono && !$isAdmin) {
+            echo json_encode(['success' => false, 'message' => 'Permissão negada']);
+            return;
+        }
+
+        try {
+            // Carregar helper para gerar PDF
+            $this->load->helper('mpdf');
+
+            // Preparar dados para o relatório
+            $this->load->model('clientes_model');
+            $this->load->model('checkin_model');
+            $this->load->model('fotosatendimento_model');
+            $this->load->model('assinaturas_model');
+
+            $data['os'] = $os;
+            $data['cliente'] = $this->clientes_model->getById($os->clientes_id);
+            $data['produtos'] = $this->tec_os_model->getProdutosOs($os_id);
+            $data['servicos'] = $this->tec_os_model->getServicosOs($os_id);
+            $data['execucoes'] = $this->tec_os_model->getExecucoesByOs($os_id);
+            $data['emitente'] = $this->mapos_model->getEmitente();
+            $data['checkins'] = $this->checkin_model->getAllByOs($os_id);
+
+            // Carregar fotos organizadas por etapa
+            $fotos = $this->fotosatendimento_model->getByOs($os_id);
+            $data['fotosPorEtapa'] = [
+                'entrada' => [],
+                'durante' => [],
+                'saida' => []
+            ];
+            foreach ($fotos as $foto) {
+                $data['fotosPorEtapa'][$foto->etapa][] = $foto;
+            }
+
+            // Carregar assinaturas
+            $assinaturas = $this->assinaturas_model->getByOs($os_id);
+            $data['assinaturasPorTipo'] = [];
+            if (!empty($assinaturas)) {
+                foreach ($assinaturas as $assinatura) {
+                    $data['assinaturasPorTipo'][$assinatura->tipo] = $assinatura;
+                }
+            }
+
+            $data['fotosTecnico'] = $this->tec_os_model->getFotosByOs($os_id);
+
+            // Carregar view do relatório como HTML
+            $html = $this->load->view('tecnicos/pdf_relatorio_execucao', $data, true);
+
+            // Gerar nome do arquivo
+            $filename = 'relatorio_os_' . $os_id . '_' . date('Ymd_His');
+
+            // Gerar PDF (salvar em arquivo temporário)
+            $pdf_path = pdf_create($html, $filename, false, false);
+
+            if (!$pdf_path || !file_exists($pdf_path)) {
+                echo json_encode(['success' => false, 'message' => 'Erro ao gerar PDF']);
+                return;
+            }
+
+            // Mover PDF para pasta permanente com nome amigável
+            $pdf_dir = FCPATH . 'assets/relatorios/';
+            if (!is_dir($pdf_dir)) {
+                mkdir($pdf_dir, 0755, true);
+            }
+
+            $pdf_final_name = 'Relatorio_OS_' . $os_id . '.pdf';
+            $pdf_final_path = $pdf_dir . $pdf_final_name;
+
+            // Copiar arquivo para local acessível
+            copy($pdf_path, $pdf_final_path);
+
+            // Limpar arquivo temporário
+            @unlink($pdf_path);
+
+            // Criar URL pública do PDF
+            $pdf_url = base_url('assets/relatorios/' . $pdf_final_name);
+
+            // Montar mensagem para WhatsApp
+            $mensagem = urlencode(
+                "*Relatório de Execução - OS #{$os_id}*\n\n" .
+                "📋 *Cliente:* " . ($data['cliente']->nomeCliente ?? 'N/A') . "\n" .
+                "📅 *Data:* " . date('d/m/Y') . "\n" .
+                "🔧 *Serviço:* " . ($os->descricaoProduto ?? 'Manutenção') . "\n\n" .
+                "📎 *Relatório em PDF:* " . $pdf_url . "\n\n" .
+                "_Este é um relatório automático de execução de serviço._"
+            );
+
+            // Montar link do WhatsApp Web/API
+            $whatsapp_link = "https://wa.me/55{$telefone}?text={$mensagem}";
+
+            // Log do envio
+            log_message('info', "Tecnicos::enviar_pdf_whatsapp - PDF gerado para OS {$os_id}. Telefone: {$telefone}");
+
+            echo json_encode([
+                'success' => true,
+                'message' => 'PDF gerado com sucesso! Clique no link para enviar pelo WhatsApp.',
+                'whatsapp_link' => $whatsapp_link,
+                'pdf_url' => $pdf_url,
+                'telefone' => $telefone
+            ]);
+
+        } catch (Exception $e) {
+            log_message('error', 'Tecnicos::enviar_pdf_whatsapp - Erro: ' . $e->getMessage());
+            echo json_encode(['success' => false, 'message' => 'Erro ao gerar PDF: ' . $e->getMessage()]);
+        }
     }
 
     /**
