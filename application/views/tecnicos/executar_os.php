@@ -47,11 +47,12 @@
                     <div class="camera-section">
                         <div class="camera-preview" id="checkinPreview">
                             <i class="bx bx-camera"></i>
-                            <span>Foto de Check-in</span>
+                            <span>Foto de Check-in (opcional)</span>
                         </div>
                         <button type="button" class="btn btn-info" onclick="capturarFotoCheckin()" id="btnFotoCheckin">
                             <i class="bx bx-camera"></i> Tirar Foto
                         </button>
+                        <small style="display: block; margin-top: 5px; color: #666; text-align: center;">A foto é opcional - você pode iniciar sem ela</small>
                     </div>
 
                     <button type="button" class="btn btn-success btn-large btn-block" onclick="iniciarExecucao()" id="btnIniciar">
@@ -156,20 +157,53 @@
                         </div>
                     </div>
 
-                    <!-- Materiais Utilizados -->
+                    <!-- Produtos da OS -->
                     <div class="widget-box">
                         <div class="widget-title">
                             <span class="icon"><i class="bx bx-package"></i></span>
-                            <h5>Materiais Utilizados</h5>
+                            <h5>Produtos/Materiais da OS</h5>
                         </div>
                         <div class="widget-content">
                             <div id="materiaisContainer">
+                                <?php if (!empty($produtos)): ?>
+                                    <div class="produtos-list">
+                                        <?php foreach ($produtos as $produto): ?>
+                                            <div class="produto-item">
+                                                <div class="produto-info">
+                                                    <div class="produto-nome">
+                                                        <?php echo htmlspecialchars($produto->descricao ?? 'Produto sem descrição', ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?>
+                                                    </div>
+                                                    <div class="produto-detalhes">
+                                                        <span class="produto-qtd">Qtd: <?php echo $produto->quantidade ?? 0; ?> <?php echo htmlspecialchars($produto->unidade ?? 'un', ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></span>
+                                                                                                                <span class="produto-preco">R$ <?php echo number_format($produto->preco ?? 0, 2, ',', '.'); ?></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                <?php else: ?>
+                                    <div class="empty-state">
+                                        <p>Nenhum produto cadastrado nesta OS</p>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Materiais do Estoque do Técnico -->
+                    <div class="widget-box">
+                        <div class="widget-title">
+                            <span class="icon"><i class="bx bx-box"></i></span>
+                            <h5>Meu Estoque</h5>
+                        </div>
+                        <div class="widget-content">
+                            <div id="materiaisEstoqueContainer">
                                 <div class="empty-state">
-                                    <p>Selecione os materiais utilizados no serviço</p>
+                                    <p>Carregando estoque...</p>
                                 </div>
                             </div>
-                            <button type="button" class="btn btn-info btn-block" onclick="abrirModalMateriais()">
-                                <i class="bx bx-plus-circle"></i> Adicionar Material
+                            <button type="button" class="btn btn-info btn-block" onclick="carregarMeuEstoque()">
+                                <i class="bx bx-refresh"></i> Atualizar Estoque
                             </button>
                         </div>
                     </div>
@@ -213,7 +247,7 @@
 
                     <!-- Finalização -->
                     <div class="action-card">
-                        <h5><i class="bx bx-camera"></i> Foto de Finalização</h5>
+                        <h5><i class="bx bx-camera"></i> Foto de Finalização (opcional)</h5>
                         <div class="camera-section">
                             <div class="camera-preview" id="checkoutPreview">
                                 <i class="bx bx-camera"></i>
@@ -222,6 +256,7 @@
                             <button type="button" class="btn btn-info" onclick="capturarFotoCheckout()" id="btnFotoCheckout">
                                 <i class="bx bx-camera"></i> Tirar Foto
                             </button>
+                            <small style="display: block; margin-top: 5px; color: #666; text-align: center;">A foto é opcional - você pode finalizar sem ela</small>
                         </div>
 
                         <button type="button" class="btn btn-success btn-large btn-block" onclick="finalizarExecucao()" id="btnFinalizar">
@@ -432,6 +467,88 @@
     flex: 1;
 }
 
+/* Produtos da OS */
+.produtos-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.produto-item {
+    background: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 12px;
+    transition: all 0.3s;
+}
+
+.produto-item:hover {
+    border-color: #667eea;
+    background: #fff;
+}
+
+.produto-nome {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.produto-detalhes {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.produto-qtd {
+    background: #e3f2fd;
+    color: #1976d2;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+}
+
+.produto-preco {
+    font-weight: 600;
+    color: #2e7d32;
+}
+
+/* Estoque do Técnico */
+.estoque-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.estoque-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+}
+
+.estoque-info {
+    flex: 1;
+}
+
+.estoque-nome {
+    font-weight: 600;
+    color: #333;
+    font-size: 0.9rem;
+}
+
+.estoque-qtd {
+    background: #667eea;
+    color: white;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+}
+
 /* Gallery */
 .gallery-grid {
     display: grid;
@@ -564,14 +681,19 @@ let fotoCheckin = null;
 let fotoCheckout = null;
 let stream = null;
 
-// Obter localização
+// Obter localização (opcional - silencia erros de permissão)
 if ('geolocation' in navigator) {
     navigator.geolocation.watchPosition(
         (pos) => {
             latitude = pos.coords.latitude;
             longitude = pos.coords.longitude;
         },
-        (err) => console.error('Erro GPS:', err),
+        (err) => {
+            // GPS opcional - não exibe erro no console
+            if (err.code !== 1) { // 1 = PERMISSION_DENIED
+                console.log('GPS não disponível');
+            }
+        },
         { enableHighAccuracy: true }
     );
 }
@@ -630,9 +752,15 @@ function limparAssinatura() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
-// Câmera
+// Câmera - OPCIONAL
 async function capturarFotoCheckin() {
     const preview = document.getElementById('checkinPreview');
+
+    // Verificar se a API de câmera está disponível
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        alert('Câmera não disponível neste dispositivo. Você pode continuar sem foto.');
+        return;
+    }
 
     try {
         const mediaStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
@@ -654,7 +782,13 @@ async function capturarFotoCheckin() {
 
         mediaStream.getTracks().forEach(track => track.stop());
     } catch (err) {
-        alert('Erro ao acessar câmera: ' + err.message);
+        // Foto opcional - mostra mensagem amigável
+        if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+            alert('Permissão de câmera negada. A foto é opcional - você pode continuar sem ela.');
+        } else {
+            alert('Câmera não disponível. Você pode continuar sem foto.');
+        }
+        console.log('Câmera opcional - erro silenciado:', err.message);
     }
 }
 
@@ -725,6 +859,12 @@ async function tirarFoto() {
 async function capturarFotoCheckout() {
     const preview = document.getElementById('checkoutPreview');
 
+    // Verificar se a API de câmera está disponível
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        alert('Câmera não disponível neste dispositivo. Você pode continuar sem foto.');
+        return;
+    }
+
     try {
         const mediaStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
         const video = document.createElement('video');
@@ -745,6 +885,13 @@ async function capturarFotoCheckout() {
 
         mediaStream.getTracks().forEach(track => track.stop());
     } catch (err) {
+        // Foto opcional - mostra mensagem amigável
+        if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+            alert('Permissão de câmera negada. A foto é opcional - você pode continuar sem ela.');
+        } else {
+            alert('Câmera não disponível. Você pode continuar sem foto.');
+        }
+        console.log('Câmera opcional - erro silenciado:', err.message);
         alert('Erro ao acessar câmera: ' + err.message);
     }
 }
@@ -887,8 +1034,44 @@ async function finalizarExecucao() {
     }
 }
 
+// Carregar estoque do técnico
+async function carregarMeuEstoque() {
+    const container = document.getElementById('materiaisEstoqueContainer');
+    container.innerHTML = '<div class="empty-state"><p>Carregando...</p></div>';
+
+    try {
+        const response = await fetch('<?php echo site_url("tecnicos/obter_estoque_json"); ?>');
+        const data = await response.json();
+
+        if (data.success && data.estoque.length > 0) {
+            let html = '<div class="estoque-list">';
+            data.estoque.forEach(item => {
+                html += `
+                    <div class="estoque-item">
+                        <div class="estoque-info">
+                            <div class="estoque-nome">${item.produto_nome || 'Produto ' + item.produto_id}</div>
+                        </div>
+                        <div class="estoque-qtd">${item.quantidade} ${item.unidade || 'un'}</div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        } else {
+            container.innerHTML = '<div class="empty-state"><p>Seu estoque está vazio</p></div>';
+        }
+    } catch (err) {
+        console.error('Erro ao carregar estoque:', err);
+        container.innerHTML = '<div class="empty-state"><p>Erro ao carregar estoque. Tente novamente.</p></div>';
+    }
+}
+
 function abrirModalMateriais() {
-    // Implementar modal de materiais
-    alert('Função de adicionar material em desenvolvimento');
+    alert('Use seu estoque pessoal para registrar o uso de materiais. Clique em "Atualizar Estoque" para ver o que está disponível.');
+}
+
+// Carregar estoque automaticamente ao abrir a página
+if (document.getElementById('execucaoSection') && !document.getElementById('execucaoSection').classList.contains('hidden')) {
+    carregarMeuEstoque();
 }
 </script>

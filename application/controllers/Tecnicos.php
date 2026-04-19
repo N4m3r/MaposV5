@@ -235,6 +235,7 @@ class Tecnicos extends CI_Controller
 
         $this->data['os'] = $os;
         $this->data['cliente'] = $this->tec_os_model->getClienteByOs($os_id);
+        $this->data['produtos'] = $this->tec_os_model->getProdutosOs($os_id);
         $this->data['servicos'] = $this->tec_os_model->getServicosOs($os_id);
         $this->data['execucao'] = $this->tec_os_model->getExecucaoAtual($os_id, $tecnico_id);
         $this->data['checklist'] = $this->tec_os_model->getChecklistExecucao($os_id);
@@ -481,6 +482,25 @@ class Tecnicos extends CI_Controller
         $this->load->view('tema/menu_portal_tecnico', $this->data);
         $this->load->view('tecnicos/meu_estoque', $this->data);
         $this->load->view('tema/rodape', $this->data);
+    }
+
+    /**
+     * API - Obter estoque do técnico em JSON
+     */
+    public function obter_estoque_json()
+    {
+        header('Content-Type: application/json');
+
+        $tecnico_id = $this->session->userdata('tec_id');
+
+        if (!$tecnico_id) {
+            echo json_encode(['success' => false, 'message' => 'Não autenticado']);
+            return;
+        }
+
+        $estoque = $this->tecnicos_model->getEstoqueVeiculo($tecnico_id);
+
+        echo json_encode(['success' => true, 'estoque' => $estoque]);
     }
 
     /**

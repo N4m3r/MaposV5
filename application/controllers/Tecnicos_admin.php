@@ -1213,6 +1213,18 @@ class Tecnicos_admin extends MY_Controller
 
             $os = $query->result();
 
+            // Debug: verificar se há OS no sistema
+            if (empty($os)) {
+                $totalOS = $this->db->count_all('os');
+                echo json_encode([
+                    'success' => true,
+                    'os' => [],
+                    'total' => 0,
+                    'debug' => 'Nenhuma OS encontrada na busca. Total na tabela OS: ' . $totalOS
+                ]);
+                return;
+            }
+
             // Adicionar flag indicando se já está vinculada
             foreach ($os as &$item) {
                 $item->ja_vinculada = !empty($item->obra_id) && $item->obra_id > 0;
@@ -1339,7 +1351,7 @@ class Tecnicos_admin extends MY_Controller
      */
     public function buscar_os_por_obra()
     {
-        $this->load->model('os_model');
+        header('Content-Type: application/json');
         $obra_id = $this->input->get('obra_id');
 
         if (!$obra_id) {
@@ -1347,24 +1359,48 @@ class Tecnicos_admin extends MY_Controller
             return;
         }
 
-        // Buscar TODAS as OS, incluindo info se já está vinculada a outra obra
-        $this->db->select('os.idOs, os.dataInicial, os.dataFinal, os.status, os.obra_id, c.nomeCliente, c.documento, o.nome as obra_vinculada');
-        $this->db->from('os');
-        $this->db->join('clientes c', 'c.idClientes = os.clientes_id');
-        $this->db->join('obras o', 'o.id = os.obra_id', 'left');
-        $this->db->order_by('os.obra_id', 'ASC'); // OS não vinculadas primeiro
-        $this->db->order_by('os.dataInicial', 'DESC');
-        $this->db->limit(100);
-        $query = $this->db->get();
-        $os = $query ? $query->result() : [];
+        try {
+            // Buscar TODAS as OS, incluindo info se já está vinculada a outra obra
+            $this->db->select('os.idOs, os.dataInicial, os.dataFinal, os.status, os.obra_id, c.nomeCliente, c.documento, o.nome as obra_vinculada');
+            $this->db->from('os');
+            $this->db->join('clientes c', 'c.idClientes = os.clientes_id', 'left');
+            $this->db->join('obras o', 'o.id = os.obra_id', 'left');
+            $this->db->order_by('os.obra_id', 'ASC');
+            $this->db->order_by('os.dataInicial', 'DESC');
+            $this->db->limit(100);
+            $query = $this->db->get();
 
-        // Adicionar flag indicando se já está vinculada
-        foreach ($os as &$item) {
-            $item->ja_vinculada = !empty($item->obra_id);
-            $item->nome_obra_vinculada = $item->obra_vinculada ?? null;
+            if (!$query) {
+                $error = $this->db->error();
+                echo json_encode(['success' => false, 'message' => 'Erro na consulta', 'error' => $error]);
+                return;
+            }
+
+            $os = $query->result();
+
+            // Debug: verificar se há OS no sistema
+            if (empty($os)) {
+                // Verificar se a tabela os tem registros
+                $totalOS = $this->db->count_all('os');
+                echo json_encode([
+                    'success' => true,
+                    'os' => [],
+                    'total' => 0,
+                    'debug' => 'Nenhuma OS encontrada. Total na tabela: ' . $totalOS
+                ]);
+                return;
+            }
+
+            // Adicionar flag indicando se já está vinculada
+            foreach ($os as &$item) {
+                $item->ja_vinculada = !empty($item->obra_id) && $item->obra_id > 0;
+                $item->nome_obra_vinculada = $item->obra_vinculada ?? null;
+            }
+
+            echo json_encode(['success' => true, 'os' => $os, 'total' => count($os)]);
+        } catch (Exception $e) {
+            echo json_encode(['success' => false, 'message' => 'Erro: ' . $e->getMessage()]);
         }
-
-        echo json_encode(['success' => true, 'os' => $os, 'total' => count($os)]);
     }
 
     /**

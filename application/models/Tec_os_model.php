@@ -133,6 +133,26 @@ class Tec_os_model extends CI_Model
     }
 
     /**
+     * Buscar produtos da OS
+     */
+    public function getProdutosOs($os_id)
+    {
+        $this->db->select('produtos_os.*, produtos.descricao, produtos.unidade, produtos.estoque');
+        $this->db->from('produtos_os');
+        $this->db->join('produtos', 'produtos.idProdutos = produtos_os.produtos_id');
+        $this->db->where('produtos_os.os_id', $os_id);
+
+        $query = $this->db->get();
+
+        if ($query === false) {
+            log_message('error', 'Erro na query getProdutosOs: ' . $this->db->last_query());
+            return [];
+        }
+
+        return $query->result();
+    }
+
+    /**
      * Buscar serviços da OS
      */
     public function getServicosOs($os_id)
