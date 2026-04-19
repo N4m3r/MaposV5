@@ -2274,6 +2274,56 @@
     });
 </script>
 
+<!-- Script para persistência da aba ativa -->
+<script>
+$(document).ready(function() {
+    // Nome da chave no localStorage
+    var storageKey = 'os_editar_tab_ativa';
+
+    // Função para ativar uma aba
+    function ativarAba(tabId) {
+        // Remove 'active' de todas as abas e conteúdos
+        $('.nav-tabs li').removeClass('active');
+        $('.tab-content .tab-pane').removeClass('active');
+
+        // Ativa a aba clicada
+        $('a[href="#' + tabId + '"]').parent().addClass('active');
+        $('#' + tabId).addClass('active');
+
+        // Salva no localStorage
+        localStorage.setItem(storageKey, tabId);
+
+        // Atualiza o hash da URL (para permitir links diretos)
+        if (history.replaceState) {
+            history.replaceState(null, null, '#' + tabId);
+        }
+    }
+
+    // Evento de clique nas abas
+    $('.nav-tabs a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+        var tabId = $(e.target).attr('href').replace('#', '');
+        localStorage.setItem(storageKey, tabId);
+
+        // Atualiza o hash da URL
+        if (history.replaceState) {
+            history.replaceState(null, null, '#' + tabId);
+        }
+    });
+
+    // Verifica se há hash na URL primeiro
+    var hashTab = window.location.hash.replace('#', '');
+    if (hashTab && $('#' + hashTab).length > 0) {
+        ativarAba(hashTab);
+    } else {
+        // Se não houver hash, verifica no localStorage
+        var tabSalva = localStorage.getItem(storageKey);
+        if (tabSalva && $('#' + tabSalva).length > 0) {
+            ativarAba(tabSalva);
+        }
+    }
+});
+</script>
+
 <!-- Scripts do Sistema de Check-in -->
 <script src="<?php echo base_url(); ?>assets/js/assinatura-canvas.js"></script>
 <script src="<?php echo base_url(); ?>assets/js/checkin-fotos.js"></script>

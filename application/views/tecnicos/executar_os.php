@@ -1778,7 +1778,11 @@ async function salvarFotoServico() {
     formData.append('longitude', longitude || 0);
     formData.append(csrf.name, csrf.value);
 
-    const btn = document.querySelector('#cameraModal .btn-primary');
+    const btn = document.querySelector('#cameraModal .btn-success');
+    if (!btn) {
+        alert('Erro: botão não encontrado no modal.');
+        return;
+    }
     const btnOriginalText = btn.innerHTML;
     btn.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Salvando...';
     btn.disabled = true;
