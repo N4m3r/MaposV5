@@ -489,10 +489,10 @@
                                 <?php if (!empty($servicos)): ?>
                                     <div class="servicos-list">
                                         <?php foreach ($servicos as $index => $servico): ?>
-                                            <div class="servico-item checklist-item pendente" data-servico-id="<?php echo $servico->idServicos ?? $index; ?>">
+                                            <div class="servico-item checklist-item pendente" data-servico-id="<?php echo $servico->idServicos_os ?? $index; ?>">
                                                 <div class="servico-info">
                                                     <div class="servico-header">
-                                                        <div class="checklist-checkbox" onclick="toggleServicoStatus(<?php echo $servico->idServicos ?? $index; ?>)">
+                                                        <div class="checklist-checkbox" onclick="toggleServicoStatus(<?php echo $servico->idServicos_os ?? $index; ?>)">
                                                             <i class="bx bx-circle"></i>
                                                         </div>
                                                         <div class="servico-nome">
@@ -505,15 +505,15 @@
                                                 </div>
                                                 <div class="servico-actions">
                                                     <button type="button" class="btn btn-mini" data-status="pendente"
-                                                            onclick="setServicoStatus(<?php echo $servico->idServicos ?? $index; ?>, 'pendente')">
+                                                            onclick="setServicoStatus(<?php echo $servico->idServicos_os ?? $index; ?>, 'pendente')">
                                                         <i class="bx bx-circle"></i> Pendente
                                                     </button>
                                                     <button type="button" class="btn btn-mini btn-success" data-status="conforme"
-                                                            onclick="setServicoStatus(<?php echo $servico->idServicos ?? $index; ?>, 'conforme')">
+                                                            onclick="setServicoStatus(<?php echo $servico->idServicos_os ?? $index; ?>, 'conforme')">
                                                         <i class="bx bx-check"></i> OK
                                                     </button>
                                                     <button type="button" class="btn btn-mini btn-danger" data-status="nao_conforme"
-                                                            onclick="setServicoStatus(<?php echo $servico->idServicos ?? $index; ?>, 'nao_conforme')">
+                                                            onclick="setServicoStatus(<?php echo $servico->idServicos_os ?? $index; ?>, 'nao_conforme')">
                                                         <i class="bx bx-x"></i> Não OK
                                                     </button>
                                                 </div>
@@ -2963,6 +2963,7 @@ function setServicoStatus(servicoId, status) {
 
     atualizarProgressoServicos();
 }
+window.setServicoStatus = setServicoStatus;
 
 function atualizarProgressoServicos() {
     const items = document.querySelectorAll('.servico-item[data-servico-id]');
