@@ -195,7 +195,8 @@ class Tec_os_model extends CI_Model
         $this->db->where('os_id', $os_id);
         $this->db->where('tecnico_id', $tecnico_id);
         $this->db->where('status', 'em_execucao');
-        return $this->db->get('tec_os_execucao')->row();
+        $query = $this->db->get('tec_os_execucao');
+        return $query ? $query->row() : null;
     }
 
     /**
