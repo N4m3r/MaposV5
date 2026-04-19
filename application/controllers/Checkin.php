@@ -786,6 +786,17 @@ class Checkin extends MY_Controller
             return;
         }
 
+        // Verificar permissão - admin com vOs OU técnico logado
+        $permissao = $this->session->userdata('permissao');
+        $isTecnico = $this->session->userdata('tec_id') ? true : false;
+
+        // Permitir acesso se tem permissão vOs OU é técnico logado
+        $temPermissao = $this->permission->checkPermission($permissao, 'vOs') || $isTecnico;
+        if (!$temPermissao) {
+            show_404();
+            return;
+        }
+
         $foto = $this->fotosatendimento_model->getImagemBase64($foto_id);
 
         if (!$foto) {
@@ -1050,14 +1061,7 @@ class Checkin extends MY_Controller
 
         // Verificar permissão - admin com vOs OU técnico logado
         $permissao = $this->session->userdata('permissao');
-        $logado = $this->session->userdata('logado');
         $isTecnico = $this->session->userdata('tec_id') ? true : false;
-
-        // Se não está logado, retornar 404
-        if (!$logado) {
-            show_404();
-            return;
-        }
 
         // Permitir acesso se tem permissão vOs OU é técnico logado
         $temPermissao = $this->permission->checkPermission($permissao, 'vOs') || $isTecnico;
