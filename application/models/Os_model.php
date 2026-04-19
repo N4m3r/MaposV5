@@ -49,8 +49,8 @@ class Os_model extends CI_Model
         $this->db->join('clientes', 'clientes.idClientes = os.clientes_id');
         $this->db->join('usuarios', 'usuarios.idUsuarios = os.usuarios_id');
         $this->db->join('garantias', 'garantias.idGarantias = os.garantias_id', 'left');
-        $this->db->join('produtos_os', 'produtos_os.os_id = os.idOs', 'left');
-        $this->db->join('servicos_os', 'servicos_os.os_id = os.idOs', 'left');
+        // NOTA: Não fazer JOIN com produtos_os ou servicos_os aqui pois causam duplicatas
+        // Os totais são calculados via subqueries no SELECT
 
         // condicionais da pesquisa
 
@@ -86,7 +86,6 @@ class Os_model extends CI_Model
 
         $this->db->limit($perpage, $start);
         $this->db->order_by('os.idOs', 'desc');
-        $this->db->group_by('os.idOs');
 
         $query = $this->db->get();
 
@@ -204,6 +203,8 @@ class Os_model extends CI_Model
             }
         }
 
+        // Usar DISTINCT para evitar duplicatas causadas pelos JOINs
+        $this->db->select('COUNT(DISTINCT os.idOs) as total');
         $this->db->from('os');
         $this->db->join('clientes', 'clientes.idClientes = os.clientes_id');
 
@@ -240,7 +241,9 @@ class Os_model extends CI_Model
             $this->db->where('os.tecnico_responsavel', $where['tecnico_responsavel']);
         }
 
-        return $this->db->count_all_results();
+        $query = $this->db->get();
+        $result = $query->row();
+        return $result ? (int) $result->total : 0;
     }
 
     public function autoCompleteProduto($q)
