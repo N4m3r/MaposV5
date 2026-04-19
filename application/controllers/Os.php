@@ -62,8 +62,16 @@ class Os extends MY_Controller
             $where_array['tecnico_responsavel'] = $idUsuario;
         }
 
+        // Filtro de status padrão do sistema (quando não há pesquisa ativa)
+        if (!$pesquisa && empty($status)) {
+            $os_status_list = $this->data['configuration']['os_status_list'] ?? null;
+            if ($os_status_list && is_array(json_decode($os_status_list))) {
+                $where_array['os_status_list'] = json_decode($os_status_list, true);
+            }
+        }
+
         $this->data['configuration']['base_url'] = site_url('os/gerenciar/');
-        $this->data['configuration']['total_rows'] = $this->os_model->count('os');
+        $this->data['configuration']['total_rows'] = $this->os_model->countOs($where_array);
         if(count($where_array) > 0) {
             $this->data['configuration']['suffix'] = "?pesquisa={$pesquisa}&status={$status}&data={$inputDe}&data2={$inputAte}";
             $this->data['configuration']['first_url'] = base_url("index.php/os/gerenciar")."\?pesquisa={$pesquisa}&status={$status}&data={$inputDe}&data2={$inputAte}";

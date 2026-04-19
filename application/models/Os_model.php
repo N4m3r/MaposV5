@@ -55,8 +55,13 @@ class Os_model extends CI_Model
         // condicionais da pesquisa
 
         // condicional de status
-        if (array_key_exists('status', $where)) {
+        if (array_key_exists('status', $where) && !empty($where['status'])) {
             $this->db->where_in('status', $where['status']);
+        }
+
+        // condicional de status padrão do sistema
+        if (array_key_exists('os_status_list', $where) && is_array($where['os_status_list'])) {
+            $this->db->where_in('status', $where['os_status_list']);
         }
 
         // condicional de clientes
@@ -177,6 +182,65 @@ class Os_model extends CI_Model
     public function count($table)
     {
         return $this->db->count_all($table);
+    }
+
+    /**
+     * Contar OS com filtros aplicados
+     */
+    public function countOs($where = [])
+    {
+        $lista_clientes = [];
+        if ($where) {
+            if (array_key_exists('pesquisa', $where)) {
+                $this->db->select('idClientes');
+                $this->db->like('nomeCliente', $where['pesquisa']);
+                $this->db->or_like('documento', $where['pesquisa']);
+                $this->db->limit(25);
+                $clientes = $this->db->get('clientes')->result();
+
+                foreach ($clientes as $c) {
+                    array_push($lista_clientes, $c->idClientes);
+                }
+            }
+        }
+
+        $this->db->from('os');
+        $this->db->join('clientes', 'clientes.idClientes = os.clientes_id');
+
+        // condicional de status
+        if (array_key_exists('status', $where) && !empty($where['status'])) {
+            $this->db->where_in('status', $where['status']);
+        }
+
+        // condicional de status padrão do sistema
+        if (array_key_exists('os_status_list', $where) && is_array($where['os_status_list'])) {
+            $this->db->where_in('status', $where['os_status_list']);
+        }
+
+        // condicional de clientes
+        if (array_key_exists('pesquisa', $where)) {
+            if ($lista_clientes != null) {
+                $this->db->where_in('os.clientes_id', $lista_clientes);
+            } else {
+                // Se pesquisou mas não encontrou clientes, retorna 0
+                return 0;
+            }
+        }
+
+        // condicional data inicial
+        if (array_key_exists('de', $where)) {
+            $this->db->where('dataInicial >=', $where['de']);
+        }
+        // condicional data final
+        if (array_key_exists('ate', $where)) {
+            $this->db->where('dataFinal <=', $where['ate']);
+        }
+        // condicional técnico responsável
+        if (array_key_exists('tecnico_responsavel', $where)) {
+            $this->db->where('os.tecnico_responsavel', $where['tecnico_responsavel']);
+        }
+
+        return $this->db->count_all_results();
     }
 
     public function autoCompleteProduto($q)

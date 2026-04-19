@@ -109,43 +109,6 @@
                     </div>
                 </div>
 
-                <!-- Card de Permissões -->
-                <div id="permissoesCard" class="widget-box" style="margin-bottom: 20px;">
-                    <div class="widget-title">
-                        <span class="icon"><i class="bx bx-shield-alt-2"></i></span>
-                        <h5>Permissões Necessárias</h5>
-                    </div>
-                    <div class="widget-content" style="padding: 20px;">
-                        <p style="margin-bottom: 15px; color: #666;">
-                            Para melhor experiência, permita o acesso à <strong>Câmera</strong> e <strong>Localização</strong>.
-                            <br><small>(Você pode continuar mesmo sem as permissões)</small>
-                        </p>
-
-                        <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-                            <div id="statusCamera" style="flex: 1; min-width: 150px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; text-align: center;">
-                                <i class="bx bx-camera" style="font-size: 32px; color: #dc3545;"></i>
-                                <p>Câmera</p>
-                                <button type="button" class="btn btn-small" onclick="ativarCamera()" id="btnAtivarCamera">
-                                    Permitir
-                                </button>
-                            </div>
-
-                            <div id="statusGPS" style="flex: 1; min-width: 150px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; text-align: center;">
-                                <i class="bx bx-map" style="font-size: 32px; color: #dc3545;"></i>
-                                <p>Localização</p>
-                                <button type="button" class="btn btn-small" onclick="ativarGPS()" id="btnAtivarGPS">
-                                    Permitir
-                                </button>
-                            </div>
-                        </div>
-
-                        <div style="margin-top: 15px; padding: 10px; background: #fff3cd; border-radius: 4px; font-size: 12px; color: #856404; display: none;">
-                            <i class="bx bx-info-circle"></i>
-                            <strong>Bloqueado pelo navegador?</strong> Clique no ícone 🔒 ao lado da URL e permita acesso à Câmera e Localização.
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Botão de Check-in -->
                 <div id="checkinSection" class="action-card <?php echo $execucao ? 'hidden' : ''; ?>">
                     <h5><i class="bx bx-map-pin"></i> Iniciar Atendimento</h5>
@@ -379,65 +342,71 @@
 </div>
 
 <!-- Modal da Câmera -->
-<div class="modal hide" id="cameraModal">
+<div class="modal hide camera-modal" id="cameraModal">
     <div class="modal-header">
         <button type="button" class="close" onclick="fecharCamera()">×</button>
-        <h3>Adicionar Foto</h3>
+        <h3><i class="bx bx-camera"></i> Adicionar Foto</h3>
     </div>
     <div class="modal-body">
         <!-- Tabs -->
-        <ul class="nav nav-tabs" id="fotoTabs" style="margin-bottom: 15px;">
+        <ul class="nav nav-tabs modal-tabs" id="fotoTabs">
             <li class="active"><a href="#tabCamera" data-toggle="tab" onclick="iniciarCamera()"><i class="bx bx-camera"></i> Câmera</a></li>
             <li><a href="#tabUpload" data-toggle="tab"><i class="bx bx-upload"></i> Arquivo</a></li>
         </ul>
 
-        <div class="tab-content">
+        <div class="tab-content modal-tab-content">
             <!-- Tab Câmera -->
             <div class="tab-pane active" id="tabCamera">
-                <video id="video" autoplay playsinline style="width: 100%; border-radius: 8px;"></video>
-                <canvas id="canvas" style="display: none;"></canvas>
-                <div id="cameraPreview" style="display: none; text-align: center; cursor: pointer;" onclick="retomarCamera()">
-                    <img id="previewImg" style="max-width: 100%; border-radius: 8px;">
-                    <p style="margin-top: 10px; color: #667eea; font-size: 0.9rem;"><i class="bx bx-refresh"></i> Clique para tirar outra foto</p>
-                </div>
-                <div id="cameraMensagem" style="margin-top: 10px; color: #666; text-align: center; display: none;">
-                    <i class="bx bx-info-circle"></i> Câmera não disponível. Use a opção "Arquivo".
+                <div class="camera-viewport">
+                    <video id="video" autoplay playsinline></video>
+                    <canvas id="canvas" style="display: none;"></canvas>
+                    <div id="cameraPreview" class="camera-preview-captured" onclick="retomarCamera()">
+                        <img id="previewImg">
+                        <p class="camera-retake-hint"><i class="bx bx-refresh"></i> Clique para tirar outra foto</p>
+                    </div>
+                    <div id="cameraMensagem" class="camera-message">
+                        <i class="bx bx-camera-off"></i>
+                        <p>Câmera não disponível</p>
+                        <small>Use a aba "Arquivo" para enviar fotos</small>
+                    </div>
                 </div>
             </div>
 
             <!-- Tab Upload -->
             <div class="tab-pane" id="tabUpload">
-                <div class="upload-area" id="dropArea" style="border: 2px dashed #ccc; border-radius: 8px; padding: 40px; text-align: center; cursor: pointer; transition: all 0.3s;" onclick="document.getElementById('fileFotoServico').click()">
-                    <i class="bx bx-image-add" style="font-size: 48px; color: #667eea; margin-bottom: 10px;"></i>
-                    <p style="margin: 0; color: #666;">Clique para selecionar uma imagem</p>
-                    <p style="margin: 5px 0 0; font-size: 0.85rem; color: #999;">ou arraste e solte aqui</p>
-                    <input type="file" id="fileFotoServico" accept="image/*" style="display: none;" onchange="previewArquivoServico(this)">
+                <div class="upload-area" id="dropArea" onclick="document.getElementById('fileFotoServico').click()">
+                    <i class="bx bx-image-add"></i>
+                    <p class="upload-title">Clique para selecionar uma imagem</p>
+                    <p class="upload-hint">ou arraste e solte aqui</p>
+                    <input type="file" id="fileFotoServico" accept="image/*" onchange="previewArquivoServico(this)">
                 </div>
-                <div id="uploadPreview" style="display: none; margin-top: 15px; text-align: center;">
-                    <img id="uploadPreviewImg" style="max-width: 100%; max-height: 300px; border-radius: 8px; border: 1px solid #ddd;">
-                    <p style="margin-top: 10px; color: #28a745;"><i class="bx bx-check-circle"></i> Imagem selecionada</p>
+                <div id="uploadPreview" class="upload-preview">
+                    <img id="uploadPreviewImg">
+                    <p class="upload-success-msg"><i class="bx bx-check-circle"></i> Imagem selecionada</p>
                 </div>
             </div>
         </div>
 
-        <div class="control-group" style="margin-top: 15px;">
-            <label>Tipo da foto</label>
-            <select id="tipoFoto" class="span12">
-                <option value="antes">Antes do serviço</option>
-                <option value="depois">Depois do serviço</option>
-                <option value="problema">Problema encontrado</option>
-                <option value="detalhe">Detalhe técnico</option>
+        <div class="modal-form-group">
+            <label class="modal-label"><i class="bx bx-category"></i> Tipo da foto</label>
+            <select id="tipoFoto" class="modal-select">
+                <option value="antes">📷 Antes do serviço</option>
+                <option value="depois">✅ Depois do serviço</option>
+                <option value="problema">⚠️ Problema encontrado</option>
+                <option value="detalhe">🔧 Detalhe técnico</option>
             </select>
         </div>
 
-        <div class="control-group">
-            <label>Descrição (opcional)</label>
-            <input type="text" id="descricaoFoto" placeholder="Descreva a foto" class="span12">
+        <div class="modal-form-group">
+            <label class="modal-label"><i class="bx bx-edit"></i> Descrição (opcional)</label>
+            <input type="text" id="descricaoFoto" placeholder="Descreva o que está sendo mostrado na foto..." class="modal-input">
         </div>
     </div>
-    <div class="modal-footer">
-        <button type="button" class="btn" onclick="fecharCamera()">Cancelar</button>
-        <button type="button" class="btn btn-primary" onclick="salvarFotoServico()">
+    <div class="modal-footer modal-footer-custom">
+        <button type="button" class="btn btn-default" onclick="fecharCamera()">
+            <i class="bx bx-x"></i> Cancelar
+        </button>
+        <button type="button" class="btn btn-success" onclick="salvarFotoServico()">
             <i class="bx bx-save"></i> Salvar Foto
         </button>
     </div>
@@ -1036,6 +1005,389 @@
         height: 150px;
     }
 }
+
+/* ========================================
+   CAMERA MODAL STYLES
+   ======================================== */
+
+/* Modal Container */
+.camera-modal {
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-width: 500px;
+    width: 90%;
+}
+
+.camera-modal .modal-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px 12px 0 0;
+    padding: 15px 20px;
+    border-bottom: none;
+}
+
+.camera-modal .modal-header h3 {
+    color: white;
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+.camera-modal .modal-header h3 i {
+    margin-right: 8px;
+}
+
+.camera-modal .modal-header .close {
+    color: white;
+    opacity: 0.8;
+    font-size: 24px;
+    text-shadow: none;
+}
+
+.camera-modal .modal-header .close:hover {
+    opacity: 1;
+}
+
+.camera-modal .modal-body {
+    padding: 20px;
+    background: #fafafa;
+}
+
+/* Modal Tabs */
+.modal-tabs {
+    margin: -20px -20px 20px -20px;
+    padding: 0 20px;
+    background: white;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.modal-tabs > li {
+    margin-bottom: -2px;
+}
+
+.modal-tabs > li > a {
+    padding: 12px 20px;
+    color: #666;
+    font-weight: 500;
+    border: none;
+    border-bottom: 2px solid transparent;
+    background: transparent;
+    transition: all 0.3s;
+}
+
+.modal-tabs > li > a:hover {
+    color: #667eea;
+    background: rgba(102, 126, 234, 0.05);
+}
+
+.modal-tabs > li.active > a,
+.modal-tabs > li.active > a:hover {
+    color: #667eea;
+    border-bottom-color: #667eea;
+    background: transparent;
+}
+
+.modal-tabs > li > a i {
+    margin-right: 6px;
+}
+
+/* Tab Content */
+.modal-tab-content {
+    background: white;
+    border-radius: 8px;
+    padding: 0;
+    min-height: 300px;
+}
+
+.modal-tab-content .tab-pane {
+    padding: 15px;
+}
+
+/* Camera Viewport */
+.camera-viewport {
+    position: relative;
+    width: 100%;
+    height: 280px;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.camera-viewport video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.camera-viewport #canvas {
+    display: none;
+}
+
+/* Captured Preview */
+.camera-preview-captured {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #1a1a2e;
+    cursor: pointer;
+}
+
+.camera-preview-captured.active {
+    display: flex;
+}
+
+.camera-preview-captured img {
+    max-width: 90%;
+    max-height: 80%;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.camera-retake-hint {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.85rem;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.camera-retake-hint i {
+    font-size: 1rem;
+}
+
+/* Camera Message (when camera unavailable) */
+.camera-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: rgba(255, 255, 255, 0.7);
+    display: none;
+}
+
+.camera-message.active {
+    display: block;
+}
+
+.camera-message i {
+    font-size: 48px;
+    margin-bottom: 10px;
+    opacity: 0.5;
+}
+
+.camera-message p {
+    margin: 0 0 5px 0;
+    font-size: 1rem;
+}
+
+.camera-message small {
+    opacity: 0.7;
+}
+
+/* Upload Area */
+.upload-area {
+    border: 2px dashed #667eea;
+    border-radius: 12px;
+    padding: 40px 30px;
+    text-align: center;
+    background: rgba(102, 126, 234, 0.03);
+    cursor: pointer;
+    transition: all 0.3s;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.upload-area:hover {
+    background: rgba(102, 126, 234, 0.08);
+    border-color: #764ba2;
+}
+
+.upload-area.dragover {
+    background: rgba(102, 126, 234, 0.15);
+    border-color: #667eea;
+    border-style: solid;
+}
+
+.upload-area i {
+    font-size: 48px;
+    color: #667eea;
+    margin-bottom: 15px;
+}
+
+.upload-title {
+    color: #333;
+    font-weight: 500;
+    margin: 0 0 5px 0;
+    font-size: 1rem;
+}
+
+.upload-hint {
+    color: #888;
+    margin: 0;
+    font-size: 0.85rem;
+}
+
+.upload-area input[type="file"] {
+    display: none;
+}
+
+/* Upload Preview */
+.upload-preview {
+    display: none;
+    text-align: center;
+    padding: 20px;
+}
+
+.upload-preview.active {
+    display: block;
+}
+
+.upload-preview img {
+    max-width: 100%;
+    max-height: 200px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    margin-bottom: 15px;
+}
+
+.upload-success-msg {
+    color: #4caf50;
+    font-weight: 500;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.upload-success-msg i {
+    font-size: 1.2rem;
+}
+
+/* Modal Form Elements */
+.modal-form-group {
+    margin-top: 15px;
+}
+
+.modal-form-group:first-of-type {
+    margin-top: 20px;
+}
+
+.modal-label {
+    display: block;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+.modal-label i {
+    color: #667eea;
+    margin-right: 6px;
+}
+
+.modal-select,
+.modal-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: all 0.3s;
+    background: white;
+}
+
+.modal-select:focus,
+.modal-input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.modal-select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23667eea' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 35px;
+}
+
+.modal-input::placeholder {
+    color: #aaa;
+}
+
+/* Modal Footer */
+.modal-footer-custom {
+    background: #f8f9fa;
+    border-top: 1px solid #e0e0e0;
+    border-radius: 0 0 12px 12px;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.modal-footer-custom .btn {
+    padding: 8px 20px;
+    font-weight: 500;
+}
+
+.modal-footer-custom .btn i {
+    margin-right: 6px;
+}
+
+/* Responsive adjustments for modal */
+@media (max-width: 768px) {
+    .camera-modal {
+        width: 95%;
+        margin: 10px auto;
+    }
+
+    .camera-viewport {
+        height: 240px;
+    }
+
+    .upload-area {
+        padding: 30px 20px;
+    }
+
+    .modal-tabs > li > a {
+        padding: 10px 15px;
+        font-size: 0.9rem;
+    }
+
+    .modal-footer-custom {
+        flex-direction: column;
+    }
+
+    .modal-footer-custom .btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .camera-viewport {
+        height: 200px;
+    }
+
+    .upload-area i {
+        font-size: 36px;
+    }
+}
 </style>
 
 <script>
@@ -1104,126 +1456,21 @@ async function solicitarPermissaoGPS() {
 }
 
 // Verificar status de permissões
+// Verificar status de permissões (silencioso)
 async function verificarPermissoes() {
     if (navigator.permissions) {
         try {
             const camResult = await navigator.permissions.query({ name: 'camera' });
             permissaoCamera = camResult.state === 'granted';
-            if (permissaoCamera) {
-                atualizarCardCamera(true);
-            }
-            camResult.onchange = () => {
-                permissaoCamera = camResult.state === 'granted';
-                atualizarCardCamera(permissaoCamera);
-            };
+            camResult.onchange = () => { permissaoCamera = camResult.state === 'granted'; };
         } catch(e) {}
     }
-    // Solicitar GPS
-    const gpsOk = await solicitarPermissaoGPS();
-    if (gpsOk) {
-        atualizarCardGPS(true);
-    }
-
-    // Verificar se deve ocultar card
-    verificarOcultarCard();
-}
-
-// Atualizar visual do card de câmera
-function atualizarCardCamera(permitido) {
-    const card = document.getElementById('statusCamera');
-    const btn = document.getElementById('btnAtivarCamera');
-    const icon = card.querySelector('i');
-
-    if (permitido) {
-        icon.style.color = '#28a745';
-        btn.className = 'btn btn-small btn-success';
-        btn.innerHTML = '<i class="bx bx-check"></i> Permitida';
-        btn.disabled = true;
-        card.style.borderColor = '#28a745';
-        card.style.background = '#f0f9f4';
-    }
-}
-
-// Atualizar visual do card de GPS
-function atualizarCardGPS(permitido) {
-    const card = document.getElementById('statusGPS');
-    const btn = document.getElementById('btnAtivarGPS');
-    const icon = card.querySelector('i');
-
-    if (permitido) {
-        icon.style.color = '#28a745';
-        btn.className = 'btn btn-small btn-success';
-        btn.innerHTML = '<i class="bx bx-check"></i> Permitida';
-        btn.disabled = true;
-        card.style.borderColor = '#28a745';
-        card.style.background = '#f0f9f4';
-    }
-}
-
-// Ocultar card de permissões se ambas concedidas
-function verificarOcultarCard() {
-    if (permissaoCamera && permissaoGPS) {
-        const card = document.getElementById('permissoesCard');
-        if (card) {
-            card.style.display = 'none';
-        }
-    }
+    // Solicitar GPS silenciosamente
+    await solicitarPermissaoGPS();
 }
 
 // Verificar permissões ao carregar
 verificarPermissoes();
-
-// Funções para ativar permissões pelo botão
-async function ativarCamera() {
-    const btn = document.getElementById('btnAtivarCamera');
-    const card = document.getElementById('statusCamera');
-    const icon = card.querySelector('i');
-
-    btn.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Solicitando...';
-    btn.disabled = true;
-
-    const resultado = await solicitarPermissaoCamera();
-
-    if (resultado) {
-        icon.style.color = '#28a745';
-        btn.className = 'btn btn-small btn-success';
-        btn.innerHTML = '<i class="bx bx-check"></i> Permitida';
-        btn.disabled = true;
-        card.style.borderColor = '#28a745';
-        card.style.background = '#f0f9f4';
-    } else {
-        icon.style.color = '#dc3545';
-        btn.className = 'btn btn-small btn-danger';
-        btn.innerHTML = '<i class="bx bx-x"></i> Negada - Tentar';
-        btn.disabled = false;
-        card.style.borderColor = '#dc3545';
-        card.style.background = '#fff5f5';
-        alert('Permissão de câmera negada.\n\nPara permitir:\n1. Clique no 🔒 (cadeado) ao lado da URL\n2. Clique em "Permitir" para Câmera\n3. Recarregue a página');
-    }
-}
-
-async function ativarGPS() {
-    const btn = document.getElementById('btnAtivarGPS');
-    const card = document.getElementById('statusGPS');
-    const icon = card.querySelector('i');
-
-    btn.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Solicitando...';
-    btn.disabled = true;
-
-    const resultado = await solicitarPermissaoGPS();
-
-    if (resultado) {
-        icon.style.color = '#28a745';
-        btn.className = 'btn btn-small btn-success';
-        btn.innerHTML = '<i class="bx bx-check"></i> Permitida';
-        btn.disabled = true;
-        card.style.borderColor = '#28a745';
-        card.style.background = '#f0f9f4';
-    } else {
-        icon.style.color = '#dc3545';
-        btn.className = 'btn btn-small btn-danger';
-        btn.innerHTML = '<i class="bx bx-x"></i> Negada - Tentar';
-        btn.disabled = false;
         card.style.borderColor = '#dc3545';
         card.style.background = '#fff5f5';
         alert('Permissão de localização negada.\n\nPara permitir:\n1. Clique no 🔒 (cadeado) ao lado da URL\n2. Clique em "Permitir" para Localização\n3. Recarregue a página');
@@ -1405,22 +1652,22 @@ function handleDrop(e) {
 
 function retomarCamera() {
     fotoServicoBase64 = null;
-    document.getElementById('cameraPreview').style.display = 'none';
+    document.getElementById('cameraPreview').classList.remove('active');
     document.getElementById('video').style.display = 'block';
     iniciarCamera();
 }
 
 async function iniciarCamera() {
     abaAtiva = 'camera';
-    document.getElementById('cameraPreview').style.display = 'none';
+    document.getElementById('cameraPreview').classList.remove('active');
     document.getElementById('video').style.display = 'block';
 
     // Se não tem permissão, tentar solicitar
     if (!permissaoCamera) {
         const resultado = await solicitarPermissaoCamera();
         if (!resultado) {
-            document.getElementById('cameraMensagem').style.display = 'block';
-            document.getElementById('cameraMensagem').innerHTML = '<i class="bx bx-info-circle"></i> Câmera não permitida. Use a aba "Arquivo" para enviar fotos.';
+            document.getElementById('cameraMensagem').classList.add('active');
+            document.getElementById('cameraMensagem').innerHTML = '<i class="bx bx-info-circle"></i><p>Câmera não permitida</p><small>Use a aba "Arquivo" para enviar fotos</small>';
             document.getElementById('video').style.display = 'none';
             return;
         }
@@ -1430,11 +1677,11 @@ async function iniciarCamera() {
         try {
             stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
             document.getElementById('video').srcObject = stream;
-            document.getElementById('cameraMensagem').style.display = 'none';
+            document.getElementById('cameraMensagem').classList.remove('active');
         } catch (err) {
             console.error('Erro ao abrir câmera:', err);
-            document.getElementById('cameraMensagem').style.display = 'block';
-            document.getElementById('cameraMensagem').innerHTML = '<i class="bx bx-error-circle"></i> Erro ao acessar câmera. Use a aba "Arquivo".';
+            document.getElementById('cameraMensagem').classList.add('active');
+            document.getElementById('cameraMensagem').innerHTML = '<i class="bx bx-error-circle"></i><p>Erro ao acessar câmera</p><small>Use a aba "Arquivo"</small>';
             document.getElementById('video').style.display = 'none';
         }
     }
@@ -1448,9 +1695,9 @@ async function abrirCamera() {
     abaAtiva = 'camera';
 
     // Reset previews
-    document.getElementById('cameraPreview').style.display = 'none';
+    document.getElementById('cameraPreview').classList.remove('active');
     document.getElementById('video').style.display = 'block';
-    document.getElementById('uploadPreview').style.display = 'none';
+    document.getElementById('uploadPreview').classList.remove('active');
     document.getElementById('fileFotoServico').value = '';
 
     // Tentar iniciar câmera
@@ -1465,8 +1712,8 @@ function fecharCamera() {
         stream = null;
     }
     fotoServicoBase64 = null;
-    document.getElementById('uploadPreview').style.display = 'none';
-    document.getElementById('cameraPreview').style.display = 'none';
+    document.getElementById('uploadPreview').classList.remove('active');
+    document.getElementById('cameraPreview').classList.remove('active');
     document.getElementById('fileFotoServico').value = '';
 }
 
@@ -1489,7 +1736,7 @@ function tirarFoto() {
     // Mostrar preview
     document.getElementById('video').style.display = 'none';
     document.getElementById('previewImg').src = fotoServicoBase64;
-    document.getElementById('cameraPreview').style.display = 'block';
+    document.getElementById('cameraPreview').classList.add('active');
 }
 
 function previewArquivoServico(input) {
@@ -1505,7 +1752,7 @@ function previewArquivoServico(input) {
     reader.onload = function(e) {
         fotoServicoBase64 = e.target.result;
         document.getElementById('uploadPreviewImg').src = fotoServicoBase64;
-        document.getElementById('uploadPreview').style.display = 'block';
+        document.getElementById('uploadPreview').classList.add('active');
         abaAtiva = 'upload';
     };
     reader.readAsDataURL(file);

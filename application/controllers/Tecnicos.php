@@ -784,7 +784,7 @@ class Tecnicos extends CI_Controller
 
         // Gerar nome único
         $nome_arquivo = $tipo . '_' . $tecnico_id . '_' . time() . '_' . uniqid() . '.' . $extensao;
-        $diretorio = 'assets/tecnicos/fotos/' . date('Y/m');
+        $diretorio = FCPATH . 'assets/tecnicos/fotos/' . date('Y/m');
 
         // Criar diretório se não existir
         if (!is_dir($diretorio)) {
@@ -799,17 +799,18 @@ class Tecnicos extends CI_Controller
             return false;
         }
 
-        $caminho = $diretorio . '/' . $nome_arquivo;
+        $caminho_completo = $diretorio . '/' . $nome_arquivo;
+        $caminho_relativo = 'assets/tecnicos/fotos/' . date('Y/m') . '/' . $nome_arquivo;
 
         // Salvar arquivo
-        $resultado = file_put_contents($caminho, $imagem);
+        $resultado = file_put_contents($caminho_completo, $imagem);
 
         if ($resultado === false || $resultado === 0) {
-            log_message('error', '_salvar_foto_base64 - Falha ao salvar arquivo: ' . $caminho);
+            log_message('error', '_salvar_foto_base64 - Falha ao salvar arquivo: ' . $caminho_completo);
             return false;
         }
 
-        log_message('info', '_salvar_foto_base64 - Foto salva com sucesso: ' . $caminho);
-        return $caminho;
+        log_message('info', '_salvar_foto_base64 - Foto salva com sucesso: ' . $caminho_relativo);
+        return $caminho_relativo;
     }
 }
