@@ -109,6 +109,43 @@
                     </div>
                 </div>
 
+                <!-- Card de Permissões -->
+                <div id="permissoesCard" class="widget-box" style="margin-bottom: 20px;">
+                    <div class="widget-title">
+                        <span class="icon"><i class="bx bx-shield-alt-2"></i></span>
+                        <h5>Permissões Necessárias</h5>
+                    </div>
+                    <div class="widget-content" style="padding: 20px;">
+                        <p style="margin-bottom: 15px; color: #666;">
+                            Para melhor experiência, permita o acesso à <strong>Câmera</strong> e <strong>Localização</strong>.
+                            <br><small>(Você pode continuar mesmo sem as permissões)</small>
+                        </p>
+
+                        <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                            <div id="statusCamera" style="flex: 1; min-width: 150px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; text-align: center;">
+                                <i class="bx bx-camera" style="font-size: 32px; color: #dc3545;"></i>
+                                <p>Câmera</p>
+                                <button type="button" class="btn btn-small" onclick="ativarCamera()" id="btnAtivarCamera">
+                                    Permitir
+                                </button>
+                            </div>
+
+                            <div id="statusGPS" style="flex: 1; min-width: 150px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; text-align: center;">
+                                <i class="bx bx-map" style="font-size: 32px; color: #dc3545;"></i>
+                                <p>Localização</p>
+                                <button type="button" class="btn btn-small" onclick="ativarGPS()" id="btnAtivarGPS">
+                                    Permitir
+                                </button>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 15px; padding: 10px; background: #fff3cd; border-radius: 4px; font-size: 12px; color: #856404; display: none;">
+                            <i class="bx bx-info-circle"></i>
+                            <strong>Bloqueado pelo navegador?</strong> Clique no ícone 🔒 ao lado da URL e permita acesso à Câmera e Localização.
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Botão de Check-in -->
                 <div id="checkinSection" class="action-card <?php echo $execucao ? 'hidden' : ''; ?>">
                     <h5><i class="bx bx-map-pin"></i> Iniciar Atendimento</h5>
@@ -157,66 +194,6 @@
                         </div>
                     </div>
 
-                    <!-- Checklist -->
-                    <div class="widget-box">
-                        <div class="widget-title">
-                            <span class="icon"><i class="bx bx-list-check"></i></span>
-                            <h5>Checklist de Execução</h5>
-                        </div>
-                        <div class="widget-content">
-                            <div id="checklistContainer">
-                                <?php if (!empty($checklist)): ?>
-                                    <?php
-                                    $itemCounter = 0;
-                                    foreach ($checklist as $index => $item):
-                                        $itemCounter++;
-                                        // Normaliza o item para garantir que seja um array
-                                        if (is_string($item)) {
-                                            $item = ['descricao' => $item, 'status' => 'pendente'];
-                                        }
-                                        $itemStatus = $item['status'] ?? 'pendente';
-                                        $itemDescricao = $item['descricao'] ?? 'Item ' . $itemCounter;
-                                        $itemServico = $item['servico'] ?? null;
-                                    ?>
-                                        <div class="checklist-item <?php echo $itemStatus; ?>" data-item-id="<?php echo $index; ?>">
-                                            <div class="checklist-header">
-                                                <div class="checklist-checkbox">
-                                                    <?php if ($itemStatus == 'conforme'): ?>
-                                                        <i class="bx bx-check"></i>
-                                                    <?php elseif ($itemStatus == 'nao_conforme'): ?>
-                                                        <i class="bx bx-x"></i>
-                                                    <?php else: ?>
-                                                        <i class="bx bx-circle"></i>
-                                                    <?php endif; ?>
-                                                </div>
-                                                <div class="checklist-text">
-                                                    <h4><?php echo htmlspecialchars($itemDescricao, ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></h4>
-                                                    <?php if ($itemServico): ?>
-                                                        <div class="checklist-servico"><?php echo htmlspecialchars($itemServico, ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></div>
-                                                    <?php endif; ?>
-                                                </div>
-                                            </div>
-
-                                            <div class="checklist-actions">
-                                                <button type="button" class="btn btn-mini <?php echo $itemStatus == 'conforme' ? 'btn-success' : ''; ?>"
-                                                        onclick="salvarChecklistItem(<?php echo $index; ?>, 'conforme')">
-                                                    <i class="bx bx-check"></i> OK
-                                                </button>
-                                                <button type="button" class="btn btn-mini <?php echo $itemStatus == 'nao_conforme' ? 'btn-danger' : ''; ?>"
-                                                        onclick="salvarChecklistItem(<?php echo $index; ?>, 'nao_conforme')">
-                                                    <i class="bx bx-x"></i> Não OK
-                                                </button>
-                                            </div>
-                                        </div>
-                                    <?php endforeach; ?>
-                                <?php else: ?>
-                                    <div class="empty-state">
-                                        <div class="empty-text">Nenhum item de checklist configurado</div>
-                                    </div>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-                    </div>
 
                     <!-- Galeria de Fotos -->
                     <div class="widget-box">
@@ -282,21 +259,40 @@
                     <div class="widget-box">
                         <div class="widget-title">
                             <span class="icon"><i class="bx bx-wrench"></i></span>
-                            <h5>Serviços da OS</h5>
+                            <h5>Serviços da OS - Checklist</h5>
                         </div>
                         <div class="widget-content">
                             <div id="servicosContainer">
                                 <?php if (!empty($servicos)): ?>
                                     <div class="servicos-list">
-                                        <?php foreach ($servicos as $servico): ?>
-                                            <div class="servico-item">
+                                        <?php foreach ($servicos as $index => $servico): ?>
+                                            <div class="servico-item checklist-item pendente" data-servico-id="<?php echo $servico->servicos_id ?? $index; ?>">
                                                 <div class="servico-info">
-                                                    <div class="servico-nome">
-                                                        <?php echo htmlspecialchars($servico->servico_nome ?? 'Serviço', ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?>
+                                                    <div class="servico-header">
+                                                        <div class="checklist-checkbox" onclick="toggleServicoStatus(<?php echo $servico->servicos_id ?? $index; ?>)">
+                                                            <i class="bx bx-circle"></i>
+                                                        </div>
+                                                        <div class="servico-nome">
+                                                            <?php echo htmlspecialchars($servico->servico_nome ?? 'Serviço', ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?>
+                                                        </div>
                                                     </div>
                                                     <?php if ($servico->servico_codigo): ?>
                                                         <div class="servico-codigo">Código: <?php echo htmlspecialchars($servico->servico_codigo, ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></div>
                                                     <?php endif; ?>
+                                                </div>
+                                                <div class="servico-actions">
+                                                    <button type="button" class="btn btn-mini" data-status="pendente"
+                                                            onclick="setServicoStatus(<?php echo $servico->servicos_id ?? $index; ?>, 'pendente')">
+                                                        <i class="bx bx-circle"></i> Pendente
+                                                    </button>
+                                                    <button type="button" class="btn btn-mini btn-success" data-status="conforme"
+                                                            onclick="setServicoStatus(<?php echo $servico->servicos_id ?? $index; ?>, 'conforme')">
+                                                        <i class="bx bx-check"></i> OK
+                                                    </button>
+                                                    <button type="button" class="btn btn-mini btn-danger" data-status="nao_conforme"
+                                                            onclick="setServicoStatus(<?php echo $servico->servicos_id ?? $index; ?>, 'nao_conforme')">
+                                                        <i class="bx bx-x"></i> Não OK
+                                                    </button>
                                                 </div>
                                             </div>
                                         <?php endforeach; ?>
@@ -819,18 +815,18 @@
     color: #2e7d32;
 }
 
-/* Serviços da OS */
+/* Serviços da OS - Checklist */
 .servicos-list {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
 }
 
 .servico-item {
     background: #f8f9fa;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 15px;
     transition: all 0.3s;
 }
 
@@ -838,15 +834,76 @@
     border-color: #667eea;
 }
 
+.servico-item.conforme {
+    border-color: #4caf50;
+    background: #f1f8e9;
+}
+
+.servico-item.nao_conforme {
+    border-color: #f44336;
+    background: #ffebee;
+}
+
+.servico-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.servico-item .checklist-checkbox {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #999;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.servico-item .checklist-checkbox:hover {
+    background: #e0e0e0;
+}
+
+.servico-item.conforme .checklist-checkbox {
+    background: #4caf50;
+    color: white;
+}
+
+.servico-item.nao_conforme .checklist-checkbox {
+    background: #f44336;
+    color: white;
+}
+
 .servico-nome {
     font-weight: 600;
     color: #333;
-    margin-bottom: 3px;
+    flex: 1;
 }
 
 .servico-codigo {
     font-size: 0.8rem;
     color: #888;
+    margin-left: 44px;
+}
+
+.servico-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    margin-left: 44px;
+}
+
+.servico-actions .btn {
+    flex: 1;
+}
+
+.servico-actions .btn.active {
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
 }
 
 /* Estoque do Técnico */
@@ -995,15 +1052,182 @@ if ('geolocation' in navigator) {
         (pos) => {
             latitude = pos.coords.latitude;
             longitude = pos.coords.longitude;
+            permissaoGPS = true;
         },
         (err) => {
-            // GPS opcional - não exibe erro no console
-            if (err.code !== 1) { // 1 = PERMISSION_DENIED
-                console.log('GPS não disponível');
-            }
+            permissaoGPS = false;
         },
         { enableHighAccuracy: true }
     );
+}
+
+// ============ SISTEMA DE PERMISSÕES ============
+let permissaoCamera = false;
+let permissaoGPS = false;
+
+// Solicitar permissão de câmera explicitamente
+async function solicitarPermissaoCamera() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        return false;
+    }
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+        stream.getTracks().forEach(track => track.stop());
+        permissaoCamera = true;
+        return true;
+    } catch (err) {
+        permissaoCamera = false;
+        return false;
+    }
+}
+
+// Solicitar permissão de GPS explicitamente
+async function solicitarPermissaoGPS() {
+    if (!('geolocation' in navigator)) {
+        return false;
+    }
+    return new Promise((resolve) => {
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                latitude = pos.coords.latitude;
+                longitude = pos.coords.longitude;
+                permissaoGPS = true;
+                resolve(true);
+            },
+            (err) => {
+                permissaoGPS = false;
+                resolve(false);
+            },
+            { enableHighAccuracy: true, timeout: 10000 }
+        );
+    });
+}
+
+// Verificar status de permissões
+async function verificarPermissoes() {
+    if (navigator.permissions) {
+        try {
+            const camResult = await navigator.permissions.query({ name: 'camera' });
+            permissaoCamera = camResult.state === 'granted';
+            if (permissaoCamera) {
+                atualizarCardCamera(true);
+            }
+            camResult.onchange = () => {
+                permissaoCamera = camResult.state === 'granted';
+                atualizarCardCamera(permissaoCamera);
+            };
+        } catch(e) {}
+    }
+    // Solicitar GPS
+    const gpsOk = await solicitarPermissaoGPS();
+    if (gpsOk) {
+        atualizarCardGPS(true);
+    }
+
+    // Verificar se deve ocultar card
+    verificarOcultarCard();
+}
+
+// Atualizar visual do card de câmera
+function atualizarCardCamera(permitido) {
+    const card = document.getElementById('statusCamera');
+    const btn = document.getElementById('btnAtivarCamera');
+    const icon = card.querySelector('i');
+
+    if (permitido) {
+        icon.style.color = '#28a745';
+        btn.className = 'btn btn-small btn-success';
+        btn.innerHTML = '<i class="bx bx-check"></i> Permitida';
+        btn.disabled = true;
+        card.style.borderColor = '#28a745';
+        card.style.background = '#f0f9f4';
+    }
+}
+
+// Atualizar visual do card de GPS
+function atualizarCardGPS(permitido) {
+    const card = document.getElementById('statusGPS');
+    const btn = document.getElementById('btnAtivarGPS');
+    const icon = card.querySelector('i');
+
+    if (permitido) {
+        icon.style.color = '#28a745';
+        btn.className = 'btn btn-small btn-success';
+        btn.innerHTML = '<i class="bx bx-check"></i> Permitida';
+        btn.disabled = true;
+        card.style.borderColor = '#28a745';
+        card.style.background = '#f0f9f4';
+    }
+}
+
+// Ocultar card de permissões se ambas concedidas
+function verificarOcultarCard() {
+    if (permissaoCamera && permissaoGPS) {
+        const card = document.getElementById('permissoesCard');
+        if (card) {
+            card.style.display = 'none';
+        }
+    }
+}
+
+// Verificar permissões ao carregar
+verificarPermissoes();
+
+// Funções para ativar permissões pelo botão
+async function ativarCamera() {
+    const btn = document.getElementById('btnAtivarCamera');
+    const card = document.getElementById('statusCamera');
+    const icon = card.querySelector('i');
+
+    btn.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Solicitando...';
+    btn.disabled = true;
+
+    const resultado = await solicitarPermissaoCamera();
+
+    if (resultado) {
+        icon.style.color = '#28a745';
+        btn.className = 'btn btn-small btn-success';
+        btn.innerHTML = '<i class="bx bx-check"></i> Permitida';
+        btn.disabled = true;
+        card.style.borderColor = '#28a745';
+        card.style.background = '#f0f9f4';
+    } else {
+        icon.style.color = '#dc3545';
+        btn.className = 'btn btn-small btn-danger';
+        btn.innerHTML = '<i class="bx bx-x"></i> Negada - Tentar';
+        btn.disabled = false;
+        card.style.borderColor = '#dc3545';
+        card.style.background = '#fff5f5';
+        alert('Permissão de câmera negada.\n\nPara permitir:\n1. Clique no 🔒 (cadeado) ao lado da URL\n2. Clique em "Permitir" para Câmera\n3. Recarregue a página');
+    }
+}
+
+async function ativarGPS() {
+    const btn = document.getElementById('btnAtivarGPS');
+    const card = document.getElementById('statusGPS');
+    const icon = card.querySelector('i');
+
+    btn.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Solicitando...';
+    btn.disabled = true;
+
+    const resultado = await solicitarPermissaoGPS();
+
+    if (resultado) {
+        icon.style.color = '#28a745';
+        btn.className = 'btn btn-small btn-success';
+        btn.innerHTML = '<i class="bx bx-check"></i> Permitida';
+        btn.disabled = true;
+        card.style.borderColor = '#28a745';
+        card.style.background = '#f0f9f4';
+    } else {
+        icon.style.color = '#dc3545';
+        btn.className = 'btn btn-small btn-danger';
+        btn.innerHTML = '<i class="bx bx-x"></i> Negada - Tentar';
+        btn.disabled = false;
+        card.style.borderColor = '#dc3545';
+        card.style.background = '#fff5f5';
+        alert('Permissão de localização negada.\n\nPara permitir:\n1. Clique no 🔒 (cadeado) ao lado da URL\n2. Clique em "Permitir" para Localização\n3. Recarregue a página');
+    }
 }
 
 // Canvas de assinatura
@@ -1066,8 +1290,17 @@ async function capturarFotoCheckin() {
 
     // Verificar se a API de câmera está disponível
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        alert('Câmera não disponível neste dispositivo. Você pode continuar sem foto.');
+        alert('Câmera não disponível neste dispositivo. Use a opção de Selecionar Arquivo.');
         return;
+    }
+
+    // Se não tem permissão, solicitar primeiro
+    if (!permissaoCamera) {
+        const resultado = await solicitarPermissaoCamera();
+        if (!resultado) {
+            alert('Câmera não permitida.\n\nPara permitir:\n1. Clique no 🔒 ao lado da URL\n2. Permita Câmera\n3. Ou use o botão "Selecionar Arquivo"\n\nVocê pode continuar sem foto.');
+            return;
+        }
     }
 
     try {
@@ -1182,13 +1415,26 @@ async function iniciarCamera() {
     document.getElementById('cameraPreview').style.display = 'none';
     document.getElementById('video').style.display = 'block';
 
+    // Se não tem permissão, tentar solicitar
+    if (!permissaoCamera) {
+        const resultado = await solicitarPermissaoCamera();
+        if (!resultado) {
+            document.getElementById('cameraMensagem').style.display = 'block';
+            document.getElementById('cameraMensagem').innerHTML = '<i class="bx bx-info-circle"></i> Câmera não permitida. Use a aba "Arquivo" para enviar fotos.';
+            document.getElementById('video').style.display = 'none';
+            return;
+        }
+    }
+
     if (!stream) {
         try {
             stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
             document.getElementById('video').srcObject = stream;
+            document.getElementById('cameraMensagem').style.display = 'none';
         } catch (err) {
             console.error('Erro ao abrir câmera:', err);
             document.getElementById('cameraMensagem').style.display = 'block';
+            document.getElementById('cameraMensagem').innerHTML = '<i class="bx bx-error-circle"></i> Erro ao acessar câmera. Use a aba "Arquivo".';
             document.getElementById('video').style.display = 'none';
         }
     }
@@ -1488,7 +1734,86 @@ async function iniciarExecucao() {
     }
 }
 
-// Checklist
+// Serviços Checklist
+let servicosStatus = {};
+
+function toggleServicoStatus(servicoId) {
+    const item = document.querySelector(`[data-servico-id="${servicoId}"]`);
+    if (!item) return;
+
+    const currentStatus = servicosStatus[servicoId] || 'pendente';
+    let newStatus;
+
+    if (currentStatus === 'pendente') {
+        newStatus = 'conforme';
+    } else if (currentStatus === 'conforme') {
+        newStatus = 'nao_conforme';
+    } else {
+        newStatus = 'pendente';
+    }
+
+    setServicoStatus(servicoId, newStatus);
+}
+
+function setServicoStatus(servicoId, status) {
+    const item = document.querySelector(`[data-servico-id="${servicoId}"]`);
+    if (!item) return;
+
+    servicosStatus[servicoId] = status;
+
+    // Update visual state
+    item.classList.remove('pendente', 'conforme', 'nao_conforme');
+    item.classList.add(status);
+
+    // Update checkbox icon
+    const checkbox = item.querySelector('.checklist-checkbox i');
+    if (checkbox) {
+        if (status === 'conforme') {
+            checkbox.className = 'bx bx-check';
+        } else if (status === 'nao_conforme') {
+            checkbox.className = 'bx bx-x';
+        } else {
+            checkbox.className = 'bx bx-circle';
+        }
+    }
+
+    // Update button states
+    const buttons = item.querySelectorAll('.servico-actions .btn');
+    buttons.forEach(btn => {
+        btn.classList.remove('btn-success', 'btn-danger', 'active');
+        const btnStatus = btn.getAttribute('data-status');
+        if (btnStatus === status) {
+            btn.classList.add('active');
+            if (status === 'conforme') btn.classList.add('btn-success');
+            if (status === 'nao_conforme') btn.classList.add('btn-danger');
+        }
+    });
+
+    atualizarProgressoServicos();
+}
+
+function atualizarProgressoServicos() {
+    const items = document.querySelectorAll('.servico-item[data-servico-id]');
+    const total = items.length;
+    let concluidos = 0;
+
+    items.forEach(item => {
+        const servicoId = item.getAttribute('data-servico-id');
+        const status = servicosStatus[servicoId] || 'pendente';
+        if (status === 'conforme' || status === 'nao_conforme') {
+            concluidos++;
+        }
+    });
+
+    const progresso = total > 0 ? Math.round((concluidos / total) * 100) : 0;
+
+    const progressBar = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+    if (progressBar) progressBar.style.width = progresso + '%';
+    if (progressText) progressText.textContent = progresso + '% concluído';
+}
+
+// Checklist (mantido para compatibilidade)
 async function salvarChecklistItem(itemId, status) {
     if (!execucaoId) return;
 

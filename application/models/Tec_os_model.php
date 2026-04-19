@@ -52,9 +52,8 @@ class Tec_os_model extends CI_Model
 
         $this->db->select('c.*, e.lat, e.lng');
         $this->db->from('clientes c');
-        $this->db->join('os o', 'o.clientes_id = c.idClientes');
         $this->db->join('enderecos_cliente e', 'e.cliente_id = c.idClientes AND e.principal = 1', 'left');
-        $this->db->where('o.idOs', $os_id);
+        $this->db->where('c.idClientes', $os->clientes_id);
         $query = $this->db->get();
 
         if (!$query || !$query->row()) {
