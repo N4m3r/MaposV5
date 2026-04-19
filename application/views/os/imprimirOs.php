@@ -289,12 +289,9 @@
                     log_info('View imprimirOS - Assinaturas recebidas: ' . count($assinaturas ?? []) . ' - OS ID: ' . ($result->idOs ?? 'N/A'));
                     ?>
                     <?php
-                    // Helper para obter URL da assinatura
+                    // Helper para obter URL da assinatura - sempre usar verAssinatura
                     function getAssinaturaUrl($assinatura) {
-                        if (isset($assinatura->is_base64) && $assinatura->is_base64) {
-                            return $assinatura->url_visualizacao;
-                        }
-                        return base_url($assinatura->assinatura);
+                        return $assinatura->url_visualizacao ?? base_url('index.php/checkin/verAssinatura/' . $assinatura->idAssinatura);
                     }
                     ?>
                     <div class="assinatura-box">

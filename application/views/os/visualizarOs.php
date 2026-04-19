@@ -581,14 +581,14 @@
                                         <div class="span3" id="assinatura-item-<?php echo $assinatura->idAssinatura; ?>" style="text-align: center; margin-bottom: 15px;">
                                             <div style="border: 1px solid #ddd; padding: 10px; border-radius: 4px;">
                                                 <?php
-                                                // Verifica se é base64 ou arquivo
-                                                if (isset($assinatura->is_base64) && $assinatura->is_base64) {
-                                                    $img_src = $assinatura->url_visualizacao;
-                                                } else {
-                                                    $img_src = base_url($assinatura->assinatura);
-                                                }
+                                                // Sempre usar url_visualizacao que aponta para verAssinatura (igual ao relatorio_execucao)
+                                                $img_src = $assinatura->url_visualizacao ?? base_url('index.php/checkin/verAssinatura/' . $assinatura->idAssinatura);
                                                 ?>
-                                                <img src="<?php echo $img_src; ?>" alt="Assinatura" style="max-width: 100%; height: auto; max-height: 100px;">
+                                                <img src="<?php echo $img_src; ?>" alt="Assinatura" style="max-width: 100%; height: auto; max-height: 100px;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                                <div style="display: none; padding: 10px; background: #f8f9fa; border-radius: 4px; text-align: center; color: #666;">
+                                                    <i class="bx bx-image-alt" style="font-size: 1.5rem; margin-bottom: 5px; display: block;"></i>
+                                                    <small>Assinatura salva</small>
+                                                </div>
                                                 <p style="margin-top: 10px; font-size: 12px;">
                                                     <strong>
                                                         <?php

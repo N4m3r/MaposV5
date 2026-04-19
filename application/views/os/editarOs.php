@@ -1791,9 +1791,11 @@
         }
 
         function renderizarAssinaturaItem(titulo, assinatura) {
+            // Usar url_visualizacao que aponta para verAssinatura
+            var imgSrc = assinatura.url_visualizacao || '<?php echo base_url('index.php/checkin/verAssinatura/'); ?>' + assinatura.idAssinatura;
             return '<div class="span4 assinatura-salva-item">' +
                 '<h6>' + titulo + '</h6>' +
-                '<img src="' + assinatura.url + '/' + assinatura.assinatura + '" style="max-width: 100%;">' +
+                '<img src="' + imgSrc + '" style="max-width: 100%;" onerror="this.style.display=\'none\'; this.parentNode.innerHTML += \'<div style=\\\'padding:10px;text-align:center;color:#666\\\'>Assinatura salva</div>\';">' +
                 (assinatura.nome_assinante ? '<div class="assinatura-info"><strong>' + assinatura.nome_assinante + '</strong></div>' : '') +
                 '</div>';
         }

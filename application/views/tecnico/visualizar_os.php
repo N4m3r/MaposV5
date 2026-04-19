@@ -475,13 +475,8 @@
                                             <?= ucfirst(str_replace('_', ' ', $assinatura->tipo)) ?>
                                         </h5>
                                         <div class="assinatura-box">
-                                            <?php if ($assinatura->is_base64): ?>
-                                                <img src="<?= $assinatura->url_visualizacao ?>" alt="Assinatura">
-                                            <?php elseif (file_exists($assinatura->assinatura)): ?>
-                                                <img src="<?= base_url($assinatura->assinatura) ?>" alt="Assinatura">
-                                            <?php else: ?>
-                                                <span class="sem-assinatura">Assinatura não disponível</span>
-                                            <?php endif; ?>
+                                            <!-- Sempre usar url_visualizacao que aponta para verAssinatura -->
+                                            <img src="<?= $assinatura->url_visualizacao ?? base_url('index.php/checkin/verAssinatura/' . $assinatura->idAssinatura) ?>" alt="Assinatura" onerror="this.style.display='none'; this.parentNode.innerHTML='<span class=\'sem-assinatura\'>Assinatura salva</span>';">
                                         </div>
                                         <small style="color: #999;">
                                             <?= date('d/m/Y H:i', strtotime($assinatura->data_assinatura)) ?>

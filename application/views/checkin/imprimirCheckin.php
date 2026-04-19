@@ -676,14 +676,10 @@
                                 <div class="signature-box">
                                     <div class="signature-image">
                                         <?php
-                                        // Verifica se é base64 ou arquivo
-                                        if (isset($assinatura->is_base64) && $assinatura->is_base64) {
-                                            $img_src = $assinatura->url_visualizacao;
-                                        } else {
-                                            $img_src = base_url($assinatura->assinatura);
-                                        }
+                                        // Sempre usar url_visualizacao que aponta para verAssinatura
+                                        $img_src = $assinatura->url_visualizacao ?? base_url('index.php/checkin/verAssinatura/' . $assinatura->idAssinatura);
                                         ?>
-                                        <img src="<?php echo $img_src; ?>" alt="Assinatura <?php echo $tipo; ?>">
+                                        <img src="<?php echo $img_src; ?>" alt="Assinatura <?php echo $tipo; ?>" onerror="this.style.display='none'; this.parentNode.innerHTML='<div style=\'padding:20px;text-align:center;color:#666\'>Assinatura salva</div>';">
                                     </div>
                                     <div class="signature-label">
                                         <?php
