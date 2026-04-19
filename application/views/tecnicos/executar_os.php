@@ -3441,6 +3441,7 @@ function limparAssinaturaWizard() {
         wizardSignaturePad.clear();
     }
 }
+window.limparAssinaturaWizard = limparAssinaturaWizard;
 
 // Resumo Final
 function atualizarResumoFinal() {
