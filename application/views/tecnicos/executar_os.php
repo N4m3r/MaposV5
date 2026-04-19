@@ -2534,6 +2534,17 @@ window.limparAssinaturaTecnico = function() {
 window.iniciarCanvasAssinatura = function() {
     console.log('DEBUG: iniciarCanvasAssinatura chamado');
     console.log('DEBUG: document.readyState:', document.readyState);
+
+    // Verificar se o canvas existe no DOM
+    const canvas = document.getElementById('assinaturaTecnico');
+    console.log('DEBUG: Canvas no DOM:', canvas ? 'SIM' : 'NAO');
+    if (canvas) {
+        console.log('DEBUG: Canvas visível:', canvas.offsetParent !== null);
+        console.log('DEBUG: Canvas dimensões:', canvas.offsetWidth, 'x', canvas.offsetHeight);
+        console.log('DEBUG: Canvas display:', getComputedStyle(canvas).display);
+        console.log('DEBUG: Canvas visibility:', getComputedStyle(canvas).visibility);
+    }
+
     initCanvasTecnico();
     console.log('DEBUG: Final do initCanvasTecnico. canvasTecnico:', window.canvasTecnico ? 'existe' : 'null');
 };
