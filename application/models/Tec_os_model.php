@@ -40,20 +40,23 @@ class Tec_os_model extends CI_Model
     {
         log_message('debug', 'Buscando OS para tecnico_id: ' . $tecnico_id . ', status: ' . $status);
 
-        // Query simples sem join - funciona mais confiavel
-        $sql = "SELECT os.*, c.nome as cliente_nome, c.telefone as cliente_telefone
+        $tecnico_id = (int) $tecnico_id;
+
+        // CORRECAO: nomeCliente em vez de nome
+        $sql = "SELECT os.*, c.nomeCliente as cliente_nome, c.telefone as cliente_telefone
                 FROM os
                 LEFT JOIN clientes c ON c.idClientes = os.clientes_id
                 WHERE os.tecnico_responsavel = ?";
 
+        $params = [$tecnico_id];
         if ($status !== 'todos') {
             $sql .= " AND os.status = ?";
-            $query = $this->db->query($sql, [$tecnico_id, $status]);
-        } else {
-            $query = $this->db->query($sql, [$tecnico_id]);
+            $params[] = $status;
         }
 
-        log_message('debug', 'Query SQL: ' . $sql);
+        $sql .= " ORDER BY os.dataInicial DESC";
+
+        $query = $this->db->query($sql, $params);
 
         if (!$query) {
             log_message('error', 'Erro na query getOsPorTecnico');
@@ -73,7 +76,7 @@ class Tec_os_model extends CI_Model
     {
         $hoje = date('Y-m-d');
 
-        $sql = "SELECT os.*, c.nome as cliente_nome, c.telefone as cliente_telefone
+        $sql = "SELECT os.*, c.nomeCliente as cliente_nome, c.telefone as cliente_telefone
                 FROM os
                 LEFT JOIN clientes c ON c.idClientes = os.clientes_id
                 WHERE os.tecnico_responsavel = ?
@@ -96,7 +99,7 @@ class Tec_os_model extends CI_Model
      */
     public function getOsPendentes($tecnico_id)
     {
-        $sql = "SELECT os.*, c.nome as cliente_nome
+        $sql = "SELECT os.*, c.nomeCliente as cliente_nome
                 FROM os
                 LEFT JOIN clientes c ON c.idClientes = os.clientes_id
                 WHERE os.tecnico_responsavel = ?
@@ -492,7 +495,7 @@ class Tec_os_model extends CI_Model
      */
     public function getHistoricoExecucoes($os_id = null, $tecnico_id = null, $limit = 50)
     {
-        $this->db->select('te.*, os.garantia as os_garantia, c.nome as cliente_nome');
+        $this->db->select('te.*, os.garantia as os_garantia, c.nomeCliente as cliente_nome');
         $this->db->from('tec_os_execucao te');
         $this->db->join('os os', 'os.idOs = te.os_id');
         $this->db->join('clientes c', 'c.idClientes = os.clientes_id');
@@ -526,7 +529,7 @@ class Tec_os_model extends CI_Model
         $hoje = date('Y-m-d');
         $futuro = date('Y-m-d', strtotime("+{$dias} days"));
 
-        $this->db->select('os.*, c.nome as cliente_nome, c.telefone as cliente_telefone');
+        $this->db->select('os.*, c.nomeCliente as cliente_nome, c.telefone as cliente_telefone');
         $this->db->from('os');
         $this->db->join('clientes c', 'c.idClientes = os.clientes_id');
         $this->db->where('os.tecnico_responsavel', $tecnico_id);
@@ -550,7 +553,7 @@ class Tec_os_model extends CI_Model
      */
     public function pesquisarOs($termo, $tecnico_id = null)
     {
-        $this->db->select('os.*, c.nome as cliente_nome');
+        $this->db->select('os.*, c.nomeCliente as cliente_nome');
         $this->db->from('os');
         $this->db->join('clientes c', 'c.idClientes = os.clientes_id');
 
@@ -560,7 +563,7 @@ class Tec_os_model extends CI_Model
 
         $this->db->group_start();
         $this->db->like('os.idOs', $termo);
-        $this->db->or_like('c.nome', $termo);
+        $this->db->or_like('c.nomeCliente', $termo);
         $this->db->or_like('c.telefone', $termo);
         $this->db->group_end();
 
@@ -613,7 +616,7 @@ class Tec_os_model extends CI_Model
      */
     public function verificarExecucaoAtiva($tecnico_id)
     {
-        $this->db->select('tec_os_execucao.*, os.idOs, c.nome as cliente_nome');
+        $this->db->select('tec_os_execucao.*, os.idOs, c.nomeCliente as cliente_nome');
         $this->db->from('tec_os_execucao');
         $this->db->join('os os', 'os.idOs = tec_os_execucao.os_id');
         $this->db->join('clientes c', 'c.idClientes = os.clientes_id');

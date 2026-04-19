@@ -268,26 +268,60 @@ $(document).ready(function() {
                 osSelect.empty();
 
                 if (response.success && response.os && response.os.length > 0) {
+                    // Separar OS não vinculadas e já vinculadas
+                    var osNaoVinculadas = response.os.filter(function(os) { return !os.ja_vinculada; });
+                    var osVinculadas = response.os.filter(function(os) { return os.ja_vinculada; });
+
                     osSelect.append('<option value="">-- Selecione uma OS --</option>');
-                    response.os.forEach(function(os) {
-                        var docFormatado = os.documento ? os.documento.replace(/[^0-9]/g, '').replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5') : '';
-                        osSelect.append(
-                            '<option value="' + os.idOs + '" ' +
-                            'data-cliente="' + (os.nomeCliente || '') + '" ' +
-                            'data-documento="' + docFormatado + '" ' +
-                            'data-status="' + os.status + '" ' +
-                            'data-data="' + os.dataInicial + '">'
-                            + '#' + os.idOs + ' - ' + os.nomeCliente +
-                            (docFormatado ? ' (' + docFormatado + ')' : '') +
-                            ' [' + os.status + ']' +
-                            '</option>'
-                        );
-                    });
+
+                    // Grupo: OS Disponíveis
+                    if (osNaoVinculadas.length > 0) {
+                        osSelect.append('<optgroup label="📋 OS Disponíveis (' + osNaoVinculadas.length + ')">');
+                        osNaoVinculadas.forEach(function(os) {
+                            var docFormatado = os.documento ? os.documento.replace(/[^0-9]/g, '').replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5') : '';
+                            osSelect.append(
+                                '<option value="' + os.idOs + '" ' +
+                                'data-cliente="' + (os.nomeCliente || '') + '" ' +
+                                'data-documento="' + docFormatado + '" ' +
+                                'data-status="' + os.status + '" ' +
+                                'data-data="' + os.dataInicial + '" ' +
+                                'data-vinculada="0">'
+                                + '#' + os.idOs + ' - ' + os.nomeCliente +
+                                (docFormatado ? ' (' + docFormatado + ')' : '') +
+                                ' [' + os.status + ']' +
+                                '</option>'
+                            );
+                        });
+                        osSelect.append('</optgroup>');
+                    }
+
+                    // Grupo: OS Já Vinculadas a Outras Obras
+                    if (osVinculadas.length > 0) {
+                        osSelect.append('<optgroup label="🔗 OS em Outras Obras (' + osVinculadas.length + ')">');
+                        osVinculadas.forEach(function(os) {
+                            var docFormatado = os.documento ? os.documento.replace(/[^0-9]/g, '').replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5') : '';
+                            osSelect.append(
+                                '<option value="' + os.idOs + '" ' +
+                                'data-cliente="' + (os.nomeCliente || '') + '" ' +
+                                'data-documento="' + docFormatado + '" ' +
+                                'data-status="' + os.status + '" ' +
+                                'data-data="' + os.dataInicial + '" ' +
+                                'data-vinculada="1" ' +
+                                'data-obra-vinculada="' + (os.nome_obra_vinculada || '') + '" ' +
+                                'style="color: #ff9800;">'
+                                + '#' + os.idOs + ' - ' + os.nomeCliente +
+                                ' → ' + (os.nome_obra_vinculada || 'Outra obra') +
+                                '</option>'
+                            );
+                        });
+                        osSelect.append('</optgroup>');
+                    }
+
                     osSelect.prop('disabled', false);
-                    msgElement.html('<i class="bx bx-check" style="color: #4caf50;"></i> ' + response.total + ' OS disponível(is)');
+                    msgElement.html('<i class="bx bx-check" style="color: #4caf50;"></i> ' + osNaoVinculadas.length + ' disponíveis, ' + osVinculadas.length + ' em outras obras');
                 } else {
-                    osSelect.append('<option value="" disabled>Nenhuma OS disponível</option>');
-                    msgElement.html('<i class="bx bx-error" style="color: #ff9800;"></i> Nenhuma OS disponível para vincular');
+                    osSelect.append('<option value="" disabled>Nenhuma OS cadastrada</option>');
+                    msgElement.html('<i class="bx bx-error" style="color: #ff9800;"></i> Nenhuma OS encontrada no sistema');
                 }
             },
             error: function() {
@@ -307,6 +341,8 @@ $(document).ready(function() {
             var documento = selected.data('documento');
             var status = selected.data('status');
             var data = selected.data('data');
+            var jaVinculada = selected.data('vinculada') == '1';
+            var obraVinculada = selected.data('obra-vinculada') || '';
 
             var corStatus = {
                 'Aberto': '#4caf50',
@@ -315,20 +351,38 @@ $(document).ready(function() {
                 'Cancelado': '#f44336'
             }[status] || '#888';
 
-            $('#preview-os-content').html(
-                '<div style="display: grid; gap: 8px; font-size: 0.9rem;">' +
-                '<div><strong>OS:</strong> #' + osId + '</div>' +
+            var html = '<div style="display: grid; gap: 8px; font-size: 0.9rem;">';
+
+            // Aviso se já está vinculada
+            if (jaVinculada) {
+                html += '<div style="background: #fff3e0; border-left: 4px solid #ff9800; padding: 10px; border-radius: 4px; margin-bottom: 10px;">' +
+                    '<i class="bx bx-error-circle" style="color: #ff9800;"></i> ' +
+                    '<strong style="color: #e65100;">Atenção:</strong> Esta OS já está vinculada à obra <strong>"' + obraVinculada + '".</strong><br>' +
+                    'Ao vincular aqui, ela será <strong>movida</strong> para esta obra.' +
+                    '</div>';
+            }
+
+            html += '<div><strong>OS:</strong> #' + osId + '</div>' +
                 '<div><strong>Cliente:</strong> ' + (cliente || '-') + '</div>' +
                 (documento ? '<div><strong>CNPJ:</strong> ' + documento + '</div>' : '') +
                 '<div><strong>Status:</strong> <span style="background: ' + corStatus + '; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem;">' + status + '</span></div>' +
                 '<div><strong>Data:</strong> ' + (data ? new Date(data).toLocaleDateString('pt-BR') : '-') + '</div>' +
-                '</div>'
-            );
+                '</div>';
+
+            $('#preview-os-content').html(html);
             $('#preview-os').show();
             $('#btn-vincular').prop('disabled', false);
+
+            // Mudar cor do botão se já está vinculada
+            if (jaVinculada) {
+                $('#btn-vincular').removeClass('btn-success').addClass('btn-warning').html('<i class="bx bx-transfer"></i> Mover para Esta Obra');
+            } else {
+                $('#btn-vincular').removeClass('btn-warning').addClass('btn-success').html('<i class="bx bx-link"></i> Vincular à Obra');
+            }
         } else {
             $('#preview-os').hide();
             $('#btn-vincular').prop('disabled', true);
+            $('#btn-vincular').removeClass('btn-warning').addClass('btn-success').html('<i class="bx bx-link"></i> Vincular à Obra');
         }
     });
 });

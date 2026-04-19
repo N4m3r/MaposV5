@@ -809,19 +809,33 @@ function renderizarOsLista(osList) {
         var corStatus = coresStatus[os.status] || '#888';
         var docFormatado = os.documento ? formatarCNPJ(os.documento) : 'Não informado';
         var dataFormatada = os.dataInicial ? new Date(os.dataInicial).toLocaleDateString('pt-BR') : '-';
+        var jaVinculada = os.ja_vinculada;
+        var obraVinculada = os.obra_vinculada || '';
 
-        var html = '<div class="os-item" data-id="' + os.idOs + '" data-status="' + os.status + '" style="' +
+        // Estilo diferente para OS já vinculadas
+        var bgStyle = jaVinculada ? 'background: #fff8e1;' : '';
+        var borderLeft = jaVinculada ? 'border-left: 4px solid #ff9800;' : 'border-left: 4px solid transparent;';
+
+        var html = '<div class="os-item" data-id="' + os.idOs + '" data-status="' + os.status + '" data-vinculada="' + (jaVinculada ? '1' : '0') + '" style="' +
             'padding: 15px; border-bottom: 1px solid #eee; cursor: pointer; transition: all 0.2s;' +
-            'display: flex; align-items: center; gap: 15px;"' +
-            'onclick="selecionarOS(' + os.idOs + ')" onmouseover="this.style.background=\'#f0f8ff\'" onmouseout="if(!this.classList.contains(\'selecionada\')) this.style.background=\'\'"\u003e';
+            'display: flex; align-items: center; gap: 15px;' + bgStyle + borderLeft + '"' +
+            'onclick="selecionarOS(' + os.idOs + ')" onmouseover="this.style.background=\'#f0f8ff\'" onmouseout="if(!this.classList.contains(\'selecionada\')) this.style.background=\'' + (jaVinculada ? '#fff8e1' : '') + '\'"\u003e';
 
-        html += '<div style="width: 50px; height: 50px; border-radius: 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; flex-shrink: 0;"\u003e#' + os.idOs + '</div\u003e';
+        // Avatar/número da OS - cor diferente se já vinculada
+        var avatarBg = jaVinculada ? 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+        html += '<div style="width: 50px; height: 50px; border-radius: 10px; background: ' + avatarBg + '; color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; flex-shrink: 0;"\u003e#' + os.idOs + '</div\u003e';
 
         html += '<div style="flex: 1;"\u003e';
         html += '<div style="font-weight: 600; color: #333; margin-bottom: 3px;"\u003e' + os.nomeCliente + '</div\u003e';
         html += '<div style="font-size: 0.8rem; color: #666;"\u003e';
         html += '<i class="bx bx-id-card"></i> CNPJ: ' + docFormatado + ' | ';
         html += '<i class="bx bx-calendar"></i> ' + dataFormatada;
+
+        // Indicador se já está vinculada a outra obra
+        if (jaVinculada) {
+            html += ' | <span style="color: #ff9800; font-weight: 600;"><i class="bx bx-link"></i> Em: ' + obraVinculada + '</span>';
+        }
+
         html += '</div\u003e';
         html += '</div\u003e';
 

@@ -771,16 +771,19 @@ class Tecnicos_admin extends MY_Controller
         }
 
         // Verificar se OS já está vinculada a outra obra
+        $mensagem = 'Ordem de Serviço vinculada com sucesso!';
         if (!empty($os->obra_id) && $os->obra_id != $obra_id) {
-            $this->session->set_flashdata('error', 'Esta OS já está vinculada a outra obra.');
-            redirect('tecnicos_admin/ver_obra/' . $obra_id);
+            // Buscar nome da obra anterior
+            $obraAnterior = $this->obras_model->getById($os->obra_id);
+            $nomeObraAnterior = $obraAnterior ? $obraAnterior->nome : 'outra obra';
+            $mensagem = 'OS movida de "' . $nomeObraAnterior . '" para esta obra com sucesso!';
         }
 
-        // Vincular OS à obra
+        // Vincular OS à obra (ou mover de outra obra)
         $this->db->where('idOs', $os_id);
         $this->db->update('os', ['obra_id' => $obra_id]);
 
-        $this->session->set_flashdata('success', 'Ordem de Serviço vinculada com sucesso!');
+        $this->session->set_flashdata('success', $mensagem);
         redirect('tecnicos_admin/ver_obra/' . $obra_id);
     }
 
@@ -1176,16 +1179,16 @@ class Tecnicos_admin extends MY_Controller
     }
 
     /**
-     * Buscar OS disponíveis para vincular (todas as OS sem obra)
+     * Buscar OS disponíveis para vincular (TODAS as OS do sistema)
      */
     public function buscar_os_disponiveis_simples()
     {
         $termo = $this->input->get('termo');
 
-        $this->db->select('os.idOs, os.dataInicial, os.dataFinal, os.status, os.valorTotal, os.garantia, c.nomeCliente, c.documento, c.telefone as cliente_telefone');
+        $this->db->select('os.idOs, os.dataInicial, os.dataFinal, os.status, os.valorTotal, os.garantia, os.obra_id, c.nomeCliente, c.documento, c.telefone as cliente_telefone, o.nome as obra_vinculada');
         $this->db->from('os');
         $this->db->join('clientes c', 'c.idClientes = os.clientes_id');
-        $this->db->where('(os.obra_id IS NULL OR os.obra_id = 0)');
+        $this->db->join('obras o', 'o.id = os.obra_id', 'left');
 
         if ($termo) {
             $this->db->group_start();
@@ -1195,10 +1198,16 @@ class Tecnicos_admin extends MY_Controller
             $this->db->group_end();
         }
 
+        $this->db->order_by('os.obra_id', 'ASC'); // OS não vinculadas primeiro
         $this->db->order_by('os.dataInicial', 'DESC');
-        $this->db->limit(50);
+        $this->db->limit(100);
         $query = $this->db->get();
         $os = $query ? $query->result() : [];
+
+        // Adicionar flag indicando se já está vinculada
+        foreach ($os as &$item) {
+            $item->ja_vinculada = !empty($item->obra_id);
+        }
 
         echo json_encode(['success' => true, 'os' => $os, 'total' => count($os)]);
     }
@@ -1326,15 +1335,22 @@ class Tecnicos_admin extends MY_Controller
             return;
         }
 
-        // Buscar OS que não estão vinculadas a nenhuma obra
-        $this->db->select('os.idOs, os.dataInicial, os.dataFinal, os.status, c.nomeCliente, c.documento');
+        // Buscar TODAS as OS, incluindo info se já está vinculada a outra obra
+        $this->db->select('os.idOs, os.dataInicial, os.dataFinal, os.status, os.obra_id, c.nomeCliente, c.documento, o.nome as obra_vinculada');
         $this->db->from('os');
         $this->db->join('clientes c', 'c.idClientes = os.clientes_id');
-        $this->db->where('(os.obra_id IS NULL OR os.obra_id = 0)');
+        $this->db->join('obras o', 'o.id = os.obra_id', 'left');
+        $this->db->order_by('os.obra_id', 'ASC'); // OS não vinculadas primeiro
         $this->db->order_by('os.dataInicial', 'DESC');
-        $this->db->limit(50);
+        $this->db->limit(100);
         $query = $this->db->get();
         $os = $query ? $query->result() : [];
+
+        // Adicionar flag indicando se já está vinculada
+        foreach ($os as &$item) {
+            $item->ja_vinculada = !empty($item->obra_id);
+            $item->nome_obra_vinculada = $item->obra_vinculada ?? null;
+        }
 
         echo json_encode(['success' => true, 'os' => $os, 'total' => count($os)]);
     }
@@ -1364,16 +1380,21 @@ class Tecnicos_admin extends MY_Controller
         header('Content-Type: application/json');
 
         try {
-            // Buscar todos os usuários ativos primeiro
+            // Buscar usuários que são técnicos (is_tecnico = 1 OU app_tecnico_instalado = 1)
             $this->db->select('idUsuarios, nome, email, telefone, nivel_tecnico, especialidades, status');
             $this->db->where('status', 1);
+            $this->db->group_start();
+            $this->db->where('is_tecnico', 1);
+            $this->db->or_where('app_tecnico_instalado', 1);
+            $this->db->group_end();
             $this->db->order_by('nome', 'ASC');
             $query = $this->db->get('usuarios');
             $tecnicos = $query ? $query->result() : [];
 
-            // Se não encontrou nenhum, tenta sem o filtro de status
+            // Se não encontrou nenhum técnico, busca todos os usuários ativos como fallback
             if (empty($tecnicos)) {
                 $this->db->select('idUsuarios, nome, email, telefone, nivel_tecnico, especialidades, status');
+                $this->db->where('status', 1);
                 $this->db->order_by('nome', 'ASC');
                 $query = $this->db->get('usuarios');
                 $tecnicos = $query ? $query->result() : [];
