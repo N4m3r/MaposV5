@@ -192,7 +192,7 @@ class Tec_os_model extends CI_Model
      */
     public function getServicosOs($os_id)
     {
-        $this->db->select('servicos_os.*, servicos.nome as servico_nome, servicos.preco as servico_preco');
+        $this->db->select('servicos_os.*, servicos.nome as servico_nome, servicos.preco as servico_preco, servicos.checklist_padrao');
         $this->db->from('servicos_os');
         $this->db->join('servicos', 'servicos.idServicos = servicos_os.servicos_id', 'left');
         $this->db->where('servicos_os.os_id', $os_id);
@@ -356,7 +356,7 @@ class Tec_os_model extends CI_Model
         $checklist = [];
 
         foreach ($servicos as $servico) {
-            if ($servico->checklist_padrao) {
+            if (isset($servico->checklist_padrao) && $servico->checklist_padrao) {
                 $items = json_decode($servico->checklist_padrao, true);
                 if ($items) {
                     foreach ($items as $item) {
