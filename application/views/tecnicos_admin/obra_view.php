@@ -468,52 +468,53 @@ $etapaStatusColors = [
         </div>
 
         <!-- Modal: Alocar Técnico -->
-        <div id="modal-equipe" class="modal hide fade" tabindex="-1" role="dialog">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">×</button>
-                <h5><i class="bx bx-user-plus"></i> Alocar Técnico</h5>
+        <div id="modal-equipe" class="modal hide fade" tabindex="-1" role="dialog" style="width: 600px; margin-left: -300px;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                <button type="button" class="close" data-dismiss="modal" style="color: white; opacity: 0.8;">×</button>
+                <h5 style="color: white;"><i class="bx bx-user-plus"></i> Alocar Técnico à Obra</h5>
             </div>
             <form action="<?= site_url('tecnicos_admin/alocar_tecnico') ?>" method="post">
                 <input type="hidden" name="obra_id" value="<?= $obra->id ?>">
-                <div class="modal-body">
+                <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
+                    <div class="alert alert-info">
+                        <i class="bx bx-info-circle"></i> Selecione um técnico disponível para alocar a esta obra.
+                    </div>
                     <div class="control-group">
                         <label class="control-label">Técnico *</label>
                         <div class="controls">
-                            <select name="tecnico_id" class="span12" required>
-                                <option value="">-- Selecione o Técnico --</option>
-                                <?php
-                                $this->db->where('status', 1);
-                                $tecnicos_query = $this->db->get('usuarios');
-                                $tecnicos_lista = $tecnicos_query ? $tecnicos_query->result() : [];
-                                foreach ($tecnicos_lista as $t): ?>
-                                    <option value="<?= $t->idUsuarios ?>"><?= htmlspecialchars($t->nome, ENT_QUOTES, 'UTF-8') ?> <?= !empty($t->telefone) ? ' - ' . $t->telefone : '' ?></option>
-                                <?php endforeach; ?>
+                            <select name="tecnico_id" id="select-tecnico" class="span12" required>
+                                <option value="">-- Carregando técnicos disponíveis... --</option>
                             </select>
                         </div>
+                        <span class="help-block" id="msg-tecnico" style="color: #666; font-size: 0.85rem;">
+                            <i class="bx bx-loader bx-spin"></i> Carregando técnicos...
+                        </span>
                     </div>
                     <div class="row-fluid">
                         <div class="span6">
                             <div class="control-group">
-                                <label class="control-label">Função</label>
+                                <label class="control-label">Função na Obra</label>
                                 <div class="controls">
                                     <select name="funcao" class="span12">
                                         <option value="Técnico">Técnico</option>
                                         <option value="Encarregado">Encarregado</option>
                                         <option value="Auxiliar">Auxiliar</option>
                                         <option value="Responsável Técnico">Responsável Técnico</option>
+                                        <option value="Engenheiro">Engenheiro</option>
+                                        <option value="Arquiteto">Arquiteto</option>
                                     </select>
                                 </div>
                             </div>
                         </div>
                         <div class="span6">
                             <div class="control-group">
-                                <label class="control-label">Nível</label>
+                                <label class="control-label">Nível de Experiência</label>
                                 <div class="controls">
                                     <select name="nivel_tecnico" class="span12">
                                         <option value="">-- Selecione --</option>
-                                        <option value="1">Nível 1</option>
-                                        <option value="2">Nível 2</option>
-                                        <option value="3">Nível 3</option>
+                                        <option value="1">Nível 1 - Júnior</option>
+                                        <option value="2">Nível 2 - Pleno</option>
+                                        <option value="3">Nível 3 - Sênior</option>
                                     </select>
                                 </div>
                             </div>
@@ -522,41 +523,81 @@ $etapaStatusColors = [
                 </div>
                 <div class="modal-footer">
                     <button class="btn" data-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-success"><i class="bx bx-save"></i> Alocar</button>
+                    <button type="submit" class="btn btn-success" id="btn-alocar" disabled><i class="bx bx-save"></i> Alocar Técnico</button>
                 </div>
             </form>
         </div>
 
         <!-- Modal: Vincular OS -->
-        <div id="modal-vincular-os" class="modal hide fade" tabindex="-1" role="dialog">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">×</button>
-                <h5><i class="bx bx-link"></i> Vincular OS à Obra</h5>
+        <div id="modal-vincular-os" class="modal hide fade" tabindex="-1" role="dialog" style="width: 800px; margin-left: -400px;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white;">
+                <button type="button" class="close" data-dismiss="modal" style="color: white; opacity: 0.8;">×</button>
+                <h5 style="color: white;"><i class="bx bx-link"></i> Vincular OS à Obra</h5>
             </div>
             <form action="<?= site_url('tecnicos_admin/vincular_os_obra') ?>" method="post">
                 <input type="hidden" name="obra_id" value="<?= $obra->id ?>">
-                <div class="modal-body">
-                    <div class="alert alert-info">
-                        <i class="bx bx-info-circle"></i> Selecione uma OS disponível para vincular a esta obra.
-                    </div>
-                    <div class="control-group">
-                        <label class="control-label">Buscar OS</label>
-                        <div class="controls">
-                            <input type="text" id="buscar-os-termo" class="span12" placeholder="Digite o número da OS ou nome do cliente">
+                <div class="modal-body" style="max-height: 500px; overflow-y: auto;">
+                    <!-- Busca -->
+                    <div class="row-fluid" style="margin-bottom: 15px;">
+                        <div class="span8">
+                            <div class="control-group" style="margin-bottom: 0;">
+                                <div class="controls">
+                                    <div class="input-append span12" style="margin-left: 0;">
+                                        <input type="text" id="buscar-os-termo" class="span10" placeholder="Buscar por número da OS, cliente ou CNPJ...">
+                                        <button type="button" class="btn btn-info" id="btn-buscar-os"><i class="bx bx-search"></i> Buscar</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="control-group">
-                        <label class="control-label">OS Disponíveis *</label>
-                        <div class="controls">
-                            <select name="os_id" id="select-os-vincular" class="span12" required>
-                                <option value="">-- Carregando OS disponíveis... --</option>
+                        <div class="span4">
+                            <select id="filtro-status-os" class="span12">
+                                <option value="">Todos os Status</option>
+                                <option value="Aberto">Aberto</option>
+                                <option value="Em Andamento">Em Andamento</option>
+                                <option value="Orçamento">Orçamento</option>
+                                <option value="Finalizado">Finalizado</option>
                             </select>
                         </div>
                     </div>
+
+                    <!-- Resumo -->
+                    <div class="alert alert-info" style="padding: 10px; margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span><i class="bx bx-info-circle"></i> <span id="total-os-disponiveis">0</span> OS disponíveis para vincular</span>
+                            <span class="badge badge-info" id="badge-selecionadas">0 selecionada(s)</span>
+                        </div>
+                    </div>
+
+                    <!-- Lista de OS -->
+                    <div id="lista-os-container" style="border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
+                        <div id="os-loading" style="text-align: center; padding: 40px;">
+                            <i class="bx bx-loader bx-spin" style="font-size: 2rem; color: #667eea;"></i>
+                            <p style="margin-top: 10px; color: #666;">Carregando OS disponíveis...</p>
+                        </div>
+                        <div id="os-vazia" style="display: none; text-align: center; padding: 40px;">
+                            <i class="bx bx-inbox" style="font-size: 3rem; color: #ccc;"></i>
+                            <p style="margin-top: 15px; color: #666;">Nenhuma OS disponível para vincular.</p>
+                            <p style="font-size: 0.85rem; color: #999;">Todas as OS já estão vinculadas a outras obras.</p>
+                        </div>
+                        <div id="os-lista" style="display: none; max-height: 300px; overflow-y: auto;">
+                            <!-- OS serão inseridas aqui via JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- OS Selecionada (hidden) -->
+                    <input type="hidden" name="os_id" id="os-selecionada-id" required>
+
+                    <!-- Preview da OS Selecionada -->
+                    <div id="os-preview" style="margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px; display: none;">
+                        <h6 style="margin: 0 0 10px 0; color: #333;"><i class="bx bx-check-circle" style="color: #4caf50;"></i> OS Selecionada</h6>
+                        <div id="os-preview-conteudo"></div>
+                    </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn" data-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-success"><i class="bx bx-link"></i> Vincular</button>
+                    <button class="btn" data-dismiss="modal" type="button">Cancelar</button>
+                    <button type="submit" class="btn btn-success" id="btn-vincular-os" disabled>
+                        <i class="bx bx-link"></i> Vincular à Obra
+                    </button>
                 </div>
             </form>
         </div>
@@ -626,6 +667,10 @@ $etapaStatusColors = [
 
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
+// Variáveis globais
+var osDisponiveis = [];
+var osSelecionada = null;
+
 $(document).ready(function() {
     // Carregar Timeline
     carregarTimeline();
@@ -635,10 +680,26 @@ $(document).ready(function() {
         carregarOsDisponiveis();
     });
 
-    // Busca de OS
-    $('#buscar-os-termo').on('input', function() {
-        var termo = $(this).val();
-        carregarOsDisponiveis(termo);
+    // Carregar técnicos ao abrir modal
+    $('#modal-equipe').on('show', function() {
+        carregarTecnicosDisponiveis();
+    });
+
+    // Busca de OS ao digitar
+    $('#buscar-os-termo').on('keyup', function(e) {
+        if (e.which === 13) {
+            carregarOsDisponiveis($(this).val());
+        }
+    });
+
+    // Botão buscar OS
+    $('#btn-buscar-os').on('click', function() {
+        carregarOsDisponiveis($('#buscar-os-termo').val());
+    });
+
+    // Filtro de status
+    $('#filtro-status-os').on('change', function() {
+        filtrarOsLista($(this).val());
     });
 
     // Gráfico de Etapas
@@ -654,9 +715,50 @@ $(document).ready(function() {
     chart.render();
 });
 
+function carregarTecnicosDisponiveis() {
+    var select = $('#select-tecnico');
+    var msgElement = $('#msg-tecnico');
+
+    select.prop('disabled', true).html('<option value="">Carregando técnicos...</option>');
+    msgElement.html('<i class="bx bx-loader bx-spin"></i> Buscando técnicos disponíveis...');
+
+    $.ajax({
+        url: '<?= site_url("tecnicos_admin/buscar_tecnicos_disponiveis") ?>',
+        type: 'GET',
+        dataType: 'json',
+        success: function(response) {
+            select.empty();
+
+            if (response.success && response.tecnicos && response.tecnicos.length > 0) {
+                select.append('<option value="">-- Selecione um técnico --</option>');
+
+                response.tecnicos.forEach(function(tecnico) {
+                    var info = tecnico.nome;
+                    if (tecnico.email) info += ' | ' + tecnico.email;
+                    if (tecnico.telefone) info += ' | ' + tecnico.telefone;
+
+                    select.append('<option value="' + tecnico.idUsuarios + '" data-nome="' + tecnico.nome + '" data-email="' + (tecnico.email || '') + '" data-telefone="' + (tecnico.telefone || '') + '" data-nivel="' + (tecnico.nivel_tecnico || '') + '" data-especialidades="' + (tecnico.especialidades || '') + '"\u003e' + info + '</option>');
+                });
+
+                select.prop('disabled', false);
+                $('#btn-alocar').prop('disabled', false);
+                msgElement.html('<i class="bx bx-check" style="color: #4caf50;"></i> ' + response.tecnicos.length + ' técnico(s) disponível(is)');
+            } else {
+                select.append('<option value="" disabled>Nenhum técnico disponível</option>');
+                msgElement.html('<i class="bx bx-error" style="color: #ff9800;"></i> Nenhum técnico encontrado');
+            }
+        },
+        error: function() {
+            select.html('<option value="" disabled>Erro ao carregar técnicos</option>');
+            msgElement.html('<i class="bx bx-error" style="color: #f44336;"></i> Erro ao buscar técnicos');
+        }
+    });
+}
+
 function carregarOsDisponiveis(termo = '') {
-    var select = $('#select-os-vincular');
-    select.prop('disabled', true).html('<option value="">Carregando...</option>');
+    $('#os-loading').show();
+    $('#os-vazia').hide();
+    $('#os-lista').hide();
 
     $.ajax({
         url: '<?= site_url("tecnicos_admin/buscar_os_disponiveis_simples") ?>',
@@ -664,21 +766,147 @@ function carregarOsDisponiveis(termo = '') {
         data: { termo: termo },
         dataType: 'json',
         success: function(response) {
-            select.empty();
+            $('#os-loading').hide();
+
             if (response.success && response.os && response.os.length > 0) {
-                select.append('<option value="">-- Selecione uma OS --</option>');
-                response.os.forEach(function(os) {
-                    select.append('<option value="' + os.idOs + '">#' + os.idOs + ' - ' + os.nomeCliente + ' (' + os.status + ')</option>');
-                });
-                select.prop('disabled', false);
+                osDisponiveis = response.os;
+                renderizarOsLista(response.os);
+                $('#total-os-disponiveis').text(response.os.length);
+                $('#os-lista').show();
             } else {
-                select.append('<option value="" disabled>Nenhuma OS disponível</option>');
+                osDisponiveis = [];
+                $('#total-os-disponiveis').text('0');
+                $('#os-vazia').show();
             }
         },
         error: function() {
-            select.html('<option value="" disabled>Erro ao carregar</option>');
+            $('#os-loading').hide();
+            $('#os-vazia').show();
+            $('#total-os-disponiveis').text('0');
         }
     });
+}
+
+function renderizarOsLista(osList) {
+    var container = $('#os-lista');
+    container.empty();
+
+    var coresStatus = {
+        'Aberto': '#4caf50',
+        'Em Andamento': '#2196f3',
+        'Finalizado': '#9c27b0',
+        'Cancelado': '#f44336',
+        'Orçamento': '#ff9800',
+        'Aprovado': '#00bcd4',
+        'Faturado': '#795548'
+    };
+
+    osList.forEach(function(os, index) {
+        var corStatus = coresStatus[os.status] || '#888';
+        var docFormatado = os.documento ? formatarCNPJ(os.documento) : 'Não informado';
+        var dataFormatada = os.dataInicial ? new Date(os.dataInicial).toLocaleDateString('pt-BR') : '-';
+
+        var html = '<div class="os-item" data-id="' + os.idOs + '" data-status="' + os.status + '" style="' +
+            'padding: 15px; border-bottom: 1px solid #eee; cursor: pointer; transition: all 0.2s;' +
+            'display: flex; align-items: center; gap: 15px;"' +
+            'onclick="selecionarOS(' + os.idOs + ')" onmouseover="this.style.background=\'#f0f8ff\'" onmouseout="if(!this.classList.contains(\'selecionada\')) this.style.background=\'\'"\u003e';
+
+        html += '<div style="width: 50px; height: 50px; border-radius: 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; flex-shrink: 0;"\u003e#' + os.idOs + '</div\u003e';
+
+        html += '<div style="flex: 1;"\u003e';
+        html += '<div style="font-weight: 600; color: #333; margin-bottom: 3px;"\u003e' + os.nomeCliente + '</div\u003e';
+        html += '<div style="font-size: 0.8rem; color: #666;"\u003e';
+        html += '<i class="bx bx-id-card"></i> CNPJ: ' + docFormatado + ' | ';
+        html += '<i class="bx bx-calendar"></i> ' + dataFormatada;
+        html += '</div\u003e';
+        html += '</div\u003e';
+
+        html += '<span style="padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; background: ' + corStatus + '20; color: ' + corStatus + '; white-space: nowrap;"\u003e' + os.status + '</span\u003e';
+
+        html += '<div class="os-radio" style="width: 24px; height: 24px; border: 2px solid #ddd; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"\u003e';
+        html += '<i class="bx bx-check" style="color: #4caf50; display: none; font-size: 1rem;"\u003e</i>';
+        html += '</div\u003e';
+
+        html += '</div\u003e';
+        container.append(html);
+    });
+}
+
+function filtrarOsLista(status) {
+    if (!status) {
+        $('.os-item').show();
+        return;
+    }
+
+    $('.os-item').each(function() {
+        var osStatus = $(this).data('status');
+        if (osStatus === status) {
+            $(this).show();
+        } else {
+            $(this).hide();
+        }
+    });
+}
+
+function selecionarOS(osId) {
+    // Remove seleção anterior
+    $('.os-item').removeClass('selecionada').css('background', '');
+    $('.os-item .os-radio').css({borderColor: '#ddd', background: ''});
+    $('.os-item .os-radio i').hide();
+
+    // Adiciona seleção atual
+    var item = $('.os-item[data-id="' + osId + '"]');
+    item.addClass('selecionada').css('background', '#e3f2fd');
+    item.find('.os-radio').css({borderColor: '#4caf50', background: '#4caf50'});
+    item.find('.os-radio i').show().css('color', 'white');
+
+    // Busca os dados da OS
+    var os = osDisponiveis.find(function(o) { return o.idOs == osId; });
+    if (os) {
+        osSelecionada = os;
+        mostrarPreviewOS(os);
+    }
+}
+
+function mostrarPreviewOS(os) {
+    $('#os-selecionada-id').val(os.idOs);
+    $('#btn-vincular-os').prop('disabled', false);
+    $('#badge-selecionadas').text('1 selecionada').removeClass('badge-info').addClass('badge-success');
+
+    var coresStatus = {
+        'Aberto': '#4caf50',
+        'Em Andamento': '#2196f3',
+        'Finalizado': '#9c27b0',
+        'Cancelado': '#f44336',
+        'Orçamento': '#ff9800'
+    };
+
+    var corStatus = coresStatus[os.status] || '#888';
+    var docFormatado = os.documento ? formatarCNPJ(os.documento) : 'Não informado';
+    var dataFormatada = os.dataInicial ? new Date(os.dataInicial).toLocaleDateString('pt-BR') : '-';
+
+    var html = '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;"\u003e';
+    html += '<div><strong>OS #:</strong> ' + os.idOs + '</div>';
+    html += '<div><strong>Status:</strong> <span style="color: ' + corStatus + '; font-weight: 600;">' + os.status + '</span></div>';
+    html += '<div><strong>Cliente:</strong> ' + os.nomeCliente + '</div>';
+    html += '<div><strong>CNPJ:</strong> ' + docFormatado + '</div>';
+    html += '<div><strong>Data:</strong> ' + dataFormatada + '</div>';
+    if (os.valorTotal) {
+        html += '<div><strong>Valor:</strong> R$ ' + parseFloat(os.valorTotal).toLocaleString('pt-BR', {minimumFractionDigits: 2}) + '</div>';
+    }
+    html += '</div>';
+
+    $('#os-preview-conteudo').html(html);
+    $('#os-preview').show();
+}
+
+function formatarCNPJ(cnpj) {
+    if (!cnpj) return '';
+    var numeros = cnpj.replace(/\D/g, '');
+    if (numeros.length === 14) {
+        return numeros.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
+    }
+    return cnpj;
 }
 
 function carregarTimeline() {
