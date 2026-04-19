@@ -2926,6 +2926,7 @@ function toggleServicoStatus(servicoId) {
 
     setServicoStatus(servicoId, newStatus);
 }
+window.toggleServicoStatus = toggleServicoStatus;
 
 function setServicoStatus(servicoId, status) {
     const item = document.querySelector(`[data-servico-id="${servicoId}"]`);
@@ -2985,6 +2986,7 @@ function atualizarProgressoServicos() {
     if (progressBar) progressBar.style.width = progresso + '%';
     if (progressText) progressText.textContent = progresso + '% concluído';
 }
+window.atualizarProgressoServicos = atualizarProgressoServicos;
 
 // Checklist (mantido para compatibilidade)
 async function salvarChecklistItem(itemId, status) {
@@ -3248,7 +3250,7 @@ function validarEtapa(etapa) {
             const algumMarcado = checks.some(cb => cb && cb.checked);
             if (!algumMarcado) {
                 Swal.fire({
-                    type: 'warning',
+                    icon: 'warning',
                     title: 'Atenção',
                     text: 'Por favor, confirme pelo menos um item para prosseguir.'
                 });
@@ -3261,7 +3263,7 @@ function validarEtapa(etapa) {
             const pendentes = Object.values(wizardServicosStatus).filter(s => s === 'pendente').length;
             if (pendentes > 0) {
                 Swal.fire({
-                    type: 'warning',
+                    icon: 'warning',
                     title: 'Serviços Pendentes',
                     text: 'Ainda há ' + pendentes + ' serviço(s) sem status definido. Por favor, marque todos.'
                 });
@@ -3274,7 +3276,7 @@ function validarEtapa(etapa) {
             const obs = document.getElementById('wizardObservacoes')?.value.trim();
             if (!obs) {
                 Swal.fire({
-                    type: 'warning',
+                    icon: 'warning',
                     title: 'Observações',
                     text: 'Por favor, preencha as observações do atendimento.'
                 });
@@ -3286,6 +3288,7 @@ function validarEtapa(etapa) {
             return true;
     }
 }
+window.validarEtapa = validarEtapa;
 
 function atualizarWizardView() {
     // Atualizar indicador
@@ -3322,6 +3325,7 @@ function atualizarWizardView() {
         atualizarResumoFinal();
     }
 }
+window.atualizarWizardView = atualizarWizardView;
 
 // Controle de Serviços no Wizard
 function setWizardServicoStatus(servicoId, status) {
@@ -3369,6 +3373,7 @@ function atualizarResumoServicos() {
         elExecutado.textContent = (executados + naoExecutados) + ' avaliado(s)';
     }
 }
+window.atualizarResumoServicos = atualizarResumoServicos;
 
 // Fotos no Wizard
 function abrirCameraWizard() {
@@ -3412,6 +3417,7 @@ function traduzirTipoFoto(tipo) {
     };
     return tipos[tipo] || tipo;
 }
+window.traduzirTipoFoto = traduzirTipoFoto;
 
 function renderizarFotosWizard() {
     const container = document.getElementById('wizardFotosPreview');
@@ -3429,6 +3435,7 @@ function renderizarFotosWizard() {
     });
     container.innerHTML = html;
 }
+window.renderizarFotosWizard = renderizarFotosWizard;
 
 function removerFotoWizard(fotoId) {
     wizardFotos = wizardFotos.filter(f => f.id !== fotoId);
@@ -3503,6 +3510,7 @@ function atualizarResumoFinal() {
 
     container.innerHTML = html;
 }
+window.atualizarResumoFinal = atualizarResumoFinal;
 
 // Finalizar Wizard
 function finalizarWizardAtendimento() {
@@ -3539,39 +3547,110 @@ function finalizarWizardAtendimento() {
     // Coletar dados
     const assinatura = wizardSignaturePad.toDataURL();
     const observacoes = document.getElementById('wizardObservacoes')?.value || '';
+    const execucaoId = typeof window.execucaoId !== 'undefined' ? window.execucaoId : null;
 
-    // Preparar dados para envio
-    const dados = {
-        os_id: typeof window.osId !== 'undefined' ? window.osId : null,
-        servicos_status: wizardServicosStatus,
-        fotos: wizardFotos,
-        observacoes: observacoes,
-        assinatura: assinatura,
-        nome_assinante: nomeAssinante,
-        check_confirmacoes: {
-            local: document.getElementById('checkConfirmarLocal')?.checked || false,
-            cliente: document.getElementById('checkConfirmarCliente')?.checked || false,
-            equipamento: document.getElementById('checkConfirmarEquipamento')?.checked || false,
-            servico_concluido: document.getElementById('checkServicoConcluido')?.checked || false,
-            cliente_orientado: document.getElementById('checkClienteOrientado')?.checked || false,
-            local_limpo: document.getElementById('checkLocalLimpo')?.checked || false,
-            equipamentos_ok: document.getElementById('checkEquipamentosOk')?.checked || false
+    if (!execucaoId) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Erro',
+            text: 'ID da execução não encontrado. Por favor, recarregue a página e tente novamente.'
+        });
+        return;
+    }
+
+    // Mostrar loading
+    Swal.fire({
+        title: 'Salvando...',
+        text: 'Enviando dados do atendimento',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        willOpen: () => {
+            Swal.showLoading();
         }
+    });
+
+    // Preparar serviços executados (apenas os marcados como conforme)
+    const servicosExecutados = [];
+    Object.entries(wizardServicosStatus).forEach(([id, status]) => {
+        if (status === 'conforme') {
+            servicosExecutados.push(id);
+        }
+    });
+
+    // 1. Salvar todas as fotos primeiro
+    const salvarFotos = async () => {
+        const fotosSalvas = [];
+        for (const foto of wizardFotos) {
+            try {
+                const formData = new FormData();
+                formData.append('execucao_id', execucaoId);
+                formData.append('foto', foto.imagem);
+                formData.append('descricao', foto.tipo ? 'Foto: ' + traduzirTipoFoto(foto.tipo) : 'Foto do atendimento');
+                formData.append('tipo', foto.tipo || 'durante');
+                formData.append('<?php echo $this->security->get_csrf_token_name(); ?>', '<?php echo $this->security->get_csrf_hash(); ?>');
+
+                const response = await fetch('<?php echo site_url('tecnicos/adicionar_foto'); ?>', {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+                if (result.success) {
+                    fotosSalvas.push(result.foto_id);
+                }
+            } catch (error) {
+                console.error('Erro ao salvar foto:', error);
+            }
+        }
+        return fotosSalvas;
     };
 
-    console.log('Dados do wizard:', dados);
+    // 2. Finalizar execução
+    const finalizarExecucao = async () => {
+        const formData = new FormData();
+        formData.append('execucao_id', execucaoId);
+        formData.append('assinatura_cliente', assinatura);
+        formData.append('nome_cliente_assina', nomeAssinante);
+        formData.append('observacoes', observacoes);
+        formData.append('servicos', JSON.stringify(servicosExecutados));
+        formData.append('latitude', '0');
+        formData.append('longitude', '0');
+        formData.append('<?php echo $this->security->get_csrf_token_name(); ?>', '<?php echo $this->security->get_csrf_hash(); ?>');
 
-    // Aqui você faria o envio para o servidor
-    // Por enquanto, mostra mensagem de sucesso
-    Swal.fire({
-        icon: 'success',
-        title: 'Atendimento Finalizado!',
-        text: 'Todos os dados foram registrados com sucesso.',
-        timer: 2000,
-        showConfirmButton: false
-    }).then(function() {
-        // Redirecionar para relatório ou recarregar página
-        window.location.reload();
+        const response = await fetch('<?php echo site_url('tecnicos/finalizar_execucao'); ?>', {
+            method: 'POST',
+            body: formData
+        });
+        return await response.json();
+    };
+
+    // Executar sequência
+    salvarFotos().then(() => {
+        return finalizarExecucao();
+    }).then(result => {
+        if (result.success) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Atendimento Finalizado!',
+                text: 'Todos os dados foram registrados com sucesso.',
+                timer: 2000,
+                showConfirmButton: false
+            }).then(function() {
+                window.location.href = '<?php echo site_url('tecnicos/relatorio_execucao/'); ?>' + window.osId;
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro',
+                text: result.message || 'Erro ao finalizar atendimento'
+            });
+        }
+    }).catch(error => {
+        console.error('Erro:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Erro',
+            text: 'Erro ao processar os dados. Tente novamente.'
+        });
     });
 }
 window.finalizarWizardAtendimento = finalizarWizardAtendimento;
