@@ -252,9 +252,9 @@ class Tec_os_model extends CI_Model
         // Se não encontrou nada, tenta buscar da tabela os_servicos (portal do técnico)
         if (empty($result) && $this->db->table_exists('os_servicos')) {
             $this->db->reset_query();
-            $this->db->select('os_servicos.id as idServicos_os, os_servicos.servico_id as servicos_id, os_servicos.quantidade, os_servicos.status, os_servicos.observacao, servicos.nome as servico_nome, servicos.preco as servico_preco');
+            $this->db->select('os_servicos.id as idServicos_os, os_servicos.servico_id as servicos_id, os_servicos.quantidade, os_servicos.status, os_servicos.observacao, servicos_catalogo.nome as servico_nome, servicos_catalogo.codigo as servico_codigo');
             $this->db->from('os_servicos');
-            $this->db->join('servicos', 'servicos.idServicos = os_servicos.servico_id', 'left');
+            $this->db->join('servicos_catalogo', 'servicos_catalogo.id = os_servicos.servico_id', 'left');
             $this->db->where('os_servicos.os_id', $os_id);
 
             $query2 = $this->db->get();

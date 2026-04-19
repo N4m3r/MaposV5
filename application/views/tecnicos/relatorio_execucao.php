@@ -562,9 +562,10 @@
                     // Se não encontrou em servicos_os, tentar os_servicos (portal do técnico)
                     if (empty($servicos_verificacao) && $CI->db->table_exists('os_servicos')) {
                         $CI->db->reset_query();
-                        $CI->db->select('id, servico_id as servicos_id, os_id, quantidade, status, observacao');
+                        $CI->db->select('os_servicos.id, os_servicos.servico_id as servicos_id, os_servicos.os_id, os_servicos.quantidade, os_servicos.status, os_servicos.observacao, servicos_catalogo.nome as servico_nome');
                         $CI->db->from('os_servicos');
-                        $CI->db->where('os_id', $os->idOs);
+                        $CI->db->join('servicos_catalogo', 'servicos_catalogo.id = os_servicos.servico_id', 'left');
+                        $CI->db->where('os_servicos.os_id', $os->idOs);
                         $query_verificacao2 = $CI->db->get();
                         if ($query_verificacao2) {
                             $servicos_verificacao = $query_verificacao2->result();

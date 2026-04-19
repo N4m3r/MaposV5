@@ -539,10 +539,21 @@ class Tecnicos extends CI_Controller
                     $servico_id_int = intval($servico_id);
                     log_message('error', 'FINALIZAR - Atualizando servico_id: ' . $servico_id_int . ' para status: ' . $status_db);
 
+                    // Tentar atualizar na tabela servicos_os primeiro (tabela padrão MAP-OS)
                     $this->db->where('idServicos_os', $servico_id_int);
                     $this->db->where('os_id', $execucao->os_id);
                     $this->db->update('servicos_os', ['status' => $status_db]);
-                    log_message('error', 'FINALIZAR - Query: ' . $this->db->last_query() . ' | Affected: ' . $this->db->affected_rows());
+                    $affected = $this->db->affected_rows();
+                    log_message('error', 'FINALIZAR - Query servicos_os: ' . $this->db->last_query() . ' | Affected: ' . $affected);
+
+                    // Se não afetou nenhuma linha, tentar atualizar na tabela os_servicos (portal do técnico)
+                    if ($affected == 0) {
+                        $this->db->where('id', $servico_id_int);
+                        $this->db->where('os_id', $execucao->os_id);
+                        $this->db->update('os_servicos', ['status' => $status_db]);
+                        $affected2 = $this->db->affected_rows();
+                        log_message('error', 'FINALIZAR - Query os_servicos: ' . $this->db->last_query() . ' | Affected: ' . $affected2);
+                    }
                 }
             }
         }
