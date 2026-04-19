@@ -314,7 +314,8 @@
                                     <?php if (!empty($servicos)): ?>
                                         <div class="wizard-servicos-list">
                                             <?php foreach ($servicos as $index => $servico): ?>
-                                                <div class="wizard-servico-item" data-servico-id="<?php echo $servico->idServicos_os ?? $index; ?>">
+                                                <?php $servico_id = intval($servico->idServicos_os ?? $index); ?>
+                                                <div class="wizard-servico-item" data-servico-id="<?php echo $servico_id; ?>">
                                                     <div class="servico-info-wizard">
                                                         <div class="servico-nome-wizard">
                                                             <i class="bx bx-wrench"></i>
@@ -326,15 +327,15 @@
                                                     </div>
                                                     <div class="servico-status-selector">
                                                         <button type="button" class="btn-status" data-status="pendente"
-                                                                onclick="setWizardServicoStatus(<?php echo $servico->idServicos_os ?? $index; ?>, 'pendente')">
+                                                                onclick="setWizardServicoStatus(<?php echo $servico_id; ?>, 'pendente')">
                                                             <i class="bx bx-circle"></i> Pendente
                                                         </button>
                                                         <button type="button" class="btn-status btn-status-ok" data-status="conforme"
-                                                                onclick="setWizardServicoStatus(<?php echo $servico->idServicos_os ?? $index; ?>, 'conforme')">
+                                                                onclick="setWizardServicoStatus(<?php echo $servico_id; ?>, 'conforme')">
                                                             <i class="bx bx-check"></i> Executado
                                                         </button>
                                                         <button type="button" class="btn-status btn-status-nok" data-status="nao_conforme"
-                                                                onclick="setWizardServicoStatus(<?php echo $servico->idServicos_os ?? $index; ?>, 'nao_conforme')">
+                                                                onclick="setWizardServicoStatus(<?php echo $servico_id; ?>, 'nao_conforme')">
                                                             <i class="bx bx-x"></i> Não Executado
                                                         </button>
                                                     </div>
@@ -3453,13 +3454,10 @@ document.addEventListener('DOMContentLoaded', function() {
 function inicializarWizard() {
     // Inicializar status dos serviços
     const servicosItems = document.querySelectorAll('.wizard-servico-item');
-    console.log('[DEBUG] inicializarWizard - Encontrados ' + servicosItems.length + ' servicos');
     servicosItems.forEach(item => {
         const servicoId = item.getAttribute('data-servico-id');
-        console.log('[DEBUG] inicializarWizard - Servico ID: ' + servicoId + ' (tipo: ' + typeof servicoId + ')');
         wizardServicosStatus[servicoId] = 'pendente';
     });
-    console.log('[DEBUG] inicializarWizard - wizardServicosStatus:', wizardServicosStatus);
 
     atualizarResumoServicos();
 }
