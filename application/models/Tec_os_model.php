@@ -244,7 +244,8 @@ class Tec_os_model extends CI_Model
         // Buscar execução
         $this->db->where('os_id', $os_id);
         $this->db->order_by('id', 'DESC');
-        $execucao = $this->db->get('tec_os_execucao')->row();
+        $query = $this->db->get('tec_os_execucao');
+        $execucao = $query ? $query->row() : null;
 
         if (!$execucao || !$execucao->checklist_execucao_json) {
             // Retornar checklist padrão baseado nos serviços da OS
@@ -342,7 +343,8 @@ class Tec_os_model extends CI_Model
     public function getServicoCatalogoById($id)
     {
         $this->db->where('idServicos', $id);
-        return $this->db->get('servicos')->row();
+        $query = $this->db->get('servicos');
+        return $query ? $query->row() : null;
     }
 
     /**
@@ -405,7 +407,8 @@ class Tec_os_model extends CI_Model
     public function getChecklistTemplateById($id)
     {
         $this->db->where('id', $id);
-        return $this->db->get('tec_checklist_template')->row();
+        $query = $this->db->get('tec_checklist_template');
+        return $query ? $query->row() : null;
     }
 
     /**
@@ -627,6 +630,7 @@ class Tec_os_model extends CI_Model
         $this->db->where('tec_os_execucao.tecnico_id', $tecnico_id);
         $this->db->where('tec_os_execucao.status', 'em_execucao');
 
-        return $this->db->get()->row();
+        $query = $this->db->get();
+        return $query ? $query->row() : null;
     }
 }

@@ -576,8 +576,8 @@ $etapaStatusColors = [
                         </div>
                         <div id="os-vazia" style="display: none; text-align: center; padding: 40px;">
                             <i class="bx bx-inbox" style="font-size: 3rem; color: #ccc;"></i>
-                            <p style="margin-top: 15px; color: #666;">Nenhuma OS disponível para vincular.</p>
-                            <p style="font-size: 0.85rem; color: #999;">Todas as OS já estão vinculadas a outras obras.</p>
+                            <p style="margin-top: 15px; color: #666;" id="os-vazia-msg">Nenhuma OS encontrada.</p>
+                            <p style="font-size: 0.85rem; color: #999;" id="os-vazia-sub">Verifique se existem OS cadastradas no sistema.</p>
                         </div>
                         <div id="os-lista" style="display: none; max-height: 300px; overflow-y: auto;">
                             <!-- OS serão inseridas aqui via JavaScript -->
@@ -771,20 +771,33 @@ function carregarOsDisponiveis(termo = '') {
         dataType: 'json',
         success: function(response) {
             $('#os-loading').hide();
+            console.log('Response:', response); // Debug
 
             if (response.success && response.os && response.os.length > 0) {
                 osDisponiveis = response.os;
                 renderizarOsLista(response.os);
                 $('#total-os-disponiveis').text(response.os.length);
                 $('#os-lista').show();
-            } else {
+            } else if (response.success && response.os.length === 0) {
+                // Sucesso mas sem OS
                 osDisponiveis = [];
                 $('#total-os-disponiveis').text('0');
+                $('#os-vazia-msg').text('Nenhuma OS cadastrada no sistema.');
+                $('#os-vazia-sub').text('Cadastre OS primeiro para poder vinculá-las às obras.');
+                $('#os-vazia').show();
+            } else {
+                // Erro retornado pelo servidor
+                osDisponiveis = [];
+                $('#total-os-disponiveis').text('0');
+                $('#os-vazia-msg').text('Erro ao buscar OS.');
+                $('#os-vazia-sub').text(response.message || 'Tente novamente mais tarde.');
                 $('#os-vazia').show();
             }
         },
-        error: function() {
+        error: function(xhr, status, error) {
             $('#os-loading').hide();
+            $('#os-vazia-msg').text('Erro de conexão.');
+            $('#os-vazia-sub').text('Verifique sua conexão e tente novamente.');
             $('#os-vazia').show();
             $('#total-os-disponiveis').text('0');
         }

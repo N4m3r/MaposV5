@@ -1183,33 +1183,45 @@ class Tecnicos_admin extends MY_Controller
      */
     public function buscar_os_disponiveis_simples()
     {
+        header('Content-Type: application/json');
         $termo = $this->input->get('termo');
 
-        $this->db->select('os.idOs, os.dataInicial, os.dataFinal, os.status, os.valorTotal, os.garantia, os.obra_id, c.nomeCliente, c.documento, c.telefone as cliente_telefone, o.nome as obra_vinculada');
-        $this->db->from('os');
-        $this->db->join('clientes c', 'c.idClientes = os.clientes_id');
-        $this->db->join('obras o', 'o.id = os.obra_id', 'left');
+        try {
+            $this->db->select('os.idOs, os.dataInicial, os.dataFinal, os.status, os.valorTotal, os.garantia, os.obra_id, c.nomeCliente, c.documento, c.telefone as cliente_telefone, o.nome as obra_vinculada');
+            $this->db->from('os');
+            $this->db->join('clientes c', 'c.idClientes = os.clientes_id', 'left');
+            $this->db->join('obras o', 'o.id = os.obra_id', 'left');
 
-        if ($termo) {
-            $this->db->group_start();
-            $this->db->like('os.idOs', $termo);
-            $this->db->or_like('c.nomeCliente', $termo);
-            $this->db->or_like('c.documento', $termo);
-            $this->db->group_end();
+            if ($termo) {
+                $this->db->group_start();
+                $this->db->like('os.idOs', $termo);
+                $this->db->or_like('c.nomeCliente', $termo);
+                $this->db->or_like('c.documento', $termo);
+                $this->db->group_end();
+            }
+
+            $this->db->order_by('os.obra_id', 'ASC');
+            $this->db->order_by('os.dataInicial', 'DESC');
+            $this->db->limit(100);
+            $query = $this->db->get();
+
+            if (!$query) {
+                $error = $this->db->error();
+                echo json_encode(['success' => false, 'message' => 'Erro na query', 'error' => $error]);
+                return;
+            }
+
+            $os = $query->result();
+
+            // Adicionar flag indicando se já está vinculada
+            foreach ($os as &$item) {
+                $item->ja_vinculada = !empty($item->obra_id) && $item->obra_id > 0;
+            }
+
+            echo json_encode(['success' => true, 'os' => $os, 'total' => count($os)]);
+        } catch (Exception $e) {
+            echo json_encode(['success' => false, 'message' => 'Erro: ' . $e->getMessage()]);
         }
-
-        $this->db->order_by('os.obra_id', 'ASC'); // OS não vinculadas primeiro
-        $this->db->order_by('os.dataInicial', 'DESC');
-        $this->db->limit(100);
-        $query = $this->db->get();
-        $os = $query ? $query->result() : [];
-
-        // Adicionar flag indicando se já está vinculada
-        foreach ($os as &$item) {
-            $item->ja_vinculada = !empty($item->obra_id);
-        }
-
-        echo json_encode(['success' => true, 'os' => $os, 'total' => count($os)]);
     }
 
     /**
@@ -1392,11 +1404,19 @@ class Tecnicos_admin extends MY_Controller
                 $tecnicos = $query ? $query->result() : [];
             }
 
+            // Se ainda não encontrou, busca todos sem filtro
+            if (empty($tecnicos)) {
+                $this->db->select('idUsuarios, nome, email, telefone, nivel_tecnico, especialidades, status');
+                $this->db->order_by('nome', 'ASC');
+                $query = $this->db->get('usuarios');
+                $tecnicos = $query ? $query->result() : [];
+            }
+
             echo json_encode([
                 'success' => true,
                 'tecnicos' => $tecnicos,
                 'total' => count($tecnicos),
-                'debug' => 'Usando usuarios_model-getAll()'
+                'debug' => 'Usando tecnicos_model-getAll()'
             ]);
         } catch (Exception $e) {
             echo json_encode([
