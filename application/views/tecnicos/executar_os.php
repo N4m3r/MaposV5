@@ -249,7 +249,6 @@
                                                     </div>
                                                     <div class="produto-detalhes">
                                                         <span class="produto-qtd">Qtd: <?php echo $produto->quantidade ?? 0; ?> <?php echo htmlspecialchars($produto->unidade ?? 'un', ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></span>
-                                                        <span class="produto-preco">R$ <?php echo number_format($produto->preco ?? 0, 2, ',', '.'); ?></span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -264,6 +263,256 @@
                         </div>
                     </div>
 
+                    <!-- Wizard de Atendimento -->
+                    <div class="widget-box wizard-container">
+                        <div class="widget-title">
+                            <span class="icon"><i class="bx bx-list-check"></i></span>
+                            <h5>Wizard de Atendimento</h5>
+                            <div class="buttons">
+                                <span class="wizard-step-indicator">
+                                    <span id="stepIndicator">Etapa 1 de 5</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="widget-content">
+                            <!-- Progresso do Wizard -->
+                            <div class="wizard-progress">
+                                <div class="wizard-progress-bar" id="wizardProgressBar"></div>
+                                <div class="wizard-steps">
+                                    <div class="wizard-step active" data-step="1">
+                                        <div class="step-number">1</div>
+                                        <div class="step-label">Check-in</div>
+                                    </div>
+                                    <div class="wizard-step" data-step="2">
+                                        <div class="step-number">2</div>
+                                        <div class="step-label">Serviços</div>
+                                    </div>
+                                    <div class="wizard-step" data-step="3">
+                                        <div class="step-number">3</div>
+                                        <div class="step-label">Fotos</div>
+                                    </div>
+                                    <div class="wizard-step" data-step="4">
+                                        <div class="step-number">4</div>
+                                        <div class="step-label">Observações</div>
+                                    </div>
+                                    <div class="wizard-step" data-step="5">
+                                        <div class="step-number">5</div>
+                                        <div class="step-label">Check-out</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Conteúdo das Etapas -->
+                            <div class="wizard-content">
+                                <!-- Etapa 1: Check-in -->
+                                <div class="wizard-step-content active" data-step="1">
+                                    <h4><i class="bx bx-log-in"></i> Iniciar Atendimento</h4>
+                                    <p>Confirme o início do atendimento na OS #<?php echo $os->idOs; ?></p>
+                                    <div class="checklist-confirmacao">
+                                        <label class="checklist-item-label">
+                                            <input type="checkbox" id="checkConfirmarLocal" class="checklist-checkbox-input">
+                                            <span class="checklist-text">
+                                                <i class="bx bx-map-pin"></i> Estou no local do atendimento
+                                            </span>
+                                        </label>
+                                        <label class="checklist-item-label">
+                                            <input type="checkbox" id="checkConfirmarCliente" class="checklist-checkbox-input">
+                                            <span class="checklist-text">
+                                                <i class="bx bx-user-check"></i> Cliente está presente/conectado
+                                            </span>
+                                        </label>
+                                        <label class="checklist-item-label">
+                                            <input type="checkbox" id="checkConfirmarEquipamento" class="checklist-checkbox-input">
+                                            <span class="checklist-text">
+                                                <i class="bx bx-wrench"></i> Equipamentos necessários disponíveis
+                                            </span>
+                                        </label>
+                                    </div>
+                                    <div class="wizard-actions">
+                                        <button type="button" class="btn btn-primary" onclick="wizardProximo()">
+                                            <i class="bx bx-right-arrow-alt"></i> Iniciar e Prosseguir
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Etapa 2: Execução dos Serviços -->
+                                <div class="wizard-step-content" data-step="2">
+                                    <h4><i class="bx bx-wrench"></i> Execução dos Serviços</h4>
+                                    <p>Marque o status de cada serviço executado:</p>
+
+                                    <?php if (!empty($servicos)): ?>
+                                        <div class="wizard-servicos-list">
+                                            <?php foreach ($servicos as $index => $servico): ?>
+                                                <div class="wizard-servico-item" data-servico-id="<?php echo $servico->idServicos_os ?? $index; ?>">
+                                                    <div class="servico-info-wizard">
+                                                        <div class="servico-nome-wizard">
+                                                            <i class="bx bx-wrench"></i>
+                                                            <?php echo htmlspecialchars($servico->servico_nome ?? $servico->nome ?? 'Serviço', ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?>
+                                                        </div>
+                                                        <?php if (!empty($servico->servico_codigo) || !empty($servico->codigo)): ?>
+                                                            <small class="servico-codigo-wizard">Código: <?php echo htmlspecialchars($servico->servico_codigo ?? $servico->codigo ?? '', ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></small>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                    <div class="servico-status-selector">
+                                                        <button type="button" class="btn-status" data-status="pendente"
+                                                                onclick="setWizardServicoStatus(<?php echo $servico->idServicos_os ?? $index; ?>, 'pendente')">
+                                                            <i class="bx bx-circle"></i> Pendente
+                                                        </button>
+                                                        <button type="button" class="btn-status btn-status-ok" data-status="conforme"
+                                                                onclick="setWizardServicoStatus(<?php echo $servico->idServicos_os ?? $index; ?>, 'conforme')">
+                                                            <i class="bx bx-check"></i> Executado
+                                                        </button>
+                                                        <button type="button" class="btn-status btn-status-nok" data-status="nao_conforme"
+                                                                onclick="setWizardServicoStatus(<?php echo $servico->idServicos_os ?? $index; ?>, 'nao_conforme')">
+                                                            <i class="bx bx-x"></i> Não Executado
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            <?php endforeach; ?>
+                                        </div>
+                                        <div class="wizard-servicos-resumo" id="wizardServicosResumo">
+                                            <span class="resumo-pendente" id="resumoPendente"></span>
+                                            <span class="resumo-executado" id="resumoExecutado"></span>
+                                        </div>
+                                    <?php else: ?>
+                                        <div class="empty-state">
+                                            <div class="empty-text">Nenhum serviço cadastrado nesta OS</div>
+                                            <small>Continue para as próximas etapas</small>
+                                        </div>
+                                    <?php endif; ?>
+
+                                    <div class="wizard-actions">
+                                        <button type="button" class="btn" onclick="wizardAnterior()">
+                                            <i class="bx bx-left-arrow-alt"></i> Voltar
+                                        </button>
+                                        <button type="button" class="btn btn-primary" onclick="wizardProximo()">
+                                            <i class="bx bx-right-arrow-alt"></i> Prosseguir
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Etapa 3: Fotos do Serviço -->
+                                <div class="wizard-step-content" data-step="3">
+                                    <h4><i class="bx bx-camera"></i> Registro Fotográfico</h4>
+                                    <p>Adicione fotos do serviço realizado:</p>
+
+                                    <div class="wizard-fotos-section">
+                                        <div class="foto-tipo-selector">
+                                            <label>Tipo da foto:</label>
+                                            <select id="tipoFotoWizard" class="span12">
+                                                <option value="antes">Antes do serviço</option>
+                                                <option value="durante">Durante o serviço</option>
+                                                <option value="depois">Depois do serviço</option>
+                                                <option value="detalhe">Detalhe/Documentação</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="camera-section-wizard">
+                                            <div class="camera-preview-wizard" id="wizardCameraPreview" onclick="abrirCameraWizard()">
+                                                <i class="bx bx-camera"></i>
+                                                <span>Clique para tirar foto</span>
+                                            </div>
+                                            <input type="file" id="wizardFotoInput" accept="image/*" capture="environment" style="display: none;" onchange="processarFotoWizard(this)">
+                                        </div>
+
+                                        <div class="fotos-preview-grid" id="wizardFotosPreview">
+                                            <!-- Fotos serão adicionadas aqui via JS -->
+                                        </div>
+                                    </div>
+
+                                    <div class="wizard-actions">
+                                        <button type="button" class="btn" onclick="wizardAnterior()">
+                                            <i class="bx bx-left-arrow-alt"></i> Voltar
+                                        </button>
+                                        <button type="button" class="btn btn-primary" onclick="wizardProximo()">
+                                            <i class="bx bx-right-arrow-alt"></i> Prosseguir
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Etapa 4: Observações -->
+                                <div class="wizard-step-content" data-step="4">
+                                    <h4><i class="bx bx-note"></i> Observações do Atendimento</h4>
+                                    <p>Descreva o que foi realizado:</p>
+
+                                    <div class="wizard-observacoes">
+                                        <textarea id="wizardObservacoes" rows="6" class="span12"
+                                            placeholder="Descreva:
+- O que foi realizado
+- Problemas encontrados
+- Recomendações ao cliente
+- Materiais utilizados"></textarea>
+
+                                        <div class="observacoes-checklist">
+                                            <h6><i class="bx bx-check-square"></i> Checklist de Conclusão</h6>
+                                            <label class="checklist-item-label">
+                                                <input type="checkbox" id="checkServicoConcluido" class="checklist-checkbox-input">
+                                                <span class="checklist-text">Serviço concluído conforme solicitado</span>
+                                            </label>
+                                            <label class="checklist-item-label">
+                                                <input type="checkbox" id="checkClienteOrientado" class="checklist-checkbox-input">
+                                                <span class="checklist-text">Cliente orientado sobre o serviço realizado</span>
+                                            </label>
+                                            <label class="checklist-item-label">
+                                                <input type="checkbox" id="checkLocalLimpo" class="checklist-checkbox-input">
+                                                <span class="checklist-text">Local de trabalho foi limpo/organizado</span>
+                                            </label>
+                                            <label class="checklist-item-label">
+                                                <input type="checkbox" id="checkEquipamentosOk" class="checklist-checkbox-input">
+                                                <span class="checklist-text">Equipamentos testados e funcionando</span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="wizard-actions">
+                                        <button type="button" class="btn" onclick="wizardAnterior()">
+                                            <i class="bx bx-left-arrow-alt"></i> Voltar
+                                        </button>
+                                        <button type="button" class="btn btn-primary" onclick="wizardProximo()">
+                                            <i class="bx bx-right-arrow-alt"></i> Prosseguir
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Etapa 5: Check-out e Assinatura -->
+                                <div class="wizard-step-content" data-step="5">
+                                    <h4><i class="bx bx-log-out"></i> Finalização - Check-out</h4>
+                                    <p>Revise e finalize o atendimento:</p>
+
+                                    <div class="wizard-resumo-final" id="wizardResumoFinal">
+                                        <!-- Resumo preenchido via JS -->
+                                    </div>
+
+                                    <div class="wizard-assinatura-section">
+                                        <h6><i class="bx bx-pencil"></i> Assinatura do Cliente</h6>
+                                        <canvas id="wizardSignaturePad" class="signature-pad-wizard"></canvas>
+                                        <button type="button" class="btn btn-mini" onclick="limparAssinaturaWizard()">
+                                            <i class="bx bx-trash"></i> Limpar Assinatura
+                                        </button>
+
+                                        <div class="control-group" style="margin-top: 15px;">
+                                            <label>Nome de quem assina:</label>
+                                            <input type="text" id="wizardNomeAssinante" placeholder="Nome completo" class="span12">
+                                        </div>
+
+                                        <label class="checklist-item-label" style="margin-top: 15px;">
+                                            <input type="checkbox" id="checkConfirmarAssinatura" class="checklist-checkbox-input">
+                                            <span class="checklist-text">Confirmo que o serviço foi realizado e aceito as condições</span>
+                                        </label>
+                                    </div>
+
+                                    <div class="wizard-actions">
+                                        <button type="button" class="btn" onclick="wizardAnterior()">
+                                            <i class="bx bx-left-arrow-alt"></i> Voltar
+                                        </button>
+                                        <button type="button" class="btn btn-success btn-large" onclick="finalizarWizardAtendimento()">
+                                            <i class="bx bx-check-double"></i> Finalizar Atendimento
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <!-- Serviços da OS -->
                     <div class="widget-box">
                         <div class="widget-title">
@@ -1461,6 +1710,581 @@
         font-size: 36px;
     }
 }
+
+/* ============================================
+   WIZARD DE ATENDIMENTO
+   ============================================ */
+.wizard-container {
+    border: 2px solid #667eea;
+}
+
+.wizard-step-indicator {
+    background: #667eea;
+    color: white;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* Progress Bar */
+.wizard-progress {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    position: relative;
+}
+
+.wizard-progress-bar {
+    position: absolute;
+    top: 40px;
+    left: 10%;
+    width: 80%;
+    height: 4px;
+    background: #e0e0e0;
+    z-index: 1;
+}
+
+.wizard-progress-bar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.wizard-progress-bar.step-1::after { width: 0%; }
+.wizard-progress-bar.step-2::after { width: 25%; }
+.wizard-progress-bar.step-3::after { width: 50%; }
+.wizard-progress-bar.step-4::after { width: 75%; }
+.wizard-progress-bar.step-5::after { width: 100%; }
+
+.wizard-steps {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    z-index: 2;
+}
+
+.wizard-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.wizard-step .step-number {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #e0e0e0;
+    color: #666;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1rem;
+    transition: all 0.3s;
+    border: 3px solid transparent;
+}
+
+.wizard-step.active .step-number {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-color: #667eea;
+}
+
+.wizard-step.completed .step-number {
+    background: #4caf50;
+    color: white;
+}
+
+.wizard-step .step-label {
+    margin-top: 8px;
+    font-size: 0.75rem;
+    color: #666;
+    font-weight: 500;
+}
+
+.wizard-step.active .step-label {
+    color: #667eea;
+    font-weight: 600;
+}
+
+/* Step Content */
+.wizard-step-content {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.wizard-step-content.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.wizard-step-content h4 {
+    color: #2d335b;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.wizard-step-content h4 i {
+    color: #667eea;
+    font-size: 1.5rem;
+}
+
+/* Checklist de Confirmação */
+.checklist-confirmacao {
+    margin: 20px 0;
+}
+
+.checklist-item-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 15px;
+    background: #f8f9fa;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.checklist-item-label:hover {
+    border-color: #667eea;
+    background: #f0f4ff;
+}
+
+.checklist-item-label input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin-top: 2px;
+    accent-color: #667eea;
+}
+
+.checklist-item-label input[type="checkbox"]:checked + .checklist-text {
+    color: #667eea;
+    font-weight: 500;
+}
+
+.checklist-text {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+    color: #333;
+}
+
+.checklist-text i {
+    color: #667eea;
+    font-size: 1.2rem;
+}
+
+/* Serviços no Wizard */
+.wizard-servicos-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.wizard-servico-item {
+    background: #f8f9fa;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.3s;
+}
+
+.wizard-servico-item:hover {
+    border-color: #667eea;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+}
+
+.wizard-servico-item.status-conforme {
+    border-color: #4caf50;
+    background: #f1f8e9;
+}
+
+.wizard-servico-item.status-nao_conforme {
+    border-color: #f44336;
+    background: #ffebee;
+}
+
+.servico-info-wizard {
+    margin-bottom: 15px;
+}
+
+.servico-nome-wizard {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2d335b;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.servico-nome-wizard i {
+    color: #667eea;
+    font-size: 1.3rem;
+}
+
+.servico-codigo-wizard {
+    color: #888;
+    font-size: 0.85rem;
+    margin-left: 30px;
+}
+
+.servico-status-selector {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.btn-status {
+    flex: 1;
+    min-width: 120px;
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    background: white;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s;
+    font-size: 0.9rem;
+}
+
+.btn-status:hover {
+    border-color: #667eea;
+    background: #f0f4ff;
+}
+
+.btn-status.active {
+    border-color: #667eea;
+    background: #667eea;
+    color: white;
+}
+
+.btn-status-ok:hover,
+.btn-status-ok.active {
+    border-color: #4caf50;
+    background: #4caf50;
+    color: white;
+}
+
+.btn-status-nok:hover,
+.btn-status-nok.active {
+    border-color: #f44336;
+    background: #f44336;
+    color: white;
+}
+
+.wizard-servicos-resumo {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+.resumo-pendente,
+.resumo-executado {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.resumo-pendente {
+    background: #fff3e0;
+    color: #ef6c00;
+}
+
+.resumo-executado {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+/* Fotos no Wizard */
+.wizard-fotos-section {
+    margin: 20px 0;
+}
+
+.foto-tipo-selector {
+    margin-bottom: 20px;
+}
+
+.foto-tipo-selector label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+}
+
+.foto-tipo-selector select {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.camera-section-wizard {
+    margin-bottom: 20px;
+}
+
+.camera-preview-wizard {
+    aspect-ratio: 16/9;
+    max-height: 300px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.camera-preview-wizard:hover {
+    transform: scale(1.02);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+}
+
+.camera-preview-wizard i {
+    font-size: 48px;
+    margin-bottom: 10px;
+}
+
+.fotos-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.foto-preview-item {
+    aspect-ratio: 1;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    border: 2px solid #e0e0e0;
+}
+
+.foto-preview-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.foto-preview-item .foto-tipo-tag {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0,0,0,0.7);
+    color: white;
+    padding: 5px;
+    font-size: 0.75rem;
+    text-align: center;
+}
+
+.foto-preview-item .btn-remover-foto {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #f44336;
+    color: white;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+/* Observações no Wizard */
+.wizard-observacoes textarea {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 1rem;
+    resize: vertical;
+    min-height: 120px;
+}
+
+.wizard-observacoes textarea:focus {
+    border-color: #667eea;
+    outline: none;
+}
+
+.observacoes-checklist {
+    margin-top: 20px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+.observacoes-checklist h6 {
+    margin: 0 0 15px 0;
+    color: #2d335b;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Resumo Final */
+.wizard-resumo-final {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.resumo-section {
+    margin-bottom: 20px;
+}
+
+.resumo-section:last-child {
+    margin-bottom: 0;
+}
+
+.resumo-section h6 {
+    color: #667eea;
+    margin: 0 0 10px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.resumo-servicos-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.resumo-servico-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background: white;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.resumo-servico-item.status-ok {
+    border-left: 3px solid #4caf50;
+}
+
+.resumo-servico-item.status-nok {
+    border-left: 3px solid #f44336;
+}
+
+.resumo-servico-item.status-pendente {
+    border-left: 3px solid #ff9800;
+}
+
+/* Assinatura no Wizard */
+.wizard-assinatura-section {
+    margin-top: 20px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+.wizard-assinatura-section h6 {
+    margin: 0 0 15px 0;
+    color: #2d335b;
+}
+
+.signature-pad-wizard {
+    width: 100%;
+    height: 200px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    background: white;
+    cursor: crosshair;
+    margin-bottom: 10px;
+}
+
+/* Ações do Wizard */
+.wizard-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.wizard-actions .btn {
+    flex: 1;
+    padding: 15px 25px;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+/* Responsividade do Wizard */
+@media (max-width: 768px) {
+    .wizard-progress-bar {
+        display: none;
+    }
+
+    .wizard-steps {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .wizard-step {
+        flex: 1;
+        min-width: 60px;
+    }
+
+    .wizard-step .step-label {
+        font-size: 0.65rem;
+    }
+
+    .servico-status-selector {
+        flex-direction: column;
+    }
+
+    .btn-status {
+        width: 100%;
+    }
+
+    .wizard-actions {
+        flex-direction: column;
+    }
+
+    .wizard-actions .btn {
+        width: 100%;
+    }
+}
+
 </style>
 
 <script>
@@ -2297,6 +3121,409 @@ document.addEventListener('DOMContentLoaded', function() {
                 previewArquivoServico(fileInput);
             }
         }
-    }
+
+// ============================================
+// WIZARD DE ATENDIMENTO
+// ============================================
+let wizardStepAtual = 1;
+const wizardTotalSteps = 5;
+let wizardServicosStatus = {};
+let wizardFotos = [];
+let wizardSignaturePad = null;
+
+// Inicializar Wizard quando DOM estiver pronto
+document.addEventListener('DOMContentLoaded', function() {
+    inicializarWizard();
 });
-</script></div>
+
+function inicializarWizard() {
+    // Inicializar canvas de assinatura do wizard
+    const canvas = document.getElementById('wizardSignaturePad');
+    if (canvas && typeof SignaturePad !== 'undefined') {
+        wizardSignaturePad = new SignaturePad(canvas, {
+            backgroundColor: 'rgba(255, 255, 255, 0)',
+            penColor: 'rgb(0, 0, 0)'
+        });
+
+        // Redimensionar canvas
+        function resizeCanvas() {
+            const ratio = Math.max(window.devicePixelRatio || 1, 1);
+            canvas.width = canvas.offsetWidth * ratio;
+            canvas.height = canvas.offsetHeight * ratio;
+            canvas.getContext('2d').scale(ratio, ratio);
+            if (wizardSignaturePad) wizardSignaturePad.clear();
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+    }
+
+    // Inicializar status dos serviços
+    const servicosItems = document.querySelectorAll('.wizard-servico-item');
+    servicosItems.forEach(item => {
+        const servicoId = item.getAttribute('data-servico-id');
+        wizardServicosStatus[servicoId] = 'pendente';
+    });
+
+    atualizarResumoServicos();
+}
+
+// Navegação do Wizard
+function wizardProximo() {
+    if (wizardStepAtual < wizardTotalSteps) {
+        // Validar etapa atual
+        if (!validarEtapa(wizardStepAtual)) {
+            return;
+        }
+
+        wizardStepAtual++;
+        atualizarWizardView();
+    }
+}
+
+function wizardAnterior() {
+    if (wizardStepAtual > 1) {
+        wizardStepAtual--;
+        atualizarWizardView();
+    }
+}
+
+function irParaEtapa(etapa) {
+    if (etapa >= 1 && etapa <= wizardTotalSteps) {
+        wizardStepAtual = etapa;
+        atualizarWizardView();
+    }
+}
+
+function validarEtapa(etapa) {
+    switch(etapa) {
+        case 1:
+            // Verificar se pelo menos um checklist está marcado
+            const checks = [
+                document.getElementById('checkConfirmarLocal'),
+                document.getElementById('checkConfirmarCliente'),
+                document.getElementById('checkConfirmarEquipamento')
+            ];
+            const algumMarcado = checks.some(cb => cb && cb.checked);
+            if (!algumMarcado) {
+                Swal.fire({
+                    type: 'warning',
+                    title: 'Atenção',
+                    text: 'Por favor, confirme pelo menos um item para prosseguir.'
+                });
+                return false;
+            }
+            return true;
+
+        case 2:
+            // Verificar se todos os serviços foram avaliados
+            const pendentes = Object.values(wizardServicosStatus).filter(s => s === 'pendente').length;
+            if (pendentes > 0) {
+                Swal.fire({
+                    type: 'warning',
+                    title: 'Serviços Pendentes',
+                    text: 'Ainda há ' + pendentes + ' serviço(s) sem status definido. Por favor, marque todos.'
+                });
+                return false;
+            }
+            return true;
+
+        case 4:
+            // Verificar se observações foram preenchidas
+            const obs = document.getElementById('wizardObservacoes')?.value.trim();
+            if (!obs) {
+                Swal.fire({
+                    type: 'warning',
+                    title: 'Observações',
+                    text: 'Por favor, preencha as observações do atendimento.'
+                });
+                return false;
+            }
+            return true;
+
+        default:
+            return true;
+    }
+}
+
+function atualizarWizardView() {
+    // Atualizar indicador
+    document.getElementById('stepIndicator').textContent = 'Etapa ' + wizardStepAtual + ' de ' + wizardTotalSteps;
+
+    // Atualizar progress bar
+    const progressBar = document.getElementById('wizardProgressBar');
+    if (progressBar) {
+        progressBar.className = 'wizard-progress-bar step-' + wizardStepAtual;
+    }
+
+    // Atualizar steps visuais
+    document.querySelectorAll('.wizard-step').forEach(step => {
+        const stepNum = parseInt(step.getAttribute('data-step'));
+        step.classList.remove('active', 'completed');
+
+        if (stepNum === wizardStepAtual) {
+            step.classList.add('active');
+        } else if (stepNum < wizardStepAtual) {
+            step.classList.add('completed');
+        }
+    });
+
+    // Mostrar conteúdo da etapa atual
+    document.querySelectorAll('.wizard-step-content').forEach(content => {
+        content.classList.remove('active');
+        if (parseInt(content.getAttribute('data-step')) === wizardStepAtual) {
+            content.classList.add('active');
+        }
+    });
+
+    // Se estiver na etapa 5, atualizar resumo
+    if (wizardStepAtual === 5) {
+        atualizarResumoFinal();
+    }
+}
+
+// Controle de Serviços no Wizard
+function setWizardServicoStatus(servicoId, status) {
+    wizardServicosStatus[servicoId] = status;
+
+    const item = document.querySelector('.wizard-servico-item[data-servico-id="' + servicoId + '"]');
+    if (item) {
+        // Remover classes anteriores
+        item.classList.remove('status-conforme', 'status-nao_conforme');
+
+        // Adicionar classe atual
+        if (status !== 'pendente') {
+            item.classList.add('status-' + status);
+        }
+
+        // Atualizar botões
+        const botoes = item.querySelectorAll('.btn-status');
+        botoes.forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.getAttribute('data-status') === status) {
+                btn.classList.add('active');
+            }
+        });
+    }
+
+    atualizarResumoServicos();
+}
+
+function atualizarResumoServicos() {
+    const total = Object.keys(wizardServicosStatus).length;
+    const executados = Object.values(wizardServicosStatus).filter(s => s === 'conforme').length;
+    const naoExecutados = Object.values(wizardServicosStatus).filter(s => s === 'nao_conforme').length;
+    const pendentes = total - executados - naoExecutados;
+
+    const elPendente = document.getElementById('resumoPendente');
+    const elExecutado = document.getElementById('resumoExecutado');
+
+    if (elPendente) {
+        elPendente.textContent = pendentes > 0 ? pendentes + ' pendente(s)' : '';
+        elPendente.style.display = pendentes > 0 ? 'inline-block' : 'none';
+    }
+
+    if (elExecutado) {
+        elExecutado.textContent = (executados + naoExecutados) + ' avaliado(s)';
+    }
+}
+
+// Fotos no Wizard
+function abrirCameraWizard() {
+    document.getElementById('wizardFotoInput').click();
+}
+
+function processarFotoWizard(input) {
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        const tipo = document.getElementById('tipoFotoWizard').value;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            adicionarFotoWizard(e.target.result, tipo);
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+function adicionarFotoWizard(imagemBase64, tipo) {
+    const foto = {
+        id: Date.now(),
+        imagem: imagemBase64,
+        tipo: tipo,
+        data: new Date().toISOString()
+    };
+
+    wizardFotos.push(foto);
+    renderizarFotosWizard();
+}
+
+function traduzirTipoFoto(tipo) {
+    const tipos = {
+        'antes': 'Antes',
+        'durante': 'Durante',
+        'depois': 'Depois',
+        'detalhe': 'Detalhe'
+    };
+    return tipos[tipo] || tipo;
+}
+
+function renderizarFotosWizard() {
+    const container = document.getElementById('wizardFotosPreview');
+    if (!container) return;
+
+    let html = '';
+    wizardFotos.forEach(foto => {
+        html += '<div class="foto-preview-item">' +
+            '<img src="' + foto.imagem + '" alt="Foto">' +
+            '<div class="foto-tipo-tag">' + traduzirTipoFoto(foto.tipo) + '</div>' +
+            '<button type="button" class="btn-remover-foto" onclick="removerFotoWizard(' + foto.id + ')">' +
+                '<i class="bx bx-x"></i>' +
+            '</button>' +
+        '</div>';
+    });
+    container.innerHTML = html;
+}
+
+function removerFotoWizard(fotoId) {
+    wizardFotos = wizardFotos.filter(f => f.id !== fotoId);
+    renderizarFotosWizard();
+}
+
+// Assinatura no Wizard
+function limparAssinaturaWizard() {
+    if (wizardSignaturePad) {
+        wizardSignaturePad.clear();
+    }
+}
+
+// Resumo Final
+function atualizarResumoFinal() {
+    const container = document.getElementById('wizardResumoFinal');
+    if (!container) return;
+
+    const observacoes = document.getElementById('wizardObservacoes')?.value || '';
+    const totalFotos = wizardFotos.length;
+
+    let servicosHtml = '';
+    const servicosItems = document.querySelectorAll('.wizard-servico-item');
+    servicosItems.forEach(item => {
+        const servicoId = item.getAttribute('data-servico-id');
+        const nomeEl = item.querySelector('.servico-nome-wizard');
+        const nome = nomeEl ? nomeEl.textContent.trim() : 'Serviço';
+        const status = wizardServicosStatus[servicoId] || 'pendente';
+
+        let statusIcon = 'bx-circle';
+        let statusClass = 'status-pendente';
+        let statusText = 'Pendente';
+
+        if (status === 'conforme') {
+            statusIcon = 'bx-check';
+            statusClass = 'status-ok';
+            statusText = 'Executado';
+        } else if (status === 'nao_conforme') {
+            statusIcon = 'bx-x';
+            statusClass = 'status-nok';
+            statusText = 'Não Executado';
+        }
+
+        servicosHtml += '<div class="resumo-servico-item ' + statusClass + '">' +
+            '<i class="bx ' + statusIcon + '"></i>' +
+            '<span>' + nome + '</span>' +
+            '<small>(' + statusText + ')</small>' +
+        '</div>';
+    });
+
+    let html = '<div class="resumo-section">' +
+        '<h6><i class="bx bx-wrench"></i> Serviços Executados</h6>' +
+        '<div class="resumo-servicos-list">' +
+            (servicosHtml || '<small>Nenhum serviço</small>') +
+        '</div>' +
+    '</div>' +
+    '<div class="resumo-section">' +
+        '<h6><i class="bx bx-camera"></i> Fotos</h6>' +
+        '<p>' + totalFotos + ' foto(s) registrada(s)</p>' +
+    '</div>';
+
+    if (observacoes) {
+        let obsResumo = observacoes.substring(0, 200);
+        if (observacoes.length > 200) obsResumo += '...';
+        html += '<div class="resumo-section">' +
+            '<h6><i class="bx bx-note"></i> Observações</h6>' +
+            '<p style="white-space: pre-wrap;">' + obsResumo + '</p>' +
+        '</div>';
+    }
+
+    container.innerHTML = html;
+}
+
+// Finalizar Wizard
+function finalizarWizardAtendimento() {
+    // Validar assinatura
+    if (!wizardSignaturePad || wizardSignaturePad.isEmpty()) {
+        Swal.fire({
+            type: 'warning',
+            title: 'Assinatura Obrigatória',
+            text: 'Por favor, colete a assinatura do cliente.'
+        });
+        return;
+    }
+
+    const nomeAssinante = document.getElementById('wizardNomeAssinante')?.value.trim();
+    if (!nomeAssinante) {
+        Swal.fire({
+            type: 'warning',
+            title: 'Nome Obrigatório',
+            text: 'Por favor, informe o nome de quem está assinando.'
+        });
+        return;
+    }
+
+    const confirmarAssinatura = document.getElementById('checkConfirmarAssinatura');
+    if (!confirmarAssinatura?.checked) {
+        Swal.fire({
+            type: 'warning',
+            title: 'Confirmação Necessária',
+            text: 'Por favor, confirme que o serviço foi realizado e aceito.'
+        });
+        return;
+    }
+
+    // Coletar dados
+    const assinatura = wizardSignaturePad.toDataURL();
+    const observacoes = document.getElementById('wizardObservacoes')?.value || '';
+
+    // Preparar dados para envio
+    const dados = {
+        os_id: typeof osId !== 'undefined' ? osId : null,
+        servicos_status: wizardServicosStatus,
+        fotos: wizardFotos,
+        observacoes: observacoes,
+        assinatura: assinatura,
+        nome_assinante: nomeAssinante,
+        check_confirmacoes: {
+            local: document.getElementById('checkConfirmarLocal')?.checked || false,
+            cliente: document.getElementById('checkConfirmarCliente')?.checked || false,
+            equipamento: document.getElementById('checkConfirmarEquipamento')?.checked || false,
+            servico_concluido: document.getElementById('checkServicoConcluido')?.checked || false,
+            cliente_orientado: document.getElementById('checkClienteOrientado')?.checked || false,
+            local_limpo: document.getElementById('checkLocalLimpo')?.checked || false,
+            equipamentos_ok: document.getElementById('checkEquipamentosOk')?.checked || false
+        }
+    };
+
+    console.log('Dados do wizard:', dados);
+
+    // Aqui você faria o envio para o servidor
+    // Por enquanto, mostra mensagem de sucesso
+    Swal.fire({
+        type: 'success',
+        title: 'Atendimento Finalizado!',
+        text: 'Todos os dados foram registrados com sucesso.',
+        timer: 2000,
+        showConfirmButton: false
+    }).then(function() {
+        // Redirecionar para relatório ou recarregar página
+        window.location.reload();
+    });
+}

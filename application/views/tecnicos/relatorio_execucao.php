@@ -264,8 +264,6 @@
                                 <tr>
                                     <th>Serviço</th>
                                     <th>Quantidade</th>
-                                    <th>Preço Unit.</th>
-                                    <th>Total</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -278,8 +276,6 @@
                                             <?php endif; ?>
                                         </td>
                                         <td><?php echo $servico->quantidade ?? 1; ?></td>
-                                        <td>R$ <?php echo number_format($servico->preco ?? $servico->servico_preco ?? 0, 2, ',', '.'); ?></td>
-                                        <td>R$ <?php echo number_format(($servico->quantidade ?? 1) * ($servico->preco ?? $servico->servico_preco ?? 0), 2, ',', '.'); ?></td>
                                     </tr>
                                 <?php endforeach; ?>
                             </tbody>
@@ -300,8 +296,6 @@
                                 <tr>
                                     <th>Produto</th>
                                     <th>Quantidade</th>
-                                    <th>Preço Unit.</th>
-                                    <th>Total</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -309,8 +303,6 @@
                                     <tr>
                                         <td><?php echo htmlspecialchars($produto->descricao ?? 'Produto', ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></td>
                                         <td><?php echo $produto->quantidade ?? 0; ?> <?php echo htmlspecialchars($produto->unidade ?? 'un', ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></td>
-                                        <td>R$ <?php echo number_format($produto->preco ?? 0, 2, ',', '.'); ?></td>
-                                        <td>R$ <?php echo number_format(($produto->quantidade ?? 0) * ($produto->preco ?? 0), 2, ',', '.'); ?></td>
                                     </tr>
                                 <?php endforeach; ?>
                             </tbody>

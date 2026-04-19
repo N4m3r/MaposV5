@@ -756,30 +756,42 @@ class Checkin extends MY_Controller
         $foto = $this->fotosatendimento_model->getImagemBase64($foto_id);
 
         if (!$foto || empty($foto->imagem_base64)) {
+            log_message('error', 'verFotoDB: Foto nao encontrada ou vazia. ID: ' . $foto_id);
             show_404();
             return;
         }
 
+        log_message('debug', 'verFotoDB: Foto encontrada. Tamanho: ' . strlen($foto->imagem_base64));
+
         // Extrair MIME type e dados base64
-        if (preg_match('/^data:(image\/\w+);base64,/', $foto->imagem_base64, $matches)) {
+        $base64_raw = $foto->imagem_base64;
+        $mime_type = 'image/jpeg'; // padrao
+        $base64_data = $base64_raw;
+
+        // Verifica se tem o formato data:image/...;base64,
+        if (preg_match('/^data:(image\/\w+);base64,(.+)/', $base64_raw, $matches)) {
             $mime_type = $matches[1];
-            $base64_data = substr($foto->imagem_base64, strlen($matches[0]));
+            $base64_data = $matches[2];
+            log_message('debug', 'verFotoDB: Formato data: encontrado. MIME: ' . $mime_type);
         } else {
+            // Se não tem o prefixo, usa o mime_type do banco ou assume jpeg
             $mime_type = $foto->mime_type ?: 'image/jpeg';
-            $base64_data = $foto->imagem_base64;
-            // Se não tem o prefixo data:, assume que é apenas o base64
-            if (strpos($foto->imagem_base64, 'data:') === 0) {
-                $base64_data = preg_replace('/^data:image\/\w+;base64,/', '', $foto->imagem_base64);
-            }
+            log_message('debug', 'verFotoDB: Formato data: NAO encontrado. Usando MIME: ' . $mime_type);
         }
+
+        // Limpa espacos em branco
+        $base64_data = trim($base64_data);
 
         // Decodifica base64
         $image_data = base64_decode($base64_data, true);
 
         if ($image_data === false) {
+            log_message('error', 'verFotoDB: Falha ao decodificar base64. Primeiros 100 chars: ' . substr($base64_data, 0, 100));
             show_error('Erro ao decodificar imagem', 500);
             return;
         }
+
+        log_message('debug', 'verFotoDB: Imagem decodificada. Tamanho: ' . strlen($image_data));
 
         // Envia headers e imagem
         header('Content-Type: ' . $mime_type);

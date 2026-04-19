@@ -281,13 +281,16 @@ class Fotosatendimento_model extends CI_Model
 
         log_message('debug', 'FotosAtendimento: Foto processada para DB: ' . $nome_arquivo);
 
+        // Reconstroi o base64 completo com o prefixo data: para salvar no banco
+        $base64_completo = 'data:' . $mime . ';base64,' . base64_encode($image_data);
+
         return [
             'arquivo' => $nome_arquivo,
             'path' => $nome_arquivo, // Mantém para compatibilidade
             'url' => base_url('index.php/checkin/verFotoDB/0'), // Será atualizado após salvar
             'tamanho' => strlen($image_data),
             'tipo' => $tipo_imagem,
-            'imagem_base64' => $base64_data,
+            'imagem_base64' => $base64_completo, // Agora com o prefixo data:image/...;base64,
             'mime_type' => $mime
         ];
     }
