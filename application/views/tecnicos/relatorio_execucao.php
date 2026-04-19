@@ -551,13 +551,29 @@
                     $debug_vazio = empty($servicos) ? 'SIM' : 'NÃO';
 
                     // CORREÇÃO: Buscar serviços diretamente se a variável estiver vazia
+                    $debug_query = '';
+                    $debug_error = '';
+                    $debug_raw = [];
+
                     if (empty($servicos)) {
                         $CI = &get_instance();
+
+                        // Tentar primeiro sem JOIN
+                        $CI->db->reset_query();
+                        $CI->db->where('os_id', $os->idOs);
+                        $query_raw = $CI->db->get('servicos_os');
+                        $debug_raw = $query_raw ? $query_raw->result() : [];
+
+                        // Agora tentar com JOIN
+                        $CI->db->reset_query();
                         $CI->db->select('servicos_os.*, servicos.nome as servico_nome, servicos.codigo as servico_codigo');
                         $CI->db->from('servicos_os');
                         $CI->db->join('servicos', 'servicos.idServicos = servicos_os.servicos_id', 'left');
                         $CI->db->where('servicos_os.os_id', $os->idOs);
                         $query_servicos = $CI->db->get();
+                        $debug_query = $CI->db->last_query();
+                        $db_error = $CI->db->error();
+                        $debug_error = $db_error['message'] ?? '';
                         $servicos = $query_servicos ? $query_servicos->result() : [];
                     }
 
@@ -570,7 +586,17 @@
                         <strong>OS ID:</strong> <?php echo $os->idOs ?? 'N/A'; ?><br>
                         <strong>Count inicial:</strong> <?php echo $debug_count_inicial; ?><br>
                         <strong>Vazio (antes):</strong> <?php echo $debug_vazio; ?><br>
-                        <strong>Count após query:</strong> <?php echo $debug_count_final; ?><br>
+                        <strong>Query sem JOIN - count:</strong> <?php echo count($debug_raw); ?><br>
+                        <?php if (!empty($debug_raw)): ?>
+                            <pre style="background: #fff9c4; padding: 8px; border-radius: 4px; margin: 5px 0; max-height: 150px; overflow: auto; font-size: 10px;">
+<?php print_r($debug_raw); ?>
+                            </pre>
+                        <?php endif; ?>
+                        <strong>Query com JOIN - count:</strong> <?php echo $debug_count_final; ?><br>
+                        <strong>Query SQL:</strong> <?php echo htmlspecialchars($debug_query); ?><br>
+                        <?php if ($debug_error): ?>
+                            <strong style="color: #d32f2f;">Erro DB:</strong> <?php echo htmlspecialchars($debug_error); ?><br>
+                        <?php endif; ?>
                         <?php if (!empty($servicos)): ?>
                             <strong>Primeiro serviço:</strong><br>
                             <pre style="background: #f5f5f5; padding: 10px; border-radius: 4px; margin-top: 10px; max-height: 200px; overflow: auto; font-size: 11px;">
@@ -579,6 +605,7 @@
                         <?php else: ?>
                             <strong style="color: #d32f2f;">⚠️ Nenhum serviço encontrado</strong>
                         <?php endif; ?>
+                    </div>
                     </div>
 
                     <?php if (!empty($servicos)): ?>
