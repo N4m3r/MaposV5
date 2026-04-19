@@ -520,7 +520,6 @@
                             <tr>
                                 <th>Serviço</th>
                                 <th>Quantidade</th>
-                                <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -528,30 +527,6 @@
                                 <tr>
                                     <td><?php echo $servico->nome; ?></td>
                                     <td style="text-align: center;"><?php echo $servico->quantidade ?? 1; ?></td>
-                                    <td style="text-align: center;">
-                                        <?php
-                                        $status = $servico->status ?? 'Pendente';
-                                        $status_labels = [
-                                            'Pendente' => 'Pendente',
-                                            'EmExecucao' => 'Em Execução',
-                                            'Concluido' => 'Concluído',
-                                            'Cancelado' => 'Cancelado',
-                                            'Executado' => 'Executado',
-                                            'NaoExecutado' => 'Não Executado'
-                                        ];
-                                        $status_classes = [
-                                            'Pendente' => 'badge-warning',
-                                            'EmExecucao' => 'badge-info',
-                                            'Concluido' => 'badge-success',
-                                            'Cancelado' => 'badge-danger',
-                                            'Executado' => 'badge-success',
-                                            'NaoExecutado' => 'badge-danger'
-                                        ];
-                                        $badge_class = $status_classes[$status] ?? 'badge-warning';
-                                        $status_label = $status_labels[$status] ?? $status;
-                                        ?>
-                                        <span class="badge <?php echo $badge_class; ?>"><?php echo $status_label; ?></span>
-                                    </td>
                                 </tr>
                             <?php } ?>
                         </tbody>

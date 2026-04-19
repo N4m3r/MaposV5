@@ -567,29 +567,6 @@
                                             <?php endif; ?>
                                         </td>
                                         <td><?php echo $servico->quantidade ?? 1; ?></td>
-                                        <td>
-                                            <?php
-                                            $status = $servico->status ?? 'Pendente';
-                                            $status_labels = [
-                                                'Pendente' => 'Pendente',
-                                                'EmExecucao' => 'Em Execução',
-                                                'Concluido' => 'Concluído',
-                                                'Cancelado' => 'Cancelado',
-                                                'Executado' => 'Executado',
-                                                'NaoExecutado' => 'Não Executado'
-                                            ];
-                                            $status_class = [
-                                                'Pendente' => 'label label-warning',
-                                                'EmExecucao' => 'label label-info',
-                                                'Concluido' => 'label label-success',
-                                                'Cancelado' => 'label label-important',
-                                                'Executado' => 'label label-success',
-                                                'NaoExecutado' => 'label label-important'
-                                            ][$status] ?? 'label';
-                                            $status_label = $status_labels[$status] ?? $status;
-                                            ?>
-                                            <span class="<?php echo $status_class; ?>"><?php echo $status_label; ?></span>
-                                        </td>
                                     </tr>
                                 <?php endforeach; ?>
                             </tbody>
