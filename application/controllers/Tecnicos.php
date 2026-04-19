@@ -205,29 +205,8 @@ class Tecnicos extends CI_Controller
         $tecnico_id = $this->session->userdata('tec_id');
         $status = $this->input->get('status') ?: 'todos';
 
-        log_message('debug', 'Tecnicos::minhas_os - tecnico_id da sessao: ' . $tecnico_id);
-
-        // Verificar OS atribuídas diretamente no banco
-        $this->db->where('tecnico_responsavel', $tecnico_id);
-        $query = $this->db->get('os');
-        $total_os = $query ? $query->num_rows() : 0;
-
-        // Buscar todas as OS atribuídas para debug
-        $this->db->where('tecnico_responsavel', $tecnico_id);
-        $os_debug = $this->db->get('os')->result();
-        $os_ids = [];
-        foreach ($os_debug as $o) {
-            $os_ids[] = $o->idOs;
-        }
-
-        log_message('debug', 'Total de OS no banco para tecnico ' . $tecnico_id . ': ' . $total_os);
-        log_message('debug', 'OS IDs: ' . implode(', ', $os_ids));
-
         $this->data['os_list'] = $this->tec_os_model->getOsPorTecnico($tecnico_id, $status);
         $this->data['status_atual'] = $status;
-        $this->data['tecnico_id'] = $tecnico_id;
-        $this->data['debug_total_os'] = $total_os;
-        $this->data['debug_os_ids'] = $os_ids;
 
         $this->load->view('tema/topo', $this->data);
         $this->load->view('tema/menu_portal_tecnico', $this->data);

@@ -903,7 +903,22 @@ function mostrarPreviewOS(os) {
     var docFormatado = os.documento ? formatarCNPJ(os.documento) : 'Não informado';
     var dataFormatada = os.dataInicial ? new Date(os.dataInicial).toLocaleDateString('pt-BR') : '-';
 
-    var html = '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;"\u003e';
+    var html = '';
+
+    // Aviso se já está vinculada a outra obra
+    if (os.ja_vinculada) {
+        html += '<div style="background: #fff3e0; border-left: 4px solid #ff9800; padding: 12px; border-radius: 4px; margin-bottom: 15px;">';
+        html += '<div style="color: #e65100; font-weight: 600; margin-bottom: 5px;"><i class="bx bx-error-circle"></i> Atenção</div>';
+        html += '<div style="color: #666; font-size: 0.9rem;">Esta OS já está vinculada à obra <strong>"' + (os.obra_vinculada || 'outra obra') + '". </strong><br>Ao vincular aqui, ela será <strong>movida</strong> para esta obra.</div>';
+        html += '</div>';
+
+        // Mudar texto e cor do botão
+        $('#btn-vincular-os').html('<i class="bx bx-transfer"></i> Mover para Esta Obra').removeClass('btn-success').addClass('btn-warning');
+    } else {
+        $('#btn-vincular-os').html('<i class="bx bx-link"></i> Vincular OS à Obra').removeClass('btn-warning').addClass('btn-success');
+    }
+
+    html += '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">';
     html += '<div><strong>OS #:</strong> ' + os.idOs + '</div>';
     html += '<div><strong>Status:</strong> <span style="color: ' + corStatus + '; font-weight: 600;">' + os.status + '</span></div>';
     html += '<div><strong>Cliente:</strong> ' + os.nomeCliente + '</div>';

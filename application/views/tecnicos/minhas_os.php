@@ -40,22 +40,7 @@
                     </a>
                 </div>
 
-                <!-- Debug Info -->
-                <div style="background: #fff3cd; border: 1px solid #ffc107; padding: 10px; margin-bottom: 15px; border-radius: 4px; font-size: 12px;">
-                    <strong>Debug:</strong> Técnico ID: <?php echo $tecnico_id ?? 'N/A'; ?> | Status: <?php echo $status_atual; ?> | Total OS no DB: <?php echo $debug_total_os ?? 'N/A'; ?> | Lista: <?php echo count($os_list); ?>
-                    <br><small>OS IDs no banco: <?php echo !empty($debug_os_ids) ? implode(', ', $debug_os_ids) : 'Nenhuma'; ?></small>
-                    <?php if (empty($os_list) && !empty($debug_os_ids)): ?>
-                    <br><strong style="color: red;">Erro: OS existem no banco mas nao aparecem na lista. Verifique os logs.</strong>
-                    <?php endif; ?>
-                </div>
-
                 <!-- Lista de OS -->
-                <?php if (empty($os_list) && !empty($debug_os_ids)): ?>
-                    <div class="alert alert-warning">
-                        <strong>OS encontradas no banco mas nao na lista:</strong> <?php echo implode(', ', $debug_os_ids); ?>
-                        <br>Verifique o arquivo de logs em application/logs/
-                    </div>
-                <?php endif; ?>
 
                 <?php if (empty($os_list)): ?>
                     <div class="empty-state">
