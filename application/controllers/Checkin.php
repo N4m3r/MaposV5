@@ -1114,6 +1114,8 @@ class Checkin extends MY_Controller
         }
 
         log_message('error', 'verAssinatura: Arquivo nao encontrado. ID: ' . $assinatura_id . ', Path: ' . $assinatura->assinatura);
+        log_message('error', 'verAssinatura: Caminho tentado: ' . $caminho_arquivo);
+        log_message('error', 'verAssinatura: FCPATH: ' . FCPATH);
         show_404();
     }
 

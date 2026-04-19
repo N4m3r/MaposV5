@@ -545,6 +545,13 @@
                 <!-- Serviços Executados -->
                 <div class="relatorio-card">
                     <h5><i class="bx bx-wrench"></i> Serviços da OS</h5>
+                    <?php
+                    // Debug: Verificar diretamente no banco de dados
+                    $CI = &get_instance();
+                    $CI->db->where('os_id', $os->idOs);
+                    $query_debug = $CI->db->get('servicos_os');
+                    $servicos_raw = $query_debug ? $query_debug->result() : [];
+                    ?>
                     <!-- DEBUG: Validar dados dos serviços -->
                     <div style="background: #e3f2fd; border: 2px solid #2196f3; border-radius: 8px; padding: 15px; margin-bottom: 15px; font-family: monospace; font-size: 13px;">
                         <strong style="color: #1976d2;">🔍 DEBUG - Serviços:</strong><br>
@@ -562,6 +569,16 @@
                             <strong style="color: #d32f2f;">⚠️ Nenhum serviço encontrado na variável \$servicos</strong>
                         <?php endif; ?>
                     </div>
+                    <?php
+                    // Se encontrou serviços via query direta, usar esses dados
+                    if (empty($servicos) && !empty($servicos_raw)) {
+                        $servicos = $servicos_raw;
+                    }
+                    // DEBUG: Mostrar count após correção
+                    echo '<div style="background: #fff3e0; border: 1px solid #ff9800; border-radius: 4px; padding: 8px; margin: 10px 0; font-size: 12px;">';
+                    echo '<strong>DEBUG:</strong> Após correção - servicos count: ' . count($servicos);
+                    echo '</div>';
+                    ?>
                     <?php if (!empty($servicos)): ?>
                         <table class="table table-bordered">
                             <thead>
@@ -819,6 +836,21 @@
 
                 <!-- Assinaturas -->
                 <?php log_info('View relatorio_execucao - Assinaturas recebidas: ' . count($assinaturas ?? [])); ?>
+
+                <!-- DEBUG VISUAL - Assinaturas -->
+                <div style="background: #fff3cd; border: 2px solid #ffc107; border-radius: 8px; padding: 15px; margin: 15px 0; font-family: monospace; font-size: 12px;">
+                    <strong style="color: #856404;">🔍 DEBUG - Assinaturas:</strong><br>
+                    <strong>Total de assinaturas:</strong> <?php echo count($assinaturas ?? []); ?><br>
+                    <?php if (!empty($assinaturas)): ?>
+                        <?php foreach ($assinaturas as $a): ?>
+                            <strong>- ID <?php echo $a->idAssinatura; ?>:</strong> <?php echo $a->tipo; ?> | Path: <?php echo substr($a->assinatura, 0, 40); ?>...<br>
+                            <strong>  URL:</strong> <?php echo $a->url_visualizacao ?? 'N/A'; ?><br>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <strong style="color: #d32f2f;">⚠️ Nenhuma assinatura encontrada</strong>
+                    <?php endif; ?>
+                </div>
+
                 <?php if (!empty($assinaturas) || !empty($execucoes)): ?>
 
                 <div class="relatorio-card">
