@@ -1754,15 +1754,10 @@ function previewArquivoServico(input) {
 }
 
 async function salvarFotoServico() {
+    // Verificar se há foto capturada ou selecionada
     if (!fotoServicoBase64) {
-        if (abaAtiva === 'camera') {
-            // Se estiver na aba câmera e não tiver foto, tenta tirar agora
-            tirarFoto();
-            if (!fotoServicoBase64) return;
-        } else {
-            alert('Selecione uma imagem primeiro.');
-            return;
-        }
+        alert('Selecione ou tire uma foto primeiro.');
+        return;
     }
 
     const tipo = document.getElementById('tipoFoto').value;
@@ -1780,7 +1775,7 @@ async function salvarFotoServico() {
 
     const btn = document.querySelector('#cameraModal .btn-success');
     if (!btn) {
-        alert('Erro: botão não encontrado no modal.');
+        alert('Erro: botão não encontrado no modal. Recarregue a página.');
         return;
     }
     const btnOriginalText = btn.innerHTML;
