@@ -59,6 +59,9 @@ class Dashboard_model extends CI_Model
             $result['taxa_conclusao'] = 0;
         }
 
+        // Técnicos ativos
+        $result['tecnicos_ativos'] = $this->db->where('is_tecnico', 1)->count_all_results('usuarios');
+
         return $result;
     }
 

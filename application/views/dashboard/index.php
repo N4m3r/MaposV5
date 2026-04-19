@@ -271,6 +271,12 @@
                 <div class="kpi-label">Novos Clientes</div>
                 <div class="kpi-value" id="kpi-novos-clientes">-</div>
             </div>
+
+            <div class="kpi-card" style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a5a 100%);">
+                <div class="kpi-icon"><i class="bx bx-hard-hat"></i></div>
+                <div class="kpi-label">Técnicos Ativos</div>
+                <div class="kpi-value" id="kpi-tecnicos-ativos">-</div>
+            </div>
         </div>
 
         <!-- Gráficos -->
@@ -425,6 +431,7 @@ function atualizarKPIs(kpi) {
     $('#kpi-valor-faturado').text('R$ ' + formatarValor(kpi.valor_faturado));
     $('#kpi-ticket-medio').text('R$ ' + formatarValor(kpi.ticket_medio));
     $('#kpi-novos-clientes').text(kpi.novos_clientes);
+    $('#kpi-tecnicos-ativos').text(kpi.tecnicos_ativos || '-');
 }
 
 function formatarValor(valor) {

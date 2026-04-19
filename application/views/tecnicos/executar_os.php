@@ -2296,11 +2296,13 @@
 </style>
 
 <script>
+console.log('DEBUG: Script iniciado - linha 1');
 let execucaoId = <?php echo $execucao ? $execucao->id : 'null'; ?>;
 let osId = <?php echo $os->idOs; ?>;
 let latitude, longitude;
 let fotoCheckin = null;
 let stream = null;
+console.log('DEBUG: Variáveis declaradas. osId:', osId);
 
 // Obter localização (opcional - silencia erros de permissão)
 if ('geolocation' in navigator) {
@@ -2436,24 +2438,31 @@ window.ctxTecnico = null;
 window.isDrawingTecnico = false;
 
 function initCanvasTecnico() {
+    console.log('DEBUG: Iniciando initCanvasTecnico');
     window.canvasTecnico = document.getElementById('assinaturaTecnico');
+    console.log('DEBUG: canvas encontrado:', window.canvasTecnico ? 'SIM' : 'NAO');
+
     if (!window.canvasTecnico) {
         console.error('Canvas assinaturaTecnico não encontrado');
         return;
     }
 
     window.ctxTecnico = window.canvasTecnico.getContext('2d');
-    console.log('Canvas técnico inicializado:', window.canvasTecnico);
+    console.log('DEBUG: contexto 2d obtido:', window.ctxTecnico ? 'SIM' : 'NAO');
+    console.log('DEBUG: Canvas elemento:', window.canvasTecnico);
+    console.log('DEBUG: offsetWidth:', window.canvasTecnico.offsetWidth);
 
     // Configurar dimensões
     const resizeCanvasTecnico = function() {
+        console.log('DEBUG: Redimensionando canvas...');
         const rect = window.canvasTecnico.getBoundingClientRect();
+        console.log('DEBUG: getBoundingClientRect:', rect);
         window.canvasTecnico.width = rect.width > 0 ? rect.width : 300;
         window.canvasTecnico.height = 150;
         window.ctxTecnico.strokeStyle = '#000';
         window.ctxTecnico.lineWidth = 2;
         window.ctxTecnico.lineCap = 'round';
-        console.log('Canvas redimensionado:', window.canvasTecnico.width, 'x', window.canvasTecnico.height);
+        console.log('DEBUG: Canvas redimensionado para:', window.canvasTecnico.width, 'x', window.canvasTecnico.height);
     };
 
     // Aguardar um tick para garantir que o layout está pronto
@@ -2462,10 +2471,13 @@ function initCanvasTecnico() {
 
     // Eventos do mouse
     window.canvasTecnico.addEventListener('mousedown', function(e) {
+        console.log('DEBUG: mousedown no canvas');
         window.isDrawingTecnico = true;
         const rect = window.canvasTecnico.getBoundingClientRect();
+        console.log('DEBUG: rect:', rect.left, rect.top);
         window.ctxTecnico.beginPath();
         window.ctxTecnico.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+        console.log('DEBUG: moveTo', e.clientX - rect.left, e.clientY - rect.top);
     });
 
     window.canvasTecnico.addEventListener('mousemove', function(e) {
@@ -2473,13 +2485,16 @@ function initCanvasTecnico() {
         const rect = window.canvasTecnico.getBoundingClientRect();
         window.ctxTecnico.lineTo(e.clientX - rect.left, e.clientY - rect.top);
         window.ctxTecnico.stroke();
+        console.log('DEBUG: mousemove - desenhando');
     });
 
     window.canvasTecnico.addEventListener('mouseup', function() {
+        console.log('DEBUG: mouseup - parando de desenhar');
         window.isDrawingTecnico = false;
     });
 
     window.canvasTecnico.addEventListener('mouseout', function() {
+        console.log('DEBUG: mouseout');
         window.isDrawingTecnico = false;
     });
 
@@ -2505,6 +2520,8 @@ function initCanvasTecnico() {
     window.canvasTecnico.addEventListener('touchend', function() {
         window.isDrawingTecnico = false;
     });
+
+    console.log('DEBUG: Todos os eventos do canvas adicionados com sucesso');
 }
 
 window.limparAssinaturaTecnico = function() {
@@ -2515,15 +2532,22 @@ window.limparAssinaturaTecnico = function() {
 
 // Inicializar quando DOM estiver pronto
 window.iniciarCanvasAssinatura = function() {
-    console.log('Inicializando canvas de assinatura...');
+    console.log('DEBUG: iniciarCanvasAssinatura chamado');
+    console.log('DEBUG: document.readyState:', document.readyState);
     initCanvasTecnico();
-    console.log('Canvas inicializado:', window.canvasTecnico ? 'OK' : 'Falhou');
+    console.log('DEBUG: Final do initCanvasTecnico. canvasTecnico:', window.canvasTecnico ? 'existe' : 'null');
 };
 
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', window.iniciarCanvasAssinatura);
-} else {
-    window.iniciarCanvasAssinatura();
+try {
+    if (document.readyState === 'loading') {
+        console.log('DEBUG: Documento ainda carregando, aguardando DOMContentLoaded...');
+        document.addEventListener('DOMContentLoaded', window.iniciarCanvasAssinatura);
+    } else {
+        console.log('DEBUG: Documento já carregado, executando imediatamente...');
+        window.iniciarCanvasAssinatura();
+    }
+} catch(e) {
+    console.error('DEBUG: Erro ao inicializar canvas:', e);
 }
 
 // Câmera - OPCIONAL

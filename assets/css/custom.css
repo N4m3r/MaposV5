@@ -423,3 +423,49 @@ textarea {
 .discount-badge i {
     margin-right: 5px;
 }
+
+/* ============================================
+   MENU BADGE - Indicador de contagem no menu
+   ============================================ */
+.menu-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    margin-left: 8px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 10px;
+    vertical-align: middle;
+}
+
+/* Badge para técnicos online */
+.menu-badge.online {
+    background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
+    animation: pulse-badge 2s infinite;
+}
+
+@keyframes pulse-badge {
+    0% {
+        box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 6px rgba(76, 175, 80, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
+    }
+}
+
+/* Ajuste no tooltip quando tem badge */
+#sidebar li a:hover .menu-badge {
+    display: none;
+}
+
+/* ============================================
+   FIM MENU BADGE
+   ============================================ */

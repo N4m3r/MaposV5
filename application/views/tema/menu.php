@@ -110,8 +110,18 @@
                         <li class="<?php if (isset($menuVendas)) { echo 'active'; }; ?>"><a class="tip-bottom" href="<?= site_url('vendas') ?>"><i class='bx bx-cart-alt iconX'></i><span class="title">Vendas</span><span class="title-tooltip">Vendas</span></a></li>
                     <?php } ?>
 
-                    <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cTecnico')) { ?>
-                        <li class="<?php if (isset($menuTecnicosAdmin)) { echo 'active'; }; ?>"><a class="tip-bottom" href="<?= site_url('tecnicos_admin') ?>"><i class='bx bx-hard-hat iconX'></i><span class="title">Técnicos</span><span class="title-tooltip">Técnicos</span></a></li>
+                    <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cTecnico')) { ?
+                        <?php
+                        // Carregar model e contar técnicos
+                        $this->load->model('tecnico_model');
+                        $total_tecnicos = $this->db->where('is_tecnico', 1)->count_all_results('usuarios');
+                        ?>
+                        <li class="<?php if (isset($menuTecnicosAdmin)) { echo 'active'; }; ?>"><a class="tip-bottom" href="<?= site_url('tecnicos_admin') ?>">
+                            <i class='bx bx-hard-hat iconX'></i>
+                            <span class="title">Técnicos</span>
+                            <span class="menu-badge"><?= $total_tecnicos ?></span>
+                            <span class="title-tooltip">Técnicos (<?= $total_tecnicos ?>)</span>
+                        </a></li>
                     <?php } ?>
                 <?php } ?>
 
