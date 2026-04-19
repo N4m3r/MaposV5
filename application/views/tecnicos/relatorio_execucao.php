@@ -802,6 +802,18 @@
 
                 <!-- Assinaturas -->
                 <?php if (!empty($assinaturas) || !empty($execucoes)): ?>
+
+                <!-- DEBUG: Informações de assinaturas -->
+                <!--<pre style="background: #f0f0f0; padding: 10px; margin: 10px 0; font-size: 11px;">
+                DEBUG ASSINATURAS:
+                Total: <?php echo count($assinaturas); ?>
+                <?php foreach ($assinaturas as $a): ?
+                - ID: <?php echo $a->idAssinatura; ?>, Tipo: <?php echo $a->tipo; ?>
+                  Path: <?php echo substr($a->assinatura, 0, 50); ?>...
+                  URL: <?php echo $a->url_visualizacao ?? 'N/A'; ?>
+                <?php endforeach; ?
+                </pre>-->
+
                 <div class="relatorio-card">
                     <h5><i class="bx bx-pencil"></i> Assinaturas</h5>
                     <div class="row-fluid">
@@ -828,19 +840,15 @@
                                         <h6><?php echo $tipo_label; ?></h6>
                                         <?php if (!empty($assinatura->assinatura)): ?>
                                             <?php
-                                            if (isset($assinatura->is_base64) && $assinatura->is_base64) {
-                                                $img_src = $assinatura->url_visualizacao;
-                                            } else {
-                                                // Se já é URL completa, usar direto, senão adicionar base_url
-                                                $img_src = (strpos($assinatura->assinatura, 'http') === 0)
-                                                    ? $assinatura->assinatura
-                                                    : base_url($assinatura->assinatura);
-                                            }
+                                            // Sempre usar url_visualizacao que aponta para verAssinatura
+                                            $img_src = $assinatura->url_visualizacao ?? base_url('index.php/checkin/verAssinatura/' . $assinatura->idAssinatura);
                                             ?>
+                                            <!-- ID: <?php echo $assinatura->idAssinatura; ?>, Path: <?php echo substr($assinatura->assinatura, 0, 30); ?>... -->
                                             <img src="<?php echo $img_src; ?>" alt="Assinatura <?php echo $tipo_label; ?>" class="assinatura-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                                             <div style="display: none; padding: 20px; background: #f8f9fa; border-radius: 8px; text-align: center; color: #666;">
                                                 <i class="bx bx-image-alt" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
                                                 Assinatura salva (erro ao carregar imagem)
+                                                <br><small>ID: <?php echo $assinatura->idAssinatura; ?></small>
                                             </div>
                                         <?php endif; ?>
                                         <?php if (!empty($assinatura->nome_assinante)): ?>

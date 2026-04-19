@@ -1051,9 +1051,12 @@ class Checkin extends MY_Controller
         $assinatura = $this->assinaturas_model->getById($assinatura_id);
 
         if (!$assinatura) {
+            log_message('error', 'verAssinatura: Assinatura nao encontrada. ID: ' . $assinatura_id);
             show_404();
             return;
         }
+
+        log_message('debug', 'verAssinatura: Assinatura encontrada. ID: ' . $assinatura_id . ', Tipo: ' . ($assinatura->tipo ?? 'N/A') . ', Path: ' . substr($assinatura->assinatura ?? 'null', 0, 100));
 
         // Se é base64 no banco
         if (isset($assinatura->assinatura) && strpos($assinatura->assinatura, 'BASE64:') === 0) {
@@ -1086,16 +1089,23 @@ class Checkin extends MY_Controller
         // Se é arquivo no disco
         $caminho_arquivo = $assinatura->assinatura;
 
+        log_message('debug', 'verAssinatura: Caminho original: ' . $caminho_arquivo);
+
         // Se o caminho for relativo, converte para absoluto usando FCPATH
         if (!file_exists($caminho_arquivo)) {
             $caminho_absoluto = FCPATH . $caminho_arquivo;
+            log_message('debug', 'verAssinatura: Tentando caminho absoluto: ' . $caminho_absoluto);
             if (file_exists($caminho_absoluto)) {
                 $caminho_arquivo = $caminho_absoluto;
+                log_message('debug', 'verAssinatura: Arquivo encontrado no caminho absoluto');
             }
+        } else {
+            log_message('debug', 'verAssinatura: Arquivo encontrado no caminho original');
         }
 
         if (file_exists($caminho_arquivo)) {
             $mime = mime_content_type($caminho_arquivo);
+            log_message('debug', 'verAssinatura: Retornando arquivo. MIME: ' . $mime . ', Tamanho: ' . filesize($caminho_arquivo));
             header('Content-Type: ' . $mime);
             header('Content-Length: ' . filesize($caminho_arquivo));
             header('Cache-Control: public, max-age=86400');

@@ -248,7 +248,30 @@ class Tecnicos extends CI_Controller
         $this->data['os'] = $os;
         $this->data['cliente'] = $this->tec_os_model->getClienteByOs($os_id);
         $this->data['produtos'] = $this->tec_os_model->getProdutosOs($os_id);
+
+        // Carregar serviços - usando o mesmo método do relatório para garantir consistência
         $this->data['servicos'] = $this->os_model->getServicos($os_id);
+
+        // Debug: log detalhado sobre serviços
+        log_message('info', '[DEBUG] Tecnicos::executar_os - OS ID: ' . $os_id);
+        log_message('info', '[DEBUG] Tecnicos::executar_os - Total serviços: ' . count($this->data['servicos']));
+
+        // Se não encontrou serviços, tentar método alternativo (igual ao relatorio_execucao)
+        if (empty($this->data['servicos'])) {
+            log_message('info', '[DEBUG] Tecnicos::executar_os - Tentando via tec_os_model->getServicosOs');
+            $servicos_alt = $this->tec_os_model->getServicosOs($os_id);
+            if (!empty($servicos_alt)) {
+                $this->data['servicos'] = $servicos_alt;
+                log_message('info', '[DEBUG] Tecnicos::executar_os - Encontrados ' . count($servicos_alt) . ' serviços via tec_os_model');
+            }
+        }
+
+        if (!empty($this->data['servicos'])) {
+            foreach ($this->data['servicos'] as $i => $serv) {
+                log_message('info', '[DEBUG] Serviço ' . $i . ': ID=' . ($serv->idServicos_os ?? 'null') . ', Nome=' . ($serv->nome ?? $serv->servico_nome ?? 'N/A'));
+            }
+        }
+
         $this->data['execucao'] = $this->tec_os_model->getExecucaoAtual($os_id, $tecnico_id);
         $this->data['checklist'] = $this->tec_os_model->getChecklistExecucao($os_id);
 
@@ -607,6 +630,11 @@ class Tecnicos extends CI_Controller
         $this->load->model('assinaturas_model');
         $assinaturas = $this->assinaturas_model->getByOs($os_id);
         $this->data['assinaturas'] = $assinaturas;
+
+        log_message('info', '[DEBUG] Tecnicos::relatorio_execucao - Total assinaturas: ' . count($assinaturas));
+        foreach ($assinaturas as $a) {
+            log_message('info', '[DEBUG] Assinatura ID: ' . $a->idAssinatura . ', Tipo: ' . $a->tipo . ', Path: ' . substr($a->assinatura, 0, 50));
+        }
 
         // Organizar assinaturas por tipo (igual ao checkin/imprimir)
         $this->data['assinaturasPorTipo'] = [];

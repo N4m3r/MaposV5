@@ -305,6 +305,12 @@
                                     <h4><i class="bx bx-wrench"></i> Execução dos Serviços</h4>
                                     <p>Marque o status de cada serviço executado:</p>
 
+                                    <?php
+                                    // DEBUG: Mostrar informações sobre serviços
+                                    $debug_servicos = isset($servicos) ? (is_array($servicos) ? count($servicos) : 'nao-array') : 'nao-definido';
+                                    ?>
+                                    <!-- <?php echo htmlspecialchars('DEBUG - servicos: ' . $debug_servicos); ?> -->
+
                                     <?php if (!empty($servicos)): ?>
                                         <div class="wizard-servicos-list">
                                             <?php foreach ($servicos as $index => $servico): ?>

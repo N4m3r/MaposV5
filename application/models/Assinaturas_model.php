@@ -74,6 +74,8 @@ class Assinaturas_model extends CI_Model
 
         $resultados = $query->result();
 
+        log_message('info', 'Assinaturas_model::getByOs - Resultados antes de processar: ' . print_r($resultados, true));
+
         // Adicionar URLs de visualização - sempre usar verAssinatura para consistência
         foreach ($resultados as $resultado) {
             $resultado->url_visualizacao = base_url('index.php/checkin/verAssinatura/' . $resultado->idAssinatura);
@@ -83,6 +85,8 @@ class Assinaturas_model extends CI_Model
                 $resultado->is_base64 = false;
             }
         }
+
+        log_message('info', 'Assinaturas_model::getByOs - Resultados apos processar: ' . print_r($resultados, true));
 
         return $resultados;
     }
