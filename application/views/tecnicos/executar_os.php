@@ -1300,6 +1300,14 @@ async function salvarFotoServico() {
             body: formData
         });
 
+        // Verificar se resposta é OK
+        if (!response.ok) {
+            const text = await response.text();
+            console.error('Erro HTTP:', response.status, text.substring(0, 500));
+            alert('Erro do servidor: ' + response.status + '. Verifique o console.');
+            return;
+        }
+
         const data = await response.json();
 
         if (data.success) {
@@ -1311,10 +1319,12 @@ async function salvarFotoServico() {
 
             fecharCamera();
             document.getElementById('descricaoFoto').value = '';
+            fotoServicoBase64 = null;
         } else {
-            alert('Erro ao salvar foto: ' + data.message);
+            alert('Erro ao salvar foto: ' + (data.message || 'Erro desconhecido'));
         }
     } catch (err) {
+        console.error('Erro completo:', err);
         alert('Erro ao enviar foto: ' + err.message);
     } finally {
         btn.innerHTML = btnOriginalText;

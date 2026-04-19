@@ -423,49 +423,69 @@ class Tecnicos extends CI_Controller
     {
         header('Content-Type: application/json');
 
-        $execucao_id = $this->input->post('execucao_id');
-        $foto = $this->input->post('foto');
-        $descricao = $this->input->post('descricao');
-        $tipo = $this->input->post('tipo'); // 'antes', 'depois', 'problema', 'detalhe'
-        $latitude = $this->input->post('latitude');
-        $longitude = $this->input->post('longitude');
+        try {
+            $execucao_id = $this->input->post('execucao_id');
+            $foto = $this->input->post('foto');
+            $descricao = $this->input->post('descricao');
+            $tipo = $this->input->post('tipo'); // 'antes', 'depois', 'problema', 'detalhe'
+            $latitude = $this->input->post('latitude');
+            $longitude = $this->input->post('longitude');
 
-        if (!$execucao_id || !$foto) {
-            echo json_encode(['success' => false, 'message' => 'Dados incompletos']);
-            return;
+            log_message('info', 'adicionar_foto - Requisicao recebida. execucao_id: ' . $execucao_id);
+
+            if (!$execucao_id || !$foto) {
+                log_message('error', 'adicionar_foto - Dados incompletos');
+                echo json_encode(['success' => false, 'message' => 'Dados incompletos']);
+                return;
+            }
+
+            $tecnico_id = $this->session->userdata('tec_id');
+            log_message('info', 'adicionar_foto - Tecnico: ' . $tecnico_id);
+
+            // Verificar execução
+            $execucao = $this->tec_os_model->getExecucaoById($execucao_id);
+            if (!$execucao || $execucao->tecnico_id != $tecnico_id) {
+                log_message('error', 'adicionar_foto - Execucao nao encontrada ou nao pertence ao tecnico');
+                echo json_encode(['success' => false, 'message' => 'Execução não encontrada']);
+                return;
+            }
+
+            // Salvar foto
+            $caminho_foto = $this->_salvar_foto_base64($foto, 'os', $tecnico_id);
+
+            if (!$caminho_foto) {
+                log_message('error', 'adicionar_foto - _salvar_foto_base64 retornou false');
+                echo json_encode(['success' => false, 'message' => 'Erro ao salvar foto - verifique logs']);
+                return;
+            }
+
+            log_message('info', 'adicionar_foto - Foto salva em: ' . $caminho_foto);
+
+            // Adicionar à galeria
+            $resultado = $this->tec_os_model->adicionarFotoGaleria($execucao_id, [
+                'caminho' => $caminho_foto,
+                'descricao' => $descricao,
+                'tipo' => $tipo,
+                'lat' => $latitude,
+                'lng' => $longitude,
+            ]);
+
+            if (!$resultado) {
+                log_message('error', 'adicionar_foto - Erro ao adicionar na galeria');
+                echo json_encode(['success' => false, 'message' => 'Erro ao adicionar foto na galeria']);
+                return;
+            }
+
+            log_message('info', 'adicionar_foto - Foto adicionada com sucesso');
+            echo json_encode([
+                'success' => true,
+                'caminho' => $caminho_foto,
+                'message' => 'Foto adicionada com sucesso',
+            ]);
+        } catch (Exception $e) {
+            log_message('error', 'adicionar_foto - Excecao: ' . $e->getMessage());
+            echo json_encode(['success' => false, 'message' => 'Erro interno: ' . $e->getMessage()]);
         }
-
-        $tecnico_id = $this->session->userdata('tec_id');
-
-        // Verificar execução
-        $execucao = $this->tec_os_model->getExecucaoById($execucao_id);
-        if (!$execucao || $execucao->tecnico_id != $tecnico_id) {
-            echo json_encode(['success' => false, 'message' => 'Execução não encontrada']);
-            return;
-        }
-
-        // Salvar foto
-        $caminho_foto = $this->_salvar_foto_base64($foto, 'os', $tecnico_id);
-
-        if (!$caminho_foto) {
-            echo json_encode(['success' => false, 'message' => 'Erro ao salvar foto']);
-            return;
-        }
-
-        // Adicionar à galeria
-        $this->tec_os_model->adicionarFotoGaleria($execucao_id, [
-            'caminho' => $caminho_foto,
-            'descricao' => $descricao,
-            'tipo' => $tipo,
-            'lat' => $latitude,
-            'lng' => $longitude,
-        ]);
-
-        echo json_encode([
-            'success' => true,
-            'caminho' => $caminho_foto,
-            'message' => 'Foto adicionada com sucesso',
-        ]);
     }
 
     /**
@@ -718,27 +738,78 @@ class Tecnicos extends CI_Controller
      */
     private function _salvar_foto_base64($base64_string, $tipo, $tecnico_id)
     {
+        log_message('info', '_salvar_foto_base64 - Iniciando salvamento para tecnico: ' . $tecnico_id);
+
+        if (empty($base64_string)) {
+            log_message('error', '_salvar_foto_base64 - String base64 vazia');
+            return false;
+        }
+
         // Extrair dados da string base64
-        $data = explode(',', $base64_string);
-        $base64_data = isset($data[1]) ? $data[1] : $data[0];
+        if (strpos($base64_string, ',') !== false) {
+            $data = explode(',', $base64_string);
+            $base64_data = isset($data[1]) ? $data[1] : $data[0];
+        } else {
+            $base64_data = $base64_string;
+        }
+
+        // Limpar base64
+        $base64_data = preg_replace('/[^a-zA-Z0-9+\/=]/', '', $base64_data);
 
         // Decodificar
-        $imagem = base64_decode($base64_data);
+        $imagem = base64_decode($base64_data, true);
+
+        if ($imagem === false) {
+            log_message('error', '_salvar_foto_base64 - Falha ao decodificar base64');
+            return false;
+        }
+
+        // Validar se é imagem
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mime_type = finfo_buffer($finfo, $imagem);
+        finfo_close($finfo);
+
+        if (!in_array($mime_type, ['image/jpeg', 'image/png', 'image/gif', 'image/webp'])) {
+            log_message('error', '_salvar_foto_base64 - Tipo invalido: ' . $mime_type);
+            return false;
+        }
+
+        // Determinar extensao
+        $extensao = 'jpg';
+        switch ($mime_type) {
+            case 'image/png': $extensao = 'png'; break;
+            case 'image/gif': $extensao = 'gif'; break;
+            case 'image/webp': $extensao = 'webp'; break;
+        }
 
         // Gerar nome único
-        $nome_arquivo = $tipo . '_' . $tecnico_id . '_' . time() . '_' . uniqid() . '.jpg';
+        $nome_arquivo = $tipo . '_' . $tecnico_id . '_' . time() . '_' . uniqid() . '.' . $extensao;
         $diretorio = 'assets/tecnicos/fotos/' . date('Y/m');
 
         // Criar diretório se não existir
         if (!is_dir($diretorio)) {
-            mkdir($diretorio, 0755, true);
+            if (!mkdir($diretorio, 0755, true)) {
+                log_message('error', '_salvar_foto_base64 - Falha ao criar diretorio: ' . $diretorio);
+                return false;
+            }
+        }
+
+        if (!is_writable($diretorio)) {
+            log_message('error', '_salvar_foto_base64 - Diretorio sem permissao de escrita: ' . $diretorio);
+            return false;
         }
 
         $caminho = $diretorio . '/' . $nome_arquivo;
 
         // Salvar arquivo
-        file_put_contents($caminho, $imagem);
+        $resultado = file_put_contents($caminho, $imagem);
 
+        if ($resultado === false || $resultado === 0) {
+            log_message('error', '_salvar_foto_base64 - Falha ao salvar arquivo: ' . $caminho);
+            return false;
+        }
+
+        log_message('info', '_salvar_foto_base64 - Foto salva com sucesso: ' . $caminho);
         return $caminho;
     }
 }

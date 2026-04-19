@@ -85,9 +85,20 @@
     .notif-item .notif-data { font-size: 10px; color: #999; margin-top: 2px; }
     .notif-item .notif-icone { margin-right: 8px; font-size: 16px; vertical-align: middle; }
     #theme-toggle-btn a { cursor: pointer; }
-    /* Notificações sempre por cima */
-    #notifications-dropdown { position: relative; z-index: 99999 !important; }
-    #notifications-dropdown .dropdown-menu { z-index: 99999 !important; }
+    /* Notificações sempre por cima - sobrepõe tudo */
+    #notifications-dropdown { position: static !important; }
+    #notifications-dropdown.open { position: relative !important; z-index: 999999 !important; }
+    #notifications-dropdown .dropdown-menu {
+        z-index: 999999 !important;
+        position: fixed !important;
+        top: 60px !important;
+        right: 60px !important;
+        left: auto !important;
+        bottom: auto !important;
+        max-height: 400px;
+        overflow-y: auto;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+    }
   </style>
 </head>
 
