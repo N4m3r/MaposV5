@@ -36,13 +36,24 @@ class Os_model extends CI_Model
                 $this->db->like('nomeCliente', $where['pesquisa']);
                 $this->db->or_like('documento', $where['pesquisa']);
                 $this->db->limit(25);
-                $clientes = $this->db->get('clientes')->result();
+                $clientes_query = $this->db->get('clientes');
+
+                // Verificar se query falhou
+                if ($clientes_query === false) {
+                    log_message('error', 'Erro ao buscar clientes na pesquisa: ' . print_r($this->db->error(), true));
+                    return [];
+                }
+
+                $clientes = $clientes_query->result();
 
                 foreach ($clientes as $c) {
                     array_push($lista_clientes, $c->idClientes);
                 }
             }
         }
+
+        // Limpar o query builder para garantir estado limpo
+        $this->db->reset_query();
 
         $this->db->select($fields . ',clientes.idClientes, clientes.nomeCliente, clientes.celular as celular_cliente, usuarios.nome, garantias.*');
         $this->db->from($table);
@@ -202,13 +213,24 @@ class Os_model extends CI_Model
                 $this->db->like('nomeCliente', $where['pesquisa']);
                 $this->db->or_like('documento', $where['pesquisa']);
                 $this->db->limit(25);
-                $clientes = $this->db->get('clientes')->result();
+                $clientes_query = $this->db->get('clientes');
+
+                // Verificar se query falhou
+                if ($clientes_query === false) {
+                    log_message('error', 'Erro ao buscar clientes na pesquisa (countOs): ' . print_r($this->db->error(), true));
+                    return 0;
+                }
+
+                $clientes = $clientes_query->result();
 
                 foreach ($clientes as $c) {
                     array_push($lista_clientes, $c->idClientes);
                 }
             }
         }
+
+        // Limpar o query builder
+        $this->db->reset_query();
 
         // Usar DISTINCT para evitar duplicatas causadas pelos JOINs
         $this->db->select('COUNT(DISTINCT os.idOs) as total');
@@ -249,6 +271,14 @@ class Os_model extends CI_Model
         }
 
         $query = $this->db->get();
+
+        // Verificar se query falhou
+        if ($query === false) {
+            $error = $this->db->error();
+            log_message('error', 'Erro na query countOs: ' . $error['message'] . ' | Query: ' . $this->db->last_query());
+            return 0;
+        }
+
         $result = $query->row();
         return $result ? (int) $result->total : 0;
     }
