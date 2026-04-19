@@ -1013,6 +1013,57 @@ class Os extends MY_Controller
         }
     }
 
+    /**
+     * Zera o preço e subtotal de todos os produtos de uma OS
+     */
+    public function zerarPrecosProdutos()
+    {
+        $idOs = $this->input->post('idOs');
+
+        if (!$idOs) {
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_status_header(400)
+                ->set_output(json_encode(['result' => false, 'message' => 'OS não informada']));
+        }
+
+        // Verifica permissão
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'eOs')) {
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_status_header(403)
+                ->set_output(json_encode(['result' => false, 'message' => 'Você não tem permissão para editar a OS']));
+        }
+
+        // Atualiza todos os produtos da OS: preco = 0, subTotal = 0
+        $this->db->where('os_id', $idOs);
+        $data = [
+            'preco' => 0.00,
+            'subTotal' => 0.00,
+        ];
+
+        if ($this->db->update('produtos_os', $data)) {
+            // Limpa descontos da OS
+            $this->db->set('desconto', 0.00);
+            $this->db->set('valor_desconto', 0.00);
+            $this->db->set('tipo_desconto', null);
+            $this->db->where('idOs', $idOs);
+            $this->db->update('os');
+
+            log_info('Zerou preços dos produtos da OS. ID: ' . $idOs);
+
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_status_header(200)
+                ->set_output(json_encode(['result' => true]));
+        } else {
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_status_header(500)
+                ->set_output(json_encode(['result' => false, 'message' => 'Erro ao atualizar preços']));
+        }
+    }
+
     public function editarServico()
     {
         $this->load->library('form_validation');
