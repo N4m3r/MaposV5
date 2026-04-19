@@ -83,26 +83,66 @@
                                 <i class="bx bx-user"></i>
                             </div>
                             <div class="client-info">
-                                <h4><?php echo $cliente ? htmlspecialchars($cliente->nomeCliente, ENT_COMPAT | ENT_HTML5, 'UTF-8') : 'Cliente não encontrado'; ?></h4>
-                                <?php if ($cliente): ?>
+                                <?php
+                                $clienteValido = $cliente && !empty($cliente->nomeCliente)
+                                    && strpos($cliente->nomeCliente, 'não encontrado') === false
+                                    && strpos($cliente->nomeCliente, 'não vinculado') === false;
+                                ?>
+
+                                <h4>
+                                    <?php if ($clienteValido): ?>
+                                        <?php echo htmlspecialchars($cliente->nomeCliente, ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?>
+                                    <?php else: ?>
+                                        <span style="color: #dc3545;"><i class="bx bx-error-circle"></i> Cliente não encontrado</span>
+                                    <?php endif; ?>
+                                </h4>
+
+                                <?php if ($clienteValido): ?>
+                                    <!-- Endereço -->
                                     <div class="client-meta">
-                                        <span class="meta-item"><i class="bx bx-map"></i> <?php echo htmlspecialchars($cliente->endereco ?? 'Endereço não informado', ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></span>
+                                        <span class="meta-item">
+                                            <i class="bx bx-map"></i>
+                                            <?php echo htmlspecialchars($cliente->endereco ?: 'Endereço não informado', ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?>
+                                        </span>
                                     </div>
-                                    <?php if (!empty($cliente->telefone)): ?>
+
+                                    <?php
+                                    // Prepara contatos
+                                    $contatos = [];
+                                    if (!empty($cliente->telefone) && $cliente->telefone !== '-') {
+                                        $contatos[] = '<i class="bx bx-phone"></i> ' . htmlspecialchars($cliente->telefone, ENT_COMPAT | ENT_HTML5, 'UTF-8');
+                                    }
+                                    if (!empty($cliente->celular) && $cliente->celular !== '-') {
+                                        $contatos[] = '<i class="bx bx-mobile"></i> ' . htmlspecialchars($cliente->celular, ENT_COMPAT | ENT_HTML5, 'UTF-8');
+                                    }
+                                    if (!empty($cliente->email)) {
+                                        $contatos[] = '<i class="bx bx-envelope"></i> ' . htmlspecialchars($cliente->email, ENT_COMPAT | ENT_HTML5, 'UTF-8');
+                                    }
+
+                                    if (!empty($contatos)):
+                                    ?>
                                         <div class="client-meta">
-                                            <span class="meta-item"><i class="bx bx-phone"></i> <?php echo htmlspecialchars($cliente->telefone, ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></span>
+                                            <span class="meta-item">
+                                                <?php echo implode(' <span style="margin: 0 8px; color: #ccc;">|</span> ', $contatos); ?>
+                                            </span>
                                         </div>
                                     <?php endif; ?>
-                                    <?php if (!empty($cliente->celular)): ?>
+
+                                    <!-- Documento -->
+                                    <?php if (!empty($cliente->documento)): ?>
                                         <div class="client-meta">
-                                            <span class="meta-item"><i class="bx bx-mobile"></i> <?php echo htmlspecialchars($cliente->celular, ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></span>
+                                            <span class="meta-item">
+                                                <i class="bx bx-id-card"></i> CPF/CNPJ: <?php echo htmlspecialchars($cliente->documento, ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?>
+                                            </span>
                                         </div>
                                     <?php endif; ?>
-                                    <?php if (!empty($cliente->email)): ?>
-                                        <div class="client-meta">
-                                            <span class="meta-item"><i class="bx bx-envelope"></i> <?php echo htmlspecialchars($cliente->email, ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></span>
-                                        </div>
-                                    <?php endif; ?>
+
+                                <?php else: ?>
+                                    <div class="client-meta" style="color: #856404; background: #fff3cd; padding: 10px; border-radius: 6px; margin-top: 10px;">
+                                        <span class="meta-item">
+                                            <i class="bx bx-info-circle"></i> Não foi possível carregar os dados do cliente. Verifique se o cliente está vinculado corretamente à OS.
+                                        </span>
+                                    </div>
                                 <?php endif; ?>
                             </div>
                         </div>
@@ -706,12 +746,24 @@
     border-radius: 8px;
     overflow: hidden;
     background: #e0e0e0;
+    position: relative;
+}
+
+.gallery-item .foto-link {
+    display: block;
+    width: 100%;
+    height: 100%;
 }
 
 .gallery-item img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform 0.3s;
+}
+
+.gallery-item:hover img {
+    transform: scale(1.05);
 }
 
 .gallery-add {
@@ -1818,7 +1870,9 @@ async function salvarFotoServico() {
             const grid = document.getElementById('galleryGrid');
             const item = document.createElement('div');
             item.className = 'gallery-item';
-            item.innerHTML = `<img src="${fotoServicoBase64}" alt="Foto">`;
+            // Usa a URL do servidor (mesmo padrão do sistema de atendimento)
+            const fotoUrl = data.url || fotoServicoBase64;
+            item.innerHTML = `<a href="${fotoUrl}" target="_blank" class="foto-link"><img src="${fotoUrl}" alt="Foto"></a>`;
             grid.insertBefore(item, grid.children[1]);
 
             fecharCamera();

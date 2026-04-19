@@ -22,6 +22,7 @@ class Tecnicos extends CI_Controller
         $this->load->model('tec_os_model');
         $this->load->model('os_model');
         $this->load->model('mapos_model');
+        $this->load->model('fotosatendimento_model');
         $this->load->library('session');
         $this->load->library('form_validation');
         $this->load->helper('url');
@@ -240,6 +241,10 @@ class Tecnicos extends CI_Controller
         $this->data['execucao'] = $this->tec_os_model->getExecucaoAtual($os_id, $tecnico_id);
         $this->data['checklist'] = $this->tec_os_model->getChecklistExecucao($os_id);
 
+        // Carregar fotos do sistema de atendimento (mesmo padrão de os/visualizar)
+        $this->load->model('fotosatendimento_model');
+        $this->data['fotosAtendimento'] = $this->fotosatendimento_model->getByOs($os_id);
+
         $this->load->view('tema/topo', $this->data);
         $this->load->view('tema/menu_portal_tecnico', $this->data);
         $this->load->view('tecnicos/executar_os', $this->data);
@@ -417,74 +422,99 @@ class Tecnicos extends CI_Controller
     }
 
     /**
-     * Adicionar foto à OS
+     * Adicionar foto à OS - Usa o mesmo padrão do sistema de atendimento
      */
     public function adicionar_foto()
     {
         header('Content-Type: application/json');
 
+        // Aumenta o limite de memória para processar imagens grandes
+        ini_set('memory_limit', '256M');
+
         try {
             $execucao_id = $this->input->post('execucao_id');
-            $foto = $this->input->post('foto');
+            // Usar FALSE para evitar XSS filter que corrompe base64
+            $foto = $this->input->post('foto', false);
             $descricao = $this->input->post('descricao');
             $tipo = $this->input->post('tipo'); // 'antes', 'depois', 'problema', 'detalhe'
             $latitude = $this->input->post('latitude');
             $longitude = $this->input->post('longitude');
 
-            log_message('info', 'adicionar_foto - Requisicao recebida. execucao_id: ' . $execucao_id);
-            log_message('info', 'adicionar_foto - Tamanho da foto: ' . strlen($foto) . ' caracteres');
+            log_message('info', 'Tecnicos::adicionar_foto - Requisicao recebida. execucao_id: ' . $execucao_id);
+            log_message('info', 'Tecnicos::adicionar_foto - Tamanho da foto: ' . strlen($foto) . ' caracteres');
 
             if (!$execucao_id || !$foto) {
-                log_message('error', 'adicionar_foto - Dados incompletos. execucao_id: ' . var_export($execucao_id, true) . ', foto vazia: ' . empty($foto));
+                log_message('error', 'Tecnicos::adicionar_foto - Dados incompletos');
                 echo json_encode(['success' => false, 'message' => 'Dados incompletos']);
                 return;
             }
 
             $tecnico_id = $this->session->userdata('tec_id');
-            log_message('info', 'adicionar_foto - Tecnico: ' . $tecnico_id);
+            log_message('info', 'Tecnicos::adicionar_foto - Tecnico: ' . $tecnico_id);
 
             // Verificar execução
             $execucao = $this->tec_os_model->getExecucaoById($execucao_id);
             if (!$execucao || $execucao->tecnico_id != $tecnico_id) {
-                log_message('error', 'adicionar_foto - Execucao nao encontrada ou nao pertence ao tecnico');
+                log_message('error', 'Tecnicos::adicionar_foto - Execucao nao encontrada ou nao pertence ao tecnico');
                 echo json_encode(['success' => false, 'message' => 'Execução não encontrada']);
                 return;
             }
 
-            // Salvar foto
-            $caminho_foto = $this->_salvar_foto_base64($foto, 'os', $tecnico_id);
+            $os_id = $execucao->os_id;
 
-            if (!$caminho_foto) {
-                log_message('error', 'adicionar_foto - _salvar_foto_base64 retornou false');
-                echo json_encode(['success' => false, 'message' => 'Erro ao salvar foto - verifique logs']);
+            // Usa o mesmo padrão do sistema de atendimento - salvar no banco com base64
+            $resultado = $this->fotosatendimento_model->salvarFotoBase64(
+                $foto,
+                $os_id,
+                $tecnico_id,
+                null, // checkin_id
+                'durante', // etapa
+                $descricao
+            );
+
+            if (isset($resultado['error'])) {
+                log_message('error', 'Tecnicos::adicionar_foto - Erro ao processar foto: ' . $resultado['error']);
+                echo json_encode(['success' => false, 'message' => $resultado['error']]);
                 return;
             }
 
-            log_message('info', 'adicionar_foto - Foto salva em: ' . $caminho_foto);
+            log_message('info', 'Tecnicos::adicionar_foto - Foto processada: ' . $resultado['arquivo']);
 
-            // Adicionar à galeria
-            $resultado = $this->tec_os_model->adicionarFotoGaleria($execucao_id, [
-                'caminho' => $caminho_foto,
+            // Dados para salvar no banco
+            $data_foto = [
+                'os_id' => $os_id,
+                'checkin_id' => null,
+                'usuarios_id' => $tecnico_id,
+                'arquivo' => $resultado['arquivo'],
+                'path' => $resultado['path'],
+                'url' => $resultado['url'],
                 'descricao' => $descricao,
-                'tipo' => $tipo,
-                'lat' => $latitude,
-                'lng' => $longitude,
-            ]);
+                'etapa' => 'durante',
+                'tamanho' => $resultado['tamanho'],
+                'tipo_arquivo' => $resultado['tipo'],
+                'imagem_base64' => $resultado['imagem_base64'],
+                'mime_type' => $resultado['mime_type']
+            ];
 
-            if (!$resultado) {
-                log_message('error', 'adicionar_foto - Erro ao adicionar na galeria');
-                echo json_encode(['success' => false, 'message' => 'Erro ao adicionar foto na galeria']);
+            // Salva no banco usando o model de fotos de atendimento
+            $foto_id = $this->fotosatendimento_model->add($data_foto, true);
+
+            if (!$foto_id) {
+                log_message('error', 'Tecnicos::adicionar_foto - Erro ao salvar no banco');
+                echo json_encode(['success' => false, 'message' => 'Erro ao salvar foto no banco']);
                 return;
             }
 
-            log_message('info', 'adicionar_foto - Foto adicionada com sucesso');
+            log_message('info', 'Tecnicos::adicionar_foto - Foto adicionada com sucesso. ID: ' . $foto_id);
+
             echo json_encode([
                 'success' => true,
-                'caminho' => $caminho_foto,
+                'foto_id' => $foto_id,
+                'url' => base_url('index.php/checkin/verFotoDB/' . $foto_id),
                 'message' => 'Foto adicionada com sucesso',
             ]);
         } catch (Exception $e) {
-            log_message('error', 'adicionar_foto - Excecao: ' . $e->getMessage());
+            log_message('error', 'Tecnicos::adicionar_foto - Excecao: ' . $e->getMessage());
             echo json_encode(['success' => false, 'message' => 'Erro interno: ' . $e->getMessage()]);
         }
     }
