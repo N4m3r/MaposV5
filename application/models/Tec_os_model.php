@@ -17,7 +17,8 @@ class Tec_os_model extends CI_Model
     public function getOsById($os_id)
     {
         $this->db->where('idOs', $os_id);
-        return $this->db->get('os')->row();
+        $query = $this->db->get('os');
+        return $query ? $query->row() : null;
     }
 
     /**
@@ -30,7 +31,8 @@ class Tec_os_model extends CI_Model
         $this->db->join('clientes c', 'c.idClientes = o.clientes_id');
         $this->db->join('enderecos_cliente e', 'e.cliente_id = c.idClientes AND e.principal = 1', 'left');
         $this->db->where('o.idOs', $os_id);
-        return $this->db->get()->row();
+        $query = $this->db->get();
+        return $query ? $query->row() : null;
     }
 
     /**

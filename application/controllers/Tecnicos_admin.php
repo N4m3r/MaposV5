@@ -1380,18 +1380,10 @@ class Tecnicos_admin extends MY_Controller
         header('Content-Type: application/json');
 
         try {
-            // Buscar usuários que são técnicos (is_tecnico = 1 OU app_tecnico_instalado = 1)
-            $this->db->select('idUsuarios, nome, email, telefone, nivel_tecnico, especialidades, status');
-            $this->db->where('status', 1);
-            $this->db->group_start();
-            $this->db->where('is_tecnico', 1);
-            $this->db->or_where('app_tecnico_instalado', 1);
-            $this->db->group_end();
-            $this->db->order_by('nome', 'ASC');
-            $query = $this->db->get('usuarios');
-            $tecnicos = $query ? $query->result() : [];
+            // Usar o Tecnicos_model para buscar técnicos (mesma lógica de tecnicos())
+            $tecnicos = $this->usuarios_model->getAll();
 
-            // Se não encontrou nenhum técnico, busca todos os usuários ativos como fallback
+            // Se não encontrou pelo model, busca todos os usuários ativos
             if (empty($tecnicos)) {
                 $this->db->select('idUsuarios, nome, email, telefone, nivel_tecnico, especialidades, status');
                 $this->db->where('status', 1);
@@ -1404,7 +1396,7 @@ class Tecnicos_admin extends MY_Controller
                 'success' => true,
                 'tecnicos' => $tecnicos,
                 'total' => count($tecnicos),
-                'debug' => 'Query executada com sucesso'
+                'debug' => 'Usando usuarios_model-getAll()'
             ]);
         } catch (Exception $e) {
             echo json_encode([
