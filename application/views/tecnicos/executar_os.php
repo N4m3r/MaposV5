@@ -3257,6 +3257,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 previewArquivoServico(fileInput);
             }
         }
+    }
+});
 
 // ============================================
 // WIZARD DE ATENDIMENTO
