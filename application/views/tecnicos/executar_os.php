@@ -3508,7 +3508,7 @@ function finalizarWizardAtendimento() {
     // Validar assinatura
     if (!wizardSignaturePad || wizardSignaturePad.isEmpty()) {
         Swal.fire({
-            type: 'warning',
+            icon: 'warning',
             title: 'Assinatura Obrigatória',
             text: 'Por favor, colete a assinatura do cliente.'
         });
@@ -3518,7 +3518,7 @@ function finalizarWizardAtendimento() {
     const nomeAssinante = document.getElementById('wizardNomeAssinante')?.value.trim();
     if (!nomeAssinante) {
         Swal.fire({
-            type: 'warning',
+            icon: 'warning',
             title: 'Nome Obrigatório',
             text: 'Por favor, informe o nome de quem está assinando.'
         });
@@ -3528,7 +3528,7 @@ function finalizarWizardAtendimento() {
     const confirmarAssinatura = document.getElementById('checkConfirmarAssinatura');
     if (!confirmarAssinatura?.checked) {
         Swal.fire({
-            type: 'warning',
+            icon: 'warning',
             title: 'Confirmação Necessária',
             text: 'Por favor, confirme que o serviço foi realizado e aceito.'
         });
