@@ -165,13 +165,16 @@
                         <div class="widget-content">
                             <div id="checklistContainer">
                                 <?php if (!empty($checklist)): ?>
-                                    <?php foreach ($checklist as $index => $item):
+                                    <?php
+                                    $itemCounter = 0;
+                                    foreach ($checklist as $index => $item):
+                                        $itemCounter++;
                                         // Normaliza o item para garantir que seja um array
                                         if (is_string($item)) {
                                             $item = ['descricao' => $item, 'status' => 'pendente'];
                                         }
                                         $itemStatus = $item['status'] ?? 'pendente';
-                                        $itemDescricao = $item['descricao'] ?? 'Item ' . ($index + 1);
+                                        $itemDescricao = $item['descricao'] ?? 'Item ' . $itemCounter;
                                         $itemServico = $item['servico'] ?? null;
                                     ?>
                                         <div class="checklist-item <?php echo $itemStatus; ?>" data-item-id="<?php echo $index; ?>">
