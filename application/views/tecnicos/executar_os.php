@@ -406,7 +406,7 @@
         <button type="button" class="btn btn-default" onclick="fecharCamera()">
             <i class="bx bx-x"></i> Cancelar
         </button>
-        <button type="button" class="btn btn-success" onclick="salvarFotoServico()">
+        <button type="button" id="btnSalvarFoto" class="btn btn-success" onclick="salvarFotoServico()">
             <i class="bx bx-save"></i> Salvar Foto
         </button>
     </div>
