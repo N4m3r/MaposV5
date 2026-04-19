@@ -610,19 +610,12 @@ class Tecnicos extends CI_Controller
 
         // Buscar serviços
         $this->data['servicos'] = $this->tec_os_model->getServicosOs($os_id);
-        log_message('info', 'Tecnicos::relatorio_execucao - OS ' . $os_id . ' - Total de serviços: ' . count($this->data['servicos']));
-        if (!empty($this->data['servicos'])) {
-            foreach ($this->data['servicos'] as $s) {
-                log_message('info', 'Tecnicos::relatorio_execucao - Servico: id=' . ($s->idServicos_os ?? 'NULL') . ', status=' . ($s->status ?? 'NULL'));
-            }
-        }
 
         // Se não encontrou serviços, tenta buscar pelo model padrão
         if (empty($this->data['servicos'])) {
             $this->load->model('os_model');
             $servicos_padrao = $this->os_model->getServicos($os_id);
             if (!empty($servicos_padrao)) {
-                log_message('info', 'Tecnicos::relatorio_execucao - Encontrados ' . count($servicos_padrao) . ' serviços via Os_model');
                 $this->data['servicos'] = $servicos_padrao;
             }
         }

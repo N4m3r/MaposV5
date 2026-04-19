@@ -4102,34 +4102,20 @@ function finalizarWizardAtendimento() {
         formData.append('longitude', '0');
         formData.append(csrf.name, csrf.value);
 
-        console.log('[DEBUG] Enviando finalizar_execucao:', {
-            execucao_id: execucaoId,
-            assinatura_tamanho: assinatura.length,
-            assinatura_preview: assinatura.substring(0, 50) + '...',
-            nome_cliente_assina: nomeAssinante,
-            servicos_status: servicosComStatus,
-            servicos_count: Object.keys(servicosComStatus).length
-        });
-
         const response = await fetch('<?php echo site_url('tecnicos/finalizar_execucao'); ?>', {
             method: 'POST',
             body: formData
         });
 
-        console.log('[DEBUG] Response status:', response.status);
-
         const responseText = await response.text();
-        console.log('[DEBUG] Response text:', responseText.substring(0, 500));
 
         if (!response.ok) {
-            console.error('[DEBUG] Erro HTTP:', response.status, responseText);
             throw new Error('Erro HTTP ' + response.status + ': ' + responseText);
         }
 
         try {
             return JSON.parse(responseText);
         } catch (e) {
-            console.error('[DEBUG] Resposta não é JSON válido:', responseText);
             throw new Error('Erro no servidor. Resposta invalida: ' + responseText.substring(0, 200));
         }
     };
