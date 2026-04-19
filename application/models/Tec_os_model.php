@@ -235,7 +235,7 @@ class Tec_os_model extends CI_Model
         $this->db->reset_query();
 
         // Primeiro tenta buscar da tabela padrão servicos_os
-        $this->db->select('servicos_os.*, servicos.nome as servico_nome, servicos.preco as servico_preco, servicos.codigo as servico_codigo, servicos.checklist_padrao');
+        $this->db->select('servicos_os.*, servicos.nome as servico_nome, servicos.preco as servico_preco, servicos.checklist_padrao');
         $this->db->from('servicos_os');
         $this->db->join('servicos', 'servicos.idServicos = servicos_os.servicos_id', 'left');
         $this->db->where('servicos_os.os_id', $os_id);
@@ -254,7 +254,7 @@ class Tec_os_model extends CI_Model
         if (empty($result) && $this->db->table_exists('os_servicos')) {
             log_message('info', 'Tec_os_model::getServicosOs - Tentando buscar em os_servicos');
             $this->db->reset_query();
-            $this->db->select('os_servicos.id as idServicos_os, os_servicos.servico_id as servicos_id, os_servicos.quantidade, os_servicos.status, os_servicos.observacao, servicos.nome as servico_nome, servicos.preco as servico_preco, servicos.codigo as servico_codigo');
+            $this->db->select('os_servicos.id as idServicos_os, os_servicos.servico_id as servicos_id, os_servicos.quantidade, os_servicos.status, os_servicos.observacao, servicos.nome as servico_nome, servicos.preco as servico_preco');
             $this->db->from('os_servicos');
             $this->db->join('servicos', 'servicos.idServicos = os_servicos.servico_id', 'left');
             $this->db->where('os_servicos.os_id', $os_id);

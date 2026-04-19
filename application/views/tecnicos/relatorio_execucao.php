@@ -564,9 +564,9 @@
                         $query_raw = $CI->db->get('servicos_os');
                         $debug_raw = $query_raw ? $query_raw->result() : [];
 
-                        // Agora tentar com JOIN
+                        // Agora tentar com JOIN (sem codigo pois coluna nao existe)
                         $CI->db->reset_query();
-                        $CI->db->select('servicos_os.*, servicos.nome as servico_nome, servicos.codigo as servico_codigo');
+                        $CI->db->select('servicos_os.*, servicos.nome as servico_nome');
                         $CI->db->from('servicos_os');
                         $CI->db->join('servicos', 'servicos.idServicos = servicos_os.servicos_id', 'left');
                         $CI->db->where('servicos_os.os_id', $os->idOs);
