@@ -183,7 +183,8 @@ class Tec_os_model extends CI_Model
     public function getExecucaoById($execucao_id)
     {
         $this->db->where('id', $execucao_id);
-        return $this->db->get('tec_os_execucao')->row();
+        $query = $this->db->get('tec_os_execucao');
+        return $query ? $query->row() : null;
     }
 
     /**
