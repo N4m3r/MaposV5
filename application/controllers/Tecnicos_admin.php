@@ -851,6 +851,410 @@ class Tecnicos_admin extends MY_Controller
     }
 
     /**
+     * Editar etapa da obra
+     */
+    public function editar_etapa($etapa_id)
+    {
+        $this->load->model('obras_model');
+
+        // Buscar a etapa
+        $this->db->where('id', $etapa_id);
+        $etapa = $this->db->get('obra_etapas')->row();
+
+        if (!$etapa) {
+            echo json_encode(['success' => false, 'message' => 'Etapa não encontrada']);
+            return;
+        }
+
+        if ($this->input->post()) {
+            $dados = [
+                'nome' => $this->input->post('nome'),
+                'descricao' => $this->input->post('descricao'),
+                'status' => $this->input->post('status'),
+                'data_inicio_prevista' => $this->input->post('data_inicio_prevista'),
+                'data_fim_prevista' => $this->input->post('data_fim_prevista'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ];
+
+            $this->db->where('id', $etapa_id);
+            if ($this->db->update('obra_etapas', $dados)) {
+                // Se mudou o status, atualizar progresso
+                if ($this->input->post('status') === 'concluida') {
+                    $this->obras_model->atualizarProgresso($etapa->obra_id);
+                }
+
+                $this->session->set_flashdata('success', 'Etapa atualizada com sucesso!');
+            } else {
+                $this->session->set_flashdata('error', 'Erro ao atualizar etapa.');
+            }
+
+            redirect('tecnicos_admin/ver_obra/' . $etapa->obra_id);
+        }
+    }
+
+    /**
+     * Atualizar status da etapa via AJAX
+     */
+    public function atualizar_status_etapa()
+    {
+        $etapa_id = $this->input->post('etapa_id');
+        $status = $this->input->post('status');
+
+        if (!$etapa_id || !$status) {
+            echo json_encode(['success' => false, 'message' => 'Dados incompletos']);
+            return;
+        }
+
+        // Buscar a etapa
+        $this->db->where('id', $etapa_id);
+        $etapa = $this->db->get('obra_etapas')->row();
+
+        if (!$etapa) {
+            echo json_encode(['success' => false, 'message' => 'Etapa não encontrada']);
+            return;
+        }
+
+        $dados = [
+            'status' => $status,
+            'updated_at' => date('Y-m-d H:i:s')
+        ];
+
+        // Se marcou como concluída, registrar data
+        if ($status === 'concluida') {
+            $dados['data_fim_real'] = date('Y-m-d');
+        }
+
+        $this->db->where('id', $etapa_id);
+        if ($this->db->update('obra_etapas', $dados)) {
+            // Atualizar progresso da obra
+            $this->load->model('obras_model');
+            $progresso = $this->obras_model->atualizarProgresso($etapa->obra_id);
+
+            echo json_encode([
+                'success' => true,
+                'message' => 'Status atualizado',
+                'progresso' => $progresso,
+                'etapa_id' => $etapa_id,
+                'status' => $status
+            ]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Erro ao atualizar']);
+        }
+    }
+
+    /**
+     * Adicionar comentário/atividade na obra
+     */
+    public function adicionar_comentario()
+    {
+        $obra_id = $this->input->post('obra_id');
+        $tipo = $this->input->post('tipo') ?: 'comentario';
+        $descricao = $this->input->post('descricao');
+
+        if (!$obra_id || !$descricao) {
+            $this->session->set_flashdata('error', 'Dados incompletos.');
+            redirect('tecnicos_admin/ver_obra/' . $obra_id);
+            return;
+        }
+
+        $dados = [
+            'obra_id' => $obra_id,
+            'usuario_id' => $this->session->userdata('id_admin'),
+            'usuario_nome' => $this->session->userdata('nome_admin'),
+            'tipo' => $tipo,
+            'descricao' => $descricao,
+            'created_at' => date('Y-m-d H:i:s')
+        ];
+
+        if ($this->db->insert('obra_atividades', $dados)) {
+            $this->session->set_flashdata('success', 'Registro adicionado com sucesso!');
+        } else {
+            $this->session->set_flashdata('error', 'Erro ao adicionar registro.');
+        }
+
+        redirect('tecnicos_admin/ver_obra/' . $obra_id);
+    }
+
+    /**
+     * Buscar atividades da obra (Timeline)
+     */
+    public function buscar_atividades_obra($obra_id)
+    {
+        if (!$obra_id) {
+            echo json_encode(['success' => false, 'atividades' => []]);
+            return;
+        }
+
+        // Buscar comentários/atividades
+        $this->db->where('obra_id', $obra_id);
+        $this->db->order_by('created_at', 'DESC');
+        $atividades = $this->db->get('obra_atividades')->result();
+
+        // Buscar etapas concluídas recentemente
+        $this->db->where('obra_id', $obra_id);
+        $this->db->where('status', 'concluida');
+        $this->db->order_by('data_fim_real', 'DESC');
+        $this->db->limit(10);
+        $etapas = $this->db->get('obra_etapas')->result();
+
+        echo json_encode([
+            'success' => true,
+            'atividades' => $atividades,
+            'etapas_concluidas' => $etapas
+        ]);
+    }
+
+    /**
+     * Área do Técnico - Obras atribuídas a ele
+     */
+    public function minhas_obras_tecnico()
+    {
+        $tecnico_id = $this->session->userdata('id_admin');
+
+        $this->load->model('obras_model');
+
+        // Buscar obras onde o técnico está na equipe
+        $this->db->select('o.*, c.nomeCliente as cliente_nome');
+        $this->db->from('obras o');
+        $this->db->join('obra_equipe oe', 'oe.obra_id = o.id');
+        $this->db->join('clientes c', 'c.idClientes = o.cliente_id', 'left');
+        $this->db->where('oe.tecnico_id', $tecnico_id);
+        $this->db->where('oe.ativo', 1);
+        $this->db->where_in('o.status', ['Contratada', 'EmExecucao']);
+        $this->db->group_by('o.id');
+        $obras = $this->db->get()->result();
+
+        // Enriquecer dados
+        foreach ($obras as $obra) {
+            $obra->minhas_os = $this->db->where(['obra_id' => $obra->id, 'tecnico_responsavel' => $tecnico_id])->count_all_results('os');
+            $obra->etapas_pendentes = $this->db->where(['obra_id' => $obra->id, 'status !=' => 'concluida'])->count_all_results('obra_etapas');
+        }
+
+        $this->data['obras'] = $obras;
+        $this->data['view'] = 'tecnicos_admin/tecnico_obras';
+        return $this->layout();
+    }
+
+    /**
+     * Técnico - Visualizar e executar etapas da obra
+     */
+    public function tecnico_executar_obra($obra_id)
+    {
+        $tecnico_id = $this->session->userdata('id_admin');
+
+        $this->load->model('obras_model');
+
+        // Verificar se técnico está na equipe
+        $this->db->where(['obra_id' => $obra_id, 'tecnico_id' => $tecnico_id, 'ativo' => 1]);
+        if (!$this->db->get('obra_equipe')->row()) {
+            $this->session->set_flashdata('error', 'Você não está alocado nesta obra.');
+            redirect('tecnicos_admin/minhas_obras_tecnico');
+        }
+
+        $obra = $this->obras_model->getById($obra_id);
+        if (!$obra) {
+            $this->session->set_flashdata('error', 'Obra não encontrada.');
+            redirect('tecnicos_admin/minhas_obras_tecnico');
+        }
+
+        // Buscar etapas da obra
+        $etapas = $this->obras_model->getEtapas($obra_id);
+
+        // Buscar minhas OS na obra
+        $this->db->select('os.idOs, os.status, os.dataInicial, c.nomeCliente');
+        $this->db->from('os');
+        $this->db->join('clientes c', 'c.idClientes = os.clientes_id');
+        $this->db->where('os.obra_id', $obra_id);
+        $this->db->where('os.tecnico_responsavel', $tecnico_id);
+        $minhas_os = $this->db->get()->result();
+
+        $this->data['obra'] = $obra;
+        $this->data['etapas'] = $etapas;
+        $this->data['minhas_os'] = $minhas_os;
+        $this->data['view'] = 'tecnicos_admin/tecnico_executar_obra';
+        return $this->layout();
+    }
+
+    /**
+     * Técnico - Atualizar progresso de etapa
+     */
+    public function tecnico_atualizar_etapa()
+    {
+        $etapa_id = $this->input->post('etapa_id');
+        $percentual = $this->input->post('percentual');
+        $observacao = $this->input->post('observacao');
+        $tecnico_id = $this->session->userdata('id_admin');
+
+        if (!$etapa_id || $percentual === null) {
+            echo json_encode(['success' => false, 'message' => 'Dados incompletos']);
+            return;
+        }
+
+        // Registrar progresso
+        $dados = [
+            'etapa_id' => $etapa_id,
+            'tecnico_id' => $tecnico_id,
+            'percentual_concluido' => $percentual,
+            'observacao' => $observacao,
+            'data_registro' => date('Y-m-d H:i:s')
+        ];
+
+        if ($this->db->insert('obra_etapa_progresso', $dados)) {
+            // Se completou 100%, marcar como concluída
+            if ($percentual >= 100) {
+                $this->db->where('id', $etapa_id);
+                $this->db->update('obra_etapas', [
+                    'status' => 'concluida',
+                    'percentual_concluido' => 100,
+                    'data_fim_real' => date('Y-m-d')
+                ]);
+            } else {
+                $this->db->where('id', $etapa_id);
+                $this->db->update('obra_etapas', [
+                    'status' => 'em_andamento',
+                    'percentual_concluido' => $percentual
+                ]);
+            }
+
+            echo json_encode(['success' => true, 'message' => 'Progresso atualizado!']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Erro ao registrar']);
+        }
+    }
+
+    /**
+     * Buscar OS disponíveis para vincular (todas as OS sem obra)
+     */
+    public function buscar_os_disponiveis_simples()
+    {
+        $termo = $this->input->get('termo');
+
+        $this->db->select('os.idOs, os.dataInicial, os.status, c.nomeCliente, c.documento');
+        $this->db->from('os');
+        $this->db->join('clientes c', 'c.idClientes = os.clientes_id');
+        $this->db->where('(os.obra_id IS NULL OR os.obra_id = 0)');
+
+        if ($termo) {
+            $this->db->like('os.idOs', $termo);
+            $this->db->or_like('c.nomeCliente', $termo);
+        }
+
+        $this->db->order_by('os.dataInicial', 'DESC');
+        $this->db->limit(50);
+        $query = $this->db->get();
+        $os = $query ? $query->result() : [];
+
+        echo json_encode(['success' => true, 'os' => $os]);
+    }
+
+    /**
+     * Remover técnico da equipe
+     */
+    public function remover_tecnico_equipe()
+    {
+        $obra_id = $this->input->post('obra_id');
+        $tecnico_id = $this->input->post('tecnico_id');
+
+        if (!$obra_id || !$tecnico_id) {
+            $this->session->set_flashdata('error', 'Dados incompletos.');
+            redirect('tecnicos_admin/ver_obra/' . $obra_id);
+            return;
+        }
+
+        $this->db->where(['obra_id' => $obra_id, 'tecnico_id' => $tecnico_id]);
+        if ($this->db->update('obra_equipe', ['ativo' => 0, 'data_saida' => date('Y-m-d')])) {
+            $this->session->set_flashdata('success', 'Técnico removido da equipe!');
+        } else {
+            $this->session->set_flashdata('error', 'Erro ao remover técnico.');
+        }
+
+        redirect('tecnicos_admin/ver_obra/' . $obra_id);
+    }
+
+    /**
+     * Excluir etapa
+     */
+    public function excluir_etapa($etapa_id)
+    {
+        // Buscar a etapa
+        $this->db->where('id', $etapa_id);
+        $etapa = $this->db->get('obra_etapas')->row();
+
+        if (!$etapa) {
+            $this->session->set_flashdata('error', 'Etapa não encontrada.');
+            redirect('tecnicos_admin/obras');
+            return;
+        }
+
+        $obra_id = $etapa->obra_id;
+
+        $this->db->where('id', $etapa_id);
+        if ($this->db->delete('obra_etapas')) {
+            // Atualizar progresso
+            $this->load->model('obras_model');
+            $this->obras_model->atualizarProgresso($obra_id);
+
+            $this->session->set_flashdata('success', 'Etapa excluída com sucesso!');
+        } else {
+            $this->session->set_flashdata('error', 'Erro ao excluir etapa.');
+        }
+
+        redirect('tecnicos_admin/ver_obra/' . $obra_id);
+    }
+
+    /**
+     * API - Dados da obra para gráficos
+     */
+    public function api_dados_obra($obra_id)
+    {
+        header('Content-Type: application/json');
+
+        if (!$obra_id) {
+            echo json_encode(['success' => false]);
+            return;
+        }
+
+        $this->load->model('obras_model');
+
+        // Estatísticas
+        $etapas = $this->obras_model->getEtapas($obra_id);
+        $total_etapas = count($etapas);
+        $etapas_concluidas = 0;
+        $etapas_andamento = 0;
+
+        foreach ($etapas as $etapa) {
+            if ($etapa->status === 'concluida') $etapas_concluidas++;
+            elseif ($etapa->status === 'em_andamento') $etapas_andamento++;
+        }
+
+        // OS por status
+        $this->db->where('obra_id', $obra_id);
+        $os_list = $this->db->get('os')->result();
+        $os_por_status = [];
+        foreach ($os_list as $os) {
+            $os_por_status[$os->status] = ($os_por_status[$os->status] ?? 0) + 1;
+        }
+
+        // Progresso ao longo do tempo
+        $this->db->where('obra_id', $obra_id);
+        $this->db->order_by('data_registro', 'ASC');
+        $progresso_historico = $this->db->get('obra_etapa_progresso')->result();
+
+        echo json_encode([
+            'success' => true,
+            'etapas' => [
+                'total' => $total_etapas,
+                'concluidas' => $etapas_concluidas,
+                'andamento' => $etapas_andamento,
+                'pendentes' => $total_etapas - $etapas_concluidas - $etapas_andamento
+            ],
+            'os_por_status' => $os_por_status,
+            'progresso_historico' => $progresso_historico
+        ]);
+        return $this->layout();
+    }
+
+    /**
      * Buscar OS disponíveis simplificado - apenas por obra
      */
     public function buscar_os_por_obra()
