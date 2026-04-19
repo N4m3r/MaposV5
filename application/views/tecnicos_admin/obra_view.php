@@ -644,18 +644,33 @@
         var obraId = <?= $obra->id ?>;
         var clienteId = <?= $obra->cliente_id ?? 'null' ?>;
 
+        var select = $('#select-os-vincular');
+        select.empty();
+        select.append('<option value="">-- Carregando OS disponíveis... --</option>');
+
         $.ajax({
             url: '<?= site_url("tecnicos_admin/buscar_os_disponiveis") ?>',
             type: 'GET',
             data: {
-                obra_id: obraId,
-                cliente_id: clienteId
+                obra_id: obraId
             },
             dataType: 'json',
             success: function(response) {
-                var select = $('#select-os-vincular');
                 select.empty();
                 select.append('<option value="">-- Selecione uma OS --</option>');
+
+                // Mostrar informações de debug
+                var debugInfo = '';
+                if (response.cliente_nome) {
+                    debugInfo = '<div class="alert alert-info" style="margin-top: 10px; padding: 8px; font-size: 12px;">' +
+                        '<i class="bx bx-info-circle"></i> ' +
+                        'Cliente: <strong>' + response.cliente_nome + '</strong><br>' +
+                        'CNPJ: ' + response.cnpj + '<br>' +
+                        'Total de OS deste cliente: ' + response.total_os_cliente + '<br>' +
+                        'OS disponíveis: ' + (response.os ? response.os.length : 0) +
+                    '</div>';
+                }
+                $('#os-detalhes').html(debugInfo).show();
 
                 if (response.success && response.os && response.os.length > 0) {
                     response.os.forEach(function(os) {
@@ -665,14 +680,13 @@
                         '</option>');
                     });
                 } else {
-                    var msg = response.message || 'Nenhuma OS disponível para vincular';
+                    var msg = response.message || 'Nenhuma OS disponível para vincular (todas já estão vinculadas ou não existem OS para este cliente)';
                     select.append('<option value="" disabled>' + msg + '</option>');
                 }
             },
-            error: function() {
-                var select = $('#select-os-vincular');
+            error: function(xhr, status, error) {
                 select.empty();
-                select.append('<option value="" disabled>Erro ao carregar OS</option>');
+                select.append('<option value="" disabled>Erro ao carregar OS: ' + error + '</option>');
             }
         });
     }

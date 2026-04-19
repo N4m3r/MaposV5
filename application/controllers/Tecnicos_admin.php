@@ -725,7 +725,19 @@ class Tecnicos_admin extends MY_Controller
         $query = $this->db->get();
         $os = $query ? $query->result() : [];
 
-        echo json_encode(['success' => true, 'os' => $os, 'cnpj' => $cliente->documento]);
+        // Buscar total de OS do cliente (para depuração)
+        $this->db->where_in('clientes_id', $clientes_ids);
+        $total_os_cliente = $this->db->count_all_results('os');
+
+        echo json_encode([
+            'success' => true,
+            'os' => $os,
+            'cnpj' => $cliente->documento,
+            'cliente_nome' => $cliente->nomeCliente,
+            'clientes_ids' => $clientes_ids,
+            'total_os_cliente' => $total_os_cliente,
+            'obra_cliente_id' => $obra->cliente_id
+        ]);
     }
 
     /**

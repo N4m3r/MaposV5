@@ -72,7 +72,7 @@ class Obras_model extends CI_Model
         }
 
         try {
-            $this->db->select('o.*, c.nomeCliente as cliente_nome, c.documento as cliente_documento, c.idClientes as cliente_id');
+            $this->db->select('o.*, c.nomeCliente as cliente_nome, c.documento as cliente_documento');
             $this->db->from('obras o');
             $this->db->join('clientes c', 'c.idClientes = o.cliente_id', 'left');
             $this->db->where('o.id', $id);
@@ -321,6 +321,7 @@ class Obras_model extends CI_Model
     public function getEquipe($obra_id)
     {
         if (!$this->tabelaExiste('obra_equipe')) {
+            $this->criarTabelaEquipe();
             return [];
         }
 
@@ -348,7 +349,7 @@ class Obras_model extends CI_Model
     public function adicionarTecnicoEquipe($obra_id, $tecnico_id, $funcao = 'Técnico')
     {
         if (!$this->tabelaExiste('obra_equipe')) {
-            return false;
+            $this->criarTabelaEquipe();
         }
 
         try {
@@ -509,6 +510,29 @@ class Obras_model extends CI_Model
             created_at DATETIME,
             updated_at DATETIME,
             INDEX idx_obra_id (obra_id)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
+
+        $this->db->query($sql);
+    }
+
+    /**
+     * Criar tabela de equipe se não existir
+     */
+    private function criarTabelaEquipe()
+    {
+        $sql = "CREATE TABLE IF NOT EXISTS obra_equipe (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            obra_id INT NOT NULL,
+            tecnico_id INT NOT NULL,
+            funcao VARCHAR(50) DEFAULT 'Técnico',
+            data_entrada DATE NOT NULL,
+            data_saida DATE DEFAULT NULL,
+            ativo TINYINT(1) DEFAULT 1,
+            observacoes TEXT,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            UNIQUE KEY uk_obra_tecnico (obra_id, tecnico_id, data_entrada),
+            INDEX idx_tecnico (tecnico_id)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
 
         $this->db->query($sql);
