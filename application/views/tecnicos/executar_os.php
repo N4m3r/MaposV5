@@ -1471,11 +1471,6 @@ async function verificarPermissoes() {
 
 // Verificar permissões ao carregar
 verificarPermissoes();
-        card.style.borderColor = '#dc3545';
-        card.style.background = '#fff5f5';
-        alert('Permissão de localização negada.\n\nPara permitir:\n1. Clique no 🔒 (cadeado) ao lado da URL\n2. Clique em "Permitir" para Localização\n3. Recarregue a página');
-    }
-}
 
 // Canvas de assinatura
 const canvas = document.getElementById('signaturePad');
