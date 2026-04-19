@@ -50,7 +50,7 @@ class Tec_os_model extends CI_Model
             return $cliente;
         }
 
-        $this->db->select('c.*, e.lat, e.lng');
+        $this->db->select('c.*, e.rua, e.numero, e.complemento, e.bairro, e.cidade, e.uf, e.cep, e.lat, e.lng');
         $this->db->from('clientes c');
         $this->db->join('enderecos_cliente e', 'e.cliente_id = c.idClientes AND e.principal = 1', 'left');
         $this->db->where('c.idClientes', $os->clientes_id);
@@ -66,7 +66,37 @@ class Tec_os_model extends CI_Model
             return $cliente;
         }
 
-        return $query->row();
+        $cliente = $query->row();
+
+        // Monta o endereço completo
+        $endereco_parts = [];
+        if (!empty($cliente->rua)) {
+            $endereco = $cliente->rua;
+            if (!empty($cliente->numero)) {
+                $endereco .= ', ' . $cliente->numero;
+            }
+            $endereco_parts[] = $endereco;
+        }
+        if (!empty($cliente->complemento)) {
+            $endereco_parts[] = $cliente->complemento;
+        }
+        if (!empty($cliente->bairro)) {
+            $endereco_parts[] = $cliente->bairro;
+        }
+        if (!empty($cliente->cidade)) {
+            $cidade_estado = $cliente->cidade;
+            if (!empty($cliente->uf)) {
+                $cidade_estado .= '/' . $cliente->uf;
+            }
+            $endereco_parts[] = $cidade_estado;
+        }
+        if (!empty($cliente->cep)) {
+            $endereco_parts[] = 'CEP: ' . $cliente->cep;
+        }
+
+        $cliente->endereco = !empty($endereco_parts) ? implode(' - ', $endereco_parts) : 'Endereço não informado';
+
+        return $cliente;
     }
 
     /**

@@ -229,31 +229,31 @@
                                 <?php if (!empty($servicos)): ?>
                                     <div class="servicos-list">
                                         <?php foreach ($servicos as $index => $servico): ?>
-                                            <div class="servico-item checklist-item pendente" data-servico-id="<?php echo $servico->servicos_id ?? $index; ?>">
+                                            <div class="servico-item checklist-item pendente" data-servico-id="<?php echo $servico->idServicos ?? $index; ?>">
                                                 <div class="servico-info">
                                                     <div class="servico-header">
-                                                        <div class="checklist-checkbox" onclick="toggleServicoStatus(<?php echo $servico->servicos_id ?? $index; ?>)">
+                                                        <div class="checklist-checkbox" onclick="toggleServicoStatus(<?php echo $servico->idServicos ?? $index; ?>)">
                                                             <i class="bx bx-circle"></i>
                                                         </div>
                                                         <div class="servico-nome">
-                                                            <?php echo htmlspecialchars($servico->servico_nome ?? 'Serviço', ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?>
+                                                            <?php echo htmlspecialchars($servico->servico_nome ?? $servico->nome ?? 'Serviço', ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?>
                                                         </div>
                                                     </div>
-                                                    <?php if ($servico->servico_codigo): ?>
-                                                        <div class="servico-codigo">Código: <?php echo htmlspecialchars($servico->servico_codigo, ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></div>
+                                                    <?php if (!empty($servico->servico_codigo) || !empty($servico->codigo)): ?>
+                                                        <div class="servico-codigo">Código: <?php echo htmlspecialchars($servico->servico_codigo ?? $servico->codigo ?? '', ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></div>
                                                     <?php endif; ?>
                                                 </div>
                                                 <div class="servico-actions">
                                                     <button type="button" class="btn btn-mini" data-status="pendente"
-                                                            onclick="setServicoStatus(<?php echo $servico->servicos_id ?? $index; ?>, 'pendente')">
+                                                            onclick="setServicoStatus(<?php echo $servico->idServicos ?? $index; ?>, 'pendente')">
                                                         <i class="bx bx-circle"></i> Pendente
                                                     </button>
                                                     <button type="button" class="btn btn-mini btn-success" data-status="conforme"
-                                                            onclick="setServicoStatus(<?php echo $servico->servicos_id ?? $index; ?>, 'conforme')">
+                                                            onclick="setServicoStatus(<?php echo $servico->idServicos ?? $index; ?>, 'conforme')">
                                                         <i class="bx bx-check"></i> OK
                                                     </button>
                                                     <button type="button" class="btn btn-mini btn-danger" data-status="nao_conforme"
-                                                            onclick="setServicoStatus(<?php echo $servico->servicos_id ?? $index; ?>, 'nao_conforme')">
+                                                            onclick="setServicoStatus(<?php echo $servico->idServicos ?? $index; ?>, 'nao_conforme')">
                                                         <i class="bx bx-x"></i> Não OK
                                                     </button>
                                                 </div>
@@ -1789,14 +1789,23 @@ async function salvarFotoServico() {
         });
 
         // Verificar se resposta é OK
+        const responseText = await response.text();
+        console.log('Resposta bruta:', responseText.substring(0, 1000));
+
         if (!response.ok) {
-            const text = await response.text();
-            console.error('Erro HTTP:', response.status, text.substring(0, 500));
-            alert('Erro do servidor: ' + response.status + '. Verifique o console.');
+            console.error('Erro HTTP:', response.status, responseText.substring(0, 500));
+            alert('Erro do servidor: ' + response.status + '. Verifique o console (F12).');
             return;
         }
 
-        const data = await response.json();
+        let data;
+        try {
+            data = JSON.parse(responseText);
+        } catch (e) {
+            console.error('Resposta não é JSON válido:', responseText);
+            alert('Erro: resposta inválida do servidor. Verifique os logs em application/logs/');
+            return;
+        }
 
         if (data.success) {
             const grid = document.getElementById('galleryGrid');
