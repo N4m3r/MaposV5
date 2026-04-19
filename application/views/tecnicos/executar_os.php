@@ -1773,9 +1773,9 @@ async function salvarFotoServico() {
     formData.append('longitude', longitude || 0);
     formData.append(csrf.name, csrf.value);
 
-    const btn = document.querySelector('#cameraModal .btn-success');
+    const btn = document.getElementById('btnSalvarFoto');
     if (!btn) {
-        alert('Erro: botão não encontrado no modal. Recarregue a página.');
+        alert('Erro: botão não encontrado. Recarregue a página (Ctrl+F5).');
         return;
     }
     const btnOriginalText = btn.innerHTML;
