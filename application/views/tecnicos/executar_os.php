@@ -309,10 +309,7 @@
                                     // DEBUG: Mostrar informações sobre serviços
                                     $debug_servicos = isset($servicos) ? (is_array($servicos) ? count($servicos) : 'nao-array') : 'nao-definido';
                                     ?>
-                                    <!-- <?php echo htmlspecialchars('DEBUG - servicos: ' . $debug_servicos); ?>
-                                    <?php if (!empty($servicos)): foreach ($servicos as $i => $s): ?>
-                                        DEBUG - Servico <?php echo $i; ?>: id=<?php echo $s->idServicos_os ?? 'NULL'; ?>, nome=<?php echo $s->servico_nome ?? $s->nome ?? 'N/A'; ?>, status=<?php echo $s->status ?? 'NULL'; ?>
-                                    <?php endforeach; endif; ?> -->
+                                    <!-- <?php echo htmlspecialchars('DEBUG - servicos: ' . $debug_servicos); ?> -->
 
                                     <?php if (!empty($servicos)): ?>
                                         <div class="wizard-servicos-list">
