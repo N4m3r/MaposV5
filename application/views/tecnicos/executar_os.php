@@ -87,17 +87,17 @@
                                     <div class="client-meta">
                                         <span class="meta-item"><i class="bx bx-map"></i> <?php echo htmlspecialchars($cliente->endereco ?? 'Endereço não informado', ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></span>
                                     </div>
-                                    <?php if ($cliente->telefone): ?>
+                                    <?php if (!empty($cliente->telefone)): ?>
                                         <div class="client-meta">
                                             <span class="meta-item"><i class="bx bx-phone"></i> <?php echo htmlspecialchars($cliente->telefone, ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></span>
                                         </div>
                                     <?php endif; ?>
-                                    <?php if ($cliente->celular): ?>
+                                    <?php if (!empty($cliente->celular)): ?>
                                         <div class="client-meta">
                                             <span class="meta-item"><i class="bx bx-mobile"></i> <?php echo htmlspecialchars($cliente->celular, ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></span>
                                         </div>
                                     <?php endif; ?>
-                                    <?php if ($cliente->email): ?>
+                                    <?php if (!empty($cliente->email)): ?>
                                         <div class="client-meta">
                                             <span class="meta-item"><i class="bx bx-envelope"></i> <?php echo htmlspecialchars($cliente->email, ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></span>
                                         </div>
