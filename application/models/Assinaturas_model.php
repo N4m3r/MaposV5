@@ -354,19 +354,21 @@ class Assinaturas_model extends CI_Model
                 break;
         }
 
-        // Criar pasta por data
-        $pasta = 'assets/assinaturas/' . date('Y-m');
+        // Criar pasta por data - usar FCPATH para caminho absoluto
+        $pasta = FCPATH . 'assets/assinaturas/' . date('Y-m');
         if (!is_dir($pasta)) {
             if (!mkdir($pasta, 0755, true)) {
                 log_message('error', 'Assinaturas_model::salvarImagem - Falha ao criar pasta: ' . $pasta);
-                return false;
+                // Tentar salvar no banco como fallback
+                return $this->salvarImagemBase64NoBanco($base64_original, $os_id, $tipo);
             }
         }
 
         // Verificar permissões da pasta
         if (!is_writable($pasta)) {
             log_message('error', 'Assinaturas_model::salvarImagem - Pasta sem permissão de escrita: ' . $pasta);
-            return false;
+            // Tentar salvar no banco como fallback
+            return $this->salvarImagemBase64NoBanco($base64_original, $os_id, $tipo);
         }
 
         // Nome do arquivo
@@ -378,15 +380,27 @@ class Assinaturas_model extends CI_Model
 
         if ($bytes_escritos === false || $bytes_escritos === 0) {
             log_message('error', 'Assinaturas_model::salvarImagem - Falha ao salvar arquivo: ' . $caminho_completo);
-            return false;
+            // Tentar salvar no banco como fallback
+            return $this->salvarImagemBase64NoBanco($base64_original, $os_id, $tipo);
         }
 
+        // Verificar se arquivo realmente existe
+        if (!file_exists($caminho_completo)) {
+            log_message('error', 'Assinaturas_model::salvarImagem - Arquivo nao existe apos salvar: ' . $caminho_completo);
+            // Tentar salvar no banco como fallback
+            return $this->salvarImagemBase64NoBanco($base64_original, $os_id, $tipo);
+        }
+
+        // Caminho relativo para salvar no banco (sem FCPATH)
+        $caminho_relativo = 'assets/assinaturas/' . date('Y-m') . '/' . $nome_arquivo;
+
         log_message('info', 'Assinaturas_model::salvarImagem - Imagem salva com sucesso: ' . $caminho_completo . ' (' . $bytes_escritos . ' bytes)');
+        log_message('info', 'Assinaturas_model::salvarImagem - Caminho relativo: ' . $caminho_relativo);
 
         return [
             'arquivo' => $nome_arquivo,
-            'path' => $caminho_completo,
-            'url' => base_url($caminho_completo),
+            'path' => $caminho_relativo,
+            'url' => base_url($caminho_relativo),
             'tamanho' => $bytes_escritos,
             'modo' => 'arquivo'
         ];

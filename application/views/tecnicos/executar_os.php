@@ -473,6 +473,10 @@
                                             <button type="button" class="btn-fullscreen" onclick="toggleFullscreenAssinatura()" title="Tela Cheia">
                                                 <i class="bx bx-fullscreen"></i>
                                             </button>
+                                            <!-- Botão de salvar que aparece apenas no fullscreen -->
+                                            <button type="button" class="btn-salvar-fullscreen" onclick="salvarEFecharFullscreen()">
+                                                <i class="bx bx-check"></i> Salvar e Voltar
+                                            </button>
                                         </div>
                                         <div class="assinatura-botoes">
                                             <button type="button" class="btn btn-mini" onclick="limparAssinaturaWizard()">
@@ -2351,6 +2355,39 @@
     content: "\\ec0e"; /* bx-exit-fullscreen */
 }
 
+/* Botão salvar em fullscreen - escondido por padrão */
+.btn-salvar-fullscreen {
+    display: none;
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    z-index: 100;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    align-items: center;
+    gap: 8px;
+}
+
+.assinatura-container.fullscreen .btn-salvar-fullscreen {
+    display: flex;
+}
+
+.btn-salvar-fullscreen:hover {
+    background: #218838;
+}
+
+.btn-salvar-fullscreen i {
+    font-size: 1.2rem;
+}
+
 /* Ações do Wizard */
 .wizard-actions {
     display: flex;
@@ -3789,6 +3826,41 @@ function toggleFullscreenAssinatura() {
 }
 window.toggleFullscreenAssinatura = toggleFullscreenAssinatura;
 
+// Salvar assinatura e fechar fullscreen
+function salvarEFecharFullscreen() {
+    // A assinatura já está salva no wizardSignaturePad
+    // Apenas fechar o fullscreen
+    const container = document.getElementById('assinaturaContainer');
+    if (!container) return;
+
+    // Mostrar feedback visual
+    const btn = document.querySelector('.btn-salvar-fullscreen');
+    if (btn) {
+        btn.innerHTML = '<i class="bx bx-check-double"></i> Salvo!';
+        btn.style.background = '#218838';
+    }
+
+    // Aguardar um momento para mostrar o feedback
+    setTimeout(() => {
+        // Sair do fullscreen
+        container.classList.remove('fullscreen');
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        }
+
+        // Restaurar botão
+        if (btn) {
+            btn.innerHTML = '<i class="bx bx-check"></i> Salvar e Voltar';
+            btn.style.background = '';
+        }
+    }, 500);
+}
+window.salvarEFecharFullscreen = salvarEFecharFullscreen;
+
 // Listener para sair do fullscreen quando pressionar ESC
 document.addEventListener('fullscreenchange', function() {
     const container = document.getElementById('assinaturaContainer');
@@ -3906,6 +3978,9 @@ function finalizarWizardAtendimento() {
 
     // Coletar dados
     const assinatura = wizardSignaturePad.toDataURL();
+    console.log('Assinatura capturada:', assinatura.substring(0, 100) + '...');
+    console.log('Tamanho da assinatura:', assinatura.length);
+
     const observacoes = document.getElementById('wizardObservacoes')?.value || '';
     const execucaoId = typeof window.execucaoId !== 'undefined' ? window.execucaoId : null;
 

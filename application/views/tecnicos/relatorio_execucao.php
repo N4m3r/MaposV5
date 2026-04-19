@@ -155,6 +155,60 @@
     margin: 0;
 }
 
+/* Checkin Table */
+.checkin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+.checkin-table th,
+.checkin-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+    font-size: 0.85rem;
+}
+.checkin-table th {
+    background: #f5f5f5;
+    font-weight: bold;
+    color: #333;
+}
+.checkin-table tr:nth-child(even) {
+    background: #fafafa;
+}
+.checkin-table small {
+    color: #888;
+    font-size: 0.75rem;
+}
+.badge-status {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+.badge-success {
+    background: #d4edda;
+    color: #155724;
+}
+.badge-warning {
+    background: #fff3cd;
+    color: #856404;
+}
+
+/* Photos by Stage */
+.photos-section {
+    margin-top: 15px;
+}
+.photos-section-title {
+    font-size: 0.95rem;
+    font-weight: bold;
+    color: #667eea;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #eee;
+}
+
 /* Client Card Responsive */
 .client-card {
     display: flex;
@@ -242,28 +296,86 @@
             </div>
             <div class="widget-content">
 
+                <!-- Informações da Empresa (Emitente) -->
+                <?php if (!empty($emitente)): ?>                <div class="relatorio-card">
+                    <h5><i class="bx bx-building"></i> Empresa</h5>
+                    <div class="client-card">
+                        <div class="client-info">
+                            <h4><?php echo $emitente->nome ?? 'Empresa'; ?></h4>
+                            <?php if (!empty($emitente->cnpj)): ?>
+                                <div class="client-meta">
+                                    <span class="meta-item">
+                                        <i class="bx bx-id-card"></i>
+                                        CNPJ: <?php echo $emitente->cnpj; ?>
+                                    </span>
+                                </div>
+                            <?php endif; ?>
+                            <?php if (!empty($emitente->rua) || !empty($emitente->cidade)): ?>
+                                <div class="client-meta">
+                                    <span class="meta-item">
+                                        <i class="bx bx-map"></i>
+                                        <?php
+                                        $endereco_emitente = [];
+                                        if (!empty($emitente->rua)) $endereco_emitente[] = $emitente->rua;
+                                        if (!empty($emitente->numero)) $endereco_emitente[] = $emitente->numero;
+                                        if (!empty($emitente->complemento)) $endereco_emitente[] = $emitente->complemento;
+                                        if (!empty($emitente->bairro)) $endereco_emitente[] = $emitente->bairro;
+                                        echo implode(', ', $endereco_emitente);
+                                        if (!empty($emitente->cidade)) {
+                                            echo (!empty($endereco_emitente) ? ' - ' : '') . $emitente->cidade;
+                                            if (!empty($emitente->uf)) echo '/' . $emitente->uf;
+                                        }
+                                        ?>
+                                    </span>
+                                </div>
+                            <?php endif; ?>
+                            <?php if (!empty($emitente->telefone) || !empty($emitente->email)): ?>
+                                <div class="client-meta">
+                                    <?php if (!empty($emitente->telefone)): ?>
+                                        <span class="meta-item">
+                                            <i class="bx bx-phone"></i>
+                                            <?php echo $emitente->telefone; ?>
+                                        </span>
+                                    <?php endif; ?>
+                                    <?php if (!empty($emitente->email)): ?>
+                                        <span class="meta-item">
+                                            <i class="bx bx-envelope"></i>
+                                            <?php echo $emitente->email; ?>
+                                        </span>
+                                    <?php endif; ?>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+                <?php endif; ?>
+
                 <!-- Informações da OS -->
                 <div class="relatorio-card">
                     <h5><i class="bx bx-clipboard"></i> Informações da OS</h5>
                     <div class="info-row">
                         <div class="info-item">
                             <span class="info-label">OS Nº</span>
-                            <span class="info-value"><?php echo $os->idOs; ?></span>
+                            <span class="info-value">#<?php echo sprintf('%04d', $os->idOs); ?></span>
                         </div>
                         <div class="info-item">
-                            <span class="info-label">Data</span>
+                            <span class="info-label">Data de Entrada</span>
                             <span class="info-value"><?php echo date('d/m/Y', strtotime($os->dataInicial)); ?></span>
                         </div>
                         <div class="info-item">
                             <span class="info-label">Status</span>
                             <span class="status-badge status-finalizada"><?php echo $os->status; ?></span>
                         </div>
+                        <div class="info-item">
+                            <span class="info-label">Data Prevista</span>
+                            <span class="info-value"><?php echo !empty($os->dataFinal) ? date('d/m/Y', strtotime($os->dataFinal)) : 'Não definida'; ?></span>
+                        </div>
                     </div>
                     <?php if ($os->descricaoProduto): ?>
                         <div class="info-row">
                             <div class="info-item" style="flex: 1;">
-                                <span class="info-label">Descrição</span>
-                                <span class="info-value"><?php echo $os->descricaoProduto; ?></span>
+                                <span class="info-label">Descrição do Produto/Serviço</span>
+                                <span class="info-value"><?php echo strip_tags($os->descricaoProduto); ?></span>
                             </div>
                         </div>
                     <?php endif; ?>
@@ -323,42 +435,112 @@
                     </div>
                 </div>
 
-                <!-- Execuções -->
+                <!-- Histórico de Checkins do Sistema de Atendimento -->
+                <?php if (!empty($checkins)): ?>
                 <div class="relatorio-card">
-                    <h5><i class="bx bx-timer"></i> Histórico de Execução</h5>
-                    <?php if (!empty($execucoes)): ?>
-                        <div class="timeline">
-                            <?php foreach ($execucoes as $exec): ?>
-                                <div class="timeline-item">
-                                    <div class="timeline-data">
-                                        <i class="bx bx-calendar"></i> <?php echo date('d/m/Y H:i', strtotime($exec->checkin_horario)); ?>
-                                    </div>
-                                    <div class="timeline-titulo">
-                                        Execução #<?php echo $exec->id; ?>
-                                    </div>
-                                    <div class="timeline-detalhes">
-                                        <?php if (!empty($exec->tempo_atendimento_minutos)): ?>
-                                            <p><i class="bx bx-time"></i> Tempo: <?php echo round($exec->tempo_atendimento_minutos / 60, 2); ?> horas</p>
+                    <h5><i class="bx bx-time"></i> Histórico de Atendimentos</h5>
+                    <table class="checkin-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Técnico</th>
+                                <th>Entrada</th>
+                                <th>Saída</th>
+                                <th>Tempo Total</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($checkins as $index => $checkin): ?>
+                                <tr>
+                                    <td><?php echo $index + 1; ?></td>
+                                    <td><?php echo $checkin->nome_tecnico; ?></td>
+                                    <td>
+                                        <?php echo date('d/m/Y H:i', strtotime($checkin->data_entrada)); ?>
+                                        <?php if ($checkin->latitude_entrada && $checkin->longitude_entrada): ?>
+                                            <br><small>Loc: <?php echo $checkin->latitude_entrada . ', ' . $checkin->longitude_entrada; ?></small>
                                         <?php endif; ?>
-                                        <?php if (!empty($exec->checklist_json)):
-                                            $checklist = json_decode($exec->checklist_json, true);
-                                            if (!empty($checklist['nome_cliente_assina'])): ?>
-                                                <p><i class="bx bx-user-check"></i> Assinado por: <?php echo htmlspecialchars($checklist['nome_cliente_assina'], ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></p>
+                                    </td>
+                                    <td>
+                                        <?php if ($checkin->data_saida): ?>
+                                            <?php echo date('d/m/Y H:i', strtotime($checkin->data_saida)); ?>
+                                            <?php if ($checkin->latitude_saida && $checkin->longitude_saida): ?>
+                                                <br><small>Loc: <?php echo $checkin->latitude_saida . ', ' . $checkin->longitude_saida; ?></small>
                                             <?php endif; ?>
-                                            <?php if (!empty($checklist['observacoes'])): ?>
-                                                <p><i class="bx bx-note"></i> Observações: <?php echo htmlspecialchars($checklist['observacoes'], ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></p>
-                                            <?php endif; ?>
+                                        <?php else: ?>
+                                            -
                                         <?php endif; ?>
-                                    </div>
-                                </div>
+                                    </td>
+                                    <td>
+                                        <?php
+                                        if ($checkin->data_saida) {
+                                            $entrada = new DateTime($checkin->data_entrada);
+                                            $saida = new DateTime($checkin->data_saida);
+                                            $intervalo = $entrada->diff($saida);
+                                            echo $intervalo->format('%h horas %i minutos');
+                                        } else {
+                                            echo 'Em andamento';
+                                        }
+                                        ?>
+                                    </td>
+                                    <td>
+                                        <?php if ($checkin->data_saida): ?>
+                                            <span class="badge-status badge-success">Finalizado</span>
+                                        <?php else: ?>
+                                            <span class="badge-status badge-warning">Em Andamento</span>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                                <?php if ($checkin->observacao_entrada || $checkin->observacao_saida): ?>
+                                    <tr style="background: #f9f9f9;">
+                                        <td colspan="6">
+                                            <?php if ($checkin->observacao_entrada): ?>
+                                                <strong>Obs. Entrada:</strong> <?php echo nl2br($checkin->observacao_entrada); ?><br>
+                                            <?php endif; ?>
+                                            <?php if ($checkin->observacao_saida): ?>
+                                                <strong>Obs. Saída:</strong> <?php echo nl2br($checkin->observacao_saida); ?>
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                <?php endif; ?>
                             <?php endforeach; ?>
-                        </div>
-                    <?php else: ?>
-                        <div class="empty-state">
-                            <div class="empty-text">Nenhuma execução registrada</div>
-                        </div>
-                    <?php endif; ?>
+                        </tbody>
+                    </table>
                 </div>
+                <?php endif; ?>
+
+                <!-- Execuções do Portal do Técnico -->
+                <?php if (!empty($execucoes)): ?>
+                <div class="relatorio-card">
+                    <h5><i class="bx bx-timer"></i> Execuções do Portal do Técnico</h5>
+                    <div class="timeline">
+                        <?php foreach ($execucoes as $exec): ?>
+                            <div class="timeline-item">
+                                <div class="timeline-data">
+                                    <i class="bx bx-calendar"></i> <?php echo date('d/m/Y H:i', strtotime($exec->checkin_horario)); ?>
+                                </div>
+                                <div class="timeline-titulo">
+                                    Execução #<?php echo $exec->id; ?> - <?php echo $exec->tecnico_nome ?? 'Técnico'; ?>
+                                </div>
+                                <div class="timeline-detalhes">
+                                    <?php if (!empty($exec->tempo_atendimento_minutos)): ?>
+                                        <p><i class="bx bx-time"></i> Tempo: <?php
+                                            $horas = floor($exec->tempo_atendimento_minutos / 60);
+                                            $minutos = $exec->tempo_atendimento_minutos % 60;
+                                            echo $horas . 'h ' . $minutos . 'min';
+                                        ?></p>
+                                    <?php endif; ?>
+                                    <?php if (!empty($exec->checklist_json)):
+                                        $checklist = json_decode($exec->checklist_json, true);
+                                        if (!empty($checklist['observacoes'])): ?>
+                                            <p><i class="bx bx-note"></i> Observações: <?php echo nl2br(htmlspecialchars($checklist['observacoes'], ENT_COMPAT | ENT_HTML5, 'UTF-8')); ?></p>
+                                        <?php endif; ?>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>                </div>
+                <?php endif; ?>
 
                 <!-- Serviços Executados -->
                 <div class="relatorio-card">
@@ -475,8 +657,114 @@
                 </div>
                 <?php endif; ?>
 
-                <!-- Fotos do Sistema de Atendimento -->
-                <?php if (!empty($fotosAtendimento)): ?>
+                <!-- Fotos do Sistema de Atendimento - Organizadas por Etapa -->
+                <?php if (!empty($fotosPorEtapa['entrada']) || !empty($fotosPorEtapa['durante']) || !empty($fotosPorEtapa['saida'])): ?>
+                <div class="relatorio-card">
+                    <h5><i class="bx bx-images"></i> Registro Fotográfico do Atendimento</h5>
+
+                    <!-- Fotos de Entrada -->
+                    <?php if (!empty($fotosPorEtapa['entrada'])): ?>
+                    <div class="photos-section">
+                        <div class="photos-section-title">📷 Fotos de Entrada</div>
+                        <div class="fotos-grid">
+                            <?php foreach ($fotosPorEtapa['entrada'] as $foto): ?>
+                                <div class="foto-item">
+                                    <?php
+                                    $imgUrl = !empty($foto->imagem_base64)
+                                        ? base_url('index.php/checkin/verFotoDB/' . $foto->idFoto)
+                                        : $foto->url;
+                                    ?>
+                                    <img src="<?php echo $imgUrl; ?>"
+                                         alt="Foto de entrada"
+                                         loading="lazy"
+                                         decoding="async"
+                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <div style="display: none; width: 100%; height: 150px; background: #f8f9fa; border: 2px dashed #ddd; border-radius: 8px; align-items: center; justify-content: center; flex-direction: column; color: #666;">
+                                        <i class="bx bx-image" style="font-size: 2rem; margin-bottom: 8px;"></i>
+                                        <span>Foto não disponível</span>
+                                    </div>
+                                    <div class="foto-tipo">
+                                        Entrada
+                                        <?php if (!empty($foto->descricao)): ?>
+                                            <br><small><?php echo htmlspecialchars($foto->descricao, ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></small>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+
+                    <!-- Fotos Durante -->
+                    <?php if (!empty($fotosPorEtapa['durante'])): ?>
+                    <div class="photos-section">
+                        <div class="photos-section-title">📷 Fotos Durante o Atendimento</div>
+                        <div class="fotos-grid">
+                            <?php foreach ($fotosPorEtapa['durante'] as $foto): ?>
+                                <div class="foto-item">
+                                    <?php
+                                    $imgUrl = !empty($foto->imagem_base64)
+                                        ? base_url('index.php/checkin/verFotoDB/' . $foto->idFoto)
+                                        : $foto->url;
+                                    ?>
+                                    <img src="<?php echo $imgUrl; ?>"
+                                         alt="Foto durante atendimento"
+                                         loading="lazy"
+                                         decoding="async"
+                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <div style="display: none; width: 100%; height: 150px; background: #f8f9fa; border: 2px dashed #ddd; border-radius: 8px; align-items: center; justify-content: center; flex-direction: column; color: #666;">
+                                        <i class="bx bx-image" style="font-size: 2rem; margin-bottom: 8px;"></i>
+                                        <span>Foto não disponível</span>
+                                    </div>
+                                    <div class="foto-tipo">
+                                        Durante
+                                        <?php if (!empty($foto->descricao)): ?>
+                                            <br><small><?php echo htmlspecialchars($foto->descricao, ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></small>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+
+                    <!-- Fotos de Saída -->
+                    <?php if (!empty($fotosPorEtapa['saida'])): ?>
+                    <div class="photos-section">
+                        <div class="photos-section-title">📷 Fotos de Saída</div>
+                        <div class="fotos-grid">
+                            <?php foreach ($fotosPorEtapa['saida'] as $foto): ?>
+                                <div class="foto-item">
+                                    <?php
+                                    $imgUrl = !empty($foto->imagem_base64)
+                                        ? base_url('index.php/checkin/verFotoDB/' . $foto->idFoto)
+                                        : $foto->url;
+                                    ?>
+                                    <img src="<?php echo $imgUrl; ?>"
+                                         alt="Foto de saída"
+                                         loading="lazy"
+                                         decoding="async"
+                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <div style="display: none; width: 100%; height: 150px; background: #f8f9fa; border: 2px dashed #ddd; border-radius: 8px; align-items: center; justify-content: center; flex-direction: column; color: #666;">
+                                        <i class="bx bx-image" style="font-size: 2rem; margin-bottom: 8px;"></i>
+                                        <span>Foto não disponível</span>
+                                    </div>
+                                    <div class="foto-tipo">
+                                        Saída
+                                        <?php if (!empty($foto->descricao)): ?>
+                                            <br><small><?php echo htmlspecialchars($foto->descricao, ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></small>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+                </div>
+                <?php endif; ?>
+
+                <!-- Fotos do Sistema de Atendimento (backup - todas as fotos) -->
+                <?php if (!empty($fotosAtendimento) && empty($fotosPorEtapa['entrada']) && empty($fotosPorEtapa['durante']) && empty($fotosPorEtapa['saida'])): ?>
                 <div class="relatorio-card">
                     <h5><i class="bx bx-images"></i> Registro Fotográfico do Atendimento</h5>
                     <div class="fotos-grid">

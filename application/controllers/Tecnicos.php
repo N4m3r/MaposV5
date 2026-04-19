@@ -393,6 +393,14 @@ class Tecnicos extends CI_Controller
         $foto_checkout = $this->input->post('foto_checkout');
         $assinatura_cliente = $this->input->post('assinatura_cliente');
         $nome_cliente_assina = $this->input->post('nome_cliente_assina');
+
+        // Log para debug da assinatura
+        if ($assinatura_cliente) {
+            log_message('info', 'finalizar_execucao - Assinatura recebida, tamanho: ' . strlen($assinatura_cliente));
+            log_message('info', 'finalizar_execucao - Primeiros 100 chars: ' . substr($assinatura_cliente, 0, 100));
+        } else {
+            log_message('error', 'finalizar_execucao - Assinatura vazia ou nao recebida');
+        }
         $observacoes = $this->input->post('observacoes');
         $servicos_executados = $this->input->post('servicos'); // array de IDs
 
@@ -440,9 +448,17 @@ class Tecnicos extends CI_Controller
                     'data_assinatura' => date('Y-m-d H:i:s'),
                     'ip_address' => $this->input->ip_address()
                 ];
-                $this->assinaturas_model->add($data_assinatura);
-                log_info('Assinatura do cliente salva via portal do técnico - OS: ' . $execucao->os_id);
+                $result = $this->assinaturas_model->add($data_assinatura);
+                if ($result) {
+                    log_info('Assinatura do cliente salva via portal do técnico - OS: ' . $execucao->os_id . ' - Path: ' . $imagem['path']);
+                } else {
+                    log_message('error', 'Falha ao salvar assinatura no banco - OS: ' . $execucao->os_id);
+                }
+            } else {
+                log_message('error', 'Falha ao processar imagem da assinatura - OS: ' . $execucao->os_id);
             }
+        } else {
+            log_message('error', 'Assinatura do cliente vazia - OS: ' . $execucao->os_id);
         }
 
         // Calcular tempo total
@@ -538,18 +554,49 @@ class Tecnicos extends CI_Controller
 
         // Buscar dados da execução
         $this->data['os'] = $os;
-        $this->data['cliente'] = $this->tec_os_model->getClienteByOs($os_id);
+
+        // Carregar dados completos do cliente (igual ao checkin/imprimir)
+        $this->load->model('clientes_model');
+        $this->data['cliente'] = $this->clientes_model->getById($os->clientes_id);
+
         $this->data['produtos'] = $this->tec_os_model->getProdutosOs($os_id);
         $this->data['servicos'] = $this->tec_os_model->getServicosOs($os_id);
         $this->data['execucoes'] = $this->tec_os_model->getExecucoesByOs($os_id);
 
-        // Carregar fotos do sistema de atendimento (checkin)
-        $this->load->model('fotosatendimento_model');
-        $this->data['fotosAtendimento'] = $this->fotosatendimento_model->getByOs($os_id);
+        // Carregar dados do emitente (empresa)
+        $this->data['emitente'] = $this->mapos_model->getEmitente();
 
-        // Carregar assinaturas do sistema de checkin
+        // Carregar histórico de checkins do sistema de atendimento (igual ao checkin/imprimir)
+        $this->load->model('checkin_model');
+        $this->data['checkins'] = $this->checkin_model->getAllByOs($os_id);
+
+        // Carregar fotos do sistema de atendimento (checkin) - organizadas por etapa
+        $this->load->model('fotosatendimento_model');
+        $fotos = $this->fotosatendimento_model->getByOs($os_id);
+        $this->data['fotosAtendimento'] = $fotos;
+
+        // Organizar fotos por etapa (igual ao checkin/imprimir)
+        $this->data['fotosPorEtapa'] = [
+            'entrada' => [],
+            'durante' => [],
+            'saida' => []
+        ];
+        foreach ($fotos as $foto) {
+            $this->data['fotosPorEtapa'][$foto->etapa][] = $foto;
+        }
+
+        // Carregar assinaturas do sistema de checkin - organizadas por tipo
         $this->load->model('assinaturas_model');
-        $this->data['assinaturas'] = $this->assinaturas_model->getByOs($os_id);
+        $assinaturas = $this->assinaturas_model->getByOs($os_id);
+        $this->data['assinaturas'] = $assinaturas;
+
+        // Organizar assinaturas por tipo (igual ao checkin/imprimir)
+        $this->data['assinaturasPorTipo'] = [];
+        if (!empty($assinaturas)) {
+            foreach ($assinaturas as $assinatura) {
+                $this->data['assinaturasPorTipo'][$assinatura->tipo] = $assinatura;
+            }
+        }
 
         // Carregar fotos do portal do técnico (tec_os_fotos)
         $this->data['fotosTecnico'] = $this->tec_os_model->getFotosByOs($os_id);
