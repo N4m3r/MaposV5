@@ -545,6 +545,15 @@
                 <!-- Serviços Executados -->
                 <div class="relatorio-card">
                     <h5><i class="bx bx-wrench"></i> Serviços da OS</h5>
+                    <!-- DEBUG: Remover após teste -->
+                    <div style="background: #fff3cd; padding: 10px; margin-bottom: 10px; border: 1px solid #ffc107; border-radius: 4px;">
+                        <strong>Debug:</strong> OS ID: <?php echo $os->idOs; ?> | Serviços encontrados: <?php echo count($servicos ?? []); ?>
+                        <?php if (empty($servicos)): ?>
+                            <br><small>Nenhum serviço retornado do banco de dados.</small>
+                        <?php else: ?>
+                            <br><small>Estrutura: <?php echo print_r($servicos[0], true); ?></small>
+                        <?php endif; ?>
+                    </div>
                     <?php if (!empty($servicos)): ?>
                         <table class="table table-bordered">
                             <thead>

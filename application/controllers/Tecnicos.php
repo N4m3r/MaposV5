@@ -560,7 +560,21 @@ class Tecnicos extends CI_Controller
         $this->data['cliente'] = $this->clientes_model->getById($os->clientes_id);
 
         $this->data['produtos'] = $this->tec_os_model->getProdutosOs($os_id);
+
+        // Buscar serviços
         $this->data['servicos'] = $this->tec_os_model->getServicosOs($os_id);
+        log_message('info', 'Tecnicos::relatorio_execucao - OS ' . $os_id . ' - Total de serviços: ' . count($this->data['servicos']));
+
+        // Se não encontrou serviços, tenta buscar pelo model padrão
+        if (empty($this->data['servicos'])) {
+            $this->load->model('os_model');
+            $servicos_padrao = $this->os_model->getServicos($os_id);
+            if (!empty($servicos_padrao)) {
+                log_message('info', 'Tecnicos::relatorio_execucao - Encontrados ' . count($servicos_padrao) . ' serviços via Os_model');
+                $this->data['servicos'] = $servicos_padrao;
+            }
+        }
+
         $this->data['execucoes'] = $this->tec_os_model->getExecucoesByOs($os_id);
 
         // Carregar dados do emitente (empresa)

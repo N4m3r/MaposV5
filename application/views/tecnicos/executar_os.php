@@ -469,7 +469,7 @@
                                     <div class="wizard-assinatura-section">
                                         <h6><i class="bx bx-pencil"></i> Assinatura do Cliente</h6>
                                         <div class="assinatura-container" id="assinaturaContainer">
-                                            <canvas id="wizardSignaturePad" class="signature-pad-wizard"></canvas>
+                                            <canvas id="assinaturaCliente" class="signature-pad-wizard"></canvas>
                                             <button type="button" class="btn-fullscreen" onclick="toggleFullscreenAssinatura()" title="Tela Cheia">
                                                 <i class="bx bx-fullscreen"></i>
                                             </button>
@@ -479,7 +479,7 @@
                                             </button>
                                         </div>
                                         <div class="assinatura-botoes">
-                                            <button type="button" class="btn btn-mini" onclick="limparAssinaturaWizard()">
+                                            <button type="button" class="btn btn-mini" onclick="limparAssinaturaCliente()">
                                                 <i class="bx bx-trash"></i> Limpar Assinatura
                                             </button>
                                             <button type="button" class="btn btn-mini btn-info" onclick="toggleFullscreenAssinatura()">
@@ -2462,6 +2462,11 @@ window.wizardServicosStatus = {};
 window.wizardFotos = [];
 window.wizardSignaturePad = null;
 
+// Canvas de assinatura do cliente (wizard) - igual ao do técnico
+window.canvasCliente = null;
+window.ctxCliente = null;
+window.isDrawingCliente = false;
+
 // Obter localização (opcional - silencia erros de permissão)
 if ('geolocation' in navigator) {
     navigator.geolocation.watchPosition(
@@ -3576,55 +3581,106 @@ function atualizarWizardView() {
     // Se estiver na etapa 5, atualizar resumo e inicializar assinatura
     if (window.wizardStepAtual === 5) {
         atualizarResumoFinal();
-        inicializarAssinaturaWizard();
+        // Inicializar canvas nativo do cliente (igual ao técnico)
+        if (!window.canvasCliente) {
+            initCanvasCliente();
+        }
     }
 }
 window.atualizarWizardView = atualizarWizardView;
 
 // Inicializar/re-inicializar canvas de assinatura do wizard
-function inicializarAssinaturaWizard(assinaturaData = null) {
-    const canvas = document.getElementById('wizardSignaturePad');
-    if (!canvas) return;
+// Inicializar canvas de assinatura do cliente (wizard) - igual ao técnico
+function initCanvasCliente() {
+    window.canvasCliente = document.getElementById('assinaturaCliente');
 
-    // Salvar assinatura atual se existir e nenhuma foi passada
-    let assinaturaSalva = assinaturaData;
-    if (!assinaturaSalva && wizardSignaturePad && !wizardSignaturePad.isEmpty()) {
-        assinaturaSalva = wizardSignaturePad.toData();
+    if (!window.canvasCliente) {
+        console.error('Canvas assinaturaCliente não encontrado');
+        return;
     }
 
-    // Aguardar um momento para o canvas estar visível
-    setTimeout(() => {
-        if (typeof SignaturePad !== 'undefined') {
-            // Se já existe, destruir e recriar para garantir dimensões corretas
-            if (wizardSignaturePad) {
-                wizardSignaturePad.off();
-            }
+    window.ctxCliente = window.canvasCliente.getContext('2d');
 
-            const ratio = Math.max(window.devicePixelRatio || 1, 1);
-            const rect = canvas.getBoundingClientRect();
+    // Configurar dimensões
+    const resizeCanvasCliente = function() {
+        const rect = window.canvasCliente.getBoundingClientRect();
+        window.canvasCliente.width = rect.width > 0 ? rect.width : 300;
+        window.canvasCliente.height = 200;
+        window.ctxCliente.strokeStyle = '#000';
+        window.ctxCliente.lineWidth = 2;
+        window.ctxCliente.lineCap = 'round';
+    };
 
-            canvas.width = rect.width * ratio;
-            canvas.height = rect.height * ratio;
+    // Aguardar um tick para garantir que o layout está pronto
+    setTimeout(resizeCanvasCliente, 100);
+    window.addEventListener('resize', resizeCanvasCliente);
 
-            const ctx = canvas.getContext('2d');
-            ctx.scale(ratio, ratio);
+    // Eventos do mouse
+    window.canvasCliente.addEventListener('mousedown', function(e) {
+        window.isDrawingCliente = true;
+        const rect = window.canvasCliente.getBoundingClientRect();
+        window.ctxCliente.beginPath();
+        window.ctxCliente.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+    });
 
-            wizardSignaturePad = new SignaturePad(canvas, {
-                backgroundColor: 'rgba(255, 255, 255, 0)',
-                penColor: 'rgb(0, 0, 0)',
-                minWidth: 1,
-                maxWidth: 3,
-                throttle: 0
-            });
+    window.canvasCliente.addEventListener('mousemove', function(e) {
+        if (!window.isDrawingCliente) return;
+        const rect = window.canvasCliente.getBoundingClientRect();
+        window.ctxCliente.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+        window.ctxCliente.stroke();
+    });
 
-            // Restaurar assinatura se existia
-            if (assinaturaSalva && Array.isArray(assinaturaSalva)) {
-                wizardSignaturePad.fromData(assinaturaSalva);
-            }
-        }
-    }, 100);
+    window.canvasCliente.addEventListener('mouseup', function() {
+        window.isDrawingCliente = false;
+    });
+
+    window.canvasCliente.addEventListener('mouseout', function() {
+        window.isDrawingCliente = false;
+    });
+
+    // Eventos touch para mobile
+    window.canvasCliente.addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        window.isDrawingCliente = true;
+        const rect = window.canvasCliente.getBoundingClientRect();
+        const touch = e.touches[0];
+        window.ctxCliente.beginPath();
+        window.ctxCliente.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
+    });
+
+    window.canvasCliente.addEventListener('touchmove', function(e) {
+        e.preventDefault();
+        if (!window.isDrawingCliente) return;
+        const rect = window.canvasCliente.getBoundingClientRect();
+        const touch = e.touches[0];
+        window.ctxCliente.lineTo(touch.clientX - rect.left, touch.clientY - rect.top);
+        window.ctxCliente.stroke();
+    });
+
+    window.canvasCliente.addEventListener('touchend', function() {
+        window.isDrawingCliente = false;
+    });
 }
-window.inicializarAssinaturaWizard = inicializarAssinaturaWizard;
+
+// Limpar assinatura do cliente
+function limparAssinaturaCliente() {
+    if (window.ctxCliente && window.canvasCliente) {
+        window.ctxCliente.clearRect(0, 0, window.canvasCliente.width, window.canvasCliente.height);
+    }
+}
+window.limparAssinaturaCliente = limparAssinaturaCliente;
+
+// Verificar se canvas tem desenho (assinatura)
+function temAssinaturaCliente() {
+    if (!window.canvasCliente || !window.ctxCliente) return false;
+    try {
+        const pixelData = window.ctxCliente.getImageData(0, 0, window.canvasCliente.width, window.canvasCliente.height).data;
+        return pixelData.some(function(pixel, index) { return index % 4 === 3 && pixel > 0; });
+    } catch (e) {
+        return false;
+    }
+}
+window.temAssinaturaCliente = temAssinaturaCliente;
 
 // Controle de Serviços no Wizard
 function setWizardServicoStatus(servicoId, status) {
@@ -3776,11 +3832,9 @@ function removerFotoWizard(fotoId) {
 }
 window.removerFotoWizard = removerFotoWizard;
 
-// Assinatura no Wizard
+// Assinatura no Wizard - usar canvas nativo igual ao técnico
 function limparAssinaturaWizard() {
-    if (wizardSignaturePad && typeof wizardSignaturePad.clear === 'function') {
-        wizardSignaturePad.clear();
-    }
+    limparAssinaturaCliente();
 }
 window.limparAssinaturaWizard = limparAssinaturaWizard;
 
@@ -3790,12 +3844,6 @@ function toggleFullscreenAssinatura() {
     if (!container) return;
 
     const isFullscreen = container.classList.contains('fullscreen');
-
-    // Salvar assinatura atual antes de alternar
-    let assinaturaSalva = null;
-    if (wizardSignaturePad && !wizardSignaturePad.isEmpty()) {
-        assinaturaSalva = wizardSignaturePad.toData();
-    }
 
     if (isFullscreen) {
         // Sair do fullscreen
@@ -3819,9 +3867,16 @@ function toggleFullscreenAssinatura() {
         }
     }
 
-    // Aguardar transição e re-inicializar o canvas
+    // Aguardar transição e redimensionar o canvas
     setTimeout(() => {
-        inicializarAssinaturaWizard(assinaturaSalva);
+        if (window.canvasCliente && window.ctxCliente) {
+            const rect = window.canvasCliente.getBoundingClientRect();
+            window.canvasCliente.width = rect.width > 0 ? rect.width : 300;
+            window.canvasCliente.height = isFullscreen ? 200 : (window.innerHeight - 150);
+            window.ctxCliente.strokeStyle = '#000';
+            window.ctxCliente.lineWidth = 2;
+            window.ctxCliente.lineCap = 'round';
+        }
     }, 300);
 }
 window.toggleFullscreenAssinatura = toggleFullscreenAssinatura;
@@ -3946,8 +4001,8 @@ window.atualizarResumoFinal = atualizarResumoFinal;
 
 // Finalizar Wizard
 function finalizarWizardAtendimento() {
-    // Validar assinatura
-    if (!wizardSignaturePad || wizardSignaturePad.isEmpty()) {
+    // Validar assinatura usando canvas nativo
+    if (!window.canvasCliente || !temAssinaturaCliente()) {
         Swal.fire({
             icon: 'warning',
             title: 'Assinatura Obrigatória',
@@ -3976,8 +4031,8 @@ function finalizarWizardAtendimento() {
         return;
     }
 
-    // Coletar dados
-    const assinatura = wizardSignaturePad.toDataURL();
+    // Coletar dados - usar canvas nativo igual ao técnico
+    const assinatura = window.canvasCliente.toDataURL('image/png');
     console.log('Assinatura capturada:', assinatura.substring(0, 100) + '...');
     console.log('Tamanho da assinatura:', assinatura.length);
 
