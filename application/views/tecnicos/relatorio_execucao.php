@@ -955,11 +955,23 @@ function enviarPdfWhatsApp() {
         dataType: 'json',
         success: function(response) {
             if (response.success) {
-                $('#mensagem_status').html('<div class="alert alert-success"><i class="bx bx-check"></i> ' + response.message + '</div>').show();
+                var htmlSucesso = '<div class="alert alert-success">' +
+                    '<i class="bx bx-check"></i> ' + response.message + '<br>' +
+                    '<a href="' + response.whatsapp_link + '" target="_blank" class="btn btn-success btn-small" style="margin-top: 10px;">' +
+                    '<i class="bx bxl-whatsapp"></i> Abrir WhatsApp</a>' +
+                    '</div>';
+                $('#mensagem_status').html(htmlSucesso).show();
+
+                // Tentar abrir WhatsApp automaticamente após 1 segundo
+                setTimeout(function() {
+                    window.open(response.whatsapp_link, '_blank');
+                }, 1000);
+
+                // Fechar modal após 10 segundos
                 setTimeout(function() {
                     $('#modalWhatsApp').modal('hide');
                     $('#mensagem_status').hide();
-                }, 3000);
+                }, 10000);
             } else {
                 $('#mensagem_status').html('<div class="alert alert-error"><i class="bx bx-error"></i> ' + response.message + '</div>').show();
             }
