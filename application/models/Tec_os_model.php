@@ -698,4 +698,65 @@ class Tec_os_model extends CI_Model
         $query = $this->db->get();
         return $query ? $query->row() : null;
     }
+
+    /**
+     * Buscar execucoes tecnicas por OS (para admin/relatorios)
+     */
+    public function getExecucoesByOs($os_id)
+    {
+        if (!$this->db->table_exists('tec_os_execucao')) {
+            return [];
+        }
+
+        $this->db->select('te.*, t.nome as tecnico_nome');
+        $this->db->from('tec_os_execucao te');
+        $this->db->join('tecnicos t', 't.idTecnicos = te.tecnico_id', 'left');
+        $this->db->where('te.os_id', $os_id);
+        $this->db->order_by('te.checkin_horario', 'desc');
+
+        $query = $this->db->get();
+        return $query ? $query->result() : [];
+    }
+
+    /**
+     * Buscar fotos do tecnico por OS (do campo JSON fotos_galeria_json)
+     */
+    public function getFotosByOs($os_id)
+    {
+        if (!$this->db->table_exists('tec_os_execucao')) {
+            return [];
+        }
+
+        $this->db->select('te.id, te.fotos_galeria_json, te.tecnico_id, te.checkin_horario, t.nome as tecnico_nome');
+        $this->db->from('tec_os_execucao te');
+        $this->db->join('tecnicos t', 't.idTecnicos = te.tecnico_id', 'left');
+        $this->db->where('te.os_id', $os_id);
+        $this->db->order_by('te.checkin_horario', 'desc');
+
+        $query = $this->db->get();
+        $execucoes = $query ? $query->result() : [];
+
+        // Extrair fotos do JSON de cada execucao
+        $fotos = [];
+        foreach ($execucoes as $execucao) {
+            if (!empty($execucao->fotos_galeria_json)) {
+                $galeria = json_decode($execucao->fotos_galeria_json, true);
+                if ($galeria && is_array($galeria)) {
+                    foreach ($galeria as $foto) {
+                        $fotos[] = (object) [
+                            'caminho' => $foto['caminho'] ?? '',
+                            'descricao' => $foto['descricao'] ?? '',
+                            'tipo' => $foto['tipo'] ?? 'foto',
+                            'data_envio' => $foto['data_hora'] ?? $execucao->checkin_horario,
+                            'tecnico_nome' => $execucao->tecnico_nome ?? 'Tecnico',
+                            'latitude' => $foto['lat'] ?? null,
+                            'longitude' => $foto['lng'] ?? null,
+                        ];
+                    }
+                }
+            }
+        }
+
+        return $fotos;
+    }
 }

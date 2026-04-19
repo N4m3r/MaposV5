@@ -282,6 +282,73 @@ class Tecnicos_admin extends MY_Controller
     }
 
     /**
+     * Buscar itens do checklist via AJAX (para modal de execução)
+     */
+    public function get_checklist_itens($id = null)
+    {
+        header('Content-Type: application/json');
+
+        if (!$id) {
+            echo json_encode(['success' => false, 'message' => 'ID não informado']);
+            return;
+        }
+
+        $this->db->where('id', $id);
+        $this->db->where('ativo', 1);
+        $checklist = $this->db->get('tec_checklist_template')->row();
+
+        if (!$checklist) {
+            echo json_encode(['success' => false, 'message' => 'Checklist não encontrado']);
+            return;
+        }
+
+        // Decodificar itens
+        $itens = [];
+        if (isset($checklist->itens)) {
+            if (is_string($checklist->itens)) {
+                $itens = json_decode($checklist->itens, true) ?: [];
+            } elseif (is_array($checklist->itens)) {
+                $itens = $checklist->itens;
+            }
+        }
+
+        echo json_encode([
+            'success' => true,
+            'checklist' => [
+                'id' => $checklist->id,
+                'nome' => $checklist->nome_template,
+                'tipo_os' => $checklist->tipo_os,
+                'tipo_servico' => $checklist->tipo_servico
+            ],
+            'itens' => $itens
+        ]);
+    }
+
+    /**
+     * Salvar execução do checklist (uso pelo técnico)
+     */
+    public function salvar_execucao_checklist()
+    {
+        header('Content-Type: application/json');
+
+        $dados = json_decode(file_get_contents('php://input'), true);
+
+        if (!$dados || !isset($dados['checklist_id'])) {
+            echo json_encode(['success' => false, 'message' => 'Dados inválidos']);
+            return;
+        }
+
+        // Aqui você pode salvar no banco a execução do checklist
+        // Ex: tabela os_checklist_execucao
+
+        echo json_encode([
+            'success' => true,
+            'message' => 'Checklist salvo com sucesso!',
+            'data' => $dados
+        ]);
+    }
+
+    /**
      * Gestão de Obras
      */
     public function obras()

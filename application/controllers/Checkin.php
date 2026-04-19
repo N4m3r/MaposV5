@@ -14,6 +14,7 @@ class Checkin extends MY_Controller
         $this->load->model('fotosatendimento_model');
         $this->load->model('os_model');
         $this->load->model('mapos_model');
+        $this->load->model('tec_os_model');
         $this->load->helper('date');
     }
 
@@ -1087,6 +1088,10 @@ class Checkin extends MY_Controller
             $fotosPorEtapa[$foto->etapa][] = $foto;
         }
 
+        // Execucoes tecnicas do portal (tec_os_execucao)
+        $execucoesTecnicas = $this->tec_os_model->getExecucoesByOs($os_id);
+        $fotosTecnico = $this->tec_os_model->getFotosByOs($os_id);
+
         // Prepara dados para a view
         $data = [
             'os' => $os,
@@ -1095,6 +1100,8 @@ class Checkin extends MY_Controller
             'checkins' => $checkins,
             'assinaturas' => $assinaturasPorTipo,
             'fotosPorEtapa' => $fotosPorEtapa,
+            'execucoesTecnicas' => $execucoesTecnicas,
+            'fotosTecnico' => $fotosTecnico,
             'titulo' => 'Relatório de Atendimento - OS #' . sprintf('%04d', $os_id)
         ];
 

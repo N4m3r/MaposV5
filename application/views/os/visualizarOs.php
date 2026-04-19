@@ -356,6 +356,87 @@
                                 </div>
                                 <?php } ?>
 
+                                <!-- Execucoes Tecnicas do Portal -->
+                                <?php if (!empty($execucoesTecnicas)) { ?>
+                                <div class="checkin-timeline" style="margin-bottom: 20px; margin-top: 20px;">
+                                    <h6><i class="bx bx-devices"></i> Execucoes Tecnicas (Portal Tecnico)</h6>
+                                    <div class="timeline">
+                                        <?php foreach ($execucoesTecnicas as $execucao) { ?>
+                                        <div class="timeline-item" style="border-left: 2px solid #667eea; padding-left: 15px; margin-bottom: 15px; position: relative;">
+                                            <div style="position: absolute; left: -6px; top: 0; width: 10px; height: 10px; border-radius: 50%; background: #667eea;"></div>
+                                            <div class="timeline-content">
+                                                <p><strong>Tecnico:</strong> <?php echo $execucao->tecnico_nome ?? 'Tecnico'; ?></p>
+                                                <p><strong>Check-in:</strong> <?php echo $execucao->checkin_horario ? date('d/m/Y H:i', strtotime($execucao->checkin_horario)) : '-'; ?>
+                                                    <?php if ($execucao->checkin_latitude && $execucao->checkin_longitude) { ?>
+                                                        <a href="https://www.google.com/maps?q=<?php echo $execucao->checkin_latitude; ?>,<?php echo $execucao->checkin_longitude; ?>" target="_blank" class="btn btn-mini" title="Ver no mapa">
+                                                            <i class="bx bx-map"></i>
+                                                        </a>
+                                                    <?php } ?>
+                                                </p>
+
+                                                <?php if ($execucao->checkout_horario) { ?>
+                                                <p><strong>Check-out:</strong> <?php echo date('d/m/Y H:i', strtotime($execucao->checkout_horario)); ?>
+                                                    <?php if ($execucao->checkout_latitude && $execucao->checkout_longitude) { ?>
+                                                        <a href="https://www.google.com/maps?q=<?php echo $execucao->checkout_latitude; ?>,<?php echo $execucao->checkout_longitude; ?>" target="_blank" class="btn btn-mini" title="Ver no mapa">
+                                                            <i class="bx bx-map"></i>
+                                                        </a>
+                                                    <?php } ?>
+                                                </p>
+                                                <p><strong>Tempo Total:</strong>
+                                                    <?php
+                                                    if ($execucao->tempo_atendimento_minutos) {
+                                                        $horas = floor($execucao->tempo_atendimento_minutos / 60);
+                                                        $minutos = $execucao->tempo_atendimento_minutos % 60;
+                                                        echo $horas . 'h ' . $minutos . 'min';
+                                                    } else {
+                                                        echo '-';
+                                                    }
+                                                    ?>
+                                                </p>
+                                                <p><span class="label label-success">Finalizado</span></p>
+                                                <?php } else { ?>
+                                                <p><span class="label label-warning">Em Andamento</span></p>
+                                                <?php } ?>
+
+                                                <?php if ($execucao->checklist_json) { ?>
+                                                    <?php $checklist = json_decode($execucao->checklist_json, true); ?>
+                                                    <?php if (!empty($checklist['observacoes'])) { ?>
+                                                    <p><strong>Observacoes:</strong> <?php echo nl2br($checklist['observacoes']); ?></p>
+                                                    <?php } ?>
+                                                    <?php if (!empty($checklist['nome_cliente_assina'])) { ?>
+                                                    <p><strong>Assinado por:</strong> <?php echo $checklist['nome_cliente_assina']; ?></p>
+                                                    <?php } ?>
+                                                <?php } ?>
+                                            </div>
+                                        </div>
+                                        <?php } ?>
+                                    </div>
+                                </div>
+                                <?php } ?>
+
+                                <!-- Fotos do Tecnico (Portal) -->
+                                <?php if (!empty($fotosTecnico)) { ?>
+                                <div class="galeria-fotos" style="margin-top: 20px;">
+                                    <h6><i class="bx bx-photo-album"></i> Fotos do Tecnico (Portal)</h6>
+                                    <div class="fotos-grid">
+                                        <?php foreach ($fotosTecnico as $foto) { ?>
+                                        <div class="foto-item">
+                                            <a href="<?php echo base_url($foto->caminho); ?>" target="_blank" class="foto-link">
+                                                <img src="<?php echo base_url($foto->caminho); ?>" alt="Foto tecnico" style="max-height: 150px;">
+                                            </a>
+                                            <?php if ($foto->descricao) { ?>
+                                            <p class="foto-descricao"><?php echo $foto->descricao; ?></p>
+                                            <?php } ?>
+                                            <p class="foto-descricao" style="font-size: 10px;">
+                                                <?php echo $foto->tipo ?? 'Foto'; ?> - <?php echo $foto->tecnico_nome ?? 'Tecnico'; ?>
+                                                <?php if ($foto->data_envio) echo ' - ' . date('d/m/Y H:i', strtotime($foto->data_envio)); ?>
+                                            </p>
+                                        </div>
+                                        <?php } ?>
+                                    </div>
+                                </div>
+                                <?php } ?>
+
                                 <!-- Galeria de Fotos -->
                                 <?php if (!empty($fotosAtendimento)) { ?>
                                 <div class="galeria-fotos">

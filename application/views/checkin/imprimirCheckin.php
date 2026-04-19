@@ -561,6 +561,110 @@
             </div>
         </div>
 
+        <!-- Execucoes Tecnicas do Portal -->
+        <?php if (!empty($execucoesTecnicas)) { ?>
+            <div class="section">
+                <div class="section-header">Execucoes Tecnicas (Portal Tecnico)</div>
+                <div class="section-content">
+                    <table class="checkin-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Tecnico</th>
+                                <th>Check-in</th>
+                                <th>Check-out</th>
+                                <th>Tempo Total</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($execucoesTecnicas as $index => $execucao) { ?>
+                                <tr>
+                                    <td><?php echo $index + 1; ?></td>
+                                    <td><?php echo $execucao->tecnico_nome ?? 'Tecnico'; ?></td>
+                                    <td>
+                                        <?php echo $execucao->checkin_horario ? date('d/m/Y H:i', strtotime($execucao->checkin_horario)) : '-'; ?>
+                                        <?php if ($execucao->checkin_latitude || $execucao->checkin_longitude) { ?>
+                                            <br><small>GPS: <?php echo $execucao->checkin_latitude . ', ' . $execucao->checkin_longitude; ?></small>
+                                        <?php } ?>
+                                    </td>
+                                    <td>
+                                        <?php if ($execucao->checkout_horario) { ?>
+                                            <?php echo date('d/m/Y H:i', strtotime($execucao->checkout_horario)); ?>
+                                            <?php if ($execucao->checkout_latitude || $execucao->checkout_longitude) { ?>
+                                                <br><small>GPS: <?php echo $execucao->checkout_latitude . ', ' . $execucao->checkout_longitude; ?></small>
+                                            <?php } ?>
+                                        <?php } else { ?>
+                                            <span class="badge badge-warning">Em Andamento</span>
+                                        <?php } ?>
+                                    </td>
+                                    <td>
+                                        <?php
+                                        if ($execucao->tempo_atendimento_minutos) {
+                                            $horas = floor($execucao->tempo_atendimento_minutos / 60);
+                                            $minutos = $execucao->tempo_atendimento_minutos % 60;
+                                            echo $horas . 'h ' . $minutos . 'min';
+                                        } else {
+                                            echo '-';
+                                        }
+                                        ?>
+                                    </td>
+                                    <td>
+                                        <?php if ($execucao->checkout_horario) { ?>
+                                            <span class="badge badge-success">Finalizado</span>
+                                        <?php } else { ?>
+                                            <span class="badge badge-warning">Em Andamento</span>
+                                        <?php } ?>
+                                    </td>
+                                </tr>
+                                <?php if ($execucao->checklist_json) { ?>
+                                    <tr style="background: #f9f9f9;">
+                                        <td colspan="6">
+                                            <strong>Checklist/Observacoes:</strong><br>
+                                            <?php
+                                            $checklist = json_decode($execucao->checklist_json, true);
+                                            if ($checklist) {
+                                                if (!empty($checklist['observacoes'])) {
+                                                    echo '<strong>Obs:</strong> ' . nl2br($checklist['observacoes']) . '<br>';
+                                                }
+                                                if (!empty($checklist['nome_cliente_assina'])) {
+                                                    echo '<strong>Assinado por:</strong> ' . $checklist['nome_cliente_assina'];
+                                                }
+                                            }
+                                            ?>
+                                        </td>
+                                    </tr>
+                                <?php } ?>
+                            <?php } ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        <?php } ?>
+
+        <!-- Fotos do Tecnico (Portal) -->
+        <?php if (!empty($fotosTecnico)) { ?>
+            <div class="section">
+                <div class="section-header">Fotos do Tecnico (Portal)</div>
+                <div class="section-content">
+                    <div class="photos-grid">
+                        <?php foreach ($fotosTecnico as $foto) { ?>
+                            <div class="photo-item">
+                                <img src="<?php echo base_url($foto->caminho); ?>" alt="Foto tecnico" style="width: 100%; height: 100px; object-fit: cover;">
+                                <?php if ($foto->descricao) { ?>
+                                    <div class="photo-description"><?php echo $foto->descricao; ?></div>
+                                <?php } ?>
+                                <div class="photo-description" style="font-size: 7px;">
+                                    <?php echo $foto->tipo ?? 'Foto'; ?> - <?php echo $foto->tecnico_nome ?? 'Tecnico'; ?>
+                                    <?php if ($foto->data_envio) echo ' - ' . date('d/m/Y H:i', strtotime($foto->data_envio)); ?>
+                                </div>
+                            </div>
+                        <?php } ?>
+                    </div>
+                </div>
+            </div>
+        <?php } ?>
+
         <!-- Assinaturas -->
         <?php if (!empty($assinaturas) && is_array($assinaturas) && count($assinaturas) > 0) { ?>
             <div class="section">

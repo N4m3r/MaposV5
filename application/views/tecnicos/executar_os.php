@@ -372,11 +372,43 @@
 <div class="modal hide" id="cameraModal">
     <div class="modal-header">
         <button type="button" class="close" onclick="fecharCamera()">×</button>
-        <h3>Capturar Foto</h3>
+        <h3>Adicionar Foto</h3>
     </div>
     <div class="modal-body">
-        <video id="video" autoplay playsinline style="width: 100%; border-radius: 8px;"></video>
-        <canvas id="canvas" style="display: none;"></canvas>
+        <!-- Tabs -->
+        <ul class="nav nav-tabs" id="fotoTabs" style="margin-bottom: 15px;">
+            <li class="active"><a href="#tabCamera" data-toggle="tab" onclick="iniciarCamera()"><i class="bx bx-camera"></i> Câmera</a></li>
+            <li><a href="#tabUpload" data-toggle="tab"><i class="bx bx-upload"></i> Arquivo</a></li>
+        </ul>
+
+        <div class="tab-content">
+            <!-- Tab Câmera -->
+            <div class="tab-pane active" id="tabCamera">
+                <video id="video" autoplay playsinline style="width: 100%; border-radius: 8px;"></video>
+                <canvas id="canvas" style="display: none;"></canvas>
+                <div id="cameraPreview" style="display: none; text-align: center; cursor: pointer;" onclick="retomarCamera()">
+                    <img id="previewImg" style="max-width: 100%; border-radius: 8px;">
+                    <p style="margin-top: 10px; color: #667eea; font-size: 0.9rem;"><i class="bx bx-refresh"></i> Clique para tirar outra foto</p>
+                </div>
+                <div id="cameraMensagem" style="margin-top: 10px; color: #666; text-align: center; display: none;">
+                    <i class="bx bx-info-circle"></i> Câmera não disponível. Use a opção "Arquivo".
+                </div>
+            </div>
+
+            <!-- Tab Upload -->
+            <div class="tab-pane" id="tabUpload">
+                <div class="upload-area" id="dropArea" style="border: 2px dashed #ccc; border-radius: 8px; padding: 40px; text-align: center; cursor: pointer; transition: all 0.3s;" onclick="document.getElementById('fileFotoServico').click()">
+                    <i class="bx bx-image-add" style="font-size: 48px; color: #667eea; margin-bottom: 10px;"></i>
+                    <p style="margin: 0; color: #666;">Clique para selecionar uma imagem</p>
+                    <p style="margin: 5px 0 0; font-size: 0.85rem; color: #999;">ou arraste e solte aqui</p>
+                    <input type="file" id="fileFotoServico" accept="image/*" style="display: none;" onchange="previewArquivoServico(this)">
+                </div>
+                <div id="uploadPreview" style="display: none; margin-top: 15px; text-align: center;">
+                    <img id="uploadPreviewImg" style="max-width: 100%; max-height: 300px; border-radius: 8px; border: 1px solid #ddd;">
+                    <p style="margin-top: 10px; color: #28a745;"><i class="bx bx-check-circle"></i> Imagem selecionada</p>
+                </div>
+            </div>
+        </div>
 
         <div class="control-group" style="margin-top: 15px;">
             <label>Tipo da foto</label>
@@ -395,8 +427,8 @@
     </div>
     <div class="modal-footer">
         <button type="button" class="btn" onclick="fecharCamera()">Cancelar</button>
-        <button type="button" class="btn btn-primary" onclick="tirarFoto()">
-            <i class="bx bx-camera"></i> Capturar
+        <button type="button" class="btn btn-primary" onclick="salvarFotoServico()">
+            <i class="bx bx-save"></i> Salvar Foto
         </button>
     </div>
 </div>
@@ -1054,14 +1086,113 @@ async function capturarFotoCheckin() {
     }
 }
 
+let fotoServicoBase64 = null;
+let abaAtiva = 'camera';
+
+// Evento para mudança de aba
+jQuery(document).on('shown', '#fotoTabs a[data-toggle="tab"]', function (e) {
+    const target = jQuery(e.target).attr('href');
+    if (target === '#tabUpload') {
+        abaAtiva = 'upload';
+        // Parar câmera para economizar recursos
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+            stream = null;
+        }
+        setupDragDrop();
+    } else {
+        abaAtiva = 'camera';
+        iniciarCamera();
+    }
+});
+
+// Setup drag and drop
+function setupDragDrop() {
+    const dropArea = document.getElementById('dropArea');
+    if (!dropArea) return;
+
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, preventDefaults, false);
+    });
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropArea.addEventListener(eventName, highlight, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, unhighlight, false);
+    });
+
+    dropArea.addEventListener('drop', handleDrop, false);
+}
+
+function preventDefaults(e) {
+    e.preventDefault();
+    e.stopPropagation();
+}
+
+function highlight(e) {
+    const dropArea = document.getElementById('dropArea');
+    dropArea.style.borderColor = '#667eea';
+    dropArea.style.background = 'rgba(102,126,234,0.05)';
+}
+
+function unhighlight(e) {
+    const dropArea = document.getElementById('dropArea');
+    dropArea.style.borderColor = '#ccc';
+    dropArea.style.background = 'transparent';
+}
+
+function handleDrop(e) {
+    const dt = e.dataTransfer;
+    const files = dt.files;
+
+    if (files.length > 0) {
+        const fileInput = document.getElementById('fileFotoServico');
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(files[0]);
+        fileInput.files = dataTransfer.files;
+        previewArquivoServico(fileInput);
+    }
+}
+
+function retomarCamera() {
+    fotoServicoBase64 = null;
+    document.getElementById('cameraPreview').style.display = 'none';
+    document.getElementById('video').style.display = 'block';
+    iniciarCamera();
+}
+
+async function iniciarCamera() {
+    abaAtiva = 'camera';
+    document.getElementById('cameraPreview').style.display = 'none';
+    document.getElementById('video').style.display = 'block';
+
+    if (!stream) {
+        try {
+            stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+            document.getElementById('video').srcObject = stream;
+        } catch (err) {
+            console.error('Erro ao abrir câmera:', err);
+            document.getElementById('cameraMensagem').style.display = 'block';
+            document.getElementById('video').style.display = 'none';
+        }
+    }
+}
+
 async function abrirCamera() {
     jQuery('#cameraModal').modal('show');
-    try {
-        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-        document.getElementById('video').srcObject = stream;
-    } catch (err) {
-        console.error('Erro ao abrir câmera:', err);
-    }
+    fotoServicoBase64 = null;
+    abaAtiva = 'camera';
+
+    // Reset previews
+    document.getElementById('cameraPreview').style.display = 'none';
+    document.getElementById('video').style.display = 'block';
+    document.getElementById('uploadPreview').style.display = 'none';
+    document.getElementById('fileFotoServico').value = '';
+
+    // Tentar iniciar câmera
+    await iniciarCamera();
 }
 
 function fecharCamera() {
@@ -1070,30 +1201,82 @@ function fecharCamera() {
         stream.getTracks().forEach(track => track.stop());
         stream = null;
     }
+    fotoServicoBase64 = null;
+    document.getElementById('uploadPreview').style.display = 'none';
+    document.getElementById('cameraPreview').style.display = 'none';
+    document.getElementById('fileFotoServico').value = '';
 }
 
-async function tirarFoto() {
+function tirarFoto() {
     const video = document.getElementById('video');
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
+
+    if (!video.videoWidth) {
+        alert('Câmera não está pronta. Aguarde ou use a opção Arquivo.');
+        return;
+    }
 
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     ctx.drawImage(video, 0, 0);
 
-    const foto = canvas.toDataURL('image/jpeg', 0.8);
+    fotoServicoBase64 = canvas.toDataURL('image/jpeg', 0.8);
+
+    // Mostrar preview
+    document.getElementById('video').style.display = 'none';
+    document.getElementById('previewImg').src = fotoServicoBase64;
+    document.getElementById('cameraPreview').style.display = 'block';
+}
+
+function previewArquivoServico(input) {
+    const file = input.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+        alert('Por favor, selecione uma imagem válida.');
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        fotoServicoBase64 = e.target.result;
+        document.getElementById('uploadPreviewImg').src = fotoServicoBase64;
+        document.getElementById('uploadPreview').style.display = 'block';
+        abaAtiva = 'upload';
+    };
+    reader.readAsDataURL(file);
+}
+
+async function salvarFotoServico() {
+    if (!fotoServicoBase64) {
+        if (abaAtiva === 'camera') {
+            // Se estiver na aba câmera e não tiver foto, tenta tirar agora
+            tirarFoto();
+            if (!fotoServicoBase64) return;
+        } else {
+            alert('Selecione uma imagem primeiro.');
+            return;
+        }
+    }
+
     const tipo = document.getElementById('tipoFoto').value;
     const descricao = document.getElementById('descricaoFoto').value;
 
     const csrf = getCsrfToken();
     const formData = new FormData();
     formData.append('execucao_id', execucaoId);
-    formData.append('foto', foto);
+    formData.append('foto', fotoServicoBase64);
     formData.append('tipo', tipo);
     formData.append('descricao', descricao);
-    formData.append('latitude', latitude);
-    formData.append('longitude', longitude);
+    formData.append('latitude', latitude || 0);
+    formData.append('longitude', longitude || 0);
     formData.append(csrf.name, csrf.value);
+
+    const btn = document.querySelector('#cameraModal .btn-primary');
+    const btnOriginalText = btn.innerHTML;
+    btn.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Salvando...';
+    btn.disabled = true;
 
     try {
         const response = await fetch('<?php echo site_url("tecnicos/adicionar_foto"); ?>', {
@@ -1107,7 +1290,7 @@ async function tirarFoto() {
             const grid = document.getElementById('galleryGrid');
             const item = document.createElement('div');
             item.className = 'gallery-item';
-            item.innerHTML = `<img src="${foto}" alt="Foto">`;
+            item.innerHTML = `<img src="${fotoServicoBase64}" alt="Foto">`;
             grid.insertBefore(item, grid.children[1]);
 
             fecharCamera();
@@ -1117,6 +1300,9 @@ async function tirarFoto() {
         }
     } catch (err) {
         alert('Erro ao enviar foto: ' + err.message);
+    } finally {
+        btn.innerHTML = btnOriginalText;
+        btn.disabled = false;
     }
 }
 

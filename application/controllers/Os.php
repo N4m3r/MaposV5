@@ -364,6 +364,7 @@ class Os extends MY_Controller
         $this->load->model('checkin_model');
         $this->load->model('assinaturas_model');
         $this->load->model('fotosatendimento_model');
+        $this->load->model('tec_os_model');
 
         $result = $this->os_model->getById($os_id);
 
@@ -403,6 +404,10 @@ class Os extends MY_Controller
         $this->data['assinaturas'] = $this->assinaturas_model->getByOs($os_id);
         log_info('OS Visualizar - Assinaturas carregadas: ' . count($this->data['assinaturas']));
         $this->data['fotosAtendimento'] = $this->fotosatendimento_model->getByOs($os_id);
+
+        // Carregar execuções técnicas do portal (tec_os_execucao)
+        $this->data['execucoesTecnicas'] = $this->tec_os_model->getExecucoesByOs($os_id);
+        $this->data['fotosTecnico'] = $this->tec_os_model->getFotosByOs($os_id);
         $this->data['qrCode'] = $this->os_model->getQrCode(
             $this->uri->segment(3),
             $this->data['configuration']['pix_key'],
