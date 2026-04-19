@@ -533,8 +533,10 @@ class Tecnicos extends CI_Controller
                             break;
                     }
 
-                    log_message('debug', 'Tecnicos::finalizar_execucao - Atualizando servico_id: ' . $servico_id . ' para status: ' . $status_db);
-                    $this->db->where('idServicos_os', $servico_id);
+                    // Converter ID para inteiro para garantir compatibilidade
+                    $servico_id_int = intval($servico_id);
+                    log_message('debug', 'Tecnicos::finalizar_execucao - Atualizando servico_id: ' . $servico_id . ' (int: ' . $servico_id_int . ') para status: ' . $status_db);
+                    $this->db->where('idServicos_os', $servico_id_int);
                     $this->db->where('os_id', $execucao->os_id);
                     $this->db->update('servicos_os', ['status' => $status_db]);
                     $affected = $this->db->affected_rows();
@@ -622,6 +624,11 @@ class Tecnicos extends CI_Controller
         // Buscar serviços
         $this->data['servicos'] = $this->tec_os_model->getServicosOs($os_id);
         log_message('info', 'Tecnicos::relatorio_execucao - OS ' . $os_id . ' - Total de serviços: ' . count($this->data['servicos']));
+        if (!empty($this->data['servicos'])) {
+            foreach ($this->data['servicos'] as $s) {
+                log_message('info', 'Tecnicos::relatorio_execucao - Servico: id=' . ($s->idServicos_os ?? 'NULL') . ', status=' . ($s->status ?? 'NULL'));
+            }
+        }
 
         // Se não encontrou serviços, tenta buscar pelo model padrão
         if (empty($this->data['servicos'])) {

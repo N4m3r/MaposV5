@@ -309,7 +309,10 @@
                                     // DEBUG: Mostrar informações sobre serviços
                                     $debug_servicos = isset($servicos) ? (is_array($servicos) ? count($servicos) : 'nao-array') : 'nao-definido';
                                     ?>
-                                    <!-- <?php echo htmlspecialchars('DEBUG - servicos: ' . $debug_servicos); ?> -->
+                                    <!-- <?php echo htmlspecialchars('DEBUG - servicos: ' . $debug_servicos); ?>
+                                    <?php if (!empty($servicos)): foreach ($servicos as $i => $s): ?>
+                                        DEBUG - Servico <?php echo $i; ?>: id=<?php echo $s->idServicos_os ?? 'NULL'; ?>, nome=<?php echo $s->servico_nome ?? $s->nome ?? 'N/A'; ?>, status=<?php echo $s->status ?? 'NULL'; ?>
+                                    <?php endforeach; endif; ?> -->
 
                                     <?php if (!empty($servicos)): ?>
                                         <div class="wizard-servicos-list">
@@ -3453,10 +3456,13 @@ document.addEventListener('DOMContentLoaded', function() {
 function inicializarWizard() {
     // Inicializar status dos serviços
     const servicosItems = document.querySelectorAll('.wizard-servico-item');
+    console.log('[DEBUG] inicializarWizard - Encontrados ' + servicosItems.length + ' servicos');
     servicosItems.forEach(item => {
         const servicoId = item.getAttribute('data-servico-id');
+        console.log('[DEBUG] inicializarWizard - Servico ID: ' + servicoId + ' (tipo: ' + typeof servicoId + ')');
         wizardServicosStatus[servicoId] = 'pendente';
     });
+    console.log('[DEBUG] inicializarWizard - wizardServicosStatus:', wizardServicosStatus);
 
     atualizarResumoServicos();
 }
@@ -4105,7 +4111,9 @@ function finalizarWizardAtendimento() {
             execucao_id: execucaoId,
             assinatura_tamanho: assinatura.length,
             assinatura_preview: assinatura.substring(0, 50) + '...',
-            nome_cliente_assina: nomeAssinante
+            nome_cliente_assina: nomeAssinante,
+            servicos_status: servicosComStatus,
+            servicos_count: Object.keys(servicosComStatus).length
         });
 
         const response = await fetch('<?php echo site_url('tecnicos/finalizar_execucao'); ?>', {

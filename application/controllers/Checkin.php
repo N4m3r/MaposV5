@@ -1255,6 +1255,12 @@ class Checkin extends MY_Controller
         // Produtos e Serviços da OS
         $produtos = $this->os_model->getProdutos($os_id);
         $servicos = $this->os_model->getServicos($os_id);
+        log_message('debug', 'Checkin::imprimir - OS ' . $os_id . ' - Total servicos: ' . count($servicos));
+        if (!empty($servicos)) {
+            foreach ($servicos as $s) {
+                log_message('debug', 'Checkin::imprimir - Servico: id=' . ($s->idServicos_os ?? 'NULL') . ', status=' . ($s->status ?? 'NULL'));
+            }
+        }
 
         // Prepara dados para a view
         $data = [
