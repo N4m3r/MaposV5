@@ -396,10 +396,28 @@ class Tecnicos extends CI_Controller
             $caminho_foto = $this->_salvar_foto_base64($foto_checkout, 'checkout', $tecnico_id);
         }
 
-        // Salvar assinatura
+        // Salvar assinatura no sistema de fotos do técnico (caminho local)
         $caminho_assinatura = null;
         if ($assinatura_cliente) {
             $caminho_assinatura = $this->_salvar_foto_base64($assinatura_cliente, 'assinatura', $tecnico_id);
+        }
+
+        // Salvar assinatura na tabela assinaturas (integração com relatório de atendimento)
+        if ($assinatura_cliente) {
+            $imagem = $this->assinaturas_model->salvarImagem($assinatura_cliente, $execucao->os_id, 'cliente_saida');
+            if ($imagem) {
+                $data_assinatura = [
+                    'os_id' => $execucao->os_id,
+                    'checkin_id' => null, // Portal do técnico não usa checkin_id
+                    'tipo' => 'cliente_saida',
+                    'assinatura' => $imagem['path'],
+                    'nome_assinante' => $nome_cliente_assina,
+                    'data_assinatura' => date('Y-m-d H:i:s'),
+                    'ip_address' => $this->input->ip_address()
+                ];
+                $this->assinaturas_model->add($data_assinatura);
+                log_info('Assinatura do cliente salva via portal do técnico - OS: ' . $execucao->os_id);
+            }
         }
 
         // Calcular tempo total
