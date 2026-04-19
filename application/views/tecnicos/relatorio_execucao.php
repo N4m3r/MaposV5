@@ -560,7 +560,7 @@
                             </pre>
                         <?php else: ?>
                             <strong style="color: #d32f2f;">⚠️ Nenhum serviço encontrado na variável \$servicos</strong>
-                        <?php endif; ?
+                        <?php endif; ?>
                     </div>
                     <?php if (!empty($servicos)): ?>
                         <table class="table table-bordered">
