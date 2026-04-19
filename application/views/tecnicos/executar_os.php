@@ -3545,9 +3545,15 @@ function atualizarWizardView() {
 window.atualizarWizardView = atualizarWizardView;
 
 // Inicializar/re-inicializar canvas de assinatura do wizard
-function inicializarAssinaturaWizard() {
+function inicializarAssinaturaWizard(assinaturaData = null) {
     const canvas = document.getElementById('wizardSignaturePad');
     if (!canvas) return;
+
+    // Salvar assinatura atual se existir e nenhuma foi passada
+    let assinaturaSalva = assinaturaData;
+    if (!assinaturaSalva && wizardSignaturePad && !wizardSignaturePad.isEmpty()) {
+        assinaturaSalva = wizardSignaturePad.toData();
+    }
 
     // Aguardar um momento para o canvas estar visível
     setTimeout(() => {
@@ -3573,6 +3579,11 @@ function inicializarAssinaturaWizard() {
                 maxWidth: 3,
                 throttle: 0
             });
+
+            // Restaurar assinatura se existia
+            if (assinaturaSalva && Array.isArray(assinaturaSalva)) {
+                wizardSignaturePad.fromData(assinaturaSalva);
+            }
         }
     }, 100);
 }
@@ -3743,6 +3754,12 @@ function toggleFullscreenAssinatura() {
 
     const isFullscreen = container.classList.contains('fullscreen');
 
+    // Salvar assinatura atual antes de alternar
+    let assinaturaSalva = null;
+    if (wizardSignaturePad && !wizardSignaturePad.isEmpty()) {
+        assinaturaSalva = wizardSignaturePad.toData();
+    }
+
     if (isFullscreen) {
         // Sair do fullscreen
         container.classList.remove('fullscreen');
@@ -3767,7 +3784,7 @@ function toggleFullscreenAssinatura() {
 
     // Aguardar transição e re-inicializar o canvas
     setTimeout(() => {
-        inicializarAssinaturaWizard();
+        inicializarAssinaturaWizard(assinaturaSalva);
     }, 300);
 }
 window.toggleFullscreenAssinatura = toggleFullscreenAssinatura;
@@ -3776,6 +3793,17 @@ window.toggleFullscreenAssinatura = toggleFullscreenAssinatura;
 document.addEventListener('fullscreenchange', function() {
     const container = document.getElementById('assinaturaContainer');
     if (container && !document.fullscreenElement) {
+        container.classList.remove('fullscreen');
+        setTimeout(() => {
+            inicializarAssinaturaWizard();
+        }, 100);
+    }
+});
+
+// Suporte para webkit browsers (iOS)
+document.addEventListener('webkitfullscreenchange', function() {
+    const container = document.getElementById('assinaturaContainer');
+    if (container && !document.webkitFullscreenElement) {
         container.classList.remove('fullscreen');
         setTimeout(() => {
             inicializarAssinaturaWizard();
