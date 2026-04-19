@@ -289,7 +289,7 @@ class Tecnicos extends CI_Controller
         $cliente = $this->tec_os_model->getClienteByOs($os_id);
         $distancia_cliente = null;
 
-        if ($cliente && $cliente->lat && $cliente->lng) {
+        if ($cliente && isset($cliente->lat) && isset($cliente->lng) && $cliente->lat && $cliente->lng) {
             $distancia_cliente = $this->_calcular_distancia(
                 $cliente->lat,
                 $cliente->lng,
