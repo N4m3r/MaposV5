@@ -230,6 +230,23 @@
           </ul>
         </li>
 
+        <!-- Notificações -->
+        <li class="dropdown" id="notifications-dropdown">
+          <a href="#" class="tip-right dropdown-toggle" data-toggle="dropdown" title="Notificações">
+            <i class='bx bx-bell iconN'></i>
+            <span class="notif-badge" id="notif-count" style="display:none;">0</span>
+          </a>
+          <ul class="dropdown-menu" id="notif-list" style="width:340px;right:0;left:auto;">
+            <li class="notif-header" style="padding:8px 12px;font-weight:bold;border-bottom:1px solid #ddd;">
+              <span>Notificações</span>
+              <a href="#" id="notif-marcar-todas" style="float:right;font-size:11px;font-weight:normal;">Marcar todas como lidas</a>
+            </li>
+            <li id="notif-items" style="max-height:320px;overflow-y:auto;">
+              <div style="padding:15px;text-align:center;color:#888;">Carregando...</div>
+            </li>
+          </ul>
+        </li>
+
         <!-- Botão Sair Direto -->
         <li>
           <a href="<?= site_url('login/sair') ?>" class="tip-right" title="Sair do Sistema">
