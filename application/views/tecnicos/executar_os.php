@@ -1077,6 +1077,7 @@ async function tirarFoto() {
     const tipo = document.getElementById('tipoFoto').value;
     const descricao = document.getElementById('descricaoFoto').value;
 
+    const csrf = getCsrfToken();
     const formData = new FormData();
     formData.append('execucao_id', execucaoId);
     formData.append('foto', foto);
@@ -1084,6 +1085,7 @@ async function tirarFoto() {
     formData.append('descricao', descricao);
     formData.append('latitude', latitude);
     formData.append('longitude', longitude);
+    formData.append(csrf.name, csrf.value);
 
     try {
         const response = await fetch('<?php echo site_url("tecnicos/adicionar_foto"); ?>', {
@@ -1149,6 +1151,20 @@ async function capturarFotoCheckout() {
     }
 }
 
+// Helper para obter CSRF token
+function getCsrfToken() {
+    const tokenName = '<?php echo $this->config->item('csrf_token_name'); ?>';
+    const cookieName = '<?php echo $this->config->item('csrf_cookie_name'); ?>';
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.indexOf(cookieName + '=') === 0) {
+            return { name: tokenName, value: cookie.substring(cookieName.length + 1) };
+        }
+    }
+    return { name: tokenName, value: '' };
+}
+
 // Execução
 async function iniciarExecucao() {
     // Localização é opcional - usa valores padrão se não disponível
@@ -1159,12 +1175,14 @@ async function iniciarExecucao() {
     btn.classList.add('loading');
     btn.disabled = true;
 
+    const csrf = getCsrfToken();
     const formData = new FormData();
     formData.append('os_id', osId);
     formData.append('latitude', lat);
     formData.append('longitude', lng);
     formData.append('foto_checkin', fotoCheckin || '');
     formData.append('tipo', 'inicio_local');
+    formData.append(csrf.name, csrf.value);
 
     try {
         const response = await fetch('<?php echo site_url("tecnicos/iniciar_execucao"); ?>', {
@@ -1194,12 +1212,14 @@ async function iniciarExecucao() {
 async function salvarChecklistItem(itemId, status) {
     if (!execucaoId) return;
 
+    const csrf = getCsrfToken();
     const formData = new FormData();
     formData.append('execucao_id', execucaoId);
     formData.append('item_id', itemId);
     formData.append('status', status);
     formData.append('observacao', '');
     formData.append('valor', '');
+    formData.append(csrf.name, csrf.value);
 
     try {
         const response = await fetch('<?php echo site_url("tecnicos/salvar_checklist_item"); ?>', {
@@ -1259,6 +1279,7 @@ async function finalizarExecucao() {
     const lat = latitude || 0;
     const lng = longitude || 0;
 
+    const csrf = getCsrfToken();
     const formData = new FormData();
     formData.append('execucao_id', execucaoId);
     formData.append('latitude', lat);
@@ -1267,6 +1288,7 @@ async function finalizarExecucao() {
     formData.append('assinatura_cliente', assinatura);
     formData.append('nome_cliente_assina', nomeAssinante);
     formData.append('observacoes', observacoes);
+    formData.append(csrf.name, csrf.value);
 
     try {
         const response = await fetch('<?php echo site_url("tecnicos/finalizar_execucao"); ?>', {

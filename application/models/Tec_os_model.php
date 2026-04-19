@@ -26,13 +26,48 @@ class Tec_os_model extends CI_Model
      */
     public function getClienteByOs($os_id)
     {
-        $this->db->select('c.*, e.lat, e.lng');
+        // Verificar se a OS existe e tem cliente vinculado
+        $this->db->select('o.clientes_id');
         $this->db->from('os o');
-        $this->db->join('clientes c', 'c.idClientes = o.clientes_id');
+        $this->db->where('o.idOs', $os_id);
+        $os_query = $this->db->get();
+
+        if (!$os_query || !$os_query->row()) {
+            log_message('error', 'OS não encontrada: ' . $os_id);
+            return null;
+        }
+
+        $os = $os_query->row();
+
+        // Se não tem cliente vinculado, retorna objeto com nome genérico
+        if (empty($os->clientes_id)) {
+            log_message('warning', 'OS ' . $os_id . ' não tem cliente vinculado');
+            $cliente = new stdClass();
+            $cliente->idClientes = null;
+            $cliente->nomeCliente = 'Cliente não vinculado';
+            $cliente->endereco = '';
+            $cliente->telefone = '';
+            return $cliente;
+        }
+
+        $this->db->select('c.*, e.lat, e.lng');
+        $this->db->from('clientes c');
+        $this->db->join('os o', 'o.clientes_id = c.idClientes');
         $this->db->join('enderecos_cliente e', 'e.cliente_id = c.idClientes AND e.principal = 1', 'left');
         $this->db->where('o.idOs', $os_id);
         $query = $this->db->get();
-        return $query ? $query->row() : null;
+
+        if (!$query || !$query->row()) {
+            log_message('warning', 'Cliente não encontrado para OS ' . $os_id . ', clientes_id: ' . $os->clientes_id);
+            $cliente = new stdClass();
+            $cliente->idClientes = $os->clientes_id;
+            $cliente->nomeCliente = 'Cliente não encontrado (ID: ' . $os->clientes_id . ')';
+            $cliente->endereco = '';
+            $cliente->telefone = '';
+            return $cliente;
+        }
+
+        return $query->row();
     }
 
     /**
@@ -153,14 +188,14 @@ class Tec_os_model extends CI_Model
     }
 
     /**
-     * Buscar serviços da OS
+     * Buscar serviços da OS (tabela padrão MAPOS)
      */
     public function getServicosOs($os_id)
     {
-        $this->db->select('os.*, sc.nome as servico_nome, sc.codigo as servico_codigo, sc.tipo as servico_tipo, sc.checklist_padrao');
-        $this->db->from('os_servicos os');
-        $this->db->join('servicos_catalogo sc', 'sc.id = os.servico_catalogo_id', 'left');
-        $this->db->where('os.os_id', $os_id);
+        $this->db->select('servicos_os.*, servicos.nome as servico_nome, servicos.preco as servico_preco');
+        $this->db->from('servicos_os');
+        $this->db->join('servicos', 'servicos.idServicos = servicos_os.servicos_id', 'left');
+        $this->db->where('servicos_os.os_id', $os_id);
 
         $query = $this->db->get();
 
