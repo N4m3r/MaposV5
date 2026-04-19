@@ -446,11 +446,16 @@ class Obras_model extends CI_Model
         try {
             $this->db->where('cliente_id', $cliente_id);
             $this->db->where('ativo', 1);
-            $count = $this->db->count_all_results('obras');
-            return is_numeric($count) ? (int) $count : 0;
+            $query = $this->db->select('COUNT(*) as total')->get('obras');
+
+            if ($query && $query->num_rows() > 0) {
+                return (int) $query->row()->total;
+            }
         } catch (Exception $e) {
-            return 0;
+            log_message('error', 'Erro ao contar obras por cliente: ' . $e->getMessage());
         }
+
+        return 0;
     }
 
     /**

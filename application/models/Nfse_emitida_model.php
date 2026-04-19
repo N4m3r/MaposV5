@@ -325,10 +325,24 @@ class Nfse_emitida_model extends CI_Model
             return 0;
         }
 
-        if (!empty($filtros['situacao'])) {
-            $this->db->where('situacao', $filtros['situacao']);
+        try {
+            $this->db->select('COUNT(*) as total');
+            $this->db->from('os_nfse_emitida');
+
+            if (!empty($filtros['situacao'])) {
+                $this->db->where('situacao', $filtros['situacao']);
+            }
+
+            $query = $this->db->get();
+
+            if ($query && $query->num_rows() > 0) {
+                return (int) $query->row()->total;
+            }
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao contar NFS-e: ' . $e->getMessage());
         }
-        return $this->db->count_all_results('os_nfse_emitida');
+
+        return 0;
     }
 
     /**
@@ -362,11 +376,21 @@ class Nfse_emitida_model extends CI_Model
             return 0;
         }
 
-        $this->db->where('os.clientes_id', $cliente_id);
-        $this->db->join('os', 'os.idOs = os_nfse_emitida.os_id', 'inner');
+        try {
+            $sql = "SELECT COUNT(*) as total
+                    FROM os_nfse_emitida
+                    INNER JOIN os ON os.idOs = os_nfse_emitida.os_id
+                    WHERE os.clientes_id = ?";
+            $query = $this->db->query($sql, [$cliente_id]);
 
-        $count = $this->db->count_all_results('os_nfse_emitida');
-        return is_numeric($count) ? (int) $count : 0;
+            if ($query && $query->num_rows() > 0) {
+                return (int) $query->row()->total;
+            }
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao contar NFS-e por cliente: ' . $e->getMessage());
+        }
+
+        return 0;
     }
 
     /**

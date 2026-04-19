@@ -95,9 +95,18 @@ class Cobrancas_model extends CI_Model
      */
     public function countByCliente($cliente_id)
     {
-        $this->db->where('clientes_id', $cliente_id);
-        $count = $this->db->count_all_results('cobrancas');
-        return is_numeric($count) ? (int) $count : 0;
+        try {
+            $this->db->where('clientes_id', $cliente_id);
+            $query = $this->db->select('COUNT(*) as total')->get('cobrancas');
+
+            if ($query && $query->num_rows() > 0) {
+                return (int) $query->row()->total;
+            }
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao contar cobranças por cliente: ' . $e->getMessage());
+        }
+
+        return 0;
     }
 
     /**
@@ -105,13 +114,19 @@ class Cobrancas_model extends CI_Model
      */
     public function getByCliente($cliente_id, $perpage = 10, $start = 0)
     {
-        $this->db->select('cobrancas.*, clientes.nomeCliente');
-        $this->db->from('cobrancas');
-        $this->db->join('clientes', 'clientes.idClientes = cobrancas.clientes_id');
-        $this->db->where('cobrancas.clientes_id', $cliente_id);
-        $this->db->order_by('cobrancas.idCobranca', 'desc');
-        $this->db->limit($perpage, $start);
-        return $this->db->get()->result();
+        try {
+            $this->db->select('cobrancas.*, clientes.nomeCliente');
+            $this->db->from('cobrancas');
+            $this->db->join('clientes', 'clientes.idClientes = cobrancas.clientes_id');
+            $this->db->where('cobrancas.clientes_id', $cliente_id);
+            $this->db->order_by('cobrancas.idCobranca', 'desc');
+            $this->db->limit($perpage, $start);
+            $query = $this->db->get();
+            return $query ? $query->result() : [];
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao buscar cobranças por cliente: ' . $e->getMessage());
+            return [];
+        }
     }
 
     /**
@@ -119,14 +134,20 @@ class Cobrancas_model extends CI_Model
      */
     public function getBoletosByCliente($cliente_id, $perpage = 10, $start = 0)
     {
-        $this->db->select('cobrancas.*, clientes.nomeCliente');
-        $this->db->from('cobrancas');
-        $this->db->join('clientes', 'clientes.idClientes = cobrancas.clientes_id');
-        $this->db->where('cobrancas.clientes_id', $cliente_id);
-        $this->db->where_in('cobrancas.payment_gateway', ['gerencianet_boleto', 'boleto', 'cora_boleto']);
-        $this->db->order_by('cobrancas.idCobranca', 'desc');
-        $this->db->limit($perpage, $start);
-        return $this->db->get()->result();
+        try {
+            $this->db->select('cobrancas.*, clientes.nomeCliente');
+            $this->db->from('cobrancas');
+            $this->db->join('clientes', 'clientes.idClientes = cobrancas.clientes_id');
+            $this->db->where('cobrancas.clientes_id', $cliente_id);
+            $this->db->where_in('cobrancas.payment_gateway', ['gerencianet_boleto', 'boleto', 'cora_boleto']);
+            $this->db->order_by('cobrancas.idCobranca', 'desc');
+            $this->db->limit($perpage, $start);
+            $query = $this->db->get();
+            return $query ? $query->result() : [];
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao buscar boletos por cliente: ' . $e->getMessage());
+            return [];
+        }
     }
 
     public function atualizarStatus($idCobranca)
