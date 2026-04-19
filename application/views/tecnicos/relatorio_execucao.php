@@ -558,11 +558,23 @@
                     $CI->db->where('os_id', $os->idOs);
                     $query_verificacao = $CI->db->get();
                     $servicos_verificacao = $query_verificacao ? $query_verificacao->result() : [];
+
+                    // Se não encontrou em servicos_os, tentar os_servicos (portal do técnico)
+                    if (empty($servicos_verificacao) && $CI->db->table_exists('os_servicos')) {
+                        $CI->db->reset_query();
+                        $CI->db->select('id, servico_id as servicos_id, os_id, quantidade, status, observacao');
+                        $CI->db->from('os_servicos');
+                        $CI->db->where('os_id', $os->idOs);
+                        $query_verificacao2 = $CI->db->get();
+                        if ($query_verificacao2) {
+                            $servicos_verificacao = $query_verificacao2->result();
+                        }
+                    }
                     ?>
                     <div style="background: #d4edda; padding: 10px; margin-bottom: 10px; border: 1px solid #155724;">
                         <strong>VERIFICAÇÃO DIRETA DO BANCO:</strong> Total: <?php echo count($servicos_verificacao); ?><br>
                         <?php foreach ($servicos_verificacao as $sv): ?>
-                            ID: <?php echo $sv->idServicos_os; ?> | Status: '<?php echo $sv->status; ?>' | OS: <?php echo $sv->os_id; ?><br>
+                            ID: <?php echo $sv->idServicos_os ?? $sv->id; ?> | Status: '<?php echo $sv->status; ?>' | OS: <?php echo $sv->os_id; ?><br>
                         <?php endforeach; ?>
                     </div>
 
