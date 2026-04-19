@@ -159,30 +159,13 @@
                     <!-- Assinatura do Técnico -->
                     <div class="assinatura-section" style="margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 8px;">
                         <h6><i class="bx bx-pen"></i> Assinatura do Técnico</h6>
-                        <canvas id="assinaturaTecnico" class="signature-pad" style="width: 100%; height: 150px; background: white; border: 2px solid #ddd; border-radius: 4px;"></canvas>
+                        <canvas id="assinaturaTecnico"></canvas>
                         <div style="margin-top: 10px; text-align: center;">
                             <button type="button" class="btn btn-mini" onclick="limparAssinaturaTecnico()">
                                 <i class="bx bx-trash"></i> Limpar Assinatura
                             </button>
                         </div>
                         <small style="display: block; margin-top: 5px; color: #666; text-align: center;">Sua assinatura é obrigatória para iniciar</small>
-                    </div>
-
-                    <div class="camera-section">
-                        <div class="camera-preview" id="checkinPreview">
-                            <i class="bx bx-camera"></i>
-                            <span>Foto de Check-in (opcional)</span>
-                        </div>
-                        <div class="foto-options" style="display: flex; gap: 10px; justify-content: center;">
-                            <button type="button" class="btn btn-info" onclick="capturarFotoCheckin()" id="btnFotoCheckin">
-                                <i class="bx bx-camera"></i> Tirar Foto
-                            </button>
-                            <label class="btn btn-default" style="cursor: pointer;">
-                                <i class="bx bx-upload"></i> Selecionar Arquivo
-                                <input type="file" id="fileCheckin" accept="image/*" style="display: none;" onchange="uploadFotoCheckin(this)">
-                            </label>
-                        </div>
-                        <small style="display: block; margin-top: 5px; color: #666; text-align: center;">A foto é opcional - você pode iniciar sem ela</small>
                     </div>
 
                     <button type="button" class="btn btn-success btn-large btn-block" onclick="iniciarExecucao()" id="btnIniciar">
@@ -1253,6 +1236,19 @@
     background: white;
     margin-bottom: 15px;
     cursor: crosshair;
+}
+
+/* Assinatura do Técnico (Check-in) */
+#assinaturaTecnico {
+    width: 100%;
+    height: 150px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    cursor: crosshair;
+    touch-action: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
 }
 
 /* Spinner */
@@ -2435,63 +2431,99 @@ function limparAssinatura() {
 }
 
 // Canvas de assinatura do Técnico (para check-in)
-const canvasTecnico = document.getElementById('assinaturaTecnico');
+let canvasTecnico = null;
 let ctxTecnico = null;
 let isDrawingTecnico = false;
 
-if (canvasTecnico) {
-    ctxTecnico = canvasTecnico.getContext('2d');
+function initCanvasTecnico() {
+    canvasTecnico = document.getElementById('assinaturaTecnico');
+    if (!canvasTecnico) {
+        console.error('Canvas assinaturaTecnico não encontrado');
+        return;
+    }
 
-    function resizeCanvasTecnico() {
+    ctxTecnico = canvasTecnico.getContext('2d');
+    console.log('Canvas técnico inicializado:', canvasTecnico);
+
+    // Configurar dimensões
+    const resizeCanvasTecnico = function() {
         const rect = canvasTecnico.getBoundingClientRect();
-        canvasTecnico.width = rect.width;
-        canvasTecnico.height = rect.height;
+        canvasTecnico.width = rect.width > 0 ? rect.width : 300;
+        canvasTecnico.height = 150;
         ctxTecnico.strokeStyle = '#000';
         ctxTecnico.lineWidth = 2;
         ctxTecnico.lineCap = 'round';
-    }
+        console.log('Canvas redimensionado:', canvasTecnico.width, 'x', canvasTecnico.height);
+    };
 
-    window.addEventListener('load', resizeCanvasTecnico);
+    // Aguardar um tick para garantir que o layout está pronto
+    setTimeout(resizeCanvasTecnico, 100);
     window.addEventListener('resize', resizeCanvasTecnico);
 
-    canvasTecnico.addEventListener('mousedown', startDrawingTecnico);
-    canvasTecnico.addEventListener('mousemove', drawTecnico);
-    canvasTecnico.addEventListener('mouseup', stopDrawingTecnico);
-    canvasTecnico.addEventListener('mouseout', stopDrawingTecnico);
-
-    canvasTecnico.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        startDrawingTecnico(e.touches[0]);
-    });
-    canvasTecnico.addEventListener('touchmove', (e) => {
-        e.preventDefault();
-        drawTecnico(e.touches[0]);
-    });
-    canvasTecnico.addEventListener('touchend', stopDrawingTecnico);
-
-    function startDrawingTecnico(e) {
+    // Eventos do mouse
+    canvasTecnico.addEventListener('mousedown', function(e) {
         isDrawingTecnico = true;
         const rect = canvasTecnico.getBoundingClientRect();
         ctxTecnico.beginPath();
         ctxTecnico.moveTo(e.clientX - rect.left, e.clientY - rect.top);
-    }
+    });
 
-    function drawTecnico(e) {
+    canvasTecnico.addEventListener('mousemove', function(e) {
         if (!isDrawingTecnico) return;
         const rect = canvasTecnico.getBoundingClientRect();
         ctxTecnico.lineTo(e.clientX - rect.left, e.clientY - rect.top);
         ctxTecnico.stroke();
-    }
+    });
 
-    function stopDrawingTecnico() {
+    canvasTecnico.addEventListener('mouseup', function() {
         isDrawingTecnico = false;
-    }
+    });
 
-    function limparAssinaturaTecnico() {
-        if (ctxTecnico) {
-            ctxTecnico.clearRect(0, 0, canvasTecnico.width, canvasTecnico.height);
-        }
+    canvasTecnico.addEventListener('mouseout', function() {
+        isDrawingTecnico = false;
+    });
+
+    // Eventos touch
+    canvasTecnico.addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        isDrawingTecnico = true;
+        const rect = canvasTecnico.getBoundingClientRect();
+        const touch = e.touches[0];
+        ctxTecnico.beginPath();
+        ctxTecnico.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
+    });
+
+    canvasTecnico.addEventListener('touchmove', function(e) {
+        e.preventDefault();
+        if (!isDrawingTecnico) return;
+        const rect = canvasTecnico.getBoundingClientRect();
+        const touch = e.touches[0];
+        ctxTecnico.lineTo(touch.clientX - rect.left, touch.clientY - rect.top);
+        ctxTecnico.stroke();
+    });
+
+    canvasTecnico.addEventListener('touchend', function() {
+        isDrawingTecnico = false;
+    });
+}
+
+function limparAssinaturaTecnico() {
+    if (ctxTecnico && canvasTecnico) {
+        ctxTecnico.clearRect(0, 0, canvasTecnico.width, canvasTecnico.height);
     }
+}
+
+// Inicializar quando DOM estiver pronto
+function iniciarCanvasAssinatura() {
+    console.log('Inicializando canvas de assinatura...');
+    initCanvasTecnico();
+    console.log('Canvas inicializado:', canvasTecnico ? 'OK' : 'Falhou');
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', iniciarCanvasAssinatura);
+} else {
+    iniciarCanvasAssinatura();
 }
 
 // Câmera - OPCIONAL
@@ -2882,15 +2914,23 @@ function getCsrfToken() {
 
 // Execução
 async function iniciarExecucao() {
+    console.log('iniciarExecucao chamada');
+
     // Validar assinatura do técnico
     if (!canvasTecnico || !ctxTecnico) {
-        alert('Erro: Canvas de assinatura não encontrado');
+        console.error('Canvas não inicializado:', { canvasTecnico, ctxTecnico });
+        alert('Erro: Canvas de assinatura não encontrado. Recarregue a página.');
         return;
     }
 
     // Verificar se o canvas tem desenho (assinatura)
-    const pixelData = ctxTecnico.getImageData(0, 0, canvasTecnico.width, canvasTecnico.height).data;
-    const hasDrawing = pixelData.some((pixel, index) => index % 4 === 3 && pixel > 0);
+    let hasDrawing = false;
+    try {
+        const pixelData = ctxTecnico.getImageData(0, 0, canvasTecnico.width, canvasTecnico.height).data;
+        hasDrawing = pixelData.some((pixel, index) => index % 4 === 3 && pixel > 0);
+    } catch (e) {
+        console.error('Erro ao verificar assinatura:', e);
+    }
 
     if (!hasDrawing) {
         alert('Por favor, assine antes de iniciar o atendimento.');
@@ -2902,6 +2942,11 @@ async function iniciarExecucao() {
     const lng = longitude || 0;
 
     const btn = document.getElementById('btnIniciar');
+    if (!btn) {
+        alert('Erro: Botão não encontrado');
+        return;
+    }
+
     btn.classList.add('loading');
     btn.disabled = true;
 
