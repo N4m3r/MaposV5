@@ -210,4 +210,29 @@ class Produtos extends MY_Controller
             $this->data['custom_error'] = '<div class="alert">Ocorreu um erro.</div>';
         }
     }
+
+    public function zerar_valor()
+    {
+        if (! $this->permission->checkPermission($this->session->userdata('permissao'), 'eProduto')) {
+            echo json_encode(['success' => false, 'message' => 'Sem permissão']);
+            return;
+        }
+
+        $idProduto = $this->input->post('id');
+        if ($idProduto == null) {
+            echo json_encode(['success' => false, 'message' => 'ID não informado']);
+            return;
+        }
+
+        $data = [
+            'precoVenda' => 0.00,
+        ];
+
+        if ($this->produtos_model->edit('produtos', $data, 'idProdutos', $idProduto) == true) {
+            log_info('Zerou o valor do produto. ID: ' . $idProduto);
+            echo json_encode(['success' => true, 'message' => 'Valor zerado com sucesso!']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Erro ao zerar valor']);
+        }
+    }
 }

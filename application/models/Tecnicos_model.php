@@ -21,7 +21,10 @@ class Tecnicos_model extends CI_Model
     public function getById($id)
     {
         $this->db->where('idUsuarios', $id);
+        $this->db->group_start();
         $this->db->where('is_tecnico', 1);
+        $this->db->or_where('app_tecnico_instalado', 1);
+        $this->db->group_end();
         return $this->db->get($this->table)->row();
     }
 
@@ -40,7 +43,10 @@ class Tecnicos_model extends CI_Model
     public function getByToken($token)
     {
         $this->db->where('token_app', $token);
+        $this->db->group_start();
         $this->db->where('is_tecnico', 1);
+        $this->db->or_where('app_tecnico_instalado', 1);
+        $this->db->group_end();
         return $this->db->get($this->table)->row();
     }
 
@@ -49,7 +55,10 @@ class Tecnicos_model extends CI_Model
      */
     public function getAll($where = [], $limit = null, $offset = null)
     {
+        $this->db->group_start();
         $this->db->where('is_tecnico', 1);
+        $this->db->or_where('app_tecnico_instalado', 1);
+        $this->db->group_end();
 
         if (!empty($where)) {
             $this->db->where($where);
@@ -69,7 +78,10 @@ class Tecnicos_model extends CI_Model
      */
     public function count($where = [])
     {
+        $this->db->group_start();
         $this->db->where('is_tecnico', 1);
+        $this->db->or_where('app_tecnico_instalado', 1);
+        $this->db->group_end();
 
         if (!empty($where)) {
             $this->db->where($where);
@@ -120,7 +132,7 @@ class Tecnicos_model extends CI_Model
     public function delete($id)
     {
         $this->db->where('idUsuarios', $id);
-        return $this->db->update($this->table, ['is_tecnico' => 0]);
+        return $this->db->update($this->table, ['is_tecnico' => 0, 'app_tecnico_instalado' => 0]);
     }
 
     /**

@@ -224,6 +224,18 @@ $route['tecnicos_admin/rotas/(:num)'] = 'tecnicos_admin/rotas/$1';
 $route['tecnicos_admin/api/dados_dashboard'] = 'tecnicos_admin/api_dados_dashboard';
 $route['tecnicos_admin/execucao'] = 'tecnicos_admin/execucao_obras';
 $route['tecnicos_admin/buscar_os_por_obra'] = 'tecnicos_admin/buscar_os_por_obra';
+$route['tecnicos_admin/editar_etapa/(:num)'] = 'tecnicos_admin/editar_etapa/$1';
+$route['tecnicos_admin/excluir_etapa/(:num)'] = 'tecnicos_admin/excluir_etapa/$1';
+$route['tecnicos_admin/buscar_etapa/(:num)'] = 'tecnicos_admin/buscar_etapa/$1';
+$route['tecnicos_admin/atualizar_status_etapa'] = 'tecnicos_admin/atualizar_status_etapa';
+$route['tecnicos_admin/buscar_atividades_obra/(:num)'] = 'tecnicos_admin/buscar_atividades_obra/$1';
+$route['tecnicos_admin/adicionar_comentario'] = 'tecnicos_admin/adicionar_comentario';
+$route['tecnicos_admin/remover_tecnico_equipe'] = 'tecnicos_admin/remover_tecnico_equipe';
+$route['tecnicos_admin/buscar_os_disponiveis_simples'] = 'tecnicos_admin/buscar_os_disponiveis_simples';
+$route['tecnicos_admin/minhas_obras'] = 'tecnicos_admin/minhas_obras_tecnico';
+$route['tecnicos_admin/tecnico_executar_obra/(:num)'] = 'tecnicos_admin/tecnico_executar_obra/$1';
+$route['tecnicos_admin/tecnico_atualizar_etapa'] = 'tecnicos_admin/tecnico_atualizar_etapa';
+$route['tecnicos_admin/api_dados_obra/(:num)'] = 'tecnicos_admin/api_dados_obra/$1';
 
 // Rotas para atribuir técnico às OS
 $route['os/atribuir'] = 'os/atribuir';

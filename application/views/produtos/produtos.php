@@ -2,6 +2,19 @@
   select {
     width: 70px;
   }
+  .btn-nwe6 {
+    background-color: #ff9800;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 3px;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-nwe6:hover {
+    background-color: #f57c00;
+    color: white;
+    text-decoration: none;
+  }
 </style>
 <div class="new122">
     <div class="widget-title" style="margin: -20px 0 0">
@@ -73,6 +86,9 @@
                     }
                     if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eProduto')) {
                         echo '<a href="#atualizar-estoque" role="button" data-toggle="modal" produto="' . $r->idProdutos . '" estoque="' . $r->estoque . '" class="btn-nwe5" title="Atualizar Estoque"><i class="bx bx-plus-circle bx-xs"></i></a>';
+                    }
+                    if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eProduto')) {
+                        echo '<a style="margin-right: 1%" href="javascript:void(0);" onclick="zerarValor(' . $r->idProdutos . ', \'' . htmlspecialchars($r->descricao, ENT_QUOTES) . '\')" class="btn-nwe6" title="Zerar Valor"><i class="bx bx-reset bx-xs"></i></a>';
                     }
                     echo '</td>';
                     echo '</tr>';
@@ -215,4 +231,26 @@
             }
         });
     });
+
+    function zerarValor(idProduto, descricao) {
+        if (confirm('Deseja realmente zerar o valor de venda do produto "' + descricao + '"?')) {
+            $.ajax({
+                url: '<?= base_url() ?>index.php/produtos/zerar_valor',
+                type: 'POST',
+                data: { id: idProduto },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        alert('Valor zerado com sucesso!');
+                        location.reload();
+                    } else {
+                        alert('Erro: ' + response.message);
+                    }
+                },
+                error: function() {
+                    alert('Erro ao comunicar com o servidor.');
+                }
+            });
+        }
+    }
 </script>

@@ -1279,4 +1279,21 @@ class Tecnicos_admin extends MY_Controller
 
         echo json_encode(['success' => true, 'os' => $os, 'total' => count($os)]);
     }
+
+    /**
+     * Buscar dados de uma etapa específica (AJAX)
+     */
+    public function buscar_etapa($etapa_id)
+    {
+        header('Content-Type: application/json');
+
+        $this->db->where('id', $etapa_id);
+        $etapa = $this->db->get('obra_etapas')->row();
+
+        if ($etapa) {
+            echo json_encode(['success' => true, 'etapa' => $etapa]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Etapa não encontrada']);
+        }
+    }
 }

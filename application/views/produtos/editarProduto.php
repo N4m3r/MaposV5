@@ -88,6 +88,9 @@
                         <label for="precoVenda" class="control-label">Preço de Venda<span class="required">*</span></label>
                         <div class="controls">
                             <input id="precoVenda" class="money" data-affixes-stay="true" data-thousands="" data-decimal="." type="text" name="precoVenda" value="<?php echo $result->precoVenda; ?>" />
+                            <button type="button" class="btn btn-warning" onclick="zerarValorVenda()" title="Zerar Valor" style="margin-left: 10px;">
+                                <i class="bx bx-reset"></i> Zerar
+                            </button>
                         </div>
                     </div>
 
@@ -195,6 +198,12 @@
             }
         }
     });
+
+    function zerarValorVenda() {
+        if (confirm('Deseja realmente zerar o valor de venda deste produto?')) {
+            $('#precoVenda').val('0.00');
+        }
+    }
 
     $(document).ready(function() {
         $(".money").maskMoney();
