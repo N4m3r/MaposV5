@@ -111,8 +111,9 @@
                         }
 
                         // Botão de impressão do relatório de atendimento
-                        // Mostra se houver checkins tradicionais OU execuções do portal do técnico
-                        if (!empty($checkins) || !empty($execucoesTecnicas)) {
+                        // Mostra se: OS estiver finalizada, OU houver checkins, OU houver execuções técnicas
+                        $podeMostrarRelatorio = $osFinalizada || !empty($checkins) || !empty($execucoesTecnicas);
+                        if ($podeMostrarRelatorio) {
                             echo '<a target="_blank" title="Imprimir Relatório de Atendimento" class="button btn btn-mini" style="background-color: #6c757d; border-color: #6c757d; color: white;" href="' . site_url('checkin/imprimir/' . $result->idOs) . '">';
                             echo '<span class="button__icon"><i class="bx bx-file-report"></i></span>';
                             echo '<span class="button__text">Relatório Atendimento</span>';
