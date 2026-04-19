@@ -89,6 +89,13 @@ class Os_model extends CI_Model
 
         $query = $this->db->get();
 
+        // Verificar se a query falhou
+        if ($query === false) {
+            $error = $this->db->error();
+            log_message('error', 'Erro na query getOs: ' . $error['message'] . ' | Query: ' . $this->db->last_query());
+            return [];
+        }
+
         $result = ! $one ? $query->result() : $query->row();
 
         return $result;
