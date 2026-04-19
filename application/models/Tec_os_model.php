@@ -73,22 +73,18 @@ class Tec_os_model extends CI_Model
     {
         $hoje = date('Y-m-d');
 
-        $this->db->select('os.*, c.nome as cliente_nome, c.telefone as cliente_telefone');
-        $this->db->from('os');
-        $this->db->join('clientes c', 'c.idClientes = os.clientes_id');
+        $sql = "SELECT os.*, c.nome as cliente_nome, c.telefone as cliente_telefone
+                FROM os
+                LEFT JOIN clientes c ON c.idClientes = os.clientes_id
+                WHERE os.tecnico_responsavel = ?
+                AND os.dataInicial = ?
+                AND os.status IN ('Aberto', 'Em Andamento', 'Aguardando Peças')
+                ORDER BY os.dataFinal ASC";
 
-        if ($tecnico_id !== null) {
-            $this->db->where('os.tecnico_responsavel', $tecnico_id);
-        }
+        $query = $this->db->query($sql, [$tecnico_id, $hoje]);
 
-        $this->db->where('os.dataInicial', $hoje);
-        $this->db->where_in('os.status', ['Aberto', 'Em Andamento', 'Aguardando Peças']);
-        $this->db->order_by('os.dataFinal', 'ASC');
-
-        $query = $this->db->get();
-
-        if ($query === false) {
-            log_message('error', 'Erro na query getOsDoDia: ' . $this->db->last_query());
+        if (!$query) {
+            log_message('error', 'Erro na query getOsDoDia');
             return [];
         }
 
@@ -100,17 +96,17 @@ class Tec_os_model extends CI_Model
      */
     public function getOsPendentes($tecnico_id)
     {
-        $this->db->select('os.*, c.nome as cliente_nome');
-        $this->db->from('os');
-        $this->db->join('clientes c', 'c.idClientes = os.clientes_id');
-        $this->db->where('os.tecnico_responsavel', $tecnico_id);
-        $this->db->where_in('os.status', ['Aberto', 'Em Andamento', 'Aguardando Peças']);
-        $this->db->order_by('os.dataInicial', 'ASC');
+        $sql = "SELECT os.*, c.nome as cliente_nome
+                FROM os
+                LEFT JOIN clientes c ON c.idClientes = os.clientes_id
+                WHERE os.tecnico_responsavel = ?
+                AND os.status IN ('Aberto', 'Em Andamento', 'Aguardando Peças')
+                ORDER BY os.dataInicial ASC";
 
-        $query = $this->db->get();
+        $query = $this->db->query($sql, [$tecnico_id]);
 
-        if ($query === false) {
-            log_message('error', 'Erro na query getOsPendentes: ' . $this->db->last_query());
+        if (!$query) {
+            log_message('error', 'Erro na query getOsPendentes');
             return [];
         }
 
