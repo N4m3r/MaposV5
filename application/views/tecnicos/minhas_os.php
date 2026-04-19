@@ -40,6 +40,13 @@
                     </a>
                 </div>
 
+                <!-- Debug Info -->
+                <?php if (ENVIRONMENT === 'development'): ?>
+                <div style="background: #fff3cd; border: 1px solid #ffc107; padding: 10px; margin-bottom: 15px; border-radius: 4px; font-size: 12px;">
+                    <strong>Debug:</strong> Técnico ID: <?php echo $tecnico_id ?? 'N/A'; ?> | Status: <?php echo $status_atual; ?>
+                </div>
+                <?php endif; ?>
+
                 <!-- Lista de OS -->
                 <?php if (empty($os_list)): ?>
                     <div class="empty-state">

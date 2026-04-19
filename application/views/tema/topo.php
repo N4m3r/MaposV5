@@ -90,6 +90,72 @@
 
 <body data-theme="<?= isset($configuration['app_theme']) ? $configuration['app_theme'] : 'default' ?>">
   <!--top-Header-menu-->
+  <?php
+  // Verificar se estamos na área do técnico (Portal do Técnico)
+  $is_area_tecnico = (strpos(uri_string(), 'tecnicos') === 0);
+  ?>
+
+  <?php if ($is_area_tecnico): ?>
+  <!-- Header para Área do Técnico -->
+  <div class="navebarn" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    <div id="user-nav" class="navbar navbar-inverse" style="background: transparent; border: none;">
+      <ul class="nav">
+        <!-- Botão Trocar Tema -->
+        <li class="" id="theme-toggle-btn">
+          <a href="#" class="tip-right" title="Alternar Tema" id="btn-toggle-theme">
+            <i class='bx bx-sun iconN' id="theme-icon"></i>
+          </a>
+        </li>
+
+        <li class="dropdown">
+          <a href="#" class="tip-right dropdown-toggle" data-toggle="dropdown" title="Meu Perfil">
+            <i class='bx bx-user-circle iconN'></i><span class="text"></span>
+          </a>
+          <ul class="dropdown-menu">
+            <li class=""><a title="Dashboard" href="<?= site_url('tecnicos/dashboard'); ?>"><i class='bx bx-home-alt'></i> <span class="text">Dashboard</span></a></li>
+            <li class=""><a title="Meu Perfil" href="<?= site_url('tecnicos/perfil'); ?>"><i class='bx bx-user'></i> <span class="text">Meu Perfil</span></a></li>
+            <li class="divider"></li>
+            <li class=""><a title="Sair" href="<?= site_url('tecnicos/logout'); ?>"><i class='bx bx-log-out-circle'></i> <span class="text">Sair</span></a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+
+    <!-- New User - Técnico -->
+    <div id="userr" style="padding-right:45px;display:flex;flex-direction:column;align-items:flex-end;justify-content:center;">
+      <div class="user-names userT0">
+        <?php
+        function saudacaoTecnico()
+        {
+          $hora = date('H');
+          if ($hora >= 00 && $hora < 12) {
+            return 'Bom dia, ';
+          } elseif ($hora >= 12 && $hora < 18) {
+            return 'Boa tarde, ';
+          } else {
+            return 'Boa noite, ';
+          }
+        }
+        echo saudacaoTecnico();
+        ?>
+      </div>
+      <div class="userT"><?= $this->session->userdata('tec_nome') ?: 'Técnico' ?></div>
+
+      <section style="display:block;position:absolute;right:10px">
+        <div class="profile">
+          <div class="profile-img">
+            <a href="<?= site_url('tecnicos/perfil'); ?>">
+              <img src="<?= base_url() ?>assets/img/User.png" alt="Técnico">
+            </a>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+  <!-- End User Técnico -->
+
+  <?php else: ?>
+  <!-- Header Padrão (Admin) -->
   <div class="navebarn">
     <div id="user-nav" class="navbar navbar-inverse">
       <ul class="nav">
@@ -148,7 +214,7 @@
             <li><a href="<?= site_url('permissoes') ?>">Permissões</a></li>
             <li><a href="<?= site_url('auditoria') ?>">Auditoria</a></li>
             <li><a href="<?= site_url('mapos/emails') ?>">Emails</a></li>
-            <li><a href="<?= site_url('mapos/backup') ?>">Backup</a></li>
+            <li><a href="<?= site_url('menu_backup') ?>">Backup</a></li>
           </ul>
         </li>
       </ul>
@@ -187,6 +253,7 @@
     </div>
   </div>
   <!-- End User -->
+  <?php endif; ?>
 
   <!--start-top-serch-->
   <div style="display: none" id="search">

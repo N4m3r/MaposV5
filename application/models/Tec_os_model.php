@@ -38,6 +38,8 @@ class Tec_os_model extends CI_Model
      */
     public function getOsPorTecnico($tecnico_id, $status = 'todos')
     {
+        log_message('debug', 'Buscando OS para tecnico_id: ' . $tecnico_id . ', status: ' . $status);
+
         $this->db->select('os.*, c.nome as cliente_nome, c.telefone as cliente_telefone');
         $this->db->from('os');
         $this->db->join('clientes c', 'c.idClientes = os.clientes_id');
@@ -52,12 +54,17 @@ class Tec_os_model extends CI_Model
 
         $query = $this->db->get();
 
+        log_message('debug', 'Query executada: ' . $this->db->last_query());
+
         if ($query === false) {
             log_message('error', 'Erro na query getOsPorTecnico: ' . $this->db->last_query());
             return [];
         }
 
-        return $query->result();
+        $result = $query->result();
+        log_message('debug', 'Total de OS encontradas: ' . count($result));
+
+        return $result;
     }
 
     /**

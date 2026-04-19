@@ -1543,6 +1543,8 @@ class Os extends MY_Controller
         $tecnico_id = $this->input->post('tecnico_id');
         $observacao = $this->input->post('observacao');
 
+        log_message('debug', "POST recebido - os_id: {$os_id}, tecnico_id: {$tecnico_id}");
+
         if (! $os_id || ! $tecnico_id) {
             $this->session->set_flashdata('error', 'Dados incompletos para atribuição.');
             redirect('os/atribuir');

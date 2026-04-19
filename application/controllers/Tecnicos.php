@@ -205,8 +205,11 @@ class Tecnicos extends CI_Controller
         $tecnico_id = $this->session->userdata('tec_id');
         $status = $this->input->get('status') ?: 'todos';
 
+        log_message('debug', 'Tecnicos::minhas_os - tecnico_id da sessao: ' . $tecnico_id);
+
         $this->data['os_list'] = $this->tec_os_model->getOsPorTecnico($tecnico_id, $status);
         $this->data['status_atual'] = $status;
+        $this->data['tecnico_id'] = $tecnico_id;
 
         $this->load->view('tema/topo', $this->data);
         $this->load->view('tema/menu_portal_tecnico', $this->data);

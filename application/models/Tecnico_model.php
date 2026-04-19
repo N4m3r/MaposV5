@@ -193,6 +193,8 @@ class Tecnico_model extends CI_Model
      */
     public function atribuirTecnico($os_id, $tecnico_id, $atribuido_por, $observacao = null)
     {
+        log_message('debug', "Atribuindo OS {$os_id} ao tecnico {$tecnico_id}");
+
         // Verificar se ja existe atribuicao ativa para o MESMO tecnico
         $this->db->where('os_id', $os_id);
         $this->db->where('tecnico_id', $tecnico_id);
@@ -200,6 +202,7 @@ class Tecnico_model extends CI_Model
         $existe = $this->db->get('os_tecnico_atribuicao');
 
         if ($existe && $existe->num_rows() > 0) {
+            log_message('debug', "OS {$os_id} ja esta atribuida ao tecnico {$tecnico_id}");
             return false; // Ja esta atribuido a este mesmo tecnico
         }
 
@@ -222,7 +225,12 @@ class Tecnico_model extends CI_Model
 
         // Atualizar campo na OS
         $this->db->where('idOs', $os_id);
-        return $this->db->update('os', ['tecnico_responsavel' => $tecnico_id]);
+        $result = $this->db->update('os', ['tecnico_responsavel' => $tecnico_id]);
+
+        log_message('debug', "Resultado da atualizacao da OS {$os_id}: " . ($result ? 'sucesso' : 'falha'));
+        log_message('debug', "Query executada: " . $this->db->last_query());
+
+        return $result;
     }
 
     /**
