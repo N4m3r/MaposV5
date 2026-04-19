@@ -1528,6 +1528,141 @@ class Mine extends CI_Controller
         $this->load->view('conecte/template', $data);
     }
 
+    /**
+     * Listar boletos do cliente
+     */
+    public function boletos()
+    {
+        if (!session_id() || !$this->session->userdata('conectado')) {
+            redirect('mine');
+        }
+
+        $this->load->helper('cliente_permissions');
+        clienteCheckPermission('visualizar_boletos');
+
+        $this->load->library('pagination');
+        $this->load->model('cobrancas_model');
+
+        $data['menuCobrancas'] = 'boletos';
+
+        $cliente_id = $this->session->userdata('cliente_id');
+
+        $config['base_url'] = base_url() . 'index.php/mine/boletos/';
+        $config['total_rows'] = $this->cobrancas_model->countByCliente($cliente_id);
+        $config['per_page'] = 10;
+        $config['next_link'] = 'Próxima';
+        $config['prev_link'] = 'Anterior';
+        $config['full_tag_open'] = '<div class="pagination alternate"><ul>';
+        $config['full_tag_close'] = '</ul></div>';
+        $config['num_tag_open'] = '<li>';
+        $config['num_tag_close'] = '</li>';
+        $config['cur_tag_open'] = '<li><a style="color: #2D335B"><b>';
+        $config['cur_tag_close'] = '</b></a></li>';
+        $config['prev_tag_open'] = '<li>';
+        $config['prev_tag_close'] = '</li>';
+        $config['next_tag_open'] = '<li>';
+        $config['next_tag_close'] = '</li>';
+        $config['first_link'] = 'Primeira';
+        $config['last_link'] = 'Última';
+
+        $this->pagination->initialize($config);
+
+        $data['results'] = $this->cobrancas_model->getByCliente($cliente_id, $config['per_page'], $this->uri->segment(3));
+        $data['output'] = 'conecte/boletos';
+
+        $this->load->view('conecte/template', $data);
+    }
+
+    /**
+     * Listar notas fiscais do cliente
+     */
+    public function notasfiscais()
+    {
+        if (!session_id() || !$this->session->userdata('conectado')) {
+            redirect('mine');
+        }
+
+        $this->load->helper('cliente_permissions');
+        clienteCheckPermission('visualizar_notas_fiscais');
+
+        $this->load->library('pagination');
+        $this->load->model('nfse_os_model');
+
+        $data['menuNotas'] = 'notas';
+
+        $cliente_id = $this->session->userdata('cliente_id');
+
+        $config['base_url'] = base_url() . 'index.php/mine/notasfiscais/';
+        $config['total_rows'] = $this->nfse_os_model->countByCliente($cliente_id);
+        $config['per_page'] = 10;
+        $config['next_link'] = 'Próxima';
+        $config['prev_link'] = 'Anterior';
+        $config['full_tag_open'] = '<div class="pagination alternate"><ul>';
+        $config['full_tag_close'] = '</ul></div>';
+        $config['num_tag_open'] = '<li>';
+        $config['num_tag_close'] = '</li>';
+        $config['cur_tag_open'] = '<li><a style="color: #2D335B"><b>';
+        $config['cur_tag_close'] = '</b></a></li>';
+        $config['prev_tag_open'] = '<li>';
+        $config['prev_tag_close'] = '</li>';
+        $config['next_tag_open'] = '<li>';
+        $config['next_tag_close'] = '</li>';
+        $config['first_link'] = 'Primeira';
+        $config['last_link'] = 'Última';
+
+        $this->pagination->initialize($config);
+
+        $data['results'] = $this->nfse_os_model->getByCliente($cliente_id, $config['per_page'], $this->uri->segment(3));
+        $data['output'] = 'conecte/notasfiscais';
+
+        $this->load->view('conecte/template', $data);
+    }
+
+    /**
+     * Listar obras do cliente
+     */
+    public function obras()
+    {
+        if (!session_id() || !$this->session->userdata('conectado')) {
+            redirect('mine');
+        }
+
+        $this->load->helper('cliente_permissions');
+        clienteCheckPermission('visualizar_obras');
+
+        $this->load->library('pagination');
+        $this->load->model('obras_model');
+
+        $data['menuObras'] = 'obras';
+
+        $cliente_id = $this->session->userdata('cliente_id');
+
+        $config['base_url'] = base_url() . 'index.php/mine/obras/';
+        $config['total_rows'] = $this->obras_model->countByCliente($cliente_id);
+        $config['per_page'] = 10;
+        $config['next_link'] = 'Próxima';
+        $config['prev_link'] = 'Anterior';
+        $config['full_tag_open'] = '<div class="pagination alternate"><ul>';
+        $config['full_tag_close'] = '</ul></div>';
+        $config['num_tag_open'] = '<li>';
+        $config['num_tag_close'] = '</li>';
+        $config['cur_tag_open'] = '<li><a style="color: #2D335B"><b>';
+        $config['cur_tag_close'] = '</b></a></li>';
+        $config['prev_tag_open'] = '<li>';
+        $config['prev_tag_close'] = '</li>';
+        $config['next_tag_open'] = '<li>';
+        $config['next_tag_close'] = '</li>';
+        $config['first_link'] = 'Primeira';
+        $config['last_link'] = 'Última';
+
+        $this->pagination->initialize($config);
+
+        $data['results'] = $this->obras_model->getByCliente($cliente_id, $config['per_page'], $this->uri->segment(3));
+        $data['output'] = 'conecte/obras';
+
+        $this->load->view('conecte/template', $data);
+    }
+
 }
 
 /* End of file conecte.php */

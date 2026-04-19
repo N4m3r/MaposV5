@@ -549,11 +549,28 @@
                 <div class="relatorio-card">
                     <h5><i class="bx bx-wrench"></i> Serviços da OS</h5>
 
+                    <?php
+                    // Buscar serviços diretamente do banco para garantir dados atualizados
+                    $CI = &get_instance();
+                    $CI->db->reset_query();
+                    $CI->db->select('idServicos_os, servicos_id, os_id, quantidade, preco, status');
+                    $CI->db->from('servicos_os');
+                    $CI->db->where('os_id', $os->idOs);
+                    $query_verificacao = $CI->db->get();
+                    $servicos_verificacao = $query_verificacao ? $query_verificacao->result() : [];
+                    ?>
+                    <div style="background: #d4edda; padding: 10px; margin-bottom: 10px; border: 1px solid #155724;">
+                        <strong>VERIFICAÇÃO DIRETA DO BANCO:</strong> Total: <?php echo count($servicos_verificacao); ?><br>
+                        <?php foreach ($servicos_verificacao as $sv): ?>
+                            ID: <?php echo $sv->idServicos_os; ?> | Status: '<?php echo $sv->status; ?>' | OS: <?php echo $sv->os_id; ?><br>
+                        <?php endforeach; ?>
+                    </div>
+
                     <?php if (!empty($servicos)): ?>
                         <div style="background: #fff3cd; padding: 10px; margin-bottom: 10px; border: 1px solid #856404;">
-                            <strong>DEBUG:</strong> Total servicos: <?php echo count($servicos); ?><br>
+                            <strong>DEBUG (dados do controller):</strong> Total: <?php echo count($servicos); ?><br>
                             <?php foreach ($servicos as $i => $servico_debug): ?>
-                                Servico <?php echo $i; ?>: id=<?php echo $servico_debug->idServicos_os ?? 'NULL'; ?>, status=<?php echo $servico_debug->status ?? 'NULL'; ?><br>
+                                ID: <?php echo $servico_debug->idServicos_os ?? 'NULL'; ?> | Status: '<?php echo $servico_debug->status ?? 'NULL'; ?>'<br>
                             <?php endforeach; ?>
                         </div>
                         <table class="table table-bordered">

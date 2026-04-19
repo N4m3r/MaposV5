@@ -398,6 +398,10 @@ class Tecnicos extends CI_Controller
     {
         header('Content-Type: application/json');
 
+        // Log inicial para verificar se o método foi chamado
+        log_message('error', '========== finalizar_execucao INICIADO ==========');
+        log_message('error', 'POST data: ' . print_r($_POST, true));
+
         $execucao_id = $this->input->post('execucao_id');
         $latitude = $this->input->post('latitude');
         $longitude = $this->input->post('longitude');

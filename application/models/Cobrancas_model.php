@@ -90,6 +90,29 @@ class Cobrancas_model extends CI_Model
         return $this->db->count_all($table);
     }
 
+    /**
+     * Contar cobranças por cliente
+     */
+    public function countByCliente($cliente_id)
+    {
+        $this->db->where('clientes_id', $cliente_id);
+        return $this->db->count_all_results('cobrancas');
+    }
+
+    /**
+     * Buscar cobranças por cliente
+     */
+    public function getByCliente($cliente_id, $perpage = 10, $start = 0)
+    {
+        $this->db->select('cobrancas.*, clientes.nomeCliente');
+        $this->db->from('cobrancas');
+        $this->db->join('clientes', 'clientes.idClientes = cobrancas.clientes_id');
+        $this->db->where('cobrancas.clientes_id', $cliente_id);
+        $this->db->order_by('cobrancas.idCobranca', 'desc');
+        $this->db->limit($perpage, $start);
+        return $this->db->get()->result();
+    }
+
     public function atualizarStatus($idCobranca)
     {
         $cobranca = $this->getById($idCobranca);

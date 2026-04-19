@@ -12,9 +12,18 @@ $CI->load->helper('cliente_permissions');
 $podeVerOS = clienteHasPermission('visualizar_os');
 $podeVerCompras = clienteHasPermission('visualizar_compras');
 $podeVerCobrancas = clienteHasPermission('visualizar_cobrancas');
+$podeVerBoletos = clienteHasPermission('visualizar_boletos');
+$podeVerNotasFiscais = clienteHasPermission('visualizar_notas_fiscais');
+$podeVerObras = clienteHasPermission('visualizar_obras');
 $podeVerFinanceiro = clienteHasPermission('visualizar_financeiro');
 $podeEditarPerfil = clienteHasPermission('editar_perfil');
 $podeSolicitarOrcamento = clienteHasPermission('solicitar_orcamento');
+
+// Contadores
+$totalCobrancas = count($cobrancas ?? []);
+$totalBoletos = count($boletos ?? []);
+$totalNotasFiscais = count($notasFiscais ?? []);
+$totalObras = count($obras ?? []);
 
 // Contadores para estatísticas
 $totalOS = count($os ?? []);
@@ -375,7 +384,37 @@ $osFinalizadas = count(array_filter($os ?? [], function($o) { return $o->status 
                 <i class='bx bx-credit-card-front'></i>
             </div>
             <div class="title">Cobranças</div>
-            <div class="subtitle">Pagamentos pendentes</div>
+            <div class="subtitle"><?= $totalCobrancas ?> cobrança(s)</div>
+        </a>
+        <?php endif; ?>
+
+        <?php if ($podeVerBoletos): ?>
+        <a href="<?= site_url('mine/boletos') ?>" class="quick-card">
+            <div class="icon-wrapper" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%)">
+                <i class='bx bx-barcode'></i>
+            </div>
+            <div class="title">Boletos</div>
+            <div class="subtitle"><?= $totalBoletos ?> boleto(s)</div>
+        </a>
+        <?php endif; ?>
+
+        <?php if ($podeVerNotasFiscais): ?>
+        <a href="<?= site_url('mine/notasfiscais') ?>" class="quick-card">
+            <div class="icon-wrapper" style="background: linear-gradient(135deg, #30cfd0 0%, #330867 100%)">
+                <i class='bx bx-receipt'></i>
+            </div>
+            <div class="title">Notas Fiscais</div>
+            <div class="subtitle"><?= $totalNotasFiscais ?> NFS-e</div>
+        </a>
+        <?php endif; ?>
+
+        <?php if ($podeVerObras): ?>
+        <a href="<?= site_url('mine/obras') ?>" class="quick-card">
+            <div class="icon-wrapper" style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%)">
+                <i class='bx bx-building-house'></i>
+            </div>
+            <div class="title">Obras</div>
+            <div class="subtitle"><?= $totalObras ?> obra(s)</div>
         </a>
         <?php endif; ?>
 
