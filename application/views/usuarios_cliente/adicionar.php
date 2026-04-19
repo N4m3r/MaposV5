@@ -146,32 +146,55 @@
                         <div class="controls">
                             <div class="span8" style="background: #f9f9f9; padding: 15px; border: 1px solid #ddd;">
                                 <h5><i class="bx bx-shield"></i> Configurações de Acesso</h5>
-                                <?php foreach ($permissoes_padrao as $chave => $valor_padrao): ?>
-                                    <?php
-                                    $label = '';
-                                    switch ($chave) {
-                                        case 'visualizar_os': $label = 'Visualizar Ordens de Serviço'; break;
-                                        case 'visualizar_os_apenas_vinculadas': $label = 'Apenas OS vinculadas aos seus CNPJs (se desmarcado, vê todas)'; break;
-                                        case 'visualizar_detalhes_os': $label = 'Ver detalhes da OS'; break;
-                                        case 'visualizar_produtos_os': $label = 'Ver produtos da OS'; break;
-                                        case 'visualizar_servicos_os': $label = 'Ver serviços da OS'; break;
-                                        case 'visualizar_anexos_os': $label = 'Ver anexos da OS'; break;
-                                        case 'visualizar_documentos_fiscais': $label = 'Ver documentos fiscais (boletos, NFS-e)'; break;
-                                        case 'visualizar_financeiro': $label = 'Ver informações financeiras'; break;
-                                        case 'visualizar_historico_pagamentos': $label = 'Ver histórico de pagamentos'; break;
-                                        case 'imprimir_os': $label = 'Imprimir relatório da OS'; break;
-                                        case 'editar_perfil': $label = 'Editar próprio perfil'; break;
-                                        case 'solicitar_orcamento': $label = 'Solicitar novo orçamento'; break;
-                                        case 'aprovar_os': $label = 'Aprovar/Reprovar OS'; break;
-                                        case 'receber_notificacoes': $label = 'Receber notificações por email'; break;
-                                        case 'acesso_mobile': $label = 'Acesso via dispositivos móveis'; break;
-                                        default: $label = $chave;
-                                    }
+                                <?php
+                                // Agrupar permissões
+                                $permissoesAgrupadasAdd = [
+                                    'Visualização de OS' => ['visualizar_os', 'visualizar_detalhes_os', 'visualizar_produtos_os', 'visualizar_servicos_os', 'visualizar_anexos_os', 'visualizar_documentos_fiscais'],
+                                    'Financeiro' => ['visualizar_financeiro', 'visualizar_historico_pagamentos', 'visualizar_cobrancas', 'visualizar_boletos', 'visualizar_notas_fiscais'],
+                                    'Obras' => ['visualizar_obras', 'visualizar_detalhes_obra'],
+                                    'Ações' => ['imprimir_os', 'editar_perfil', 'solicitar_orcamento', 'aprovar_os', 'visualizar_compras'],
+                                    'Notificações' => ['receber_notificacoes', 'acesso_mobile'],
+                                ];
+
+                                $labelsAdd = [
+                                    'visualizar_os' => 'Visualizar Ordens de Serviço',
+                                    'visualizar_os_apenas_vinculadas' => 'Apenas OS vinculadas aos seus CNPJs',
+                                    'visualizar_detalhes_os' => 'Ver detalhes da OS',
+                                    'visualizar_produtos_os' => 'Ver produtos da OS',
+                                    'visualizar_servicos_os' => 'Ver serviços da OS',
+                                    'visualizar_anexos_os' => 'Ver anexos da OS',
+                                    'visualizar_documentos_fiscais' => 'Ver documentos fiscais',
+                                    'visualizar_financeiro' => 'Ver informações financeiras',
+                                    'visualizar_historico_pagamentos' => 'Ver histórico de pagamentos',
+                                    'visualizar_cobrancas' => 'Visualizar Cobranças',
+                                    'visualizar_boletos' => 'Visualizar Boletos',
+                                    'visualizar_notas_fiscais' => 'Visualizar Notas Fiscais (NFS-e)',
+                                    'visualizar_obras' => 'Visualizar Obras',
+                                    'visualizar_detalhes_obra' => 'Ver detalhes da Obra',
+                                    'visualizar_compras' => 'Visualizar Compras',
+                                    'imprimir_os' => 'Imprimir relatório da OS',
+                                    'editar_perfil' => 'Editar próprio perfil',
+                                    'solicitar_orcamento' => 'Solicitar novo orçamento',
+                                    'aprovar_os' => 'Aprovar/Reprovar OS',
+                                    'receber_notificacoes' => 'Receber notificações por email',
+                                    'acesso_mobile' => 'Acesso via dispositivos móveis',
+                                ];
+
+                                foreach ($permissoesAgrupadasAdd as $grupo => $chaves): ?>
+                                    <h6 style="margin: 15px 0 10px; color: #2c3e50; border-bottom: 1px solid #eee; padding-bottom: 5px;">
+                                        <i class="bx bx-folder-open"></i> <?= $grupo ?>
+                                    </h6>
+                                    <?php foreach ($chaves as $chave):
+                                        // Pula se não existe no array de permissões padrão
+                                        if (!isset($permissoes_padrao[$chave])) continue;
+                                        $valor_padrao = $permissoes_padrao[$chave];
+                                        $label = $labelsAdd[$chave] ?? $chave;
                                     ?>
-                                    <label class="checkbox">
-                                        <input type="checkbox" name="permissoes[<?= $chave ?>]" value="1" <?= set_checkbox('permissoes[' . $chave . ']', '1', $valor_padrao) ?> />
-                                        <?= $label ?>
-                                    </label>
+                                        <label class="checkbox" style="margin-left: 15px;">
+                                            <input type="checkbox" name="permissoes[<?= $chave ?>]" value="1" <?= set_checkbox('permissoes[' . $chave . ']', '1', $valor_padrao) ?> />
+                                            <?= $label ?>
+                                        </label>
+                                    <?php endforeach; ?>
                                 <?php endforeach; ?>
                             </div>
                         </div>

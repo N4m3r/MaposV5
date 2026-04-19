@@ -39,6 +39,9 @@ $CI->load->helper('cliente_permissions');
 $podeVerOS = clienteHasPermission('visualizar_os');
 $podeVerCompras = clienteHasPermission('visualizar_compras');
 $podeVerCobrancas = clienteHasPermission('visualizar_cobrancas');
+$podeVerBoletos = clienteHasPermission('visualizar_boletos');
+$podeVerNotasFiscais = clienteHasPermission('visualizar_notas_fiscais');
+$podeVerObras = clienteHasPermission('visualizar_obras');
 $podeEditarPerfil = clienteHasPermission('editar_perfil');
 ?>
 
@@ -103,6 +106,18 @@ $podeEditarPerfil = clienteHasPermission('editar_perfil');
 
                     <?php if ($podeVerCobrancas): ?>
                     <li class="<?php if (isset($menuCobrancas)) { echo 'active'; } ?>"><a class="tip-bottom" title="" href="<?php echo base_url() ?>index.php/mine/cobrancas"><i class='bx bx-credit-card-front iconX'></i> <span class="title">Cobranças</span></a></li>
+                    <?php endif; ?>
+
+                    <?php if ($podeVerBoletos): ?>
+                    <li class="<?php if (isset($menuBoletos)) { echo 'active'; } ?>"><a class="tip-bottom" title="" href="<?php echo base_url() ?>index.php/mine/boletos"><i class='bx bx-barcode iconX'></i> <span class="title">Boletos</span></a></li>
+                    <?php endif; ?>
+
+                    <?php if ($podeVerNotasFiscais): ?>
+                    <li class="<?php if (isset($menuNotas)) { echo 'active'; } ?>"><a class="tip-bottom" title="" href="<?php echo base_url() ?>index.php/mine/notasfiscais"><i class='bx bx-receipt iconX'></i> <span class="title">Notas Fiscais</span></a></li>
+                    <?php endif; ?>
+
+                    <?php if ($podeVerObras): ?>
+                    <li class="<?php if (isset($menuObras)) { echo 'active'; } ?>"><a class="tip-bottom" title="" href="<?php echo base_url() ?>index.php/mine/obras"><i class='bx bx-building-house iconX'></i> <span class="title">Obras</span></a></li>
                     <?php endif; ?>
                 </ul>
             </div>

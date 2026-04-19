@@ -152,12 +152,13 @@
                 <h5>Permissões de Acesso</h5>
             </div>
             <div class="widget-content">
-                <div style="max-height: 300px; overflow-y: auto;">
+                <div style="max-height: 400px; overflow-y: auto;">
                     <?php
                     $permissoesAgrupadas = [
-                        'Visualização' => ['visualizar_os', 'visualizar_detalhes_os', 'visualizar_produtos_os', 'visualizar_servicos_os', 'visualizar_anexos_os', 'visualizar_documentos_fiscais'],
-                        'Financeiro' => ['visualizar_financeiro', 'visualizar_historico_pagamentos'],
-                        'Ações' => ['imprimir_os', 'editar_perfil', 'solicitar_orcamento', 'aprovar_os'],
+                        'Visualização de OS' => ['visualizar_os', 'visualizar_detalhes_os', 'visualizar_produtos_os', 'visualizar_servicos_os', 'visualizar_anexos_os', 'visualizar_documentos_fiscais'],
+                        'Financeiro' => ['visualizar_financeiro', 'visualizar_historico_pagamentos', 'visualizar_cobrancas', 'visualizar_boletos', 'visualizar_notas_fiscais'],
+                        'Obras' => ['visualizar_obras', 'visualizar_detalhes_obra'],
+                        'Ações' => ['imprimir_os', 'editar_perfil', 'solicitar_orcamento', 'aprovar_os', 'visualizar_compras'],
                         'Notificações' => ['receber_notificacoes', 'acesso_mobile'],
                     ];
 
@@ -170,6 +171,12 @@
                         'visualizar_documentos_fiscais' => 'Ver documentos fiscais',
                         'visualizar_financeiro' => 'Ver informações financeiras',
                         'visualizar_historico_pagamentos' => 'Ver histórico de pagamentos',
+                        'visualizar_cobrancas' => 'Visualizar Cobranças',
+                        'visualizar_boletos' => 'Visualizar Boletos',
+                        'visualizar_notas_fiscais' => 'Visualizar Notas Fiscais (NFS-e)',
+                        'visualizar_obras' => 'Visualizar Obras',
+                        'visualizar_detalhes_obra' => 'Ver detalhes da Obra',
+                        'visualizar_compras' => 'Visualizar Compras',
                         'imprimir_os' => 'Imprimir relatório da OS',
                         'editar_perfil' => 'Editar próprio perfil',
                         'solicitar_orcamento' => 'Solicitar novo orçamento',
