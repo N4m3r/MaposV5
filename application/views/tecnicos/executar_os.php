@@ -3448,10 +3448,13 @@ document.addEventListener('DOMContentLoaded', function() {
 function inicializarWizard() {
     // Inicializar status dos serviços
     const servicosItems = document.querySelectorAll('.wizard-servico-item');
+    console.log('DEBUG inicializarWizard - Encontrados ' + servicosItems.length + ' servicos');
     servicosItems.forEach(item => {
         const servicoId = item.getAttribute('data-servico-id');
+        console.log('DEBUG inicializarWizard - Servico ID: ' + servicoId);
         wizardServicosStatus[servicoId] = 'pendente';
     });
+    console.log('DEBUG inicializarWizard - wizardServicosStatus:', wizardServicosStatus);
 
     atualizarResumoServicos();
 }
@@ -3676,7 +3679,9 @@ window.temAssinaturaCliente = temAssinaturaCliente;
 
 // Controle de Serviços no Wizard
 function setWizardServicoStatus(servicoId, status) {
+    console.log('DEBUG setWizardServicoStatus - servicoId: ' + servicoId + ', status: ' + status);
     wizardServicosStatus[servicoId] = status;
+    console.log('DEBUG setWizardServicoStatus - wizardServicosStatus atualizado:', wizardServicosStatus);
 
     const item = document.querySelector('.wizard-servico-item[data-servico-id="' + servicoId + '"]');
     if (item) {
@@ -4049,10 +4054,13 @@ function finalizarWizardAtendimento() {
 
     // Preparar serviços executados com seus status completos
     // Enviar todos os serviços com seus respectivos status: conforme, nao_conforme, pendente
+    console.log('DEBUG confirmarFinalizacao - wizardServicosStatus:', wizardServicosStatus);
     const servicosComStatus = {};
     Object.entries(wizardServicosStatus).forEach(([id, status]) => {
         servicosComStatus[id] = status;
     });
+    console.log('DEBUG confirmarFinalizacao - servicosComStatus:', servicosComStatus);
+    console.log('DEBUG confirmarFinalizacao - JSON:', JSON.stringify(servicosComStatus));
 
     // 1. Salvar todas as fotos primeiro
     const salvarFotos = async () => {
@@ -4085,6 +4093,7 @@ function finalizarWizardAtendimento() {
 
     // 2. Finalizar execucao
     const finalizarExecucao = async () => {
+        console.log('DEBUG finalizarExecucao - Iniciando envio...');
         const csrf = getCsrfToken();
         const formData = new FormData();
         formData.append('execucao_id', execucaoId);
@@ -4095,6 +4104,11 @@ function finalizarWizardAtendimento() {
         formData.append('latitude', '0');
         formData.append('longitude', '0');
         formData.append(csrf.name, csrf.value);
+
+        // Debug: mostrar o que está sendo enviado
+        for (let pair of formData.entries()) {
+            console.log('DEBUG formData - ' + pair[0] + ':', pair[1]);
+        }
 
         const response = await fetch('<?php echo site_url('tecnicos/finalizar_execucao'); ?>', {
             method: 'POST',

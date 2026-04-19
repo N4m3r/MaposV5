@@ -1492,7 +1492,7 @@ class Mine extends CI_Controller
         $data['cliente'] = $this->clientes_model->getById($os->clientes_id);
         $data['produtos'] = $this->os_model->getProdutos($os_id);
         $data['servicos'] = $this->os_model->getServicos($os_id);
-        $data['emitente'] = $this->mapo_model->getEmitente();
+        $data['emitente'] = $this->mapos_model->getEmitente();
 
         // Buscar execuções do técnico
         $data['execucoes'] = $this->tec_os_model->getExecucoesByOs($os_id);
