@@ -432,9 +432,10 @@ class Tecnicos extends CI_Controller
             $longitude = $this->input->post('longitude');
 
             log_message('info', 'adicionar_foto - Requisicao recebida. execucao_id: ' . $execucao_id);
+            log_message('info', 'adicionar_foto - Tamanho da foto: ' . strlen($foto) . ' caracteres');
 
             if (!$execucao_id || !$foto) {
-                log_message('error', 'adicionar_foto - Dados incompletos');
+                log_message('error', 'adicionar_foto - Dados incompletos. execucao_id: ' . var_export($execucao_id, true) . ', foto vazia: ' . empty($foto));
                 echo json_encode(['success' => false, 'message' => 'Dados incompletos']);
                 return;
             }
@@ -739,6 +740,8 @@ class Tecnicos extends CI_Controller
     private function _salvar_foto_base64($base64_string, $tipo, $tecnico_id)
     {
         log_message('info', '_salvar_foto_base64 - Iniciando salvamento para tecnico: ' . $tecnico_id);
+        log_message('info', '_salvar_foto_base64 - Tamanho recebido: ' . strlen($base64_string) . ' caracteres');
+        log_message('info', '_salvar_foto_base64 - Primeiros 100 caracteres: ' . substr($base64_string, 0, 100));
 
         if (empty($base64_string)) {
             log_message('error', '_salvar_foto_base64 - String base64 vazia');
@@ -755,19 +758,27 @@ class Tecnicos extends CI_Controller
 
         // Limpar base64
         $base64_data = preg_replace('/[^a-zA-Z0-9+\/=]/', '', $base64_data);
+        log_message('info', '_salvar_foto_base64 - Tamanho apos limpeza: ' . strlen($base64_data));
 
         // Decodificar
         $imagem = base64_decode($base64_data, true);
 
         if ($imagem === false) {
-            log_message('error', '_salvar_foto_base64 - Falha ao decodificar base64');
+            log_message('error', '_salvar_foto_base64 - Falha ao decodificar base64. Tamanho: ' . strlen($base64_data));
             return false;
         }
+        log_message('info', '_salvar_foto_base64 - Imagem decodificada: ' . strlen($imagem) . ' bytes');
 
         // Validar se é imagem
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        if (!$finfo) {
+            log_message('error', '_salvar_foto_base64 - Nao foi possivel abrir finfo');
+            return false;
+        }
         $mime_type = finfo_buffer($finfo, $imagem);
         finfo_close($finfo);
+
+        log_message('info', '_salvar_foto_base64 - MIME type detectado: ' . $mime_type);
 
         if (!in_array($mime_type, ['image/jpeg', 'image/png', 'image/gif', 'image/webp'])) {
             log_message('error', '_salvar_foto_base64 - Tipo invalido: ' . $mime_type);
@@ -787,11 +798,13 @@ class Tecnicos extends CI_Controller
         $diretorio = FCPATH . 'assets/tecnicos/fotos/' . date('Y/m');
 
         // Criar diretório se não existir
+        log_message('info', '_salvar_foto_base64 - Diretorio alvo: ' . $diretorio);
         if (!is_dir($diretorio)) {
             if (!mkdir($diretorio, 0755, true)) {
-                log_message('error', '_salvar_foto_base64 - Falha ao criar diretorio: ' . $diretorio);
+                log_message('error', '_salvar_foto_base64 - Falha ao criar diretorio: ' . $diretorio . ' - erro: ' . error_get_last()['message']);
                 return false;
             }
+            log_message('info', '_salvar_foto_base64 - Diretorio criado: ' . $diretorio);
         }
 
         if (!is_writable($diretorio)) {
@@ -803,12 +816,14 @@ class Tecnicos extends CI_Controller
         $caminho_relativo = 'assets/tecnicos/fotos/' . date('Y/m') . '/' . $nome_arquivo;
 
         // Salvar arquivo
+        log_message('info', '_salvar_foto_base64 - Tentando salvar em: ' . $caminho_completo);
         $resultado = file_put_contents($caminho_completo, $imagem);
 
         if ($resultado === false || $resultado === 0) {
-            log_message('error', '_salvar_foto_base64 - Falha ao salvar arquivo: ' . $caminho_completo);
+            log_message('error', '_salvar_foto_base64 - Falha ao salvar arquivo: ' . $caminho_completo . ' - resultado: ' . var_export($resultado, true));
             return false;
         }
+        log_message('info', '_salvar_foto_base64 - Bytes escritos: ' . $resultado);
 
         log_message('info', '_salvar_foto_base64 - Foto salva com sucesso: ' . $caminho_relativo);
         return $caminho_relativo;

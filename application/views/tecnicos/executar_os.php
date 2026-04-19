@@ -1754,6 +1754,11 @@ function previewArquivoServico(input) {
 }
 
 async function salvarFotoServico() {
+    // Debug info
+    console.log('execucaoId:', execucaoId);
+    console.log('fotoServicoBase64 existe:', !!fotoServicoBase64);
+    console.log('fotoServicoBase64 tamanho:', fotoServicoBase64 ? fotoServicoBase64.length : 0);
+
     // Verificar se há foto capturada ou selecionada
     if (!fotoServicoBase64) {
         alert('Selecione ou tire uma foto primeiro.');
@@ -1772,6 +1777,8 @@ async function salvarFotoServico() {
     formData.append('latitude', latitude || 0);
     formData.append('longitude', longitude || 0);
     formData.append(csrf.name, csrf.value);
+
+    console.log('Enviando execucao_id:', execucaoId);
 
     const btn = document.getElementById('btnSalvarFoto');
     if (!btn) {

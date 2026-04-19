@@ -307,13 +307,17 @@ class Tec_os_model extends CI_Model
      */
     public function adicionarFotoGaleria($execucao_id, $foto)
     {
+        log_message('info', 'adicionarFotoGaleria - Iniciando para execucao_id: ' . $execucao_id);
+
         $execucao = $this->getExecucaoById($execucao_id);
 
         if (!$execucao) {
+            log_message('error', 'adicionarFotoGaleria - Execucao nao encontrada: ' . $execucao_id);
             return false;
         }
 
         $galeria = json_decode($execucao->fotos_galeria_json, true) ?: [];
+        log_message('info', 'adicionarFotoGaleria - Fotos existentes: ' . count($galeria));
 
         $galeria[] = [
             'caminho' => $foto['caminho'],
@@ -325,9 +329,17 @@ class Tec_os_model extends CI_Model
         ];
 
         $this->db->where('id', $execucao_id);
-        return $this->db->update('tec_os_execucao', [
+        $resultado = $this->db->update('tec_os_execucao', [
             'fotos_galeria_json' => json_encode($galeria),
         ]);
+
+        if (!$resultado) {
+            log_message('error', 'adicionarFotoGaleria - Erro no update: ' . $this->db->error()['message']);
+        } else {
+            log_message('info', 'adicionarFotoGaleria - Update OK, affected rows: ' . $this->db->affected_rows());
+        }
+
+        return $resultado;
     }
 
     /**
