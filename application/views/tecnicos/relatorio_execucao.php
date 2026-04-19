@@ -325,7 +325,7 @@
                                      alt="Foto do técnico"
                                      loading="eager"
                                      decoding="async"
-                                     onerror="this.style.display='none'; this.parentElement.innerHTML+='Erro ao carregar';">
+                                     onerror="console.error('Erro ao carregar foto:', this.src); this.style.border='2px dashed #f00';">
                                 <div class="foto-tipo">
                                     <?php
                                     $tipo = $foto->tipo ?? 'foto';
@@ -362,7 +362,7 @@
                                      alt="Foto de atendimento"
                                      loading="eager"
                                      decoding="async"
-                                     onerror="this.style.display='none'; this.parentElement.innerHTML+='Erro ao carregar';">
+                                     onerror="console.error('Erro ao carregar foto:', this.src); this.style.border='2px dashed #f00';">
                                 <div class="foto-tipo">
                                     <?php
                                     $etapa = $foto->etapa ?? 'foto';

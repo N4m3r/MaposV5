@@ -23,6 +23,7 @@ class Tecnicos extends CI_Controller
         $this->load->model('os_model');
         $this->load->model('mapos_model');
         $this->load->model('fotosatendimento_model');
+        $this->load->model('assinaturas_model');
         $this->load->library('session');
         $this->load->library('form_validation');
         $this->load->helper('url');
@@ -267,6 +268,7 @@ class Tecnicos extends CI_Controller
         $latitude = $this->input->post('latitude');
         $longitude = $this->input->post('longitude');
         $foto_checkin = $this->input->post('foto_checkin');
+        $assinatura_tecnico = $this->input->post('assinatura_tecnico', false); // false para não aplicar XSS filter
         $tipo = $this->input->post('tipo'); // 'inicio_dia' ou 'inicio_local'
 
         // Apenas OS é obrigatório - latitude/longitude podem ser 0 (GPS opcional)
@@ -329,6 +331,24 @@ class Tecnicos extends CI_Controller
             log_message('error', 'Tecnicos::iniciar_execucao - Falha ao obter insert_id');
             echo json_encode(['success' => false, 'message' => 'Erro ao criar execução. ID retornado: ' . $execucao_id]);
             return;
+        }
+
+        // Salvar assinatura do técnico na tabela assinaturas (integração com relatório de atendimento)
+        if ($assinatura_tecnico) {
+            $imagem = $this->assinaturas_model->salvarImagem($assinatura_tecnico, $os_id, 'tecnico_entrada');
+            if ($imagem) {
+                $data_assinatura = [
+                    'os_id' => $os_id,
+                    'checkin_id' => null, // Portal do técnico não usa checkin_id
+                    'tipo' => 'tecnico_entrada',
+                    'assinatura' => $imagem['path'],
+                    'nome_assinante' => $this->session->userdata('nome') ?: 'Técnico',
+                    'data_assinatura' => date('Y-m-d H:i:s'),
+                    'ip_address' => $this->input->ip_address()
+                ];
+                $this->assinaturas_model->add($data_assinatura);
+                log_info('Assinatura do técnico salva via portal - OS: ' . $os_id);
+            }
         }
 
         // Atualizar status da OS

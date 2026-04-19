@@ -156,6 +156,18 @@
                 <div id="checkinSection" class="action-card <?php echo $execucao ? 'hidden' : ''; ?>">
                     <h5><i class="bx bx-map-pin"></i> Iniciar Atendimento</h5>
 
+                    <!-- Assinatura do Técnico -->
+                    <div class="assinatura-section" style="margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                        <h6><i class="bx bx-pen"></i> Assinatura do Técnico</h6>
+                        <canvas id="assinaturaTecnico" class="signature-pad" style="width: 100%; height: 150px; background: white; border: 2px solid #ddd; border-radius: 4px;"></canvas>
+                        <div style="margin-top: 10px; text-align: center;">
+                            <button type="button" class="btn btn-mini" onclick="limparAssinaturaTecnico()">
+                                <i class="bx bx-trash"></i> Limpar Assinatura
+                            </button>
+                        </div>
+                        <small style="display: block; margin-top: 5px; color: #666; text-align: center;">Sua assinatura é obrigatória para iniciar</small>
+                    </div>
+
                     <div class="camera-section">
                         <div class="camera-preview" id="checkinPreview">
                             <i class="bx bx-camera"></i>
@@ -2422,6 +2434,66 @@ function limparAssinatura() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
+// Canvas de assinatura do Técnico (para check-in)
+const canvasTecnico = document.getElementById('assinaturaTecnico');
+let ctxTecnico = null;
+let isDrawingTecnico = false;
+
+if (canvasTecnico) {
+    ctxTecnico = canvasTecnico.getContext('2d');
+
+    function resizeCanvasTecnico() {
+        const rect = canvasTecnico.getBoundingClientRect();
+        canvasTecnico.width = rect.width;
+        canvasTecnico.height = rect.height;
+        ctxTecnico.strokeStyle = '#000';
+        ctxTecnico.lineWidth = 2;
+        ctxTecnico.lineCap = 'round';
+    }
+
+    window.addEventListener('load', resizeCanvasTecnico);
+    window.addEventListener('resize', resizeCanvasTecnico);
+
+    canvasTecnico.addEventListener('mousedown', startDrawingTecnico);
+    canvasTecnico.addEventListener('mousemove', drawTecnico);
+    canvasTecnico.addEventListener('mouseup', stopDrawingTecnico);
+    canvasTecnico.addEventListener('mouseout', stopDrawingTecnico);
+
+    canvasTecnico.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        startDrawingTecnico(e.touches[0]);
+    });
+    canvasTecnico.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        drawTecnico(e.touches[0]);
+    });
+    canvasTecnico.addEventListener('touchend', stopDrawingTecnico);
+
+    function startDrawingTecnico(e) {
+        isDrawingTecnico = true;
+        const rect = canvasTecnico.getBoundingClientRect();
+        ctxTecnico.beginPath();
+        ctxTecnico.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+    }
+
+    function drawTecnico(e) {
+        if (!isDrawingTecnico) return;
+        const rect = canvasTecnico.getBoundingClientRect();
+        ctxTecnico.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+        ctxTecnico.stroke();
+    }
+
+    function stopDrawingTecnico() {
+        isDrawingTecnico = false;
+    }
+
+    function limparAssinaturaTecnico() {
+        if (ctxTecnico) {
+            ctxTecnico.clearRect(0, 0, canvasTecnico.width, canvasTecnico.height);
+        }
+    }
+}
+
 // Câmera - OPCIONAL
 async function capturarFotoCheckin() {
     const preview = document.getElementById('checkinPreview');
@@ -2810,6 +2882,21 @@ function getCsrfToken() {
 
 // Execução
 async function iniciarExecucao() {
+    // Validar assinatura do técnico
+    if (!canvasTecnico || !ctxTecnico) {
+        alert('Erro: Canvas de assinatura não encontrado');
+        return;
+    }
+
+    // Verificar se o canvas tem desenho (assinatura)
+    const pixelData = ctxTecnico.getImageData(0, 0, canvasTecnico.width, canvasTecnico.height).data;
+    const hasDrawing = pixelData.some((pixel, index) => index % 4 === 3 && pixel > 0);
+
+    if (!hasDrawing) {
+        alert('Por favor, assine antes de iniciar o atendimento.');
+        return;
+    }
+
     // Localização é opcional - usa valores padrão se não disponível
     const lat = latitude || 0;
     const lng = longitude || 0;
@@ -2818,12 +2905,16 @@ async function iniciarExecucao() {
     btn.classList.add('loading');
     btn.disabled = true;
 
+    // Coletar assinatura do técnico
+    const assinaturaTecnico = canvasTecnico.toDataURL('image/png');
+
     const csrf = getCsrfToken();
     const formData = new FormData();
     formData.append('os_id', osId);
     formData.append('latitude', lat);
     formData.append('longitude', lng);
     formData.append('foto_checkin', fotoCheckin || '');
+    formData.append('assinatura_tecnico', assinaturaTecnico);
     formData.append('tipo', 'inicio_local');
     formData.append(csrf.name, csrf.value);
 
