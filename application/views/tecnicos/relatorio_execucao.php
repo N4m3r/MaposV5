@@ -804,15 +804,13 @@
                 <?php if (!empty($assinaturas) || !empty($execucoes)): ?>
 
                 <!-- DEBUG: Informações de assinaturas -->
-                <!--<pre style="background: #f0f0f0; padding: 10px; margin: 10px 0; font-size: 11px;">
-                DEBUG ASSINATURAS:
-                Total: <?php echo count($assinaturas); ?>
-                <?php foreach ($assinaturas as $a): ?
-                - ID: <?php echo $a->idAssinatura; ?>, Tipo: <?php echo $a->tipo; ?>
-                  Path: <?php echo substr($a->assinatura, 0, 50); ?>...
-                  URL: <?php echo $a->url_visualizacao ?? 'N/A'; ?>
-                <?php endforeach; ?
-                </pre>-->
+                <!--<pre style="background: #f0f0f0; padding: 10px; margin: 10px 0; font-size: 11px;">DEBUG ASSINATURAS:
+Total: <?php echo count($assinaturas); ?>
+<?php foreach ($assinaturas as $a): ?>
+- ID: <?php echo $a->idAssinatura; ?>, Tipo: <?php echo $a->tipo; ?>
+  Path: <?php echo substr($a->assinatura, 0, 50); ?>...
+  URL: <?php echo $a->url_visualizacao ?? 'N/A'; ?>
+<?php endforeach; ?></pre>-->
 
                 <div class="relatorio-card">
                     <h5><i class="bx bx-pencil"></i> Assinaturas</h5>
