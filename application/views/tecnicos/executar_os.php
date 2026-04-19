@@ -2296,20 +2296,19 @@
 </style>
 
 <script>
-console.log('DEBUG: Script iniciado - linha 1');
-let execucaoId = <?php echo $execucao ? $execucao->id : 'null'; ?>;
-let osId = <?php echo $os->idOs; ?>;
-let latitude, longitude;
-let fotoCheckin = null;
-let stream = null;
-console.log('DEBUG: Variáveis declaradas. osId:', osId);
+window.execucaoId = <?php echo $execucao ? $execucao->id : 'null'; ?>;
+window.osId = <?php echo $os->idOs; ?>;
+window.latitude = undefined;
+window.longitude = undefined;
+window.fotoCheckin = null;
+window.stream = null;
 
 // Obter localização (opcional - silencia erros de permissão)
 if ('geolocation' in navigator) {
     navigator.geolocation.watchPosition(
         (pos) => {
-            latitude = pos.coords.latitude;
-            longitude = pos.coords.longitude;
+            window.latitude = pos.coords.latitude;
+            window.longitude = pos.coords.longitude;
             permissaoGPS = true;
         },
         (err) => {
@@ -2347,8 +2346,8 @@ async function solicitarPermissaoGPS() {
     return new Promise((resolve) => {
         navigator.geolocation.getCurrentPosition(
             (pos) => {
-                latitude = pos.coords.latitude;
-                longitude = pos.coords.longitude;
+                window.latitude = pos.coords.latitude;
+                window.longitude = pos.coords.longitude;
                 permissaoGPS = true;
                 resolve(true);
             },
@@ -2438,9 +2437,7 @@ window.ctxTecnico = null;
 window.isDrawingTecnico = false;
 
 function initCanvasTecnico() {
-    console.log('DEBUG: Iniciando initCanvasTecnico');
     window.canvasTecnico = document.getElementById('assinaturaTecnico');
-    console.log('DEBUG: canvas encontrado:', window.canvasTecnico ? 'SIM' : 'NAO');
 
     if (!window.canvasTecnico) {
         console.error('Canvas assinaturaTecnico não encontrado');
@@ -2448,21 +2445,15 @@ function initCanvasTecnico() {
     }
 
     window.ctxTecnico = window.canvasTecnico.getContext('2d');
-    console.log('DEBUG: contexto 2d obtido:', window.ctxTecnico ? 'SIM' : 'NAO');
-    console.log('DEBUG: Canvas elemento:', window.canvasTecnico);
-    console.log('DEBUG: offsetWidth:', window.canvasTecnico.offsetWidth);
 
     // Configurar dimensões
     const resizeCanvasTecnico = function() {
-        console.log('DEBUG: Redimensionando canvas...');
         const rect = window.canvasTecnico.getBoundingClientRect();
-        console.log('DEBUG: getBoundingClientRect:', rect);
         window.canvasTecnico.width = rect.width > 0 ? rect.width : 300;
         window.canvasTecnico.height = 150;
         window.ctxTecnico.strokeStyle = '#000';
         window.ctxTecnico.lineWidth = 2;
         window.ctxTecnico.lineCap = 'round';
-        console.log('DEBUG: Canvas redimensionado para:', window.canvasTecnico.width, 'x', window.canvasTecnico.height);
     };
 
     // Aguardar um tick para garantir que o layout está pronto
@@ -2471,13 +2462,10 @@ function initCanvasTecnico() {
 
     // Eventos do mouse
     window.canvasTecnico.addEventListener('mousedown', function(e) {
-        console.log('DEBUG: mousedown no canvas');
         window.isDrawingTecnico = true;
         const rect = window.canvasTecnico.getBoundingClientRect();
-        console.log('DEBUG: rect:', rect.left, rect.top);
         window.ctxTecnico.beginPath();
         window.ctxTecnico.moveTo(e.clientX - rect.left, e.clientY - rect.top);
-        console.log('DEBUG: moveTo', e.clientX - rect.left, e.clientY - rect.top);
     });
 
     window.canvasTecnico.addEventListener('mousemove', function(e) {
@@ -2485,16 +2473,13 @@ function initCanvasTecnico() {
         const rect = window.canvasTecnico.getBoundingClientRect();
         window.ctxTecnico.lineTo(e.clientX - rect.left, e.clientY - rect.top);
         window.ctxTecnico.stroke();
-        console.log('DEBUG: mousemove - desenhando');
     });
 
     window.canvasTecnico.addEventListener('mouseup', function() {
-        console.log('DEBUG: mouseup - parando de desenhar');
         window.isDrawingTecnico = false;
     });
 
     window.canvasTecnico.addEventListener('mouseout', function() {
-        console.log('DEBUG: mouseout');
         window.isDrawingTecnico = false;
     });
 
@@ -2520,8 +2505,6 @@ function initCanvasTecnico() {
     window.canvasTecnico.addEventListener('touchend', function() {
         window.isDrawingTecnico = false;
     });
-
-    console.log('DEBUG: Todos os eventos do canvas adicionados com sucesso');
 }
 
 window.limparAssinaturaTecnico = function() {
@@ -2532,33 +2515,13 @@ window.limparAssinaturaTecnico = function() {
 
 // Inicializar quando DOM estiver pronto
 window.iniciarCanvasAssinatura = function() {
-    console.log('DEBUG: iniciarCanvasAssinatura chamado');
-    console.log('DEBUG: document.readyState:', document.readyState);
-
-    // Verificar se o canvas existe no DOM
-    const canvas = document.getElementById('assinaturaTecnico');
-    console.log('DEBUG: Canvas no DOM:', canvas ? 'SIM' : 'NAO');
-    if (canvas) {
-        console.log('DEBUG: Canvas visível:', canvas.offsetParent !== null);
-        console.log('DEBUG: Canvas dimensões:', canvas.offsetWidth, 'x', canvas.offsetHeight);
-        console.log('DEBUG: Canvas display:', getComputedStyle(canvas).display);
-        console.log('DEBUG: Canvas visibility:', getComputedStyle(canvas).visibility);
-    }
-
     initCanvasTecnico();
-    console.log('DEBUG: Final do initCanvasTecnico. canvasTecnico:', window.canvasTecnico ? 'existe' : 'null');
 };
 
-try {
-    if (document.readyState === 'loading') {
-        console.log('DEBUG: Documento ainda carregando, aguardando DOMContentLoaded...');
-        document.addEventListener('DOMContentLoaded', window.iniciarCanvasAssinatura);
-    } else {
-        console.log('DEBUG: Documento já carregado, executando imediatamente...');
-        window.iniciarCanvasAssinatura();
-    }
-} catch(e) {
-    console.error('DEBUG: Erro ao inicializar canvas:', e);
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', window.iniciarCanvasAssinatura);
+} else {
+    window.iniciarCanvasAssinatura();
 }
 
 // Câmera - OPCIONAL
@@ -2595,7 +2558,7 @@ async function capturarFotoCheckin() {
         const tempCtx = tempCanvas.getContext('2d');
         tempCtx.drawImage(video, 0, 0);
 
-        fotoCheckin = tempCanvas.toDataURL('image/jpeg', 0.8);
+        window.fotoCheckin = tempCanvas.toDataURL('image/jpeg', 0.8);
         preview.innerHTML = `<img src="${fotoCheckin}">`;
 
         mediaStream.getTracks().forEach(track => track.stop());
@@ -2619,9 +2582,9 @@ jQuery(document).on('shown', '#fotoTabs a[data-toggle="tab"]', function (e) {
     if (target === '#tabUpload') {
         abaAtiva = 'upload';
         // Parar câmera para economizar recursos
-        if (stream) {
-            stream.getTracks().forEach(track => track.stop());
-            stream = null;
+        if (window.stream) {
+            window.stream.getTracks().forEach(track => track.stop());
+            window.stream = null;
         }
         setupDragDrop();
     } else {
@@ -2703,10 +2666,10 @@ async function iniciarCamera() {
         }
     }
 
-    if (!stream) {
+    if (!window.stream) {
         try {
-            stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-            document.getElementById('video').srcObject = stream;
+            window.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+            document.getElementById('video').srcObject = window.stream;
             document.getElementById('cameraMensagem').classList.remove('active');
         } catch (err) {
             console.error('Erro ao abrir câmera:', err);
@@ -2737,8 +2700,8 @@ async function abrirCamera() {
 function fecharCamera() {
     jQuery('#cameraModal').modal('hide');
     document.getElementById('cameraModal').setAttribute('aria-hidden', 'true');
-    if (stream) {
-        stream.getTracks().forEach(track => track.stop());
+    if (window.stream) {
+        window.stream.getTracks().forEach(track => track.stop());
         stream = null;
     }
     fotoServicoBase64 = null;
@@ -2826,7 +2789,7 @@ async function removerFoto(fotoId) {
 
 async function salvarFotoServico() {
     // Debug info
-    console.log('execucaoId:', execucaoId);
+    console.log('execucaoId:', window.execucaoId);
     console.log('fotoServicoBase64 existe:', !!fotoServicoBase64);
     console.log('fotoServicoBase64 tamanho:', fotoServicoBase64 ? fotoServicoBase64.length : 0);
 
@@ -2841,12 +2804,12 @@ async function salvarFotoServico() {
 
     const csrf = getCsrfToken();
     const formData = new FormData();
-    formData.append('execucao_id', execucaoId);
+    formData.append('execucao_id', window.execucaoId);
     formData.append('foto', fotoServicoBase64);
     formData.append('tipo', tipo);
     formData.append('descricao', descricao);
-    formData.append('latitude', latitude || 0);
-    formData.append('longitude', longitude || 0);
+    formData.append('latitude', window.latitude || 0);
+    formData.append('longitude', window.longitude || 0);
     formData.append(csrf.name, csrf.value);
 
     console.log('Enviando execucao_id:', execucaoId);
@@ -3025,7 +2988,7 @@ window.iniciarExecucao = async function() {
                 return;
             }
             window.execucaoId = data.execucao_id;
-            console.log('Execução iniciada com ID:', execucaoId);
+            console.log('Execução iniciada com ID:', window.execucaoId);
             document.getElementById('checkinSection').classList.add('hidden');
             document.getElementById('execucaoSection').classList.remove('hidden');
             window.scrollTo(0, 0);
@@ -3122,11 +3085,11 @@ function atualizarProgressoServicos() {
 
 // Checklist (mantido para compatibilidade)
 async function salvarChecklistItem(itemId, status) {
-    if (!execucaoId) return;
+    if (!window.execucaoId) return;
 
     const csrf = getCsrfToken();
     const formData = new FormData();
-    formData.append('execucao_id', execucaoId);
+    formData.append('execucao_id', window.execucaoId);
     formData.append('item_id', itemId);
     formData.append('status', status);
     formData.append('observacao', '');
@@ -3179,7 +3142,7 @@ function atualizarProgresso() {
 
 // Finalização
 async function finalizarExecucao() {
-    if (execucaoId === null || execucaoId === undefined) {
+    if (window.execucaoId === null || window.execucaoId === undefined) {
         alert('Erro: Execução não iniciada. Por favor, recarregue a página e tente novamente.');
         return;
     }
@@ -3204,7 +3167,7 @@ async function finalizarExecucao() {
 
     const csrf = getCsrfToken();
     const formData = new FormData();
-    formData.append('execucao_id', execucaoId);
+    formData.append('execucao_id', window.execucaoId);
     formData.append('latitude', lat);
     formData.append('longitude', lng);
     formData.append('assinatura_cliente', assinatura);
@@ -3212,7 +3175,7 @@ async function finalizarExecucao() {
     formData.append('observacoes', observacoes);
     formData.append(csrf.name, csrf.value);
 
-    console.log('Finalizando execução...', { execucao_id: execucaoId });
+    console.log('Finalizando execução...', { execucao_id: window.execucaoId });
 
     try {
         const response = await fetch('<?php echo site_url("tecnicos/finalizar_execucao"); ?>', {
@@ -3668,7 +3631,7 @@ function finalizarWizardAtendimento() {
 
     // Preparar dados para envio
     const dados = {
-        os_id: typeof osId !== 'undefined' ? osId : null,
+        os_id: typeof window.osId !== 'undefined' ? window.osId : null,
         servicos_status: wizardServicosStatus,
         fotos: wizardFotos,
         observacoes: observacoes,
