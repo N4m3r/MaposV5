@@ -110,7 +110,7 @@
                         <li class="<?php if (isset($menuVendas)) { echo 'active'; }; ?>"><a class="tip-bottom" href="<?= site_url('vendas') ?>"><i class='bx bx-cart-alt iconX'></i><span class="title">Vendas</span><span class="title-tooltip">Vendas</span></a></li>
                     <?php } ?>
 
-                    <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cTecnico')) { ?
+                    <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cTecnico')) { ?>
                         <?php
                         // Carregar model e contar técnicos
                         $this->load->model('tecnico_model');
