@@ -112,6 +112,15 @@
                             echo '<span class="button__text">Relatório Atendimento</span>';
                             echo '</a>';
                         }
+
+                        // Botão para visualizar relatório de execução do portal do técnico
+                        // Mostra apenas quando houver execuções técnicas do portal
+                        if (!empty($execucoesTecnicas)) {
+                            echo '<a target="_blank" title="Ver Relatório de Execução do Técnico" class="button btn btn-mini" style="background-color: #17a2b8; border-color: #17a2b8; color: white;" href="' . site_url('tecnicos/relatorio_execucao/' . $result->idOs) . '">';
+                            echo '<span class="button__icon"><i class="bx bx-user-check"></i></span>';
+                            echo '<span class="button__text">Relatório Execução</span>';
+                            echo '</a>';
+                        }
                     }
                     ?>
                 </div>

@@ -437,12 +437,30 @@ class Tecnicos extends CI_Controller
         }
 
         $tecnico_id = $this->session->userdata('tec_id');
+        $permissao = $this->session->userdata('permissao');
 
-        // Verificar se OS pertence ao técnico
+        // Verificar se OS existe
         $os = $this->tec_os_model->getOsById($os_id);
-        if (!$os || $os->tecnico_responsavel != $tecnico_id) {
+        if (!$os) {
+            $this->session->set_flashdata('error', 'OS não encontrada.');
+            if ($this->permission->checkPermission($permissao, 'vOs')) {
+                redirect('os');
+            } else {
+                redirect('tecnicos/minhas_os');
+            }
+        }
+
+        // Verificar permissão: técnico dono da OS OU admin com permissão vOs
+        $isTecnicoDono = ($tecnico_id && $os->tecnico_responsavel == $tecnico_id);
+        $isAdmin = $this->permission->checkPermission($permissao, 'vOs');
+
+        if (!$isTecnicoDono && !$isAdmin) {
             $this->session->set_flashdata('error', 'Você não tem permissão para ver esta OS.');
-            redirect('tecnicos/minhas_os');
+            if ($isAdmin) {
+                redirect('os');
+            } else {
+                redirect('tecnicos/minhas_os');
+            }
         }
 
         // Buscar dados da execução
@@ -452,8 +470,26 @@ class Tecnicos extends CI_Controller
         $this->data['servicos'] = $this->tec_os_model->getServicosOs($os_id);
         $this->data['execucoes'] = $this->tec_os_model->getExecucoesByOs($os_id);
 
+        // Carregar fotos do sistema de atendimento (checkin)
+        $this->load->model('fotosatendimento_model');
+        $this->data['fotosAtendimento'] = $this->fotosatendimento_model->getByOs($os_id);
+
+        // Carregar assinaturas do sistema de checkin
+        $this->load->model('assinaturas_model');
+        $this->data['assinaturas'] = $this->assinaturas_model->getByOs($os_id);
+
+        // Carregar fotos do portal do técnico (tec_os_fotos)
+        $this->data['fotosTecnico'] = $this->tec_os_model->getFotosByOs($os_id);
+
         $this->load->view('tema/topo', $this->data);
-        $this->load->view('tema/menu_portal_tecnico', $this->data);
+
+        // Carregar menu apropriado: menu padrão para admin, menu portal para técnico
+        if ($isAdmin) {
+            $this->load->view('tema/menu', $this->data);
+        } else {
+            $this->load->view('tema/menu_portal_tecnico', $this->data);
+        }
+
         $this->load->view('tecnicos/relatorio_execucao', $this->data);
         $this->load->view('tema/rodape', $this->data);
     }

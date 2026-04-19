@@ -204,6 +204,19 @@ class Checkin extends MY_Controller
         // Atualiza status da OS para "Em Andamento"
         $this->os_model->edit('os', ['status' => 'Em Andamento'], 'idOs', $os_id);
 
+        // Cria execução no portal do técnico (integração)
+        $dados_execucao = [
+            'os_id' => $os_id,
+            'tecnico_id' => $usuario_id,
+            'checkin_horario' => $data_checkin['data_entrada'],
+            'checkin_latitude' => $data_checkin['latitude_entrada'],
+            'checkin_longitude' => $data_checkin['longitude_entrada'],
+            'tipo_servico' => 'Manutenção',
+            'status' => 'em_execucao'
+        ];
+        $this->tec_os_model->iniciarExecucao($dados_execucao);
+        log_info('Execução no portal do técnico iniciada para OS: ' . $os_id);
+
         // Log
         log_info('Iniciou atendimento da OS. ID: ' . $os_id);
 
@@ -379,6 +392,26 @@ class Checkin extends MY_Controller
 
         // Atualiza status da OS para "Finalizado"
         $this->os_model->edit('os', ['status' => 'Finalizado'], 'idOs', $os_id);
+
+        // Finaliza execução no portal do técnico (integração)
+        $execucao_atual = $this->tec_os_model->getExecucaoAtual($os_id, $usuario_id);
+        if ($execucao_atual) {
+            $data_checkin_dt = new DateTime($execucao_atual->checkin_horario);
+            $data_checkout_dt = new DateTime();
+            $intervalo = $data_checkin_dt->diff($data_checkout_dt);
+            $tempo_total_minutos = ($intervalo->h * 60) + $intervalo->i + ($intervalo->days * 24 * 60);
+
+            $dados_finalizacao = [
+                'checkout_horario' => date('Y-m-d H:i:s'),
+                'checkout_latitude' => $latitude ?: null,
+                'checkout_longitude' => $longitude ?: null,
+                'tempo_atendimento_minutos' => $tempo_total_minutos,
+                'checklist_completude' => 100,
+                'status' => 'concluida'
+            ];
+            $this->tec_os_model->finalizarExecucao($execucao_atual->id, $dados_finalizacao);
+            log_info('Execução no portal do técnico finalizada para OS: ' . $os_id);
+        }
 
         // Log
         log_info('Finalizou atendimento da OS. ID: ' . $os_id);

@@ -314,80 +314,149 @@
                     <?php endif; ?>
                 </div>
 
-                <!-- Fotos -->
+                <!-- Fotos do Portal do Técnico -->
+                <?php if (!empty($fotosTecnico)): ?>
                 <div class="relatorio-card">
-                    <h5><i class="bx bx-camera"></i> Registro Fotográfico</h5>
-                    <?php
-                    // Coletar todas as fotos das execuções
-                    $todas_fotos = [];
-                    if (!empty($execucoes)) {
-                        foreach ($execucoes as $exec) {
-                            if (!empty($exec->fotos_galeria_json)) {
-                                $fotos = json_decode($exec->fotos_galeria_json, true);
-                                if (is_array($fotos)) {
-                                    $todas_fotos = array_merge($todas_fotos, $fotos);
+                    <h5><i class="bx bx-camera"></i> Fotos do Técnico</h5>
+                    <div class="fotos-grid">
+                        <?php foreach ($fotosTecnico as $foto): ?>
+                            <div class="foto-item">
+                                <img src="<?php echo base_url($foto->caminho); ?>" alt="Foto do técnico">
+                                <div class="foto-tipo">
+                                    <?php
+                                    $tipo = $foto->tipo ?? 'foto';
+                                    $tipos_label = [
+                                        'checkin' => 'Check-in',
+                                        'checkout' => 'Check-out',
+                                        'antes' => 'Antes',
+                                        'depois' => 'Depois',
+                                        'problema' => 'Problema',
+                                        'detalhe' => 'Detalhe',
+                                        'durante' => 'Durante',
+                                        'foto' => 'Foto'
+                                    ];
+                                    echo $tipos_label[$tipo] ?? ucfirst($tipo);
+                                    ?>
+                                    <?php if (!empty($foto->data_envio)): ?>
+                                        <br><small><?php echo date('d/m/Y H:i', strtotime($foto->data_envio)); ?></small>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+                <?php endif; ?>
+
+                <!-- Fotos do Sistema de Atendimento -->
+                <?php if (!empty($fotosAtendimento)): ?>
+                <div class="relatorio-card">
+                    <h5><i class="bx bx-images"></i> Registro Fotográfico do Atendimento</h5>
+                    <div class="fotos-grid">
+                        <?php foreach ($fotosAtendimento as $foto): ?>
+                            <div class="foto-item">
+                                <?php
+                                $imgUrl = !empty($foto->imagem_base64)
+                                    ? base_url('index.php/checkin/verFotoDB/' . $foto->idFoto)
+                                    : $foto->url;
+                                ?>
+                                <img src="<?php echo $imgUrl; ?>" alt="Foto de atendimento">
+                                <div class="foto-tipo">
+                                    <?php
+                                    $etapa = $foto->etapa ?? 'foto';
+                                    $etapas_label = [
+                                        'entrada' => 'Entrada',
+                                        'saida' => 'Saída',
+                                        'durante' => 'Durante',
+                                        'foto' => 'Foto'
+                                    ];
+                                    echo $etapas_label[$etapa] ?? ucfirst($etapa);
+                                    ?>
+                                    <?php if (!empty($foto->descricao)): ?>
+                                        <br><small><?php echo htmlspecialchars($foto->descricao, ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></small>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+                <?php endif; ?>
+
+                <!-- Assinaturas -->
+                <?php if (!empty($assinaturas) || !empty($execucoes)): ?>
+                <div class="relatorio-card">
+                    <h5><i class="bx bx-pencil"></i> Assinaturas</h5>
+                    <div class="row-fluid">
+                        <!-- Assinaturas do Sistema de Check-in -->
+                        <?php if (!empty($assinaturas)): ?>
+                            <?php foreach ($assinaturas as $assinatura):
+                                $tipo_label = '';
+                                switch ($assinatura->tipo) {
+                                    case 'tecnico_entrada':
+                                        $tipo_label = 'Técnico - Entrada';
+                                        break;
+                                    case 'tecnico_saida':
+                                        $tipo_label = 'Técnico - Saída';
+                                        break;
+                                    case 'cliente_saida':
+                                        $tipo_label = 'Cliente - Saída';
+                                        break;
+                                    default:
+                                        $tipo_label = ucfirst(str_replace('_', ' ', $assinatura->tipo));
                                 }
-                            }
-                            if (!empty($exec->checkin_foto)) {
-                                $todas_fotos[] = ['caminho' => $exec->checkin_foto, 'tipo' => 'checkin', 'data_hora' => $exec->checkin_horario];
-                            }
-                            if (!empty($exec->checkout_foto)) {
-                                $todas_fotos[] = ['caminho' => $exec->checkout_foto, 'tipo' => 'checkout', 'data_hora' => $exec->checkout_horario ?? $exec->data_checkin];
-                            }
-                        }
-                    }
-                    ?>
-                    <?php if (!empty($todas_fotos)): ?>
-                        <div class="fotos-grid">
-                            <?php foreach ($todas_fotos as $foto): ?>
-                                <div class="foto-item">
-                                    <img src="<?php echo base_url($foto['caminho']); ?>" alt="Foto do serviço">
-                                    <div class="foto-tipo">
-                                        <?php
-                                        $tipo = $foto['tipo'] ?? 'foto';
-                                        $tipos_label = [
-                                            'checkin' => 'Check-in',
-                                            'checkout' => 'Check-out',
-                                            'antes' => 'Antes',
-                                            'depois' => 'Depois',
-                                            'problema' => 'Problema',
-                                            'detalhe' => 'Detalhe',
-                                            'foto' => 'Foto'
-                                        ];
-                                        echo $tipos_label[$tipo] ?? ucfirst($tipo);
-                                        ?>
+                            ?>
+                                <div class="span6">
+                                    <div class="assinatura-box">
+                                        <h6><?php echo $tipo_label; ?></h6>
+                                        <?php if (!empty($assinatura->assinatura)): ?>
+                                            <?php
+                                            $img_src = (isset($assinatura->is_base64) && $assinatura->is_base64)
+                                                ? $assinatura->url_visualizacao
+                                                : base_url($assinatura->assinatura);
+                                            ?>
+                                            <img src="<?php echo $img_src; ?>" alt="Assinatura <?php echo $tipo_label; ?>" class="assinatura-img">
+                                        <?php endif; ?>
+                                        <?php if (!empty($assinatura->nome_assinante)): ?>
+                                            <p style="margin-top: 10px; font-size: 0.9rem;">
+                                                <strong>Assinado por:</strong> <?php echo htmlspecialchars($assinatura->nome_assinante, ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?>
+                                            </p>
+                                        <?php endif; ?>
+                                        <?php if (!empty($assinatura->data_assinatura)): ?>
+                                            <p style="font-size: 0.8rem; color: #666;">
+                                                <i class="bx bx-calendar"></i> <?php echo date('d/m/Y H:i', strtotime($assinatura->data_assinatura)); ?>
+                                            </p>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                             <?php endforeach; ?>
-                        </div>
-                    <?php else: ?>
-                        <div class="empty-state">
-                            <div class="empty-text">Nenhuma foto registrada</div>
-                        </div>
-                    <?php endif; ?>
-                </div>
+                        <?php endif; ?>
 
-                <!-- Assinatura -->
-                <?php if (!empty($execucoes)):
-                    $assinatura = null;
-                    foreach ($execucoes as $exec) {
-                        if (!empty($exec->checklist_json)) {
-                            $checklist = json_decode($exec->checklist_json, true);
-                            if (!empty($checklist['assinatura_cliente'])) {
-                                $assinatura = $checklist['assinatura_cliente'];
-                                break;
-                            }
-                        }
-                    }
-                    if ($assinatura):
-                ?>
-                    <div class="relatorio-card">
-                        <h5><i class="bx bx-pencil"></i> Assinatura do Cliente</h5>
-                        <div class="assinatura-box">
-                            <img src="<?php echo $assinatura; ?>" alt="Assinatura" class="assinatura-img">
-                        </div>
+                        <!-- Assinatura do Portal do Técnico (execução) -->
+                        <?php if (!empty($execucoes)): ?>
+                            <?php foreach ($execucoes as $exec):
+                                if (!empty($exec->checklist_json)):
+                                    $checklist = json_decode($exec->checklist_json, true);
+                                    if (!empty($checklist['assinatura_cliente'])):
+                            ?>
+                                <div class="span6">
+                                    <div class="assinatura-box">
+                                        <h6>Assinatura do Cliente (Portal)</h6>
+                                        <img src="<?php echo $checklist['assinatura_cliente']; ?>" alt="Assinatura" class="assinatura-img">
+                                        <?php if (!empty($checklist['nome_cliente_assina'])): ?>
+                                            <p style="margin-top: 10px; font-size: 0.9rem;">
+                                                <strong>Assinado por:</strong> <?php echo htmlspecialchars($checklist['nome_cliente_assina'], ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?>
+                                            </p>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            <?php
+                                    endif;
+                                endif;
+                            endforeach;
+                        ?>
+                        <?php endif; ?>
                     </div>
-                <?php endif; endif; ?>
+                </div>
+                <?php endif; ?>
 
                 <!-- Botão Voltar -->
                 <div style="text-align: center; margin-top: 30px;">
