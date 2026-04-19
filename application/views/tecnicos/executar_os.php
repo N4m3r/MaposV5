@@ -28,10 +28,12 @@
                                 <i class="bx bx-user"></i>
                             </div>
                             <div class="client-info">
-                                <h4><?php echo htmlspecialchars($cliente->nome, ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></h4>
-                                <p><i class="bx bx-map"></i> <?php echo htmlspecialchars($cliente->endereco ?? 'Endereço não informado', ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></p>
-                                <?php if ($cliente->telefone): ?>
-                                    <p><i class="bx bx-phone"></i> <?php echo htmlspecialchars($cliente->telefone, ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></p>
+                                <h4><?php echo $cliente ? htmlspecialchars($cliente->nomeCliente, ENT_COMPAT | ENT_HTML5, 'UTF-8') : 'Cliente não encontrado'; ?></h4>
+                                <?php if ($cliente): ?>
+                                    <p><i class="bx bx-map"></i> <?php echo htmlspecialchars($cliente->endereco ?? 'Endereço não informado', ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></p>
+                                    <?php if ($cliente->telefone): ?>
+                                        <p><i class="bx bx-phone"></i> <?php echo htmlspecialchars($cliente->telefone, ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></p>
+                                    <?php endif; ?>
                                 <?php endif; ?>
                             </div>
                         </div>

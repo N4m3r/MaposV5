@@ -266,6 +266,7 @@ $(document).ready(function() {
             dataType: 'json',
             success: function(response) {
                 osSelect.empty();
+                console.log('Response buscar_os_por_obra:', response); // Debug
 
                 if (response.success && response.os && response.os.length > 0) {
                     // Separar OS não vinculadas e já vinculadas
