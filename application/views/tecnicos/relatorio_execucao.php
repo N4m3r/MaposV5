@@ -546,45 +546,16 @@
                 <div class="relatorio-card">
                     <h5><i class="bx bx-wrench"></i> Serviços da OS</h5>
                     <?php
-                    // Debug: Verificar diretamente no banco de dados
-                    $CI = &get_instance();
-                    $CI->db->where('os_id', $os->idOs);
-                    $query_debug = $CI->db->get('servicos_os');
-                    $servicos_raw = $query_debug ? $query_debug->result() : [];
-                    ?>
-                    <!-- DEBUG: Validar dados dos serviços -->
-                    <div style="background: #e3f2fd; border: 2px solid #2196f3; border-radius: 8px; padding: 15px; margin-bottom: 15px; font-family: monospace; font-size: 13px;">
-                        <strong style="color: #1976d2;">🔍 DEBUG - Serviços:</strong><br>
-                        <strong>OS ID:</strong> <?php echo $os->idOs ?? 'N/A'; ?><br>
-                        <strong>Variável \$servicos existe:</strong> <?php echo isset($servicos) ? 'SIM' : 'NÃO'; ?><br>
-                        <strong>\$servicos vazio:</strong> <?php echo empty($servicos) ? 'SIM' : 'NÃO'; ?><br>
-                        <strong>Count \$servicos:</strong> <?php echo isset($servicos) ? count($servicos) : 'N/A'; ?><br>
-                        <strong>Tipo:</strong> <?php echo isset($servicos) ? gettype($servicos) : 'N/A'; ?><br>
-                        <?php if (!empty($servicos)): ?>
-                            <strong>Primeiro item:</strong><br>
-                            <pre style="background: #f5f5f5; padding: 10px; border-radius: 4px; margin-top: 10px; max-height: 200px; overflow: auto;">
-<?php print_r($servicos[0]); ?>
-                            </pre>
-                        <?php else: ?>
-                            <strong style="color: #d32f2f;">⚠️ Nenhum serviço encontrado na variável \$servicos</strong>
-                        <?php endif; ?>
-                        <hr style="margin: 10px 0; border: none; border-top: 1px dashed #2196f3;">
-                        <strong>Query direta (servicos_raw):</strong> <?php echo count($servicos_raw); ?> registros<br>
-                        <?php if (!empty($servicos_raw)): ?>
-                            <pre style="background: #f5f5f5; padding: 8px; border-radius: 4px; margin-top: 8px; max-height: 150px; overflow: auto; font-size: 10px;">
-<?php print_r($servicos_raw); ?>
-                            </pre>
-                        <?php endif; ?>
-                    </div>
-                    <?php
-                    // Se encontrou serviços via query direta, usar esses dados
-                    if (empty($servicos) && !empty($servicos_raw)) {
-                        $servicos = $servicos_raw;
+                    // CORREÇÃO: Buscar serviços diretamente se a variável estiver vazia
+                    if (empty($servicos)) {
+                        $CI = &get_instance();
+                        $CI->db->select('servicos_os.*, servicos.nome as servico_nome, servicos.codigo as servico_codigo');
+                        $CI->db->from('servicos_os');
+                        $CI->db->join('servicos', 'servicos.idServicos = servicos_os.servicos_id', 'left');
+                        $CI->db->where('servicos_os.os_id', $os->idOs);
+                        $query_servicos = $CI->db->get();
+                        $servicos = $query_servicos ? $query_servicos->result() : [];
                     }
-                    // DEBUG: Mostrar count após correção
-                    echo '<div style="background: #fff3e0; border: 1px solid #ff9800; border-radius: 4px; padding: 8px; margin: 10px 0; font-size: 12px;">';
-                    echo '<strong>DEBUG:</strong> Após correção - servicos count: ' . count($servicos);
-                    echo '</div>';
                     ?>
                     <?php if (!empty($servicos)): ?>
                         <table class="table table-bordered">
@@ -849,7 +820,7 @@
                     <strong style="color: #856404;">🔍 DEBUG - Assinaturas:</strong><br>
                     <strong>Total de assinaturas:</strong> <?php echo count($assinaturas ?? []); ?><br>
                     <?php if (!empty($assinaturas)): ?>
-                        <?php foreach ($assinaturas as $a): ?
+                        <?php foreach ($assinaturas as $a): ?>
                             <strong>- ID <?php echo $a->idAssinatura; ?>:</strong> <?php echo $a->tipo; ?> | Path: <?php echo substr($a->assinatura, 0, 40); ?>...<br>
                             <strong>  URL:</strong> <a href="<?php echo $a->url_visualizacao; ?>" target="_blank"><?php echo $a->url_visualizacao; ?></a><br>
                             <strong>  Teste direto:</strong> <a href="<?php echo base_url('index.php/checkin/verAssinatura/' . $a->idAssinatura); ?>" target="_blank">Clique aqui para testar</a><br>
