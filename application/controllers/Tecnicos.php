@@ -249,7 +249,7 @@ class Tecnicos extends CI_Controller
         $this->data['os'] = $os;
         $this->data['cliente'] = $this->tec_os_model->getClienteByOs($os_id);
         $this->data['produtos'] = $this->tec_os_model->getProdutosOs($os_id);
-        $this->data['servicos'] = $this->tec_os_model->getServicosOs($os_id);
+        $this->data['servicos'] = $this->os_model->getServicos($os_id);
         $this->data['execucao'] = $this->tec_os_model->getExecucaoAtual($os_id, $tecnico_id);
         $this->data['checklist'] = $this->tec_os_model->getChecklistExecucao($os_id);
 

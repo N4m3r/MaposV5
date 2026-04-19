@@ -196,36 +196,6 @@
                     </div>
 
 
-                    <!-- Galeria de Fotos -->
-                    <div class="widget-box">
-                        <div class="widget-title">
-                            <span class="icon"><i class="bx bx-camera"></i></span>
-                            <h5>Fotos do Serviço</h5>
-                        </div>
-                        <div class="widget-content">
-                            <div class="gallery-grid" id="galleryGrid">
-                                <div class="gallery-add" onclick="abrirCamera()">
-                                    <i class="bx bx-plus"></i>
-                                    <span>Adicionar</span>
-                                </div>
-
-                                <?php // Fotos do sistema de atendimento (mesmo padrão de os/visualizar) ?>
-                                <?php if (!empty($fotosAtendimento)): ?>
-                                    <?php foreach ($fotosAtendimento as $foto): ?>
-                                        <div class="gallery-item" id="foto-item-<?php echo $foto->idFoto; ?>">
-                                            <a href="<?php echo $foto->url; ?>" target="_blank" class="foto-link">
-                                                <img src="<?php echo $foto->url; ?>" alt="<?php echo htmlspecialchars($foto->descricao ?? 'Foto'); ?>">
-                                            </a>
-                                            <button type="button" class="btn-remover-foto" onclick="removerFoto(<?php echo $foto->idFoto; ?>)" title="Remover foto">
-                                                <i class="bx bx-trash"></i>
-                                            </button>
-                                        </div>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Produtos da OS -->
                     <div class="widget-box">
                         <div class="widget-title">
@@ -258,11 +228,11 @@
                         </div>
                     </div>
 
-                    <!-- Wizard de Atendimento -->
+                    <!-- Atendimento -->
                     <div class="widget-box wizard-container">
                         <div class="widget-title">
                             <span class="icon"><i class="bx bx-list-check"></i></span>
-                            <h5>Wizard de Atendimento</h5>
+                            <h5>Atendimento</h5>
                             <div class="buttons">
                                 <span class="wizard-step-indicator">
                                     <span id="stepIndicator">Etapa 1 de 5</span>
@@ -613,76 +583,8 @@
     </div>
 </div>
 
-<!-- Modal da Câmera -->
-<div class="modal hide camera-modal" id="cameraModal">
-    <div class="modal-header">
-        <button type="button" class="close" onclick="fecharCamera()">×</button>
-        <h3><i class="bx bx-camera"></i> Adicionar Foto</h3>
-    </div>
-    <div class="modal-body">
-        <!-- Tabs -->
-        <ul class="nav nav-tabs modal-tabs" id="fotoTabs">
-            <li class="active"><a href="#tabCamera" data-toggle="tab" onclick="iniciarCamera()"><i class="bx bx-camera"></i> Câmera</a></li>
-            <li><a href="#tabUpload" data-toggle="tab"><i class="bx bx-upload"></i> Arquivo</a></li>
-        </ul>
-
-        <div class="tab-content modal-tab-content">
-            <!-- Tab Câmera -->
-            <div class="tab-pane active" id="tabCamera">
-                <div class="camera-viewport">
-                    <video id="video" autoplay playsinline></video>
-                    <canvas id="canvas" style="display: none;"></canvas>
-                    <div id="cameraPreview" class="camera-preview-captured" onclick="retomarCamera()">
-                        <img id="previewImg">
-                        <p class="camera-retake-hint"><i class="bx bx-refresh"></i> Clique para tirar outra foto</p>
-                    </div>
-                    <div id="cameraMensagem" class="camera-message">
-                        <i class="bx bx-camera-off"></i>
-                        <p>Câmera não disponível</p>
-                        <small>Use a aba "Arquivo" para enviar fotos</small>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Tab Upload -->
-            <div class="tab-pane" id="tabUpload">
-                <div class="upload-area" id="dropArea" onclick="document.getElementById('fileFotoServico').click()">
-                    <i class="bx bx-image-add"></i>
-                    <p class="upload-title">Clique para selecionar uma imagem</p>
-                    <p class="upload-hint">ou arraste e solte aqui</p>
-                    <input type="file" id="fileFotoServico" accept="image/*" onchange="previewArquivoServico(this)">
-                </div>
-                <div id="uploadPreview" class="upload-preview">
-                    <img id="uploadPreviewImg">
-                    <p class="upload-success-msg"><i class="bx bx-check-circle"></i> Imagem selecionada</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="modal-form-group">
-            <label class="modal-label"><i class="bx bx-category"></i> Tipo da foto</label>
-            <select id="tipoFoto" class="modal-select">
-                <option value="antes">📷 Antes do serviço</option>
-                <option value="depois">✅ Depois do serviço</option>
-                <option value="problema">⚠️ Problema encontrado</option>
-                <option value="detalhe">🔧 Detalhe técnico</option>
-            </select>
-        </div>
-
-        <div class="modal-form-group">
-            <label class="modal-label"><i class="bx bx-edit"></i> Descrição (opcional)</label>
-            <input type="text" id="descricaoFoto" placeholder="Descreva o que está sendo mostrado na foto..." class="modal-input">
-        </div>
-    </div>
-    <div class="modal-footer modal-footer-custom">
-        <button type="button" class="btn btn-default" onclick="fecharCamera()">
-            <i class="bx bx-x"></i> Cancelar
-        </button>
-        <button type="button" id="btnSalvarFoto" class="btn btn-success" onclick="salvarFotoServico()">
-            <i class="bx bx-save"></i> Salvar Foto
-        </button>
-    </div>
-</div>
+<!-- SweetAlert2 para o Wizard -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <style>
 /* OS Details Card */

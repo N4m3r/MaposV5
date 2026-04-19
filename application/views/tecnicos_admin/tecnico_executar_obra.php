@@ -116,6 +116,20 @@ $statusCores = [
                     </div>
                 </div>
 
+                <!-- Minhas Tarefas -->
+                <div class="widget-box" style="border-radius: 16px; overflow: hidden; margin-bottom: 20px;">
+                    <div class="widget-title" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                        <span class="icon" style="color: white;"><i class="bx bx-task"></i></span>
+                        <h5 style="color: white;">Minhas Tarefas</h5>
+                    </div>
+                    <div class="widget-content" style="padding: 20px;" id="minhas-tarefas">
+                        <div style="text-align: center; padding: 40px; color: #888;">
+                            <i class="bx bx-loader-alt bx-spin" style="font-size: 2rem;"></i>
+                            <p style="margin-top: 10px;">Carregando tarefas...</p>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Minhas OS -->
                 <div class="widget-box" style="border-radius: 16px; overflow: hidden;">
                     <div class="widget-title" style="background: #f8f9fa;">
@@ -125,7 +139,8 @@ $statusCores = [
                     <div class="widget-content" style="padding: 20px;">
                         <?php if (!empty($minhas_os)): ?>
                             <div style="display: flex; flex-direction: column; gap: 10px;">
-                                <?php foreach ($minhas_os as $os):
+                                <?php foreach ($minhas_os as $os): ?>
+                                    <?php
                                     $osStatusColors = [
                                         'Aberto' => '#4caf50',
                                         'Em Andamento' => '#2196f3',
@@ -133,30 +148,30 @@ $statusCores = [
                                         'Cancelado' => '#f44336',
                                     ];
                                     $osCor = $osStatusColors[$os->status] ?? '#888';
-                                ?>
-                                <div style="display: flex; align-items: center; gap: 12px; padding: 15px; background: #f8f9fa; border-radius: 12px;">
-                                    <div style="width: 50px; height: 50px; border-radius: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600;">
-                                        #<?= $os->idOs ?>
-                                    </div>
-                                    <div style="flex: 1;">
-                                        <div style="font-weight: 600; color: #333;"><?= htmlspecialchars($os->nomeCliente, ENT_COMPAT | ENT_HTML5, 'UTF-8') ?></div>
-                                        <div style="font-size: 0.8rem; color: #888;">
-                                            <i class="bx bx-calendar"></i> <?= date('d/m/Y', strtotime($os->dataInicial)) ?>
+                                    ?>
+                                    <div style="display: flex; align-items: center; gap: 12px; padding: 15px; background: #f8f9fa; border-radius: 12px;">
+                                        <div style="width: 50px; height: 50px; border-radius: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600;">
+                                            #<?= $os->idOs ?>
                                         </div>
+                                        <div style="flex: 1;">
+                                            <div style="font-weight: 600; color: #333;"><?= htmlspecialchars($os->nomeCliente, ENT_COMPAT | ENT_HTML5, 'UTF-8') ?></div>
+                                            <div style="font-size: 0.8rem; color: #888;">
+                                                <i class="bx bx-calendar"></i> <?= date('d/m/Y', strtotime($os->dataInicial)) ?>
+                                            </div>
+                                        </div>
+                                        <span style="padding: 4px 10px; border-radius: 10px; font-size: 0.75rem; background: <?= $osCor ?>20; color: <?= $osCor ?>;">
+                                            <?= $os->status ?>
+                                        </span>
+                                        <a href="<?= site_url('os/visualizar/' . $os->idOs) ?>" class="btn btn-mini btn-info">
+                                            <i class="bx bx-show"></i>
+                                        </a>
                                     </div>
-                                    <span style="padding: 4px 10px; border-radius: 10px; font-size: 0.75rem; background: <?= $osCor ?>20; color: <?= $osCor ?>;">
-                                        <?= $os->status ?>
-                                    </span>
-                                    <a href="<?= site_url('os/visualizar/' . $os->idOs) ?>" class="btn btn-mini btn-info">
-                                        <i class="bx bx-show"></i>
-                                    </a>
-                                </div>
                                 <?php endforeach; ?>
                             </div>
                         <?php else: ?>
                             <div style="text-align: center; padding: 40px; color: #888;">
                                 <i class="bx bx-clipboard" style="font-size: 3rem; margin-bottom: 15px;"></i>
-                                <p>Você não possui OS nesta obra</p>
+                                <p>Voce nao possui OS nesta obra</p>
                             </div>
                         <?php endif; ?>
                     </div>
@@ -219,7 +234,7 @@ $statusCores = [
             </div>
         </div>
 
-        <!-- Modal: Atualizar Progresso -->
+        <!-- Modal: Atualizar Progresso da Etapa -->
         <div id="modal-atualizar-progresso" class="modal hide fade" tabindex="-1" role="dialog">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">×</button>
@@ -235,7 +250,7 @@ $statusCores = [
                         </div>
                     </div>
                     <div class="control-group">
-                        <label class="control-label">% Concluído</label>
+                        <label class="control-label">% Concluido</label>
                         <div class="controls">
                             <input type="range" name="percentual" id="progresso-percentual" class="span12" min="0" max="100" style="margin: 10px 0;">
                             <div style="text-align: center; font-size: 1.2rem; font-weight: 600; color: #667eea;">
@@ -244,9 +259,53 @@ $statusCores = [
                         </div>
                     </div>
                     <div class="control-group">
-                        <label class="control-label">Observação</label>
+                        <label class="control-label">Observacao</label>
                         <div class="controls">
-                            <textarea name="observacao" class="span12" rows="3" placeholder="Observações sobre o progresso..."></textarea>
+                            <textarea name="observacao" class="span12" rows="3" placeholder="Observacoes sobre o progresso..."></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success"><i class="bx bx-save"></i> Salvar</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Modal: Atualizar Progresso da Tarefa -->
+        <div id="modal-tarefa-progresso" class="modal hide fade" tabindex="-1" role="dialog">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">×</button>
+                <h5><i class="bx bx-task"></i> Atualizar Tarefa</h5>
+            </div>
+            <form id="form-tarefa-progresso">
+                <input type="hidden" name="tarefa_id" id="tarefa-id">
+                <div class="modal-body">
+                    <div class="control-group">
+                        <label class="control-label">Tarefa</label>
+                        <div class="controls">
+                            <input type="text" id="tarefa-titulo" class="span12" readonly style="background: #f5f5f5;">
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">% Concluido</label>
+                        <div class="controls">
+                            <input type="range" name="percentual" id="tarefa-percentual" class="span12" min="0" max="100" style="margin: 10px 0;">
+                            <div style="text-align: center; font-size: 1.2rem; font-weight: 600; color: #667eea;">
+                                <span id="tarefa-valor">0</span>%
+                            </div>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">Horas Trabalhadas</label>
+                        <div class="controls">
+                            <input type="number" name="horas_trabalhadas" id="tarefa-horas" class="span12" step="0.5" min="0" placeholder="Ex: 2.5">
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">Observacao</label>
+                        <div class="controls">
+                            <textarea name="observacao" id="tarefa-observacao" class="span12" rows="3" placeholder="O que foi feito..."></textarea>
                         </div>
                     </div>
                 </div>
@@ -258,9 +317,92 @@ $statusCores = [
         </div>
 
         <script>
+        // Carregar tarefas do tecnico
+        function carregarTarefas() {
+            $.ajax({
+                url: '<?= site_url("tecnicos_admin/buscar_tarefas_tecnico") ?>',
+                type: 'GET',
+                data: { obra_id: <?= $obra->id ?> },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success && response.tarefas.length > 0) {
+                        let html = '<div style="display: flex; flex-direction: column; gap: 10px;">';
+
+                        response.tarefas.forEach(function(t) {
+                            const prioridadeCores = {
+                                'urgente': '#f44336',
+                                'alta': '#ff9800',
+                                'normal': '#2196f3',
+                                'baixa': '#4caf50'
+                            };
+                            const cor = prioridadeCores[t.prioridade] || '#888';
+
+                            const statusLabels = {
+                                'pendente': 'Pendente',
+                                'em_andamento': 'Em Andamento',
+                                'pausada': 'Pausada',
+                                'concluida': 'Concluida'
+                            };
+
+                            const isConcluida = t.status === 'concluida';
+
+                            html += '<div class="tarefa-card" style="padding: 15px; background: #f8f9fa; border-radius: 12px; border-left: 4px solid ' + cor + '; opacity: ' + (isConcluida ? '0.7' : '1') + ';">';
+                            html += '<div style="display: flex; justify-content: space-between; align-items: flex-start;">';
+                            html += '<div>';
+                            html += '<div style="font-weight: 600; color: #333;">' + t.titulo + '</div>';
+                            if (t.descricao) {
+                                html += '<div style="font-size: 0.85rem; color: #666; margin-top: 3px;">' + t.descricao.substring(0, 60) + '...</div>';
+                            }
+                            html += '<div style="margin-top: 5px;">';
+                            html += '<span style="padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; background: ' + cor + '20; color: ' + cor + '; margin-right: 5px;">' + t.prioridade.toUpperCase() + '</span>';
+                            html += '<span style="font-size: 0.8rem; color: #888;"><i class="bx bx-calendar"></i> ' + t.data_fim_prevista + '</span>';
+                            html += '</div>';
+                            html += '</div>';
+
+                            if (!isConcluida) {
+                                html += '<button type="button" class="btn btn-small btn-primary" onclick="abrirModalTarefa(' + t.id + ', \'' + t.titulo + '\', ' + t.percentual_concluido + ')">';
+                                html += '<i class="bx bx-edit"></i>';
+                                html += '</button>';
+                            }
+                            html += '</div>';
+
+                            html += '<div style="margin-top: 10px;">';
+                            html += '<div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #666; margin-bottom: 3px;">';
+                            html += '<span>' + statusLabels[t.status] + '</span>';
+                            html += '<span>' + t.percentual_concluido + '%</span>';
+                            html += '</div>';
+                            html += '<div style="height: 6px; background: #e0e0e0; border-radius: 3px; overflow: hidden;">';
+                            html += '<div style="height: 100%; width: ' + t.percentual_concluido + '%; background: ' + cor + '; border-radius: 3px; transition: width 0.3s;"></div>';
+                            html += '</div>';
+                            html += '</div>';
+
+                            html += '</div>';
+                        });
+
+                        html += '</div>';
+                        $('#minhas-tarefas').html(html);
+                    } else {
+                        $('#minhas-tarefas').html('<div style="text-align: center; padding: 40px; color: #888;"><i class="bx bx-task" style="font-size: 3rem; margin-bottom: 15px;"></i><p>Nenhuma tarefa atribuida</p></div>');
+                    }
+                },
+                error: function() {
+                    $('#minhas-tarefas').html('<div style="text-align: center; padding: 40px; color: #f44336;">Erro ao carregar tarefas</div>');
+                }
+            });
+        }
+
+        // Carregar tarefas ao iniciar
+        $(document).ready(function() {
+            carregarTarefas();
+        });
+
         // Atualizar valor do range
         $('#progresso-percentual').on('input', function() {
             $('#progresso-valor').text($(this).val());
+        });
+
+        $('#tarefa-percentual').on('input', function() {
+            $('#tarefa-valor').text($(this).val());
         });
 
         function atualizarProgresso(etapaId, etapaNome) {
@@ -269,8 +411,53 @@ $statusCores = [
             $('#modal-atualizar-progresso').modal('show');
         }
 
+        function abrirModalTarefa(tarefaId, titulo, percentual) {
+            $('#tarefa-id').val(tarefaId);
+            $('#tarefa-titulo').val(titulo);
+            $('#tarefa-percentual').val(percentual);
+            $('#tarefa-valor').text(percentual);
+            $('#tarefa-observacao').val('');
+            $('#tarefa-horas').val('');
+            $('#modal-tarefa-progresso').modal('show');
+        }
+
+        // Submeter atualizacao da tarefa
+        $('#form-tarefa-progresso').on('submit', function(e) {
+            e.preventDefault();
+
+            const formData = $(this).serialize();
+
+            $.ajax({
+                url: '<?= site_url("tecnicos_admin/api_atualizar_tarefa_tecnico") ?>',
+                type: 'POST',
+                data: formData,
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        $('#modal-tarefa-progresso').modal('hide');
+                        carregarTarefas();
+
+                        // Mostrar alerta de sucesso
+                        const alert = '<div class="alert alert-success" style="position: fixed; top: 20px; right: 20px; z-index: 9999;">' +
+                                      '<button type="button" class="close" data-dismiss="alert">×</button>' +
+                                      '<i class="bx bx-check"></i> ' + response.message +
+                                      '</div>';
+                        $('body').append(alert);
+                        setTimeout(function() {
+                            $('.alert').fadeOut(function() { $(this).remove(); });
+                        }, 3000);
+                    } else {
+                        alert('Erro: ' + response.message);
+                    }
+                },
+                error: function() {
+                    alert('Erro ao atualizar tarefa');
+                }
+            });
+        });
+
         function concluirEtapa(etapaId) {
-            if (!confirm('Tem certeza que deseja marcar esta etapa como concluída?')) return;
+            if (!confirm('Tem certeza que deseja marcar esta etapa como concluida?')) return;
 
             $.ajax({
                 url: '<?= site_url("tecnicos_admin/atualizar_status_etapa") ?>',
@@ -290,6 +477,16 @@ $statusCores = [
             });
         }
         </script>
+
+        <style>
+        .tarefa-card {
+            transition: all 0.3s;
+        }
+        .tarefa-card:hover {
+            transform: translateX(3px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        </style>
 
     <?php else: ?>
         <div style="text-align: center; padding: 80px 20px;">

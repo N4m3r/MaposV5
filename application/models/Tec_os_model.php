@@ -228,12 +228,13 @@ class Tec_os_model extends CI_Model
     }
 
     /**
-     * Buscar serviços da OS (tabela padrão MAPOS)
+     * Buscar serviços da OS (tabela padrão MAPOS ou tabela os_servicos do portal)
      */
     public function getServicosOs($os_id)
     {
         $this->db->reset_query();
 
+        // Primeiro tenta buscar da tabela padrão servicos_os
         $this->db->select('servicos_os.*, servicos.nome as servico_nome, servicos.preco as servico_preco, servicos.codigo as servico_codigo, servicos.checklist_padrao');
         $this->db->from('servicos_os');
         $this->db->join('servicos', 'servicos.idServicos = servicos_os.servicos_id', 'left');
@@ -247,7 +248,22 @@ class Tec_os_model extends CI_Model
         }
 
         $result = $query->result();
-        log_message('debug', 'getServicosOs: OS ' . $os_id . ' - ' . count($result) . ' serviços encontrados');
+        log_message('debug', 'getServicosOs: OS ' . $os_id . ' - ' . count($result) . ' serviços encontrados em servicos_os');
+
+        // Se não encontrou nada, tenta buscar da tabela os_servicos (portal do técnico)
+        if (empty($result) && $this->db->table_exists('os_servicos')) {
+            $this->db->reset_query();
+            $this->db->select('os_servicos.id as idServicos_os, os_servicos.servico_id as servicos_id, os_servicos.quantidade, os_servicos.status, os_servicos.observacao, servicos.nome as servico_nome, servicos.preco as servico_preco, servicos.codigo as servico_codigo');
+            $this->db->from('os_servicos');
+            $this->db->join('servicos', 'servicos.idServicos = os_servicos.servico_id', 'left');
+            $this->db->where('os_servicos.os_id', $os_id);
+
+            $query2 = $this->db->get();
+            if ($query2 !== false) {
+                $result = $query2->result();
+                log_message('debug', 'getServicosOs: OS ' . $os_id . ' - ' . count($result) . ' serviços encontrados em os_servicos');
+            }
+        }
 
         return $result;
     }

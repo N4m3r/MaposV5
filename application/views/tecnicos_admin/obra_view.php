@@ -52,6 +52,10 @@ $etapaStatusColors = [
                 <span class="button__icon"><i class="bx bx-edit"></i></span>
                 <span class="button__text2">Editar</span>
             </a>
+            <a href="<?= site_url('tecnicos_admin/tarefas_obra/' . $obra->id) ?>" class="button btn btn-mini btn-success">
+                <span class="button__icon"><i class="bx bx-task"></i></span>
+                <span class="button__text2">Tarefas</span>
+            </a>
         </div>
     </div>
 
