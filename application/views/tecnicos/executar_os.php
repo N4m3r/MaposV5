@@ -20,6 +20,60 @@
             </div>
             <div class="widget-content">
 
+                <!-- Informações da OS -->
+                <div class="row-fluid">
+                    <div class="span12">
+                        <div class="os-details-card">
+                            <div class="os-detail-row">
+                                <div class="os-detail-item">
+                                    <span class="detail-label"><i class="bx bx-hash"></i> OS Nº</span>
+                                    <span class="detail-value"><?php echo $os->idOs; ?></span>
+                                </div>
+                                <div class="os-detail-item">
+                                    <span class="detail-label"><i class="bx bx-calendar"></i> Data</span>
+                                    <span class="detail-value"><?php echo date('d/m/Y', strtotime($os->dataInicial)); ?></span>
+                                </div>
+                                <div class="os-detail-item">
+                                    <span class="detail-label"><i class="bx bx-flag"></i> Status</span>
+                                    <span class="detail-value status-badge status-<?php echo strtolower(str_replace(' ', '_', $os->status)); ?>"><?php echo $os->status; ?></span>
+                                </div>
+                            </div>
+                            <?php if ($os->descricaoProduto): ?>
+                                <div class="os-detail-row full-width">
+                                    <div class="os-detail-item block">
+                                        <span class="detail-label"><i class="bx bx-detail"></i> Descrição</span>
+                                        <span class="detail-value descricao-texto"><?php echo htmlspecialchars($os->descricaoProduto, ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></span>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
+                            <?php if ($os->defeito): ?>
+                                <div class="os-detail-row full-width">
+                                    <div class="os-detail-item block alert-item">
+                                        <span class="detail-label"><i class="bx bx-error-circle"></i> Problema Relatado</span>
+                                        <span class="detail-value"><?php echo htmlspecialchars($os->defeito, ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></span>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
+                            <?php if ($os->observacoes): ?>
+                                <div class="os-detail-row full-width">
+                                    <div class="os-detail-item block observacao-item">
+                                        <span class="detail-label"><i class="bx bx-note"></i> Observações</span>
+                                        <span class="detail-value"><?php echo htmlspecialchars($os->observacoes, ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></span>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
+                            <?php if ($os->laudoTecnico): ?>
+                                <div class="os-detail-row full-width">
+                                    <div class="os-detail-item block laudo-item">
+                                        <span class="detail-label"><i class="bx bx-wrench"></i> Laudo Técnico</span>
+                                        <span class="detail-value"><?php echo htmlspecialchars($os->laudoTecnico, ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></span>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Informações do Cliente -->
                 <div class="row-fluid">
                     <div class="span12">
@@ -30,9 +84,23 @@
                             <div class="client-info">
                                 <h4><?php echo $cliente ? htmlspecialchars($cliente->nomeCliente, ENT_COMPAT | ENT_HTML5, 'UTF-8') : 'Cliente não encontrado'; ?></h4>
                                 <?php if ($cliente): ?>
-                                    <p><i class="bx bx-map"></i> <?php echo htmlspecialchars($cliente->endereco ?? 'Endereço não informado', ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></p>
+                                    <div class="client-meta">
+                                        <span class="meta-item"><i class="bx bx-map"></i> <?php echo htmlspecialchars($cliente->endereco ?? 'Endereço não informado', ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></span>
+                                    </div>
                                     <?php if ($cliente->telefone): ?>
-                                        <p><i class="bx bx-phone"></i> <?php echo htmlspecialchars($cliente->telefone, ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></p>
+                                        <div class="client-meta">
+                                            <span class="meta-item"><i class="bx bx-phone"></i> <?php echo htmlspecialchars($cliente->telefone, ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></span>
+                                        </div>
+                                    <?php endif; ?>
+                                    <?php if ($cliente->celular): ?>
+                                        <div class="client-meta">
+                                            <span class="meta-item"><i class="bx bx-mobile"></i> <?php echo htmlspecialchars($cliente->celular, ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></span>
+                                        </div>
+                                    <?php endif; ?>
+                                    <?php if ($cliente->email): ?>
+                                        <div class="client-meta">
+                                            <span class="meta-item"><i class="bx bx-envelope"></i> <?php echo htmlspecialchars($cliente->email, ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></span>
+                                        </div>
                                     <?php endif; ?>
                                 <?php endif; ?>
                             </div>
@@ -76,9 +144,9 @@
                             <div class="progress">
                                 <div class="bar bar-success" id="progressBar" style="width: <?php echo $execucao ? $execucao->progresso_execucao : 0; ?>%"></div>
                             </div>
-                            <p class="text-center" id="progressText">
+                            <div class="text-center progress-text" id="progressText">
                                 <?php echo $execucao ? $execucao->progresso_execucao : 0; ?>% concluído
-                            </p>
+                            </div>
                         </div>
                     </div>
 
@@ -106,7 +174,7 @@
                                                 <div class="checklist-text">
                                                     <h4><?php echo htmlspecialchars($item['descricao'] ?? $item, ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></h4>
                                                     <?php if (isset($item['servico'])): ?>
-                                                        <p><?php echo htmlspecialchars($item['servico'], ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></p>
+                                                        <div class="checklist-servico"><?php echo htmlspecialchars($item['servico'], ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></div>
                                                     <?php endif; ?>
                                                 </div>
                                             </div>
@@ -125,7 +193,7 @@
                                     <?php endforeach; ?>
                                 <?php else: ?>
                                     <div class="empty-state">
-                                        <p>Nenhum item de checklist configurado</p>
+                                        <div class="empty-text">Nenhum item de checklist configurado</div>
                                     </div>
                                 <?php endif; ?>
                             </div>
@@ -175,7 +243,7 @@
                                                     </div>
                                                     <div class="produto-detalhes">
                                                         <span class="produto-qtd">Qtd: <?php echo $produto->quantidade ?? 0; ?> <?php echo htmlspecialchars($produto->unidade ?? 'un', ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></span>
-                                                                                                                <span class="produto-preco">R$ <?php echo number_format($produto->preco ?? 0, 2, ',', '.'); ?></span>
+                                                        <span class="produto-preco">R$ <?php echo number_format($produto->preco ?? 0, 2, ',', '.'); ?></span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -183,7 +251,39 @@
                                     </div>
                                 <?php else: ?>
                                     <div class="empty-state">
-                                        <p>Nenhum produto cadastrado nesta OS</p>
+                                        <div class="empty-text">Nenhum produto cadastrado nesta OS</div>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Serviços da OS -->
+                    <div class="widget-box">
+                        <div class="widget-title">
+                            <span class="icon"><i class="bx bx-wrench"></i></span>
+                            <h5>Serviços da OS</h5>
+                        </div>
+                        <div class="widget-content">
+                            <div id="servicosContainer">
+                                <?php if (!empty($servicos)): ?>
+                                    <div class="servicos-list">
+                                        <?php foreach ($servicos as $servico): ?>
+                                            <div class="servico-item">
+                                                <div class="servico-info">
+                                                    <div class="servico-nome">
+                                                        <?php echo htmlspecialchars($servico->servico_nome ?? 'Serviço', ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?>
+                                                    </div>
+                                                    <?php if ($servico->servico_codigo): ?>
+                                                        <div class="servico-codigo">Código: <?php echo htmlspecialchars($servico->servico_codigo, ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></div>
+                                                    <?php endif; ?>
+                                                </div>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                <?php else: ?>
+                                    <div class="empty-state">
+                                        <div class="empty-text">Nenhum serviço cadastrado nesta OS</div>
                                     </div>
                                 <?php endif; ?>
                             </div>
@@ -199,7 +299,7 @@
                         <div class="widget-content">
                             <div id="materiaisEstoqueContainer">
                                 <div class="empty-state">
-                                    <p>Carregando estoque...</p>
+                                    <div class="empty-text">Carregando estoque...</div>
                                 </div>
                             </div>
                             <button type="button" class="btn btn-info btn-block" onclick="carregarMeuEstoque()">
@@ -238,7 +338,7 @@
                     <div class="widget-box">
                         <div class="widget-title">
                             <span class="icon"><i class="bx bx-note"></i></span>
-                            <h5>Observações</h5>
+                            <h5>Observações do Técnico</h5>
                         </div>
                         <div class="widget-content">
                             <textarea id="observacoes" rows="4" class="span12" placeholder="Descreva o que foi realizado, problemas encontrados, recomendações..."></textarea>
@@ -308,12 +408,113 @@
 </div>
 
 <style>
+/* OS Details Card */
+.os-details-card {
+    background: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.os-detail-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.os-detail-row.full-width {
+    width: 100%;
+}
+
+.os-detail-row:last-child {
+    margin-bottom: 0;
+}
+
+.os-detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.os-detail-item.block {
+    flex: 1;
+    width: 100%;
+}
+
+.detail-label {
+    font-size: 0.8rem;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.detail-label i {
+    margin-right: 5px;
+    color: #667eea;
+}
+
+.detail-value {
+    font-size: 1rem;
+    color: #333;
+    font-weight: 500;
+}
+
+.detail-value.descricao-texto {
+    font-weight: normal;
+    line-height: 1.5;
+    color: #555;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.status-badge.status-aberto {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.status-badge.status-em_andamento {
+    background: #fff3e0;
+    color: #ef6c00;
+}
+
+.status-badge.status-finalizada {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.alert-item {
+    background: #ffebee;
+    border-color: #ffcdd2;
+}
+
+.alert-item .detail-label {
+    color: #c62828;
+}
+
+.observacao-item {
+    background: #fff8e1;
+    border-color: #ffecb3;
+}
+
+.laudo-item {
+    background: #e8f5e9;
+    border-color: #c8e6c9;
+}
+
 /* Cliente Card */
 .client-card {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 15px;
-    padding: 15px;
+    padding: 20px;
     background: #f8f9fa;
     border-radius: 12px;
     margin-bottom: 20px;
@@ -329,22 +530,29 @@
     justify-content: center;
     color: white;
     font-size: 24px;
+    flex-shrink: 0;
 }
 
 .client-info h4 {
-    margin: 0 0 5px 0;
+    margin: 0 0 10px 0;
     color: #333;
+    font-size: 1.2rem;
 }
 
-.client-info p {
-    margin: 3px 0;
+.client-meta {
+    margin: 5px 0;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     color: #666;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
 }
 
-.client-info i {
+.meta-item i {
     color: #667eea;
-    margin-right: 5px;
 }
 
 /* Action Card */
@@ -452,10 +660,10 @@
     font-size: 0.95rem;
 }
 
-.checklist-text p {
+.checklist-servico {
     margin: 0;
     font-size: 0.8rem;
-    color: #999;
+    color: #888;
 }
 
 .checklist-actions {
@@ -465,6 +673,49 @@
 
 .checklist-actions .btn {
     flex: 1;
+}
+
+/* Gallery */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 10px;
+}
+
+.gallery-item {
+    aspect-ratio: 1;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #e0e0e0;
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.gallery-add {
+    aspect-ratio: 1;
+    border: 2px dashed #667eea;
+    border-radius: 8px;
+    background: rgba(102, 126, 234, 0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #667eea;
+    transition: all 0.3s;
+}
+
+.gallery-add:hover {
+    background: rgba(102, 126, 234, 0.1);
+}
+
+.gallery-add i {
+    font-size: 24px;
+    margin-bottom: 5px;
 }
 
 /* Produtos da OS */
@@ -514,6 +765,36 @@
     color: #2e7d32;
 }
 
+/* Serviços da OS */
+.servicos-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.servico-item {
+    background: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 12px 15px;
+    transition: all 0.3s;
+}
+
+.servico-item:hover {
+    border-color: #667eea;
+}
+
+.servico-nome {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 3px;
+}
+
+.servico-codigo {
+    font-size: 0.8rem;
+    color: #888;
+}
+
 /* Estoque do Técnico */
 .estoque-list {
     display: flex;
@@ -547,49 +828,6 @@
     padding: 3px 10px;
     border-radius: 12px;
     font-size: 0.8rem;
-}
-
-/* Gallery */
-.gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: 10px;
-}
-
-.gallery-item {
-    aspect-ratio: 1;
-    border-radius: 8px;
-    overflow: hidden;
-    background: #e0e0e0;
-}
-
-.gallery-item img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.gallery-add {
-    aspect-ratio: 1;
-    border: 2px dashed #667eea;
-    border-radius: 8px;
-    background: rgba(102, 126, 234, 0.05);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    color: #667eea;
-    transition: all 0.3s;
-}
-
-.gallery-add:hover {
-    background: rgba(102, 126, 234, 0.1);
-}
-
-.gallery-add i {
-    font-size: 24px;
-    margin-bottom: 5px;
 }
 
 /* Signature Pad */
@@ -634,12 +872,19 @@
     color: #999;
 }
 
-.empty-state p {
+.empty-text {
     margin: 0;
 }
 
 .hidden {
     display: none !important;
+}
+
+/* Progress text */
+.progress-text {
+    margin-top: 10px;
+    color: #666;
+    font-size: 0.9rem;
 }
 
 /* Responsividade Mobile */
@@ -649,6 +894,15 @@
         text-align: center;
     }
 
+    .client-avatar {
+        margin: 0 auto;
+    }
+
+    .os-detail-row {
+        flex-direction: column;
+        gap: 10px;
+    }
+
     .checklist-header {
         flex-direction: column;
     }
@@ -656,13 +910,13 @@
     .gallery-grid {
         grid-template-columns: repeat(3, 1fr);
     }
-}
 
-@media (max-width: 480px) {
     .checklist-actions {
         flex-direction: column;
     }
+}
 
+@media (max-width: 480px) {
     .gallery-grid {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -892,16 +1146,14 @@ async function capturarFotoCheckout() {
             alert('Câmera não disponível. Você pode continuar sem foto.');
         }
         console.log('Câmera opcional - erro silenciado:', err.message);
-        alert('Erro ao acessar câmera: ' + err.message);
     }
 }
 
 // Execução
 async function iniciarExecucao() {
-    if (!latitude || !longitude) {
-        alert('Aguardando localização...');
-        return;
-    }
+    // Localização é opcional - usa valores padrão se não disponível
+    const lat = latitude || 0;
+    const lng = longitude || 0;
 
     const btn = document.getElementById('btnIniciar');
     btn.classList.add('loading');
@@ -909,8 +1161,8 @@ async function iniciarExecucao() {
 
     const formData = new FormData();
     formData.append('os_id', osId);
-    formData.append('latitude', latitude);
-    formData.append('longitude', longitude);
+    formData.append('latitude', lat);
+    formData.append('longitude', lng);
     formData.append('foto_checkin', fotoCheckin || '');
     formData.append('tipo', 'inicio_local');
 
@@ -1003,10 +1255,14 @@ async function finalizarExecucao() {
 
     const assinatura = canvas.toDataURL('image/png');
 
+    // Localização é opcional
+    const lat = latitude || 0;
+    const lng = longitude || 0;
+
     const formData = new FormData();
     formData.append('execucao_id', execucaoId);
-    formData.append('latitude', latitude);
-    formData.append('longitude', longitude);
+    formData.append('latitude', lat);
+    formData.append('longitude', lng);
     formData.append('foto_checkout', fotoCheckout || '');
     formData.append('assinatura_cliente', assinatura);
     formData.append('nome_cliente_assina', nomeAssinante);
@@ -1037,7 +1293,7 @@ async function finalizarExecucao() {
 // Carregar estoque do técnico
 async function carregarMeuEstoque() {
     const container = document.getElementById('materiaisEstoqueContainer');
-    container.innerHTML = '<div class="empty-state"><p>Carregando...</p></div>';
+    container.innerHTML = '<div class="empty-state"><div class="empty-text">Carregando...</div></div>';
 
     try {
         const response = await fetch('<?php echo site_url("tecnicos/obter_estoque_json"); ?>');
@@ -1058,11 +1314,11 @@ async function carregarMeuEstoque() {
             html += '</div>';
             container.innerHTML = html;
         } else {
-            container.innerHTML = '<div class="empty-state"><p>Seu estoque está vazio</p></div>';
+            container.innerHTML = '<div class="empty-state"><div class="empty-text">Seu estoque está vazio</div></div>';
         }
     } catch (err) {
         console.error('Erro ao carregar estoque:', err);
-        container.innerHTML = '<div class="empty-state"><p>Erro ao carregar estoque. Tente novamente.</p></div>';
+        container.innerHTML = '<div class="empty-state"><div class="empty-text">Erro ao carregar estoque. Tente novamente.</div></div>';
     }
 }
 
