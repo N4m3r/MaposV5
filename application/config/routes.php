@@ -95,6 +95,10 @@ $route['dre/lancamentos'] = 'dre/lancamentos';
 // Rotas de Relatórios de Técnicos
 $route['relatoriotecnicos'] = 'relatoriotecnicos';
 
+// Rotas de Notificações
+$route['notificacoes/listar'] = 'notificacoes/listar';
+$route['notificacoes/marcar_lida'] = 'notificacoes/marcar_lida';
+
 // Rotas de Webhooks
 $route['webhooks'] = 'webhooks';
 $route['webhooks/docs'] = 'webhooks/docs';

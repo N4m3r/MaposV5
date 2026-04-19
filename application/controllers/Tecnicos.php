@@ -421,6 +421,8 @@ class Tecnicos extends CI_Controller
      */
     public function adicionar_foto()
     {
+        header('Content-Type: application/json');
+
         $execucao_id = $this->input->post('execucao_id');
         $foto = $this->input->post('foto');
         $descricao = $this->input->post('descricao');
@@ -444,6 +446,11 @@ class Tecnicos extends CI_Controller
 
         // Salvar foto
         $caminho_foto = $this->_salvar_foto_base64($foto, 'os', $tecnico_id);
+
+        if (!$caminho_foto) {
+            echo json_encode(['success' => false, 'message' => 'Erro ao salvar foto']);
+            return;
+        }
 
         // Adicionar à galeria
         $this->tec_os_model->adicionarFotoGaleria($execucao_id, [

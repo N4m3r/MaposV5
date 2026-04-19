@@ -188,6 +188,23 @@
   <div class="navebarn">
     <div id="user-nav" class="navbar navbar-inverse">
       <ul class="nav">
+        <!-- Notificações -->
+        <li class="dropdown" id="notifications-dropdown">
+          <a href="#" class="tip-right dropdown-toggle" data-toggle="dropdown" title="Notificações">
+            <i class='bx bx-bell iconN'></i>
+            <span class="notif-badge" id="notif-count" style="display:none;">0</span>
+          </a>
+          <ul class="dropdown-menu" id="notif-list" style="width:340px;right:0;left:auto;">
+            <li class="notif-header" style="padding:8px 12px;font-weight:bold;border-bottom:1px solid #ddd;">
+              <span>Notificações</span>
+              <a href="#" id="notif-marcar-todas" style="float:right;font-size:11px;font-weight:normal;">Marcar todas como lidas</a>
+            </li>
+            <li id="notif-items" style="max-height:320px;overflow-y:auto;">
+              <div style="padding:15px;text-align:center;color:#888;">Carregando...</div>
+            </li>
+          </ul>
+        </li>
+
         <!-- Botão Trocar Tema -->
         <li class="" id="theme-toggle-btn">
           <a href="#" class="tip-right" title="Alternar Tema" id="btn-toggle-theme">
@@ -241,6 +258,7 @@
 
     <!-- New User -->
     <div id="userr" style="padding-right:45px;display:flex;flex-direction:column;align-items:flex-end;justify-content:center;">
+
       <div class="user-names userT0">
         <?php
         function saudacao()
@@ -260,27 +278,6 @@
         ?>
       </div>
       <div class="userT"><?= $this->session->userdata('nome_admin') ?></div>
-
-      <!-- Notificações ao lado da foto -->
-      <div class="notificacoes-header" style="position:absolute;right:45px;top:50%;transform:translateY(-50%);z-index:1000;">
-        <ul class="nav" style="margin:0;">
-          <li class="dropdown" id="notifications-dropdown" style="list-style:none;">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Notificações" style="padding:10px;display:block;position:relative;">
-              <i class='bx bx-bell' style="font-size:22px;color:#333;"></i>
-              <span class="notif-badge" id="notif-count" style="display:none;position:absolute;top:2px;right:2px;background:#e74c3c;color:#fff;font-size:10px;font-weight:bold;border-radius:50%;min-width:18px;height:18px;line-height:18px;text-align:center;padding:0 4px;">0</span>
-            </a>
-            <ul class="dropdown-menu" id="notif-list" style="width:340px;right:0;left:auto;margin-top:10px;">
-              <li class="notif-header" style="padding:8px 12px;font-weight:bold;border-bottom:1px solid #ddd;">
-                <span>Notificações</span>
-                <a href="#" id="notif-marcar-todas" style="float:right;font-size:11px;font-weight:normal;">Marcar todas como lidas</a>
-              </li>
-              <li id="notif-items" style="max-height:320px;overflow-y:auto;">
-                <div style="padding:15px;text-align:center;color:#888;">Carregando...</div>
-              </li>
-            </ul>
-          </li>
-        </ul>
-      </div>
 
       <section style="display:block;position:absolute;right:10px">
         <div class="profile">

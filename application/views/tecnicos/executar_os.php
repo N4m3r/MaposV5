@@ -1192,6 +1192,8 @@ async function iniciarCamera() {
 }
 
 async function abrirCamera() {
+    const modal = document.getElementById('cameraModal');
+    modal.removeAttribute('aria-hidden');
     jQuery('#cameraModal').modal('show');
     fotoServicoBase64 = null;
     abaAtiva = 'camera';
@@ -1208,6 +1210,7 @@ async function abrirCamera() {
 
 function fecharCamera() {
     jQuery('#cameraModal').modal('hide');
+    document.getElementById('cameraModal').setAttribute('aria-hidden', 'true');
     if (stream) {
         stream.getTracks().forEach(track => track.stop());
         stream = null;
@@ -1495,15 +1498,23 @@ async function salvarChecklistItem(itemId, status) {
 
         if (data.success) {
             const item = document.querySelector(`[data-item-id="${itemId}"]`);
+            if (!item) {
+                console.error('Item do checklist nao encontrado:', itemId);
+                return;
+            }
             item.classList.remove('conforme', 'nao_conforme');
             item.classList.add(status === 'conforme' ? 'conforme' : 'nao_conforme');
 
             const checkbox = item.querySelector('.checklist-checkbox');
-            checkbox.innerHTML = status === 'conforme' ? '<i class="bx bx-check"></i>' : '<i class="bx bx-x"></i>';
+            if (checkbox) {
+                checkbox.innerHTML = status === 'conforme' ? '<i class="bx bx-check"></i>' : '<i class="bx bx-x"></i>';
+            }
 
             const botoes = item.querySelectorAll('.checklist-actions .btn');
-            botoes[0].className = 'btn btn-mini ' + (status === 'conforme' ? 'btn-success' : '');
-            botoes[1].className = 'btn btn-mini ' + (status === 'nao_conforme' ? 'btn-danger' : '');
+            if (botoes.length >= 2) {
+                botoes[0].className = 'btn btn-mini ' + (status === 'conforme' ? 'btn-success' : '');
+                botoes[1].className = 'btn btn-mini ' + (status === 'nao_conforme' ? 'btn-danger' : '');
+            }
 
             atualizarProgresso();
         }
