@@ -2447,13 +2447,13 @@ function initCanvasTecnico() {
 
     // Configurar dimensões
     const resizeCanvasTecnico = function() {
-        const rect = canvasTecnico.getBoundingClientRect();
-        canvasTecnico.width = rect.width > 0 ? rect.width : 300;
-        canvasTecnico.height = 150;
-        ctxTecnico.strokeStyle = '#000';
-        ctxTecnico.lineWidth = 2;
-        ctxTecnico.lineCap = 'round';
-        console.log('Canvas redimensionado:', canvasTecnico.width, 'x', canvasTecnico.height);
+        const rect = window.canvasTecnico.getBoundingClientRect();
+        window.canvasTecnico.width = rect.width > 0 ? rect.width : 300;
+        window.canvasTecnico.height = 150;
+        window.ctxTecnico.strokeStyle = '#000';
+        window.ctxTecnico.lineWidth = 2;
+        window.ctxTecnico.lineCap = 'round';
+        console.log('Canvas redimensionado:', window.canvasTecnico.width, 'x', window.canvasTecnico.height);
     };
 
     // Aguardar um tick para garantir que o layout está pronto
@@ -2461,69 +2461,69 @@ function initCanvasTecnico() {
     window.addEventListener('resize', resizeCanvasTecnico);
 
     // Eventos do mouse
-    canvasTecnico.addEventListener('mousedown', function(e) {
-        isDrawingTecnico = true;
-        const rect = canvasTecnico.getBoundingClientRect();
-        ctxTecnico.beginPath();
-        ctxTecnico.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+    window.canvasTecnico.addEventListener('mousedown', function(e) {
+        window.isDrawingTecnico = true;
+        const rect = window.canvasTecnico.getBoundingClientRect();
+        window.ctxTecnico.beginPath();
+        window.ctxTecnico.moveTo(e.clientX - rect.left, e.clientY - rect.top);
     });
 
-    canvasTecnico.addEventListener('mousemove', function(e) {
-        if (!isDrawingTecnico) return;
-        const rect = canvasTecnico.getBoundingClientRect();
-        ctxTecnico.lineTo(e.clientX - rect.left, e.clientY - rect.top);
-        ctxTecnico.stroke();
+    window.canvasTecnico.addEventListener('mousemove', function(e) {
+        if (!window.isDrawingTecnico) return;
+        const rect = window.canvasTecnico.getBoundingClientRect();
+        window.ctxTecnico.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+        window.ctxTecnico.stroke();
     });
 
-    canvasTecnico.addEventListener('mouseup', function() {
-        isDrawingTecnico = false;
+    window.canvasTecnico.addEventListener('mouseup', function() {
+        window.isDrawingTecnico = false;
     });
 
-    canvasTecnico.addEventListener('mouseout', function() {
-        isDrawingTecnico = false;
+    window.canvasTecnico.addEventListener('mouseout', function() {
+        window.isDrawingTecnico = false;
     });
 
     // Eventos touch
-    canvasTecnico.addEventListener('touchstart', function(e) {
+    window.canvasTecnico.addEventListener('touchstart', function(e) {
         e.preventDefault();
-        isDrawingTecnico = true;
-        const rect = canvasTecnico.getBoundingClientRect();
+        window.isDrawingTecnico = true;
+        const rect = window.canvasTecnico.getBoundingClientRect();
         const touch = e.touches[0];
-        ctxTecnico.beginPath();
-        ctxTecnico.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
+        window.ctxTecnico.beginPath();
+        window.ctxTecnico.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
     });
 
-    canvasTecnico.addEventListener('touchmove', function(e) {
+    window.canvasTecnico.addEventListener('touchmove', function(e) {
         e.preventDefault();
-        if (!isDrawingTecnico) return;
-        const rect = canvasTecnico.getBoundingClientRect();
+        if (!window.isDrawingTecnico) return;
+        const rect = window.canvasTecnico.getBoundingClientRect();
         const touch = e.touches[0];
-        ctxTecnico.lineTo(touch.clientX - rect.left, touch.clientY - rect.top);
-        ctxTecnico.stroke();
+        window.ctxTecnico.lineTo(touch.clientX - rect.left, touch.clientY - rect.top);
+        window.ctxTecnico.stroke();
     });
 
-    canvasTecnico.addEventListener('touchend', function() {
-        isDrawingTecnico = false;
+    window.canvasTecnico.addEventListener('touchend', function() {
+        window.isDrawingTecnico = false;
     });
 }
 
-function limparAssinaturaTecnico() {
-    if (ctxTecnico && canvasTecnico) {
-        ctxTecnico.clearRect(0, 0, canvasTecnico.width, canvasTecnico.height);
+window.limparAssinaturaTecnico = function() {
+    if (window.ctxTecnico && window.canvasTecnico) {
+        window.ctxTecnico.clearRect(0, 0, window.canvasTecnico.width, window.canvasTecnico.height);
     }
-}
+};
 
 // Inicializar quando DOM estiver pronto
-function iniciarCanvasAssinatura() {
+window.iniciarCanvasAssinatura = function() {
     console.log('Inicializando canvas de assinatura...');
     initCanvasTecnico();
-    console.log('Canvas inicializado:', canvasTecnico ? 'OK' : 'Falhou');
-}
+    console.log('Canvas inicializado:', window.canvasTecnico ? 'OK' : 'Falhou');
+};
 
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', iniciarCanvasAssinatura);
+    document.addEventListener('DOMContentLoaded', window.iniciarCanvasAssinatura);
 } else {
-    iniciarCanvasAssinatura();
+    window.iniciarCanvasAssinatura();
 }
 
 // Câmera - OPCIONAL
@@ -2989,7 +2989,7 @@ window.iniciarExecucao = async function() {
                 console.error('execucao_id inválido:', data.execucao_id);
                 return;
             }
-            execucaoId = data.execucao_id;
+            window.execucaoId = data.execucao_id;
             console.log('Execução iniciada com ID:', execucaoId);
             document.getElementById('checkinSection').classList.add('hidden');
             document.getElementById('execucaoSection').classList.remove('hidden');
