@@ -148,10 +148,10 @@
                         </div>
                         <div class="widget-content">
                             <div class="progress">
-                                <div class="bar bar-success" id="progressBar" style="width: <?php echo $execucao ? $execucao->progresso_execucao : 0; ?>%"></div>
+                                <div class="bar bar-success" id="progressBar" style="width: <?php echo $execucao ? $execucao->checklist_completude : 0; ?>%"></div>
                             </div>
                             <div class="text-center progress-text" id="progressText">
-                                <?php echo $execucao ? $execucao->progresso_execucao : 0; ?>% concluído
+                                <?php echo $execucao ? $execucao->checklist_completude : 0; ?>% concluído
                             </div>
                         </div>
                     </div>

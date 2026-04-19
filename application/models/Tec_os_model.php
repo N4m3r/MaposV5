@@ -353,7 +353,7 @@ class Tec_os_model extends CI_Model
         $this->db->where('id', $execucao_id);
         return $this->db->update('tec_os_execucao', [
             'checklist_json' => json_encode($checklist),
-            'progresso_execucao' => $progresso,
+            'checklist_completude' => $progresso,
         ]);
     }
 
