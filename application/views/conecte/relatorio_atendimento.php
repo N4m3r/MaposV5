@@ -292,12 +292,12 @@
             <div class="widget-content">
 
                 <!-- Informações da Empresa (Emitente) -->
-                <?php if (!empty($emitente)): ?>                <div class="relatorio-card">
+                <?php if (!empty($emitente)): ?>>                <div class="relatorio-card">
                     <h5><i class="bx bx-building"></i> Empresa Responsável</h5>
                     <div class="client-card">
                         <div class="client-info">
                             <h4><?php echo $emitente->nome ?? 'Empresa'; ?></h4>
-                            <?php if (!empty($emitente->cnpj)): ?
+                            <?php if (!empty($emitente->cnpj)): ?>>
                                 <div class="client-meta">
                                     <span class="meta-item">
                                         <i class="bx bx-id-card"></i>
@@ -305,7 +305,7 @@
                                     </span>
                                 </div>
                             <?php endif; ?>
-                            <?php if (!empty($emitente->rua) || !empty($emitente->cidade)): ?
+                            <?php if (!empty($emitente->rua) || !empty($emitente->cidade)): ?>>
                                 <div class="client-meta">
                                     <span class="meta-item">
                                         <i class="bx bx-map"></i>
@@ -323,15 +323,15 @@
                                     </span>
                                 </div>
                             <?php endif; ?>
-                            <?php if (!empty($emitente->telefone) || !empty($emitente->email)): ?
+                            <?php if (!empty($emitente->telefone) || !empty($emitente->email)): ?>
                                 <div class="client-meta">
-                                    <?php if (!empty($emitente->telefone)): ?
+                                    <?php if (!empty($emitente->telefone)): ?>
                                         <span class="meta-item">
                                             <i class="bx bx-phone"></i>
                                             <?php echo $emitente->telefone; ?>
                                         </span>
                                     <?php endif; ?>
-                                    <?php if (!empty($emitente->email)): ?
+                                    <?php if (!empty($emitente->email)): ?>
                                         <span class="meta-item">
                                             <i class="bx bx-envelope"></i>
                                             <?php echo $emitente->email; ?>
@@ -365,7 +365,7 @@
                             <span class="info-value"><?php echo !empty($os->dataFinal) ? date('d/m/Y', strtotime($os->dataFinal)) : 'Não definida'; ?></span>
                         </div>
                     </div>
-                    <?php if ($os->descricaoProduto): ?
+                    <?php if ($os->descricaoProduto): ?>
                         <div class="info-row">
                             <div class="info-item" style="flex: 1;">
                                 <span class="info-label">Descrição do Produto/Serviço</span>
@@ -385,7 +385,7 @@
                         <div class="client-info">
                             <h4><?php echo htmlspecialchars($cliente->nomeCliente ?? 'Não informado', ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></h4>
 
-                            <?php if (!empty($cliente->endereco)): ?
+                            <?php if (!empty($cliente->endereco)): ?>
                                 <div class="client-meta">
                                     <span class="meta-item">
                                         <i class="bx bx-map"></i>
@@ -400,7 +400,7 @@
                                 </div>
                             <?php endif; ?>
 
-                            <?php if (!empty($cliente->cidade) || !empty($cliente->estado) || !empty($cliente->cep)): ?
+                            <?php if (!empty($cliente->cidade) || !empty($cliente->estado) || !empty($cliente->cep)): ?>
                                 <div class="client-meta">
                                     <span class="meta-item">
                                         <i class="bx bx-location-plus"></i>
@@ -415,7 +415,7 @@
                                 </div>
                             <?php endif; ?>
 
-                            <?php if (!empty($cliente->telefone) || !empty($cliente->celular)): ?
+                            <?php if (!empty($cliente->telefone) || !empty($cliente->celular)): ?>
                                 <div class="client-meta">
                                     <span class="meta-item">
                                         <i class="bx bx-phone"></i>
@@ -429,7 +429,7 @@
                                 </div>
                             <?php endif; ?>
 
-                            <?php if (!empty($cliente->email)): ?
+                            <?php if (!empty($cliente->email)): ?>
                                 <div class="client-meta">
                                     <span class="meta-item">
                                         <i class="bx bx-envelope"></i>
@@ -442,7 +442,7 @@
                 </div>
 
                 <!-- Produtos -->
-                <?php if (!empty($produtos)): ?>                <div class="relatorio-card">
+                <?php if (!empty($produtos)): ?>>                <div class="relatorio-card">
                     <h5><i class="bx bx-package"></i> Produtos Utilizados</h5>
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped">
@@ -453,7 +453,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php foreach ($produtos as $produto): ?>                                <tr>
+                                <?php foreach ($produtos as $produto): ?>>                                <tr>
                                     <td><?php echo htmlspecialchars($produto->descricao ?? $produto->nome ?? 'Produto', ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></td>
                                     <td><?php echo $produto->quantidade ?? 1; ?></td>
                                 </tr>
@@ -465,7 +465,7 @@
                 <?php endif; ?>
 
                 <!-- Serviços -->
-                <?php if (!empty($servicos)): ?>                <div class="relatorio-card">
+                <?php if (!empty($servicos)): ?>>                <div class="relatorio-card">
                     <h5><i class="bx bx-wrench"></i> Serviços Executados</h5>
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped">
@@ -492,19 +492,19 @@
                 <?php endif; ?>
 
                 <!-- Timeline de Execuções -->
-                <?php if (!empty($execucoes)): ?>                <div class="relatorio-card">
+                <?php if (!empty($execucoes)): ?>>                <div class="relatorio-card">
                     <h5><i class="bx bx-time"></i> Histórico de Execução</h5>
 
                     <div class="timeline">
-                        <?php foreach ($execucoes as $execucao): ?>                        <div class="timeline-item">
+                        <?php foreach ($execucoes as $execucao): ?>>                        <div class="timeline-item">
                             <div class="timeline-data">
                                 <i class="bx bx-log-in"></i> Check-in: <?php echo date('d/m/Y H:i', strtotime($execucao->checkin_horario)); ?>
-                                <?php if ($execucao->checkout_horario): ?
+                                <?php if ($execucao->checkout_horario): ?>
                                     <br><i class="bx bx-log-out"></i> Check-out: <?php echo date('d/m/Y H:i', strtotime($execucao->checkout_horario)); ?>
                                 <?php endif; ?>
                             </div>
 
-                            <?php if ($execucao->tempo_atendimento_minutos): ?
+                            <?php if ($execucao->tempo_atendimento_minutos): ?>
                             <div class="timeline-detalhes">
                                 <strong>Tempo de Atendimento:</strong> <?php echo floor($execucao->tempo_atendimento_minutos / 60) . 'h ' . ($execucao->tempo_atendimento_minutos % 60) . 'min'; ?>
                             </div>
@@ -512,7 +512,7 @@
 
                             <?php if ($execucao->checklist_json):
                                 $checklist = json_decode($execucao->checklist_json, true);
-                                if (!empty($checklist['observacoes'])): ?
+                                if (!empty($checklist['observacoes'])): ?>
                             <div class="timeline-detalhes">
                                 <strong>Observações do Técnico:</strong><br>
                                 <?php echo nl2br(htmlspecialchars($checklist['observacoes'])); ?>
@@ -525,7 +525,7 @@
                 <?php endif; ?>
 
                 <!-- Check-ins do Sistema -->
-                <?php if (!empty($checkins)): ?>                <div class="relatorio-card">
+                <?php if (!empty($checkins)): ?>>                <div class="relatorio-card">
                     <h5><i class="bx bx-calendar-check"></i> Registros de Check-in</h5>
                     <div class="table-responsive">
                         <table class="checkin-table">
@@ -538,7 +538,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php foreach ($checkins as $checkin): ?>                                <tr>
+                                <?php foreach ($checkins as $checkin): ?>>                                <tr>
                                     <td><?php echo date('d/m/Y H:i', strtotime($checkin->data_entrada)); ?></td>
                                     <td><?php echo $checkin->data_saida ? date('d/m/Y H:i', strtotime($checkin->data_saida)) : '---'; ?></td>
                                     <td><span class="badge-status badge-success"><?php echo $checkin->status ?? 'Em Andamento'; ?></span></td>
@@ -552,16 +552,16 @@
                 <?php endif; ?>
 
                 <!-- Fotos do Atendimento -->
-                <?php if (!empty($fotosPorEtapa['entrada']) || !empty($fotosPorEtapa['durante']) || !empty($fotosPorEtapa['saida'])): ?>                <div class="relatorio-card">
+                <?php if (!empty($fotosPorEtapa['entrada']) || !empty($fotosPorEtapa['durante']) || !empty($fotosPorEtapa['saida'])): ?>>                <div class="relatorio-card">
                     <h5><i class="bx bx-camera"></i> Registro Fotográfico do Atendimento</h5>
 
-                    <?php if (!empty($fotosPorEtapa['entrada'])): ?>                    <div class="photos-section">
+                    <?php if (!empty($fotosPorEtapa['entrada'])): ?>>                    <div class="photos-section">
                         <div class="photos-section-title">📷 Fotos de Entrada</div>
                         <div class="fotos-grid">
-                            <?php foreach ($fotosPorEtapa['entrada'] as $foto): ?>                            <div class="foto-item">
-                                <?php if (!empty($foto->imagem_base64)): ?>
+                            <?php foreach ($fotosPorEtapa['entrada'] as $foto): ?>>                            <div class="foto-item">
+                                <?php if (!empty($foto->imagem_base64)): ?>>
                                     <img src="<?php echo 'data:image/jpeg;base64,' . $foto->imagem_base64; ?>" alt="Foto de entrada" loading="lazy" decoding="async">
-                                <?php else: ?>
+                                <?php else: ?>>
                                     <img src="<?php echo $foto->url ?? $foto->path ?? ''; ?>" alt="Foto de entrada" loading="lazy" decoding="async">
                                 <?php endif; ?>
                                 <div class="foto-tipo">Entrada</div>
@@ -571,13 +571,13 @@
                     </div>
                     <?php endif; ?>
 
-                    <?php if (!empty($fotosPorEtapa['durante'])): ?>                    <div class="photos-section">
+                    <?php if (!empty($fotosPorEtapa['durante'])): ?>>                    <div class="photos-section">
                         <div class="photos-section-title">📷 Fotos Durante o Atendimento</div>
                         <div class="fotos-grid">
-                            <?php foreach ($fotosPorEtapa['durante'] as $foto): ?>                            <div class="foto-item">
-                                <?php if (!empty($foto->imagem_base64)): ?>
+                            <?php foreach ($fotosPorEtapa['durante'] as $foto): ?>>                            <div class="foto-item">
+                                <?php if (!empty($foto->imagem_base64)): ?>>
                                     <img src="<?php echo 'data:image/jpeg;base64,' . $foto->imagem_base64; ?>" alt="Foto durante atendimento" loading="lazy" decoding="async">
-                                <?php else: ?>
+                                <?php else: ?>>
                                     <img src="<?php echo $foto->url ?? $foto->path ?? ''; ?>" alt="Foto durante atendimento" loading="lazy" decoding="async">
                                 <?php endif; ?>
                                 <div class="foto-tipo">Durante</div>
@@ -587,13 +587,13 @@
                     </div>
                     <?php endif; ?>
 
-                    <?php if (!empty($fotosPorEtapa['saida'])): ?>                    <div class="photos-section">
+                    <?php if (!empty($fotosPorEtapa['saida'])): ?>>                    <div class="photos-section">
                         <div class="photos-section-title">📷 Fotos de Saída</div>
                         <div class="fotos-grid">
-                            <?php foreach ($fotosPorEtapa['saida'] as $foto): ?>                            <div class="foto-item">
-                                <?php if (!empty($foto->imagem_base64)): ?>
+                            <?php foreach ($fotosPorEtapa['saida'] as $foto): ?>>                            <div class="foto-item">
+                                <?php if (!empty($foto->imagem_base64)): ?>>
                                     <img src="<?php echo 'data:image/jpeg;base64,' . $foto->imagem_base64; ?>" alt="Foto de saída" loading="lazy" decoding="async">
-                                <?php else: ?>
+                                <?php else: ?>>
                                     <img src="<?php echo $foto->url ?? $foto->path ?? ''; ?>" alt="Foto de saída" loading="lazy" decoding="async">
                                 <?php endif; ?>
                                 <div class="foto-tipo">Saída</div>
@@ -606,10 +606,10 @@
                 <?php endif; ?>
 
                 <!-- Fotos do Portal do Técnico -->
-                <?php if (!empty($fotosTecnico)): ?>                <div class="relatorio-card">
+                <?php if (!empty($fotosTecnico)): ?>>                <div class="relatorio-card">
                     <h5><i class="bx bx-images"></i> Fotos do Técnico</h5>
                     <div class="fotos-grid">
-                        <?php foreach ($fotosTecnico as $foto): ?>                        <div class="foto-item">
+                        <?php foreach ($fotosTecnico as $foto): ?>>                        <div class="foto-item">
                             <img src="<?php echo base_url($foto->caminho ?? $foto->foto ?? ''); ?>" alt="Foto do técnico" loading="lazy" decoding="async">
                             <div class="foto-tipo"><?php echo htmlspecialchars($foto->descricao ?? $foto->tipo ?? 'Foto', ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></div>
                         </div>
@@ -619,11 +619,11 @@
                 <?php endif; ?>
 
                 <!-- Assinaturas -->
-                <?php if (!empty($assinaturasPorTipo)): ?>                <div class="relatorio-card">
+                <?php if (!empty($assinaturasPorTipo)): ?>>                <div class="relatorio-card">
                     <h5><i class="bx bx-pen"></i> Assinaturas</h5>
 
                     <div class="row-fluid">
-                        <?php if (isset($assinaturasPorTipo['tecnico_entrada'])): ?>                        <div class="span6">
+                        <?php if (isset($assinaturasPorTipo['tecnico_entrada'])): ?>>                        <div class="span6">
                             <div class="assinatura-box">
                                 <h6>Assinatura do Técnico (Entrada)</h6>
                                 <img src="<?php echo base_url($assinaturasPorTipo['tecnico_entrada']->assinatura ?? ''); ?>" alt="Assinatura do técnico" class="assinatura-img">
@@ -631,11 +631,11 @@
                         </div>
                         <?php endif; ?>
 
-                        <?php if (isset($assinaturasPorTipo['cliente_saida'])): ?>                        <div class="span6">
+                        <?php if (isset($assinaturasPorTipo['cliente_saida'])): ?>>                        <div class="span6">
                             <div class="assinatura-box">
                                 <h6>Assinatura do Cliente (Saída)</h6>
                                 <img src="<?php echo base_url($assinaturasPorTipo['cliente_saida']->assinatura ?? ''); ?>" alt="Assinatura do cliente" class="assinatura-img">
-                                <?php if (!empty($assinaturasPorTipo['cliente_saida']->nome_assinante)): ?>
+                                <?php if (!empty($assinaturasPorTipo['cliente_saida']->nome_assinante)): ?>>
                                     <p style="margin-top: 10px;"><strong>Assinado por:</strong> <?php echo htmlspecialchars($assinaturasPorTipo['cliente_saida']->nome_assinante, ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></p>
                                 <?php endif; ?>
                             </div>

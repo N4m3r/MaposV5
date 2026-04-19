@@ -143,10 +143,15 @@ if (!$results) {
                             echo '<td><span class="badge" style="background-color: ' . $corGarantia . '; border-color: ' . $corGarantia . '">' . $vencGarantia . '</span> </td>';
                             echo '<td><span class="badge" style="background-color: ' . $cor . '; border-color: ' . $cor . '">' . $r->status . '</span> </td>';
 
-                            echo '<td><a href="' . base_url() . 'index.php/mine/visualizarOs/' . $r->idOs . '" class="btn-nwe" title="Visualizar e Imprimir"><i class="bx bx-show-alt"></i></a>
-                                  <a href="' . base_url() . 'index.php/mine/imprimirOs/' . $r->idOs . '" class="btn-nwe3" title="Imprimir" target="_blank"><i class="bx bx-printer"></i></a>
-                                  <a href="' . base_url() . 'index.php/mine/detalhesOs/' . $r->idOs . '" class="btn-nwe4" title="Ver mais detalhes"><i class="bx bx-detail"></i></a>
-                                  </td>';
+                            echo '<td>';
+                            echo '<a href="' . base_url() . 'index.php/mine/visualizarOs/' . $r->idOs . '" class="btn-nwe" title="Visualizar e Imprimir"><i class="bx bx-show-alt"></i></a>';
+                            // Botão de relatório de atendimento apenas para OS finalizadas
+                            if ($r->status == 'Finalizado' || $r->status == 'Finalizada') {
+                                echo '<a href="' . base_url() . 'index.php/mine/relatorioAtendimento/' . $r->idOs . '" class="btn-nwe" style="background: #28a745;" title="Relatório de Atendimento"><i class="bx bx-file"></i></a>';
+                            }
+                            echo '<a href="' . base_url() . 'index.php/mine/imprimirOs/' . $r->idOs . '" class="btn-nwe3" title="Imprimir" target="_blank"><i class="bx bx-printer"></i></a>';
+                            echo '<a href="' . base_url() . 'index.php/mine/detalhesOs/' . $r->idOs . '" class="btn-nwe4" title="Ver mais detalhes"><i class="bx bx-detail"></i></a>';
+                            echo '</td>';
                             echo '</tr>';
                         } ?>
                     </tbody>
