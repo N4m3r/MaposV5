@@ -546,6 +546,10 @@
                 <div class="relatorio-card">
                     <h5><i class="bx bx-wrench"></i> Serviços da OS</h5>
                     <?php
+                    // DEBUG: Verificar estado inicial
+                    $debug_count_inicial = isset($servicos) ? count($servicos) : 'N/A';
+                    $debug_vazio = empty($servicos) ? 'SIM' : 'NÃO';
+
                     // CORREÇÃO: Buscar serviços diretamente se a variável estiver vazia
                     if (empty($servicos)) {
                         $CI = &get_instance();
@@ -556,7 +560,27 @@
                         $query_servicos = $CI->db->get();
                         $servicos = $query_servicos ? $query_servicos->result() : [];
                     }
+
+                    $debug_count_final = count($servicos);
                     ?>
+
+                    <!-- DEBUG SECTION -->
+                    <div style="background: #e3f2fd; border: 2px solid #2196f3; border-radius: 8px; padding: 15px; margin-bottom: 15px; font-family: monospace; font-size: 13px;">
+                        <strong style="color: #1976d2;">🔍 DEBUG - Serviços:</strong><br>
+                        <strong>OS ID:</strong> <?php echo $os->idOs ?? 'N/A'; ?><br>
+                        <strong>Count inicial:</strong> <?php echo $debug_count_inicial; ?><br>
+                        <strong>Vazio (antes):</strong> <?php echo $debug_vazio; ?><br>
+                        <strong>Count após query:</strong> <?php echo $debug_count_final; ?><br>
+                        <?php if (!empty($servicos)): ?
+                            <strong>Primeiro serviço:</strong><br>
+                            <pre style="background: #f5f5f5; padding: 10px; border-radius: 4px; margin-top: 10px; max-height: 200px; overflow: auto; font-size: 11px;">
+<?php print_r($servicos[0]); ?>
+                            </pre>
+                        <?php else: ?
+                            <strong style="color: #d32f2f;">⚠️ Nenhum serviço encontrado</strong>
+                        <?php endif; ?
+                    </div>
+
                     <?php if (!empty($servicos)): ?>
                         <table class="table table-bordered">
                             <thead>
@@ -813,23 +837,6 @@
                 <?php endif; ?>
 
                 <!-- Assinaturas -->
-                <?php log_info('View relatorio_execucao - Assinaturas recebidas: ' . count($assinaturas ?? [])); ?>
-
-                <!-- DEBUG VISUAL - Assinaturas -->
-                <div style="background: #fff3cd; border: 2px solid #ffc107; border-radius: 8px; padding: 15px; margin: 15px 0; font-family: monospace; font-size: 12px;">
-                    <strong style="color: #856404;">🔍 DEBUG - Assinaturas:</strong><br>
-                    <strong>Total de assinaturas:</strong> <?php echo count($assinaturas ?? []); ?><br>
-                    <?php if (!empty($assinaturas)): ?>
-                        <?php foreach ($assinaturas as $a): ?>
-                            <strong>- ID <?php echo $a->idAssinatura; ?>:</strong> <?php echo $a->tipo; ?> | Path: <?php echo substr($a->assinatura, 0, 40); ?>...<br>
-                            <strong>  URL:</strong> <a href="<?php echo $a->url_visualizacao; ?>" target="_blank"><?php echo $a->url_visualizacao; ?></a><br>
-                            <strong>  Teste direto:</strong> <a href="<?php echo base_url('index.php/checkin/verAssinatura/' . $a->idAssinatura); ?>" target="_blank">Clique aqui para testar</a><br>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <strong style="color: #d32f2f;">⚠️ Nenhuma assinatura encontrada</strong>
-                    <?php endif; ?>
-                </div>
-
                 <?php if (!empty($assinaturas) || !empty($execucoes)): ?>
 
                 <div class="relatorio-card">
@@ -860,9 +867,7 @@
                                             <?php
                                             // Sempre usar url_visualizacao que aponta para verAssinatura
                                             $img_src = $assinatura->url_visualizacao ?? base_url('index.php/checkin/verAssinatura/' . $assinatura->idAssinatura);
-                                            log_info('View relatorio_execucao - Assinatura ID: ' . $assinatura->idAssinatura . ' - URL: ' . $img_src);
                                             ?>
-                                            <!-- DEBUG URL: <?php echo $img_src; ?> -->
                                             <img src="<?php echo $img_src; ?>" alt="Assinatura <?php echo $tipo_label; ?>" class="assinatura-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                                             <div style="display: none; padding: 20px; background: #f8f9fa; border-radius: 8px; text-align: center; color: #666;">
                                                 <i class="bx bx-image-alt" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
