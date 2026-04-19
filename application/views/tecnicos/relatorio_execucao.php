@@ -571,14 +571,14 @@
                         <strong>Count inicial:</strong> <?php echo $debug_count_inicial; ?><br>
                         <strong>Vazio (antes):</strong> <?php echo $debug_vazio; ?><br>
                         <strong>Count após query:</strong> <?php echo $debug_count_final; ?><br>
-                        <?php if (!empty($servicos)): ?
+                        <?php if (!empty($servicos)): ?>
                             <strong>Primeiro serviço:</strong><br>
                             <pre style="background: #f5f5f5; padding: 10px; border-radius: 4px; margin-top: 10px; max-height: 200px; overflow: auto; font-size: 11px;">
 <?php print_r($servicos[0]); ?>
                             </pre>
-                        <?php else: ?
+                        <?php else: ?>
                             <strong style="color: #d32f2f;">⚠️ Nenhum serviço encontrado</strong>
-                        <?php endif; ?
+                        <?php endif; ?>
                     </div>
 
                     <?php if (!empty($servicos)): ?>
