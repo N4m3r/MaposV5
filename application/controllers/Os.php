@@ -1546,7 +1546,7 @@ class Os extends MY_Controller
         log_message('debug', "POST recebido - os_id: {$os_id}, tecnico_id: {$tecnico_id}");
 
         if (! $os_id || ! $tecnico_id) {
-            $this->session->set_flashdata('error', 'Dados incompletos para atribuição.');
+            $this->session->set_flashdata('error', 'Dados incompletos para atribuição. OS: ' . $os_id . ', Tecnico: ' . $tecnico_id);
             redirect('os/atribuir');
         }
 
@@ -1554,7 +1554,15 @@ class Os extends MY_Controller
 
         $atribuido_por = $this->session->userdata('idUsuarios');
 
+        // Verificar OS atual
+        $os_atual = $this->os_model->getById($os_id);
+        log_message('debug', 'OS atual antes da atribuicao: ' . json_encode($os_atual));
+
         if ($this->tecnico_model->atribuirTecnico($os_id, $tecnico_id, $atribuido_por, $observacao)) {
+            // Verificar se salvou
+            $os_depois = $this->os_model->getById($os_id);
+            log_message('debug', 'OS depois da atribuicao: ' . json_encode($os_depois));
+
             $this->session->set_flashdata('success', 'Técnico atribuído à OS #' . $os_id . ' com sucesso!');
             log_info('Atribuiu técnico ' . $tecnico_id . ' à OS #' . $os_id);
         } else {

@@ -676,12 +676,12 @@ $(document).ready(function() {
     carregarTimeline();
 
     // Carregar OS disponíveis ao abrir modal
-    $('#modal-vincular-os').on('show', function() {
+    $('#modal-vincular-os').on('show.bs.modal', function() {
         carregarOsDisponiveis();
     });
 
     // Carregar técnicos ao abrir modal
-    $('#modal-equipe').on('show', function() {
+    $('#modal-equipe').on('show.bs.modal', function() {
         carregarTecnicosDisponiveis();
     });
 
@@ -719,6 +719,8 @@ function carregarTecnicosDisponiveis() {
     var select = $('#select-tecnico');
     var msgElement = $('#msg-tecnico');
 
+    console.log('Carregando técnicos...');
+
     select.prop('disabled', true).html('<option value="">Carregando técnicos...</option>');
     msgElement.html('<i class="bx bx-loader bx-spin"></i> Buscando técnicos disponíveis...');
 
@@ -727,6 +729,7 @@ function carregarTecnicosDisponiveis() {
         type: 'GET',
         dataType: 'json',
         success: function(response) {
+            console.log('Resposta:', response);
             select.empty();
 
             if (response.success && response.tecnicos && response.tecnicos.length > 0) {
@@ -745,12 +748,13 @@ function carregarTecnicosDisponiveis() {
                 msgElement.html('<i class="bx bx-check" style="color: #4caf50;"></i> ' + response.tecnicos.length + ' técnico(s) disponível(is)');
             } else {
                 select.append('<option value="" disabled>Nenhum técnico disponível</option>');
-                msgElement.html('<i class="bx bx-error" style="color: #ff9800;"></i> Nenhum técnico encontrado');
+                msgElement.html('<i class="bx bx-error" style="color: #ff9800;"></i> Nenhum técnico encontrado. Total: ' + (response.total || 0));
             }
         },
-        error: function() {
+        error: function(xhr, status, error) {
+            console.error('Erro AJAX:', error);
             select.html('<option value="" disabled>Erro ao carregar técnicos</option>');
-            msgElement.html('<i class="bx bx-error" style="color: #f44336;"></i> Erro ao buscar técnicos');
+            msgElement.html('<i class="bx bx-error" style="color: #f44336;"></i> Erro: ' + error);
         }
     });
 }

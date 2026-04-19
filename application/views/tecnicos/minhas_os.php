@@ -41,11 +41,10 @@
                 </div>
 
                 <!-- Debug Info -->
-                <?php if (ENVIRONMENT === 'development' || true): ?>
                 <div style="background: #fff3cd; border: 1px solid #ffc107; padding: 10px; margin-bottom: 15px; border-radius: 4px; font-size: 12px;">
                     <strong>Debug:</strong> Técnico ID: <?php echo $tecnico_id ?? 'N/A'; ?> | Status: <?php echo $status_atual; ?> | Total OS no DB: <?php echo $debug_total_os ?? 'N/A'; ?> | Lista: <?php echo count($os_list); ?>
+                    <br><small>OS IDs no banco: <?php echo !empty($debug_os_ids) ? implode(', ', $debug_os_ids) : 'Nenhuma'; ?></small>
                 </div>
-                <?php endif; ?>
 
                 <!-- Lista de OS -->
                 <?php if (empty($os_list)): ?>

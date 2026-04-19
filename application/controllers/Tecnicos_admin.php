@@ -1307,27 +1307,35 @@ class Tecnicos_admin extends MY_Controller
     {
         header('Content-Type: application/json');
 
-        // Buscar usuários ativos que são técnicos ou têm permissão de técnico
-        $this->db->select('idUsuarios, nome, email, telefone, nivel_tecnico, especialidades');
-        $this->db->where('status', 1);
-        $this->db->where('(nivel_tecnico IS NOT NULL OR permissao_id IN (SELECT idPermissao FROM permissoes WHERE nome LIKE "%tecnico%" OR nome LIKE "%Tecnico%"))');
-        $this->db->order_by('nome', 'ASC');
-        $query = $this->db->get('usuarios');
-        $tecnicos = $query ? $query->result() : [];
-
-        // Se não encontrou com o filtro de permissão, busca todos ativos
-        if (empty($tecnicos)) {
-            $this->db->select('idUsuarios, nome, email, telefone, nivel_tecnico, especialidades');
+        try {
+            // Buscar todos os usuários ativos primeiro
+            $this->db->select('idUsuarios, nome, email, telefone, nivel_tecnico, especialidades, status');
             $this->db->where('status', 1);
             $this->db->order_by('nome', 'ASC');
             $query = $this->db->get('usuarios');
             $tecnicos = $query ? $query->result() : [];
-        }
 
-        echo json_encode([
-            'success' => true,
-            'tecnicos' => $tecnicos,
-            'total' => count($tecnicos)
-        ]);
+            // Se não encontrou nenhum, tenta sem o filtro de status
+            if (empty($tecnicos)) {
+                $this->db->select('idUsuarios, nome, email, telefone, nivel_tecnico, especialidades, status');
+                $this->db->order_by('nome', 'ASC');
+                $query = $this->db->get('usuarios');
+                $tecnicos = $query ? $query->result() : [];
+            }
+
+            echo json_encode([
+                'success' => true,
+                'tecnicos' => $tecnicos,
+                'total' => count($tecnicos),
+                'debug' => 'Query executada com sucesso'
+            ]);
+        } catch (Exception $e) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Erro ao buscar técnicos: ' . $e->getMessage(),
+                'tecnicos' => [],
+                'total' => 0
+            ]);
+        }
     }
 }
