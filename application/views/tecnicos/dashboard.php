@@ -236,10 +236,17 @@
                                         </span>
                                     </td>
                                     <td style="text-align: center;">
-                                        <a href="<?php echo site_url('tecnicos/executar_os/' . $os->idOs); ?>"
-                                           class="btn btn-mini btn-success" title="Executar OS">
-                                            <i class="bx bx-play"></i>
-                                        </a>
+                                        <?php if ($os->status == 'Finalizada' || $os->status == 'Finalizado'): ?>
+                                            <a href="<?php echo site_url('tecnicos/relatorio_execucao/' . $os->idOs); ?>"
+                                               class="btn btn-mini btn-info" title="Ver relatório">
+                                                <i class="bx bx-file"></i>
+                                            </a>
+                                        <?php else: ?>
+                                            <a href="<?php echo site_url('tecnicos/executar_os/' . $os->idOs); ?>"
+                                               class="btn btn-mini btn-success" title="Executar OS">
+                                                <i class="bx bx-play"></i>
+                                            </a>
+                                        <?php endif; ?>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

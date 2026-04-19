@@ -211,15 +211,15 @@
                                     <span>Adicionar</span>
                                 </div>
 
-                                <?php if ($execucao && isset($execucao->fotos_galeria_json) && $execucao->fotos_galeria_json): ?>
-                                    <?php $fotos = json_decode($execucao->fotos_galeria_json, true); ?>
-                                    <?php if ($fotos): ?>
-                                        <?php foreach ($fotos as $foto): ?>
-                                            <div class="gallery-item">
-                                                <img src="<?php echo base_url($foto['caminho'] ?? ''); ?>" alt="Foto">
-                                            </div>
-                                        <?php endforeach; ?>
-                                    <?php endif; ?>
+                                <?php // Fotos do sistema de atendimento (mesmo padrão de os/visualizar) ?>
+                                <?php if (!empty($fotosAtendimento)): ?>
+                                    <?php foreach ($fotosAtendimento as $foto): ?>
+                                        <div class="gallery-item" id="foto-item-<?php echo $foto->idFoto; ?>">
+                                            <a href="<?php echo $foto->url; ?>" target="_blank" class="foto-link">
+                                                <img src="<?php echo $foto->url; ?>" alt="<?php echo htmlspecialchars($foto->descricao ?? 'Foto'); ?>">
+                                            </a>
+                                        </div>
+                                    <?php endforeach; ?>
                                 <?php endif; ?>
                             </div>
                         </div>

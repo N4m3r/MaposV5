@@ -82,10 +82,17 @@
                                         <i class="bx bx-calendar"></i>
                                         <?php echo date('d/m/Y', strtotime($os->dataInicial)); ?>
                                     </div>
-                                    <a href="<?php echo site_url('tecnicos/executar_os/' . $os->idOs); ?>"
-                                       class="btn btn-mini btn-success">
-                                        <i class="bx bx-play"></i> Executar
-                                    </a>
+                                    <?php if ($os->status == 'Finalizada' || $os->status == 'Finalizado'): ?>
+                                        <a href="<?php echo site_url('tecnicos/relatorio_execucao/' . $os->idOs); ?>"
+                                           class="btn btn-mini btn-info" title="Ver relatório de execução">
+                                            <i class="bx bx-file"></i> Relatório
+                                        </a>
+                                    <?php else: ?>
+                                        <a href="<?php echo site_url('tecnicos/executar_os/' . $os->idOs); ?>"
+                                           class="btn btn-mini btn-success">
+                                            <i class="bx bx-play"></i> Executar
+                                        </a>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         <?php endforeach; ?>

@@ -422,6 +422,38 @@ class Tecnicos extends CI_Controller
     }
 
     /**
+     * Ver relatório de execução da OS
+     */
+    public function relatorio_execucao($os_id = null)
+    {
+        if (!$os_id) {
+            $this->session->set_flashdata('error', 'OS não encontrada.');
+            redirect('tecnicos/minhas_os');
+        }
+
+        $tecnico_id = $this->session->userdata('tec_id');
+
+        // Verificar se OS pertence ao técnico
+        $os = $this->tec_os_model->getOsById($os_id);
+        if (!$os || $os->tecnico_responsavel != $tecnico_id) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para ver esta OS.');
+            redirect('tecnicos/minhas_os');
+        }
+
+        // Buscar dados da execução
+        $this->data['os'] = $os;
+        $this->data['cliente'] = $this->tec_os_model->getClienteByOs($os_id);
+        $this->data['produtos'] = $this->tec_os_model->getProdutosOs($os_id);
+        $this->data['servicos'] = $this->tec_os_model->getServicosOs($os_id);
+        $this->data['execucoes'] = $this->tec_os_model->getExecucoesByOs($os_id);
+
+        $this->load->view('tema/topo', $this->data);
+        $this->load->view('tema/menu_portal_tecnico', $this->data);
+        $this->load->view('tecnicos/relatorio_execucao', $this->data);
+        $this->load->view('tema/rodape', $this->data);
+    }
+
+    /**
      * Adicionar foto à OS - Usa o mesmo padrão do sistema de atendimento
      */
     public function adicionar_foto()
