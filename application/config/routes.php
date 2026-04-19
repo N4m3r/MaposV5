@@ -172,6 +172,7 @@ $route['tecnicos/logout'] = 'tecnicos/logout';
 $route['tecnicos/dashboard'] = 'tecnicos/dashboard';
 $route['tecnicos/minhas_os'] = 'tecnicos/minhas_os';
 $route['tecnicos/executar_os/(:num)'] = 'tecnicos/executar_os/$1';
+$route['tecnicos/relatorio_execucao/(:num)'] = 'tecnicos/relatorio_execucao/$1';
 $route['tecnicos/meu_estoque'] = 'tecnicos/meu_estoque';
 $route['tecnicos/perfil'] = 'tecnicos/perfil';
 $route['tecnicos/atualizar_foto'] = 'tecnicos/atualizar_foto';

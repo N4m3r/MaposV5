@@ -26,47 +26,52 @@ class Tec_os_model extends CI_Model
      */
     public function getClienteByOs($os_id)
     {
-        // Verificar se a OS existe e tem cliente vinculado
-        $this->db->select('o.clientes_id');
-        $this->db->from('os o');
-        $this->db->where('o.idOs', $os_id);
-        $os_query = $this->db->get();
+        // Buscar primeiro a OS para obter o clientes_id
+        $this->db->where('idOs', $os_id);
+        $os_query = $this->db->get('os');
 
         if (!$os_query || !$os_query->row()) {
-            log_message('error', 'OS não encontrada: ' . $os_id);
+            log_message('error', 'getClienteByOs: OS não encontrada: ' . $os_id);
             return null;
         }
 
         $os = $os_query->row();
 
-        // Se não tem cliente vinculado, retorna objeto com nome genérico
+        // Se não tem cliente vinculado
         if (empty($os->clientes_id)) {
-            log_message('error', 'OS ' . $os_id . ' não tem cliente vinculado');
+            log_message('error', 'getClienteByOs: OS ' . $os_id . ' não tem clientes_id');
             $cliente = new stdClass();
             $cliente->idClientes = null;
             $cliente->nomeCliente = 'Cliente não vinculado';
             $cliente->endereco = '';
             $cliente->telefone = '';
+            $cliente->celular = '';
+            $cliente->email = '';
+            $cliente->documento = '';
             return $cliente;
         }
 
-        $this->db->select('c.*, e.rua, e.numero, e.complemento, e.bairro, e.cidade, e.uf, e.cep, e.lat, e.lng');
-        $this->db->from('clientes c');
-        $this->db->join('enderecos_cliente e', 'e.cliente_id = c.idClientes AND e.principal = 1', 'left');
-        $this->db->where('c.idClientes', $os->clientes_id);
-        $query = $this->db->get();
+        // Buscar o cliente diretamente na tabela clientes
+        $this->db->where('idClientes', $os->clientes_id);
+        $cliente_query = $this->db->get('clientes');
 
-        if (!$query || !$query->row()) {
-            log_message('error', 'Cliente não encontrado para OS ' . $os_id . ', clientes_id: ' . $os->clientes_id);
+        if (!$cliente_query || !$cliente_query->row()) {
+            log_message('error', 'getClienteByOs: Cliente ID ' . $os->clientes_id . ' não encontrado na tabela');
             $cliente = new stdClass();
             $cliente->idClientes = $os->clientes_id;
             $cliente->nomeCliente = 'Cliente não encontrado (ID: ' . $os->clientes_id . ')';
             $cliente->endereco = '';
             $cliente->telefone = '';
+            $cliente->celular = '';
+            $cliente->email = '';
+            $cliente->documento = '';
             return $cliente;
         }
 
-        $cliente = $query->row();
+        $cliente = $cliente_query->row();
+
+        // Debug log
+        log_message('debug', 'getClienteByOs: Cliente encontrado - ID: ' . $cliente->idClientes . ', Nome: ' . ($cliente->nomeCliente ?? 'VAZIO'));
 
         // Monta o endereço completo
         $endereco_parts = [];
@@ -85,8 +90,8 @@ class Tec_os_model extends CI_Model
         }
         if (!empty($cliente->cidade)) {
             $cidade_estado = $cliente->cidade;
-            if (!empty($cliente->uf)) {
-                $cidade_estado .= '/' . $cliente->uf;
+            if (!empty($cliente->estado)) {
+                $cidade_estado .= '/' . $cliente->estado;
             }
             $endereco_parts[] = $cidade_estado;
         }

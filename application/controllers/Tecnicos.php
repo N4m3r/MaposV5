@@ -234,6 +234,11 @@ class Tecnicos extends CI_Controller
             redirect('tecnicos/minhas_os');
         }
 
+        // Se OS já estiver finalizada, redirecionar para o relatório
+        if ($os->status == 'Finalizada' || $os->status == 'Finalizado') {
+            redirect('tecnicos/relatorio_execucao/' . $os_id);
+        }
+
         $this->data['os'] = $os;
         $this->data['cliente'] = $this->tec_os_model->getClienteByOs($os_id);
         $this->data['produtos'] = $this->tec_os_model->getProdutosOs($os_id);
