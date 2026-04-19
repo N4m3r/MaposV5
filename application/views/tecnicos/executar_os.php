@@ -4059,6 +4059,7 @@ function finalizarWizardAtendimento() {
     Object.entries(wizardServicosStatus).forEach(([id, status]) => {
         servicosComStatus[id] = status;
     });
+    console.log('DEBUG - servicosComStatus:', servicosComStatus);
 
     // 1. Salvar todas as fotos primeiro
     const salvarFotos = async () => {

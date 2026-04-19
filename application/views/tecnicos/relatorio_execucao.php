@@ -573,7 +573,9 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php foreach ($servicos as $servico): ?>
+                                <!-- DEBUG: Total servicos no relatorio: <?php echo count($servicos); ?> -->
+                                <?php foreach ($servicos as $i => $servico): ?
+                                    <!-- DEBUG Servico <?php echo $i; ?>: id=<?php echo $servico->idServicos_os ?? 'NULL'; ?>, status_bruto=<?php echo $servico->status ?? 'NULL'; ?> -->
                                     <tr>
                                         <td>
                                             <?php echo htmlspecialchars($servico->servico_nome ?? $servico->nome ?? 'Serviço', ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?>

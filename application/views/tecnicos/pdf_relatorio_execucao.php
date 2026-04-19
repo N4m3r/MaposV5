@@ -137,7 +137,7 @@
 <?php
 $totalFotos = count($fotosPorEtapa['entrada'] ?? []) + count($fotosPorEtapa['durante'] ?? []) + count($fotosPorEtapa['saida'] ?? []) + count($fotosTecnico ?? []);
 if ($totalFotos > 0):
-?}
+?>
 <div class="section">
     <div class="section-title">Registro Fotográfico</div>
     <p class="fotos-info">Total de fotos registradas: <?php echo $totalFotos; ?></p>
@@ -153,7 +153,7 @@ if ($totalFotos > 0):
             <td class="label">Cliente:</td>
             <td class="assinatura">
                 <img src="<?php echo base_url($assinaturasPorTipo['cliente_saida']->assinatura ?? ''); ?>" alt=""><br>
-                <?php if (!empty($assinaturasPorTipo['cliente_saida']->nome_assinante')) echo '<small>' . htmlspecialchars($assinaturasPorTipo['cliente_saida']->nome_assinante) . '</small>'; ?>
+                <?php if (!empty($assinaturasPorTipo['cliente_saida']->nome_assinante)) echo '<small>' . htmlspecialchars($assinaturasPorTipo['cliente_saida']->nome_assinante) . '</small>'; ?>
             </td>
         </tr>
         <?php endif; ?>
