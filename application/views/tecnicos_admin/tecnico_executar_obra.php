@@ -72,7 +72,7 @@ $statusCores = [
                                             <?php endif; ?>
                                         </div>
                                         <span style="padding: 4px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; background: <?= $corStatus ?>20; color: <?= $corStatus ?>;">
-                                            <?= $statusLabels[$etapaStatus] ?>
+                                            <?= $statusLabels[$etapaStatus] ?? ucfirst($etapaStatus) ?>
                                         </span>
                                     </div>
 

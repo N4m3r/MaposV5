@@ -43,7 +43,8 @@
                     default => 'Planejada'
                 };
 
-                $corProgresso = $obra->percentual_concluido >= 80 ? '#4caf50' : ($obra->percentual_concluido >= 50 ? '#ff9800' : '#2196f3');
+                $percentualObra = $obra->percentual_concluido ?? 0;
+                $corProgresso = $percentualObra >= 80 ? '#4caf50' : ($percentualObra >= 50 ? '#ff9800' : '#2196f3');
                 ?>
                 <div class="span6" style="margin-bottom: 20px;">
                     <div class="obra-execucao-card" style="
@@ -87,12 +88,12 @@
                         <div style="padding: 20px; border-bottom: 1px solid #eee;">
                             <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
                                 <span style="font-size: 0.85rem; color: #666;">Progresso da Obra</span>
-                                <span style="font-weight: 700; color: <?= $corProgresso ?>;"><?= $obra->percentual_concluido ?>%</span>
+                                <span style="font-weight: 700; color: <?= $corProgresso ?>;"><?= $percentualObra ?>%</span>
                             </div>
                             <div style="height: 8px; background: #f0f0f0; border-radius: 4px; overflow: hidden;">
                                 <div style="
                                     height: 100%;
-                                    width: <?= $obra->percentual_concluido ?>%;
+                                    width: <?= $percentualObra ?>%;
                                     background: <?= $corProgresso ?>;
                                     border-radius: 4px;
                                     transition: width 0.5s ease;
