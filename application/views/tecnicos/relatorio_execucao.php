@@ -549,7 +549,7 @@
                 <div class="relatorio-card">
                     <h5><i class="bx bx-wrench"></i> Serviços da OS</h5>
 
-                    <?php if (!empty($servicos)): ?
+                    <?php if (!empty($servicos)): ?>
                         <div style="background: #fff3cd; padding: 10px; margin-bottom: 10px; border: 1px solid #856404;">
                             <strong>DEBUG:</strong> Total servicos: <?php echo count($servicos); ?><br>
                             <?php foreach ($servicos as $i => $servico_debug): ?>
