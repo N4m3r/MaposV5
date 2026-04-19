@@ -165,32 +165,40 @@
                         <div class="widget-content">
                             <div id="checklistContainer">
                                 <?php if (!empty($checklist)): ?>
-                                    <?php foreach ($checklist as $index => $item): ?>
-                                        <div class="checklist-item <?php echo $item['status'] ?? ''; ?>" data-item-id="<?php echo $index; ?>">
+                                    <?php foreach ($checklist as $index => $item):
+                                        // Normaliza o item para garantir que seja um array
+                                        if (is_string($item)) {
+                                            $item = ['descricao' => $item, 'status' => 'pendente'];
+                                        }
+                                        $itemStatus = $item['status'] ?? 'pendente';
+                                        $itemDescricao = $item['descricao'] ?? 'Item ' . ($index + 1);
+                                        $itemServico = $item['servico'] ?? null;
+                                    ?>
+                                        <div class="checklist-item <?php echo $itemStatus; ?>" data-item-id="<?php echo $index; ?>">
                                             <div class="checklist-header">
                                                 <div class="checklist-checkbox">
-                                                    <?php if ($item['status'] == 'conforme'): ?>
+                                                    <?php if ($itemStatus == 'conforme'): ?>
                                                         <i class="bx bx-check"></i>
-                                                    <?php elseif ($item['status'] == 'nao_conforme'): ?>
+                                                    <?php elseif ($itemStatus == 'nao_conforme'): ?>
                                                         <i class="bx bx-x"></i>
                                                     <?php else: ?>
                                                         <i class="bx bx-circle"></i>
                                                     <?php endif; ?>
                                                 </div>
                                                 <div class="checklist-text">
-                                                    <h4><?php echo htmlspecialchars($item['descricao'] ?? $item, ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></h4>
-                                                    <?php if (isset($item['servico'])): ?>
-                                                        <div class="checklist-servico"><?php echo htmlspecialchars($item['servico'], ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></div>
+                                                    <h4><?php echo htmlspecialchars($itemDescricao, ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></h4>
+                                                    <?php if ($itemServico): ?>
+                                                        <div class="checklist-servico"><?php echo htmlspecialchars($itemServico, ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></div>
                                                     <?php endif; ?>
                                                 </div>
                                             </div>
 
                                             <div class="checklist-actions">
-                                                <button type="button" class="btn btn-mini <?php echo ($item['status'] ?? '') == 'conforme' ? 'btn-success' : ''; ?>"
+                                                <button type="button" class="btn btn-mini <?php echo $itemStatus == 'conforme' ? 'btn-success' : ''; ?>"
                                                         onclick="salvarChecklistItem(<?php echo $index; ?>, 'conforme')">
                                                     <i class="bx bx-check"></i> OK
                                                 </button>
-                                                <button type="button" class="btn btn-mini <?php echo ($item['status'] ?? '') == 'nao_conforme' ? 'btn-danger' : ''; ?>"
+                                                <button type="button" class="btn btn-mini <?php echo $itemStatus == 'nao_conforme' ? 'btn-danger' : ''; ?>"
                                                         onclick="salvarChecklistItem(<?php echo $index; ?>, 'nao_conforme')">
                                                     <i class="bx bx-x"></i> Não OK
                                                 </button>

@@ -249,18 +249,54 @@ class Tecnicos_admin extends MY_Controller
             redirect('tecnicos_admin/checklists');
         }
 
+        // Processar itens JSON
+        $itens_json = $this->input->post('itens_json');
+        $itens = [];
+
+        if ($itens_json) {
+            $itens_decodificados = json_decode($itens_json, true);
+            if (is_array($itens_decodificados) && count($itens_decodificados) > 0) {
+                $itens = $itens_decodificados;
+            }
+        }
+
+        // Se não veio via JSON, tenta pegar do formato antigo (compatibilidade)
+        if (empty($itens) && $this->input->post('itens')) {
+            $itens_enviados = $this->input->post('itens');
+            if (is_array($itens_enviados)) {
+                foreach ($itens_enviados as $i => $item) {
+                    if (!empty($item['descricao'])) {
+                        $itens[] = [
+                            'id' => $i + 1,
+                            'descricao' => $item['descricao'],
+                            'hint' => $item['hint'] ?? '',
+                            'ordem' => $i + 1
+                        ];
+                    }
+                }
+            }
+        }
+
+        // Validar se tem pelo menos 1 item
+        if (empty($itens)) {
+            $this->session->set_flashdata('error', 'Adicione pelo menos um item ao checklist!');
+            redirect('tecnicos_admin/checklists');
+        }
+
         $dados = [
             'nome_template' => $this->input->post('nome_template'),
             'tipo_os' => $this->input->post('tipo_os'),
             'tipo_servico' => $this->input->post('tipo_servico'),
-            'itens' => json_encode([]),
+            'itens' => json_encode($itens),
             'ativo' => 1,
+            'created_at' => date('Y-m-d H:i:s')
         ];
 
         if ($this->db->insert('tec_checklist_template', $dados)) {
-            $this->session->set_flashdata('success', 'Template de checklist criado com sucesso!');
+            $this->session->set_flashdata('success', 'Template de checklist criado com sucesso! (' . count($itens) . ' itens)');
         } else {
-            $this->session->set_flashdata('error', 'Erro ao criar template.');
+            $error = $this->db->error();
+            $this->session->set_flashdata('error', 'Erro ao criar template: ' . ($error['message'] ?? 'Erro desconhecido'));
         }
 
         redirect('tecnicos_admin/checklists');

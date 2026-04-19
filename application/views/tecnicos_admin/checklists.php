@@ -164,61 +164,159 @@
     <?php endif; ?>
 </div>
 
-<!-- Modal Novo Checklist -->
-<div id="modal-novo-checklist" class="modal hide fade" tabindex="-1" role="dialog">
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">×</button>
-        <h5><i class="bx bx-plus-circle"></i> Novo Template de Checklist</h5>
+<!-- Modal Novo Checklist - Versão Intuitiva -->
+<div id="modal-novo-checklist" class="modal hide fade" tabindex="-1" role="dialog" style="width: 750px; margin-left: -375px;">
+    <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+        <button type="button" class="close" data-dismiss="modal" style="color: white; opacity: 0.8;">×</button>
+        <h5 style="color: white;"><i class="bx bx-plus-circle"></i> Criar Novo Template de Checklist</h5>
     </div>
-    <form action="<?= site_url('tecnicos_admin/salvar_checklist') ?>" method="post">
-        <div class="modal-body">
-            <div class="control-group">
-                <label class="control-label">Nome do Template</label>
-                <div class="controls">
-                    <input type="text" name="nome_template" class="span12" placeholder="Ex: Instalação CFTV Padrão"
-                           required>
+
+    <form id="form-novo-checklist" action="<?= site_url('tecnicos_admin/salvar_checklist') ?>" method="post">
+        <div class="modal-body" style="max-height: 550px; overflow-y: auto; padding: 25px;">
+
+            <!-- Preview do Header -->
+            <div class="preview-header" style="background: #f8f9fa; border-radius: 12px; padding: 20px; margin-bottom: 25px; border: 2px dashed #667eea;">
+                <div class="row-fluid">
+                    <div class="span6">
+                        <div class="control-group" style="margin-bottom: 15px;">
+                            <label class="control-label" style="font-weight: 600; color: #333;">
+                                <i class="bx bx-tag"></i> Nome do Template *
+                            </label>
+                            <div class="controls">
+                                <input type="text" name="nome_template" id="novo-nome-template" class="span12"
+                                       placeholder="Ex: Instalação CFTV - Padrão Residencial"
+                                       style="font-size: 16px; padding: 10px; border-radius: 8px; border: 2px solid #e0e0e0;"
+                                       required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="span3">
+                        <div class="control-group" style="margin-bottom: 15px;">
+                            <label class="control-label" style="font-weight: 600; color: #333;">
+                                <i class="bx bx-folder"></i> Tipo de OS *
+                            </label>
+                            <div class="controls">
+                                <select name="tipo_os" id="novo-tipo-os" class="span12"
+                                        style="height: 44px; border-radius: 8px; border: 2px solid #e0e0e0;">
+                                    <option value="CFTV">CFTV</option>
+                                    <option value="Alarme">Alarme</option>
+                                    <option value="Rede">Rede</option>
+                                    <option value="Interfone">Interfone</option>
+                                    <option value="Porteiro">Porteiro Eletrônico</option>
+                                    <option value="Cerca">Cerca Elétrica</option>
+                                    <option value="Outro">Outro</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="span3">
+                        <div class="control-group" style="margin-bottom: 15px;">
+                            <label class="control-label" style="font-weight: 600; color: #333;">
+                                <i class="bx bx-wrench"></i> Serviço *
+                            </label>
+                            <div class="controls">
+                                <select name="tipo_servico" id="novo-tipo-servico" class="span12"
+                                        style="height: 44px; border-radius: 8px; border: 2px solid #e0e0e0;">
+                                    <option value="INS">Instalação</option>
+                                    <option value="MP">Manutenção Preventiva</option>
+                                    <option value="MC">Manutenção Corretiva</option>
+                                    <option value="CT">Consultoria</option>
+                                    <option value="TR">Treinamento</option>
+                                    <option value="UP">Upgrade</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preview visual -->
+                <div class="card-preview" style="background: white; border-radius: 10px; padding: 15px; margin-top: 15px; border: 1px solid #e0e0e0;">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div class="preview-icon" style="width: 50px; height: 50px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px;">
+                            <i class="bx bx-check-square"></i>
+                        </div>
+                        <div class="preview-info" style="flex: 1;">
+                            <div id="preview-nome" style="font-weight: 600; font-size: 16px; color: #333;">Nome do Template</div>
+                            <div style="display: flex; gap: 10px; margin-top: 5px;">
+                                <span id="preview-tipo-os" class="label label-info">CFTV</span>
+                                <span id="preview-tipo-servico" class="label label-success">Instalação</span>
+                                <span id="preview-contador" class="label"><i class="bx bx-list-check"></i> 0 itens</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class="control-group">
-                <label class="control-label">Tipo de OS</label>
-                <div class="controls">
-                    <select name="tipo_os" class="span12">
-                        <option value="CFTV">CFTV</option>
-                        <option value="Alarme">Alarme</option>
-                        <option value="Rede">Rede</option>
-                        <option value="Interfone">Interfone</option>
-                        <option value="Porteiro">Porteiro Eletrônico</option>
-                        <option value="Cerca">Cerca Elétrica</option>
-                        <option value="Outro">Outro</option>
-                    </select>
+            <!-- Área de Itens -->
+            <div class="itens-section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h6 style="margin: 0; font-size: 18px; color: #333;">
+                        <i class="bx bx-list-ul"></i> Itens do Checklist
+                    </h6>
+                    <span class="badge badge-info" id="contador-itens">0 itens</span>
+                </div>
+
+                <!-- Lista de Itens -->
+                <div id="lista-itens-container" style="margin-bottom: 20px;">
+                    <!-- Itens serão adicionados aqui -->
+                    <div class="empty-itens" id="empty-itens-message" style="text-align: center; padding: 40px; background: #f8f9fa; border-radius: 12px; border: 2px dashed #ddd;">
+                        <i class="bx bx-clipboard" style="font-size: 48px; color: #ccc; margin-bottom: 15px; display: block;"></i>
+                        <p style="color: #999; margin-bottom: 10px;">Nenhum item adicionado ainda</p>
+                        <p style="color: #bbb; font-size: 13px;">Adicione itens para criar seu checklist</p>
+                    </div>
+                </div>
+
+                <!-- Campo para adicionar novo item -->
+                <div class="add-item-box" style="background: #f0f7ff; border-radius: 12px; padding: 20px; border: 2px solid #e3f2fd;">
+                    <div style="font-weight: 600; margin-bottom: 15px; color: #1976d2;">
+                        <i class="bx bx-plus-circle"></i> Adicionar Novo Item
+                    </div>
+
+                    <div class="row-fluid">
+                        <div class="span9">
+                            <input type="text" id="novo-item-descricao" class="span12"
+                                   placeholder="Descreva o item (ex: Verificar integridade das câmeras)"
+                                   style="padding: 12px; font-size: 14px; border-radius: 8px; border: 2px solid #e0e0e0;">
+                        </div>
+                        <div class="span3">
+                            <button type="button" class="button btn btn-primary span12" onclick="adicionarItemNovo()"
+                                    style="height: 46px;">
+                                <span class="button__icon"><i class="bx bx-plus"></i></span>
+                                <span class="button__text2">Adicionar</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 15px;">
+                        <input type="text" id="novo-item-dica" class="span12"
+                               placeholder="Dica opcional: ex: Verificar pontos de emenda e conectores"
+                               style="padding: 10px; font-size: 13px; border-radius: 6px; border: 1px solid #e0e0e0;">
+                    </div>
                 </div>
             </div>
 
-            <div class="control-group">
-                <label class="control-label">Tipo de Serviço</label>
-                <div class="controls">
-                    <select name="tipo_servico" class="span12">
-                        <option value="INS">Instalação</option>
-                        <option value="MP">Manutenção Preventiva</option>
-                        <option value="MC">Manutenção Corretiva</option>
-                        <option value="CT">Consultoria</option>
-                        <option value="TR">Treinamento</option>
-                        <option value="UP">Upgrade</option>
-                    </select>
-                </div>
-            </div>
+            <!-- Campo hidden para itens JSON -->
+            <input type="hidden" name="itens_json" id="itens-json-input" value="[]">
+
         </div>
 
-        <div class="modal-footer" style="display: flex; justify-content: center; gap: 10px;">
-            <button type="button" class="button btn btn-warning" data-dismiss="modal">
-                <span class="button__icon"><i class="bx bx-x"></i></span>
-                <span class="button__text2">Cancelar</span>
-            </button>
-            <button type="submit" class="button btn btn-success">
-                <span class="button__icon"><i class="bx bx-save"></i></span>
-                <span class="button__text2">Salvar Template</span>
-            </button>
+        <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; padding: 20px 25px;">
+
+            <div style="color: #666; font-size: 13px;">
+                <i class="bx bx-info-circle"></i> Preencha todos os campos obrigatórios
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button type="button" class="button btn btn-warning" data-dismiss="modal">
+                    <span class="button__icon"><i class="bx bx-x"></i></span>
+                    <span class="button__text2">Cancelar</span>
+                </button>
+
+                <button type="submit" class="button btn btn-success" id="btn-salvar-checklist">
+                    <span class="button__icon"><i class="bx bx-save"></i></span>
+                    <span class="button__text2">Salvar Template</span>
+                </button>
+            </div>
         </div>
     </form>
 </div>
@@ -898,4 +996,177 @@ function concluirChecklist() {
 function editarChecklist(id) {
     window.location.href = '<?= site_url('tecnicos_admin/editar_checklist/') ?>' + id;
 }
+
+// ============================================
+// SISTEMA DE CRIAÇÃO DE CHECKLIST INTUITIVO
+// ============================================
+
+let itensChecklistNovo = [];
+
+// Atualizar preview em tempo real
+document.getElementById('novo-nome-template').addEventListener('input', atualizarPreview);
+document.getElementById('novo-tipo-os').addEventListener('change', atualizarPreview);
+document.getElementById('novo-tipo-servico').addEventListener('change', atualizarPreview);
+
+function atualizarPreview() {
+    const nome = document.getElementById('novo-nome-template').value || 'Nome do Template';
+    const tipoOs = document.getElementById('novo-tipo-os').value;
+    const tipoServico = document.getElementById('novo-tipo-servico');
+    const servicoText = tipoServico.options[tipoServico.selectedIndex].text;
+
+    document.getElementById('preview-nome').textContent = nome;
+    document.getElementById('preview-tipo-os').textContent = tipoOs;
+    document.getElementById('preview-tipo-servico').textContent = servicoText;
+    document.getElementById('preview-contador').innerHTML = `<i class="bx bx-list-check"></i> ${itensChecklistNovo.length} itens`;
+}
+
+function adicionarItemNovo() {
+    const descricao = document.getElementById('novo-item-descricao').value.trim();
+    const dica = document.getElementById('novo-item-dica').value.trim();
+
+    if (!descricao) {
+        alert('Digite uma descrição para o item!');
+        document.getElementById('novo-item-descricao').focus();
+        return;
+    }
+
+    const item = {
+        id: Date.now(),
+        descricao: descricao,
+        hint: dica || '',
+        ordem: itensChecklistNovo.length + 1
+    };
+
+    itensChecklistNovo.push(item);
+
+    // Limpar campos
+    document.getElementById('novo-item-descricao').value = '';
+    document.getElementById('novo-item-dica').value = '';
+    document.getElementById('novo-item-descricao').focus();
+
+    // Atualizar UI
+    renderizarItensNovo();
+    atualizarPreview();
+}
+
+function renderizarItensNovo() {
+    const container = document.getElementById('lista-itens-container');
+    const emptyMsg = document.getElementById('empty-itens-message');
+    const contador = document.getElementById('contador-itens');
+
+    // Atualizar contador
+    contador.textContent = `${itensChecklistNovo.length} itens`;
+
+    // Atualizar JSON hidden
+    document.getElementById('itens-json-input').value = JSON.stringify(itensChecklistNovo);
+
+    if (itensChecklistNovo.length === 0) {
+        container.innerHTML = `
+            <div class="empty-itens" id="empty-itens-message" style="text-align: center; padding: 40px; background: #f8f9fa; border-radius: 12px; border: 2px dashed #ddd;">
+                <i class="bx bx-clipboard" style="font-size: 48px; color: #ccc; margin-bottom: 15px; display: block;"></i>
+                <p style="color: #999; margin-bottom: 10px;">Nenhum item adicionado ainda</p>
+                <p style="color: #bbb; font-size: 13px;">Adicione itens para criar seu checklist</p>
+            </div>
+        `;
+        return;
+    }
+
+    let html = '';
+    itensChecklistNovo.forEach((item, index) => {
+        html += `
+            <div class="item-row" style="display: flex; align-items: flex-start; gap: 12px; padding: 15px; background: white; border-radius: 10px; margin-bottom: 10px; border: 2px solid #e0e0e0; transition: all 0.2s;">
+                <div class="item-number" style="width: 32px; height: 32px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; flex-shrink: 0;">
+                    ${index + 1}
+                </div>
+
+                <div class="item-content" style="flex: 1;">
+                    <div class="item-descricao" style="font-size: 15px; color: #333; margin-bottom: ${item.hint ? '5px' : '0'};">
+                        ${escapeHtml(item.descricao)}
+                    </div>
+                    ${item.hint ? `<div class="item-hint" style="font-size: 12px; color: #888; display: flex; align-items: center; gap: 5px;">
+                        <i class="bx bx-info-circle"></i> ${escapeHtml(item.hint)}
+                    </div>` : ''}
+                </div>
+
+                <div class="item-actions" style="display: flex; gap: 5px; flex-shrink: 0;">
+                    <button type="button" class="btn btn-small" onclick="moverItemNovo(${index}, -1)" title="Mover para cima" ${index === 0 ? 'disabled' : ''}
+                            style="padding: 5px 8px;">
+                        <i class="bx bx-chevron-up"></i>
+                    </button>
+                    <button type="button" class="btn btn-small" onclick="moverItemNovo(${index}, 1)" title="Mover para baixo" ${index === itensChecklistNovo.length - 1 ? 'disabled' : ''}
+                            style="padding: 5px 8px;">
+                        <i class="bx bx-chevron-down"></i>
+                    </button>
+                    <button type="button" class="btn btn-small btn-danger" onclick="removerItemNovo(${index})" title="Remover"
+                            style="padding: 5px 8px;">
+                        <i class="bx bx-trash"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+    });
+
+    container.innerHTML = html;
+}
+
+function moverItemNovo(index, direcao) {
+    const novoIndex = index + direcao;
+    if (novoIndex < 0 || novoIndex >= itensChecklistNovo.length) return;
+
+    // Trocar posições
+    const temp = itensChecklistNovo[index];
+    itensChecklistNovo[index] = itensChecklistNovo[novoIndex];
+    itensChecklistNovo[novoIndex] = temp;
+
+    // Atualizar ordens
+    itensChecklistNovo.forEach((item, i) => item.ordem = i + 1);
+
+    renderizarItensNovo();
+    atualizarPreview();
+}
+
+function removerItemNovo(index) {
+    if (confirm('Remover este item?')) {
+        itensChecklistNovo.splice(index, 1);
+        itensChecklistNovo.forEach((item, i) => item.ordem = i + 1);
+        renderizarItensNovo();
+        atualizarPreview();
+    }
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Tecla Enter para adicionar item rapidamente
+document.getElementById('novo-item-descricao').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        adicionarItemNovo();
+    }
+});
+
+// Resetar ao abrir modal
+$('#modal-novo-checklist').on('show.bs.modal', function() {
+    itensChecklistNovo = [];
+    renderizarItensNovo();
+    atualizarPreview();
+    document.getElementById('novo-item-descricao').focus();
+});
+
+// Validar antes de enviar
+document.getElementById('form-novo-checklist').addEventListener('submit', function(e) {
+    if (itensChecklistNovo.length === 0) {
+        e.preventDefault();
+        alert('Adicione pelo menos um item ao checklist!');
+        document.getElementById('novo-item-descricao').focus();
+        return false;
+    }
+
+    // Atualizar JSON final
+    document.getElementById('itens-json-input').value = JSON.stringify(itensChecklistNovo);
+    return true;
+});
 </script>
