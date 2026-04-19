@@ -150,15 +150,24 @@
             <div class="widget-title" style="background: #f8f9fa;">
                 <span class="icon"><i class="bx bx-shield" style="color: #9b59b6;"></i></span>
                 <h5>Permissões de Acesso</h5>
+                <div class="buttons">
+                    <button type="button" class="btn btn-mini btn-info" id="btn-marcar-todos">
+                        <i class="bx bx-check-square"></i> Marcar Todos
+                    </button>
+                    <button type="button" class="btn btn-mini btn-default" id="btn-desmarcar-todos">
+                        <i class="bx bx-square"></i> Desmarcar Todos
+                    </button>
+                </div>
             </div>
             <div class="widget-content">
-                <div style="max-height: 400px; overflow-y: auto;">
+                <div style="max-height: 450px; overflow-y: auto;" id="container-permissoes">
                     <?php
                     $permissoesAgrupadas = [
                         'Visualização de OS' => ['visualizar_os', 'visualizar_detalhes_os', 'visualizar_produtos_os', 'visualizar_servicos_os', 'visualizar_anexos_os', 'visualizar_documentos_fiscais'],
                         'Financeiro' => ['visualizar_financeiro', 'visualizar_historico_pagamentos', 'visualizar_cobrancas', 'visualizar_boletos', 'visualizar_notas_fiscais'],
                         'Obras' => ['visualizar_obras', 'visualizar_detalhes_obra'],
-                        'Ações' => ['imprimir_os', 'editar_perfil', 'solicitar_orcamento', 'aprovar_os', 'visualizar_compras'],
+                        'Compras' => ['visualizar_compras'],
+                        'Ações' => ['imprimir_os', 'editar_perfil', 'solicitar_orcamento', 'aprovar_os'],
                         'Notificações' => ['receber_notificacoes', 'acesso_mobile'],
                     ];
 
@@ -185,26 +194,50 @@
                         'acesso_mobile' => 'Acesso via dispositivos móveis',
                     ];
 
+                    $iconesGrupo = [
+                        'Visualização de OS' => 'bx bx-file',
+                        'Financeiro' => 'bx bx-money',
+                        'Obras' => 'bx bx-building-house',
+                        'Compras' => 'bx bx-cart-alt',
+                        'Ações' => 'bx bx-check-circle',
+                        'Notificações' => 'bx bx-bell',
+                    ];
+
                     foreach ($permissoesAgrupadas as $grupo => $chaves):
+                        $temPermissaoNoGrupo = false;
+                        foreach ($chaves as $chave) {
+                            if (isset($permissoes_padrao[$chave])) {
+                                $temPermissaoNoGrupo = true;
+                                break;
+                            }
+                        }
+                        if (!$temPermissaoNoGrupo) continue;
                     ?>
-                        <div style="margin-bottom: 15px;">
-                            <h6 style="margin: 0 0 10px; color: #2c3e50; border-bottom: 1px solid #eee; padding-bottom: 5px;">
-                                <i class="bx bx-folder-open"></i> <?= $grupo ?>
-                            </h6>
-                            <?php foreach ($chaves as $chave):
-                                if (!isset($permissoes_padrao[$chave])) continue;
-                                // Obtém o valor atual da permissão (do banco ou padrão)
-                                $valor_salvo = isset($permissoes[$chave]) ? $permissoes[$chave] : null;
-                                // Se tem valor salvo no banco, usa ele. Senão, usa o padrão
-                                $valor_atual = ($valor_salvo !== null) ? $valor_salvo : $permissoes_padrao[$chave];
-                                // Converte para booleano para garantir que está correto
-                                $valor_atual = ($valor_atual === true || $valor_atual === '1' || $valor_atual === 1);
-                            ?>
-                                <label class="checkbox" style="margin-left: 15px; margin-bottom: 8px;">
-                                    <input type="checkbox" name="permissoes[<?= $chave ?>]" value="1" <?= $valor_atual ? 'checked="checked"' : '' ?> />
-                                    <?= $labels[$chave] ?? $chave ?>
-                                </label>
-                            <?php endforeach; ?>
+                        <div class="grupo-permissoes" style="margin-bottom: 20px; background: #f8f9fa; border-radius: 8px; padding: 15px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 2px solid #dee2e6; padding-bottom: 8px;">
+                                <h6 style="margin: 0; color: #2c3e50; font-size: 14px; font-weight: 600;">
+                                    <i class="<?= $iconesGrupo[$grupo] ?? 'bx bx-folder-open' ?>" style="color: #667eea; margin-right: 8px;"></i> <?= $grupo ?>
+                                </h6>
+                                <button type="button" class="btn btn-mini btn-marcar-grupo" data-grupo="<?= md5($grupo) ?>">
+                                    <i class="bx bx-check-square"></i> Marcar Grupo
+                                </button>
+                            </div>
+                            <div class="checkboxes-grupo" data-grupo="<?= md5($grupo) ?>">
+                                <?php foreach ($chaves as $chave):
+                                    if (!isset($permissoes_padrao[$chave])) continue;
+                                    // Obtém o valor atual da permissão (do banco ou padrão)
+                                    $valor_salvo = isset($permissoes[$chave]) ? $permissoes[$chave] : null;
+                                    // Se tem valor salvo no banco, usa ele. Senão, usa o padrão
+                                    $valor_atual = ($valor_salvo !== null) ? $valor_salvo : $permissoes_padrao[$chave];
+                                    // Converte para booleano para garantir que está correto
+                                    $valor_atual = ($valor_atual === true || $valor_atual === '1' || $valor_atual === 1);
+                                ?>
+                                    <label class="checkbox" style="margin-left: 10px; margin-bottom: 8px; display: block;">
+                                        <input type="checkbox" name="permissoes[<?= $chave ?>]" value="1" class="checkbox-permissao" <?= $valor_atual ? 'checked="checked"' : '' ?> />
+                                        <span style="margin-left: 5px;"><?= $labels[$chave] ?? $chave ?></span>
+                                    </label>
+                                <?php endforeach; ?>
+                            </div>
                         </div>
                     <?php endforeach; ?>
                 </div>
@@ -582,5 +615,36 @@ $(document).ready(function() {
 
     // Inicializar contador
     atualizarContador();
+
+    // Botão Marcar Todos
+    $('#btn-marcar-todos').click(function() {
+        $('.checkbox-permissao').prop('checked', true);
+        $(this).removeClass('btn-info').addClass('btn-success');
+        setTimeout(() => {
+            $(this).removeClass('btn-success').addClass('btn-info');
+        }, 500);
+    });
+
+    // Botão Desmarcar Todos
+    $('#btn-desmarcar-todos').click(function() {
+        $('.checkbox-permissao').prop('checked', false);
+    });
+
+    // Botão Marcar Grupo
+    $('.btn-marcar-grupo').click(function() {
+        var grupoHash = $(this).data('grupo');
+        var $checkboxes = $('.checkboxes-grupo[data-grupo="' + grupoHash + '"]').find('.checkbox-permissao');
+
+        // Verifica se todos estão marcados
+        var todosMarcados = $checkboxes.length === $checkboxes.filter(':checked').length;
+
+        if (todosMarcados) {
+            $checkboxes.prop('checked', false);
+            $(this).html('<i class="bx bx-check-square"></i> Marcar Grupo');
+        } else {
+            $checkboxes.prop('checked', true);
+            $(this).html('<i class="bx bx-square"></i> Desmarcar Grupo');
+        }
+    });
 });
 </script>

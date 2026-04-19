@@ -144,15 +144,27 @@
                     <div class="control-group">
                         <label class="control-label">Permissões:</label>
                         <div class="controls">
-                            <div class="span8" style="background: #f9f9f9; padding: 15px; border: 1px solid #ddd;">
-                                <h5><i class="bx bx-shield"></i> Configurações de Acesso</h5>
+                            <div class="span8" style="background: #f9f9f9; padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 2px solid #dee2e6; padding-bottom: 10px;">
+                                    <h5 style="margin: 0;"><i class="bx bx-shield" style="color: #9b59b6;"></i> Configurações de Acesso</h5>
+                                    <div>
+                                        <button type="button" class="btn btn-mini btn-info" id="btn-marcar-todos-add">
+                                            <i class="bx bx-check-square"></i> Marcar Todos
+                                        </button>
+                                        <button type="button" class="btn btn-mini btn-default" id="btn-desmarcar-todos-add">
+                                            <i class="bx bx-square"></i> Desmarcar
+                                        </button>
+                                    </div>
+                                </div>
+
                                 <?php
                                 // Agrupar permissões
                                 $permissoesAgrupadasAdd = [
                                     'Visualização de OS' => ['visualizar_os', 'visualizar_detalhes_os', 'visualizar_produtos_os', 'visualizar_servicos_os', 'visualizar_anexos_os', 'visualizar_documentos_fiscais'],
                                     'Financeiro' => ['visualizar_financeiro', 'visualizar_historico_pagamentos', 'visualizar_cobrancas', 'visualizar_boletos', 'visualizar_notas_fiscais'],
                                     'Obras' => ['visualizar_obras', 'visualizar_detalhes_obra'],
-                                    'Ações' => ['imprimir_os', 'editar_perfil', 'solicitar_orcamento', 'aprovar_os', 'visualizar_compras'],
+                                    'Compras' => ['visualizar_compras'],
+                                    'Ações' => ['imprimir_os', 'editar_perfil', 'solicitar_orcamento', 'aprovar_os'],
                                     'Notificações' => ['receber_notificacoes', 'acesso_mobile'],
                                 ];
 
@@ -180,21 +192,39 @@
                                     'acesso_mobile' => 'Acesso via dispositivos móveis',
                                 ];
 
+                                $iconesGrupoAdd = [
+                                    'Visualização de OS' => 'bx bx-file',
+                                    'Financeiro' => 'bx bx-money',
+                                    'Obras' => 'bx bx-building-house',
+                                    'Compras' => 'bx bx-cart-alt',
+                                    'Ações' => 'bx bx-check-circle',
+                                    'Notificações' => 'bx bx-bell',
+                                ];
+
                                 foreach ($permissoesAgrupadasAdd as $grupo => $chaves): ?>
-                                    <h6 style="margin: 15px 0 10px; color: #2c3e50; border-bottom: 1px solid #eee; padding-bottom: 5px;">
-                                        <i class="bx bx-folder-open"></i> <?= $grupo ?>
-                                    </h6>
-                                    <?php foreach ($chaves as $chave):
-                                        // Pula se não existe no array de permissões padrão
-                                        if (!isset($permissoes_padrao[$chave])) continue;
-                                        $valor_padrao = $permissoes_padrao[$chave];
-                                        $label = $labelsAdd[$chave] ?? $chave;
-                                    ?>
-                                        <label class="checkbox" style="margin-left: 15px;">
-                                            <input type="checkbox" name="permissoes[<?= $chave ?>]" value="1" <?= set_checkbox('permissoes[' . $chave . ']', '1', $valor_padrao) ?> />
-                                            <?= $label ?>
-                                        </label>
-                                    <?php endforeach; ?>
+                                    <div class="grupo-permissoes" style="margin-bottom: 15px; background: #fff; border-radius: 6px; padding: 12px; border: 1px solid #e9ecef;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                            <h6 style="margin: 0; color: #2c3e50; font-weight: 600;">
+                                                <i class="<?= $iconesGrupoAdd[$grupo] ?? 'bx bx-folder-open' ?>" style="color: #667eea; margin-right: 8px;"></i> <?= $grupo ?>
+                                            </h6>
+                                            <button type="button" class="btn btn-mini btn-marcar-grupo-add" data-grupo="<?= md5($grupo) ?>">
+                                                <i class="bx bx-check-square"></i> Marcar Grupo
+                                            </button>
+                                        </div>
+                                        <div class="checkboxes-grupo-add" data-grupo="<?= md5($grupo) ?>">
+                                            <?php foreach ($chaves as $chave):
+                                                // Pula se não existe no array de permissões padrão
+                                                if (!isset($permissoes_padrao[$chave])) continue;
+                                                $valor_padrao = $permissoes_padrao[$chave];
+                                                $label = $labelsAdd[$chave] ?? $chave;
+                                            ?>
+                                                <label class="checkbox" style="margin-left: 10px; margin-bottom: 6px; display: block;">
+                                                    <input type="checkbox" name="permissoes[<?= $chave ?>]" value="1" class="checkbox-permissao-add" <?= set_checkbox('permissoes[' . $chave . ']', '1', $valor_padrao) ?> />
+                                                    <span style="margin-left: 5px;"><?= $label ?></span>
+                                                </label>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    </div>
                                 <?php endforeach; ?>
                             </div>
                         </div>
@@ -395,6 +425,37 @@ $(document).ready(function() {
                     }
                 });
             }
+        }
+    });
+
+    // Botão Marcar Todos
+    $('#btn-marcar-todos-add').click(function() {
+        $('.checkbox-permissao-add').prop('checked', true);
+        $(this).removeClass('btn-info').addClass('btn-success');
+        setTimeout(() => {
+            $(this).removeClass('btn-success').addClass('btn-info');
+        }, 500);
+    });
+
+    // Botão Desmarcar Todos
+    $('#btn-desmarcar-todos-add').click(function() {
+        $('.checkbox-permissao-add').prop('checked', false);
+    });
+
+    // Botão Marcar Grupo
+    $('.btn-marcar-grupo-add').click(function() {
+        var grupoHash = $(this).data('grupo');
+        var $checkboxes = $('.checkboxes-grupo-add[data-grupo="' + grupoHash + '"]').find('.checkbox-permissao-add');
+
+        // Verifica se todos estão marcados
+        var todosMarcados = $checkboxes.length === $checkboxes.filter(':checked').length;
+
+        if (todosMarcados) {
+            $checkboxes.prop('checked', false);
+            $(this).html('<i class="bx bx-check-square"></i> Marcar Grupo');
+        } else {
+            $checkboxes.prop('checked', true);
+            $(this).html('<i class="bx bx-square"></i> Desmarcar Grupo');
         }
     });
 });
