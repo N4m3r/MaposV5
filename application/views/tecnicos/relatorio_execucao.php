@@ -549,49 +549,12 @@
                 <div class="relatorio-card">
                     <h5><i class="bx bx-wrench"></i> Serviços da OS</h5>
 
-                    <?php
-                    // Buscar serviços diretamente do banco para garantir dados atualizados
-                    $CI = &get_instance();
-                    $CI->db->reset_query();
-                    $CI->db->select('idServicos_os, servicos_id, os_id, quantidade, preco, status');
-                    $CI->db->from('servicos_os');
-                    $CI->db->where('os_id', $os->idOs);
-                    $query_verificacao = $CI->db->get();
-                    $servicos_verificacao = $query_verificacao ? $query_verificacao->result() : [];
-
-                    // Se não encontrou em servicos_os, tentar os_servicos (portal do técnico)
-                    if (empty($servicos_verificacao) && $CI->db->table_exists('os_servicos')) {
-                        $CI->db->reset_query();
-                        $CI->db->select('os_servicos.id, os_servicos.servico_id as servicos_id, os_servicos.os_id, os_servicos.quantidade, os_servicos.status, os_servicos.observacao, servicos_catalogo.nome as servico_nome');
-                        $CI->db->from('os_servicos');
-                        $CI->db->join('servicos_catalogo', 'servicos_catalogo.id = os_servicos.servico_id', 'left');
-                        $CI->db->where('os_servicos.os_id', $os->idOs);
-                        $query_verificacao2 = $CI->db->get();
-                        if ($query_verificacao2) {
-                            $servicos_verificacao = $query_verificacao2->result();
-                        }
-                    }
-                    ?>
-                    <div style="background: #d4edda; padding: 10px; margin-bottom: 10px; border: 1px solid #155724;">
-                        <strong>VERIFICAÇÃO DIRETA DO BANCO:</strong> Total: <?php echo count($servicos_verificacao); ?><br>
-                        <?php foreach ($servicos_verificacao as $sv): ?>
-                            ID: <?php echo $sv->idServicos_os ?? $sv->id; ?> | Status: '<?php echo $sv->status; ?>' | OS: <?php echo $sv->os_id; ?><br>
-                        <?php endforeach; ?>
-                    </div>
-
                     <?php if (!empty($servicos)): ?>
-                        <div style="background: #fff3cd; padding: 10px; margin-bottom: 10px; border: 1px solid #856404;">
-                            <strong>DEBUG (dados do controller):</strong> Total: <?php echo count($servicos); ?><br>
-                            <?php foreach ($servicos as $i => $servico_debug): ?>
-                                ID: <?php echo $servico_debug->idServicos_os ?? 'NULL'; ?> | Status: '<?php echo $servico_debug->status ?? 'NULL'; ?>'<br>
-                            <?php endforeach; ?>
-                        </div>
                         <table class="table table-bordered">
                             <thead>
                                 <tr>
                                     <th>Serviço</th>
                                     <th>Quantidade</th>
-                                    <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
