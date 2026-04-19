@@ -229,7 +229,17 @@ class Tec_os_model extends CI_Model
     public function iniciarExecucao($dados)
     {
         $this->db->insert('tec_os_execucao', $dados);
-        return $this->db->insert_id();
+
+        $insert_id = $this->db->insert_id();
+        $error = $this->db->error();
+
+        if ($error['code'] != 0) {
+            log_message('error', 'Tec_os_model::iniciarExecucao - Erro DB: ' . $error['message']);
+        }
+
+        log_message('info', 'Tec_os_model::iniciarExecucao - Insert ID: ' . $insert_id . ', Last Query: ' . $this->db->last_query());
+
+        return $insert_id;
     }
 
     /**
@@ -249,7 +259,7 @@ class Tec_os_model extends CI_Model
     {
         $this->db->where('os_id', $os_id);
         $this->db->where('tecnico_id', $tecnico_id);
-        $this->db->where('status', 'em_execucao');
+        $this->db->where('checkout_horario IS NULL', null, false); // Em andamento = sem checkout
         $query = $this->db->get('tec_os_execucao');
         return $query ? $query->row() : null;
     }
@@ -302,12 +312,12 @@ class Tec_os_model extends CI_Model
         $query = $this->db->get('tec_os_execucao');
         $execucao = $query ? $query->row() : null;
 
-        if (!$execucao || !$execucao->checklist_execucao_json) {
+        if (!$execucao || !$execucao->checklist_json) {
             // Retornar checklist padrão baseado nos serviços da OS
             return $this->getChecklistPadraoOs($os_id);
         }
 
-        return json_decode($execucao->checklist_execucao_json, true);
+        return json_decode($execucao->checklist_json, true);
     }
 
     /**
@@ -321,7 +331,7 @@ class Tec_os_model extends CI_Model
             return false;
         }
 
-        $checklist = json_decode($execucao->checklist_execucao_json, true) ?: [];
+        $checklist = json_decode($execucao->checklist_json, true) ?: [];
 
         $checklist[$item_id] = [
             'status' => $dados['status'],
@@ -342,7 +352,7 @@ class Tec_os_model extends CI_Model
 
         $this->db->where('id', $execucao_id);
         return $this->db->update('tec_os_execucao', [
-            'checklist_execucao_json' => json_encode($checklist),
+            'checklist_json' => json_encode($checklist),
             'progresso_execucao' => $progresso,
         ]);
     }

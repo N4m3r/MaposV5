@@ -298,20 +298,28 @@ class Tecnicos extends CI_Controller
             );
         }
 
-        // Criar registro de execução
+        // Criar registro de execução - usando nomes corretos da tabela
         $dados = [
             'os_id' => $os_id,
             'tecnico_id' => $tecnico_id,
-            'data_checkin' => date('Y-m-d H:i:s'),
-            'gps_checkin_lat' => $latitude,
-            'gps_checkin_lng' => $longitude,
-            'foto_checkin' => $caminho_foto,
-            'tipo_inicio' => $tipo,
-            'distancia_ate_cliente' => $distancia_cliente,
-            'status' => 'em_execucao',
+            'checkin_horario' => date('Y-m-d H:i:s'),
+            'checkin_latitude' => $latitude,
+            'checkin_longitude' => $longitude,
+            'checkin_foto' => $caminho_foto,
+            'tipo_servico' => 'MC', // Manutenção Corretiva como padrão
+            'checkin_distancia_metros' => $distancia_cliente ? round($distancia_cliente) : null,
         ];
 
         $execucao_id = $this->tec_os_model->iniciarExecucao($dados);
+
+        log_message('info', 'Tecnicos::iniciar_execucao - Execucao ID retornado: ' . var_export($execucao_id, true));
+        log_message('info', 'Tecnicos::iniciar_execucao - Dados inseridos: ' . print_r($dados, true));
+
+        if (!$execucao_id || $execucao_id == 0) {
+            log_message('error', 'Tecnicos::iniciar_execucao - Falha ao obter insert_id');
+            echo json_encode(['success' => false, 'message' => 'Erro ao criar execução. ID retornado: ' . $execucao_id]);
+            return;
+        }
 
         // Atualizar status da OS
         $this->os_model->edit('os', ['status' => 'Em Andamento'], 'idOs', $os_id);
@@ -371,23 +379,29 @@ class Tecnicos extends CI_Controller
         }
 
         // Calcular tempo total
-        $data_checkin = new DateTime($execucao->data_checkin);
+        $data_checkin = new DateTime($execucao->checkin_horario);
         $data_checkout = new DateTime();
         $intervalo = $data_checkin->diff($data_checkout);
         $tempo_total_horas = $intervalo->h + ($intervalo->i / 60) + ($intervalo->days * 24);
+        $tempo_atendimento_minutos = round($tempo_total_horas * 60);
 
-        // Atualizar execução
-        $dados = [
-            'data_checkout' => date('Y-m-d H:i:s'),
-            'gps_checkout_lat' => $latitude,
-            'gps_checkout_lng' => $longitude,
-            'foto_checkout' => $caminho_foto,
+        // Preparar dados do checklist com assinatura e observações
+        $checklist_data = [
             'assinatura_cliente' => $caminho_assinatura,
             'nome_cliente_assina' => $nome_cliente_assina,
-            'observacoes_tecnico' => $observacoes,
-            'tempo_total_horas' => $tempo_total_horas,
-            'servicos_executados' => $servicos_executados ? json_encode($servicos_executados) : null,
-            'status' => 'concluida',
+            'observacoes' => $observacoes,
+            'servicos_executados' => $servicos_executados,
+        ];
+
+        // Atualizar execução - usando nomes corretos da tabela
+        $dados = [
+            'checkout_horario' => date('Y-m-d H:i:s'),
+            'checkout_latitude' => $latitude,
+            'checkout_longitude' => $longitude,
+            'checkout_foto' => $caminho_foto,
+            'tempo_atendimento_minutos' => $tempo_atendimento_minutos,
+            'checklist_json' => json_encode($checklist_data),
+            'checklist_completude' => 100, // Marca como 100% completo ao finalizar
         ];
 
         $this->tec_os_model->finalizarExecucao($execucao_id, $dados);

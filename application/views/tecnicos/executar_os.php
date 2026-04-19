@@ -117,9 +117,15 @@
                             <i class="bx bx-camera"></i>
                             <span>Foto de Check-in (opcional)</span>
                         </div>
-                        <button type="button" class="btn btn-info" onclick="capturarFotoCheckin()" id="btnFotoCheckin">
-                            <i class="bx bx-camera"></i> Tirar Foto
-                        </button>
+                        <div class="foto-options" style="display: flex; gap: 10px; justify-content: center;">
+                            <button type="button" class="btn btn-info" onclick="capturarFotoCheckin()" id="btnFotoCheckin">
+                                <i class="bx bx-camera"></i> Tirar Foto
+                            </button>
+                            <label class="btn btn-default" style="cursor: pointer;">
+                                <i class="bx bx-upload"></i> Selecionar Arquivo
+                                <input type="file" id="fileCheckin" accept="image/*" style="display: none;" onchange="uploadFotoCheckin(this)">
+                            </label>
+                        </div>
                         <small style="display: block; margin-top: 5px; color: #666; text-align: center;">A foto é opcional - você pode iniciar sem ela</small>
                     </div>
 
@@ -290,24 +296,6 @@
                         </div>
                     </div>
 
-                    <!-- Materiais do Estoque do Técnico -->
-                    <div class="widget-box">
-                        <div class="widget-title">
-                            <span class="icon"><i class="bx bx-box"></i></span>
-                            <h5>Meu Estoque</h5>
-                        </div>
-                        <div class="widget-content">
-                            <div id="materiaisEstoqueContainer">
-                                <div class="empty-state">
-                                    <div class="empty-text">Carregando estoque...</div>
-                                </div>
-                            </div>
-                            <button type="button" class="btn btn-info btn-block" onclick="carregarMeuEstoque()">
-                                <i class="bx bx-refresh"></i> Atualizar Estoque
-                            </button>
-                        </div>
-                    </div>
-
                     <!-- Assinatura -->
                     <div class="widget-box">
                         <div class="widget-title">
@@ -353,9 +341,15 @@
                                 <i class="bx bx-camera"></i>
                                 <span>Foto de Check-out</span>
                             </div>
-                            <button type="button" class="btn btn-info" onclick="capturarFotoCheckout()" id="btnFotoCheckout">
-                                <i class="bx bx-camera"></i> Tirar Foto
-                            </button>
+                            <div class="foto-options" style="display: flex; gap: 10px; justify-content: center;">
+                                <button type="button" class="btn btn-info" onclick="capturarFotoCheckout()" id="btnFotoCheckout">
+                                    <i class="bx bx-camera"></i> Tirar Foto
+                                </button>
+                                <label class="btn btn-default" style="cursor: pointer;">
+                                    <i class="bx bx-upload"></i> Selecionar Arquivo
+                                    <input type="file" id="fileCheckout" accept="image/*" style="display: none;" onchange="uploadFotoCheckout(this)">
+                                </label>
+                            </div>
                             <small style="display: block; margin-top: 5px; color: #666; text-align: center;">A foto é opcional - você pode finalizar sem ela</small>
                         </div>
 
@@ -1165,6 +1159,46 @@ async function capturarFotoCheckout() {
     }
 }
 
+// Upload de arquivo para Check-in
+function uploadFotoCheckin(input) {
+    const preview = document.getElementById('checkinPreview');
+    const file = input.files[0];
+
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+        alert('Por favor, selecione uma imagem válida.');
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        fotoCheckin = e.target.result;
+        preview.innerHTML = `<img src="${fotoCheckin}" style="max-width: 100%; max-height: 100%;">`;
+    };
+    reader.readAsDataURL(file);
+}
+
+// Upload de arquivo para Check-out
+function uploadFotoCheckout(input) {
+    const preview = document.getElementById('checkoutPreview');
+    const file = input.files[0];
+
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+        alert('Por favor, selecione uma imagem válida.');
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        fotoCheckout = e.target.result;
+        preview.innerHTML = `<img src="${fotoCheckout}" style="max-width: 100%; max-height: 100%;">`;
+    };
+    reader.readAsDataURL(file);
+}
+
 // Helper para obter CSRF token
 function getCsrfToken() {
     const tokenName = '<?php echo $this->config->item('csrf_token_name'); ?>';
@@ -1219,7 +1253,13 @@ async function iniciarExecucao() {
         }
 
         if (data.success) {
+            if (!data.execucao_id || data.execucao_id == 0) {
+                alert('Erro: ID da execução não retornado corretamente. Por favor, recarregue a página.');
+                console.error('execucao_id inválido:', data.execucao_id);
+                return;
+            }
             execucaoId = data.execucao_id;
+            console.log('Execução iniciada com ID:', execucaoId);
             document.getElementById('checkinSection').classList.add('hidden');
             document.getElementById('execucaoSection').classList.remove('hidden');
             window.scrollTo(0, 0);
@@ -1286,7 +1326,10 @@ function atualizarProgresso() {
 
 // Finalização
 async function finalizarExecucao() {
-    if (!execucaoId) return;
+    if (execucaoId === null || execucaoId === undefined) {
+        alert('Erro: Execução não iniciada. Por favor, recarregue a página e tente novamente.');
+        return;
+    }
 
     const nomeAssinante = document.getElementById('nomeAssinante').value;
     const observacoes = document.getElementById('observacoes').value;
@@ -1317,13 +1360,25 @@ async function finalizarExecucao() {
     formData.append('observacoes', observacoes);
     formData.append(csrf.name, csrf.value);
 
+    console.log('Finalizando execução...', { execucao_id: execucaoId });
+
     try {
         const response = await fetch('<?php echo site_url("tecnicos/finalizar_execucao"); ?>', {
             method: 'POST',
             body: formData
         });
 
-        const data = await response.json();
+        const responseText = await response.text();
+        console.log('Resposta raw finalizar:', responseText.substring(0, 500));
+
+        let data;
+        try {
+            data = JSON.parse(responseText);
+        } catch (e) {
+            console.error('Resposta não é JSON válido:', responseText);
+            alert('Erro no servidor ao finalizar. Verifique o console.');
+            return;
+        }
 
         if (data.success) {
             alert('OS finalizada com sucesso! Tempo total: ' + Math.round(data.tempo_total * 100) / 100 + ' horas');
@@ -1333,6 +1388,7 @@ async function finalizarExecucao() {
         }
     } catch (err) {
         alert('Erro ao finalizar: ' + err.message);
+        console.error('Erro:', err);
     } finally {
         btn.classList.remove('loading');
         btn.disabled = false;
@@ -1340,43 +1396,5 @@ async function finalizarExecucao() {
 }
 
 // Carregar estoque do técnico
-async function carregarMeuEstoque() {
-    const container = document.getElementById('materiaisEstoqueContainer');
-    container.innerHTML = '<div class="empty-state"><div class="empty-text">Carregando...</div></div>';
-
-    try {
-        const response = await fetch('<?php echo site_url("tecnicos/obter_estoque_json"); ?>');
-        const data = await response.json();
-
-        if (data.success && data.estoque.length > 0) {
-            let html = '<div class="estoque-list">';
-            data.estoque.forEach(item => {
-                html += `
-                    <div class="estoque-item">
-                        <div class="estoque-info">
-                            <div class="estoque-nome">${item.produto_nome || 'Produto ' + item.produto_id}</div>
-                        </div>
-                        <div class="estoque-qtd">${item.quantidade} ${item.unidade || 'un'}</div>
-                    </div>
-                `;
-            });
-            html += '</div>';
-            container.innerHTML = html;
-        } else {
-            container.innerHTML = '<div class="empty-state"><div class="empty-text">Seu estoque está vazio</div></div>';
-        }
-    } catch (err) {
-        console.error('Erro ao carregar estoque:', err);
-        container.innerHTML = '<div class="empty-state"><div class="empty-text">Erro ao carregar estoque. Tente novamente.</div></div>';
-    }
-}
-
-function abrirModalMateriais() {
-    alert('Use seu estoque pessoal para registrar o uso de materiais. Clique em "Atualizar Estoque" para ver o que está disponível.');
-}
-
-// Carregar estoque automaticamente ao abrir a página
-if (document.getElementById('execucaoSection') && !document.getElementById('execucaoSection').classList.contains('hidden')) {
-    carregarMeuEstoque();
-}
+// Funções removidas: carregarMeuEstoque, abrirModalMateriais
 </script>
