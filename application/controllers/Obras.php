@@ -423,23 +423,46 @@ class Obras extends MY_Controller
     {
         $obra_id = $this->input->post('obra_id');
 
+        // Debug: verificar se tabela existe
+        if (!$this->db->table_exists('obra_atividades')) {
+            log_message('error', 'Tabela obra_atividades nao existe');
+            $this->session->set_flashdata('error', 'Erro: Tabela de atividades nao existe. Execute as migracoes.');
+            redirect('obras/atividades/' . $obra_id);
+            return;
+        }
+
         $dados = [
             'obra_id' => $obra_id,
-            'etapa_id' => $this->input->post('etapa_id'),
-            'tecnico_id' => $this->input->post('tecnico_id'),
+            'etapa_id' => $this->input->post('etapa_id') ?: null,
+            'tecnico_id' => $this->input->post('tecnico_id') ?: null,
             'data_atividade' => $this->input->post('data_atividade'),
             'titulo' => $this->input->post('titulo'),
             'descricao' => $this->input->post('descricao'),
-            'tipo' => $this->input->post('tipo') ?? 'trabalho',
+            'tipo' => $this->input->post('tipo') ?: 'trabalho',
             'visivel_cliente' => $this->input->post('visivel_cliente') ? 1 : 0,
         ];
+
+        // Validar dados obrigatorios
+        if (empty($dados['titulo'])) {
+            $this->session->set_flashdata('error', 'Erro: Titulo da atividade e obrigatorio.');
+            redirect('obras/atividades/' . $obra_id);
+            return;
+        }
+
+        if (empty($dados['data_atividade'])) {
+            $this->session->set_flashdata('error', 'Erro: Data da atividade e obrigatoria.');
+            redirect('obras/atividades/' . $obra_id);
+            return;
+        }
 
         $atividade_id = $this->obra_atividades_model->add($dados);
 
         if ($atividade_id) {
             $this->session->set_flashdata('success', 'Atividade adicionada com sucesso!');
         } else {
-            $this->session->set_flashdata('error', 'Erro ao adicionar atividade.');
+            $error = $this->db->error();
+            log_message('error', 'Erro ao adicionar atividade: ' . print_r($error, true));
+            $this->session->set_flashdata('error', 'Erro ao adicionar atividade: ' . ($error['message'] ?? 'Erro desconhecido'));
         }
 
         redirect('obras/atividades/' . $obra_id);
