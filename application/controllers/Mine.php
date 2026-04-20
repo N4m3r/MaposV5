@@ -873,6 +873,13 @@ class Mine extends CI_Controller
         // Carregar documentos fiscais vinculados à OS (cobranças, NFS-e, impostos)
         $data['documentos_fiscais'] = $this->os_model->getDocumentosFiscais($this->uri->segment(3));
 
+        // Carregar cobranças/boletos específicos da OS
+        $data['cobrancas_os'] = $this->os_model->getCobrancas($this->uri->segment(3));
+
+        // Carregar notas fiscais específicas da OS
+        $this->load->model('nfse_emitida_model');
+        $data['notas_fiscais_os'] = $this->nfse_emitida_model->getByOsId($this->uri->segment(3));
+
         $data['emitente'] = $this->mapos_model->getEmitente();
         $data['qrCode'] = $this->os_model->getQrCode(
             $id,

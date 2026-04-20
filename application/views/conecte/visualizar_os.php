@@ -1,5 +1,170 @@
 <?php $totalServico = 0;
-$totalProdutos = 0; ?>
+$totalProdutos = 0;
+
+// Helper para cores de status
+function getStatusColor($status) {
+    $colors = [
+        'pago' => '#27ae60',
+        'Pago' => '#27ae60',
+        'PAGO' => '#27ae60',
+        'pendente' => '#f39c12',
+        'Pendente' => '#f39c12',
+        'vencido' => '#e74c3c',
+        'Vencido' => '#e74c3c',
+        'cancelado' => '#95a5a6',
+        'Cancelado' => '#95a5a6',
+        'Emitida' => '#27ae60',
+        'Cancelada' => '#e74c3c',
+        'Processando' => '#3498db'
+    ];
+    return $colors[$status] ?? '#7f8c8d';
+}
+?>
+
+<style>
+/* Tabs modernas */
+.os-tabs {
+    border-bottom: 2px solid #e9ecef;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 5px;
+}
+
+.os-tab {
+    padding: 12px 20px;
+    border: none;
+    background: transparent;
+    color: #6c757d;
+    font-weight: 500;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.os-tab:hover {
+    color: #495057;
+    background: #f8f9fa;
+}
+
+.os-tab.active {
+    color: #667eea;
+    border-bottom-color: #667eea;
+    background: #fff;
+}
+
+.os-tab .badge-count {
+    background: #e9ecef;
+    color: #495057;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.75rem;
+}
+
+.os-tab.active .badge-count {
+    background: #667eea;
+    color: white;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Cards de boletos/notas */
+.doc-card {
+    background: white;
+    border-radius: 8px;
+    padding: 15px;
+    border: 1px solid #e9ecef;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+}
+
+.doc-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.doc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.doc-type {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.doc-type.boleto {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.doc-type.nota {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.doc-status {
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.doc-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 10px 0;
+}
+
+.doc-info {
+    color: #6c757d;
+    font-size: 0.85rem;
+}
+
+.doc-actions {
+    margin-top: 12px;
+    display: flex;
+    gap: 8px;
+}
+
+.doc-actions .btn {
+    flex: 1;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px;
+    color: #6c757d;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    opacity: 0.5;
+}
+</style>
+
 <div class="row-fluid" style="margin-top: 0">
     <div class="span12">
         <div class="widget-box">
@@ -7,20 +172,45 @@ $totalProdutos = 0; ?>
                 <span class="icon">
                     <i class="fas fa-diagnoses"></i>
                 </span>
-                <h5>Ordem de Serviço</h5>
+                <h5>Ordem de Serviço #<?php echo $result->idOs; ?></h5>
                 <div class="buttons" style=" padding-left:5px;">
                     <?php if ($result->status == 'Finalizado' || $result->status == 'Finalizada'): ?>
                         <a title="Relatório de Atendimento" class="button btn btn-mini btn-success" href="<?php echo site_url('mine/relatorioAtendimento/' . $result->idOs); ?>">
-                            <span class="button__icon"><i class="bx bx-file"></i></span> <span class="button__text">Relatório de Atendimento</span></a>
+                            <span class="button__icon"><i class="bx bx-file"></i></span> <span class="button__text">Relatório</span></a>
                     <?php endif; ?>
                     <?php if ($pode_aprovar && in_array($result->status, ['Orçamento', 'Aberto', 'Negociação'])): ?>
-                        <a title="Aprovar Ordem de Serviço" class="button btn btn-mini btn-success" href="<?php echo site_url('mine/aprovarOs/' . $result->idOs); ?>">
-                            <span class="button__icon"><i class="bx bx-check"></i></span> <span class="button__text">Aprovar OS</span></a>
+                        <a title="Aprovar" class="button btn btn-mini btn-success" href="<?php echo site_url('mine/aprovarOs/' . $result->idOs); ?>">
+                            <span class="button__icon"><i class="bx bx-check"></i></span> <span class="button__text">Aprovar</span></a>
                     <?php endif; ?>
-                    <a target="_blank" title="Imprimir Relatório" class="button btn btn-mini btn-inverse" href="<?php echo site_url() ?>/mine/imprimirOs/<?php echo $result->idOs; ?>">
-                        <span class="button__icon"><i class="bx bx-printer"></i></span> <span class="button__text">Imprimir Relatório</span></a>
+                    <a target="_blank" title="Imprimir" class="button btn btn-mini btn-inverse" href="<?php echo site_url() ?>/mine/imprimirOs/<?php echo $result->idOs; ?>">
+                        <span class="button__icon"><i class="bx bx-printer"></i></span> <span class="button__text">Imprimir</span></a>
                 </div>
             </div>
+
+            <!-- Tabs Navigation -->
+            <div class="widget-content" style="padding-bottom: 0;">
+                <div class="os-tabs">
+                    <button class="os-tab active" onclick="showTab('tab-detalhes')" data-tab="tab-detalhes">
+                        <i class="bx bx-detail"></i> Detalhes
+                    </button>
+                    <button class="os-tab" onclick="showTab('tab-boletos')" data-tab="tab-boletos">
+                        <i class="bx bx-barcode"></i> Boletos
+                        <?php if (!empty($cobrancas_os)): ?>
+                            <span class="badge-count"><?php echo count($cobrancas_os); ?></span>
+                        <?php endif; ?>
+                    </button>
+
+                    <button class="os-tab" onclick="showTab('tab-notas')" data-tab="tab-notas">
+                        <i class="bx bx-receipt"></i> Notas Fiscais
+                        <?php if (!empty($notas_fiscais_os)): ?>
+                            <span class="badge-count"><?php echo count($notas_fiscais_os); ?></span>
+                        <?php endif; ?>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tab Detalhes -->
+            <div id="tab-detalhes" class="tab-content active">
             <div class="widget-content" id="printOs">
                 <div class="invoice-content">
                     <div class="invoice-head" style="margin-bottom: 0">
