@@ -762,3 +762,187 @@
     </div>
 </div>
 <?php endif; ?>
+
+<script>
+// Preview da foto antes do upload
+function previewFoto(input) {
+    const preview = document.getElementById('fotoPreview');
+    const previewImg = document.getElementById('previewImg');
+
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            previewImg.src = e.target.result;
+            preview.style.display = 'block';
+        }
+        reader.readAsDataURL(input.files[0]);
+    } else {
+        preview.style.display = 'none';
+    }
+}
+
+// Upload de foto via AJAX
+jQuery(document).ready(function($) {
+    $('#formUploadFoto').on('submit', function(e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+        const statusDiv = $('#uploadStatus');
+
+        statusDiv.html('<div style="color: #667eea;"><i class="bx bx-loader bx-spin"></i> Enviando foto... Aguarde</div>');
+
+        $.ajax({
+            url: '<?php echo base_url("index.php/mine/uploadFotoCliente"); ?>',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    statusDiv.html('<div style="color: #28a745;"><i class="bx bx-check-circle"></i> ' + response.message + '</div>');
+                    // Recarregar a página após 2 segundos para mostrar a nova foto
+                    setTimeout(function() {
+                        location.reload();
+                    }, 2000);
+                } else {
+                    statusDiv.html('<div style="color: #dc3545;"><i class="bx bx-error-circle"></i> ' + response.message + '</div>');
+                }
+            },
+            error: function(xhr, status, error) {
+                statusDiv.html('<div style="color: #dc3545;"><i class="bx bx-error-circle"></i> Erro ao enviar foto. Tente novamente.</div>');
+            }
+        });
+    });
+});
+
+// Canvas de Assinatura
+let canvas, ctx, isDrawing = false;
+
+document.addEventListener('DOMContentLoaded', function() {
+    canvas = document.getElementById('canvasAssinatura');
+    if (canvas) {
+        // Ajustar tamanho do canvas
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+
+        ctx = canvas.getContext('2d');
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+
+        // Eventos de mouse
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseout', stopDrawing);
+
+        // Eventos de touch (para mobile)
+        canvas.addEventListener('touchstart', handleTouch);
+        canvas.addEventListener('touchmove', handleTouch);
+        canvas.addEventListener('touchend', stopDrawing);
+    }
+
+    // Envio do formulário de assinatura
+    const formAssinatura = document.getElementById('formAssinatura');
+    if (formAssinatura) {
+        formAssinatura.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const nome = document.getElementById('nomeAssinante').value.trim();
+            if (!nome) {
+                alert('Por favor, digite seu nome antes de assinar.');
+                return;
+            }
+
+            // Verificar se há assinatura
+            const imageData = canvas.toDataURL('image/png');
+            const isEmpty = isCanvasEmpty(canvas);
+
+            if (isEmpty) {
+                alert('Por favor, faça sua assinatura no canvas antes de confirmar.');
+                return;
+            }
+
+            document.getElementById('inputAssinatura').value = imageData;
+
+            const statusDiv = document.getElementById('assinaturaStatus');
+            statusDiv.innerHTML = '<div style="color: #667eea;"><i class="bx bx-loader bx-spin"></i> Salvando assinatura... Aguarde</div>';
+
+            // Enviar via AJAX
+            const formData = new FormData(formAssinatura);
+
+            fetch('<?php echo base_url("index.php/mine/salvarAssinaturaCliente"); ?>', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    statusDiv.innerHTML = '<div style="color: #28a745;"><i class="bx bx-check-circle"></i> ' + data.message + '</div>';
+                    setTimeout(function() {
+                        location.reload();
+                    }, 2000);
+                } else {
+                    statusDiv.innerHTML = '<div style="color: #dc3545;"><i class="bx bx-error-circle"></i> ' + data.message + '</div>';
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                statusDiv.innerHTML = '<div style="color: #dc3545;"><i class="bx bx-error-circle"></i> Erro ao salvar assinatura. Tente novamente.</div>';
+            });
+        });
+    }
+});
+
+function startDrawing(e) {
+    isDrawing = true;
+    draw(e);
+}
+
+function draw(e) {
+    if (!isDrawing) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    ctx.lineTo(x, y);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+}
+
+function stopDrawing() {
+    if (isDrawing) {
+        isDrawing = false;
+        ctx.beginPath();
+    }
+}
+
+function handleTouch(e) {
+    e.preventDefault();
+    const touch = e.touches[0];
+    const mouseEvent = new MouseEvent(e.type === 'touchstart' ? 'mousedown' : 'mousemove', {
+        clientX: touch.clientX,
+        clientY: touch.clientY
+    });
+    canvas.dispatchEvent(mouseEvent);
+}
+
+function limparAssinatura() {
+    if (canvas && ctx) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.beginPath();
+    }
+}
+
+function isCanvasEmpty(canvas) {
+    const blank = document.createElement('canvas');
+    blank.width = canvas.width;
+    blank.height = canvas.height;
+    return canvas.toDataURL() === blank.toDataURL();
+}
+</script>

@@ -271,12 +271,19 @@ class Obras extends MY_Controller
         }
 
         $obra_id = $this->input->post('obra_id');
+        $nome = $this->input->post('nome');
+
+        if (!$obra_id || !$nome) {
+            $this->session->set_flashdata('error', 'Dados incompletos. Preencha todos os campos obrigatórios.');
+            redirect('obras');
+        }
 
         $dados = [
             'obra_id' => $obra_id,
-            'numero_etapa' => $this->input->post('numero_etapa'),
-            'nome' => $this->input->post('nome'),
+            'numero_etapa' => $this->input->post('numero_etapa') ?: 1,
+            'nome' => $nome,
             'descricao' => $this->input->post('descricao'),
+            'especialidade' => $this->input->post('especialidade'),
             'data_inicio_prevista' => $this->input->post('data_inicio_prevista'),
             'data_fim_prevista' => $this->input->post('data_fim_prevista'),
         ];
