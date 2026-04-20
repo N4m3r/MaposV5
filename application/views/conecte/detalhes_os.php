@@ -21,6 +21,11 @@
                     <i class="fas fa-diagnoses"></i>
                 </span>
                 <h5>Detalhes OS</h5>
+                <div class="buttons">
+                    <a href="<?php echo site_url('mine/os'); ?>" class="btn btn-mini btn-inverse">
+                        <i class="bx bx-arrow-back"></i> Voltar
+                    </a>
+                </div>
             </div>
             <div class="widget-content nopadding tab-content">
 

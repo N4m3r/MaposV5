@@ -80,19 +80,24 @@
                                     </td>
                                     <td>R$ <?php echo number_format($r->valor_contrato ?? 0, 2, ',', '.'); ?></td>
                                     <td>
-                                        <a href="<?php echo site_url('obras/visualizar/' . $r->id); ?>" class="btn btn-mini btn-info" title="Visualizar">
-                                            <i class="icon-eye-open icon-white"></i>
-                                        </a>
-                                        <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
-                                            <a href="<?php echo site_url('obras/editar/' . $r->id); ?>" class="btn btn-mini btn-primary" title="Editar">
-                                                <i class="icon-edit icon-white"></i>
+                                        <div class="btn-group">
+                                            <a href="<?php echo site_url('obras/visualizar/' . $r->id); ?>" class="btn btn-mini btn-info" title="Visualizar Obra">
+                                                <i class="icon-eye-open icon-white"></i>
                                             </a>
-                                        <?php endif; ?>
-                                        <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dObras')): ?>
-                                            <button class="btn btn-mini btn-danger" title="Excluir" onclick="confirmarExclusao(<?php echo $r->id; ?>)">
-                                                <i class="icon-remove icon-white"></i>
-                                            </button>
-                                        <?php endif; ?>
+                                            <a href="<?php echo site_url('obras/equipe/' . $r->id); ?>" class="btn btn-mini btn-warning" title="Gerenciar Equipe">
+                                                <i class="icon-group icon-white"></i>
+                                            </a>
+                                            <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
+                                                <a href="<?php echo site_url('obras/editar/' . $r->id); ?>" class="btn btn-mini btn-primary" title="Editar Obra">
+                                                    <i class="icon-edit icon-white"></i>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dObras')): ?>
+                                                <button class="btn btn-mini btn-danger" title="Excluir Obra" onclick="confirmarExclusao(<?php echo $r->id; ?>)">
+                                                    <i class="icon-remove icon-white"></i>
+                                                </button>
+                                            <?php endif; ?>
+                                        </div>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
