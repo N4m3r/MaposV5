@@ -1,5 +1,10 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
 <!-- Relatório de Atendimento - Área do Cliente -->
+<?php
+// Carregar helper de permissões
+$CI =& get_instance();
+$CI->load->helper('cliente_permissions');
+?>
 <div id="content">
 <style>
 .cliente-relatorio-content { margin-top: 15px !important; }
@@ -576,11 +581,11 @@
                 <?php endif; ?>
 
                 <!-- Fotos do Atendimento -->
-                <?php if (!empty($fotosPorEtapa['entrada']) || !empty($fotosPorEtapa['durante']) || !empty($fotosPorEtapa['saida'])): ?>
+                <?php if (clienteHasPermission('visualizar_os') && (!empty($fotosPorEtapa['entrada']) || !empty($fotosPorEtapa['durante']) || !empty($fotosPorEtapa['saida']))): ?>
                 <div class="relatorio-card">
                     <h5><i class="bx bx-camera"></i> Registro Fotográfico do Atendimento</h5>
 
-                    <?php if (!empty($fotosPorEtapa['entrada'])): ?>
+                    <?php if (clienteHasPermission('visualizar_os') && !empty($fotosPorEtapa['entrada'])): ?>
                     <div class="photos-section">
                         <div class="photos-section-title">📷 Fotos de Entrada</div>
                         <div class="fotos-grid">
@@ -598,7 +603,7 @@
                     </div>
                     <?php endif; ?>
 
-                    <?php if (!empty($fotosPorEtapa['durante'])): ?>
+                    <?php if (clienteHasPermission('visualizar_os') && !empty($fotosPorEtapa['durante'])): ?>
                     <div class="photos-section">
                         <div class="photos-section-title">📷 Fotos Durante o Atendimento</div>
                         <div class="fotos-grid">
@@ -616,7 +621,7 @@
                     </div>
                     <?php endif; ?>
 
-                    <?php if (!empty($fotosPorEtapa['saida'])): ?>
+                    <?php if (clienteHasPermission('visualizar_os') && !empty($fotosPorEtapa['saida'])): ?>
                     <div class="photos-section">
                         <div class="photos-section-title">📷 Fotos de Saída</div>
                         <div class="fotos-grid">
@@ -637,7 +642,7 @@
                 <?php endif; ?>
 
                 <!-- Fotos do Portal do Técnico -->
-                <?php if (!empty($fotosTecnico)): ?>
+                <?php if (clienteHasPermission('visualizar_os') && !empty($fotosTecnico)): ?>
                 <div class="relatorio-card">
                     <h5><i class="bx bx-images"></i> Fotos do Técnico</h5>
                     <div class="fotos-grid">
