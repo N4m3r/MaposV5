@@ -209,6 +209,88 @@
                 </div>
                 <?php endif; ?>
 
+                <!-- Atividades Recentes -->
+                <?php if (!empty($atividades)): ?>
+                <div class="row-fluid">
+                    <div class="span12">
+                        <div class="widget-box">
+                            <div class="widget-title">
+                                <span class="icon"><i class="bx bx-calendar-check"></i></span>
+                                <h5>Atividades Recentes</h5>
+                            </div>
+                            <div class="widget-content nopadding">
+                                <table class="table table-bordered table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Data</th>
+                                            <th>Título</th>
+                                            <th>Técnico</th>
+                                            <th>Tipo</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($atividades as $atividade): ?>
+                                        <?php
+                                        $tipoColors = [
+                                            'trabalho' => 'info',
+                                            'impedimento' => 'important',
+                                            'visita' => 'success',
+                                            'manutencao' => 'warning',
+                                            'outro' => 'default'
+                                        ];
+                                        $tipoLabel = $tipoColors[$atividade->tipo] ?? 'default';
+
+                                        $statusColors = [
+                                            'agendada' => 'default',
+                                            'iniciada' => 'info',
+                                            'pausada' => 'warning',
+                                            'concluida' => 'success',
+                                            'cancelada' => 'inverse'
+                                        ];
+                                        $statusLabel = $statusColors[$atividade->status] ?? 'default';
+                                        ?>
+                                        <tr>
+                                            <td><?= date('d/m/Y', strtotime($atividade->data_atividade)) ?></td>
+                                            <td><?= htmlspecialchars($atividade->titulo) ?></td>
+                                            <td><?= htmlspecialchars($atividade->tecnico_nome ?? '-') ?></td>
+                                            <td><span class="label label-<?= $tipoLabel ?>"><?= ucfirst($atividade->tipo) ?></span></td>
+                                            <td><span class="label label-<?= $statusLabel ?>"><?= ucfirst($atividade->status) ?></span></td>
+                                        </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <?php endif; ?>
+
+                <!-- Galeria de Fotos -->
+                <?php if (!empty($fotos)): ?>
+                <div class="row-fluid">
+                    <div class="span12">
+                        <div class="widget-box">
+                            <div class="widget-title">
+                                <span class="icon"><i class="bx bx-images"></i></span>
+                                <h5>Fotos da Obra</h5>
+                            </div>
+                            <div class="widget-content">
+                                <div class="row-fluid">
+                                    <?php foreach ($fotos as $foto): ?>
+                                    <div class="span2" style="margin-bottom: 10px;">
+                                        <a href="<?= base_url($foto) ?>" target="_blank" class="thumbnail">
+                                            <img src="<?= base_url($foto) ?>" style="height: 100px; object-fit: cover;">
+                                        </a>
+                                    </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <?php endif; ?>
+
             </div>
         </div>
     </div>

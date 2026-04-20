@@ -1979,6 +1979,8 @@ class Mine extends CI_Controller
         clienteCheckPermission('visualizar_obras');
 
         $this->load->model('obras_model');
+        $this->load->model('obra_atividades_model');
+        $this->load->model('obra_cliente_model');
         $this->load->model('mapos_model');
 
         $obra = $this->obras_model->getById($id);
@@ -2007,12 +2009,36 @@ class Mine extends CI_Controller
         // Carregar equipe
         $equipe = $this->obras_model->getEquipe($id);
 
+        // Carregar atividades do novo sistema (apenas visíveis ao cliente)
+        $atividades = [];
+        if (method_exists($this->obra_atividades_model, 'getByObra')) {
+            $atividades = $this->obra_atividades_model->getByObra($id, [
+                'visivel_cliente' => true
+            ], 20);
+        }
+
+        // Coletar fotos de todas as atividades
+        $fotos = [];
+        foreach ($atividades as $atv) {
+            if (!empty($atv->fotos_checkin)) {
+                $fotos = array_merge($fotos, json_decode($atv->fotos_checkin, true) ?? []);
+            }
+            if (!empty($atv->fotos_atividade)) {
+                $fotos = array_merge($fotos, json_decode($atv->fotos_atividade, true) ?? []);
+            }
+            if (!empty($atv->fotos_checkout)) {
+                $fotos = array_merge($fotos, json_decode($atv->fotos_checkout, true) ?? []);
+            }
+        }
+
         $data['menuObras'] = 'obras';
         $data['obra'] = $obra;
         $data['os_vinculadas'] = $os_vinculadas;
         $data['etapas'] = $etapas;
         $data['diario'] = $diario;
         $data['equipe'] = $equipe;
+        $data['atividades'] = $atividades;
+        $data['fotos'] = array_slice($fotos, 0, 12); // Limitar a 12 fotos
         $data['emitente'] = $this->mapos_model->getEmitente();
         $data['output'] = 'conecte/visualizar_obra';
 
