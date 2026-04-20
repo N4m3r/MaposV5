@@ -1,7 +1,31 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
 
+<style>
+    /* Ajustes adicionais para dark mode no dashboard */
+    body[data-theme="dark"] .welcome-card {
+        background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%) !important;
+    }
+
+    body[data-theme="dark"] .btn-ver-obras {
+        background: rgba(255,255,255,0.1) !important;
+        color: #fff !important;
+    }
+
+    body[data-theme="dark"] .btn-ver-obras:hover {
+        background: rgba(255,255,255,0.2) !important;
+    }
+
+    body[data-theme="dark"] .empty-state {
+        color: #888 !important;
+    }
+
+    body[data-theme="dark"] .progress-bar-bg {
+        background: #2d3347 !important;
+    }
+</style>
+
 <!-- Header com saudação -->
-<div class="tec-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
+<div class="tec-card welcome-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
     <div class="tec-card-body" style="color: #fff;">
         <div style="display: flex; align-items: center; gap: 16px;">
             <div style="width: 60px; height: 60px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700;">
@@ -109,7 +133,7 @@
                     <?php endforeach; ?>
                 </div>
             <?php else: ?>
-                <div style="text-align: center; padding: 40px; color: #888;">
+                <div class="empty-state" style="text-align: center; padding: 40px; color: #888;">
                     <i class='bx bx-calendar' style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;"></i>
                     <p>Nenhuma OS agendada para hoje</p>
                 </div>
@@ -139,7 +163,7 @@
                                     <?= htmlspecialchars($obra->cliente_nome ?? 'Cliente') ?> • <?= $obra->percentual_concluido ?? 0 ?>% concluído
                                 </div>
                             </div>
-                            <div style="width: 60px; height: 6px; background: #e8e8e8; border-radius: 3px; overflow: hidden;">
+                            <div class="progress-bar-bg" style="width: 60px; height: 6px; background: #e8e8e8; border-radius: 3px; overflow: hidden;">
                                 <div style="width: <?= $obra->percentual_concluido ?? 0 ?>%; height: 100%; background: linear-gradient(90deg, #27ae60, #2ecc71); border-radius: 3px;"></div>
                             </div>
                             <a href="<?= site_url('tecnicos/executar_obra/' . $obra->id) ?>" class="tec-list-action" style="color: #27ae60; font-size: 20px;">
@@ -149,7 +173,7 @@
                     <?php endforeach; ?>
                 </div>
             <?php else: ?>
-                <div style="text-align: center; padding: 40px; color: #888;">
+                <div class="empty-state" style="text-align: center; padding: 40px; color: #888;">
                     <i class='bx bx-building' style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;"></i>
                     <p>Você não está alocado em nenhuma obra</p>
                 </div>
@@ -180,7 +204,7 @@
                 <?php endforeach; ?>
             </div>
         <?php else: ?>
-            <div style="text-align: center; padding: 30px; color: #888;">
+            <div class="empty-state" style="text-align: center; padding: 30px; color: #888;">
                 <i class='bx bx-package' style="font-size: 32px; margin-bottom: 10px; opacity: 0.5;"></i>
                 <p>Nenhum item em estoque</p>
             </div>

@@ -85,6 +85,9 @@ class MY_Controller extends CI_Controller
 
     public function layout()
     {
+        // Define se estamos na area do tecnico
+        $this->data['is_area_tecnico'] = $this->isTecnico();
+
         // load views
         $this->load->view('tema/topo', $this->data);
 

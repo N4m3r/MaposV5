@@ -455,6 +455,103 @@
                 padding: 16px;
             }
         }
+
+        /* ============================================
+           MODO ESCURO (DARK MODE)
+           ============================================ */
+
+        /* Quando body tem data-theme="dark" */
+        body[data-theme="dark"] {
+            background: #0f1117;
+            color: #e8e8e8;
+        }
+
+        body[data-theme="dark"] .tec-main {
+            background: #0f1117;
+        }
+
+        /* Navbar no dark mode */
+        body[data-theme="dark"] .tec-navbar {
+            background: #1a1d29;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+
+        body[data-theme="dark"] .tec-page-title {
+            color: #e8e8e8;
+        }
+
+        body[data-theme="dark"] .tec-nav-btn {
+            color: #a0a0a0;
+        }
+
+        body[data-theme="dark"] .tec-nav-btn:hover {
+            background: #252a3a;
+            color: #e8e8e8;
+        }
+
+        body[data-theme="dark"] .tec-user-info:hover {
+            background: #252a3a;
+        }
+
+        body[data-theme="dark"] .tec-user-name {
+            color: #e8e8e8;
+        }
+
+        body[data-theme="dark"] .tec-user-role {
+            color: #888;
+        }
+
+        /* Cards no dark mode */
+        body[data-theme="dark"] .tec-card {
+            background: #1a1d29;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+
+        body[data-theme="dark"] .tec-card-header {
+            border-bottom-color: #2d3347;
+        }
+
+        body[data-theme="dark"] .tec-card-title {
+            color: #e8e8e8;
+        }
+
+        body[data-theme="dark"] .tec-stat-card {
+            background: #1a1d29;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+
+        body[data-theme="dark"] .tec-stat-value {
+            color: #e8e8e8;
+        }
+
+        /* Quick Actions no dark mode */
+        body[data-theme="dark"] .tec-action-btn {
+            background: #1a1d29;
+            border-color: #2d3347;
+            color: #e8e8e8;
+        }
+
+        body[data-theme="dark"] .tec-action-btn:hover {
+            background: #252a3a;
+            border-color: #667eea;
+        }
+
+        /* Lista no dark mode */
+        body[data-theme="dark"] .tec-list-item {
+            background: #252a3a;
+        }
+
+        body[data-theme="dark"] .tec-list-item:hover {
+            background: #2d3347;
+        }
+
+        body[data-theme="dark"] .tec-list-title {
+            color: #e8e8e8;
+        }
+
+        body[data-theme="dark"] .tec-list-subtitle {
+            color: #888;
+        }
     </style>
 </head>
 <body>
@@ -557,13 +654,38 @@
         // Toggle Theme
         function toggleTheme() {
             const body = document.body;
-            const currentTheme = body.getAttribute('data-theme') || 'default';
-            const newTheme = currentTheme === 'white' ? 'default' : 'white';
-            body.setAttribute('data-theme', newTheme);
+            const themeIcon = document.getElementById('themeIcon');
+            const currentTheme = body.getAttribute('data-theme') || 'light';
 
-            // Salvar preferência via AJAX
-            $.post('<?= base_url() ?>index.php/notificacoes/trocar_tema', { tema: newTheme });
+            // Alternar entre light e dark
+            if (currentTheme === 'dark') {
+                body.setAttribute('data-theme', 'light');
+                themeIcon.classList.remove('bx-sun');
+                themeIcon.classList.add('bx-moon');
+                localStorage.setItem('tec-theme', 'light');
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                themeIcon.classList.remove('bx-moon');
+                themeIcon.classList.add('bx-sun');
+                localStorage.setItem('tec-theme', 'dark');
+            }
         }
+
+        // Carregar tema salvo ao iniciar
+        (function loadTheme() {
+            const savedTheme = localStorage.getItem('tec-theme') || 'light';
+            const themeIcon = document.getElementById('themeIcon');
+
+            if (savedTheme === 'dark') {
+                document.body.setAttribute('data-theme', 'dark');
+                themeIcon.classList.remove('bx-moon');
+                themeIcon.classList.add('bx-sun');
+            } else {
+                document.body.setAttribute('data-theme', 'light');
+                themeIcon.classList.remove('bx-sun');
+                themeIcon.classList.add('bx-moon');
+            }
+        })();
 
         // Carregar notificações
         function loadNotifications() {
