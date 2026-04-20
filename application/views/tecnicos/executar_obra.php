@@ -1,761 +1,1404 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
 
 <style>
-.obra-execucao { padding: 20px; }
+/* Reset e Base */
+.obra-execucao { padding: 15px; max-width: 100%; }
 
-/* Header */
-.exec-header {
+/* Header Mobile-First */
+.exec-header-mobile {
     background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-    border-radius: 20px;
-    padding: 30px;
+    border-radius: 15px;
+    padding: 20px;
     color: white;
-    margin-bottom: 25px;
-    box-shadow: 0 10px 40px rgba(17, 153, 142, 0.3);
+    margin-bottom: 20px;
+    box-shadow: 0 5px 20px rgba(17, 153, 142, 0.3);
 }
 .exec-header-top {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    flex-wrap: wrap;
-    gap: 20px;
+    margin-bottom: 15px;
 }
 .exec-header-info h1 {
-    margin: 0 0 10px 0;
-    font-size: 28px;
+    margin: 0 0 5px 0;
+    font-size: 20px;
     font-weight: 700;
+    line-height: 1.2;
 }
 .exec-header-info p {
     margin: 0;
     opacity: 0.9;
-    font-size: 16px;
+    font-size: 13px;
 }
-.exec-progress-section { flex: 1; max-width: 300px; }
-.exec-progress-label {
+.btn-voltar {
+    background: rgba(255,255,255,0.2);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Status Card */
+.status-card {
+    background: rgba(255,255,255,0.15);
+    border-radius: 12px;
+    padding: 15px;
+    margin-top: 15px;
+}
+.status-card-header {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     margin-bottom: 10px;
-    font-size: 14px;
 }
-.exec-progress-bar {
-    height: 12px;
+.status-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    opacity: 0.8;
+}
+.status-value {
+    font-size: 24px;
+    font-weight: 700;
+}
+.progress-bar-mobile {
+    height: 8px;
     background: rgba(255,255,255,0.3);
-    border-radius: 10px;
+    border-radius: 4px;
     overflow: hidden;
 }
-.exec-progress-fill {
+.progress-fill-mobile {
     height: 100%;
     background: white;
-    border-radius: 10px;
+    border-radius: 4px;
     transition: width 0.5s ease;
 }
 
-/* Layout Grid */
-.exec-grid {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 25px;
-}
-
-/* Cards */
-.exec-card {
+/* Card de Ação Principal - Check-in/Check-out */
+.action-card-principal {
     background: white;
-    border-radius: 15px;
+    border-radius: 20px;
     padding: 25px;
-    margin-bottom: 25px;
-    box-shadow: 0 2px 20px rgba(0,0,0,0.08);
-    border: 1px solid #e8e8e8;
-}
-.exec-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
     margin-bottom: 20px;
-    padding-bottom: 15px;
-    border-bottom: 2px solid #f0f0f0;
+    box-shadow: 0 4px 25px rgba(0,0,0,0.1);
+    text-align: center;
+    border: 2px solid #e8e8e8;
 }
-.exec-card-title {
+.action-card-principal.ativo {
+    border-color: #11998e;
+    background: linear-gradient(135deg, #f0fff4 0%, #e6fffa 100%);
+}
+.status-trabalho {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 10px;
+}
+.status-trabalho strong {
+    display: block;
+    font-size: 18px;
+    color: #333;
+    margin-top: 5px;
+}
+.btn-principal-acao {
+    width: 100%;
+    padding: 18px 30px;
+    border: none;
+    border-radius: 15px;
     font-size: 18px;
     font-weight: 700;
-    color: #333;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-.exec-card-title i { color: #11998e; font-size: 22px; }
-
-/* Timeline de Etapas */
-.etapas-timeline-modern {
-    position: relative;
-    padding-left: 30px;
-}
-.etapas-timeline-modern::before {
-    content: '';
-    position: absolute;
-    left: 8px;
-    top: 0;
-    bottom: 0;
-    width: 3px;
-    background: linear-gradient(to bottom, #11998e, #38ef7d);
-    border-radius: 3px;
-}
-.etapa-timeline-item {
-    position: relative;
-    margin-bottom: 20px;
-    padding-left: 25px;
-}
-.etapa-timeline-item:last-child { margin-bottom: 0; }
-.etapa-dot-modern {
-    position: absolute;
-    left: -26px;
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    background: #ddd;
-    border: 3px solid white;
-    box-shadow: 0 0 0 3px #e8e8e8;
-}
-.etapa-dot-modern.concluida {
-    background: linear-gradient(135deg, #11998e, #38ef7d);
-    box-shadow: 0 0 0 3px rgba(17, 153, 142, 0.3);
-}
-.etapa-dot-modern.andamento {
-    background: linear-gradient(135deg, #4facfe, #00f2fe);
-    box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.3);
-    animation: pulse 2s infinite;
-}
-@keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-}
-
-.etapa-card-modern {
-    background: #f8f9fa;
-    border-radius: 12px;
-    padding: 20px;
-    border-left: 4px solid #ddd;
-    transition: all 0.3s;
-}
-.etapa-card-modern:hover {
-    transform: translateX(5px);
-    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-}
-.etapa-card-modern.concluida { border-left-color: #11998e; }
-.etapa-card-modern.andamento { border-left-color: #4facfe; }
-.etapa-header-modern {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-}
-.etapa-title-modern { font-weight: 700; color: #333; font-size: 16px; }
-.etapa-status-badge {
-    padding: 4px 12px;
-    border-radius: 15px;
-    font-size: 12px;
-    font-weight: 600;
-}
-.etapa-status-badge.pendente { background: #e0e0e0; color: #666; }
-.etapa-status-badge.andamento { background: #e3f2fd; color: #1976d2; }
-.etapa-status-badge.concluida { background: #e8f5e9; color: #388e3c; }
-
-/* Progress Bar Small */
-.progress-small { margin: 15px 0; }
-.progress-header-small {
-    display: flex;
-    justify-content: space-between;
-    font-size: 13px;
-    margin-bottom: 5px;
-}
-.progress-bar-small {
-    height: 6px;
-    background: #e0e0e0;
-    border-radius: 5px;
-    overflow: hidden;
-}
-.progress-bar-small .fill {
-    height: 100%;
-    border-radius: 5px;
-    transition: width 0.3s;
-}
-
-/* Action Buttons */
-.etapa-actions { display: flex; gap: 10px; margin-top: 15px; }
-.btn-action {
-    flex: 1;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 600;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 15px 0;
     transition: all 0.3s;
-    text-align: center;
-    text-decoration: none;
-    display: inline-flex;
+}
+.btn-principal-acao.checkin {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: white;
+    box-shadow: 0 5px 20px rgba(17, 153, 142, 0.4);
+}
+.btn-principal-acao.checkin:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(17, 153, 142, 0.5);
+}
+.btn-principal-acao.checkout {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    color: white;
+    box-shadow: 0 5px 20px rgba(231, 76, 60, 0.4);
+}
+.btn-principal-acao.checkout:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(231, 76, 60, 0.5);
+}
+.btn-principal-acao:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+.tempo-trabalhando {
+    font-size: 32px;
+    font-weight: 700;
+    color: #11998e;
+    font-family: 'Courier New', monospace;
+    margin: 10px 0;
+}
+.info-localizacao {
+    font-size: 12px;
+    color: #888;
+    display: flex;
     align-items: center;
     justify-content: center;
     gap: 5px;
 }
-.btn-action-primary {
-    background: linear-gradient(135deg, #11998e, #38ef7d);
-    color: white;
-}
-.btn-action-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 20px rgba(17, 153, 142, 0.4);
-}
-.btn-action-secondary {
-    background: #e3f2fd;
-    color: #1976d2;
-}
-.btn-action-success {
-    background: #e8f5e9;
-    color: #388e3c;
-}
 
-/* Tarefas */
-.tarefas-list { display: flex; flex-direction: column; gap: 12px; }
-.tarefa-card-modern {
-    background: #f8f9fa;
-    border-radius: 12px;
-    padding: 15px;
-    border-left: 4px solid #667eea;
-    transition: all 0.3s;
+/* Menu Rápido */
+.menu-rapido {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
 }
-.tarefa-card-modern:hover { transform: translateX(3px); }
-.tarefa-card-modern.urgente { border-left-color: #f44336; }
-.tarefa-card-modern.alta { border-left-color: #ff9800; }
-.tarefa-card-modern.normal { border-left-color: #2196f3; }
-.tarefa-card-modern.baixa { border-left-color: #4caf50; }
-.tarefa-card-modern.concluida { opacity: 0.7; border-left-color: #9e9e9e; }
-
-/* Sidebar Info */
-.info-card { background: #f8f9fa; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
-.info-row { display: flex; justify-content: space-between; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #e8e8e8; }
-.info-row:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
-.info-label { color: #888; font-size: 13px; }
-.info-value { font-weight: 600; color: #333; }
-
-/* Registrar Atividade */
-.registrar-card {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 15px;
-    padding: 25px;
-    color: white;
-}
-.registrar-card h4 { margin: 0 0 15px 0; }
-.form-modern { display: flex; flex-direction: column; gap: 12px; }
-.form-modern select, .form-modern textarea {
-    border: none;
-    border-radius: 10px;
-    padding: 12px 15px;
-    font-size: 14px;
-    font-family: inherit;
-}
-.form-modern textarea { resize: vertical; min-height: 80px; }
-.btn-registrar {
+.btn-menu-rapido {
     background: white;
-    color: #667eea;
-    border: none;
-    padding: 14px;
-    border-radius: 10px;
-    font-size: 15px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.3s;
-}
-.btn-registrar:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-}
-
-/* Empty State */
-.empty-state-modern {
+    border: 2px solid #e8e8e8;
+    border-radius: 15px;
+    padding: 20px 15px;
     text-align: center;
-    padding: 50px 20px;
-    color: #888;
-}
-.empty-state-modern i { font-size: 50px; color: #ddd; margin-bottom: 15px; }
-
-/* OS Cards */
-.os-card-modern {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    padding: 15px;
-    background: #f8f9fa;
-    border-radius: 12px;
-    margin-bottom: 12px;
+    text-decoration: none;
+    color: #333;
     transition: all 0.3s;
 }
-.os-card-modern:hover { background: #e8e8e8; transform: translateX(3px); }
-.os-avatar {
-    width: 50px;
-    height: 50px;
-    border-radius: 12px;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 14px;
+.btn-menu-rapido:hover {
+    border-color: #11998e;
+    background: #f0fff4;
+    transform: translateY(-2px);
 }
-.os-info { flex: 1; }
-.os-cliente { font-weight: 600; color: #333; }
-.os-data { font-size: 12px; color: #888; }
-.os-status {
-    padding: 4px 10px;
-    border-radius: 10px;
-    font-size: 11px;
+.btn-menu-rapido i {
+    font-size: 28px;
+    color: #11998e;
+    display: block;
+    margin-bottom: 8px;
+}
+.btn-menu-rapido span {
+    font-size: 13px;
     font-weight: 600;
 }
 
-/* Concluído Badge */
-.concluido-badge {
+/* Cards de Seção */
+.section-card {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.06);
+    border: 1px solid #f0f0f0;
+}
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #f5f5f5;
+}
+.section-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.section-title i {
+    color: #11998e;
+    font-size: 20px;
+}
+.btn-ver-tudo {
+    font-size: 12px;
+    color: #11998e;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+/* Etapas Simplificadas */
+.etapas-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.etapa-item {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 15px;
+    border-left: 4px solid #ddd;
+    transition: all 0.3s;
+}
+.etapa-item.ativa { border-left-color: #3498db; background: #ebf5fb; }
+.etapa-item.concluida { border-left-color: #11998e; background: #e8f8f5; }
+.etapa-item.atrasada { border-left-color: #e74c3c; background: #fdedec; }
+.etapa-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+}
+.etapa-nome {
+    font-weight: 600;
+    font-size: 14px;
+    color: #333;
+    flex: 1;
+}
+.etapa-status {
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+.etapa-status.pendente { background: #f39c12; color: white; }
+.etapa-status.andamento { background: #3498db; color: white; }
+.etapa-status.concluida { background: #11998e; color: white; }
+.etapa-status.atrasada { background: #e74c3c; color: white; }
+.etapa-prazo {
+    font-size: 12px;
+    color: #666;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.etapa-progresso {
+    margin-top: 10px;
+}
+.progresso-barra {
+    height: 6px;
+    background: #e9ecef;
+    border-radius: 3px;
+    overflow: hidden;
+}
+.progresso-preenchido {
+    height: 100%;
+    background: linear-gradient(90deg, #11998e, #38ef7d);
+    border-radius: 3px;
+}
+.btn-acao-etapa {
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    background: #11998e;
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* Atividades do Dia */
+.atividade-item {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 10px;
+}
+.atividade-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+.atividade-hora {
+    font-size: 12px;
+    color: #888;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.atividade-descricao {
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 8px;
+}
+.atividade-tipo {
+    display: inline-block;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+}
+.atividade-tipo.execucao { background: #d4edda; color: #155724; }
+.atividade-tipo.problema { background: #f8d7da; color: #721c24; }
+.atividade-tipo.observacao { background: #fff3cd; color: #856404; }
+.btn-adicionar-atividade {
+    width: 100%;
+    padding: 15px;
+    border: 2px dashed #11998e;
+    border-radius: 12px;
+    background: #f0fff4;
+    color: #11998e;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 12px;
-    background: #e8f5e9;
-    border-radius: 10px;
-    color: #388e3c;
-    font-weight: 600;
+}
+.btn-adicionar-atividade:hover {
+    background: #e6fffa;
 }
 
-@media (max-width: 992px) {
-    .exec-grid { grid-template-columns: 1fr; }
-    .exec-header-top { flex-direction: column; }
-    .exec-progress-section { max-width: 100%; width: 100%; }
+/* Resumo do Dia */
+.resumo-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 15px;
+    padding: 20px;
+    color: white;
+    margin-bottom: 15px;
+}
+.resumo-titulo {
+    font-size: 14px;
+    opacity: 0.9;
+    margin-bottom: 15px;
+}
+.resumo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    text-align: center;
+}
+.resumo-item-valor {
+    font-size: 24px;
+    font-weight: 700;
+}
+.resumo-item-label {
+    font-size: 11px;
+    opacity: 0.8;
+    margin-top: 5px;
+}
+
+/* Botão Flutuante */
+.fab-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: white;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 5px 20px rgba(17, 153, 142, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    transition: all 0.3s;
+}
+.fab-button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 8px 25px rgba(17, 153, 142, 0.5);
+}
+
+/* Modais */
+.modal-header-custom {
+    background: linear-gradient(135deg, #11998e, #38ef7d);
+    color: white;
+    padding: 20px;
+    border-radius: 15px 15px 0 0;
+}
+.modal-body-custom {
+    padding: 20px;
+}
+.form-group-custom {
+    margin-bottom: 20px;
+}
+.form-label-custom {
+    display: block;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+.form-input-custom, .form-textarea-custom, .form-select-custom {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #e8e8e8;
+    border-radius: 12px;
+    font-size: 16px;
+    font-family: inherit;
+}
+.form-input-custom:focus, .form-textarea-custom:focus, .form-select-custom:focus {
+    outline: none;
+    border-color: #11998e;
+}
+.form-textarea-custom {
+    resize: vertical;
+    min-height: 100px;
+}
+.btn-submit-custom {
+    width: 100%;
+    padding: 18px;
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* Preview de Fotos */
+.foto-preview-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 15px;
+}
+.foto-preview-item {
+    aspect-ratio: 1;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.foto-preview-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.btn-adicionar-foto {
+    border: 2px dashed #ddd;
+    background: #f8f9fa;
+    cursor: pointer;
+    color: #888;
+    font-size: 24px;
+}
+.btn-adicionar-foto:hover {
+    border-color: #11998e;
+    color: #11998e;
+}
+
+/* Alertas */
+.alerta-card {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+.alerta-card i {
+    color: #f39c12;
+    font-size: 20px;
+}
+.alerta-card.erro {
+    background: #f8d7da;
+    border-color: #f5c6cb;
+}
+.alerta-card.erro i {
+    color: #e74c3c;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #888;
+}
+.empty-state i {
+    font-size: 48px;
+    margin-bottom: 15px;
+    opacity: 0.5;
+}
+.empty-state p {
+    font-size: 14px;
+}
+
+/* Desktop Responsive */
+@media (min-width: 768px) {
+    .obra-execucao { padding: 30px; max-width: 1200px; margin: 0 auto; }
+    .exec-grid-desktop {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 25px;
+    }
+    .menu-rapido { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* Animações */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+.animacao-pulse {
+    animation: pulse 2s infinite;
 }
 </style>
 
 <div class="obra-execucao">
-    <?php if (!empty($obra)): ?>
 
-        <!-- Header -->
-        <div class="exec-header">
-            <div class="exec-header-top">
-                <div class="exec-header-info">
-                    <h1><i class="icon-play-circle"></i> <?= htmlspecialchars($obra->nome) ?></h1>
-                    <p><i class="icon-user"></i> <?= htmlspecialchars($obra->cliente_nome ?? 'Não informado') ?></p>
+    <!-- Header -->
+    <div class="exec-header-mobile">
+        <div class="exec-header-top">
+            <div class="exec-header-info">
+                <h1><i class="icon-building"></i> <?= htmlspecialchars($obra->nome) ?></h1>
+                <p><i class="icon-user"></i> <?= htmlspecialchars($obra->cliente_nome ?? 'N/A') ?></p>
+            </div>
+            <a href="<?= site_url('tecnicos/minhas_obras') ?>" class="btn-voltar">
+                <i class="icon-arrow-left"></i> Voltar
+            </a>
+        </div>
+
+        <div class="status-card">
+            <div class="status-card-header">
+                <span class="status-label">Progresso da Obra</span>
+                <span class="status-value"><?= $obra->percentual_concluido ?? 0 ?>%</span>
+            </div>
+            <div class="progress-bar-mobile">
+                <div class="progress-fill-mobile" style="width: <?= $obra->percentual_concluido ?? 0 ?>%"></div>
+            </div>
+        </div>
+    </div>
+
+    <?php if (isset($obra) && $obra): ?>
+
+        <!-- Card Principal: Check-in/Check-out -->
+        <div id="card-acao-principal" class="action-card-principal">
+            <div class="status-trabalho">
+                Status do Trabalho
+                <strong id="status-trabalho-texto">Não iniciado</strong>
+            </div>
+
+            <div id="tempo-trabalhando-container" style="display: none;">
+                <div class="tempo-trabalhando" id="tempo-trabalhando">00:00:00</div>
+                <div class="info-localizacao">
+                    <i class="icon-map-marker"></i>
+                    <span id="status-localizacao">Obtendo localização...</span>
                 </div>
-                <a href="<?= site_url('tecnicos/minhas_obras') ?>" class="btn-action" style="background: rgba(255,255,255,0.2); color: white;">
-                    <i class="icon-arrow-left"></i> Voltar
+            </div>
+
+            <button type="button" id="btn-acao-principal" class="btn-principal-acao checkin" onclick="executarAcaoPrincipal()">
+                <i class="icon-play-circle"></i>
+                <span id="texto-btn-acao">Iniciar Trabalho</span>
+            </button>
+
+            <input type="hidden" id="checkin-ativo-id" value="">
+            <input type="hidden" id="latitude" value="">
+            <input type="hidden" id="longitude" value="">
+        </div>
+
+        <!-- Resumo do Dia -->
+        <div class="resumo-card">
+            <div class="resumo-titulo"><i class="icon-calendar"></i> Resumo de Hoje</div>
+            <div class="resumo-grid">
+                <div class="resumo-item">
+                    <div class="resumo-item-valor" id="resumo-horas">0h</div>
+                    <div class="resumo-item-label">Trabalhadas</div>
+                </div>
+                <div class="resumo-item">
+                    <div class="resumo-item-valor" id="resumo-atividades">0</div>
+                    <div class="resumo-item-label">Atividades</div>
+                </div>
+                <div class="resumo-item">
+                    <div class="resumo-item-valor" id="resumo-checkins">0</div>
+                    <div class="resumo-item-label">Entradas</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Menu Rápido -->
+        <div class="menu-rapido">
+            <a href="#etapas" class="btn-menu-rapido" onclick="mostrarSecao('etapas')">
+                <i class="icon-tasks"></i>
+                <span>Etapas</span>
+            </a>
+            <a href="#atividades" class="btn-menu-rapido" onclick="mostrarSecao('atividades')">
+                <i class="icon-clipboard"></i>
+                <span>Atividades</span>
+            </a>
+            <a href="#minhas-os" class="btn-menu-rapido" onclick="mostrarSecao('minhas-os')">
+                <i class="icon-wrench"></i>
+                <span>Minhas OS</span>
+            </a>
+            <a href="javascript:void(0)" class="btn-menu-rapido" onclick="abrirModalRelatorio()">
+                <i class="icon-file-alt"></i>
+                <span>Relatório</span>
+            </a>
+        </div>
+
+        <!-- Seção: Etapas -->
+        <div id="secao-etapas" class="section-card">
+            <div class="section-header">
+                <div class="section-title">
+                    <i class="icon-tasks"></i> Etapas da Obra
+                </div>
+                <a href="javascript:void(0)" class="btn-ver-tudo" onclick="toggleExpandirEtapas()">
+                    Ver todas
                 </a>
             </div>
 
-            <div style="margin-top: 25px;">
-                <div class="exec-progress-label">
-                    <span>Progresso Geral da Obra</span>
-                    <span style="font-size: 24px; font-weight: 700;"><?= $obra->percentual_concluido ?? 0 ?>%</span>
-                </div>
-                <div class="exec-progress-bar">
-                    <div class="exec-progress-fill" style="width: <?= $obra->percentual_concluido ?? 0 ?>%;"></div>
-                </div>
-            </div>
-        </div>
+            <div class="etapas-lista">
+                <?php if (!empty($etapas)): ?>
+                    <?php foreach ($etapas as $i => $etapa): ?>
+                        <?php
+                        $statusClass = 'pendente';
+                        $statusLabel = 'Pendente';
+                        if ($etapa->status == 'concluida') {
+                            $statusClass = 'concluida';
+                            $statusLabel = 'Concluída';
+                        } elseif ($etapa->status == 'em_andamento') {
+                            $statusClass = 'andamento';
+                            $statusLabel = 'Em Andamento';
+                        } elseif ($etapa->status == 'atrasada') {
+                            $statusClass = 'atrasada';
+                            $statusLabel = 'Atrasada';
+                        }
 
-        <div class="exec-grid">
-            <!-- Coluna Principal -->
-            <div class="exec-main">
-
-                <!-- Etapas -->
-                <div class="exec-card">
-                    <div class="exec-card-header">
-                        <div class="exec-card-title">
-                            <i class="icon-tasks"></i> Etapas da Obra
-                        </div>
-                    </div>
-
-                    <?php if (!empty($etapas)): ?>
-                        <div class="etapas-timeline-modern">
-                            <?php foreach ($etapas as $etapa):
-                                $etapaStatus = $etapa->status ?? 'pendente';
-                                $dotClass = ($etapaStatus == 'concluida') ? 'concluida' : (($etapaStatus == 'em_andamento') ? 'andamento' : '');
-                                $cardClass = ($etapaStatus == 'concluida') ? 'concluida' : (($etapaStatus == 'em_andamento') ? 'andamento' : '');
-                                $percentual = $etapa->percentual_concluido ?? 0;
-                            ?>
-                            <div class="etapa-timeline-item">
-                                <div class="etapa-dot-modern <?= $dotClass ?>"></div>
-                                <div class="etapa-card-modern <?= $cardClass ?>">
-                                    <div class="etapa-header-modern">
-                                        <div>
-                                            <div class="etapa-title-modern"><?= htmlspecialchars($etapa->nome) ?></div>
-                                            <?php if (!empty($etapa->descricao)): ?>
-                                                <small style="color: #888;"><?= htmlspecialchars(substr($etapa->descricao, 0, 60)) ?>...</small>
-                                            <?php endif; ?>
-                                        </div>
-                                        <span class="etapa-status-badge <?= $etapaStatus ?>">
-                                            <?= ucfirst(str_replace('_', ' ', $etapaStatus)) ?>
-                                        </span>
-                                    </div>
-
-                                    <div class="progress-small">
-                                        <div class="progress-header-small">
-                                            <span>Progresso</span>
-                                            <span><?= $percentual ?>%</span>
-                                        </div>
-                                        <div class="progress-bar-small">
-                                            <div class="fill" style="width: <?= $percentual ?>%; background: linear-gradient(90deg, #11998e, #38ef7d);"></div>
-                                        </div>
-                                    </div>
-
-                                    <?php if ($etapaStatus !== 'concluida'): ?>
-                                        <div class="etapa-actions">
-                                            <button type="button" class="btn-action btn-action-primary" onclick="atualizarProgresso(<?= $etapa->id ?>, '<?= htmlspecialchars($etapa->nome) ?>')">
-                                                <i class="icon-refresh"></i> Atualizar
-                                            </button>
-                                            <?php if ($etapaStatus === 'em_andamento'): ?>
-                                                <button type="button" class="btn-action btn-action-success" onclick="concluirEtapa(<?= $etapa->id ?>)" style="flex: 0.5;">
-                                                    <i class="icon-check"></i>
-                                                </button>
-                                            <?php endif; ?>
-                                        </div>
-                                    <?php else: ?>
-                                        <div class="concluido-badge">
-                                            <i class="icon-check-circle"></i> Etapa Concluída
-                                        </div>
+                        // Calcular dias restantes
+                        $diasRestantes = '';
+                        if ($etapa->data_fim_prevista) {
+                            $hoje = new DateTime();
+                            $fim = new DateTime($etapa->data_fim_prevista);
+                            $diff = $hoje->diff($fim);
+                            if ($fim >= $hoje) {
+                                $diasRestantes = $diff->days . ' dias restantes';
+                            } else {
+                                $diasRestantes = 'Atrasada ' . $diff->days . ' dias';
+                            }
+                        }
+                        ?>
+                        <div class="etapa-item <?= $statusClass ?> <?= $i > 2 ? 'etapa-extra hidden' : '' ?>" data-etapa-id="<?= $etapa->id ?>">
+                            <div class="etapa-header">
+                                <div class="etapa-nome"><?= htmlspecialchars($etapa->nome) ?></div>
+                                <span class="etapa-status <?= $statusClass ?>"><?= $statusLabel ?></span>
+                            </div>
+                            <div class="etapa-prazo">
+                                <i class="icon-calendar"></i>
+                                <?php if ($etapa->data_inicio_prevista): ?>
+                                    <?= date('d/m/Y', strtotime($etapa->data_inicio_prevista)) ?> -
+                                    <?= $etapa->data_fim_prevista ? date('d/m/Y', strtotime($etapa->data_fim_prevista)) : 'Não definido' ?>
+                                    <?php if ($diasRestantes): ?>
+                                        <span style="margin-left: 10px; color: #888;">(<?= $diasRestantes ?>)</span>
                                     <?php endif; ?>
+                                <?php else: ?>
+                                    Prazo não definido
+                                <?php endif; ?>
+                            </div>
+                            <div class="etapa-progresso">
+                                <div class="progresso-barra">
+                                    <div class="progresso-preenchido" style="width: <?= $etapa->percentual_concluido ?? 0 ?>"></div>
+                                </div>
+                                <div style="text-align: right; font-size: 12px; color: #666; margin-top: 5px;">
+                                    <?= $etapa->percentual_concluido ?? 0 ?>% concluído
                                 </div>
                             </div>
-                            <?php endforeach; ?>
+                            <?php if ($etapa->status != 'concluida'): ?>
+                                <button type="button" class="btn-acao-etapa" onclick="atualizarProgressoEtapa(<?= $etapa->id ?>, '<?= htmlspecialchars($etapa->nome) ?>')">
+                                    <i class="icon-refresh"></i> Atualizar Progresso
+                                </button>
+                            <?php endif; ?>
                         </div>
-                    <?php else: ?>
-                        <div class="empty-state-modern">
-                            <i class="icon-list-ul"></i>
-                            <p>Nenhuma etapa cadastrada para esta obra.</p>
+                    <?php endforeach; ?>
+
+                    <?php if (count($etapas) > 3): ?>
+                        <div style="text-align: center; margin-top: 15px;">
+                            <button type="button" id="btn-ver-mais-etapas" class="btn-ver-tudo" onclick="toggleExpandirEtapas()">
+                                Ver mais <?= count($etapas) - 3 ?> etapas
+                            </button>
                         </div>
                     <?php endif; ?>
+                <?php else: ?>
+                    <div class="empty-state">
+                        <i class="icon-tasks"></i>
+                        <p>Nenhuma etapa cadastrada</p>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+
+        <!-- Seção: Atividades do Dia -->
+        <div id="secao-atividades" class="section-card">
+            <div class="section-header">
+                <div class="section-title">
+                    <i class="icon-clipboard"></i> Atividades de Hoje
                 </div>
+            </div>
 
-                <!-- Minhas Tarefas -->
-                <div class="exec-card">
-                    <div class="exec-card-header">
-                        <div class="exec-card-title" style="color: #667eea;">
-                            <i class="icon-pushpin"></i> Minhas Tarefas
-                        </div>
-                    </div>
-
-                    <div id="minhas-tarefas">
-                        <div class="empty-state-modern">
-                            <i class="icon-refresh icon-spin"></i>
-                            <p>Carregando tarefas...</p>
-                        </div>
-                    </div>
+            <div id="lista-atividades">
+                <div class="empty-state">
+                    <i class="icon-clipboard"></i>
+                    <p>Nenhuma atividade registrada hoje</p>
                 </div>
+            </div>
 
-                <!-- Minhas OS -->
-                <div class="exec-card">
-                    <div class="exec-card-header">
-                        <div class="exec-card-title" style="color: #764ba2;">
-                            <i class="icon-file-alt"></i> Minhas OS na Obra
-                        </div>
-                    </div>
+            <button type="button" class="btn-adicionar-atividade" onclick="abrirModalAtividade()">
+                <i class="icon-plus"></i> Registrar Nova Atividade
+            </button>
+        </div>
 
-                    <?php if (!empty($minhas_os)): ?>
-                        <?php foreach ($minhas_os as $os):
-                            $osStatusColors = [
-                                'Aberto' => ['#4caf50', '#e8f5e9'],
-                                'Em Andamento' => ['#2196f3', '#e3f2fd'],
-                                'Finalizado' => ['#9c27b0', '#f3e5f5'],
-                                'Cancelado' => ['#f44336', '#ffebee']
-                            ];
-                            $osStyle = $osStatusColors[$os->status] ?? ['#888', '#f5f5f5'];
-                        ?>
-                        <div class="os-card-modern">
-                            <div class="os-avatar">#<?= $os->idOs ?></div>
-                            <div class="os-info">
-                                <div class="os-cliente"><?= htmlspecialchars($os->nomeCliente) ?></div>
-                                <div class="os-data"><i class="icon-calendar"></i> <?= date('d/m/Y', strtotime($os->dataInicial)) ?></div>
-                            </div>
-                            <span class="os-status" style="background: <?= $osStyle[1] ?>; color: <?= $osStyle[0] ?>;">
+        <!-- Seção: Minhas OS -->
+        <div id="secao-minhas-os" class="section-card" style="display: none;">
+            <div class="section-header">
+                <div class="section-title">
+                    <i class="icon-wrench"></i> Minhas OS nesta Obra
+                </div>
+            </div>
+
+            <?php if (!empty($minhas_os)): ?>
+                <?php foreach ($minhas_os as $os): ?>
+                    <div class="atividade-item">
+                        <div class="atividade-header">
+                            <span style="font-weight: 600;">OS #<?= $os->idOs ?></span>
+                            <span class="atividade-tipo <?= strtolower($os->status) ?>">
                                 <?= $os->status ?>
                             </span>
-                            <a href="<?= site_url('os/visualizar/' . $os->idOs) ?>" class="btn-action btn-action-secondary" style="padding: 8px 12px;">
-                                <i class="icon-eye-open"></i>
+                        </div>
+                        <div class="atividade-descricao">
+                            <i class="icon-user"></i> <?= htmlspecialchars($os->nomeCliente ?? 'N/A') ?>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            <a href="<?= site_url('tecnicos/executar_os/' . $os->idOs) ?>" class="btn-acao-etapa" style="display: inline-block; width: auto; padding: 8px 20px;">
+                                <i class="icon-play"></i> Executar OS
                             </a>
                         </div>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <div class="empty-state-modern">
-                            <i class="icon-clipboard"></i>
-                            <p>Você não possui OS nesta obra.</p>
-                        </div>
-                    <?php endif; ?>
-                </div>
-            </div>
-
-            <!-- Sidebar -->
-            <div class="exec-sidebar">
-
-                <!-- Informações -->
-                <div class="exec-card" style="background: linear-gradient(135deg, #f8f9fa, #e9ecef);">
-                    <div class="exec-card-header" style="border-bottom-color: #e0e0e0;">
-                        <div class="exec-card-title">
-                            <i class="icon-info-sign" style="color: #764ba2;"></i> Informações
-                        </div>
                     </div>
-
-                    <div class="info-card" style="background: white;">
-                        <div class="info-row">
-                            <span class="info-label"><i class="icon-map-marker"></i> Endereço</span>
-                            <span class="info-value"><?= htmlspecialchars($obra->endereco ?? 'N/A') ?></span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label"><i class="icon-calendar"></i> Previsão</span>
-                            <span class="info-value"><?= isset($obra->data_fim_prevista) ? date('d/m/Y', strtotime($obra->data_fim_prevista)) : '-' ?></span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label"><i class="icon-tag"></i> Tipo</span>
-                            <span class="info-value"><?= $obra->tipo_obra ?? 'N/A' ?></span>
-                        </div>
-                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <div class="empty-state">
+                    <i class="icon-wrench"></i>
+                    <p>Nenhuma OS atribuída nesta obra</p>
                 </div>
-
-                <!-- Registrar Atividade -->
-                <div class="registrar-card">
-                    <h4><i class="icon-plus-sign"></i> Registrar Atividade</h4>
-
-                    <form action="<?= site_url('tecnicos/api_adicionar_comentario') ?>" method="post" class="form-modern">
-                        <input type="hidden" name="obra_id" value="<?= $obra->id ?>">
-
-                        <select name="tipo" required>
-                            <option value="comentario">💬 Comentário</option>
-                            <option value="atualizacao">📊 Atualização</option>
-                            <option value="problema">⚠️ Problema</option>
-                        </select>
-
-                        <textarea name="descricao" placeholder="Descreva sua atividade..." required></textarea>
-
-                        <button type="submit" class="btn-registrar">
-                            <i class="icon-save"></i> Registrar
-                        </button>
-                    </form>
-                </div>
-
-            </div>
+            <?php endif; ?>
         </div>
 
-        <!-- Modal: Atualizar Progresso -->
-        <div id="modal-atualizar-progresso" class="modal hide fade" tabindex="-1" role="dialog">
-            <div class="modal-header" style="background: linear-gradient(135deg, #11998e, #38ef7d); color: white;">
-                <button type="button" class="close" data-dismiss="modal" style="color: white;">×</button>
-                <h4><i class="icon-refresh"></i> Atualizar Progresso</h4>
-            </div>
-            <form id="form-atualizar-progresso" action="<?= site_url('tecnicos/api_atualizar_etapa') ?>" method="post">
-                <input type="hidden" name="etapa_id" id="progresso-etapa-id">
-                <div class="modal-body" style="padding: 30px;">
-                    <div class="control-group">
-                        <label style="font-weight: 600; color: #333;">Etapa</label>
-                        <input type="text" id="progresso-etapa-nome" class="span12" readonly style="background: #f5f5f5; border: none; padding: 12px; border-radius: 8px;">
-                    </div>
-
-                    <div class="control-group" style="margin-top: 20px;">
-                        <label style="font-weight: 600; color: #333;">% Concluído</label>
-                        <input type="range" name="percentual" id="progresso-percentual" class="span12" min="0" max="100" style="margin: 15px 0;">
-                        <div style="text-align: center; font-size: 32px; font-weight: 700; color: #11998e;">
-                            <span id="progresso-valor">0</span>%
-                        </div>
-                    </div>
-
-                    <div class="control-group" style="margin-top: 20px;">
-                        <label style="font-weight: 600; color: #333;">Observação</label>
-                        <textarea name="observacao" class="span12" rows="3" placeholder="Descreva o que foi realizado..." style="border-radius: 10px; border: 2px solid #e8e8e8; padding: 12px;"></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-large" data-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-success btn-large"><i class="icon-save"></i> Salvar Progresso</button>
-                </div>
-            </form>
-        </div>
-
-        <!-- Modal: Tarefa -->
-        <div id="modal-tarefa-progresso" class="modal hide fade" tabindex="-1" role="dialog">
-            <div class="modal-header" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white;">
-                <button type="button" class="close" data-dismiss="modal" style="color: white;">×</button>
-                <h4><i class="icon-pushpin"></i> Atualizar Tarefa</h4>
-            </div>
-            <form id="form-tarefa-progresso">
-                <input type="hidden" name="tarefa_id" id="tarefa-id">
-                <div class="modal-body" style="padding: 30px;">
-                    <div class="control-group">
-                        <label style="font-weight: 600; color: #333;">Tarefa</label>
-                        <input type="text" id="tarefa-titulo" class="span12" readonly style="background: #f5f5f5; border: none; padding: 12px; border-radius: 8px;">
-                    </div>
-
-                    <div class="control-group" style="margin-top: 20px;">
-                        <label style="font-weight: 600; color: #333;">% Concluído</label>
-                        <input type="range" name="percentual" id="tarefa-percentual" class="span12" min="0" max="100" style="margin: 15px 0;">
-                        <div style="text-align: center; font-size: 32px; font-weight: 700; color: #667eea;">
-                            <span id="tarefa-valor">0</span>%
-                        </div>
-                    </div>
-
-                    <div class="form-row" style="margin-top: 20px;">
-                        <div class="control-group" style="flex: 1;">
-                            <label style="font-weight: 600; color: #333;">Horas Trabalhadas</label>
-                            <input type="number" name="horas_trabalhadas" id="tarefa-horas" class="span12" step="0.5" min="0" placeholder="Ex: 2.5" style="border-radius: 10px; border: 2px solid #e8e8e8; padding: 12px;">
-                        </div>
-                    </div>
-
-                    <div class="control-group" style="margin-top: 20px;">
-                        <label style="font-weight: 600; color: #333;">Observação</label>
-                        <textarea name="observacao" id="tarefa-observacao" class="span12" rows="3" placeholder="O que foi realizado..." style="border-radius: 10px; border: 2px solid #e8e8e8; padding: 12px;"></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-large" data-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-success btn-large"><i class="icon-save"></i> Salvar</button>
-                </div>
-            </form>
-        </div>
-
-        <script>
-        // Range input updates
-        $('#progresso-percentual').on('input', function() {
-            $('#progresso-valor').text($(this).val());
-        });
-
-        $('#tarefa-percentual').on('input', function() {
-            $('#tarefa-valor').text($(this).val());
-        });
-
-        function atualizarProgresso(etapaId, etapaNome) {
-            $('#progresso-etapa-id').val(etapaId);
-            $('#progresso-etapa-nome').val(etapaNome);
-            $('#modal-atualizar-progresso').modal('show');
-        }
-
-        function abrirModalTarefa(tarefaId, titulo, percentual) {
-            $('#tarefa-id').val(tarefaId);
-            $('#tarefa-titulo').val(titulo);
-            $('#tarefa-percentual').val(percentual);
-            $('#tarefa-valor').text(percentual);
-            $('#modal-tarefa-progresso').modal('show');
-        }
-
-        function concluirEtapa(etapaId) {
-            if (!confirm('Tem certeza que deseja marcar esta etapa como concluída?')) return;
-
-            $.ajax({
-                url: '<?= site_url("tecnicos/api_atualizar_status_etapa") ?>',
-                type: 'POST',
-                data: { etapa_id: etapaId, status: 'concluida' },
-                dataType: 'json',
-                success: function(response) {
-                    if (response.success) {
-                        location.reload();
-                    } else {
-                        alert('Erro: ' + response.message);
-                    }
-                },
-                error: function() {
-                    alert('Erro ao atualizar status');
-                }
-            });
-        }
-
-        // Carregar tarefas
-        function carregarTarefas() {
-            $.ajax({
-                url: '<?= site_url("tecnicos/api_buscar_tarefas") ?>',
-                type: 'GET',
-                data: { obra_id: <?= $obra->id ?> },
-                dataType: 'json',
-                success: function(response) {
-                    if (response.success && response.tarefas.length > 0) {
-                        let html = '<div class="tarefas-list">';
-
-                        response.tarefas.forEach(function(t) {
-                            const prioridadeClasses = {
-                                'urgente': 'urgente',
-                                'alta': 'alta',
-                                'normal': 'normal',
-                                'baixa': 'baixa'
-                            };
-                            const prioridadeCores = {
-                                'urgente': '#f44336',
-                                'alta': '#ff9800',
-                                'normal': '#2196f3',
-                                'baixa': '#4caf50'
-                            };
-                            const cor = prioridadeCores[t.prioridade] || '#888';
-                            const classe = prioridadeClasses[t.prioridade] || 'normal';
-                            const isConcluida = t.status === 'concluida';
-
-                            html += '<div class="tarefa-card-modern ' + classe + (isConcluida ? ' concluida' : '') + '">';
-                            html += '<div style="display: flex; justify-content: space-between; align-items: flex-start;">';
-                            html += '<div style="flex: 1;">';
-                            html += '<div style="font-weight: 600; color: #333; margin-bottom: 5px;">' + t.titulo + '</div>';
-                            if (t.descricao) {
-                                html += '<div style="font-size: 13px; color: #666;">' + t.descricao.substring(0, 50) + '...</div>';
-                            }
-                            html += '<div style="margin-top: 8px; display: flex; gap: 10px; align-items: center;">';
-                            html += '<span style="padding: 2px 8px; border-radius: 10px; font-size: 11px; background: ' + cor + '20; color: ' + cor + ';">' + t.prioridade.toUpperCase() + '</span>';
-                            html += '<span style="font-size: 12px; color: #888;"><i class="icon-calendar"></i> ' + t.data_fim_prevista + '</span>';
-                            html += '</div>';
-                            html += '</div>';
-
-                            if (!isConcluida) {
-                                html += '<button type="button" class="btn-action btn-action-secondary" onclick="abrirModalTarefa(' + t.id + ', \'' + t.titulo + '\', ' + t.percentual_concluido + ')" style="padding: 8px 12px;">';
-                                html += '<i class="icon-edit"></i>';
-                                html += '</button>';
-                            }
-                            html += '</div>';
-
-                            html += '<div style="margin-top: 12px;">';
-                            html += '<div style="display: flex; justify-content: space-between; font-size: 12px; color: #666; margin-bottom: 4px;">';
-                            html += '<span>' + (t.status === 'concluida' ? 'Concluída' : t.status === 'em_andamento' ? 'Em Andamento' : 'Pendente') + '</span>';
-                            html += '<span style="font-weight: 600;">' + t.percentual_concluido + '%</span>';
-                            html += '</div>';
-                            html += '<div class="progress-bar-small">';
-                            html += '<div class="fill" style="width: ' + t.percentual_concluido + '%; background: ' + cor + ';"></div>';
-                            html += '</div>';
-                            html += '</div>';
-
-                            html += '</div>';
-                        });
-
-                        html += '</div>';
-                        $('#minhas-tarefas').html(html);
-                    } else {
-                        $('#minhas-tarefas').html('<div class="empty-state-modern"><i class="icon-pushpin" style="font-size: 40px;"></i><p>Nenhuma tarefa atribuída</p></div>';
-                    }
-                },
-                error: function() {
-                    $('#minhas-tarefas').html('<div class="empty-state-modern" style="color: #f44336;"><i class="icon-exclamation-sign"></i><p>Erro ao carregar tarefas</p></div>';
-                }
-            });
-        }
-
-        $(document).ready(function() {
-            carregarTarefas();
-        });
-
-        // Animate progress bars
-        document.addEventListener('DOMContentLoaded', function() {
-            const progressBar = document.querySelector('.exec-progress-fill');
-            const width = progressBar.style.width;
-            progressBar.style.width = '0%';
-            setTimeout(() => {
-                progressBar.style.width = width;
-            }, 300);
-        });
-        </script>
+        <!-- Botão Flutuante -->
+        <button type="button" class="fab-button" onclick="abrirModalAtividade()" title="Registrar Atividade Rápida">
+            <i class="icon-plus"></i>
+        </button>
 
     <?php else: ?>
-        <div style="text-align: center; padding: 100px 20px; background: white; border-radius: 20px; box-shadow: 0 2px 20px rgba(0,0,0,0.08);">
-            <div style="font-size: 80px; color: #e0e0e0; margin-bottom: 20px;">
-                <i class="icon-exclamation-sign"></i>
+        <div class="alerta-card erro">
+            <i class="icon-exclamation-sign"></i>
+            <div>
+                <strong>Obra não encontrada</strong><br>
+                Você não tem acesso a esta obra ou ela não existe.
             </div>
-            <h2 style="color: #666; font-weight: 400; margin-bottom: 15px;">Obra não encontrada</h2>
-            <p style="color: #999; margin-bottom: 30px;">Você não tem acesso a esta obra ou ela não existe.</p>
-            <a href="<?= site_url('tecnicos/minhas_obras') ?>" class="btn-action btn-action-primary" style="display: inline-flex; padding: 15px 30px;">
+        </div>
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="<?= site_url('tecnicos/minhas_obras') ?>" class="btn-acao-etapa" style="display: inline-block; width: auto; padding: 15px 30px;">
                 <i class="icon-arrow-left"></i> Voltar para Minhas Obras
             </a>
         </div>
     <?php endif; ?>
 </div>
+
+<!-- Modal: Atualizar Progresso da Etapa -->
+<div id="modal-progresso-etapa" class="modal hide fade" tabindex="-1" role="dialog">
+    <div class="modal-header-custom">
+        <button type="button" class="close" data-dismiss="modal" style="color: white;">×</button>
+        <h4><i class="icon-refresh"></i> Atualizar Progresso</h4>
+    </div>
+    <form id="form-progresso-etapa" onsubmit="salvarProgressoEtapa(event)">
+        <div class="modal-body-custom">
+            <input type="hidden" id="progresso-etapa-id" name="etapa_id">
+
+            <div class="form-group-custom">
+                <label class="form-label-custom">Etapa</label>
+                <input type="text" id="progresso-etapa-nome" class="form-input-custom" readonly style="background: #f5f5f5;">
+            </div>
+
+            <div class="form-group-custom">
+                <label class="form-label-custom">Percentual Concluído</label>
+                <input type="range" name="percentual" id="progresso-percentual" min="0" max="100" value="0" class="form-input-custom" style="padding: 0;" oninput="atualizarValorRange(this.value)">
+                <div style="text-align: center; font-size: 28px; font-weight: 700; color: #11998e; margin-top: 10px;">
+                    <span id="progresso-valor">0</span>%
+                </div>
+            </div>
+
+            <div class="form-group-custom">
+                <label class="form-label-custom">Observação</label>
+                <textarea name="observacao" class="form-textarea-custom" placeholder="Descreva o que foi realizado..."></textarea>
+            </div>
+        </div>
+        <div class="modal-footer" style="padding: 0 20px 20px; border: none;">
+            <button type="button" class="btn btn-large" data-dismiss="modal" style="width: 48%; margin-right: 4%;">Cancelar</button>
+            <button type="submit" class="btn-submit-custom" style="width: 48%;">
+                <i class="icon-save"></i> Salvar
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Modal: Registrar Atividade -->
+<div id="modal-atividade" class="modal hide fade" tabindex="-1" role="dialog">
+    <div class="modal-header-custom">
+        <button type="button" class="close" data-dismiss="modal" style="color: white;">×</button>
+        <h4><i class="icon-plus"></i> Registrar Atividade</h4>
+    </div>
+    <form id="form-atividade" onsubmit="salvarAtividade(event)">
+        <div class="modal-body-custom">
+            <input type="hidden" name="obra_id" value="<?= $obra->id ?? '' ?>">
+
+            <div class="form-group-custom">
+                <label class="form-label-custom">Etapa</label>
+                <select name="etapa_id" class="form-select-custom" required>
+                    <option value="">Selecione a etapa...</option>
+                    <?php foreach ($etapas as $etapa): ?>
+                        <option value="<?= $etapa->id ?>"><?= htmlspecialchars($etapa->nome) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div class="form-group-custom">
+                <label class="form-label-custom">Tipo</label>
+                <select name="tipo" class="form-select-custom" required>
+                    <option value="execucao">✓ Execução</option>
+                    <option value="problema">⚠ Problema</option>
+                    <option value="observacao">📝 Observação</option>
+                </select>
+            </div>
+
+            <div class="form-group-custom">
+                <label class="form-label-custom">Descrição da Atividade</label>
+                <textarea name="descricao" class="form-textarea-custom" placeholder="Descreva o que foi feito..." required></textarea>
+            </div>
+
+            <div class="form-group-custom">
+                <label class="form-label-custom">Percentual Concluído</label>
+                <input type="range" name="percentual_concluido" min="0" max="100" value="0" class="form-input-custom" style="padding: 0;" oninput="atualizarValorRange2(this.value)">
+                <div style="text-align: center; font-size: 24px; font-weight: 700; color: #11998e; margin-top: 10px;">
+                    <span id="atividade-valor">0</span>%
+                </div>
+            </div>
+
+            <div class="form-group-custom">
+                <label class="form-label-custom">Fotos de Evidência</label>
+                <div class="foto-preview-container">
+                    <div class="foto-preview-item" id="preview-fotos"></div>
+                    <button type="button" class="foto-preview-item btn-adicionar-foto" onclick="document.getElementById('input-foto-atividade').click()">
+                        <i class="icon-camera"></i>
+                    </button>
+                </div>
+                <input type="file" id="input-foto-atividade" accept="image/*" multiple capture="environment" style="display: none;" onchange="processarFotos(this)">
+                <input type="hidden" name="fotos" id="fotos-base64">
+            </div>
+        </div>
+        <div class="modal-footer" style="padding: 0 20px 20px; border: none;">
+            <button type="button" class="btn btn-large" data-dismiss="modal" style="width: 48%; margin-right: 4%;">Cancelar</button>
+            <button type="submit" class="btn-submit-custom" style="width: 48%;">
+                <i class="icon-save"></i> Registrar
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Modal: Check-in com Foto -->
+<div id="modal-checkin" class="modal hide fade" tabindex="-1" role="dialog">
+    <div class="modal-header-custom">
+        <button type="button" class="close" data-dismiss="modal" style="color: white;">×</button>
+        <h4><i class="icon-play-circle"></i> Iniciar Trabalho</h4>
+    </div>
+    <div class="modal-body-custom" style="text-align: center;">
+        <p style="margin-bottom: 20px;">Tire uma foto para registrar seu check-in</p>
+
+        <div style="margin-bottom: 20px;">
+            <video id="video-checkin" style="width: 100%; max-width: 400px; border-radius: 15px; display: none;" autoplay></video>
+            <canvas id="canvas-checkin" style="display: none;"></canvas>
+            <img id="preview-checkin" style="width: 100%; max-width: 400px; border-radius: 15px; display: none;">
+        </div>
+
+        <button type="button" id="btn-capturar-foto" class="btn-principal-acao checkin" style="margin: 10px auto;">
+            <i class="icon-camera"></i> Tirar Foto
+        </button>
+
+        <div class="form-group-custom" style="text-align: left; margin-top: 20px;">
+            <label class="form-label-custom">Observação (opcional)</label>
+            <textarea id="observacao-checkin" class="form-textarea-custom" placeholder="Alguma observação sobre o início do trabalho..."></textarea>
+        </div>
+    </div>
+    <div class="modal-footer" style="padding: 0 20px 20px; border: none;">
+        <button type="button" class="btn btn-large" data-dismiss="modal" style="width: 48%; margin-right: 4%;">Cancelar</button>
+        <button type="button" id="btn-confirmar-checkin" class="btn-submit-custom" style="width: 48%;" onclick="confirmarCheckin()" disabled>
+            <i class="icon-ok"></i> Confirmar Check-in
+        </button>
+    </div>
+</div>
+
+<!-- Modal: Check-out com Foto -->
+<div id="modal-checkout" class="modal hide fade" tabindex="-1" role="dialog">
+    <div class="modal-header-custom" style="background: linear-gradient(135deg, #e74c3c, #c0392b);">
+        <button type="button" class="close" data-dismiss="modal" style="color: white;">×</button>
+        <h4><i class="icon-stop"></i> Finalizar Trabalho</h4>
+    </div>
+    <div class="modal-body-custom" style="text-align: center;">
+        <p style="margin-bottom: 20px;">Tempo trabalhado: <strong id="tempo-checkout" style="font-size: 24px;">00:00:00</strong></p>
+
+        <div style="margin-bottom: 20px;">
+            <video id="video-checkout" style="width: 100%; max-width: 400px; border-radius: 15px; display: none;" autoplay></video>
+            <canvas id="canvas-checkout" style="display: none;"></canvas>
+            <img id="preview-checkout" style="width: 100%; max-width: 400px; border-radius: 15px; display: none;">
+        </div>
+
+        <button type="button" id="btn-capturar-foto-checkout" class="btn-principal-acao checkout" style="margin: 10px auto;">
+            <i class="icon-camera"></i> Tirar Foto
+        </button>
+
+        <div class="form-group-custom" style="text-align: left; margin-top: 20px;">
+            <label class="form-label-custom">Atividades Realizadas</label>
+            <textarea id="atividades-checkout" class="form-textarea-custom" placeholder="Descreva as atividades realizadas neste período..."></textarea>
+        </div>
+
+        <div class="form-group-custom" style="text-align: left;">
+            <label class="form-label-custom">Observação (opcional)</label>
+            <textarea id="observacao-checkout" class="form-textarea-custom" placeholder="Alguma observação sobre o trabalho realizado..."></textarea>
+        </div>
+    </div>
+    <div class="modal-footer" style="padding: 0 20px 20px; border: none;">
+        <button type="button" class="btn btn-large" data-dismiss="modal" style="width: 48%; margin-right: 4%;">Cancelar</button>
+        <button type="button" id="btn-confirmar-checkout" class="btn-submit-custom" style="width: 48%; background: linear-gradient(135deg, #e74c3c, #c0392b);" onclick="confirmarCheckout()" disabled>
+            <i class="icon-stop"></i> Confirmar Check-out
+        </button>
+    </div>
+</div>
+
+<script>
+// Variáveis globais
+let checkinAtivo = null;
+let timerInterval = null;
+let fotosCapturadas = [];
+let streamVideo = null;
+
+// Inicialização
+document.addEventListener('DOMContentLoaded', function() {
+    verificarCheckinAtivo();
+    carregarResumoDia();
+    obterLocalizacao();
+});
+
+// Obter localização
+function obterLocalizacao() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                document.getElementById('latitude').value = position.coords.latitude;
+                document.getElementById('longitude').value = position.coords.longitude;
+                document.getElementById('status-localizacao').textContent = 'Localização obtida ✓';
+            },
+            function(error) {
+                document.getElementById('status-localizacao').textContent = 'GPS não disponível';
+                console.log('Erro ao obter localização:', error);
+            }
+        );
+    } else {
+        document.getElementById('status-localizacao').textContent = 'GPS não suportado';
+    }
+}
+
+// Verificar se existe check-in ativo
+function verificarCheckinAtivo() {
+    const obraId = '<?= $obra->id ?? 0 ?>';
+
+    fetch('<?= site_url("tecnicos/api_checkin_ativo_obra") ?>?obra_id=' + obraId)
+        .then(r => r.json())
+        .then(data => {
+            if (data.success && data.checkin) {
+                checkinAtivo = data.checkin;
+                atualizarInterfaceCheckin(true);
+                iniciarTimer(data.checkin.check_in);
+            } else {
+                atualizarInterfaceCheckin(false);
+            }
+        })
+        .catch(err => {
+            console.error('Erro ao verificar check-in:', err);
+        });
+}
+
+// Atualizar interface baseada no status
+function atualizarInterfaceCheckin(estaTrabalhando) {
+    const card = document.getElementById('card-acao-principal');
+    const btn = document.getElementById('btn-acao-principal');
+    const textoBtn = document.getElementById('texto-btn-acao');
+    const statusTexto = document.getElementById('status-trabalho-texto');
+    const tempoContainer = document.getElementById('tempo-trabalhando-container');
+
+    if (estaTrabalhando) {
+        card.classList.add('ativo');
+        btn.classList.remove('checkin');
+        btn.classList.add('checkout');
+        textoBtn.textContent = 'Finalizar Trabalho';
+        statusTexto.textContent = 'Trabalhando';
+        statusTexto.style.color = '#11998e';
+        tempoContainer.style.display = 'block';
+    } else {
+        card.classList.remove('ativo');
+        btn.classList.remove('checkout');
+        btn.classList.add('checkin');
+        textoBtn.textContent = 'Iniciar Trabalho';
+        statusTexto.textContent = 'Não iniciado';
+        statusTexto.style.color = '#888';
+        tempoContainer.style.display = 'none';
+    }
+}
+
+// Executar ação principal (check-in ou check-out)
+function executarAcaoPrincipal() {
+    if (checkinAtivo) {
+        abrirModalCheckout();
+    } else {
+        abrirModalCheckin();
+    }
+}
+
+// Abrir modal de check-in
+function abrirModalCheckin() {
+    $('#modal-checkin').modal('show');
+    iniciarCamera('video-checkin', 'btn-capturar-foto');
+}
+
+// Abrir modal de check-out
+function abrirModalCheckout() {
+    if (checkinAtivo) {
+        const inicio = new Date(checkinAtivo.check_in);
+        const agora = new Date();
+        const diff = Math.floor((agora - inicio) / 1000);
+        const horas = Math.floor(diff / 3600);
+        const minutos = Math.floor((diff % 3600) / 60);
+        const segundos = diff % 60;
+        document.getElementById('tempo-checkout').textContent =
+            String(horas).padStart(2, '0') + ':' +
+            String(minutos).padStart(2, '0') + ':' +
+            String(segundos).padStart(2, '0');
+    }
+    $('#modal-checkout').modal('show');
+    iniciarCamera('video-checkout', 'btn-capturar-foto-checkout');
+}
+
+// Iniciar câmera
+function iniciarCamera(videoId, btnId) {
+    const video = document.getElementById(videoId);
+    const btn = document.getElementById(btnId);
+
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+            .then(function(stream) {
+                streamVideo = stream;
+                video.srcObject = stream;
+                video.style.display = 'block';
+
+                btn.onclick = function() {
+                    tirarFoto(videoId, videoId.replace('video', 'preview'));
+                };
+            })
+            .catch(function(err) {
+                console.log('Erro ao acessar câmera:', err);
+                alert('Não foi possível acessar a câmera. Verifique as permissões.');
+            });
+    }
+}
+
+// Tirar foto
+function tirarFoto(videoId, previewId) {
+    const video = document.getElementById(videoId);
+    const canvas = document.getElementById(videoId.replace('video', 'canvas'));
+    const preview = document.getElementById(previewId);
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video, 0, 0);
+
+    const fotoBase64 = canvas.toDataURL('image/jpeg');
+
+    preview.src = fotoBase64;
+    preview.style.display = 'block';
+    video.style.display = 'none';
+
+    // Parar câmera
+    if (streamVideo) {
+        streamVideo.getTracks().forEach(track => track.stop());
+    }
+
+    // Habilitar botão de confirmar
+    const btnConfirmarId = videoId === 'video-checkin' ? 'btn-confirmar-checkin' : 'btn-confirmar-checkout';
+    document.getElementById(btnConfirmarId).disabled = false;
+
+    return fotoBase64;
+}
+
+// Confirmar check-in
+function confirmarCheckin() {
+    const preview = document.getElementById('preview-checkin');
+    const observacao = document.getElementById('observacao-checkin').value;
+    const latitude = document.getElementById('latitude').value;
+    const longitude = document.getElementById('longitude').value;
+
+    const dados = {
+        obra_id: '<?= $obra->id ?? 0 ?>',
+        latitude: latitude,
+        longitude: longitude,
+        foto: preview.src,
+        observacao: observacao
+    };
+
+    fetch('<?= site_url("tecnicos/api_checkin_obra") ?>', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(dados)
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            $('#modal-checkin').modal('hide');
+            checkinAtivo = { id: data.checkin_id, check_in: new Date().toISOString() };
+            atualizarInterfaceCheckin(true);
+            iniciarTimer(new Date().toISOString());
+            carregarResumoDia();
+            alert('Check-in realizado com sucesso!');
+        } else {
+            alert('Erro: ' + data.message);
+        }
+    })
+    .catch(err => {
+        console.error('Erro:', err);
+        alert('Erro ao realizar check-in');
+    });
+}
+
+// Confirmar check-out
+function confirmarCheckout() {
+    const preview = document.getElementById('preview-checkout');
+    const atividades = document.getElementById('atividades-checkout').value;
+    const observacao = document.getElementById('observacao-checkout').value;
+    const latitude = document.getElementById('latitude').value;
+    const longitude = document.getElementById('longitude').value;
+
+    const dados = {
+        checkin_id: checkinAtivo.id,
+        latitude: latitude,
+        longitude: longitude,
+        foto: preview.src,
+        atividades_realizadas: atividades,
+        observacao: observacao
+    };
+
+    fetch('<?= site_url("tecnicos/api_checkout_obra") ?>', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(dados)
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            $('#modal-checkout').modal('hide');
+            checkinAtivo = null;
+            atualizarInterfaceCheckin(false);
+            pararTimer();
+            carregarResumoDia();
+            alert('Check-out realizado! Horas trabalhadas: ' + data.horas_trabalhadas);
+        } else {
+            alert('Erro: ' + data.message);
+        }
+    })
+    .catch(err => {
+        console.error('Erro:', err);
+        alert('Erro ao realizar check-out');
+    });
+}
+
+// Timer
+function iniciarTimer(horaInicio) {
+    pararTimer();
+    const inicio = new Date(horaInicio);
+
+    timerInterval = setInterval(function() {
+        const agora = new Date();
+        const diff = Math.floor((agora - inicio) / 1000);
+        const horas = Math.floor(diff / 3600);
+        const minutos = Math.floor((diff % 3600) / 60);
+        const segundos = diff % 60;
+
+        document.getElementById('tempo-trabalhando').textContent =
+            String(horas).padStart(2, '0') + ':' +
+            String(minutos).padStart(2, '0') + ':' +
+            String(segundos).padStart(2, '0');
+    }, 1000);
+}
+
+function pararTimer() {
+    if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
+    document.getElementById('tempo-trabalhando').textContent = '00:00:00';
+}
+
+// Carregar resumo do dia
+function carregarResumoDia() {
+    const obraId = '<?= $obra->id ?? 0 ?>';
+
+    fetch('<?= site_url("tecnicos/api_relatorio_diario_obra") ?>?obra_id=' + obraId)
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('resumo-horas').textContent = data.total_horas + 'h';
+                document.getElementById('resumo-atividades').textContent = data.total_atividades;
+                document.getElementById('resumo-checkins').textContent = data.checkins.length;
+
+                // Atualizar lista de atividades
+                if (data.atividades.length > 0) {
+                    const container = document.getElementById('lista-atividades');
+                    container.innerHTML = data.atividades.map(a => `
+                        <div class="atividade-item">
+                            <div class="atividade-header">
+                                <span class="atividade-hora">
+                                    <i class="icon-time"></i> ${a.data_atividade}
+                                </span>
+                                <span class="atividade-tipo ${a.tipo}">${a.tipo}</span>
+                            </div>
+                            <div class="atividade-descricao">${a.descricao}</div>
+                            ${a.percentual_concluido > 0 ? `<small style="color: #11998e;">${a.percentual_concluido}% concluído</small>` : ''}
+                        </div>
+                    `).join('');
+                }
+            }
+        })
+        .catch(err => console.error('Erro ao carregar resumo:', err));
+}
+
+// Mostrar seção
+function mostrarSecao(secao) {
+    document.getElementById('secao-etapas').style.display = secao === 'etapas' ? 'block' : 'none';
+    document.getElementById('secao-atividades').style.display = secao === 'atividades' ? 'block' : 'none';
+    document.getElementById('secao-minhas-os').style.display = secao === 'minhas-os' ? 'block' : 'none';
+}
+
+// Toggle expandir etapas
+function toggleExpandirEtapas() {
+    const extras = document.querySelectorAll('.etapa-extra');
+    const btn = document.getElementById('btn-ver-mais-etapas');
+
+    extras.forEach(e => {
+        if (e.classList.contains('hidden')) {
+            e.classList.remove('hidden');
+            btn.textContent = 'Ver menos';
+        } else {
+            e.classList.add('hidden');
+            btn.textContent = 'Ver mais <?= count($etapas ?? []) - 3 ?> etapas';
+        }
+    });
+}
+
+// Abrir modal de atividade
+function abrirModalAtividade() {
+    $('#modal-atividade').modal('show');
+}
+
+// Atualizar valor do range
+function atualizarValorRange(valor) {
+    document.getElementById('progresso-valor').textContent = valor;
+}
+
+function atualizarValorRange2(valor) {
+    document.getElementById('atividade-valor').textContent = valor;
+}
+
+// Atualizar progresso da etapa
+function atualizarProgressoEtapa(etapaId, etapaNome) {
+    document.getElementById('progresso-etapa-id').value = etapaId;
+    document.getElementById('progresso-etapa-nome').value = etapaNome;
+    $('#modal-progresso-etapa').modal('show');
+}
+
+// Salvar progresso da etapa
+function salvarProgressoEtapa(event) {
+    event.preventDefault();
+
+    const formData = new FormData(event.target);
+    formData.append('obra_id', '<?= $obra->id ?? 0 ?>');
+
+    fetch('<?= site_url("tecnicos/api_atualizar_etapa") ?>', {
+        method: 'POST',
+        body: new URLSearchParams(formData)
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            $('#modal-progresso-etapa').modal('hide');
+            alert('Progresso atualizado!');
+            location.reload();
+        } else {
+            alert('Erro: ' + data.message);
+        }
+    })
+    .catch(err => {
+        console.error('Erro:', err);
+        alert('Erro ao atualizar progresso');
+    });
+}
+
+// Processar fotos da atividade
+function processarFotos(input) {
+    const container = document.getElementById('preview-fotos');
+    const fotosBase64 = [];
+
+    Array.from(input.files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            container.innerHTML = '';
+            container.appendChild(img);
+            fotosBase64.push(e.target.result);
+            document.getElementById('fotos-base64').value = JSON.stringify(fotosBase64);
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+// Salvar atividade
+function salvarAtividade(event) {
+    event.preventDefault();
+
+    const formData = new FormData(event.target);
+
+    fetch('<?= site_url("tecnicos/api_registrar_atividade_obra") ?>', {
+        method: 'POST',
+        body: new URLSearchParams(formData)
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            $('#modal-atividade').modal('hide');
+            document.getElementById('form-atividade').reset();
+            document.getElementById('preview-fotos').innerHTML = '';
+            carregarResumoDia();
+            alert('Atividade registrada!');
+        } else {
+            alert('Erro: ' + data.message);
+        }
+    })
+    .catch(err => {
+        console.error('Erro:', err);
+        alert('Erro ao registrar atividade');
+    });
+}
+
+// Abrir modal relatório
+function abrirModalRelatorio() {
+    const obraId = '<?= $obra->id ?? 0 ?>';
+    window.open('<?= site_url("tecnicos/relatorio_obra/") ?>' + obraId, '_blank');
+}
+</script>

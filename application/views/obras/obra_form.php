@@ -174,7 +174,7 @@
                 <div style="font-size: 14px; opacity: 0.8;">Código</div>
                 <div style="font-size: 24px; font-weight: 700;">#<?php echo $result->id; ?></div>
             </div>
-            <?php endif; ?
+            <?php endif; ?>
         </div>
     </div>
 
