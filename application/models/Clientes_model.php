@@ -38,6 +38,15 @@ class Clientes_model extends CI_Model
     }
 
     /**
+     * Retorna todos os clientes ativos
+     */
+    public function getAll()
+    {
+        $this->db->order_by('nomeCliente', 'ASC');
+        return $this->db->get('clientes')->result();
+    }
+
+    /**
      * Buscar cliente por documento (CPF/CNPJ)
      * Busca com e sem formatação
      */
