@@ -240,7 +240,8 @@ class Obras_model extends CI_Model
                 'especialidade' => $dados['especialidade'] ?? null,
                 'data_inicio_prevista' => $dados['data_inicio_prevista'] ?? null,
                 'data_fim_prevista' => $dados['data_fim_prevista'] ?? null,
-                'status' => 'pendente',
+                'status' => 'NaoIniciada',
+                'ativo' => 1,
                 'created_at' => date('Y-m-d H:i:s'),
             ];
 

@@ -639,6 +639,16 @@ class Migration_Add_Obras_Sistema extends CI_Migration {
                     ]
                 ]);
             }
+            if (!$this->db->field_exists('ativo', 'obra_etapas')) {
+                $this->dbforge->add_column('obra_etapas', [
+                    'ativo' => [
+                        'type' => 'TINYINT',
+                        'constraint' => 1,
+                        'default' => 1,
+                        'after' => 'updated_at'
+                    ]
+                ]);
+            }
         }
     }
 

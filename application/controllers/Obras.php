@@ -266,16 +266,21 @@ class Obras extends MY_Controller
     public function adicionarEtapa()
     {
         if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')) {
-            $this->session->set_flashdata('error', 'Sem permissão.');
+            $this->session->set_flashdata('error', 'Sem permissão para adicionar etapas.');
             redirect('obras');
         }
 
         $obra_id = $this->input->post('obra_id');
         $nome = $this->input->post('nome');
 
-        if (!$obra_id || !$nome) {
-            $this->session->set_flashdata('error', 'Dados incompletos. Preencha todos os campos obrigatórios.');
+        if (!$obra_id) {
+            $this->session->set_flashdata('error', 'ID da obra não informado.');
             redirect('obras');
+        }
+
+        if (!$nome) {
+            $this->session->set_flashdata('error', 'Nome da etapa é obrigatório.');
+            redirect('obras/etapas/' . $obra_id);
         }
 
         $dados = [
@@ -288,10 +293,12 @@ class Obras extends MY_Controller
             'data_fim_prevista' => $this->input->post('data_fim_prevista'),
         ];
 
-        if ($this->obras_model->adicionarEtapa($obra_id, $dados)) {
-            $this->session->set_flashdata('success', 'Etapa adicionada com sucesso!');
+        $etapa_id = $this->obras_model->adicionarEtapa($obra_id, $dados);
+
+        if ($etapa_id) {
+            $this->session->set_flashdata('success', 'Etapa "' . $nome . '" adicionada com sucesso!');
         } else {
-            $this->session->set_flashdata('error', 'Erro ao adicionar etapa.');
+            $this->session->set_flashdata('error', 'Erro ao adicionar etapa. Verifique os dados e tente novamente.');
         }
 
         redirect('obras/etapas/' . $obra_id);

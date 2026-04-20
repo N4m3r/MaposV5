@@ -573,9 +573,9 @@
     <!-- Stats -->
     <?php
     $total = count($etapas);
-    $concluidas = count(array_filter($etapas, fn($e) => $e->status == 'concluida'));
-    $em_andamento = count(array_filter($etapas, fn($e) => $e->status == 'em_andamento'));
-    $pendentes = count(array_filter($etapas, fn($e) => $e->status == 'pendente'));
+    $concluidas = count(array_filter($etapas, fn($e) => $e->status == 'Concluida'));
+    $em_andamento = count(array_filter($etapas, fn($e) => $e->status == 'EmAndamento'));
+    $pendentes = count(array_filter($etapas, fn($e) => $e->status == 'NaoIniciada'));
     ?>
     <div class="etapas-stats">
         <div class="etapas-stat-card">
@@ -620,15 +620,24 @@
         <div class="etapas-timeline">
             <?php foreach ($etapas as $index => $etapa): ?>
             <?php
-            $statusClass = $etapa->status;
+            // Mapear status do ENUM para classes CSS
+            $statusMap = [
+                'NaoIniciada' => 'pendente',
+                'EmAndamento' => 'em_andamento',
+                'Concluida' => 'concluida',
+                'Atrasada' => 'atrasada',
+                'Paralisada' => 'atrasada'
+            ];
+            $statusClass = $statusMap[$etapa->status] ?? 'pendente';
             $statusLabels = [
-                'pendente' => 'Pendente',
-                'em_andamento' => 'Em Andamento',
-                'concluida' => 'Concluída',
-                'atrasada' => 'Atrasada'
+                'NaoIniciada' => 'Não Iniciada',
+                'EmAndamento' => 'Em Andamento',
+                'Concluida' => 'Concluída',
+                'Atrasada' => 'Atrasada',
+                'Paralisada' => 'Paralisada'
             ];
             $statusLabel = $statusLabels[$etapa->status] ?? $etapa->status;
-            $progresso = $etapa->percentual_concluido ?? ($etapa->status == 'concluida' ? 100 : ($etapa->status == 'em_andamento' ? 50 : 0));
+            $progresso = $etapa->percentual_concluido ?? ($etapa->status == 'Concluida' ? 100 : ($etapa->status == 'EmAndamento' ? 50 : 0));
 
             // Calcular cor da barra de progresso
             if ($progresso < 30) {
