@@ -1623,9 +1623,9 @@ class Tecnicos_admin extends MY_Controller
         // Estatísticas
         $stats = [
             'total' => count($tarefas),
-            'pendentes' => count(array_filter($tarefas, fn($t) => $t->status === 'pendente')),
-            'em_andamento' => count(array_filter($tarefas, fn($t) => $t->status === 'em_andamento')),
-            'concluidas' => count(array_filter($tarefas, fn($t) => $t->status === 'concluida')),
+            'pendentes' => count(array_filter($tarefas, function($t) { return $t->status === 'pendente'; })),
+            'em_andamento' => count(array_filter($tarefas, function($t) { return $t->status === 'em_andamento'; })),
+            'concluidas' => count(array_filter($tarefas, function($t) { return $t->status === 'concluida'; })),
         ];
 
         $this->data['obra'] = $obra;
@@ -1879,7 +1879,7 @@ class Tecnicos_admin extends MY_Controller
         $atividades = $this->db->get()->result();
 
         // Calcular total de horas
-        $total_horas = array_sum(array_map(fn($a) => $a->horas_trabalhadas, $atividades));
+        $total_horas = array_sum(array_map(function($a) { return $a->horas_trabalhadas; }, $atividades));
 
         // Buscar técnicos para filtro
         $this->db->where('is_tecnico', 1);
