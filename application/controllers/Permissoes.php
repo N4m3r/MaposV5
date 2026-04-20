@@ -178,6 +178,18 @@ class Permissoes extends MY_Controller
                 'cBoletoOS' => $this->input->post('cBoletoOS'),
                 'eBoletoOS' => $this->input->post('eBoletoOS'),
                 'rNFSe' => $this->input->post('rNFSe'),
+
+                // Permissões Sistema de Obras
+                'vObras' => $this->input->post('vObras'),
+                'cObras' => $this->input->post('cObras'),
+                'eObras' => $this->input->post('eObras'),
+                'dObras' => $this->input->post('dObras'),
+                'vObrasTodas' => $this->input->post('vObrasTodas'),
+                'vObrasRelatorios' => $this->input->post('vObrasRelatorios'),
+                'vTecnicoObra' => $this->input->post('vTecnicoObra'),
+                'eTecnicoExec' => $this->input->post('eTecnicoExec'),
+                'eTecnicoFotos' => $this->input->post('eTecnicoFotos'),
+                'eTecnicoImped' => $this->input->post('eTecnicoImped'),
             ];
 
             // Converter null para '0' (checkbox desmarcado)
@@ -340,6 +352,18 @@ class Permissoes extends MY_Controller
                 'vBoletoOS' => $this->input->post('vBoletoOS'),
                 'cBoletoOS' => $this->input->post('cBoletoOS'),
                 'eBoletoOS' => $this->input->post('eBoletoOS'),
+
+                // Permissões Sistema de Obras
+                'vObras' => $this->input->post('vObras'),
+                'cObras' => $this->input->post('cObras'),
+                'eObras' => $this->input->post('eObras'),
+                'dObras' => $this->input->post('dObras'),
+                'vObrasTodas' => $this->input->post('vObrasTodas'),
+                'vObrasRelatorios' => $this->input->post('vObrasRelatorios'),
+                'vTecnicoObra' => $this->input->post('vTecnicoObra'),
+                'eTecnicoExec' => $this->input->post('eTecnicoExec'),
+                'eTecnicoFotos' => $this->input->post('eTecnicoFotos'),
+                'eTecnicoImped' => $this->input->post('eTecnicoImped'),
 
                 'categoria_d' => $this->input->post('categoria_d'),
                 'categoria_v' => $this->input->post('categoria_v'),

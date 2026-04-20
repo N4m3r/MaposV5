@@ -206,12 +206,108 @@
                                 </div>
                             </div>
                         </div>
+                        <!-- SISTEMA DE OBRAS -->
+                        <div class="accordion-group widget-box">
+                            <div class="accordion-heading">
+                                <div class="widget-title">
+                                    <a data-parent="#collapse-group" href="#collapseGObras" data-toggle="collapse">
+                                      <span><i class='bx bx-building-house icon-cli'></i></span>
+                                      <h5 style="padding-left: 28px">Obras e Projetos</h5>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="collapse accordion-body" id="collapseGObras">
+                                <div class="widget-content">
+                                    <table class="table table-bordered">
+                                        <tbody>
+                                        <tr>
+                                            <td>
+                                                <label>
+                                                    <input name="vObras" class="marcar" type="checkbox" checked="checked" value="1" />
+                                                    <span class="lbl"> Visualizar Obras</span>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <label>
+                                                    <input name="cObras" class="marcar" type="checkbox" value="1" />
+                                                    <span class="lbl"> Cadastrar Obras</span>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <label>
+                                                    <input name="eObras" class="marcar" type="checkbox" value="1" />
+                                                    <span class="lbl"> Editar Obras</span>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <label>
+                                                    <input name="dObras" class="marcar" type="checkbox" value="1" />
+                                                    <span class="lbl"> Excluir Obras</span>
+                                                </label>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <label>
+                                                    <input name="vObrasTodas" class="marcar" type="checkbox" value="1" />
+                                                    <span class="lbl"> Visualizar Todas as Obras</span>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <label>
+                                                    <input name="vObrasRelatorios" class="marcar" type="checkbox" value="1" />
+                                                    <span class="lbl"> Relatórios de Obras</span>
+                                                </label>
+                                            </td>
+                                            <td colspan="2"></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+
+                                    <!-- Permissões de Técnico para Obras -->
+                                    <div class="widget-title" style="background: #f5f5f5; padding: 5px; margin: 10px 0;">
+                                        <h6 style="margin: 0;"><i class='bx bx-hard-hat'></i> Permissões do Técnico em Obras</h6>
+                                    </div>
+                                    <table class="table table-bordered">
+                                        <tbody>
+                                        <tr>
+                                            <td>
+                                                <label>
+                                                    <input name="vTecnicoObra" class="marcar" type="checkbox" value="1" />
+                                                    <span class="lbl"> Ver Obras Atribuídas</span>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <label>
+                                                    <input name="eTecnicoExec" class="marcar" type="checkbox" value="1" />
+                                                    <span class="lbl"> Executar Atividades</span>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <label>
+                                                    <input name="eTecnicoFotos" class="marcar" type="checkbox" value="1" />
+                                                    <span class="lbl"> Adicionar Fotos</span>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <label>
+                                                    <input name="eTecnicoImped" class="marcar" type="checkbox" value="1" />
+                                                    <span class="lbl"> Registrar Impedimentos</span>
+                                                </label>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="accordion-group widget-box">
                             <div class="accordion-heading">
                                 <div class="widget-title">
                                     <a data-parent="#collapse-group" href="#collapseGTecnico" data-toggle="collapse">
                                       <span><i class='bx bx-user-check icon-cli'></i></span>
-                                      <h5 style="padding-left: 28px">Permissões de Técnico</h5>
+                                      <h5 style="padding-left: 28px">Permissões de Técnico (OS)</h5>
                                     </a>
                                 </div>
                             </div>

@@ -50,6 +50,42 @@
                     </li>
                 <?php } ?>
 
+                <!-- OBRAS E PROJETOS -->
+                <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vObras') || $this->permission->checkPermission($this->session->userdata('permissao'), 'cObras')) { ?>
+                    <li class="menu-divider"><span class="divider-text">OBRAS E PROJETOS</span></li>
+
+                    <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vObras')) { ?>
+                        <li class="<?php if (isset($menuObras)) { echo 'active'; }; ?>">
+                            <a class="tip-bottom" href="<?= site_url('obras') ?>" title="Gerenciar Obras">
+                                <i class='bx bx-building-house iconX'></i>
+                                <span class="title">Gerenciar Obras</span>
+                                <span class="title-tooltip">Obras</span>
+                            </a>
+                        </li>
+                    <?php } ?>
+
+                    <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cObras')) { ?>
+                        <li class="<?php if (isset($menuObrasAdd)) { echo 'active'; }; ?>">
+                            <a class="tip-bottom" href="<?= site_url('obras/adicionar') ?>" title="Nova Obra">
+                                <i class='bx bx-plus-circle iconX'></i>
+                                <span class="title">Nova Obra</span>
+                                <span class="title-tooltip">Nova Obra</span>
+                            </a>
+                        </li>
+                    <?php } ?>
+
+                    <!-- Acesso Portal Técnico para Obras -->
+                    <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vTecnicoObra') && !$this->permission->checkPermission($this->session->userdata('permissao'), 'cObras')) { ?>
+                        <li class="<?php if (isset($menuObrasTecnico)) { echo 'active'; }; ?>">
+                            <a href="<?= site_url('obras_tecnico') ?>" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); border-radius: 8px; margin: 5px 10px;">
+                                <i class='bx bx-hard-hat iconX' style="color: white;"></i>
+                                <span class="title" style="color: white; font-weight: 600;">Minhas Obras</span>
+                                <span class="title-tooltip">Minhas Obras</span>
+                            </a>
+                        </li>
+                    <?php } ?>
+                <?php } ?>
+
                 <!-- ORDENS DE SERVIÇO -->
                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vOs') || $this->permission->checkPermission($this->session->userdata('permissao'), 'eOs')) { ?>
                     <li class="menu-divider"><span class="divider-text">ORDENS DE SERVIÇO</span></li>

@@ -138,6 +138,49 @@ $route['dashboard/relatorio_financeiro'] = 'dashboard/relatorio_financeiro';
 $route['dashboard/relatorio_produtos'] = 'dashboard/relatorio_produtos';
 $route['dashboard/relatorio_clientes'] = 'dashboard/relatorio_clientes';
 
+// ============================================
+// ROTAS DO SISTEMA DE OBRAS (Gestão Completa)
+// ============================================
+
+// Administração de Obras
+$route['obras'] = 'obras/gerenciar';
+$route['obras/gerenciar'] = 'obras/gerenciar';
+$route['obras/adicionar'] = 'obras/adicionar';
+$route['obras/editar/(:num)'] = 'obras/editar/$1';
+$route['obras/visualizar/(:num)'] = 'obras/visualizar/$1';
+$route['obras/excluir'] = 'obras/excluir';
+$route['obras/etapas/(:num)'] = 'obras/etapas/$1';
+$route['obras/adicionarEtapa'] = 'obras/adicionarEtapa';
+$route['obras/editarEtapa/(:num)'] = 'obras/editarEtapa/$1';
+$route['obras/excluirEtapa/(:num)'] = 'obras/excluirEtapa/$1';
+$route['obras/atividades/(:num)'] = 'obras/atividades/$1';
+$route['obras/adicionarAtividade'] = 'obras/adicionarAtividade';
+$route['obras/editarAtividade/(:num)'] = 'obras/editarAtividade/$1';
+$route['obras/visualizarAtividade/(:num)'] = 'obras/visualizarAtividade/$1';
+$route['obras/relatorioProgresso/(:num)'] = 'obras/relatorioProgresso/$1';
+$route['obras/relatorioDiario/(:num)'] = 'obras/relatorioDiario/$1';
+$route['obras/api/atualizarProgresso/(:num)'] = 'obras/api_atualizarProgresso/$1';
+$route['obras/api/dadosGrafico/(:num)'] = 'obras/api_dadosGrafico/$1';
+
+// Portal do Técnico - Obras
+$route['obras_tecnico'] = 'obras_tecnico/minhasObras';
+$route['obras_tecnico/minhasObras'] = 'obras_tecnico/minhasObras';
+$route['obras_tecnico/obra/(:num)'] = 'obras_tecnico/obra/$1';
+$route['obras_tecnico/atividade/(:num)'] = 'obras_tecnico/atividade/$1';
+$route['obras_tecnico/iniciarAtividade'] = 'obras_tecnico/iniciarAtividade';
+$route['obras_tecnico/pausarAtividade'] = 'obras_tecnico/pausarAtividade';
+$route['obras_tecnico/retomarAtividade'] = 'obras_tecnico/retomarAtividade';
+$route['obras_tecnico/finalizarAtividade'] = 'obras_tecnico/finalizarAtividade';
+$route['obras_tecnico/registrarImpedimento'] = 'obras_tecnico/registrarImpedimento';
+$route['obras_tecnico/registrarCheckin'] = 'obras_tecnico/registrarCheckin';
+$route['obras_tecnico/registrarCheckout'] = 'obras_tecnico/registrarCheckout';
+$route['obras_tecnico/uploadFoto'] = 'obras_tecnico/uploadFoto';
+$route['obras_tecnico/listarFotos/(:num)'] = 'obras_tecnico/listarFotos/$1';
+$route['obras_tecnico/relatorioDiario/(:num)'] = 'obras_tecnico/relatorioDiario/$1';
+$route['obras_tecnico/api/getAtividades'] = 'obras_tecnico/api_getAtividades';
+$route['obras_tecnico/api/registrarAcao'] = 'obras_tecnico/api_registrarAcao';
+$route['obras_tecnico/api/getObra/(:num)'] = 'obras_tecnico/api_getObra/$1';
+
 // Rotas de Usuários Cliente (Multi-CNPJ)
 $route['usuarioscliente'] = 'usuarioscliente';
 $route['usuarioscliente/adicionar'] = 'usuarioscliente/adicionar';
