@@ -998,12 +998,13 @@ class Mine extends CI_Controller
 
     public function visualizarOs($id = null)
     {
-        if (! session_id() || ! $this->session->userdata('conectado')) {
+        if (!session_id() || !$this->session->userdata('conectado')) {
+            $this->session->set_flashdata('error', 'Você precisa estar logado para acessar esta página.');
             redirect('mine');
         }
 
-        if (!$id) {
-            $this->session->set_flashdata('error', 'OS não informada.');
+        if (!$id || !is_numeric($id)) {
+            $this->session->set_flashdata('error', 'OS não informada ou inválida.');
             redirect('mine/os');
         }
 
@@ -1238,11 +1239,12 @@ class Mine extends CI_Controller
     public function imprimirOs($id = null)
     {
         if (!session_id() || !$this->session->userdata('conectado')) {
+            $this->session->set_flashdata('error', 'Você precisa estar logado para acessar esta página.');
             redirect('mine');
         }
 
-        if (!$id) {
-            $this->session->set_flashdata('error', 'OS não informada.');
+        if (!$id || !is_numeric($id)) {
+            $this->session->set_flashdata('error', 'OS não informada ou inválida.');
             redirect('mine/os');
         }
 
