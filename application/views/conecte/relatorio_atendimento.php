@@ -1,3 +1,4 @@
+<?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
 <!-- Relatório de Atendimento - Área do Cliente -->
 <div id="content">
 <style>

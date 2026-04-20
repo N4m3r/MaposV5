@@ -148,6 +148,21 @@ $('#btn-toggle-theme').on('click', function(e) {
     // Salvar no servidor
     $.post(notifBaseUrl + '/trocar_tema', { tema: novoTema });
 });
+
+// ============================================
+// LAYOUT PORTAL DO TÉCNICO
+// Toggle do sidebar
+// ============================================
+$(document).ready(function() {
+    // Toggle do sidebar ao clicar no botão de modo
+    $('#sidebar .mode').on('click', function(e) {
+        e.preventDefault();
+        $('#sidebar').toggleClass('open');
+    });
+});
+// ============================================
+// FIM LAYOUT PORTAL DO TÉCNICO
+// ============================================
 </script>
 </body>
 <script type="text/javascript">

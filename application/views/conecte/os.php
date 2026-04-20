@@ -411,7 +411,7 @@ function getStatusColor($status) {
 
     <!-- Filtros -->
     <div class="filter-card">
-        <form method="get" action="<?= site_url('mine/os') ?>">
+        <form method="get" action="<?= base_url('index.php/mine/os') ?>">
             <div class="filter-grid">
                 <div class="filter-group">
                     <label><i class="bx bx-search"></i> Buscar</label>
@@ -445,7 +445,7 @@ function getStatusColor($status) {
                     <button type="submit" class="btn-filter">
                         <i class="bx bx-search"></i> Filtrar
                     </button>
-                    <a href="<?= site_url('mine/os?limpar=1') ?>" class="btn-clear">
+                    <a href="<?= base_url('index.php/mine/os?limpar=1') ?>" class="btn-clear">
                         <i class="bx bx-x"></i> Limpar
                     </a>
                 </div>
@@ -460,7 +460,7 @@ function getStatusColor($status) {
             <h3>Nenhuma OS encontrada</h3>
             <p>Não encontramos ordens de serviço com os filtros selecionados.</p>
             <?php if (!empty($filtros['busca']) || !empty($filtros['status']) || !empty($filtros['data_inicio']) || !empty($filtros['data_fim'])): ?>
-                <a href="<?= site_url('mine/os?limpar=1') ?>" class="btn-filter">
+                <a href="<?= base_url('index.php/mine/os?limpar=1') ?>" class="btn-filter">
                     <i class="bx bx-x"></i> Limpar Filtros
                 </a>
             <?php endif; ?>

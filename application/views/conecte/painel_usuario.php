@@ -278,16 +278,16 @@ if (!function_exists('getPainelUsuarioStatusColor')) {
                     </div>
                     <div class="span4 text-right">
                         <?php if ($podeSolicitarOrcamento): ?>
-                            <a href="<?= site_url('mine/adicionarOs') ?>" class="btn btn-small btn-success" style="margin-right: 5px;">
+                            <a href="<?= base_url('index.php/mine/adicionarOs') ?>" class="btn btn-small btn-success" style="margin-right: 5px;">
                                 <i class="bx bx-plus"></i> Nova OS
                             </a>
                         <?php endif; ?>
                         <?php if ($podeEditarPerfil): ?>
-                            <a href="<?= site_url('mine/conta') ?>" class="btn btn-small btn-info" style="margin-right: 5px;">
+                            <a href="<?= base_url('index.php/mine/conta') ?>" class="btn btn-small btn-info" style="margin-right: 5px;">
                                 <i class="bx bx-user"></i> Perfil
                             </a>
                         <?php endif; ?>
-                        <a href="<?= site_url('mine/sair_usuario') ?>" class="btn btn-small btn-danger">
+                        <a href="<?= base_url('index.php/mine/sair_usuario') ?>" class="btn btn-small btn-danger">
                             <i class="bx bx-log-out"></i> Sair
                         </a>
                     </div>
@@ -306,7 +306,7 @@ if (!function_exists('getPainelUsuarioStatusColor')) {
             </div>
             <div class="quick-access-grid">
                 <?php if ($podeVerOS): ?>
-                <a href="<?= site_url('mine/os') ?>" class="quick-card">
+                <a href="<?= base_url('index.php/mine/os') ?>" class="quick-card">
                     <div class="icon-wrapper" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%)">
                         <i class='bx bx-file'></i>
                     </div>
@@ -316,7 +316,7 @@ if (!function_exists('getPainelUsuarioStatusColor')) {
                 <?php endif; ?>
 
                 <?php if ($podeVerCobrancas): ?>
-                <a href="<?= site_url('mine/cobrancas') ?>" class="quick-card">
+                <a href="<?= base_url('index.php/mine/cobrancas') ?>" class="quick-card">
                     <div class="icon-wrapper" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%)">
                         <i class='bx bx-credit-card-front'></i>
                     </div>
@@ -326,7 +326,7 @@ if (!function_exists('getPainelUsuarioStatusColor')) {
                 <?php endif; ?>
 
                 <?php if ($podeVerObras): ?>
-                <a href="<?= site_url('mine/obras') ?>" class="quick-card">
+                <a href="<?= base_url('index.php/mine/obras') ?>" class="quick-card">
                     <div class="icon-wrapper" style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%)">
                         <i class='bx bx-building-house'></i>
                     </div>
@@ -336,7 +336,7 @@ if (!function_exists('getPainelUsuarioStatusColor')) {
                 <?php endif; ?>
 
                 <?php if ($podeVerCompras): ?>
-                <a href="<?= site_url('mine/compras') ?>" class="quick-card">
+                <a href="<?= base_url('index.php/mine/compras') ?>" class="quick-card">
                     <div class="icon-wrapper" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%)">
                         <i class='bx bx-cart-alt'></i>
                     </div>
@@ -384,7 +384,7 @@ if (!function_exists('getPainelUsuarioStatusColor')) {
         <div class="widget-card-modern">
             <div class="widget-header-modern">
                 <h5><i class='bx bx-file'></i> Ordens de Serviço Recentes</h5>
-                <a href="<?= site_url('mine/os') ?>" class="btn btn-mini btn-info">
+                <a href="<?= base_url('index.php/mine/os') ?>" class="btn btn-mini btn-info">
                     <i class="bx bx-list-ul"></i> Ver Todas
                 </a>
             </div>
@@ -451,7 +451,7 @@ if (!function_exists('getPainelUsuarioStatusColor')) {
         <div class="widget-card-modern">
             <div class="widget-header-modern">
                 <h5><i class='bx bx-credit-card-front'></i> Cobranças Recentes</h5>
-                <a href="<?= site_url('mine/cobrancas') ?>" class="btn btn-mini btn-info">Ver Todas</a>
+                <a href="<?= base_url('index.php/mine/cobrancas') ?>" class="btn btn-mini btn-info">Ver Todas</a>
             </div>
             <div class="widget-content" style="padding: 0">
                 <table class="modern-table">
@@ -502,7 +502,7 @@ if (!function_exists('getPainelUsuarioStatusColor')) {
         <div class="widget-card-modern">
             <div class="widget-header-modern">
                 <h5><i class='bx bx-barcode'></i> Boletos Recentes</h5>
-                <a href="<?= site_url('mine/boletos') ?>" class="btn btn-mini btn-info">Ver Todos</a>
+                <a href="<?= base_url('index.php/mine/boletos') ?>" class="btn btn-mini btn-info">Ver Todos</a>
             </div>
             <div class="widget-content" style="padding: 0">
                 <table class="modern-table">
@@ -557,7 +557,7 @@ if (!function_exists('getPainelUsuarioStatusColor')) {
         <div class="widget-card-modern">
             <div class="widget-header-modern">
                 <h5><i class='bx bx-building-house'></i> Obras</h5>
-                <a href="<?= site_url('mine/obras') ?>" class="btn btn-mini btn-info">Ver Todas</a>
+                <a href="<?= base_url('index.php/mine/obras') ?>" class="btn btn-mini btn-info">Ver Todas</a>
             </div>
             <div class="widget-content" style="padding: 0">
                 <table class="modern-table">
@@ -612,7 +612,7 @@ if (!function_exists('getPainelUsuarioStatusColor')) {
         <div class="widget-card-modern">
             <div class="widget-header-modern">
                 <h5><i class='bx bx-receipt'></i> Notas Fiscais de Serviço (NFS-e)</h5>
-                <a href="<?= site_url('mine/notasfiscais') ?>" class="btn btn-mini btn-info">Ver Todas</a>
+                <a href="<?= base_url('index.php/mine/notasfiscais') ?>" class="btn btn-mini btn-info">Ver Todas</a>
             </div>
             <div class="widget-content" style="padding: 0">
                 <table class="modern-table">

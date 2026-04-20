@@ -22,6 +22,14 @@
         </div>
     </a>
 
+    <!-- Botão toggle visível em desktop também -->
+    <div class="mode mode-desktop" style="cursor: pointer;" title="Recolher/Expandir Menu">
+        <div class="moon-menu">
+            <i class='bx bx-chevron-left iconX open-2'></i>
+            <i class='bx bx-chevron-right iconX close-2'></i>
+        </div>
+    </div>
+
     <div class="menu-bar">
         <div class="menu menu-scrollable">
 

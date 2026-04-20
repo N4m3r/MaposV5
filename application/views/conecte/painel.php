@@ -350,7 +350,7 @@ $osFinalizadas = count(array_filter($os ?? [], function($o) { return $o->status 
             <p>Bem-vindo à sua área do cliente. Aqui você pode acompanhar suas ordens de serviço, compras e muito mais.</p>
         </div>
         <?php if ($podeSolicitarOrcamento): ?>
-        <a href="<?= site_url('mine/adicionarOs') ?>" class="btn-action">
+        <a href="<?= base_url('index.php/mine/adicionarOs') ?>" class="btn-action">
             <i class='bx bx-plus'></i> Solicitar Orçamento
         </a>
         <?php endif; ?>
@@ -359,7 +359,7 @@ $osFinalizadas = count(array_filter($os ?? [], function($o) { return $o->status 
     <!-- Cards de Acesso Rápido -->
     <div class="quick-access-grid">
         <?php if ($podeVerOS): ?>
-        <a href="<?= site_url('mine/os') ?>" class="quick-card">
+        <a href="<?= base_url('index.php/mine/os') ?>" class="quick-card">
             <div class="icon-wrapper" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%)">
                 <i class='bx bx-file'></i>
             </div>
@@ -369,7 +369,7 @@ $osFinalizadas = count(array_filter($os ?? [], function($o) { return $o->status 
         <?php endif; ?>
 
         <?php if ($podeVerCompras): ?>
-        <a href="<?= site_url('mine/compras') ?>" class="quick-card">
+        <a href="<?= base_url('index.php/mine/compras') ?>" class="quick-card">
             <div class="icon-wrapper" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%)">
                 <i class='bx bx-cart-alt'></i>
             </div>
@@ -379,7 +379,7 @@ $osFinalizadas = count(array_filter($os ?? [], function($o) { return $o->status 
         <?php endif; ?>
 
         <?php if ($podeVerCobrancas): ?>
-        <a href="<?= site_url('mine/cobrancas') ?>" class="quick-card">
+        <a href="<?= base_url('index.php/mine/cobrancas') ?>" class="quick-card">
             <div class="icon-wrapper" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%)">
                 <i class='bx bx-credit-card-front'></i>
             </div>
@@ -389,7 +389,7 @@ $osFinalizadas = count(array_filter($os ?? [], function($o) { return $o->status 
         <?php endif; ?>
 
         <?php if ($podeVerBoletos): ?>
-        <a href="<?= site_url('mine/boletos') ?>" class="quick-card">
+        <a href="<?= base_url('index.php/mine/boletos') ?>" class="quick-card">
             <div class="icon-wrapper" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%)">
                 <i class='bx bx-barcode'></i>
             </div>
@@ -399,7 +399,7 @@ $osFinalizadas = count(array_filter($os ?? [], function($o) { return $o->status 
         <?php endif; ?>
 
         <?php if ($podeVerNotasFiscais): ?>
-        <a href="<?= site_url('mine/notasfiscais') ?>" class="quick-card">
+        <a href="<?= base_url('index.php/mine/notasfiscais') ?>" class="quick-card">
             <div class="icon-wrapper" style="background: linear-gradient(135deg, #30cfd0 0%, #330867 100%)">
                 <i class='bx bx-receipt'></i>
             </div>
@@ -409,7 +409,7 @@ $osFinalizadas = count(array_filter($os ?? [], function($o) { return $o->status 
         <?php endif; ?>
 
         <?php if ($podeVerObras): ?>
-        <a href="<?= site_url('mine/obras') ?>" class="quick-card">
+        <a href="<?= base_url('index.php/mine/obras') ?>" class="quick-card">
             <div class="icon-wrapper" style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%)">
                 <i class='bx bx-building-house'></i>
             </div>
@@ -419,7 +419,7 @@ $osFinalizadas = count(array_filter($os ?? [], function($o) { return $o->status 
         <?php endif; ?>
 
         <?php if ($podeEditarPerfil): ?>
-        <a href="<?= site_url('mine/conta') ?>" class="quick-card">
+        <a href="<?= base_url('index.php/mine/conta') ?>" class="quick-card">
             <div class="icon-wrapper" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)">
                 <i class='bx bx-user-circle'></i>
             </div>
@@ -460,7 +460,7 @@ $osFinalizadas = count(array_filter($os ?? [], function($o) { return $o->status 
             <div class="widget-card">
                 <div class="widget-header">
                     <h5><i class='bx bx-file'></i> Últimas Ordens de Serviço</h5>
-                    <a href="<?= site_url('mine/os') ?>" class="btn btn-small">Ver Todas</a>
+                    <a href="<?= base_url('index.php/mine/os') ?>" class="btn btn-small">Ver Todas</a>
                 </div>
                 <div class="widget-body" style="padding: 0">
                     <?php if (!empty($os)): ?>
@@ -536,7 +536,7 @@ $osFinalizadas = count(array_filter($os ?? [], function($o) { return $o->status 
             <div class="widget-card">
                 <div class="widget-header">
                     <h5><i class='bx bx-cart-alt'></i> Últimas Compras</h5>
-                    <a href="<?= site_url('mine/compras') ?>" class="btn btn-small">Ver Todas</a>
+                    <a href="<?= base_url('index.php/mine/compras') ?>" class="btn btn-small">Ver Todas</a>
                 </div>
                 <div class="widget-body" style="padding: 0">
                     <?php if (!empty($compras)): ?>
@@ -569,7 +569,7 @@ $osFinalizadas = count(array_filter($os ?? [], function($o) { return $o->status 
                                     </span>
                                 </td>
                                 <td>
-                                    <a href="<?= site_url('mine/visualizarCompra/' . $c->idVendas) ?>" class="btn btn-small" title="Visualizar">
+                                    <a href="<?= base_url('index.php/mine/visualizarCompra/' . $c->idVendas) ?>" class="btn btn-small" title="Visualizar">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                 </td>

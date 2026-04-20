@@ -103,7 +103,7 @@
   </style>
 </head>
 
-<body data-theme="<?= isset($configuration['app_theme']) ? $configuration['app_theme'] : 'default' ?>">
+<body data-theme="<?= isset($configuration['app_theme']) ? $configuration['app_theme'] : 'default' ?>" class="portal-tecnico">
   <!--top-Header-menu-->
   <?php
   // Verificar se estamos na área do técnico (Portal do Técnico)
