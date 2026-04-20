@@ -154,6 +154,11 @@
             <div class="widget-title">
                 <span class="icon"><i class="icon-group"></i></span>
                 <h5>Equipe</h5>
+                <div class="buttons">
+                    <a href="<?php echo site_url('obras/equipe/' . $resumo['obra']->id); ?>" class="btn btn-mini btn-primary">
+                        <i class="icon-cog icon-white"></i> Gerenciar Equipe
+                    </a>
+                </div>
             </div>
 
             <div class="widget-content nopadding">
@@ -182,7 +187,13 @@
                             <?php endforeach; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="4" class="text-center">Nenhum técnico alocado.</td>
+                                <td colspan="4" class="text-center">
+                                    <div style="padding: 20px;">
+                                        <i class="icon-info-sign" style="font-size: 24px; color: #999;"></i><br>
+                                        <strong>Nenhum técnico alocado.</strong><br>
+                                        <small>Clique em "Gerenciar Equipe" para adicionar técnicos.</small>
+                                    </div>
+                                </td>
                             </tr>
                         <?php endif; ?>
                     </tbody>
