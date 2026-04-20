@@ -148,7 +148,7 @@ class WebhookManager
         $logs = $this->db->get('webhook_logs')->result();
 
         $total = count($logs);
-        $success = count(array_filter($logs, fn($l) => $l->success));
+        $success = count(array_filter($logs, function($l) { return $l->success; }));
 
         return [
             'total' => $total,
