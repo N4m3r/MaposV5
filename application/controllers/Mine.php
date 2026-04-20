@@ -1064,7 +1064,29 @@ class Mine extends CI_Controller
         );
         $data['chaveFormatada'] = $this->formatarChave($data['pix_key']);
 
-        if ($data['result']->idClientes != $this->session->userdata('cliente_id')) {
+        // Verificar se o cliente tem permissão para ver esta OS
+        $cliente_id = $this->session->userdata('cliente_id');
+        $usuario_cliente_id = $this->session->userdata('usuario_cliente_id');
+        $permissao_os = false;
+
+        // Sistema antigo - verificação direta por cliente_id
+        if ($cliente_id && $data['result']->idClientes == $cliente_id) {
+            $permissao_os = true;
+        }
+
+        // Novo sistema - verificação por CNPJs vinculados ao usuário
+        if (!$permissao_os && $usuario_cliente_id && $this->session->userdata('tipo_acesso') == 'usuario_cliente') {
+            $this->load->model('usuarios_cliente_model');
+            $os_list = $this->usuarios_cliente_model->getOsByCnpjs($usuario_cliente_id);
+            foreach ($os_list as $os_item) {
+                if ($os_item->idOs == $data['result']->idOs) {
+                    $permissao_os = true;
+                    break;
+                }
+            }
+        }
+
+        if (!$permissao_os) {
             $this->session->set_flashdata('error', 'Esta OS não pertence ao cliente logado.');
             redirect('mine/painel');
         }
