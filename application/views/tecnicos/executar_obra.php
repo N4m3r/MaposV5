@@ -341,7 +341,7 @@
                     <h1><i class="icon-play-circle"></i> <?= htmlspecialchars($obra->nome) ?></h1>
                     <p><i class="icon-user"></i> <?= htmlspecialchars($obra->cliente_nome ?? 'Não informado') ?></p>
                 </div>
-                <a href="<?= site_url('tecnicos_admin/minhas_obras') ?>" class="btn-action" style="background: rgba(255,255,255,0.2); color: white;">
+                <a href="<?= site_url('tecnicos/minhas_obras') ?>" class="btn-action" style="background: rgba(255,255,255,0.2); color: white;">
                     <i class="icon-arrow-left"></i> Voltar
                 </a>
             </div>
@@ -518,7 +518,7 @@
                 <div class="registrar-card">
                     <h4><i class="icon-plus-sign"></i> Registrar Atividade</h4>
 
-                    <form action="<?= site_url('tecnicos_admin/adicionar_comentario') ?>" method="post" class="form-modern">
+                    <form action="<?= site_url('tecnicos/api_adicionar_comentario') ?>" method="post" class="form-modern">
                         <input type="hidden" name="obra_id" value="<?= $obra->id ?>">
 
                         <select name="tipo" required>
@@ -544,7 +544,7 @@
                 <button type="button" class="close" data-dismiss="modal" style="color: white;">×</button>
                 <h4><i class="icon-refresh"></i> Atualizar Progresso</h4>
             </div>
-            <form id="form-atualizar-progresso" action="<?= site_url('tecnicos_admin/tecnico_atualizar_etapa') ?>" method="post">
+            <form id="form-atualizar-progresso" action="<?= site_url('tecnicos/api_atualizar_etapa') ?>" method="post">
                 <input type="hidden" name="etapa_id" id="progresso-etapa-id">
                 <div class="modal-body" style="padding: 30px;">
                     <div class="control-group">
@@ -641,7 +641,7 @@
             if (!confirm('Tem certeza que deseja marcar esta etapa como concluída?')) return;
 
             $.ajax({
-                url: '<?= site_url("tecnicos_admin/atualizar_status_etapa") ?>',
+                url: '<?= site_url("tecnicos/api_atualizar_status_etapa") ?>',
                 type: 'POST',
                 data: { etapa_id: etapaId, status: 'concluida' },
                 dataType: 'json',
@@ -661,7 +661,7 @@
         // Carregar tarefas
         function carregarTarefas() {
             $.ajax({
-                url: '<?= site_url("tecnicos_admin/buscar_tarefas_tecnico") ?>',
+                url: '<?= site_url("tecnicos/api_buscar_tarefas") ?>',
                 type: 'GET',
                 data: { obra_id: <?= $obra->id ?> },
                 dataType: 'json',
@@ -753,7 +753,7 @@
             </div>
             <h2 style="color: #666; font-weight: 400; margin-bottom: 15px;">Obra não encontrada</h2>
             <p style="color: #999; margin-bottom: 30px;">Você não tem acesso a esta obra ou ela não existe.</p>
-            <a href="<?= site_url('tecnicos_admin/minhas_obras') ?>" class="btn-action btn-action-primary" style="display: inline-flex; padding: 15px 30px;">
+            <a href="<?= site_url('tecnicos/minhas_obras') ?>" class="btn-action btn-action-primary" style="display: inline-flex; padding: 15px 30px;">
                 <i class="icon-arrow-left"></i> Voltar para Minhas Obras
             </a>
         </div>

@@ -318,8 +318,7 @@
                 </div>
 
                 <!-- Team Members -->
-                <?php foreach ($equipe as $membro): ?
-003e
+                <?php foreach ($equipe as $membro): ?>
                 <div class="team-card" data-nome="<?php echo strtolower($membro->tecnico_nome); ?>" data-funcao="<?php echo $membro->funcao; ?>">
                     <div class="team-card-header">
                         <div class="team-avatar">

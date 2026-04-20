@@ -1347,6 +1347,192 @@ class Tecnicos extends CI_Controller
     }
 
     /**
+     * API - Adicionar comentário/atividade na obra
+     */
+    public function api_adicionar_comentario()
+    {
+        header('Content-Type: application/json');
+
+        $obra_id = $this->input->post('obra_id');
+        $tipo = $this->input->post('tipo');
+        $descricao = $this->input->post('descricao');
+        $tecnico_id = $this->session->userdata('tec_id');
+
+        if (!$obra_id || !$tipo || !$descricao) {
+            echo json_encode(['success' => false, 'message' => 'Dados incompletos']);
+            return;
+        }
+
+        // Verificar se técnico está na equipe
+        $this->db->where(['obra_id' => $obra_id, 'tecnico_id' => $tecnico_id, 'ativo' => 1]);
+        if (!$this->db->get('obra_equipe')->row()) {
+            echo json_encode(['success' => false, 'message' => 'Você não está alocado nesta obra']);
+            return;
+        }
+
+        // Inserir comentário
+        $dados = [
+            'obra_id' => $obra_id,
+            'tecnico_id' => $tecnico_id,
+            'tipo' => $tipo,
+            'descricao' => $descricao,
+            'data_criacao' => date('Y-m-d H:i:s')
+        ];
+
+        // Verificar se tabela existe
+        if (!$this->db->table_exists('obra_comentarios')) {
+            $this->db->query("CREATE TABLE IF NOT EXISTS obra_comentarios (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                obra_id INT NOT NULL,
+                tecnico_id INT NOT NULL,
+                tipo VARCHAR(50) NOT NULL,
+                descricao TEXT NOT NULL,
+                data_criacao DATETIME NOT NULL
+            )");
+        }
+
+        if ($this->db->insert('obra_comentarios', $dados)) {
+            echo json_encode(['success' => true, 'message' => 'Registro salvo com sucesso']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Erro ao salvar']);
+        }
+    }
+
+    /**
+     * API - Atualizar progresso de etapa
+     */
+    public function api_atualizar_etapa()
+    {
+        header('Content-Type: application/json');
+
+        $etapa_id = $this->input->post('etapa_id');
+        $percentual = $this->input->post('percentual');
+        $observacao = $this->input->post('observacao');
+        $tecnico_id = $this->session->userdata('tec_id');
+
+        if (!$etapa_id || $percentual === null) {
+            echo json_encode(['success' => false, 'message' => 'Dados incompletos']);
+            return;
+        }
+
+        // Verificar se técnico tem acesso à etapa
+        $etapa = $this->db->where('id', $etapa_id)->get('obra_etapas')->row();
+        if (!$etapa) {
+            echo json_encode(['success' => false, 'message' => 'Etapa não encontrada']);
+            return;
+        }
+
+        $this->db->where(['obra_id' => $etapa->obra_id, 'tecnico_id' => $tecnico_id, 'ativo' => 1]);
+        if (!$this->db->get('obra_equipe')->row()) {
+            echo json_encode(['success' => false, 'message' => 'Você não tem acesso a esta obra']);
+            return;
+        }
+
+        // Verificar/criar tabela
+        if (!$this->db->table_exists('obra_etapa_progresso')) {
+            $this->db->query("CREATE TABLE IF NOT EXISTS obra_etapa_progresso (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                etapa_id INT NOT NULL,
+                tecnico_id INT NOT NULL,
+                percentual_concluido INT NOT NULL,
+                observacao TEXT,
+                data_registro DATETIME NOT NULL
+            )");
+        }
+
+        // Registrar progresso
+        $dados = [
+            'etapa_id' => $etapa_id,
+            'tecnico_id' => $tecnico_id,
+            'percentual_concluido' => $percentual,
+            'observacao' => $observacao,
+            'data_registro' => date('Y-m-d H:i:s')
+        ];
+
+        if ($this->db->insert('obra_etapa_progresso', $dados)) {
+            // Se completou 100%, marcar como concluída
+            if ($percentual >= 100) {
+                $this->db->where('id', $etapa_id);
+                $this->db->update('obra_etapas', ['status' => 'concluida', 'data_conclusao' => date('Y-m-d')]);
+            }
+            echo json_encode(['success' => true, 'message' => 'Progresso atualizado']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Erro ao atualizar']);
+        }
+    }
+
+    /**
+     * API - Atualizar status da etapa
+     */
+    public function api_atualizar_status_etapa()
+    {
+        header('Content-Type: application/json');
+
+        $etapa_id = $this->input->post('etapa_id');
+        $status = $this->input->post('status');
+        $tecnico_id = $this->session->userdata('tec_id');
+
+        if (!$etapa_id || !$status) {
+            echo json_encode(['success' => false, 'message' => 'Dados incompletos']);
+            return;
+        }
+
+        // Verificar se técnico tem acesso à etapa
+        $etapa = $this->db->where('id', $etapa_id)->get('obra_etapas')->row();
+        if (!$etapa) {
+            echo json_encode(['success' => false, 'message' => 'Etapa não encontrada']);
+            return;
+        }
+
+        $this->db->where(['obra_id' => $etapa->obra_id, 'tecnico_id' => $tecnico_id, 'ativo' => 1]);
+        if (!$this->db->get('obra_equipe')->row()) {
+            echo json_encode(['success' => false, 'message' => 'Você não tem acesso a esta obra']);
+            return;
+        }
+
+        $dados = ['status' => $status];
+        if ($status == 'concluida') {
+            $dados['data_conclusao'] = date('Y-m-d');
+        }
+
+        $this->db->where('id', $etapa_id);
+        if ($this->db->update('obra_etapas', $dados)) {
+            echo json_encode(['success' => true, 'message' => 'Status atualizado']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Erro ao atualizar']);
+        }
+    }
+
+    /**
+     * API - Buscar tarefas do técnico
+     */
+    public function api_buscar_tarefas()
+    {
+        header('Content-Type: application/json');
+
+        $obra_id = $this->input->get('obra_id');
+        $tecnico_id = $this->session->userdata('tec_id');
+
+        if (!$obra_id) {
+            echo json_encode(['success' => false, 'message' => 'Obra não informada']);
+            return;
+        }
+
+        // Verificar se técnico está na equipe
+        $this->db->where(['obra_id' => $obra_id, 'tecnico_id' => $tecnico_id, 'ativo' => 1]);
+        if (!$this->db->get('obra_equipe')->row()) {
+            echo json_encode(['success' => false, 'message' => 'Acesso negado']);
+            return;
+        }
+
+        // Buscar tarefas atribuídas ao técnico
+        $this->db->where(['obra_id' => $obra_id, 'tecnico_id' => $tecnico_id]);
+        $tarefas = $this->db->get('obra_tarefas')->result();
+
+        echo json_encode(['success' => true, 'tarefas' => $tarefas]);
+    }
+
+    /**
      * Salvar foto em base64 para arquivo
      */
     private function _salvar_foto_base64($base64_string, $tipo, $tecnico_id)

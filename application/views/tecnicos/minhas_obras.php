@@ -285,7 +285,7 @@
                     </div>
 
                     <div class="obra-tecnico-actions">
-                        <a href="<?= site_url('tecnicos_admin/tecnico_executar_obra/' . $obra->id) ?>" class="btn-executar">
+                        <a href="<?= site_url('tecnicos/executar_obra/' . $obra->id) ?>" class="btn-executar">
                             <i class="icon-play-circle"></i> Executar Obra
                         </a>
                     </div>

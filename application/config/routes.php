@@ -230,6 +230,10 @@ $route['tecnicos/perfil'] = 'tecnicos/perfil';
 $route['tecnicos/atualizar_foto'] = 'tecnicos/atualizar_foto';
 $route['tecnicos/minhas_obras'] = 'tecnicos/minhas_obras';
 $route['tecnicos/executar_obra/(:num)'] = 'tecnicos/executar_obra/$1';
+$route['tecnicos/api/adicionar_comentario'] = 'tecnicos/api_adicionar_comentario';
+$route['tecnicos/api/atualizar_etapa'] = 'tecnicos/api_atualizar_etapa';
+$route['tecnicos/api/atualizar_status_etapa'] = 'tecnicos/api_atualizar_status_etapa';
+$route['tecnicos/api/buscar_tarefas'] = 'tecnicos/api_buscar_tarefas';
 
 // APIs do Técnico
 $route['tecnicos/api/login'] = 'tecnicos/api_login';
