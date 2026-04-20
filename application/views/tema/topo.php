@@ -106,7 +106,7 @@
 <body data-theme="<?= isset($configuration['app_theme']) ? $configuration['app_theme'] : 'default' ?>">
   <!--top-Header-menu-->
 
-  <?php if ($is_area_tecnico): ?>
+  <?php if (isset($is_area_tecnico) && $is_area_tecnico): ?>
   <!-- Header para Área do Técnico -->
   <div class="navebarn" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
     <div id="user-nav" class="navbar navbar-inverse" style="background: transparent; border: none;">

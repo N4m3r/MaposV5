@@ -240,11 +240,13 @@ class Tecnicos extends CI_Controller
     public function minhas_obras()
     {
         $tecnico_id = $this->session->userdata('tec_id');
+        log_message('info', 'Tecnicos::minhas_obras - tecnico_id da sessao: ' . $tecnico_id);
 
         $this->load->model('obras_model');
 
         // Buscar obras onde o técnico está na equipe usando o model
         $obras = $this->obras_model->getObrasPorTecnico($tecnico_id);
+        log_message('info', 'Tecnicos::minhas_obras - Total de obras retornadas: ' . count($obras));
 
         // Enriquecer dados e calcular estatísticas
         foreach ($obras as $obra) {
@@ -1917,5 +1919,40 @@ class Tecnicos extends CI_Controller
 
         log_message('info', '_salvar_foto_base64 - Foto salva com sucesso: ' . $caminho_relativo);
         return $caminho_relativo;
+    }
+
+    /**
+     * Debug - Verificar dados da equipe da obra
+     */
+    public function debug_equipe($obra_id = null)
+    {
+        header('Content-Type: application/json');
+        $tecnico_id = $this->session->userdata('tec_id');
+
+        $result = [
+            'tecnico_id_sessao' => $tecnico_id,
+            'obra_id_param' => $obra_id,
+        ];
+
+        // Verificar tabela obra_equipe
+        if ($this->db->table_exists('obra_equipe')) {
+            // Buscar todos registros do técnico
+            $this->db->where('tecnico_id', $tecnico_id);
+            $result['registros_tecnico'] = $this->db->get('obra_equipe')->result();
+
+            // Contar registros ativos
+            $this->db->where(['tecnico_id' => $tecnico_id, 'ativo' => 1]);
+            $result['total_ativos'] = $this->db->count_all_results('obra_equipe');
+
+            // Se passou obra_id, verificar especificamente
+            if ($obra_id) {
+                $this->db->where(['obra_id' => $obra_id, 'tecnico_id' => $tecnico_id, 'ativo' => 1]);
+                $result['registro_obra_especifica'] = $this->db->get('obra_equipe')->row();
+            }
+        } else {
+            $result['erro'] = 'Tabela obra_equipe nao existe';
+        }
+
+        echo json_encode($result, JSON_PRETTY_PRINT);
     }
 }

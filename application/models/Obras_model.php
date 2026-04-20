@@ -388,7 +388,10 @@ class Obras_model extends CI_Model
      */
     public function adicionarTecnicoEquipe($obra_id, $tecnico_id, $funcao = 'Técnico')
     {
+        log_message('info', 'adicionarTecnicoEquipe - Iniciando: obra_id=' . $obra_id . ', tecnico_id=' . $tecnico_id . ', funcao=' . $funcao);
+
         if (!$this->tabelaExiste('obra_equipe')) {
+            log_message('info', 'adicionarTecnicoEquipe - Tabela nao existe, criando...');
             $this->criarTabelaEquipe();
         }
 
@@ -401,9 +404,18 @@ class Obras_model extends CI_Model
                 'ativo' => 1,
             ];
 
-            $this->db->insert('obra_equipe', $data);
-            return $this->db->insert_id();
+            $result = $this->db->insert('obra_equipe', $data);
+            $insert_id = $this->db->insert_id();
+
+            log_message('info', 'adicionarTecnicoEquipe - Insert result: ' . ($result ? 'true' : 'false') . ', insert_id: ' . $insert_id);
+
+            if (!$result) {
+                log_message('error', 'adicionarTecnicoEquipe - Erro DB: ' . print_r($this->db->error(), true));
+            }
+
+            return $insert_id;
         } catch (Exception $e) {
+            log_message('error', 'adicionarTecnicoEquipe - Exception: ' . $e->getMessage());
             return false;
         }
     }
@@ -1088,7 +1100,10 @@ class Obras_model extends CI_Model
      */
     public function getObrasPorTecnico($tecnico_id)
     {
+        log_message('info', 'getObrasPorTecnico - tecnico_id: ' . $tecnico_id);
+
         if (!$this->tabelaExiste('obras') || !$this->tabelaExiste('obra_equipe')) {
+            log_message('info', 'getObrasPorTecnico - Tabelas nao existem, usando fallback');
             // Fallback: buscar obras onde o técnico é responsável técnico
             $this->db->where('responsavel_tecnico_id', $tecnico_id);
             $this->db->where('ativo', 1);
@@ -1096,6 +1111,12 @@ class Obras_model extends CI_Model
         }
 
         try {
+            // Verificar se técnico tem registros na equipe
+            $this->db->where('tecnico_id', $tecnico_id);
+            $this->db->where('ativo', 1);
+            $count_equipe = $this->db->count_all_results('obra_equipe');
+            log_message('info', 'getObrasPorTecnico - Registros na equipe para tecnico ' . $tecnico_id . ': ' . $count_equipe);
+
             $this->db->distinct();
             $this->db->select('o.*, c.nomeCliente as cliente_nome, oe.funcao');
             $this->db->from('obras o');
@@ -1107,7 +1128,10 @@ class Obras_model extends CI_Model
             $this->db->order_by('o.data_inicio_contrato', 'DESC');
 
             $query = $this->db->get();
-            return $query ? $query->result() : [];
+            $result = $query ? $query->result() : [];
+            log_message('info', 'getObrasPorTecnico - Obras encontradas: ' . count($result));
+
+            return $result;
         } catch (Exception $e) {
             log_message('error', 'Erro ao buscar obras do técnico: ' . $e->getMessage());
             return [];
