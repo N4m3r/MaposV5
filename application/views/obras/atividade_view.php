@@ -289,10 +289,10 @@
                     <a href="<?php echo site_url('obras/atividades/' . $obra->id); ?>">Atividades</a> &raquo;
                     <span>Detalhes</span>
                 </div>
-                <h1><i class="icon-tasks"></i> <?php echo htmlspecialchars($atividade->titulo); ?></h1>
+                <h1><i class="icon-tasks"></i> <?php echo htmlspecialchars($atividade->titulo ?? 'Atividade #' . $atividade->id); ?></h1>
                 <div class="atividade-subtitle">
                     <i class="icon-user"></i> Técnico: <?php echo $atividade->tecnico_nome ?? 'Não atribuído'; ?> |
-                    <i class="icon-calendar"></i> Data: <?php echo date('d/m/Y', strtotime($atividade->data_atividade)); ?>
+                    <i class="icon-calendar"></i> Data: <?php echo $atividade->data_atividade ? date('d/m/Y', strtotime($atividade->data_atividade)) : 'N/A'; ?>
                 </div>
             </div>
             <div class="atividade-status-section">

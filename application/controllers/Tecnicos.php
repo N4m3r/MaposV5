@@ -1944,6 +1944,267 @@ class Tecnicos extends CI_Controller
     }
 
     /**
+     * Registrar impedimento - Não pode realizar a OS
+     */
+    public function registrar_impedimento()
+    {
+        header('Content-Type: application/json');
+
+        $os_id = $this->input->post('os_id');
+        $motivo = $this->input->post('motivo');
+        $outro_motivo = $this->input->post('outro_motivo');
+        $observacoes = $this->input->post('observacoes');
+        $fotos = $this->input->post('fotos'); // JSON array de base64
+        $latitude = $this->input->post('latitude');
+        $longitude = $this->input->post('longitude');
+
+        $tecnico_id = $this->session->userdata('tec_id');
+
+        if (!$os_id || !$motivo) {
+            echo json_encode(['success' => false, 'message' => 'OS e motivo são obrigatórios']);
+            return;
+        }
+
+        // Verificar se OS existe e pertence ao técnico
+        $os = $this->tec_os_model->getOsById($os_id);
+        if (!$os || $os->tecnico_responsavel != $tecnico_id) {
+            echo json_encode(['success' => false, 'message' => 'OS não encontrada ou não pertence a você']);
+            return;
+        }
+
+        // Criar tabela de impedimentos se não existir
+        if (!$this->db->table_exists('os_impedimentos')) {
+            $this->db->query("CREATE TABLE IF NOT EXISTS os_impedimentos (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                os_id INT NOT NULL,
+                tecnico_id INT NOT NULL,
+                motivo VARCHAR(100) NOT NULL,
+                outro_motivo TEXT,
+                observacoes TEXT,
+                fotos_json TEXT,
+                latitude DECIMAL(10,8),
+                longitude DECIMAL(11,8),
+                status_os VARCHAR(50),
+                created_at DATETIME NOT NULL,
+                INDEX idx_os_id (os_id)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+        }
+
+        // Processar fotos
+        $fotos_salvas = [];
+        if ($fotos) {
+            $fotos_array = json_decode($fotos, true) ?: [];
+            foreach ($fotos_array as $foto_base64) {
+                $caminho = $this->_salvar_foto_base64($foto_base64, 'impedimento', $tecnico_id);
+                if ($caminho) {
+                    $fotos_salvas[] = $caminho;
+                }
+            }
+        }
+
+        // Descrição do motivo para histórico
+        $motivos_desc = [
+            'cliente_ausente' => 'Cliente ausente',
+            'endereco_errado' => 'Endereço incorreto',
+            'ausencia_energia' => 'Ausência de energia elétrica',
+            'clima' => 'Condições climáticas adversas',
+            'falta_acesso' => 'Falta de acesso ao local',
+            'equipamento_incompativel' => 'Equipamento incompatível/não instalado',
+            'material_faltante' => 'Material/componente faltante',
+            'problema_rede' => 'Problema na rede/sinal',
+            'agendado_cliente' => 'Aguardando agendamento com cliente',
+            'outro' => $outro_motivo ?: 'Outro motivo'
+        ];
+
+        $motivo_descricao = $motivos_desc[$motivo] ?? $motivo;
+
+        // Inserir registro de impedimento
+        $dados_impedimento = [
+            'os_id' => $os_id,
+            'tecnico_id' => $tecnico_id,
+            'motivo' => $motivo,
+            'outro_motivo' => ($motivo === 'outro') ? $outro_motivo : null,
+            'observacoes' => $observacoes,
+            'fotos_json' => json_encode($fotos_salvas),
+            'latitude' => $latitude ?: null,
+            'longitude' => $longitude ?: null,
+            'status_os' => $os->status,
+            'created_at' => date('Y-m-d H:i:s')
+        ];
+
+        $this->db->insert('os_impedimentos', $dados_impedimento);
+        $impedimento_id = $this->db->insert_id();
+
+        // Atualizar status da OS para 'Aguardando' ou manter status atual
+        // Opcional: adicionar observação na OS
+        $obs_atual = $os->observacoes ?: '';
+        $nova_obs = $obs_atual . "\n\n[IMPEDIMENTO - " . date('d/m/Y H:i') . "]\n";
+        $nova_obs .= "Motivo: " . $motivo_descricao . "\n";
+        if ($observacoes) {
+            $nova_obs .= "Obs: " . $observacoes . "\n";
+        }
+
+        $this->os_model->edit('os', ['observacoes' => $nova_obs], 'idOs', $os_id);
+
+        log_message('info', "Tecnicos::registrar_impedimento - Impedimento registrado para OS {$os_id}. ID: {$impedimento_id}");
+
+        echo json_encode([
+            'success' => true,
+            'message' => 'Impedimento registrado com sucesso',
+            'impedimento_id' => $impedimento_id,
+            'fotos_salvas' => count($fotos_salvas)
+        ]);
+    }
+
+    /**
+     * Registrar retorno - Não finalizou no mesmo dia
+     */
+    public function registrar_retorno()
+    {
+        header('Content-Type: application/json');
+
+        $os_id = $this->input->post('os_id');
+        $execucao_id = $this->input->post('execucao_id');
+        $motivo = $this->input->post('motivo');
+        $outro_motivo = $this->input->post('outro_motivo');
+        $observacoes = $this->input->post('observacoes');
+        $fotos = $this->input->post('fotos');
+        $latitude = $this->input->post('latitude');
+        $longitude = $this->input->post('longitude');
+
+        $tecnico_id = $this->session->userdata('tec_id');
+
+        if (!$os_id || !$motivo || !$observacoes) {
+            echo json_encode(['success' => false, 'message' => 'OS, motivo e observações são obrigatórios']);
+            return;
+        }
+
+        // Verificar se OS existe e pertence ao técnico
+        $os = $this->tec_os_model->getOsById($os_id);
+        if (!$os || $os->tecnico_responsavel != $tecnico_id) {
+            echo json_encode(['success' => false, 'message' => 'OS não encontrada ou não pertence a você']);
+            return;
+        }
+
+        // Criar tabela de retornos se não existir
+        if (!$this->db->table_exists('os_retornos')) {
+            $this->db->query("CREATE TABLE IF NOT EXISTS os_retornos (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                os_id INT NOT NULL,
+                tecnico_id INT NOT NULL,
+                execucao_id INT,
+                motivo VARCHAR(100) NOT NULL,
+                outro_motivo TEXT,
+                observacoes TEXT NOT NULL,
+                fotos_json TEXT,
+                latitude DECIMAL(10,8),
+                longitude DECIMAL(11,8),
+                data_retorno DATE,
+                status VARCHAR(50) DEFAULT 'pendente',
+                created_at DATETIME NOT NULL,
+                INDEX idx_os_id (os_id)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+        }
+
+        // Processar fotos
+        $fotos_salvas = [];
+        if ($fotos) {
+            $fotos_array = json_decode($fotos, true) ?: [];
+            foreach ($fotos_array as $foto_base64) {
+                $caminho = $this->_salvar_foto_base64($foto_base64, 'retorno', $tecnico_id);
+                if ($caminho) {
+                    $fotos_salvas[] = $caminho;
+                }
+            }
+        }
+
+        // Calcular próximo dia útil
+        $data_retorno = $this->_proximo_dia_util();
+
+        // Descrição do motivo
+        $motivos_desc = [
+            'tempo_excedido' => 'Tempo de atendimento excedido',
+            'complexidade' => 'Serviço mais complexo que o previsto',
+            'falta_material' => 'Falta de material/componente',
+            'equipamento_necessario' => 'Necessidade de equipamento especial',
+            'autorizacao_adicional' => 'Aguardando autorização adicional',
+            'horario_comercial' => 'Horário comercial encerrado',
+            'seguranca' => 'Questões de segurança no local',
+            'outro' => $outro_motivo ?: 'Outro motivo'
+        ];
+
+        $motivo_descricao = $motivos_desc[$motivo] ?? $motivo;
+
+        // Inserir registro de retorno
+        $dados_retorno = [
+            'os_id' => $os_id,
+            'tecnico_id' => $tecnico_id,
+            'execucao_id' => $execucao_id ?: null,
+            'motivo' => $motivo,
+            'outro_motivo' => ($motivo === 'outro') ? $outro_motivo : null,
+            'observacoes' => $observacoes,
+            'fotos_json' => json_encode($fotos_salvas),
+            'latitude' => $latitude ?: null,
+            'longitude' => $longitude ?: null,
+            'data_retorno' => $data_retorno,
+            'status' => 'pendente',
+            'created_at' => date('Y-m-d H:i:s')
+        ];
+
+        $this->db->insert('os_retornos', $dados_retorno);
+        $retorno_id = $this->db->insert_id();
+
+        // Atualizar execução atual se existir
+        if ($execucao_id) {
+            $this->tec_os_model->finalizarExecucao($execucao_id, [
+                'checkout_horario' => date('Y-m-d H:i:s'),
+                'checkout_latitude' => $latitude,
+                'checkout_longitude' => $longitude,
+                'observacoes' => '[RETORNO AGENDADO] ' . $observacoes
+            ]);
+        }
+
+        // Atualizar OS - mudar data para próximo dia útil e adicionar observação
+        $obs_atual = $os->observacoes ?: '';
+        $nova_obs = $obs_atual . "\n\n[RETORNO - " . date('d/m/Y H:i') . "]\n";
+        $nova_obs .= "Motivo: " . $motivo_descricao . "\n";
+        $nova_obs .= "Retorno agendado para: " . date('d/m/Y', strtotime($data_retorno)) . "\n";
+        $nova_obs .= "Obs: " . $observacoes . "\n";
+
+        // Atualizar OS - manter como Em Andamento ou mudar para status específico
+        $this->os_model->edit('os', [
+            'observacoes' => $nova_obs,
+            'dataFinal' => $data_retorno // Atualizar data final para o retorno
+        ], 'idOs', $os_id);
+
+        log_message('info', "Tecnicos::registrar_retorno - Retorno registrado para OS {$os_id}. ID: {$retorno_id}, Data: {$data_retorno}");
+
+        echo json_encode([
+            'success' => true,
+            'message' => 'Retorno agendado com sucesso',
+            'retorno_id' => $retorno_id,
+            'data_retorno' => date('d/m/Y', strtotime($data_retorno)),
+            'fotos_salvas' => count($fotos_salvas)
+        ]);
+    }
+
+    /**
+     * Calcular próximo dia útil
+     */
+    private function _proximo_dia_util()
+    {
+        $data = new DateTime();
+        $data->modify('+1 day');
+
+        // Pular fins de semana
+        while (in_array($data->format('N'), [6, 7])) { // 6 = Sábado, 7 = Domingo
+            $data->modify('+1 day');
+        }
+
+        return $data->format('Y-m-d');
+    }
+
+    /**
      * Debug - Verificar dados da equipe da obra
      */
     public function debug_equipe($obra_id = null)

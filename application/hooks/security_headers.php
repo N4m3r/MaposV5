@@ -22,8 +22,9 @@ function apply_security_headers()
     // Controlar referrer
     header('Referrer-Policy: strict-origin-when-cross-origin');
 
-    // Permissions Policy
-    header('Permissions-Policy: geolocation=(), microphone=(), camera=()');
+    // Permissions Policy - geolocation permitido para funcionamento do app de técnicos
+    // Não definir geolocation aqui pois é configurado no controller Tecnicos
+    header('Permissions-Policy: microphone=(), camera=(self)');
 
     // HSTS em produção
     if (ENVIRONMENT === 'production') {
@@ -33,4 +34,7 @@ function apply_security_headers()
     // Remover headers que identificam o servidor
     header_remove('X-Powered-By');
     header_remove('Server');
+
+    // Remover Feature-Policy obsoleto (substituído por Permissions-Policy)
+    header_remove('Feature-Policy');
 }

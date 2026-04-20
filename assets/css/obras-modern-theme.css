@@ -10,6 +10,21 @@
    VARIÁVEIS ESPECÍFICAS DO SISTEMA DE OBRAS
    ============================================ */
 :root {
+    /* Variáveis de tema padrão (light mode) */
+    --white: #ffffff;
+    --black: #000000;
+    --widget-box: #ffffff;
+    --body-color: #f8f9fa;
+    --border-color: rgba(0,0,0,0.05);
+    --title: #333333;
+    --subtitle: #666666;
+
+    /* Dark mode colors (fallback) */
+    --dark-2: #2d3748;
+    --dark-3: #3d4852;
+    --dark-4: #4a5568;
+    --dark-7: #a0aec0;
+
     /* Cores de status das obras */
     --obra-status-prospeccao: #95a5a6;
     --obra-status-contratada: #f39c12;
@@ -718,4 +733,162 @@ body[data-theme="dark"] .acao-rapida-btn {
 
 body[data-theme="dark"] .acao-rapida-btn:hover {
     background: rgba(255,255,255,0.1);
+}
+
+/* ============================================
+   DARK MODE - NOVAS CLASSES UNIFICADAS
+   ============================================ */
+
+/* Container principal */
+body[data-theme="dark"] .obras-unified-container,
+body[data-theme="dark"] .obra-view-container {
+    color: var(--branco, #caced8);
+}
+
+/* Stats cards */
+body[data-theme="dark"] .obras-stat-card,
+body[data-theme="dark"] .obra-item-card,
+body[data-theme="dark"] .obras-filter-bar,
+body[data-theme="dark"] .obras-empty-state {
+    background: var(--dark-2, #2d3748);
+    border-color: var(--dark-4, #4a5568);
+}
+
+body[data-theme="dark"] .obras-stat-value,
+body[data-theme="dark"] .obra-card-title,
+body[data-theme="dark"] .obra-card-info-value,
+body[data-theme="dark"] .obras-header-title h1,
+body[data-theme="dark"] .obras-empty-title,
+body[data-theme="dark"] .obra-section-title,
+body[data-theme="dark"] .obra-view-title,
+body[data-theme="dark"] .obra-info-value,
+body[data-theme="dark"] .etapa-title,
+body[data-theme="dark"] .atividade-titulo,
+body[data-theme="dark"] .equipe-nome {
+    color: var(--branco, #fff);
+}
+
+body[data-theme="dark"] .obras-stat-label,
+body[data-theme="dark"] .obra-card-cliente,
+body[data-theme="dark"] .obra-card-info-label,
+body[data-theme="dark"] .obras-empty-desc,
+body[data-theme="dark"] .obra-section-title i,
+body[data-theme="dark"] .etapa-meta,
+body[data-theme="dark"] .atividade-meta,
+body[data-theme="dark"] .equipe-funcao {
+    color: var(--dark-7, #a0aec0);
+}
+
+/* Cards internos */
+body[data-theme="dark"] .obra-card-stat,
+body[data-theme="dark"] .obra-card-actions,
+body[data-theme="dark"] .obra-info-item,
+body[data-theme="dark"] .etapa-timeline-content,
+body[data-theme="dark"] .atividade-item-rapido,
+body[data-theme="dark"] .equipe-card {
+    background: var(--dark-3, #3d4852);
+}
+
+/* Inputs e selects */
+body[data-theme="dark"] .obras-filter-input,
+body[data-theme="dark"] .obras-filter-select,
+body[data-theme="dark"] .wizard-form-input,
+body[data-theme="dark"] .wizard-form-select,
+body[data-theme="dark"] .wizard-form-textarea {
+    background: var(--dark-3, #3d4852);
+    border-color: var(--dark-4, #4a5568);
+    color: var(--branco, #fff);
+}
+
+body[data-theme="dark"] .obras-filter-input:focus,
+body[data-theme="dark"] .wizard-form-input:focus {
+    border-color: #667eea;
+}
+
+/* Timeline */
+body[data-theme="dark"] .etapas-timeline::before {
+    background: var(--dark-4, #4a5568);
+}
+
+body[data-theme="dark"] .etapa-timeline-dot {
+    background: var(--dark-4, #4a5568);
+    border-color: var(--dark-2, #2d3748);
+    box-shadow: 0 0 0 3px var(--dark-4, #4a5568);
+}
+
+/* Modal wizard */
+body[data-theme="dark"] .wizard-modal .modal-body {
+    background: var(--dark-2, #2d3748);
+}
+
+body[data-theme="dark"] .wizard-modal .modal-footer {
+    background: var(--dark-3, #3d4852);
+    border-color: var(--dark-4, #4a5568);
+}
+
+body[data-theme="dark"] .wizard-step-label {
+    color: var(--dark-7, #a0aec0);
+}
+
+body[data-theme="dark"] .wizard-step-line {
+    background: var(--dark-4, #4a5568);
+}
+
+body[data-theme="dark"] .wizard-step-number {
+    background: var(--dark-4, #4a5568);
+    color: var(--dark-7, #a0aec0);
+}
+
+body[data-theme="dark"] .wizard-step.active .wizard-step-number {
+    background: #667eea;
+    color: white;
+}
+
+body[data-theme="dark"] .wizard-step.completed .wizard-step-number {
+    background: #27ae60;
+    color: white;
+}
+
+body[data-theme="dark"] .wizard-atividades-lista,
+body[data-theme="dark"] .wizard-atividade-item,
+body[data-theme="dark"] .wizard-resumo {
+    background: var(--dark-3, #3d4852);
+    border-color: var(--dark-4, #4a5568);
+}
+
+body[data-theme="dark"] .wizard-atividade-input {
+    background: var(--dark-2, #2d3748);
+    border-color: var(--dark-4, #4a5568);
+    color: var(--branco, #fff);
+}
+
+/* Progress bars */
+body[data-theme="dark"] .obra-card-progress-bar {
+    background: var(--dark-4, #4a5568);
+}
+
+/* Section cards */
+body[data-theme="dark"] .obra-section-card {
+    background: var(--dark-2, #2d3748);
+    border-color: var(--dark-4, #4a5568);
+}
+
+body[data-theme="dark"] .obra-section-header {
+    border-color: var(--dark-4, #4a5568);
+}
+
+/* Botões secundários */
+body[data-theme="dark"] .obras-filter-btn.secondary,
+body[data-theme="dark"] .wizard-btn-secondary {
+    background: var(--dark-4, #4a5568);
+    color: var(--branco, #fff);
+}
+
+/* Link padrão tema escuro */
+body[data-theme="dark"] a {
+    color: var(--cor-primaria, #667eea);
+}
+
+body[data-theme="dark"] a:hover {
+    color: var(--cor-primaria-hover, #764ba2);
 }

@@ -329,7 +329,7 @@
                         <td><?php echo $atividade->etapa_nome ?? 'N/A'; ?></td>
                         <td><?php echo nl2br(htmlspecialchars($atividade->descricao ?? 'N/A')); ?></td>
                         <td>
-                            <span class="status-badge <?php echo $atividade->status; ?>">
+                            <span class="status-badge <?php echo $atividade->status ?? 'agendada'; ?>">
                                 <?php
                                 $statusLabels = [
                                     'agendada' => 'Agendada',
@@ -338,7 +338,7 @@
                                     'concluida' => 'Concluída',
                                     'cancelada' => 'Cancelada'
                                 ];
-                                echo $statusLabels[$atividade->status] ?? $atividade->status;
+                                echo $statusLabels[$atividade->status] ?? ($atividade->status ?? 'N/A');
                                 ?>
                             </span>
                         </td>

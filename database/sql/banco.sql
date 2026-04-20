@@ -2059,6 +2059,46 @@ CREATE TABLE IF NOT EXISTS `obra_checkins` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- -----------------------------------------------------
+-- Table `os_impedimentos` - Impedimentos para não realização da OS
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `os_impedimentos` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `os_id` INT(11) NOT NULL,
+  `tecnico_id` INT(11) NOT NULL,
+  `motivo` VARCHAR(100) NOT NULL,
+  `outro_motivo` TEXT NULL DEFAULT NULL,
+  `observacoes` TEXT NULL DEFAULT NULL,
+  `fotos_json` TEXT NULL DEFAULT NULL,
+  `latitude` DECIMAL(10,8) NULL DEFAULT NULL,
+  `longitude` DECIMAL(11,8) NULL DEFAULT NULL,
+  `status_os` VARCHAR(50) NULL DEFAULT NULL,
+  `created_at` DATETIME NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `idx_os_id` (`os_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `os_retornos` - Retornos quando não finaliza no mesmo dia
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `os_retornos` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `os_id` INT(11) NOT NULL,
+  `tecnico_id` INT(11) NOT NULL,
+  `execucao_id` INT(11) NULL DEFAULT NULL,
+  `motivo` VARCHAR(100) NOT NULL,
+  `outro_motivo` TEXT NULL DEFAULT NULL,
+  `observacoes` TEXT NOT NULL,
+  `fotos_json` TEXT NULL DEFAULT NULL,
+  `latitude` DECIMAL(10,8) NULL DEFAULT NULL,
+  `longitude` DECIMAL(11,8) NULL DEFAULT NULL,
+  `data_retorno` DATE NULL DEFAULT NULL,
+  `status` VARCHAR(50) DEFAULT 'pendente',
+  `created_at` DATETIME NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `idx_os_id` (`os_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
+
+-- -----------------------------------------------------
 -- Table `obra_materiais` - Materiais da obra
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `obra_materiais` (

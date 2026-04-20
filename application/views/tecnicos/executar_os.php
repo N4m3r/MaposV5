@@ -293,7 +293,10 @@
                                             </span>
                                         </label>
                                     </div>
-                                    <div class="wizard-actions">
+                                    <div class="wizard-actions wizard-actions-etapa1">
+                                        <button type="button" class="btn btn-warning" onclick="abrirModalImpedimento()">
+                                            <i class="bx bx-block"></i> Não Posso Realizar
+                                        </button>
                                         <button type="button" class="btn btn-primary" onclick="wizardProximo()">
                                             <i class="bx bx-right-arrow-alt"></i> Iniciar e Prosseguir
                                         </button>
@@ -503,6 +506,9 @@
                                         <button type="button" class="btn" onclick="wizardAnterior()">
                                             <i class="bx bx-left-arrow-alt"></i> Voltar
                                         </button>
+                                        <button type="button" class="btn btn-warning" onclick="abrirModalRetorno()">
+                                            <i class="bx bx-calendar-event"></i> Retornar Amanhã
+                                        </button>
                                         <button type="button" class="btn btn-success btn-large" onclick="finalizarWizardAtendimento()">
                                             <i class="bx bx-check-double"></i> Finalizar Atendimento
                                         </button>
@@ -516,6 +522,143 @@
             </div>
         </div>
 
+    </div>
+</div>
+
+<!-- Modal de Impedimento - Não pode realizar OS -->
+<div id="modalImpedimento" class="modal-overlay" style="display: none;">
+    <div class="modal-content modal-impedimento">
+        <div class="modal-header">
+            <h4><i class="bx bx-block"></i> Não Foi Possível Realizar a OS</h4>
+            <button type="button" class="modal-close" onclick="fecharModalImpedimento()"><i class="bx bx-x"></i></button>
+        </div>
+        <div class="modal-body">
+            <p class="modal-descricao">Selecione o motivo e adicione evidências fotográficas do impedimento:</p>
+
+            <div class="form-group">
+                <label>Motivo do Impedimento:</label>
+                <select id="impedimentoMotivo" class="span12">
+                    <option value="">-- Selecione o motivo --</option>
+                    <option value="cliente_ausente">Cliente ausente</option>
+                    <option value="endereco_errado">Endereço incorreto</option>
+                    <option value="ausencia_energia">Ausência de energia elétrica</option>
+                    <option value="clima">Condições climáticas adversas</option>
+                    <option value="falta_acesso">Falta de acesso ao local</option>
+                    <option value="equipamento_incompativel">Equipamento incompatível/não instalado</option>
+                    <option value="material_faltante">Material/componente faltante</option>
+                    <option value="problema_rede">Problema na rede/sinal</option>
+                    <option value="agendado_cliente">Aguardando agendamento com cliente</option>
+                    <option value="outro">Outro motivo</option>
+                </select>
+            </div>
+
+            <div class="form-group" id="outroMotivoContainer" style="display: none;">
+                <label>Descreva o motivo:</label>
+                <textarea id="impedimentoOutroMotivo" rows="3" class="span12" placeholder="Descreva detalhadamente o motivo do impedimento..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Observações Adicionais:</label>
+                <textarea id="impedimentoObservacoes" rows="2" class="span12" placeholder="Informações complementares sobre o impedimento..."></textarea>
+            </div>
+
+            <!-- Seleção de Fotos - Galeria ou Câmera -->
+            <div class="form-group">
+                <label>Evidências Fotográficas (Obrigatório):</label>
+                <div class="foto-opcoes">
+                    <button type="button" class="btn-foto-opcao" onclick="abrirCameraImpedimento()">
+                        <i class="bx bx-camera"></i>
+                        <span>Tirar Foto</span>
+                    </button>
+                    <button type="button" class="btn-foto-opcao" onclick="abrirGaleriaImpedimento()">
+                        <i class="bx bx-images"></i>
+                        <span>Galeria</span>
+                    </button>
+                </div>
+                <input type="file" id="impedimentoCameraInput" accept="image/*" capture="environment" style="display: none;" onchange="processarFotoImpedimento(this)">
+                <input type="file" id="impedimentoGaleriaInput" accept="image/*" style="display: none;" onchange="processarFotoImpedimento(this)">
+            </div>
+
+            <!-- Preview das fotos -->
+            <div id="impedimentoFotosPreview" class="fotos-preview-grid"></div>
+            <p id="impedimentoFotosContador" class="fotos-contador"><i class="bx bx-images"></i> 0 fotos</p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn" onclick="fecharModalImpedimento()">Cancelar</button>
+            <button type="button" class="btn btn-danger" onclick="registrarImpedimento()">
+                <i class="bx bx-block"></i> Registrar Impedimento
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Retorno - Não finalizou no mesmo dia -->
+<div id="modalRetorno" class="modal-overlay" style="display: none;">
+    <div class="modal-content modal-retorno">
+        <div class="modal-header">
+            <h4><i class="bx bx-calendar-event"></i> Retornar Amanhã</h4>
+            <button type="button" class="modal-close" onclick="fecharModalRetorno()"><i class="bx bx-x"></i></button>
+        </div>
+        <div class="modal-body">
+            <p class="modal-descricao">Informe o motivo da não finalização e adicione fotos do estado atual:</p>
+
+            <div class="form-group">
+                <label>Motivo da Não Finalização:</label>
+                <select id="retornoMotivo" class="span12">
+                    <option value="">-- Selecione o motivo --</option>
+                    <option value="tempo_excedido">Tempo de atendimento excedido</option>
+                    <option value="complexidade">Serviço mais complexo que o previsto</option>
+                    <option value="falta_material">Falta de material/componente</option>
+                    <option value="equipamento_necessario">Necessidade de equipamento especial</option>
+                    <option value="autorizacao_adicional">Aguardando autorização adicional</option>
+                    <option value="horario_comercial">Horário comercial encerrado</option>
+                    <option value="seguranca">Questões de segurança no local</option>
+                    <option value="outro">Outro motivo</option>
+                </select>
+            </div>
+
+            <div class="form-group" id="retornoOutroMotivoContainer" style="display: none;">
+                <label>Descreva o motivo:</label>
+                <textarea id="retornoOutroMotivo" rows="3" class="span12" placeholder="Descreva detalhadamente o motivo..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Observações sobre o Retorno:</label>
+                <textarea id="retornoObservacoes" rows="3" class="span12" placeholder="Descreva o que foi feito hoje, o que falta fazer, e o que será feito no retorno..."></textarea>
+            </div>
+
+            <!-- Seleção de Fotos -->
+            <div class="form-group">
+                <label>Fotos do Estado Atual:</label>
+                <div class="foto-opcoes">
+                    <button type="button" class="btn-foto-opcao" onclick="abrirCameraRetorno()">
+                        <i class="bx bx-camera"></i>
+                        <span>Tirar Foto</span>
+                    </button>
+                    <button type="button" class="btn-foto-opcao" onclick="abrirGaleriaRetorno()">
+                        <i class="bx bx-images"></i>
+                        <span>Galeria</span>
+                    </button>
+                </div>
+                <input type="file" id="retornoCameraInput" accept="image/*" capture="environment" style="display: none;" onchange="processarFotoRetorno(this)">
+                <input type="file" id="retornoGaleriaInput" accept="image/*" style="display: none;" onchange="processarFotoRetorno(this)">
+            </div>
+
+            <!-- Preview das fotos -->
+            <div id="retornoFotosPreview" class="fotos-preview-grid"></div>
+            <p id="retornoFotosContador" class="fotos-contador"><i class="bx bx-images"></i> 0 fotos</p>
+
+            <div class="alert alert-info">
+                <i class="bx bx-info-circle"></i>
+                <strong>Importante:</strong> Ao registrar o retorno, a OS será reagendada automaticamente para o próximo dia útil disponível.
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn" onclick="fecharModalRetorno()">Cancelar</button>
+            <button type="button" class="btn btn-warning" onclick="registrarRetorno()">
+                <i class="bx bx-calendar-event"></i> Confirmar Retorno Amanhã
+            </button>
+        </div>
     </div>
 </div>
 
@@ -4160,4 +4303,734 @@ function finalizarWizardAtendimento() {
 }
 window.finalizarWizardAtendimento = finalizarWizardAtendimento;
 
-</script></div>
+// ============================================
+// MODAL DE IMPEDIMENTO - NÃO PODE REALIZAR OS
+// ============================================
+
+// Array para armazenar fotos do impedimento
+let impedimentoFotos = [];
+
+function abrirModalImpedimento() {
+    document.getElementById('modalImpedimento').style.display = 'flex';
+    impedimentoFotos = [];
+    atualizarPreviewImpedimento();
+}
+window.abrirModalImpedimento = abrirModalImpedimento;
+
+function fecharModalImpedimento() {
+    document.getElementById('modalImpedimento').style.display = 'none';
+    // Limpar formulário
+    document.getElementById('impedimentoMotivo').value = '';
+    document.getElementById('impedimentoOutroMotivo').value = '';
+    document.getElementById('impedimentoObservacoes').value = '';
+    document.getElementById('outroMotivoContainer').style.display = 'none';
+    impedimentoFotos = [];
+    atualizarPreviewImpedimento();
+}
+window.fecharModalImpedimento = fecharModalImpedimento;
+
+// Mostrar campo de outro motivo quando selecionado
+document.getElementById('impedimentoMotivo')?.addEventListener('change', function() {
+    const outroContainer = document.getElementById('outroMotivoContainer');
+    if (this.value === 'outro') {
+        outroContainer.style.display = 'block';
+    } else {
+        outroContainer.style.display = 'none';
+    }
+});
+
+function abrirCameraImpedimento() {
+    document.getElementById('impedimentoCameraInput').click();
+}
+window.abrirCameraImpedimento = abrirCameraImpedimento;
+
+function abrirGaleriaImpedimento() {
+    document.getElementById('impedimentoGaleriaInput').click();
+}
+window.abrirGaleriaImpedimento = abrirGaleriaImpedimento;
+
+function processarFotoImpedimento(input) {
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            adicionarFotoImpedimento(e.target.result);
+        };
+        reader.readAsDataURL(file);
+    }
+    input.value = ''; // Reset para permitir selecionar a mesma foto
+}
+window.processarFotoImpedimento = processarFotoImpedimento;
+
+function adicionarFotoImpedimento(imagemBase64) {
+    const foto = {
+        id: Date.now() + Math.random(),
+        imagem: imagemBase64,
+        data: new Date().toISOString()
+    };
+    impedimentoFotos.push(foto);
+    atualizarPreviewImpedimento();
+}
+window.adicionarFotoImpedimento = adicionarFotoImpedimento;
+
+function atualizarPreviewImpedimento() {
+    const preview = document.getElementById('impedimentoFotosPreview');
+    const contador = document.getElementById('impedimentoFotosContador');
+
+    if (!preview || !contador) return;
+
+    preview.innerHTML = impedimentoFotos.map(foto => `
+        <div class="foto-preview-item">
+            <img src="${foto.imagem}" alt="Evidência">
+            <button type="button" class="btn-remover-foto" onclick="removerFotoImpedimento(${foto.id})">
+                <i class='bx bx-x'></i>
+            </button>
+        </div>
+    `).join('');
+
+    contador.innerHTML = `<i class='bx bx-images'></i> ${impedimentoFotos.length} foto${impedimentoFotos.length !== 1 ? 's' : ''}`;
+}
+window.atualizarPreviewImpedimento = atualizarPreviewImpedimento;
+
+function removerFotoImpedimento(fotoId) {
+    impedimentoFotos = impedimentoFotos.filter(f => f.id !== fotoId);
+    atualizarPreviewImpedimento();
+}
+window.removerFotoImpedimento = removerFotoImpedimento;
+
+function registrarImpedimento() {
+    const motivo = document.getElementById('impedimentoMotivo').value;
+    const outroMotivo = document.getElementById('impedimentoOutroMotivo').value;
+    const observacoes = document.getElementById('impedimentoObservacoes').value;
+
+    // Validação
+    if (!motivo) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Motivo Obrigatório',
+            text: 'Selecione o motivo do impedimento.'
+        });
+        return;
+    }
+
+    if (motivo === 'outro' && !outroMotivo.trim()) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Descrição Obrigatória',
+            text: 'Descreva o motivo do impedimento.'
+        });
+        return;
+    }
+
+    if (impedimentoFotos.length === 0) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Evidências Obrigatórias',
+            text: 'Adicione pelo menos uma foto como evidência do impedimento.'
+        });
+        return;
+    }
+
+    // Dados para enviar
+    const dados = {
+        os_id: window.osId,
+        motivo: motivo,
+        outro_motivo: outroMotivo,
+        observacoes: observacoes,
+        fotos: impedimentoFotos.map(f => f.imagem),
+        latitude: window.ultimaLatitude || null,
+        longitude: window.ultimaLongitude || null
+    };
+
+    // Mostrar loading
+    Swal.fire({
+        title: 'Registrando Impedimento...',
+        text: 'Por favor aguarde',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        willOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    // Enviar para o servidor
+    fetch('<?php echo site_url('tecnicos/registrar_impedimento'); ?>', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams(dados)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Impedimento Registrado!',
+                text: 'A OS será reagendada.',
+                timer: 2000,
+                showConfirmButton: false
+            }).then(() => {
+                window.location.href = '<?php echo site_url('tecnicos/minhas_os'); ?>';
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro',
+                text: data.message || 'Erro ao registrar impedimento'
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Erro:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Erro',
+            text: 'Erro ao registrar impedimento. Tente novamente.'
+        });
+    });
+}
+window.registrarImpedimento = registrarImpedimento;
+
+// ============================================
+// MODAL DE RETORNO - NÃO FINALIZOU NO MESMO DIA
+// ============================================
+
+let retornoFotos = [];
+
+function abrirModalRetorno() {
+    document.getElementById('modalRetorno').style.display = 'flex';
+    retornoFotos = [];
+    atualizarPreviewRetorno();
+}
+window.abrirModalRetorno = abrirModalRetorno;
+
+function fecharModalRetorno() {
+    document.getElementById('modalRetorno').style.display = 'none';
+    // Limpar formulário
+    document.getElementById('retornoMotivo').value = '';
+    document.getElementById('retornoOutroMotivo').value = '';
+    document.getElementById('retornoObservacoes').value = '';
+    document.getElementById('retornoOutroMotivoContainer').style.display = 'none';
+    retornoFotos = [];
+    atualizarPreviewRetorno();
+}
+window.fecharModalRetorno = fecharModalRetorno;
+
+// Mostrar campo de outro motivo quando selecionado
+document.getElementById('retornoMotivo')?.addEventListener('change', function() {
+    const outroContainer = document.getElementById('retornoOutroMotivoContainer');
+    if (this.value === 'outro') {
+        outroContainer.style.display = 'block';
+    } else {
+        outroContainer.style.display = 'none';
+    }
+});
+
+function abrirCameraRetorno() {
+    document.getElementById('retornoCameraInput').click();
+}
+window.abrirCameraRetorno = abrirCameraRetorno;
+
+function abrirGaleriaRetorno() {
+    document.getElementById('retornoGaleriaInput').click();
+}
+window.abrirGaleriaRetorno = abrirGaleriaRetorno;
+
+function processarFotoRetorno(input) {
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            adicionarFotoRetorno(e.target.result);
+        };
+        reader.readAsDataURL(file);
+    }
+    input.value = '';
+}
+window.processarFotoRetorno = processarFotoRetorno;
+
+function adicionarFotoRetorno(imagemBase64) {
+    const foto = {
+        id: Date.now() + Math.random(),
+        imagem: imagemBase64,
+        data: new Date().toISOString()
+    };
+    retornoFotos.push(foto);
+    atualizarPreviewRetorno();
+}
+window.adicionarFotoRetorno = adicionarFotoRetorno;
+
+function atualizarPreviewRetorno() {
+    const preview = document.getElementById('retornoFotosPreview');
+    const contador = document.getElementById('retornoFotosContador');
+
+    if (!preview || !contador) return;
+
+    preview.innerHTML = retornoFotos.map(foto => `
+        <div class="foto-preview-item">
+            <img src="${foto.imagem}" alt="Foto">
+            <button type="button" class="btn-remover-foto" onclick="removerFotoRetorno(${foto.id})">
+                <i class='bx bx-x'></i>
+            </button>
+        </div>
+    `).join('');
+
+    contador.innerHTML = `<i class='bx bx-images'></i> ${retornoFotos.length} foto${retornoFotos.length !== 1 ? 's' : ''}`;
+}
+window.atualizarPreviewRetorno = atualizarPreviewRetorno;
+
+function removerFotoRetorno(fotoId) {
+    retornoFotos = retornoFotos.filter(f => f.id !== fotoId);
+    atualizarPreviewRetorno();
+}
+window.removerFotoRetorno = removerFotoRetorno;
+
+function registrarRetorno() {
+    const motivo = document.getElementById('retornoMotivo').value;
+    const outroMotivo = document.getElementById('retornoOutroMotivo').value;
+    const observacoes = document.getElementById('retornoObservacoes').value;
+    const execucaoId = window.execucaoAtual?.id;
+
+    if (!motivo) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Motivo Obrigatório',
+            text: 'Selecione o motivo da não finalização.'
+        });
+        return;
+    }
+
+    if (motivo === 'outro' && !outroMotivo.trim()) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Descrição Obrigatória',
+            text: 'Descreva o motivo da não finalização.'
+        });
+        return;
+    }
+
+    if (!observacoes.trim()) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Observações Obrigatórias',
+            text: 'Descreva o que foi feito e o que falta fazer no retorno.'
+        });
+        return;
+    }
+
+    const dados = {
+        os_id: window.osId,
+        execucao_id: execucaoId,
+        motivo: motivo,
+        outro_motivo: outroMotivo,
+        observacoes: observacoes,
+        fotos: retornoFotos.map(f => f.imagem),
+        latitude: window.ultimaLatitude || null,
+        longitude: window.ultimaLongitude || null
+    };
+
+    Swal.fire({
+        title: 'Registrando Retorno...',
+        text: 'Por favor aguarde',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        willOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    fetch('<?php echo site_url('tecnicos/registrar_retorno'); ?>', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams(dados)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Retorno Registrado!',
+                text: 'A OS foi reagendada para amanhã.',
+                timer: 2000,
+                showConfirmButton: false
+            }).then(() => {
+                window.location.href = '<?php echo site_url('tecnicos/minhas_os'); ?>';
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro',
+                text: data.message || 'Erro ao registrar retorno'
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Erro:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Erro',
+            text: 'Erro ao registrar retorno. Tente novamente.'
+        });
+    });
+}
+window.registrarRetorno = registrarRetorno;
+
+</script>
+
+<!-- Estilos dos Modais -->
+<style>
+/* Modal Overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    backdrop-filter: blur(4px);
+}
+
+/* Modal Content */
+.modal-content {
+    background: #fff;
+    border-radius: 16px;
+    max-width: 600px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-30px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.modal-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 16px 16px 0 0;
+}
+
+.modal-header h4 {
+    margin: 0;
+    font-size: 18px;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.modal-header h4 i {
+    font-size: 22px;
+}
+
+.modal-impedimento .modal-header h4 i {
+    color: #e74c3c;
+}
+
+.modal-retorno .modal-header h4 i {
+    color: #f39c12;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #666;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.modal-close:hover {
+    background: #e0e0e0;
+    color: #333;
+}
+
+.modal-body {
+    padding: 24px;
+}
+
+.modal-descricao {
+    color: #666;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    background: #f8f9fa;
+    border-radius: 0 0 16px 16px;
+}
+
+/* Formulários no Modal */
+.modal-body .form-group {
+    margin-bottom: 20px;
+}
+
+.modal-body label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #333;
+    font-size: 14px;
+}
+
+.modal-body select,
+.modal-body textarea {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.3s;
+}
+
+.modal-body select:focus,
+.modal-body textarea:focus {
+    border-color: #3498db;
+    outline: none;
+}
+
+/* Opções de Foto */
+.foto-opcoes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.btn-foto-opcao {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    border: 2px dashed #ccc;
+    border-radius: 12px;
+    background: #f8f9fa;
+    cursor: pointer;
+    transition: all 0.3s;
+    gap: 8px;
+}
+
+.btn-foto-opcao:hover {
+    border-color: #3498db;
+    background: #ebf5fb;
+}
+
+.btn-foto-opcao i {
+    font-size: 32px;
+    color: #3498db;
+}
+
+.btn-foto-opcao span {
+    font-size: 14px;
+    color: #666;
+    font-weight: 500;
+}
+
+/* Preview de Fotos */
+.fotos-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.foto-preview-item {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.foto-preview-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.btn-remover-foto {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 24px;
+    height: 24px;
+    background: rgba(231, 76, 60, 0.9);
+    border: none;
+    border-radius: 50%;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s;
+}
+
+.btn-remover-foto:hover {
+    background: #c0392b;
+    transform: scale(1.1);
+}
+
+.fotos-contador {
+    margin-top: 12px;
+    font-size: 13px;
+    color: #666;
+}
+
+/* Alertas no Modal */
+.modal-body .alert {
+    padding: 16px;
+    border-radius: 8px;
+    margin-top: 16px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.modal-body .alert-info {
+    background: #d1ecf1;
+    border: 1px solid #bee5eb;
+    color: #0c5460;
+}
+
+.modal-body .alert i {
+    font-size: 20px;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .modal-overlay {
+        padding: 10px;
+    }
+
+    .modal-content {
+        max-height: 95vh;
+    }
+
+    .modal-header {
+        padding: 16px;
+    }
+
+    .modal-body {
+        padding: 16px;
+    }
+
+    .modal-footer {
+        padding: 12px 16px;
+        flex-direction: column-reverse;
+    }
+
+    .modal-footer button {
+        width: 100%;
+    }
+
+    .foto-opcoes {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .btn-foto-opcao {
+        padding: 16px;
+    }
+
+    .btn-foto-opcao i {
+        font-size: 24px;
+    }
+
+    .fotos-preview-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Dark Mode Support */
+body[data-theme="dark"] .modal-content {
+    background: #2a2d3e;
+    color: #e8e8e8;
+}
+
+body[data-theme="dark"] .modal-header {
+    background: linear-gradient(135deg, #252a3a 0%, #1a1d29 100%);
+    border-color: #3a3f4f;
+}
+
+body[data-theme="dark"] .modal-header h4 {
+    color: #e8e8e8;
+}
+
+body[data-theme="dark"] .modal-body label {
+    color: #e8e8e8;
+}
+
+body[data-theme="dark"] .modal-body select,
+body[data-theme="dark"] .modal-body textarea {
+    background: #1a1d29;
+    border-color: #3a3f4f;
+    color: #e8e8e8;
+}
+
+body[data-theme="dark"] .modal-footer {
+    background: #252a3a;
+    border-color: #3a3f4f;
+}
+
+body[data-theme="dark"] .btn-foto-opcao {
+    background: #252a3a;
+    border-color: #3a3f4f;
+}
+
+body[data-theme="dark"] .btn-foto-opcao:hover {
+    background: #2d3348;
+    border-color: #4a5070;
+}
+
+body[data-theme="dark"] .btn-foto-opcao span {
+    color: #b0b0b0;
+}
+
+/* Wizard Actions - Melhorado */
+.wizard-actions-etapa1 {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.wizard-actions-etapa1 .btn-warning {
+    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+    color: white;
+    border: none;
+}
+
+.wizard-actions-etapa1 .btn-warning:hover {
+    background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
+}
+</style>
+
+</div>

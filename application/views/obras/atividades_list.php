@@ -690,7 +690,7 @@
             $progressoColor = 'linear-gradient(90deg, #1dd1a1, #10ac84)';
         }
         ?>
-        <div class="atividade-card <?php echo $status_class; ?>" data-status="<?php echo $atividade->status; ?>" data-tipo="<?php echo $atividade->tipo; ?>" data-titulo="<?php echo strtolower($atividade->titulo); ?>">
+        <div class="atividade-card <?php echo $status_class; ?>" data-status="<?php echo $atividade->status ?? 'agendada'; ?>" data-tipo="<?php echo $atividade->tipo ?? 'trabalho'; ?>" data-titulo="<?php echo strtolower($atividade->titulo ?? 'Atividade'); ?>">
             <!-- Visibilidade -->
             <div class="atividade-visibilidade <?php echo $atividade->visivel_cliente ? 'visivel' : 'oculto'; ?>" title="<?php echo $atividade->visivel_cliente ? 'Visível ao cliente' : 'Oculto do cliente'; ?>">
                 <i class="icon-<?php echo $atividade->visivel_cliente ? 'eye-open' : 'eye-close'; ?>"></i>
@@ -700,12 +700,12 @@
                 <div class="atividade-card-title-section">
                     <div class="atividade-card-date">
                         <i class="icon-calendar"></i>
-                        <?php echo date('d/m/Y', strtotime($atividade->data_atividade)); ?>
+                        <?php echo $atividade->data_atividade ? date('d/m/Y', strtotime($atividade->data_atividade)) : 'N/A'; ?>
                     </div>
-                    <h3 class="atividade-card-title"><?php echo htmlspecialchars($atividade->titulo); ?></h3>
+                    <h3 class="atividade-card-title"><?php echo htmlspecialchars($atividade->titulo ?? 'Atividade #' . $atividade->id); ?></h3>
                 </div>
                 <span class="atividade-status-badge <?php echo $status_class; ?>">
-                    <?php echo ucfirst($atividade->status); ?>
+                    <?php echo ucfirst($atividade->status ?? 'agendada'); ?>
                 </span>
             </div>
 
@@ -717,9 +717,9 @@
                 <?php endif; ?>
 
                 <div class="atividade-card-meta">
-                    <div class="atividade-meta-item tipo-<?php echo $atividade->tipo; ?>">
+                    <div class="atividade-meta-item tipo-<?php echo $atividade->tipo ?? 'trabalho'; ?>">
                         <i class="<?php echo $tipo_icon; ?>"></i>
-                        <span><?php echo ucfirst($atividade->tipo); ?></span>
+                        <span><?php echo ucfirst($atividade->tipo ?? 'trabalho'); ?></span>
                     </div>
                     <?php if ($atividade->tecnico_nome): ?>
                     <div class="atividade-meta-item">

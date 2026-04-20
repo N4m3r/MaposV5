@@ -1,667 +1,781 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
 
-<!-- Tema Moderno Obras -->
+<!-- Tema Moderno Obras - CSS Unificado -->
 <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/obras-modern-theme.css">
 
 <style>
-.obras-dashboard { padding: 20px; }
-.stats-cards { display: flex; gap: 20px; margin-bottom: 25px; flex-wrap: wrap; }
-.stat-card {
-    flex: 1;
-    min-width: 200px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 12px;
-    padding: 20px;
-    color: white;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    transition: transform 0.2s;
-}
-.stat-card:hover { transform: translateY(-3px); }
-.stat-card.success { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
-.stat-card.warning { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
-.stat-card.info { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
-.stat-number { font-size: 36px; font-weight: bold; margin-bottom: 5px; }
-.stat-label { font-size: 14px; opacity: 0.9; }
-.stat-icon { float: right; font-size: 40px; opacity: 0.3; margin-top: -10px; }
+/* ============================================
+   SISTEMA DE OBRAS - TEMA UNIFICADO
+   Suporte completo a Dark/Light Mode
+   ============================================ */
 
-.filter-bar {
-    background: var(--widget-box, #f8f9fa);
-    border-radius: 10px;
-    padding: 20px;
-    margin-bottom: 25px;
+/* Container principal */
+.obras-unified-container {
+    padding: 24px;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+/* Header principal */
+.obras-main-header {
+    background: var(--gradient-primary, linear-gradient(135deg, #667eea 0%, #764ba2 100%));
+    border-radius: var(--radius-xl, 20px);
+    padding: 32px;
+    color: white;
+    margin-bottom: 30px;
+    box-shadow: var(--shadow-xl, 0 20px 40px rgba(0,0,0,0.15));
+    position: relative;
+    overflow: hidden;
+}
+
+.obras-main-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 500px;
+    height: 500px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.obras-header-content {
+    position: relative;
+    z-index: 1;
     display: flex;
-    gap: 15px;
-    align-items: center;
+    justify-content: space-between;
+    align-items: flex-start;
     flex-wrap: wrap;
-    border: 1px solid rgba(0,0,0,0.05);
-}
-.filter-bar select, .filter-bar input {
-    border-radius: 8px;
-    border: 2px solid rgba(0,0,0,0.1);
-    padding: 10px 15px;
-    font-size: 14px;
-    background: var(--widget-box, #fff);
-    color: var(--title, #333);
-}
-.filter-bar .btn-filter {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    padding: 10px 25px;
-    border-radius: 8px;
-    font-weight: 600;
-    transition: all 0.3s;
-}
-.filter-bar .btn-filter:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    gap: 20px;
 }
 
-.obras-grid-modern {
+.obras-header-title h1 {
+    margin: 0 0 8px 0;
+    font-size: 32px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.obras-header-title p {
+    margin: 0;
+    opacity: 0.9;
+    font-size: 16px;
+}
+
+/* Stats Cards Modernos */
+.obras-stats-row {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
     margin-bottom: 30px;
 }
-.obra-card {
-    background: var(--widget-box, white);
-    border-radius: 15px;
-    box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+
+.obras-stat-card {
+    background: var(--widget-box, #ffffff);
+    border-radius: var(--radius-lg, 16px);
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: var(--shadow-md, 0 4px 6px rgba(0,0,0,0.07));
+    border: 1px solid var(--border-color, rgba(0,0,0,0.05));
+    transition: all var(--transition-normal, 0.3s ease);
+}
+
+.obras-stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg, 0 10px 25px rgba(0,0,0,0.1));
+}
+
+.obras-stat-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-md, 12px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: white;
+    flex-shrink: 0;
+}
+
+.obras-stat-icon.blue { background: var(--gradient-primary, linear-gradient(135deg, #667eea 0%, #764ba2 100%)); }
+.obras-stat-icon.green { background: var(--gradient-success, linear-gradient(135deg, #11998e 0%, #38ef7d 100%)); }
+.obras-stat-icon.orange { background: var(--gradient-warning, linear-gradient(135deg, #feca57 0%, #ff9f43 100%)); }
+.obras-stat-icon.red { background: var(--gradient-danger, linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%)); }
+.obras-stat-icon.cyan { background: var(--gradient-info, linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)); }
+
+.obras-stat-info { flex: 1; }
+.obras-stat-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--title, #333);
+    line-height: 1;
+    margin-bottom: 4px;
+}
+.obras-stat-label {
+    font-size: 14px;
+    color: var(--subtitle, #666);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Barra de filtros moderna */
+.obras-filter-bar {
+    background: var(--widget-box, #f8f9fa);
+    border-radius: var(--radius-lg, 16px);
+    padding: 20px 24px;
+    margin-bottom: 24px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+    border: 1px solid var(--border-color, rgba(0,0,0,0.05));
+    box-shadow: var(--shadow-sm, 0 2px 4px rgba(0,0,0,0.05));
+}
+
+.obras-filter-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.obras-filter-group label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--title, #333);
+    white-space: nowrap;
+}
+
+.obras-filter-input,
+.obras-filter-select {
+    padding: 12px 16px;
+    border-radius: var(--radius-md, 10px);
+    border: 2px solid var(--border-color, #e0e0e0);
+    background: var(--widget-box, #fff);
+    color: var(--title, #333);
+    font-size: 14px;
+    min-width: 180px;
+    transition: all var(--transition-fast, 0.15s ease);
+}
+
+.obras-filter-input:focus,
+.obras-filter-select:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+.obras-filter-btn {
+    padding: 12px 24px;
+    border-radius: var(--radius-md, 10px);
+    border: none;
+    background: var(--gradient-primary, linear-gradient(135deg, #667eea 0%, #764ba2 100%));
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all var(--transition-normal, 0.3s ease);
+}
+
+.obras-filter-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+}
+
+.obras-filter-btn.secondary {
+    background: var(--body-color, #6c757d);
+}
+
+.obras-filter-btn.secondary:hover {
+    background: #5a6268;
+}
+
+.obras-add-btn {
+    margin-left: auto;
+    padding: 12px 28px;
+    background: var(--gradient-success, linear-gradient(135deg, #11998e 0%, #38ef7d 100%));
+}
+
+.obras-add-btn:hover {
+    box-shadow: 0 8px 20px rgba(17, 153, 142, 0.3);
+}
+
+/* Grid de cards de obras */
+.obras-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 24px;
+}
+
+/* Card de obra individual */
+.obra-item-card {
+    background: var(--widget-box, #ffffff);
+    border-radius: var(--radius-xl, 20px);
     overflow: hidden;
-    transition: all 0.3s ease;
-    border: 1px solid rgba(0,0,0,0.05);
+    box-shadow: var(--shadow-md, 0 4px 6px rgba(0,0,0,0.07));
+    border: 1px solid var(--border-color, rgba(0,0,0,0.05));
+    transition: all var(--transition-normal, 0.3s ease);
+    display: flex;
+    flex-direction: column;
 }
-.obra-card:hover {
+
+.obra-item-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    box-shadow: var(--shadow-xl, 0 20px 40px rgba(0,0,0,0.12));
 }
-.obra-header {
-    padding: 20px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+.obra-card-header {
+    padding: 24px;
+    background: var(--gradient-primary, linear-gradient(135deg, #667eea 0%, #764ba2 100%));
     color: white;
     position: relative;
 }
-.obra-header.andamento { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
-.obra-header.concluida { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
-.obra-header.paralisada { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
-.obra-header.prospeccao { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: #333; }
-.obra-status-badge {
+
+.obra-card-header.andamento {
+    background: var(--gradient-info, linear-gradient(135deg, #4facfe 0%, #00f2fe 100%));
+}
+
+.obra-card-header.concluida {
+    background: var(--gradient-success, linear-gradient(135deg, #11998e 0%, #38ef7d 100%));
+}
+
+.obra-card-header.paralisada {
+    background: var(--gradient-danger, linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%));
+}
+
+.obra-card-header.prospeccao {
+    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+    color: #333;
+}
+
+.obra-card-status-badge {
     position: absolute;
-    top: 15px;
-    right: 15px;
+    top: 16px;
+    right: 16px;
     background: rgba(255,255,255,0.25);
-    padding: 5px 12px;
+    padding: 6px 14px;
     border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
+    font-size: 11px;
+    font-weight: 700;
     text-transform: uppercase;
+    letter-spacing: 0.5px;
     backdrop-filter: blur(10px);
 }
-.obra-title {
+
+.obra-card-title {
     font-size: 20px;
     font-weight: 700;
-    margin-bottom: 5px;
+    margin: 0 0 8px 0;
     line-height: 1.3;
+    padding-right: 80px;
 }
-.obra-cliente {
+
+.obra-card-cliente {
     font-size: 14px;
     opacity: 0.9;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
-.obra-body { padding: 20px; }
-.obra-info-row {
+
+.obra-card-body {
+    padding: 24px;
+    flex: 1;
+}
+
+.obra-card-info-row {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 15px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid rgba(0,0,0,0.05);
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-color, rgba(0,0,0,0.05));
 }
-.obra-info-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-.obra-info-label { color: var(--subtitle, #888); font-size: 13px; }
-.obra-info-value { font-weight: 600; color: var(--title, #333); font-size: 14px; }
-.obra-progress-section { margin: 20px 0; }
-.obra-progress-bar {
-    height: 10px;
-    background: rgba(0,0,0,0.08);
+
+.obra-card-info-row:last-child {
+    border-bottom: none;
+}
+
+.obra-card-info-label {
+    font-size: 13px;
+    color: var(--subtitle, #888);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.obra-card-info-value {
+    font-weight: 600;
+    color: var(--title, #333);
+    font-size: 14px;
+}
+
+/* Progresso no card */
+.obra-card-progress {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color, rgba(0,0,0,0.05));
+}
+
+.obra-card-progress-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 13px;
+}
+
+.obra-card-progress-label {
+    color: var(--subtitle, #666);
+    font-weight: 600;
+}
+
+.obra-card-progress-value {
+    color: #667eea;
+    font-weight: 700;
+}
+
+.obra-card-progress-bar {
+    height: 8px;
+    background: var(--body-color, #e9ecef);
     border-radius: 10px;
     overflow: hidden;
-    margin-bottom: 8px;
 }
-.obra-progress-fill {
+
+.obra-card-progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    background: var(--gradient-primary, linear-gradient(90deg, #667eea 0%, #764ba2 100%));
     border-radius: 10px;
     transition: width 0.5s ease;
 }
-.obra-progress-text {
+
+/* Estatísticas rápidas no card */
+.obra-card-stats {
     display: flex;
-    justify-content: space-between;
-    font-size: 13px;
-    color: var(--subtitle, #666);
+    gap: 16px;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color, rgba(0,0,0,0.05));
 }
-.obra-stats {
-    display: flex;
-    gap: 15px;
-    margin-top: 15px;
-    padding-top: 15px;
-    border-top: 1px solid rgba(0,0,0,0.05);
-}
-.obra-stat {
+
+.obra-card-stat {
     flex: 1;
     text-align: center;
+    padding: 12px;
+    background: var(--body-color, #f8f9fa);
+    border-radius: var(--radius-md, 10px);
 }
-.obra-stat-number {
-    font-size: 22px;
+
+.obra-card-stat-value {
+    font-size: 20px;
     font-weight: 700;
     color: #667eea;
+    display: block;
 }
-.obra-stat-label { font-size: 11px; color: var(--subtitle, #888); text-transform: uppercase; }
-.obra-actions {
+
+.obra-card-stat-label {
+    font-size: 11px;
+    color: var(--subtitle, #888);
+    text-transform: uppercase;
+}
+
+/* Ações do card */
+.obra-card-actions {
     display: flex;
     gap: 8px;
-    padding: 15px 20px;
-    background: rgba(0,0,0,0.02);
-    border-top: 1px solid rgba(0,0,0,0.05);
-    flex-wrap: wrap;
+    padding: 16px 24px;
+    background: var(--body-color, #f8f9fa);
+    border-top: 1px solid var(--border-color, rgba(0,0,0,0.05));
 }
-.obra-btn-action {
+
+.obra-card-btn {
     flex: 1;
     padding: 10px;
-    border-radius: 8px;
+    border-radius: var(--radius-md, 10px);
     border: none;
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 5px;
+    gap: 6px;
     text-decoration: none;
+    transition: all var(--transition-fast, 0.15s ease);
     color: white;
 }
-.obra-btn-action:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    color: white;
-    text-decoration: none;
-}
-.obra-btn-view { background: #667eea; }
-.obra-btn-etapas { background: #9b59b6; }
-.obra-btn-relatorio { background: #f39c12; }
-.obra-btn-edit { background: #f093fb; color: #333; }
-.obra-btn-delete { background: #f5576c; }
 
-.empty-state-modern {
-    text-align: center;
-    padding: 60px 20px;
-    background: var(--widget-box, white);
-    border-radius: 15px;
-    box-shadow: 0 2px 20px rgba(0,0,0,0.08);
-}
-.empty-state-icon {
-    font-size: 80px;
-    color: var(--subtitle, #ddd);
-    margin-bottom: 20px;
-}
-.empty-state h3 { color: var(--title, #666); margin-bottom: 10px; }
-.empty-state p { color: var(--subtitle, #999); margin-bottom: 25px; }
-
-.view-toggle {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-.view-toggle-btn {
-    padding: 10px 20px;
-    border-radius: 8px;
-    border: 2px solid #667eea;
-    background: transparent;
-    color: #667eea;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s;
-}
-.view-toggle-btn.active {
+.obra-card-btn.view {
     background: #667eea;
-    color: white;
 }
 
-.obras-table-view { display: none; }
-.obras-table-view.active { display: block; }
-.obras-grid-view.active { display: grid; }
-
-.quick-actions {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    z-index: 1000;
+.obra-card-btn.view:hover {
+    background: #5568d3;
+    transform: translateY(-2px);
 }
-.quick-actions-btn {
-    width: 60px;
-    height: 60px;
+
+.obra-card-btn.edit {
+    background: #f39c12;
+}
+
+.obra-card-btn.edit:hover {
+    background: #e67e22;
+    transform: translateY(-2px);
+}
+
+/* Empty state */
+.obras-empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    background: var(--widget-box, white);
+    border-radius: var(--radius-xl, 20px);
+    box-shadow: var(--shadow-md, 0 4px 6px rgba(0,0,0,0.07));
+}
+
+.obras-empty-icon {
+    width: 120px;
+    height: 120px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    font-size: 24px;
-    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
-    cursor: pointer;
-    transition: all 0.3s;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
     display: flex;
     align-items: center;
     justify-content: center;
-}
-.quick-actions-btn:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 30px rgba(102, 126, 234, 0.5);
-}
-
-/* Dark theme compatibility */
-body[data-theme="dark"] .filter-bar,
-body[data-theme="dark"] .obra-card,
-body[data-theme="dark"] .empty-state-modern {
-    background: var(--dark-2, #272835);
-    border-color: rgba(255,255,255,0.05);
+    margin: 0 auto 30px;
+    font-size: 60px;
+    color: #667eea;
 }
 
-body[data-theme="dark"] .filter-bar input,
-body[data-theme="dark"] .filter-bar select {
-    background: var(--dark-1, #14141a);
-    border-color: rgba(255,255,255,0.1);
-    color: var(--branco, #caced8);
+.obras-empty-title {
+    font-size: 24px;
+    color: var(--title, #333);
+    margin-bottom: 10px;
 }
 
-body[data-theme="dark"] .obra-info-value {
-    color: var(--branco, #caced8);
+.obras-empty-desc {
+    color: var(--subtitle, #666);
+    margin-bottom: 30px;
+    font-size: 16px;
 }
 
-body[data-theme="dark"] .obra-progress-bar {
-    background: rgba(255,255,255,0.1);
+/* Paginação */
+.obras-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-top: 40px;
+    padding: 20px;
+}
+
+/* ============================================
+   DARK MODE SUPPORT
+   ============================================ */
+
+[data-theme="dark"] .obras-stat-card,
+[data-theme="dark"] .obra-item-card,
+[data-theme="dark"] .obras-filter-bar,
+[data-theme="dark"] .obras-empty-state {
+    background: var(--dark-2, #2d3748);
+    border-color: var(--dark-4, #4a5568);
+}
+
+[data-theme="dark"] .obras-stat-value,
+[data-theme="dark"] .obra-card-title,
+[data-theme="dark"] .obra-card-info-value,
+[data-theme="dark"] .obras-filter-group label,
+[data-theme="dark"] .obras-header-title h1,
+[data-theme="dark"] .obras-empty-title {
+    color: var(--white, #fff);
+}
+
+[data-theme="dark"] .obras-stat-label,
+[data-theme="dark"] .obra-card-cliente,
+[data-theme="dark"] .obra-card-info-label,
+[data-theme="dark"] .obras-empty-desc,
+[data-theme="dark"] .obra-card-progress-label {
+    color: var(--dark-7, #a0aec0);
+}
+
+[data-theme="dark"] .obras-filter-input,
+[data-theme="dark"] .obras-filter-select {
+    background: var(--dark-3, #3d4852);
+    border-color: var(--dark-4, #4a5568);
+    color: var(--white, #fff);
+}
+
+[data-theme="dark"] .obras-filter-input:focus,
+[data-theme="dark"] .obras-filter-select:focus {
+    border-color: #667eea;
+}
+
+[data-theme="dark"] .obra-card-stat,
+[data-theme="dark"] .obra-card-actions {
+    background: var(--dark-3, #3d4852);
+}
+
+[data-theme="dark"] .obra-card-progress-bar {
+    background: var(--dark-4, #4a5568);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .obras-unified-container { padding: 16px; }
+    .obras-header-content { flex-direction: column; }
+    .obras-header-title h1 { font-size: 24px; }
+    .obras-stats-row { grid-template-columns: repeat(2, 1fr); }
+    .obras-filter-bar { flex-direction: column; align-items: stretch; }
+    .obras-add-btn { margin-left: 0; width: 100%; justify-content: center; }
+    .obras-cards-grid { grid-template-columns: 1fr; }
+    .obra-card-actions { flex-wrap: wrap; }
 }
 </style>
 
-<div class="obras-modern-container obras-dashboard">
-    <!-- Header com Ações Principais -->
-    <div class="obra-card-modern animacao-entrada">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
-            <div>
-                <h2 style="margin: 0; font-size: 28px; color: inherit;">
-                    <i class="icon-building" style="color: #667eea;"></i>
-                    Gestão de Obras
-                </h2>
-                <p style="margin: 5px 0 0 0; opacity: 0.8;">Controle e acompanhamento de todas as obras</p>
+<div class="obras-unified-container">
+    <!-- Header Principal -->
+    <div class="obras-main-header">
+        <div class="obras-header-content">
+            <div class="obras-header-title">
+                <h1><i class="icon-building"></i> Gerenciamento de Obras</h1>
+                <p>Acompanhe e gerencie todas as obras do sistema</p>
             </div>
-            <div class="acoes-rapidas" style="margin: 0;">
-                <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cObras')): ?>
-                    <a href="<?php echo site_url('obras/adicionar'); ?>" class="btn-moderno btn-moderno-primary">
-                        <i class="icon-plus"></i> Nova Obra
-                    </a>
-                <?php endif; ?>
-                <a href="<?php echo site_url('obras/relatorios'); ?>" class="btn-moderno btn-moderno-warning">
-                    <i class="icon-file-alt"></i> Relatórios
-                </a>
-                <a href="<?php echo site_url('tecnicos_admin'); ?>" class="acao-rapida-btn">
-                    <i class="icon-group"></i> Equipe
-                </a>
-                <a href="<?php echo site_url('clientes'); ?>" class="acao-rapida-btn">
-                    <i class="icon-user"></i> Clientes
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Stats Cards -->
-    <div class="stats-cards">
-        <div class="stat-card">
-            <i class="icon-building stat-icon"></i>
-            <div class="stat-number"><?php echo count($results); ?></div>
-            <div class="stat-label">Total de Obras</div>
-        </div>
-        <div class="stat-card info">
-            <i class="icon-refresh stat-icon"></i>
-            <div class="stat-number">
-                <?php
-                $em_andamento = array_filter($results ?? [], function($o) { return $o->status == 'Em Andamento'; });
-                echo count($em_andamento);
-                ?>
-            </div>
-            <div class="stat-label">Em Andamento</div>
-        </div>
-        <div class="stat-card success">
-            <i class="icon-check stat-icon"></i>
-            <div class="stat-number">
-                <?php
-                $concluidas = array_filter($results ?? [], function($o) { return in_array($o->status, ['Concluida', 'Concluída']); });
-                echo count($concluidas);
-                ?>
-            </div>
-            <div class="stat-label">Concluídas</div>
-        </div>
-        <div class="stat-card warning">
-            <i class="icon-group stat-icon"></i>
-            <div class="stat-number">
-                <?php
-                $total_progresso = 0;
-                $count = count($results ?? []);
-                foreach ($results ?? [] as $r) {
-                    $total_progresso += ($r->percentual_concluido ?? 0);
-                }
-                echo $count > 0 ? round($total_progresso / $count) : 0;
-                ?>%
-            </div>
-            <div class="stat-label">Progresso Médio</div>
-        </div>
-    </div>
-
-    <!-- Filter Bar -->
-    <div class="filter-bar">
-        <i class="icon-filter" style="font-size: 20px; color: #667eea;"></i>
-        <select name="status" id="filterStatus" onchange="aplicarFiltros()">
-            <option value="">Todos os Status</option>
-            <option value="Prospeccao" <?php echo $this->input->get('status') == 'Prospeccao' ? 'selected' : ''; ?>>Prospecção</option>
-            <option value="Em Andamento" <?php echo $this->input->get('status') == 'Em Andamento' ? 'selected' : ''; ?>>Em Andamento</option>
-            <option value="Paralisada" <?php echo $this->input->get('status') == 'Paralisada' ? 'selected' : ''; ?>>Paralisada</option>
-            <option value="Concluida" <?php echo in_array($this->input->get('status'), ['Concluida', 'Concluída']) ? 'selected' : ''; ?>>Concluída</option>
-        </select>
-        <input type="text" id="filterCliente" placeholder="Buscar por cliente..." value="<?php echo $this->input->get('cliente'); ?>">
-        <input type="text" id="filterObra" placeholder="Buscar por nome da obra..." value="<?php echo $this->input->get('obra'); ?>">
-        <button class="btn-filter" onclick="aplicarFiltros()">
-            <i class="icon-search"></i> Buscar
-        </button>
-        <?php if ($this->input->get()): ?>
-            <a href="<?php echo site_url('obras'); ?>" class="btn" style="margin-left: auto;">
-                <i class="icon-refresh"></i> Limpar Filtros
+            <a href="<?php echo site_url('obras/adicionar'); ?>" class="obras-filter-btn obras-add-btn">
+                <i class="icon-plus"></i> Nova Obra
             </a>
-        <?php endif; ?>
-    </div>
-
-    <!-- View Toggle -->
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h3 style="margin: 0; color: inherit;">
-            <i class="icon-building" style="color: #667eea;"></i>
-            Obras Cadastradas
-        </h3>
-        <div class="view-toggle">
-            <button class="view-toggle-btn active" onclick="toggleView('grid')">
-                <i class="icon-th-large"></i> Cards
-            </button>
-            <button class="view-toggle-btn" onclick="toggleView('table')">
-                <i class="icon-list"></i> Lista
-            </button>
         </div>
     </div>
 
-    <!-- Grid View -->
-    <div id="gridView" class="obras-grid-view active">
-        <?php if (isset($results) && count($results) > 0): ?>
-            <div class="obras-grid-modern">
-                <?php foreach ($results as $r): ?>
-                    <?php
-                    $headerClass = 'prospeccao';
-                    if ($r->status == 'Em Andamento') $headerClass = 'andamento';
-                    elseif (in_array($r->status, ['Concluida', 'Concluída'])) $headerClass = 'concluida';
-                    elseif ($r->status == 'Paralisada') $headerClass = 'paralisada';
-                    ?>
-                    <div class="obra-card animacao-entrada">
-                        <div class="obra-header <?php echo $headerClass; ?>">
-                            <span class="obra-status-badge"><?php echo $r->status; ?></span>
-                            <div class="obra-title"><?php echo htmlspecialchars($r->nome); ?></div>
-                            <div class="obra-cliente">
-                                <i class="icon-user"></i> <?php echo htmlspecialchars($r->cliente_nome ?? 'Cliente não definido'); ?>
-                            </div>
-                        </div>
-                        <div class="obra-body">
-                            <div class="obra-info-row">
-                                <div>
-                                    <div class="obra-info-label">Previsão de Término</div>
-                                    <div class="obra-info-value">
-                                        <i class="icon-calendar"></i>
-                                        <?php echo $r->data_fim_prevista ? date('d/m/Y', strtotime($r->data_fim_prevista)) : 'Não definida'; ?>
-                                    </div>
-                                </div>
-                                <div style="text-align: right;">
-                                    <div class="obra-info-label">Valor do Contrato</div>
-                                    <div class="obra-info-value" style="color: #667eea; font-size: 18px;">
-                                        R$ <?php echo number_format($r->valor_contrato ?? 0, 2, ',', '.'); ?>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="obra-progress-section">
-                                <div class="obra-progress-text">
-                                    <span>Progresso</span>
-                                    <span><?php echo $r->percentual_concluido ?? 0; ?>%</span>
-                                </div>
-                                <div class="obra-progress-bar">
-                                    <div class="obra-progress-fill" style="width: <?php echo $r->percentual_concluido ?? 0; ?>%;"></div>
-                                </div>
-                            </div>
-
-                            <div class="obra-stats">
-                                <div class="obra-stat">
-                                    <div class="obra-stat-number">
-                                        <?php echo $r->total_etapas ?? 0; ?>
-                                    </div>
-                                    <div class="obra-stat-label">Etapas</div>
-                                </div>
-                                <div class="obra-stat">
-                                    <div class="obra-stat-number">
-                                        <?php echo $r->total_equipe ?? 0; ?>
-                                    </div>
-                                    <div class="obra-stat-label">Equipe</div>
-                                </div>
-                                <div class="obra-stat">
-                                    <div class="obra-stat-number">
-                                        <?php
-                                        if ($r->data_fim_prevista) {
-                                            $hoje = new DateTime();
-                                            $previsto = new DateTime($r->data_fim_prevista);
-                                            $dias = $hoje->diff($previsto)->format('%r%a');
-                                            echo $dias > 0 ? $dias : 0;
-                                        } else {
-                                            echo '-';
-                                        }
-                                        ?>
-                                    </div>
-                                    <div class="obra-stat-label">Dias Restantes</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="obra-actions">
-                            <a href="<?php echo site_url('obras/visualizar/' . $r->id); ?>" class="obra-btn-action obra-btn-view" title="Visualizar">
-                                <i class="icon-eye-open"></i>
-                            </a>
-                            <a href="<?php echo site_url('obras/etapas/' . $r->id); ?>" class="obra-btn-action obra-btn-etapas" title="Etapas">
-                                <i class="icon-tasks"></i>
-                            </a>
-                            <a href="<?php echo site_url('obras/relatorioProgresso/' . $r->id); ?>" class="obra-btn-action obra-btn-relatorio" title="Relatório">
-                                <i class="icon-file-alt"></i>
-                            </a>
-                            <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
-                                <a href="<?php echo site_url('obras/editar/' . $r->id); ?>" class="obra-btn-action obra-btn-edit" title="Editar">
-                                    <i class="icon-edit"></i>
-                                </a>
-                            <?php endif; ?>
-                            <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dObras')): ?>
-                                <button onclick="confirmarExclusao(<?php echo $r->id; ?>)" class="obra-btn-action obra-btn-delete" title="Excluir">
-                                    <i class="icon-trash"></i>
-                                </button>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
+    <!-- Estatísticas -->
+    <div class="obras-stats-row">
+        <div class="obras-stat-card">
+            <div class="obras-stat-icon blue">
+                <i class="icon-building"></i>
             </div>
-        <?php else: ?>
-            <div class="empty-state-modern">
-                <div class="empty-state-icon">
-                    <i class="icon-building"></i>
+            <div class="obras-stat-info">
+                <div class="obras-stat-value"><?php echo isset($total_obras) ? $total_obras : count($obras); ?></div>
+                <div class="obras-stat-label">Total de Obras</div>
+            </div>
+        </div>
+
+        <div class="obras-stat-card">
+            <div class="obras-stat-icon green">
+                <i class="icon-play-circle"></i>
+            </div>
+            <div class="obras-stat-info">
+                <div class="obras-stat-value"><?php echo isset($obras_em_andamento) ? $obras_em_andamento : count(array_filter($obras ?? [], function($o) { return $o->status == 'em-andamento'; })); ?></div>
+                <div class="obras-stat-label">Em Andamento</div>
+            </div>
+        </div>
+
+        <div class="obras-stat-card">
+            <div class="obras-stat-icon cyan">
+                <i class="icon-calendar"></i>
+            </div>
+            <div class="obras-stat-info">
+                <div class="obras-stat-value"><?php echo isset($obras_contratadas) ? $obras_contratadas : count(array_filter($obras ?? [], function($o) { return $o->status == 'contratada'; })); ?></div>
+                <div class="obras-stat-label">Contratadas</div>
+            </div>
+        </div>
+
+        <div class="obras-stat-card">
+            <div class="obras-stat-icon orange">
+                <i class="icon-check-circle"></i>
+            </div>
+            <div class="obras-stat-info">
+                <div class="obras-stat-value"><?php echo isset($obras_concluidas) ? $obras_concluidas : count(array_filter($obras ?? [], function($o) { return $o->status == 'concluida'; })); ?></div>
+                <div class="obras-stat-label">Concluídas</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="obras-filter-bar">
+        <div class="obras-filter-group">
+            <label><i class="icon-search"></i> Buscar:</label>
+            <input type="text" id="searchObra" class="obras-filter-input" placeholder="Nome da obra..." onkeyup="filtrarObras()">
+        </div>
+
+        <div class="obras-filter-group">
+            <label><i class="icon-filter"></i> Status:</label>
+            <select id="filterStatus" class="obras-filter-select" onchange="filtrarObras()">
+                <option value="">Todos</option>
+                <option value="prospeccao">Prospecção</option>
+                <option value="contratada">Contratada</option>
+                <option value="em-andamento">Em Andamento</option>
+                <option value="concluida">Concluída</option>
+                <option value="paralisada">Paralisada</option>
+            </select>
+        </div>
+
+        <button class="obras-filter-btn secondary" onclick="limparFiltros()">
+            <i class="icon-refresh"></i> Limpar
+        </button>
+    </div>
+
+    <!-- Grid de Obras -->
+    <?php if (!empty($obras)): ?>
+    <div class="obras-cards-grid" id="obrasGrid">
+        <?php foreach ($obras as $obra): ?>
+        <?php
+        $status_class = '';
+        $status_label = '';
+        switch ($obra->status) {
+            case 'em-andamento':
+            case 'em execucao':
+                $status_class = 'andamento';
+                $status_label = 'Em Andamento';
+                break;
+            case 'concluida':
+                $status_class = 'concluida';
+                $status_label = 'Concluída';
+                break;
+            case 'paralisada':
+                $status_class = 'paralisada';
+                $status_label = 'Paralisada';
+                break;
+            case 'prospeccao':
+                $status_class = 'prospeccao';
+                $status_label = 'Prospecção';
+                break;
+            default:
+                $status_class = '';
+                $status_label = ucfirst($obra->status);
+        }
+        $progresso = $obra->percentual_concluido ?? 0;
+        ?>
+        <div class="obra-item-card" data-nome="<?php echo strtolower($obra->nome); ?>" data-status="<?php echo $obra->status; ?>">
+            <div class="obra-card-header <?php echo $status_class; ?>">
+                <span class="obra-card-status-badge"><?php echo $status_label; ?></span>
+                <h3 class="obra-card-title"><?php echo htmlspecialchars($obra->nome); ?></h3>
+                <div class="obra-card-cliente">
+                    <i class="icon-user"></i> <?php echo htmlspecialchars($obra->cliente_nome ?? 'Sem cliente'); ?>
                 </div>
-                <h3>Nenhuma obra encontrada</h3>
-                <p>Comece cadastrando sua primeira obra no sistema.</p>
-                <a href="<?php echo site_url('obras/adicionar'); ?>" class="btn-moderno btn-moderno-primary" style="display: inline-flex; padding: 15px 30px;">
-                    <i class="icon-plus"></i> Nova Obra
+            </div>
+
+            <div class="obra-card-body">
+                <div class="obra-card-info-row">
+                    <span class="obra-card-info-label">
+                        <i class="icon-map-marker"></i> Endereço
+                    </span>
+                    <span class="obra-card-info-value">
+                        <?php echo htmlspecialchars($obra->endereco ?? 'Não informado'); ?>
+                    </span>
+                </div>
+
+                <div class="obra-card-info-row">
+                    <span class="obra-card-info-label">
+                        <i class="icon-calendar"></i> Início
+                    </span>
+                    <span class="obra-card-info-value">
+                        <?php echo $obra->data_inicio_contrato ? date('d/m/Y', strtotime($obra->data_inicio_contrato)) : 'Não definido'; ?>
+                    </span>
+                </div>
+
+                <div class="obra-card-info-row">
+                    <span class="obra-card-info-label">
+                        <i class="icon-flag-checkered"></i> Previsão
+                    </span>
+                    <span class="obra-card-info-value">
+                        <?php echo $obra->data_fim_prevista ? date('d/m/Y', strtotime($obra->data_fim_prevista)) : 'Não definido'; ?>
+                    </span>
+                </div>
+
+                <!-- Progresso -->
+                <div class="obra-card-progress">
+                    <div class="obra-card-progress-header">
+                        <span class="obra-card-progress-label">Progresso</span>
+                        <span class="obra-card-progress-value"><?php echo $progresso; ?>%</span>
+                    </div>
+                    <div class="obra-card-progress-bar">
+                        <div class="obra-card-progress-fill" style="width: <?php echo $progresso; ?>"></div>
+                    </div>
+                </div>
+
+                <!-- Stats rápidas -->
+                <div class="obra-card-stats">
+                    <div class="obra-card-stat">
+                        <span class="obra-card-stat-value"><?php echo $obra->total_etapas ?? 0; ?></span>
+                        <span class="obra-card-stat-label">Etapas</span>
+                    </div>
+                    <div class="obra-card-stat">
+                        <span class="obra-card-stat-value"><?php echo $obra->total_atividades ?? 0; ?></span>
+                        <span class="obra-card-stat-label">Atividades</span>
+                    </div>
+                    <div class="obra-card-stat">
+                        <span class="obra-card-stat-value"><?php echo $obra->total_equipe ?? 0; ?></span>
+                        <span class="obra-card-stat-label">Equipe</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="obra-card-actions">
+                <a href="<?php echo site_url('obras/visualizar/' . $obra->id); ?>" class="obra-card-btn view">
+                    <i class="icon-eye-open"></i> Visualizar
                 </a>
-            </div>
-        <?php endif; ?>
-    </div>
-
-    <!-- Table View (Alternative) -->
-    <div id="tableView" class="obras-table-view">
-        <div class="obra-card-modern" style="padding: 0; overflow: hidden;">
-            <div class="widget-content nopadding">
-                <table class="table table-bordered table-striped" style="margin: 0;">
-                    <thead style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-                        <tr>
-                            <th>Obra</th>
-                            <th>Cliente</th>
-                            <th>Status</th>
-                            <th>Progresso</th>
-                            <th>Previsão</th>
-                            <th>Valor</th>
-                            <th style="width: 150px;">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if (isset($results) && count($results) > 0): ?>
-                            <?php foreach ($results as $r): ?>
-                                <tr>
-                                    <td>
-                                        <strong><?php echo htmlspecialchars($r->nome); ?></strong>
-                                    </td>
-                                    <td><?php echo htmlspecialchars($r->cliente_nome ?? 'N/A'); ?></td>
-                                    <td>
-                                        <span class="label" style="font-size: 12px; padding: 6px 12px; background:
-                                            <?php
-                                            echo match($r->status) {
-                                                'Em Andamento' => '#3498db',
-                                                'Concluida', 'Concluída' => '#27ae60',
-                                                'Paralisada' => '#e74c3c',
-                                                'Prospeccao' => '#95a5a6',
-                                                default => '#667eea'
-                                            };
-                                            ?>; color: white;">
-                                            <?php echo $r->status; ?>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <div class="progress" style="margin: 0; height: 8px; background: rgba(0,0,0,0.1);">
-                                            <div class="bar" style="width: <?php echo $r->percentual_concluido ?? 0; ?>%; background: linear-gradient(90deg, #667eea, #764ba2);"></div>
-                                        </div>
-                                        <small><?php echo $r->percentual_concluido ?? 0; ?>%</small>
-                                    </td>
-                                    <td><?php echo $r->data_fim_prevista ? date('d/m/Y', strtotime($r->data_fim_prevista)) : 'N/A'; ?></td>
-                                    <td>R$ <?php echo number_format($r->valor_contrato ?? 0, 2, ',', '.'); ?></td>
-                                    <td>
-                                        <div class="btn-group">
-                                            <a href="<?php echo site_url('obras/visualizar/' . $r->id); ?>" class="btn btn-mini btn-info" title="Visualizar">
-                                                <i class="icon-eye-open icon-white"></i>
-                                            </a>
-                                            <a href="<?php echo site_url('obras/equipe/' . $r->id); ?>" class="btn btn-mini btn-success" title="Equipe">
-                                                <i class="icon-group icon-white"></i>
-                                            </a>
-                                            <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
-                                                <a href="<?php echo site_url('obras/editar/' . $r->id); ?>" class="btn btn-mini btn-primary" title="Editar">
-                                                    <i class="icon-edit icon-white"></i>
-                                                </a>
-                                            <?php endif; ?>
-                                        </div>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <tr>
-                                <td colspan="7" class="text-center" style="padding: 40px;">
-                                    Nenhuma obra encontrada.
-                                </td>
-                            </tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
+                <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
+                <a href="<?php echo site_url('obras/editar/' . $obra->id); ?>" class="obra-card-btn edit">
+                    <i class="icon-edit"></i> Editar
+                </a>
+                <?php endif; ?>
             </div>
         </div>
+        <?php endforeach; ?>
     </div>
 
-    <!-- Pagination -->
-    <?php if (isset($results) && count($results) > 0): ?>
-        <div style="margin-top: 20px; text-align: center;">
-            <?php echo $this->pagination->create_links(); ?>
+    <!-- Paginação -->
+    <?php if (isset($pagination)): ?>
+    <div class="obras-pagination">
+        <?php echo $pagination; ?>
+    </div>
+    <?php endif; ?>
+
+    <?php else: ?>
+    <!-- Empty State -->
+    <div class="obras-empty-state">
+        <div class="obras-empty-icon">
+            <i class="icon-building"></i>
         </div>
+        <h3 class="obras-empty-title">Nenhuma obra encontrada</h3>
+        <p class="obras-empty-desc">Comece cadastrando uma nova obra para gerenciar seus projetos.</p>
+        <a href="<?php echo site_url('obras/adicionar'); ?>" class="obras-filter-btn">
+            <i class="icon-plus"></i> Cadastrar Nova Obra
+        </a>
+    </div>
     <?php endif; ?>
 </div>
 
-<!-- Quick Actions Button -->
-<div class="quick-actions">
-    <a href="<?php echo site_url('obras/adicionar'); ?>" class="quick-actions-btn" title="Nova Obra">
-        <i class="icon-plus"></i>
-    </a>
-</div>
-
-<!-- Delete Modal -->
-<div id="modalExcluir" class="modal hide fade" tabindex="-1" role="dialog">
-    <div class="modal-header" style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%); color: white;">
-        <button type="button" class="close" data-dismiss="modal" style="color: white;">×</button>
-        <h3><i class="icon-trash"></i> Confirmar Exclusão</h3>
-    </div>
-    <div class="modal-body" style="padding: 30px;">
-        <p style="font-size: 16px;">Tem certeza que deseja excluir esta obra?</p>
-        <p class="text-warning"><i class="icon-warning-sign"></i> Esta ação não poderá ser desfeita.</p>
-    </div>
-    <div class="modal-footer">
-        <form id="formExcluir" method="post" action="<?php echo site_url('obras/excluir'); ?>">
-            <input type="hidden" name="id" id="obraIdExcluir">
-            <button class="btn btn-large" data-dismiss="modal">Cancelar</button>
-            <button type="submit" class="btn btn-danger btn-large">
-                <i class="icon-trash icon-white"></i> Sim, Excluir
-            </button>
-        </form>
-    </div>
-</div>
-
 <script>
-function confirmarExclusao(id) {
-    document.getElementById('obraIdExcluir').value = id;
-    $('#modalExcluir').modal('show');
-}
-
-function toggleView(view) {
-    const gridView = document.getElementById('gridView');
-    const tableView = document.getElementById('tableView');
-    const buttons = document.querySelectorAll('.view-toggle-btn');
-
-    buttons.forEach(btn => btn.classList.remove('active'));
-    event.target.closest('.view-toggle-btn').classList.add('active');
-
-    if (view === 'grid') {
-        gridView.classList.add('active');
-        tableView.classList.remove('active');
-    } else {
-        gridView.classList.remove('active');
-        tableView.classList.add('active');
-    }
-}
-
-function aplicarFiltros() {
+// Filtro de obras
+function filtrarObras() {
+    const search = document.getElementById('searchObra').value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
     const status = document.getElementById('filterStatus').value;
-    const cliente = document.getElementById('filterCliente').value;
-    const obra = document.getElementById('filterObra').value;
+    const cards = document.querySelectorAll('.obra-item-card');
 
-    let url = '<?php echo site_url("obras"); ?>?';
-    if (status) url += 'status=' + encodeURIComponent(status) + '&';
-    if (cliente) url += 'cliente=' + encodeURIComponent(cliente) + '&';
-    if (obra) url += 'obra=' + encodeURIComponent(obra) + '&';
+    cards.forEach(card => {
+        const nome = card.getAttribute('data-nome');
+        const cardStatus = card.getAttribute('data-status');
 
-    window.location.href = url;
+        const matchSearch = !search || nome.includes(search);
+        const matchStatus = !status || cardStatus === status;
+
+        card.style.display = matchSearch && matchStatus ? 'flex' : 'none';
+    });
 }
 
-// Animate progress bars on load
-document.addEventListener('DOMContentLoaded', function() {
-    const progressBars = document.querySelectorAll('.obra-progress-fill');
-    progressBars.forEach(bar => {
-        const width = bar.style.width;
-        bar.style.width = '0%';
-        setTimeout(() => {
-            bar.style.width = width;
-        }, 100);
+function limparFiltros() {
+    document.getElementById('searchObra').value = '';
+    document.getElementById('filterStatus').value = '';
+    filtrarObras();
+}
+
+// Animação de entrada
+$(document).ready(function() {
+    $('.obra-item-card').each(function(index) {
+        $(this).hide().delay(index * 100).fadeIn(400);
     });
 });
 </script>

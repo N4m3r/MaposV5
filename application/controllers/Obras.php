@@ -512,11 +512,11 @@ class Obras extends MY_Controller
             echo '<tr><th>ID</th><th>Título</th><th>Data</th><th>Status</th><th>Tipo</th></tr>';
             foreach ($query->result() as $ativ) {
                 echo '<tr>';
-                echo '<td>' . $ativ->id . '</td>';
-                echo '<td>' . $ativ->titulo . '</td>';
-                echo '<td>' . $ativ->data_atividade . '</td>';
-                echo '<td>' . $ativ->status . '</td>';
-                echo '<td>' . $ativ->tipo . '</td>';
+                echo '<td>' . ($ativ->id ?? 'N/A') . '</td>';
+                echo '<td>' . ($ativ->titulo ?? $ativ->descricao ?? 'Sem título') . '</td>';
+                echo '<td>' . ($ativ->data_atividade ?? 'N/A') . '</td>';
+                echo '<td>' . ($ativ->status ?? 'N/A') . '</td>';
+                echo '<td>' . ($ativ->tipo ?? 'N/A') . '</td>';
                 echo '</tr>';
             }
             echo '</table>';
@@ -526,6 +526,83 @@ class Obras extends MY_Controller
 
         echo '<hr>';
         echo '<a href="' . site_url('obras/atividades/' . $obra_id) . '" class="btn">Voltar para Atividades</a>';
+    }
+
+    /**
+     * Wizard - Salvar etapa e atividades
+     */
+    public function salvarWizard($obra_id)
+    {
+        if (!$obra_id || !is_numeric($obra_id)) {
+            $this->session->set_flashdata('error', 'Obra invalida.');
+            redirect('obras');
+        }
+
+        // Verificar se tabelas existem
+        if (!$this->db->table_exists('obra_etapas')) {
+            $this->session->set_flashdata('error', 'Tabela obra_etapas nao existe. Execute o diagnostico primeiro.');
+            redirect('obras/visualizar/' . $obra_id);
+        }
+
+        $this->db->trans_start();
+
+        try {
+            // 1. Salvar a etapa
+            $etapa_data = [
+                'obra_id' => $obra_id,
+                'numero_etapa' => $this->input->post('etapa_numero'),
+                'nome' => $this->input->post('etapa_nome'),
+                'descricao' => $this->input->post('etapa_descricao'),
+                'data_inicio_prevista' => $this->input->post('etapa_data_inicio') ?: null,
+                'data_fim_prevista' => $this->input->post('etapa_data_fim') ?: null,
+                'status' => 'pendente',
+                'ativo' => 1
+            ];
+
+            $this->db->insert('obra_etapas', $etapa_data);
+            $etapa_id = $this->db->insert_id();
+
+            if (!$etapa_id) {
+                throw new Exception('Erro ao criar etapa');
+            }
+
+            // 2. Salvar atividades (se houver)
+            $atividades = $this->input->post('atividades');
+            $total_atividades = 0;
+
+            if (!empty($atividades) && is_array($atividades)) {
+                foreach ($atividades as $atividade) {
+                    if (!empty($atividade['titulo'])) {
+                        $ativ_data = [
+                            'obra_id' => $obra_id,
+                            'etapa_id' => $etapa_id,
+                            'titulo' => $atividade['titulo'],
+                            'tipo' => $atividade['tipo'] ?? 'trabalho',
+                            'status' => 'agendada',
+                            'data_atividade' => date('Y-m-d'),
+                            'ativo' => 1
+                        ];
+
+                        $this->db->insert('obra_atividades', $ativ_data);
+                        $total_atividades++;
+                    }
+                }
+            }
+
+            $this->db->trans_complete();
+
+            $this->session->set_flashdata('success',
+                'Etapa criada com sucesso! ' .
+                ($total_atividades > 0 ? "{$total_atividades} atividade(s) adicionada(s)." : '')
+            );
+
+        } catch (Exception $e) {
+            $this->db->trans_rollback();
+            log_message('error', 'Erro no wizard: ' . $e->getMessage());
+            $this->session->set_flashdata('error', 'Erro ao salvar: ' . $e->getMessage());
+        }
+
+        redirect('obras/visualizar/' . $obra_id);
     }
 
     /**
