@@ -131,7 +131,6 @@ class Obra_atividades_model extends CI_Model
                 'obra_id' => $dados['obra_id'],
                 'etapa_id' => $dados['etapa_id'] ?? null,
                 'tecnico_id' => $dados['tecnico_id'] ?? null,
-                'os_id' => $dados['os_id'] ?? null,
                 'data_atividade' => $dados['data_atividade'] ?? date('Y-m-d'),
                 'titulo' => $dados['titulo'],
                 'descricao' => $dados['descricao'] ?? null,
@@ -139,10 +138,12 @@ class Obra_atividades_model extends CI_Model
                 'status' => $dados['status'] ?? 'agendada',
                 'percentual_concluido' => $dados['percentual_concluido'] ?? 0,
                 'visivel_cliente' => $dados['visivel_cliente'] ?? 1,
-                'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s'),
             ];
 
+            // Adicionar campos opcionais se existirem
+            if (!empty($dados['os_id'])) {
+                $data['os_id'] = $dados['os_id'];
+            }
             if (!empty($dados['hora_inicio'])) {
                 $data['hora_inicio'] = $dados['hora_inicio'];
             }
@@ -150,11 +151,19 @@ class Obra_atividades_model extends CI_Model
                 $data['hora_fim'] = $dados['hora_fim'];
             }
 
+            // Só adicionar timestamps se as colunas existirem
+            if ($this->db->field_exists('created_at', 'obra_atividades')) {
+                $data['created_at'] = date('Y-m-d H:i:s');
+            }
+            if ($this->db->field_exists('updated_at', 'obra_atividades')) {
+                $data['updated_at'] = date('Y-m-d H:i:s');
+            }
+
             $this->db->insert('obra_atividades', $data);
             $id = $this->db->insert_id();
 
-            // Registrar no histórico
-            if ($id) {
+            // Registrar no histórico (se tabela existir)
+            if ($id && $this->tabelaExiste('obra_atividades_historico')) {
                 $this->registrarHistorico($id, 'criacao', $dados['tecnico_id'] ?? null, [
                     'descricao' => 'Atividade criada',
                     'percentual_novo' => $data['percentual_concluido']

@@ -300,12 +300,19 @@ class Tecnicos extends CI_Controller
         $etapas = $this->obras_model->getEtapas($obra_id);
 
         // Buscar minhas OS na obra
-        $this->db->select('os.idOs, os.status, os.dataInicial, c.nomeCliente');
-        $this->db->from('os');
-        $this->db->join('clientes c', 'c.idClientes = os.clientes_id');
-        $this->db->where('os.obra_id', $obra_id);
-        $this->db->where('os.tecnico_responsavel', $tecnico_id);
-        $minhas_os = $this->db->get()->result();
+        $minhas_os = [];
+        try {
+            $this->db->select('os.idOs, os.status, os.dataInicial, c.nomeCliente');
+            $this->db->from('os');
+            $this->db->join('clientes c', 'c.idClientes = os.clientes_id');
+            $this->db->where('os.obra_id', $obra_id);
+            $this->db->where('os.tecnico_responsavel', $tecnico_id);
+            $query = $this->db->get();
+            $minhas_os = $query ? $query->result() : [];
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao buscar OS do tecnico na obra: ' . $e->getMessage());
+            $minhas_os = [];
+        }
 
         $this->data['obra'] = $obra;
         $this->data['etapas'] = $etapas;
