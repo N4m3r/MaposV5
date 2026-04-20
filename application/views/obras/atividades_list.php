@@ -619,7 +619,13 @@
         <?php if (empty($atividades)): ?>
         <div style="margin-top: 10px; padding: 10px; background: #fff3cd; border: 1px solid #ffc107; border-radius: 4px;">
             <i class="icon-warning-sign"></i> <strong>Nenhuma atividade encontrada!</strong><br>
-            SQL: <?php echo $this->db->last_query(); ?>
+            <small>SQL: <?php echo $this->db->last_query(); ?></small><br>
+            <a href="<?php echo site_url('diagnostico/obras'); ?>" class="btn btn-mini" style="margin-top: 5px;">
+                <i class="icon-wrench"></i> Verificar Diagnóstico
+            </a>
+            <a href="<?php echo site_url('obras/verificarAtividades/' . $obra->id); ?>" class="btn btn-mini btn-info" style="margin-top: 5px;">
+                <i class="icon-search"></i> Verificar no Banco
+            </a>
         </div>
         <?php else: ?>
         <div style="margin-top: 10px; color: #28a745;">
