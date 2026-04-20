@@ -471,34 +471,24 @@ textarea {
    ============================================ */
 
 /* ============================================
-   LAYOUT PORTAL DO TÉCNICO V2 - SIMPLES E LIMPO
+   LAYOUT PORTAL DO TÉCNICO V3 - ULTRA SIMPLES
    ============================================ */
 
 /* Apenas páginas do técnico - layout com sidebar */
 body.portal-tecnico #content {
     margin-left: 240px;
-    margin-top: 0;
     padding: 20px;
     min-height: 100vh;
-    transition: margin-left 0.3s ease;
+    box-sizing: border-box;
 }
 
-/* Quando sidebar está recolhido */
-body.portal-tecnico #sidebar.open {
-    width: 80px;
-}
-
-body.portal-tecnico:has(#sidebar.open) #content {
+/* Sidebar recolhido - ajusta margem */
+body.portal-tecnico #sidebar.open + #content,
+body.portal-tecnico #sidebar.open ~ #content {
     margin-left: 80px;
 }
 
-/* Botão toggle visível em desktop */
-#sidebar .mode-desktop {
-    display: block;
-    cursor: pointer;
-}
-
-/* Responsivo - mobile */
+/* Responsivo - remove margem em telas pequenas */
 @media (max-width: 768px) {
     body.portal-tecnico #content {
         margin-left: 0;
