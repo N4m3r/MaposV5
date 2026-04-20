@@ -1721,15 +1721,18 @@ class Tecnicos extends CI_Controller
         $fotos = $this->input->post('fotos'); // array de fotos base64
         $tecnico_id = $this->session->userdata('tec_id');
 
+        log_message('info', 'api_registrar_atividade_obra - Dados recebidos: obra_id=' . $obra_id . ', tecnico_id=' . $tecnico_id);
+
         if (!$obra_id || !$descricao) {
-            echo json_encode(['success' => false, 'message' => 'Dados incompletos']);
+            echo json_encode(['success' => false, 'message' => 'Dados incompletos: obra_id e descricao sao obrigatorios']);
             return;
         }
 
         // Verificar se técnico está na equipe
-        $this->db->where(['obra_id' => $obra_id, 'tecnico_id' => $tecnico_id, 'ativo' => 1]);
-        if (!$this->db->get('obra_equipe')->row()) {
-            echo json_encode(['success' => false, 'message' => 'Você não está alocado nesta obra']);
+        $this->load->model('obras_model');
+        if (!$this->obras_model->tecnicoEstaNaEquipe($obra_id, $tecnico_id)) {
+            log_message('error', 'api_registrar_atividade_obra - Tecnico ' . $tecnico_id . ' nao esta na equipe da obra ' . $obra_id);
+            echo json_encode(['success' => false, 'message' => 'Voce nao esta alocado nesta obra']);
             return;
         }
 
@@ -1764,24 +1767,32 @@ class Tecnicos extends CI_Controller
         // Inserir atividade
         $dados = [
             'obra_id' => $obra_id,
-            'etapa_id' => $etapa_id,
+            'etapa_id' => $etapa_id ?: null,
             'tecnico_id' => $tecnico_id,
             'descricao' => $descricao,
             'tipo' => $tipo ?: 'execucao',
             'percentual_concluido' => $percentual_concluido ?: 0,
             'fotos' => json_encode($fotos_salvas),
             'data_atividade' => date('Y-m-d'),
-            'created_at' => date('Y-m-d H:i:s')
+            'created_at' => date('Y-m-d H:i:s'),
+            'ativo' => 1
         ];
 
-        if ($this->db->insert('obra_atividades', $dados)) {
+        log_message('info', 'api_registrar_atividade_obra - Inserindo atividade: ' . print_r($dados, true));
+
+        $result = $this->db->insert('obra_atividades', $dados);
+        if ($result) {
+            $atividade_id = $this->db->insert_id();
+            log_message('info', 'api_registrar_atividade_obra - Atividade inserida com sucesso. ID: ' . $atividade_id);
             echo json_encode([
                 'success' => true,
                 'message' => 'Atividade registrada com sucesso',
-                'atividade_id' => $this->db->insert_id()
+                'atividade_id' => $atividade_id
             ]);
         } else {
-            echo json_encode(['success' => false, 'message' => 'Erro ao registrar atividade']);
+            $error = $this->db->error();
+            log_message('error', 'api_registrar_atividade_obra - Erro ao inserir: ' . print_r($error, true));
+            echo json_encode(['success' => false, 'message' => 'Erro ao registrar atividade: ' . ($error['message'] ?? 'Erro desconhecido')]);
         }
     }
 

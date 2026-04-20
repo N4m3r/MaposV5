@@ -107,6 +107,14 @@
         color: white;
         box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
     }
+    .btn-success-tec {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: white;
+    }
+    .btn-success-tec:hover {
+        color: white;
+        box-shadow: 0 4px 12px rgba(17, 153, 142, 0.4);
+    }
 
     .os-lista {
         display: flex;
@@ -154,6 +162,100 @@
         opacity: 0.5;
     }
 
+    /* Formulario de atividade */
+    .form-atividade {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 20px;
+        margin-top: 20px;
+    }
+    .form-group {
+        margin-bottom: 16px;
+    }
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #333;
+    }
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 14px;
+        transition: border-color 0.3s;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+        border-color: #11998e;
+        outline: none;
+    }
+    .form-group textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+    .btn-submit {
+        width: 100%;
+        padding: 14px;
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(17, 153, 142, 0.4);
+    }
+    .btn-submit:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    /* Alertas */
+    .alert {
+        padding: 12px 16px;
+        border-radius: 8px;
+        margin-bottom: 16px;
+        display: none;
+    }
+    .alert.success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+    .alert.error {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+    .alert.show {
+        display: block;
+    }
+
+    /* Loading */
+    .loading {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(255,255,255,.3);
+        border-radius: 50%;
+        border-top-color: #fff;
+        animation: spin 1s ease-in-out infinite;
+        margin-right: 8px;
+    }
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
     /* Dark mode support */
     body[data-theme="dark"] .section-title { color: #e8e8e8; }
     body[data-theme="dark"] .etapa-item { background: #252a3a; }
@@ -161,12 +263,21 @@
     body[data-theme="dark"] .os-item { background: #252a3a; }
     body[data-theme="dark"] .os-cliente { color: #e8e8e8; }
     body[data-theme="dark"] .os-data { color: #888; }
+    body[data-theme="dark"] .form-atividade { background: #252a3a; }
+    body[data-theme="dark"] .form-group label { color: #e8e8e8; }
+    body[data-theme="dark"] .form-group input,
+    body[data-theme="dark"] .form-group textarea,
+    body[data-theme="dark"] .form-group select {
+        background: #1a1d29;
+        border-color: #3a3f4f;
+        color: #e8e8e8;
+    }
 </style>
 
 <!-- Header da Obra -->
 <div class="obra-header">
     <h2><i class='bx bx-building'></i> <?= htmlspecialchars($obra->nome) ?></h2>
-    <p><i class='bx bx-user'></i> <?= htmlspecialchars($obra->cliente_nome ?? 'Cliente não informado') ?></p>
+    <p><i class='bx bx-user'></i> <?= htmlspecialchars($obra->cliente_nome ?? 'Cliente nao informado') ?></p>
     <span class="obra-status"><?= $obra->status ?></span>
 
     <div class="progress-section">
@@ -182,7 +293,7 @@
 
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px;">
 
-    <!-- Coluna Esquerda: Etapas -->
+    <!-- Coluna Esquerda: Etapas e Atividades -->
     <div>
         <h3 class="section-title"><i class='bx bx-list-check'></i> Etapas da Obra</h3>
 
@@ -223,7 +334,7 @@
         <?php endif; ?>
     </div>
 
-    <!-- Coluna Direita: Minhas OS -->
+    <!-- Coluna Direita: Minhas OS e Registrar Atividade -->
     <div>
         <h3 class="section-title"><i class='bx bx-clipboard'></i> Minhas OS nesta Obra</h3>
 
@@ -247,16 +358,57 @@
         <?php else: ?>
             <div class="empty-state">
                 <i class='bx bx-clipboard'></i>
-                <p>Você não tem OS nesta obra</p>
+                <p>Voce nao tem OS nesta obra</p>
             </div>
         <?php endif; ?>
 
-        <!-- Ações -->
-        <div style="margin-top: 24px; padding: 20px; background: #f8f9fa; border-radius: 12px; text-align: center;">
-            <h4 style="margin-bottom: 12px;">Registrar Atividade</h4>
-            <a href="#" class="btn-acao btn-primary-tec" onclick="alert('Função em desenvolvimento'); return false;">
-                <i class='bx bx-camera'></i> Check-in com Foto
-            </a>
+        <!-- Formulario de Registrar Atividade -->
+        <div class="form-atividade">
+            <h4 class="section-title"><i class='bx bx-plus-circle'></i> Registrar Nova Atividade</h4>
+
+            <div id="alertSuccess" class="alert success">
+                <i class='bx bx-check-circle'></i> Atividade registrada com sucesso!
+            </div>
+            <div id="alertError" class="alert error">
+                <i class='bx bx-error-circle'></i> <span id="errorMessage">Erro ao registrar atividade.</span>
+            </div>
+
+            <form id="formAtividade">
+                <input type="hidden" name="obra_id" value="<?= $obra->id ?>">
+
+                <div class="form-group">
+                    <label for="etapa_id">Etapa (opcional)</label>
+                    <select name="etapa_id" id="etapa_id">
+                        <option value="">-- Selecione uma etapa --</option>
+                        <?php foreach ($etapas as $etapa): ?>
+                            <option value="<?= $etapa->id ?>"><?= htmlspecialchars($etapa->nome) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="descricao">Descricao da Atividade *</label>
+                    <textarea name="descricao" id="descricao" placeholder="Descreva o que foi realizado..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="tipo">Tipo de Atividade</label>
+                    <select name="tipo" id="tipo">
+                        <option value="execucao">Execucao</option>
+                        <option value="problema">Problema/Impedimento</option>
+                        <option value="observacao">Observacao</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="percentual_concluido">Percentual Concluido (%)</label>
+                    <input type="number" name="percentual_concluido" id="percentual_concluido" min="0" max="100" value="0">
+                </div>
+
+                <button type="submit" class="btn-submit" id="btnSubmit">
+                    <i class='bx bx-save'></i> Salvar Atividade
+                </button>
+            </form>
         </div>
     </div>
 
@@ -273,5 +425,63 @@ document.addEventListener('DOMContentLoaded', function() {
             progressFill.style.width = width;
         }, 300);
     }
+
+    // Submissao do formulario
+    const form = document.getElementById('formAtividade');
+    const btnSubmit = document.getElementById('btnSubmit');
+    const alertSuccess = document.getElementById('alertSuccess');
+    const alertError = document.getElementById('alertError');
+    const errorMessage = document.getElementById('errorMessage');
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // Esconder alertas
+        alertSuccess.classList.remove('show');
+        alertError.classList.remove('show');
+
+        // Desabilitar botao
+        btnSubmit.disabled = true;
+        btnSubmit.innerHTML = '<span class="loading"></span> Salvando...';
+
+        // Coletar dados
+        const formData = new FormData(form);
+        const data = {};
+        formData.forEach((value, key) => {
+            data[key] = value;
+        });
+
+        // Enviar AJAX
+        fetch('<?= site_url("tecnicos/api_registrar_atividade_obra") ?>', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams(data)
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                alertSuccess.classList.add('show');
+                form.reset();
+                // Recarregar pagina apos 2 segundos
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            } else {
+                errorMessage.textContent = result.message || 'Erro ao registrar atividade.';
+                alertError.classList.add('show');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            errorMessage.textContent = 'Erro de conexao. Tente novamente.';
+            alertError.classList.add('show');
+        })
+        .finally(() => {
+            btnSubmit.disabled = false;
+            btnSubmit.innerHTML = '<i class=\'bx bx-save\'></i> Salvar Atividade';
+        });
+    });
 });
 </script>
