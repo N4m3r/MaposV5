@@ -288,7 +288,7 @@
                 <div class="alert alert-error">
                     <strong>Erro:</strong> Não foi possível carregar os dados da OS. Por favor, tente novamente.
                 </div>
-                <a href="<?php echo site_url('mine/os'); ?>" class="btn btn-primary">
+                <a href="<?php echo base_url('index.php/mine/os'); ?>" class="btn btn-primary">
                     <i class="bx bx-arrow-back"></i> Voltar para Minhas OS
                 </a>
             </div>
