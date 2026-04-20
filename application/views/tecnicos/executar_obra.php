@@ -328,9 +328,7 @@
                         </div>
                     <?php endif; ?>
                 </div>
-            <?php endforeach; else: ?>
-                <option value="">Nenhuma etapa cadastrada</option>
-            <?php endif; ?>
+            <?php endforeach; ?>
         <?php else: ?>
             <div class="empty-state">
                 <i class='bx bx-list-ul'></i>
