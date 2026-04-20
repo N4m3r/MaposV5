@@ -1181,12 +1181,12 @@
 
                 <?php if (!empty($equipe)): ?>
                 <div class="equipe-grid">
-                    <?php foreach (array_slice($equipe, 0, 6) as $membro): ?>>
+                    <?php foreach (array_slice($equipe, 0, 6) as $membro): ?>
                     <div class="equipe-card">
                         <div class="equipe-avatar">
                             <i class="icon-user"></i>
                         </div>
-                        <div class="equipe-nome"><?php echo htmlspecialchars($membro->nome); ?></div>
+                        <div class="equipe-nome"><?php echo htmlspecialchars($membro->nome ?? $membro->tecnico_nome ?? 'Sem nome'); ?></div>
                         <div class="equipe-funcao"><?php echo htmlspecialchars($membro->funcao ?? 'Técnico'); ?></div>
                     </div>
                     <?php endforeach; ?>
