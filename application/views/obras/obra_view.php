@@ -1054,7 +1054,7 @@
 
                 <?php if (!empty($etapas)): ?>
                 <div class="etapas-timeline">
-                    <?php foreach ($etapas as $etapa): ?
+                    <?php foreach ($etapas as $etapa): ?>
                     <?php
                     $etapa_status = $etapa->status ?? 'pendente';
                     $etapa_class = '';
