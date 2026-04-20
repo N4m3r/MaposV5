@@ -459,6 +459,7 @@ $config['csrf_exclude_uris'] = [
     'notificacoes/marcar_lida',
     'tecnicos/finalizar_execucao',
     'tecnicos/adicionar_foto',
+    'tecnicos/api_registrar_atividade_obra',
 ];
 
 /*

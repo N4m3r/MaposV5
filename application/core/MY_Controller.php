@@ -41,8 +41,8 @@ class MY_Controller extends CI_Controller
 
         // Headers de seguranca para permitir geolocalizacao em iframes cross-origin
         // https://www.chromium.org/Home/chromium-security/deprecating-permissions-in-cross-origin-iframes/
+        // Permissions-Policy é o header moderno (substitui Feature-Policy)
         header('Permissions-Policy: geolocation=(self)');
-        header('Feature-Policy: geolocation *');
 
         if ((! session_id()) || (! $this->session->userdata('logado'))) {
             redirect('login');

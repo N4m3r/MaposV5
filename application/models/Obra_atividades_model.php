@@ -94,6 +94,7 @@ class Obra_atividades_model extends CI_Model
             }
 
             $query = $this->db->get();
+            log_message('debug', 'SQL getByObra obra_id=' . $obra_id . ': ' . $this->db->last_query());
             return $query ? $query->result() : [];
         } catch (Exception $e) {
             log_message('error', 'Erro ao listar atividades: ' . $e->getMessage());

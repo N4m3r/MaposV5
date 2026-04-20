@@ -607,6 +607,28 @@
         </div>
     </div>
 
+    <!-- Debug Info -->
+    <div style="background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; margin-bottom: 20px; font-size: 13px;">
+        <strong><i class="icon-info-sign"></i> Debug:</strong>
+        Obra ID: <code><?php echo $obra->id; ?></code> |
+        Total de atividades: <code><?php echo count($atividades); ?></code> |
+        Tabela existe: <code><?php echo $this->db->table_exists('obra_atividades') ? 'Sim' : 'Não'; ?></code>
+        <button onclick="location.reload()" style="float: right; padding: 4px 12px; font-size: 12px;">
+            <i class="icon-refresh"></i> Recarregar
+        </button>
+        <?php if (empty($atividades)): ?>
+        <div style="margin-top: 10px; padding: 10px; background: #fff3cd; border: 1px solid #ffc107; border-radius: 4px;">
+            <i class="icon-warning-sign"></i> <strong>Nenhuma atividade encontrada!</strong><br>
+            SQL: <?php echo $this->db->last_query(); ?>
+        </div>
+        <?php else: ?>
+        <div style="margin-top: 10px; color: #28a745;">
+            <i class="icon-ok"></i> Atividades carregadas com sucesso!
+        </div>
+        <?php endif; ?>
+        <div style="clear: both;"></div>
+    </div>
+
     <!-- Filtros -->
     <div class="atividades-filters">
         <i class="icon-search" style="font-size: 20px; color: #667eea;"></i>
