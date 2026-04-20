@@ -1,406 +1,547 @@
-<?php
-/**
- * Dashboard do Técnico - Portal Interno
- * Design integrado ao tema MAPOS
- */
-?>
+<?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
 
-<div id="content">
-<!-- Header do Técnico -->
-<div class="row-fluid">
-    <div class="span12">
-        <div class="widget-box" style="margin-top: 0;">
-            <div class="widget-title">
-                <span class="icon"><i class="bx bx-hard-hat"></i></span>
-                <h5>Portal do Técnico</h5>
-                <div class="buttons">
-                    <a href="<?php echo site_url('tecnicos/logout'); ?>" class="btn btn-mini btn-danger">
-                        <i class="bx bx-log-out"></i> Sair
+<style>
+/* Dashboard Mobile-First */
+.dashboard-container { padding: 15px; max-width: 100%; }
+
+/* Header do Técnico */
+.header-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    padding: 25px 20px;
+    color: white;
+    margin-bottom: 20px;
+    box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.tec-avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+.tec-info h2 {
+    margin: 0 0 5px 0;
+    font-size: 20px;
+    font-weight: 700;
+}
+.tec-info p {
+    margin: 0;
+    opacity: 0.9;
+    font-size: 13px;
+}
+.tec-badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    margin-top: 8px;
+}
+
+/* Grid de Stats */
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+.stat-box {
+    background: white;
+    border-radius: 15px;
+    padding: 20px 15px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    border-left: 4px solid #3498db;
+    transition: all 0.3s;
+}
+.stat-box:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+}
+.stat-box.success { border-left-color: #11998e; }
+.stat-box.warning { border-left-color: #f39c12; }
+.stat-box.danger { border-left-color: #e74c3c; }
+.stat-box.obras { border-left-color: #667eea; }
+.stat-numero {
+    font-size: 32px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 5px;
+}
+.stat-label {
+    font-size: 12px;
+    color: #888;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+/* Card de Ação Principal - Obras */
+.obras-destaque {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    border-radius: 20px;
+    padding: 25px;
+    color: white;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+}
+.obras-destaque::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 200px;
+    height: 200px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+}
+.obras-destaque-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+    position: relative;
+}
+.obras-destaque-titulo {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0;
+}
+.obras-destaque-contagem {
+    background: rgba(255,255,255,0.2);
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+}
+.obras-destaque-lista {
+    position: relative;
+}
+.obra-destaque-item {
+    background: rgba(255,255,255,0.15);
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.obra-destaque-item:last-child {
+    margin-bottom: 0;
+}
+.obra-destaque-nome {
+    font-weight: 600;
+    font-size: 14px;
+}
+.obra-destaque-progresso {
+    font-size: 18px;
+    font-weight: 700;
+}
+.btn-ver-obras {
+    display: block;
+    width: 100%;
+    margin-top: 15px;
+    padding: 15px;
+    background: white;
+    color: #11998e;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+.btn-ver-obras:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    text-decoration: none;
+    color: #11998e;
+}
+
+/* Menu Principal */
+.menu-principal {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+.menu-item {
+    background: white;
+    border-radius: 15px;
+    padding: 25px 15px;
+    text-align: center;
+    text-decoration: none;
+    color: #333;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    border: 2px solid transparent;
+    transition: all 0.3s;
+}
+.menu-item:hover {
+    border-color: #11998e;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+    text-decoration: none;
+    color: #333;
+}
+.menu-item i {
+    font-size: 32px;
+    margin-bottom: 10px;
+    display: block;
+}
+.menu-item.os i { color: #3498db; }
+.menu-item.obras i { color: #11998e; }
+.menu-item.estoque i { color: #9b59b6; }
+.menu-item.perfil i { color: #f39c12; }
+.menu-item span {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* Seção de OS de Hoje */
+.section-card {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.06);
+}
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #f5f5f5;
+}
+.section-titulo {
+    font-size: 16px;
+    font-weight: 700;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.section-titulo i { color: #3498db; }
+.btn-ver-tudo {
+    font-size: 12px;
+    color: #3498db;
+    text-decoration: none;
+    font-weight: 600;
+}
+.btn-ver-tudo:hover {
+    text-decoration: underline;
+}
+
+/* Lista de OS */
+.os-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.os-item {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.3s;
+}
+.os-item:hover {
+    background: #e8f4f8;
+}
+.os-numero {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+.os-info {
+    flex: 1;
+    min-width: 0;
+}
+.os-cliente {
+    font-weight: 600;
+    font-size: 14px;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.os-detalhes {
+    font-size: 12px;
+    color: #888;
+    margin-top: 3px;
+}
+.os-status {
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+.os-status.aberto { background: #d4edda; color: #155724; }
+.os-status.andamento { background: #fff3cd; color: #856404; }
+.os-status.pendente { background: #f8d7da; color: #721c24; }
+.os-status.finalizada { background: #d1ecf1; color: #0c5460; }
+.os-acao {
+    width: 40px;
+    height: 40px;
+    background: #11998e;
+    color: white;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    flex-shrink: 0;
+}
+.os-acao:hover {
+    background: #0d7a6e;
+    text-decoration: none;
+    color: white;
+}
+
+/* Estoque Preview */
+.estoque-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+.estoque-item:last-child {
+    border-bottom: none;
+}
+.estoque-nome {
+    font-size: 14px;
+    color: #333;
+}
+.estoque-qtd {
+    background: #e8f4f8;
+    color: #3498db;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #888;
+}
+.empty-state i {
+    font-size: 48px;
+    margin-bottom: 15px;
+    opacity: 0.5;
+}
+.empty-state p {
+    font-size: 14px;
+}
+
+/* Desktop Responsive */
+@media (min-width: 768px) {
+    .dashboard-container { padding: 30px; max-width: 1200px; margin: 0 auto; }
+    .stats-row { grid-template-columns: repeat(4, 1fr); }
+    .menu-principal { grid-template-columns: repeat(4, 1fr); }
+    .header-card { padding: 30px; }
+}
+</style>
+
+<div class="dashboard-container">
+
+    <!-- Header do Técnico -->
+    <div class="header-card">
+        <div class="tec-avatar">
+            <?php echo strtoupper(substr($tecnico->nome ?? 'T', 0, 1)); ?>
+        </div>
+        <div class="tec-info">
+            <h2>Olá, <?php echo htmlspecialchars($tecnico->nome ?? 'Técnico'); ?></h2>
+            <p><?php echo date('d/m/Y'); ?> •
+                <?php
+                $dias = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+                echo $dias[date('w')];
+                ?>
+            </p>
+            <span class="tec-badge">
+                <i class="icon-star"></i> Nível <?php echo $tecnico->nivel_tecnico ?? 'II'; ?>
+            </span>
+        </div>
+    </div>
+
+    <!-- Grid de Stats -->
+    <div class="stats-row">
+        <div class="stat-box">
+            <div class="stat-numero"><?php echo count($os_hoje ?? []); ?></div>
+            <div class="stat-label">OS Hoje</div>
+        </div>
+        <div class="stat-box warning">
+            <div class="stat-numero"><?php echo count($os_pendentes ?? []); ?></div>
+            <div class="stat-label">Pendentes</div>
+        </div>
+        <div class="stat-box success">
+            <div class="stat-numero"><?php echo $os_concluidas ?? 0; ?></div>
+            <div class="stat-label">Concluídas</div>
+        </div>
+        <div class="stat-box obras">
+            <div class="stat-numero"><?php echo count($minhas_obras ?? []); ?></div>
+            <div class="stat-label">Obras</div>
+        </div>
+    </div>
+
+    <?php if (!empty($minhas_obras)): ?>
+    <!-- Card Destaque: Obras -->
+    <div class="obras-destaque">
+        <div class="obras-destaque-header">
+            <h3 class="obras-destaque-titulo">
+                <i class="icon-building"></i> Minhas Obras
+            </h3>
+            <span class="obras-destaque-contagem"><?php echo count($minhas_obras); ?> ativa(s)</span>
+        </div>
+
+        <div class="obras-destaque-lista">
+            <?php foreach (array_slice($minhas_obras, 0, 2) as $obra): ?>
+            <div class="obra-destaque-item">
+                <span class="obra-destaque-nome"><?php echo htmlspecialchars($obra->nome); ?></span>
+                <span class="obra-destaque-progresso"><?php echo $obra->percentual_concluido ?? 0; ?>%</span>
+            </div>
+            <?php endforeach; ?>
+        </div>
+
+        <a href="<?php echo site_url('tecnicos/minhas_obras'); ?>" class="btn-ver-obras">
+            Ver Todas as Obras <i class="icon-arrow-right"></i>
+        </a>
+    </div>
+    <?php endif; ?>
+
+    <!-- Menu Principal -->
+    <div class="menu-principal">
+        <a href="<?php echo site_url('tecnicos/minhas_os'); ?>" class="menu-item os">
+            <i class="icon-clipboard"></i>
+            <span>Minhas OS</span>
+        </a>
+        <a href="<?php echo site_url('tecnicos/minhas_obras'); ?>" class="menu-item obras">
+            <i class="icon-building"></i>
+            <span>Minhas Obras</span>
+        </a>
+        <a href="<?php echo site_url('tecnicos/meu_estoque'); ?>" class="menu-item estoque">
+            <i class="icon-package"></i>
+            <span>Meu Estoque</span>
+        </a>
+        <a href="<?php echo site_url('tecnicos/perfil'); ?>" class="menu-item perfil">
+            <i class="icon-user"></i>
+            <span>Meu Perfil</span>
+        </a>
+    </div>
+
+    <!-- OS de Hoje -->
+    <div class="section-card">
+        <div class="section-header">
+            <div class="section-titulo">
+                <i class="icon-calendar"></i> OS de Hoje
+            </div>
+            <a href="<?php echo site_url('tecnicos/minhas_os'); ?>" class="btn-ver-tudo">Ver todas</a>
+        </div>
+
+        <?php if (!empty($os_hoje)): ?>
+            <div class="os-lista">
+                <?php foreach ($os_hoje as $os): ?>
+                <?php
+                $statusClass = 'aberto';
+                if ($os->status == 'Em Andamento') $statusClass = 'andamento';
+                elseif ($os->status == 'Pendente') $statusClass = 'pendente';
+                elseif ($os->status == 'Finalizada') $statusClass = 'finalizada';
+                ?>
+                <div class="os-item">
+                    <div class="os-numero">#<?php echo $os->idOs; ?></div>
+                    <div class="os-info">
+                        <div class="os-cliente"><?php echo htmlspecialchars($os->cliente_nome ?? 'N/A'); ?></div>
+                        <div class="os-detalhes">
+                            <?php if (isset($os->hora_inicial)): ?>
+                                <i class="icon-time"></i> <?php echo $os->hora_inicial; ?>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <span class="os-status <?php echo $statusClass; ?>"><?php echo $os->status; ?></span>
+                    <a href="<?php echo site_url('tecnicos/executar_os/' . $os->idOs); ?>" class="os-acao" title="Executar OS">
+                        <i class="icon-play"></i>
                     </a>
                 </div>
+                <?php endforeach; ?>
             </div>
-            <div class="widget-content">
-                <div class="row-fluid">
-                    <div class="span8">
-                        <div class="media">
-                            <div class="pull-left">
-                                <div class="tec-avatar" style="
-                                    width: 70px;
-                                    height: 70px;
-                                    border-radius: 50%;
-                                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                                    display: flex;
-                                    align-items: center;
-                                    justify-content: center;
-                                    color: white;
-                                    font-size: 28px;
-                                    font-weight: 600;
-                                ">
-                                    <?php echo strtoupper(substr($tecnico->nome ?? 'T', 0, 1)); ?>
-                                </div>
-                            </div>
-                            <div class="media-body" style="padding-left: 15px;">
-                                <h4 class="media-heading" style="margin: 5px 0 5px 0; font-size: 18px;">
-                                    <?php echo htmlspecialchars($tecnico->nome ?? 'Técnico', ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?>
-                                </h4>
-                                <p style="margin: 0; color: #666; font-size: 13px;">
-                                    <i class="bx bx-envelope"></i> <?php echo htmlspecialchars($tecnico->email ?? '', ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?>
-                                </p>
-                                <span class="label label-info" style="margin-top: 5px; display: inline-block;">
-                                    <i class="bx bx-star"></i> Nível <?php echo $tecnico->nivel_tecnico ?? 'II'; ?>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="span4 text-right">
-                        <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; display: inline-block; text-align: center;">
-                            <div style="font-size: 13px; color: #666; margin-bottom: 5px;">
-                                <i class="bx bx-calendar"></i> <?php echo date('d/m/Y'); ?>
-                            </div>
-                            <div style="font-size: 18px; font-weight: bold; color: #333;">
-                                <?php
-                                $dia_semana = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
-                                echo $dia_semana[date('w')];
-                                ?>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        <?php else: ?>
+            <div class="empty-state">
+                <i class="icon-calendar"></i>
+                <p>Nenhuma OS agendada para hoje</p>
             </div>
-        </div>
-    </div>
-</div>
-
-<!-- Cards de Estatísticas -->
-<div class="row-fluid">
-    <!-- OS de Hoje -->
-    <div class="span3">
-        <div class="widget-box" style="background: #3498db; border: none;">
-            <div class="widget-content" style="padding: 20px; color: white;">
-                <div class="row-fluid">
-                    <div class="span8">
-                        <div style="font-size: 32px; font-weight: bold;"><?php echo count($os_hoje ?? []); ?></div>
-                        <div style="font-size: 13px; opacity: 0.9;">OS Hoje</div>
-                    </div>
-                    <div class="span4 text-right">
-                        <i class="bx bx-calendar-check" style="font-size: 40px; opacity: 0.3;"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Pendentes -->
-    <div class="span3">
-        <div class="widget-box" style="background: #e74c3c; border: none;">
-            <div class="widget-content" style="padding: 20px; color: white;">
-                <div class="row-fluid">
-                    <div class="span8">
-                        <div style="font-size: 32px; font-weight: bold;"><?php echo count($os_pendentes ?? []); ?></div>
-                        <div style="font-size: 13px; opacity: 0.9;">Pendentes</div>
-                    </div>
-                    <div class="span4 text-right">
-                        <i class="bx bx-time-five" style="font-size: 40px; opacity: 0.3;"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Concluídas -->
-    <div class="span3">
-        <div class="widget-box" style="background: #27ae60; border: none;">
-            <div class="widget-content" style="padding: 20px; color: white;">
-                <div class="row-fluid">
-                    <div class="span8">
-                        <div style="font-size: 32px; font-weight: bold;"><?php echo $os_concluidas ?? 0; ?></div>
-                        <div style="font-size: 13px; opacity: 0.9;">Concluídas (Semana)</div>
-                    </div>
-                    <div class="span4 text-right">
-                        <i class="bx bx-check-circle" style="font-size: 40px; opacity: 0.3;"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <?php endif; ?>
     </div>
 
     <!-- Estoque -->
-    <div class="span3">
-        <div class="widget-box" style="background: #9b59b6; border: none;">
-            <div class="widget-content" style="padding: 20px; color: white;">
-                <div class="row-fluid">
-                    <div class="span8">
-                        <div style="font-size: 32px; font-weight: bold;"><?php echo count($estoque ?? []); ?></div>
-                        <div style="font-size: 13px; opacity: 0.9;">Itens em Estoque</div>
-                    </div>
-                    <div class="span4 text-right">
-                        <i class="bx bx-package" style="font-size: 40px; opacity: 0.3;"></i>
-                    </div>
-                </div>
+    <div class="section-card">
+        <div class="section-header">
+            <div class="section-titulo">
+                <i class="icon-package" style="color: #9b59b6;"></i> Meu Estoque
             </div>
+            <a href="<?php echo site_url('tecnicos/meu_estoque'); ?>" class="btn-ver-tudo">Ver tudo</a>
         </div>
+
+        <?php if (!empty($estoque)): ?>
+            <?php foreach (array_slice($estoque, 0, 3) as $item): ?>
+            <div class="estoque-item">
+                <span class="estoque-nome">
+                    <i class="icon-package" style="color: #27ae60; margin-right: 8px;"></i>
+                    <?php echo htmlspecialchars($item->produto_nome ?? 'Produto'); ?>
+                </span>
+                <span class="estoque-qtd"><?php echo $item->quantidade; ?> <?php echo $item->unidade ?? ''; ?></span>
+            </div>
+            <?php endforeach; ?>
+            <?php if (count($estoque) > 3): ?>
+            <div style="text-align: center; margin-top: 15px;">
+                <a href="<?php echo site_url('tecnicos/meu_estoque'); ?>" class="btn-ver-tudo">+ <?php echo count($estoque) - 3; ?> itens</a>
+            </div>
+            <?php endif; ?>
+        <?php else: ?>
+            <div class="empty-state">
+                <i class="icon-package"></i>
+                <p>Nenhum item em estoque</p>
+            </div>
+        <?php endif; ?>
     </div>
 
-    <!-- Minhas Obras -->
-    <div class="span3">
-        <div class="widget-box" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); border: none;">
-            <div class="widget-content" style="padding: 20px; color: white;">
-                <div class="row-fluid">
-                    <div class="span8">
-                        <div style="font-size: 32px; font-weight: bold;"><?php echo count($minhas_obras ?? []); ?></div>
-                        <div style="font-size: 13px; opacity: 0.9;">Minhas Obras</div>
-                    </div>
-                    <div class="span4 text-right">
-                        <i class="bx bx-building" style="font-size: 40px; opacity: 0.3;"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 
-<!-- Ações Rápidas -->
-<div class="row-fluid">
-    <div class="span12">
-        <div class="widget-box">
-            <div class="widget-title">
-                <span class="icon"><i class="bx bx-bolt"></i></span>
-                <h5>Ações Rápidas</h5>
-            </div>
-            <div class="widget-content">
-                <div class="row-fluid" style="text-align: center;">
-                    <div class="span3">
-                        <a href="<?php echo site_url('tecnicos/minhas_os'); ?>" class="btn btn-large btn-info" style="width: 90%; padding: 20px;">
-                            <i class="bx bx-clipboard" style="font-size: 32px; display: block; margin-bottom: 10px;"></i>
-                            <span style="font-size: 14px;">Minhas OS</span>
-                        </a>
-                    </div>
-                    <div class="span3">
-                        <a href="<?php echo site_url('tecnicos/minhas_obras'); ?>" class="btn btn-large" style="width: 90%; padding: 20px; background: linear-gradient(135deg, #11998e, #38ef7d); color: white;">
-                            <i class="bx bx-building" style="font-size: 32px; display: block; margin-bottom: 10px;"></i>
-                            <span style="font-size: 14px;">Minhas Obras</span>
-                        </a>
-                    </div>
-                    <div class="span3">
-                        <a href="<?php echo site_url('tecnicos/meu_estoque'); ?>" class="btn btn-large btn-success" style="width: 90%; padding: 20px;">
-                            <i class="bx bx-package" style="font-size: 32px; display: block; margin-bottom: 10px;"></i>
-                            <span style="font-size: 14px;">Meu Estoque</span>
-                        </a>
-                    </div>
-                    <div class="span3">
-                        <a href="<?php echo site_url('tecnicos/perfil'); ?>" class="btn btn-large btn-warning" style="width: 90%; padding: 20px;">
-                            <i class="bx bx-user" style="font-size: 32px; display: block; margin-bottom: 10px;"></i>
-                            <span style="font-size: 14px;">Meu Perfil</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Minhas Obras -->
-<div class="row-fluid">
-    <div class="span12">
-        <div class="widget-box">
-            <div class="widget-title" style="background: linear-gradient(135deg, #11998e, #38ef7d);">
-                <span class="icon"><i class="bx bx-building" style="color: white;"></i></span>
-                <h5 style="color: white;">Minhas Obras</h5>
-                <div class="buttons">
-                    <a href="<?php echo site_url('tecnicos/minhas_obras'); ?>" class="btn btn-mini" style="background: rgba(255,255,255,0.9); color: #11998e;">
-                        <i class="bx bx-list-ul"></i> Ver Todas
-                    </a>
-                </div>
-            </div>
-            <div class="widget-content nopadding">
-                <?php if (!empty($minhas_obras)): ?>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 15px; padding: 15px;">
-                        <?php foreach ($minhas_obras as $obra): ?>
-                            <div style="background: white; border-radius: 10px; border: 1px solid #e8e8e8; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: all 0.3s;">
-                                <div style="padding: 15px; background: linear-gradient(135deg, #11998e, #38ef7d); color: white;">
-                                    <div style="font-size: 12px; opacity: 0.9; margin-bottom: 5px;">
-                                        <i class="bx bx-barcode"></i> <?php echo $obra->codigo; ?>
-                                    </div>
-                                    <div style="font-weight: 600; font-size: 15px;">
-                                        <?php echo htmlspecialchars($obra->nome, ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?>
-                                    </div>
-                                    <div style="font-size: 12px; opacity: 0.9; margin-top: 5px;">
-                                        <i class="bx bx-user"></i> <?php echo htmlspecialchars($obra->cliente_nome ?? 'N/A', ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?>
-                                    </div>
-                                </div>
-                                <div style="padding: 15px;">
-                                    <div style="margin-bottom: 10px;">
-                                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 12px;">
-                                            <span>Progresso</span>
-                                            <span style="font-weight: 600; color: #11998e;"><?php echo $obra->percentual_concluido ?? 0; ?>%</span>
-                                        </div>
-                                        <div style="height: 6px; background: #e9ecef; border-radius: 3px; overflow: hidden;">
-                                            <div style="height: 100%; width: <?php echo $obra->percentual_concluido ?? 0; ?>%; background: linear-gradient(90deg, #11998e, #38ef7d); border-radius: 3px;"></div>
-                                        </div>
-                                    </div>
-
-                                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                                        <span class="label" style="background: <?php echo $obra->status == 'EmExecucao' ? '#4facfe' : '#f39c12'; ?>;">
-                                            <?php echo $obra->status == 'EmExecucao' ? 'Em Execução' : $obra->status; ?>
-                                        </span>
-
-                                        <a href="<?php echo site_url('tecnicos/executar_obra/' . $obra->id); ?>" class="btn btn-small" style="background: linear-gradient(135deg, #11998e, #38ef7d); color: white;">
-                                            <i class="bx bx-play-circle"></i> Executar
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                <?php else: ?>
-                    <div style="padding: 40px; text-align: center; color: #999;">
-                        <i class="bx bx-building" style="font-size: 48px; opacity: 0.3;"></i>
-                        <h4 style="margin: 15px 0 5px 0; color: #666; font-weight: normal;">Nenhuma obra atribuída</h4>
-                        <p style="font-size: 13px;">Você não está alocado em nenhuma obra no momento.</p>
-                    </div>
-                <?php endif; ?>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- OS de Hoje -->
-<div class="row-fluid">
-    <div class="span8">
-        <div class="widget-box">
-            <div class="widget-title">
-                <span class="icon"><i class="bx bx-calendar-event"></i></span>
-                <h5>OS de Hoje</h5>
-                <div class="buttons">
-                    <a href="<?php echo site_url('tecnicos/minhas_os'); ?>" class="btn btn-mini btn-info">
-                        <i class="bx bx-list-ul"></i> Ver Todas
-                    </a>
-                </div>
-            </div>
-            <div class="widget-content nopadding">
-                <?php if (!empty($os_hoje)): ?>
-                    <table class="table table-bordered table-striped table-condensed">
-                        <thead>
-                            <tr>
-                                <th style="width: 60px; text-align: center;">OS</th>
-                                <th>Cliente</th>
-                                <th style="width: 100px;">Horário</th>
-                                <th style="width: 100px; text-align: center;">Status</th>
-                                <th style="width: 80px; text-align: center;">Ação</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($os_hoje as $os): ?>
-                                <tr>
-                                    <td style="text-align: center; font-weight: bold; color: #667eea;">
-                                        #<?php echo $os->idOs; ?>
-                                    </td>
-                                    <td>
-                                        <?php echo htmlspecialchars($os->cliente_nome ?? 'N/A', ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?>
-                                    </td>
-                                    <td>
-                                        <?php echo isset($os->hora_inicial) ? $os->hora_inicial : '-'; ?>
-                                    </td>
-                                    <td style="text-align: center;">
-                                        <?php
-                                        $statusLabel = $os->status ?? 'Aberto';
-                                        $statusClass = 'label';
-                                        switch ($statusLabel) {
-                                            case 'Aberto':
-                                                $statusClass = 'label label-info';
-                                                break;
-                                            case 'Em Andamento':
-                                                $statusClass = 'label label-warning';
-                                                break;
-                                            case 'Finalizada':
-                                                $statusClass = 'label label-success';
-                                                break;
-                                            default:
-                                                $statusClass = 'label';
-                                        }
-                                        ?>
-                                        <span class="<?php echo $statusClass; ?>">
-                                            <?php echo $statusLabel; ?>
-                                        </span>
-                                    </td>
-                                    <td style="text-align: center;">
-                                        <?php if ($os->status == 'Finalizada' || $os->status == 'Finalizado'): ?>
-                                            <a href="<?php echo site_url('tecnicos/relatorio_execucao/' . $os->idOs); ?>"
-                                               class="btn btn-mini btn-info" title="Ver relatório">
-                                                <i class="bx bx-file"></i>
-                                            </a>
-                                        <?php else: ?>
-                                            <a href="<?php echo site_url('tecnicos/executar_os/' . $os->idOs); ?>"
-                                               class="btn btn-mini btn-success" title="Executar OS">
-                                                <i class="bx bx-play"></i>
-                                            </a>
-                                        <?php endif; ?>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                <?php else: ?>
-                    <div style="padding: 40px; text-align: center; color: #999;">
-                        <i class="bx bx-calendar-check" style="font-size: 48px; opacity: 0.3;"></i>
-                        <h4 style="margin: 15px 0 5px 0; color: #666; font-weight: normal;">Nenhuma OS agendada para hoje</h4>
-                        <p style="font-size: 13px;">Você não possui ordens de serviço agendadas para hoje.</p>
-                    </div>
-                <?php endif; ?>
-            </div>
-        </div>
-    </div>
-
-    <!-- Resumo do Estoque -->
-    <div class="span4">
-        <div class="widget-box">
-            <div class="widget-title">
-                <span class="icon"><i class="bx bx-package"></i></span>
-                <h5>Meu Estoque</h5>
-                <div class="buttons">
-                    <a href="<?php echo site_url('tecnicos/meu_estoque'); ?>" class="btn btn-mini btn-success">
-                        <i class="bx bx-list-ul"></i> Ver Tudo
-                    </a>
-                </div>
-            </div>
-            <div class="widget-content">
-                <?php if (!empty($estoque)): ?>
-                    <div style="max-height: 250px; overflow-y: auto;">
-                        <?php
-                        $count = 0;
-                        foreach ($estoque as $item):
-                            if ($count >= 5) break;
-                        ?>
-                            <div style="padding: 10px; border-bottom: 1px solid #eee;">
-                                <div style="font-weight: 600; font-size: 13px; margin-bottom: 3px;">
-                                    <i class="bx bx-package" style="color: #27ae60;"></i>
-                                    <?php echo htmlspecialchars($item->produto_nome ?? 'Produto', ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?>
-                                </div>
-                                <div style="font-size: 12px; color: #888;">
-                                    Qtd: <span class="label label-info"><?php echo $item->quantidade; ?></span>
-                                    <?php echo $item->unidade ?? ''; ?>
-                                </div>
-                            </div>
-                        <?php
-                            $count++;
-                        endforeach;
-                        ?>
-                    </div>
-                    <?php if (count($estoque) > 5): ?>
-                        <div style="text-align: center; padding: 10px; border-top: 1px solid #eee;">
-                            <a href="<?php echo site_url('tecnicos/meu_estoque'); ?>" class="btn btn-small btn-default">
-                                Ver mais <?php echo count($estoque) - 5; ?> itens
-                            </a>
-                        </div>
-                    <?php endif; ?>
-                <?php else: ?>
-                    <div style="padding: 30px; text-align: center; color: #999;">
-                        <i class="bx bx-package" style="font-size: 40px; opacity: 0.3;"></i>
-                        <p style="margin-top: 10px; font-size: 13px;">Nenhum item em estoque</p>
-                    </div>
-                <?php endif; ?>
-            </div>
-        </div>
-    </div>
-</div>
-</div>
+<script>
+// Animação nos cards
+document.addEventListener('DOMContentLoaded', function() {
+    const cards = document.querySelectorAll('.stat-box, .menu-item');
+    cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            card.style.transition = 'all 0.4s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+});
+</script>
