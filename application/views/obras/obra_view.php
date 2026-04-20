@@ -1052,9 +1052,9 @@
                     </button>
                 </div>
 
-                <?php if (!empty($etapas)): ?>
+                <?php if (!empty($etapas)): ?>>
                 <div class="etapas-timeline">
-                    <?php foreach ($etapas as $etapa): ?>
+                    <?php foreach ($etapas as $etapa): ?>>
                     <?php
                     $etapa_status = $etapa->status ?? 'pendente';
                     $etapa_class = '';
@@ -1109,7 +1109,7 @@
                     </div>
                     <?php endforeach; ?>
                 </div>
-                <?php else: ?>
+                <?php else: ?>>
                 <div style="text-align: center; padding: 40px; color: var(--subtitle, #888);">
                     <i class="icon-tasks" style="font-size: 48px; margin-bottom: 16px; display: block; opacity: 0.5;"></i>
                     <p>Nenhuma etapa cadastrada</p>
@@ -1137,9 +1137,9 @@
                     </a>
                 </div>
 
-                <?php if (!empty($atividades_recentes)): ?
+                <?php if (!empty($atividades_recentes)): ?>
                 <div class="atividades-lista-rapida">
-                    <?php foreach (array_slice($atividades_recentes, 0, 5) as $atividade): ?
+                    <?php foreach (array_slice($atividades_recentes, 0, 5) as $atividade): ?>
                     <?php $ativ_class = ($atividade->status == 'concluida') ? 'concluida' : 'agendada'; ?>
 
                     <div class="atividade-item-rapido <?php echo $ativ_class; ?>">
@@ -1152,7 +1152,7 @@
                             <div class="atividade-meta">
                                 <i class="icon-calendar"></i>
                                 <?php echo date('d/m/Y', strtotime($atividade->data_atividade)); ?>
-                                <?php if ($atividade->tecnico_nome): ?>
+                                <?php if ($atividade->tecnico_nome): ?>>
                                 <span>| <i class="icon-user"></i> <?php echo htmlspecialchars($atividade->tecnico_nome); ?></span>
                                 <?php endif; ?>
                             </div>
@@ -1160,7 +1160,7 @@
                     </div>
                     <?php endforeach; ?>
                 </div>
-                <?php else: ?
+                <?php else: ?>
                 <div style="text-align: center; padding: 30px; color: var(--subtitle, #888);">
                     <p>Nenhuma atividade recente</p>
                 </div>
@@ -1179,9 +1179,9 @@
                     </a>
                 </div>
 
-                <?php if (!empty($equipe)): ?
+                <?php if (!empty($equipe)): ?>
                 <div class="equipe-grid">
-                    <?php foreach (array_slice($equipe, 0, 6) as $membro): ?>
+                    <?php foreach (array_slice($equipe, 0, 6) as $membro): ?>>
                     <div class="equipe-card">
                         <div class="equipe-avatar">
                             <i class="icon-user"></i>
@@ -1191,7 +1191,7 @@
                     </div>
                     <?php endforeach; ?>
                 </div>
-                <?php else: ?
+                <?php else: ?>
                 <div style="text-align: center; padding: 30px; color: var(--subtitle, #888);">
                     <p>Nenhum membro na equipe</p>
                     <a href="<?php echo site_url('obras/equipe/' . $obra->id); ?>" class="obra-section-action" style="margin-top: 16px; display: inline-block;">
