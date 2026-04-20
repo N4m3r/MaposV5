@@ -582,7 +582,17 @@ class Mine extends CI_Controller
             // Carrega obras se tiver permissão
             if ($this->usuarios_cliente_model->hasPermissao($usuario_id, 'visualizar_obras') && $cliente_id) {
                 $this->load->model('obras_model');
-                $obras = $this->obras_model->getByCliente($cliente_id, 5, 0) ?? [];
+                $this->load->model('clientes_model');
+
+                // Buscar documento do cliente para buscar obras vinculadas ao CNPJ
+                $cliente_documento = '';
+                $cliente = $this->clientes_model->getById($cliente_id);
+                if ($cliente) {
+                    $cliente_documento = $cliente->documento ?? '';
+                }
+
+                // Usar getByClienteCompleto para buscar por ID e também por CNPJ/documento
+                $obras = $this->obras_model->getByClienteCompleto($cliente_id, $cliente_documento, 5, 0) ?? [];
             }
 
             log_message('debug', 'Painel Usuário - OS: ' . count($os) . ', Cobranças: ' . count($cobrancas) . ', Boletos: ' . count($boletos) . ', Obras: ' . count($obras));
@@ -602,9 +612,26 @@ class Mine extends CI_Controller
             $this->load->view('conecte/template', $data);
         } else {
             // Sistema antigo por token
+            $cliente_id = $this->session->userdata('cliente_id');
+
+            // Buscar documento do cliente para buscar obras vinculadas ao CNPJ
+            $cliente_documento = '';
+            if ($cliente_id) {
+                $this->load->model('clientes_model');
+                $cliente = $this->clientes_model->getById($cliente_id);
+                if ($cliente) {
+                    $cliente_documento = $cliente->documento ?? '';
+                }
+            }
+
+            // Carrega obras vinculadas ao cliente (por ID ou CNPJ)
+            $this->load->model('obras_model');
+            $obras = $this->obras_model->getByClienteCompleto($cliente_id, $cliente_documento, 5, 0) ?? [];
+
             $data['menuPainel'] = 'painel';
-            $data['compras'] = $this->Conecte_model->getLastCompras($this->session->userdata('cliente_id'));
-            $data['os'] = $this->Conecte_model->getLastOs($this->session->userdata('cliente_id'));
+            $data['compras'] = $this->Conecte_model->getLastCompras($cliente_id);
+            $data['os'] = $this->Conecte_model->getLastOs($cliente_id);
+            $data['obras'] = $obras;
             $data['output'] = 'conecte/painel';
             $this->load->view('conecte/template', $data);
         }
