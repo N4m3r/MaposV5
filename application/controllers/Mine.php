@@ -1455,30 +1455,35 @@ class Mine extends CI_Controller
 
     public function detalhesOs($id = null)
     {
-        if (is_numeric($id) && $id != null) {
-            $this->load->model('mapos_model');
-            $this->load->model('os_model');
-
-            $this->data['result'] = $this->os_model->getById($id);
-            $this->data['produtos'] = $this->os_model->getProdutos($id);
-            $this->data['servicos'] = $this->os_model->getServicos($id);
-            $this->data['anexos'] = $this->os_model->getAnexos($id);
-
-            if (!$this->data['result'] || !isset($this->data['result']->idClientes)) {
-                $this->session->set_flashdata('error', 'OS não encontrada.');
-                redirect('mine/os');
-            }
-
-            if ($this->data['result']->idClientes != $this->session->userdata('cliente_id')) {
-                $this->session->set_flashdata('error', 'Esta OS não pertence ao cliente logado.');
-                redirect('mine/painel');
-            }
-
-            $this->data['output'] = 'conecte/detalhes_os';
-            $this->load->view('conecte/template', $this->data);
-        } else {
-            echo 'teste';
+        if (!session_id() || !$this->session->userdata('conectado')) {
+            redirect('mine');
         }
+
+        if (!$id || !is_numeric($id)) {
+            $this->session->set_flashdata('error', 'OS não informada ou inválida.');
+            redirect('mine/os');
+        }
+
+        $this->load->model('mapos_model');
+        $this->load->model('os_model');
+
+        $this->data['result'] = $this->os_model->getById($id);
+        $this->data['produtos'] = $this->os_model->getProdutos($id);
+        $this->data['servicos'] = $this->os_model->getServicos($id);
+        $this->data['anexos'] = $this->os_model->getAnexos($id);
+
+        if (!$this->data['result'] || !isset($this->data['result']->idClientes)) {
+            $this->session->set_flashdata('error', 'OS não encontrada.');
+            redirect('mine/os');
+        }
+
+        if ($this->data['result']->idClientes != $this->session->userdata('cliente_id')) {
+            $this->session->set_flashdata('error', 'Esta OS não pertence ao cliente logado.');
+            redirect('mine/painel');
+        }
+
+        $this->data['output'] = 'conecte/detalhes_os';
+        $this->load->view('conecte/template', $this->data);
     }
 
     public function cadastrar()
