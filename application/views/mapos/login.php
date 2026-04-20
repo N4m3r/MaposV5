@@ -530,7 +530,11 @@
 
         <div class="left-content">
             <div class="greeting-icon">
-                <i class="bx bx-shield-alt-2"></i>
+                <?php if (isset($emitente) && !empty($emitente->url_logo)): ?>
+                    <img src="<?= $emitente->url_logo ?>" alt="Logo" style="max-width: 120px; max-height: 120px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
+                <?php else: ?>
+                    <i class="bx bx-shield-alt-2"></i>
+                <?php endif; ?>
             </div>
             <h1 class="greeting-title">
                 <?php
@@ -548,7 +552,13 @@
                 echo saudacao();
                 ?>
             </h1>
-            <p class="greeting-subtitle">Sistema de Gerenciamento de Ordens de Serviço</p>
+            <p class="greeting-subtitle">
+                <?php if (isset($emitente) && !empty($emitente->nome)): ?>
+                    <?= $emitente->nome ?>
+                <?php else: ?>
+                    Sistema de Gerenciamento de Ordens de Serviço
+                <?php endif; ?>
+            </p>
             <img src="<?= base_url() ?>assets/img/dashboard-animate.svg" class="left-image" alt="Map-OS">
         </div>
     </div>
@@ -561,10 +571,18 @@
                 <div class="card-header">
                     <div class="logo-area">
                         <div class="logo-icon">
-                            <img src="<?= base_url() ?>assets/img/logo-two.png" alt="Logo">
+                            <?php if (isset($emitente) && !empty($emitente->url_logo)): ?
+                                <img src="<?= $emitente->url_logo ?>" alt="Logo" style="border-radius: 8px;">
+                            <?php else: ?
+                                <img src="<?= base_url() ?>assets/img/logo-two.png" alt="Logo">
+                            <?php endif; ?>
                         </div>
                         <div class="logo-text">
-                            <img src="<?= base_url() ?>assets/img/logo-mapos-branco.png" alt="Map-OS">
+                            <?php if (isset($emitente) && !empty($emitente->nome)): ?
+                                <span style="font-size: 20px; font-weight: 700; color: #1a1f3a;"><?= $emitente->nome ?></span>
+                            <?php else: ?
+                                <img src="<?= base_url() ?>assets/img/logo-mapos-branco.png" alt="Map-OS">
+                            <?php endif; ?>
                         </div>
                     </div>
                     <span class="version-badge">Versão: <?= $this->config->item('app_version'); ?></span>
@@ -606,7 +624,12 @@
                 <!-- Footer -->
                 <div class="card-footer">
                     <p class="footer-text">
-                        <?= date('Y'); ?> &copy; <a href="https://github.com/RamonSilva20/mapos" target="_blank">Map-OS</a>
+                        <?= date('Y'); ?> &copy;
+                        <?php if (isset($emitente) && !empty($emitente->nome)): ?>
+                            <?= $emitente->nome ?>
+                        <?php else: ?
+                            <a href="https://github.com/RamonSilva20/mapos" target="_blank">Map-OS</a>
+                        <?php endif; ?>
                     </p>
                 </div>
             </div>

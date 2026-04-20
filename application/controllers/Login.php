@@ -10,7 +10,8 @@ class Login extends CI_Controller
 
     public function index()
     {
-        $this->load->view('mapos/login');
+        $data['emitente'] = $this->mapos_model->getEmitente();
+        $this->load->view('mapos/login', $data);
     }
 
     public function sair()

@@ -823,5 +823,84 @@ class Obras_model extends CI_Model
             return false;
         }
     }
+
+    /**
+     * Buscar obras por técnico (onde o técnico está na equipe)
+     */
+    public function getObrasPorTecnico($tecnico_id)
+    {
+        if (!$this->tabelaExiste('obras') || !$this->tabelaExiste('obra_equipe')) {
+            // Fallback: buscar obras onde o técnico é responsável técnico
+            $this->db->where('responsavel_tecnico_id', $tecnico_id);
+            $this->db->where('ativo', 1);
+            return $this->db->get('obras')->result();
+        }
+
+        try {
+            $this->db->select('o.*, c.nomeCliente as cliente_nome, oe.funcao');
+            $this->db->from('obras o');
+            $this->db->join('obra_equipe oe', 'oe.obra_id = o.id');
+            $this->db->join('clientes c', 'c.idClientes = o.cliente_id', 'left');
+            $this->db->where('oe.tecnico_id', $tecnico_id);
+            $this->db->where('oe.ativo', 1);
+            $this->db->where('o.ativo', 1);
+            $this->db->order_by('o.data_inicio_contrato', 'DESC');
+
+            $query = $this->db->get();
+            return $query ? $query->result() : [];
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao buscar obras do técnico: ' . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Verificar se técnico está na equipe da obra
+     */
+    public function tecnicoEstaNaEquipe($obra_id, $tecnico_id)
+    {
+        if (!$this->tabelaExiste('obra_equipe')) {
+            // Fallback: verificar se é responsável técnico
+            $this->db->where('id', $obra_id);
+            $this->db->where('responsavel_tecnico_id', $tecnico_id);
+            $this->db->where('ativo', 1);
+            return $this->db->count_all_results('obras') > 0;
+        }
+
+        try {
+            $this->db->where('obra_id', $obra_id);
+            $this->db->where('tecnico_id', $tecnico_id);
+            $this->db->where('ativo', 1);
+            return $this->db->count_all_results('obra_equipe') > 0;
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao verificar equipe: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Buscar equipe da obra
+     */
+    public function getEquipe($obra_id)
+    {
+        if (!$this->tabelaExiste('obra_equipe')) {
+            return [];
+        }
+
+        try {
+            $this->db->select('oe.*, u.nome as tecnico_nome, u.telefone as tecnico_telefone');
+            $this->db->from('obra_equipe oe');
+            $this->db->join('usuarios u', 'u.idUsuarios = oe.tecnico_id', 'left');
+            $this->db->where('oe.obra_id', $obra_id);
+            $this->db->where('oe.ativo', 1);
+            $this->db->order_by('oe.data_entrada', 'ASC');
+
+            $query = $this->db->get();
+            return $query ? $query->result() : [];
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao buscar equipe: ' . $e->getMessage());
+            return [];
+        }
+    }
 }
 
