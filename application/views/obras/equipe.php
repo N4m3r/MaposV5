@@ -351,19 +351,16 @@
                     </div>
 
                     <div class="team-actions">
-                        <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?
-003e
+                        <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
                         <a href="<?php echo site_url('obras/removerTecnico/' . $membro->id); ?>" class="team-btn team-btn-danger" onclick="return confirm('Tem certeza que deseja remover este técnico da equipe?')">
                             <i class="icon-remove"></i> Remover da Equipe
                         </a>
-                        <?php endif; ?
-003e
+                        <?php endif; ?>
                     </div>
                 </div>
                 <?php endforeach; ?>
             </div>
-        <?php else: ?
-003e
+        <?php else: ?>
             <div class="empty-state-equipe">
                 <i class="icon-group"></i>
                 <h3>Nenhum técnico alocado</h3>
@@ -400,14 +397,12 @@
                             }
                         }
                         ?>
-                        <?php if (!$ja_na_equipe): ?
-003e
+                        <?php if (!$ja_na_equipe): ?>
                         <option value="<?php echo $t->idUsuarios; ?>">
                             <?php echo $t->nome; ?>
                             <?php if ($t->nivel_tecnico): ?> - <?php echo $t->nivel_tecnico; ?><?php endif; ?>
                         </option>
-                        <?php endif; ?
-003e
+                        <?php endif; ?>
                     <?php endforeach; ?>
                 </select>
             </div>

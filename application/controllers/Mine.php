@@ -773,43 +773,34 @@ class Mine extends CI_Controller
             redirect('mine');
         }
 
-        if (! $this->uri->segment(3) || ! is_numeric($this->uri->segment(3))) {
-            $this->session->set_flashdata('error', 'Item não pode ser encontrado, parâmetro não foi passado corretamente.');
-            redirect('mapos');
-        }
-
-        if (! $this->permission->checkPermission($this->session->userdata('permissao'), 'eCobranca')) {
-            $this->session->set_flashdata('error', 'Você não tem permissão para atualizar cobrança.');
-            redirect(base_url());
+        if (!$id || !is_numeric($id)) {
+            $this->session->set_flashdata('error', 'Cobrança não informada ou inválida.');
+            redirect('mine/cobrancas');
         }
 
         $this->load->model('cobrancas_model');
-        $this->cobrancas_model->atualizarStatus($this->uri->segment(3));
+        $this->cobrancas_model->atualizarStatus($id);
 
-        redirect(site_url('mine/cobrancas/'));
+        $this->session->set_flashdata('success', 'Cobrança atualizada com sucesso!');
+        redirect('mine/cobrancas');
     }
 
-    public function enviarcobranca()
+    public function enviarcobranca($id = null)
     {
         if (! session_id() || ! $this->session->userdata('conectado')) {
             redirect('mine');
         }
 
-        if (! $this->uri->segment(3) || ! is_numeric($this->uri->segment(3))) {
-            $this->session->set_flashdata('error', 'Item não pode ser encontrado, parâmetro não foi passado corretamente.');
-            redirect('mapos');
-        }
-
-        if (! $this->permission->checkPermission($this->session->userdata('permissao'), 'eCobranca')) {
-            $this->session->set_flashdata('error', 'Você não tem permissão para atualizar cobrança.');
-            redirect(base_url());
+        if (!$id || !is_numeric($id)) {
+            $this->session->set_flashdata('error', 'Cobrança não informada ou inválida.');
+            redirect('mine/cobrancas');
         }
 
         $this->load->model('cobrancas_model');
-        $this->cobrancas_model->enviarEmail($this->uri->segment(3));
-        $this->session->set_flashdata('success', 'Email adicionado na fila.');
+        $this->cobrancas_model->enviarEmail($id);
+        $this->session->set_flashdata('success', 'Email adicionado na fila de envio.');
 
-        redirect(site_url('mine/cobrancas/'));
+        redirect('mine/cobrancas');
     }
 
     public function os()
@@ -1290,16 +1281,21 @@ class Mine extends CI_Controller
             redirect('mine');
         }
 
+        if (!$id || !is_numeric($id)) {
+            $this->session->set_flashdata('error', 'Compra não informada ou inválida.');
+            redirect('mine/compras');
+        }
+
         $data['menuVendas'] = 'vendas';
         $data['custom_error'] = '';
         $this->CI = &get_instance();
         $this->CI->load->database();
         $this->load->model('mapos_model');
         $this->load->model('os_model');
-        $this->load->model('vendas_model');        
+        $this->load->model('vendas_model');
 
-        $data['result'] = $this->vendas_model->getById($this->uri->segment(3));
-        $data['produtos'] = $this->vendas_model->getProdutos($this->uri->segment(3));
+        $data['result'] = $this->vendas_model->getById($id);
+        $data['produtos'] = $this->vendas_model->getProdutos($id);
         $data['emitente'] = $this->mapos_model->getEmitente();
         $data['pix_key'] = $this->CI->db->get_where('configuracoes', ['config' => 'pix_key'])->row_object()->valor;
         $data['qrCode'] = $this->vendas_model->getQrCode(
@@ -1308,9 +1304,14 @@ class Mine extends CI_Controller
             $data['emitente']
         );
         $data['chaveFormatada'] = $this->formatarChave($data['pix_key']);
-        
+
+        if (!$data['result'] || !isset($data['result']->clientes_id)) {
+            $this->session->set_flashdata('error', 'Compra não encontrada.');
+            redirect('mine/compras');
+        }
+
         if ($data['result']->clientes_id != $this->session->userdata('cliente_id')) {
-            $this->session->set_flashdata('error', 'Esta OS não pertence ao cliente logado.');
+            $this->session->set_flashdata('error', 'Esta compra não pertence ao cliente logado.');
             redirect('mine/painel');
         }
 
@@ -1325,6 +1326,11 @@ class Mine extends CI_Controller
             redirect('mine');
         }
 
+        if (!$id || !is_numeric($id)) {
+            $this->session->set_flashdata('error', 'Venda não informada ou inválida.');
+            redirect('mine/compras');
+        }
+
         $data['menuVendas'] = 'vendas';
         $data['custom_error'] = '';
 
@@ -1335,6 +1341,11 @@ class Mine extends CI_Controller
         $data['result'] = $this->vendas_model->getById($id);
         $data['produtos'] = $this->vendas_model->getProdutos($id);
         $data['emitente'] = $this->mapos_model->getEmitente();
+
+        if (!$data['result'] || !isset($data['result']->clientes_id)) {
+            $this->session->set_flashdata('error', 'Venda não encontrada.');
+            redirect('mine/compras');
+        }
 
         $this->CI = &get_instance();
         $this->CI->load->database();
