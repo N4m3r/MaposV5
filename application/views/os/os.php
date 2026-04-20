@@ -3,8 +3,12 @@
 <script type="text/javascript" src="<?php echo base_url() ?>assets/js/jquery-ui/js/jquery-ui-1.9.2.custom.js"></script>
 <script src="<?php echo base_url() ?>assets/js/sweetalert2.all.min.js"></script>
 <style>
-  select {
-    width: 70px;
+  select[name="status"] {
+    width: 100%;
+    min-width: 140px;
+    height: 30px;
+    padding: 4px 8px;
+    font-size: 13px;
   }
 </style>
 <div class="new122">

@@ -865,7 +865,8 @@ class Mine extends CI_Controller
             }
             if (!empty($clientes_ids)) {
                 $this->db->where_in('idClientes', $clientes_ids);
-                $data['clientes_filtro'] = $this->db->get('clientes')->result();
+                $clientes_query = $this->db->get('clientes');
+                $data['clientes_filtro'] = ($clientes_query !== FALSE && is_object($clientes_query)) ? $clientes_query->result() : [];
             }
         } else {
             // Sistema antigo - apenas um cliente
