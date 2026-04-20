@@ -493,19 +493,24 @@ function getStatusColor($status) {
                 <tbody>
                     <?php foreach ($results as $r): ?>
                         <?php
-                        $cor = getStatusColor($r->status);
+                        $cor = getStatusColor($r->status ?? '');
 
                         // Calcular garantia
                         $vencGarantia = '';
                         $corGarantia = '';
-                        if ($r->garantia && is_numeric($r->garantia) && $r->dataFinal) {
-                            $vencGarantia = dateInterval($r->dataFinal, $r->garantia);
-                            $dataGarantia = explode('/', $vencGarantia);
-                            if (count($dataGarantia) == 3) {
-                                $dataGarantiaFormatada = $dataGarantia[2] . '-' . $dataGarantia[1] . '-' . $dataGarantia[0];
-                                $corGarantia = (strtotime($dataGarantiaFormatada) >= strtotime(date('Y-m-d'))) ? '#4d9c79' : '#f24c6f';
+                        if (!empty($r->garantia) && is_numeric($r->garantia) && !empty($r->dataFinal)) {
+                            try {
+                                $vencGarantia = dateInterval($r->dataFinal, $r->garantia);
+                                $dataGarantia = explode('/', $vencGarantia);
+                                if (count($dataGarantia) == 3) {
+                                    $dataGarantiaFormatada = $dataGarantia[2] . '-' . $dataGarantia[1] . '-' . $dataGarantia[0];
+                                    $corGarantia = (strtotime($dataGarantiaFormatada) >= strtotime(date('Y-m-d'))) ? '#4d9c79' : '#f24c6f';
+                                }
+                            } catch (Exception $e) {
+                                $vencGarantia = 'Erro no cálculo';
+                                $corGarantia = '#95a5a6';
                             }
-                        } elseif ($r->garantia == "0") {
+                        } elseif (isset($r->garantia) && $r->garantia == "0") {
                             $vencGarantia = 'Sem Garantia';
                         }
                         ?>
@@ -525,7 +530,7 @@ function getStatusColor($status) {
                             <td>
                                 <div class="os-date">
                                     <div class="label">Início</div>
-                                    <?= date('d/m/Y', strtotime($r->dataInicial)) ?>
+                                    <?= !empty($r->dataInicial) ? date('d/m/Y', strtotime($r->dataInicial)) : 'N/A' ?>
                                 </div>
                             </td>
                             <td>
@@ -539,7 +544,7 @@ function getStatusColor($status) {
                             </td>
                             <td>
                                 <span class="os-status" style="background-color: <?= $cor ?>20; color: <?= $cor ?>;">
-                                    <?= $r->status ?>
+                                    <?= htmlspecialchars($r->status ?? 'N/A') ?>
                                 </span>
                             </td>
                             <td>
@@ -549,7 +554,7 @@ function getStatusColor($status) {
                                         <i class="bx bx-show-alt"></i>
                                     </a>
 
-                                    <?php if ($r->status == 'Finalizado' || $r->status == 'Finalizada'): ?>
+                                    <?php if (isset($r->status) && ($r->status == 'Finalizado' || $r->status == 'Finalizada')): ?>
                                         <a href="<?= site_url('mine/relatorioAtendimento/' . $r->idOs) ?>"
                                            class="os-btn os-btn-report" title="Relatório de Atendimento">
                                             <i class="bx bx-file"></i>

@@ -168,13 +168,17 @@ class Obras_model extends CI_Model
         }
 
         try {
-            // Calcular progresso baseado nas etapas
-            $this->db->where('obra_id', $obra_id);
-            $total_etapas = $this->db->count_all_results('obra_etapas');
+            // Calcular progresso baseado nas etapas usando métodos seguros
+            $total_etapas = $this->contarRegistros('obra_etapas', ['obra_id' => $obra_id]);
 
-            $this->db->where('obra_id', $obra_id);
-            $this->db->where('status', 'concluida');
-            $etapas_concluidas = $this->db->count_all_results('obra_etapas');
+            $etapas_concluidas = 0;
+            if ($this->tabelaExiste('obra_etapas')) {
+                $sql = "SELECT COUNT(*) as total FROM obra_etapas WHERE obra_id = ? AND status = ?";
+                $query = $this->db->query($sql, [$obra_id, 'concluida']);
+                if ($query && $query->num_rows() > 0) {
+                    $etapas_concluidas = (int) $query->row()->total;
+                }
+            }
 
             $progresso = $total_etapas > 0 ? round(($etapas_concluidas / $total_etapas) * 100) : 0;
 
@@ -257,8 +261,7 @@ class Obras_model extends CI_Model
         }
 
         try {
-            $this->db->where('obra_id', $obra_id);
-            $total = $this->db->count_all_results('obra_etapas');
+            $total = $this->contarRegistros('obra_etapas', ['obra_id' => $obra_id]);
 
             $this->db->where('id', $obra_id);
             $this->db->update('obras', [
@@ -389,16 +392,7 @@ class Obras_model extends CI_Model
      */
     public function countByStatus($status)
     {
-        if (!$this->tabelaExiste('obras')) {
-            return 0;
-        }
-
-        try {
-            $this->db->where('status', $status);
-            return $this->db->count_all_results('obras');
-        } catch (Exception $e) {
-            return 0;
-        }
+        return $this->contarRegistros('obras', ['status' => $status]);
     }
 
     /**
@@ -746,6 +740,39 @@ class Obras_model extends CI_Model
     }
 
     /**
+     * Contar registros de forma segura
+     */
+    private function contarRegistros($tabela, $where = [])
+    {
+        if (!$this->tabelaExiste($tabela)) {
+            return 0;
+        }
+
+        try {
+            $sql = "SELECT COUNT(*) as total FROM {$tabela}";
+            $params = [];
+
+            if (!empty($where)) {
+                $conditions = [];
+                foreach ($where as $col => $val) {
+                    $conditions[] = "{$col} = ?";
+                    $params[] = $val;
+                }
+                $sql .= " WHERE " . implode(' AND ', $conditions);
+            }
+
+            $query = $this->db->query($sql, $params);
+            if ($query && $query->num_rows() > 0) {
+                return (int) $query->row()->total;
+            }
+        } catch (Exception $e) {
+            log_message('error', "Erro ao contar em {$tabela}: " . $e->getMessage());
+        }
+
+        return 0;
+    }
+
+    /**
      * Resumo da obra para dashboard
      */
     public function getResumo($obra_id)
@@ -760,33 +787,27 @@ class Obras_model extends CI_Model
                 return null;
             }
 
-            // Contar etapas (com tratamento de erro)
-            $total_etapas = 0;
+            // Contar etapas usando método seguro
+            $total_etapas = $this->contarRegistros('obra_etapas', ['obra_id' => $obra_id]);
             $etapas_concluidas = 0;
             if ($this->tabelaExiste('obra_etapas')) {
                 try {
-                    $total_etapas = $this->db->where('obra_id', $obra_id)->count_all_results('obra_etapas');
-                    $this->db->where('obra_id', $obra_id);
-                    $this->db->where('status', 'Concluida');
-                    $etapas_concluidas = $this->db->count_all_results('obra_etapas');
+                    $sql = "SELECT COUNT(*) as total FROM obra_etapas WHERE obra_id = ? AND status = ?";
+                    $query = $this->db->query($sql, [$obra_id, 'Concluida']);
+                    if ($query && $query->num_rows() > 0) {
+                        $etapas_concluidas = (int) $query->row()->total;
+                    }
                 } catch (Exception $e) {
-                    log_message('error', 'Erro ao contar etapas: ' . $e->getMessage());
+                    log_message('error', 'Erro ao contar etapas concluídas: ' . $e->getMessage());
                 }
             }
 
             // Contar atividades
-            $total_atividades = 0;
-            $atividades_hoje = 0;
-            if ($this->tabelaExiste('obra_atividades')) {
-                try {
-                    $total_atividades = $this->db->where('obra_id', $obra_id)->count_all_results('obra_atividades');
-                    $this->db->where('obra_id', $obra_id);
-                    $this->db->where('data_atividade', date('Y-m-d'));
-                    $atividades_hoje = $this->db->count_all_results('obra_atividades');
-                } catch (Exception $e) {
-                    log_message('error', 'Erro ao contar atividades: ' . $e->getMessage());
-                }
-            }
+            $total_atividades = $this->contarRegistros('obra_atividades', ['obra_id' => $obra_id]);
+            $atividades_hoje = $this->contarRegistros('obra_atividades', [
+                'obra_id' => $obra_id,
+                'data_atividade' => date('Y-m-d')
+            ]);
 
             // Calcular dias restantes
             $dias_restantes = null;
@@ -821,10 +842,9 @@ class Obras_model extends CI_Model
 
         try {
             $this->db->where('id', $obra_id);
-            $this->db->where('cliente_id', $cliente_id);
-            $this->db->where('visivel_cliente', 1);
-            $this->db->where('ativo', 1);
-            return $this->db->count_all_results('obras') > 0;
+            $sql = "SELECT COUNT(*) as total FROM obras WHERE id = ? AND cliente_id = ? AND visivel_cliente = 1 AND ativo = 1";
+            $query = $this->db->query($sql, [$obra_id, $cliente_id]);
+            return ($query && $query->num_rows() > 0) ? $query->row()->total > 0 : false;
         } catch (Exception $e) {
             log_message('error', 'Erro ao verificar acesso: ' . $e->getMessage());
             return false;
@@ -868,17 +888,15 @@ class Obras_model extends CI_Model
     {
         if (!$this->tabelaExiste('obra_equipe')) {
             // Fallback: verificar se é responsável técnico
-            $this->db->where('id', $obra_id);
-            $this->db->where('responsavel_tecnico_id', $tecnico_id);
-            $this->db->where('ativo', 1);
-            return $this->db->count_all_results('obras') > 0;
+            $sql = "SELECT COUNT(*) as total FROM obras WHERE id = ? AND responsavel_tecnico_id = ? AND ativo = 1";
+            $query = $this->db->query($sql, [$obra_id, $tecnico_id]);
+            return ($query && $query->num_rows() > 0) ? $query->row()->total > 0 : false;
         }
 
         try {
-            $this->db->where('obra_id', $obra_id);
-            $this->db->where('tecnico_id', $tecnico_id);
-            $this->db->where('ativo', 1);
-            return $this->db->count_all_results('obra_equipe') > 0;
+            $sql = "SELECT COUNT(*) as total FROM obra_equipe WHERE obra_id = ? AND tecnico_id = ? AND ativo = 1";
+            $query = $this->db->query($sql, [$obra_id, $tecnico_id]);
+            return ($query && $query->num_rows() > 0) ? $query->row()->total > 0 : false;
         } catch (Exception $e) {
             log_message('error', 'Erro ao verificar equipe: ' . $e->getMessage());
             return false;

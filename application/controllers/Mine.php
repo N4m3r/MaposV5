@@ -848,14 +848,17 @@ class Mine extends CI_Controller
             redirect('mine/os');
         }
 
-        // Buscar clientes vinculados ao usuário para o filtro
-        $clientes_vinculados = [];
+        // Buscar clientes e OS vinculados ao usuário
+        $os_ids = [];
+        $data['clientes_filtro'] = [];
+
         if ($this->session->userdata('tipo_acesso') == 'usuario_cliente' && $usuario_cliente_id) {
             $this->load->model('usuarios_cliente_model');
-            $clientes_vinculados = $this->usuarios_cliente_model->getOsByCnpjs($usuario_cliente_id, ['limit' => 1000]);
-            // Extrair IDs únicos de clientes
+            $os_list = $this->usuarios_cliente_model->getOsByCnpjs($usuario_cliente_id);
+            $os_ids = [];
             $clientes_ids = [];
-            foreach ($clientes_vinculados as $os) {
+            foreach ($os_list as $os) {
+                $os_ids[] = $os->idOs;
                 if (!in_array($os->clientes_id, $clientes_ids)) {
                     $clientes_ids[] = $os->clientes_id;
                 }
@@ -863,29 +866,22 @@ class Mine extends CI_Controller
             if (!empty($clientes_ids)) {
                 $this->db->where_in('idClientes', $clientes_ids);
                 $data['clientes_filtro'] = $this->db->get('clientes')->result();
-            } else {
-                $data['clientes_filtro'] = [];
             }
         } else {
             // Sistema antigo - apenas um cliente
             if ($cliente_id) {
                 $cliente = $this->clientes_model->getById($cliente_id);
                 $data['clientes_filtro'] = $cliente ? [$cliente] : [];
-            } else {
-                $data['clientes_filtro'] = [];
             }
         }
 
         // Contar total com filtros
         $this->db->from('os');
         if ($this->session->userdata('tipo_acesso') == 'usuario_cliente' && $usuario_cliente_id) {
-            // Buscar OS pelos CNPJs do usuário
-            $os_list = $this->usuarios_cliente_model->getOsByCnpjs($usuario_cliente_id);
-            $os_ids = array_map(function($o) { return $o->idOs; }, $os_list);
             if (!empty($os_ids)) {
                 $this->db->where_in('idOs', $os_ids);
             } else {
-                $this->db->where('idOs', 0); // Nenhuma OS
+                $this->db->where('idOs', 0);
             }
         } else {
             $this->db->where('clientes_id', $cliente_id);
@@ -909,7 +905,8 @@ class Mine extends CI_Controller
             $this->db->where('dataInicial <=', $filtros['data_fim']);
         }
 
-        $config['total_rows'] = $this->db->count_all_results();
+        $total_result = @$this->db->count_all_results();
+        $config['total_rows'] = ($total_result !== FALSE) ? $total_result : 0;
 
         // Configuração da paginação
         $config['base_url'] = base_url() . 'index.php/mine/os/';
@@ -942,11 +939,6 @@ class Mine extends CI_Controller
         $this->db->join('clientes', 'os.clientes_id = clientes.idClientes', 'left');
         $this->db->join('usuarios', 'os.usuarios_id = usuarios.idUsuarios', 'left');
 
-        // Garantir que $os_ids está definido
-        if (!isset($os_ids)) {
-            $os_ids = [];
-        }
-
         if ($this->session->userdata('tipo_acesso') == 'usuario_cliente' && $usuario_cliente_id) {
             if (!empty($os_ids)) {
                 $this->db->where_in('os.idOs', $os_ids);
@@ -978,8 +970,16 @@ class Mine extends CI_Controller
 
         $this->db->order_by('os.idOs', 'desc');
         $this->db->limit($config['per_page'], $this->uri->segment(3) ? $this->uri->segment(3) : 0);
+
         $query = $this->db->get();
-        $data['results'] = ($query !== FALSE) ? $query->result() : [];
+
+        if ($query === FALSE) {
+            $error = $this->db->error();
+            log_message('error', 'Mine::os - Erro na query: ' . print_r($error, true));
+            $data['results'] = [];
+        } else {
+            $data['results'] = $query->result();
+        }
 
         // Dados para a view
         $data['filtros'] = $filtros ?? ['busca' => '', 'status' => '', 'data_inicio' => '', 'data_fim' => ''];
