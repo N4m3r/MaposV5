@@ -253,14 +253,14 @@
                 <div class="form-grid">
                     <div class="form-group full-width">
                         <label class="form-label">Endereço</label>
-                        <input type="text" name="endereco" class="form-input"
+                        <input type="text" name="endereco" id="endereco" class="form-input"
                                value="<?php echo isset($result) ? $result->endereco : ''; ?>"
                                placeholder="Rua, número, complemento...">
                     </div>
 
                     <div class="form-group">
                         <label class="form-label">Bairro</label>
-                        <input type="text" name="bairro" class="form-input"
+                        <input type="text" name="bairro" id="bairro" class="form-input"
                                value="<?php echo isset($result) ? $result->bairro : ''; ?>"
                                placeholder="Bairro">
                     </div>
@@ -268,14 +268,14 @@
                     <div class="form-row" style="display: contents;">
                         <div class="form-group">
                             <label class="form-label">Cidade</label>
-                            <input type="text" name="cidade" class="form-input"
+                            <input type="text" name="cidade" id="cidade" class="form-input"
                                    value="<?php echo isset($result) ? $result->cidade : ''; ?>"
                                    placeholder="Cidade">
                         </div>
 
                         <div class="form-group">
                             <label class="form-label">UF</label>
-                            <input type="text" name="estado" class="form-input" maxlength="2"
+                            <input type="text" name="estado" id="estado" class="form-input" maxlength="2"
                                    value="<?php echo isset($result) ? $result->estado : ''; ?>"
                                    placeholder="UF">
                         </div>
@@ -283,7 +283,7 @@
 
                     <div class="form-group">
                         <label class="form-label">CEP</label>
-                        <input type="text" name="cep" class="form-input cep"
+                        <input type="text" name="cep" id="cep" class="form-input cep"
                                value="<?php echo isset($result) ? $result->cep : ''; ?>"
                                placeholder="00000-000">
                     </div>
@@ -395,5 +395,55 @@
 $(document).ready(function() {
     $('.money').mask('000.000.000,00', {reverse: true});
     $('.cep').mask('00000-000');
+
+    // Auto-preenchimento de endereço ao selecionar cliente
+    $('#cliente_select').on('change', function() {
+        var selectedOption = $(this).find('option:selected');
+        var clienteId = $(this).val();
+
+        if (clienteId) {
+            // Pegar dados do data-attribute
+            var documento = selectedOption.data('documento');
+            var endereco = selectedOption.data('endereco');
+            var numero = selectedOption.data('numero');
+            var bairro = selectedOption.data('bairro');
+            var cidade = selectedOption.data('cidade');
+            var estado = selectedOption.data('estado');
+            var cep = selectedOption.data('cep');
+
+            // Montar endereço completo
+            var enderecoCompleto = [];
+            if (endereco) enderecoCompleto.push(endereco);
+            if (numero) enderecoCompleto.push(numero);
+
+            // Preencher campos
+            $('#endereco').val(enderecoCompleto.join(', '));
+            $('#bairro').val(bairro || '');
+            $('#cidade').val(cidade || '');
+            $('#estado').val(estado || '');
+            $('#cep').val(cep || '');
+
+            // Mostrar documento
+            if (documento) {
+                $('#cliente_info').show();
+                $('#cliente_doc').text('CNPJ/CPF: ' + documento);
+            } else {
+                $('#cliente_info').hide();
+            }
+        } else {
+            // Limpar campos se nenhum cliente selecionado
+            $('#endereco').val('');
+            $('#bairro').val('');
+            $('#cidade').val('');
+            $('#estado').val('');
+            $('#cep').val('');
+            $('#cliente_info').hide();
+        }
+    });
+
+    // Trigger change se já tiver cliente selecionado (edição)
+    if ($('#cliente_select').val()) {
+        $('#cliente_select').trigger('change');
+    }
 });
 </script>
