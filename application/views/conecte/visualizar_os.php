@@ -13,6 +13,10 @@ $totalProdutos = 0; ?>
                         <a title="Relatório de Atendimento" class="button btn btn-mini btn-success" href="<?php echo site_url('mine/relatorioAtendimento/' . $result->idOs); ?>">
                             <span class="button__icon"><i class="bx bx-file"></i></span> <span class="button__text">Relatório de Atendimento</span></a>
                     <?php endif; ?>
+                    <?php if ($pode_aprovar && in_array($result->status, ['Orçamento', 'Aberto', 'Negociação'])): ?>
+                        <a title="Aprovar Ordem de Serviço" class="button btn btn-mini btn-success" href="<?php echo site_url('mine/aprovarOs/' . $result->idOs); ?>">
+                            <span class="button__icon"><i class="bx bx-check"></i></span> <span class="button__text">Aprovar OS</span></a>
+                    <?php endif; ?>
                     <a target="_blank" title="Imprimir Relatório" class="button btn btn-mini btn-inverse" href="<?php echo site_url() ?>/mine/imprimirOs/<?php echo $result->idOs; ?>">
                         <span class="button__icon"><i class="bx bx-printer"></i></span> <span class="button__text">Imprimir Relatório</span></a>
                 </div>

@@ -869,8 +869,77 @@ class Mine extends CI_Controller
             redirect('mine/painel');
         }
 
+        // Verificar permissão para aprovar OS (novo sistema de usuários)
+        $data['pode_aprovar'] = false;
+        if ($this->session->userdata('tipo_acesso') == 'usuario_cliente') {
+            $this->load->model('usuarios_cliente_model');
+            $data['pode_aprovar'] = $this->usuarios_cliente_model->hasPermissao(
+                $this->session->userdata('usuario_cliente_id'),
+                'aprovar_os'
+            );
+        } else {
+            // Sistema antigo - cliente tem permissão por padrão
+            $data['pode_aprovar'] = true;
+        }
+
         $data['output'] = 'conecte/visualizar_os';
         $this->load->view('conecte/template', $data);
+    }
+
+    public function aprovarOs($id = null)
+    {
+        if (! session_id() || ! $this->session->userdata('conectado')) {
+            redirect('mine');
+        }
+
+        if (! $id || ! is_numeric($id)) {
+            $this->session->set_flashdata('error', 'OS não encontrada.');
+            redirect('mine/os');
+        }
+
+        $this->load->model('os_model');
+        $os = $this->os_model->getById($id);
+
+        if (! $os) {
+            $this->session->set_flashdata('error', 'OS não encontrada.');
+            redirect('mine/os');
+        }
+
+        // Verificar se a OS pertence ao cliente logado
+        if ($os->idClientes != $this->session->userdata('cliente_id')) {
+            $this->session->set_flashdata('error', 'Esta OS não pertence ao cliente logado.');
+            redirect('mine/painel');
+        }
+
+        // Verificar permissão para aprovar
+        if ($this->session->userdata('tipo_acesso') == 'usuario_cliente') {
+            $this->load->model('usuarios_cliente_model');
+            if (! $this->usuarios_cliente_model->hasPermissao(
+                $this->session->userdata('usuario_cliente_id'),
+                'aprovar_os'
+            )) {
+                $this->session->set_flashdata('error', 'Você não tem permissão para aprovar OS.');
+                redirect('mine/visualizarOs/' . $id);
+            }
+        }
+
+        // Verificar se o status atual permite aprovação
+        $statusPermitidos = ['Orçamento', 'Aberto', 'Negociação'];
+        if (! in_array($os->status, $statusPermitidos)) {
+            $this->session->set_flashdata('error', 'Esta OS não pode ser aprovada no status atual: ' . $os->status);
+            redirect('mine/visualizarOs/' . $id);
+        }
+
+        // Atualizar status para Aprovado
+        $data = ['status' => 'Aprovado'];
+        if ($this->os_model->edit('os', $data, 'idOs', $id)) {
+            $this->session->set_flashdata('success', 'Ordem de Serviço aprovada com sucesso!');
+            log_info('Cliente aprovou a OS. ID: ' . $id);
+        } else {
+            $this->session->set_flashdata('error', 'Erro ao aprovar a Ordem de Serviço.');
+        }
+
+        redirect('mine/visualizarOs/' . $id);
     }
 
     public function validarCPF($cpf)
