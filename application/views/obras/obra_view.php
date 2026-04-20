@@ -361,7 +361,7 @@
                     </div>
                     <div class="info-item">
                         <div class="info-label">Início</div>
-                        <div class="info-value"><i class="icon-calendar"></i> <?php echo $resumo['obra']->data_inicio ? date('d/m/Y', strtotime($resumo['obra']->data_inicio)) : 'N/A'; ?></div>
+                        <div class="info-value"><i class="icon-calendar"></i> <?php echo $resumo['obra']->data_inicio_contrato ? date('d/m/Y', strtotime($resumo['obra']->data_inicio_contrato)) : 'N/A'; ?></div>
                     </div>
                     <div class="info-item">
                         <div class="info-label">Previsão de Término</div>

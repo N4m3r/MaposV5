@@ -169,25 +169,96 @@
             </div>
             <div class="widget-content">
                 <div class="row-fluid" style="text-align: center;">
-                    <div class="span4">
+                    <div class="span3">
                         <a href="<?php echo site_url('tecnicos/minhas_os'); ?>" class="btn btn-large btn-info" style="width: 90%; padding: 20px;">
                             <i class="bx bx-clipboard" style="font-size: 32px; display: block; margin-bottom: 10px;"></i>
                             <span style="font-size: 14px;">Minhas OS</span>
                         </a>
                     </div>
-                    <div class="span4">
+                    <div class="span3">
+                        <a href="<?php echo site_url('tecnicos_admin/minhas_obras'); ?>" class="btn btn-large" style="width: 90%; padding: 20px; background: linear-gradient(135deg, #11998e, #38ef7d); color: white;">
+                            <i class="bx bx-building" style="font-size: 32px; display: block; margin-bottom: 10px;"></i>
+                            <span style="font-size: 14px;">Minhas Obras</span>
+                        </a>
+                    </div>
+                    <div class="span3">
                         <a href="<?php echo site_url('tecnicos/meu_estoque'); ?>" class="btn btn-large btn-success" style="width: 90%; padding: 20px;">
                             <i class="bx bx-package" style="font-size: 32px; display: block; margin-bottom: 10px;"></i>
                             <span style="font-size: 14px;">Meu Estoque</span>
                         </a>
                     </div>
-                    <div class="span4">
+                    <div class="span3">
                         <a href="<?php echo site_url('tecnicos/perfil'); ?>" class="btn btn-large btn-warning" style="width: 90%; padding: 20px;">
                             <i class="bx bx-user" style="font-size: 32px; display: block; margin-bottom: 10px;"></i>
                             <span style="font-size: 14px;">Meu Perfil</span>
                         </a>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Minhas Obras -->
+<div class="row-fluid">
+    <div class="span12">
+        <div class="widget-box">
+            <div class="widget-title" style="background: linear-gradient(135deg, #11998e, #38ef7d);">
+                <span class="icon"><i class="bx bx-building" style="color: white;"></i></span>
+                <h5 style="color: white;">Minhas Obras</h5>
+                <div class="buttons">
+                    <a href="<?php echo site_url('tecnicos_admin/minhas_obras'); ?>" class="btn btn-mini" style="background: rgba(255,255,255,0.9); color: #11998e;">
+                        <i class="bx bx-list-ul"></i> Ver Todas
+                    </a>
+                </div>
+            </div>
+            <div class="widget-content nopadding">
+                <?php if (!empty($minhas_obras)): ?>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 15px; padding: 15px;">
+                        <?php foreach ($minhas_obras as $obra): ?>
+                            <div style="background: white; border-radius: 10px; border: 1px solid #e8e8e8; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: all 0.3s;">
+                                <div style="padding: 15px; background: linear-gradient(135deg, #11998e, #38ef7d); color: white;">
+                                    <div style="font-size: 12px; opacity: 0.9; margin-bottom: 5px;">
+                                        <i class="bx bx-barcode"></i> <?php echo $obra->codigo; ?>
+                                    </div>
+                                    <div style="font-weight: 600; font-size: 15px;">
+                                        <?php echo htmlspecialchars($obra->nome, ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?>
+                                    </div>
+                                    <div style="font-size: 12px; opacity: 0.9; margin-top: 5px;">
+                                        <i class="bx bx-user"></i> <?php echo htmlspecialchars($obra->cliente_nome ?? 'N/A', ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?>
+                                    </div>
+                                </div>
+                                <div style="padding: 15px;">
+                                    <div style="margin-bottom: 10px;">
+                                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 12px;">
+                                            <span>Progresso</span>
+                                            <span style="font-weight: 600; color: #11998e;"><?php echo $obra->percentual_concluido ?? 0; ?>%</span>
+                                        </div>
+                                        <div style="height: 6px; background: #e9ecef; border-radius: 3px; overflow: hidden;">
+                                            <div style="height: 100%; width: <?php echo $obra->percentual_concluido ?? 0; ?>%; background: linear-gradient(90deg, #11998e, #38ef7d); border-radius: 3px;"></div>
+                                        </div>
+                                    </div>
+
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <span class="label" style="background: <?php echo $obra->status == 'EmExecucao' ? '#4facfe' : '#f39c12'; ?>;">
+                                            <?php echo $obra->status == 'EmExecucao' ? 'Em Execução' : $obra->status; ?>
+                                        </span>
+
+                                        <a href="<?php echo site_url('tecnicos_admin/tecnico_executar_obra/' . $obra->id); ?>" class="btn btn-small" style="background: linear-gradient(135deg, #11998e, #38ef7d); color: white;">
+                                            <i class="bx bx-play-circle"></i> Executar
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php else: ?>
+                    <div style="padding: 40px; text-align: center; color: #999;">
+                        <i class="bx bx-building" style="font-size: 48px; opacity: 0.3;"></i>
+                        <h4 style="margin: 15px 0 5px 0; color: #666; font-weight: normal;">Nenhuma obra atribuída</h4>
+                        <p style="font-size: 13px;">Você não está alocado em nenhuma obra no momento.</p>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>

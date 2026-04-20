@@ -45,6 +45,15 @@
                     </a>
                 </li>
 
+                <!-- Minhas Obras -->
+                <li class="<?php if (isset($menuObras)) { echo 'active'; }; ?>">
+                    <a class="tip-bottom" title="" href="<?= site_url('tecnicos_admin/minhas_obras') ?>">
+                        <i class='bx bx-building iconX'></i>
+                        <span class="title">Minhas Obras</span>
+                        <span class="title-tooltip">Minhas Obras</span>
+                    </a>
+                </li>
+
                 <!-- Meu Estoque -->
                 <li class="<?php if (isset($menuEstoque)) { echo 'active'; }; ?>">
                     <a class="tip-bottom" title="" href="<?= site_url('tecnicos/meu_estoque') ?>">

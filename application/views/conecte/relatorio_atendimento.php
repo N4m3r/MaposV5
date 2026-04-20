@@ -369,26 +369,26 @@
                     <div class="info-row">
                         <div class="info-item">
                             <span class="info-label">OS Nº</span>
-                            <span class="info-value">#<?php echo sprintf('%04d', $os->idOs); ?></span>
+                            <span class="info-value">#<?php echo sprintf('%04d', $os->idOs ?? 0); ?></span>
                         </div>
                         <div class="info-item">
                             <span class="info-label">Data de Entrada</span>
-                            <span class="info-value"><?php echo date('d/m/Y', strtotime($os->dataInicial)); ?></span>
+                            <span class="info-value"><?php echo !empty($os->dataInicial) ? date('d/m/Y', strtotime($os->dataInicial)) : '-'; ?></span>
                         </div>
                         <div class="info-item">
                             <span class="info-label">Status</span>
-                            <span class="status-badge status-finalizada"><?php echo $os->status; ?></span>
+                            <span class="status-badge status-finalizada"><?php echo $os->status ?? 'N/A'; ?></span>
                         </div>
                         <div class="info-item">
                             <span class="info-label">Data de Finalização</span>
                             <span class="info-value"><?php echo !empty($os->dataFinal) ? date('d/m/Y', strtotime($os->dataFinal)) : 'Não definida'; ?></span>
                         </div>
                     </div>
-                    <?php if ($os->descricaoProduto): ?>
+                    <?php if (!empty($os->descricaoProduto)): ?>
                         <div class="info-row">
                             <div class="info-item" style="flex: 1;">
                                 <span class="info-label">Descrição do Produto/Serviço</span>
-                                <span class="info-value"><?php echo strip_tags($os->descricaoProduto); ?></span>
+                                <span class="info-value"><?php echo strip_tags($os->descricaoProduto ?? ''); ?></span>
                             </div>
                         </div>
                     <?php endif; ?>

@@ -244,12 +244,21 @@
         <?php if (!empty($os_hoje)): ?>
             <div class="os-grid">
                 <?php foreach ($os_hoje as $os):
-                    $statusClass = match($os->status ?? 'Aberto') {
-                        'Aberto' => ['bg' => '#e3f2fd', 'color' => '#1976d2', 'icon' => 'bx-time', 'label' => 'Aberto'],
-                        'Em Andamento' => ['bg' => '#fff3e0', 'color' => '#f57c00', 'icon' => 'bx-loader-alt', 'label' => 'Em Andamento'],
-                        'Finalizado' => ['bg' => '#e8f5e9', 'color' => '#388e3c', 'icon' => 'bx-check-circle', 'label' => 'Finalizado'],
-                        default => ['bg' => '#f5f5f5', 'color' => '#666', 'icon' => 'bx-help-circle', 'label' => $os->status]
-                    };
+                    $status = $os->status ?? 'Aberto';
+                    switch($status) {
+                        case 'Aberto':
+                            $statusClass = ['bg' => '#e3f2fd', 'color' => '#1976d2', 'icon' => 'bx-time', 'label' => 'Aberto'];
+                            break;
+                        case 'Em Andamento':
+                            $statusClass = ['bg' => '#fff3e0', 'color' => '#f57c00', 'icon' => 'bx-loader-alt', 'label' => 'Em Andamento'];
+                            break;
+                        case 'Finalizado':
+                        case 'Finalizada':
+                            $statusClass = ['bg' => '#e8f5e9', 'color' => '#388e3c', 'icon' => 'bx-check-circle', 'label' => 'Finalizado'];
+                            break;
+                        default:
+                            $statusClass = ['bg' => '#f5f5f5', 'color' => '#666', 'icon' => 'bx-help-circle', 'label' => $status];
+                    }
                 ?>
                 <div class="os-card">
                     <div class="os-card-header" style="background: <?php echo $statusClass['bg']; ?>;">
