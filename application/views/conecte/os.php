@@ -549,24 +549,24 @@ function getStatusColor($status) {
                             </td>
                             <td>
                                 <div class="os-actions">
-                                    <a href="<?= site_url('mine/visualizarOs/' . $r->idOs) ?>"
+                                    <a href="<?= base_url('index.php/mine/visualizarOs/' . $r->idOs) ?>"
                                        class="os-btn os-btn-view" title="Visualizar">
                                         <i class="bx bx-show-alt"></i>
                                     </a>
 
                                     <?php if (isset($r->status) && ($r->status == 'Finalizado' || $r->status == 'Finalizada')): ?>
-                                        <a href="<?= site_url('mine/relatorioAtendimento/' . $r->idOs) ?>"
+                                        <a href="<?= base_url('index.php/mine/relatorioAtendimento/' . $r->idOs) ?>"
                                            class="os-btn os-btn-report" title="Relatório de Atendimento">
                                             <i class="bx bx-file"></i>
                                         </a>
                                     <?php endif; ?>
 
-                                    <a href="<?= site_url('mine/imprimirOs/' . $r->idOs) ?>"
+                                    <a href="<?= base_url('index.php/mine/imprimirOs/' . $r->idOs) ?>"
                                        class="os-btn os-btn-print" title="Imprimir" target="_blank">
                                         <i class="bx bx-printer"></i>
                                     </a>
 
-                                    <a href="<?= site_url('mine/detalhesOs/' . $r->idOs) ?>"
+                                    <a href="<?= base_url('index.php/mine/detalhesOs/' . $r->idOs) ?>"
                                        class="os-btn os-btn-detail" title="Ver Detalhes">
                                         <i class="bx bx-detail"></i>
                                     </a>

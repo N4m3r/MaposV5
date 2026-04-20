@@ -205,6 +205,7 @@ class Tecnicos extends CI_Controller
 
         $this->load->view('tema/topo', $this->data);
         $this->load->view('tema/menu_portal_tecnico', $this->data);
+        $this->load->view('tema/conteudo', $this->data);
         $this->load->view('tecnicos/dashboard', $this->data);
         $this->load->view('tema/rodape', $this->data);
     }
@@ -222,6 +223,7 @@ class Tecnicos extends CI_Controller
 
         $this->load->view('tema/topo', $this->data);
         $this->load->view('tema/menu_portal_tecnico', $this->data);
+        $this->load->view('tema/conteudo', $this->data);
         $this->load->view('tecnicos/minhas_os', $this->data);
         $this->load->view('tema/rodape', $this->data);
     }
@@ -257,6 +259,7 @@ class Tecnicos extends CI_Controller
 
         $this->load->view('tema/topo', $this->data);
         $this->load->view('tema/menu_portal_tecnico', $this->data);
+        $this->load->view('tema/conteudo', $this->data);
         $this->load->view('tecnicos/minhas_obras', $this->data);
         $this->load->view('tema/rodape', $this->data);
     }
@@ -306,6 +309,7 @@ class Tecnicos extends CI_Controller
 
         $this->load->view('tema/topo', $this->data);
         $this->load->view('tema/menu_portal_tecnico', $this->data);
+        $this->load->view('tema/conteudo', $this->data);
         $this->load->view('tecnicos/executar_obra', $this->data);
         $this->load->view('tema/rodape', $this->data);
     }

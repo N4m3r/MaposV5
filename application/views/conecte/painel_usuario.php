@@ -414,7 +414,7 @@ if (!function_exists('getPainelUsuarioStatusColor')) {
                                     </span>
                                 </td>
                                 <td class="text-center">
-                                    <a href="<?= site_url('mine/visualizarOs/' . $o->idOs) ?>" class="btn btn-mini btn-info" title="Visualizar">
+                                    <a href="<?= base_url('index.php/mine/visualizarOs/' . $o->idOs) ?>" class="btn btn-mini btn-info" title="Visualizar">
                                         <i class="bx bx-show"></i>
                                     </a>
                                 </td>

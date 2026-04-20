@@ -502,15 +502,15 @@ $osFinalizadas = count(array_filter($os ?? [], function($o) { return $o->status 
                                     </span>
                                 </td>
                                 <td>
-                                    <a href="<?= site_url('mine/visualizarOs/' . $o->idOs) ?>" class="btn btn-small" title="Visualizar">
+                                    <a href="<?= base_url('index.php/mine/visualizarOs/' . $o->idOs) ?>" class="btn btn-small" title="Visualizar">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                     <?php if ($o->status == 'Finalizado' || $o->status == 'Finalizada'): ?>
-                                        <a href="<?= site_url('mine/relatorioAtendimento/' . $o->idOs) ?>" class="btn btn-small" style="background: #28a745; color: white;" title="Relatório de Atendimento">
+                                        <a href="<?= base_url('index.php/mine/relatorioAtendimento/' . $o->idOs) ?>" class="btn btn-small" style="background: #28a745; color: white;" title="Relatório de Atendimento">
                                             <i class="bx bx-file"></i>
                                         </a>
                                     <?php endif; ?>
-                                    <a href="<?= site_url('mine/imprimirOs/' . $o->idOs) ?>" class="btn btn-small" target="_blank" title="Imprimir">
+                                    <a href="<?= base_url('index.php/mine/imprimirOs/' . $o->idOs) ?>" class="btn btn-small" target="_blank" title="Imprimir">
                                         <i class="fas fa-print"></i>
                                     </a>
                                 </td>

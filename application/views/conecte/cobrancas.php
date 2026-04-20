@@ -38,10 +38,10 @@
                         echo '<td>' . $dataVenda . '</td>';
 
                         if ($r->os_id != '') {
-                            echo '<td><a href="' . base_url() . 'index.php/mine/visualizarOs/' . $r->os_id . '">  Ordem de Serviço: #' . $r->os_id . '</a></td>';
+                            echo '<td><a href="' . base_url('index.php/mine/visualizarOs/' . $r->os_id) . '">  Ordem de Serviço: #' . $r->os_id . '</a></td>';
                         }
                         if ($r->vendas_id != '') {
-                            echo '<td><a href="' . base_url() . 'index.php/mine/visualizarCompra/' . $r->vendas_id . '">  Venda: #' . $r->vendas_id . '</a></td>';
+                            echo '<td><a href="' . base_url('index.php/mine/visualizarCompra/' . $r->vendas_id) . '">  Venda: #' . $r->vendas_id . '</a></td>';
                         }
 
                         echo '<td>' . $cobrancaStatus . '</td>';

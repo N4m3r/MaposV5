@@ -179,14 +179,14 @@ function getStatusColor($status) {
                 <h5>Ordem de Serviço #<?php echo $result->idOs; ?></h5>
                 <div class="buttons" style=" padding-left:5px;">
                     <?php if ($result->status == 'Finalizado' || $result->status == 'Finalizada'): ?>
-                        <a title="Relatório de Atendimento" class="button btn btn-mini btn-success" href="<?php echo site_url('mine/relatorioAtendimento/' . $result->idOs); ?>">
+                        <a title="Relatório de Atendimento" class="button btn btn-mini btn-success" href="<?php echo base_url('index.php/mine/relatorioAtendimento/' . $result->idOs); ?>">
                             <span class="button__icon"><i class="bx bx-file"></i></span> <span class="button__text">Relatório</span></a>
                     <?php endif; ?>
                     <?php if ($pode_aprovar && in_array($result->status, ['Orçamento', 'Aberto', 'Negociação'])): ?>
-                        <a title="Aprovar" class="button btn btn-mini btn-success" href="<?php echo site_url('mine/aprovarOs/' . $result->idOs); ?>">
+                        <a title="Aprovar" class="button btn btn-mini btn-success" href="<?php echo base_url('index.php/mine/aprovarOs/' . $result->idOs); ?>">
                             <span class="button__icon"><i class="bx bx-check"></i></span> <span class="button__text">Aprovar</span></a>
                     <?php endif; ?>
-                    <a target="_blank" title="Imprimir" class="button btn btn-mini btn-inverse" href="<?php echo site_url() ?>/mine/imprimirOs/<?php echo $result->idOs; ?>">
+                    <a target="_blank" title="Imprimir" class="button btn btn-mini btn-inverse" href="<?php echo base_url('index.php/mine/imprimirOs/' . $result->idOs); ?>">
                         <span class="button__icon"><i class="bx bx-printer"></i></span> <span class="button__text">Imprimir</span></a>
                 </div>
             </div>

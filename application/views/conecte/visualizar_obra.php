@@ -266,7 +266,7 @@
             <h4 style="margin: 0 0 20px 0; color: #333;"><i class="bx bx-group" style="color: #667eea;"></i> Equipe da Obra</h4>
 
             <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px;">
-                <?php foreach ($equipe as $membro): ?
+                <?php foreach ($equipe as $membro): ?>
 
                 <div style="background: #f8f9fa; border-radius: 12px; padding: 15px; display: flex; align-items: center; gap: 12px;">
                     <div style="width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; font-weight: 700; flex-shrink: 0;">
@@ -291,7 +291,7 @@
             <h4 style="margin: 0 0 20px 0; color: #333;"><i class="bx bx-images" style="color: #667eea;"></i> Fotos da Obra</h4>
 
             <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px;">
-                <?php foreach ($fotos as $foto): ?
+                <?php foreach ($fotos as $foto): ?>
                 <a href="<?= base_url($foto) ?>" target="_blank" style="display: block; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.3s;">
                     <img src="<?= base_url($foto) ?>" style="width: 100%; height: 150px; object-fit: cover; display: block;">
                 </a>
@@ -317,7 +317,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($os_vinculadas as $os): ?
+                        <?php foreach ($os_vinculadas as $os): ?>
                         <?php
                         $osStatusColors = [
                             'Aberto' => '#e74c3c',
