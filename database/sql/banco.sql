@@ -2059,6 +2059,23 @@ CREATE TABLE IF NOT EXISTS `obra_checkins` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- -----------------------------------------------------
+-- Table `obra_materiais` - Materiais da obra
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `obra_materiais` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `obra_id` INT(11) NOT NULL,
+  `nome` VARCHAR(255) NOT NULL,
+  `quantidade` INT DEFAULT 1,
+  `quantidade_usada` INT DEFAULT 0,
+  `observacao` TEXT,
+  `status` VARCHAR(50) DEFAULT 'pendente',
+  `created_at` DATETIME,
+  `updated_at` DATETIME,
+  PRIMARY KEY (`id`),
+  INDEX `idx_obra_id` (`obra_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
+
+-- -----------------------------------------------------
 -- Dados iniciais - Anexo V Impostos (configuracoes_impostos)
 -- -----------------------------------------------------
 -- NOTA: As aliquotas do Anexo V sao inseridas aqui como configuracao padrao.
