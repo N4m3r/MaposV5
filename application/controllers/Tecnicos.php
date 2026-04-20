@@ -243,21 +243,21 @@ class Tecnicos extends CI_Controller
 
         $this->load->model('obras_model');
 
-        // Buscar obras onde o técnico está na equipe
-        $this->db->select('o.*, c.nomeCliente as cliente_nome');
-        $this->db->from('obras o');
-        $this->db->join('obra_equipe oe', 'oe.obra_id = o.id');
-        $this->db->join('clientes c', 'c.idClientes = o.cliente_id', 'left');
-        $this->db->where('oe.tecnico_id', $tecnico_id);
-        $this->db->where('oe.ativo', 1);
-        $this->db->where_in('o.status', ['Contratada', 'EmExecucao']);
-        $this->db->group_by('o.id');
-        $obras = $this->db->get()->result();
+        // Buscar obras onde o técnico está na equipe usando o model
+        $obras = $this->obras_model->getObrasPorTecnico($tecnico_id);
 
-        // Enriquecer dados
+        // Enriquecer dados e calcular estatísticas
         foreach ($obras as $obra) {
-            $obra->minhas_os = $this->db->where(['obra_id' => $obra->id, 'tecnico_responsavel' => $tecnico_id])->count_all_results('os');
-            $obra->etapas_pendentes = $this->db->where(['obra_id' => $obra->id, 'status !=' => 'concluida'])->count_all_results('obra_etapas');
+            // Contar OS do técnico nesta obra
+            $this->db->where(['obra_id' => $obra->id, 'tecnico_responsavel' => $tecnico_id]);
+            $obra->minhas_os = $this->db->count_all_results('os');
+
+            // Contar etapas pendentes
+            $this->db->where(['obra_id' => $obra->id, 'status !=' => 'concluida']);
+            $obra->etapas_pendentes = $this->db->count_all_results('obra_etapas');
+
+            // Buscar equipe da obra
+            $obra->equipe = $this->obras_model->getEquipe($obra->id);
         }
 
         $this->data['obras'] = $obras;
@@ -269,7 +269,7 @@ class Tecnicos extends CI_Controller
     }
 
     /**
-     * Técnico - Visualizar e executar etapas da obra
+     * Técnico - Visualizar e executar etapas da obra - NOVO LAYOUT
      */
     public function executar_obra($obra_id = null)
     {
@@ -282,9 +282,8 @@ class Tecnicos extends CI_Controller
 
         $this->load->model('obras_model');
 
-        // Verificar se técnico está na equipe
-        $this->db->where(['obra_id' => $obra_id, 'tecnico_id' => $tecnico_id, 'ativo' => 1]);
-        if (!$this->db->get('obra_equipe')->row()) {
+        // Verificar se técnico está na equipe usando o model
+        if (!$this->obras_model->tecnicoNaEquipe($obra_id, $tecnico_id)) {
             $this->session->set_flashdata('error', 'Você não está alocado nesta obra.');
             redirect('tecnicos/minhas_obras');
         }
@@ -310,12 +309,10 @@ class Tecnicos extends CI_Controller
         $this->data['etapas'] = $etapas;
         $this->data['minhas_os'] = $minhas_os;
         $this->data['menuObras'] = 'active';
+        $this->data['pageTitle'] = 'Executar Obra: ' . $obra->nome;
+        $this->data['title'] = 'Executar Obra - Portal do Técnico';
 
-        $this->load->view('tema/topo', $this->data);
-        $this->load->view('tema/menu_portal_tecnico', $this->data);
-        $this->load->view('tema/conteudo', $this->data);
-        $this->load->view('tecnicos/executar_obra', $this->data);
-        $this->load->view('tema/rodape', $this->data);
+        $this->_load_tec_layout('executar_obra', $this->data);
     }
 
     /**

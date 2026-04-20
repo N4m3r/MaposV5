@@ -495,19 +495,14 @@
                             <thead>
                                 <tr>
                                     <th>Serviço</th>
-                                    <th width="120">Status</th>
+                                    <th width="120" style="text-align: center;">Quantidade</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php foreach ($servicos as $servico):
-                                    $status = $servico->status ?? '';
-                                    if (empty($status)) continue; // Pula serviços sem status definido
-                                    $badge_class = 'badge-warning';
-                                    if ($status == 'Executado' || $status == 'Concluido') $badge_class = 'badge-success';
-                                ?>
+                                <?php foreach ($servicos as $servico): ?>
                                 <tr>
                                     <td><?php echo htmlspecialchars($servico->nome ?? $servico->descricao ?? 'Serviço', ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></td>
-                                    <td><span class="badge-status <?php echo $badge_class; ?>"><?php echo $status; ?></span></td>
+                                    <td style="text-align: center; font-weight: 600;"><?php echo $servico->quantidade ?? 1; ?></td>
                                 </tr>
                                 <?php endforeach; ?>
                             </tbody>
