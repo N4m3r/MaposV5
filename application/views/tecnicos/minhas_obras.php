@@ -1,315 +1,448 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
 
 <style>
-.tecnico-obras { padding: 20px; }
-.tecnico-header {
+/* Container Principal */
+.obras-container { padding: 15px; max-width: 100%; }
+
+/* Header Mobile-First */
+.obras-header {
     background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
     border-radius: 20px;
-    padding: 30px;
+    padding: 25px 20px;
     color: white;
-    margin-bottom: 25px;
+    margin-bottom: 20px;
     box-shadow: 0 10px 40px rgba(17, 153, 142, 0.3);
 }
-.tecnico-header h1 { margin: 0; font-size: 28px; font-weight: 700; }
-.tecnico-header p { margin: 10px 0 0; opacity: 0.9; font-size: 16px; }
-
-.stats-cards-tecnico {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
-    margin-bottom: 30px;
+.obras-header h1 {
+    margin: 0 0 8px 0;
+    font-size: 24px;
+    font-weight: 700;
 }
-.stat-card-tecnico {
+.obras-header p {
+    margin: 0;
+    opacity: 0.9;
+    font-size: 14px;
+}
+
+/* Cards de Estatísticas */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 25px;
+}
+.stat-card {
     background: white;
     border-radius: 15px;
-    padding: 25px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    border-left: 5px solid #11998e;
-    transition: all 0.3s;
+    padding: 20px 15px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    border-top: 4px solid #11998e;
 }
-.stat-card-tecnico:hover { transform: translateY(-5px); box-shadow: 0 8px 30px rgba(0,0,0,0.12); }
-.stat-card-tecnico.warning { border-left-color: #f093fb; }
-.stat-card-tecnico.info { border-left-color: #667eea; }
-.stat-number-tecnico {
-    font-size: 36px;
+.stat-card.warning { border-top-color: #f39c12; }
+.stat-card.info { border-top-color: #3498db; }
+.stat-numero {
+    font-size: 28px;
     font-weight: 700;
     color: #333;
     margin-bottom: 5px;
 }
-.stat-label-tecnico {
+.stat-label {
+    font-size: 11px;
     color: #888;
-    font-size: 14px;
-}
-.stat-icon-tecnico {
-    float: right;
-    width: 50px;
-    height: 50px;
-    border-radius: 12px;
-    background: linear-gradient(135deg, #11998e, #38ef7d);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
+    text-transform: uppercase;
+    font-weight: 600;
 }
 
-.obras-tecnico-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-    gap: 25px;
-}
-.obra-tecnico-card {
+/* Filtros */
+.filtros-container {
     background: white;
     border-radius: 15px;
-    overflow: hidden;
-    box-shadow: 0 2px 20px rgba(0,0,0,0.08);
-    border: 1px solid #e8e8e8;
-    transition: all 0.3s ease;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
-.obra-tecnico-card:hover {
-    transform: translateY(-5px);
+.filtros-titulo {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 12px;
+}
+.filtros-grid {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 5px;
+}
+.filtro-btn {
+    padding: 10px 20px;
+    border: 2px solid #e8e8e8;
+    border-radius: 25px;
+    background: white;
+    color: #666;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.3s;
+}
+.filtro-btn:hover,
+.filtro-btn.active {
+    border-color: #11998e;
+    background: #f0fff4;
+    color: #11998e;
+}
+
+/* Cards de Obras */
+.obras-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.obra-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid #f0f0f0;
+    transition: all 0.3s;
+}
+.obra-card:hover {
+    transform: translateY(-3px);
     box-shadow: 0 8px 30px rgba(0,0,0,0.12);
 }
-.obra-tecnico-header {
-    padding: 25px;
+.obra-header-card {
+    padding: 20px;
     background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
     color: white;
     position: relative;
 }
-.obra-tecnico-header.em-andamento { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
-.obra-tecnico-status {
+.obra-header-card.em-execucao {
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+}
+.obra-status-badge {
     position: absolute;
     top: 15px;
     right: 15px;
     background: rgba(255,255,255,0.25);
-    padding: 6px 14px;
+    padding: 5px 12px;
     border-radius: 20px;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
+    text-transform: uppercase;
 }
-.obra-tecnico-codigo {
-    font-size: 13px;
+.obra-codigo {
+    font-size: 12px;
     opacity: 0.9;
     margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
-.obra-tecnico-title {
-    font-size: 20px;
+.obra-nome {
+    font-size: 18px;
     font-weight: 700;
-    margin: 0;
+    margin: 0 0 8px 0;
+    line-height: 1.3;
 }
-.obra-tecnico-cliente {
-    margin-top: 8px;
-    font-size: 14px;
+.obra-cliente {
+    font-size: 13px;
     opacity: 0.9;
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
-.obra-tecnico-body { padding: 20px; }
-.obra-tecnico-progress {
+
+/* Corpo do Card */
+.obra-body {
+    padding: 20px;
+}
+.obra-progresso-section {
     margin-bottom: 20px;
 }
-.progress-header {
+.obra-progresso-header {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     margin-bottom: 8px;
-    font-size: 13px;
 }
-.progress-label { color: #666; }
-.progress-value { font-weight: 700; color: #11998e; }
-.progress-bar-modern {
+.obra-progresso-label {
+    font-size: 13px;
+    color: #666;
+}
+.obra-progresso-valor {
+    font-size: 20px;
+    font-weight: 700;
+    color: #11998e;
+}
+.obra-barra-progresso {
     height: 10px;
     background: #e9ecef;
-    border-radius: 10px;
+    border-radius: 5px;
     overflow: hidden;
 }
-.progress-fill-modern {
+.obra-barra-preenchida {
     height: 100%;
     background: linear-gradient(90deg, #11998e, #38ef7d);
-    border-radius: 10px;
+    border-radius: 5px;
     transition: width 0.5s ease;
 }
-.obra-tecnico-stats {
+
+/* Stats Grid dentro do card */
+.obra-stats {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 15px;
     padding: 15px 0;
     border-top: 1px solid #f0f0f0;
 }
-.stat-item-modern {
+.obra-stat-item {
     text-align: center;
 }
-.stat-item-value {
-    font-size: 22px;
+.obra-stat-valor {
+    font-size: 20px;
     font-weight: 700;
     color: #333;
 }
-.stat-item-value.primary { color: #667eea; }
-.stat-item-value.success { color: #11998e; }
-.stat-item-value.warning { color: #f093fb; }
-.stat-item-label {
-    font-size: 11px;
+.obra-stat-valor.os { color: #3498db; }
+.obra-stat-valor.etapas { color: #f39c12; }
+.obra-stat-valor.equipe { color: #9b59b6; }
+.obra-stat-label {
+    font-size: 10px;
     color: #888;
-    margin-top: 3px;
     text-transform: uppercase;
+    margin-top: 4px;
 }
-.obra-tecnico-actions {
-    padding: 15px 20px;
-    background: #f8f9fa;
-    border-top: 1px solid #e8e8e8;
+
+/* Botões de Ação */
+.obra-actions {
+    padding: 0 20px 20px;
 }
-.btn-executar {
+.btn-executar-obra {
     display: block;
     width: 100%;
-    padding: 14px;
+    padding: 16px;
     background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
     color: white;
     border: none;
-    border-radius: 10px;
-    font-size: 15px;
-    font-weight: 600;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
     transition: all 0.3s;
     text-decoration: none;
-    text-align: center;
 }
-.btn-executar:hover {
+.btn-executar-obra:hover {
     transform: translateY(-2px);
     box-shadow: 0 5px 20px rgba(17, 153, 142, 0.4);
+    color: white;
+    text-decoration: none;
+}
+.btn-executar-obra i {
+    font-size: 20px;
 }
 
-.empty-state-tecnico {
+/* Empty State */
+.empty-state {
     text-align: center;
-    padding: 80px 20px;
+    padding: 60px 20px;
     background: white;
-    border-radius: 15px;
-    box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
 }
-.empty-icon-tecnico {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
+.empty-icon {
+    width: 100px;
+    height: 100px;
     background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 0 auto 25px;
-    font-size: 60px;
+    font-size: 50px;
     color: #ddd;
 }
-.empty-state-tecnico h3 { color: #666; font-weight: 400; margin-bottom: 10px; }
-.empty-state-tecnico p { color: #999; margin-bottom: 25px; }
+.empty-state h3 {
+    color: #666;
+    font-weight: 400;
+    margin-bottom: 10px;
+    font-size: 18px;
+}
+.empty-state p {
+    color: #999;
+    font-size: 14px;
+    margin-bottom: 25px;
+}
 
-@media (max-width: 768px) {
-    .obras-tecnico-grid { grid-template-columns: 1fr; }
+/* Desktop Responsive */
+@media (min-width: 768px) {
+    .obras-container { padding: 30px; max-width: 1200px; margin: 0 auto; }
+    .obras-lista {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+        gap: 20px;
+    }
+    .stats-grid { gap: 20px; }
+    .stat-card { padding: 25px; }
+}
+
+/* Animações */
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+.obra-card {
+    animation: slideInUp 0.4s ease;
+}
+
+/* Alerta de Info */
+.info-box {
+    background: #e8f4f8;
+    border-left: 4px solid #3498db;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+    border-radius: 0 10px 10px 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+.info-box i {
+    color: #3498db;
+    font-size: 20px;
+    margin-top: 2px;
+}
+.info-box p {
+    margin: 0;
+    color: #555;
+    font-size: 13px;
 }
 </style>
 
-<div class="tecnico-obras">
+<div class="obras-container">
 
     <!-- Header -->
-    <div class="tecnico-header">
+    <div class="obras-header">
         <h1><i class="icon-hard-hat"></i> Minhas Obras</h1>
-        <p>Área de execução das obras atribuídas a você</p>
+        <p>Obras em que você está alocado para execução</p>
     </div>
 
     <?php if (!empty($obras)): ?>
-        <!-- Stats Cards -->
-        <div class="stats-cards-tecnico">
-            <div class="stat-card-tecnico">
-                <div class="stat-icon-tecnico"><i class="icon-building"></i></div>
-                <div class="stat-number-tecnico"><?= count($obras) ?></div>
-                <div class="stat-label-tecnico">Obras Ativas</div>
+
+        <!-- Cards de Estatísticas -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-numero"><?= count($obras) ?></div>
+                <div class="stat-label">Obras Ativas</div>
             </div>
-            <div class="stat-card-tecnico warning">
-                <div class="stat-icon-tecnico" style="background: linear-gradient(135deg, #f093fb, #f5576c);"><i class="icon-tasks"></i></div>
-                <div class="stat-number-tecnico">
-                    <?= array_sum(array_column($obras, 'etapas_pendentes')) ?>
-                </div>
-                <div class="stat-label-tecnico">Etapas Pendentes</div>
+            <div class="stat-card warning">
+                <div class="stat-numero"><?= array_sum(array_column($obras, 'etapas_pendentes')) ?></div>
+                <div class="stat-label">Etapas Pendentes</div>
             </div>
-            <div class="stat-card-tecnico info">
-                <div class="stat-icon-tecnico" style="background: linear-gradient(135deg, #667eea, #764ba2);"><i class="icon-clipboard"></i></div>
-                <div class="stat-number-tecnico">
-                    <?= array_sum(array_column($obras, 'minhas_os')) ?>
-                </div>
-                <div class="stat-label-tecnico">Minhas OS</div>
+            <div class="stat-card info">
+                <div class="stat-numero"><?= array_sum(array_column($obras, 'minhas_os')) ?></div>
+                <div class="stat-label">Minhas OS</div>
             </div>
         </div>
 
-        <!-- Obras Grid -->
-        <div class="obras-tecnico-grid">
-            <?php foreach ($obras as $obra): ?>
+        <!-- Info Box -->
+        <div class="info-box">
+            <i class="icon-info-sign"></i>
+            <p>
+                <strong>Dica:</strong> Clique em "Executar Obra" para registrar seu check-in,
+                acompanhar etapas e registrar atividades com fotos.
+            </p>
+        </div>
+
+        <!-- Lista de Obras -->
+        <div class="obras-lista">
+            <?php foreach ($obras as $obra): ?
+003e
                 <?php
-                $headerClass = '';
-                if ($obra->status == 'EmExecucao') $headerClass = 'em-andamento';
+                $headerClass = ($obra->status == 'EmExecucao') ? 'em-execucao' : '';
+                $statusLabel = ($obra->status == 'EmExecucao') ? 'Em Execução' : $obra->status;
                 ?>
-                <div class="obra-tecnico-card">
-                    <div class="obra-tecnico-header <?= $headerClass ?>">
-                        <span class="obra-tecnico-status">
-                            <?= $obra->status == 'EmExecucao' ? 'Em Execução' : $obra->status ?>
-                        </span>
-                        <div class="obra-tecnico-codigo">
+
+                <div class="obra-card">
+                    <div class="obra-header-card <?= $headerClass ?>">
+                        <span class="obra-status-badge"><?= $statusLabel ?></span>
+                        <div class="obra-codigo">
                             <i class="icon-barcode"></i> <?= $obra->codigo ?>
                         </div>
-                        <h4 class="obra-tecnico-title"><?= htmlspecialchars($obra->nome) ?></h4>
-                        <div class="obra-tecnico-cliente">
+                        <h2 class="obra-nome"><?= htmlspecialchars($obra->nome) ?></h2>
+                        <div class="obra-cliente">
                             <i class="icon-user"></i> <?= htmlspecialchars($obra->cliente_nome ?? 'Não informado') ?>
                         </div>
                     </div>
 
-                    <div class="obra-tecnico-body">
+                    <div class="obra-body">
                         <!-- Progresso -->
-                        <div class="obra-tecnico-progress">
-                            <div class="progress-header">
-                                <span class="progress-label">Progresso da Obra</span>
-                                <span class="progress-value"><?= $obra->percentual_concluido ?? 0 ?>%</span>
+                        <div class="obra-progresso-section">
+                            <div class="obra-progresso-header">
+                                <span class="obra-progresso-label">Progresso da Obra</span>
+                                <span class="obra-progresso-valor"><?= $obra->percentual_concluido ?? 0 ?>%</span>
                             </div>
-                            <div class="progress-bar-modern">
-                                <div class="progress-fill-modern" style="width: <?= $obra->percentual_concluido ?? 0 ?>%;"></div>
+                            <div class="obra-barra-progresso">
+                                <div class="obra-barra-preenchida" style="width: <?= $obra->percentual_concluido ?? 0 ?>%"></div>
                             </div>
                         </div>
 
                         <!-- Stats -->
-                        <div class="obra-tecnico-stats">
-                            <div class="stat-item-modern">
-                                <div class="stat-item-value primary"><?= $obra->minhas_os ?? 0 ?></div>
-                                <div class="stat-item-label">Minhas OS</div>
+                        <div class="obra-stats">
+                            <div class="obra-stat-item">
+                                <div class="obra-stat-valor os"><?= $obra->minhas_os ?? 0 ?></div>
+                                <div class="obra-stat-label">Minhas OS</div>
                             </div>
-                            <div class="stat-item-modern">
-                                <div class="stat-item-value success"><?= $obra->etapas_pendentes ?? 0 ?></div>
-                                <div class="stat-item-label">Etapas</div>
+                            <div class="obra-stat-item">
+                                <div class="obra-stat-valor etapas"><?= $obra->etapas_pendentes ?? 0 ?></div>
+                                <div class="obra-stat-label">Etapas</div>
                             </div>
-                            <div class="stat-item-modern">
-                                <div class="stat-item-value warning"><?= count($obra->equipe ?? []) ?></div>
-                                <div class="stat-item-label">Equipe</div>
+                            <div class="obra-stat-item">
+                                <div class="obra-stat-valor equipe"><?= count($obra->equipe ?? []) ?></div>
+                                <div class="obra-stat-label">Equipe</div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="obra-tecnico-actions">
-                        <a href="<?= site_url('tecnicos/executar_obra/' . $obra->id) ?>" class="btn-executar">
+                    <div class="obra-actions">
+                        <a href="<?= site_url('tecnicos/executar_obra/' . $obra->id) ?>" class="btn-executar-obra">
                             <i class="icon-play-circle"></i> Executar Obra
                         </a>
                     </div>
                 </div>
             <?php endforeach; ?>
         </div>
+
     <?php else: ?>
-        <div class="empty-state-tecnico">
-            <div class="empty-icon-tecnico">
+
+        <div class="empty-state">
+            <div class="empty-icon">
                 <i class="icon-building"></i>
             </div>
             <h3>Nenhuma obra atribuída</h3>
             <p>Você não está alocado em nenhuma obra no momento.</p>
-            <p style="color: #888; font-size: 14px;">
+            <p style="color: #888; font-size: 14px; margin-top: 15px;">
                 <i class="icon-info-sign"></i> Entre em contato com o gestor para ser alocado em uma obra.
             </p>
         </div>
+
     <?php endif; ?>
+
 </div>
 
 <script>
-// Animate progress bars on load
+// Animate progress bars on scroll
 document.addEventListener('DOMContentLoaded', function() {
-    const progressBars = document.querySelectorAll('.progress-fill-modern');
+    const progressBars = document.querySelectorAll('.obra-barra-preenchida');
     progressBars.forEach(bar => {
         const width = bar.style.width;
         bar.style.width = '0%';
@@ -318,4 +451,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 300);
     });
 });
+
+// Add animation on scroll
+function animateOnScroll() {
+    const cards = document.querySelectorAll('.obra-card');
+    cards.forEach((card, index) => {
+        card.style.animationDelay = (index * 0.1) + 's';
+    });
+}
+
+animateOnScroll();
 </script>
