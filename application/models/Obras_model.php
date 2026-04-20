@@ -208,7 +208,12 @@ class Obras_model extends CI_Model
 
         try {
             $this->db->where('obra_id', $obra_id);
-            $this->db->where('ativo', 1);
+
+            // Só filtrar por ativo se a coluna existir
+            if ($this->db->field_exists('ativo', 'obra_etapas')) {
+                $this->db->where('ativo', 1);
+            }
+
             $this->db->order_by('numero_etapa', 'ASC');
             $query = $this->db->get('obra_etapas');
 
@@ -241,9 +246,18 @@ class Obras_model extends CI_Model
                 'data_inicio_prevista' => $dados['data_inicio_prevista'] ?? null,
                 'data_fim_prevista' => $dados['data_fim_prevista'] ?? null,
                 'status' => 'NaoIniciada',
-                'ativo' => 1,
-                'created_at' => date('Y-m-d H:i:s'),
             ];
+
+            // Adicionar colunas opcionais se existirem
+            if ($this->db->field_exists('ativo', 'obra_etapas')) {
+                $data['ativo'] = 1;
+            }
+            if ($this->db->field_exists('visivel_cliente', 'obra_etapas')) {
+                $data['visivel_cliente'] = 1;
+            }
+            if ($this->db->field_exists('created_at', 'obra_etapas')) {
+                $data['created_at'] = date('Y-m-d H:i:s');
+            }
 
             $this->db->insert('obra_etapas', $data);
             $etapa_id = $this->db->insert_id();
@@ -253,6 +267,7 @@ class Obras_model extends CI_Model
 
             return $etapa_id;
         } catch (Exception $e) {
+            log_message('error', 'Erro ao adicionar etapa: ' . $e->getMessage());
             return false;
         }
     }
@@ -932,9 +947,19 @@ class Obras_model extends CI_Model
                 COUNT(DISTINCT oa.id) as total_atividades,
                 COUNT(DISTINCT CASE WHEN oa.status = "concluida" THEN oa.id END) as atividades_concluidas');
             $this->db->from('obra_etapas oe');
-            $this->db->join('obra_atividades oa', 'oa.etapa_id = oe.id AND oa.obra_id = oe.obra_id AND oa.ativo = 1', 'left');
+
+            // Só fazer join com atividades se a tabela existir
+            if ($this->tabelaExiste('obra_atividades')) {
+                $this->db->join('obra_atividades oa', 'oa.etapa_id = oe.id AND oa.obra_id = oe.obra_id' . ($this->db->field_exists('ativo', 'obra_atividades') ? ' AND oa.ativo = 1' : ''), 'left');
+            }
+
             $this->db->where('oe.obra_id', $obra_id);
-            $this->db->where('oe.ativo', 1);
+
+            // Só filtrar por ativo se a coluna existir
+            if ($this->db->field_exists('ativo', 'obra_etapas')) {
+                $this->db->where('oe.ativo', 1);
+            }
+
             $this->db->group_by('oe.id');
             $this->db->order_by('oe.numero_etapa', 'ASC');
             $query = $this->db->get();
