@@ -27,6 +27,22 @@ class Obras_model extends CI_Model
     }
 
     /**
+     * Retorna a classe CSS para o label de status
+     */
+    public function getStatusLabelClass($status)
+    {
+        $classes = [
+            'Prospeccao' => 'label-default',
+            'Em Andamento' => 'label-info',
+            'Paralisada' => 'label-warning',
+            'Concluida' => 'label-success',
+            'Concluída' => 'label-success',
+            'Cancelada' => 'label-inverse',
+        ];
+        return $classes[$status] ?? 'label-default';
+    }
+
+    /**
      * Listar todas as obras
      */
     public function getAll($where = [], $limit = null)

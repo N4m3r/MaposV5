@@ -453,7 +453,7 @@ function getStatusColor($status) {
         </form>
     </div>
 
-    <?php if (!$results): ?>
+    <?php if (empty($results)): ?>
         <!-- Estado vazio -->
         <div class="empty-state">
             <i class="bx bx-clipboard"></i>
@@ -474,7 +474,7 @@ function getStatusColor($status) {
                     Resultados da Busca
                 </div>
                 <div style="color: #7f8c8d; font-size: 0.9rem;">
-                    Mostrando <?= count($results) ?> de <?= $total_os ?> OS
+                    Mostrando <?= is_array($results) ? count($results) : 0 ?> de <?= $total_os ?? 0 ?> OS
                 </div>
             </div>
 

@@ -942,6 +942,11 @@ class Mine extends CI_Controller
         $this->db->join('clientes', 'os.clientes_id = clientes.idClientes', 'left');
         $this->db->join('usuarios', 'os.usuarios_id = usuarios.idUsuarios', 'left');
 
+        // Garantir que $os_ids está definido
+        if (!isset($os_ids)) {
+            $os_ids = [];
+        }
+
         if ($this->session->userdata('tipo_acesso') == 'usuario_cliente' && $usuario_cliente_id) {
             if (!empty($os_ids)) {
                 $this->db->where_in('os.idOs', $os_ids);
@@ -973,11 +978,12 @@ class Mine extends CI_Controller
 
         $this->db->order_by('os.idOs', 'desc');
         $this->db->limit($config['per_page'], $this->uri->segment(3) ? $this->uri->segment(3) : 0);
-        $data['results'] = $this->db->get()->result();
+        $query = $this->db->get();
+        $data['results'] = ($query !== FALSE) ? $query->result() : [];
 
         // Dados para a view
-        $data['filtros'] = $filtros;
-        $data['total_os'] = $config['total_rows'];
+        $data['filtros'] = $filtros ?? ['busca' => '', 'status' => '', 'data_inicio' => '', 'data_fim' => ''];
+        $data['total_os'] = $config['total_rows'] ?? 0;
 
         // Status disponíveis para filtro
         $data['status_list'] = [
