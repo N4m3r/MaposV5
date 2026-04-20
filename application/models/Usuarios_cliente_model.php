@@ -362,10 +362,26 @@ class Usuarios_cliente_model extends CI_Model
         $cnpjsLimpos = [];
         $cnpjsFormatados = [];
         foreach ($cnpjs as $c) {
+            // IGNORAR CNPJs muito longos (possivelmente dados corrompidos como imagens base64)
+            if (strlen($c->cnpj) > 50) {
+                log_message('error', 'getOsByCnpjs: CNPJ muito longo ignorado (' . strlen($c->cnpj) . ' chars) para usuario ' . $usuario_id);
+                continue;
+            }
             $limpo = preg_replace('/[^0-9]/', '', $c->cnpj);
+            // Validar se tem 14 dígitos (CNPJ válido)
+            if (strlen($limpo) !== 14) {
+                log_message('debug', 'getOsByCnpjs: CNPJ inválido ignorado: ' . substr($limpo, 0, 20));
+                continue;
+            }
             $formatado = $this->formatarCnpj($limpo);
             $cnpjsLimpos[] = $limpo;
             $cnpjsFormatados[] = $formatado;
+        }
+
+        // Verificar se há CNPJs válidos
+        if (empty($cnpjsLimpos)) {
+            log_message('debug', 'getOsByCnpjs: Nenhum CNPJ válido encontrado após filtragem');
+            return [];
         }
 
         log_message('debug', 'getOsByCnpjs: Buscando OS para CNPJs: ' . implode(', ', $cnpjsLimpos));
@@ -374,7 +390,9 @@ class Usuarios_cliente_model extends CI_Model
         $this->db->select('idClientes, documento');
         $this->db->group_start();
         $this->db->where_in('documento', $cnpjsLimpos);
-        $this->db->or_where_in('documento', $cnpjsFormatados);
+        if (!empty($cnpjsFormatados)) {
+            $this->db->or_where_in('documento', $cnpjsFormatados);
+        }
         $this->db->group_end();
         $query = $this->db->get('clientes');
 
