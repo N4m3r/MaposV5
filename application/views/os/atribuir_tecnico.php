@@ -448,15 +448,15 @@
                     <label><i class='fas fa-flag'></i> Status</label>
                     <select name="status" id="status" class="span12">
                         <option value="">Todos</option>
-                        <option value="Aberto" <?= $this->input->get('status') == 'Aberto' ? 'selected' : '' ?>>Aberto</option>
-                        <option value="Orçamento" <?= $this->input->get('status') == 'Orçamento' ? 'selected' : '' ?>>Orçamento</option>
-                        <option value="Negociação" <?= $this->input->get('status') == 'Negociação' ? 'selected' : '' ?>>Negociação</option>
-                        <option value="Em Andamento" <?= $this->input->get('status') == 'Em Andamento' ? 'selected' : '' ?>>Em Andamento</option>
-                        <option value="Aguardando Peças" <?= $this->input->get('status') == 'Aguardando Peças' ? 'selected' : '' ?>>Aguardando Peças</option>
-                        <option value="Aprovado" <?= $this->input->get('status') == 'Aprovado' ? 'selected' : '' ?>>Aprovado</option>
-                        <option value="Finalizado" <?= $this->input->get('status') == 'Finalizado' ? 'selected' : '' ?>>Finalizado</option>
-                        <option value="Faturado" <?= $this->input->get('status') == 'Faturado' ? 'selected' : '' ?>>Faturado</option>
-                        <option value="Cancelado" <?= $this->input->get('status') == 'Cancelado' ? 'selected' : '' ?>>Cancelado</option>
+                        <option value="Aberto" <?php echo $this->input->get('status') == 'Aberto' ? 'selected' : ''; ?>>Aberto</option>
+                        <option value="Orçamento" <?php echo $this->input->get('status') == 'Orçamento' ? 'selected' : ''; ?>>Or&ccedil;amento</option>
+                        <option value="Negociação" <?php echo $this->input->get('status') == 'Negociação' ? 'selected' : ''; ?>>Negocia&ccedil;&atilde;o</option>
+                        <option value="Aprovado" <?php echo $this->input->get('status') == 'Aprovado' ? 'selected' : ''; ?>>Aprovado</option>
+                        <option value="Em Andamento" <?php echo $this->input->get('status') == 'Em Andamento' ? 'selected' : ''; ?>>Em Andamento</option>
+                        <option value="Aguardando Peças" <?php echo $this->input->get('status') == 'Aguardando Peças' ? 'selected' : ''; ?>>Aguardando Pe&ccedil;as</option>
+                        <option value="Finalizado" <?php echo $this->input->get('status') == 'Finalizado' ? 'selected' : ''; ?>>Finalizado</option>
+                        <option value="Faturado" <?php echo $this->input->get('status') == 'Faturado' ? 'selected' : ''; ?>>Faturado</option>
+                        <option value="Cancelado" <?php echo $this->input->get('status') == 'Cancelado' ? 'selected' : ''; ?>>Cancelado</option>
                     </select>
                 </div>
 

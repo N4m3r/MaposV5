@@ -91,16 +91,16 @@
                                     <div class="span12" style="padding: 1%; margin-left: 0">
                                         <div class="span3">
                                             <label for="status">Status<span class="required">*</span></label>
-                                            <select class="span12" name="status" id="status" value="">
-                                                <option <?php if ($result->status == 'Aberto') { echo 'selected'; } ?> value="Aberto">Aberto</option>
-                                                <option <?php if ($result->status == 'Orçamento') { echo 'selected'; } ?> value="Orçamento">Orçamento</option>
-                                                <option <?php if ($result->status == 'Negociação') { echo 'selected'; } ?> value="Negociação">Negociação</option>
-                                                <option <?php if ($result->status == 'Aprovado') { echo 'selected'; } ?> value="Aprovado">Aprovado</option>
-                                                <option <?php if ($result->status == 'Aguardando Peças') { echo 'selected'; } ?> value="Aguardando Peças">Aguardando Peças</option>
-                                                <option <?php if ($result->status == 'Em Andamento') { echo 'selected'; } ?> value="Em Andamento">Em Andamento</option>
-                                                <option <?php if ($result->status == 'Finalizado') { echo 'selected'; } ?> value="Finalizado">Finalizado</option>
-                                                <option <?php if ($result->status == 'Faturado') { echo 'selected'; } ?> value="Faturado">Faturado</option>
-                                                <option <?php if ($result->status == 'Cancelado') { echo 'selected'; } ?> value="Cancelado">Cancelado</option>                                                          
+                                            <select class="span12" name="status" id="status">
+                                                <option value="Aberto" <?php if ($result->status == 'Aberto') { echo 'selected'; } ?>>Aberto</option>
+                                                <option value="Orçamento" <?php if ($result->status == 'Orçamento') { echo 'selected'; } ?>>Or&ccedil;amento</option>
+                                                <option value="Negociação" <?php if ($result->status == 'Negociação') { echo 'selected'; } ?>>Negocia&ccedil;&atilde;o</option>
+                                                <option value="Aprovado" <?php if ($result->status == 'Aprovado') { echo 'selected'; } ?>>Aprovado</option>
+                                                <option value="Aguardando Peças" <?php if ($result->status == 'Aguardando Peças') { echo 'selected'; } ?>>Aguardando Pe&ccedil;as</option>
+                                                <option value="Em Andamento" <?php if ($result->status == 'Em Andamento') { echo 'selected'; } ?>>Em Andamento</option>
+                                                <option value="Finalizado" <?php if ($result->status == 'Finalizado') { echo 'selected'; } ?>>Finalizado</option>
+                                                <option value="Faturado" <?php if ($result->status == 'Faturado') { echo 'selected'; } ?>>Faturado</option>
+                                                <option value="Cancelado" <?php if ($result->status == 'Cancelado') { echo 'selected'; } ?>>Cancelado</option>
                                             </select>
                                         </div>
                                         <div class="span3">

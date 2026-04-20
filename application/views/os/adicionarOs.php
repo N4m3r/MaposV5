@@ -43,12 +43,12 @@
                                     <div class="span12" style="padding: 1%; margin-left: 0">
                                         <div class="span3">
                                             <label for="status">Status<span class="required">*</span></label>
-                                            <select class="span12" name="status" id="status" value="">
+                                            <select class="span12" name="status" id="status">
                                                 <option value="Aberto">Aberto</option>
-                                                <option value="Orçamento">Orçamento</option>
-                                                <option value="Negociação">Negociação</option>
+                                                <option value="Orçamento">Or&ccedil;amento</option>
+                                                <option value="Negociação">Negocia&ccedil;&atilde;o</option>
                                                 <option value="Aprovado">Aprovado</option>
-                                                <option value="Aguardando Peças">Aguardando Peças</option>
+                                                <option value="Aguardando Peças">Aguardando Pe&ccedil;as</option>
                                                 <option value="Em Andamento">Em Andamento</option>
                                                 <option value="Finalizado">Finalizado</option>
                                                 <option value="Faturado">Faturado</option>
