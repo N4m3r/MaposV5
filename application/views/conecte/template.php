@@ -117,7 +117,7 @@ $podeEditarPerfil = clienteHasPermission('editar_perfil');
 
             <div class="botton-content">
                 <li class="">
-                    <a class="tip-bottom" title="" href="<?= site_url('login/sair'); ?>">
+                    <a class="tip-bottom" title="" href="<?= base_url('index.php/login/sair'); ?>">
                         <i class='bx bx-log-out-circle iconX'></i>
                         <span class="title">Sair</span></a>
                 </li>

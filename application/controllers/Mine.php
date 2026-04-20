@@ -1317,6 +1317,13 @@ class Mine extends CI_Controller
             redirect('mine/painel');
         }
 
+        // Verificar permissão específica para imprimir OS
+        $this->load->helper('cliente_permissions');
+        if (!clienteHasPermission('imprimir_os')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para imprimir OS.');
+            redirect('mine/os');
+        }
+
         $this->load->view('conecte/imprimirOs', $data);
     }
 
@@ -1558,6 +1565,13 @@ class Mine extends CI_Controller
         if (!$permissao_os) {
             $this->session->set_flashdata('error', 'Esta OS não pertence ao cliente logado.');
             redirect('mine/painel');
+        }
+
+        // Verificar permissão para visualizar detalhes da OS
+        $this->load->helper('cliente_permissions');
+        if (!clienteHasPermission('visualizar_os')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para visualizar detalhes da OS.');
+            redirect('mine/os');
         }
 
         $this->data['output'] = 'conecte/detalhes_os';
@@ -1931,6 +1945,13 @@ class Mine extends CI_Controller
         if (!$permissao_os) {
             $this->session->set_flashdata('error', 'Esta OS não pertence ao cliente logado.');
             redirect('mine/painel');
+        }
+
+        // Verificar permissão para visualizar relatório
+        $this->load->helper('cliente_permissions');
+        if (!clienteHasPermission('visualizar_os')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para visualizar relatórios de OS.');
+            redirect('mine/os');
         }
 
         // Verificar se OS está finalizada (só mostrar relatório para OS finalizadas)

@@ -95,7 +95,7 @@ class MY_Controller extends CI_Controller
             $this->load->view('tema/menu');
         }
 
-        $this->load->view('tema/conteudo');
+        $this->load->view('tema/conteudo', $this->data);
         $this->load->view('tema/rodape');
     }
 }
