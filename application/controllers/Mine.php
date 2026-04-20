@@ -1124,8 +1124,29 @@ class Mine extends CI_Controller
             redirect('mine/os');
         }
 
-        // Verificar se a OS pertence ao cliente logado
-        if ($os->idClientes != $this->session->userdata('cliente_id')) {
+        // Verificar se a OS pertence ao cliente logado - suporta cliente tradicional e usuário do portal
+        $cliente_id = $this->session->userdata('cliente_id');
+        $usuario_cliente_id = $this->session->userdata('usuario_cliente_id');
+        $permissao_os = false;
+
+        // Sistema antigo - verificação direta por cliente_id
+        if ($cliente_id && $os->idClientes == $cliente_id) {
+            $permissao_os = true;
+        }
+
+        // Novo sistema - verificação por CNPJs vinculados ao usuário
+        if (!$permissao_os && $usuario_cliente_id && $this->session->userdata('tipo_acesso') == 'usuario_cliente') {
+            $this->load->model('usuarios_cliente_model');
+            $os_list = $this->usuarios_cliente_model->getOsByCnpjs($usuario_cliente_id);
+            foreach ($os_list as $os_item) {
+                if ($os_item->idOs == $os->idOs) {
+                    $permissao_os = true;
+                    break;
+                }
+            }
+        }
+
+        if (!$permissao_os) {
             $this->session->set_flashdata('error', 'Esta OS não pertence ao cliente logado.');
             redirect('mine/painel');
         }
@@ -1269,7 +1290,29 @@ class Mine extends CI_Controller
             redirect('mine/os');
         }
 
-        if ($data['result']->idClientes != $this->session->userdata('cliente_id')) {
+        // Verificar permissão - suporta tanto cliente tradicional quanto usuário do portal
+        $cliente_id = $this->session->userdata('cliente_id');
+        $usuario_cliente_id = $this->session->userdata('usuario_cliente_id');
+        $permissao_os = false;
+
+        // Sistema antigo - verificação direta por cliente_id
+        if ($cliente_id && $data['result']->idClientes == $cliente_id) {
+            $permissao_os = true;
+        }
+
+        // Novo sistema - verificação por CNPJs vinculados ao usuário
+        if (!$permissao_os && $usuario_cliente_id && $this->session->userdata('tipo_acesso') == 'usuario_cliente') {
+            $this->load->model('usuarios_cliente_model');
+            $os_list = $this->usuarios_cliente_model->getOsByCnpjs($usuario_cliente_id);
+            foreach ($os_list as $os_item) {
+                if ($os_item->idOs == $data['result']->idOs) {
+                    $permissao_os = true;
+                    break;
+                }
+            }
+        }
+
+        if (!$permissao_os) {
             $this->session->set_flashdata('error', 'Esta OS não pertence ao cliente logado.');
             redirect('mine/painel');
         }
@@ -1490,7 +1533,29 @@ class Mine extends CI_Controller
             redirect('mine/os');
         }
 
-        if ($this->data['result']->idClientes != $this->session->userdata('cliente_id')) {
+        // Verificar permissão - suporta tanto cliente tradicional quanto usuário do portal
+        $cliente_id = $this->session->userdata('cliente_id');
+        $usuario_cliente_id = $this->session->userdata('usuario_cliente_id');
+        $permissao_os = false;
+
+        // Sistema antigo - verificação direta por cliente_id
+        if ($cliente_id && $this->data['result']->idClientes == $cliente_id) {
+            $permissao_os = true;
+        }
+
+        // Novo sistema - verificação por CNPJs vinculados ao usuário
+        if (!$permissao_os && $usuario_cliente_id && $this->session->userdata('tipo_acesso') == 'usuario_cliente') {
+            $this->load->model('usuarios_cliente_model');
+            $os_list = $this->usuarios_cliente_model->getOsByCnpjs($usuario_cliente_id);
+            foreach ($os_list as $os_item) {
+                if ($os_item->idOs == $this->data['result']->idOs) {
+                    $permissao_os = true;
+                    break;
+                }
+            }
+        }
+
+        if (!$permissao_os) {
             $this->session->set_flashdata('error', 'Esta OS não pertence ao cliente logado.');
             redirect('mine/painel');
         }
@@ -1841,13 +1906,29 @@ class Mine extends CI_Controller
             redirect('mine/painel');
         }
 
-        // Verificar se a OS pertence ao cliente logado
+        // Verificar se a OS pertence ao cliente logado - suporta cliente tradicional e usuário do portal
         $cliente_id = $this->session->userdata('cliente_id');
-        if (empty($cliente_id)) {
-            $this->session->set_flashdata('error', 'Sessão expirada. Por favor, faça login novamente.');
-            redirect('mine');
+        $usuario_cliente_id = $this->session->userdata('usuario_cliente_id');
+        $permissao_os = false;
+
+        // Sistema antigo - verificação direta por cliente_id
+        if ($cliente_id && $os->clientes_id == $cliente_id) {
+            $permissao_os = true;
         }
-        if ($os->clientes_id != $cliente_id) {
+
+        // Novo sistema - verificação por CNPJs vinculados ao usuário
+        if (!$permissao_os && $usuario_cliente_id && $this->session->userdata('tipo_acesso') == 'usuario_cliente') {
+            $this->load->model('usuarios_cliente_model');
+            $os_list = $this->usuarios_cliente_model->getOsByCnpjs($usuario_cliente_id);
+            foreach ($os_list as $os_item) {
+                if ($os_item->idOs == $os->idOs) {
+                    $permissao_os = true;
+                    break;
+                }
+            }
+        }
+
+        if (!$permissao_os) {
             $this->session->set_flashdata('error', 'Esta OS não pertence ao cliente logado.');
             redirect('mine/painel');
         }

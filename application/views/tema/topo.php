@@ -103,12 +103,13 @@
   </style>
 </head>
 
-<body data-theme="<?= isset($configuration['app_theme']) ? $configuration['app_theme'] : 'default' ?>" class="portal-tecnico">
+<?php
+// Verificar se estamos na área do técnico (Portal do Técnico) - ANTES do body
+$is_area_tecnico = (strpos(uri_string(), 'tecnicos') === 0);
+$body_class = $is_area_tecnico ? 'portal-tecnico' : '';
+?>
+<body data-theme="<?= isset($configuration['app_theme']) ? $configuration['app_theme'] : 'default' ?>" class="<?= $body_class ?>">
   <!--top-Header-menu-->
-  <?php
-  // Verificar se estamos na área do técnico (Portal do Técnico)
-  $is_area_tecnico = (strpos(uri_string(), 'tecnicos') === 0);
-  ?>
 
   <?php if ($is_area_tecnico): ?>
   <!-- Header para Área do Técnico -->

@@ -150,13 +150,13 @@ $('#btn-toggle-theme').on('click', function(e) {
 });
 
 // ============================================
-// LAYOUT PORTAL DO TÉCNICO
-// Toggle do sidebar
+// LAYOUT PORTAL DO TÉCNICO - Toggle Sidebar
 // ============================================
 $(document).ready(function() {
-    // Toggle do sidebar ao clicar no botão de modo
-    $('#sidebar .mode').on('click', function(e) {
+    // Toggle do sidebar ao clicar no botão
+    $(document).on('click', '#sidebar .mode, #sidebar .mode-desktop', function(e) {
         e.preventDefault();
+        e.stopPropagation();
         $('#sidebar').toggleClass('open');
     });
 });

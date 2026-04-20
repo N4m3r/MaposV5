@@ -13,17 +13,8 @@
         </div>
     </div>
 
-    <a href="#" class="visible-phone">
-        <div class="mode">
-            <div class="moon-menu">
-                <i class='bx bx-chevron-right iconX open-2'></i>
-                <i class='bx bx-chevron-left iconX close-2'></i>
-            </div>
-        </div>
-    </a>
-
-    <!-- Botão toggle visível em desktop também -->
-    <div class="mode mode-desktop" style="cursor: pointer;" title="Recolher/Expandir Menu">
+    <!-- Botão toggle do sidebar -->
+    <div class="mode" title="Recolher/Expandir Menu">
         <div class="moon-menu">
             <i class='bx bx-chevron-left iconX open-2'></i>
             <i class='bx bx-chevron-right iconX close-2'></i>
