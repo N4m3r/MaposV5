@@ -649,4 +649,179 @@ class Obras_model extends CI_Model
         $query = $this->db->get();
         return $query ? $query->result() : [];
     }
+
+    // ============================================
+    // NOVOS MÉTODOS PARA SISTEMA DE OBRAS COMPLETO
+    // ============================================
+
+    /**
+     * Buscar obra com dados completos (incluindo cliente e gestor)
+     */
+    public function getByIdCompleto($id)
+    {
+        if (!$this->tabelaExiste('obras')) {
+            return null;
+        }
+
+        try {
+            $this->db->select('o.*, c.nomeCliente as cliente_nome, c.documento as cliente_documento,
+                c.email as cliente_email, c.telefone as cliente_telefone,
+                u.nome as gestor_nome, u.telefone as gestor_telefone');
+            $this->db->from('obras o');
+            $this->db->join('clientes c', 'c.idClientes = o.cliente_id', 'left');
+            $this->db->join('usuarios u', 'u.idUsuarios = o.gestor_id', 'left');
+            $this->db->where('o.id', $id);
+            $query = $this->db->get();
+
+            return $query ? $query->row() : null;
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao buscar obra completa: ' . $e->getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Calcular progresso geral da obra
+     */
+    public function calcularProgresso($obra_id)
+    {
+        if (!$this->tabelaExiste('obra_etapas')) {
+            return 0;
+        }
+
+        try {
+            $this->db->select_avg('percentual_concluido', 'progresso');
+            $this->db->where('obra_id', $obra_id);
+            $query = $this->db->get('obra_etapas');
+
+            $result = $query ? $query->row() : null;
+            return $result ? round($result->progresso) : 0;
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao calcular progresso: ' . $e->getMessage());
+            return 0;
+        }
+    }
+
+    /**
+     * Atualizar percentual da obra
+     */
+    public function atualizarProgresso($obra_id)
+    {
+        $progresso = $this->calcularProgresso($obra_id);
+
+        try {
+            $this->db->where('id', $obra_id);
+            $this->db->update('obras', [
+                'percentual_concluido' => $progresso,
+                'updated_at' => date('Y-m-d H:i:s')
+            ]);
+            return $progresso;
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao atualizar progresso: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Buscar etapas da obra com estatísticas
+     */
+    public function getEtapasComEstatisticas($obra_id)
+    {
+        if (!$this->tabelaExiste('obra_etapas')) {
+            return [];
+        }
+
+        try {
+            $this->db->select('oe.*,
+                COUNT(DISTINCT oa.id) as total_atividades,
+                COUNT(DISTINCT CASE WHEN oa.status = "concluida" THEN oa.id END) as atividades_concluidas');
+            $this->db->from('obra_etapas oe');
+            $this->db->join('obra_atividades oa', 'oa.etapa_id = oe.id AND oa.obra_id = oe.obra_id', 'left');
+            $this->db->where('oe.obra_id', $obra_id);
+            $this->db->group_by('oe.id');
+            $this->db->order_by('oe.numero_etapa', 'ASC');
+            $query = $this->db->get();
+
+            return $query ? $query->result() : [];
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao buscar etapas: ' . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Resumo da obra para dashboard
+     */
+    public function getResumo($obra_id)
+    {
+        if (!$this->tabelaExiste('obras')) {
+            return null;
+        }
+
+        try {
+            $obra = $this->getByIdCompleto($obra_id);
+            if (!$obra) {
+                return null;
+            }
+
+            // Contar etapas
+            $total_etapas = $this->db->where('obra_id', $obra_id)->count_all_results('obra_etapas');
+            $this->db->where('obra_id', $obra_id);
+            $this->db->where('status', 'Concluida');
+            $etapas_concluidas = $this->db->count_all_results('obra_etapas');
+
+            // Contar atividades
+            $total_atividades = 0;
+            $atividades_hoje = 0;
+            if ($this->tabelaExiste('obra_atividades')) {
+                $total_atividades = $this->db->where('obra_id', $obra_id)->count_all_results('obra_atividades');
+
+                $this->db->where('obra_id', $obra_id);
+                $this->db->where('data_atividade', date('Y-m-d'));
+                $atividades_hoje = $this->db->count_all_results('obra_atividades');
+            }
+
+            // Calcular dias restantes
+            $dias_restantes = null;
+            if ($obra->data_fim_prevista) {
+                $hoje = new DateTime();
+                $previsto = new DateTime($obra->data_fim_prevista);
+                $dias_restantes = $hoje->diff($previsto, false)->format('%r%a');
+            }
+
+            return [
+                'obra' => $obra,
+                'total_etapas' => $total_etapas,
+                'etapas_concluidas' => $etapas_concluidas,
+                'total_atividades' => $total_atividades,
+                'atividades_hoje' => $atividades_hoje,
+                'dias_restantes' => $dias_restantes,
+            ];
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao buscar resumo: ' . $e->getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Verificar se cliente tem acesso à obra
+     */
+    public function clienteTemAcesso($obra_id, $cliente_id)
+    {
+        if (!$this->tabelaExiste('obras')) {
+            return false;
+        }
+
+        try {
+            $this->db->where('id', $obra_id);
+            $this->db->where('cliente_id', $cliente_id);
+            $this->db->where('visivel_cliente', 1);
+            $this->db->where('ativo', 1);
+            return $this->db->count_all_results('obras') > 0;
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao verificar acesso: ' . $e->getMessage());
+            return false;
+        }
+    }
 }
+
