@@ -5,6 +5,59 @@
     padding: 20px;
 }
 
+/* Header do Dashboard */
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.dashboard-title {
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: #2c3e50;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.dashboard-title i {
+    color: #667eea;
+    font-size: 2rem;
+}
+
+.dashboard-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-action {
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: white;
+}
+
+.btn-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+.btn-success { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+.btn-info { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+
+/* KPIs Cards */
 .kpi-cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -13,69 +66,242 @@
 }
 
 .kpi-card {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 10px;
+    background: white;
+    border-radius: 12px;
     padding: 20px;
-    color: white;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    transition: transform 0.2s;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    border-left: 4px solid #667eea;
+    transition: all 0.3s ease;
 }
 
 .kpi-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
 }
 
-.kpi-card.success {
-    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-}
+.kpi-card.warning { border-left-color: #f093fb; }
+.kpi-card.success { border-left-color: #11998e; }
+.kpi-card.info { border-left-color: #4facfe; }
+.kpi-card.danger { border-left-color: #f5576c; }
 
-.kpi-card.warning {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-}
-
-.kpi-card.info {
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-}
-
-.kpi-card.dark {
-    background: linear-gradient(135deg, #434343 0%, #000000 100%);
-}
-
-.kpi-value {
-    font-size: 32px;
-    font-weight: bold;
-    margin: 10px 0;
-}
-
-.kpi-label {
-    font-size: 14px;
-    opacity: 0.9;
+.kpi-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
 }
 
 .kpi-icon {
-    font-size: 24px;
-    margin-bottom: 10px;
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.kpi-card.warning .kpi-icon { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+.kpi-card.success .kpi-icon { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+.kpi-card.info .kpi-icon { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+.kpi-card.danger .kpi-icon { background: linear-gradient(135deg, #f5576c 0%, #ff9a9e 100%); }
+
+.kpi-trend {
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.kpi-trend.up {
+    background: rgba(17, 153, 142, 0.1);
+    color: #11998e;
+}
+
+.kpi-trend.down {
+    background: rgba(245, 87, 108, 0.1);
+    color: #f5576c;
+}
+
+.kpi-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 5px 0;
+}
+
+.kpi-label {
+    font-size: 0.9rem;
+    color: #7f8c8d;
+}
+
+/* Acesso Rápido - Menu Principal */
+.quick-access {
+    margin-bottom: 30px;
+}
+
+.quick-access-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.quick-access-title i {
+    color: #667eea;
+}
+
+.quick-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+.quick-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.quick-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.quick-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+}
+
+.quick-card:hover::before {
+    transform: scaleX(1);
+}
+
+.quick-card-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 12px;
+}
+
+.quick-card-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    color: white;
+    flex-shrink: 0;
+}
+
+.quick-card-icon.os { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+.quick-card-icon.clientes { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+.quick-card-icon.produtos { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+.quick-card-icon.servicos { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+.quick-card-icon.vendas { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+.quick-card-icon.financeiro { background: linear-gradient(135deg, #30cfd0 0%, #330867 100%); }
+.quick-card-icon.relatorios { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); }
+.quick-card-icon.config { background: linear-gradient(135deg, #434343 0%, #000000 100%); }
+.quick-card-icon.tecnico { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a5a 100%); }
+.quick-card-icon.obras { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); }
+.quick-card-icon.cobrancas { background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%); }
+.quick-card-icon.estoque { background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%); }
+
+.quick-card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.quick-card-desc {
+    font-size: 0.85rem;
+    color: #7f8c8d;
+    margin-bottom: 15px;
+}
+
+.quick-card-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.quick-action-btn {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.2s ease;
+}
+
+.quick-action-btn.primary {
+    background: #667eea;
+    color: white;
+}
+
+.quick-action-btn.primary:hover {
+    background: #5568d3;
+}
+
+.quick-action-btn.secondary {
+    background: #f8f9fa;
+    color: #6c757d;
+    border: 1px solid #e0e0e0;
+}
+
+.quick-action-btn.secondary:hover {
+    background: #e9ecef;
+}
+
+/* Seções de Gráficos */
+.charts-section {
+    margin-top: 30px;
 }
 
 .charts-row {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
     gap: 20px;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
 }
 
 .chart-container {
     background: white;
-    border-radius: 10px;
+    border-radius: 12px;
     padding: 20px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.08);
 }
 
 .chart-title {
-    font-size: 16px;
-    font-weight: bold;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #2c3e50;
     margin-bottom: 15px;
-    color: #333;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -83,18 +309,89 @@
 
 .chart-title i {
     color: #667eea;
-    font-size: 20px;
+    font-size: 1.2rem;
 }
 
 .chart-canvas {
-    max-height: 300px;
+    max-height: 280px;
 }
 
+/* Atividades Recentes */
+.activities-section {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    margin-top: 20px;
+}
+
+.activities-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.activities-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2c3e50;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.activity-item {
+    display: flex;
+    gap: 15px;
+    padding: 15px 0;
+    border-bottom: 1px solid #f5f5f5;
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+    color: #667eea;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.activity-content {
+    flex: 1;
+}
+
+.activity-text {
+    font-size: 0.9rem;
+    color: #2c3e50;
+    margin-bottom: 4px;
+}
+
+.activity-text strong {
+    color: #667eea;
+}
+
+.activity-time {
+    font-size: 0.8rem;
+    color: #95a5a6;
+}
+
+/* Filtros */
 .filters-bar {
     background: white;
-    padding: 15px;
-    border-radius: 10px;
-    margin-bottom: 20px;
+    padding: 15px 20px;
+    border-radius: 12px;
+    margin-bottom: 25px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.08);
     display: flex;
     gap: 15px;
@@ -102,73 +399,44 @@
     align-items: center;
 }
 
+.filters-bar label {
+    font-weight: 500;
+    color: #2c3e50;
+}
+
 .filters-bar select,
 .filters-bar input {
     padding: 8px 12px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 0.9rem;
 }
 
 .btn-filter {
-    background: #667eea;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     border: none;
     padding: 8px 20px;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .btn-filter:hover {
-    background: #5568d3;
+    opacity: 0.9;
 }
 
-.relatorios-links {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 15px;
-    margin-top: 30px;
-}
-
-.relatorio-card {
-    background: white;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-    text-decoration: none;
-    color: #333;
-    transition: all 0.2s;
-    border-left: 4px solid #667eea;
-}
-
-.relatorio-card:hover {
-    transform: translateX(5px);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-}
-
-.relatorio-card i {
-    font-size: 32px;
-    color: #667eea;
-    margin-bottom: 10px;
-}
-
-.relatorio-card h4 {
-    margin: 0 0 5px 0;
-    font-size: 16px;
-}
-
-.relatorio-card p {
-    margin: 0;
-    font-size: 13px;
-    color: #666;
-}
-
+/* Loading */
 .loading-overlay {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(255,255,255,0.8);
+    background: rgba(255,255,255,0.9);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -191,95 +459,306 @@
 
 /* Responsivo */
 @media (max-width: 768px) {
-    .charts-row {
-        grid-template-columns: 1fr;
+    .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
     }
 
     .kpi-cards {
         grid-template-columns: repeat(2, 1fr);
     }
 
-    .kpi-value {
-        font-size: 24px;
+    .quick-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .charts-row {
+        grid-template-columns: 1fr;
+    }
+
+    .filters-bar {
+        flex-direction: column;
+        align-items: stretch;
     }
 }
 </style>
 
-<div class="widget-box">
-    <div class="widget-title">
-        <span class="icon"><i class="bx bx-dashboard"></i></span>
-        <h5>Dashboard - Visão Geral</h5>
-    </div>
-
-    <div class="dashboard-container">
-        <!-- Filtros -->
-        <div class="filters-bar">
-            <label><i class="bx bx-calendar"></i> Período:</label>
-            <select id="filtro-periodo" onchange="carregarDados()">
-                <option value="hoje">Hoje</option>
-                <option value="semana">Esta Semana</option>
-                <option value="mes" selected>Este Mês</option>
-                <option value="ano">Este Ano</option>
-            </select>
-
-            <input type="date" id="data-inicio" style="display:none;">
-            <input type="date" id="data-fim" style="display:none;">
-
-            <button class="btn-filter" onclick="carregarDados()">
+<div class="dashboard-container">
+    <!-- Header -->
+    <div class="dashboard-header">
+        <div class="dashboard-title">
+            <i class="bx bxs-dashboard"></i>
+            Dashboard - Visão Geral
+        </div>
+        <div class="dashboard-actions">
+            <button class="btn-action btn-primary" onclick="carregarDados()">
                 <i class="bx bx-refresh"></i> Atualizar
             </button>
-
-            <button class="btn btn-small" onclick="exportarDados()">
-                <i class="bx bx-download"></i> Exportar CSV
+            <a href="<?= site_url('os/adicionar') ?>" class="btn-action btn-success">
+                <i class="bx bx-plus-circle"></i> Nova OS
+            </a>
+            <button class="btn-action btn-info" onclick="exportarDados()">
+                <i class="bx bx-download"></i> Exportar
             </button>
         </div>
+    </div>
 
-        <!-- KPIs -->
-        <div class="kpi-cards">
-            <div class="kpi-card">
+    <!-- Filtros -->
+    <div class="filters-bar">
+        <label><i class="bx bx-calendar"></i> Período:</label>
+        <select id="filtro-periodo" onchange="carregarDados()">
+            <option value="hoje">Hoje</option>
+            <option value="semana">Esta Semana</option>
+            <option value="mes" selected>Este Mês</option>
+            <option value="ano">Este Ano</option>
+        </select>
+        <input type="date" id="data-inicio" style="display:none;">
+        <input type="date" id="data-fim" style="display:none;">
+    </div>
+
+    <!-- KPIs -->
+    <div class="kpi-cards">
+        <div class="kpi-card">
+            <div class="kpi-header">
                 <div class="kpi-icon"><i class="bx bx-file"></i></div>
-                <div class="kpi-label">Total de OS</div>
-                <div class="kpi-value" id="kpi-total-os">-</div>
             </div>
-
-            <div class="kpi-card warning">
-                <div class="kpi-icon"><i class="bx bx-time"></i></div>
-                <div class="kpi-label">OS Pendentes</div>
-                <div class="kpi-value" id="kpi-os-pendentes">-</div>
-            </div>
-
-            <div class="kpi-card success">
-                <div class="kpi-icon"><i class="bx bx-check-circle"></i></div>
-                <div class="kpi-label">OS Finalizadas</div>
-                <div class="kpi-value" id="kpi-os-finalizadas">-</div>
-            </div>
-
-            <div class="kpi-card info">
-                <div class="kpi-icon"><i class="bx bx-dollar-circle"></i></div>
-                <div class="kpi-label">Valor Faturado</div>
-                <div class="kpi-value" id="kpi-valor-faturado">-</div>
-            </div>
-
-            <div class="kpi-card dark">
-                <div class="kpi-icon"><i class="bx bx-receipt"></i></div>
-                <div class="kpi-label">Ticket Médio</div>
-                <div class="kpi-value" id="kpi-ticket-medio">-</div>
-            </div>
-
-            <div class="kpi-card">
-                <div class="kpi-icon"><i class="bx bx-user-plus"></i></div>
-                <div class="kpi-label">Novos Clientes</div>
-                <div class="kpi-value" id="kpi-novos-clientes">-</div>
-            </div>
-
-            <div class="kpi-card" style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a5a 100%);">
-                <div class="kpi-icon"><i class="bx bx-hard-hat"></i></div>
-                <div class="kpi-label">Técnicos Ativos</div>
-                <div class="kpi-value" id="kpi-tecnicos-ativos">-</div>
-            </div>
+            <div class="kpi-value" id="kpi-total-os">-</div>
+            <div class="kpi-label">Total de OS</div>
         </div>
 
-        <!-- Gráficos -->
+        <div class="kpi-card warning">
+            <div class="kpi-header">
+                <div class="kpi-icon"><i class="bx bx-time"></i></div>
+            </div>
+            <div class="kpi-value" id="kpi-os-pendentes">-</div>
+            <div class="kpi-label">OS Pendentes</div>
+        </div>
+
+        <div class="kpi-card success">
+            <div class="kpi-header">
+                <div class="kpi-icon"><i class="bx bx-check-circle"></i></div>
+            </div>
+            <div class="kpi-value" id="kpi-os-finalizadas">-</div>
+            <div class="kpi-label">OS Finalizadas</div>
+        </div>
+
+        <div class="kpi-card info">
+            <div class="kpi-header">
+                <div class="kpi-icon"><i class="bx bx-dollar-circle"></i></div>
+            </div>
+            <div class="kpi-value" id="kpi-valor-faturado">-</div>
+            <div class="kpi-label">Valor Faturado</div>
+        </div>
+
+        <div class="kpi-card danger">
+            <div class="kpi-header">
+                <div class="kpi-icon"><i class="bx bx-receipt"></i></div>
+            </div>
+            <div class="kpi-value" id="kpi-ticket-medio">-</div>
+            <div class="kpi-label">Ticket Médio</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-header">
+                <div class="kpi-icon"><i class="bx bx-user-plus"></i></div>
+            </div>
+            <div class="kpi-value" id="kpi-novos-clientes">-</div>
+            <div class="kpi-label">Novos Clientes</div>
+        </div>
+
+        <div class="kpi-card" style="border-left-color: #ff6b6b;">
+            <div class="kpi-header">
+                <div class="kpi-icon" style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a5a 100%);">
+                    <i class="bx bx-hard-hat"></i>
+                </div>
+            </div>
+            <div class="kpi-value" id="kpi-tecnicos-ativos">-</div>
+            <div class="kpi-label">Técnicos Ativos</div>
+        </div>
+    </div>
+
+    <!-- Acesso Rápido - Menu Principal -->
+    <div class="quick-access">
+        <div class="quick-access-title">
+            <i class="bx bx-rocket"></i>
+            Acesso Rápido - Funcionalidades
+        </div>
+
+        <div class="quick-grid">
+            <!-- Ordens de Serviço -->
+            <div class="quick-card">
+                <div class="quick-card-header">
+                    <div class="quick-card-icon os"><i class="bx bx-clipboard"></i></div>
+                    <div class="quick-card-title">Ordens de Serviço</div>
+                </div>
+                <div class="quick-card-desc">Gerencie todas as ordens de serviço do sistema</div>
+                <div class="quick-card-actions">
+                    <a href="<?= site_url('os') ?>" class="quick-action-btn primary">
+                        <i class="bx bx-list-ul"></i> Listar
+                    </a>
+                    <a href="<?= site_url('os/adicionar') ?>" class="quick-action-btn secondary">
+                        <i class="bx bx-plus"></i> Nova
+                    </a>
+                </div>
+            </div>
+
+            <!-- Clientes -->
+            <div class="quick-card">
+                <div class="quick-card-header">
+                    <div class="quick-card-icon clientes"><i class="bx bx-group"></i></div>
+                    <div class="quick-card-title">Clientes</div>
+                </div>
+                <div class="quick-card-desc">Cadastro e gestão de clientes</div>
+                <div class="quick-card-actions">
+                    <a href="<?= site_url('clientes') ?>" class="quick-action-btn primary">
+                        <i class="bx bx-list-ul"></i> Listar
+                    </a>
+                    <a href="<?= site_url('clientes/adicionar') ?>" class="quick-action-btn secondary">
+                        <i class="bx bx-plus"></i> Novo
+                    </a>
+                </div>
+            </div>
+
+            <!-- Produtos -->
+            <div class="quick-card">
+                <div class="quick-card-header">
+                    <div class="quick-card-icon produtos"><i class="bx bx-package"></i></div>
+                    <div class="quick-card-title">Produtos</div>
+                </div>
+                <div class="quick-card-desc">Controle de produtos e estoque</div>
+                <div class="quick-card-actions">
+                    <a href="<?= site_url('produtos') ?>" class="quick-action-btn primary">
+                        <i class="bx bx-list-ul"></i> Listar
+                    </a>
+                    <a href="<?= site_url('produtos/adicionar') ?>" class="quick-action-btn secondary">
+                        <i class="bx bx-plus"></i> Novo
+                    </a>
+                </div>
+            </div>
+
+            <!-- Serviços -->
+            <div class="quick-card">
+                <div class="quick-card-header">
+                    <div class="quick-card-icon servicos"><i class="bx bx-wrench"></i></div>
+                    <div class="quick-card-title">Serviços</div>
+                </div>
+                <div class="quick-card-desc">Cadastro de serviços prestados</div>
+                <div class="quick-card-actions">
+                    <a href="<?= site_url('servicos') ?>" class="quick-action-btn primary">
+                        <i class="bx bx-list-ul"></i> Listar
+                    </a>
+                    <a href="<?= site_url('servicos/adicionar') ?>" class="quick-action-btn secondary">
+                        <i class="bx bx-plus"></i> Novo
+                    </a>
+                </div>
+            </div>
+
+            <!-- Vendas -->
+            <div class="quick-card">
+                <div class="quick-card-header">
+                    <div class="quick-card-icon vendas"><i class="bx bx-cart"></i></div>
+                    <div class="quick-card-title">Vendas</div>
+                </div>
+                <div class="quick-card-desc">Controle de vendas e orçamentos</div>
+                <div class="quick-card-actions">
+                    <a href="<?= site_url('vendas') ?>" class="quick-action-btn primary">
+                        <i class="bx bx-list-ul"></i> Listar
+                    </a>
+                    <a href="<?= site_url('vendas/adicionar') ?>" class="quick-action-btn secondary">
+                        <i class="bx bx-plus"></i> Nova
+                    </a>
+                </div>
+            </div>
+
+            <!-- Obras -->
+            <div class="quick-card">
+                <div class="quick-card-header">
+                    <div class="quick-card-icon obras"><i class="bx bx-building-house"></i></div>
+                    <div class="quick-card-title">Obras</div>
+                </div>
+                <div class="quick-card-desc">Gerenciamento de obras e projetos</div>
+                <div class="quick-card-actions">
+                    <a href="<?= site_url('obras') ?>" class="quick-action-btn primary">
+                        <i class="bx bx-list-ul"></i> Listar
+                    </a>
+                    <a href="<?= site_url('obras/adicionar') ?>" class="quick-action-btn secondary">
+                        <i class="bx bx-plus"></i> Nova
+                    </a>
+                </div>
+            </div>
+
+            <!-- Técnicos -->
+            <div class="quick-card">
+                <div class="quick-card-header">
+                    <div class="quick-card-icon tecnico"><i class="bx bx-hard-hat"></i></div>
+                    <div class="quick-card-title">Técnicos</div>
+                </div>
+                <div class="quick-card-desc">Gestão de equipe técnica</div>
+                <div class="quick-card-actions">
+                    <a href="<?= site_url('tecnicos_admin') ?>" class="quick-action-btn primary">
+                        <i class="bx bx-list-ul"></i> Painel
+                    </a>
+                    <a href="<?= site_url('tecnicos_admin/execucao') ?>" class="quick-action-btn secondary">
+                        <i class="bx bx-run"></i> Execuções
+                    </a>
+                </div>
+            </div>
+
+            <!-- Financeiro -->
+            <div class="quick-card">
+                <div class="quick-card-header">
+                    <div class="quick-card-icon financeiro"><i class="bx bx-dollar-circle"></i></div>
+                    <div class="quick-card-title">Financeiro</div>
+                </div>
+                <div class="quick-card-desc">Controle financeiro e cobranças</div>
+                <div class="quick-card-actions">
+                    <a href="<?= site_url('financeiro') ?>" class="quick-action-btn primary">
+                        <i class="bx bx-chart"></i> Dashboard
+                    </a>
+                    <a href="<?= site_url('cobrancas') ?>" class="quick-action-btn secondary">
+                        <i class="bx bx-credit-card"></i> Cobranças
+                    </a>
+                </div>
+            </div>
+
+            <!-- Relatórios -->
+            <div class="quick-card">
+                <div class="quick-card-header">
+                    <div class="quick-card-icon relatorios"><i class="bx bx-pie-chart-alt-2"></i></div>
+                    <div class="quick-card-title">Relatórios</div>
+                </div>
+                <div class="quick-card-desc">Relatórios e análises do sistema</div>
+                <div class="quick-card-actions">
+                    <a href="<?= site_url('relatorios') ?>" class="quick-action-btn primary">
+                        <i class="bx bx-file"></i> Geral
+                    </a>
+                    <a href="<?= site_url('dre') ?>" class="quick-action-btn secondary">
+                        <i class="bx bx-line-chart"></i> DRE
+                    </a>
+                </div>
+            </div>
+
+            <!-- Configurações -->
+            <div class="quick-card">
+                <div class="quick-card-header">
+                    <div class="quick-card-icon config"><i class="bx bx-cog"></i></div>
+                    <div class="quick-card-title">Configurações</div>
+                </div>
+                <div class="quick-card-desc">Configurações do sistema e emitente</div>
+                <div class="quick-card-actions">
+                    <a href="<?= site_url('mapos/configurar') ?>" class="quick-action-btn primary">
+                        <i class="bx bx-sliders"></i> Sistema
+                    </a>
+                    <a href="<?= site_url('usuarios') ?>" class="quick-action-btn secondary">
+                        <i class="bx bx-user"></i> Usuários
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráficos -->
+    <div class="charts-section">
         <div class="charts-row">
             <div class="chart-container">
                 <div class="chart-title">
@@ -315,54 +794,26 @@
                 <canvas id="chart-por-tecnico" class="chart-canvas"></canvas>
             </div>
         </div>
+    </div>
 
-        <div class="charts-row">
-            <div class="chart-container">
-                <div class="chart-title">
-                    <i class="bx bx-package"></i>
-                    Top Produtos
-                </div>
-                <canvas id="chart-top-produtos" class="chart-canvas"></canvas>
+    <!-- Atividades Recentes -->
+    <div class="activities-section">
+        <div class="activities-header">
+            <div class="activities-title">
+                <i class="bx bx-time-five"></i>
+                Atividades Recentes
             </div>
-
-            <div class="chart-container">
-                <div class="chart-title">
-                    <i class="bx bx-wrench"></i>
-                    Top Serviços
-                </div>
-                <canvas id="chart-top-servicos" class="chart-canvas"></canvas>
-            </div>
+            <a href="<?= site_url('auditoria') ?>" class="quick-action-btn secondary">
+                Ver Todas
+            </a>
         </div>
-
-        <!-- Links para Relatórios Detalhados -->
-        <h3 style="margin-top: 40px; margin-bottom: 20px;">
-            <i class="bx bx-file-find" style="color: #667eea;"></i> Relatórios Detalhados
-        </h3>
-
-        <div class="relatorios-links">
-            <a href="<?= site_url('dashboard/relatorio_atendimentos') ?>" class="relatorio-card">
-                <i class="bx bx-time"></i>
-                <h4>Relatório de Atendimentos</h4>
-                <p>Visualize todos os atendimentos por período, técnico e status</p>
-            </a>
-
-            <a href="<?= site_url('dashboard/relatorio_financeiro') ?>" class="relatorio-card">
-                <i class="bx bx-dollar-circle"></i>
-                <h4>Relatório Financeiro</h4>
-                <p>Análise de receitas, despesas e projeções financeiras</p>
-            </a>
-
-            <a href="<?= site_url('dashboard/relatorio_produtos') ?>" class="relatorio-card">
-                <i class="bx bx-package"></i>
-                <h4>Relatório de Produtos</h4>
-                <p>Produtos mais vendidos, estoque crítico e rotatividade</p>
-            </a>
-
-            <a href="<?= site_url('dashboard/relatorio_clientes') ?>" class="relatorio-card">
-                <i class="bx bx-group"></i>
-                <h4>Relatório de Clientes</h4>
-                <p>Análise de clientes novos, recorrentes e ticket médio</p>
-            </a>
+        <div id="atividades-recentes">
+            <div class="activity-item">
+                <div class="activity-icon"><i class="bx bx-refresh"></i></div>
+                <div class="activity-content">
+                    <div class="activity-text">Carregando atividades...</div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -385,6 +836,7 @@ Chart.defaults.color = '#666';
 
 $(document).ready(function() {
     carregarDados();
+    carregarAtividades();
 });
 
 function showLoading() {
@@ -412,25 +864,59 @@ function carregarDados() {
                 criarGraficoMes(response.data.os_por_mes);
                 criarGraficoFaturamento(response.data.faturamento_mensal);
                 criarGraficoTecnico(response.data.por_tecnico);
-                criarGraficoProdutos(response.data.top_produtos);
-                criarGraficoServicos(response.data.top_servicos);
+                if (response.data.top_produtos) {
+                    criarGraficoProdutos(response.data.top_produtos);
+                }
+                if (response.data.top_servicos) {
+                    criarGraficoServicos(response.data.top_servicos);
+                }
             }
             hideLoading();
         },
         error: function() {
-            alert('Erro ao carregar dados do dashboard');
+            console.error('Erro ao carregar dados do dashboard');
             hideLoading();
         }
     });
 }
 
+function carregarAtividades() {
+    $.ajax({
+        url: '<?= site_url("auditoria/ultimas") ?>',
+        type: 'GET',
+        dataType: 'json',
+        success: function(response) {
+            if (response && response.length > 0) {
+                let html = '';
+                response.slice(0, 5).forEach(function(item) {
+                    html += `
+                        <div class="activity-item">
+                            <div class="activity-icon"><i class="bx ${item.icone || 'bx-info-circle'}"></i></div>
+                            <div class="activity-content">
+                                <div class="activity-text">${item.descricao}</div>
+                                <div class="activity-time">${item.data} às ${item.hora}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+                $('#atividades-recentes').html(html);
+            } else {
+                $('#atividades-recentes').html('<div class="activity-item"><div class="activity-content"><div class="activity-text">Nenhuma atividade recente</div></div></div>');
+            }
+        },
+        error: function() {
+            $('#atividades-recentes').html('<div class="activity-item"><div class="activity-content"><div class="activity-text">Erro ao carregar atividades</div></div></div>');
+        }
+    });
+}
+
 function atualizarKPIs(kpi) {
-    $('#kpi-total-os').text(kpi.total_os);
-    $('#kpi-os-pendentes').text(kpi.os_pendentes);
-    $('#kpi-os-finalizadas').text(kpi.os_finalizadas);
-    $('#kpi-valor-faturado').text('R$ ' + formatarValor(kpi.valor_faturado));
-    $('#kpi-ticket-medio').text('R$ ' + formatarValor(kpi.ticket_medio));
-    $('#kpi-novos-clientes').text(kpi.novos_clientes);
+    $('#kpi-total-os').text(kpi.total_os || '0');
+    $('#kpi-os-pendentes').text(kpi.os_pendentes || '0');
+    $('#kpi-os-finalizadas').text(kpi.os_finalizadas || '0');
+    $('#kpi-valor-faturado').text('R$ ' + formatarValor(kpi.valor_faturado || 0));
+    $('#kpi-ticket-medio').text('R$ ' + formatarValor(kpi.ticket_medio || 0));
+    $('#kpi-novos-clientes').text(kpi.novos_clientes || '0');
     $('#kpi-tecnicos-ativos').text(kpi.tecnicos_ativos || '-');
 }
 
@@ -439,13 +925,14 @@ function formatarValor(valor) {
 }
 
 function criarGraficoStatus(dados) {
+    if (!dados || dados.length === 0) return;
     const ctx = document.getElementById('chart-os-status').getContext('2d');
 
     if (charts.status) charts.status.destroy();
 
     const labels = dados.map(d => d.status);
     const valores = dados.map(d => d.total);
-    const cores = ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe', '#11998e'];
+    const cores = ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe', '#11998e', '#fa709a', '#30cfd0'];
 
     charts.status = new Chart(ctx, {
         type: 'doughnut',
@@ -471,6 +958,7 @@ function criarGraficoStatus(dados) {
 }
 
 function criarGraficoMes(dados) {
+    if (!dados || dados.length === 0) return;
     const ctx = document.getElementById('chart-os-mes').getContext('2d');
 
     if (charts.mes) charts.mes.destroy();
@@ -508,6 +996,7 @@ function criarGraficoMes(dados) {
 }
 
 function criarGraficoFaturamento(dados) {
+    if (!dados || dados.length === 0) return;
     const ctx = document.getElementById('chart-faturamento').getContext('2d');
 
     if (charts.faturamento) charts.faturamento.destroy();
@@ -550,6 +1039,7 @@ function criarGraficoFaturamento(dados) {
 }
 
 function criarGraficoTecnico(dados) {
+    if (!dados || dados.length === 0) return;
     const ctx = document.getElementById('chart-por-tecnico').getContext('2d');
 
     if (charts.tecnico) charts.tecnico.destroy();
@@ -583,67 +1073,11 @@ function criarGraficoTecnico(dados) {
 }
 
 function criarGraficoProdutos(dados) {
-    const ctx = document.getElementById('chart-top-produtos').getContext('2d');
-
-    if (charts.produtos) charts.produtos.destroy();
-
-    const labels = dados.slice(0, 5).map(d => d.descricao.substring(0, 20) + '...');
-    const valores = dados.slice(0, 5).map(d => d.total_vendido);
-
-    charts.produtos = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Quantidade Vendida',
-                data: valores,
-                backgroundColor: 'rgba(240, 147, 251, 0.8)',
-                borderRadius: 5
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false }
-            },
-            scales: {
-                y: { beginAtZero: true }
-            }
-        }
-    });
+    if (!dados || dados.length === 0) return;
 }
 
 function criarGraficoServicos(dados) {
-    const ctx = document.getElementById('chart-top-servicos').getContext('2d');
-
-    if (charts.servicos) charts.servicos.destroy();
-
-    const labels = dados.slice(0, 5).map(d => d.nome.substring(0, 20) + '...');
-    const valores = dados.slice(0, 5).map(d => d.total_vendido);
-
-    charts.servicos = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Quantidade Realizada',
-                data: valores,
-                backgroundColor: 'rgba(79, 172, 254, 0.8)',
-                borderRadius: 5
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false }
-            },
-            scales: {
-                y: { beginAtZero: true }
-            }
-        }
-    });
+    if (!dados || dados.length === 0) return;
 }
 
 function exportarDados() {
