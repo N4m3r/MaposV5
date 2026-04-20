@@ -202,14 +202,14 @@
                             <?= htmlspecialchars($etapa->descricao) ?>
                         </p>
                     <?php endif; ?>
-                    <?php if ($etapa->percentual > 0): ?>
+                    <?php if (($etapa->percentual_concluido ?? 0) > 0): ?>
                         <div style="margin-top: 10px;">
                             <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
                                 <span>Progresso</span>
-                                <span><?= $etapa->percentual ?>%</span>
+                                <span><?= $etapa->percentual_concluido ?? 0 ?>%</span>
                             </div>
                             <div style="height: 6px; background: #e0e0e0; border-radius: 3px;">
-                                <div style="width: <?= $etapa->percentual ?>%; height: 100%; background: linear-gradient(90deg, #667eea, #764ba2); border-radius: 3px;"></div>
+                                <div style="width: <?= $etapa->percentual_concluido ?? 0 ?>%; height: 100%; background: linear-gradient(90deg, #667eea, #764ba2); border-radius: 3px;"></div>
                             </div>
                         </div>
                     <?php endif; ?>
