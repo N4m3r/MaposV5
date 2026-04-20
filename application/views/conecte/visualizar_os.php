@@ -1,5 +1,9 @@
-<?php $totalServico = 0;
+<?php
+// Inicializar variáveis
+$totalServico = 0;
 $totalProdutos = 0;
+$cobrancas_os = isset($cobrancas_os) ? $cobrancas_os : [];
+$notas_fiscais_os = isset($notas_fiscais_os) ? $notas_fiscais_os : [];
 
 // Helper para cores de status
 function getStatusColor($status) {
@@ -433,7 +437,6 @@ function getStatusColor($status) {
                             </thead>
                         </table>
 
-                        <?php } ?>
                     </div>
                 </div>
             </div>

@@ -147,6 +147,123 @@ CREATE TABLE obra_checkins (
 );
 ```
 
+**4. obra_cliente_notificacoes** (Notificações para o cliente)
+```sql
+CREATE TABLE obra_cliente_notificacoes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    obra_id INT NOT NULL,
+    cliente_id INT NOT NULL,
+    
+    -- Dados da notificação
+    tipo ENUM('etapa_inicio', 'etapa_fim', 'fotos_novas', 'impedimento', 
+              'atraso', 'mensagem', 'relatorio', 'outro') NOT NULL,
+    titulo VARCHAR(255) NOT NULL,
+    mensagem TEXT,
+    
+    -- Link para ação
+    url_destino VARCHAR(500),
+    entidade_relacionada VARCHAR(50), -- 'etapa', 'atividade', 'foto'
+    entidade_id INT,
+    
+    -- Status
+    lida BOOLEAN DEFAULT FALSE,
+    data_leitura DATETIME,
+    
+    -- Envio
+    email_enviado BOOLEAN DEFAULT FALSE,
+    whatsapp_enviado BOOLEAN DEFAULT FALSE,
+    
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    INDEX (obra_id),
+    INDEX (cliente_id),
+    INDEX (lida),
+    INDEX (created_at)
+);
+```
+
+**5. obra_cliente_acessos** (Log de acessos do cliente)
+```sql
+CREATE TABLE obra_cliente_acessos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    obra_id INT NOT NULL,
+    cliente_id INT NOT NULL,
+    
+    -- Dados do acesso
+    ip VARCHAR(45),
+    user_agent TEXT,
+    pagina_acessada VARCHAR(255),
+    
+    -- Tempo
+    tempo_na_pagina INT DEFAULT 0, -- segundos
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    
+    INDEX (obra_id),
+    INDEX (cliente_id),
+    INDEX (created_at)
+);
+```
+
+**6. obra_compartilhamentos** (Links temporários para compartilhar fotos)
+```sql
+CREATE TABLE obra_compartilhamentos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    obra_id INT NOT NULL,
+    cliente_id INT NOT NULL,
+    
+    -- Link temporário
+    token VARCHAR(64) UNIQUE NOT NULL,
+    tipo ENUM('fotos', 'relatorio', 'progresso') DEFAULT 'fotos',
+    
+    -- Filtros
+    data_inicio DATE,
+    data_fim DATE,
+    etapa_id INT,
+    
+    -- Validade
+    data_expiracao DATETIME NOT NULL,
+    acessos_permitidos INT DEFAULT 0, -- 0 = ilimitado
+    acessos_realizados INT DEFAULT 0,
+    
+    -- Status
+    ativo BOOLEAN DEFAULT TRUE,
+    
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    INDEX (obra_id),
+    INDEX (token),
+    INDEX (data_expiracao)
+);
+```
+
+**7. obra_mensagens** (Chat entre cliente e gestor)
+```sql
+CREATE TABLE obra_mensagens (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    obra_id INT NOT NULL,
+    
+    -- Remetente
+    remetente_tipo ENUM('cliente', 'gestor', 'sistema') NOT NULL,
+    remetente_id INT NOT NULL,
+    
+    -- Mensagem
+    mensagem TEXT NOT NULL,
+    anexo_url VARCHAR(255),
+    anexo_tipo VARCHAR(50),
+    
+    -- Status
+    lida BOOLEAN DEFAULT FALSE,
+    data_leitura DATETIME,
+    
+    -- Resposta
+    resposta_para INT, -- ID da mensagem original (thread)
+    
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    INDEX (obra_id),
+    INDEX (remetente_id),
+    INDEX (lida),
+    INDEX (created_at)
+);
+```
+
 ---
 
 ## 3. Fluxo de Funcionamento
@@ -746,22 +863,49 @@ Fotos por Obra/
 - Status visual (cor + ícone)
 - Botão de ação rápida
 
-### 7.3 Relatórios
+### 7.3 Dashboard do Cliente
 
-**Relatório Diário de Obra (RDO):**
-- Data e clima
-- Equipe presente
-- Atividades executadas
-- Fotos do dia
-- Problemas e ações corretivas
-- Materiais recebidos/consumidos
-- Assinatura digital
+**Cards Principais:**
+- Progresso geral da obra (% e barra visual)
+- Dias restantes para entrega
+- Etapa atual em execução
+- Quantidade de fotos disponíveis
+- Últimas atualizações (timeline)
+- Botão rápido para contato
+
+**Visualização Timeline:**
+```
+[Início]────●────●────●────●────[Entrega]
+            │    │    │    │
+         Etapa1 Etapa2 Atual Etapa4
+         ✓ Concluída ✓ Concluída ▶ Em And ○ Pendente
+```
+
+**Gráficos:**
+- Evolução semanal (% concluído)
+- Fotos adicionadas por semana
+- Atividades realizadas (heatmap)
+
+### 7.4 Relatórios para Cliente
+
+**Relatório Diário de Obra (RDO) - Versão Cliente:**
+- Resumo executivo (1 página)
+- Evolução da obra (gráfico)
+- Fotos em destaque (máx 6)
+- Próximas atividades previstas
+- QR Code para acessar online
 
 **Relatório de Progresso:**
 - Comparativo planejado vs real
 - Curva S (avanço acumulado)
 - Análise de desvios
 - Previsão de término
+
+**Relatório Mensal Automático:**
+- Enviado por e-mail no dia configurado
+- PDF com todas as fotos do período
+- Gráfico de evolução
+- Resumo das etapas concluídas
 
 ---
 
@@ -780,6 +924,47 @@ POST /api/atividades/{id}/finalizar  # Finalizar atividade
 POST /api/atividades/{id}/impedir   # Registrar impedimento
 POST /api/atividades/{id}/foto      # Upload de foto
 GET  /api/atividades/{id}/fotos     # Listar fotos
+```
+
+### 8.2 Endpoints da API (Portal do Cliente)
+
+```
+GET  /api/cliente/obras                    # Listar obras do cliente
+GET  /api/cliente/obras/{id}                 # Detalhes da obra
+GET  /api/cliente/obras/{id}/progresso     # Dados de progresso
+GET  /api/cliente/obras/{id}/etapas        # Lista de etapas
+GET  /api/cliente/obras/{id}/fotos         # Fotos da obra
+     Params: data_inicio, data_fim, etapa_id
+GET  /api/cliente/obras/{id}/atividades  # Atividades visíveis
+GET  /api/cliente/obras/{id}/relatorio     # Gerar relatório PDF
+POST /api/cliente/obras/{id}/mensagem     # Enviar mensagem
+GET  /api/cliente/notificacoes             # Lista de notificações
+POST /api/cliente/notificacoes/{id}/ler    # Marcar como lida
+```
+
+### 8.3 Webhooks para Notificações
+
+**Eventos disponíveis:**
+- `obra.etapa.iniciada`
+- `obra.etapa.concluida`
+- `obra.fotos.adicionadas`
+- `obra.impedimento.registrado`
+- `obra.mensagem.recebida`
+
+**Payload exemplo:**
+```json
+{
+  "evento": "obra.etapa.concluida",
+  "obra_id": 123,
+  "cliente_id": 456,
+  "dados": {
+    "etapa_id": 789,
+    "etapa_nome": "Elétrica - Bloco A",
+    "percentual_geral": 75,
+    "data_conclusao": "2026-04-18T14:30:00"
+  },
+  "timestamp": "2026-04-18T14:30:00Z"
+}
 ```
 
 ### 8.2 App Mobile (PWA)
@@ -822,15 +1007,64 @@ GET  /api/atividades/{id}/fotos     # Listar fotos
 
 ### 9.2 Permissões do Sistema
 
+**Permissões Administrativas:**
 ```php
-$permissoes_obras = [
-    'vObras'      => 'Visualizar obras',
-    'cObras'      => 'Cadastrar obras',
-    'eObras'      => 'Editar obras',
-    'dObras'      => 'Excluir obras',
-    'vTecnicoObra'=> 'Ver obras atribuídas',
-    'eTecnicoExec'=> 'Executar atividades',
+$permissoes_obras_admin = [
+    'vObras'        => 'Visualizar obras',
+    'cObras'        => 'Cadastrar obras',
+    'eObras'        => 'Editar obras',
+    'dObras'        => 'Excluir obras',
+    'vObrasTodas'   => 'Visualizar todas as obras',
+    'eObrasConfig'  => 'Configurar obras (etapas, equipe)',
+    'vObrasRelatorios' => 'Visualizar relatórios gerenciais',
+    'eObrasNotificacoes' => 'Configurar notificações de clientes',
 ];
+```
+
+**Permissões do Técnico:**
+```php
+$permissoes_obras_tecnico = [
+    'vTecnicoObra'  => 'Ver obras atribuídas',
+    'eTecnicoExec'  => 'Executar atividades',
+    'eTecnicoFotos' => 'Adicionar fotos',
+    'eTecnicoImped' => 'Registrar impedimentos',
+    'vTecnicoRelatorio' => 'Ver relatório próprio',
+];
+```
+
+**Permissões do Cliente (via Permissões do Sistema):**
+```php
+$permissoes_cliente = [
+    'visualizar_obras'    => 'Acessar módulo de obras',
+    'visualizar_fotos'    => 'Ver fotos das obras',
+    'download_fotos'      => 'Baixar fotos',
+    'visualizar_relatorio'=> 'Ver relatórios simplificados',
+    'enviar_mensagem'     => 'Enviar mensagens ao gestor',
+    'receber_notificacao' => 'Receber notificações',
+    'compartilhar_relatorio'=> 'Gerar links de compartilhamento',
+];
+```
+
+**Controle de Visibilidade (no model):**
+```php
+// Cliente só vê obras vinculadas a ele
+public function getObrasPorCliente($cliente_id)
+{
+    return $this->db->where('cliente_id', $cliente_id)
+                    ->where('visivel_cliente', 1)
+                    ->get('obras')
+                    ->result();
+}
+
+// Fotos marcadas como "visivel_cliente"
+public function getFotosVisiveis($obra_id)
+{
+    return $this->db->where('obra_id', $obra_id)
+                    ->where('visivel_cliente', 1)
+                    ->where('excluida', 0)
+                    ->get('obra_atividades')
+                    ->result();
+}
 ```
 
 ---
@@ -868,11 +1102,19 @@ $permissoes_obras = [
 3. Otimizações de performance
 4. Documentação completa
 
-### Fase 6: Mobile e Integrações (Semana 8)
+### Fase 6: Portal do Cliente (Semana 7)
+1. Views para cliente (lista, dashboard, fotos)
+2. Sistema de notificações ao cliente
+3. Chat cliente-gestor
+4. Relatórios simplificados
+5. Sistema de compartilhamento de fotos
+
+### Fase 7: Mobile e Integrações (Semana 8)
 1. PWA para técnicos
-2. Notificações push
-3. Integração com OS existentes
-4. Testes e ajustes finais
+2. PWA para clientes (visualização)
+3. Notificações push
+4. Integração com OS existentes
+5. Testes e ajustes finais
 
 ---
 
@@ -905,6 +1147,18 @@ application/
         ├── checkin.php
         ├── impedimento.php
         └── fotos_galeria.php
+    └── conecte/                           # Portal do Cliente
+        ├── obras.php                      # Lista de obras
+        ├── obra_view.php                  # Dashboard da obra
+        ├── obra_etapas.php                # Timeline de etapas
+        ├── obra_fotos.php                 # Galeria de fotos
+        ├── obra_atividades.php            # Atividades realizadas
+        ├── obra_relatorio.php             # Relatório para cliente
+        ├── obra_mensagens.php             # Chat
+        └── widgets/
+            ├── progresso_bar.php
+            ├── timeline_etapas.php
+            └── card_foto.php
 
 assets/
 ├── js/
@@ -918,7 +1172,11 @@ assets/
 
 database/migrations/
 ├── 20260420000001_add_obra_atividades.php
-└── 20260420000002_add_obra_checkins.php
+├── 20260420000002_add_obra_checkins.php
+├── 20260420000003_add_obra_cliente_notificacoes.php
+├── 20260420000004_add_obra_cliente_acessos.php
+├── 20260420000005_add_obra_compartilhamentos.php
+└── 20260420000006_add_obra_mensagens.php
 ```
 
 ---
@@ -965,6 +1223,39 @@ $obra_foto_tamanho_max = 10;
 // Qualidade de compressão de fotos (%)
 $obra_foto_qualidade = 85;
 
+// Configurações do Portal do Cliente
+$obra_cliente_notificar_email = true;
+$obra_cliente_notificar_whatsapp = false;
+$obra_cliente_notificar_push = true;
+
+// Eventos que geram notificação ao cliente
+$obra_cliente_notificar_eventos = [
+    'etapa_inicio'      => true,
+    'etapa_fim'         => true,
+    'fotos_novas'       => false,  // Pode ser muitas notificações
+    'impedimento'       => true,
+    'atraso'            => true,
+    'mensagem'          => true,
+    'relatorio_mensal'  => true,
+];
+
+// Visibilidade padrão das fotos para cliente
+$obra_fotos_visiveis_cliente = true;
+
+// Dias de retenção de notificações antigas
+$obra_notificacoes_retencao = 90;
+
+// Máximo de fotos por página na galeria do cliente
+$obra_fotos_por_pagina = 24;
+
+// Tempo de expiração de links de compartilhamento (dias)
+$obra_compartilhamento_expiracao = 30;
+
+// Horário de envio de relatório mensal automático
+$obra_relatorio_hora_envio = '08:00';
+$obra_relatorio_dia_envio = 1; // Dia 1 de cada mês
+$obra_foto_qualidade = 85;
+
 // Horário padrão de trabalho
 $obra_horario_inicio = '08:00';
 $obra_horario_fim = '17:00';
@@ -977,7 +1268,7 @@ $obra_dias_uteis = [1, 2, 3, 4, 5]; // Seg a Sex
 
 ## 14. Métricas e KPIs
 
-**Dashboard Gerencial:**
+**Dashboard Gerencial (Admin):**
 - Taxa de cumprimento de prazo (%)
 - Média de horas por atividade
 - Número de impedimentos por tipo
@@ -985,9 +1276,83 @@ $obra_dias_uteis = [1, 2, 3, 4, 5]; // Seg a Sex
 - Adesão ao check-in/out (%)
 - Tempo médio de resolução de impedimentos
 
+**Dashboard do Cliente:**
+- Percentual de conclusão da obra
+- Dias restantes para entrega
+- Etapas concluídas vs. total
+- Fotos adicionadas (quantidade)
+- Atividades realizadas na última semana
+- Tempo desde última atualização
+- Número de mensagens não lidas
+
+**Métricas de Engajamento do Cliente:**
+- Frequência de acesso ao portal
+- Taxa de abertura de notificações
+- Downloads de relatórios
+- Interações (mensagens enviadas)
+- Tempo médio de visualização de fotos
+
+---
+
+## 15. Resumo das Funcionalidades do Cliente
+
+### Portal do Cliente - Checklist de Funcionalidades
+
+**Dashboard Principal:**
+- [ ] Lista de obras vinculadas ao cliente
+- [ ] Card de progresso visual (barra percentual)
+- [ ] Timeline de etapas (concluídas/em andamento/pendentes)
+- [ ] Alertas de atualizações importantes
+- [ ] Acesso rápido às fotos recentes
+- [ ] Resumo de mensagens não lidas
+
+**Visualização da Obra:**
+- [ ] Gráfico de evolução do progresso
+- [ ] Detalhes de cada etapa (descrição, previsão, status)
+- [ ] Calendário com atividades realizadas
+- [ ] Informações da equipe técnica
+- [ ] Contatos do gestor
+
+**Galeria de Fotos:**
+- [ ] Grid de fotos organizadas por data
+- [ ] Filtro por etapa da obra
+- [ ] Visualização ampliada com zoom
+- [ ] Download individual e em lote
+- [ ] Modo "comparativo" (antes/depois)
+- [ ] Links de compartilhamento temporários
+
+**Atividades:**
+- [ ] Lista de atividades realizadas (simplificada)
+- [ ] Filtro por período
+- [ ] Visualização de impedimentos registrados
+- [ ] Fotos vinculadas às atividades
+
+**Relatórios:**
+- [ ] Relatório simplificado em PDF
+- [ ] Gráficos de progresso
+- [ ] Fotos em destaque do período
+- [ ] Envio automático mensal por e-mail
+
+**Comunicação:**
+- [ ] Chat direto com gestor
+- [ ] Envio de mensagens com anexos
+- [ ] Notificações em tempo real
+- [ ] Histórico de conversas
+
+**Notificações:**
+- [ ] Configuração de preferências (e-mail, WhatsApp, push)
+- [ ] Eventos: início/fim de etapa, fotos novas, impedimentos
+- [ ] Badge de notificações não lidas
+- [ ] Lista de notificações com marcar como lida
+
+**Configurações:**
+- [ ] Preferências de notificação
+- [ ] Alteração de dados de contato
+- [ ] Visualização de termos/contrato
+
 ---
 
 **Documento criado em:** Abril/2026  
-**Versão:** 1.0  
+**Versão:** 1.1 (Atualizado com Portal do Cliente)  
 **Autor:** Sistema MapOS  
 **Status:** Especificação Técnica para Implementação
