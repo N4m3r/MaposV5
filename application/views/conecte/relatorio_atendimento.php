@@ -302,7 +302,7 @@
                 <span class="icon"><i class="bx bx-file"></i></span>
                 <h5>Relatório de Atendimento - OS #<?php echo $os->idOs ?? 'N/A'; ?></h5>
                 <div class="buttons">
-                    <a href="<?php echo site_url('mine/visualizarOs/' . ($os->idOs ?? '')); ?>" class="btn btn-mini">
+                    <a href="<?php echo base_url('index.php/mine/visualizarOs/' . ($os->idOs ?? '')); ?>" class="btn btn-mini">
                         <i class="bx bx-arrow-back"></i> Voltar para OS
                     </a>
                 </div>

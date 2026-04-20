@@ -6,7 +6,7 @@
             <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                 <div>
                     <div style="font-size: 14px; opacity: 0.9; margin-bottom: 8px;">
-                        <a href="<?= site_url('mine/obras') ?>" style="color: white; text-decoration: none;"><i class="bx bx-arrow-back"></i> Voltar para Minhas Obras</a>
+                        <a href="<?= base_url('index.php/mine/obras') ?>" style="color: white; text-decoration: none;"><i class="bx bx-arrow-back"></i> Voltar para Minhas Obras</a>
                     </div>
                     <h2 style="margin: 0; font-size: 28px; font-weight: 700;"><i class="bx bx-building-house"></i> <?= htmlspecialchars($obra->nome) ?></h2>
                     <p style="margin: 10px 0 0; opacity: 0.9;">

@@ -509,6 +509,170 @@ class Obras_model extends CI_Model
     }
 
     /**
+     * Buscar obras por documento do cliente (CPF/CNPJ)
+     * Busca tanto com formatação quanto sem
+     */
+    public function getByClienteDocumento($documento, $perpage = 10, $start = 0)
+    {
+        if (!$this->tabelaExiste('obras') || !$this->tabelaExiste('clientes')) {
+            return [];
+        }
+
+        try {
+            // Limpar documento para busca
+            $documentoLimpo = preg_replace('/[^0-9]/', '', $documento);
+
+            $this->db->select('o.*');
+            $this->db->from('obras o');
+            $this->db->join('clientes c', 'c.idClientes = o.cliente_id', 'left');
+            $this->db->where('o.ativo', 1);
+
+            // Buscar por documento com ou sem formatação
+            $this->db->group_start();
+            $this->db->where('c.documento', $documento);
+            $this->db->or_where('c.documento', $documentoLimpo);
+            $this->db->group_end();
+
+            $this->db->order_by('o.created_at', 'DESC');
+            $this->db->limit($perpage, $start);
+            $query = $this->db->get();
+
+            if ($query === false || !is_object($query)) {
+                return [];
+            }
+
+            return $query->result();
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao buscar obras por documento: ' . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Contar obras por documento do cliente (CPF/CNPJ)
+     */
+    public function countByClienteDocumento($documento)
+    {
+        if (!$this->tabelaExiste('obras') || !$this->tabelaExiste('clientes')) {
+            return 0;
+        }
+
+        try {
+            // Limpar documento para busca
+            $documentoLimpo = preg_replace('/[^0-9]/', '', $documento);
+
+            $this->db->from('obras o');
+            $this->db->join('clientes c', 'c.idClientes = o.cliente_id', 'left');
+            $this->db->where('o.ativo', 1);
+
+            // Buscar por documento com ou sem formatação
+            $this->db->group_start();
+            $this->db->where('c.documento', $documento);
+            $this->db->or_where('c.documento', $documentoLimpo);
+            $this->db->group_end();
+
+            $query = $this->db->select('COUNT(*) as total')->get();
+
+            if ($query && $query->num_rows() > 0) {
+                return (int) $query->row()->total;
+            }
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao contar obras por documento: ' . $e->getMessage());
+        }
+
+        return 0;
+    }
+
+    /**
+     * Buscar obras por cliente combinando ID e documento
+     * Útil quando o cliente pode ter múltiplos registros com o mesmo CNPJ
+     */
+    public function getByClienteCompleto($cliente_id, $documento, $perpage = 10, $start = 0)
+    {
+        if (!$this->tabelaExiste('obras') || !$this->tabelaExiste('clientes')) {
+            return [];
+        }
+
+        try {
+            // Limpar documento para busca
+            $documentoLimpo = preg_replace('/[^0-9]/', '', $documento);
+
+            $this->db->select('o.*, c.nomeCliente as cliente_nome, c.documento as cliente_documento');
+            $this->db->from('obras o');
+            $this->db->join('clientes c', 'c.idClientes = o.cliente_id', 'left');
+            $this->db->where('o.ativo', 1);
+
+            // Buscar por ID do cliente OU por documento
+            $this->db->group_start();
+            $this->db->where('o.cliente_id', $cliente_id);
+
+            if (!empty($documentoLimpo)) {
+                $this->db->or_group_start();
+                $this->db->where('c.documento', $documento);
+                $this->db->or_where('c.documento', $documentoLimpo);
+                $this->db->group_end();
+            }
+
+            $this->db->group_end();
+
+            $this->db->order_by('o.created_at', 'DESC');
+            $this->db->limit($perpage, $start);
+            $query = $this->db->get();
+
+            if ($query === false || !is_object($query)) {
+                return [];
+            }
+
+            return $query->result();
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao buscar obras completas: ' . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Contar obras por cliente combinando ID e documento
+     */
+    public function countByClienteCompleto($cliente_id, $documento)
+    {
+        if (!$this->tabelaExiste('obras') || !$this->tabelaExiste('clientes')) {
+            return 0;
+        }
+
+        try {
+            // Limpar documento para busca
+            $documentoLimpo = preg_replace('/[^0-9]/', '', $documento);
+
+            $this->db->from('obras o');
+            $this->db->join('clientes c', 'c.idClientes = o.cliente_id', 'left');
+            $this->db->where('o.ativo', 1);
+
+            // Buscar por ID do cliente OU por documento
+            $this->db->group_start();
+            $this->db->where('o.cliente_id', $cliente_id);
+
+            if (!empty($documentoLimpo)) {
+                $this->db->or_group_start();
+                $this->db->where('c.documento', $documento);
+                $this->db->or_where('c.documento', $documentoLimpo);
+                $this->db->group_end();
+            }
+
+            $this->db->group_end();
+
+            $query = $this->db->select('COUNT(*) as total')->get();
+
+            if ($query && $query->num_rows() > 0) {
+                return (int) $query->row()->total;
+            }
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao contar obras completas: ' . $e->getMessage());
+        }
+
+        return 0;
+    }
+
+    /**
      * Buscar cliente da obra
      */
     public function getCliente($obra_id)

@@ -262,7 +262,7 @@
                             </div>
 
                             <!-- Botão -->
-                            <a href="<?php echo site_url('mine/visualizarObra/' . $r->id); ?>" class="btn-acompanhar">
+                            <a href="<?php echo base_url('index.php/mine/visualizarObra/' . $r->id); ?>" class="btn-acompanhar">
                                 <i class="bx bx-show"></i> Ver Detalhes da Obra
                             </a>
                         </div>

@@ -1991,6 +1991,7 @@ class Mine extends CI_Controller
 
     /**
      * Listar obras do cliente
+     * Busca por ID do cliente e também por CNPJ/Documento
      */
     public function obras()
     {
@@ -2003,13 +2004,24 @@ class Mine extends CI_Controller
 
         $this->load->library('pagination');
         $this->load->model('obras_model');
+        $this->load->model('clientes_model');
 
         $data['menuObras'] = 'obras';
 
         $cliente_id = $this->session->userdata('cliente_id');
 
+        // Buscar dados do cliente para obter o documento (CNPJ)
+        $cliente_documento = '';
+        if ($cliente_id) {
+            $cliente = $this->clientes_model->getById($cliente_id);
+            if ($cliente) {
+                $cliente_documento = $cliente->documento ?? '';
+            }
+        }
+
         $config['base_url'] = base_url() . 'index.php/mine/obras/';
-        $config['total_rows'] = $this->obras_model->countByCliente($cliente_id);
+        // Usar a busca combinada por ID e documento
+        $config['total_rows'] = $this->obras_model->countByClienteCompleto($cliente_id, $cliente_documento);
         $config['per_page'] = 10;
         $config['next_link'] = 'Próxima';
         $config['prev_link'] = 'Anterior';
@@ -2028,7 +2040,8 @@ class Mine extends CI_Controller
 
         $this->pagination->initialize($config);
 
-        $data['results'] = $this->obras_model->getByCliente($cliente_id, $config['per_page'], $this->uri->segment(3));
+        // Buscar obras usando a função combinada por ID e documento
+        $data['results'] = $this->obras_model->getByClienteCompleto($cliente_id, $cliente_documento, $config['per_page'], $this->uri->segment(3));
         $data['output'] = 'conecte/obras';
 
         $this->load->view('conecte/template', $data);
@@ -2063,9 +2076,25 @@ class Mine extends CI_Controller
             redirect('mine/obras');
         }
 
-        // Verificar se a obra pertence ao cliente logado
+        // Verificar se a obra pertence ao cliente logado (por ID ou por CNPJ/Documento)
         $cliente_id = $this->session->userdata('cliente_id');
-        if ($obra->cliente_id != $cliente_id) {
+        $tem_acesso = false;
+
+        if ($obra->cliente_id == $cliente_id) {
+            $tem_acesso = true;
+        } else {
+            // Verificar pelo documento (CNPJ) do cliente
+            $this->load->model('clientes_model');
+            $cliente = $this->clientes_model->getById($cliente_id);
+            if ($cliente && !empty($cliente->documento)) {
+                $cliente_obra = $this->obras_model->getCliente($obra->id);
+                if ($cliente_obra && $cliente_obra->documento == $cliente->documento) {
+                    $tem_acesso = true;
+                }
+            }
+        }
+
+        if (!$tem_acesso) {
             $this->session->set_flashdata('error', 'Esta obra não pertence ao cliente logado.');
             redirect('mine/obras');
         }

@@ -22,7 +22,7 @@
                 </span>
                 <h5>Detalhes OS</h5>
                 <div class="buttons">
-                    <a href="<?php echo site_url('mine/os'); ?>" class="btn btn-mini btn-inverse">
+                    <a href="<?php echo base_url('index.php/mine/os'); ?>" class="btn btn-mini btn-inverse">
                         <i class="bx bx-arrow-back"></i> Voltar
                     </a>
                 </div>
