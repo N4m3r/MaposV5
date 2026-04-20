@@ -913,6 +913,12 @@
         box-shadow: 0 2px 8px rgba(0,0,0,0.3);
     }
 
+    /* Dark mode - Dica box */
+    body[data-theme="dark"] .dica-box {
+        background: #1a3a4a !important;
+        color: #8ecae6 !important;
+    }
+
     /* ==========================================
        RESPONSIVIDADE - Mobile & Desktop
        ========================================== */
@@ -1466,10 +1472,13 @@
                         <div class="step-subtitle">Detalhe a atividade realizada</div>
 
                         <div class="form-group">
-                            <textarea name="descricao" id="descricao" placeholder="Ex: Instalacao das tubulacoes PVC no pavimento superior, conexoes de todos os pontos de agua fria..." required></textarea>
+                            <textarea name="descricao" id="descricao" placeholder="Ex: Instalacao das tubulacoes PVC no pavimento superior, conexoes de todos os pontos de agua fria..." required oninput="document.getElementById('charCount').textContent = this.value.length + ' caracteres'"></textarea>
+                            <div style="text-align: right; font-size: 11px; color: #888; margin-top: 4px;">
+                                <span id="charCount">0 caracteres</span> (min. 10)
+                            </div>
                         </div>
 
-                        <div style="background: #e8f4fd; border-radius: 8px; padding: 12px; font-size: 13px; color: #0c5460;">
+                        <div class="dica-box" style="background: #e8f4fd; border-radius: 8px; padding: 12px; font-size: 13px; color: #0c5460;">
                             <i class='bx bx-info-circle'></i> <strong>Dica:</strong> Seja especifico. Inclua materiais usados, medidas, localizacao e qualquer detalhe relevante.
                         </div>
                     </div>
@@ -1619,6 +1628,82 @@ const wizard = {
         this.createToastContainer();
         this.updateUI();
         this.setupKeyboardNavigation();
+        this.setupDragAndDrop();
+    },
+
+    // Setup Drag and Drop para desktop
+    setupDragAndDrop: function() {
+        const uploadArea = document.getElementById('photoUploadArea');
+        if (!uploadArea) return;
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            }, false);
+        });
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, () => {
+                uploadArea.classList.add('dragover');
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, () => {
+                uploadArea.classList.remove('dragover');
+            }, false);
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            const files = Array.from(e.dataTransfer.files);
+            this.processPhotoFiles(files);
+        }, false);
+    },
+
+    // Processar arquivos de foto (reutilizável)
+    processPhotoFiles: function(files) {
+        if (!files || files.length === 0) return;
+
+        const maxPhotos = 10;
+        if (this.data.fotos.length + files.length > maxPhotos) {
+            this.showToast(`Limite de ${maxPhotos} fotos atingido`, 'warning');
+            return;
+        }
+
+        this.showToast(`Processando ${files.length} foto(s)...`, 'info');
+
+        let processed = 0;
+        files.forEach(file => {
+            if (!file.type.startsWith('image/')) {
+                this.showToast(`${file.name} não é uma imagem`, 'warning');
+                return;
+            }
+
+            if (file.size > 10 * 1024 * 1024) {
+                this.showToast(`${file.name} muito grande (max 10MB)`, 'warning');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                this.data.fotos.push({
+                    file: file,
+                    preview: e.target.result,
+                    name: file.name
+                });
+                this.updatePhotoPreview();
+                processed++;
+
+                if (processed === files.filter(f => f.type.startsWith('image/')).length) {
+                    this.showToast(`${processed} foto(s) adicionada(s)`, 'success');
+                }
+            };
+            reader.onerror = () => {
+                this.showToast(`Erro ao ler: ${file.name}`, 'error');
+            };
+            reader.readAsDataURL(file);
+        });
     },
 
     // Criar container para toast notifications - Responsivo
@@ -1871,50 +1956,10 @@ const wizard = {
         }
     },
 
-    // Handler para selecao de fotos com compressao
+    // Handler para selecao de fotos - usa processPhotoFiles
     handlePhotoSelect: function(event) {
         const files = Array.from(event.target.files);
-        if (!files || files.length === 0) return;
-
-        const maxPhotos = 10;
-        if (this.data.fotos.length + files.length > maxPhotos) {
-            this.showToast(`Limite de ${maxPhotos} fotos atingido`, 'warning');
-            return;
-        }
-
-        this.showToast(`Processando ${files.length} foto(s)...`, 'info');
-
-        files.forEach(file => {
-            if (!file.type.startsWith('image/')) {
-                this.showToast(`Arquivo ignorado: ${file.name} não é uma imagem`, 'warning');
-                return;
-            }
-
-            // Validar tamanho (max 10MB)
-            if (file.size > 10 * 1024 * 1024) {
-                this.showToast(`Foto muito grande: ${file.name} (max 10MB)`, 'warning');
-                return;
-            }
-
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                this.data.fotos.push({
-                    file: file,
-                    preview: e.target.result,
-                    name: file.name
-                });
-                this.updatePhotoPreview();
-
-                if (this.data.fotos.length === files.length) {
-                    this.showToast(`${files.length} foto(s) adicionada(s)`, 'success');
-                }
-            };
-            reader.onerror = () => {
-                this.showToast(`Erro ao ler arquivo: ${file.name}`, 'error');
-            };
-            reader.readAsDataURL(file);
-        });
-
+        this.processPhotoFiles(files);
         event.target.value = '';
     },
 
