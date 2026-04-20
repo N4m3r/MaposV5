@@ -37,6 +37,39 @@ class Clientes_model extends CI_Model
         return $this->db->get('clientes')->row();
     }
 
+    /**
+     * Buscar cliente por documento (CPF/CNPJ)
+     * Busca com e sem formatação
+     */
+    public function getByDocumento($documento)
+    {
+        $documentoLimpo = preg_replace('/[^0-9]/', '', $documento);
+        $documentoFormatado = $this->formatarDocumento($documentoLimpo);
+
+        $this->db->group_start();
+        $this->db->where('documento', $documentoLimpo);
+        $this->db->or_where('documento', $documentoFormatado);
+        $this->db->group_end();
+        $this->db->limit(1);
+
+        $query = $this->db->get('clientes');
+        return $query ? $query->row() : null;
+    }
+
+    /**
+     * Formatar documento (CPF/CNPJ)
+     */
+    private function formatarDocumento($doc)
+    {
+        $doc = preg_replace('/[^0-9]/', '', $doc);
+        if (strlen($doc) === 11) {
+            return preg_replace('/(\d{3})(\d{3})(\d{3})(\d{2})/', '$1.$2.$3-$4', $doc);
+        } elseif (strlen($doc) === 14) {
+            return preg_replace('/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/', '$1.$2.$3/$4-$5', $doc);
+        }
+        return $doc;
+    }
+
     public function add($table, $data)
     {
         $this->db->insert($table, $data);

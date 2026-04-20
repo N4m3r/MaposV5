@@ -546,29 +546,46 @@ class Mine extends CI_Controller
             $notasFiscais = [];
             $obras = [];
 
+            // Se não tiver cliente_id, tenta obter pelos CNPJs vinculados
+            if (!$cliente_id) {
+                $cnpjs = $this->usuarios_cliente_model->getCnpjs($usuario_id);
+                if (!empty($cnpjs)) {
+                    $primeiroCnpj = preg_replace('/[^0-9]/', '', $cnpjs[0]->cnpj);
+                    $this->load->model('clientes_model');
+                    $cliente = $this->clientes_model->getByDocumento($primeiroCnpj);
+                    if ($cliente) {
+                        $cliente_id = $cliente->idClientes;
+                        // Atualiza sessão
+                        $this->session->set_userdata('cliente_id', $cliente_id);
+                    }
+                }
+            }
+
             // Carrega cobranças se tiver permissão
             if ($this->usuarios_cliente_model->hasPermissao($usuario_id, 'visualizar_cobrancas') && $cliente_id) {
                 $this->load->model('cobrancas_model');
-                $cobrancas = $this->cobrancas_model->getByCliente($cliente_id, 5, 0);
+                $cobrancas = $this->cobrancas_model->getByCliente($cliente_id, 5, 0) ?? [];
             }
 
             // Carrega boletos se tiver permissão
             if ($this->usuarios_cliente_model->hasPermissao($usuario_id, 'visualizar_boletos') && $cliente_id) {
                 $this->load->model('cobrancas_model');
-                $boletos = $this->cobrancas_model->getBoletosByCliente($cliente_id, 5, 0);
+                $boletos = $this->cobrancas_model->getBoletosByCliente($cliente_id, 5, 0) ?? [];
             }
 
             // Carrega notas fiscais se tiver permissão
             if ($this->usuarios_cliente_model->hasPermissao($usuario_id, 'visualizar_notas_fiscais') && $cliente_id) {
                 $this->load->model('nfse_emitida_model');
-                $notasFiscais = $this->nfse_emitida_model->getByCliente($cliente_id, 5, 0);
+                $notasFiscais = $this->nfse_emitida_model->getByCliente($cliente_id, 5, 0) ?? [];
             }
 
             // Carrega obras se tiver permissão
             if ($this->usuarios_cliente_model->hasPermissao($usuario_id, 'visualizar_obras') && $cliente_id) {
                 $this->load->model('obras_model');
-                $obras = $this->obras_model->getByCliente($cliente_id, 5, 0);
+                $obras = $this->obras_model->getByCliente($cliente_id, 5, 0) ?? [];
             }
+
+            log_message('debug', 'Painel Usuário - OS: ' . count($os) . ', Cobranças: ' . count($cobrancas) . ', Boletos: ' . count($boletos) . ', Obras: ' . count($obras));
 
             $data['menuPainel'] = 'painel';
             $data['usuario'] = $usuario;
@@ -1822,7 +1839,7 @@ class Mine extends CI_Controller
         $data['etapas'] = $etapas;
         $data['diario'] = $diario;
         $data['equipe'] = $equipe;
-        $data['emitente'] = $this->mapo_model->getEmitente();
+        $data['emitente'] = $this->mapos_model->getEmitente();
         $data['output'] = 'conecte/visualizar_obra';
 
         $this->load->view('conecte/template', $data);

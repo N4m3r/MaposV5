@@ -354,24 +354,44 @@ class Usuarios_cliente_model extends CI_Model
         // Busca CNPJs do usuário
         $cnpjs = $this->getCnpjs($usuario_id);
         if (empty($cnpjs)) {
+            log_message('debug', 'getOsByCnpjs: Usuário ' . $usuario_id . ' não tem CNPJs vinculados');
             return [];
         }
 
-        $cnpjsList = array_map(function($c) {
-            return preg_replace('/[^0-9]/', '', $c->cnpj);
-        }, $cnpjs);
+        // Prepara lista de CNPJs (com e sem formatação para garantir match)
+        $cnpjsLimpos = [];
+        $cnpjsFormatados = [];
+        foreach ($cnpjs as $c) {
+            $limpo = preg_replace('/[^0-9]/', '', $c->cnpj);
+            $formatado = $this->formatarCnpj($limpo);
+            $cnpjsLimpos[] = $limpo;
+            $cnpjsFormatados[] = $formatado;
+        }
 
-        // Busca clientes com esses CNPJs
+        log_message('debug', 'getOsByCnpjs: Buscando OS para CNPJs: ' . implode(', ', $cnpjsLimpos));
+
+        // Busca clientes com esses CNPJs (tenta com e sem formatação)
         $this->db->select('idClientes, documento');
-        $this->db->where_in('documento', $cnpjsList);
+        $this->db->group_start();
+        $this->db->where_in('documento', $cnpjsLimpos);
+        $this->db->or_where_in('documento', $cnpjsFormatados);
+        $this->db->group_end();
         $query = $this->db->get('clientes');
-        $clientes = $query ? $query->result() : [];
+
+        if (!$query) {
+            log_message('error', 'getOsByCnpjs: Erro ao buscar clientes: ' . print_r($this->db->error(), true));
+            return [];
+        }
+
+        $clientes = $query->result();
 
         if (empty($clientes)) {
+            log_message('debug', 'getOsByCnpjs: Nenhum cliente encontrado para os CNPJs fornecidos');
             return [];
         }
 
         $clientesIds = array_map(function($c) { return $c->idClientes; }, $clientes);
+        log_message('debug', 'getOsByCnpjs: Clientes encontrados: ' . implode(', ', $clientesIds));
 
         // Busca OS desses clientes
         $this->db->select('os.*, clientes.nomeCliente, clientes.documento');
@@ -392,9 +412,22 @@ class Usuarios_cliente_model extends CI_Model
             $this->db->where('os.dataInicial <=', $filtros['data_fim']);
         }
 
+        if (!empty($filtros['limit'])) {
+            $this->db->limit($filtros['limit']);
+        }
+
         $this->db->order_by('os.idOs', 'DESC');
         $query = $this->db->get();
-        return $query ? $query->result() : [];
+
+        if (!$query) {
+            log_message('error', 'getOsByCnpjs: Erro ao buscar OS: ' . print_r($this->db->error(), true));
+            return [];
+        }
+
+        $result = $query->result();
+        log_message('debug', 'getOsByCnpjs: Total de OS encontradas: ' . count($result));
+
+        return $result;
     }
 
     /**

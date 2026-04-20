@@ -36,9 +36,6 @@ class Os extends MY_Controller
         if ($pesquisa) {
             $where_array['pesquisa'] = $pesquisa;
         }
-        if ($status) {
-            $where_array['status'] = $status;
-        }
         if ($inputDe) {
             $de = explode('/', $inputDe);
             $de = $de[2] . '-' . $de[1] . '-' . $de[0];
@@ -62,13 +59,11 @@ class Os extends MY_Controller
             $where_array['tecnico_responsavel'] = $idUsuario;
         }
 
-        // Filtro de status padrão do sistema (quando não há pesquisa ativa)
-        if (!$pesquisa && empty($status)) {
-            $os_status_list = $this->data['configuration']['os_status_list'] ?? null;
-            if ($os_status_list && is_array(json_decode($os_status_list))) {
-                $where_array['os_status_list'] = json_decode($os_status_list, true);
-            }
+        // Quando filtro de status é aplicado, usa o valor direto
+        if ($status) {
+            $where_array['status'] = $status;
         }
+        // Quando não há filtro de status, mostra TODAS as OS (sem filtro de status padrão)
 
         $this->data['configuration']['base_url'] = site_url('os/gerenciar/');
         $this->data['configuration']['total_rows'] = $this->os_model->countOs($where_array);
