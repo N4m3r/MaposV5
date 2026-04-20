@@ -426,12 +426,12 @@
                             <a href="<?php echo site_url('obras/relatorioProgresso/' . $r->id); ?>" class="obra-btn" style="background: #f39c12; color: white;" title="Relatório">
                                 <i class="icon-file-alt"></i>
                             </a>
-                            <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?
+                            <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
                                 <a href="<?php echo site_url('obras/editar/' . $r->id); ?>" class="obra-btn obra-btn-warning" style="color: #333;" title="Editar">
                                     <i class="icon-edit"></i>
                                 </a>
                             <?php endif; ?>
-                            <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dObras')): ?
+                            <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dObras')): ?>
                                 <button onclick="confirmarExclusao(<?php echo $r->id; ?>)" class="obra-btn obra-btn-danger" title="Excluir">
                                     <i class="icon-trash"></i>
                                 </button>
