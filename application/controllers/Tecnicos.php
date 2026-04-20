@@ -196,6 +196,11 @@ class Tecnicos extends CI_Controller
         $this->data['os_pendentes'] = $this->tec_os_model->getOsPendentes($tecnico_id);
         $this->data['os_concluidas'] = $this->tec_os_model->getOsConcluidasSemana($tecnico_id);
         $this->data['estoque'] = $this->tecnicos_model->getEstoqueVeiculo($tecnico_id);
+
+        // Carregar obras do técnico
+        $this->load->model('obras_model');
+        $this->data['minhas_obras'] = $this->obras_model->getObrasPorTecnico($tecnico_id);
+
         $this->data['menuDashboard'] = 'active';
 
         $this->load->view('tema/topo', $this->data);

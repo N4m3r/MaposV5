@@ -140,6 +140,23 @@
             </div>
         </div>
     </div>
+
+    <!-- Minhas Obras -->
+    <div class="span3">
+        <div class="widget-box" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); border: none;">
+            <div class="widget-content" style="padding: 20px; color: white;">
+                <div class="row-fluid">
+                    <div class="span8">
+                        <div style="font-size: 32px; font-weight: bold;"><?php echo count($minhas_obras ?? []); ?></div>
+                        <div style="font-size: 13px; opacity: 0.9;">Minhas Obras</div>
+                    </div>
+                    <div class="span4 text-right">
+                        <i class="bx bx-building" style="font-size: 40px; opacity: 0.3;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Ações Rápidas -->

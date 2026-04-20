@@ -277,14 +277,32 @@
 </style>
 
 <div class="row-fluid cliente-relatorio-content">
+    <?php if (empty($os) || !is_object($os)): ?>
     <div class="span12">
+        <div class="widget-box">
+            <div class="widget-title">
+                <span class="icon"><i class="bx bx-error"></i></span>
+                <h5>Erro ao carregar relatório</h5>
+            </div>
+            <div class="widget-content">
+                <div class="alert alert-error">
+                    <strong>Erro:</strong> Não foi possível carregar os dados da OS. Por favor, tente novamente.
+                </div>
+                <a href="<?php echo site_url('mine/os'); ?>" class="btn btn-primary">
+                    <i class="bx bx-arrow-back"></i> Voltar para Minhas OS
+                </a>
+            </div>
+        </div>
+    </div>
+<?php else: ?>
+<div class="span12">
         <!-- Header -->
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="bx bx-file"></i></span>
-                <h5>Relatório de Atendimento - OS #<?php echo $os->idOs; ?></h5>
+                <h5>Relatório de Atendimento - OS #<?php echo $os->idOs ?? 'N/A'; ?></h5>
                 <div class="buttons">
-                    <a href="<?php echo site_url('mine/visualizarOs/' . $os->idOs); ?>" class="btn btn-mini">
+                    <a href="<?php echo site_url('mine/visualizarOs/' . ($os->idOs ?? '')); ?>" class="btn btn-mini">
                         <i class="bx bx-arrow-back"></i> Voltar para OS
                     </a>
                 </div>
@@ -670,3 +688,4 @@
         </div>
     </div>
 </div>
+<?php endif; ?>

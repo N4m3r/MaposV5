@@ -492,8 +492,7 @@
 
                 <div class="equipe-list">
                     <?php if (count($equipe) > 0): ?>
-                        <?php foreach (array_slice($equipe, 0, 5) as $membro): ?
-003e
+                        <?php foreach (array_slice($equipe, 0, 5) as $membro): ?>
                         <div class="equipe-item">
                             <div class="equipe-avatar">
                                 <?php echo substr($membro->tecnico_nome, 0, 1); ?>
