@@ -573,9 +573,9 @@
     <!-- Stats -->
     <?php
     $total = count($etapas);
-    $concluidas = count(array_filter($etapas, fn($e) => $e->status == 'Concluida'));
-    $em_andamento = count(array_filter($etapas, fn($e) => $e->status == 'EmAndamento'));
-    $pendentes = count(array_filter($etapas, fn($e) => $e->status == 'NaoIniciada'));
+    $concluidas = count(array_filter($etapas, function($e) { return $e->status == 'Concluida'; }));
+    $em_andamento = count(array_filter($etapas, function($e) { return $e->status == 'EmAndamento'; }));
+    $pendentes = count(array_filter($etapas, function($e) { return $e->status == 'NaoIniciada'; }));
     ?>
     <div class="etapas-stats">
         <div class="etapas-stat-card">

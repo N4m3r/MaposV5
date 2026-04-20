@@ -126,17 +126,17 @@ $tecnicos = $tecnicos ?? [];
                             <div class="row-fluid" style="margin-top: 15px;">
                                 <div class="span4">
                                     <div class="alert alert-success">
-                                        <strong>Login:</strong> <?php echo count(array_filter($rotas, fn($r) => $r->tipo == 'login')); ?>
+                                        <strong>Login:</strong> <?php echo count(array_filter($rotas, function($r) { return $r->tipo == 'login'; })); ?>
                                     </div>
                                 </div>
                                 <div class="span4">
                                     <div class="alert alert-info">
-                                        <strong>Check-ins:</strong> <?php echo count(array_filter($rotas, fn($r) => $r->tipo == 'checkin')); ?>
+                                        <strong>Check-ins:</strong> <?php echo count(array_filter($rotas, function($r) { return $r->tipo == 'checkin'; })); ?>
                                     </div>
                                 </div>
                                 <div class="span4">
                                     <div class="alert alert-warning">
-                                        <strong>Check-outs:</strong> <?php echo count(array_filter($rotas, fn($r) => $r->tipo == 'checkout')); ?>
+                                        <strong>Check-outs:</strong> <?php echo count(array_filter($rotas, function($r) { return $r->tipo == 'checkout'; })); ?>
                                     </div>
                                 </div>
                             </div>

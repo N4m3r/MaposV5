@@ -708,7 +708,7 @@ $(document).ready(function() {
 
     // Gráfico de Etapas
     var options = {
-        series: [<?= count(array_filter($etapas ?? [], fn($e) => $e->status === 'concluida')) ?>, <?= count(array_filter($etapas ?? [], fn($e) => $e->status === 'em_andamento')) ?>, <?= count(array_filter($etapas ?? [], fn($e) => $e->status === 'pendente')) ?>],
+        series: [<?= count(array_filter($etapas ?? [], function($e) { return $e->status === 'concluida'; })) ?>, <?= count(array_filter($etapas ?? [], function($e) { return $e->status === 'em_andamento'; })) ?>, <?= count(array_filter($etapas ?? [], function($e) { return $e->status === 'pendente'; })) ?>],
         labels: ['Concluídas', 'Em Andamento', 'Pendentes'],
         chart: { type: 'donut', height: 200 },
         colors: ['#4caf50', '#2196f3', '#9e9e9e'],

@@ -572,9 +572,9 @@
     <!-- Stats -->
     <?php
     $total = count($atividades);
-    $hoje = count(array_filter($atividades, fn($a) => $a->data_atividade == date('Y-m-d')));
-    $agendadas = count(array_filter($atividades, fn($a) => $a->status == 'agendada'));
-    $concluidas = count(array_filter($atividades, fn($a) => $a->status == 'concluida'));
+    $hoje = count(array_filter($atividades, function($a) { return $a->data_atividade == date('Y-m-d'); }));
+    $agendadas = count(array_filter($atividades, function($a) { return $a->status == 'agendada'; }));
+    $concluidas = count(array_filter($atividades, function($a) { return $a->status == 'concluida'; }));
     ?>
     <div class="atividades-stats">
         <div class="atividades-stat-card">

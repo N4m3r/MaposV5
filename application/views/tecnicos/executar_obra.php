@@ -385,7 +385,7 @@
                         <option value="">-- Selecione uma etapa --</option>
                         <?php if (!empty($etapas)): foreach ($etapas as $etapa): ?>
                             <option value="<?= $etapa->id ?>"><?= htmlspecialchars($etapa->nome) ?></option>
-                        <?php endforeach; ?>
+                        <?php endforeach; endif; ?>
                     </select>
                 </div>
 

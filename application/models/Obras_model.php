@@ -649,6 +649,9 @@ class Obras_model extends CI_Model
         }
 
         try {
+            // Limpar query builder para evitar conflitos
+            $this->db->reset_query();
+
             // Limpar documento para busca
             $documentoLimpo = preg_replace('/[^0-9]/', '', $documento);
 
@@ -695,6 +698,9 @@ class Obras_model extends CI_Model
         }
 
         try {
+            // Limpar query builder para evitar conflitos
+            $this->db->reset_query();
+
             // Limpar documento para busca
             $documentoLimpo = preg_replace('/[^0-9]/', '', $documento);
 
