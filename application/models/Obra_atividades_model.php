@@ -1,0 +1,567 @@
+<?php
+if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
+
+/**
+ * Model de Atividades de Obra
+ *
+ * Gerencia atividades diárias, check-ins, histórico
+ */
+class Obra_atividades_model extends CI_Model
+{
+    public function __construct()
+    {
+        parent::__construct();
+        $this->load->database();
+    }
+
+    /**
+     * Verificar se tabela existe
+     */
+    private function tabelaExiste($tabela)
+    {
+        try {
+            return $this->db->table_exists($tabela);
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    // ============================================
+    // CRUD ATIVIDADES
+    // ============================================
+
+    /**
+     * Buscar atividade por ID
+     */
+    public function getById($id)
+    {
+        if (!$this->tabelaExiste('obra_atividades')) {
+            return null;
+        }
+
+        try {
+            $this->db->where('id', $id);
+            $query = $this->db->get('obra_atividades');
+            return $query ? $query->row() : null;
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao buscar atividade: ' . $e->getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Listar atividades por obra
+     */
+    public function getByObra($obra_id, $filtros = [], $limit = null, $offset = 0)
+    {
+        if (!$this->tabelaExiste('obra_atividades')) {
+            return [];
+        }
+
+        try {
+            $this->db->select('obra_atividades.*, u.nome as tecnico_nome, oe.nome as etapa_nome');
+            $this->db->from('obra_atividades');
+            $this->db->join('usuarios u', 'u.idUsuarios = obra_atividades.tecnico_id', 'left');
+            $this->db->join('obra_etapas oe', 'oe.id = obra_atividades.etapa_id', 'left');
+            $this->db->where('obra_atividades.obra_id', $obra_id);
+
+            // Filtros
+            if (!empty($filtros['status'])) {
+                $this->db->where('obra_atividades.status', $filtros['status']);
+            }
+            if (!empty($filtros['tecnico_id'])) {
+                $this->db->where('obra_atividades.tecnico_id', $filtros['tecnico_id']);
+            }
+            if (!empty($filtros['data_inicio']) && !empty($filtros['data_fim'])) {
+                $this->db->where('obra_atividades.data_atividade >=', $filtros['data_inicio']);
+                $this->db->where('obra_atividades.data_atividade <=', $filtros['data_fim']);
+            }
+            if (!empty($filtros['tipo'])) {
+                $this->db->where('obra_atividades.tipo', $filtros['tipo']);
+            }
+            if (!empty($filtros['etapa_id'])) {
+                $this->db->where('obra_atividades.etapa_id', $filtros['etapa_id']);
+            }
+
+            // Ordenação
+            $this->db->order_by('obra_atividades.data_atividade', 'DESC');
+            $this->db->order_by('obra_atividades.hora_inicio', 'DESC');
+
+            if ($limit) {
+                $this->db->limit($limit, $offset);
+            }
+
+            $query = $this->db->get();
+            return $query ? $query->result() : [];
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao listar atividades: ' . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Atividades do dia para um técnico
+     */
+    public function getAtividadesDoDia($tecnico_id, $data = null)
+    {
+        if (!$data) {
+            $data = date('Y-m-d');
+        }
+
+        return $this->getByObra(null, [
+            'tecnico_id' => $tecnico_id,
+            'data_inicio' => $data,
+            'data_fim' => $data
+        ]);
+    }
+
+    /**
+     * Adicionar atividade
+     */
+    public function add($dados)
+    {
+        if (!$this->tabelaExiste('obra_atividades')) {
+            return false;
+        }
+
+        try {
+            $data = [
+                'obra_id' => $dados['obra_id'],
+                'etapa_id' => $dados['etapa_id'] ?? null,
+                'tecnico_id' => $dados['tecnico_id'] ?? null,
+                'os_id' => $dados['os_id'] ?? null,
+                'data_atividade' => $dados['data_atividade'] ?? date('Y-m-d'),
+                'titulo' => $dados['titulo'],
+                'descricao' => $dados['descricao'] ?? null,
+                'tipo' => $dados['tipo'] ?? 'trabalho',
+                'status' => $dados['status'] ?? 'agendada',
+                'percentual_concluido' => $dados['percentual_concluido'] ?? 0,
+                'visivel_cliente' => $dados['visivel_cliente'] ?? 1,
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s'),
+            ];
+
+            if (!empty($dados['hora_inicio'])) {
+                $data['hora_inicio'] = $dados['hora_inicio'];
+            }
+            if (!empty($dados['hora_fim'])) {
+                $data['hora_fim'] = $dados['hora_fim'];
+            }
+
+            $this->db->insert('obra_atividades', $data);
+            $id = $this->db->insert_id();
+
+            // Registrar no histórico
+            if ($id) {
+                $this->registrarHistorico($id, 'criacao', $dados['tecnico_id'] ?? null, [
+                    'descricao' => 'Atividade criada',
+                    'percentual_novo' => $data['percentual_concluido']
+                ]);
+            }
+
+            return $id;
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao adicionar atividade: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Atualizar atividade
+     */
+    public function update($id, $dados)
+    {
+        if (!$this->tabelaExiste('obra_atividades')) {
+            return false;
+        }
+
+        try {
+            // Buscar dados atuais para o histórico
+            $atividade_atual = $this->getById($id);
+            if (!$atividade_atual) {
+                return false;
+            }
+
+            $data = [
+                'updated_at' => date('Y-m-d H:i:s')
+            ];
+
+            // Campos permitidos
+            $campos = [
+                'etapa_id', 'tecnico_id', 'titulo', 'descricao', 'tipo',
+                'status', 'percentual_concluido', 'hora_inicio', 'hora_fim',
+                'horas_trabalhadas', 'impedimento', 'motivo_impedimento',
+                'tipo_impedimento', 'checkin_lat', 'checkin_lng',
+                'checkout_lat', 'checkout_lng', 'fotos_checkin',
+                'fotos_atividade', 'fotos_checkout', 'visivel_cliente'
+            ];
+
+            foreach ($campos as $campo) {
+                if (isset($dados[$campo])) {
+                    $data[$campo] = $dados[$campo];
+                }
+            }
+
+            $this->db->where('id', $id);
+            $result = $this->db->update('obra_atividades', $data);
+
+            // Registrar mudança de percentual no histórico
+            if ($result && isset($dados['percentual_concluido'])) {
+                if ($dados['percentual_concluido'] != $atividade_atual->percentual_concluido) {
+                    $this->registrarHistorico($id, 'progresso', $dados['tecnico_id'] ?? null, [
+                        'descricao' => 'Progresso atualizado',
+                        'percentual_anterior' => $atividade_atual->percentual_concluido,
+                        'percentual_novo' => $dados['percentual_concluido']
+                    ]);
+                }
+            }
+
+            return $result;
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao atualizar atividade: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Excluir atividade
+     */
+    public function delete($id)
+    {
+        if (!$this->tabelaExiste('obra_atividades')) {
+            return false;
+        }
+
+        try {
+            $this->db->where('id', $id);
+            return $this->db->delete('obra_atividades');
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao excluir atividade: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    // ============================================
+    // AÇÕES ESPECÍFICAS
+    // ============================================
+
+    /**
+     * Iniciar atividade
+     */
+    public function iniciarAtividade($id, $tecnico_id, $dados = [])
+    {
+        $update_data = [
+            'status' => 'iniciada',
+            'tecnico_id' => $tecnico_id,
+            'hora_inicio' => $dados['hora_inicio'] ?? date('H:i:s'),
+            'checkin_lat' => $dados['latitude'] ?? null,
+            'checkin_lng' => $dados['longitude'] ?? null,
+        ];
+
+        if (!empty($dados['foto'])) {
+            $update_data['fotos_checkin'] = json_encode([$dados['foto']]);
+        }
+
+        $result = $this->update($id, $update_data);
+
+        if ($result) {
+            $this->registrarHistorico($id, 'inicio', $tecnico_id, [
+                'descricao' => 'Atividade iniciada',
+                'localizacao_lat' => $dados['latitude'] ?? null,
+                'localizacao_lng' => $dados['longitude'] ?? null
+            ]);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Pausar atividade
+     */
+    public function pausarAtividade($id, $tecnico_id, $dados = [])
+    {
+        $update_data = [
+            'status' => 'pausada',
+        ];
+
+        $result = $this->update($id, $update_data);
+
+        if ($result) {
+            $this->registrarHistorico($id, 'pausa', $tecnico_id, [
+                'descricao' => $dados['motivo'] ?? 'Atividade pausada',
+                'horas_trabalhadas' => $dados['horas'] ?? 0
+            ]);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Retomar atividade
+     */
+    public function retomarAtividade($id, $tecnico_id, $dados = [])
+    {
+        $update_data = [
+            'status' => 'iniciada',
+        ];
+
+        $result = $this->update($id, $update_data);
+
+        if ($result) {
+            $this->registrarHistorico($id, 'retorno', $tecnico_id, [
+                'descricao' => 'Atividade retomada',
+                'localizacao_lat' => $dados['latitude'] ?? null,
+                'localizacao_lng' => $dados['longitude'] ?? null
+            ]);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Finalizar atividade
+     */
+    public function finalizarAtividade($id, $tecnico_id, $dados = [])
+    {
+        $atividade = $this->getById($id);
+        if (!$atividade) {
+            return false;
+        }
+
+        // Calcular horas trabalhadas
+        $horas_trabalhadas = $dados['horas_trabalhadas'] ?? 0;
+        if ($horas_trabalhadas == 0 && $atividade->hora_inicio) {
+            $inicio = strtotime($atividade->hora_inicio);
+            $fim = strtotime(date('H:i:s'));
+            $horas_trabalhadas = round(($fim - $inicio) / 3600, 2);
+        }
+
+        $update_data = [
+            'status' => 'concluida',
+            'hora_fim' => $dados['hora_fim'] ?? date('H:i:s'),
+            'horas_trabalhadas' => $horas_trabalhadas,
+            'percentual_concluido' => $dados['percentual'] ?? 100,
+            'checkout_lat' => $dados['latitude'] ?? null,
+            'checkout_lng' => $dados['longitude'] ?? null,
+        ];
+
+        if (!empty($dados['fotos'])) {
+            $update_data['fotos_checkout'] = json_encode($dados['fotos']);
+        }
+
+        $result = $this->update($id, $update_data);
+
+        if ($result) {
+            $this->registrarHistorico($id, 'conclusao', $tecnico_id, [
+                'descricao' => 'Atividade concluída',
+                'percentual_novo' => $dados['percentual'] ?? 100,
+                'horas_trabalhadas' => $horas_trabalhadas,
+                'localizacao_lat' => $dados['latitude'] ?? null,
+                'localizacao_lng' => $dados['longitude'] ?? null
+            ]);
+
+            // Atualizar progresso da etapa
+            if ($atividade->etapa_id) {
+                $this->atualizarProgressoEtapa($atividade->etapa_id);
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Registrar impedimento
+     */
+    public function registrarImpedimento($id, $tecnico_id, $dados)
+    {
+        $update_data = [
+            'status' => 'pausada',
+            'impedimento' => 1,
+            'tipo_impedimento' => $dados['tipo'] ?? 'outro',
+            'motivo_impedimento' => $dados['descricao'] ?? null,
+        ];
+
+        $result = $this->update($id, $update_data);
+
+        if ($result) {
+            $this->registrarHistorico($id, 'impedimento', $tecnico_id, [
+                'descricao' => 'Impedimento registrado: ' . ($dados['descricao'] ?? ''),
+                'tipo_impedimento' => $dados['tipo'] ?? 'outro'
+            ]);
+        }
+
+        return $result;
+    }
+
+    // ============================================
+    // HISTÓRICO
+    // ============================================
+
+    /**
+     * Registrar histórico
+     */
+    private function registrarHistorico($atividade_id, $tipo, $tecnico_id, $dados)
+    {
+        if (!$this->tabelaExiste('obra_atividades_historico')) {
+            return false;
+        }
+
+        try {
+            $data = [
+                'atividade_id' => $atividade_id,
+                'tecnico_id' => $tecnico_id,
+                'tipo_alteracao' => $tipo,
+                'descricao' => $dados['descricao'] ?? null,
+                'percentual_anterior' => $dados['percentual_anterior'] ?? 0,
+                'percentual_novo' => $dados['percentual_novo'] ?? 0,
+                'horas_trabalhadas' => $dados['horas_trabalhadas'] ?? 0,
+                'localizacao_lat' => $dados['localizacao_lat'] ?? null,
+                'localizacao_lng' => $dados['localizacao_lng'] ?? null,
+                'created_at' => date('Y-m-d H:i:s'),
+            ];
+
+            $this->db->insert('obra_atividades_historico', $data);
+            return $this->db->insert_id();
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao registrar histórico: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Buscar histórico de atividade
+     */
+    public function getHistorico($atividade_id)
+    {
+        if (!$this->tabelaExiste('obra_atividades_historico')) {
+            return [];
+        }
+
+        try {
+            $this->db->select('obra_atividades_historico.*, u.nome as tecnico_nome');
+            $this->db->from('obra_atividades_historico');
+            $this->db->join('usuarios u', 'u.idUsuarios = obra_atividades_historico.tecnico_id', 'left');
+            $this->db->where('atividade_id', $atividade_id);
+            $this->db->order_by('created_at', 'DESC');
+            $query = $this->db->get();
+            return $query ? $query->result() : [];
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao buscar histórico: ' . $e->getMessage());
+            return [];
+        }
+    }
+
+    // ============================================
+    // CÁLCULOS E ESTATÍSTICAS
+    // ============================================
+
+    /**
+     * Atualizar progresso da etapa
+     */
+    private function atualizarProgressoEtapa($etapa_id)
+    {
+        if (!$this->tabelaExiste('obra_atividades') || !$this->tabelaExiste('obra_etapas')) {
+            return false;
+        }
+
+        try {
+            // Calcular média de percentual das atividades concluídas
+            $this->db->select_avg('percentual_concluido', 'media_percentual');
+            $this->db->where('etapa_id', $etapa_id);
+            $this->db->where('status', 'concluida');
+            $query = $this->db->get('obra_atividades');
+            $result = $query ? $query->row() : null;
+
+            $percentual = $result ? round($result->media_percentual) : 0;
+
+            // Atualizar etapa
+            $this->db->where('id', $etapa_id);
+            $this->db->update('obra_etapas', [
+                'percentual_concluido' => $percentual,
+                'updated_at' => date('Y-m-d H:i:s')
+            ]);
+
+            return $percentual;
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao atualizar progresso da etapa: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Estatísticas de atividades
+     */
+    public function getEstatisticas($obra_id, $data_inicio = null, $data_fim = null)
+    {
+        if (!$this->tabelaExiste('obra_atividades')) {
+            return [];
+        }
+
+        try {
+            $this->db->where('obra_id', $obra_id);
+
+            if ($data_inicio && $data_fim) {
+                $this->db->where('data_atividade >=', $data_inicio);
+                $this->db->where('data_atividade <=', $data_fim);
+            }
+
+            $total = $this->db->count_all_results('obra_atividades');
+
+            $this->db->where('obra_id', $obra_id);
+            $this->db->where('status', 'concluida');
+            if ($data_inicio && $data_fim) {
+                $this->db->where('data_atividade >=', $data_inicio);
+                $this->db->where('data_atividade <=', $data_fim);
+            }
+            $concluidas = $this->db->count_all_results('obra_atividades');
+
+            $this->db->select_sum('horas_trabalhadas', 'total_horas');
+            $this->db->where('obra_id', $obra_id);
+            if ($data_inicio && $data_fim) {
+                $this->db->where('data_atividade >=', $data_inicio);
+                $this->db->where('data_atividade <=', $data_fim);
+            }
+            $query = $this->db->get('obra_atividades');
+            $horas = $query ? $query->row()->total_horas : 0;
+
+            return [
+                'total_atividades' => $total,
+                'concluidas' => $concluidas,
+                'pendentes' => $total - $concluidas,
+                'total_horas' => round($horas, 2)
+            ];
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao calcular estatísticas: ' . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Contar atividades por status
+     */
+    public function countByStatus($obra_id)
+    {
+        if (!$this->tabelaExiste('obra_atividades')) {
+            return [];
+        }
+
+        try {
+            $this->db->select('status, COUNT(*) as total');
+            $this->db->where('obra_id', $obra_id);
+            $this->db->group_by('status');
+            $query = $this->db->get('obra_atividades');
+
+            $result = [];
+            foreach ($query->result() as $row) {
+                $result[$row->status] = $row->total;
+            }
+
+            return $result;
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao contar por status: ' . $e->getMessage());
+            return [];
+        }
+    }
+}

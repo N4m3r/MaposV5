@@ -820,32 +820,177 @@ class Mine extends CI_Controller
 
         $data['menuOs'] = 'os';
         $this->load->library('pagination');
+        $this->load->model('clientes_model');
 
+        // Verificar se é novo sistema de usuário cliente
+        $cliente_id = $this->session->userdata('cliente_id');
+        $usuario_cliente_id = $this->session->userdata('usuario_cliente_id');
+
+        // Parâmetros de filtro
+        $filtros = [
+            'busca' => $this->input->get('busca'),
+            'status' => $this->input->get('status'),
+            'data_inicio' => $this->input->get('data_inicio'),
+            'data_fim' => $this->input->get('data_fim'),
+        ];
+
+        // Guardar filtros na sessão para manter ao paginar
+        if ($this->input->get()) {
+            $this->session->set_userdata('os_filtros', $filtros);
+        } elseif ($this->session->userdata('os_filtros') && !$this->input->get('limpar')) {
+            $filtros = $this->session->userdata('os_filtros');
+        }
+
+        // Limpar filtros
+        if ($this->input->get('limpar')) {
+            $this->session->unset_userdata('os_filtros');
+            $filtros = ['busca' => '', 'status' => '', 'data_inicio' => '', 'data_fim' => ''];
+            redirect('mine/os');
+        }
+
+        // Buscar clientes vinculados ao usuário para o filtro
+        $clientes_vinculados = [];
+        if ($this->session->userdata('tipo_acesso') == 'usuario_cliente' && $usuario_cliente_id) {
+            $this->load->model('usuarios_cliente_model');
+            $clientes_vinculados = $this->usuarios_cliente_model->getOsByCnpjs($usuario_cliente_id, ['limit' => 1000]);
+            // Extrair IDs únicos de clientes
+            $clientes_ids = [];
+            foreach ($clientes_vinculados as $os) {
+                if (!in_array($os->clientes_id, $clientes_ids)) {
+                    $clientes_ids[] = $os->clientes_id;
+                }
+            }
+            if (!empty($clientes_ids)) {
+                $this->db->where_in('idClientes', $clientes_ids);
+                $data['clientes_filtro'] = $this->db->get('clientes')->result();
+            } else {
+                $data['clientes_filtro'] = [];
+            }
+        } else {
+            // Sistema antigo - apenas um cliente
+            if ($cliente_id) {
+                $cliente = $this->clientes_model->getById($cliente_id);
+                $data['clientes_filtro'] = $cliente ? [$cliente] : [];
+            } else {
+                $data['clientes_filtro'] = [];
+            }
+        }
+
+        // Contar total com filtros
+        $this->db->from('os');
+        if ($this->session->userdata('tipo_acesso') == 'usuario_cliente' && $usuario_cliente_id) {
+            // Buscar OS pelos CNPJs do usuário
+            $os_list = $this->usuarios_cliente_model->getOsByCnpjs($usuario_cliente_id);
+            $os_ids = array_map(function($o) { return $o->idOs; }, $os_list);
+            if (!empty($os_ids)) {
+                $this->db->where_in('idOs', $os_ids);
+            } else {
+                $this->db->where('idOs', 0); // Nenhuma OS
+            }
+        } else {
+            $this->db->where('clientes_id', $cliente_id);
+        }
+
+        // Aplicar filtros na contagem
+        if (!empty($filtros['busca'])) {
+            $this->db->group_start();
+            $this->db->like('idOs', $filtros['busca']);
+            $this->db->or_like('descricaoProduto', $filtros['busca']);
+            $this->db->or_like('status', $filtros['busca']);
+            $this->db->group_end();
+        }
+        if (!empty($filtros['status'])) {
+            $this->db->where('status', $filtros['status']);
+        }
+        if (!empty($filtros['data_inicio'])) {
+            $this->db->where('dataInicial >=', $filtros['data_inicio']);
+        }
+        if (!empty($filtros['data_fim'])) {
+            $this->db->where('dataInicial <=', $filtros['data_fim']);
+        }
+
+        $config['total_rows'] = $this->db->count_all_results();
+
+        // Configuração da paginação
         $config['base_url'] = base_url() . 'index.php/mine/os/';
-        $config['total_rows'] = $this->Conecte_model->count('os', $this->session->userdata('cliente_id'));
-        $config['per_page'] = 10;
-        $config['next_link'] = 'Próxima';
-        $config['prev_link'] = 'Anterior';
-        $config['full_tag_open'] = '<div class="pagination alternate"><ul>';
+        $config['per_page'] = 15;
+        $config['reuse_query_string'] = true;
+        $config['next_link'] = 'Próxima <i class="bx bx-chevron-right"></i>';
+        $config['prev_link'] = '<i class="bx bx-chevron-left"></i> Anterior';
+        $config['first_link'] = '<i class="bx bx-chevrons-left"></i> Primeira';
+        $config['last_link'] = 'Última <i class="bx bx-chevrons-right"></i>';
+        $config['full_tag_open'] = '<div class="pagination-wrapper"><ul class="pagination modern">';
         $config['full_tag_close'] = '</ul></div>';
         $config['num_tag_open'] = '<li>';
         $config['num_tag_close'] = '</li>';
-        $config['cur_tag_open'] = '<li><a style="color: #2D335B"><b>';
-        $config['cur_tag_close'] = '</b></a></li>';
-        $config['prev_tag_open'] = '<li>';
+        $config['cur_tag_open'] = '<li class="active"><a>';
+        $config['cur_tag_close'] = '</a></li>';
+        $config['prev_tag_open'] = '<li class="nav">';
         $config['prev_tag_close'] = '</li>';
-        $config['next_tag_open'] = '<li>';
+        $config['next_tag_open'] = '<li class="nav">';
         $config['next_tag_close'] = '</li>';
-        $config['first_link'] = 'Primeira';
-        $config['last_link'] = 'Última';
-        $config['first_tag_open'] = '<li>';
+        $config['first_tag_open'] = '<li class="nav">';
         $config['first_tag_close'] = '</li>';
-        $config['last_tag_open'] = '<li>';
+        $config['last_tag_open'] = '<li class="nav">';
         $config['last_tag_close'] = '</li>';
 
         $this->pagination->initialize($config);
 
-        $data['results'] = $this->Conecte_model->getOs('os', '*', '', $config['per_page'], $this->uri->segment(3), '', '', $this->session->userdata('cliente_id'));
+        // Buscar resultados com filtros
+        $this->db->select('os.*, clientes.nomeCliente, clientes.documento, usuarios.nome as responsavel');
+        $this->db->from('os');
+        $this->db->join('clientes', 'os.clientes_id = clientes.idClientes', 'left');
+        $this->db->join('usuarios', 'os.usuarios_id = usuarios.idUsuarios', 'left');
+
+        if ($this->session->userdata('tipo_acesso') == 'usuario_cliente' && $usuario_cliente_id) {
+            if (!empty($os_ids)) {
+                $this->db->where_in('os.idOs', $os_ids);
+            } else {
+                $this->db->where('os.idOs', 0);
+            }
+        } else {
+            $this->db->where('os.clientes_id', $cliente_id);
+        }
+
+        // Aplicar filtros na busca
+        if (!empty($filtros['busca'])) {
+            $this->db->group_start();
+            $this->db->like('os.idOs', $filtros['busca']);
+            $this->db->or_like('os.descricaoProduto', $filtros['busca']);
+            $this->db->or_like('os.status', $filtros['busca']);
+            $this->db->or_like('clientes.nomeCliente', $filtros['busca']);
+            $this->db->group_end();
+        }
+        if (!empty($filtros['status'])) {
+            $this->db->where('os.status', $filtros['status']);
+        }
+        if (!empty($filtros['data_inicio'])) {
+            $this->db->where('os.dataInicial >=', $filtros['data_inicio']);
+        }
+        if (!empty($filtros['data_fim'])) {
+            $this->db->where('os.dataInicial <=', $filtros['data_fim']);
+        }
+
+        $this->db->order_by('os.idOs', 'desc');
+        $this->db->limit($config['per_page'], $this->uri->segment(3) ? $this->uri->segment(3) : 0);
+        $data['results'] = $this->db->get()->result();
+
+        // Dados para a view
+        $data['filtros'] = $filtros;
+        $data['total_os'] = $config['total_rows'];
+
+        // Status disponíveis para filtro
+        $data['status_list'] = [
+            'Aberto' => 'Aberto',
+            'Orçamento' => 'Orçamento',
+            'Negociação' => 'Negociação',
+            'Aprovado' => 'Aprovado',
+            'Em Andamento' => 'Em Andamento',
+            'Aguardando Peças' => 'Aguardando Peças',
+            'Finalizado' => 'Finalizado',
+            'Faturado' => 'Faturado',
+            'Cancelado' => 'Cancelado'
+        ];
 
         $data['output'] = 'conecte/os';
         $this->load->view('conecte/template', $data);
