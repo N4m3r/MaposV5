@@ -476,6 +476,59 @@ class Obras extends MY_Controller
     }
 
     /**
+     * Verificar atividades no banco (debug)
+     */
+    public function verificarAtividades($obra_id)
+    {
+        if (!$obra_id || !is_numeric($obra_id)) {
+            echo 'Obra ID inválido';
+            return;
+        }
+
+        echo '<h2>Verificação de Atividades - Obra ID: ' . $obra_id . '</h2>';
+        echo '<hr>';
+
+        // Verificar se tabela existe
+        $tabela_existe = $this->db->table_exists('obra_atividades');
+        echo '<p><strong>Tabela obra_atividades existe:</strong> ' . ($tabela_existe ? 'SIM' : 'NÃO') . '</p>';
+
+        if (!$tabela_existe) {
+            echo '<p style="color: red;">A tabela não existe! Crie as tabelas primeiro.</p>';
+            echo '<a href="' . site_url('diagnostico/obras') . '">Ir para Diagnóstico</a>';
+            return;
+        }
+
+        // Contar total de atividades
+        $total = $this->db->where('obra_id', $obra_id)->count_all_results('obra_atividades');
+        echo '<p><strong>Total de atividades nesta obra:</strong> ' . $total . '</p>';
+
+        // Query direta
+        $query = $this->db->where('obra_id', $obra_id)->get('obra_atividades');
+        echo '<p><strong>Query executada:</strong> ' . $this->db->last_query() . '</p>';
+
+        if ($total > 0) {
+            echo '<h3>Atividades encontradas:</h3>';
+            echo '<table border="1" cellpadding="10">';
+            echo '<tr><th>ID</th><th>Título</th><th>Data</th><th>Status</th><th>Tipo</th></tr>';
+            foreach ($query->result() as $ativ) {
+                echo '<tr>';
+                echo '<td>' . $ativ->id . '</td>';
+                echo '<td>' . $ativ->titulo . '</td>';
+                echo '<td>' . $ativ->data_atividade . '</td>';
+                echo '<td>' . $ativ->status . '</td>';
+                echo '<td>' . $ativ->tipo . '</td>';
+                echo '</tr>';
+            }
+            echo '</table>';
+        } else {
+            echo '<p style="color: orange;">Nenhuma atividade encontrada para esta obra.</p>';
+        }
+
+        echo '<hr>';
+        echo '<a href="' . site_url('obras/atividades/' . $obra_id) . '" class="btn">Voltar para Atividades</a>';
+    }
+
+    /**
      * Visualizar atividade
      */
     public function visualizarAtividade($atividade_id)

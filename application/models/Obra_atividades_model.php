@@ -61,11 +61,22 @@ class Obra_atividades_model extends CI_Model
         }
 
         try {
-            $this->db->select('obra_atividades.*, u.nome as tecnico_nome, oe.nome as etapa_nome');
-            $this->db->from('obra_atividades');
-            $this->db->join('usuarios u', 'u.idUsuarios = obra_atividades.tecnico_id', 'left');
-            $this->db->join('obra_etapas oe', 'oe.id = obra_atividades.etapa_id', 'left');
-            $this->db->where('obra_atividades.obra_id', $obra_id);
+            // Verificar se tabelas de join existem
+            $join_usuarios = $this->db->table_exists('usuarios');
+            $join_etapas = $this->db->table_exists('obra_etapas');
+
+            if ($join_usuarios && $join_etapas) {
+                $this->db->select('obra_atividades.*, u.nome as tecnico_nome, oe.nome as etapa_nome');
+                $this->db->from('obra_atividades');
+                $this->db->join('usuarios u', 'u.idUsuarios = obra_atividades.tecnico_id', 'left');
+                $this->db->join('obra_etapas oe', 'oe.id = obra_atividades.etapa_id', 'left');
+            } else {
+                // Query simples sem joins se tabelas não existirem
+                $this->db->select('*');
+                $this->db->from('obra_atividades');
+            }
+
+            $this->db->where('obra_id', $obra_id);
 
             // Filtros
             if (!empty($filtros['status'])) {

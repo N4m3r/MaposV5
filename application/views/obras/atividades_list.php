@@ -617,19 +617,28 @@
             <i class="icon-refresh"></i> Recarregar
         </button>
         <?php if (empty($atividades)): ?>
-        <div style="margin-top: 10px; padding: 10px; background: #fff3cd; border: 1px solid #ffc107; border-radius: 4px;">
-            <i class="icon-warning-sign"></i> <strong>Nenhuma atividade encontrada!</strong><br>
-            <small>SQL: <?php echo $this->db->last_query(); ?></small><br>
-            <a href="<?php echo site_url('diagnostico/obras'); ?>" class="btn btn-mini" style="margin-top: 5px;">
-                <i class="icon-wrench"></i> Verificar Diagnóstico
-            </a>
-            <a href="<?php echo site_url('obras/verificarAtividades/' . $obra->id); ?>" class="btn btn-mini btn-info" style="margin-top: 5px;">
-                <i class="icon-search"></i> Verificar no Banco
-            </a>
+        <div style="margin-top: 10px; padding: 15px; background: #fff3cd; border: 1px solid #ffc107; border-radius: 4px;">
+            <i class="icon-warning-sign" style="font-size: 18px; color: #856404;"></i>
+            <strong style="color: #856404;"> Nenhuma atividade cadastrada para esta obra!</strong><br><br>
+
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
+                <button onclick="$('#modalAdicionar').modal('show')" class="btn btn-success">
+                    <i class="icon-plus"></i> Adicionar Primeira Atividade
+                </button>
+                <?php endif; ?>
+
+                <a href="<?php echo site_url('diagnostico/obras'); ?>" class="btn btn-mini">
+                    <i class="icon-wrench"></i> Diagnóstico
+                </a>
+                <a href="<?php echo site_url('obras/verificarAtividades/' . $obra->id); ?>" class="btn btn-mini btn-info" target="_blank">
+                    <i class="icon-search"></i> Verificar Banco
+                </a>
+            </div>
         </div>
         <?php else: ?>
         <div style="margin-top: 10px; color: #28a745;">
-            <i class="icon-ok"></i> Atividades carregadas com sucesso!
+            <i class="icon-ok"></i> <strong><?php echo count($atividades); ?> atividade(s) encontrada(s)</strong>
         </div>
         <?php endif; ?>
         <div style="clear: both;"></div>
