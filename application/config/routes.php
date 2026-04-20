@@ -132,9 +132,18 @@ $route['relatorioatendimentos/estatisticas'] = 'relatorioatendimentos/estatistic
 $route['relatorioatendimentos/exportar'] = 'relatorioatendimentos/exportar';
 $route['relatorioatendimentos/visualizar/(:num)'] = 'relatorioatendimentos/visualizar/$1';
 
-// Rota para relatório de atendimento do cliente (portal)
+// Rotas da Área do Cliente (Portal do Cliente)
 $route['mine/relatorioatendimento/(:num)'] = 'mine/relatorioAtendimento/$1';
 $route['mine/relatorioAtendimento/(:num)'] = 'mine/relatorioAtendimento/$1';
+$route['mine/visualizarOs/(:num)'] = 'mine/visualizarOs/$1';
+$route['mine/imprimirOs/(:num)'] = 'mine/imprimirOs/$1';
+$route['mine/detalhesOs/(:num)'] = 'mine/detalhesOs/$1';
+$route['mine/aprovarOs/(:num)'] = 'mine/aprovarOs/$1';
+$route['mine/visualizarCompra/(:num)'] = 'mine/visualizarCompra/$1';
+$route['mine/imprimirCompra/(:num)'] = 'mine/imprimirCompra/$1';
+$route['mine/visualizarObra/(:num)'] = 'mine/visualizarObra/$1';
+$route['mine/atualizarcobranca/(:num)'] = 'mine/atualizarcobranca/$1';
+$route['mine/enviarcobranca/(:num)'] = 'mine/enviarcobranca/$1';
 
 // Rotas do Dashboard para relatórios
 $route['dashboard/relatorio_atendimentos'] = 'dashboard/relatorio_atendimentos';
@@ -234,6 +243,11 @@ $route['tecnicos/api/adicionar_comentario'] = 'tecnicos/api_adicionar_comentario
 $route['tecnicos/api/atualizar_etapa'] = 'tecnicos/api_atualizar_etapa';
 $route['tecnicos/api/atualizar_status_etapa'] = 'tecnicos/api_atualizar_status_etapa';
 $route['tecnicos/api/buscar_tarefas'] = 'tecnicos/api_buscar_tarefas';
+$route['tecnicos/api/checkin_obra'] = 'tecnicos/api_checkin_obra';
+$route['tecnicos/api/checkout_obra'] = 'tecnicos/api_checkout_obra';
+$route['tecnicos/api/checkin_ativo_obra'] = 'tecnicos/api_checkin_ativo_obra';
+$route['tecnicos/api/registrar_atividade_obra'] = 'tecnicos/api_registrar_atividade_obra';
+$route['tecnicos/api/relatorio_diario_obra'] = 'tecnicos/api_relatorio_diario_obra';
 
 // APIs do Técnico
 $route['tecnicos/api/login'] = 'tecnicos/api_login';

@@ -1533,6 +1533,293 @@ class Tecnicos extends CI_Controller
     }
 
     /**
+     * API - Check-in na obra (início do trabalho)
+     */
+    public function api_checkin_obra()
+    {
+        header('Content-Type: application/json');
+
+        $obra_id = $this->input->post('obra_id');
+        $etapa_id = $this->input->post('etapa_id');
+        $latitude = $this->input->post('latitude');
+        $longitude = $this->input->post('longitude');
+        $foto = $this->input->post('foto');
+        $observacao = $this->input->post('observacao');
+        $tecnico_id = $this->session->userdata('tec_id');
+
+        if (!$obra_id) {
+            echo json_encode(['success' => false, 'message' => 'Obra não informada']);
+            return;
+        }
+
+        // Verificar se técnico está na equipe
+        $this->db->where(['obra_id' => $obra_id, 'tecnico_id' => $tecnico_id, 'ativo' => 1]);
+        if (!$this->db->get('obra_equipe')->row()) {
+            echo json_encode(['success' => false, 'message' => 'Você não está alocado nesta obra']);
+            return;
+        }
+
+        // Verificar se já existe check-in ativo
+        $this->db->where(['obra_id' => $obra_id, 'tecnico_id' => $tecnico_id, 'check_out' => null]);
+        $checkin_ativo = $this->db->get('obra_checkins')->row();
+        if ($checkin_ativo) {
+            echo json_encode(['success' => false, 'message' => 'Você já tem um check-in ativo. Faça check-out primeiro.']);
+            return;
+        }
+
+        // Salvar foto se enviada
+        $caminho_foto = null;
+        if ($foto) {
+            $caminho_foto = $this->_salvar_foto_base64($foto, 'checkin_obra', $tecnico_id);
+        }
+
+        // Inserir check-in
+        $dados = [
+            'obra_id' => $obra_id,
+            'etapa_id' => $etapa_id,
+            'tecnico_id' => $tecnico_id,
+            'check_in' => date('Y-m-d H:i:s'),
+            'latitude_in' => $latitude,
+            'longitude_in' => $longitude,
+            'foto_in' => $caminho_foto,
+            'observacao_in' => $observacao,
+            'created_at' => date('Y-m-d H:i:s')
+        ];
+
+        if ($this->db->insert('obra_checkins', $dados)) {
+            echo json_encode([
+                'success' => true,
+                'message' => 'Check-in registrado com sucesso',
+                'checkin_id' => $this->db->insert_id(),
+                'hora' => date('H:i:s')
+            ]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Erro ao registrar check-in']);
+        }
+    }
+
+    /**
+     * API - Check-out da obra (fim do trabalho)
+     */
+    public function api_checkout_obra()
+    {
+        header('Content-Type: application/json');
+
+        $checkin_id = $this->input->post('checkin_id');
+        $latitude = $this->input->post('latitude');
+        $longitude = $this->input->post('longitude');
+        $foto = $this->input->post('foto');
+        $observacao = $this->input->post('observacao');
+        $atividades_realizadas = $this->input->post('atividades_realizadas');
+        $tecnico_id = $this->session->userdata('tec_id');
+
+        if (!$checkin_id) {
+            echo json_encode(['success' => false, 'message' => 'Check-in não informado']);
+            return;
+        }
+
+        // Buscar check-in
+        $this->db->where(['id' => $checkin_id, 'tecnico_id' => $tecnico_id]);
+        $checkin = $this->db->get('obra_checkins')->row();
+        if (!$checkin) {
+            echo json_encode(['success' => false, 'message' => 'Check-in não encontrado']);
+            return;
+        }
+
+        if ($checkin->check_out) {
+            echo json_encode(['success' => false, 'message' => 'Este check-in já foi finalizado']);
+            return;
+        }
+
+        // Salvar foto se enviada
+        $caminho_foto = null;
+        if ($foto) {
+            $caminho_foto = $this->_salvar_foto_base64($foto, 'checkout_obra', $tecnico_id);
+        }
+
+        // Calcular tempo trabalhado
+        $hora_in = new DateTime($checkin->check_in);
+        $hora_out = new DateTime();
+        $intervalo = $hora_in->diff($hora_out);
+        $horas_trabalhadas = $intervalo->h + ($intervalo->i / 60);
+
+        // Atualizar check-out
+        $dados = [
+            'check_out' => date('Y-m-d H:i:s'),
+            'latitude_out' => $latitude,
+            'longitude_out' => $longitude,
+            'foto_out' => $caminho_foto,
+            'observacao_out' => $observacao,
+            'atividades_realizadas' => $atividades_realizadas,
+            'horas_trabalhadas' => round($horas_trabalhadas, 2)
+        ];
+
+        $this->db->where('id', $checkin_id);
+        if ($this->db->update('obra_checkins', $dados)) {
+            echo json_encode([
+                'success' => true,
+                'message' => 'Check-out registrado com sucesso',
+                'horas_trabalhadas' => round($horas_trabalhadas, 2)
+            ]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Erro ao registrar check-out']);
+        }
+    }
+
+    /**
+     * API - Buscar check-in ativo do técnico na obra
+     */
+    public function api_checkin_ativo_obra()
+    {
+        header('Content-Type: application/json');
+
+        $obra_id = $this->input->get('obra_id');
+        $tecnico_id = $this->session->userdata('tec_id');
+
+        if (!$obra_id) {
+            echo json_encode(['success' => false, 'message' => 'Obra não informada']);
+            return;
+        }
+
+        $this->db->where(['obra_id' => $obra_id, 'tecnico_id' => $tecnico_id, 'check_out' => null]);
+        $this->db->order_by('check_in', 'DESC');
+        $checkin = $this->db->get('obra_checkins')->row();
+
+        if ($checkin) {
+            echo json_encode(['success' => true, 'checkin' => $checkin]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Nenhum check-in ativo']);
+        }
+    }
+
+    /**
+     * API - Registrar atividade do dia
+     */
+    public function api_registrar_atividade_obra()
+    {
+        header('Content-Type: application/json');
+
+        $obra_id = $this->input->post('obra_id');
+        $etapa_id = $this->input->post('etapa_id');
+        $descricao = $this->input->post('descricao');
+        $tipo = $this->input->post('tipo'); // 'execucao', 'problema', 'observacao'
+        $percentual_concluido = $this->input->post('percentual_concluido');
+        $fotos = $this->input->post('fotos'); // array de fotos base64
+        $tecnico_id = $this->session->userdata('tec_id');
+
+        if (!$obra_id || !$descricao) {
+            echo json_encode(['success' => false, 'message' => 'Dados incompletos']);
+            return;
+        }
+
+        // Verificar se técnico está na equipe
+        $this->db->where(['obra_id' => $obra_id, 'tecnico_id' => $tecnico_id, 'ativo' => 1]);
+        if (!$this->db->get('obra_equipe')->row()) {
+            echo json_encode(['success' => false, 'message' => 'Você não está alocado nesta obra']);
+            return;
+        }
+
+        // Criar tabela se não existir
+        if (!$this->db->table_exists('obra_atividades')) {
+            $this->db->query("CREATE TABLE IF NOT EXISTS obra_atividades (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                obra_id INT NOT NULL,
+                etapa_id INT,
+                tecnico_id INT NOT NULL,
+                descricao TEXT NOT NULL,
+                tipo VARCHAR(50) DEFAULT 'execucao',
+                percentual_concluido INT DEFAULT 0,
+                fotos TEXT,
+                data_atividade DATE NOT NULL,
+                created_at DATETIME NOT NULL,
+                ativo TINYINT(1) DEFAULT 1
+            )");
+        }
+
+        // Processar fotos
+        $fotos_salvas = [];
+        if ($fotos && is_array($fotos)) {
+            foreach ($fotos as $foto) {
+                $caminho = $this->_salvar_foto_base64($foto, 'atividade_obra', $tecnico_id);
+                if ($caminho) {
+                    $fotos_salvas[] = $caminho;
+                }
+            }
+        }
+
+        // Inserir atividade
+        $dados = [
+            'obra_id' => $obra_id,
+            'etapa_id' => $etapa_id,
+            'tecnico_id' => $tecnico_id,
+            'descricao' => $descricao,
+            'tipo' => $tipo ?: 'execucao',
+            'percentual_concluido' => $percentual_concluido ?: 0,
+            'fotos' => json_encode($fotos_salvas),
+            'data_atividade' => date('Y-m-d'),
+            'created_at' => date('Y-m-d H:i:s')
+        ];
+
+        if ($this->db->insert('obra_atividades', $dados)) {
+            echo json_encode([
+                'success' => true,
+                'message' => 'Atividade registrada com sucesso',
+                'atividade_id' => $this->db->insert_id()
+            ]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Erro ao registrar atividade']);
+        }
+    }
+
+    /**
+     * API - Gerar relatório diário de atividades
+     */
+    public function api_relatorio_diario_obra()
+    {
+        header('Content-Type: application/json');
+
+        $obra_id = $this->input->get('obra_id');
+        $data = $this->input->get('data') ?: date('Y-m-d');
+        $tecnico_id = $this->session->userdata('tec_id');
+
+        if (!$obra_id) {
+            echo json_encode(['success' => false, 'message' => 'Obra não informada']);
+            return;
+        }
+
+        // Buscar check-ins do dia
+        $this->db->where(['obra_id' => $obra_id, 'tecnico_id' => $tecnico_id]);
+        $this->db->where('DATE(check_in)', $data);
+        $this->db->order_by('check_in', 'ASC');
+        $checkins = $this->db->get('obra_checkins')->result();
+
+        // Buscar atividades do dia
+        if ($this->db->table_exists('obra_atividades')) {
+            $this->db->where(['obra_id' => $obra_id, 'tecnico_id' => $tecnico_id, 'data_atividade' => $data]);
+            $atividades = $this->db->get('obra_atividades')->result();
+        } else {
+            $atividades = [];
+        }
+
+        // Calcular total de horas
+        $total_horas = 0;
+        foreach ($checkins as $c) {
+            if ($c->check_out) {
+                $total_horas += $c->horas_trabalhadas;
+            }
+        }
+
+        echo json_encode([
+            'success' => true,
+            'data' => $data,
+            'checkins' => $checkins,
+            'atividades' => $atividades,
+            'total_horas' => round($total_horas, 2),
+            'total_atividades' => count($atividades)
+        ]);
+    }
+
+    /**
      * Salvar foto em base64 para arquivo
      */
     private function _salvar_foto_base64($base64_string, $tipo, $tecnico_id)
