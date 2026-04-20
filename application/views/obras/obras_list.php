@@ -238,6 +238,35 @@
 </style>
 
 <div class="obras-dashboard">
+    <!-- Header com Ações Principais -->
+    <div style="background: white; border-radius: 15px; padding: 25px; margin-bottom: 25px; box-shadow: 0 2px 20px rgba(0,0,0,0.08);">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+            <div>
+                <h2 style="margin: 0; color: #333; font-size: 28px;">
+                    <i class="icon-building" style="color: #667eea;"></i>
+                    Gestão de Obras
+                </h2>
+                <p style="margin: 5px 0 0 0; color: #888;">Controle e acompanhamento de todas as obras</p>
+            </div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cObras')): ?>
+                    <a href="<?php echo site_url('obras/adicionar'); ?>" class="obra-btn obra-btn-primary" style="padding: 12px 25px;">
+                        <i class="icon-plus"></i> Nova Obra
+                    </a>
+                <?php endif; ?>
+                <a href="<?php echo site_url('obras/relatorios'); ?>" class="obra-btn obra-btn-warning" style="padding: 12px 25px; color: #333;">
+                    <i class="icon-file-alt"></i> Relatórios
+                </a>
+                <a href="<?php echo site_url('tecnicos_admin'); ?>" class="obra-btn" style="padding: 12px 25px; background: #4facfe; color: white;">
+                    <i class="icon-group"></i> Equipe
+                </a>
+                <a href="<?php echo site_url('clientes'); ?>" class="obra-btn" style="padding: 12px 25px; background: #a8edea; color: #333;">
+                    <i class="icon-user"></i> Clientes
+                </a>
+            </div>
+        </div>
+    </div>
+
     <!-- Stats Cards -->
     <div class="stats-cards">
         <div class="stat-card">
@@ -387,17 +416,25 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="obra-actions">
-                            <a href="<?php echo site_url('obras/visualizar/' . $r->id); ?>" class="obra-btn obra-btn-primary">
-                                <i class="icon-eye-open"></i> Visualizar
+                        <div class="obra-actions" style="flex-wrap: wrap;">
+                            <a href="<?php echo site_url('obras/visualizar/' . $r->id); ?>" class="obra-btn obra-btn-primary" title="Visualizar">
+                                <i class="icon-eye-open"></i>
                             </a>
-                            <a href="<?php echo site_url('obras/equipe/' . $r->id); ?>" class="obra-btn obra-btn-success">
-                                <i class="icon-group"></i> Equipe
+                            <a href="<?php echo site_url('obras/etapas/' . $r->id); ?>" class="obra-btn" style="background: #9b59b6; color: white;" title="Etapas">
+                                <i class="icon-tasks"></i>
                             </a>
-                            <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
-                                <a href="<?php echo site_url('obras/editar/' . $r->id); ?>" class="obra-btn obra-btn-warning" style="color: #333;">
-                                    <i class="icon-edit"></i> Editar
+                            <a href="<?php echo site_url('obras/relatorioProgresso/' . $r->id); ?>" class="obra-btn" style="background: #f39c12; color: white;" title="Relatório">
+                                <i class="icon-file-alt"></i>
+                            </a>
+                            <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?
+                                <a href="<?php echo site_url('obras/editar/' . $r->id); ?>" class="obra-btn obra-btn-warning" style="color: #333;" title="Editar">
+                                    <i class="icon-edit"></i>
                                 </a>
+                            <?php endif; ?>
+                            <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dObras')): ?
+                                <button onclick="confirmarExclusao(<?php echo $r->id; ?>)" class="obra-btn obra-btn-danger" title="Excluir">
+                                    <i class="icon-trash"></i>
+                                </button>
                             <?php endif; ?>
                         </div>
                     </div>
