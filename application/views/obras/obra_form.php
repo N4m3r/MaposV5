@@ -116,19 +116,6 @@
     font-weight: 500;
 }
 
-.form-actions-bar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: white;
-    padding: 20px 30px;
-    box-shadow: 0 -5px 30px rgba(0,0,0,0.1);
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    z-index: 1000;
-}
 .form-btn {
     padding: 15px 40px;
     border-radius: 12px;
@@ -152,7 +139,6 @@
     color: #666;
     border: 2px solid #e8e8e8;
 }
-.form-content-wrapper { padding-bottom: 100px; }
 
 @media (max-width: 768px) {
     .form-grid { grid-template-columns: 1fr; }
@@ -178,8 +164,7 @@
         </div>
     </div>
 
-    <div class="form-content-wrapper">
-        <form method="post" action="">
+        <form method="post" action="" id="formObra">
 
             <!-- Dados Básicos -->
             <div class="form-card">
@@ -376,19 +361,23 @@
                 </div>
             </div>
 
+            <!-- Actions dentro do form -->
+            <div class="form-card" style="background: transparent; box-shadow: none; border: none;">
+                <div style="display: flex; justify-content: center; gap: 15px; padding: 20px 0;">
+                    <button type="submit" class="form-btn form-btn-primary">
+                        <i class="icon-save"></i> Salvar Obra
+                    </button>
+
+                    <a href="<?php echo site_url('obras'); ?>" class="form-btn form-btn-secondary" style="text-decoration: none;">
+                        <i class="icon-remove"></i> Cancelar
+                    </a>
+                </div>
+            </div>
+
         </form>
     </div>
-
-    <!-- Fixed Actions Bar -->
-    <div class="form-actions-bar">
-        <button type="submit" class="form-btn form-btn-primary" onclick="document.querySelector('form').submit()">
-            <i class="icon-save"></i> Salvar Obra
-        </button>
-        <a href="<?php echo site_url('obras'); ?>" class="form-btn form-btn-secondary">
-            <i class="icon-remove"></i> Cancelar
-        </a>
-    </div>
 </div>
+</form>
 
 <script src="<?php echo base_url(); ?>assets/js/jquery.mask.min.js"></script>
 <script>
