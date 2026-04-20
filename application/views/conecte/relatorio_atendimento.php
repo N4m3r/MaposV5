@@ -598,34 +598,6 @@
                     </div>
                     <?php endif; ?>
 
-                    <!-- Formulário de Upload de Fotos pelo Cliente -->
-                    <div class="photos-section upload-section" style="background: #f0f7ff; padding: 20px; border-radius: 8px; border: 2px dashed #667eea; margin-bottom: 20px;">
-                        <div class="photos-section-title" style="color: #667eea;">📷 Adicionar Foto ao Relatório</div>
-                        <form id="formUploadFoto" enctype="multipart/form-data" method="post">
-                            <input type="hidden" name="os_id" value="<?php echo $os->idOs; ?>">
-                            <input type="hidden" name="etapa" value="durante">
-                            <div style="margin-bottom: 15px;">
-                                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Selecione a foto:</label>
-                                <input type="file" name="foto" id="fotoInput" accept="image/*" required
-                                       style="padding: 10px; border: 1px solid #ddd; border-radius: 4px; width: 100%;"
-                                       onchange="previewFoto(this)">
-                            </div>
-                            <div id="fotoPreview" style="margin-bottom: 15px; display: none;">
-                                <img id="previewImg" style="max-width: 200px; max-height: 200px; border-radius: 8px; border: 1px solid #ddd;">
-                            </div>
-                            <div style="margin-bottom: 15px;">
-                                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Descrição:</label>
-                                <input type="text" name="descricao" placeholder="Ex: Foto do problema, Foto do equipamento..."
-                                       style="padding: 10px; border: 1px solid #ddd; border-radius: 4px; width: 100%;">
-                            </div>
-                            <button type="submit" class="btn btn-primary"
-                                    style="background: #667eea; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-weight: 600;">
-                                <i class="bx bx-upload"></i> Enviar Foto
-                            </button>
-                            <div id="uploadStatus" style="margin-top: 10px;"></div>
-                        </form>
-                    </div>
-
                     <?php if (!empty($fotosPorEtapa['durante'])): ?>
                     <div class="photos-section">
                         <div class="photos-section-title">📷 Fotos Durante o Atendimento</div>
@@ -759,58 +731,6 @@
 <?php endif; ?>
 
 <script>
-// Preview da foto antes do upload
-function previewFoto(input) {
-    const preview = document.getElementById('fotoPreview');
-    const previewImg = document.getElementById('previewImg');
-
-    if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            previewImg.src = e.target.result;
-            preview.style.display = 'block';
-        }
-        reader.readAsDataURL(input.files[0]);
-    } else {
-        preview.style.display = 'none';
-    }
-}
-
-// Upload de foto via AJAX
-jQuery(document).ready(function($) {
-    $('#formUploadFoto').on('submit', function(e) {
-        e.preventDefault();
-
-        const formData = new FormData(this);
-        const statusDiv = $('#uploadStatus');
-
-        statusDiv.html('<div style="color: #667eea;"><i class="bx bx-loader bx-spin"></i> Enviando foto... Aguarde</div>');
-
-        $.ajax({
-            url: '<?php echo base_url("index.php/mine/uploadFotoCliente"); ?>',
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            dataType: 'json',
-            success: function(response) {
-                if (response.success) {
-                    statusDiv.html('<div style="color: #28a745;"><i class="bx bx-check-circle"></i> ' + response.message + '</div>');
-                    // Recarregar a página após 2 segundos para mostrar a nova foto
-                    setTimeout(function() {
-                        location.reload();
-                    }, 2000);
-                } else {
-                    statusDiv.html('<div style="color: #dc3545;"><i class="bx bx-error-circle"></i> ' + response.message + '</div>');
-                }
-            },
-            error: function(xhr, status, error) {
-                statusDiv.html('<div style="color: #dc3545;"><i class="bx bx-error-circle"></i> Erro ao enviar foto. Tente novamente.</div>');
-            }
-        });
-    });
-});
-
 // Canvas de Assinatura
 let canvas, ctx, isDrawing = false;
 

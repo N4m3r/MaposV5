@@ -559,4 +559,36 @@ class Obras extends MY_Controller
 
         echo json_encode($dados);
     }
+
+    /**
+     * API: Buscar dados do cliente
+     */
+    public function api_getCliente($cliente_id)
+    {
+        if (!$this->input->is_ajax_request()) {
+            show_404();
+        }
+
+        $this->load->model('clientes_model');
+        $cliente = $this->clientes_model->getById($cliente_id);
+
+        if ($cliente) {
+            echo json_encode([
+                'success' => true,
+                'cliente' => [
+                    'id' => $cliente->idClientes,
+                    'nome' => $cliente->nomeCliente,
+                    'documento' => $cliente->documento,
+                    'endereco' => $cliente->rua,
+                    'numero' => $cliente->numero,
+                    'bairro' => $cliente->bairro,
+                    'cidade' => $cliente->cidade,
+                    'estado' => $cliente->estado,
+                    'cep' => $cliente->cep
+                ]
+            ]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Cliente não encontrado']);
+        }
+    }
 }

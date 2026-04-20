@@ -198,19 +198,29 @@
 
                     <div class="form-group">
                         <label class="form-label">Cliente <span class="required">*</span></label>
-                        <select name="cliente_id" class="form-select" required <?php echo isset($result) ? 'disabled' : ''; ?>
+                        <select name="cliente_id" id="cliente_select" class="form-select" required <?php echo isset($result) ? 'disabled' : ''; ?>
                             style="<?php echo isset($result) ? 'background: #f5f5f5;' : ''; ?>">
                             <option value="">Selecione o cliente...</option>
                             <?php foreach ($clientes as $c): ?>
                                 <option value="<?php echo $c->idClientes; ?>"
+                                    data-documento="<?php echo $c->documento ?? ''; ?>"
+                                    data-endereco="<?php echo $c->rua ?? ''; ?>"
+                                    data-numero="<?php echo $c->numero ?? ''; ?>"
+                                    data-bairro="<?php echo $c->bairro ?? ''; ?>"
+                                    data-cidade="<?php echo $c->cidade ?? ''; ?>"
+                                    data-estado="<?php echo $c->estado ?? ''; ?>"
+                                    data-cep="<?php echo $c->cep ?? ''; ?>"
                                     <?php echo (isset($result) && $result->cliente_id == $c->idClientes) ? 'selected' : ''; ?>
-                                    ><?php echo $c->nomeCliente; ?>
+                                    ><?php echo $c->nomeCliente; ?> <?php echo !empty($c->documento) ? '(' . $c->documento . ')' : ''; ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
                         <?php if (isset($result)): ?>
                         <input type="hidden" name="cliente_id" value="<?php echo $result->cliente_id; ?>">
                         <?php endif; ?>
+                        <div id="cliente_info" style="margin-top: 10px; font-size: 13px; color: #667eea; display: none;">
+                            <i class="icon-info-sign"></i> <span id="cliente_doc"></span>
+                        </div>
                     </div>
 
                     <div class="form-group">
