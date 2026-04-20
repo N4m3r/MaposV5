@@ -1764,12 +1764,16 @@ class Tecnicos extends CI_Controller
             }
         }
 
+        // Preparar título a partir da descrição
+        $titulo = substr($descricao, 0, 100); // Primeiros 100 caracteres
+
         // Inserir atividade
         $dados = [
             'obra_id' => $obra_id,
             'etapa_id' => $etapa_id ?: null,
             'tecnico_id' => $tecnico_id,
             'descricao' => $descricao,
+            'titulo' => $titulo,
             'tipo' => $tipo ?: 'execucao',
             'percentual_concluido' => $percentual_concluido ?: 0,
             'fotos' => json_encode($fotos_salvas),

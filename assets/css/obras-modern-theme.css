@@ -1,0 +1,721 @@
+/**
+ * =====================================================
+ * Sistema de Obras - Tema Moderno e Responsivo
+ * Compatível com: tema-white, tema-dark-orange,
+ * tema-pure-dark, tema-dark-violet, tema-white-green
+ * =====================================================
+ */
+
+/* ============================================
+   VARIÁVEIS ESPECÍFICAS DO SISTEMA DE OBRAS
+   ============================================ */
+:root {
+    /* Cores de status das obras */
+    --obra-status-prospeccao: #95a5a6;
+    --obra-status-contratada: #f39c12;
+    --obra-status-em-andamento: #3498db;
+    --obra-status-em-execucao: #3498db;
+    --obra-status-concluida: #27ae60;
+    --obra-status-paralisada: #e74c3c;
+    --obra-status-cancelada: #7f8c8d;
+
+    /* Cores de etapas */
+    --etapa-pendente: #f39c12;
+    --etapa-em-andamento: #3498db;
+    --etapa-concluida: #27ae60;
+
+    /* Gradientes modernos */
+    --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --gradient-success: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    --gradient-info: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    --gradient-warning: linear-gradient(135deg, #feca57 0%, #ff9f43 100%);
+    --gradient-danger: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+
+    /* Sombras modernas */
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+    --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+    --shadow-xl: 0 20px 40px rgba(0,0,0,0.15);
+
+    /* Bordas arredondadas */
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+
+    /* Transições */
+    --transition-fast: 0.15s ease;
+    --transition-normal: 0.3s ease;
+    --transition-slow: 0.5s ease;
+}
+
+/* ============================================
+   ESTILOS BASE - COMPATÍVEL COM TEMAS
+   ============================================ */
+
+/* Container principal */
+.obras-modern-container {
+    padding: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Header moderno */
+.obra-header-modern {
+    background: var(--gradient-primary);
+    border-radius: var(--radius-lg);
+    padding: 30px;
+    color: white;
+    margin-bottom: 25px;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    overflow: hidden;
+}
+
+.obra-header-modern::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 400px;
+    height: 400px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.obra-header-modern h1,
+.obra-header-modern h2 {
+    margin: 0 0 10px 0;
+    font-size: 28px;
+    font-weight: 700;
+    position: relative;
+    z-index: 1;
+}
+
+.obra-header-modern p {
+    margin: 0;
+    opacity: 0.9;
+    font-size: 15px;
+    position: relative;
+    z-index: 1;
+}
+
+/* Status badges modernos */
+.obra-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    backdrop-filter: blur(10px);
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: white;
+}
+
+/* Cards modernos */
+.obra-card-modern {
+    background: var(--widget-box, #ffffff);
+    border-radius: var(--radius-lg);
+    padding: 25px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid rgba(0,0,0,0.05);
+    transition: all var(--transition-normal);
+}
+
+.obra-card-modern:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+}
+
+/* Grid de cards */
+.obras-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 20px;
+}
+
+/* Card de obra na lista */
+.obra-list-card {
+    background: var(--widget-box, #ffffff);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    border: 1px solid rgba(0,0,0,0.05);
+    transition: all var(--transition-normal);
+    display: flex;
+    flex-direction: column;
+}
+
+.obra-list-card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-4px);
+}
+
+.obra-list-card .card-header {
+    padding: 20px;
+    background: var(--gradient-primary);
+    color: white;
+    position: relative;
+}
+
+.obra-list-card .card-header.status-em-andamento,
+.obra-list-card .card-header.status-EmExecucao {
+    background: var(--gradient-info);
+}
+
+.obra-list-card .card-header.status-concluida,
+.obra-list-card .card-header.status-Concluida {
+    background: var(--gradient-success);
+}
+
+.obra-list-card .card-header.status-paralisada {
+    background: var(--gradient-danger);
+}
+
+.obra-list-card .card-header.status-contratada {
+    background: var(--gradient-warning);
+}
+
+.obra-list-card .card-body {
+    padding: 20px;
+    flex: 1;
+}
+
+.obra-list-card .card-footer {
+    padding: 15px 20px;
+    border-top: 1px solid rgba(0,0,0,0.05);
+    background: rgba(0,0,0,0.02);
+}
+
+/* Progresso moderno */
+.progresso-moderno {
+    margin: 15px 0;
+}
+
+.progresso-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.progresso-label {
+    font-size: 13px;
+    color: var(--subtitle, #666);
+    font-weight: 500;
+}
+
+.progresso-valor {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--title, #333);
+}
+
+.progresso-barra-container {
+    height: 10px;
+    background: rgba(0,0,0,0.08);
+    border-radius: 50px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progresso-barra-fill {
+    height: 100%;
+    border-radius: 50px;
+    background: var(--gradient-success);
+    transition: width var(--transition-slow);
+    position: relative;
+}
+
+.progresso-barra-fill.baixo { background: var(--gradient-danger); }
+.progresso-barra-fill.medio { background: var(--gradient-warning); }
+.progresso-barra-fill.alto { background: var(--gradient-success); }
+
+/* Stats cards */
+.obra-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.obra-stat-item {
+    background: rgba(0,0,0,0.03);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    text-align: center;
+    transition: all var(--transition-fast);
+}
+
+.obra-stat-item:hover {
+    background: rgba(0,0,0,0.05);
+    transform: scale(1.02);
+}
+
+.obra-stat-valor {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--title, #333);
+    margin-bottom: 5px;
+}
+
+.obra-stat-label {
+    font-size: 11px;
+    color: var(--subtitle, #888);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
+
+/* Botões modernos */
+.btn-moderno {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    text-decoration: none;
+}
+
+.btn-moderno:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    text-decoration: none;
+}
+
+.btn-moderno-primary {
+    background: var(--gradient-primary);
+    color: white;
+}
+
+.btn-moderno-success {
+    background: var(--gradient-success);
+    color: white;
+}
+
+.btn-moderno-danger {
+    background: var(--gradient-danger);
+    color: white;
+}
+
+.btn-moderno-warning {
+    background: var(--gradient-warning);
+    color: white;
+}
+
+.btn-moderno-outline {
+    background: transparent;
+    border: 2px solid currentColor;
+    color: var(--title, #333);
+}
+
+/* Timeline de etapas */
+.etapas-timeline-moderno {
+    position: relative;
+    padding-left: 30px;
+}
+
+.etapas-timeline-moderno::before {
+    content: '';
+    position: absolute;
+    left: 10px;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(to bottom,
+        var(--etapa-concluida) 0%,
+        var(--etapa-em-andamento) 50%,
+        var(--etapa-pendente) 100%);
+    border-radius: 3px;
+}
+
+.etapa-item-moderno {
+    position: relative;
+    padding-bottom: 25px;
+}
+
+.etapa-item-moderno:last-child {
+    padding-bottom: 0;
+}
+
+.etapa-dot-moderno {
+    position: absolute;
+    left: -25px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--widget-box, #fff);
+    border: 4px solid var(--etapa-pendente);
+    box-shadow: 0 0 0 4px rgba(243, 156, 18, 0.2);
+}
+
+.etapa-item-moderno.concluida .etapa-dot-moderno {
+    border-color: var(--etapa-concluida);
+    background: var(--etapa-concluida);
+    box-shadow: 0 0 0 4px rgba(39, 174, 96, 0.2);
+}
+
+.etapa-item-moderno.em-andamento .etapa-dot-moderno {
+    border-color: var(--etapa-em-andamento);
+    box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.2);
+}
+
+.etapa-content-moderno {
+    background: rgba(0,0,0,0.03);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    margin-left: 15px;
+}
+
+/* Lista de equipe */
+.equipe-lista-moderno {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.equipe-item-moderno {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background: rgba(0,0,0,0.03);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+}
+
+.equipe-item-moderno:hover {
+    background: rgba(0,0,0,0.05);
+    transform: translateX(5px);
+}
+
+.equipe-avatar-moderno {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--gradient-primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.equipe-info-moderno {
+    flex: 1;
+}
+
+.equipe-nome-moderno {
+    font-weight: 600;
+    color: var(--title, #333);
+    font-size: 15px;
+}
+
+.equipe-funcao-moderno {
+    font-size: 13px;
+    color: var(--subtitle, #888);
+}
+
+/* Atividades */
+.atividade-item-moderno {
+    display: flex;
+    gap: 15px;
+    padding: 20px;
+    background: rgba(0,0,0,0.03);
+    border-radius: var(--radius-md);
+    margin-bottom: 15px;
+    transition: all var(--transition-fast);
+}
+
+.atividade-item-moderno:hover {
+    background: rgba(0,0,0,0.05);
+}
+
+.atividade-icon-moderno {
+    width: 45px;
+    height: 45px;
+    border-radius: 12px;
+    background: var(--gradient-primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.atividade-icon-moderno.execucao { background: var(--gradient-success); }
+.atividade-icon-moderno.problema { background: var(--gradient-danger); }
+.atividade-icon-moderno.observacao { background: var(--gradient-warning); }
+
+.atividade-content-moderno {
+    flex: 1;
+}
+
+.atividade-header-moderno {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+}
+
+.atividade-titulo-moderno {
+    font-weight: 600;
+    color: var(--title, #333);
+}
+
+.atividade-data-moderno {
+    font-size: 12px;
+    color: var(--subtitle, #888);
+}
+
+/* Formulários modernos */
+.form-moderno .form-group {
+    margin-bottom: 20px;
+}
+
+.form-moderno label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--title, #333);
+    font-size: 14px;
+}
+
+.form-moderno input,
+.form-moderno select,
+.form-moderno textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid rgba(0,0,0,0.1);
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    background: var(--widget-box, #fff);
+    color: var(--title, #333);
+    transition: all var(--transition-fast);
+}
+
+.form-moderno input:focus,
+.form-moderno select:focus,
+.form-moderno textarea:focus {
+    border-color: #667eea;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Empty state */
+.empty-state-moderno {
+    text-align: center;
+    padding: 60px 20px;
+    background: rgba(0,0,0,0.02);
+    border-radius: var(--radius-lg);
+}
+
+.empty-state-moderno i {
+    font-size: 60px;
+    color: var(--subtitle, #ccc);
+    margin-bottom: 20px;
+    opacity: 0.5;
+}
+
+.empty-state-moderno h3 {
+    color: var(--title, #666);
+    font-weight: 400;
+    margin-bottom: 10px;
+}
+
+.empty-state-moderno p {
+    color: var(--subtitle, #999);
+}
+
+/* Tabela moderna */
+.tabela-moderna {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.tabela-moderna th {
+    background: rgba(0,0,0,0.05);
+    padding: 15px;
+    text-align: left;
+    font-weight: 600;
+    color: var(--title, #333);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.tabela-moderna td {
+    padding: 15px;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    color: var(--subtitle, #666);
+}
+
+.tabela-moderna tr:hover td {
+    background: rgba(0,0,0,0.02);
+}
+
+/* Ações rápidas */
+.acoes-rapidas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.acao-rapida-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border-radius: var(--radius-md);
+    background: rgba(0,0,0,0.05);
+    color: var(--title, #333);
+    font-weight: 500;
+    font-size: 13px;
+    transition: all var(--transition-fast);
+    border: none;
+    cursor: pointer;
+}
+
+.acao-rapida-btn:hover {
+    background: rgba(0,0,0,0.1);
+    transform: translateY(-1px);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .obras-modern-container {
+        padding: 15px;
+    }
+
+    .obra-header-modern {
+        padding: 20px;
+    }
+
+    .obra-header-modern h1,
+    .obra-header-modern h2 {
+        font-size: 22px;
+    }
+
+    .obras-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .obra-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .btn-moderno {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* ============================================
+   ANIMAÇÕES
+   ============================================ */
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+.animacao-entrada {
+    animation: fadeInUp 0.4s ease forwards;
+}
+
+/* Stagger delay para listas */
+.obra-list-card:nth-child(1) { animation-delay: 0.05s; }
+.obra-list-card:nth-child(2) { animation-delay: 0.1s; }
+.obra-list-card:nth-child(3) { animation-delay: 0.15s; }
+.obra-list-card:nth-child(4) { animation-delay: 0.2s; }
+.obra-list-card:nth-child(5) { animation-delay: 0.25s; }
+
+/* ============================================
+   COMPATIBILIDADE COM TEMAS DARK
+   ============================================ */
+
+/* Tema Dark - ajustes específicos */
+body[data-theme="dark"] .obra-card-modern,
+body[data-theme="dark"] .obra-list-card {
+    background: var(--dark-2, #272835);
+    border-color: rgba(255,255,255,0.05);
+}
+
+body[data-theme="dark"] .obra-stat-item,
+body[data-theme="dark"] .etapa-content-moderno,
+body[data-theme="dark"] .equipe-item-moderno,
+body[data-theme="dark"] .atividade-item-moderno {
+    background: rgba(255,255,255,0.05);
+}
+
+body[data-theme="dark"] .obra-stat-item:hover,
+body[data-theme="dark"] .etapa-content-moderno:hover,
+body[data-theme="dark"] .equipe-item-moderno:hover,
+body[data-theme="dark"] .atividade-item-moderno:hover {
+    background: rgba(255,255,255,0.08);
+}
+
+body[data-theme="dark"] .progresso-barra-container {
+    background: rgba(255,255,255,0.1);
+}
+
+body[data-theme="dark"] .form-moderno input,
+body[data-theme="dark"] .form-moderno select,
+body[data-theme="dark"] .form-moderno textarea {
+    background: var(--dark-2, #272835);
+    border-color: rgba(255,255,255,0.1);
+    color: var(--branco, #caced8);
+}
+
+body[data-theme="dark"] .empty-state-moderno {
+    background: rgba(255,255,255,0.03);
+}
+
+body[data-theme="dark"] .tabela-moderna th {
+    background: rgba(255,255,255,0.05);
+}
+
+body[data-theme="dark"] .tabela-moderna td {
+    border-color: rgba(255,255,255,0.05);
+}
+
+body[data-theme="dark"] .acao-rapida-btn {
+    background: rgba(255,255,255,0.05);
+    color: var(--branco, #caced8);
+}
+
+body[data-theme="dark"] .acao-rapida-btn:hover {
+    background: rgba(255,255,255,0.1);
+}

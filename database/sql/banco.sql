@@ -1330,6 +1330,9 @@ CREATE TABLE IF NOT EXISTS `obras` (
   `art_arquivo` VARCHAR(255) DEFAULT NULL,
   `memorial_descritivo` TEXT,
   `observacoes` TEXT,
+  `visivel_cliente` TINYINT(1) DEFAULT 1,
+  `ativo` TINYINT(1) DEFAULT 1,
+  `valor_contrato` DECIMAL(15,2) NULL,
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
@@ -1337,7 +1340,8 @@ CREATE TABLE IF NOT EXISTS `obras` (
   FOREIGN KEY (`gestor_obra_id`) REFERENCES `usuarios`(`idUsuarios`),
   FOREIGN KEY (`responsavel_tecnico_id`) REFERENCES `usuarios`(`idUsuarios`),
   INDEX `idx_cliente` (`cliente_id`),
-  INDEX `idx_status` (`status`)
+  INDEX `idx_status` (`status`),
+  INDEX `idx_ativo` (`ativo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- -----------------------------------------------------
@@ -1358,12 +1362,15 @@ CREATE TABLE IF NOT EXISTS `obra_etapas` (
   `status` ENUM('NaoIniciada','EmAndamento','Concluida','Atrasada','Paralisada') DEFAULT 'NaoIniciada',
   `tecnicos_designados` JSON DEFAULT NULL,
   `os_ids` JSON DEFAULT NULL COMMENT 'OS vinculadas',
+  `visivel_cliente` TINYINT(1) DEFAULT 1,
+  `ativo` TINYINT(1) DEFAULT 1,
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`obra_id`) REFERENCES `obras`(`id`) ON DELETE CASCADE,
   INDEX `idx_obra_id` (`obra_id`),
-  INDEX `idx_status` (`status`)
+  INDEX `idx_status` (`status`),
+  INDEX `idx_ativo` (`ativo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- -----------------------------------------------------
@@ -1408,6 +1415,9 @@ CREATE TABLE IF NOT EXISTS `obra_equipe` (
   `data_saida` DATE DEFAULT NULL,
   `ativo` TINYINT(1) DEFAULT 1,
   `observacoes` TEXT,
+  `visivel_cliente` TINYINT(1) DEFAULT 1,
+  `ativo` TINYINT(1) DEFAULT 1,
+  `valor_contrato` DECIMAL(15,2) NULL,
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
@@ -1479,7 +1489,8 @@ CREATE TABLE IF NOT EXISTS `os_checkin` (
   `data_atualizacao` DATETIME NULL,
   PRIMARY KEY (`idCheckin`),
   INDEX `idx_os_id` (`os_id`),
-  INDEX `idx_status` (`status`)
+  INDEX `idx_status` (`status`),
+  INDEX `idx_ativo` (`ativo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- -----------------------------------------------------
@@ -1823,7 +1834,8 @@ CREATE TABLE IF NOT EXISTS `calculos_impostos` (
   INDEX `idx_venda_id` (`venda_id`),
   INDEX `idx_cobranca_id` (`cobranca_id`),
   INDEX `idx_competencia` (`competencia`),
-  INDEX `idx_status` (`status`)
+  INDEX `idx_status` (`status`),
+  INDEX `idx_ativo` (`ativo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- -----------------------------------------------------
@@ -1965,6 +1977,86 @@ CREATE TABLE IF NOT EXISTS `certificado_nfe_importada` (
   INDEX `idx_cnpj_destinatario` (`cnpj_destinatario`),
   INDEX `idx_situacao` (`situacao`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `obra_atividades` - Atividades de obras
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `obra_atividades` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `obra_id` INT(11) UNSIGNED NOT NULL,
+  `etapa_id` INT(11) UNSIGNED NULL DEFAULT NULL,
+  `tecnico_id` INT(11) UNSIGNED NULL DEFAULT NULL,
+  `os_id` INT(11) UNSIGNED NULL DEFAULT NULL,
+  `data_atividade` DATE NOT NULL,
+  `titulo` VARCHAR(255) NOT NULL,
+  `descricao` TEXT NULL DEFAULT NULL,
+  `tipo` ENUM('trabalho', 'impedimento', 'visita', 'manutencao', 'outro') DEFAULT 'trabalho',
+  `status` ENUM('agendada', 'iniciada', 'pausada', 'concluida', 'cancelada') DEFAULT 'agendada',
+  `percentual_concluido` INT(3) DEFAULT 0,
+  `hora_inicio` TIME NULL DEFAULT NULL,
+  `hora_fim` TIME NULL DEFAULT NULL,
+  `horas_trabalhadas` DECIMAL(5,2) DEFAULT 0.00,
+  `impedimento` TINYINT(1) DEFAULT 0,
+  `motivo_impedimento` TEXT NULL DEFAULT NULL,
+  `tipo_impedimento` ENUM('clima', 'falta_material', 'falta_ferramenta', 'acesso_negado', 'problema_tecnico', 'outro') NULL DEFAULT NULL,
+  `checkin_lat` DECIMAL(10,8) NULL DEFAULT NULL,
+  `checkin_lng` DECIMAL(11,8) NULL DEFAULT NULL,
+  `checkout_lat` DECIMAL(10,8) NULL DEFAULT NULL,
+  `checkout_lng` DECIMAL(11,8) NULL DEFAULT NULL,
+  `fotos_checkin` JSON NULL DEFAULT NULL,
+  `fotos_atividade` JSON NULL DEFAULT NULL,
+  `fotos_checkout` JSON NULL DEFAULT NULL,
+  `visivel_cliente` TINYINT(1) DEFAULT 1,
+  `ativo` TINYINT(1) DEFAULT 1,
+  `created_at` DATETIME NULL DEFAULT NULL,
+  `updated_at` DATETIME NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `idx_obra_id` (`obra_id`),
+  INDEX `idx_etapa_id` (`etapa_id`),
+  INDEX `idx_tecnico_id` (`tecnico_id`),
+  INDEX `idx_data_atividade` (`data_atividade`),
+  INDEX `idx_status` (`status`),
+  INDEX `idx_ativo` (`ativo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `obra_atividades_historico` - Historico de atividades
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `obra_atividades_historico` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `atividade_id` INT(11) UNSIGNED NOT NULL,
+  `tecnico_id` INT(11) UNSIGNED NULL DEFAULT NULL,
+  `tipo_alteracao` ENUM('inicio', 'pausa', 'retorno', 'conclusao', 'impedimento', 'foto', 'observacao') NOT NULL,
+  `descricao` TEXT NULL DEFAULT NULL,
+  `percentual_anterior` INT(3) DEFAULT 0,
+  `percentual_novo` INT(3) DEFAULT 0,
+  `horas_trabalhadas` DECIMAL(5,2) DEFAULT 0.00,
+  `localizacao_lat` DECIMAL(10,8) NULL DEFAULT NULL,
+  `localizacao_lng` DECIMAL(11,8) NULL DEFAULT NULL,
+  `created_at` DATETIME NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `idx_atividade_id` (`atividade_id`),
+  INDEX `idx_tecnico_id` (`tecnico_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `obra_checkins` - Checkins de atividades
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `obra_checkins` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `atividade_id` INT(11) UNSIGNED NOT NULL,
+  `tecnico_id` INT(11) UNSIGNED NOT NULL,
+  `tipo` ENUM('checkin', 'checkout', 'pausa', 'retorno') NOT NULL,
+  `latitude` DECIMAL(10,8) NULL DEFAULT NULL,
+  `longitude` DECIMAL(11,8) NULL DEFAULT NULL,
+  `endereco_detectado` VARCHAR(255) NULL DEFAULT NULL,
+  `foto_url` VARCHAR(255) NULL DEFAULT NULL,
+  `observacao` TEXT NULL DEFAULT NULL,
+  `created_at` DATETIME NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `idx_atividade_id` (`atividade_id`),
+  INDEX `idx_tecnico_id` (`tecnico_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- -----------------------------------------------------
 -- Dados iniciais - Anexo V Impostos (configuracoes_impostos)

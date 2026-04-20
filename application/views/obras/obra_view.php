@@ -1,5 +1,8 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
 
+<!-- Tema Moderno Obras -->
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/obras-modern-theme.css">
+
 <style>
 .obra-unified { padding: 20px; }
 .obra-header-card {
@@ -495,13 +498,13 @@
                         <?php foreach (array_slice($equipe, 0, 5) as $membro): ?>
                         <div class="equipe-item">
                             <div class="equipe-avatar">
-                                <?php echo substr($membro->tecnico_nome, 0, 1); ?>
+                                <?php echo substr($membro->tecnico_nome ?? '?', 0, 1); ?>
                             </div>
                             <div class="equipe-info">
-                                <div class="equipe-nome"><?php echo $membro->tecnico_nome; ?></div>
-                                <div class="equipe-funcao"><?php echo $membro->funcao; ?></div>
+                                <div class="equipe-nome"><?php echo htmlspecialchars($membro->tecnico_nome ?? 'Técnico'); ?></div>
+                                <div class="equipe-funcao"><?php echo htmlspecialchars($membro->funcao ?? 'Função não definida'); ?></div>
                             </div>
-                            <div class="equipe-status <?php echo $membro->ativo ? '' : 'inativo'; ?>"></div>
+                            <div class="equipe-status <?php echo ($membro->ativo ?? 0) ? '' : 'inativo'; ?>"></div>
                         </div>
                         <?php endforeach; ?>
                         <?php if (count($equipe) > 5): ?>

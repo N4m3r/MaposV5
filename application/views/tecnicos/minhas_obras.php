@@ -1,5 +1,8 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
 
+<!-- Tema Moderno Obras -->
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/obras-modern-theme.css">
+
 <style>
 /* Container Principal */
 .obras-container { padding: 15px; max-width: 100%; }

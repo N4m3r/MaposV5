@@ -13,8 +13,15 @@ class Obras extends MY_Controller
         parent::__construct();
         $this->load->model('obras_model');
         $this->load->model('obra_atividades_model');
-        $this->load->model('obra_checkins_model');
-        $this->load->model('obra_cliente_model');
+
+        // Carregar models opcionais apenas se existirem
+        if (file_exists(APPPATH . 'models/obra_checkins_model.php')) {
+            $this->load->model('obra_checkins_model');
+        }
+        if (file_exists(APPPATH . 'models/obra_cliente_model.php')) {
+            $this->load->model('obra_cliente_model');
+        }
+
         $this->data['menuObras'] = 'Obras';
     }
 

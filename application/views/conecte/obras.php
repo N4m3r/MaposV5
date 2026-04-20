@@ -1,5 +1,8 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
 
+<!-- Tema Moderno Obras -->
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/obras-modern-theme.css">
+
 <style>
 .obras-cliente-header {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);

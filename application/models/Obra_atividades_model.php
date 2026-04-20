@@ -127,27 +127,42 @@ class Obra_atividades_model extends CI_Model
         }
 
         try {
+            // Campos obrigatórios
             $data = [
                 'obra_id' => $dados['obra_id'],
-                'etapa_id' => $dados['etapa_id'] ?? null,
-                'tecnico_id' => $dados['tecnico_id'] ?? null,
                 'data_atividade' => $dados['data_atividade'] ?? date('Y-m-d'),
-                'titulo' => $dados['titulo'],
-                'descricao' => $dados['descricao'] ?? null,
-                'tipo' => $dados['tipo'] ?? 'trabalho',
-                'status' => $dados['status'] ?? 'agendada',
-                'percentual_concluido' => $dados['percentual_concluido'] ?? 0,
-                'visivel_cliente' => $dados['visivel_cliente'] ?? 1,
+                'titulo' => $dados['titulo'] ?? $dados['descricao'] ?? 'Atividade',
             ];
 
-            // Adicionar campos opcionais se existirem
-            if (!empty($dados['os_id'])) {
+            // Campos opcionais - só adicionar se a coluna existir
+            if ($this->db->field_exists('etapa_id', 'obra_atividades') && !empty($dados['etapa_id'])) {
+                $data['etapa_id'] = $dados['etapa_id'];
+            }
+            if ($this->db->field_exists('tecnico_id', 'obra_atividades') && !empty($dados['tecnico_id'])) {
+                $data['tecnico_id'] = $dados['tecnico_id'];
+            }
+            if ($this->db->field_exists('os_id', 'obra_atividades') && !empty($dados['os_id'])) {
                 $data['os_id'] = $dados['os_id'];
             }
-            if (!empty($dados['hora_inicio'])) {
+            if ($this->db->field_exists('descricao', 'obra_atividades') && !empty($dados['descricao'])) {
+                $data['descricao'] = $dados['descricao'];
+            }
+            if ($this->db->field_exists('tipo', 'obra_atividades') && !empty($dados['tipo'])) {
+                $data['tipo'] = $dados['tipo'];
+            }
+            if ($this->db->field_exists('status', 'obra_atividades')) {
+                $data['status'] = $dados['status'] ?? 'agendada';
+            }
+            if ($this->db->field_exists('percentual_concluido', 'obra_atividades')) {
+                $data['percentual_concluido'] = $dados['percentual_concluido'] ?? 0;
+            }
+            if ($this->db->field_exists('visivel_cliente', 'obra_atividades')) {
+                $data['visivel_cliente'] = $dados['visivel_cliente'] ?? 1;
+            }
+            if ($this->db->field_exists('hora_inicio', 'obra_atividades') && !empty($dados['hora_inicio'])) {
                 $data['hora_inicio'] = $dados['hora_inicio'];
             }
-            if (!empty($dados['hora_fim'])) {
+            if ($this->db->field_exists('hora_fim', 'obra_atividades') && !empty($dados['hora_fim'])) {
                 $data['hora_fim'] = $dados['hora_fim'];
             }
 
@@ -166,7 +181,7 @@ class Obra_atividades_model extends CI_Model
             if ($id && $this->tabelaExiste('obra_atividades_historico')) {
                 $this->registrarHistorico($id, 'criacao', $dados['tecnico_id'] ?? null, [
                     'descricao' => 'Atividade criada',
-                    'percentual_novo' => $data['percentual_concluido']
+                    'percentual_novo' => $dados['percentual_concluido'] ?? 0
                 ]);
             }
 

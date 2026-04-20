@@ -1,5 +1,8 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
 
+<!-- Tema Moderno Obras -->
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/obras-modern-theme.css">
+
 <style>
     .obra-header {
         background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
@@ -276,9 +279,9 @@
 
 <!-- Header da Obra -->
 <div class="obra-header">
-    <h2><i class='bx bx-building'></i> <?= htmlspecialchars($obra->nome) ?></h2>
+    <h2><i class='bx bx-building'></i> <?= htmlspecialchars($obra->nome ?? 'Obra') ?></h2>
     <p><i class='bx bx-user'></i> <?= htmlspecialchars($obra->cliente_nome ?? 'Cliente nao informado') ?></p>
-    <span class="obra-status"><?= $obra->status ?></span>
+    <span class="obra-status"><?= $obra->status ?? 'N/A' ?></span>
 
     <div class="progress-section">
         <div class="progress-header">
@@ -325,7 +328,9 @@
                         </div>
                     <?php endif; ?>
                 </div>
-            <?php endforeach; ?>
+            <?php endforeach; else: ?>
+                <option value="">Nenhuma etapa cadastrada</option>
+            <?php endif; ?>
         <?php else: ?>
             <div class="empty-state">
                 <i class='bx bx-list-ul'></i>
@@ -380,7 +385,7 @@
                     <label for="etapa_id">Etapa (opcional)</label>
                     <select name="etapa_id" id="etapa_id">
                         <option value="">-- Selecione uma etapa --</option>
-                        <?php foreach ($etapas as $etapa): ?>
+                        <?php if (!empty($etapas)): foreach ($etapas as $etapa): ?>
                             <option value="<?= $etapa->id ?>"><?= htmlspecialchars($etapa->nome) ?></option>
                         <?php endforeach; ?>
                     </select>

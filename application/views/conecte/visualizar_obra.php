@@ -1,4 +1,7 @@
-<div class="row-fluid" style="margin-top: 0">
+<!-- Tema Moderno Obras -->
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/obras-modern-theme.css">
+
+<div class="row-fluid obras-modern-container" style="margin-top: 0">
     <div class="span12">
 
         <!-- Header -->
@@ -66,7 +69,7 @@
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 25px; padding-top: 20px; border-top: 1px solid #eee;">
                 <div style="text-align: center;">
                     <div style="font-size: 13px; color: #888; margin-bottom: 5px;"><i class="bx bx-calendar"></i> Data de Início</div>
-                    <div style="font-size: 18px; font-weight: 600; color: #333;"><?= isset($obra->data_inicio_contrato) ? date('d/m/Y', strtotime($obra->data_intrato)) : '-' ?></div>
+                    <div style="font-size: 18px; font-weight: 600; color: #333;"><?= isset($obra->data_inicio_contrato) ? date('d/m/Y', strtotime($obra->data_inicio_contrato)) : '-' ?></div>
                 </div>
 
                 <div style="text-align: center;">
@@ -231,7 +234,7 @@
                     <div style="flex: 1;">
                         <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                             <div>
-                                <div style="font-weight: 600; color: #333; margin-bottom: 4px;"><?= htmlspecialchars($atividade->titulo) ?></div>
+                                <div style="font-weight: 600; color: #333; margin-bottom: 4px;"><?= htmlspecialchars($atividade->titulo ?? $atividade->descricao ?? 'Atividade sem título') ?></div>
                                 <div style="font-size: 13px; color: #666;">
                                     <i class="bx bx-user"></i> <?= htmlspecialchars($atividade->tecnico_nome ?? 'Técnico não informado') ?>
                                 </div>

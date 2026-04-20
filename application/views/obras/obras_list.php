@@ -1,5 +1,8 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
 
+<!-- Tema Moderno Obras -->
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/obras-modern-theme.css">
+
 <style>
 .obras-dashboard { padding: 20px; }
 .stats-cards { display: flex; gap: 20px; margin-bottom: 25px; flex-wrap: wrap; }
@@ -22,7 +25,7 @@
 .stat-icon { float: right; font-size: 40px; opacity: 0.3; margin-top: -10px; }
 
 .filter-bar {
-    background: #f8f9fa;
+    background: var(--widget-box, #f8f9fa);
     border-radius: 10px;
     padding: 20px;
     margin-bottom: 25px;
@@ -30,15 +33,18 @@
     gap: 15px;
     align-items: center;
     flex-wrap: wrap;
+    border: 1px solid rgba(0,0,0,0.05);
 }
 .filter-bar select, .filter-bar input {
     border-radius: 8px;
-    border: 1px solid #ddd;
+    border: 2px solid rgba(0,0,0,0.1);
     padding: 10px 15px;
     font-size: 14px;
+    background: var(--widget-box, #fff);
+    color: var(--title, #333);
 }
 .filter-bar .btn-filter {
-    background: #667eea;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     border: none;
     padding: 10px 25px;
@@ -46,21 +52,24 @@
     font-weight: 600;
     transition: all 0.3s;
 }
-.filter-bar .btn-filter:hover { background: #5568d3; }
+.filter-bar .btn-filter:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
 
-.obras-grid {
+.obras-grid-modern {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
     gap: 25px;
     margin-bottom: 30px;
 }
 .obra-card {
-    background: white;
+    background: var(--widget-box, white);
     border-radius: 15px;
     box-shadow: 0 2px 20px rgba(0,0,0,0.08);
     overflow: hidden;
     transition: all 0.3s ease;
-    border: 1px solid #e8e8e8;
+    border: 1px solid rgba(0,0,0,0.05);
 }
 .obra-card:hover {
     transform: translateY(-5px);
@@ -86,6 +95,7 @@
     font-size: 12px;
     font-weight: 600;
     text-transform: uppercase;
+    backdrop-filter: blur(10px);
 }
 .obra-title {
     font-size: 20px;
@@ -103,15 +113,15 @@
     justify-content: space-between;
     margin-bottom: 15px;
     padding-bottom: 15px;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
 }
 .obra-info-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-.obra-info-label { color: #888; font-size: 13px; }
-.obra-info-value { font-weight: 600; color: #333; font-size: 14px; }
+.obra-info-label { color: var(--subtitle, #888); font-size: 13px; }
+.obra-info-value { font-weight: 600; color: var(--title, #333); font-size: 14px; }
 .obra-progress-section { margin: 20px 0; }
 .obra-progress-bar {
     height: 10px;
-    background: #e9ecef;
+    background: rgba(0,0,0,0.08);
     border-radius: 10px;
     overflow: hidden;
     margin-bottom: 8px;
@@ -126,14 +136,14 @@
     display: flex;
     justify-content: space-between;
     font-size: 13px;
-    color: #666;
+    color: var(--subtitle, #666);
 }
 .obra-stats {
     display: flex;
     gap: 15px;
     margin-top: 15px;
     padding-top: 15px;
-    border-top: 1px solid #f0f0f0;
+    border-top: 1px solid rgba(0,0,0,0.05);
 }
 .obra-stat {
     flex: 1;
@@ -144,15 +154,16 @@
     font-weight: 700;
     color: #667eea;
 }
-.obra-stat-label { font-size: 11px; color: #888; text-transform: uppercase; }
+.obra-stat-label { font-size: 11px; color: var(--subtitle, #888); text-transform: uppercase; }
 .obra-actions {
     display: flex;
     gap: 8px;
     padding: 15px 20px;
-    background: #f8f9fa;
-    border-top: 1px solid #e8e8e8;
+    background: rgba(0,0,0,0.02);
+    border-top: 1px solid rgba(0,0,0,0.05);
+    flex-wrap: wrap;
 }
-.obra-btn {
+.obra-btn-action {
     flex: 1;
     padding: 10px;
     border-radius: 8px;
@@ -168,26 +179,32 @@
     text-decoration: none;
     color: white;
 }
-.obra-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-.obra-btn-primary { background: #667eea; }
-.obra-btn-success { background: #11998e; }
-.obra-btn-warning { background: #f093fb; }
-.obra-btn-danger { background: #f5576c; }
+.obra-btn-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    color: white;
+    text-decoration: none;
+}
+.obra-btn-view { background: #667eea; }
+.obra-btn-etapas { background: #9b59b6; }
+.obra-btn-relatorio { background: #f39c12; }
+.obra-btn-edit { background: #f093fb; color: #333; }
+.obra-btn-delete { background: #f5576c; }
 
-.empty-state {
+.empty-state-modern {
     text-align: center;
     padding: 60px 20px;
-    background: white;
+    background: var(--widget-box, white);
     border-radius: 15px;
     box-shadow: 0 2px 20px rgba(0,0,0,0.08);
 }
 .empty-state-icon {
     font-size: 80px;
-    color: #ddd;
+    color: var(--subtitle, #ddd);
     margin-bottom: 20px;
 }
-.empty-state h3 { color: #666; margin-bottom: 10px; }
-.empty-state p { color: #999; margin-bottom: 25px; }
+.empty-state h3 { color: var(--title, #666); margin-bottom: 10px; }
+.empty-state p { color: var(--subtitle, #999); margin-bottom: 25px; }
 
 .view-toggle {
     display: flex;
@@ -198,7 +215,7 @@
     padding: 10px 20px;
     border-radius: 8px;
     border: 2px solid #667eea;
-    background: white;
+    background: transparent;
     color: #667eea;
     font-weight: 600;
     cursor: pointer;
@@ -230,37 +247,63 @@
     box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
     cursor: pointer;
     transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 .quick-actions-btn:hover {
     transform: scale(1.1);
     box-shadow: 0 6px 30px rgba(102, 126, 234, 0.5);
 }
+
+/* Dark theme compatibility */
+body[data-theme="dark"] .filter-bar,
+body[data-theme="dark"] .obra-card,
+body[data-theme="dark"] .empty-state-modern {
+    background: var(--dark-2, #272835);
+    border-color: rgba(255,255,255,0.05);
+}
+
+body[data-theme="dark"] .filter-bar input,
+body[data-theme="dark"] .filter-bar select {
+    background: var(--dark-1, #14141a);
+    border-color: rgba(255,255,255,0.1);
+    color: var(--branco, #caced8);
+}
+
+body[data-theme="dark"] .obra-info-value {
+    color: var(--branco, #caced8);
+}
+
+body[data-theme="dark"] .obra-progress-bar {
+    background: rgba(255,255,255,0.1);
+}
 </style>
 
-<div class="obras-dashboard">
+<div class="obras-modern-container obras-dashboard">
     <!-- Header com Ações Principais -->
-    <div style="background: white; border-radius: 15px; padding: 25px; margin-bottom: 25px; box-shadow: 0 2px 20px rgba(0,0,0,0.08);">
+    <div class="obra-card-modern animacao-entrada">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
             <div>
-                <h2 style="margin: 0; color: #333; font-size: 28px;">
+                <h2 style="margin: 0; font-size: 28px; color: inherit;">
                     <i class="icon-building" style="color: #667eea;"></i>
                     Gestão de Obras
                 </h2>
-                <p style="margin: 5px 0 0 0; color: #888;">Controle e acompanhamento de todas as obras</p>
+                <p style="margin: 5px 0 0 0; opacity: 0.8;">Controle e acompanhamento de todas as obras</p>
             </div>
-            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <div class="acoes-rapidas" style="margin: 0;">
                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cObras')): ?>
-                    <a href="<?php echo site_url('obras/adicionar'); ?>" class="obra-btn obra-btn-primary" style="padding: 12px 25px;">
+                    <a href="<?php echo site_url('obras/adicionar'); ?>" class="btn-moderno btn-moderno-primary">
                         <i class="icon-plus"></i> Nova Obra
                     </a>
                 <?php endif; ?>
-                <a href="<?php echo site_url('obras/relatorios'); ?>" class="obra-btn obra-btn-warning" style="padding: 12px 25px; color: #333;">
+                <a href="<?php echo site_url('obras/relatorios'); ?>" class="btn-moderno btn-moderno-warning">
                     <i class="icon-file-alt"></i> Relatórios
                 </a>
-                <a href="<?php echo site_url('tecnicos_admin'); ?>" class="obra-btn" style="padding: 12px 25px; background: #4facfe; color: white;">
+                <a href="<?php echo site_url('tecnicos_admin'); ?>" class="acao-rapida-btn">
                     <i class="icon-group"></i> Equipe
                 </a>
-                <a href="<?php echo site_url('clientes'); ?>" class="obra-btn" style="padding: 12px 25px; background: #a8edea; color: #333;">
+                <a href="<?php echo site_url('clientes'); ?>" class="acao-rapida-btn">
                     <i class="icon-user"></i> Clientes
                 </a>
             </div>
@@ -298,7 +341,6 @@
             <i class="icon-group stat-icon"></i>
             <div class="stat-number">
                 <?php
-                // Calcula média de progresso
                 $total_progresso = 0;
                 $count = count($results ?? []);
                 foreach ($results ?? [] as $r) {
@@ -335,7 +377,7 @@
 
     <!-- View Toggle -->
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h3 style="margin: 0; color: #333;">
+        <h3 style="margin: 0; color: inherit;">
             <i class="icon-building" style="color: #667eea;"></i>
             Obras Cadastradas
         </h3>
@@ -352,7 +394,7 @@
     <!-- Grid View -->
     <div id="gridView" class="obras-grid-view active">
         <?php if (isset($results) && count($results) > 0): ?>
-            <div class="obras-grid">
+            <div class="obras-grid-modern">
                 <?php foreach ($results as $r): ?>
                     <?php
                     $headerClass = 'prospeccao';
@@ -360,12 +402,12 @@
                     elseif (in_array($r->status, ['Concluida', 'Concluída'])) $headerClass = 'concluida';
                     elseif ($r->status == 'Paralisada') $headerClass = 'paralisada';
                     ?>
-                    <div class="obra-card">
+                    <div class="obra-card animacao-entrada">
                         <div class="obra-header <?php echo $headerClass; ?>">
                             <span class="obra-status-badge"><?php echo $r->status; ?></span>
-                            <div class="obra-title"><?php echo $r->nome; ?></div>
+                            <div class="obra-title"><?php echo htmlspecialchars($r->nome); ?></div>
                             <div class="obra-cliente">
-                                <i class="icon-user"></i> <?php echo $r->cliente_nome ?? 'Cliente não definido'; ?>
+                                <i class="icon-user"></i> <?php echo htmlspecialchars($r->cliente_nome ?? 'Cliente não definido'); ?>
                             </div>
                         </div>
                         <div class="obra-body">
@@ -398,41 +440,50 @@
                             <div class="obra-stats">
                                 <div class="obra-stat">
                                     <div class="obra-stat-number">
-                                        <?php echo $r->total_etapas ?? rand(2, 8); // temporário ?>
+                                        <?php echo $r->total_etapas ?? 0; ?>
                                     </div>
                                     <div class="obra-stat-label">Etapas</div>
                                 </div>
                                 <div class="obra-stat">
                                     <div class="obra-stat-number">
-                                        <?php echo $r->total_equipe ?? rand(3, 12); // temporário ?>
+                                        <?php echo $r->total_equipe ?? 0; ?>
                                     </div>
                                     <div class="obra-stat-label">Equipe</div>
                                 </div>
                                 <div class="obra-stat">
                                     <div class="obra-stat-number">
-                                        <?php echo $r->dias_restantes ?? rand(15, 180); // temporário ?>
+                                        <?php
+                                        if ($r->data_fim_prevista) {
+                                            $hoje = new DateTime();
+                                            $previsto = new DateTime($r->data_fim_prevista);
+                                            $dias = $hoje->diff($previsto)->format('%r%a');
+                                            echo $dias > 0 ? $dias : 0;
+                                        } else {
+                                            echo '-';
+                                        }
+                                        ?>
                                     </div>
-                                    <div class="obra-stat-label">Dias</div>
+                                    <div class="obra-stat-label">Dias Restantes</div>
                                 </div>
                             </div>
                         </div>
-                        <div class="obra-actions" style="flex-wrap: wrap;">
-                            <a href="<?php echo site_url('obras/visualizar/' . $r->id); ?>" class="obra-btn obra-btn-primary" title="Visualizar">
+                        <div class="obra-actions">
+                            <a href="<?php echo site_url('obras/visualizar/' . $r->id); ?>" class="obra-btn-action obra-btn-view" title="Visualizar">
                                 <i class="icon-eye-open"></i>
                             </a>
-                            <a href="<?php echo site_url('obras/etapas/' . $r->id); ?>" class="obra-btn" style="background: #9b59b6; color: white;" title="Etapas">
+                            <a href="<?php echo site_url('obras/etapas/' . $r->id); ?>" class="obra-btn-action obra-btn-etapas" title="Etapas">
                                 <i class="icon-tasks"></i>
                             </a>
-                            <a href="<?php echo site_url('obras/relatorioProgresso/' . $r->id); ?>" class="obra-btn" style="background: #f39c12; color: white;" title="Relatório">
+                            <a href="<?php echo site_url('obras/relatorioProgresso/' . $r->id); ?>" class="obra-btn-action obra-btn-relatorio" title="Relatório">
                                 <i class="icon-file-alt"></i>
                             </a>
                             <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
-                                <a href="<?php echo site_url('obras/editar/' . $r->id); ?>" class="obra-btn obra-btn-warning" style="color: #333;" title="Editar">
+                                <a href="<?php echo site_url('obras/editar/' . $r->id); ?>" class="obra-btn-action obra-btn-edit" title="Editar">
                                     <i class="icon-edit"></i>
                                 </a>
                             <?php endif; ?>
                             <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dObras')): ?>
-                                <button onclick="confirmarExclusao(<?php echo $r->id; ?>)" class="obra-btn obra-btn-danger" title="Excluir">
+                                <button onclick="confirmarExclusao(<?php echo $r->id; ?>)" class="obra-btn-action obra-btn-delete" title="Excluir">
                                     <i class="icon-trash"></i>
                                 </button>
                             <?php endif; ?>
@@ -441,13 +492,13 @@
                 <?php endforeach; ?>
             </div>
         <?php else: ?>
-            <div class="empty-state">
+            <div class="empty-state-modern">
                 <div class="empty-state-icon">
                     <i class="icon-building"></i>
                 </div>
                 <h3>Nenhuma obra encontrada</h3>
                 <p>Comece cadastrando sua primeira obra no sistema.</p>
-                <a href="<?php echo site_url('obras/adicionar'); ?>" class="obra-btn obra-btn-primary" style="display: inline-flex; padding: 15px 30px;">
+                <a href="<?php echo site_url('obras/adicionar'); ?>" class="btn-moderno btn-moderno-primary" style="display: inline-flex; padding: 15px 30px;">
                     <i class="icon-plus"></i> Nova Obra
                 </a>
             </div>
@@ -456,10 +507,10 @@
 
     <!-- Table View (Alternative) -->
     <div id="tableView" class="obras-table-view">
-        <div class="widget-box" style="border-radius: 15px; overflow: hidden;">
+        <div class="obra-card-modern" style="padding: 0; overflow: hidden;">
             <div class="widget-content nopadding">
                 <table class="table table-bordered table-striped" style="margin: 0;">
-                    <thead style="background: #667eea; color: white;">
+                    <thead style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
                         <tr>
                             <th>Obra</th>
                             <th>Cliente</th>
@@ -475,17 +526,26 @@
                             <?php foreach ($results as $r): ?>
                                 <tr>
                                     <td>
-                                        <strong><?php echo $r->nome; ?></strong>
+                                        <strong><?php echo htmlspecialchars($r->nome); ?></strong>
                                     </td>
-                                    <td><?php echo $r->cliente_nome ?? 'N/A'; ?></td>
+                                    <td><?php echo htmlspecialchars($r->cliente_nome ?? 'N/A'); ?></td>
                                     <td>
-                                        <span class="label <?php echo $this->obras_model->getStatusLabelClass($r->status); ?>" style="font-size: 12px; padding: 6px 12px;">
+                                        <span class="label" style="font-size: 12px; padding: 6px 12px; background:
+                                            <?php
+                                            echo match($r->status) {
+                                                'Em Andamento' => '#3498db',
+                                                'Concluida', 'Concluída' => '#27ae60',
+                                                'Paralisada' => '#e74c3c',
+                                                'Prospeccao' => '#95a5a6',
+                                                default => '#667eea'
+                                            };
+                                            ?>; color: white;">
                                             <?php echo $r->status; ?>
                                         </span>
                                     </td>
                                     <td>
-                                        <div class="progress" style="margin: 0; height: 8px;">
-                                            <div class="bar" style="width: <?php echo $r->percentual_concluido ?? 0; ?>%;"></div>
+                                        <div class="progress" style="margin: 0; height: 8px; background: rgba(0,0,0,0.1);">
+                                            <div class="bar" style="width: <?php echo $r->percentual_concluido ?? 0; ?>%; background: linear-gradient(90deg, #667eea, #764ba2);"></div>
                                         </div>
                                         <small><?php echo $r->percentual_concluido ?? 0; ?>%</small>
                                     </td>
@@ -538,7 +598,7 @@
 
 <!-- Delete Modal -->
 <div id="modalExcluir" class="modal hide fade" tabindex="-1" role="dialog">
-    <div class="modal-header" style="background: #f5576c; color: white;">
+    <div class="modal-header" style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%); color: white;">
         <button type="button" class="close" data-dismiss="modal" style="color: white;">×</button>
         <h3><i class="icon-trash"></i> Confirmar Exclusão</h3>
     </div>

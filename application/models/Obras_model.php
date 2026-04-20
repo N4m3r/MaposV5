@@ -228,12 +228,39 @@ class Obras_model extends CI_Model
     }
 
     /**
+     * Criar tabela de etapas se não existir
+     */
+    private function criarTabelaEtapas()
+    {
+        $sql = "CREATE TABLE IF NOT EXISTS obra_etapas (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            obra_id INT NOT NULL,
+            numero_etapa INT DEFAULT 1,
+            nome VARCHAR(255) NOT NULL,
+            descricao TEXT,
+            especialidade VARCHAR(100),
+            data_inicio_prevista DATE,
+            data_fim_prevista DATE,
+            data_conclusao DATE,
+            status VARCHAR(50) DEFAULT 'NaoIniciada',
+            percentual_concluido INT DEFAULT 0,
+            visivel_cliente TINYINT(1) DEFAULT 1,
+            ativo TINYINT(1) DEFAULT 1,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            INDEX idx_obra_id (obra_id)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
+
+        $this->db->query($sql);
+    }
+
+    /**
      * Adicionar etapa
      */
     public function adicionarEtapa($obra_id, $dados)
     {
         if (!$this->tabelaExiste('obra_etapas')) {
-            return false;
+            $this->criarTabelaEtapas();
         }
 
         try {
@@ -245,7 +272,7 @@ class Obras_model extends CI_Model
                 'especialidade' => $dados['especialidade'] ?? null,
                 'data_inicio_prevista' => $dados['data_inicio_prevista'] ?? null,
                 'data_fim_prevista' => $dados['data_fim_prevista'] ?? null,
-                'status' => 'NaoIniciada',
+                'status' => 'pendente',
             ];
 
             // Adicionar colunas opcionais se existirem
@@ -988,6 +1015,22 @@ class Obras_model extends CI_Model
      */
     private function contarRegistros($tabela, $where = [])
     {
+        // Whitelist de tabelas permitidas para prevenir SQL Injection
+        $tabelas_permitidas = [
+            'obras',
+            'obra_etapas',
+            'obra_equipe',
+            'obra_atividades',
+            'obra_diario',
+            'obra_materiais',
+            'obra_checkins'
+        ];
+
+        if (!in_array($tabela, $tabelas_permitidas)) {
+            log_message('error', "Tentativa de acesso a tabela não permitida: {$tabela}");
+            return 0;
+        }
+
         if (!$this->tabelaExiste($tabela)) {
             return 0;
         }
@@ -1104,10 +1147,14 @@ class Obras_model extends CI_Model
 
         if (!$this->tabelaExiste('obras') || !$this->tabelaExiste('obra_equipe')) {
             log_message('info', 'getObrasPorTecnico - Tabelas nao existem, usando fallback');
-            // Fallback: buscar obras onde o técnico é responsável técnico
-            $this->db->where('responsavel_tecnico_id', $tecnico_id);
-            $this->db->where('ativo', 1);
-            return $this->db->get('obras')->result();
+
+            // Fallback: buscar obras onde o técnico é responsável técnico (se coluna existir)
+            if ($this->tabelaExiste('obras') && $this->db->field_exists('responsavel_tecnico_id', 'obras')) {
+                $this->db->where('responsavel_tecnico_id', $tecnico_id);
+                $this->db->where('ativo', 1);
+                return $this->db->get('obras')->result();
+            }
+            return [];
         }
 
         try {
@@ -1117,14 +1164,15 @@ class Obras_model extends CI_Model
             $count_equipe = $this->db->count_all_results('obra_equipe');
             log_message('info', 'getObrasPorTecnico - Registros na equipe para tecnico ' . $tecnico_id . ': ' . $count_equipe);
 
+            // Query corrigida - join separado do where
             $this->db->distinct();
             $this->db->select('o.*, c.nomeCliente as cliente_nome, oe.funcao');
             $this->db->from('obras o');
-            $this->db->join('obra_equipe oe', 'oe.obra_id = o.id AND oe.tecnico_id = ' . (int)$tecnico_id);
+            $this->db->join('obra_equipe oe', 'oe.obra_id = o.id');
             $this->db->join('clientes c', 'c.idClientes = o.cliente_id', 'left');
+            $this->db->where('oe.tecnico_id', $tecnico_id);
             $this->db->where('oe.ativo', 1);
             $this->db->where('o.ativo', 1);
-            $this->db->group_by('o.id');
             $this->db->order_by('o.data_inicio_contrato', 'DESC');
 
             $query = $this->db->get();
