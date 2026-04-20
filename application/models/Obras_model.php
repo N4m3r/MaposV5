@@ -1096,13 +1096,14 @@ class Obras_model extends CI_Model
         }
 
         try {
+            $this->db->distinct();
             $this->db->select('o.*, c.nomeCliente as cliente_nome, oe.funcao');
             $this->db->from('obras o');
-            $this->db->join('obra_equipe oe', 'oe.obra_id = o.id');
+            $this->db->join('obra_equipe oe', 'oe.obra_id = o.id AND oe.tecnico_id = ' . (int)$tecnico_id);
             $this->db->join('clientes c', 'c.idClientes = o.cliente_id', 'left');
-            $this->db->where('oe.tecnico_id', $tecnico_id);
             $this->db->where('oe.ativo', 1);
             $this->db->where('o.ativo', 1);
+            $this->db->group_by('o.id');
             $this->db->order_by('o.data_inicio_contrato', 'DESC');
 
             $query = $this->db->get();
