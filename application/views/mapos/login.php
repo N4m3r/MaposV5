@@ -571,16 +571,16 @@
                 <div class="card-header">
                     <div class="logo-area">
                         <div class="logo-icon">
-                            <?php if (isset($emitente) && !empty($emitente->url_logo)): ?
+                            <?php if (isset($emitente) && !empty($emitente->url_logo)): ?>
                                 <img src="<?= $emitente->url_logo ?>" alt="Logo" style="border-radius: 8px;">
-                            <?php else: ?
+                            <?php else: ?>
                                 <img src="<?= base_url() ?>assets/img/logo-two.png" alt="Logo">
                             <?php endif; ?>
                         </div>
                         <div class="logo-text">
-                            <?php if (isset($emitente) && !empty($emitente->nome)): ?
+                            <?php if (isset($emitente) && !empty($emitente->nome)): ?>
                                 <span style="font-size: 20px; font-weight: 700; color: #1a1f3a;"><?= $emitente->nome ?></span>
-                            <?php else: ?
+                            <?php else: ?>
                                 <img src="<?= base_url() ?>assets/img/logo-mapos-branco.png" alt="Map-OS">
                             <?php endif; ?>
                         </div>
@@ -627,7 +627,7 @@
                         <?= date('Y'); ?> &copy;
                         <?php if (isset($emitente) && !empty($emitente->nome)): ?>
                             <?= $emitente->nome ?>
-                        <?php else: ?
+                        <?php else: ?>
                             <a href="https://github.com/RamonSilva20/mapos" target="_blank">Map-OS</a>
                         <?php endif; ?>
                     </p>
