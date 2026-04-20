@@ -900,7 +900,7 @@ class Mine extends CI_Controller
         // Mesclar notas emitidas e importadas
         $data['notas_fiscais_os'] = array_merge($notasEmitidas, $notasImportadas);
 
-        log_message('debug', 'visualizarOs OS=' . $this->uri->sgment(3) . ' Cobrancas=' . count($data['cobrancas_os']) . ' Notas=' . count($data['notas_fiscais_os']));
+        log_message('debug', 'visualizarOs OS=' . $this->uri->segment(3) . ' Cobrancas=' . count($data['cobrancas_os']) . ' Notas=' . count($data['notas_fiscais_os']));
 
         $data['emitente'] = $this->mapos_model->getEmitente();
         $data['qrCode'] = $this->os_model->getQrCode(
