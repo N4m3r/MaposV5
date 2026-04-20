@@ -984,6 +984,7 @@ class Mine extends CI_Controller
         // Dados para a view
         $data['filtros'] = $filtros ?? ['busca' => '', 'status' => '', 'data_inicio' => '', 'data_fim' => ''];
         $data['total_os'] = $config['total_rows'] ?? 0;
+        $data['clientes_filtro'] = $data['clientes_filtro'] ?? [];
 
         // Status disponíveis para filtro
         $data['status_list'] = [
@@ -999,6 +1000,7 @@ class Mine extends CI_Controller
         ];
 
         $data['output'] = 'conecte/os';
+        $this->load->helper('date');
         $this->load->view('conecte/template', $data);
     }
 

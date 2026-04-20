@@ -760,21 +760,32 @@ class Obras_model extends CI_Model
                 return null;
             }
 
-            // Contar etapas
-            $total_etapas = $this->db->where('obra_id', $obra_id)->count_all_results('obra_etapas');
-            $this->db->where('obra_id', $obra_id);
-            $this->db->where('status', 'Concluida');
-            $etapas_concluidas = $this->db->count_all_results('obra_etapas');
+            // Contar etapas (com tratamento de erro)
+            $total_etapas = 0;
+            $etapas_concluidas = 0;
+            if ($this->tabelaExiste('obra_etapas')) {
+                try {
+                    $total_etapas = $this->db->where('obra_id', $obra_id)->count_all_results('obra_etapas');
+                    $this->db->where('obra_id', $obra_id);
+                    $this->db->where('status', 'Concluida');
+                    $etapas_concluidas = $this->db->count_all_results('obra_etapas');
+                } catch (Exception $e) {
+                    log_message('error', 'Erro ao contar etapas: ' . $e->getMessage());
+                }
+            }
 
             // Contar atividades
             $total_atividades = 0;
             $atividades_hoje = 0;
             if ($this->tabelaExiste('obra_atividades')) {
-                $total_atividades = $this->db->where('obra_id', $obra_id)->count_all_results('obra_atividades');
-
-                $this->db->where('obra_id', $obra_id);
-                $this->db->where('data_atividade', date('Y-m-d'));
-                $atividades_hoje = $this->db->count_all_results('obra_atividades');
+                try {
+                    $total_atividades = $this->db->where('obra_id', $obra_id)->count_all_results('obra_atividades');
+                    $this->db->where('obra_id', $obra_id);
+                    $this->db->where('data_atividade', date('Y-m-d'));
+                    $atividades_hoje = $this->db->count_all_results('obra_atividades');
+                } catch (Exception $e) {
+                    log_message('error', 'Erro ao contar atividades: ' . $e->getMessage());
+                }
             }
 
             // Calcular dias restantes
