@@ -178,7 +178,7 @@ class Obras_model extends CI_Model
             $etapas_concluidas = 0;
             if ($this->tabelaExiste('obra_etapas')) {
                 $sql = "SELECT COUNT(*) as total FROM obra_etapas WHERE obra_id = ? AND status = ?";
-                $query = $this->db->query($sql, [$obra_id, 'concluida']);
+                $query = $this->db->query($sql, [$obra_id, 'Concluida']);
                 if ($query && $query->num_rows() > 0) {
                     $etapas_concluidas = (int) $query->row()->total;
                 }
