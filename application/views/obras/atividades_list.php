@@ -32,7 +32,7 @@
                     </thead>
                     <tbody>
                         <?php if (count($atividades) > 0): ?>
-                            <?php foreach ($atividades as $atividade): ?
+                            <?php foreach ($atividades as $atividade): ?>
                                 <?php
                                 $status_class = [
                                     'agendada' => 'default',
@@ -80,7 +80,7 @@
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
-                        <?php else: ?
+                        <?php else: ?>
                             <tr>
                                 <td colspan="8" class="text-center">Nenhuma atividade encontrada.</td>
                             </tr>

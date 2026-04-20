@@ -703,26 +703,6 @@ class Obras_model extends CI_Model
     }
 
     /**
-     * Atualizar percentual da obra
-     */
-    public function atualizarProgresso($obra_id)
-    {
-        $progresso = $this->calcularProgresso($obra_id);
-
-        try {
-            $this->db->where('id', $obra_id);
-            $this->db->update('obras', [
-                'percentual_concluido' => $progresso,
-                'updated_at' => date('Y-m-d H:i:s')
-            ]);
-            return $progresso;
-        } catch (Exception $e) {
-            log_message('error', 'Erro ao atualizar progresso: ' . $e->getMessage());
-            return false;
-        }
-    }
-
-    /**
      * Buscar etapas da obra com estatísticas
      */
     public function getEtapasComEstatisticas($obra_id)
@@ -875,31 +855,6 @@ class Obras_model extends CI_Model
         } catch (Exception $e) {
             log_message('error', 'Erro ao verificar equipe: ' . $e->getMessage());
             return false;
-        }
-    }
-
-    /**
-     * Buscar equipe da obra
-     */
-    public function getEquipe($obra_id)
-    {
-        if (!$this->tabelaExiste('obra_equipe')) {
-            return [];
-        }
-
-        try {
-            $this->db->select('oe.*, u.nome as tecnico_nome, u.telefone as tecnico_telefone');
-            $this->db->from('obra_equipe oe');
-            $this->db->join('usuarios u', 'u.idUsuarios = oe.tecnico_id', 'left');
-            $this->db->where('oe.obra_id', $obra_id);
-            $this->db->where('oe.ativo', 1);
-            $this->db->order_by('oe.data_entrada', 'ASC');
-
-            $query = $this->db->get();
-            return $query ? $query->result() : [];
-        } catch (Exception $e) {
-            log_message('error', 'Erro ao buscar equipe: ' . $e->getMessage());
-            return [];
         }
     }
 }

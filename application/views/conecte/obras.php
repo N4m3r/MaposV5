@@ -21,7 +21,7 @@
         <?php if (isset($results) && count($results) > 0): ?>
             <!-- Card View -->
             <div class="row-fluid" style="padding: 15px;">
-                <?php foreach ($results as $r): ?
+                <?php foreach ($results as $r): ?>
                     <?php
                     $status = $r->status ?? 'Em Andamento';
                     $statusColors = [
@@ -72,7 +72,7 @@
                                     <strong>Previsão:</strong><br>
                                     <?php if ($dias_restantes !== null && $dias_restantes >= 0): ?>
                                         <span class="text-success"><?php echo date('d/m/Y', strtotime($r->data_fim_prevista)); ?></span>
-                                    <?php elseif ($dias_restantes < 0): ?
+                                    <?php elseif ($dias_restantes < 0): ?>
                                         <span class="text-error">Atrasada</span>
                                     <?php else: ?>
                                         N/A
@@ -91,18 +91,18 @@
 
                     <?php if (++$count % 3 == 0): ?>
                         </div><div class="row-fluid" style="padding: 0 15px;">
-                    <?php endif; ?
+                    <?php endif; ?>
 
-                <?php endforeach; ?
+                <?php endforeach; ?>
             </div>
 
-        <?php else: ?
+        <?php else: ?>
             <div class="alert alert-info" style="margin: 15px;">
                 <i class="bx bx-info-circle"></i>
                 <strong>Nenhuma obra encontrada.</strong><br>
                 Você ainda não possui obras vinculadas à sua conta.
             </div>
-        <?php endif; ?
+        <?php endif; ?>
 
     </div>
 </div>
