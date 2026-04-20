@@ -406,7 +406,7 @@
                 </div>
 
                 <div class="etapas-timeline">
-                    <?php if (count($etapas) > 0): ?>
+                    <?php if (!empty($etapas) && is_array($etapas) && count($etapas) > 0): ?>
                         <?php foreach (array_slice($etapas, 0, 4) as $etapa): ?>
                         <?php
                         $dotClass = '';
@@ -439,7 +439,7 @@
                         </div>
                         <?php endif; ?>
                     <?php else: ?>
-                        <div class="alert alert-info">
+                        <div class="alert alert-info" style="margin: 0;">
                             <i class="icon-info-sign"></i> Nenhuma etapa cadastrada.
                             <a href="<?php echo site_url('obras/etapas/' . $resumo['obra']->id); ?>">Clique aqui para adicionar.</a>
                         </div>

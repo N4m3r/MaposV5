@@ -823,7 +823,7 @@ class Obras_model extends CI_Model
             observacoes TEXT,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            UNIQUE KEY uk_obra_tecnico (obra_id, tecnico_id, data_entrada),
+            UNIQUE KEY uk_obra_tecnico (obra_id, tecnico_id),
             INDEX idx_tecnico (tecnico_id)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
 
