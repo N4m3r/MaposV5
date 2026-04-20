@@ -470,32 +470,3 @@ textarea {
    FIM MENU BADGE
    ============================================ */
 
-/* ============================================
-   LAYOUT PORTAL DO TÉCNICO V3 - ULTRA SIMPLES
-   ============================================ */
-
-/* Apenas páginas do técnico - layout com sidebar */
-body.portal-tecnico #content {
-    margin-left: 240px;
-    padding: 20px;
-    min-height: 100vh;
-    box-sizing: border-box;
-}
-
-/* Sidebar recolhido - ajusta margem */
-body.portal-tecnico #sidebar.open + #content,
-body.portal-tecnico #sidebar.open ~ #content {
-    margin-left: 80px;
-}
-
-/* Responsivo - remove margem em telas pequenas */
-@media (max-width: 768px) {
-    body.portal-tecnico #content {
-        margin-left: 0;
-        padding: 15px;
-    }
-}
-
-/* ============================================
-   FIM LAYOUT PORTAL DO TÉCNICO
-   ============================================ */

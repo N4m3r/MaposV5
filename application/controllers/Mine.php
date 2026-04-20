@@ -693,6 +693,13 @@ class Mine extends CI_Controller
             redirect('mine');
         }
 
+        // Verificar permissão para visualizar compras
+        $this->load->helper('cliente_permissions');
+        if (!clienteHasPermission('visualizar_compras')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para visualizar compras.');
+            redirect('mine/painel');
+        }
+
         $data['menuVendas'] = 'vendas';
         $this->load->library('pagination');
 
@@ -730,6 +737,13 @@ class Mine extends CI_Controller
     {
         if (! session_id() || ! $this->session->userdata('conectado')) {
             redirect('mine');
+        }
+
+        // Verificar permissão para visualizar cobranças
+        $this->load->helper('cliente_permissions');
+        if (!clienteHasPermission('visualizar_cobrancas')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para visualizar cobranças.');
+            redirect('mine/painel');
         }
 
         $this->load->library('pagination');
@@ -773,6 +787,13 @@ class Mine extends CI_Controller
             redirect('mine');
         }
 
+        // Verificar permissão para visualizar/atualizar cobranças
+        $this->load->helper('cliente_permissions');
+        if (!clienteHasPermission('visualizar_cobrancas')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para atualizar cobranças.');
+            redirect('mine/painel');
+        }
+
         if (!$id || !is_numeric($id)) {
             $this->session->set_flashdata('error', 'Cobrança não informada ou inválida.');
             redirect('mine/cobrancas');
@@ -791,6 +812,13 @@ class Mine extends CI_Controller
             redirect('mine');
         }
 
+        // Verificar permissão para visualizar/enviar cobranças
+        $this->load->helper('cliente_permissions');
+        if (!clienteHasPermission('visualizar_cobrancas')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para enviar cobranças.');
+            redirect('mine/painel');
+        }
+
         if (!$id || !is_numeric($id)) {
             $this->session->set_flashdata('error', 'Cobrança não informada ou inválida.');
             redirect('mine/cobrancas');
@@ -807,6 +835,13 @@ class Mine extends CI_Controller
     {
         if (! session_id() || ! $this->session->userdata('conectado')) {
             redirect('mine');
+        }
+
+        // Verificar permissão para visualizar OS
+        $this->load->helper('cliente_permissions');
+        if (!clienteHasPermission('visualizar_os')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para visualizar ordens de serviço.');
+            redirect('mine/painel');
         }
 
         $data['menuOs'] = 'os';
@@ -1088,6 +1123,13 @@ class Mine extends CI_Controller
             redirect('mine/painel');
         }
 
+        // Verificar permissão para visualizar OS
+        $this->load->helper('cliente_permissions');
+        if (!clienteHasPermission('visualizar_os')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para visualizar OS.');
+            redirect('mine/os');
+        }
+
         // Verificar permissão para aprovar OS (novo sistema de usuários)
         $data['pode_aprovar'] = false;
         if ($this->session->userdata('tipo_acesso') == 'usuario_cliente') {
@@ -1151,7 +1193,14 @@ class Mine extends CI_Controller
             redirect('mine/painel');
         }
 
-        // Verificar permissão para aprovar
+        // Verificar permissão para aprovar OS
+        $this->load->helper('cliente_permissions');
+        if (!clienteHasPermission('aprovar_os')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para aprovar OS.');
+            redirect('mine/visualizarOs/' . $id);
+        }
+
+        // Verificar permissão específica para usuários do portal
         if ($this->session->userdata('tipo_acesso') == 'usuario_cliente') {
             $this->load->model('usuarios_cliente_model');
             if (! $this->usuarios_cliente_model->hasPermissao(
@@ -1367,6 +1416,13 @@ class Mine extends CI_Controller
             redirect('mine/painel');
         }
 
+        // Verificar permissão para visualizar compras
+        $this->load->helper('cliente_permissions');
+        if (!clienteHasPermission('visualizar_compras')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para visualizar compras.');
+            redirect('mine/compras');
+        }
+
         $data['output'] = 'conecte/visualizar_compra';
 
         $this->load->view('conecte/template', $data);
@@ -1408,6 +1464,13 @@ class Mine extends CI_Controller
         if ($data['result']->clientes_id != $this->session->userdata('cliente_id')) {
             $this->session->set_flashdata('error', 'Esta venda não pertence ao cliente logado.');
             redirect('mine/painel');
+        }
+
+        // Verificar permissão para visualizar/imprimir compras
+        $this->load->helper('cliente_permissions');
+        if (!clienteHasPermission('visualizar_compras')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para imprimir compras.');
+            redirect('mine/compras');
         }
 
         $this->load->view('conecte/imprimirVenda', $data);

@@ -185,7 +185,16 @@ class Tecnicos extends CI_Controller
     }
 
     /**
-     * Dashboard do técnico
+     * Carregar layout do portal do técnico
+     */
+    private function _load_tec_layout($content_view, $data = [])
+    {
+        $data['content'] = $this->load->view('tecnicos/' . $content_view, $data, true);
+        $this->load->view('tecnicos/layout', array_merge($this->data, $data));
+    }
+
+    /**
+     * Dashboard do técnico - NOVO LAYOUT
      */
     public function dashboard()
     {
@@ -202,16 +211,14 @@ class Tecnicos extends CI_Controller
         $this->data['minhas_obras'] = $this->obras_model->getObrasPorTecnico($tecnico_id);
 
         $this->data['menuDashboard'] = 'active';
+        $this->data['pageTitle'] = 'Dashboard';
+        $this->data['title'] = 'Dashboard - Portal do Técnico';
 
-        $this->load->view('tema/topo', $this->data);
-        $this->load->view('tema/menu_portal_tecnico', $this->data);
-        $this->load->view('tema/conteudo', $this->data);
-        $this->load->view('tecnicos/dashboard', $this->data);
-        $this->load->view('tema/rodape', $this->data);
+        $this->_load_tec_layout('dashboard_novo', $this->data);
     }
 
     /**
-     * Listar OS atribuídas ao técnico
+     * Listar OS atribuídas ao técnico - NOVO LAYOUT
      */
     public function minhas_os()
     {
@@ -220,16 +227,15 @@ class Tecnicos extends CI_Controller
 
         $this->data['os_list'] = $this->tec_os_model->getOsPorTecnico($tecnico_id, $status);
         $this->data['status_atual'] = $status;
+        $this->data['menuMinhasOs'] = 'active';
+        $this->data['pageTitle'] = 'Minhas OS';
+        $this->data['title'] = 'Minhas OS - Portal do Técnico';
 
-        $this->load->view('tema/topo', $this->data);
-        $this->load->view('tema/menu_portal_tecnico', $this->data);
-        $this->load->view('tema/conteudo', $this->data);
-        $this->load->view('tecnicos/minhas_os', $this->data);
-        $this->load->view('tema/rodape', $this->data);
+        $this->_load_tec_layout('minhas_os', $this->data);
     }
 
     /**
-     * Listar obras atribuídas ao técnico
+     * Listar obras atribuídas ao técnico - NOVO LAYOUT
      */
     public function minhas_obras()
     {
@@ -256,12 +262,10 @@ class Tecnicos extends CI_Controller
 
         $this->data['obras'] = $obras;
         $this->data['menuObras'] = 'active';
+        $this->data['pageTitle'] = 'Minhas Obras';
+        $this->data['title'] = 'Minhas Obras - Portal do Técnico';
 
-        $this->load->view('tema/topo', $this->data);
-        $this->load->view('tema/menu_portal_tecnico', $this->data);
-        $this->load->view('tema/conteudo', $this->data);
-        $this->load->view('tecnicos/minhas_obras', $this->data);
-        $this->load->view('tema/rodape', $this->data);
+        $this->_load_tec_layout('minhas_obras', $this->data);
     }
 
     /**

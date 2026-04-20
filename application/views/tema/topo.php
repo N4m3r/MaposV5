@@ -103,12 +103,7 @@
   </style>
 </head>
 
-<?php
-// Verificar se estamos na área do técnico (Portal do Técnico) - ANTES do body
-$is_area_tecnico = (strpos(uri_string(), 'tecnicos') === 0);
-$body_class = $is_area_tecnico ? 'portal-tecnico' : '';
-?>
-<body data-theme="<?= isset($configuration['app_theme']) ? $configuration['app_theme'] : 'default' ?>" class="<?= $body_class ?>">
+<body data-theme="<?= isset($configuration['app_theme']) ? $configuration['app_theme'] : 'default' ?>">
   <!--top-Header-menu-->
 
   <?php if ($is_area_tecnico): ?>

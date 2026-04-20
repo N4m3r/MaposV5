@@ -155,20 +155,6 @@ $('#btn-toggle-theme').on('click', function(e) {
     $.post(notifBaseUrl + '/trocar_tema', { tema: novoTema });
 });
 
-// ============================================
-// LAYOUT PORTAL DO TÉCNICO - Toggle Sidebar
-// ============================================
-$(document).ready(function() {
-    // Toggle do sidebar ao clicar no botão
-    $(document).on('click', '#sidebar .mode, #sidebar .mode-desktop', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        $('#sidebar').toggleClass('open');
-    });
-});
-// ============================================
-// FIM LAYOUT PORTAL DO TÉCNICO
-// ============================================
 // DataTable
 $(document).ready(function() {
     var dataTableEnabled = '<?= $configuration['control_datatable'] ?>';
