@@ -433,108 +433,145 @@ function getStatusColor($status) {
                             </thead>
                         </table>
 
-                        <!-- DOCUMENTOS FISCAIS VINCULADOS -->
-                        <?php if (isset($documentos_fiscais) && !empty($documentos_fiscais)) { ?>
-                        <div style="margin-top: 30px; border: 1px solid #ddd; padding: 15px; background: #f9f9f9;">
-                            <h4><i class="fas fa-receipt"></i> Documentos Fiscais e Pagamentos</h4>
-                            <hr style="margin: 10px 0;">
-
-                            <div class="row-fluid">
-                                <?php foreach ($documentos_fiscais as $doc) { ?>
-                                <div class="span6" style="margin-bottom: 15px;">
-                                    <div style="border: 1px solid #ddd; padding: 10px; background: #fff;">
-                                        <div style="margin-bottom: 8px;">
-                                            <?php if ($doc['tipo'] == 'cobranca') { ?>
-                                                <span class="label label-info"><i class="fas fa-dollar-sign"></i> Boleto/Pagamento</span>
-                                            <?php } elseif ($doc['tipo'] == 'nfse') { ?>
-                                                <span class="label label-success"><i class="fas fa-file-invoice"></i> NFS-e</span>
-                                            <?php } elseif ($doc['tipo'] == 'imposto') { ?>
-                                                <span class="label label-warning"><i class="fas fa-calculator"></i> Impostos Retidos</span>
-                                            <?php } ?>
-                                        </div>
-
-                                        <p><strong>Número:</strong> <?= $doc['numero'] ?></p>
-                                        <p><strong>Data:</strong> <?= date('d/m/Y', strtotime($doc['data'])) ?></p>
-                                        <p><strong>Valor:</strong> R$ <?= number_format($doc['valor'], 2, ',', '.') ?></p>
-
-                                        <p>
-                                            <strong>Status:</strong>
-                                            <?php
-                                            $statusLabel = 'label';
-                                            switch ($doc['status']) {
-                                                case 'PAGO':
-                                                case 'Paid':
-                                                case 'paid':
-                                                case 'pago':
-                                                case 'Normal':
-                                                case 'Retido':
-                                                    $statusLabel .= ' label-success';
-                                                    break;
-                                                case 'PENDING':
-                                                case 'Pending':
-                                                case 'pending':
-                                                case 'Aguardando':
-                                                    $statusLabel .= ' label-warning';
-                                                    break;
-                                                case 'CANCELLED':
-                                                case 'Cancelled':
-                                                case 'cancelled':
-                                                case 'Cancelado':
-                                                case 'Estornado':
-                                                    $statusLabel .= ' label-important';
-                                                    break;
-                                                default:
-                                                    $statusLabel .= ' label-info';
-                                            }
-                                            ?>
-                                            <span class="<?= $statusLabel ?>"><?= $doc['status'] ?></span>
-                                        </p>
-
-                                        <?php if ($doc['tipo'] == 'cobranca') { ?>
-                                            <?php if (!empty($doc['link'])) { ?>
-                                                <a href="<?= $doc['link'] ?>" target="_blank" class="btn btn-small btn-success" style="width: 100%; margin-top: 5px;">
-                                                    <i class="fas fa-credit-card"></i> Pagar Agora
-                                                </a>
-                                            <?php } ?>
-                                            <?php if (!empty($doc['pdf'])) { ?>
-                                                <a href="<?= $doc['pdf'] ?>" target="_blank" class="btn btn-small btn-info" style="width: 100%; margin-top: 5px;">
-                                                    <i class="fas fa-file-pdf"></i> Ver Boleto
-                                                </a>
-                                            <?php } ?>
-                                            <?php if (!empty($doc['barcode'])) { ?>
-                                                <button class="btn btn-small btn-inverse" onclick="copyBarcode('<?= $doc['barcode'] ?>')" style="width: 100%; margin-top: 5px;">
-                                                    <i class="fas fa-copy"></i> Copiar Código
-                                                </button>
-                                            <?php } ?>
-                                        <?php } elseif ($doc['tipo'] == 'nfse') { ?>
-                                            <?php if (!empty($doc['xml_path'])) { ?>
-                                                <a href="<?= base_url($doc['xml_path']) ?>" target="_blank" class="btn btn-small btn-info" style="width: 100%; margin-top: 5px;">
-                                                    <i class="fas fa-file-code"></i> Download XML
-                                                </a>
-                                            <?php } ?>
-                                            <?php if (!empty($doc['prestador'])) { ?>
-                                                <p style="margin-top: 5px; font-size: 11px;">
-                                                    <strong>Prestador:</strong> <?= $doc['prestador'] ?>
-                                                </p>
-                                            <?php } ?>
-                                        <?php } elseif ($doc['tipo'] == 'imposto') { ?>
-                                            <p style="margin-top: 5px; font-size: 11px;">
-                                                <strong>Valor Bruto:</strong> R$ <?= number_format($doc['valor_bruto'], 2, ',', '.') ?><br>
-                                                <strong>Alíquota:</strong> <?= $doc['aliquota'] ?>%
-                                            </p>
-                                        <?php } ?>
-                                    </div>
-                                </div>
-                                <?php } ?>
-                            </div>
-                        </div>
                         <?php } ?>
                     </div>
                 </div>
             </div>
+
+            <!-- Tab Boletos -->
+            <div id="tab-boletos" class="tab-content">
+                <div class="widget-content">
+                    <?php if (!empty($cobrancas_os)): ?>
+                        <div class="row-fluid">
+                            <?php foreach ($cobrancas_os as $cobranca): ?>
+                                <div class="span6">
+                                    <div class="doc-card">
+                                        <div class="doc-header">
+                                            <span class="doc-type boleto">
+                                                <i class="bx bx-barcode"></i> BOLETO
+                                            </span>
+                                            <span class="doc-status" style="background: <?= getStatusColor($cobranca->status) ?>20; color: <?= getStatusColor($cobranca->status) ?>">
+                                                <?= ucfirst($cobranca->status ?? 'Pendente') ?>
+                                            </span>
+                                        </div>
+
+                                        <div class="doc-value">
+                                            R$ <?= number_format($cobranca->total ?? $cobranca->valor ?? 0, 2, ',', '.') ?>
+                                        </div>
+
+                                        <div class="doc-info">
+                                            <p><strong>Descrição:</strong> <?= htmlspecialchars($cobranca->descricao ?? 'Boleto #' . $cobranca->idCobranca) ?></p>
+                                            <p><strong>Vencimento:</strong> <?= isset($cobranca->expire_at) ? date('d/m/Y', strtotime($cobranca->expire_at)) : '-' ?></p>
+                                            <?php if (!empty($cobranca->charge_id)): ?>
+                                                <p><strong>Código:</strong> <?= $cobranca->charge_id ?></p>
+                                            <?php endif; ?>
+                                        </div>
+
+                                        <div class="doc-actions">
+                                            <?php if (!empty($cobranca->payment_url)): ?>
+                                                <a href="<?= $cobranca->payment_url ?>" target="_blank" class="btn btn-success">
+                                                    <i class="bx bx-credit-card"></i> Pagar Agora
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if (!empty($cobranca->pdf)): ?>
+                                                <a href="<?= $cobranca->pdf ?>" target="_blank" class="btn btn-info">
+                                                    <i class="bx bx-file"></i> Ver Boleto
+                                                </a>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php else: ?>
+                        <div class="empty-state">
+                            <i class="bx bx-barcode"></i>
+                            <h4>Nenhum boleto encontrado</h4>
+                            <p>Não há boletos vinculados a esta ordem de serviço.</p>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+
+            <!-- Tab Notas Fiscais -->
+            <div id="tab-notas" class="tab-content">
+                <div class="widget-content">
+                    <?php if (!empty($notas_fiscais_os)): ?>
+                        <div class="row-fluid">
+                            <?php foreach ($notas_fiscais_os as $nf): ?>
+                                <div class="span6">
+                                    <div class="doc-card">
+                                        <div class="doc-header">
+                                            <span class="doc-type nota">
+                                                <i class="bx bx-receipt"></i> NFS-e
+                                            </span>
+                                            <span class="doc-status" style="background: <?= getStatusColor($nf->status ?? 'Emitida') ?>20; color: <?= getStatusColor($nf->status ?? 'Emitida') ?>">
+                                                <?= $nf->status ?? 'Emitida' ?>
+                                            </span>
+                                        </div>
+
+                                        <div class="doc-value" style="font-size: 1rem;">
+                                            <strong>Nº <?= $nf->numero_nfse ?? $nf->numero ?? '-' ?></strong>
+                                        </div>
+
+                                        <div class="doc-info">
+                                            <p><strong>Data Emissão:</strong> <?= isset($nf->data_emissao) ? date('d/m/Y', strtotime($nf->data_emissao)) : (isset($nf->created_at) ? date('d/m/Y', strtotime($nf->created_at)) : '-') ?></p>
+                                            <p><strong>Valor Total:</strong> R$ <?= number_format($nf->valor_total ?? $nf->valor ?? 0, 2, ',', '.') ?></p>
+                                            <?php if (!empty($nf->prestador_nome)): ?>
+                                                <p><strong>Prestador:</strong> <?= htmlspecialchars($nf->prestador_nome) ?></p>
+                                            <?php endif; ?>
+                                        </div>
+
+                                        <div class="doc-actions">
+                                            <?php if (!empty($nf->link_pdf) || !empty($nf->pdf_url)): ?>
+                                                <a href="<?= $nf->link_pdf ?? $nf->pdf_url ?>" target="_blank" class="btn btn-success">
+                                                    <i class="bx bx-download"></i> Download PDF
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if (!empty($nf->caminho_xml)): ?>
+                                                <a href="<?= base_url($nf->caminho_xml) ?>" target="_blank" class="btn btn-info">
+                                                    <i class="bx bx-file"></i> Download XML
+                                                </a>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php else: ?>
+                        <div class="empty-state">
+                            <i class="bx bx-receipt"></i>
+                            <h4>Nenhuma nota fiscal encontrada</h4>
+                            <p>Não há notas fiscais vinculadas a esta ordem de serviço.</p>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+
+            </div>
         </div>
     </div>
 </div>
+
+<script>
+function showTab(tabId) {
+    // Esconde todas as tabs
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+    });
+
+    // Remove active de todos os botões
+    document.querySelectorAll('.os-tab').forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    // Mostra a tab selecionada
+    document.getElementById(tabId).classList.add('active');
+
+    // Adiciona active ao botão
+    document.querySelector('[data-tab="' + tabId + '"]').classList.add('active');
+}
+</script>
 
 <script>
 function copyBarcode(barcode) {

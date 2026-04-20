@@ -806,20 +806,20 @@
             $('#summaryEquipamento').text(equipamento || '-');
 
             var marcaModelo = $('#marcaModelo').val().trim();
-            $('#summaryMarcaModelo').text(marcaModelo || '<span class="empty">Não informado</span>');
+            $('#summaryMarcaModelo').html(marcaModelo ? marcaModelo : '<span class="empty">Não informado</span>');
 
             var numeroSerie = $('#numeroSerie').val().trim();
-            $('#summaryNumeroSerie').text(numeroSerie || '<span class="empty">Não informado</span>');
+            $('#summaryNumeroSerie').html(numeroSerie ? numeroSerie : '<span class="empty">Não informado</span>');
 
             var descricao = $('#descricaoProblema').val();
             $('#summaryDescricao').html(descricao || '-');
 
             var quandoComecou = $('#quandoComecou').val().trim();
-            $('#summaryQuandoComecou').text(quandoComecou || '<span class="empty">Não informado</span>');
+            $('#summaryQuandoComecou').html(quandoComecou ? quandoComecou : '<span class="empty">Não informado</span>');
 
             var tentativas = $('#tentativasSolucao').val();
             var textTentativas = tentativas ? tentativas.replace(/<[^>]*>/g, '').trim() : '';
-            $('#summaryTentativas').html(textTentativas || '<span class="empty">Não informado</span>');
+            $('#summaryTentativas').html(textTentativas ? tentativas : '<span class="empty">Não informado</span>');
         }
 
         function combineFormData() {

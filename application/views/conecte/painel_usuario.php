@@ -283,7 +283,7 @@ if (!function_exists('getPainelUsuarioStatusColor')) {
                             </a>
                         <?php endif; ?>
                         <?php if ($podeEditarPerfil): ?>
-                            <a href="<?= site_url('mine/perfil') ?>" class="btn btn-small btn-info" style="margin-right: 5px;">
+                            <a href="<?= site_url('mine/conta') ?>" class="btn btn-small btn-info" style="margin-right: 5px;">
                                 <i class="bx bx-user"></i> Perfil
                             </a>
                         <?php endif; ?>
@@ -322,26 +322,6 @@ if (!function_exists('getPainelUsuarioStatusColor')) {
                     </div>
                     <div class="title">Cobranças</div>
                     <div class="subtitle"><?= $totalCobrancas ?> cobrança(s)</div>
-                </a>
-                <?php endif; ?>
-
-                <?php if ($podeVerBoletos): ?>
-                <a href="<?= site_url('mine/boletos') ?>" class="quick-card">
-                    <div class="icon-wrapper" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%)">
-                        <i class='bx bx-barcode'></i>
-                    </div>
-                    <div class="title">Boletos</div>
-                    <div class="subtitle"><?= $totalBoletos ?> boleto(s)</div>
-                </a>
-                <?php endif; ?>
-
-                <?php if ($podeVerNotasFiscais): ?>
-                <a href="<?= site_url('mine/notasfiscais') ?>" class="quick-card">
-                    <div class="icon-wrapper" style="background: linear-gradient(135deg, #30cfd0 0%, #330867 100%)">
-                        <i class='bx bx-receipt'></i>
-                    </div>
-                    <div class="title">Notas Fiscais</div>
-                    <div class="subtitle"><?= $totalNotasFiscais ?> NFS-e</div>
                 </a>
                 <?php endif; ?>
 

@@ -874,11 +874,33 @@ class Mine extends CI_Controller
         $data['documentos_fiscais'] = $this->os_model->getDocumentosFiscais($this->uri->segment(3));
 
         // Carregar cobranças/boletos específicos da OS
-        $data['cobrancas_os'] = $this->os_model->getCobrancas($this->uri->segment(3));
+        $cobrancas = $this->os_model->getCobrancas($this->uri->segment(3));
+        $data['cobrancas_os'] = is_array($cobrancas) ? $cobrancas : [];
 
         // Carregar notas fiscais específicas da OS
         $this->load->model('nfse_emitida_model');
-        $data['notas_fiscais_os'] = $this->nfse_emitida_model->getByOsId($this->uri->segment(3));
+        $notasEmitidas = $this->nfse_emitida_model->getAllByOsId($this->uri->segment(3)) ?? [];
+
+        // Também buscar na tabela de notas importadas
+        $notasImportadas = [];
+        try {
+            $this->db->select('*');
+            $this->db->from('certificado_nfe_importada');
+            $this->db->where('os_id', $this->uri->segment(3));
+            $this->db->order_by('id', 'DESC');
+            $query = $this->db->get();
+            if ($query) {
+                $notasImportadas = $query->result();
+            }
+        } catch (Exception $e) {
+            // Tabela pode não existir
+            $notasImportadas = [];
+        }
+
+        // Mesclar notas emitidas e importadas
+        $data['notas_fiscais_os'] = array_merge($notasEmitidas, $notasImportadas);
+
+        log_message('debug', 'visualizarOs OS=' . $this->uri->sgment(3) . ' Cobrancas=' . count($data['cobrancas_os']) . ' Notas=' . count($data['notas_fiscais_os']));
 
         $data['emitente'] = $this->mapos_model->getEmitente();
         $data['qrCode'] = $this->os_model->getQrCode(
