@@ -21,6 +21,7 @@
         <?php if (isset($results) && count($results) > 0): ?>
             <!-- Card View -->
             <div class="row-fluid" style="padding: 15px;">
+                <?php $count = 0; ?>
                 <?php foreach ($results as $r): ?>
                     <?php
                     $status = $r->status ?? 'Em Andamento';

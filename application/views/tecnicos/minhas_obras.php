@@ -365,8 +365,7 @@
 
         <!-- Lista de Obras -->
         <div class="obras-lista">
-            <?php foreach ($obras as $obra): ?
-003e
+            <?php foreach ($obras as $obra): ?>
                 <?php
                 $headerClass = ($obra->status == 'EmExecucao') ? 'em-execucao' : '';
                 $statusLabel = ($obra->status == 'EmExecucao') ? 'Em Execução' : $obra->status;
