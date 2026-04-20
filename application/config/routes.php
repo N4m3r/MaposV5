@@ -166,6 +166,11 @@ $route['obras/relatorioDiario/(:num)'] = 'obras/relatorioDiario/$1';
 $route['obras/api/atualizarProgresso/(:num)'] = 'obras/api_atualizarProgresso/$1';
 $route['obras/api/dadosGrafico/(:num)'] = 'obras/api_dadosGrafico/$1';
 
+// Equipe
+$route['obras/equipe/(:num)'] = 'obras/equipe/$1';
+$route['obras/adicionarTecnico'] = 'obras/adicionarTecnico';
+$route['obras/removerTecnico/(:num)'] = 'obras/removerTecnico/$1';
+
 // Portal do Técnico - Obras
 $route['obras_tecnico'] = 'obras_tecnico/minhasObras';
 $route['obras_tecnico/minhasObras'] = 'obras_tecnico/minhasObras';

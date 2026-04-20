@@ -1011,6 +1011,11 @@ class Mine extends CI_Controller
             redirect('mine');
         }
 
+        if (!$id) {
+            $this->session->set_flashdata('error', 'OS não informada.');
+            redirect('mine/os');
+        }
+
         $data['menuOs'] = 'os';
         $this->data['custom_error'] = '';
         $this->load->model('mapos_model');
@@ -1019,28 +1024,28 @@ class Mine extends CI_Controller
         $this->CI->load->database();
 
         $data['pix_key'] = $this->CI->db->get_where('configuracoes', ['config' => 'pix_key'])->row_object()->valor;
-        $data['result'] = $this->os_model->getById($this->uri->segment(3));
-        $data['produtos'] = $this->os_model->getProdutos($this->uri->segment(3));
-        $data['servicos'] = $this->os_model->getServicos($this->uri->segment(3));
-        $data['anexos'] = $this->os_model->getAnexos($this->uri->segment(3));
+        $data['result'] = $this->os_model->getById($id);
+        $data['produtos'] = $this->os_model->getProdutos($id);
+        $data['servicos'] = $this->os_model->getServicos($id);
+        $data['anexos'] = $this->os_model->getAnexos($id);
 
         // Carregar documentos fiscais vinculados à OS (cobranças, NFS-e, impostos)
-        $data['documentos_fiscais'] = $this->os_model->getDocumentosFiscais($this->uri->segment(3));
+        $data['documentos_fiscais'] = $this->os_model->getDocumentosFiscais($id);
 
         // Carregar cobranças/boletos específicos da OS
-        $cobrancas = $this->os_model->getCobrancas($this->uri->segment(3));
+        $cobrancas = $this->os_model->getCobrancas($id);
         $data['cobrancas_os'] = is_array($cobrancas) ? $cobrancas : [];
 
         // Carregar notas fiscais específicas da OS
         $this->load->model('nfse_emitida_model');
-        $notasEmitidas = $this->nfse_emitida_model->getAllByOsId($this->uri->segment(3)) ?? [];
+        $notasEmitidas = $this->nfse_emitida_model->getAllByOsId($id) ?? [];
 
         // Também buscar na tabela de notas importadas
         $notasImportadas = [];
         try {
             $this->db->select('*');
             $this->db->from('certificado_nfe_importada');
-            $this->db->where('os_id', $this->uri->segment(3));
+            $this->db->where('os_id', $id);
             $this->db->order_by('id', 'DESC');
             $query = $this->db->get();
             if ($query) {
@@ -1054,7 +1059,7 @@ class Mine extends CI_Controller
         // Mesclar notas emitidas e importadas
         $data['notas_fiscais_os'] = array_merge($notasEmitidas, $notasImportadas);
 
-        log_message('debug', 'visualizarOs OS=' . $this->uri->segment(3) . ' Cobrancas=' . count($data['cobrancas_os']) . ' Notas=' . count($data['notas_fiscais_os']));
+        log_message('debug', 'visualizarOs OS=' . $id . ' Cobrancas=' . count($data['cobrancas_os']) . ' Notas=' . count($data['notas_fiscais_os']));
 
         $data['emitente'] = $this->mapos_model->getEmitente();
         $data['qrCode'] = $this->os_model->getQrCode(
@@ -1245,13 +1250,18 @@ class Mine extends CI_Controller
             redirect('mine');
         }
 
+        if (!$id) {
+            $this->session->set_flashdata('error', 'OS não informada.');
+            redirect('mine/os');
+        }
+
         $data['menuOs'] = 'os';
         $this->data['custom_error'] = '';
         $this->load->model('mapos_model');
         $this->load->model('os_model');
-        $data['result'] = $this->os_model->getById($this->uri->segment(3));
-        $data['produtos'] = $this->os_model->getProdutos($this->uri->segment(3));
-        $data['servicos'] = $this->os_model->getServicos($this->uri->segment(3));
+        $data['result'] = $this->os_model->getById($id);
+        $data['produtos'] = $this->os_model->getProdutos($id);
+        $data['servicos'] = $this->os_model->getServicos($id);
         $data['emitente'] = $this->mapos_model->getEmitente();
         $data['pix_key'] = $this->db->get_where('configuracoes', ['config' => 'pix_key'])->row_object()->valor;
         $data['qrCode'] = $this->os_model->getQrCode(
@@ -1260,6 +1270,11 @@ class Mine extends CI_Controller
             $data['emitente']
         );
         $data['chaveFormatada'] = $this->formatarChave($data['pix_key']);      
+
+        if (!$data['result'] || !isset($data['result']->idClientes)) {
+            $this->session->set_flashdata('error', 'OS não encontrada.');
+            redirect('mine/os');
+        }
 
         if ($data['result']->idClientes != $this->session->userdata('cliente_id')) {
             $this->session->set_flashdata('error', 'Esta OS não pertence ao cliente logado.');
@@ -1448,6 +1463,11 @@ class Mine extends CI_Controller
             $this->data['produtos'] = $this->os_model->getProdutos($id);
             $this->data['servicos'] = $this->os_model->getServicos($id);
             $this->data['anexos'] = $this->os_model->getAnexos($id);
+
+            if (!$this->data['result'] || !isset($this->data['result']->idClientes)) {
+                $this->session->set_flashdata('error', 'OS não encontrada.');
+                redirect('mine/os');
+            }
 
             if ($this->data['result']->idClientes != $this->session->userdata('cliente_id')) {
                 $this->session->set_flashdata('error', 'Esta OS não pertence ao cliente logado.');
