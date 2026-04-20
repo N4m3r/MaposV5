@@ -2312,6 +2312,189 @@ class Mine extends CI_Controller
         $this->load->view('conecte/template', $data);
     }
 
+    /**
+     * Upload de foto pelo cliente no relatório de atendimento
+     */
+    public function uploadFotoCliente()
+    {
+        if (!session_id() || !$this->session->userdata('conectado')) {
+            echo json_encode(['success' => false, 'message' => 'Não autorizado']);
+            return;
+        }
+
+        // Verificar permissão
+        $this->load->helper('cliente_permissions');
+        if (!clienteHasPermission('visualizar_os')) {
+            echo json_encode(['success' => false, 'message' => 'Sem permissão']);
+            return;
+        }
+
+        $os_id = $this->input->post('os_id');
+        $etapa = $this->input->post('etapa') ?: 'durante';
+        $descricao = $this->input->post('descricao') ?: 'Foto do cliente';
+
+        if (!$os_id || !is_numeric($os_id)) {
+            echo json_encode(['success' => false, 'message' => 'OS inválida']);
+            return;
+        }
+
+        // Verificar se o cliente tem acesso à OS
+        $this->load->model('os_model');
+        $os = $this->os_model->getById($os_id);
+
+        if (!$os) {
+            echo json_encode(['success' => false, 'message' => 'OS não encontrada']);
+            return;
+        }
+
+        $cliente_id = $this->session->userdata('cliente_id');
+        $usuario_cliente_id = $this->session->userdata('usuario_cliente_id');
+        $permissao_os = false;
+
+        if ($cliente_id && $os->clientes_id == $cliente_id) {
+            $permissao_os = true;
+        }
+
+        if (!$permissao_os && $usuario_cliente_id) {
+            $this->load->model('usuarios_cliente_model');
+            $os_list = $this->usuarios_cliente_model->getOsByCnpjs($usuario_cliente_id);
+            foreach ($os_list as $os_item) {
+                if ($os_item->idOs == $os_id) {
+                    $permissao_os = true;
+                    break;
+                }
+            }
+        }
+
+        if (!$permissao_os) {
+            echo json_encode(['success' => false, 'message' => 'Sem permissão para esta OS']);
+            return;
+        }
+
+        // Processar upload
+        if (!empty($_FILES['foto'])) {
+            $this->load->model('fotosatendimento_model');
+
+            $result = $this->fotosatendimento_model->uploadFoto($_FILES['foto'], $os_id, $cliente_id ?: $usuario_cliente_id, null, $etapa, $descricao);
+
+            if (isset($result['error'])) {
+                echo json_encode(['success' => false, 'message' => $result['error']]);
+                return;
+            }
+
+            // Salvar no banco
+            $foto_data = [
+                'os_id' => $os_id,
+                'usuarios_id' => null,
+                'checkin_id' => null,
+                'arquivo' => $result['arquivo'],
+                'path' => $result['path'],
+                'url' => $result['url'],
+                'etapa' => $etapa,
+                'descricao' => $descricao,
+                'tamanho' => $result['tamanho'],
+                'tipo' => $result['tipo'],
+                'imagem_base64' => $result['imagem_base64'],
+                'mime_type' => $result['mime_type'],
+                'data_upload' => date('Y-m-d H:i:s')
+            ];
+
+            if ($this->fotosatendimento_model->add($foto_data)) {
+                echo json_encode(['success' => true, 'message' => 'Foto enviada com sucesso!']);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Erro ao salvar foto']);
+            }
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Nenhuma foto enviada']);
+        }
+    }
+
+    /**
+     * Salvar assinatura pelo cliente
+     */
+    public function salvarAssinaturaCliente()
+    {
+        if (!session_id() || !$this->session->userdata('conectado')) {
+            echo json_encode(['success' => false, 'message' => 'Não autorizado']);
+            return;
+        }
+
+        // Verificar permissão
+        $this->load->helper('cliente_permissions');
+        if (!clienteHasPermission('visualizar_os')) {
+            echo json_encode(['success' => false, 'message' => 'Sem permissão']);
+            return;
+        }
+
+        $os_id = $this->input->post('os_id');
+        $tipo = $this->input->post('tipo') ?: 'cliente_saida';
+        $assinatura_base64 = $this->input->post('assinatura');
+        $nome_assinante = $this->input->post('nome_assinante');
+
+        if (!$os_id || !is_numeric($os_id)) {
+            echo json_encode(['success' => false, 'message' => 'OS inválida']);
+            return;
+        }
+
+        if (empty($assinatura_base64)) {
+            echo json_encode(['success' => false, 'message' => 'Assinatura vazia']);
+            return;
+        }
+
+        // Verificar se o cliente tem acesso à OS
+        $this->load->model('os_model');
+        $os = $this->os_model->getById($os_id);
+
+        if (!$os) {
+            echo json_encode(['success' => false, 'message' => 'OS não encontrada']);
+            return;
+        }
+
+        $cliente_id = $this->session->userdata('cliente_id');
+        $usuario_cliente_id = $this->session->userdata('usuario_cliente_id');
+        $permissao_os = false;
+
+        if ($cliente_id && $os->clientes_id == $cliente_id) {
+            $permissao_os = true;
+        }
+
+        if (!$permissao_os && $usuario_cliente_id) {
+            $this->load->model('usuarios_cliente_model');
+            $os_list = $this->usuarios_cliente_model->getOsByCnpjs($usuario_cliente_id);
+            foreach ($os_list as $os_item) {
+                if ($os_item->idOs == $os_id) {
+                    $permissao_os = true;
+                    break;
+                }
+            }
+        }
+
+        if (!$permissao_os) {
+            echo json_encode(['success' => false, 'message' => 'Sem permissão para esta OS']);
+            return;
+        }
+
+        // Salvar assinatura
+        $this->load->model('assinaturas_model');
+
+        $result = $this->assinaturas_model->salvarImagem($assinatura_base64, $os_id, $tipo);
+
+        if ($result && !isset($result['error'])) {
+            // Adicionar nome do assinante
+            if ($nome_assinante) {
+                $this->db->where('os_id', $os_id);
+                $this->db->where('tipo', $tipo);
+                $this->db->order_by('idAssinatura', 'DESC');
+                $this->db->limit(1);
+                $this->db->update('os_assinaturas', ['nome_assinante' => $nome_assinante]);
+            }
+
+            echo json_encode(['success' => true, 'message' => 'Assinatura salva com sucesso!']);
+        } else {
+            echo json_encode(['success' => false, 'message' => $result['error'] ?? 'Erro ao salvar assinatura']);
+        }
+    }
+
 }
 
 /* End of file conecte.php */

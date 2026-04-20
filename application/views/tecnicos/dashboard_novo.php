@@ -6,22 +6,22 @@
         background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%) !important;
     }
 
-    body[data-theme="dark"] .btn-ver-obras {
-        background: rgba(255,255,255,0.1) !important;
-        color: #fff !important;
-    }
-
-    body[data-theme="dark"] .btn-ver-obras:hover {
-        background: rgba(255,255,255,0.2) !important;
-    }
-
     body[data-theme="dark"] .empty-state {
         color: #888 !important;
+    }
+
+    body[data-theme="dark"] .empty-state i {
+        opacity: 0.3 !important;
     }
 
     body[data-theme="dark"] .progress-bar-bg {
         background: #2d3347 !important;
     }
+
+    body[data-theme="dark"] .tec-list-status.aberto { background: #1e4d2b; color: #4ade80; }
+    body[data-theme="dark"] .tec-list-status.andamento { background: #713f12; color: #facc15; }
+    body[data-theme="dark"] .tec-list-status.pendente { background: #7f1d1d; color: #f87171; }
+    body[data-theme="dark"] .tec-list-status.concluido { background: #1e3a5f; color: #60a5fa; }
 </style>
 
 <!-- Header com saudação -->

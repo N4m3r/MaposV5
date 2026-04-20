@@ -500,7 +500,8 @@
                             </thead>
                             <tbody>
                                 <?php foreach ($servicos as $servico):
-                                    $status = $servico->status ?? 'Pendente';
+                                    $status = $servico->status ?? '';
+                                    if (empty($status)) continue; // Pula serviços sem status definido
                                     $badge_class = 'badge-warning';
                                     if ($status == 'Executado' || $status == 'Concluido') $badge_class = 'badge-success';
                                 ?>
@@ -602,6 +603,34 @@
                     </div>
                     <?php endif; ?>
 
+                    <!-- Formulário de Upload de Fotos pelo Cliente -->
+                    <div class="photos-section upload-section" style="background: #f0f7ff; padding: 20px; border-radius: 8px; border: 2px dashed #667eea; margin-bottom: 20px;">
+                        <div class="photos-section-title" style="color: #667eea;">📷 Adicionar Foto ao Relatório</div>
+                        <form id="formUploadFoto" enctype="multipart/form-data" method="post">
+                            <input type="hidden" name="os_id" value="<?php echo $os->idOs; ?>">
+                            <input type="hidden" name="etapa" value="durante">
+                            <div style="margin-bottom: 15px;">
+                                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Selecione a foto:</label>
+                                <input type="file" name="foto" id="fotoInput" accept="image/*" required
+                                       style="padding: 10px; border: 1px solid #ddd; border-radius: 4px; width: 100%;"
+                                       onchange="previewFoto(this)">
+                            </div>
+                            <div id="fotoPreview" style="margin-bottom: 15px; display: none;">
+                                <img id="previewImg" style="max-width: 200px; max-height: 200px; border-radius: 8px; border: 1px solid #ddd;">
+                            </div>
+                            <div style="margin-bottom: 15px;">
+                                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Descrição:</label>
+                                <input type="text" name="descricao" placeholder="Ex: Foto do problema, Foto do equipamento..."
+                                       style="padding: 10px; border: 1px solid #ddd; border-radius: 4px; width: 100%;">
+                            </div>
+                            <button type="submit" class="btn btn-primary"
+                                    style="background: #667eea; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                                <i class="bx bx-upload"></i> Enviar Foto
+                            </button>
+                            <div id="uploadStatus" style="margin-top: 10px;"></div>
+                        </form>
+                    </div>
+
                     <?php if (!empty($fotosPorEtapa['durante'])): ?>
                     <div class="photos-section">
                         <div class="photos-section-title">📷 Fotos Durante o Atendimento</div>
@@ -652,6 +681,49 @@
                         </div>
                         <?php endforeach; ?>
                     </div>
+                </div>
+                <?php endif; ?>
+
+                <!-- Formulário de Assinatura do Cliente -->
+                <?php if (!isset($assinaturasPorTipo['cliente_saida'])): ?>
+                <div class="relatorio-card" style="background: #f0f7ff; border: 2px dashed #667eea;">
+                    <h5 style="color: #667eea;"><i class="bx bx-pen"></i> Assinar Relatório</h5>
+                    <p style="margin-bottom: 15px;">Para confirmar que você recebeu o atendimento, por favor assine abaixo:</p>
+
+                    <form id="formAssinatura" method="post">
+                        <input type="hidden" name="os_id" value="<?php echo $os->idOs; ?>">
+                        <input type="hidden" name="tipo" value="cliente_saida">
+
+                        <div style="margin-bottom: 15px;">
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600;">Seu Nome:</label>
+                            <input type="text" name="nome_assinante" id="nomeAssinante" required
+                                   placeholder="Digite seu nome completo"
+                                   style="padding: 10px; border: 1px solid #ddd; border-radius: 4px; width: 100%; max-width: 400px;"
+                                   value="<?php echo htmlspecialchars($cliente->nomeCliente ?? '', ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?>">
+                        </div>
+
+                        <div style="margin-bottom: 15px;">
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600;">Sua Assinatura:</label>
+                            <div style="border: 2px solid #ddd; border-radius: 8px; background: white; padding: 10px;">
+                                <canvas id="canvasAssinatura" style="width: 100%; max-width: 600px; height: 200px; cursor: crosshair;"></canvas>
+                            </div>
+                            <div style="margin-top: 10px;">
+                                <button type="button" class="btn btn-small" onclick="limparAssinatura()"
+                                        style="background: #f8f9fa; border: 1px solid #ddd; padding: 8px 16px; cursor: pointer; margin-right: 10px;">
+                                    <i class="bx bx-eraser"></i> Limpar
+                                </button>
+                            </div>
+                        </div>
+
+                        <input type="hidden" name="assinatura" id="inputAssinatura">
+
+                        <button type="submit" class="btn btn-success"
+                                style="background: #28a745; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                            <i class="bx bx-check"></i> Confirmar Assinatura
+                        </button>
+
+                        <div id="assinaturaStatus" style="margin-top: 10px;"></div>
+                    </form>
                 </div>
                 <?php endif; ?>
 

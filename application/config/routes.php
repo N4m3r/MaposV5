@@ -144,6 +144,8 @@ $route['mine/imprimirCompra/(:num)'] = 'mine/imprimirCompra/$1';
 $route['mine/visualizarObra/(:num)'] = 'mine/visualizarObra/$1';
 $route['mine/atualizarcobranca/(:num)'] = 'mine/atualizarcobranca/$1';
 $route['mine/enviarcobranca/(:num)'] = 'mine/enviarcobranca/$1';
+$route['mine/uploadFotoCliente'] = 'mine/uploadFotoCliente';
+$route['mine/salvarAssinaturaCliente'] = 'mine/salvarAssinaturaCliente';
 
 // Rotas do Dashboard para relatórios
 $route['dashboard/relatorio_atendimentos'] = 'dashboard/relatorio_atendimentos';
