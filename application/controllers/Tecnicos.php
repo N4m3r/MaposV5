@@ -1707,7 +1707,7 @@ class Tecnicos extends CI_Controller
     }
 
     /**
-     * API - Registrar atividade do dia
+     * API - Registrar atividade do dia - Versão melhorada com suporte a FormData
      */
     public function api_registrar_atividade_obra()
     {
@@ -1718,13 +1718,24 @@ class Tecnicos extends CI_Controller
         $descricao = $this->input->post('descricao');
         $tipo = $this->input->post('tipo'); // 'execucao', 'problema', 'observacao'
         $percentual_concluido = $this->input->post('percentual_concluido');
-        $fotos = $this->input->post('fotos'); // array de fotos base64
+        $fotos = $this->input->post('fotos'); // array de fotos base64 (legado)
         $tecnico_id = $this->session->userdata('tec_id');
 
         log_message('info', 'api_registrar_atividade_obra - Dados recebidos: obra_id=' . $obra_id . ', tecnico_id=' . $tecnico_id);
 
-        if (!$obra_id || !$descricao) {
-            echo json_encode(['success' => false, 'message' => 'Dados incompletos: obra_id e descricao sao obrigatorios']);
+        // Validar dados obrigatórios
+        if (!$obra_id) {
+            echo json_encode(['success' => false, 'message' => 'ID da obra não informado']);
+            return;
+        }
+
+        if (!$descricao || trim($descricao) === '') {
+            echo json_encode(['success' => false, 'message' => 'Descrição da atividade é obrigatória']);
+            return;
+        }
+
+        if (!$tecnico_id) {
+            echo json_encode(['success' => false, 'message' => 'Sessão expirada. Faça login novamente.']);
             return;
         }
 
@@ -1732,7 +1743,7 @@ class Tecnicos extends CI_Controller
         $this->load->model('obras_model');
         if (!$this->obras_model->tecnicoEstaNaEquipe($obra_id, $tecnico_id)) {
             log_message('error', 'api_registrar_atividade_obra - Tecnico ' . $tecnico_id . ' nao esta na equipe da obra ' . $obra_id);
-            echo json_encode(['success' => false, 'message' => 'Voce nao esta alocado nesta obra']);
+            echo json_encode(['success' => false, 'message' => 'Você não está alocado nesta obra']);
             return;
         }
 
@@ -1753,8 +1764,10 @@ class Tecnicos extends CI_Controller
             )");
         }
 
-        // Processar fotos
+        // Processar fotos (suporte a base64 legado e upload de arquivos)
         $fotos_salvas = [];
+
+        // 1. Processar fotos base64 (modo legado)
         if ($fotos && is_array($fotos)) {
             foreach ($fotos as $foto) {
                 $caminho = $this->_salvar_foto_base64($foto, 'atividade_obra', $tecnico_id);
@@ -1764,8 +1777,23 @@ class Tecnicos extends CI_Controller
             }
         }
 
+        // 2. Processar arquivos enviados via $_FILES (novo modo FormData)
+        if (!empty($_FILES)) {
+            foreach ($_FILES as $key => $file) {
+                if (strpos($key, 'foto_') === 0 && $file['error'] === UPLOAD_ERR_OK) {
+                    $caminho = $this->_salvar_foto_upload($file, 'atividade_obra', $tecnico_id);
+                    if ($caminho) {
+                        $fotos_salvas[] = $caminho;
+                        log_message('info', 'api_registrar_atividade_obra - Foto salva via upload: ' . $caminho);
+                    }
+                }
+            }
+        }
+
+        log_message('info', 'api_registrar_atividade_obra - Total fotos salvas: ' . count($fotos_salvas));
+
         // Preparar título a partir da descrição
-        $titulo = substr($descricao, 0, 100); // Primeiros 100 caracteres
+        $titulo = substr($descricao, 0, 100);
 
         // Inserir atividade
         $dados = [
@@ -1782,7 +1810,7 @@ class Tecnicos extends CI_Controller
             'ativo' => 1
         ];
 
-        log_message('info', 'api_registrar_atividade_obra - Inserindo atividade: ' . print_r($dados, true));
+        log_message('info', 'api_registrar_atividade_obra - Inserindo atividade: obra_id=' . $obra_id . ', tecnico=' . $tecnico_id);
 
         $result = $this->db->insert('obra_atividades', $dados);
         if ($result) {
@@ -1791,12 +1819,65 @@ class Tecnicos extends CI_Controller
             echo json_encode([
                 'success' => true,
                 'message' => 'Atividade registrada com sucesso',
-                'atividade_id' => $atividade_id
+                'atividade_id' => $atividade_id,
+                'fotos_salvas' => count($fotos_salvas)
             ]);
         } else {
             $error = $this->db->error();
             log_message('error', 'api_registrar_atividade_obra - Erro ao inserir: ' . print_r($error, true));
             echo json_encode(['success' => false, 'message' => 'Erro ao registrar atividade: ' . ($error['message'] ?? 'Erro desconhecido')]);
+        }
+    }
+
+    /**
+     * Salvar foto de upload de arquivo
+     */
+    private function _salvar_foto_upload($file, $tipo, $tecnico_id)
+    {
+        log_message('info', '_salvar_foto_upload - Iniciando salvamento: ' . $file['name']);
+
+        if (!$file || $file['error'] !== UPLOAD_ERR_OK) {
+            log_message('error', '_salvar_foto_upload - Erro no upload: ' . ($file['error'] ?? 'desconhecido'));
+            return false;
+        }
+
+        // Validar tipo MIME
+        $mime_types_permitidos = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        if (!in_array($file['type'], $mime_types_permitidos)) {
+            log_message('error', '_salvar_foto_upload - Tipo não permitido: ' . $file['type']);
+            return false;
+        }
+
+        // Validar extensão
+        $extensao = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        $extensoes_permitidas = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+        if (!in_array($extensao, $extensoes_permitidas)) {
+            log_message('error', '_salvar_foto_upload - Extensão não permitida: ' . $extensao);
+            return false;
+        }
+
+        // Gerar nome único
+        $nome_arquivo = $tipo . '_' . $tecnico_id . '_' . time() . '_' . uniqid() . '.' . $extensao;
+        $diretorio = FCPATH . 'assets/tecnicos/fotos/' . date('Y/m');
+
+        // Criar diretório se não existir
+        if (!is_dir($diretorio)) {
+            if (!mkdir($diretorio, 0755, true)) {
+                log_message('error', '_salvar_foto_upload - Falha ao criar diretório: ' . $diretorio);
+                return false;
+            }
+        }
+
+        $caminho_completo = $diretorio . '/' . $nome_arquivo;
+        $caminho_relativo = 'assets/tecnicos/fotos/' . date('Y/m') . '/' . $nome_arquivo;
+
+        // Mover arquivo
+        if (move_uploaded_file($file['tmp_name'], $caminho_completo)) {
+            log_message('info', '_salvar_foto_upload - Foto salva com sucesso: ' . $caminho_relativo);
+            return $caminho_relativo;
+        } else {
+            log_message('error', '_salvar_foto_upload - Falha ao mover arquivo para: ' . $caminho_completo);
+            return false;
         }
     }
 

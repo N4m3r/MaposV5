@@ -206,17 +206,16 @@ class Obras extends MY_Controller
         $this->load->model('mapos_model');
         $this->load->model('usuarios_model');
 
-        $this->data['resumo'] = $this->obras_model->getResumo($id);
+        $this->data['obra'] = $this->obras_model->getById($id);
 
-        if (!$this->data['resumo']) {
+        if (!$this->data['obra']) {
             $this->session->set_flashdata('error', 'Obra não encontrada.');
             redirect('obras');
         }
 
         $this->data['etapas'] = $this->obras_model->getEtapasComEstatisticas($id);
         $this->data['equipe'] = $this->obras_model->getEquipe($id);
-        $this->data['os_vinculadas'] = $this->obras_model->getOsVinculadas($id);
-        $this->data['estatisticas'] = $this->obra_atividades_model->getEstatisticas($id);
+        $this->data['atividades_recentes'] = $this->obra_atividades_model->getByObra($id, [], 10);
 
         $this->data['view'] = 'obras/obra_view';
         return $this->layout();

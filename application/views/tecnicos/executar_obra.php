@@ -679,6 +679,131 @@
         to { transform: rotate(360deg); }
     }
 
+    /* Melhorias no Wizard - Feedback Visual */
+    .wizard-container {
+        position: relative;
+    }
+
+    /* Indicador de passo atual */
+    .step.active {
+        animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4); }
+        50% { transform: scale(1.05); box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6); }
+    }
+
+    /* Cards de seleção melhorados */
+    .select-card.selected .select-card-icon {
+        animation: iconPop 0.3s ease;
+    }
+    @keyframes iconPop {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.2); }
+        100% { transform: scale(1); }
+    }
+
+    /* Cards de etapa melhorados */
+    .etapa-card.selected {
+        animation: slideHighlight 0.4s ease;
+    }
+    @keyframes slideHighlight {
+        from { transform: translateX(0); background: #fff; }
+        50% { transform: translateX(5px); }
+        to { transform: translateX(0); background: linear-gradient(135deg, #667eea08 0%, #764ba208 100%); }
+    }
+
+    /* Slider de progresso estilizado */
+    .progress-slider {
+        background: linear-gradient(to right, #667eea 0%, #667eea 0%, #e0e0e0 0%, #e0e0e0 100%);
+    }
+
+    /* Upload area com drag highlight */
+    .photo-upload-area.dragover {
+        border-color: #667eea;
+        background: #f0f4ff;
+        transform: scale(1.02);
+    }
+
+    /* Preview de fotos melhorado */
+    .photo-preview-item {
+        transition: all 0.3s ease;
+    }
+    .photo-preview-item:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+
+    /* Resumo com destaque */
+    .resumo-box {
+        border-left: 4px solid #667eea;
+        transition: all 0.3s ease;
+    }
+    .resumo-box:hover {
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    /* Alertas animados */
+    .alert {
+        animation: alertSlide 0.3s ease;
+    }
+    @keyframes alertSlide {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Botão pular etapa */
+    .btn-pular {
+        background: transparent;
+        border: 1px dashed #999;
+        color: #666;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 13px;
+        cursor: pointer;
+        margin-left: auto;
+        transition: all 0.3s;
+    }
+    .btn-pular:hover {
+        border-color: #667eea;
+        color: #667eea;
+        background: #f8f9ff;
+    }
+
+    /* Tooltip de ajuda */
+    .help-tooltip {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #e0e0e0;
+        color: #666;
+        font-size: 12px;
+        cursor: help;
+        margin-left: 8px;
+    }
+    .help-tooltip:hover {
+        background: #667eea;
+        color: white;
+    }
+
+    /* Keyboard hint */
+    .keyboard-hint {
+        font-size: 12px;
+        color: #888;
+        margin-top: 8px;
+        text-align: center;
+    }
+    .keyboard-hint kbd {
+        background: #f0f0f0;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family: monospace;
+        border: 1px solid #ddd;
+    }
+
     /* Dark mode support */
     body[data-theme="dark"] .section-title { color: #e8e8e8; }
     body[data-theme="dark"] .etapa-item { background: #252a3a; }
@@ -787,6 +912,367 @@
     body[data-theme="dark"] .photo-preview-item {
         box-shadow: 0 2px 8px rgba(0,0,0,0.3);
     }
+
+    /* ==========================================
+       RESPONSIVIDADE - Mobile & Desktop
+       ========================================== */
+
+    /* Container principal - Layout responsivo */
+    .main-container {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    @media (min-width: 1024px) {
+        .main-container {
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+    }
+
+    /* Header da obra - Responsivo */
+    @media (max-width: 768px) {
+        .obra-header {
+            padding: 16px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+        }
+        .obra-header h2 {
+            font-size: 18px;
+        }
+        .obra-header p {
+            font-size: 13px;
+        }
+    }
+
+    /* Wizard Container - Mobile First */
+    .wizard-container {
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        border-radius: 12px;
+    }
+
+    @media (max-width: 768px) {
+        .wizard-container {
+            border-radius: 0;
+            margin: 0 -8px;
+            width: calc(100% + 16px);
+        }
+    }
+
+    /* Wizard Header responsivo */
+    @media (max-width: 768px) {
+        .wizard-header {
+            padding: 16px 12px;
+        }
+        .wizard-header h4 {
+            font-size: 16px;
+        }
+        .wizard-header p {
+            font-size: 12px;
+        }
+    }
+
+    /* Wizard Steps - Scrollable em mobile */
+    @media (max-width: 768px) {
+        .wizard-steps {
+            padding: 12px 8px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            justify-content: flex-start;
+        }
+        .step-indicator {
+            min-width: max-content;
+            gap: 4px;
+        }
+        .step {
+            width: 28px;
+            height: 28px;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+        .step-line {
+            width: 20px;
+            height: 2px;
+        }
+    }
+
+    /* Wizard Content responsivo */
+    @media (max-width: 768px) {
+        .wizard-content {
+            padding: 16px 12px;
+            min-height: auto;
+        }
+        .step-title {
+            font-size: 16px;
+        }
+        .step-subtitle {
+            font-size: 13px;
+        }
+    }
+
+    /* Cards de seleção responsivos */
+    @media (max-width: 768px) {
+        .select-cards {
+            gap: 8px;
+        }
+        .select-card {
+            padding: 12px;
+            gap: 12px;
+        }
+        .select-card-icon {
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+        }
+        .select-card-title {
+            font-size: 14px;
+        }
+        .select-card-desc {
+            font-size: 12px;
+        }
+    }
+
+    /* Etapa cards responsivos */
+    @media (max-width: 768px) {
+        .etapa-cards {
+            max-height: 250px;
+            gap: 8px;
+        }
+        .etapa-card {
+            padding: 10px;
+        }
+        .etapa-card-nome {
+            font-size: 13px;
+        }
+        .etapa-card-status {
+            font-size: 10px;
+        }
+    }
+
+    /* Formulários responsivos */
+    @media (max-width: 768px) {
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            padding: 12px;
+            font-size: 16px; /* Evita zoom no iOS */
+            border-radius: 8px;
+        }
+        .form-group textarea {
+            min-height: 100px;
+        }
+    }
+
+    /* Progress Slider responsivo */
+    @media (max-width: 768px) {
+        .progress-slider-container {
+            padding: 16px;
+        }
+        .progress-value {
+            font-size: 28px;
+        }
+        .progress-presets {
+            gap: 6px;
+        }
+        .progress-preset {
+            padding: 6px 10px;
+            font-size: 11px;
+        }
+    }
+
+    /* Upload de fotos responsivo */
+    @media (max-width: 768px) {
+        .photo-upload-area {
+            padding: 24px 16px;
+        }
+        .photo-upload-area i {
+            font-size: 36px;
+        }
+        .photo-upload-text {
+            font-size: 14px;
+        }
+        .photo-upload-hint {
+            font-size: 12px;
+        }
+        .photos-preview {
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 8px;
+        }
+        .photo-preview-item {
+            border-radius: 8px;
+        }
+    }
+
+    /* Resumo responsivo */
+    @media (max-width: 768px) {
+        .resumo-box {
+            padding: 16px;
+        }
+        .resumo-item {
+            flex-direction: column;
+            gap: 4px;
+            padding: 8px 0;
+        }
+        .resumo-label {
+            font-size: 12px;
+        }
+        .resumo-value {
+            font-size: 13px;
+            text-align: left !important;
+            max-width: 100% !important;
+        }
+    }
+
+    /* Navegação do wizard responsiva */
+    @media (max-width: 768px) {
+        .wizard-nav {
+            padding: 12px;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .wizard-btn {
+            padding: 12px 16px;
+            font-size: 14px;
+            min-height: 48px;
+            flex: 1 1 calc(50% - 4px);
+        }
+        .wizard-btn-success {
+            flex: 1 1 100%;
+            order: -1;
+        }
+    }
+
+    /* Etapas da obra responsivas */
+    @media (max-width: 768px) {
+        .etapa-item {
+            padding: 12px;
+            margin-bottom: 8px;
+        }
+        .etapa-nome {
+            font-size: 14px;
+        }
+        .etapa-status {
+            padding: 3px 8px;
+            font-size: 10px;
+        }
+    }
+
+    /* OS lista responsiva */
+    @media (max-width: 768px) {
+        .os-item {
+            padding: 12px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .os-numero {
+            width: 40px;
+            height: 40px;
+            font-size: 14px;
+        }
+        .os-cliente {
+            font-size: 14px;
+        }
+        .os-data {
+            font-size: 12px;
+        }
+        .btn-acao {
+            width: 100%;
+            justify-content: center;
+            margin-top: 8px;
+            padding: 12px 20px;
+        }
+    }
+
+    /* Títulos de seção responsivos */
+    @media (max-width: 768px) {
+        .section-title {
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+    }
+
+    /* Toast notifications responsivos */
+    @media (max-width: 768px) {
+        #toastContainer {
+            left: 16px !important;
+            right: 16px !important;
+            top: auto !important;
+            bottom: 80px !important;
+            max-width: none !important;
+        }
+    }
+
+    /* Atalhos de teclado escondidos em mobile */
+    @media (max-width: 768px) {
+        .keyboard-hint {
+            display: none !important;
+        }
+    }
+
+    /* Landscape mode em mobile */
+    @media (max-height: 500px) and (orientation: landscape) {
+        .wizard-header {
+            padding: 12px;
+        }
+        .wizard-header h4 {
+            font-size: 14px;
+        }
+        .wizard-steps {
+            padding: 8px;
+        }
+        .wizard-content {
+            padding: 12px;
+            min-height: 200px;
+        }
+    }
+
+    /* Tablets */
+    @media (min-width: 769px) and (max-width: 1023px) {
+        .main-container {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Tela grande - Desktop */
+    @media (min-width: 1400px) {
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+    }
+
+    /* Fix para safe areas em iPhone X+ */
+    @supports (padding: max(0px)) {
+        @media (max-width: 768px) {
+            .wizard-container {
+                padding-left: max(0px, env(safe-area-inset-left));
+                padding-right: max(0px, env(safe-area-inset-right));
+            }
+            .wizard-nav {
+                padding-bottom: max(12px, env(safe-area-inset-bottom));
+            }
+        }
+    }
+
+    /* Dark mode responsivo */
+    @media (max-width: 768px) {
+        body[data-theme="dark"] .wizard-container {
+            border-radius: 0;
+        }
+    }
 </style>
 
 <!-- Header da Obra -->
@@ -806,7 +1292,7 @@
     </div>
 </div>
 
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px;">
+<div class="main-container">
 
     <!-- Coluna Esquerda: Etapas e Atividades -->
     <div>
@@ -1082,9 +1568,21 @@
                 <button type="button" class="wizard-btn wizard-btn-primary" id="btnAvancar" onclick="wizard.nextStep()">
                     Avancar <i class='bx bx-chevron-right'></i>
                 </button>
+                <button type="button" class="btn-pular" onclick="wizard.pularWizard()" style="margin-left: auto; background: transparent; border: 1px dashed #999; color: #666; padding: 8px 16px; border-radius: 8px; font-size: 13px; cursor: pointer;">
+                    Cancelar
+                </button>
                 <button type="button" class="wizard-btn wizard-btn-success" id="btnFinalizar" onclick="wizard.submitForm()" style="display: none;">
                     <i class='bx bx-check'></i> Finalizar Registro
                 </button>
+            </div>
+
+            <!-- Dicas de teclado -->
+            <div style="background: #f8f9fa; padding: 10px 20px; border-top: 1px solid #e0e0e0; text-align: center; font-size: 12px; color: #888;">
+                <i class='bx bx-keyboard' style="margin-right: 6px;"></i>
+                <b>Atalhos:</b>
+                <kbd style="background: white; padding: 2px 6px; border-radius: 4px; border: 1px solid #ddd; margin: 0 4px;">Alt + →</kbd> Avançar
+                <kbd style="background: white; padding: 2px 6px; border-radius: 4px; border: 1px solid #ddd; margin: 0 4px;">Alt + ←</kbd> Voltar
+                <kbd style="background: white; padding: 2px 6px; border-radius: 4px; border: 1px solid #ddd; margin: 0 4px;">Ctrl + Enter</kbd> Finalizar
             </div>
         </div>
     </div>
@@ -1123,13 +1621,27 @@ const wizard = {
         this.setupKeyboardNavigation();
     },
 
-    // Criar container para toast notifications
+    // Criar container para toast notifications - Responsivo
     createToastContainer: function() {
         if (!document.getElementById('toastContainer')) {
             const container = document.createElement('div');
             container.id = 'toastContainer';
-            container.style.cssText = 'position:fixed;top:20px;right:20px;z-index:9999;max-width:350px;';
+            // Mobile: bottom center, Desktop: top right
+            const isMobile = window.innerWidth <= 768;
+            container.style.cssText = isMobile
+                ? 'position:fixed;left:16px;right:16px;bottom:80px;z-index:9999;'
+                : 'position:fixed;top:20px;right:20px;z-index:9999;max-width:350px;';
             document.body.appendChild(container);
+
+            // Atualizar posição ao redimensionar
+            window.addEventListener('resize', () => {
+                const isMobileNow = window.innerWidth <= 768;
+                if (isMobileNow) {
+                    container.style.cssText = 'position:fixed;left:16px;right:16px;bottom:80px;z-index:9999;';
+                } else {
+                    container.style.cssText = 'position:fixed;top:20px;right:20px;z-index:9999;max-width:350px;';
+                }
+            });
         }
     },
 
@@ -1521,7 +2033,17 @@ const wizard = {
     atualizarResumo: function() {
         document.getElementById('resumoEtapa').textContent = this.data.etapa_nome;
         document.getElementById('resumoTipo').textContent = this.data.tipo_nome || '-';
-        document.getElementById('resumoFotos').textContent = this.data.fotos.length > 0 ? `${this.data.fotos.length} foto(s)` : 'Nenhuma';
+
+        // Resumo de fotos com ícone
+        const resumoFotos = document.getElementById('resumoFotos');
+        if (this.data.fotos.length > 0) {
+            resumoFotos.innerHTML = `<i class='bx bx-image' style="color: #667eea; margin-right: 4px;"></i> ${this.data.fotos.length} foto${this.data.fotos.length > 1 ? 's' : ''}`;
+            resumoFotos.style.color = '#667eea';
+        } else {
+            resumoFotos.textContent = 'Nenhuma foto anexada';
+            resumoFotos.style.color = '#999';
+        }
+
         document.getElementById('resumoProgresso').textContent = this.data.percentual + '%';
         document.getElementById('resumoDescricao').textContent = this.data.descricao || '-';
 
