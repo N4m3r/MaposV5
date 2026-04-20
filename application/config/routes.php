@@ -132,6 +132,10 @@ $route['relatorioatendimentos/estatisticas'] = 'relatorioatendimentos/estatistic
 $route['relatorioatendimentos/exportar'] = 'relatorioatendimentos/exportar';
 $route['relatorioatendimentos/visualizar/(:num)'] = 'relatorioatendimentos/visualizar/$1';
 
+// Rota para relatório de atendimento do cliente (portal)
+$route['mine/relatorioatendimento/(:num)'] = 'mine/relatorioAtendimento/$1';
+$route['mine/relatorioAtendimento/(:num)'] = 'mine/relatorioAtendimento/$1';
+
 // Rotas do Dashboard para relatórios
 $route['dashboard/relatorio_atendimentos'] = 'dashboard/relatorio_atendimentos';
 $route['dashboard/relatorio_financeiro'] = 'dashboard/relatorio_financeiro';

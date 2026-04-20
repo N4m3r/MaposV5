@@ -45,7 +45,7 @@ class Obras_model extends CI_Model
     /**
      * Listar todas as obras
      */
-    public function getAll($where = [], $limit = null)
+    public function getAll($where = [], $limit = null, $offset = null)
     {
         if (!$this->tabelaExiste('obras')) {
             return [];
@@ -56,6 +56,9 @@ class Obras_model extends CI_Model
             $this->db->from('obras o');
             $this->db->join('clientes c', 'c.idClientes = o.cliente_id', 'left');
 
+            // Filtrar apenas obras ativas (não excluídas)
+            $this->db->where('o.ativo', 1);
+
             if (!empty($where)) {
                 $this->db->where($where);
             }
@@ -63,7 +66,7 @@ class Obras_model extends CI_Model
             $this->db->order_by('o.created_at', 'DESC');
 
             if ($limit) {
-                $this->db->limit($limit);
+                $this->db->limit($limit, $offset ?: 0);
             }
 
             $query = $this->db->get();
@@ -92,6 +95,7 @@ class Obras_model extends CI_Model
             $this->db->from('obras o');
             $this->db->join('clientes c', 'c.idClientes = o.cliente_id', 'left');
             $this->db->where('o.id', $id);
+            $this->db->where('o.ativo', 1);
             $query = $this->db->get();
 
             if ($query === false || !is_object($query)) {
@@ -204,6 +208,7 @@ class Obras_model extends CI_Model
 
         try {
             $this->db->where('obra_id', $obra_id);
+            $this->db->where('ativo', 1);
             $this->db->order_by('numero_etapa', 'ASC');
             $query = $this->db->get('obra_etapas');
 
@@ -382,6 +387,41 @@ class Obras_model extends CI_Model
 
             $this->db->insert('obra_equipe', $data);
             return $this->db->insert_id();
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Remover técnico da equipe (soft delete)
+     */
+    public function removerTecnicoEquipe($equipe_id)
+    {
+        try {
+            $this->db->where('id', $equipe_id);
+            $this->db->update('obra_equipe', ['ativo' => 0, 'data_saida' => date('Y-m-d')]);
+            return $this->db->affected_rows() > 0;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Verificar se técnico está na equipe da obra
+     */
+    public function tecnicoNaEquipe($obra_id, $tecnico_id)
+    {
+        if (!$this->tabelaExiste('obra_equipe')) {
+            return false;
+        }
+
+        try {
+            $this->db->where('obra_id', $obra_id);
+            $this->db->where('tecnico_id', $tecnico_id);
+            $this->db->where('ativo', 1);
+            $query = $this->db->get('obra_equipe');
+
+            return $query && $query->num_rows() > 0;
         } catch (Exception $e) {
             return false;
         }
@@ -681,6 +721,7 @@ class Obras_model extends CI_Model
             $this->db->join('clientes c', 'c.idClientes = o.cliente_id', 'left');
             $this->db->join('usuarios u', 'u.idUsuarios = o.gestor_id', 'left');
             $this->db->where('o.id', $id);
+            $this->db->where('o.ativo', 1);
             $query = $this->db->get();
 
             return $query ? $query->row() : null;
@@ -726,8 +767,9 @@ class Obras_model extends CI_Model
                 COUNT(DISTINCT oa.id) as total_atividades,
                 COUNT(DISTINCT CASE WHEN oa.status = "concluida" THEN oa.id END) as atividades_concluidas');
             $this->db->from('obra_etapas oe');
-            $this->db->join('obra_atividades oa', 'oa.etapa_id = oe.id AND oa.obra_id = oe.obra_id', 'left');
+            $this->db->join('obra_atividades oa', 'oa.etapa_id = oe.id AND oa.obra_id = oe.obra_id AND oa.ativo = 1', 'left');
             $this->db->where('oe.obra_id', $obra_id);
+            $this->db->where('oe.ativo', 1);
             $this->db->group_by('oe.id');
             $this->db->order_by('oe.numero_etapa', 'ASC');
             $query = $this->db->get();

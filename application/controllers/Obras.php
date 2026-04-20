@@ -291,6 +291,93 @@ class Obras extends MY_Controller
     }
 
     // ============================================
+    // EQUIPE
+    // ============================================
+
+    /**
+     * Gerenciar equipe da obra
+     */
+    public function equipe($obra_id)
+    {
+        if (!$obra_id || !is_numeric($obra_id)) {
+            $this->session->set_flashdata('error', 'Obra não encontrada.');
+            redirect('obras');
+        }
+
+        $this->load->model('usuarios_model');
+
+        $this->data['obra'] = $this->obras_model->getById($obra_id);
+        $this->data['equipe'] = $this->obras_model->getEquipe($obra_id);
+        $this->data['tecnicos'] = $this->usuarios_model->getAll();
+        $this->data['view'] = 'obras/equipe';
+
+        return $this->layout();
+    }
+
+    /**
+     * Adicionar técnico à equipe
+     */
+    public function adicionarTecnico()
+    {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')) {
+            $this->session->set_flashdata('error', 'Sem permissão.');
+            redirect('obras');
+        }
+
+        $obra_id = $this->input->post('obra_id');
+        $tecnico_id = $this->input->post('tecnico_id');
+        $funcao = $this->input->post('funcao') ?: 'Técnico';
+
+        if (!$obra_id || !$tecnico_id) {
+            $this->session->set_flashdata('error', 'Dados incompletos.');
+            redirect('obras/equipe/' . $obra_id);
+        }
+
+        // Verificar se técnico já está na equipe
+        if ($this->obras_model->tecnicoNaEquipe($obra_id, $tecnico_id)) {
+            $this->session->set_flashdata('error', 'Técnico já está na equipe desta obra.');
+            redirect('obras/equipe/' . $obra_id);
+        }
+
+        if ($this->obras_model->adicionarTecnicoEquipe($obra_id, $tecnico_id, $funcao)) {
+            $this->session->set_flashdata('success', 'Técnico adicionado à equipe com sucesso!');
+        } else {
+            $this->session->set_flashdata('error', 'Erro ao adicionar técnico à equipe.');
+        }
+
+        redirect('obras/equipe/' . $obra_id);
+    }
+
+    /**
+     * Remover técnico da equipe
+     */
+    public function removerTecnico($equipe_id)
+    {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')) {
+            $this->session->set_flashdata('error', 'Sem permissão.');
+            redirect('obras');
+        }
+
+        if (!$equipe_id || !is_numeric($equipe_id)) {
+            $this->session->set_flashdata('error', 'Registro não encontrado.');
+            redirect('obras');
+        }
+
+        // Buscar informação da equipe para redirecionar após remover
+        $this->db->where('id', $equipe_id);
+        $query = $this->db->get('obra_equipe');
+        $equipe = $query ? $query->row() : null;
+
+        if ($this->obras_model->removerTecnicoEquipe($equipe_id)) {
+            $this->session->set_flashdata('success', 'Técnico removido da equipe com sucesso!');
+        } else {
+            $this->session->set_flashdata('error', 'Erro ao remover técnico da equipe.');
+        }
+
+        redirect('obras/equipe/' . ($equipe ? $equipe->obra_id : 'gerenciar'));
+    }
+
+    // ============================================
     // ATIVIDADES
     // ============================================
 
