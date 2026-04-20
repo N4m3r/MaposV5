@@ -1825,6 +1825,10 @@ class Mine extends CI_Controller
 
         // Verificar se a OS pertence ao cliente logado
         $cliente_id = $this->session->userdata('cliente_id');
+        if (empty($cliente_id)) {
+            $this->session->set_flashdata('error', 'Sessão expirada. Por favor, faça login novamente.');
+            redirect('mine');
+        }
         if ($os->clientes_id != $cliente_id) {
             $this->session->set_flashdata('error', 'Esta OS não pertence ao cliente logado.');
             redirect('mine/painel');

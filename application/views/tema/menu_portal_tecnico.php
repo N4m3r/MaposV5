@@ -47,7 +47,7 @@
 
                 <!-- Minhas Obras -->
                 <li class="<?php if (isset($menuObras)) { echo 'active'; }; ?>">
-                    <a class="tip-bottom" title="" href="<?= site_url('tecnicos_admin/minhas_obras') ?>">
+                    <a class="tip-bottom" title="" href="<?= site_url('tecnicos/minhas_obras') ?>">
                         <i class='bx bx-building iconX'></i>
                         <span class="title">Minhas Obras</span>
                         <span class="title-tooltip">Minhas Obras</span>

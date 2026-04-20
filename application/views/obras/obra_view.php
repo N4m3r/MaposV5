@@ -385,10 +385,10 @@
                             <?php endif; ?>
                         </div>
                     </div>
-                    <?php if ($resumo['obra']->descricao): ?>
+                    <?php if ($resumo['obra']->observacoes): ?>
                     <div class="info-item full-width">
                         <div class="info-label">Descrição</div>
-                        <div class="info-value"><?php echo nl2br(htmlspecialchars($resumo['obra']->descricao)); ?></div>
+                        <div class="info-value"><?php echo nl2br(htmlspecialchars($resumo['obra']->observacoes)); ?></div>
                     </div>
                     <?php endif; ?>
                 </div>

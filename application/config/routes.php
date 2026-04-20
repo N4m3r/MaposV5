@@ -228,6 +228,8 @@ $route['tecnicos/relatorio_execucao/(:num)'] = 'tecnicos/relatorio_execucao/$1';
 $route['tecnicos/meu_estoque'] = 'tecnicos/meu_estoque';
 $route['tecnicos/perfil'] = 'tecnicos/perfil';
 $route['tecnicos/atualizar_foto'] = 'tecnicos/atualizar_foto';
+$route['tecnicos/minhas_obras'] = 'tecnicos/minhas_obras';
+$route['tecnicos/executar_obra/(:num)'] = 'tecnicos/executar_obra/$1';
 
 // APIs do Técnico
 $route['tecnicos/api/login'] = 'tecnicos/api_login';

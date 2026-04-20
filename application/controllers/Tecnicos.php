@@ -227,6 +227,90 @@ class Tecnicos extends CI_Controller
     }
 
     /**
+     * Listar obras atribuídas ao técnico
+     */
+    public function minhas_obras()
+    {
+        $tecnico_id = $this->session->userdata('tec_id');
+
+        $this->load->model('obras_model');
+
+        // Buscar obras onde o técnico está na equipe
+        $this->db->select('o.*, c.nomeCliente as cliente_nome');
+        $this->db->from('obras o');
+        $this->db->join('obra_equipe oe', 'oe.obra_id = o.id');
+        $this->db->join('clientes c', 'c.idClientes = o.cliente_id', 'left');
+        $this->db->where('oe.tecnico_id', $tecnico_id);
+        $this->db->where('oe.ativo', 1);
+        $this->db->where_in('o.status', ['Contratada', 'EmExecucao']);
+        $this->db->group_by('o.id');
+        $obras = $this->db->get()->result();
+
+        // Enriquecer dados
+        foreach ($obras as $obra) {
+            $obra->minhas_os = $this->db->where(['obra_id' => $obra->id, 'tecnico_responsavel' => $tecnico_id])->count_all_results('os');
+            $obra->etapas_pendentes = $this->db->where(['obra_id' => $obra->id, 'status !=' => 'concluida'])->count_all_results('obra_etapas');
+        }
+
+        $this->data['obras'] = $obras;
+        $this->data['menuObras'] = 'active';
+
+        $this->load->view('tema/topo', $this->data);
+        $this->load->view('tema/menu_portal_tecnico', $this->data);
+        $this->load->view('tecnicos/minhas_obras', $this->data);
+        $this->load->view('tema/rodape', $this->data);
+    }
+
+    /**
+     * Técnico - Visualizar e executar etapas da obra
+     */
+    public function executar_obra($obra_id = null)
+    {
+        if (!$obra_id) {
+            $this->session->set_flashdata('error', 'Obra não encontrada.');
+            redirect('tecnicos/minhas_obras');
+        }
+
+        $tecnico_id = $this->session->userdata('tec_id');
+
+        $this->load->model('obras_model');
+
+        // Verificar se técnico está na equipe
+        $this->db->where(['obra_id' => $obra_id, 'tecnico_id' => $tecnico_id, 'ativo' => 1]);
+        if (!$this->db->get('obra_equipe')->row()) {
+            $this->session->set_flashdata('error', 'Você não está alocado nesta obra.');
+            redirect('tecnicos/minhas_obras');
+        }
+
+        $obra = $this->obras_model->getById($obra_id);
+        if (!$obra) {
+            $this->session->set_flashdata('error', 'Obra não encontrada.');
+            redirect('tecnicos/minhas_obras');
+        }
+
+        // Buscar etapas da obra
+        $etapas = $this->obras_model->getEtapas($obra_id);
+
+        // Buscar minhas OS na obra
+        $this->db->select('os.idOs, os.status, os.dataInicial, c.nomeCliente');
+        $this->db->from('os');
+        $this->db->join('clientes c', 'c.idClientes = os.clientes_id');
+        $this->db->where('os.obra_id', $obra_id);
+        $this->db->where('os.tecnico_responsavel', $tecnico_id);
+        $minhas_os = $this->db->get()->result();
+
+        $this->data['obra'] = $obra;
+        $this->data['etapas'] = $etapas;
+        $this->data['minhas_os'] = $minhas_os;
+        $this->data['menuObras'] = 'active';
+
+        $this->load->view('tema/topo', $this->data);
+        $this->load->view('tema/menu_portal_tecnico', $this->data);
+        $this->load->view('tecnicos/executar_obra', $this->data);
+        $this->load->view('tema/rodape', $this->data);
+    }
+
+    /**
      * Visualizar detalhes da OS e executar
      */
     public function executar_os($os_id = null)

@@ -176,7 +176,7 @@
                         </a>
                     </div>
                     <div class="span3">
-                        <a href="<?php echo site_url('tecnicos_admin/minhas_obras'); ?>" class="btn btn-large" style="width: 90%; padding: 20px; background: linear-gradient(135deg, #11998e, #38ef7d); color: white;">
+                        <a href="<?php echo site_url('tecnicos/minhas_obras'); ?>" class="btn btn-large" style="width: 90%; padding: 20px; background: linear-gradient(135deg, #11998e, #38ef7d); color: white;">
                             <i class="bx bx-building" style="font-size: 32px; display: block; margin-bottom: 10px;"></i>
                             <span style="font-size: 14px;">Minhas Obras</span>
                         </a>
@@ -207,7 +207,7 @@
                 <span class="icon"><i class="bx bx-building" style="color: white;"></i></span>
                 <h5 style="color: white;">Minhas Obras</h5>
                 <div class="buttons">
-                    <a href="<?php echo site_url('tecnicos_admin/minhas_obras'); ?>" class="btn btn-mini" style="background: rgba(255,255,255,0.9); color: #11998e;">
+                    <a href="<?php echo site_url('tecnicos/minhas_obras'); ?>" class="btn btn-mini" style="background: rgba(255,255,255,0.9); color: #11998e;">
                         <i class="bx bx-list-ul"></i> Ver Todas
                     </a>
                 </div>
@@ -244,7 +244,7 @@
                                             <?php echo $obra->status == 'EmExecucao' ? 'Em Execução' : $obra->status; ?>
                                         </span>
 
-                                        <a href="<?php echo site_url('tecnicos_admin/tecnico_executar_obra/' . $obra->id); ?>" class="btn btn-small" style="background: linear-gradient(135deg, #11998e, #38ef7d); color: white;">
+                                        <a href="<?php echo site_url('tecnicos/executar_obra/' . $obra->id); ?>" class="btn btn-small" style="background: linear-gradient(135deg, #11998e, #38ef7d); color: white;">
                                             <i class="bx bx-play-circle"></i> Executar
                                         </a>
                                     </div>
