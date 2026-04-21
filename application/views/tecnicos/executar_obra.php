@@ -1397,7 +1397,7 @@
             </div>
         </div>
 
-        <a href="<?php echo site_url('atividades/wizard_obra/' . $obra->id . '/' . $wizard_em_andamento->etapa_id); ?>"
+        <a href="<?php echo site_url('tecnicos/wizard_obra/' . $obra->id . '/' . $wizard_em_andamento->etapa_id); ?>"
            style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;"
            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(17,153,142,0.3)';"
            onmouseout="this.style.transform=''; this.style.boxShadow='';">
@@ -1573,7 +1573,7 @@
             </p>
 
             <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
-                <a href="<?php echo site_url('atividades/wizard_obra/' . $obra->id); ?>"
+                <a href="<?php echo site_url('tecnicos/wizard_obra/' . $obra->id); ?>"
                    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;"
                    onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(102,126,234,0.3)';"
                    onmouseout="this.style.transform=''; this.style.boxShadow='';">

@@ -361,6 +361,84 @@ class Tecnicos extends MY_Controller
     }
 
     /**
+     * Wizard de atividades para obra - Integração com sistema de atividades
+     * Carrega o wizard dentro do layout do portal do técnico
+     */
+    public function wizard_obra($obra_id = null, $etapa_id = null)
+    {
+        if (!$obra_id) {
+            $this->session->set_flashdata('error', 'Obra não encontrada.');
+            redirect('tecnicos/minhas_obras');
+        }
+
+        $tecnico_id = $this->session->userdata('tec_id');
+
+        // Verificar se técnico está na equipe
+        $this->load->model('obras_model');
+        if (!$this->obras_model->tecnicoNaEquipe($obra_id, $tecnico_id)) {
+            $this->session->set_flashdata('error', 'Você não está alocado nesta obra.');
+            redirect('tecnicos/minhas_obras');
+        }
+
+        // Carregar dados da obra
+        $obra = $this->obras_model->getById($obra_id);
+        if (!$obra) {
+            $this->session->set_flashdata('error', 'Obra não encontrada.');
+            redirect('tecnicos/minhas_obras');
+        }
+
+        // Carregar model de atividades
+        $this->load->model('Atividades_model', 'atividades');
+        $this->load->model('Atividades_tipos_model', 'atividades_tipos');
+
+        // Verifica se já tem atividade em andamento
+        $atividade_andamento = $this->atividades->getAtividadeEmAndamento($tecnico_id);
+
+        // Se tem atividade em andamento em outra obra, redirecionar
+        if ($atividade_andamento && $atividade_andamento->obra_id != $obra_id) {
+            $this->session->set_flashdata('error', 'Você já tem uma atividade em andamento em outra obra.');
+            redirect('tecnicos/wizard_obra/' . $atividade_andamento->obra_id);
+        }
+
+        // Carrega etapa se especificada
+        $etapa = null;
+        if ($etapa_id) {
+            $etapa = $this->obras_model->getEtapaById($etapa_id);
+        }
+
+        // Carrega etapas para seleção
+        $etapas = $this->obras_model->getEtapas($obra_id);
+
+        // Vincula atividade planejada se informada via GET
+        $obra_atividade_id = $this->input->get('obra_atividade_id');
+        $obra_atividade = null;
+        if ($obra_atividade_id) {
+            $this->load->model('obra_atividades_model');
+            $obra_atividade = $this->obra_atividades_model->getById($obra_atividade_id);
+        }
+
+        // Prepara dados para a view
+        $this->data['obra'] = $obra;
+        $this->data['etapa'] = $etapa;
+        $this->data['etapas'] = $etapas;
+        $this->data['atividade_em_andamento'] = $atividade_andamento;
+        $this->data['atividades_lista'] = $this->atividades->listarPorObra($obra_id);
+        $this->data['tipos_atividades'] = $this->atividades_tipos->listarPorCategoria();
+        $this->data['checkin_realizado'] = count($this->data['atividades_lista']) > 0;
+        $this->data['obra_atividade'] = $obra_atividade;
+        $this->data['obra_atividade_id'] = $obra_atividade_id;
+        $this->data['obra_id'] = $obra_id;
+        $this->data['etapa_id'] = $etapa_id;
+        $this->data['is_portal_tecnico'] = true;
+
+        $this->data['menuObras'] = 'active';
+        $this->data['pageTitle'] = 'Wizard - ' . $obra->nome;
+        $this->data['title'] = 'Wizard de Atividades - Portal do Técnico';
+
+        $this->_load_tec_layout('wizard_obra', $this->data);
+    }
+
+    /**
      * Visualizar detalhes da OS e executar
      */
     public function executar_os($os_id = null)
