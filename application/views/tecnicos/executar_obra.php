@@ -1345,6 +1345,39 @@
     .empty-atividades {
         border: 2px dashed #e0e0e0;
     }
+
+    /* Estilos para o step de Materiais */
+    .material-item {
+        animation: fadeIn 0.3s ease;
+    }
+
+    #stepMateriais {
+        display: none;
+    }
+
+    #stepMateriais.active {
+        display: block;
+    }
+
+    .material-form input:focus,
+    .material-form select:focus,
+    .material-form textarea:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+    }
+
+    .empty-materiais {
+        animation: pulse 2s infinite;
+    }
+
+    .select-card.selected-foradoscopo {
+        border-color: #ff6b6b !important;
+        background: linear-gradient(135deg, #fff5f5 0%, #fff 100%);
+    }
+
+    .select-card.selected-foradoscopo .select-card-icon {
+        background: linear-gradient(135deg, #ff6b6b, #ee5a5a) !important;
+    }
 </style>
 
 <!-- Header da Obra -->
@@ -2263,12 +2296,15 @@ const wizard = {
 
         // Visual feedback
         document.querySelectorAll('.select-card').forEach(card => {
-            card.classList.remove('selected');
+            card.classList.remove('selected', 'selected-foradoscopo');
             card.style.transform = '';
         });
 
         const selectedCard = event.currentTarget;
         selectedCard.classList.add('selected');
+        if (tipo === 'fora_do_escopo') {
+            selectedCard.classList.add('selected-foradoscopo');
+        }
         selectedCard.style.transform = 'scale(1.03)';
         setTimeout(() => selectedCard.style.transform = '', 200);
 
@@ -2506,11 +2542,25 @@ const wizard = {
                 }
                 this.data.descricao = descricao;
                 return true;
-            case 5: // Fotos - sempre valido (opcional)
+            case 5: // Materiais - validar campos se preenchidos, mas nao obrigatorios
+                if (this.data.tipo === 'fora_do_escopo') {
+                    // Salvar dados de materiais
+                    this.data.tempo_gasto = document.getElementById('tempo_gasto').value;
+                    this.data.tipo_tempo = document.getElementById('tipo_tempo').value;
+                    this.data.solicitante = document.getElementById('solicitante').value.trim();
+                    this.data.justificativa = document.getElementById('justificativa').value.trim();
+
+                    // Aviso se nao adicionou materiais
+                    if (this.data.materiais.length === 0) {
+                        this.showToast('Nenhum material registrado. Adicione materiais ou continue.', 'info');
+                    }
+                }
                 return true;
-            case 6: // Progresso - sempre valido
+            case 6: // Fotos - sempre valido (opcional)
                 return true;
-            case 7: // Resumo - sempre valido
+            case 7: // Progresso - sempre valido
+                return true;
+            case 8: // Resumo - sempre valido
                 return true;
             default:
                 return true;
@@ -2653,7 +2703,60 @@ const wizard = {
             resumoAtividade.textContent = '-';
         }
 
-        document.getElementById('resumoTipo').textContent = this.data.tipo_nome || '-';
+        // Resumo de tipo especial (fora do escopo)
+        let tipoTexto = this.data.tipo_nome || '-';
+        if (this.data.tipo === 'fora_do_escopo') {
+            tipoTexto += ' <span style="color: #ff6b6b; font-size: 11px;">(Nao Planejada)</span>';
+        }
+        document.getElementById('resumoTipo').innerHTML = tipoTexto;
+
+        // Resumo de materiais (apenas para atividades fora do escopo)
+        let resumoMateriaisEl = document.getElementById('resumoMateriais');
+        if (this.data.tipo === 'fora_do_escopo') {
+            if (!resumoMateriaisEl) {
+                // Criar elemento dinamicamente
+                const resumoBox = document.getElementById('resumoBox');
+                const novoItem = document.createElement('div');
+                novoItem.className = 'resumo-item';
+                novoItem.id = 'resumoMateriaisItem';
+                novoItem.innerHTML = `
+                    <span class="resumo-label">Materiais:</span>
+                    <span class="resumo-value" id="resumoMateriais">-</span>
+                `;
+                // Inserir antes do Progresso
+                const progressoItem = resumoBox.querySelector('.resumo-item:nth-child(5)');
+                if (progressoItem) {
+                    resumoBox.insertBefore(novoItem, progressoItem);
+                }
+                resumoMateriaisEl = document.getElementById('resumoMateriais');
+            }
+
+            let materiaisTexto = '';
+            if (this.data.materiais.length > 0) {
+                materiaisTexto = `${this.data.materiais.length} item(s)`;
+                const totalValor = this.data.materiais.reduce((sum, m) => sum + ((m.valor || 0) * m.qtd), 0);
+                if (totalValor > 0) {
+                    materiaisTexto += ` | Total: R$ ${totalValor.toFixed(2)}`;
+                }
+            } else {
+                materiaisTexto = 'Nenhum material registrado';
+            }
+
+            // Adicionar tempo gasto
+            if (this.data.tempo_gasto) {
+                materiaisTexto += `<br><span style="font-size: 12px; color: #666;">Tempo: ${this.data.tempo_gasto}h (${this.data.tipo_tempo})`;
+                if (this.data.solicitante) {
+                    materiaisTexto += ` | Solicitante: ${this.escapeHtml(this.data.solicitante)}`;
+                }
+                materiaisTexto += '</span>';
+            }
+
+            resumoMateriaisEl.innerHTML = materiaisTexto;
+        } else if (resumoMateriaisEl) {
+            // Remover elemento se nao for fora do escopo
+            const item = document.getElementById('resumoMateriaisItem');
+            if (item) item.remove();
+        }
 
         // Resumo de fotos com ícone
         const resumoFotos = document.getElementById('resumoFotos');
@@ -2676,6 +2779,8 @@ const wizard = {
             resumoProgresso.style.color = '#e74c3c';
         } else if (this.data.tipo === 'observacao') {
             resumoProgresso.style.color = '#f39c12';
+        } else if (this.data.tipo === 'fora_do_escopo') {
+            resumoProgresso.style.color = '#ff6b6b';
         } else {
             resumoProgresso.style.color = '#667eea';
         }
@@ -2708,6 +2813,18 @@ const wizard = {
             formData.append('tipo', this.data.tipo);
             formData.append('descricao', this.data.descricao);
             formData.append('percentual_concluido', this.data.percentual);
+
+            // Adicionar dados de materiais (se for atividade fora do escopo)
+            if (this.data.tipo === 'fora_do_escopo') {
+                formData.append('is_foradoscopo', '1');
+                formData.append('tempo_gasto', this.data.tempo_gasto || '');
+                formData.append('tipo_tempo', this.data.tipo_tempo || '');
+                formData.append('solicitante', this.data.solicitante || '');
+                formData.append('justificativa', this.data.justificativa || '');
+                if (this.data.materiais.length > 0) {
+                    formData.append('materiais', JSON.stringify(this.data.materiais));
+                }
+            }
 
             // Adicionar fotos
             this.data.fotos.forEach((foto, index) => {

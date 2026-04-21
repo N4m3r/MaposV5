@@ -363,7 +363,30 @@
                     <div class="empty-state-icon"><i class="icon-tasks"></i></div>
                     <div class="empty-state-text">Nenhuma atividade atribuída para você nesta obra.</div>
                 </div>
-                <?php endif; ?>
+                <?php endif; ?
+            </div>
+
+            <!-- Sistema de Registro de Atividades (Hora Início/Fim) -->
+            <div class="obra-dash-card" style="border-left: 4px solid #11998e;">
+                <div class="obra-dash-card-header">
+                    <div class="obra-dash-card-title">
+                        <i class="bx bx-timer" style="color: #11998e;"></i> Registro de Atividades
+                    </div>
+                </div>
+                <div style="background: linear-gradient(135deg, #11998e10 0%, #38ef7d10 100%); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                    <p style="margin: 0 0 10px 0; font-size: 14px;">
+                        <strong><i class="bx bx-info-circle"></i> Registre Hora Início e Hora Fim</strong>
+                        <br>Utilize o novo sistema para registrar atividades com precisão de tempo.
+                    </p>
+                    <a href="<?php echo site_url('atividades/wizard_obra/' . $obra->id); ?>" class="btn-acao btn-acao-iniciar" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white;">
+                        <i class="bx bx-play"></i> Iniciar Atividade
+                    </a>
+                </div>
+                <p style="font-size: 12px; color: #666; margin: 0;">
+                    <i class="bx bx-check-circle"></i> Registro preciso de tempo<br>
+                    <i class="bx bx-camera"></i> Fotos das atividades<br>
+                    <i class="bx bx-map"></i> Geolocalização
+                </p>
             </div>
 
             <!-- Etapas -->

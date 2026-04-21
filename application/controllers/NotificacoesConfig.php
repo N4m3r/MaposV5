@@ -166,9 +166,89 @@ class NotificacoesConfig extends MY_Controller
             'venda' => 'Vendas',
             'cobranca' => 'Cobranças',
             'marketing' => 'Marketing',
-            'sistema' => 'Sistema'
+            'sistema' => 'Sistema',
+            'personalizado' => 'Personalizados'
         ];
         $this->data['view'] = 'notificacoes/templates';
+        $this->data['menuConfiguracoes'] = 'Notificações';
+
+        return $this->layout();
+    }
+
+    /**
+     * Adicionar novo template personalizado
+     */
+    public function adicionar_template()
+    {
+        if ($this->input->post()) {
+            $chave = $this->input->post('chave');
+
+            // Validações
+            if (empty($chave) || empty($this->input->post('nome')) || empty($this->input->post('mensagem'))) {
+                $this->session->set_flashdata('error', 'Preencha todos os campos obrigatórios.');
+                redirect(current_url());
+            }
+
+            // Verifica se chave já existe
+            if ($this->notificacoes_templates_model->getByChave($chave)) {
+                $this->session->set_flashdata('error', 'Esta chave já está em uso. Escolha outra.');
+                redirect(current_url());
+            }
+
+            // Valida formato da chave (apenas letras, números e underline)
+            if (!preg_match('/^[a-z0-9_]+$/', $chave)) {
+                $this->session->set_flashdata('error', 'A chave deve conter apenas letras minúsculas, números e underline (_).');
+                redirect(current_url());
+            }
+
+            // Processa variáveis personalizadas
+            $variaveis = [];
+            $vars_nomes = $this->input->post('variavel_nome') ?? [];
+            $vars_descs = $this->input->post('variavel_desc') ?? [];
+
+            foreach ($vars_nomes as $i => $nome) {
+                if (!empty($nome)) {
+                    $variaveis[$nome] = $vars_descs[$i] ?? $nome;
+                }
+            }
+
+            $dados = [
+                'chave' => $chave,
+                'nome' => $this->input->post('nome'),
+                'descricao' => $this->input->post('descricao'),
+                'categoria' => $this->input->post('categoria') ?: 'personalizado',
+                'canal' => $this->input->post('canal') ?: 'whatsapp',
+                'assunto' => $this->input->post('assunto'),
+                'mensagem' => $this->input->post('mensagem'),
+                'variaveis' => json_encode($variaveis),
+                'ativo' => $this->input->post('ativo') ? 1 : 0,
+                'e_marketing' => $this->input->post('e_marketing') ? 1 : 0,
+            ];
+
+            if ($this->notificacoes_templates_model->salvar($dados)) {
+                $this->session->set_flashdata('success', 'Template criado com sucesso!');
+                log_info('Criou novo template de notificação: ' . $chave);
+                redirect('notificacoesConfig/templates');
+            } else {
+                $this->session->set_flashdata('error', 'Erro ao criar template.');
+            }
+        }
+
+        $this->data['categorias'] = [
+            'os' => 'Ordens de Serviço',
+            'venda' => 'Vendas',
+            'cobranca' => 'Cobranças',
+            'marketing' => 'Marketing',
+            'sistema' => 'Sistema',
+            'personalizado' => 'Personalizados'
+        ];
+        $this->data['canais'] = [
+            'whatsapp' => 'WhatsApp',
+            'email' => 'E-mail',
+            'sms' => 'SMS',
+            'todos' => 'Todos'
+        ];
+        $this->data['view'] = 'notificacoes/templates_adicionar';
         $this->data['menuConfiguracoes'] = 'Notificações';
 
         return $this->layout();
@@ -191,6 +271,11 @@ class NotificacoesConfig extends MY_Controller
             redirect('notificacoesConfig/templates');
         }
 
+        // Verifica se é template padrão
+        $chavesPadrao = ['os_criada', 'os_atualizada', 'os_pronta', 'os_orcamento', 'os_aguardando_peca',
+                         'venda_realizada', 'cobranca_gerada', 'cobranca_vencimento', 'aniversario'];
+        $this->data['is_padrao'] = in_array($template->chave, $chavesPadrao);
+
         if ($this->input->post()) {
             $dados = [
                 'id' => $id,
@@ -200,6 +285,25 @@ class NotificacoesConfig extends MY_Controller
                 'assunto' => $this->input->post('assunto'),
                 'ativo' => $this->input->post('ativo') ? 1 : 0,
             ];
+
+            // Se não for template padrão, permite editar categoria e variáveis
+            if (!$this->data['is_padrao']) {
+                $dados['categoria'] = $this->input->post('categoria');
+                $dados['canal'] = $this->input->post('canal');
+                $dados['e_marketing'] = $this->input->post('e_marketing') ? 1 : 0;
+
+                // Processa variáveis personalizadas
+                $variaveis = [];
+                $vars_nomes = $this->input->post('variavel_nome') ?? [];
+                $vars_descs = $this->input->post('variavel_desc') ?? [];
+
+                foreach ($vars_nomes as $i => $nome) {
+                    if (!empty($nome)) {
+                        $variaveis[$nome] = $vars_descs[$i] ?? $nome;
+                    }
+                }
+                $dados['variaveis'] = json_encode($variaveis);
+            }
 
             if ($this->notificacoes_templates_model->salvar($dados)) {
                 $this->session->set_flashdata('success', 'Template atualizado com sucesso!');
@@ -213,6 +317,20 @@ class NotificacoesConfig extends MY_Controller
 
         $this->data['template'] = $template;
         $this->data['variaveis'] = $this->notificacoes_templates_model->getVariaveis($template->chave);
+        $this->data['categorias'] = [
+            'os' => 'Ordens de Serviço',
+            'venda' => 'Vendas',
+            'cobranca' => 'Cobranças',
+            'marketing' => 'Marketing',
+            'sistema' => 'Sistema',
+            'personalizado' => 'Personalizados'
+        ];
+        $this->data['canais'] = [
+            'whatsapp' => 'WhatsApp',
+            'email' => 'E-mail',
+            'sms' => 'SMS',
+            'todos' => 'Todos'
+        ];
         $this->data['view'] = 'notificacoes/templates_editar';
         $this->data['menuConfiguracoes'] = 'Notificações';
 
@@ -233,6 +351,42 @@ class NotificacoesConfig extends MY_Controller
             $this->session->set_flashdata('success', 'Status do template alterado!');
         } else {
             $this->session->set_flashdata('error', 'Erro ao alterar status.');
+        }
+
+        redirect('notificacoesConfig/templates');
+    }
+
+    /**
+     * Excluir template (apenas personalizados)
+     */
+    public function excluir_template($id = null)
+    {
+        if (!$id) {
+            $this->session->set_flashdata('error', 'Template não especificado.');
+            redirect('notificacoesConfig/templates');
+        }
+
+        $template = $this->notificacoes_templates_model->getById($id);
+
+        if (!$template) {
+            $this->session->set_flashdata('error', 'Template não encontrado.');
+            redirect('notificacoesConfig/templates');
+        }
+
+        // Verifica se é um template padrão
+        $chavesPadrao = ['os_criada', 'os_atualizada', 'os_pronta', 'os_orcamento', 'os_aguardando_peca',
+                         'venda_realizada', 'cobranca_gerada', 'cobranca_vencimento', 'aniversario'];
+
+        if (in_array($template->chave, $chavesPadrao)) {
+            $this->session->set_flashdata('error', 'Templates padrão não podem ser excluídos, apenas desativados.');
+            redirect('notificacoesConfig/templates');
+        }
+
+        if ($this->notificacoes_templates_model->excluir($id)) {
+            $this->session->set_flashdata('success', 'Template excluído com sucesso!');
+            log_info('Excluiu template de notificação: ' . $template->chave);
+        } else {
+            $this->session->set_flashdata('error', 'Erro ao excluir template.');
         }
 
         redirect('notificacoesConfig/templates');

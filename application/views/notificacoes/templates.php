@@ -112,6 +112,13 @@
     .btn-toggle:hover {
         opacity: 0.8;
     }
+    .btn-delete {
+        background: #dc3545;
+        color: white;
+    }
+    .btn-delete:hover {
+        background: #c82333;
+    }
     .category-section {
         margin-bottom: 30px;
     }
@@ -140,6 +147,9 @@
                 </span>
                 <h5>Templates de Mensagens</h5>
                 <div class="buttons">
+                    <a href="<?php echo site_url('notificacoesConfig/adicionar_template'); ?>" class="btn btn-mini btn-success">
+                        <i class="bx bx-plus"></i> Novo Template
+                    </a>
                     <a href="<?php echo site_url('notificacoesConfig/configuracoes'); ?>" class="btn btn-mini">
                         <i class="bx bx-cog"></i> Configurações
                     </a>
@@ -213,6 +223,17 @@
                                                    class="btn-icon btn-toggle <?php echo $template->ativo ? 'active' : ''; ?>" title="Ativar/Desativar">
                                                     <i class="bx bx-power-off"></i>
                                                 </a>
+                                                <?php
+                                                // Só permite excluir templates personalizados (não padrão)
+                                                $chavesPadrao = ['os_criada', 'os_atualizada', 'os_pronta', 'os_orcamento', 'os_aguardando_peca',
+                                                                 'venda_realizada', 'cobranca_gerada', 'cobranca_vencimento', 'aniversario'];
+                                                if (!in_array($template->chave, $chavesPadrao)): ?>
+                                                    <a href="<?php echo site_url('notificacoesConfig/excluir_template/' . $template->id); ?>"
+                                                       class="btn-icon btn-delete" title="Excluir"
+                                                       onclick="return confirm('Tem certeza que deseja excluir este template?');">
+                                                        <i class="bx bx-trash"></i>
+                                                    </a>
+                                                <?php endif; ?>
                                             </div>
                                         </div>
                                     </div>

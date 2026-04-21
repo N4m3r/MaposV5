@@ -1903,6 +1903,20 @@ class Tecnicos extends CI_Controller
             )");
         }
 
+        // Criar tabela de materiais para atividades fora do escopo
+        if (!$this->db->table_exists('obra_atividade_materiais')) {
+            $this->db->query("CREATE TABLE IF NOT EXISTS obra_atividade_materiais (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                atividade_id INT NOT NULL,
+                nome VARCHAR(255) NOT NULL,
+                quantidade DECIMAL(10,2) DEFAULT 1,
+                unidade VARCHAR(20) DEFAULT 'un',
+                valor_unitario DECIMAL(10,2) NULL,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (atividade_id) REFERENCES obra_atividades(id) ON DELETE CASCADE
+            )");
+        }
+
         // Processar fotos (suporte a base64 legado e upload de arquivos)
         $fotos_salvas = [];
 
@@ -1941,6 +1955,28 @@ class Tecnicos extends CI_Controller
         // Verificar quais colunas existem na tabela (para compatibilidade)
         $colunas_existentes = $this->db->list_fields('obra_atividades');
         log_message('debug', 'Colunas existentes: ' . implode(', ', $colunas_existentes));
+
+        // Verificar/adicionar colunas para atividades fora do escopo
+        if (!in_array('is_foradoscopo', $colunas_existentes)) {
+            $this->db->query("ALTER TABLE obra_atividades ADD COLUMN is_foradoscopo TINYINT(1) DEFAULT 0");
+            $colunas_existentes[] = 'is_foradoscopo';
+        }
+        if (!in_array('tempo_gasto', $colunas_existentes)) {
+            $this->db->query("ALTER TABLE obra_atividades ADD COLUMN tempo_gasto DECIMAL(5,2) NULL");
+            $colunas_existentes[] = 'tempo_gasto';
+        }
+        if (!in_array('tipo_tempo', $colunas_existentes)) {
+            $this->db->query("ALTER TABLE obra_atividades ADD COLUMN tipo_tempo VARCHAR(50) NULL");
+            $colunas_existentes[] = 'tipo_tempo';
+        }
+        if (!in_array('solicitante', $colunas_existentes)) {
+            $this->db->query("ALTER TABLE obra_atividades ADD COLUMN solicitante VARCHAR(255) NULL");
+            $colunas_existentes[] = 'solicitante';
+        }
+        if (!in_array('justificativa', $colunas_existentes)) {
+            $this->db->query("ALTER TABLE obra_atividades ADD COLUMN justificativa TEXT NULL");
+            $colunas_existentes[] = 'justificativa';
+        }
 
         // Se atividade_id foi informado, atualizar a atividade existente
         if ($atividade_existente_id) {
@@ -2000,6 +2036,14 @@ class Tecnicos extends CI_Controller
             'data_atividade' => date('Y-m-d'),
         ];
 
+        // Receber dados de atividade fora do escopo
+        $is_foradoscopo = $this->input->post('is_foradoscopo');
+        $tempo_gasto = $this->input->post('tempo_gasto');
+        $tipo_tempo = $this->input->post('tipo_tempo');
+        $solicitante = $this->input->post('solicitante');
+        $justificativa = $this->input->post('justificativa');
+        $materiais_json = $this->input->post('materiais');
+
         // Campos opcionais - só adicionar se a coluna existir
         if (in_array('etapa_id', $colunas_existentes)) {
             $dados['etapa_id'] = $etapa_id ?: null;
@@ -2012,6 +2056,25 @@ class Tecnicos extends CI_Controller
         }
         if (in_array('percentual_concluido', $colunas_existentes)) {
             $dados['percentual_concluido'] = $percentual_concluido ?: 0;
+        }
+
+        // Campos específicos para atividades fora do escopo
+        if (in_array('is_foradoscopo', $colunas_existentes)) {
+            $dados['is_foradoscopo'] = $is_foradoscopo ? 1 : 0;
+        }
+        if ($is_foradoscopo) {
+            if (in_array('tempo_gasto', $colunas_existentes) && $tempo_gasto) {
+                $dados['tempo_gasto'] = floatval($tempo_gasto);
+            }
+            if (in_array('tipo_tempo', $colunas_existentes) && $tipo_tempo) {
+                $dados['tipo_tempo'] = $tipo_tempo;
+            }
+            if (in_array('solicitante', $colunas_existentes) && $solicitante) {
+                $dados['solicitante'] = $solicitante;
+            }
+            if (in_array('justificativa', $colunas_existentes) && $justificativa) {
+                $dados['justificativa'] = $justificativa;
+            }
         }
 
         // Fotos - verificar qual coluna existe
@@ -2037,13 +2100,37 @@ class Tecnicos extends CI_Controller
         $result = $this->db->insert('obra_atividades', $dados);
         if ($result) {
             $atividade_id = $this->db->insert_id();
+
+            // Salvar materiais se for atividade fora do escopo
+            $materiais_salvos = 0;
+            if ($is_foradoscopo && $materiais_json) {
+                $materiais = json_decode($materiais_json, true);
+                if (is_array($materiais) && !empty($materiais)) {
+                    foreach ($materiais as $mat) {
+                        $dados_material = [
+                            'atividade_id' => $atividade_id,
+                            'nome' => $mat['nome'] ?? 'Material',
+                            'quantidade' => floatval($mat['qtd'] ?? 1),
+                            'unidade' => $mat['unidade'] ?? 'un',
+                            'valor_unitario' => $mat['valor'] ? floatval($mat['valor']) : null,
+                            'created_at' => date('Y-m-d H:i:s')
+                        ];
+                        $this->db->insert('obra_atividade_materiais', $dados_material);
+                        $materiais_salvos++;
+                    }
+                    log_message('info', 'api_registrar_atividade_obra - ' . $materiais_salvos . ' materiais salvos para atividade ID: ' . $atividade_id);
+                }
+            }
+
             log_message('info', 'api_registrar_atividade_obra - Atividade inserida com sucesso. ID: ' . $atividade_id);
             echo json_encode([
                 'success' => true,
-                'message' => 'Atividade registrada com sucesso',
+                'message' => $is_foradoscopo ? 'Atividade fora do escopo registrada com sucesso' : 'Atividade registrada com sucesso',
                 'atividade_id' => $atividade_id,
                 'fotos_salvas' => count($fotos_salvas),
-                'acao' => 'inserida'
+                'materiais_salvos' => $materiais_salvos,
+                'acao' => 'inserida',
+                'is_foradoscopo' => $is_foradoscopo ? true : false
             ]);
         } else {
             $error = $this->db->error();

@@ -369,5 +369,13 @@ $route['atividades/listar_por_os/(:num)'] = 'atividades/listar_por_os/$1';
 $route['atividades/detalhes/(:num)'] = 'atividades/detalhes/$1';
 $route['atividades/get_tipos_por_categoria/(:any)'] = 'atividades/get_tipos_por_categoria/$1';
 
+// Rotas para Integração com Obras
+$route['atividades/wizard_obra/(:num)'] = 'atividades/wizard_obra/$1';
+$route['atividades/wizard_obra/(:num)/(:num)'] = 'atividades/wizard_obra/$1/$2';
+$route['atividades/checkin_obra'] = 'atividades/checkin_obra';
+$route['atividades/checkout_obra'] = 'atividades/checkout_obra';
+$route['atividades/iniciar_na_obra'] = 'atividades/iniciar_na_obra';
+$route['atividades/listar_por_obra/(:num)'] = 'atividades/listar_por_obra/$1';
+
 /* End of file routes.php */
 /* Location: ./application/config/routes.php */
