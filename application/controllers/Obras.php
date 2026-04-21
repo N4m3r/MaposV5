@@ -93,6 +93,16 @@ class Obras extends MY_Controller
             $this->form_validation->set_rules('cliente_id', 'Cliente', 'required|numeric');
 
             if ($this->form_validation->run() == TRUE) {
+                // Converter valor do contrato de formato brasileiro para formato do banco
+                $valor_contrato = $this->input->post('valor_contrato');
+                if (!empty($valor_contrato)) {
+                    // Remove pontos de milhar e substitui vírgula por ponto
+                    $valor_contrato = str_replace('.', '', $valor_contrato);
+                    $valor_contrato = str_replace(',', '.', $valor_contrato);
+                } else {
+                    $valor_contrato = null;
+                }
+
                 $dados = [
                     'nome' => $this->input->post('nome'),
                     'cliente_id' => $this->input->post('cliente_id'),
@@ -105,7 +115,7 @@ class Obras extends MY_Controller
                     'data_inicio_contrato' => $this->input->post('data_inicio'),
                     'data_fim_prevista' => $this->input->post('data_previsao_fim'),
                     'observacoes' => $this->input->post('observacoes'),
-                    'valor_contrato' => $this->input->post('valor_contrato'),
+                    'valor_contrato' => $valor_contrato,
                     'gestor_id' => $this->input->post('gestor_id'),
                     'responsavel_tecnico_id' => $this->input->post('responsavel_tecnico_id'),
                     'status' => 'Prospeccao',
@@ -161,6 +171,16 @@ class Obras extends MY_Controller
             $this->form_validation->set_rules('nome', 'Nome', 'required|trim');
 
             if ($this->form_validation->run() == TRUE) {
+                // Converter valor do contrato de formato brasileiro para formato do banco
+                $valor_contrato = $this->input->post('valor_contrato');
+                if (!empty($valor_contrato)) {
+                    // Remove pontos de milhar e substitui vírgula por ponto
+                    $valor_contrato = str_replace('.', '', $valor_contrato);
+                    $valor_contrato = str_replace(',', '.', $valor_contrato);
+                } else {
+                    $valor_contrato = null;
+                }
+
                 $dados = [
                     'nome' => $this->input->post('nome'),
                     'tipo_obra' => $this->input->post('tipo_obra'),
@@ -173,7 +193,7 @@ class Obras extends MY_Controller
                     'data_fim_prevista' => $this->input->post('data_previsao_fim'),
                     'observacoes' => $this->input->post('observacoes'),
                     'status' => $this->input->post('status'),
-                    'valor_contrato' => $this->input->post('valor_contrato'),
+                    'valor_contrato' => $valor_contrato,
                     'gestor_id' => $this->input->post('gestor_id'),
                     'responsavel_tecnico_id' => $this->input->post('responsavel_tecnico_id'),
                     'visivel_cliente' => $this->input->post('visivel_cliente') ? 1 : 0,
