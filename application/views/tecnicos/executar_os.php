@@ -363,7 +363,7 @@
                                 <!-- Etapa 3: Fotos do Servico -->
                                 <div class="wizard-step-content" data-step="3">
                                     <h4><i class="bx bx-camera"></i> Registro Fotografico</h4>
-                                    <p>Adicione fotos do servico realizado:</p>
+                                    <p>Adicione fotos do servico realizado. Você pode selecionar múltiplas fotos de uma vez:</p>
 
                                     <div class="wizard-fotos-container">
                                         <!-- Tabs de tipo de foto -->
@@ -388,17 +388,23 @@
                                         <div class="upload-area-modern" id="uploadAreaModern" onclick="abrirSeletorFoto()">
                                             <div class="upload-content">
                                                 <i class="bx bx-cloud-upload"></i>
-                                                <span class="upload-title">Adicionar Foto</span>
-                                                <span class="upload-subtitle">Toque para camera ou escolher arquivo</span>
+                                                <span class="upload-title">Adicionar Fotos</span>
+                                                <span class="upload-subtitle">Toque para selecionar uma ou mais fotos</span>
                                             </div>
                                         </div>
 
-                                        <!-- Input file escondido -->
-                                        <input type="file" id="wizardFotoInput" accept="image/*" style="display: none;" onchange="processarFotoWizard(this)">
+                                        <!-- Input file escondido - agora com multiple -->
+                                        <input type="file" id="wizardFotoInput" accept="image/*" multiple style="display: none;" onchange="processarFotoWizard(this)">
 
                                         <!-- Galeria de fotos -->
                                         <div class="fotos-galeria-modern" id="wizardFotosPreview">
                                             <!-- Fotos serao adicionadas aqui via JS -->
+                                        </div>
+
+                                        <!-- Botao adicionar mais fotos -->
+                                        <div class="add-more-fotos" id="addMoreFotos" onclick="abrirSeletorFoto()" style="display: none;">
+                                            <i class="bx bx-plus-circle"></i>
+                                            <span>Adicionar mais fotos</span>
                                         </div>
 
                                         <!-- Contador de fotos -->
@@ -2167,6 +2173,88 @@
     transform: scale(1.1);
 }
 
+/* Botao Adicionar Mais Fotos */
+.add-more-fotos {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 20px;
+    margin: 15px auto;
+    max-width: 200px;
+    border: 2px dashed #4CAF50;
+    border-radius: 12px;
+    background: rgba(76, 175, 80, 0.05);
+    color: #4CAF50;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.add-more-fotos:hover {
+    background: rgba(76, 175, 80, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+}
+
+.add-more-fotos:active {
+    transform: translateY(0);
+}
+
+.add-more-fotos i {
+    font-size: 2rem;
+}
+
+.add-more-fotos span {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+/* Modal Visualizacao Fullscreen */
+.foto-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.foto-modal-overlay img {
+    max-width: 100%;
+    max-height: 90vh;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+
+.foto-modal-overlay .close-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    color: white;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.5rem;
+    transition: all 0.2s;
+}
+
+.foto-modal-overlay .close-btn:hover {
+    background: rgba(255,255,255,0.3);
+    transform: scale(1.1);
+}
+
 /* Contador de fotos */
 .fotos-contador {
     text-align: center;
@@ -3877,15 +3965,84 @@ function abrirCameraWizard() {
 window.abrirCameraWizard = abrirCameraWizard;
 
 function processarFotoWizard(input) {
-    if (input.files && input.files[0]) {
-        const file = input.files[0];
+    if (input.files && input.files.length > 0) {
         const tipo = document.getElementById('tipoFotoWizard').value;
+        const files = Array.from(input.files);
+        const totalFiles = files.length;
 
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            adicionarFotoWizard(e.target.result, tipo);
+        // Criar indicador de progresso
+        const uploadArea = document.getElementById('uploadAreaModern');
+        const progressHtml = '<div id="uploadProgress" style="display: flex; flex-direction: column; align-items: center; gap: 15px; width: 100%; max-width: 250px;">' +
+            '<div style="width: 100%; height: 8px; background: rgba(255,255,255,0.3); border-radius: 4px; overflow: hidden;">' +
+                '<div style="width: 0%; height: 100%; background: white; border-radius: 4px; transition: width 0.3s ease;"></div>' +
+            '</div>' +
+            '<span style="font-size: 0.9rem; color: white; font-weight: 500;">Processando 0/' + totalFiles + '...</span>' +
+        '</div>';
+
+        if (uploadArea) {
+            uploadArea.innerHTML = progressHtml;
+            uploadArea.style.pointerEvents = 'none';
+        }
+
+        // Processar cada arquivo selecionado
+        let processados = 0;
+        const processarProximo = (index) => {
+            if (index >= files.length) {
+                // Todos processados
+                if (typeof showToast === 'function') {
+                    showToast(processados + ' foto(s) adicionadas!', 'success');
+                }
+                // Restaurar upload area
+                if (uploadArea) {
+                    uploadArea.innerHTML = '
+                        <div class="upload-content">
+                            <i class="bx bx-cloud-upload"></i>
+                            <span class="upload-title">Adicionar Fotos</span>
+                            <span class="upload-subtitle">Toque para selecionar uma ou mais fotos</span>
+                        </div>
+                    ';
+                    uploadArea.style.pointerEvents = '';
+                }
+                return;
+            }
+
+            const file = files[index];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                adicionarFotoWizard(e.target.result, tipo);
+                processados++;
+
+                // Atualizar progresso
+                const progressIndicator = document.getElementById('uploadProgress');
+                if (progressIndicator) {
+                    const progressPercent = (processados / totalFiles) * 100;
+                    progressIndicator.innerHTML = '
+                        <div class="upload-progress-bar" style="width: 100%; height: 8px; background: rgba(255,255,255,0.3); border-radius: 4px; overflow: hidden;">
+                            <div style="width: ' + progressPercent + '%; height: 100%; background: white; border-radius: 4px; transition: width 0.3s ease;"></div>
+                        </div>
+                        <span class="upload-progress-text" style="font-size: 0.9rem; color: white; font-weight: 500;">Processando ' + processados + '/' + totalFiles + '...</span>
+                    ';
+                }
+
+                // Processar próximo
+                setTimeout(() => processarProximo(index + 1), 50);
+            };
+
+            reader.onerror = function() {
+                console.error('Erro ao ler arquivo:', file.name);
+                processados++;
+                setTimeout(() => processarProximo(index + 1), 50);
+            };
+
+            reader.readAsDataURL(file);
         };
-        reader.readAsDataURL(file);
+
+        // Iniciar processamento
+        processarProximo(0);
+
+        // Limpar input para permitir selecionar mesmos arquivos novamente
+        input.value = '';
     }
 }
 window.processarFotoWizard = processarFotoWizard;
@@ -3916,6 +4073,7 @@ window.traduzirTipoFoto = traduzirTipoFoto;
 
 function renderizarFotosWizard() {
     const container = document.getElementById('wizardFotosPreview');
+    const addMoreBtn = document.getElementById('addMoreFotos');
     if (!container) return;
 
     // Atualizar contador
@@ -3925,12 +4083,23 @@ function renderizarFotosWizard() {
         contadorTexto.textContent = total + ' foto' + (total !== 1 ? 's' : '');
     }
 
+    // Mostrar/esconder botao "Adicionar mais fotos"
+    if (addMoreBtn) {
+        addMoreBtn.style.display = wizardFotos.length > 0 ? 'flex' : 'none';
+    }
+
+    // Mostrar/esconder area de upload inicial
+    const uploadArea = document.getElementById('uploadAreaModern');
+    if (uploadArea) {
+        uploadArea.style.display = wizardFotos.length > 0 ? 'none' : 'flex';
+    }
+
     let html = '';
     wizardFotos.forEach(foto => {
-        html += '<div class="foto-card-modern">' +
+        html += '<div class="foto-card-modern" data-foto-id="' + foto.id + '" onclick="visualizarFotoFullscreen(' + foto.id + ')">' +
             '<img src="' + foto.imagem + '" alt="Foto">' +
             '<span class="foto-card-badge ' + foto.tipo + '" style="font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 80%;">' + traduzirTipoFoto(foto.tipo) + '</span>' +
-            '<button type="button" class="foto-card-remove" onclick="removerFotoWizard(' + foto.id + ')">' +
+            '<button type="button" class="foto-card-remove" onclick="event.stopPropagation(); removerFotoWizard(' + foto.id + ')">' +
                 '<i class="bx bx-trash"></i>' +
             '</button>' +
         '</div>';
@@ -3967,6 +4136,50 @@ function removerFotoWizard(fotoId) {
     renderizarFotosWizard();
 }
 window.removerFotoWizard = removerFotoWizard;
+
+// Visualizar foto em fullscreen
+function visualizarFotoFullscreen(fotoId) {
+    const foto = wizardFotos.find(f => f.id === fotoId);
+    if (!foto) return;
+
+    // Criar overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'foto-modal-overlay';
+    overlay.innerHTML = '
+        <button class="close-btn" onclick="fecharFotoFullscreen()"><i class="bx bx-x"></i></button>
+        <img src="' + foto.imagem + '" alt="Foto em tamanho grande">
+    ';
+
+    // Fechar ao clicar fora da imagem
+    overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) {
+            fecharFotoFullscreen();
+        }
+    });
+
+    // Fechar com ESC
+    document.addEventListener('keydown', fecharFullscreenEsc);
+
+    document.body.appendChild(overlay);
+    document.body.style.overflow = 'hidden'; // Prevenir scroll
+}
+window.visualizarFotoFullscreen = visualizarFotoFullscreen;
+
+function fecharFotoFullscreen() {
+    const overlay = document.querySelector('.foto-modal-overlay');
+    if (overlay) {
+        overlay.remove();
+        document.body.style.overflow = '';
+        document.removeEventListener('keydown', fecharFullscreenEsc);
+    }
+}
+window.fecharFotoFullscreen = fecharFotoFullscreen;
+
+function fecharFullscreenEsc(e) {
+    if (e.key === 'Escape') {
+        fecharFotoFullscreen();
+    }
+}
 
 // Assinatura no Wizard - usar canvas nativo igual ao técnico
 function limparAssinaturaWizard() {
