@@ -341,29 +341,29 @@
                         </div>
 
                         <div class="atividade-actions">
-                            <?php if ($ativ->status == 'agendada'): ?>
+                            <?php if ($ativ->status == 'agendada'): ?>>
                             <a href="<?php echo site_url('obras_tecnico/atividade/' . $ativ->id); ?>" class="btn-acao btn-acao-iniciar">
                                 <i class="icon-play"></i> Iniciar
                             </a>
-                            <?php elseif ($ativ->status == 'iniciada'): ?>
+                            <?php elseif ($ativ->status == 'iniciada'): ?>>
                             <a href="<?php echo site_url('obras_tecnico/atividade/' . $ativ->id); ?>" class="btn-acao btn-acao-continuar">
                                 <i class="icon-refresh"></i> Continuar
                             </a>
-                            <?php else: ?>
+                            <?php else: ?>>
                             <a href="<?php echo site_url('obras_tecnico/atividade/' . $ativ->id); ?>" class="btn-acao btn-acao-visualizar">
                                 <i class="icon-eye-open"></i> Ver
                             </a>
-                            <?php endif; ?>
+                            <?php endif; ?>>
                         </div>
                     </div>
-                    <?php endforeach; ?
+                    <?php endforeach; ?>
                 </div>
-                <?php else: ?>
+                <?php else: ?>>
                 <div class="empty-state">
                     <div class="empty-state-icon"><i class="icon-tasks"></i></div>
                     <div class="empty-state-text">Nenhuma atividade atribuída para você nesta obra.</div>
                 </div>
-                <?php endif; ?
+                <?php endif; ?>
             </div>
 
             <!-- Sistema de Registro de Atividades (Hora Início/Fim) -->
@@ -409,8 +409,8 @@
                                 Previsão: <?php echo date('d/m/Y', strtotime($etapa->data_inicio_prevista)); ?>
                                 <?php if ($etapa->data_fim_prevista): ?>
                                 - <?php echo date('d/m/Y', strtotime($etapa->data_fim_prevista)); ?>
-                                <?php endif; ?>
-                                <?php endif; ?>
+                                <?php endif; ?>>
+                                <?php endif; ?>>
                             </div>
                         </div>
                         <div class="etapa-status <?php echo $etapa->status; ?>">
@@ -426,14 +426,14 @@
                             ?>
                         </div>
                     </div>
-                    <?php endforeach; ?
+                    <?php endforeach; ?>
                 </div>
-                <?php else: ?>
+                <?php else: ?>>
                 <div class="empty-state">
                     <div class="empty-state-icon"><i class="icon-road"></i></div>
                     <div class="empty-state-text">Nenhuma etapa cadastrada.</div>
                 </div>
-                <?php endif; ?>
+                <?php endif; ?>>
             </div>
         </div>
 
@@ -495,7 +495,7 @@
                             <?php echo nl2br(htmlspecialchars($obra->observacoes)); ?>
                         </div>
                     </div>
-                    <?php endif; ?
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
