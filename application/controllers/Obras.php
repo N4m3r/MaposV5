@@ -452,10 +452,11 @@ class Obras extends MY_Controller
         $query = $this->db->get('obra_atividades');
         $this->data['atividades'] = $query ? $query->result() : [];
 
-        // Log para debug
-        log_message('debug', 'Atividades - Obra ID: ' . $obra_id);
-        log_message('debug', 'Atividades - Query: ' . $this->db->last_query());
-        log_message('debug', 'Atividades - Total: ' . count($this->data['atividades']));
+        // Debug para view
+        $this->data['debug_query'] = $this->db->last_query();
+        $this->data['debug_total'] = count($this->data['atividades']);
+        $this->data['debug_tabela_existe'] = $this->db->table_exists('obra_atividades');
+        $this->data['debug_campos'] = $this->db->list_fields('obra_atividades');
 
         $this->data['tecnicos'] = $this->usuarios_model->getAll();
         $this->data['etapas'] = $this->obras_model->getEtapas($obra_id);

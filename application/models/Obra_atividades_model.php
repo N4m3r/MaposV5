@@ -215,6 +215,7 @@ class Obra_atividades_model extends CI_Model
                 if (in_array($campo, $colunas_existentes)) {
                     if (isset($dados[$campo]) && $dados[$campo] !== '') {
                         $data[$campo] = $dados[$campo];
+                        log_message('debug', 'add atividade - campo ' . $campo . ' = ' . $dados[$campo]);
                     } elseif (in_array($campo, ['status', 'tipo'])) {
                         // Valores padrão para campos ENUM
                         $data[$campo] = ($campo == 'status') ? 'agendada' : 'trabalho';
