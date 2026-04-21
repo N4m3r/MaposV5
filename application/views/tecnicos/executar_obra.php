@@ -1549,9 +1549,21 @@ window.WizardAtendimento = {
         var self = this;
         fetch('<?= site_url("atividades/checkin_obra") ?>', {
             method: 'POST',
-            body: formData
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
         })
         .then(function(r) {
+            // Verificar se a resposta é JSON
+            var contentType = r.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                // Se não for JSON, ler como texto para debug
+                return r.text().then(function(text) {
+                    console.error('Resposta não-JSON:', text.substring(0, 500));
+                    throw new Error('Resposta inválida do servidor. Verifique o console (F12) para detalhes.');
+                });
+            }
             if (!r.ok) throw new Error('HTTP ' + r.status);
             return r.json();
         })
@@ -1572,6 +1584,7 @@ window.WizardAtendimento = {
             }
         })
         .catch(function(err) {
+            console.error('Erro completo:', err);
             alert('Erro ao iniciar: ' + err.message);
             btn.innerHTML = '<i class="icon-play"></i> INICIAR ATENDIMENTO';
             btn.disabled = false;
@@ -1645,9 +1658,21 @@ window.WizardAtendimento = {
         var self = this;
         fetch('<?= site_url("atividades/adicionar_atividade_obra") ?>', {
             method: 'POST',
-            body: formData
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
         })
-        .then(function(r) { return r.json(); })
+        .then(function(r) {
+            var contentType = r.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                return r.text().then(function(text) {
+                    console.error('Resposta não-JSON:', text.substring(0, 500));
+                    throw new Error('Resposta inválida do servidor');
+                });
+            }
+            return r.json();
+        })
         .then(function(data) {
             if (data.success) {
                 self.fecharModal('modalAtividade');
@@ -1664,7 +1689,7 @@ window.WizardAtendimento = {
             }
         })
         .catch(function(err) {
-            alert('Erro ao salvar atividade.');
+            alert('Erro ao salvar atividade: ' + err.message);
             console.error(err);
         });
     },
@@ -1711,9 +1736,21 @@ window.WizardAtendimento = {
         var self = this;
         fetch('<?= site_url("atividades/adicionar_foto_obra") ?>', {
             method: 'POST',
-            body: formData
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
         })
-        .then(function(r) { return r.json(); })
+        .then(function(r) {
+            var contentType = r.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                return r.text().then(function(text) {
+                    console.error('Resposta não-JSON:', text.substring(0, 500));
+                    throw new Error('Resposta inválida do servidor');
+                });
+            }
+            return r.json();
+        })
         .then(function(data) {
             if (data.success) {
                 self.fecharModal('modalFoto');
@@ -1727,7 +1764,7 @@ window.WizardAtendimento = {
             }
         })
         .catch(function(err) {
-            alert('Erro ao adicionar foto.');
+            alert('Erro ao adicionar foto: ' + err.message);
             console.error(err);
         });
     },
@@ -1745,10 +1782,22 @@ window.WizardAtendimento = {
         var self = this;
         fetch('<?= site_url("atividades/pausar") ?>', {
             method: 'POST',
-            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
             body: body
         })
-        .then(function(r) { return r.json(); })
+        .then(function(r) {
+            var contentType = r.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                return r.text().then(function(text) {
+                    console.error('Resposta não-JSON:', text.substring(0, 500));
+                    throw new Error('Resposta inválida do servidor');
+                });
+            }
+            return r.json();
+        })
         .then(function(data) {
             if (data.success) {
                 self.fechar();
@@ -1758,7 +1807,7 @@ window.WizardAtendimento = {
             }
         })
         .catch(function(err) {
-            alert('Erro ao pausar.');
+            alert('Erro ao pausar: ' + err.message);
             console.error(err);
         });
     },
@@ -1784,9 +1833,21 @@ window.WizardAtendimento = {
         var self = this;
         fetch('<?= site_url("atividades/checkout_obra") ?>', {
             method: 'POST',
-            body: formData
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
         })
-        .then(function(r) { return r.json(); })
+        .then(function(r) {
+            var contentType = r.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                return r.text().then(function(text) {
+                    console.error('Resposta não-JSON:', text.substring(0, 500));
+                    throw new Error('Resposta inválida do servidor');
+                });
+            }
+            return r.json();
+        })
         .then(function(data) {
             if (data.success) {
                 alert('Atendimento finalizado com sucesso!');
@@ -1797,7 +1858,7 @@ window.WizardAtendimento = {
             }
         })
         .catch(function(err) {
-            alert('Erro ao finalizar atendimento.');
+            alert('Erro ao finalizar atendimento: ' + err.message);
             console.error(err);
         });
     }
