@@ -1818,10 +1818,8 @@ const wizard = {
     isSubmitting: false,
 
     init: function() {
-        console.log('[Wizard] init() - Iniciando wizard. Etapa atual:', this.currentStep);
-
         // Animar barra de progresso da obra ao carregar
-        var progressFill = document.querySelector('.obra-header .progress-fill');
+        const progressFill = document.querySelector('.obra-header .progress-fill');
         if (progressFill) {
             const width = progressFill.style.width;
             progressFill.style.width = '0%';
@@ -2008,7 +2006,6 @@ const wizard = {
 
     // Selecao de Etapa com animacao - Agora carrega atividades da etapa
     selectEtapa: function(id, nome) {
-        console.log('[Wizard] selectEtapa() - ID:', id, 'Nome:', nome);
         this.data.etapa_id = id;
         this.data.etapa_nome = id ? nome : 'Nao especificada';
 
@@ -2041,11 +2038,8 @@ const wizard = {
 
     // Carregar atividades da etapa selecionada
     carregarAtividadesDaEtapa: function(etapaId, etapaNome) {
-        console.log('[Wizard] carregarAtividadesDaEtapa() - EtapaID:', etapaId, 'Nome:', etapaNome);
-        console.log('[Wizard] atividadesPorEtapa disponíveis:', Object.keys(this.atividadesPorEtapa));
-
-        var container = document.getElementById('atividadesContainer');
-        var subtitle = document.getElementById('atividadeSubtitle');
+        const container = document.getElementById('atividadesContainer');
+        const subtitle = document.getElementById('atividadeSubtitle');
 
         subtitle.textContent = etapaId
             ? `Atividades da etapa: ${etapaNome}`
@@ -2250,12 +2244,8 @@ const wizard = {
 
     // Navegacao melhorada
     nextStep: function() {
-        console.log('[Wizard] nextStep() - Passo atual:', this.currentStep, 'Total:', this.totalSteps);
         if (this.currentStep < this.totalSteps) {
-            if (!this.validateStep(this.currentStep)) {
-                console.log('[Wizard] Validação falhou no passo', this.currentStep);
-                return;
-            }
+            if (!this.validateStep(this.currentStep)) return;
 
             // Animacao de transicao
             const currentContent = document.querySelector(`.wizard-step-content[data-step="${this.currentStep}"]`);
@@ -2385,7 +2375,6 @@ const wizard = {
     },
 
     updateUI: function() {
-        console.log('[Wizard] updateUI() - Passo atual:', this.currentStep);
         // Esconder todos os steps
         document.querySelectorAll('.wizard-step-content').forEach(function(content) {
             content.classList.remove('active');
@@ -2634,9 +2623,6 @@ document.head.appendChild(style);
 
 // Inicializar quando carregar
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('[Wizard] DOMContentLoaded - Inicializando wizard...');
-    console.log('[Wizard] atividadesPorEtapa:', wizard.atividadesPorEtapa);
     wizard.init();
-    console.log('[Wizard] Wizard inicializado com sucesso');
 });
 </script>
