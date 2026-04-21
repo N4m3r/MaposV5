@@ -569,6 +569,21 @@
         </div>
     </div>
 
+    <!-- Mensagens Flash -->
+    <?php if ($this->session->flashdata('success')): ?>
+    <div style="background: #d4edda; border: 1px solid #28a745; color: #155724; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+        <i class="icon-ok" style="font-size: 20px;"></i>
+        <strong><?php echo $this->session->flashdata('success'); ?></strong>
+    </div>
+    <?php endif; ?>
+
+    <?php if ($this->session->flashdata('error')): ?>
+    <div style="background: #f8d7da; border: 1px solid #dc3545; color: #721c24; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+        <i class="icon-remove" style="font-size: 20px;"></i>
+        <strong><?php echo $this->session->flashdata('error'); ?></strong>
+    </div>
+    <?php endif; ?>
+
     <!-- Stats -->
     <?php
     $total = count($atividades);
@@ -906,5 +921,34 @@ $(document).ready(function() {
     $('.atividade-card').each(function(index) {
         $(this).hide().delay(index * 100).fadeIn(400);
     });
+});
+
+// Auto-refresh a cada 10 segundos se a aba estiver visível
+let refreshInterval;
+
+function startAutoRefresh() {
+    refreshInterval = setInterval(function() {
+        if (!document.hidden) {
+            location.reload();
+        }
+    }, 10000); // 10 segundos
+}
+
+function stopAutoRefresh() {
+    clearInterval(refreshInterval);
+}
+
+// Iniciar auto-refresh quando a página carregar
+$(document).ready(function() {
+    startAutoRefresh();
+});
+
+// Parar refresh quando o modal estiver aberto (para não perder dados do formulário)
+$('#modalAdicionar').on('shown.bs.modal', function () {
+    stopAutoRefresh();
+});
+
+$('#modalAdicionar').on('hidden.bs.modal', function () {
+    startAutoRefresh();
 });
 </script>
