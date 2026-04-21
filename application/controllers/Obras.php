@@ -337,6 +337,109 @@ class Obras extends MY_Controller
         redirect('obras/etapas/' . $obra_id);
     }
 
+    /**
+     * Editar etapa
+     */
+    public function editarEtapa($etapa_id)
+    {
+        if (!$etapa_id || !is_numeric($etapa_id)) {
+            $this->session->set_flashdata('error', 'ID da etapa inválido.');
+            redirect('obras');
+            return;
+        }
+
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')) {
+            $this->session->set_flashdata('error', 'Sem permissão para editar etapas.');
+            redirect('obras');
+            return;
+        }
+
+        // Buscar etapa
+        $etapa = $this->obras_model->getEtapaById($etapa_id);
+        if (!$etapa) {
+            $this->session->set_flashdata('error', 'Etapa não encontrada.');
+            redirect('obras');
+            return;
+        }
+
+        $obra_id = $etapa->obra_id;
+
+        // Processar formulário
+        if ($this->input->post()) {
+            $dados = [
+                'numero_etapa' => $this->input->post('numero_etapa') ?: 1,
+                'nome' => $this->input->post('nome'),
+                'descricao' => $this->input->post('descricao'),
+                'especialidade' => $this->input->post('especialidade'),
+                'data_inicio_prevista' => $this->input->post('data_inicio_prevista'),
+                'data_fim_prevista' => $this->input->post('data_fim_prevista'),
+                'status' => $this->input->post('status') ?: 'NaoIniciada',
+            ];
+
+            if (!$dados['nome']) {
+                $this->session->set_flashdata('error', 'Nome da etapa é obrigatório.');
+                redirect('obras/editarEtapa/' . $etapa_id);
+                return;
+            }
+
+            $result = $this->obras_model->atualizarEtapa($etapa_id, $dados);
+
+            if ($result) {
+                $this->session->set_flashdata('success', 'Etapa atualizada com sucesso!');
+                redirect('obras/etapas/' . $obra_id);
+            } else {
+                $this->session->set_flashdata('error', 'Erro ao atualizar etapa.');
+                redirect('obras/editarEtapa/' . $etapa_id);
+            }
+            return;
+        }
+
+        $this->data['obra'] = $this->obras_model->getById($obra_id);
+        $this->data['etapa'] = $etapa;
+        $this->data['etapas'] = $this->obras_model->getEtapas($obra_id);
+        $this->data['view'] = 'obras/etapa_edit';
+
+        return $this->layout();
+    }
+
+    /**
+     * Excluir etapa
+     */
+    public function excluirEtapa($etapa_id)
+    {
+        if (!$etapa_id || !is_numeric($etapa_id)) {
+            $this->session->set_flashdata('error', 'ID da etapa inválido.');
+            redirect('obras');
+            return;
+        }
+
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'dObras')) {
+            $this->session->set_flashdata('error', 'Sem permissão para excluir etapas.');
+            redirect('obras');
+            return;
+        }
+
+        // Buscar etapa para obter obra_id antes de excluir
+        $etapa = $this->obras_model->getEtapaById($etapa_id);
+        if (!$etapa) {
+            $this->session->set_flashdata('error', 'Etapa não encontrada.');
+            redirect('obras');
+            return;
+        }
+
+        $obra_id = $etapa->obra_id;
+
+        $result = $this->obras_model->excluirEtapa($etapa_id);
+
+        if ($result) {
+            $this->session->set_flashdata('success', 'Etapa excluída com sucesso!');
+        } else {
+            $this->session->set_flashdata('error', 'Erro ao excluir etapa.');
+        }
+
+        redirect('obras/etapas/' . $obra_id);
+    }
+
     // ============================================
     // EQUIPE
     // ============================================

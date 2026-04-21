@@ -284,7 +284,7 @@ class Obras_model extends CI_Model
                 'especialidade' => $dados['especialidade'] ?? null,
                 'data_inicio_prevista' => $dados['data_inicio_prevista'] ?? null,
                 'data_fim_prevista' => $dados['data_fim_prevista'] ?? null,
-                'status' => 'pendente',
+                'status' => $dados['status'] ?? 'NaoIniciada',
             ];
 
             // Adicionar colunas opcionais se existirem
@@ -330,6 +330,88 @@ class Obras_model extends CI_Model
             ]);
         } catch (Exception $e) {
             // Silenciar erro
+        }
+    }
+
+    /**
+     * Buscar etapa por ID
+     */
+    public function getEtapaById($etapa_id)
+    {
+        if (!$this->tabelaExiste('obra_etapas')) {
+            return null;
+        }
+
+        try {
+            $this->db->where('id', $etapa_id);
+            $query = $this->db->get('obra_etapas');
+            return $query->row();
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao buscar etapa: ' . $e->getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Atualizar etapa
+     */
+    public function atualizarEtapa($etapa_id, $dados)
+    {
+        if (!$this->tabelaExiste('obra_etapas')) {
+            return false;
+        }
+
+        try {
+            $data = [
+                'numero_etapa' => $dados['numero_etapa'] ?? 1,
+                'nome' => $dados['nome'],
+                'descricao' => $dados['descricao'] ?? null,
+                'especialidade' => $dados['especialidade'] ?? null,
+                'data_inicio_prevista' => $dados['data_inicio_prevista'] ?? null,
+                'data_fim_prevista' => $dados['data_fim_prevista'] ?? null,
+                'status' => $dados['status'] ?? 'NaoIniciada',
+            ];
+
+            if ($this->db->field_exists('updated_at', 'obra_etapas')) {
+                $data['updated_at'] = date('Y-m-d H:i:s');
+            }
+
+            $this->db->where('id', $etapa_id);
+            $this->db->update('obra_etapas', $data);
+
+            return $this->db->affected_rows() >= 0;
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao atualizar etapa: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Excluir etapa
+     */
+    public function excluirEtapa($etapa_id)
+    {
+        if (!$this->tabelaExiste('obra_etapas')) {
+            return false;
+        }
+
+        try {
+            // Buscar etapa para obter obra_id antes de excluir
+            $etapa = $this->getEtapaById($etapa_id);
+            $obra_id = $etapa ? $etapa->obra_id : null;
+
+            $this->db->where('id', $etapa_id);
+            $this->db->delete('obra_etapas');
+
+            // Atualizar total de etapas se obra_id foi encontrado
+            if ($obra_id) {
+                $this->atualizarTotalEtapas($obra_id);
+            }
+
+            return $this->db->affected_rows() > 0;
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao excluir etapa: ' . $e->getMessage());
+            return false;
         }
     }
 
