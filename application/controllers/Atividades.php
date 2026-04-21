@@ -202,20 +202,17 @@ class Atividades extends MY_Controller
         // Flag para a view saber se é portal do técnico
         $this->data['is_portal_tecnico'] = $this->is_portal_tecnico;
 
-        // Usa layout diferente para portal do técnico
-        if ($this->is_portal_tecnico) {
-            $this->data['menuObras'] = 'active';
-            $this->data['pageTitle'] = 'Wizard - ' . $this->data['obra']->nome;
-            $this->load->view('tema/topo', $this->data);
-            $this->load->view('tema/menu_portal_tecnico', $this->data);
-            $this->load->view('atividades/wizard_obra', $this->data);
-            $this->load->view('tema/rodape', $this->data);
-        } else {
-            $this->load->view('tema/topo', $this->data);
-            $this->load->view('tema/menu_portal_tecnico', $this->data);
-            $this->load->view('atividades/wizard_obra', $this->data);
-            $this->load->view('tema/rodape');
-        }
+        // Define se está na área do técnico para o layout
+        $this->data['is_area_tecnico'] = $this->is_portal_tecnico;
+        $this->data['menuObras'] = 'active';
+
+        // Flag para usar o menu do portal do técnico (sidebar correto)
+        $this->data['use_menu_portal_tecnico'] = true;
+
+        // Usa o método layout() do MY_Controller que carrega: topo -> menu -> conteudo -> rodape
+        // O conteudo.php abre o <div id="content"> que tem margin-left: 240px para o sidebar
+        $this->data['view'] = 'atividades/wizard_obra';
+        $this->layout();
     }
 
     /**
