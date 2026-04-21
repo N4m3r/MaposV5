@@ -51,7 +51,7 @@ class Atividades extends MY_Controller
         $this->data['title'] = 'Área do Técnico - Atividades';
         $this->load->view('tema/topo', $this->data);
         $this->load->view('tema/menu_portal_tecnico', $this->data);
-        $this->load->view('atividades/dashboard');
+        $this->load->view('atividades/dashboard', $this->data);
         $this->load->view('tema/rodape');
     }
 
@@ -94,8 +94,8 @@ class Atividades extends MY_Controller
         $this->data['modo'] = 'os';
 
         $this->load->view('tema/topo', $this->data);
-        $this->load->view('tema/menu_portal_tecnico', $data);
-        $this->load->view('atividades/wizard');
+        $this->load->view('tema/menu_portal_tecnico', $this->data);
+        $this->load->view('atividades/wizard', $this->data);
         $this->load->view('tema/rodape');
     }
 
@@ -154,8 +154,8 @@ class Atividades extends MY_Controller
         $this->data['modo'] = 'obra';
 
         $this->load->view('tema/topo', $this->data);
-        $this->load->view('tema/menu_portal_tecnico', $data);
-        $this->load->view('atividades/wizard_obra');
+        $this->load->view('tema/menu_portal_tecnico', $this->data);
+        $this->load->view('atividades/wizard_obra', $this->data);
         $this->load->view('tema/rodape');
     }
 
@@ -177,8 +177,8 @@ class Atividades extends MY_Controller
         $this->data['title'] = 'Selecionar Ordem de Serviço';
 
         $this->load->view('tema/topo', $this->data);
-        $this->load->view('tema/menu_portal_tecnico', $data);
-        $this->load->view('atividades/selecionar_os');
+        $this->load->view('tema/menu_portal_tecnico', $this->data);
+        $this->load->view('atividades/selecionar_os', $this->data);
         $this->load->view('tema/rodape');
     }
 

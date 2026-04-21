@@ -1899,7 +1899,7 @@ const wizard = {
                 this.updatePhotoPreview();
                 processed++;
 
-                if (processed === files.filter(f => f.type.startsWith('image/')).length) {
+                if (processed === files.filter(function(f) { return f.type.startsWith('image/'); }).length) {
                     this.showToast(`${processed} foto(s) adicionada(s)`, 'success');
                 }
             };
@@ -1974,19 +1974,19 @@ const wizard = {
             <i class='bx bx-x' style="opacity:0.7;"></i>
         `;
 
-        toast.onclick = () => toast.remove();
+        toast.onclick = function() { toast.remove(); };
 
         container.appendChild(toast);
 
-        setTimeout(() => {
+        setTimeout(function() {
             toast.style.animation = 'slideOut 0.3s ease';
-            setTimeout(() => toast.remove(), 300);
+            setTimeout(function() { toast.remove(); }, 300);
         }, 5000);
     },
 
     // Navegacao por teclado
     setupKeyboardNavigation: function() {
-        document.addEventListener('keydown', (e) => {
+        document.addEventListener('keydown', function(e) {
             if (e.key === 'Enter' && e.ctrlKey) {
                 e.preventDefault();
                 if (this.currentStep === this.totalSteps && !this.isSubmitting) {
@@ -2017,13 +2017,13 @@ const wizard = {
         document.getElementById('novo_titulo_atividade').value = '';
 
         // Visual feedback com animacao
-        document.querySelectorAll('.etapa-card').forEach(card => {
+        document.querySelectorAll('.etapa-card').forEach(function(card) {
             card.classList.remove('selected');
             card.style.transform = '';
             if (card.dataset.etapaId === id || (!id && card.classList.contains('pular'))) {
                 card.classList.add('selected');
                 card.style.transform = 'scale(1.02)';
-                setTimeout(() => card.style.transform = '', 200);
+                setTimeout(function() { card.style.transform = ''; }, 200);
             }
         });
 
@@ -2033,7 +2033,7 @@ const wizard = {
         // Carregar atividades da etapa selecionada
         this.carregarAtividadesDaEtapa(id, nome);
 
-        setTimeout(() => this.nextStep(), 400);
+        var self = this; setTimeout(function() { self.nextStep(); }, 400);
     },
 
     // Carregar atividades da etapa selecionada
@@ -2057,7 +2057,7 @@ const wizard = {
             `;
         } else {
             let html = '<div class="atividades-grid" style="display: grid; gap: 12px;">';
-            atividades.forEach(atv => {
+            atividades.forEach(function(atv) {
                 const tipoLabels = { 'execucao': 'Execução', 'problema': 'Problema', 'observacao': 'Observação' };
                 const tipoCores = { 'execucao': '#27ae60', 'problema': '#e74c3c', 'observacao': '#f39c12' };
                 const tipo = atv.tipo || 'execucao';
@@ -2116,7 +2116,7 @@ const wizard = {
         document.getElementById('atividade_id').value = id;
 
         // Visual feedback
-        document.querySelectorAll('.atividade-card-wizard').forEach(card => {
+        document.querySelectorAll('.atividade-card-wizard').forEach(function(card) {
             card.classList.remove('selected');
             card.style.borderColor = '#e0e0e0';
             card.style.transform = '';
@@ -2133,7 +2133,7 @@ const wizard = {
 
         this.showToast(`Atividade selecionada: ${nome.substring(0, 30)}${nome.length > 30 ? '...' : ''}`, 'success');
 
-        setTimeout(() => this.nextStep(), 400);
+        var self = this; setTimeout(function() { self.nextStep(); }, 400);
     },
 
     // Verificar se pode criar nova atividade
@@ -2176,7 +2176,7 @@ const wizard = {
         this.data.is_foradoscopo = tipo === 'fora_do_escopo';
 
         // Visual feedback
-        document.querySelectorAll('.select-card').forEach(card => {
+        document.querySelectorAll('.select-card').forEach(function(card) {
             card.classList.remove('selected', 'selected-foradoscopo');
             card.style.transform = '';
         });
@@ -2187,7 +2187,7 @@ const wizard = {
             selectedCard.classList.add('selected-foradoscopo');
         }
         selectedCard.style.transform = 'scale(1.03)';
-        setTimeout(() => selectedCard.style.transform = '', 200);
+        setTimeout(function() { selectedCard.style.transform = ''; }, 200);
 
         document.getElementById('tipo').value = tipo;
 
@@ -2202,7 +2202,7 @@ const wizard = {
         progressValue.style.color = cores[tipo] || '#667eea';
 
         this.showToast(`Tipo selecionado: ${nome}`, 'success');
-        setTimeout(() => this.nextStep(), 400);
+        var self = this; setTimeout(function() { self.nextStep(); }, 400);
     },
 
     // Atualizar Progresso com feedback
@@ -2357,7 +2357,7 @@ const wizard = {
             `;
         }
 
-        this.data.fotos.forEach((foto, index) => {
+        this.data.fotos.forEach(function(foto, index) {
             const div = document.createElement('div');
             div.className = 'photo-preview-item';
             div.style.animation = 'fadeInScale 0.3s ease';
@@ -2376,7 +2376,7 @@ const wizard = {
 
     updateUI: function() {
         // Esconder todos os steps
-        document.querySelectorAll('.wizard-step-content').forEach(content => {
+        document.querySelectorAll('.wizard-step-content').forEach(function(content) {
             content.classList.remove('active');
             content.style.animation = '';
         });
@@ -2389,7 +2389,7 @@ const wizard = {
         }
 
         // Atualizar indicadores de step
-        document.querySelectorAll('.step').forEach((step, index) => {
+        document.querySelectorAll('.step').forEach(function(step, index) {
             const stepNum = index + 1;
             step.classList.remove('active', 'completed');
             if (stepNum === this.currentStep) {
@@ -2403,7 +2403,7 @@ const wizard = {
         });
 
         // Atualizar linhas de progresso
-        document.querySelectorAll('.step-line').forEach((line, index) => {
+        document.querySelectorAll('.step-line').forEach(function(line, index) {
             const stepNum = index + 1;
             line.classList.toggle('completed', stepNum < this.currentStep);
         });
@@ -2514,7 +2514,7 @@ const wizard = {
             formData.append('percentual_concluido', this.data.percentual);
 
             // Adicionar fotos
-            this.data.fotos.forEach((foto, index) => {
+            this.data.fotos.forEach(function(foto, index) {
                 formData.append(`foto_${index}`, foto.file);
             });
 
