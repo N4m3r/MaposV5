@@ -79,9 +79,21 @@
     font-size: 14px;
     background: white;
     cursor: pointer;
-    color: black;
+    color: #333;
+    -webkit-appearance: menulist;
+    -moz-appearance: menulist;
+    appearance: menulist;
 }
 .form-select:focus { border-color: #667eea; outline: none; }
+.form-select option {
+    color: #333;
+    background: white;
+    padding: 8px;
+}
+.form-select option:first-child {
+    color: #666;
+    font-style: italic;
+}
 .form-textarea {
     width: 100%;
     padding: 12px 15px;
@@ -212,6 +224,7 @@
                     <div class="form-group">
                         <label class="form-label">Tipo de Obra</label>
                         <select name="tipo_obra" class="form-select">
+                            <option value="" disabled <?php echo (!isset($result) || empty($result->tipo_obra)) ? 'selected' : ''; ?>>Selecione o tipo...</option>
                             <option value="Reforma" <?php echo (isset($result) && $result->tipo_obra == 'Reforma') ? 'selected' : ''; ?>>Reforma</option>
                             <option value="Construcao" <?php echo (isset($result) && $result->tipo_obra == 'Construcao') ? 'selected' : ''; ?>>Construção</option>
                             <option value="Instalacao" <?php echo (isset($result) && $result->tipo_obra == 'Instalacao') ? 'selected' : ''; ?>>Instalação</option>
