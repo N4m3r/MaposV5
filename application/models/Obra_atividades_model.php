@@ -170,6 +170,13 @@ class Obra_atividades_model extends CI_Model
             $last_query = $this->db->last_query();
             log_message('debug', 'SQL getByObra obra_id=' . $obra_id . ': ' . $last_query);
 
+            // Verificar erro na query
+            $error = $this->db->error();
+            if ($error['code'] != 0) {
+                log_message('error', 'getByObra: Erro SQL: ' . $error['message']);
+                return [];
+            }
+
             if (!$query) {
                 log_message('error', 'getByObra: Query retornou false');
                 return [];

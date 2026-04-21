@@ -539,9 +539,56 @@ class Obras extends MY_Controller
         print_r($fields);
         echo '</pre>';
 
-        // Usar o model para buscar atividades (com joins para técnico e etapa)
-        $atividades = $this->obra_atividades_model->getByObra($obra_id);
-        $total = count($atividades);
+        // DEBUG: Verificar colunas específicas
+        echo '<div style="background: #fff3cd; border: 2px solid #ffc107; padding: 15px; margin: 15px 0;">';
+        echo '<strong>DEBUG:</strong> Verificando colunas...';
+        echo '<ul>';
+        echo '<li>tecnico_id existe: ' . (in_array('tecnico_id', $fields) ? 'SIM' : 'NÃO') . '</li>';
+        echo '<li>usuario_id existe: ' . (in_array('usuario_id', $fields) ? 'SIM' : 'NÃO') . '</li>';
+        echo '<li>etapa_id existe: ' . (in_array('etapa_id', $fields) ? 'SIM' : 'NÃO') . '</li>';
+        echo '<li>titulo existe: ' . (in_array('titulo', $fields) ? 'SIM' : 'NÃO') . '</li>';
+        echo '<li>status existe: ' . (in_array('status', $fields) ? 'SIM' : 'NÃO') . '</li>';
+        echo '<li>data_atividade existe: ' . (in_array('data_atividade', $fields) ? 'SIM' : 'NÃO') . '</li>';
+        echo '</ul>';
+        echo '</div>';
+
+        // Query direta primeiro (igual ao método antigo)
+        echo '<h3>Query Direta (sem model):</h3>';
+        $query_direta = $this->db->where('obra_id', $obra_id)->get('obra_atividades');
+        $result_direto = $query_direta ? $query_direta->result() : [];
+        echo '<p>Total via query direta: ' . count($result_direto) . '</p>';
+        echo '<pre style="background: #e3f2fd; padding: 10px;">';
+        print_r($result_direto);
+        echo '</pre>';
+
+        // Agora usar o model
+        echo '<hr>';
+        echo '<h3>Via Model (com joins):</h3>';
+
+        // Capturar possíveis erros
+        try {
+            $atividades = $this->obra_atividades_model->getByObra($obra_id);
+            $total = count($atividades);
+            echo '<p><strong>Total via model:</strong> ' . $total . '</p>';
+
+            if ($total > 0) {
+                echo '<h4>Primeira atividade (detalhada):</h4>';
+                echo '<pre style="background: #d4edda; padding: 10px;">';
+                print_r($atividades[0]);
+                echo '</pre>';
+
+                echo '<h4>Campos disponíveis:</h4>';
+                echo '<ul>';
+                foreach ($atividades[0] as $key => $value) {
+                    echo '<li>' . $key . ' = ' . (is_string($value) || is_numeric($value) ? $value : json_encode($value)) . '</li>';
+                }
+                echo '</ul>';
+            }
+        } catch (Exception $e) {
+            echo '<p style="color: red;"><strong>ERRO:</strong> ' . $e->getMessage() . '</p>';
+            $atividades = [];
+            $total = 0;
+        }
 
         echo '<p><strong>Total de atividades nesta obra:</strong> ' . $total . '</p>';
         echo '<p><strong>Query executada:</strong> ' . $this->db->last_query() . '</p>';
