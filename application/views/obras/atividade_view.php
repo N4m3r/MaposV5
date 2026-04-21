@@ -279,6 +279,32 @@
 </style>
 
 <div class="atividade-view">
+
+    <!-- DEBUG PANEL -->
+    <div style="background: #2c3e50; color: #fff; padding: 15px; margin-bottom: 20px; border-radius: 8px; font-family: monospace; font-size: 12px;">
+        <div style="font-weight: bold; color: #e74c3c; margin-bottom: 10px; font-size: 14px;">
+            <i class="icon-bug"></i> DEBUG - Dados da Atividade
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+            <div><strong>ID:</strong> <?php echo $atividade->id; ?></div>
+            <div><strong>Titulo:</strong> <?php echo $atividade->titulo ?? 'N/A'; ?></div>
+            <div><strong>Status:</strong> <?php echo $atividade->status ?? 'N/A'; ?></div>
+            <div><strong>Etapa ID:</strong> <?php echo $atividade->etapa_id ?? 'NULL'; ?></div>
+            <div><strong>Etapa Nome:</strong> <?php echo $atividade->etapa_nome ?? 'N/A'; ?></div>
+            <div><strong>Etapa Num:</strong> <?php echo $atividade->numero_etapa ?? 'N/A'; ?></div>
+            <div><strong>Tecnico ID:</strong> <?php echo $atividade->tecnico_id ?? 'NULL'; ?></div>
+            <div><strong>Tecnico Nome:</strong> <?php echo $atividade->tecnico_nome ?? 'N/A'; ?></div>
+            <div><strong>Tipo:</strong> <?php echo $atividade->tipo ?? 'N/A'; ?></div>
+            <div><strong>Data:</strong> <?php echo $atividade->data_atividade ?? 'N/A'; ?></div>
+            <div><strong>Progresso:</strong> <?php echo $atividade->percentual_concluido ?? 0; ?>%</div>
+            <div><strong>Visivel:</strong> <?php echo $atividade->visivel_cliente ?? 0; ?></div>
+        </div>
+        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #34495e;">
+            <strong>Objeto completo:</strong>
+            <pre style="margin: 5px 0; background: #1a252f; padding: 10px; border-radius: 4px; overflow-x: auto;"><?php print_r($atividade); ?></pre>
+        </div>
+    </div>
+
     <!-- Header -->
     <div class="atividade-header">
         <div class="atividade-header-content">
