@@ -79,6 +79,7 @@
     font-size: 14px;
     background: white;
     cursor: pointer;
+    color: black;
 }
 .form-select:focus { border-color: #667eea; outline: none; }
 .form-textarea {
@@ -210,7 +211,7 @@
 
                     <div class="form-group">
                         <label class="form-label">Tipo de Obra</label>
-                        <select name="tipo_obra" class="form-select" style="color: black;">
+                        <select name="tipo_obra" class="form-select">
                             <option value="Reforma" <?php echo (isset($result) && $result->tipo_obra == 'Reforma') ? 'selected' : ''; ?>>Reforma</option>
                             <option value="Construcao" <?php echo (isset($result) && $result->tipo_obra == 'Construcao') ? 'selected' : ''; ?>>Construção</option>
                             <option value="Instalacao" <?php echo (isset($result) && $result->tipo_obra == 'Instalacao') ? 'selected' : ''; ?>>Instalação</option>
