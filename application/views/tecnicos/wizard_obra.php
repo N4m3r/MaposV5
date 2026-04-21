@@ -699,15 +699,14 @@ if ($etapa_id && !empty($etapas)) {
 
 <script>
 console.log('Wizard JS carregando...');
+// Definir funções imediatamente para garantir disponibilidade global
+window.previewFoto = window.previewFoto || function() { console.log('previewFoto não carregado ainda'); };
+window.selecionarEtapa = window.selecionarEtapa || function() { console.log('selecionarEtapa não carregado ainda'); };
+
 // Dados das etapas - usando JSON_HEX_TAG para evitar que </script> nos dados quebre o código
-try {
-    const etapasDados = <?= json_encode($etapas ?? [], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>;
-    console.log('Etapas carregadas:', etapasDados ? etapasDados.length : 0);
-} catch (e) {
-    console.error('Erro ao carregar etapas:', e);
-    var etapasDados = [];
-}
-let etapaSelecionadaId = <?= $etapa_id ? json_encode($etapa_id) : 'null' ?>;
+var etapasDados = <?= json_encode($etapas ?? [], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>;
+console.log('Etapas carregadas:', etapasDados ? etapasDados.length : 0);
+var etapaSelecionadaId = <?= $etapa_id ? json_encode($etapa_id) : 'null' ?>;
 
 // Helper para obter cookie CSRF
 function getCookie(name) {
@@ -716,11 +715,11 @@ function getCookie(name) {
 }
 
 // CSRF Token para requisições fetch
-const csrfMetaName = document.querySelector('meta[name="csrf-token-name"]');
-const csrfMetaCookie = document.querySelector('meta[name="csrf-cookie-name"]');
-const csrfTokenName = (csrfMetaName && csrfMetaName.content) ? csrfMetaName.content : '<?= config_item("csrf_token_name") ?>';
-const csrfCookieName = (csrfMetaCookie && csrfMetaCookie.content) ? csrfMetaCookie.content : '<?= config_item("csrf_cookie_name") ?>';
-const csrfToken = getCookie(csrfCookieName);
+var csrfMetaName = document.querySelector('meta[name="csrf-token-name"]');
+var csrfMetaCookie = document.querySelector('meta[name="csrf-cookie-name"]');
+var csrfTokenName = (csrfMetaName && csrfMetaName.content) ? csrfMetaName.content : '<?= config_item("csrf_token_name") ?>';
+var csrfCookieName = (csrfMetaCookie && csrfMetaCookie.content) ? csrfMetaCookie.content : '<?= config_item("csrf_cookie_name") ?>';
+var csrfToken = getCookie(csrfCookieName);
 
 // Função helper para adicionar CSRF ao FormData
 function appendCsrf(formData) {
@@ -1103,7 +1102,7 @@ window.fecharModal = function(id) {
 
 <?php if ($atividade_em_andamento): ?>
 // Cronômetro
-let cronometroIniciado = new Date('<?= $atividade_em_andamento->hora_inicio ?>');
+var cronometroIniciado = new Date('<?= $atividade_em_andamento->hora_inicio ?>');
 
 window.atualizarCronometro = function() {
     const agora = new Date();
