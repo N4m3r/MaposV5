@@ -384,8 +384,8 @@
                             na etapa: <strong><?php echo htmlspecialchars($atividade_novo_andamento->etapa_nome); ?></strong>
                         <?php endif; ?>
                     </p>
-                    <a href="<?php echo site_url('atividades/wizard_obra/' . $obra->id); ?>" class="btn-acao" style="background: linear-gradient(135deg, #ffc107 0%, #ff9807 100%); color: white;">
-                        <i class="bx bx-refresh"></i> Continuar Atividade
+                    <a href="<?php echo site_url('obras/atividades/' . $obra->id); ?>" class="btn-acao" style="background: linear-gradient(135deg, #ffc107 0%, #ff9807 100%); color: white;">
+                        <i class="bx bx-refresh"></i> Ir para Atividades
                     </a>
                 </div>
                 <?php else: ?>
@@ -393,10 +393,10 @@
                 <div style="background: linear-gradient(135deg, #11998e10 0%, #38ef7d10 100%); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
                     <p style="margin: 0 0 10px 0; font-size: 14px;">
                         <strong><i class="bx bx-info-circle"></i> Registre Hora Início e Hora Fim</strong>
-                        <br>Utilize o novo sistema para registrar atividades com precisão de tempo.
+                        <br>Utilize o sistema de atividades para registrar com precisão de tempo.
                     </p>
-                    <a href="<?php echo site_url('atividades/wizard_obra/' . $obra->id); ?>" class="btn-acao btn-acao-iniciar" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white;">
-                        <i class="bx bx-play"></i> Iniciar Atividade
+                    <a href="<?php echo site_url('obras/atividades/' . $obra->id); ?>" class="btn-acao btn-acao-iniciar" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white;">
+                        <i class="bx bx-play"></i> Gerenciar Atividades
                     </a>
                 </div>
                 <?php endif; ?>

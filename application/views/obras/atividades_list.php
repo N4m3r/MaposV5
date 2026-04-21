@@ -694,6 +694,144 @@
         </select>
     </div>
 
+    <!-- SEÇÃO: Registro de Atividades (Hora Início/Fim) - NOVO SISTEMA -->
+    <?php if (!empty($atividades_registradas) || !empty($estatisticas_registro) || $this->session->userdata('permissao') == 1 || $this->session->userdata('permissao') == 2): ?>
+    <div style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); border: 2px solid #667eea; border-radius: 15px; padding: 25px; margin-bottom: 30px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <div>
+                <h3 style="margin: 0; color: #667eea; font-size: 20px;">
+                    <i class="bx bx-timer"></i> Registro de Atividades (Hora Início/Fim)
+                </h3>
+                <p style="margin: 5px 0 0 0; color: #666; font-size: 13px;">
+                    Sistema de registro preciso de tempo para atividades executadas na obra
+                </p>
+            </div>
+            <div>
+                <button onclick="$('#modalIniciarRegistro').modal('show')" class="atividades-btn" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white;">
+                    <i class="bx bx-play"></i> Iniciar Atividade
+                </button>
+            </div>
+        </div>
+
+        <?php if (!empty($estatisticas_registro)): ?>
+        <!-- Estatísticas -->
+        <div class="atividades-stats" style="margin-bottom: 20px;">
+            <div class="atividades-stat-card">
+                <div class="atividades-stat-icon" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white;"><i class="bx bx-list-ul"></i></div>
+                <div class="atividades-stat-content">
+                    <div class="atividades-stat-value"><?php echo $estatisticas_registro['total_atividades'] ?? 0; ?></div>
+                    <div class="atividades-stat-label">Total Registrado</div>
+                </div>
+            </div>
+            <div class="atividades-stat-card">
+                <div class="atividades-stat-icon" style="background: linear-gradient(135deg, #11998e, #38ef7d); color: white;"><i class="bx bx-check-circle"></i></div>
+                <div class="atividades-stat-content">
+                    <div class="atividades-stat-value"><?php echo $estatisticas_registro['concluidas'] ?? 0; ?></div>
+                    <div class="atividades-stat-label">Concluídas</div>
+                </div>
+            </div>
+            <div class="atividades-stat-card">
+                <div class="atividades-stat-icon" style="background: linear-gradient(135deg, #f093fb, #f5576c); color: white;"><i class="bx bx-time"></i></div>
+                <div class="atividades-stat-content">
+                    <div class="atividades-stat-value"><?php echo $estatisticas_registro['em_andamento'] ?? 0; ?></div>
+                    <div class="atividades-stat-label">Em Andamento</div>
+                </div>
+            </div>
+            <div class="atividades-stat-card">
+                <div class="atividades-stat-icon" style="background: linear-gradient(135deg, #4facfe, #00f2fe); color: white;"><i class="bx bx-hourglass"></i></div>
+                <div class="atividades-stat-content">
+                    <div class="atividades-stat-value"><?php echo $estatisticas_registro['tempo_total_horas'] ?? 0; ?>h</div>
+                    <div class="atividades-stat-label">Horas Trabalhadas</div>
+                </div>
+            </div>
+        </div>
+        <?php endif; ?>
+
+        <?php if (!empty($atividades_registradas)): ?>
+        <!-- Timeline de Atividades Registradas -->
+        <div style="background: white; border-radius: 10px; padding: 20px; max-height: 400px; overflow-y: auto;">
+            <h4 style="margin: 0 0 15px 0; font-size: 16px; color: #333;"><i class="bx bx-history"></i> Histórico de Registros</h4>
+
+            <?php foreach (array_slice($atividades_registradas, 0, 10) as $registro): ?>
+            <?php
+                $classe_status = 'concluida';
+                $badge_status = 'success';
+                $badge_text = 'Finalizada';
+
+                if ($registro->status == 'finalizada' && $registro->concluida == 1) {
+                    $classe_status = 'concluida';
+                    $badge_status = 'success';
+                    $badge_text = 'Concluída';
+                } elseif ($registro->status == 'em_andamento') {
+                    $classe_status = 'andamento';
+                    $badge_status = 'warning';
+                    $badge_text = 'Em Andamento';
+                } elseif ($registro->status == 'pausada') {
+                    $classe_status = 'pausada';
+                    $badge_status = 'default';
+                    $badge_text = 'Pausada';
+                }
+
+                $duracao = '';
+                if ($registro->duracao_minutos) {
+                    $horas = floor($registro->duracao_minutos / 60);
+                    $minutos = $registro->duracao_minutos % 60;
+                    $duracao = $horas . 'h ' . $minutos . 'min';
+                }
+            ?>
+            <div style="display: flex; gap: 15px; padding: 12px; margin-bottom: 10px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid <?php echo $registro->status == 'em_andamento' ? '#ffc107' : '#28a745'; ?>;">
+                <div style="min-width: 80px; text-align: center;">
+                    <div style="font-weight: bold; color: #333; font-size: 14px;">
+                        <?php echo date('H:i', strtotime($registro->hora_inicio)); ?>
+                    </div>
+                    <div style="font-size: 11px; color: #888;">
+                        <?php echo date('d/m', strtotime($registro->hora_inicio)); ?>
+                    </div>
+                </div>
+                <div style="flex: 1;">
+                    <div style="font-weight: 600; color: #333; font-size: 14px; margin-bottom: 4px;">
+                        <i class="bx <?php echo $registro->tipo_icone ?? 'bx-wrench'; ?>" style="color: <?php echo $registro->tipo_cor ?? '#667eea'; ?>;"></i>
+                        <?php echo htmlspecialchars($registro->tipo_nome ?? 'Atividade'); ?>
+                    </div>
+                    <div style="font-size: 12px; color: #666;">
+                        <?php if ($registro->etapa_nome ?? false): ?>
+                        <span class="label label-info" style="margin-right: 5px;"><i class="bx bx-layer"></i> <?php echo htmlspecialchars($registro->etapa_nome); ?></span>
+                        <?php endif; ?>
+                        <span class="label label-<?php echo $badge_status; ?>"><?php echo $badge_text; ?></span>
+                        <?php if ($duracao): ?>
+                        <span style="margin-left: 10px; color: #667eea; font-weight: 500;"><i class="bx bx-time"></i> <?php echo $duracao; ?></span>
+                        <?php endif; ?>
+                    </div>
+                    <?php if ($registro->nome_tecnico): ?>
+                    <div style="font-size: 12px; color: #888; margin-top: 4px;">
+                        <i class="bx bx-user"></i> <?php echo htmlspecialchars($registro->nome_tecnico); ?>
+                    </div>
+                    <?php endif; ?>
+                </div>
+                <div style="text-align: right;">
+                    <?php if ($registro->hora_fim): ?>
+                        <div style="font-size: 13px; color: #666;">
+                            <i class="bx bx-stop-circle"></i> <?php echo date('H:i', strtotime($registro->hora_fim)); ?>
+                        </div>
+                    <?php else: ?>
+                        <div style="font-size: 13px; color: #ffc107; font-weight: 500;">
+                            <i class="bx bx-time"></i> Em andamento...
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <?php endforeach; ?>
+        </div>
+        <?php else: ?>
+        <div style="text-align: center; padding: 30px; color: #666;">
+            <i class="bx bx-clipboard" style="font-size: 32px; color: #ddd; margin-bottom: 10px; display: block;"></i>
+            <p style="margin: 0;">Nenhuma atividade registrada ainda.</p>
+            <p style="font-size: 12px; margin-top: 5px;">Clique em "Iniciar Atividade" para começar.</p>
+        </div>
+        <?php endif; ?>
+    </div>
+    <?php endif; ?>
+
     <!-- Grid de Atividades -->
     <?php if (isset($atividades) && !empty($atividades) && is_array($atividades)): ?>
     <div class="atividades-grid" id="atividadesGrid">
@@ -823,6 +961,225 @@
     </div>
     <?php endif; ?>
 </div>
+
+<!-- Modal Iniciar Registro de Atividade (Hora Início/Fim) -->
+<div id="modalIniciarRegistro" class="modal hide fade modal-atividades" tabindex="-1" role="dialog" aria-labelledby="modalRegistroLabel" aria-hidden="true">
+    <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true" style="color: white; opacity: 0.8;">&times;</button>
+        <h3 id="modalRegistroLabel"><i class="bx bx-timer"></i> Iniciar Atividade - Registro de Tempo</h3>
+    </div>
+
+    <form id="formIniciarRegistro" onsubmit="return iniciarRegistroAtividade(event)">
+        <div class="modal-body">
+            <input type="hidden" name="obra_id" value="<?php echo $obra->id; ?>">
+            <input type="hidden" name="latitude" id="registro_latitude">
+            <input type="hidden" name="longitude" id="registro_longitude">
+
+            <!-- Seleção de Etapa (OBRIGATÓRIA) -->
+            <div class="atividades-form-group">
+                <label class="atividades-form-label" for="etapa_id_registro">
+                    <i class="bx bx-layer"></i> Etapa da Obra <span style="color: #dc3545;">*</span>
+                </label>
+                <select name="etapa_id" id="etapa_id_registro" class="atividades-form-select" required>
+                    <option value="">Selecione uma etapa...</option>
+                    <?php if (isset($etapas) && !empty($etapas)): ?>
+                        <?php foreach ($etapas as $e): ?>
+                        <option value="<?php echo $e->id; ?>">
+                            #<?php echo $e->numero_etapa ?? 'N/A'; ?> - <?php echo $e->nome; ?>
+                            <?php if (isset($e->progresso_real) && $e->progresso_real > 0): ?>
+                                (<?php echo $e->progresso_real; ?>%)
+                            <?php endif; ?>
+                        </option>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <option value="" disabled>Nenhuma etapa cadastrada</option>
+                    <?php endif; ?>
+                </select>
+                <div style="font-size: 12px; color: #666; margin-top: 5px;">
+                    <i class="bx bx-info-circle"></i> Selecione a etapa em que você está trabalhando. Obrigatório.
+                </div>
+            </div>
+
+            <!-- Tipo de Atividade -->
+            <div class="atividades-form-group">
+                <label class="atividades-form-label" for="tipo_id_registro">
+                    <i class="bx bx-wrench"></i> Tipo de Atividade <span style="color: #dc3545;">*</span>
+                </label>
+                <select name="tipo_id" id="tipo_id_registro" class="atividades-form-select" required>
+                    <option value="">Selecione o tipo...</option>
+                    <?php if (!empty($tipos_atividades)): ?>
+                        <optgroup label="Rede Estruturada">
+                        <?php foreach ($tipos_atividades as $tipo): ?>
+                            <?php if ($tipo->categoria == 'rede'): ?>
+                            <option value="<?php echo $tipo->idTipo; ?>" data-categoria="rede">
+                                <i class="bx bx-network-chart"></i> <?php echo $tipo->nome; ?>
+                            </option>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                        </optgroup>
+                        <optgroup label="CFTV">
+                        <?php foreach ($tipos_atividades as $tipo): ?>
+                            <?php if ($tipo->categoria == 'cftv'): ?>
+                            <option value="<?php echo $tipo->idTipo; ?>" data-categoria="cftv">
+                                <i class="bx bx-camera"></i> <?php echo $tipo->nome; ?>
+                            </option>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                        </optgroup>
+                        <optgroup label="Infraestrutura">
+                        <?php foreach ($tipos_atividades as $tipo): ?>
+                            <?php if ($tipo->categoria == 'infra'): ?>
+                            <option value="<?php echo $tipo->idTipo; ?>" data-categoria="infra">
+                                <i class="bx bx-server"></i> <?php echo $tipo->nome; ?>
+                            </option>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                        </optgroup>
+                        <optgroup label="Segurança">
+                        <?php foreach ($tipos_atividades as $tipo): ?>
+                            <?php if ($tipo->categoria == 'seguranca'): ?>
+                            <option value="<?php echo $tipo->idTipo; ?>" data-categoria="seguranca">
+                                <i class="bx bx-shield"></i> <?php echo $tipo->nome; ?>
+                            </option>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                        </optgroup>
+                        <optgroup label="Geral">
+                        <?php foreach ($tipos_atividades as $tipo): ?>
+                            <?php if (!in_array($tipo->categoria, ['rede', 'cftv', 'infra', 'seguranca'])): ?>
+                            <option value="<?php echo $tipo->idTipo; ?>">
+                                <i class="bx bx-wrench"></i> <?php echo $tipo->nome; ?>
+                            </option>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                        </optgroup>
+                    <?php else: ?>
+                        <option value="1">Trabalho Técnico</option>
+                    <?php endif; ?>
+                </select>
+            </div>
+
+            <!-- Descrição -->
+            <div class="atividades-form-group">
+                <label class="atividades-form-label" for="descricao_registro">
+                    <i class="bx bx-detail"></i> Descrição da Atividade
+                </label>
+                <textarea name="descricao" id="descricao_registro" class="atividades-form-textarea" rows="2" placeholder="Descreva o trabalho que será realizado..."></textarea>
+            </div>
+
+            <!-- Equipamento/Local -->
+            <div class="atividades-form-group">
+                <label class="atividades-form-label" for="equipamento_registro">
+                    <i class="bx bx-wrench"></i> Equipamento/Local
+                </label>
+                <input type="text" name="equipamento" id="equipamento_registro" class="atividades-form-input" placeholder="Ex: Rack principal, Câmera 1, Sala do servidor...">
+            </div>
+
+            <!-- GPS -->
+            <div class="atividades-form-group">
+                <label class="atividades-form-label">
+                    <i class="bx bx-map"></i> Localização GPS
+                </label>
+                <button type="button" class="btn btn-info" onclick="obterLocalizacaoRegistro()">
+                    <i class="bx bx-map-pin"></i> Obter Localização
+                </button>
+                <div id="gps_info_registro" style="margin-top: 10px; font-size: 12px; color: #666;">
+                    <i class="bx bx-info-circle"></i> Clique no botão acima para registrar sua localização.
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="atividades-btn-cancel" data-dismiss="modal">
+                <i class="bx bx-x"></i> Cancelar
+            </button>
+            <button type="submit" class="atividades-btn-submit" id="btnIniciarRegistro" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                <i class="bx bx-play"></i> INICIAR ATIVIDADE
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+// Função para obter localização GPS
+function obterLocalizacaoRegistro() {
+    if ('geolocation' in navigator) {
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                document.getElementById('registro_latitude').value = position.coords.latitude;
+                document.getElementById('registro_longitude').value = position.coords.longitude;
+                document.getElementById('gps_info_registro').innerHTML =
+                    '<i class="bx bx-check-circle" style="color: #28a745;"></i> Localização obtida com sucesso!';
+            },
+            function(error) {
+                document.getElementById('gps_info_registro').innerHTML =
+                    '<i class="bx bx-error-circle" style="color: #dc3545;"></i> Erro ao obter localização: ' + error.message;
+            }
+        );
+    } else {
+        document.getElementById('gps_info_registro').innerHTML =
+            '<i class="bx bx-error-circle" style="color: #dc3545;"></i> GPS não disponível no dispositivo.';
+    }
+}
+
+// Função para iniciar o registro de atividade
+function iniciarRegistroAtividade(event) {
+    event.preventDefault();
+
+    const form = document.getElementById('formIniciarRegistro');
+    const formData = new FormData(form);
+
+    // Validação
+    const etapaId = formData.get('etapa_id');
+    const tipoId = formData.get('tipo_id');
+
+    if (!etapaId) {
+        alert('Por favor, selecione uma etapa da obra.');
+        document.getElementById('etapa_id_registro').focus();
+        return false;
+    }
+
+    if (!tipoId) {
+        alert('Por favor, selecione o tipo de atividade.');
+        document.getElementById('tipo_id_registro').focus();
+        return false;
+    }
+
+    // Desabilita botão para evitar duplo clique
+    document.getElementById('btnIniciarRegistro').disabled = true;
+    document.getElementById('btnIniciarRegistro').innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Iniciando...';
+
+    // Envia requisição AJAX
+    fetch('<?php echo site_url("atividades/checkin_obra"); ?>', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Fecha modal e recarrega página
+            $('#modalIniciarRegistro').modal('hide');
+            alert('Atividade iniciada com sucesso! Hora Início registrada.');
+            location.reload();
+        } else {
+            alert('Erro: ' + (data.message || 'Erro ao iniciar atividade'));
+            document.getElementById('btnIniciarRegistro').disabled = false;
+            document.getElementById('btnIniciarRegistro').innerHTML = '<i class="bx bx-play"></i> INICIAR ATIVIDADE';
+        }
+    })
+    .catch(error => {
+        console.error('Erro:', error);
+        alert('Erro ao iniciar atividade. Tente novamente.');
+        document.getElementById('btnIniciarRegistro').disabled = false;
+        document.getElementById('btnIniciarRegistro').innerHTML = '<i class="bx bx-play"></i> INICIAR ATIVIDADE';
+    });
+
+    return false;
+}
+</script>
 
 <!-- Modal Adicionar Atividade -->
 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>

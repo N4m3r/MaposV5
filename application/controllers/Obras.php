@@ -561,8 +561,27 @@ class Obras extends MY_Controller
             redirect('obras');
         }
 
-        // Usar o model para buscar atividades (com joins para técnico e etapa)
+        // Atividades agendadas do sistema antigo (com joins para técnico e etapa)
         $this->data['atividades'] = $this->obra_atividades_model->getByObra($obra_id);
+
+        // Carrega dados do sistema de registro de atividades (Hora Início/Fim) se disponível
+        if (file_exists(APPPATH . 'models/Atividades_model.php')) {
+            $this->load->model('Atividades_model', 'atividades_sistema');
+            $this->load->model('Atividades_tipos_model');
+
+            // Atividades registradas com Hora Início/Fim
+            $this->data['atividades_registradas'] = $this->atividades_sistema->listarPorObra($obra_id, [], 50);
+
+            // Estatísticas das atividades registradas
+            $this->data['estatisticas_registro'] = $this->atividades_sistema->getEstatisticasPorObra($obra_id);
+
+            // Tipos de atividades para o formulário de registro
+            $this->data['tipos_atividades'] = $this->Atividades_tipos_model->listarPorCategoria();
+        } else {
+            $this->data['atividades_registradas'] = [];
+            $this->data['estatisticas_registro'] = null;
+            $this->data['tipos_atividades'] = [];
+        }
 
         $this->data['tecnicos'] = $this->usuarios_model->getAll();
         $this->data['etapas'] = $this->obras_model->getEtapas($obra_id);
