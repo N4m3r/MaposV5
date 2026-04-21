@@ -113,11 +113,40 @@
                     !$this->permission->checkPermission($this->session->userdata('permissao'), 'cPermissao')
                 ) { ?>
                     <li class="menu-divider"><span class="divider-text">ÁREA DO TÉCNICO</span></li>
+
+                    <!-- SISTEMA DE ATIVIDADES - Registro de Hora Início/Fim -->
+                    <li class="<?php if (isset($menuAtividadesDashboard)) { echo 'active'; }; ?>">
+                        <a href="<?= site_url('atividades') ?>" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); border-radius: 8px; margin: 5px 10px;">
+                            <i class='bx bx-timer iconX' style="color: white;"></i>
+                            <span class="title" style="color: white; font-weight: 600;">Minhas Atividades</span>
+                            <span class="title-tooltip">Atividades</span>
+                        </a>
+                    </li>
+
                     <li class="<?php if (isset($menuTecnicoDashboard)) { echo 'active'; }; ?>">
                         <a href="<?= site_url('tecnico') ?>" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; margin: 5px 10px;">
                             <i class='bx bx-hard-hat iconX' style="color: white;"></i>
                             <span class="title" style="color: white; font-weight: 600;">Acessar Portal</span>
                             <span class="title-tooltip">Portal Técnico</span>
+                        </a>
+                    </li>
+                <?php } ?>
+
+                <!-- ADMIN: GESTÃO DE ATIVIDADES -->
+                <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cPermissao')) { ?>
+                    <li class="menu-divider"><span class="divider-text">REGISTRO DE ATIVIDADES</span></li>
+                    <li class="<?php if (isset($menuAtividadesDashboard)) { echo 'active'; }; ?>">
+                        <a href="<?= site_url('atividades') ?>">
+                            <i class='bx bx-timer iconX'></i>
+                            <span class="title">Dashboard Atividades</span>
+                            <span class="title-tooltip">Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="<?php if (isset($menuAtividadesRelatorio)) { echo 'active'; }; ?>">
+                        <a href="<?= site_url('atividades/relatorio') ?>">
+                            <i class='bx bx-chart iconX'></i>
+                            <span class="title">Relatório de Atividades</span>
+                            <span class="title-tooltip">Relatório</span>
                         </a>
                     </li>
                 <?php } ?>

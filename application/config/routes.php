@@ -342,5 +342,32 @@ $route['os/atribuirTecnicoAction'] = 'os/atribuirTecnicoAction';
 $route['os/removerTecnicoAction'] = 'os/removerTecnicoAction';
 $route['os/historicoAtribuicoes/(:num)'] = 'os/historicoAtribuicoes/$1';
 
+// ============================================
+// ROTAS DO SISTEMA DE ATIVIDADES DE TÉCNICOS
+// ============================================
+
+// Dashboard e Wizard
+$route['atividades'] = 'atividades';
+$route['atividades/selecionar_os'] = 'atividades/selecionar_os';
+$route['atividades/wizard'] = 'atividades/wizard';
+$route['atividades/wizard/(:num)'] = 'atividades/wizard/$1';
+$route['atividades/historico'] = 'atividades/historico';
+$route['atividades/relatorio'] = 'atividades/relatorio';
+
+// Ações AJAX
+$route['atividades/checkin'] = 'atividades/checkin';
+$route['atividades/iniciar_atividade'] = 'atividades/iniciar_atividade';
+$route['atividades/finalizar_atividade'] = 'atividades/finalizar_atividade';
+$route['atividades/checkout'] = 'atividades/checkout';
+$route['atividades/pausar'] = 'atividades/pausar';
+$route['atividades/retomar'] = 'atividades/retomar';
+$route['atividades/adicionar_material'] = 'atividades/adicionar_material';
+$route['atividades/adicionar_foto'] = 'atividades/adicionar_foto';
+
+// APIs
+$route['atividades/listar_por_os/(:num)'] = 'atividades/listar_por_os/$1';
+$route['atividades/detalhes/(:num)'] = 'atividades/detalhes/$1';
+$route['atividades/get_tipos_por_categoria/(:any)'] = 'atividades/get_tipos_por_categoria/$1';
+
 /* End of file routes.php */
 /* Location: ./application/config/routes.php */

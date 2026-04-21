@@ -1279,6 +1279,72 @@
             border-radius: 0;
         }
     }
+
+    /* Estilos para seleção de atividades (Step 2) */
+    .atividades-grid {
+        max-height: 400px;
+        overflow-y: auto;
+        padding-right: 5px;
+    }
+
+    .atividades-grid::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .atividades-grid::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 3px;
+    }
+
+    .atividades-grid::-webkit-scrollbar-thumb {
+        background: #667eea;
+        border-radius: 3px;
+    }
+
+    .atividade-card-wizard {
+        position: relative;
+        transition: all 0.3s ease;
+    }
+
+    .atividade-card-wizard.selected {
+        border-color: #667eea !important;
+        background: linear-gradient(135deg, #f8f9ff 0%, #fff 100%);
+    }
+
+    .atividade-card-wizard.selected::after {
+        content: '\2713';
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: #667eea;
+        color: white;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    .loading-atividades {
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
+
+    .criar-atividade-section input:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+    }
+
+    .empty-atividades {
+        border: 2px dashed #e0e0e0;
+    }
 </style>
 
 <!-- Header da Obra -->
@@ -1452,6 +1518,8 @@
                     <div class="step" data-step="5">5</div>
                     <div class="step-line" data-step="5"></div>
                     <div class="step" data-step="6">6</div>
+                    <div class="step-line" data-step="6"></div>
+                    <div class="step" data-step="7">7</div>
                 </div>
             </div>
 
@@ -1490,8 +1558,47 @@
                         </div>
                     </div>
 
-                    <!-- Step 2: Tipo de Atividade -->
+                    <!-- Step 2: Selecionar ou Criar Atividade -->
                     <div class="wizard-step-content" data-step="2">
+                        <div class="step-title"><i class='bx bx-layer'></i> Selecione a Atividade</div>
+                        <div class="step-subtitle" id="atividadeSubtitle">Escolha uma atividade existente ou crie uma nova</div>
+
+                        <input type="hidden" name="atividade_id" id="atividade_id" value="">
+
+                        <div id="atividadesContainer">
+                            <!-- As atividades serão carregadas dinamicamente via JavaScript -->
+                            <div class="loading-atividades" style="text-align: center; padding: 30px; color: #888;">
+                                <i class='bx bx-loader-alt bx-spin' style="font-size: 32px; margin-bottom: 10px; display: block;"></i>
+                                Carregando atividades...
+                            </div>
+                        </div>
+
+                        <div class="criar-atividade-section" style="margin-top: 20px; padding-top: 20px; border-top: 2px dashed #e0e0e0;">
+                            <div class="step-subtitle" style="margin-bottom: 15px;"><i class='bx bx-plus-circle'></i> Ou crie uma nova atividade</div>
+
+                            <div class="form-group" style="margin-bottom: 15px;">
+                                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #555; font-size: 14px;">Título da Atividade</label>
+                                <input type="text" id="novo_titulo_atividade" placeholder="Ex: Instalação das tubulações do 2º andar"
+                                    style="width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 14px; transition: all 0.3s;"
+                                    onfocus="this.style.borderColor='#667eea'" onblur="this.style.borderColor='#e0e0e0'"
+                                    oninput="wizard.verificarNovoTitulo()">
+                            </div>
+
+                            <button type="button" class="select-card" id="btnCriarAtividade" onclick="wizard.criarNovaAtividade()"
+                                style="width: 100%; opacity: 0.6; pointer-events: none;">
+                                <div class="select-card-icon" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white;">
+                                    <i class='bx bx-plus'></i>
+                                </div>
+                                <div class="select-card-info">
+                                    <div class="select-card-title">Criar Nova Atividade</div>
+                                    <div class="select-card-desc">Inicie uma nova atividade para esta etapa</div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Tipo de Atividade -->
+                    <div class="wizard-step-content" data-step="3">
                         <div class="step-title"><i class='bx bx-task'></i> Que tipo de atividade foi?</div>
                         <div class="step-subtitle">Selecione o tipo que melhor descreve seu trabalho</div>
 
@@ -1528,8 +1635,8 @@
                         </div>
                     </div>
 
-                    <!-- Step 3: Descricao -->
-                    <div class="wizard-step-content" data-step="3">
+                    <!-- Step 4: Descricao -->
+                    <div class="wizard-step-content" data-step="4">
                         <div class="step-title"><i class='bx bx-edit-alt'></i> Descreva o que foi feito</div>
                         <div class="step-subtitle">Detalhe a atividade realizada</div>
 
@@ -1545,8 +1652,8 @@
                         </div>
                     </div>
 
-                    <!-- Step 4: Fotos (Novo) -->
-                    <div class="wizard-step-content" data-step="4">
+                    <!-- Step 5: Fotos -->
+                    <div class="wizard-step-content" data-step="5">
                         <div class="step-title"><i class='bx bx-camera'></i> Anexe fotos da execucao</div>
                         <div class="step-subtitle">Registre visualmente o que foi realizado ou problemas encontrados</div>
 
@@ -1572,8 +1679,8 @@
                         </div>
                     </div>
 
-                    <!-- Step 5: Progresso -->
-                    <div class="wizard-step-content" data-step="5">
+                    <!-- Step 6: Progresso -->
+                    <div class="wizard-step-content" data-step="6">
                         <div class="step-title"><i class='bx bx-trending-up'></i> Qual o percentual de conclusao?</div>
                         <div class="step-subtitle">Ajuste o slider para indicar o progresso desta etapa</div>
 
@@ -1593,8 +1700,8 @@
                         </div>
                     </div>
 
-                    <!-- Step 6: Resumo -->
-                    <div class="wizard-step-content" data-step="6">
+                    <!-- Step 7: Resumo -->
+                    <div class="wizard-step-content" data-step="7">
                         <div class="step-title"><i class='bx bx-check-double'></i> Revise e confirme</div>
                         <div class="step-subtitle">Verifique as informacoes antes de finalizar</div>
 
@@ -1602,6 +1709,10 @@
                             <div class="resumo-item">
                                 <span class="resumo-label">Etapa:</span>
                                 <span class="resumo-value" id="resumoEtapa">-</span>
+                            </div>
+                            <div class="resumo-item">
+                                <span class="resumo-label">Atividade:</span>
+                                <span class="resumo-value" id="resumoAtividade">Nova Atividade</span>
                             </div>
                             <div class="resumo-item">
                                 <span class="resumo-label">Tipo:</span>
@@ -1664,16 +1775,20 @@
 // Wizard de Execucao de Atividade - Versao Aprimorada
 const wizard = {
     currentStep: 1,
-    totalSteps: 6,
+    totalSteps: 7,
     data: {
         etapa_id: '',
         etapa_nome: '-',
+        atividade_id: '',
+        atividade_nome: '',
+        is_nova_atividade: false,
         tipo: '',
         tipo_nome: '',
         descricao: '',
         percentual: 0,
         fotos: []
     },
+    atividadesPorEtapa: <?= json_encode($atividades_por_etapa ?? []) ?>,
     isSubmitting: false,
 
     init: function() {
@@ -1862,10 +1977,17 @@ const wizard = {
         });
     },
 
-    // Selecao de Etapa com animacao
+    // Selecao de Etapa com animacao - Agora carrega atividades da etapa
     selectEtapa: function(id, nome) {
         this.data.etapa_id = id;
         this.data.etapa_nome = id ? nome : 'Nao especificada';
+
+        // Reset atividade selection
+        this.data.atividade_id = '';
+        this.data.atividade_nome = '';
+        this.data.is_nova_atividade = false;
+        document.getElementById('atividade_id').value = '';
+        document.getElementById('novo_titulo_atividade').value = '';
 
         // Visual feedback com animacao
         document.querySelectorAll('.etapa-card').forEach(card => {
@@ -1881,7 +2003,143 @@ const wizard = {
         document.getElementById('etapa_id').value = id;
         this.showToast(id ? `Etapa selecionada: ${nome}` : 'Nenhuma etapa especificada', 'success');
 
+        // Carregar atividades da etapa selecionada
+        this.carregarAtividadesDaEtapa(id, nome);
+
         setTimeout(() => this.nextStep(), 400);
+    },
+
+    // Carregar atividades da etapa selecionada
+    carregarAtividadesDaEtapa: function(etapaId, etapaNome) {
+        const container = document.getElementById('atividadesContainer');
+        const subtitle = document.getElementById('atividadeSubtitle');
+
+        subtitle.textContent = etapaId
+            ? `Atividades da etapa: ${etapaNome}`
+            : 'Atividades sem etapa definida';
+
+        const atividades = this.atividadesPorEtapa[etapaId || 'sem_etapa'] || [];
+
+        if (atividades.length === 0) {
+            container.innerHTML = `
+                <div class="empty-atividades" style="text-align: center; padding: 30px; color: #888; background: #f8f9fa; border-radius: 12px;">
+                    <i class='bx bx-layer' style="font-size: 40px; margin-bottom: 10px; display: block; color: #ddd;"></i>
+                    <p style="margin: 0; font-size: 14px;">Nenhuma atividade encontrada nesta etapa</p>
+                    <p style="margin: 8px 0 0 0; font-size: 12px; color: #aaa;">Crie uma nova atividade abaixo</p>
+                </div>
+            `;
+        } else {
+            let html = '<div class="atividades-grid" style="display: grid; gap: 12px;">';
+            atividades.forEach(atv => {
+                const tipoLabels = { 'execucao': 'Execução', 'problema': 'Problema', 'observacao': 'Observação' };
+                const tipoCores = { 'execucao': '#27ae60', 'problema': '#e74c3c', 'observacao': '#f39c12' };
+                const tipo = atv.tipo || 'execucao';
+                const cor = tipoCores[tipo] || '#667eea';
+                const label = tipoLabels[tipo] || tipo;
+                const temFotos = atv.fotos_atividade || atv.fotos;
+                const percentual = atv.percentual_concluido || 0;
+                const titulo = atv.titulo || atv.descricao?.substring(0, 50) || 'Atividade';
+
+                html += `
+                    <div class="atividade-card-wizard" data-atividade-id="${atv.id}"
+                        onclick="wizard.selectAtividade('${atv.id}', '${this.escapeHtml(titulo)}')"
+                        style="background: white; border: 2px solid #e0e0e0; border-radius: 12px; padding: 15px; cursor: pointer; transition: all 0.3s;"
+                        onmouseover="this.style.borderColor='#667eea'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)';"
+                        onmouseout="if(!this.classList.contains('selected')){this.style.borderColor='#e0e0e0'; this.style.transform=''; this.style.boxShadow='';}"
+                    >
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="background: ${cor}20; color: ${cor}; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">${label}</span>
+                                ${temFotos ? "<i class='bx bx-camera' style='color: #667eea; font-size: 16px;'></i>" : ''}
+                            </div>
+                            <span style="font-size: 12px; color: #888;">${new Date(atv.data_atividade).toLocaleDateString('pt-BR')}</span>
+                        </div>
+                        <p style="margin: 0; font-size: 13px; color: #333; line-height: 1.4; margin-bottom: 8px;">
+                            ${this.escapeHtml(titulo)}
+                        </p>
+                        ${percentual > 0 ? `
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div style="flex: 1; height: 4px; background: #e0e0e0; border-radius: 2px;">
+                                    <div style="width: ${percentual}%; height: 100%; background: ${cor}; border-radius: 2px;"></div>
+                                </div>
+                                <span style="font-size: 11px; color: #666;">${percentual}%</span>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+    },
+
+    // Escape HTML para evitar XSS
+    escapeHtml: function(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    },
+
+    // Selecionar uma atividade existente
+    selectAtividade: function(id, nome) {
+        this.data.atividade_id = id;
+        this.data.atividade_nome = nome;
+        this.data.is_nova_atividade = false;
+        document.getElementById('atividade_id').value = id;
+
+        // Visual feedback
+        document.querySelectorAll('.atividade-card-wizard').forEach(card => {
+            card.classList.remove('selected');
+            card.style.borderColor = '#e0e0e0';
+            card.style.transform = '';
+            card.style.boxShadow = '';
+        });
+
+        const selected = document.querySelector(`.atividade-card-wizard[data-atividade-id="${id}"]`);
+        if (selected) {
+            selected.classList.add('selected');
+            selected.style.borderColor = '#667eea';
+            selected.style.transform = 'scale(1.02)';
+            selected.style.boxShadow = '0 4px 15px rgba(102,126,234,0.3)';
+        }
+
+        this.showToast(`Atividade selecionada: ${nome.substring(0, 30)}${nome.length > 30 ? '...' : ''}`, 'success');
+
+        setTimeout(() => this.nextStep(), 400);
+    },
+
+    // Verificar se pode criar nova atividade
+    verificarNovoTitulo: function() {
+        const titulo = document.getElementById('novo_titulo_atividade').value.trim();
+        const btn = document.getElementById('btnCriarAtividade');
+
+        if (titulo.length >= 3) {
+            btn.style.opacity = '1';
+            btn.style.pointerEvents = 'auto';
+            btn.style.borderColor = '#667eea';
+        } else {
+            btn.style.opacity = '0.6';
+            btn.style.pointerEvents = 'none';
+            btn.style.borderColor = 'transparent';
+        }
+    },
+
+    // Criar nova atividade
+    criarNovaAtividade: function() {
+        const titulo = document.getElementById('novo_titulo_atividade').value.trim();
+        if (titulo.length < 3) {
+            this.showToast('Digite um título de pelo menos 3 caracteres', 'warning');
+            return;
+        }
+
+        this.data.atividade_id = '';
+        this.data.atividade_nome = titulo;
+        this.data.is_nova_atividade = true;
+        document.getElementById('atividade_id').value = '';
+
+        this.showToast(`Nova atividade: ${titulo}`, 'success');
+        this.nextStep();
     },
 
     // Selecao de Tipo com feedback visual
@@ -1988,13 +2246,19 @@ const wizard = {
         switch(step) {
             case 1: // Etapa - sempre valido (pode ser vazio)
                 return true;
-            case 2: // Tipo - obrigatorio
+            case 2: // Atividade - obrigatorio (existente ou nova)
+                if (!this.data.atividade_id && !this.data.is_nova_atividade) {
+                    this.showToast('Por favor, selecione uma atividade existente ou crie uma nova', 'warning');
+                    return false;
+                }
+                return true;
+            case 3: // Tipo - obrigatorio
                 if (!this.data.tipo) {
                     this.showToast('Por favor, selecione o tipo de atividade', 'warning');
                     return false;
                 }
                 return true;
-            case 3: // Descricao - obrigatoria
+            case 4: // Descricao - obrigatoria
                 const descricao = document.getElementById('descricao').value.trim();
                 if (!descricao || descricao.length < 10) {
                     this.showToast('Por favor, descreva a atividade com pelo menos 10 caracteres', 'warning');
@@ -2007,11 +2271,11 @@ const wizard = {
                 }
                 this.data.descricao = descricao;
                 return true;
-            case 4: // Fotos - sempre valido (opcional)
+            case 5: // Fotos - sempre valido (opcional)
                 return true;
-            case 5: // Progresso - sempre valido
+            case 6: // Progresso - sempre valido
                 return true;
-            case 6: // Resumo - sempre valido
+            case 7: // Resumo - sempre valido
                 return true;
             default:
                 return true;
@@ -2139,6 +2403,21 @@ const wizard = {
 
     atualizarResumo: function() {
         document.getElementById('resumoEtapa').textContent = this.data.etapa_nome;
+
+        // Resumo da atividade
+        const resumoAtividade = document.getElementById('resumoAtividade');
+        if (this.data.atividade_id) {
+            resumoAtividade.innerHTML = `<i class='bx bx-check-circle' style="color: #27ae60; margin-right: 4px;"></i>
+                ${this.escapeHtml(this.data.atividade_nome.substring(0, 40))}${this.data.atividade_nome.length > 40 ? '...' : ''}
+                <span style="font-size: 11px; color: #888; margin-left: 8px;">(Existente)</span>`;
+        } else if (this.data.is_nova_atividade) {
+            resumoAtividade.innerHTML = `<i class='bx bx-plus-circle' style="color: #667eea; margin-right: 4px;"></i>
+                ${this.escapeHtml(this.data.atividade_nome.substring(0, 40))}${this.data.atividade_nome.length > 40 ? '...' : ''}
+                <span style="font-size: 11px; color: #888; margin-left: 8px;">(Nova)</span>`;
+        } else {
+            resumoAtividade.textContent = '-';
+        }
+
         document.getElementById('resumoTipo').textContent = this.data.tipo_nome || '-';
 
         // Resumo de fotos com ícone
@@ -2187,6 +2466,10 @@ const wizard = {
             const formData = new FormData();
             formData.append('obra_id', document.querySelector('input[name="obra_id"]').value);
             formData.append('etapa_id', this.data.etapa_id);
+            formData.append('atividade_id', this.data.atividade_id);
+            if (this.data.is_nova_atividade && this.data.atividade_nome) {
+                formData.append('titulo', this.data.atividade_nome);
+            }
             formData.append('tipo', this.data.tipo);
             formData.append('descricao', this.data.descricao);
             formData.append('percentual_concluido', this.data.percentual);

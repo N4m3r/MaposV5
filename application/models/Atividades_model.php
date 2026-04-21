@@ -1,0 +1,486 @@
+<?php
+
+if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
+
+/**
+ * Model para gerenciamento de Atividades de Técnicos
+ * Registra cada atividade específica realizada durante um atendimento
+ */
+class Atividades_model extends CI_Model
+{
+    protected $table = 'os_atividades';
+
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+    /**
+     * Inicia uma nova atividade
+     */
+    public function iniciar($dados)
+    {
+        $padrao = [
+            'hora_inicio' => date('Y-m-d H:i:s'),
+            'status' => 'em_andamento',
+            'concluida' => 0,
+        ];
+
+        $dados = array_merge($padrao, $dados);
+
+        $this->db->insert($this->table, $dados);
+        return $this->db->insert_id();
+    }
+
+    /**
+     * Finaliza uma atividade
+     */
+    public function finalizar($atividade_id, $dados = [])
+    {
+        $atividade = $this->getById($atividade_id);
+        if (!$atividade) {
+            return false;
+        }
+
+        $hora_fim = date('Y-m-d H:i:s');
+
+        // Calcula duração
+        $duracao_minutos = $this->calcularDuracao($atividade->hora_inicio, $hora_fim, $atividade_id);
+
+        $update = array_merge($dados, [
+            'hora_fim' => $hora_fim,
+            'status' => 'finalizada',
+            'duracao_minutos' => $duracao_minutos,
+        ]);
+
+        $this->db->where('idAtividade', $atividade_id);
+        return $this->db->update($this->table, $update);
+    }
+
+    /**
+     * Pausa uma atividade
+     */
+    public function pausar($atividade_id, $motivo = null, $observacao = null)
+    {
+        $this->db->where('idAtividade', $atividade_id);
+        $this->db->update($this->table, [
+            'status' => 'pausada',
+            'pausado_em' => date('Y-m-d H:i:s'),
+        ]);
+
+        // Registra na tabela de pausas
+        $this->db->insert('atividades_pausas', [
+            'atividade_id' => $atividade_id,
+            'pausa_inicio' => date('Y-m-d H:i:s'),
+            'motivo' => $motivo,
+            'observacao' => $observacao,
+        ]);
+
+        return $this->db->insert_id();
+    }
+
+    /**
+     * Retoma uma atividade pausada
+     */
+    public function retomar($atividade_id)
+    {
+        // Atualiza a pausa mais recente
+        $this->db->where('atividade_id', $atividade_id);
+        $this->db->where('pausa_fim IS NULL');
+        $this->db->order_by('idPausa', 'DESC');
+        $this->db->limit(1);
+        $this->db->update('atividades_pausas', [
+            'pausa_fim' => date('Y-m-d H:i:s'),
+        ]);
+
+        // Atualiza a atividade
+        $this->db->where('idAtividade', $atividade_id);
+        return $this->db->update($this->table, [
+            'status' => 'em_andamento',
+        ]);
+    }
+
+    /**
+     * Obtém atividade por ID
+     */
+    public function getById($id)
+    {
+        $this->db->where('idAtividade', $id);
+        return $this->db->get($this->table)->row();
+    }
+
+    /**
+     * Obtém atividade com detalhes completos
+     */
+    public function getByIdCompleto($id)
+    {
+        $this->db->select('os_atividades.*,
+                           atividades_tipos.nome as tipo_nome,
+                           atividades_tipos.icone as tipo_icone,
+                           atividades_tipos.cor as tipo_cor,
+                           usuarios.nome as nome_tecnico');
+        $this->db->from($this->table);
+        $this->db->join('atividades_tipos', 'atividades_tipos.idTipo = os_atividades.tipo_id', 'left');
+        $this->db->join('usuarios', 'usuarios.idUsuarios = os_atividades.tecnico_id', 'left');
+        $this->db->where('os_atividades.idAtividade', $id);
+
+        $atividade = $this->db->get()->row();
+
+        if ($atividade) {
+            $atividade->materiais = $this->getMateriais($id);
+            $atividade->fotos = $this->getFotos($id);
+            $atividade->pausas = $this->getPausas($id);
+            $atividade->checklist = $this->getChecklist($id);
+        }
+
+        return $atividade;
+    }
+
+    /**
+     * Lista atividades por OS
+     */
+    public function listarPorOS($os_id, $filtros = [])
+    {
+        $this->db->select('os_atividades.*,
+                           atividades_tipos.nome as tipo_nome,
+                           atividades_tipos.icone as tipo_icone,
+                           atividades_tipos.cor as tipo_cor,
+                           usuarios.nome as nome_tecnico');
+        $this->db->from($this->table);
+        $this->db->join('atividades_tipos', 'atividades_tipos.idTipo = os_atividades.tipo_id', 'left');
+        $this->db->join('usuarios', 'usuarios.idUsuarios = os_atividades.tecnico_id', 'left');
+        $this->db->where('os_atividades.os_id', $os_id);
+
+        if (isset($filtros['status'])) {
+            $this->db->where('os_atividades.status', $filtros['status']);
+        }
+
+        if (isset($filtros['tecnico_id'])) {
+            $this->db->where('os_atividades.tecnico_id', $filtros['tecnico_id']);
+        }
+
+        if (isset($filtros['data_inicio'])) {
+            $this->db->where('DATE(os_atividades.hora_inicio) >=', $filtros['data_inicio']);
+        }
+
+        if (isset($filtros['data_fim'])) {
+            $this->db->where('DATE(os_atividades.hora_inicio) <=', $filtros['data_fim']);
+        }
+
+        $this->db->order_by('os_atividades.hora_inicio', 'ASC');
+
+        return $this->db->get()->result();
+    }
+
+    /**
+     * Lista atividades por técnico
+     */
+    public function listarPorTecnico($tecnico_id, $filtros = [], $limite = null)
+    {
+        $this->db->select('os_atividades.*,
+                           atividades_tipos.nome as tipo_nome,
+                           os.descricaoProduto as os_equipamento,
+                           os.defeito as os_defeito,
+                           clientes.nomeCliente');
+        $this->db->from($this->table);
+        $this->db->join('atividades_tipos', 'atividades_tipos.idTipo = os_atividades.tipo_id', 'left');
+        $this->db->join('os', 'os.idOs = os_atividades.os_id', 'left');
+        $this->db->join('clientes', 'clientes.idClientes = os.clientes_id', 'left');
+        $this->db->where('os_atividades.tecnico_id', $tecnico_id);
+
+        if (isset($filtros['status'])) {
+            $this->db->where('os_atividades.status', $filtros['status']);
+        }
+
+        if (isset($filtros['data'])) {
+            $this->db->where('DATE(os_atividades.hora_inicio)', $filtros['data']);
+        }
+
+        $this->db->order_by('os_atividades.hora_inicio', 'DESC');
+
+        if ($limite) {
+            $this->db->limit($limite);
+        }
+
+        return $this->db->get()->result();
+    }
+
+    /**
+     * Obtém atividade em andamento de um técnico
+     */
+    public function getAtividadeEmAndamento($tecnico_id)
+    {
+        $this->db->select('os_atividades.*,
+                           atividades_tipos.nome as tipo_nome,
+                           atividades_tipos.icone as tipo_icone,
+                           atividades_tipos.cor as tipo_cor,
+                           os.descricaoProduto as os_equipamento,
+                           clientes.nomeCliente,
+                           clientes.telefone,
+                           clientes.celular');
+        $this->db->from($this->table);
+        $this->db->join('atividades_tipos', 'atividades_tipos.idTipo = os_atividades.tipo_id', 'left');
+        $this->db->join('os', 'os.idOs = os_atividades.os_id', 'left');
+        $this->db->join('clientes', 'clientes.idClientes = os.clientes_id', 'left');
+        $this->db->where('os_atividades.tecnico_id', $tecnico_id);
+        $this->db->where('os_atividades.status', 'em_andamento');
+        $this->db->limit(1);
+
+        return $this->db->get()->row();
+    }
+
+    /**
+     * Verifica se técnico tem atividade em andamento
+     */
+    public function hasAtividadeEmAndamento($tecnico_id)
+    {
+        $this->db->where('tecnico_id', $tecnico_id);
+        $this->db->where('status', 'em_andamento');
+        return $this->db->count_all_results($this->table) > 0;
+    }
+
+    /**
+     * Atualiza atividade
+     */
+    public function atualizar($atividade_id, $dados)
+    {
+        $this->db->where('idAtividade', $atividade_id);
+        return $this->db->update($this->table, $dados);
+    }
+
+    /**
+     * Exclui atividade (com verificação de permissões)
+     */
+    public function excluir($atividade_id, $tecnico_id = null)
+    {
+        $this->db->where('idAtividade', $atividade_id);
+
+        if ($tecnico_id) {
+            $this->db->where('tecnico_id', $tecnico_id);
+        }
+
+        // Só permite excluir se ainda não finalizou ou se finalizou há pouco tempo
+        $this->db->group_start();
+        $this->db->where('status', 'em_andamento');
+        $this->db->or_where('hora_fim >', date('Y-m-d H:i:s', strtotime('-1 hour')));
+        $this->db->group_end();
+
+        return $this->db->delete($this->table);
+    }
+
+    /**
+     * Adiciona material à atividade
+     */
+    public function adicionarMaterial($atividade_id, $dados)
+    {
+        $dados['atividade_id'] = $atividade_id;
+        return $this->db->insert('atividades_materiais', $dados);
+    }
+
+    /**
+     * Lista materiais de uma atividade
+     */
+    public function getMateriais($atividade_id)
+    {
+        $this->db->select('atividades_materiais.*, produtos.descricao as produto_descricao');
+        $this->db->from('atividades_materiais');
+        $this->db->join('produtos', 'produtos.idProdutos = atividades_materiais.produto_id', 'left');
+        $this->db->where('atividade_id', $atividade_id);
+        return $this->db->get()->result();
+    }
+
+    /**
+     * Adiciona foto à atividade
+     */
+    public function adicionarFoto($atividade_id, $dados)
+    {
+        $dados['atividade_id'] = $atividade_id;
+        return $this->db->insert('atividades_fotos', $dados);
+    }
+
+    /**
+     * Lista fotos de uma atividade
+     */
+    public function getFotos($atividade_id)
+    {
+        $this->db->where('atividade_id', $atividade_id);
+        $this->db->order_by('data_hora', 'ASC');
+        return $this->db->get('atividades_fotos')->result();
+    }
+
+    /**
+     * Lista pausas de uma atividade
+     */
+    public function getPausas($atividade_id)
+    {
+        $this->db->where('atividade_id', $atividade_id);
+        $this->db->order_by('pausa_inicio', 'ASC');
+        return $this->db->get('atividades_pausas')->result();
+    }
+
+    /**
+     * Lista checklist de uma atividade
+     */
+    public function getChecklist($atividade_id)
+    {
+        $this->db->where('atividade_id', $atividade_id);
+        $this->db->order_by('ordem', 'ASC');
+        return $this->db->get('atividades_checklist')->result();
+    }
+
+    /**
+     * Calcula duração em minutos, descontando pausas
+     */
+    private function calcularDuracao($hora_inicio, $hora_fim, $atividade_id)
+    {
+        $inicio = strtotime($hora_inicio);
+        $fim = strtotime($hora_fim);
+        $duracao_total = ($fim - $inicio) / 60; // em minutos
+
+        // Desconta pausas
+        $pausas = $this->getPausas($atividade_id);
+        $tempo_pausado = 0;
+
+        foreach ($pausas as $pausa) {
+            if ($pausa->pausa_fim) {
+                $pausa_inicio = strtotime($pausa->pausa_inicio);
+                $pausa_fim = strtotime($pausa->pausa_fim);
+                $tempo_pausado += ($pausa_fim - $pausa_inicio) / 60;
+            }
+        }
+
+        return round($duracao_total - $tempo_pausado);
+    }
+
+    /**
+     * Obtém estatísticas de atividades por técnico
+     */
+    public function getEstatisticasTecnico($tecnico_id, $data_inicio = null, $data_fim = null)
+    {
+        if (!$data_inicio) {
+            $data_inicio = date('Y-m-01'); // Início do mês
+        }
+        if (!$data_fim) {
+            $data_fim = date('Y-m-t'); // Fim do mês
+        }
+
+        // Total de atividades
+        $this->db->where('tecnico_id', $tecnico_id);
+        $this->db->where('DATE(hora_inicio) >=', $data_inicio);
+        $this->db->where('DATE(hora_inicio) <=', $data_fim);
+        $total = $this->db->count_all_results($this->table);
+
+        // Atividades concluídas
+        $this->db->where('tecnico_id', $tecnico_id);
+        $this->db->where('status', 'finalizada');
+        $this->db->where('concluida', 1);
+        $this->db->where('DATE(hora_inicio) >=', $data_inicio);
+        $this->db->where('DATE(hora_inicio) <=', $data_fim);
+        $concluidas = $this->db->count_all_results($this->table);
+
+        // Total de minutos trabalhados
+        $this->db->select_sum('duracao_minutos', 'total');
+        $this->db->where('tecnico_id', $tecnico_id);
+        $this->db->where('status', 'finalizada');
+        $this->db->where('DATE(hora_inicio) >=', $data_inicio);
+        $this->db->where('DATE(hora_inicio) <=', $data_fim);
+        $minutos = $this->db->get($this->table)->row()->total;
+
+        // Atividades por categoria
+        $this->db->select('categoria, COUNT(*) as total, SUM(duracao_minutos) as minutos');
+        $this->db->where('tecnico_id', $tecnico_id);
+        $this->db->where('status', 'finalizada');
+        $this->db->where('DATE(hora_inicio) >=', $data_inicio);
+        $this->db->where('DATE(hora_inicio) <=', $data_fim);
+        $this->db->group_by('categoria');
+        $por_categoria = $this->db->get($this->table)->result();
+
+        return [
+            'total_atividades' => $total,
+            'concluidas' => $concluidas,
+            'tempo_total_minutos' => $minutos ?: 0,
+            'tempo_total_horas' => round(($minutos ?: 0) / 60, 2),
+            'por_categoria' => $por_categoria,
+        ];
+    }
+
+    /**
+     * Obtém resumo do dia para o técnico
+     */
+    public function getResumoDia($tecnico_id, $data = null)
+    {
+        if (!$data) {
+            $data = date('Y-m-d');
+        }
+
+        // Atividades em andamento
+        $em_andamento = $this->getAtividadeEmAndamento($tecnico_id);
+
+        // Atividades do dia
+        $atividades = $this->listarPorTecnico($tecnico_id, ['data' => $data]);
+
+        // Calcula tempo total trabalhado hoje
+        $tempo_trabalhado = 0;
+        $atividades_finalizadas = [];
+
+        foreach ($atividades as $atv) {
+            if ($atv->status == 'finalizada' && $atv->duracao_minutos) {
+                $tempo_trabalhado += $atv->duracao_minutos;
+                $atividades_finalizadas[] = $atv;
+            }
+        }
+
+        return [
+            'data' => $data,
+            'em_andamento' => $em_andamento,
+            'total_atividades' => count($atividades),
+            'atividades_finalizadas' => $atividades_finalizadas,
+            'tempo_trabalhado_minutos' => $tempo_trabalhado,
+            'tempo_trabalhado_horas' => round($tempo_trabalhado / 60, 2),
+        ];
+    }
+
+    /**
+     * Gera relatório detalhado de atividades
+     */
+    public function gerarRelatorio($filtros = [])
+    {
+        $this->db->select('os_atividades.*,
+                           atividades_tipos.nome as tipo_nome,
+                           os.descricaoProduto as os_equipamento,
+                           os.defeito as os_defeito,
+                           clientes.nomeCliente,
+                           usuarios.nome as nome_tecnico');
+        $this->db->from($this->table);
+        $this->db->join('atividades_tipos', 'atividades_tipos.idTipo = os_atividades.tipo_id', 'left');
+        $this->db->join('os', 'os.idOs = os_atividades.os_id', 'left');
+        $this->db->join('clientes', 'clientes.idClientes = os.clientes_id', 'left');
+        $this->db->join('usuarios', 'usuarios.idUsuarios = os_atividades.tecnico_id', 'left');
+
+        if (isset($filtros['data_inicio'])) {
+            $this->db->where('DATE(os_atividades.hora_inicio) >=', $filtros['data_inicio']);
+        }
+
+        if (isset($filtros['data_fim'])) {
+            $this->db->where('DATE(os_atividades.hora_inicio) <=', $filtros['data_fim']);
+        }
+
+        if (isset($filtros['tecnico_id'])) {
+            $this->db->where('os_atividades.tecnico_id', $filtros['tecnico_id']);
+        }
+
+        if (isset($filtros['categoria'])) {
+            $this->db->where('os_atividades.categoria', $filtros['categoria']);
+        }
+
+        if (isset($filtros['concluida'])) {
+            $this->db->where('os_atividades.concluida', $filtros['concluida']);
+        }
+
+        $this->db->order_by('os_atividades.hora_inicio', 'DESC');
+
+        return $this->db->get()->result();
+    }
+}

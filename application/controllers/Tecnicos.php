@@ -316,6 +316,7 @@ class Tecnicos extends CI_Controller
 
         // Buscar minhas atividades na obra
         $minhas_atividades = [];
+        $atividades_por_etapa = []; // Agrupadas por etapa para o novo workflow
         try {
             if ($this->db->table_exists('obra_atividades')) {
                 $this->db->where(['obra_id' => $obra_id, 'tecnico_id' => $tecnico_id]);
@@ -323,6 +324,15 @@ class Tecnicos extends CI_Controller
                 $this->db->order_by('created_at', 'DESC');
                 $query = $this->db->get('obra_atividades');
                 $minhas_atividades = $query ? $query->result() : [];
+
+                // Agrupar atividades por etapa_id para o novo workflow
+                foreach ($minhas_atividades as $atv) {
+                    $etapa_id = $atv->etapa_id ?? 'sem_etapa';
+                    if (!isset($atividades_por_etapa[$etapa_id])) {
+                        $atividades_por_etapa[$etapa_id] = [];
+                    }
+                    $atividades_por_etapa[$etapa_id][] = $atv;
+                }
             }
         } catch (Exception $e) {
             log_message('error', 'Erro ao buscar atividades do tecnico na obra: ' . $e->getMessage());
@@ -333,6 +343,7 @@ class Tecnicos extends CI_Controller
         $this->data['etapas'] = $etapas;
         $this->data['minhas_os'] = $minhas_os;
         $this->data['minhas_atividades'] = $minhas_atividades;
+        $this->data['atividades_por_etapa'] = $atividades_por_etapa;
         $this->data['menuObras'] = 'active';
         $this->data['pageTitle'] = 'Executar Obra: ' . $obra->nome;
         $this->data['title'] = 'Executar Obra - Portal do Técnico';
@@ -1920,14 +1931,68 @@ class Tecnicos extends CI_Controller
 
         log_message('info', 'api_registrar_atividade_obra - Total fotos salvas: ' . count($fotos_salvas));
 
-        // Preparar título a partir da descrição
-        $titulo = substr($descricao, 0, 100);
+        // Receber atividade_id (para atualizar atividade existente) e título
+        $atividade_existente_id = $this->input->post('atividade_id');
+        $titulo_enviado = $this->input->post('titulo');
+
+        // Preparar título: usar título enviado ou gerar a partir da descrição
+        $titulo = $titulo_enviado ? substr($titulo_enviado, 0, 255) : substr($descricao, 0, 100);
 
         // Verificar quais colunas existem na tabela (para compatibilidade)
         $colunas_existentes = $this->db->list_fields('obra_atividades');
         log_message('debug', 'Colunas existentes: ' . implode(', ', $colunas_existentes));
 
-        // Inserir atividade - apenas com colunas que existem
+        // Se atividade_id foi informado, atualizar a atividade existente
+        if ($atividade_existente_id) {
+            $dados_update = [];
+
+            if (in_array('tipo', $colunas_existentes)) {
+                $dados_update['tipo'] = $tipo ?: 'execucao';
+            }
+            if (in_array('percentual_concluido', $colunas_existentes)) {
+                $dados_update['percentual_concluido'] = $percentual_concluido ?: 0;
+            }
+
+            // Fotos - verificar qual coluna existe
+            if (!empty($fotos_salvas)) {
+                $fotos_json = json_encode($fotos_salvas);
+                if (in_array('fotos_atividade', $colunas_existentes)) {
+                    $dados_update['fotos_atividade'] = $fotos_json;
+                } elseif (in_array('fotos', $colunas_existentes)) {
+                    $dados_update['fotos'] = $fotos_json;
+                }
+            }
+
+            // Append descrição à descrição existente
+            $atividade_atual = $this->db->get_where('obra_atividades', ['id' => $atividade_existente_id])->row();
+            if ($atividade_atual) {
+                $nova_descricao = $atividade_atual->descricao . "\n\n--- Atualização " . date('d/m/Y H:i') . " ---\n" . $descricao;
+                $dados_update['descricao'] = $nova_descricao;
+            }
+
+            if (!empty($dados_update)) {
+                $this->db->where('id', $atividade_existente_id);
+                $result = $this->db->update('obra_atividades', $dados_update);
+
+                if ($result) {
+                    log_message('info', 'api_registrar_atividade_obra - Atividade atualizada com sucesso. ID: ' . $atividade_existente_id);
+                    echo json_encode([
+                        'success' => true,
+                        'message' => 'Atividade atualizada com sucesso',
+                        'atividade_id' => $atividade_existente_id,
+                        'fotos_salvas' => count($fotos_salvas),
+                        'acao' => 'atualizada'
+                    ]);
+                } else {
+                    $error = $this->db->error();
+                    log_message('error', 'api_registrar_atividade_obra - Erro ao atualizar: ' . print_r($error, true));
+                    echo json_encode(['success' => false, 'message' => 'Erro ao atualizar atividade: ' . ($error['message'] ?? 'Erro desconhecido')]);
+                }
+                return;
+            }
+        }
+
+        // Inserir nova atividade - apenas com colunas que existem
         $dados = [
             'obra_id' => $obra_id,
             'tecnico_id' => $tecnico_id,
@@ -1977,7 +2042,8 @@ class Tecnicos extends CI_Controller
                 'success' => true,
                 'message' => 'Atividade registrada com sucesso',
                 'atividade_id' => $atividade_id,
-                'fotos_salvas' => count($fotos_salvas)
+                'fotos_salvas' => count($fotos_salvas),
+                'acao' => 'inserida'
             ]);
         } else {
             $error = $this->db->error();
