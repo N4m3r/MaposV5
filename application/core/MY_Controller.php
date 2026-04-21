@@ -44,7 +44,25 @@ class MY_Controller extends CI_Controller
         // Permissions-Policy é o header moderno (substitui Feature-Policy)
         header('Permissions-Policy: geolocation=(self)');
 
-        if ((! session_id()) || (! $this->session->userdata('logado'))) {
+        // Verificar se está acessando área do técnico (controller Tecnicos)
+        // O controller Tecnicos tem sua própria autenticação
+        $router = &load_class('Router', 'core');
+        $controller = $router->fetch_class();
+        $metodos_publicos_tecnico = ['login', 'autenticar', 'logout', 'api_login', 'api_verificar'];
+        $metodo = $router->fetch_method();
+
+        // Se for controller Tecnicos e método público, não redirecionar
+        if (strtolower($controller) === 'tecnicos' && in_array($metodo, $metodos_publicos_tecnico)) {
+            // Não redirecionar - o Tecnicos controller tem sua própria autenticação
+        }
+        // Se for controller Tecnicos mas método protegido, verificar sessão do técnico
+        elseif (strtolower($controller) === 'tecnicos') {
+            if ((! session_id()) || (! $this->session->userdata('logged_in') && ! $this->session->userdata('logado'))) {
+                redirect('tecnicos/login');
+            }
+        }
+        // Para outros controllers, verificar sessão padrão
+        elseif ((! session_id()) || (! $this->session->userdata('logado'))) {
             redirect('login');
         }
 
