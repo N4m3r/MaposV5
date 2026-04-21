@@ -196,8 +196,15 @@ class Obras extends MY_Controller
                     'valor_contrato' => $valor_contrato,
                     'gestor_id' => $this->input->post('gestor_id'),
                     'responsavel_tecnico_id' => $this->input->post('responsavel_tecnico_id'),
-                    'visivel_cliente' => $this->input->post('visivel_cliente') ? 1 : 0,
                 ];
+
+                // Apenas incluir visivel_cliente se o campo existir no POST
+                if ($this->input->post('visivel_cliente') !== null) {
+                    $dados['visivel_cliente'] = $this->input->post('visivel_cliente') ? 1 : 0;
+                }
+
+                // Log para debug
+                log_message('debug', 'Editar obra ID ' . $obra_id . ' - Dados: ' . print_r($dados, true));
 
                 if ($this->obras_model->update($obra_id, $dados)) {
                     log_info('Obra atualizada. ID: ' . $obra_id);

@@ -151,13 +151,25 @@ class Obras_model extends CI_Model
     public function update($id, $dados)
     {
         if (!$this->tabelaExiste('obras')) {
+            log_message('error', 'Update obra: tabela obras nao existe');
             return false;
         }
 
         try {
             $this->db->where('id', $id);
-            return $this->db->update('obras', $dados);
+            $this->db->update('obras', $dados);
+
+            // Verificar se houve erro real na query
+            $error = $this->db->error();
+            if ($error['code'] != 0) {
+                log_message('error', 'Update obra ID ' . $id . ' erro SQL: ' . print_r($error, true));
+                log_message('error', 'Update obra ID ' . $id . ' dados: ' . print_r($dados, true));
+                return false;
+            }
+
+            return true;
         } catch (Exception $e) {
+            log_message('error', 'Update obra ID ' . $id . ' exception: ' . $e->getMessage());
             return false;
         }
     }

@@ -73,26 +73,32 @@
 }
 .form-select {
     width: 100%;
-    padding: 12px 15px;
+    height: 46px;
+    padding: 10px 35px 10px 15px;
     border: 2px solid #e8e8e8;
     border-radius: 10px;
     font-size: 14px;
     background: white;
     cursor: pointer;
-    color: #333;
-    -webkit-appearance: menulist;
-    -moz-appearance: menulist;
-    appearance: menulist;
+    color: #000 !important;
+    line-height: 1.4;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23667eea' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 12px;
 }
-.form-select:focus { border-color: #667eea; outline: none; }
+.form-select:focus { border-color: #667eea; outline: none; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
 .form-select option {
-    color: #333;
+    color: #000;
     background: white;
-    padding: 8px;
+    padding: 10px;
+    font-size: 14px;
 }
 .form-select option:first-child {
-    color: #666;
-    font-style: italic;
+    color: #999;
 }
 .form-textarea {
     width: 100%;
@@ -198,7 +204,7 @@
                         <label class="form-label">Cliente <span class="required">*</span></label>
                         <select name="cliente_id" id="cliente_select" class="form-select" required <?php echo isset($result) ? 'disabled' : ''; ?>
                             style="<?php echo isset($result) ? 'background: #f5f5f5;' : ''; ?>">
-                            <option value="">Selecione o cliente...</option>
+                            <option value="" disabled <?php echo (!isset($result) || empty($result->cliente_id)) ? 'selected' : ''; ?>>Selecione o cliente...</option>
                             <?php foreach ($clientes as $c): ?>
                                 <option value="<?php echo $c->idClientes; ?>"
                                     data-documento="<?php echo $c->documento ?? ''; ?>"
@@ -300,7 +306,7 @@
                     <div class="form-group">
                         <label class="form-label">Gestor Responsável</label>
                         <select name="gestor_id" class="form-select">
-                            <option value="">Selecione o gestor...</option>
+                            <option value="" disabled <?php echo (!isset($result) || empty($result->gestor_id)) ? 'selected' : ''; ?>>Selecione o gestor...</option>
                             <?php foreach ($tecnicos as $t): ?>
                                 <option value="<?php echo $t->idUsuarios; ?>"
                                     <?php echo (isset($result) && $result->gestor_id == $t->idUsuarios) ? 'selected' : ''; ?>
@@ -313,7 +319,7 @@
                     <div class="form-group">
                         <label class="form-label">Responsável Técnico</label>
                         <select name="responsavel_tecnico_id" class="form-select">
-                            <option value="">Selecione o responsável técnico...</option>
+                            <option value="" disabled <?php echo (!isset($result) || empty($result->responsavel_tecnico_id)) ? 'selected' : ''; ?>>Selecione o responsável técnico...</option>
                             <?php foreach ($tecnicos as $t): ?>
                                 <option value="<?php echo $t->idUsuarios; ?>"
                                     <?php echo (isset($result) && $result->responsavel_tecnico_id == $t->idUsuarios) ? 'selected' : ''; ?>
