@@ -1010,45 +1010,45 @@
                     <?php if (!empty($tipos_atividades)): ?>
                         <optgroup label="Rede Estruturada">
                         <?php foreach ($tipos_atividades as $tipo): ?>
-                            <?php if ($tipo->categoria == 'rede'): ?>
-                            <option value="<?php echo $tipo->idTipo; ?>" data-categoria="rede">
-                                <i class="bx bx-network-chart"></i> <?php echo $tipo->nome; ?>
+                            <?php if ($tipo['categoria'] == 'rede'): ?>
+                            <option value="<?php echo $tipo['idTipo']; ?>" data-categoria="rede">
+                                <i class="bx bx-network-chart"></i> <?php echo $tipo['nome']; ?>
                             </option>
                             <?php endif; ?>
                         <?php endforeach; ?>
                         </optgroup>
                         <optgroup label="CFTV">
                         <?php foreach ($tipos_atividades as $tipo): ?>
-                            <?php if ($tipo->categoria == 'cftv'): ?>
-                            <option value="<?php echo $tipo->idTipo; ?>" data-categoria="cftv">
-                                <i class="bx bx-camera"></i> <?php echo $tipo->nome; ?>
+                            <?php if ($tipo['categoria'] == 'cftv'): ?>
+                            <option value="<?php echo $tipo['idTipo']; ?>" data-categoria="cftv">
+                                <i class="bx bx-camera"></i> <?php echo $tipo['nome']; ?>
                             </option>
                             <?php endif; ?>
                         <?php endforeach; ?>
                         </optgroup>
                         <optgroup label="Infraestrutura">
                         <?php foreach ($tipos_atividades as $tipo): ?>
-                            <?php if ($tipo->categoria == 'infra'): ?>
-                            <option value="<?php echo $tipo->idTipo; ?>" data-categoria="infra">
-                                <i class="bx bx-server"></i> <?php echo $tipo->nome; ?>
+                            <?php if ($tipo['categoria'] == 'infra'): ?>
+                            <option value="<?php echo $tipo['idTipo']; ?>" data-categoria="infra">
+                                <i class="bx bx-server"></i> <?php echo $tipo['nome']; ?>
                             </option>
                             <?php endif; ?>
                         <?php endforeach; ?>
                         </optgroup>
                         <optgroup label="Segurança">
                         <?php foreach ($tipos_atividades as $tipo): ?>
-                            <?php if ($tipo->categoria == 'seguranca'): ?>
-                            <option value="<?php echo $tipo->idTipo; ?>" data-categoria="seguranca">
-                                <i class="bx bx-shield"></i> <?php echo $tipo->nome; ?>
+                            <?php if ($tipo['categoria'] == 'seguranca'): ?>
+                            <option value="<?php echo $tipo['idTipo']; ?>" data-categoria="seguranca">
+                                <i class="bx bx-shield"></i> <?php echo $tipo['nome']; ?>
                             </option>
                             <?php endif; ?>
                         <?php endforeach; ?>
                         </optgroup>
                         <optgroup label="Geral">
                         <?php foreach ($tipos_atividades as $tipo): ?>
-                            <?php if (!in_array($tipo->categoria, ['rede', 'cftv', 'infra', 'seguranca'])): ?>
-                            <option value="<?php echo $tipo->idTipo; ?>">
-                                <i class="bx bx-wrench"></i> <?php echo $tipo->nome; ?>
+                            <?php if (!in_array($tipo['categoria'], ['rede', 'cftv', 'infra', 'seguranca'])): ?>
+                            <option value="<?php echo $tipo['idTipo']; ?>">
+                                <i class="bx bx-wrench"></i> <?php echo $tipo['nome']; ?>
                             </option>
                             <?php endif; ?>
                         <?php endforeach; ?>
