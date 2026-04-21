@@ -14,7 +14,6 @@ class NotificacoesConfig extends MY_Controller
         $this->load->model('notificacoes_log_model');
         $this->load->model('clientes_model');
         $this->load->helper('notificacoes');
-        $this->load->service('WhatsAppService');
 
         // Verificar permissão
         if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cConfiguracao')) {

@@ -244,6 +244,17 @@ class Obras extends MY_Controller
         $this->data['equipe'] = $this->obras_model->getEquipe($id);
         $this->data['atividades_recentes'] = $this->obra_atividades_model->getByObra($id, [], 10);
 
+        // Atividades do novo sistema (Hora Início/Fim)
+        $this->load->model('Atividades_model', 'atividades_novas');
+        $this->data['atividades_sistema'] = $this->atividades_novas->listarPorObra($id, [], 20);
+
+        // Estatísticas das atividades do novo sistema
+        $this->data['estatisticas_atividades'] = $this->atividades_novas->getEstatisticasPorObra($id);
+
+        // Tipos de atividades para iniciar trabalho
+        $this->load->model('Atividades_tipos_model');
+        $this->data['tipos_atividades'] = $this->Atividades_tipos_model->listarPorCategoria();
+
         $this->data['view'] = 'obras/obra_view';
         return $this->layout();
     }

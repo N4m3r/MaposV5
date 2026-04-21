@@ -88,9 +88,71 @@ class Atividades extends CI_Controller
 
         $data['title'] = 'Wizard de Atividades - OS #' . $os_id;
         $data['os_id'] = $os_id;
+        $data['obra_id'] = null;
+        $data['etapa_id'] = null;
+        $data['modo'] = 'os';
 
         $this->load->view('tema/header', $data);
         $this->load->view('atividades/wizard');
+        $this->load->view('tema/footer');
+    }
+
+    /**
+     * Wizard de Atividades para Obras - Integração com sistema de obras
+     */
+    public function wizard_obra($obra_id = null, $etapa_id = null)
+    {
+        $tecnico_id = $this->session->userdata('idAdmin');
+
+        // Verifica se já tem atividade em andamento
+        $atividade_andamento = $this->atividades->getAtividadeEmAndamento($tecnico_id);
+
+        if ($atividade_andamento && $atividade_andamento->obra_id != $obra_id) {
+            $this->session->set_flashdata('error', 'Você já tem uma atividade em andamento. Finalize-a primeiro.');
+            redirect('obras_tecnico/obra/' . $atividade_andamento->obra_id);
+        }
+
+        if (!$obra_id) {
+            $this->session->set_flashdata('error', 'Selecione uma obra para iniciar.');
+            redirect('obras_tecnico');
+        }
+
+        // Carrega dados da obra
+        $this->load->model('obras_model');
+        $data['obra'] = $this->obras_model->getById($obra_id);
+        if (!$data['obra']) {
+            show_404();
+        }
+
+        // Verifica se técnico tem acesso
+        if (!$this->obras_model->tecnicoEstaNaEquipe($obra_id, $tecnico_id)) {
+            $this->session->set_flashdata('error', 'Você não tem acesso a esta obra.');
+            redirect('obras_tecnico');
+        }
+
+        // Carrega etapa se especificada
+        $data['etapa'] = null;
+        if ($etapa_id) {
+            $data['etapa'] = $this->obras_model->getEtapaById($etapa_id);
+        }
+
+        // Carrega etapas para seleção
+        $data['etapas'] = $this->obras_model->getEtapas($obra_id);
+
+        // Dados para o wizard
+        $data['atividade_em_andamento'] = $atividade_andamento;
+        $data['atividades_lista'] = $this->atividades->listarPorObra($obra_id);
+        $data['tipos_atividades'] = $this->atividades_tipos->listarPorCategoria();
+        $data['checkin_realizado'] = count($data['atividades_lista']) > 0;
+
+        $data['title'] = 'Wizard de Atividades - Obra: ' . $data['obra']->nome;
+        $data['obra_id'] = $obra_id;
+        $data['etapa_id'] = $etapa_id;
+        $data['os_id'] = null;
+        $data['modo'] = 'obra';
+
+        $this->load->view('tema/header', $data);
+        $this->load->view('atividades/wizard_obra');
         $this->load->view('tema/footer');
     }
 

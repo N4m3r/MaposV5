@@ -152,6 +152,8 @@ class Atividades_model extends CI_Model
         $this->db->join('atividades_tipos', 'atividades_tipos.idTipo = os_atividades.tipo_id', 'left');
         $this->db->join('usuarios', 'usuarios.idUsuarios = os_atividades.tecnico_id', 'left');
         $this->db->where('os_atividades.os_id', $os_id);
+        $this->db->where('os_atividades.obra_id IS NULL');  // Só atividades não vinculadas a obras
+
 
         if (isset($filtros['status'])) {
             $this->db->where('os_atividades.status', $filtros['status']);
@@ -482,5 +484,118 @@ class Atividades_model extends CI_Model
         $this->db->order_by('os_atividades.hora_inicio', 'DESC');
 
         return $this->db->get()->result();
+    }
+
+    /**
+     * Lista atividades por Obra (integração com sistema de obras)
+     */
+    public function listarPorObra($obra_id, $filtros = [], $limite = null)
+    {
+        $this->db->select('os_atividades.*,
+                           atividades_tipos.nome as tipo_nome,
+                           atividades_tipos.icone as tipo_icone,
+                           atividades_tipos.cor as tipo_cor,
+                           usuarios.nome as nome_tecnico');
+        $this->db->from($this->table);
+        $this->db->join('atividades_tipos', 'atividades_tipos.idTipo = os_atividades.tipo_id', 'left');
+        $this->db->join('usuarios', 'usuarios.idUsuarios = os_atividades.tecnico_id', 'left');
+        $this->db->where('os_atividades.obra_id', $obra_id);
+        $this->db->where('os_atividades.obra_id IS NOT NULL');
+
+        if (isset($filtros['status'])) {
+            $this->db->where('os_atividades.status', $filtros['status']);
+        }
+
+        if (isset($filtros['tecnico_id'])) {
+            $this->db->where('os_atividades.tecnico_id', $filtros['tecnico_id']);
+        }
+
+        if (isset($filtros['data_inicio'])) {
+            $this->db->where('DATE(os_atividades.hora_inicio) >=', $filtros['data_inicio']);
+        }
+
+        if (isset($filtros['data_fim'])) {
+            $this->db->where('DATE(os_atividades.hora_inicio) <=', $filtros['data_fim']);
+        }
+
+        $this->db->order_by('os_atividades.hora_inicio', 'DESC');
+
+        if ($limite) {
+            $this->db->limit($limite);
+        }
+
+        return $this->db->get()->result();
+    }
+
+    /**
+     * Obtém estatísticas de atividades por obra
+     */
+    public function getEstatisticasPorObra($obra_id)
+    {
+        // Total de atividades
+        $this->db->where('obra_id', $obra_id);
+        $total = $this->db->count_all_results($this->table);
+
+        // Atividades concluídas
+        $this->db->where('obra_id', $obra_id);
+        $this->db->where('status', 'finalizada');
+        $this->db->where('concluida', 1);
+        $concluidas = $this->db->count_all_results($this->table);
+
+        // Total de minutos trabalhados
+        $this->db->select_sum('duracao_minutos', 'total');
+        $this->db->where('obra_id', $obra_id);
+        $this->db->where('status', 'finalizada');
+        $minutos = $this->db->get($this->table)->row()->total;
+
+        // Atividades em andamento
+        $this->db->where('obra_id', $obra_id);
+        $this->db->where('status', 'em_andamento');
+        $em_andamento = $this->db->count_all_results($this->table);
+
+        return [
+            'total_atividades' => $total,
+            'concluidas' => $concluidas,
+            'pendentes' => $total - $concluidas,
+            'em_andamento' => $em_andamento,
+            'tempo_total_minutos' => $minutos ?: 0,
+            'tempo_total_horas' => round(($minutos ?: 0) / 60, 2),
+        ];
+    }
+
+    /**
+     * Inicia atividade em uma obra (para integração com obras)
+     */
+    public function iniciarNaObra($obra_id, $etapa_id, $dados)
+    {
+        $padrao = [
+            'obra_id' => $obra_id,
+            'etapa_id' => $etapa_id,
+            'hora_inicio' => date('Y-m-d H:i:s'),
+            'status' => 'em_andamento',
+            'concluida' => 0,
+        ];
+
+        $dados = array_merge($padrao, $dados);
+
+        $this->db->insert($this->table, $dados);
+        return $this->db->insert_id();
+    }
+
+    /**
+     * Vincula atividade existente a uma obra
+     */
+    public function vincularObra($atividade_id, $obra_id, $etapa_id = null)
+    {
+        $update = [
+            'obra_id' => $obra_id,
+        ];
+
+        if ($etapa_id) {
+            $update['etapa_id'] = $etapa_id;
+        }
+
+        $this->db->where('idAtividade', $atividade_id);
+        return $this->db->update($this->table, $update);
     }
 }

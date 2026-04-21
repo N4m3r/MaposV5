@@ -1205,6 +1205,14 @@
                 <?php endif; ?>
             </div>
 
+            <!-- ATIVIDADES SISTEMA (Hora Início/Fim) -->
+            <?php $this->load->view('obras/atividades_sistema', [
+                'atividades_sistema' => $atividades_sistema ?? [],
+                'estatisticas_atividades' => $estatisticas_atividades ?? null,
+                'obra' => $obra,
+                'tipos_atividades' => $tipos_atividades ?? []
+            ]); ?>
+
         </div>
     </div>
 </div>
