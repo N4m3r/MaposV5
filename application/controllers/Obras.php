@@ -539,34 +539,64 @@ class Obras extends MY_Controller
         print_r($fields);
         echo '</pre>';
 
-        // Contar total de atividades
-        $total = $this->db->where('obra_id', $obra_id)->count_all_results('obra_atividades');
-        echo '<p><strong>Total de atividades nesta obra:</strong> ' . $total . '</p>';
+        // Usar o model para buscar atividades (com joins para técnico e etapa)
+        $atividades = $this->obra_atividades_model->getByObra($obra_id);
+        $total = count($atividades);
 
-        // Query direta
-        $query = $this->db->where('obra_id', $obra_id)->get('obra_atividades');
+        echo '<p><strong>Total de atividades nesta obra:</strong> ' . $total . '</p>';
         echo '<p><strong>Query executada:</strong> ' . $this->db->last_query() . '</p>';
 
         if ($total > 0) {
             echo '<h3>Atividades encontradas:</h3>';
-            echo '<table border="1" cellpadding="10">';
-            echo '<tr><th>ID</th><th>Título</th><th>Data</th><th>Status</th><th>Tipo</th></tr>';
-            foreach ($query->result() as $ativ) {
+            echo '<table border="1" cellpadding="10" style="border-collapse: collapse;">';
+            echo '<tr style="background: #f0f0f0;">';
+            echo '<th>ID</th>';
+            echo '<th>Título</th>';
+            echo '<th>Descrição</th>';
+            echo '<th>Data</th>';
+            echo '<th>Status</th>';
+            echo '<th>Tipo</th>';
+            echo '<th>Técnico</th>';
+            echo '<th>Etapa</th>';
+            echo '<th>Progresso</th>';
+            echo '<th>Visível</th>';
+            echo '</tr>';
+            foreach ($atividades as $ativ) {
+                $tecnico = $ativ->tecnico_nome ?? ($ativ->usuario_nome ?? 'N/A');
+                $etapa = ($ativ->etapa_nome ?? '') . (($ativ->numero_etapa ?? '') ? ' #' . $ativ->numero_etapa : '');
+                $etapa = trim($etapa) ?: 'N/A';
+                $titulo = $ativ->titulo ?? $ativ->descricao ?? 'Sem título';
+                $data = $ativ->data_atividade ?? ($ativ->created_at ? date('Y-m-d', strtotime($ativ->created_at)) : 'N/A');
+
                 echo '<tr>';
                 echo '<td>' . ($ativ->id ?? 'N/A') . '</td>';
-                echo '<td>' . ($ativ->titulo ?? $ativ->descricao ?? 'Sem título') . '</td>';
-                echo '<td>' . ($ativ->data_atividade ?? 'N/A') . '</td>';
-                echo '<td>' . ($ativ->status ?? 'N/A') . '</td>';
-                echo '<td>' . ($ativ->tipo ?? 'N/A') . '</td>';
+                echo '<td>' . htmlspecialchars($titulo) . '</td>';
+                echo '<td>' . htmlspecialchars($ativ->descricao ?? '') . '</td>';
+                echo '<td>' . $data . '</td>';
+                echo '<td>' . ($ativ->status ?? 'agendada') . '</td>';
+                echo '<td>' . ($ativ->tipo ?? 'trabalho') . '</td>';
+                echo '<td>' . htmlspecialchars($tecnico) . '</td>';
+                echo '<td>' . htmlspecialchars($etapa) . '</td>';
+                echo '<td>' . ($ativ->percentual_concluido ?? 0) . '%</td>';
+                echo '<td>' . (($ativ->visivel_cliente ?? 1) ? 'Sim' : 'Não') . '</td>';
                 echo '</tr>';
             }
             echo '</table>';
+
+            // Também mostrar dados brutos
+            echo '<h3>Dados completos (raw):</h3>';
+            echo '<pre style="background: #f5f5f5; padding: 15px; overflow-x: auto;">';
+            print_r($atividades);
+            echo '</pre>';
         } else {
             echo '<p style="color: orange;">Nenhuma atividade encontrada para esta obra.</p>';
         }
 
         echo '<hr>';
+        echo '<div style="display: flex; gap: 10px;">';
         echo '<a href="' . site_url('obras/atividades/' . $obra_id) . '" class="btn">Voltar para Atividades</a>';
+        echo '<a href="' . site_url('obras/migrarAtividades') . '" class="btn" style="background: #28a745; color: white; padding: 5px 10px; text-decoration: none;">Migrar Tabela</a>';
+        echo '</div>';
     }
 
     /**
