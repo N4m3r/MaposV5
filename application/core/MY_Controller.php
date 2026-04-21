@@ -64,8 +64,10 @@ class MY_Controller extends CI_Controller
                 redirect('tecnicos/login');
             }
         }
-        // Para outros controllers, verificar sessão padrão
-        elseif ((! session_id()) || (! $this->session->userdata('logado'))) {
+        // Para outros controllers, verificar sessão padrão (admin) OU sessão de técnico
+        elseif ((! session_id()) ||
+                (! $this->session->userdata('logado') &&
+                 ! ($this->session->userdata('tec_id') && $this->session->userdata('tec_logado')))) {
             redirect('login');
         }
 

@@ -36,10 +36,14 @@ class Atividades extends MY_Controller
      */
     public function index()
     {
-        $tecnico_id = $this->session->userdata('idAdmin');
+        // Detecta se é acesso via portal do técnico ou admin
+        $is_portal_tecnico = $this->is_portal_tecnico;
+        $tecnico_id = $is_portal_tecnico
+            ? $this->session->userdata('tec_id')
+            : $this->session->userdata('idAdmin');
 
         // Verifica se é técnico ou admin
-        $this->data['is_admin'] = $this->session->userdata('permissao') == 1;
+        $this->data['is_admin'] = !$is_portal_tecnico && $this->session->userdata('permissao') == 1;
 
         // Atividade em andamento
         $this->data['atividade_em_andamento'] = $this->atividades->getAtividadeEmAndamento($tecnico_id);
@@ -66,7 +70,11 @@ class Atividades extends MY_Controller
      */
     public function wizard($os_id = null)
     {
-        $tecnico_id = $this->session->userdata('idAdmin');
+        // Detecta se é acesso via portal do técnico
+        $is_portal_tecnico = $this->is_portal_tecnico;
+        $tecnico_id = $is_portal_tecnico
+            ? $this->session->userdata('tec_id')
+            : $this->session->userdata('idAdmin');
 
         // Verifica se já tem atividade em andamento
         $atividade_andamento = $this->atividades->getAtividadeEmAndamento($tecnico_id);
@@ -253,7 +261,11 @@ class Atividades extends MY_Controller
             return;
         }
 
-        $tecnico_id = $this->session->userdata('idAdmin');
+        // Detecta se é acesso via portal do técnico
+        $is_portal_tecnico = $this->is_portal_tecnico;
+        $tecnico_id = $is_portal_tecnico
+            ? $this->session->userdata('tec_id')
+            : $this->session->userdata('idAdmin');
 
         // Verifica se já tem atividade em andamento
         if ($this->atividades->hasAtividadeEmAndamento($tecnico_id)) {
@@ -491,7 +503,11 @@ class Atividades extends MY_Controller
             redirect('atividades');
         }
 
-        $tecnico_id = $this->session->userdata('idAdmin');
+        // Detecta se é acesso via portal do técnico
+        $is_portal_tecnico = $this->is_portal_tecnico;
+        $tecnico_id = $is_portal_tecnico
+            ? $this->session->userdata('tec_id')
+            : $this->session->userdata('idAdmin');
         $os_id = $this->input->post('os_id');
 
         // Busca atividade em andamento
@@ -834,11 +850,17 @@ class Atividades extends MY_Controller
             return;
         }
 
+        // Detecta se é acesso via portal do técnico
+        $is_portal_tecnico = $this->is_portal_tecnico;
+        $tecnico_id = $is_portal_tecnico
+            ? $this->session->userdata('tec_id')
+            : $this->session->userdata('idAdmin');
+
         $atividade = $this->atividades->getById($this->input->post('atividade_id'));
 
         $dados = [
             'os_id' => $atividade->os_id,
-            'tecnico_id' => $this->session->userdata('idAdmin'),
+            'tecnico_id' => $tecnico_id,
             'descricao' => $this->input->post('descricao'),
             'tipo_foto' => $this->input->post('tipo_foto') ?? 'execucao',
             'etapa' => $this->input->post('etapa') ?? 'durante',
