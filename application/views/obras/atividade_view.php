@@ -372,14 +372,14 @@
                 </div>
                 <?php endif; ?>
 
-                <?php if ($atividade->impedimento): ?>
+                <?php if ($atividade->impedimento ?? null): ?>
                 <div style="margin-top: 20px; background: #fff5f5; border-left: 4px solid #e74c3c; padding: 15px; border-radius: 10px;">
                     <div style="color: #e74c3c; font-weight: 600; margin-bottom: 5px;">
                         <i class="icon-warning-sign"></i> Impedimento Registrado
                     </div>
                     <div style="color: #666;">
-                        <strong>Tipo:</strong> <?php echo $atividade->tipo_impedimento; ?><br>
-                        <strong>Motivo:</strong> <?php echo nl2br(htmlspecialchars($atividade->motivo_impedimento)); ?>
+                        <strong>Tipo:</strong> <?php echo $atividade->tipo_impedimento ?? 'N/A'; ?><br>
+                        <strong>Motivo:</strong> <?php echo nl2br(htmlspecialchars($atividade->motivo_impedimento ?? '')); ?>
                     </div>
                 </div>
                 <?php endif; ?>
