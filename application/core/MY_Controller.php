@@ -44,6 +44,9 @@ class MY_Controller extends CI_Controller
         // Permissions-Policy é o header moderno (substitui Feature-Policy)
         header('Permissions-Policy: geolocation=(self)');
 
+        // Carregar configurações primeiro (necessário para todas as áreas)
+        $this->load_configuration();
+
         // Verificar se está acessando área do técnico (controller Tecnicos)
         // O controller Tecnicos tem sua própria autenticação
         $router = &load_class('Router', 'core');
@@ -68,8 +71,6 @@ class MY_Controller extends CI_Controller
 
         // Carregar library de permissoes
         $this->load->library('permission');
-
-        $this->load_configuration();
     }
 
     private function load_configuration()
