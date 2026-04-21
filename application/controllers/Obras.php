@@ -538,6 +538,13 @@ class Obras extends MY_Controller
             return;
         }
 
+        // Mostrar estrutura da tabela
+        echo '<h3>Estrutura da tabela:</h3>';
+        echo '<pre>';
+        $fields = $this->db->list_fields('obra_atividades');
+        print_r($fields);
+        echo '</pre>';
+
         // Contar total de atividades
         $total = $this->db->where('obra_id', $obra_id)->count_all_results('obra_atividades');
         echo '<p><strong>Total de atividades nesta obra:</strong> ' . $total . '</p>';
