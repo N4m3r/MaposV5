@@ -686,6 +686,8 @@ class Obras extends MY_Controller
 
         // Processar formulário
         if ($this->input->post()) {
+            log_message('debug', 'editarAtividade - POST recebido: ' . print_r($this->input->post(), true));
+
             $dados = [
                 'titulo' => $this->input->post('titulo'),
                 'descricao' => $this->input->post('descricao'),
@@ -698,11 +700,18 @@ class Obras extends MY_Controller
                 'visivel_cliente' => $this->input->post('visivel_cliente') ? 1 : 0,
             ];
 
-            if ($this->obra_atividades_model->update($atividade_id, $dados)) {
+            log_message('debug', 'editarAtividade - Dados preparados: ' . print_r($dados, true));
+
+            $result = $this->obra_atividades_model->update($atividade_id, $dados);
+            log_message('debug', 'editarAtividade - Resultado update: ' . ($result ? 'true' : 'false'));
+
+            if ($result) {
                 $this->session->set_flashdata('success', 'Atividade atualizada com sucesso!');
                 redirect('obras/visualizarAtividade/' . $atividade_id);
             } else {
-                $this->session->set_flashdata('error', 'Erro ao atualizar atividade.');
+                $error = $this->db->error();
+                log_message('error', 'editarAtividade - Erro DB: ' . print_r($error, true));
+                $this->session->set_flashdata('error', 'Erro ao atualizar atividade: ' . ($error['message'] ?? 'Erro desconhecido'));
             }
         }
 
