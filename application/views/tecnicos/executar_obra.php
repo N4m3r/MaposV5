@@ -1,713 +1,1216 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
 
-<!-- WIZARD DE ATENDIMENTO MODERNO -->
+<!-- Tema Moderno Obras - Mesmo padrão de minhas_obras -->
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/obras-modern-theme.css">
+
 <style>
-    /* Modal Moderno */
-    .modal-wizard-overlay {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-        z-index: 9999;
-        overflow-y: auto;
-    }
-    .modal-wizard-container {
-        min-height: 100vh;
-        padding: 20px;
-    }
-    .modal-wizard-content {
-        max-width: 1000px;
-        margin: 0 auto;
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        overflow: hidden;
-    }
-    .modal-wizard-header {
-        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-        color: white;
-        padding: 25px 30px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    .modal-wizard-header h3 {
-        margin: 0;
-        font-size: 22px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-    .modal-wizard-body {
-        padding: 30px;
-        background: #f8f9fa;
-        min-height: 500px;
-    }
+/* Container Principal */
+.obras-container { padding: 15px; max-width: 100%; }
 
-    /* Steps Indicator */
-    .wizard-steps {
-        display: flex;
-        justify-content: center;
-        margin-bottom: 30px;
-        gap: 15px;
-    }
-    .wizard-step {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        opacity: 0.5;
-        transition: all 0.3s;
-    }
-    .wizard-step.active {
-        opacity: 1;
-    }
-    .wizard-step.completed {
-        opacity: 1;
-    }
-    .wizard-step-icon {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        background: #ddd;
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 20px;
-        margin-bottom: 8px;
-        transition: all 0.3s;
-    }
-    .wizard-step.active .wizard-step-icon {
-        background: #3498db;
-        box-shadow: 0 4px 15px rgba(52,152,219,0.4);
-    }
-    .wizard-step.completed .wizard-step-icon {
-        background: #27ae60;
-    }
-    .wizard-step-label {
-        font-size: 12px;
-        font-weight: 600;
-        color: #666;
-    }
-    .wizard-step.active .wizard-step-label {
-        color: #3498db;
-    }
-    .wizard-step.completed .wizard-step-label {
-        color: #27ae60;
-    }
+/* Header Mobile-First */
+.obra-detalhe-header {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    border-radius: 20px;
+    padding: 25px 20px;
+    color: white;
+    margin-bottom: 20px;
+    box-shadow: 0 10px 40px rgba(17, 153, 142, 0.3);
+    position: relative;
+}
+.obra-detalhe-header h1 {
+    margin: 0 0 8px 0;
+    font-size: 22px;
+    font-weight: 700;
+}
+.obra-detalhe-header p {
+    margin: 0;
+    opacity: 0.9;
+    font-size: 14px;
+}
+.btn-voltar {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 12px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.btn-voltar:hover {
+    background: rgba(255,255,255,0.3);
+    color: white;
+    text-decoration: none;
+}
 
-    /* Cards Modernos */
-    .wizard-card {
-        background: white;
-        border-radius: 12px;
-        padding: 25px;
-        margin-bottom: 20px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-        border: 1px solid #e0e0e0;
-    }
-    .wizard-card-title {
-        font-size: 18px;
-        font-weight: 700;
-        color: #2c3e50;
-        margin-bottom: 20px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-    .wizard-card-title i {
-        color: #3498db;
-    }
+/* Atividade em Andamento Alert */
+.atividade-andamento-alert {
+    background: linear-gradient(135deg, #f39c12 0%, #f1c40f 100%);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+    color: white;
+    box-shadow: 0 5px 20px rgba(243, 156, 18, 0.3);
+}
+.atividade-andamento-alert h3 {
+    margin: 0 0 10px 0;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.atividade-andamento-alert p {
+    margin: 0 0 15px 0;
+    opacity: 0.95;
+}
+.btn-continuar {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: white;
+    color: #f39c12;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 25px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.btn-continuar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
 
-    /* Seleção de Etapa */
-    .etapas-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        gap: 15px;
-    }
-    .etapa-card {
-        background: white;
-        border: 2px solid #e0e0e0;
-        border-radius: 10px;
-        padding: 20px;
-        cursor: pointer;
-        transition: all 0.3s;
-        text-align: center;
-    }
-    .etapa-card:hover {
-        border-color: #3498db;
-        transform: translateY(-3px);
-        box-shadow: 0 5px 20px rgba(52,152,219,0.2);
-    }
-    .etapa-card.selecionada {
-        border-color: #3498db;
-        background: #ebf5fb;
-        box-shadow: 0 5px 20px rgba(52,152,219,0.3);
-    }
-    .etapa-card i {
-        font-size: 32px;
-        color: #95a5a6;
-        margin-bottom: 10px;
-    }
-    .etapa-card.selecionada i {
-        color: #3498db;
-    }
-    .etapa-card h4 {
-        margin: 0 0 8px 0;
-        font-size: 16px;
-        color: #2c3e50;
-    }
-    .etapa-card .progress {
-        height: 6px;
-        background: #ecf0f1;
-        border-radius: 3px;
-        overflow: hidden;
-        margin-top: 10px;
-    }
-    .etapa-card .progress-bar {
-        height: 100%;
-        background: linear-gradient(90deg, #3498db, #2980b9);
-        transition: width 0.3s;
-    }
+/* Cards de Estatísticas */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+@media (min-width: 768px) {
+    .stats-grid { grid-template-columns: repeat(4, 1fr); }
+}
+.stat-card {
+    background: white;
+    border-radius: 15px;
+    padding: 20px 15px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    border-top: 4px solid #11998e;
+}
+.stat-card.warning { border-top-color: #f39c12; }
+.stat-card.info { border-top-color: #3498db; }
+.stat-card.danger { border-top-color: #e74c3c; }
+.stat-numero {
+    font-size: 28px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 5px;
+}
+.stat-label {
+    font-size: 11px;
+    color: #888;
+    text-transform: uppercase;
+    font-weight: 600;
+}
 
-    /* Timer Moderno */
-    .timer-display {
-        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-        border-radius: 12px;
-        padding: 30px;
-        text-align: center;
-        color: white;
-        margin-bottom: 25px;
-    }
-    .timer-display .time {
-        font-size: 56px;
-        font-weight: 700;
-        font-family: 'Courier New', monospace;
-        letter-spacing: 3px;
-    }
-    .timer-display .label {
-        font-size: 14px;
-        opacity: 0.8;
-        margin-top: 5px;
-    }
+/* Botão Iniciar Atendimento Principal */
+.btn-iniciar-principal {
+    display: block;
+    width: 100%;
+    padding: 20px;
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: white;
+    border: none;
+    border-radius: 15px;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.3s;
+    margin-bottom: 20px;
+    box-shadow: 0 5px 20px rgba(17, 153, 142, 0.3);
+}
+.btn-iniciar-principal:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(17, 153, 142, 0.4);
+}
+.btn-iniciar-principal i {
+    font-size: 24px;
+}
 
-    /* Botões de Ação */
-    .acoes-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 15px;
-        margin-bottom: 25px;
-    }
-    .acao-btn {
-        background: white;
-        border: 2px solid #e0e0e0;
-        border-radius: 12px;
-        padding: 25px;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.3s;
-    }
-    .acao-btn:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-    }
-    .acao-btn i {
-        font-size: 36px;
-        margin-bottom: 10px;
-        display: block;
-    }
-    .acao-btn.atividade { border-color: #3498db; }
-    .acao-btn.atividade i { color: #3498db; }
-    .acao-btn.atividade:hover { background: #ebf5fb; }
+/* Cards de Etapas */
+.etapas-section {
+    margin-bottom: 20px;
+}
+.section-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.etapas-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.etapa-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid #f0f0f0;
+    transition: all 0.3s;
+}
+.etapa-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+}
+.etapa-header-card {
+    padding: 20px;
+    position: relative;
+    background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+}
+.etapa-header-card.pendente {
+    background: linear-gradient(135deg, #f39c12 0%, #f1c40f 100%);
+}
+.etapa-header-card.em-andamento {
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+}
+.etapa-header-card.concluida {
+    background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+}
+.etapa-status-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(255,255,255,0.25);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: white;
+}
+.etapa-numero {
+    font-size: 12px;
+    opacity: 0.9;
+    margin-bottom: 5px;
+    color: white;
+}
+.etapa-nome {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0 0 8px 0;
+    line-height: 1.3;
+    color: white;
+}
+.etapa-progresso {
+    font-size: 13px;
+    opacity: 0.9;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
 
-    .acao-btn.foto { border-color: #9b59b6; }
-    .acao-btn.foto i { color: #9b59b6; }
-    .acao-btn.foto:hover { background: #f5eef8; }
+/* Corpo do Card */
+.etapa-body {
+    padding: 20px;
+}
+.etapa-barra-progresso {
+    height: 8px;
+    background: #e9ecef;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 15px;
+}
+.etapa-barra-preenchida {
+    height: 100%;
+    background: linear-gradient(90deg, #11998e, #38ef7d);
+    border-radius: 4px;
+    transition: width 0.5s ease;
+}
+.etapa-descricao {
+    color: #666;
+    font-size: 13px;
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
 
-    .acao-btn.pausar { border-color: #f39c12; }
-    .acao-btn.pausar i { color: #f39c12; }
-    .acao-btn.pausar:hover { background: #fef9e7; }
+/* Atividades da Etapa */
+.etapa-atividades {
+    border-top: 1px solid #f0f0f0;
+    padding-top: 15px;
+}
+.etapa-atividades h4 {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+.etapa-atividade-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0;
+    border-bottom: 1px solid #f5f5f5;
+    font-size: 13px;
+    color: #555;
+}
+.etapa-atividade-item:last-child {
+    border-bottom: none;
+}
+.etapa-atividade-item i {
+    color: #27ae60;
+}
+.etapa-atividade-item.pendente i {
+    color: #f39c12;
+}
 
-    .acao-btn.finalizar { border-color: #27ae60; }
-    .acao-btn.finalizar i { color: #27ae60; }
-    .acao-btn.finalizar:hover { background: #eafaf1; }
+/* Ações do Card */
+.etapa-actions {
+    padding: 0 20px 20px;
+    display: flex;
+    gap: 10px;
+}
+.btn-etapa-acao {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    transition: all 0.3s;
+}
+.btn-etapa-acao.iniciar {
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    color: white;
+}
+.btn-etapa-acao.iniciar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+}
+.btn-etapa-acao.detalhes {
+    background: #f8f9fa;
+    color: #666;
+}
+.btn-etapa-acao.detalhes:hover {
+    background: #e9ecef;
+}
 
-    /* Modais Internos */
-    .wizard-modal {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.6);
-        z-index: 10001;
-        align-items: center;
-        justify-content: center;
-    }
-    .wizard-modal-content {
-        background: white;
-        border-radius: 12px;
-        width: 90%;
-        max-width: 500px;
-        max-height: 90vh;
-        overflow-y: auto;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-    }
-    .wizard-modal-header {
-        background: #2c3e50;
-        color: white;
-        padding: 20px 25px;
-        border-radius: 12px 12px 0 0;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    .wizard-modal-header h4 {
-        margin: 0;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-    .wizard-modal-body {
-        padding: 25px;
-    }
+/* Atividades Recentes */
+.atividades-recentes {
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    margin-bottom: 20px;
+}
+.atividades-recentes h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #333;
+}
+.atividade-recente-item {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    border-bottom: 1px solid #f5f5f5;
+    gap: 15px;
+}
+.atividade-recente-item:last-child {
+    border-bottom: none;
+}
+.atividade-recente-icon {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+.atividade-recente-icon.concluida {
+    background: #d4edda;
+    color: #155724;
+}
+.atividade-recente-icon.andamento {
+    background: #cce5ff;
+    color: #004085;
+}
+.atividade-recente-icon.pendente {
+    background: #fff3cd;
+    color: #856404;
+}
+.atividade-recente-info {
+    flex: 1;
+}
+.atividade-recente-info h4 {
+    font-size: 14px;
+    margin: 0 0 5px 0;
+    color: #333;
+}
+.atividade-recente-info p {
+    font-size: 12px;
+    color: #888;
+    margin: 0;
+}
+.atividade-recente-status {
+    text-align: right;
+}
+.atividade-recente-status .hora {
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+}
+.atividade-recente-status .badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-top: 5px;
+}
+.badge-success { background: #d4edda; color: #155724; }
+.badge-warning { background: #fff3cd; color: #856404; }
+.badge-info { background: #cce5ff; color: #004085; }
 
-    /* Upload de Foto */
-    .foto-upload-area {
-        border: 3px dashed #ddd;
-        border-radius: 12px;
-        padding: 40px;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.3s;
-        background: #fafafa;
-    }
-    .foto-upload-area:hover {
-        border-color: #3498db;
-        background: #ebf5fb;
-    }
-    .foto-upload-area i {
-        font-size: 48px;
-        color: #95a5a6;
-        margin-bottom: 15px;
-    }
-    .foto-preview {
-        max-width: 100%;
-        border-radius: 8px;
-        margin-top: 15px;
-    }
+/* ================= MODAL WIZARD ================= */
+.wizard-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    z-index: 9999;
+    overflow-y: auto;
+}
+.wizard-container {
+    min-height: 100vh;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+}
+.wizard-header {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    border-radius: 20px;
+    padding: 20px;
+    color: white;
+    margin-bottom: 20px;
+    position: relative;
+}
+.wizard-header h2 {
+    margin: 0;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.wizard-header p {
+    margin: 5px 0 0 0;
+    opacity: 0.9;
+    font-size: 13px;
+}
+.btn-fechar-wizard {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    transition: all 0.3s;
+}
+.btn-fechar-wizard:hover {
+    background: rgba(255,255,255,0.3);
+}
 
-    /* Status Badge */
-    .status-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        padding: 6px 12px;
-        border-radius: 20px;
-        font-size: 12px;
-        font-weight: 600;
-    }
-    .status-badge.ativo {
-        background: #d4edda;
-        color: #155724;
-    }
+/* Steps */
+.wizard-steps {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+.wizard-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    opacity: 0.4;
+    transition: all 0.3s;
+}
+.wizard-step.active {
+    opacity: 1;
+}
+.wizard-step.completed {
+    opacity: 1;
+}
+.wizard-step-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: white;
+    color: #11998e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    margin-bottom: 8px;
+    border: 3px solid white;
+    transition: all 0.3s;
+}
+.wizard-step.active .wizard-step-icon {
+    box-shadow: 0 0 0 4px rgba(255,255,255,0.3);
+}
+.wizard-step.completed .wizard-step-icon {
+    background: #27ae60;
+    color: white;
+}
+.wizard-step-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: white;
+    text-transform: uppercase;
+}
 
-    /* Info Box */
-    .info-box {
-        background: #e3f2fd;
-        border-left: 4px solid #2196f3;
-        padding: 15px 20px;
-        border-radius: 4px;
-        margin-bottom: 20px;
-    }
+/* Wizard Body */
+.wizard-body {
+    flex: 1;
+}
+.wizard-card {
+    background: white;
+    border-radius: 20px;
+    padding: 25px;
+    margin-bottom: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+.wizard-card-titulo {
+    font-size: 16px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.wizard-card-titulo i {
+    color: #11998e;
+    font-size: 20px;
+}
 
-    /* Lista de Atividades */
-    .atividade-item {
-        background: white;
-        border-radius: 8px;
-        padding: 15px;
-        margin-bottom: 10px;
-        border-left: 4px solid #ddd;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    }
-    .atividade-item.executada { border-left-color: #27ae60; }
-    .atividade-item.pendente { border-left-color: #f39c12; }
+/* Grid de Etapas no Wizard */
+.etapas-wizard-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+}
+@media (min-width: 768px) {
+    .etapas-wizard-grid { grid-template-columns: repeat(2, 1fr); }
+}
+.etapa-wizard-card {
+    background: #f8f9fa;
+    border: 2px solid #e0e0e0;
+    border-radius: 15px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+}
+.etapa-wizard-card:hover {
+    border-color: #11998e;
+    background: #f0fff4;
+    transform: translateY(-2px);
+}
+.etapa-wizard-card.selecionada {
+    border-color: #11998e;
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: white;
+}
+.etapa-wizard-card.selecionada .etapa-wizard-nome,
+.etapa-wizard-card.selecionada .etapa-wizard-progresso {
+    color: white;
+}
+.etapa-wizard-card i {
+    font-size: 32px;
+    color: #11998e;
+    margin-bottom: 10px;
+    display: block;
+}
+.etapa-wizard-card.selecionada i {
+    color: white;
+}
+.etapa-wizard-nome {
+    font-weight: 700;
+    font-size: 15px;
+    color: #333;
+    margin-bottom: 5px;
+}
+.etapa-wizard-progresso {
+    font-size: 12px;
+    color: #888;
+}
 
-    /* Botões Principais */
-    .btn-wizard-primary {
-        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-        color: white;
-        border: none;
-        padding: 15px 40px;
-        border-radius: 8px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s;
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-    }
-    .btn-wizard-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 20px rgba(52,152,219,0.4);
-    }
-    .btn-wizard-primary:disabled {
-        background: #95a5a6;
-        cursor: not-allowed;
-        transform: none;
-    }
+/* Foto Upload */
+.foto-upload-area {
+    border: 3px dashed #e0e0e0;
+    border-radius: 15px;
+    padding: 40px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: #fafafa;
+}
+.foto-upload-area:hover {
+    border-color: #11998e;
+    background: #f0fff4;
+}
+.foto-upload-area i {
+    font-size: 48px;
+    color: #11998e;
+    margin-bottom: 15px;
+    display: block;
+}
+.foto-upload-area h4 {
+    margin: 0 0 5px 0;
+    font-size: 16px;
+    color: #333;
+}
+.foto-upload-area p {
+    margin: 0;
+    font-size: 13px;
+    color: #888;
+}
+.foto-preview {
+    max-width: 100%;
+    border-radius: 10px;
+    margin-top: 15px;
+}
 
-    /* Responsivo */
-    @media (max-width: 768px) {
-        .acoes-grid { grid-template-columns: 1fr; }
-        .etapas-grid { grid-template-columns: 1fr; }
-        .timer-display .time { font-size: 36px; }
-    }
+/* Inputs */
+.wizard-input {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: inherit;
+    transition: all 0.3s;
+    box-sizing: border-box;
+}
+.wizard-input:focus {
+    outline: none;
+    border-color: #11998e;
+}
+
+/* Timer */
+.wizard-timer {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    border-radius: 15px;
+    padding: 30px 20px;
+    text-align: center;
+    color: white;
+    margin-bottom: 20px;
+}
+.wizard-tempo {
+    font-size: 48px;
+    font-weight: 700;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 3px;
+    margin-bottom: 5px;
+}
+.wizard-timer-label {
+    font-size: 13px;
+    opacity: 0.8;
+}
+
+/* Botões de Ação no Wizard */
+.wizard-acoes-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+.wizard-acao-btn {
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.wizard-acao-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+.wizard-acao-btn i {
+    font-size: 28px;
+    margin-bottom: 8px;
+    display: block;
+}
+.wizard-acao-btn.atividade { border-color: #3498db; color: #3498db; }
+.wizard-acao-btn.atividade:hover { background: #ebf5fb; }
+
+.wizard-acao-btn.foto { border-color: #9b59b6; color: #9b59b6; }
+.wizard-acao-btn.foto:hover { background: #f5eef8; }
+
+.wizard-acao-btn.pausar { border-color: #f39c12; color: #f39c12; }
+.wizard-acao-btn.pausar:hover { background: #fef9e7; }
+
+.wizard-acao-btn.finalizar { border-color: #27ae60; color: #27ae60; }
+.wizard-acao-btn.finalizar:hover { background: #eafaf1; }
+
+/* Lista de Atividades */
+.wizard-atividades-lista {
+    max-height: 300px;
+    overflow-y: auto;
+}
+.wizard-atividade-item {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.wizard-atividade-item.executada {
+    border-left: 4px solid #27ae60;
+}
+.wizard-atividade-item.pendente {
+    border-left: 4px solid #f39c12;
+}
+.wizard-atividade-item i {
+    font-size: 20px;
+}
+.wizard-atividade-item.executada i {
+    color: #27ae60;
+}
+.wizard-atividade-item.pendente i {
+    color: #f39c12;
+}
+.wizard-atividade-info {
+    flex: 1;
+}
+.wizard-atividade-info h5 {
+    margin: 0 0 3px 0;
+    font-size: 14px;
+    color: #333;
+}
+.wizard-atividade-info p {
+    margin: 0;
+    font-size: 12px;
+    color: #888;
+}
+
+/* Botão Principal Wizard */
+.wizard-btn-principal {
+    display: block;
+    width: 100%;
+    padding: 18px;
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: white;
+    border: none;
+    border-radius: 15px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.3s;
+    margin-top: 20px;
+}
+.wizard-btn-principal:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(17, 153, 142, 0.3);
+}
+.wizard-btn-principal:disabled {
+    background: #95a5a6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Modais Internos */
+.wizard-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+}
+.wizard-modal-content {
+    background: white;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+.wizard-modal-header {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 20px 20px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.wizard-modal-header h3 {
+    margin: 0;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.wizard-modal-body {
+    padding: 25px;
+}
+.wizard-modal-footer {
+    padding: 20px 25px;
+    border-top: 1px solid #f0f0f0;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+.wizard-btn {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.wizard-btn.secundario {
+    background: #f8f9fa;
+    color: #666;
+}
+.wizard-btn.secundario:hover {
+    background: #e9ecef;
+}
+.wizard-btn.primario {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: white;
+}
+.wizard-btn.primario:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(17, 153, 142, 0.3);
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+}
+.empty-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 40px;
+    color: #ddd;
+}
+.empty-state p {
+    color: #888;
+    margin: 0;
+}
+
+/* Responsivo */
+@media (min-width: 768px) {
+    .obras-container { padding: 30px; max-width: 1200px; margin: 0 auto; }
+    .wizard-container { padding: 30px; }
+    .wizard-tempo { font-size: 64px; }
+}
+
+/* Animações */
+@keyframes slideInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.etapa-card, .atividade-recente-item {
+    animation: slideInUp 0.4s ease;
+}
 </style>
 
-<!-- HEADER DA OBRA -->
-<div class="widget-box">
-    <div class="widget-title" style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); color: white;">
-        <span class="icon"><i class="bx bx-building"></i></span>
-        <h5><?= htmlspecialchars($obra->nome) ?></h5>
-        <div class="buttons">
-            <a href="<?= site_url('tecnicos/minhas_obras') ?>" class="btn btn-mini" style="background: rgba(255,255,255,0.2); border: none; color: white;">
-                <i class="bx bx-arrow-back"></i> Voltar
-            </a>
-        </div>
-    </div>
-    <div class="widget-content">
-        <div class="row-fluid">
-            <div class="span8">
-                <p><strong><i class="bx bx-user"></i> Cliente:</strong> <?= htmlspecialchars($obra->cliente_nome ?? 'Não definido') ?></p>
-                <p><strong><i class="bx bx-map"></i> Endereço:</strong> <?= htmlspecialchars($obra->endereco ?? 'Não definido') ?></p>
-                <div class="progress" style="height: 20px; margin: 15px 0;">
-                    <div class="progress-bar progress-bar-success" style="width: <?= $obra->percentual_concluido ?? 0 ?>%">
-                        <?= $obra->percentual_concluido ?? 0 ?>%
-                    </div>
-                </div>
-            </div>
-            <div class="span4" style="text-align: right;">
-                <?php if (!empty($wizard_em_andamento)): ?>
-                    <div class="alert alert-warning" style="margin-bottom: 15px;">
-                        <i class="bx bx-time"></i> <strong>Atividade em andamento</strong><br>
-                        <?= htmlspecialchars($wizard_em_andamento->etapa_nome ?? 'Geral') ?><br>
-                        <small>Iniciado às <?= date('H:i', strtotime($wizard_em_andamento->hora_inicio)) ?></small>
-                    </div>
-                    <button class="btn btn-success btn-large" onclick="WizardAtendimento.continuar(<?= $wizard_em_andamento->id ?>, '<?= $wizard_em_andamento->hora_inicio ?>', '<?= htmlspecialchars($wizard_em_andamento->etapa_nome ?? 'Atividade geral') ?>')" style="padding: 15px 30px;">
-                        <i class="bx bx-play-circle"></i> CONTINUAR ATENDIMENTO
-                    </button>
-                <?php else: ?>
-                    <button class="btn btn-primary btn-large" onclick="WizardAtendimento.iniciar()" style="padding: 15px 30px; background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); border: none;">
-                        <i class="bx bx-log-in-circle"></i> INICIAR ATENDIMENTO
-                    </button>
-                <?php endif; ?>
-            </div>
-        </div>
-    </div>
-</div>
+<div class="obras-container">
 
-<!-- ESTATISTICAS -->
-<div class="row-fluid">
-    <div class="span3">
-        <div class="widget-box" style="text-align: center;">
-            <div class="widget-content">
-                <i class="bx bx-layer" style="font-size: 32px; color: #3498db;"></i>
-                <h2 style="margin: 10px 0; color: #2c3e50;"><?= count($etapas) ?></h2>
-                <small style="color: #7f8c8d;">Etapas Totais</small>
-            </div>
-        </div>
+    <!-- Header da Obra -->
+    <div class="obra-detalhe-header">
+        <a href="<?= site_url('tecnicos/minhas_obras') ?>" class="btn-voltar">
+            <i class="icon-arrow-left"></i> Voltar
+        </a>
+        <h1><i class="icon-building"></i> <?= htmlspecialchars($obra->nome) ?></h1>
+        <p><i class="icon-user"></i> <?= htmlspecialchars($obra->cliente_nome ?? 'Cliente não informado') ?></p>
     </div>
-    <div class="span3">
-        <div class="widget-box" style="text-align: center;">
-            <div class="widget-content">
-                <i class="bx bx-check-circle" style="font-size: 32px; color: #27ae60;"></i>
-                <h2 style="margin: 10px 0; color: #2c3e50;"><?= count(array_filter($etapas, function($e) { return ($e->status ?? '') === 'concluida'; })) ?></h2>
-                <small style="color: #7f8c8d;">Etapas Concluídas</small>
-            </div>
-        </div>
-    </div>
-    <div class="span3">
-        <div class="widget-box" style="text-align: center;">
-            <div class="widget-content">
-                <i class="bx bx-wrench" style="font-size: 32px; color: #f39c12;"></i>
-                <h2 style="margin: 10px 0; color: #2c3e50;"><?= count($minhas_atividades) ?></h2>
-                <small style="color: #7f8c8d;">Minhas Atividades</small>
-            </div>
-        </div>
-    </div>
-    <div class="span3">
-        <div class="widget-box" style="text-align: center;">
-            <div class="widget-content">
-                <i class="bx bx-task" style="font-size: 32px; color: #e74c3c;"></i>
-                <h2 style="margin: 10px 0; color: #2c3e50;"><?= count(array_filter($minhas_os, function($os) { return ($os->status ?? '') !== 'Finalizada'; })) ?></h2>
-                <small style="color: #7f8c8d;">OS em Aberto</small>
-            </div>
-        </div>
-    </div>
-</div>
 
-<!-- LISTA DE ETAPAS -->
-<div class="widget-box">
-    <div class="widget-title">
-        <span class="icon"><i class="bx bx-list-check"></i></span>
-        <h5>Etapas da Obra</h5>
+    <!-- Alerta Atividade em Andamento -->
+    <?php if (!empty($wizard_em_andamento)): ?>
+    <div class="atividade-andamento-alert">
+        <h3><i class="icon-time"></i> Atividade em Andamento</h3>
+        <p>
+            <strong><?= htmlspecialchars($wizard_em_andamento->etapa_nome ?? 'Geral') ?></strong><br>
+            Iniciado às <?= date('H:i', strtotime($wizard_em_andamento->hora_inicio)) ?> -
+            <?= date('d/m/Y', strtotime($wizard_em_andamento->data_atividade ?? 'now')) ?>
+        </p>
+        <button class="btn-continuar" onclick="WizardAtendimento.continuar(<?= $wizard_em_andamento->id ?>, '<?= $wizard_em_andamento->hora_inicio ?>', '<?= htmlspecialchars($wizard_em_andamento->etapa_nome ?? 'Atividade geral') ?>')">
+            <i class="icon-play"></i> CONTINUAR ATENDIMENTO
+        </button>
     </div>
-    <div class="widget-content">
+    <?php else: ?>
+    <!-- Botão Iniciar Principal -->
+    <button class="btn-iniciar-principal" onclick="WizardAtendimento.iniciar()">
+        <i class="icon-play-circle"></i> INICIAR ATENDIMENTO
+    </button>
+    <?php endif; ?>
+
+    <!-- Cards de Estatísticas -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-numero"><?= count($etapas) ?></div>
+            <div class="stat-label">Etapas Totais</div>
+        </div>
+        <div class="stat-card warning">
+            <div class="stat-numero"><?= count(array_filter($etapas, function($e) { return ($e->status ?? '') === 'concluida'; })) ?></div>
+            <div class="stat-label">Concluídas</div>
+        </div>
+        <div class="stat-card info">
+            <div class="stat-numero"><?= count($minhas_atividades) ?></div>
+            <div class="stat-label">Minhas Atividades</div>
+        </div>
+        <div class="stat-card danger">
+            <div class="stat-numero"><?= $obra->percentual_concluido ?? 0 ?>%</div>
+            <div class="stat-label">Progresso</div>
+        </div>
+    </div>
+
+    <!-- Etapas da Obra -->
+    <div class="etapas-section">
+        <h3 class="section-title"><i class="icon-list"></i> Etapas da Obra</h3>
+
         <?php if (empty($etapas)): ?>
-            <div class="alert alert-info">
-                <i class="bx bx-info-circle"></i> Nenhuma etapa cadastrada para esta obra.
+        <div class="wizard-card">
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="icon-list-alt"></i>
+                </div>
+                <p>Nenhuma etapa cadastrada</p>
             </div>
+        </div>
         <?php else: ?>
+        <div class="etapas-lista">
             <?php foreach ($etapas as $etapa): ?>
                 <?php
-                    $statusClass = '';
-                    $statusLabel = '';
-                    $statusIcon = '';
-                    switch($etapa->status ?? 'pendente') {
-                        case 'concluida':
-                            $statusClass = 'concluida';
-                            $statusLabel = '<span class="label label-success">Concluída</span>';
-                            $statusIcon = 'bx-check-circle';
-                            break;
-                        case 'em-andamento':
-                            $statusClass = 'em-andamento';
-                            $statusLabel = '<span class="label label-info">Em Andamento</span>';
-                            $statusIcon = 'bx-play-circle';
-                            break;
-                        default:
-                            $statusClass = 'pendente';
-                            $statusLabel = '<span class="label label-warning">Pendente</span>';
-                            $statusIcon = 'bx-time';
-                    }
+                $statusClass = '';
+                $statusLabel = '';
+                $statusIcon = '';
+                switch($etapa->status ?? 'pendente') {
+                    case 'concluida':
+                        $statusClass = 'concluida';
+                        $statusLabel = 'Concluída';
+                        $statusIcon = 'icon-ok';
+                        break;
+                    case 'em-andamento':
+                        $statusClass = 'em-andamento';
+                        $statusLabel = 'Em Andamento';
+                        $statusIcon = 'icon-play';
+                        break;
+                    default:
+                        $statusClass = 'pendente';
+                        $statusLabel = 'Pendente';
+                        $statusIcon = 'icon-time';
+                }
                 ?>
-                <div class="widget-box etapa-item <?= $statusClass ?>" style="margin-bottom: 15px;">
-                    <div class="widget-content">
-                        <div class="row-fluid">
-                            <div class="span1" style="text-align: center; padding-top: 10px;">
-                                <i class="bx <?= $statusIcon ?>" style="font-size: 28px; color: <?= $statusClass === 'concluida' ? '#27ae60' : ($statusClass === 'em-andamento' ? '#3498db' : '#f39c12') ?>;"></i>
-                            </div>
-                            <div class="span7">
-                                <h5 style="margin: 0 0 8px 0;"><?= htmlspecialchars($etapa->nome) ?></h5>
-                                <?= $statusLabel ?>
-                                <span class="label label-info"><?= $etapa->percentual_concluido ?? 0 ?>% concluído</span>
-                            </div>
-                            <div class="span4" style="text-align: right;">
-                                <?php if (empty($wizard_em_andamento) && ($etapa->status ?? '') !== 'concluida'): ?>
-                                    <button class="btn btn-primary" onclick="WizardAtendimento.iniciarComEtapa(<?= $etapa->id ?>, '<?= htmlspecialchars($etapa->nome) ?>')">
-                                        <i class="bx bx-play"></i> Iniciar
-                                    </button>
-                                <?php endif; ?>
-                                <a href="#etapa<?= $etapa->id ?>" class="btn" data-toggle="collapse">
-                                    <i class="bx bx-chevron-down"></i> Detalhes
-                                </a>
-                            </div>
+                <div class="etapa-card">
+                    <div class="etapa-header-card <?= $statusClass ?>">
+                        <span class="etapa-status-badge"><?= $statusLabel ?></span>
+                        <div class="etapa-numero">
+                            <i class="<?= $statusIcon ?>"></i> Etapa #<?= $etapa->numero_etapa ?? $etapa->id ?>
+                        </div>
+                        <h2 class="etapa-nome"><?= htmlspecialchars($etapa->nome) ?></h2>
+                        <div class="etapa-progresso">
+                            <i class="icon-chart"></i> <?= $etapa->percentual_concluido ?? 0 ?>% concluído
+                        </div>
+                    </div>
+
+                    <div class="etapa-body">
+                        <div class="etapa-barra-progresso">
+                            <div class="etapa-barra-preenchida" style="width: <?= $etapa->percentual_concluido ?? 0 ?>%"></div>
                         </div>
 
-                        <!-- DETALHES DA ETAPA -->
-                        <div id="etapa<?= $etapa->id ?>" class="collapse" style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px;">
-                            <p><strong>Descrição:</strong> <?= nl2br(htmlspecialchars($etapa->descricao ?? 'Nenhuma descrição')) ?></p>
+                        <?php if (!empty($etapa->descricao)): ?>
+                        <p class="etapa-descricao"><?= nl2br(htmlspecialchars($etapa->descricao)) ?></p>
+                        <?php endif; ?>
 
-                            <?php if (!empty($atividades_por_etapa[$etapa->id])): ?>
-                                <h6>Atividades Registradas:</h6>
-                                <ul class="unstyled">
-                                    <?php foreach ($atividades_por_etapa[$etapa->id] as $ativ): ?>
-                                        <li style="padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
-                                            <i class="bx bx-check-square" style="color: <?= ($ativ->status ?? '') === 'concluida' ? '#27ae60' : '#f39c12' ?>;"></i>
-                                            <?= htmlspecialchars($ativ->titulo ?? $ativ->descricao ?? 'Atividade #' . $ativ->id) ?>
-                                            <span class="label <?= ($ativ->status ?? '') === 'concluida' ? 'label-success' : 'label-warning' ?>">
-                                                <?= ($ativ->status ?? '') === 'concluida' ? 'Concluída' : 'Pendente' ?>
-                                            </span>
-                                        </li>
-                                    <?php endforeach; ?>
-                                </ul>
+                        <?php if (!empty($atividades_por_etapa[$etapa->id])): ?>
+                        <div class="etapa-atividades">
+                            <h4>Atividades Registradas</h4>
+                            <?php foreach (array_slice($atividades_por_etapa[$etapa->id], 0, 3) as $ativ): ?>
+                            <div class="etapa-atividade-item <?= ($ativ->status ?? '') === 'concluida' ? '' : 'pendente' ?>">
+                                <i class="<?= ($ativ->status ?? '') === 'concluida' ? 'icon-check' : 'icon-time' ?>"></i>
+                                <?= htmlspecialchars($ativ->titulo ?? $ativ->descricao ?? 'Atividade #' . $ativ->id) ?>
+                            </div>
+                            <?php endforeach; ?>
+                            <?php if (count($atividades_por_etapa[$etapa->id]) > 3): ?>
+                            <div class="etapa-atividade-item" style="color: #888;">
+                                <i class="icon-ellipsis-horizontal"></i>
+                                +<?= count($atividades_por_etapa[$etapa->id]) - 3 ?> atividades
+                            </div>
                             <?php endif; ?>
                         </div>
+                        <?php endif; ?>
+                    </div>
+
+                    <div class="etapa-actions">
+                        <?php if (empty($wizard_em_andamento) && ($etapa->status ?? '') !== 'concluida'): ?>
+                        <button class="btn-etapa-acao iniciar" onclick="WizardAtendimento.iniciarComEtapa(<?= $etapa->id ?>, '<?= htmlspecialchars($etapa->nome) ?>')">
+                            <i class="icon-play"></i> Iniciar
+                        </button>
+                        <?php endif; ?>
+                        <button class="btn-etapa-acao detalhes" onclick="this.closest('.etapa-card').querySelector('.etapa-detalhes').style.display = this.closest('.etapa-card').querySelector('.etapa-detalhes').style.display === 'none' ? 'block' : 'none'">
+                            <i class="icon-chevron-down"></i> Detalhes
+                        </button>
+                    </div>
+
+                    <div class="etapa-detalhes" style="display: none; padding: 0 20px 20px;">
+                        <?php if (!empty($atividades_por_etapa[$etapa->id])): ?>
+                        <div style="background: #f8f9fa; border-radius: 10px; padding: 15px;">
+                            <h5 style="margin: 0 0 10px 0; font-size: 13px; color: #888;">Todas as Atividades:</h5>
+                            <?php foreach ($atividades_por_etapa[$etapa->id] as $ativ): ?>
+                            <div style="padding: 8px 0; border-bottom: 1px solid #eee; font-size: 13px;">
+                                <i class="<?= ($ativ->status ?? '') === 'concluida' ? 'icon-check' : 'icon-time' ?>" style="color: <?= ($ativ->status ?? '') === 'concluida' ? '#27ae60' : '#f39c12' ?>;"></i>
+                                <?= htmlspecialchars($ativ->titulo ?? $ativ->descricao ?? 'Atividade #' . $ativ->id) ?>
+                                <span style="float: right; color: #888;">
+                                    <?= date('d/m/Y', strtotime($ativ->data_atividade ?? $ativ->created_at ?? 'now')) ?>
+                                </span>
+                            </div>
+                            <?php endforeach; ?>
+                        </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             <?php endforeach; ?>
+        </div>
         <?php endif; ?>
     </div>
+
+    <!-- Atividades Recentes -->
+    <?php if (!empty($minhas_atividades)): ?>
+    <div class="atividades-recentes">
+        <h3><i class="icon-history"></i> Minhas Atividades Recentes</h3>
+
+        <?php foreach (array_slice($minhas_atividades, 0, 5) as $ativ): ?>
+        <div class="atividade-recente-item">
+            <div class="atividade-recente-icon <?= ($ativ->status ?? '') === 'concluida' ? 'concluida' : (($ativ->status ?? '') === 'em_andamento' ? 'andamento' : 'pendente') ?>">
+                <i class="icon-<?= ($ativ->status ?? '') === 'concluida' ? 'check' : (($ativ->status ?? '') === 'em_andamento' ? 'play' : 'time') ?>"></i>
+            </div>
+            <div class="atividade-recente-info">
+                <h4><?= htmlspecialchars($ativ->etapa_nome ?? 'Atividade Geral') ?></h4>
+                <p><?= htmlspecialchars($ativ->titulo ?? $ativ->descricao ?? 'Atividade #' . $ativ->id) ?></p>
+            </div>
+            <div class="atividade-recente-status">
+                <div class="hora">
+                    <?= !empty($ativ->hora_inicio) ? date('H:i', strtotime($ativ->hora_inicio)) : '--:--' ?>
+                    -
+                    <?= !empty($ativ->hora_fim) ? date('H:i', strtotime($ativ->hora_fim)) : '--:--' ?>
+                </div>
+                <span class="badge badge-<?= ($ativ->status ?? '') === 'concluida' ? 'success' : (($ativ->status ?? '') === 'em_andamento' ? 'info' : 'warning') ?>">
+                    <?= ($ativ->status ?? '') === 'concluida' ? 'Concluída' : (($ativ->status ?? '') === 'em_andamento' ? 'Em Andamento' : 'Pendente') ?>
+                </span>
+            </div>
+        </div>
+        <?php endforeach; ?>
+    </div>
+    <?php endif; ?>
+
 </div>
 
-<!-- MINHAS ATIVIDADES RECENTES -->
-<?php if (!empty($minhas_atividades)): ?>
-<div class="widget-box">
-    <div class="widget-title">
-        <span class="icon"><i class="bx bx-history"></i></span>
-        <h5>Minhas Atividades Recentes</h5>
-    </div>
-    <div class="widget-content">
-        <table class="table table-bordered table-striped">
-            <thead>
-                <tr>
-                    <th>Data</th>
-                    <th>Etapa</th>
-                    <th>Período</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach (array_slice($minhas_atividades, 0, 5) as $ativ): ?>
-                    <tr>
-                        <td><?= date('d/m/Y', strtotime($ativ->data_atividade ?? $ativ->created_at ?? 'now')) ?></td>
-                        <td><?= htmlspecialchars($ativ->etapa_nome ?? 'Geral') ?></td>
-                        <td><?= !empty($ativ->hora_inicio) ? date('H:i', strtotime($ativ->hora_inicio)) : '--:--' ?> - <?= !empty($ativ->hora_fim) ? date('H:i', strtotime($ativ->hora_fim)) : '--:--' ?></td>
-                        <td>
-                            <?php if ($ativ->status === 'concluida'): ?>
-                                <span class="label label-success"><i class="bx bx-check"></i> Concluída</span>
-                            <?php elseif ($ativ->status === 'em_andamento'): ?>
-                                <span class="label label-info"><i class="bx bx-time"></i> Em Andamento</span>
-                            <?php else: ?>
-                                <span class="label label-warning"><i class="bx bx-hourglass"></i> Pendente</span>
-                            <?php endif; ?>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    </div>
-</div>
-<?php endif; ?>
+<!-- ================= MODAL WIZARD DE ATENDIMENTO ================= -->
+<div id="wizardModal" class="wizard-overlay">
+    <div class="wizard-container">
 
-<!-- ==================== MODAL WIZARD DE ATENDIMENTO ==================== -->
-<div id="modalWizard" class="modal-wizard-overlay">
-    <div class="modal-wizard-container">
-        <div class="modal-wizard-content">
+        <!-- Header -->
+        <div class="wizard-header">
+            <button class="btn-fechar-wizard" onclick="WizardAtendimento.fechar()">
+                <i class="icon-remove"></i>
+            </button>
+            <h2><i class="icon-walk"></i> <span id="wizardTitle">Novo Atendimento</span></h2>
+            <p>Registre sua entrada e acompanhe o tempo de execução</p>
+        </div>
 
-            <!-- HEADER -->
-            <div class="modal-wizard-header">
-                <h3><i class="bx bx-walk"></i> <span id="wizardTitle">Novo Atendimento</span></h3>
-                <button class="btn btn-danger" onclick="WizardAtendimento.fechar()" style="border: none; background: rgba(255,255,255,0.2);">
-                    <i class="bx bx-x"></i> Fechar
+        <!-- Steps -->
+        <div class="wizard-steps">
+            <div class="wizard-step active" data-step="1">
+                <div class="wizard-step-icon"><i class="icon-signin"></i></div>
+                <div class="wizard-step-label">Check-in</div>
+            </div>
+            <div class="wizard-step" data-step="2">
+                <div class="wizard-step-icon"><i class="icon-wrench"></i></div>
+                <div class="wizard-step-label">Execução</div>
+            </div>
+            <div class="wizard-step" data-step="3">
+                <div class="wizard-step-icon"><i class="icon-signout"></i></div>
+                <div class="wizard-step-label">Finalizar</div>
+            </div>
+        </div>
+
+        <!-- Body -->
+        <div class="wizard-body">
+
+            <!-- STEP 1: CHECK-IN -->
+            <div id="stepCheckin" class="wizard-step-content">
+
+                <!-- Seleção de Etapa -->
+                <div class="wizard-card">
+                    <div class="wizard-card-titulo">
+                        <i class="icon-list-check"></i> Selecione a Etapa
+                    </div>
+                    <div class="etapas-wizard-grid">
+                        <?php foreach ($etapas as $etapa): ?>
+                        <div class="etapa-wizard-card" data-etapa-id="<?= $etapa->id ?>" onclick="WizardAtendimento.selecionarEtapa(<?= $etapa->id ?>, '<?= htmlspecialchars($etapa->nome) ?>', this)">
+                            <i class="icon-hard-hat"></i>
+                            <div class="etapa-wizard-nome"><?= htmlspecialchars($etapa->nome) ?></div>
+                            <div class="etapa-wizard-progresso"><?= $etapa->percentual_concluido ?? 0 ?>% concluído</div>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                    <input type="hidden" id="checkinEtapaId" value="">
+                </div>
+
+                <!-- Foto do Check-in -->
+                <div class="wizard-card">
+                    <div class="wizard-card-titulo">
+                        <i class="icon-camera"></i> Foto do Local (Opcional)
+                    </div>
+                    <div class="foto-upload-area" onclick="document.getElementById('checkinFoto').click()">
+                        <i class="icon-camera"></i>
+                        <h4>Clique para adicionar foto</h4>
+                        <p>Registre o estado inicial do local</p>
+                        <input type="file" id="checkinFoto" accept="image/*" capture="environment" style="display: none;" onchange="WizardAtendimento.previewFoto(this, 'checkinPreview')">
+                    </div>
+                    <img id="checkinPreview" class="foto-preview" style="display: none;">
+                </div>
+
+                <!-- Observações -->
+                <div class="wizard-card">
+                    <div class="wizard-card-titulo">
+                        <i class="icon-edit"></i> Observações
+                    </div>
+                    <textarea id="checkinObservacoes" class="wizard-input" rows="4" placeholder="Descreva as condições do local, materiais disponíveis, ou qualquer observação importante..."></textarea>
+                </div>
+
+                <!-- Botão Iniciar -->
+                <button id="btnIniciar" class="wizard-btn-principal" onclick="WizardAtendimento.realizarCheckin()" disabled>
+                    <i class="icon-play"></i> INICIAR ATENDIMENTO
                 </button>
             </div>
 
-            <!-- STEPS INDICATOR -->
-            <div class="wizard-steps" id="wizardSteps">
-                <div class="wizard-step active" data-step="1">
-                    <div class="wizard-step-icon"><i class="bx bx-log-in"></i></div>
-                    <div class="wizard-step-label">Check-in</div>
+            <!-- STEP 2: EXECUÇÃO -->
+            <div id="stepExecucao" class="wizard-step-content" style="display: none;">
+
+                <!-- Timer -->
+                <div class="wizard-timer">
+                    <div class="wizard-tempo" id="timerDisplay">00:00:00</div>
+                    <div class="wizard-timer-label"><i class="icon-time"></i> Tempo de Execução</div>
                 </div>
-                <div class="wizard-step" data-step="2">
-                    <div class="wizard-step-icon"><i class="bx bx-wrench"></i></div>
-                    <div class="wizard-step-label">Execução</div>
+
+                <!-- Info Etapa -->
+                <div class="wizard-card" style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); color: white;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="icon-info-sign" style="font-size: 24px;"></i>
+                        <div>
+                            <div style="font-size: 12px; opacity: 0.9;">Etapa em Execução</div>
+                            <div style="font-size: 18px; font-weight: 700;" id="etapaExecucaoNome">--</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="wizard-step" data-step="3">
-                    <div class="wizard-step-icon"><i class="bx bx-check-double"></i></div>
-                    <div class="wizard-step-label">Finalizar</div>
+
+                <!-- Ações -->
+                <div class="wizard-acoes-grid">
+                    <div class="wizard-acao-btn atividade" onclick="WizardAtendimento.abrirModalAtividade()">
+                        <i class="icon-plus"></i>
+                        <strong>Registrar Atividade</strong>
+                        <small style="display: block; margin-top: 5px; opacity: 0.7;">Adicione trabalhos</small>
+                    </div>
+                    <div class="wizard-acao-btn foto" onclick="WizardAtendimento.abrirModalFoto()">
+                        <i class="icon-camera"></i>
+                        <strong>Adicionar Foto</strong>
+                        <small style="display: block; margin-top: 5px; opacity: 0.7;">Documente o serviço</small>
+                    </div>
+                    <div class="wizard-acao-btn pausar" onclick="WizardAtendimento.pausarAtendimento()">
+                        <i class="icon-pause"></i>
+                        <strong>Pausar</strong>
+                        <small style="display: block; margin-top: 5px; opacity: 0.7;">Interrompa</small>
+                    </div>
+                    <div class="wizard-acao-btn finalizar" onclick="WizardAtendimento.abrirModalCheckout()">
+                        <i class="icon-stop"></i>
+                        <strong>Finalizar</strong>
+                        <small style="display: block; margin-top: 5px; opacity: 0.7;">Encerre</small>
+                    </div>
+                </div>
+
+                <!-- Atividades Registradas -->
+                <div class="wizard-card">
+                    <div class="wizard-card-titulo">
+                        <i class="icon-list-ul"></i> Atividades Registradas
+                        <span id="contadorAtividades" style="background: #11998e; color: white; padding: 4px 12px; border-radius: 15px; font-size: 12px; margin-left: 10px;">0</span>
+                    </div>
+                    <div class="wizard-atividades-lista" id="listaAtividades">
+                        <div class="empty-state">
+                            <div class="empty-icon">
+                                <i class="icon-clipboard"></i>
+                            </div>
+                            <p>Nenhuma atividade registrada ainda</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- BODY -->
-            <div class="modal-wizard-body">
-
-                <!-- STEP 1: CHECK-IN -->
-                <div id="stepCheckin" class="wizard-step-content">
-                    <div class="wizard-card">
-                        <div class="wizard-card-title">
-                            <i class="bx bx-list-check"></i> Selecione a Etapa
-                        </div>
-                        <div class="etapas-grid">
-                            <?php foreach ($etapas as $etapa): ?>
-                                <div class="etapa-card" data-etapa-id="<?= $etapa->id ?>" onclick="WizardAtendimento.selecionarEtapa(<?= $etapa->id ?>, '<?= htmlspecialchars($etapa->nome) ?>', this)">
-                                    <i class="bx bx-layer"></i>
-                                    <h4><?= htmlspecialchars($etapa->nome) ?></h4>
-                                    <span class="label label-info"><?= $etapa->percentual_concluido ?? 0 ?>%</span>
-                                    <div class="progress">
-                                        <div class="progress-bar" style="width: <?= $etapa->percentual_concluido ?? 0 ?>%"></div>
-                                    </div>
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                        <input type="hidden" id="checkinEtapaId" value="">
-                    </div>
-
-                    <div class="wizard-card">
-                        <div class="wizard-card-title">
-                            <i class="bx bx-camera"></i> Foto do Local (Opcional)
-                        </div>
-                        <div class="foto-upload-area" onclick="document.getElementById('checkinFoto').click()">
-                            <i class="bx bx-camera"></i>
-                            <h4>Clique para adicionar foto</h4>
-                            <p class="text-muted">Registre o estado inicial do local</p>
-                            <input type="file" id="checkinFoto" accept="image/*" capture="environment" style="display: none;" onchange="WizardAtendimento.previewFoto(this, 'checkinPreview')">
-                        </div>
-                        <img id="checkinPreview" class="foto-preview" style="display: none;">
-                    </div>
-
-                    <div class="wizard-card">
-                        <div class="wizard-card-title">
-                            <i class="bx bx-note"></i> Observações
-                        </div>
-                        <textarea id="checkinObservacoes" rows="3" class="span12" placeholder="Descreva as condições do local, materiais disponíveis, etc..."></textarea>
-                    </div>
-
-                    <div style="text-align: center; margin-top: 30px;">
-                        <button id="btnIniciar" class="btn-wizard-primary" onclick="WizardAtendimento.realizarCheckin()" disabled>
-                            <i class="bx bx-play-circle"></i> INICIAR ATENDIMENTO
-                        </button>
-                    </div>
-                </div>
-
-                <!-- STEP 2: EXECUÇÃO -->
-                <div id="stepExecucao" class="wizard-step-content" style="display: none;">
-                    <!-- TIMER -->
-                    <div class="timer-display">
-                        <div class="time" id="timerDisplay">00:00:00</div>
-                        <div class="label"><i class="bx bx-time"></i> Tempo de Execução</div>
-                    </div>
-
-                    <!-- INFO ETAPA -->
-                    <div class="info-box">
-                        <i class="bx bx-info-circle"></i>
-                        <strong>Etapa em Execução:</strong> <span id="etapaExecucaoNome">--</span>
-                    </div>
-
-                    <!-- AÇÕES -->
-                    <div class="acoes-grid">
-                        <div class="acao-btn atividade" onclick="WizardAtendimento.abrirModalAtividade()">
-                            <i class="bx bx-plus-circle"></i>
-                            <h4>Registrar Atividade</h4>
-                            <small>Adicione trabalhos realizados</small>
-                        </div>
-                        <div class="acao-btn foto" onclick="WizardAtendimento.abrirModalFoto()">
-                            <i class="bx bx-camera"></i>
-                            <h4>Adicionar Foto</h4>
-                            <small>Documente o serviço</small>
-                        </div>
-                        <div class="acao-btn pausar" onclick="WizardAtendimento.pausarAtendimento()">
-                            <i class="bx bx-pause-circle"></i>
-                            <h4>Pausar</h4>
-                            <small>Interrompa temporariamente</small>
-                        </div>
-                        <div class="acao-btn finalizar" onclick="WizardAtendimento.abrirModalCheckout()">
-                            <i class="bx bx-check-circle"></i>
-                            <h4>Finalizar</h4>
-                            <small>Encerre o atendimento</small>
-                        </div>
-                    </div>
-
-                    <!-- ATIVIDADES REGISTRADAS -->
-                    <div class="wizard-card">
-                        <div class="wizard-card-title">
-                            <i class="bx bx-list-ul"></i> Atividades Registradas
-                            <span class="badge badge-info" id="contadorAtividades" style="margin-left: 10px;">0</span>
-                        </div>
-                        <div id="listaAtividades">
-                            <p class="text-muted" style="text-align: center; padding: 20px;">
-                                <i class="bx bx-info-circle" style="font-size: 32px; color: #ddd; display: block; margin-bottom: 10px;"></i>
-                                Nenhuma atividade registrada ainda.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
         </div>
     </div>
 </div>
@@ -716,51 +1219,56 @@
 <div id="modalAtividade" class="wizard-modal">
     <div class="wizard-modal-content">
         <div class="wizard-modal-header">
-            <h4><i class="bx bx-plus-circle"></i> Registrar Atividade</h4>
-            <button class="btn btn-mini" onclick="WizardAtendimento.fecharModal('modalAtividade')" style="background: rgba(255,255,255,0.2); border: none; color: white;">
-                <i class="bx bx-x"></i>
+            <h3><i class="icon-plus"></i> Registrar Atividade</h3>
+            <button class="btn-fechar-wizard" onclick="WizardAtendimento.fecharModal('modalAtividade')" style="position: static; width: 35px; height: 35px;">
+                <i class="icon-remove"></i>
             </button>
         </div>
         <div class="wizard-modal-body">
-            <div class="control-group">
-                <label class="control-label"><i class="bx bx-tag"></i> Tipo de Atividade *</label>
-                <div class="controls">
-                    <select id="atividadeTipoId" class="span12" style="height: 40px; font-size: 14px;">
-                        <option value="">Selecione o tipo...</option>
-                        <?php foreach ($tipos_atividades as $tipo): ?>
-                            <option value="<?= is_object($tipo) ? $tipo->id : ($tipo['id'] ?? '') ?>">
-                                <?= htmlspecialchars(is_object($tipo) ? $tipo->nome : ($tipo['nome'] ?? '')) ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #555;">
+                    <i class="icon-tag"></i> Tipo de Atividade *
+                </label>
+                <select id="atividadeTipoId" class="wizard-input">
+                    <option value="">Selecione o tipo...</option>
+                    <?php foreach ($tipos_atividades as $tipo): ?>
+                        <option value="<?= is_object($tipo) ? $tipo->id : ($tipo['id'] ?? '') ?>">
+                            <?= htmlspecialchars(is_object($tipo) ? $tipo->nome : ($tipo['nome'] ?? '')) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
             </div>
 
-            <div class="control-group">
-                <label class="control-label"><i class="bx bx-detail"></i> Descrição</label>
-                <div class="controls">
-                    <textarea id="atividadeDescricao" rows="4" class="span12" placeholder="Descreva detalhadamente o que foi realizado..."></textarea>
-                </div>
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #555;">
+                    <i class="icon-edit"></i> Descrição
+                </label>
+                <textarea id="atividadeDescricao" class="wizard-input" rows="4" placeholder="Descreva detalhadamente o que foi realizado..."></textarea>
             </div>
 
-            <div class="control-group">
-                <label class="control-label"><i class="bx bx-status"></i> Status</label>
-                <div class="controls">
-                    <label class="radio inline" style="padding: 10px 20px; background: #d4edda; border-radius: 20px; margin-right: 10px;">
-                        <input type="radio" name="atividadeStatus" value="executada" checked> <i class="bx bx-check" style="color: #27ae60;"></i> Executada
+            <div>
+                <label style="display: block; margin-bottom: 12px; font-weight: 600; color: #555;">
+                    <i class="icon-question-sign"></i> Status
+                </label>
+                <div style="display: flex; gap: 15px;">
+                    <label style="flex: 1; padding: 15px; background: #d4edda; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                        <input type="radio" name="atividadeStatus" value="executada" checked style="margin: 0;">
+                        <i class="icon-check" style="color: #27ae60;"></i>
+                        <span style="font-weight: 600; color: #155724;">Executada</span>
                     </label>
-                    <label class="radio inline" style="padding: 10px 20px; background: #fff3cd; border-radius: 20px;">
-                        <input type="radio" name="atividadeStatus" value="pendente"> <i class="bx bx-time" style="color: #f39c12;"></i> Pendente
+                    <label style="flex: 1; padding: 15px; background: #fff3cd; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                        <input type="radio" name="atividadeStatus" value="pendente" style="margin: 0;">
+                        <i class="icon-time" style="color: #f39c12;"></i>
+                        <span style="font-weight: 600; color: #856404;">Pendente</span>
                     </label>
                 </div>
             </div>
-
-            <div class="form-actions" style="text-align: right; margin: 20px 0 0 0; padding-top: 20px; border-top: 1px solid #eee;">
-                <button class="btn" onclick="WizardAtendimento.fecharModal('modalAtividade')">Cancelar</button>
-                <button class="btn btn-primary" onclick="WizardAtendimento.salvarAtividade()" style="padding: 10px 25px;">
-                    <i class="bx bx-save"></i> Salvar Atividade
-                </button>
-            </div>
+        </div>
+        <div class="wizard-modal-footer">
+            <button class="wizard-btn secundario" onclick="WizardAtendimento.fecharModal('modalAtividade')">Cancelar</button>
+            <button class="wizard-btn primario" onclick="WizardAtendimento.salvarAtividade()">
+                <i class="icon-save"></i> Salvar
+            </button>
         </div>
     </div>
 </div>
@@ -768,34 +1276,33 @@
 <!-- MODAL ADICIONAR FOTO -->
 <div id="modalFoto" class="wizard-modal">
     <div class="wizard-modal-content">
-        <div class="wizard-modal-header" style="background: #9b59b6;">
-            <h4><i class="bx bx-camera"></i> Adicionar Foto</h4>
-            <button class="btn btn-mini" onclick="WizardAtendimento.fecharModal('modalFoto')" style="background: rgba(255,255,255,0.2); border: none; color: white;">
-                <i class="bx bx-x"></i>
+        <div class="wizard-modal-header" style="background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);">
+            <h3><i class="icon-camera"></i> Adicionar Foto</h3>
+            <button class="btn-fechar-wizard" onclick="WizardAtendimento.fecharModal('modalFoto')" style="position: static; width: 35px; height: 35px;">
+                <i class="icon-remove"></i>
             </button>
         </div>
         <div class="wizard-modal-body">
             <div class="foto-upload-area" onclick="document.getElementById('fotoFile').click()">
-                <i class="bx bx-camera" style="font-size: 48px;"></i>
+                <i class="icon-camera" style="color: #9b59b6;"></i>
                 <h4>Clique para selecionar foto</h4>
-                <p class="text-muted">Ou arraste e solte aqui</p>
+                <p>Ou arraste e solte aqui</p>
                 <input type="file" id="fotoFile" accept="image/*" capture="environment" style="display: none;" onchange="WizardAtendimento.previewFotoModal(this)">
             </div>
-            <img id="fotoPreviewModal" class="foto-preview" style="display: none; margin-top: 15px;">
+            <img id="fotoPreviewModal" class="foto-preview" style="display: none;">
 
-            <div class="control-group" style="margin-top: 20px;">
-                <label class="control-label">Descrição da Foto</label>
-                <div class="controls">
-                    <textarea id="fotoDescricao" rows="2" class="span12" placeholder="Descreva o que está na foto..."></textarea>
-                </div>
+            <div style="margin-top: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #555;">
+                    Descrição da Foto
+                </label>
+                <textarea id="fotoDescricao" class="wizard-input" rows="2" placeholder="Descreva o que está na foto..."></textarea>
             </div>
-
-            <div class="form-actions" style="text-align: right; margin: 20px 0 0 0; padding-top: 20px; border-top: 1px solid #eee;">
-                <button class="btn" onclick="WizardAtendimento.fecharModal('modalFoto')">Cancelar</button>
-                <button class="btn btn-success" onclick="WizardAtendimento.salvarFoto()" style="padding: 10px 25px;">
-                    <i class="bx bx-camera"></i> Salvar Foto
-                </button>
-            </div>
+        </div>
+        <div class="wizard-modal-footer">
+            <button class="wizard-btn secundario" onclick="WizardAtendimento.fecharModal('modalFoto')">Cancelar</button>
+            <button class="wizard-btn primario" onclick="WizardAtendimento.salvarFoto()" style="background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);">
+                <i class="icon-camera"></i> Salvar Foto
+            </button>
         </div>
     </div>
 </div>
@@ -803,76 +1310,75 @@
 <!-- MODAL CHECKOUT / FINALIZAR -->
 <div id="modalCheckout" class="wizard-modal">
     <div class="wizard-modal-content">
-        <div class="wizard-modal-header" style="background: #27ae60;">
-            <h4><i class="bx bx-check-double"></i> Finalizar Atendimento</h4>
-            <button class="btn btn-mini" onclick="WizardAtendimento.fecharModal('modalCheckout')" style="background: rgba(255,255,255,0.2); border: none; color: white;">
-                <i class="bx bx-x"></i>
+        <div class="wizard-modal-header" style="background: linear-gradient(135deg, #27ae60 0%, #229954 100%);">
+            <h3><i class="icon-signout"></i> Finalizar Atendimento</h3>
+            <button class="btn-fechar-wizard" onclick="WizardAtendimento.fecharModal('modalCheckout')" style="position: static; width: 35px; height: 35px;">
+                <i class="icon-remove"></i>
             </button>
         </div>
         <div class="wizard-modal-body">
-            <!-- RESUMO -->
-            <div style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); color: white; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-                <h5 style="margin: 0 0 15px 0;"><i class="bx bx-time"></i> Resumo do Atendimento</h5>
-                <div class="row-fluid">
-                    <div class="span6">
-                        <small style="opacity: 0.7;">Início:</small><br>
-                        <strong id="checkoutHoraInicio" style="font-size: 18px;">--:--</strong>
+            <!-- Resumo -->
+            <div style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); color: white; padding: 20px; border-radius: 15px; margin-bottom: 20px;">
+                <div style="font-size: 12px; opacity: 0.8; margin-bottom: 5px;"><i class="icon-time"></i> Resumo</div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-size: 12px; opacity: 0.7;">Início</div>
+                        <div style="font-size: 16px; font-weight: 600;" id="checkoutHoraInicio">--:--</div>
                     </div>
-                    <div class="span6" style="text-align: right;">
-                        <small style="opacity: 0.7;">Tempo Total:</small><br>
-                        <strong id="checkoutTempoTotal" style="font-size: 24px; color: #27ae60;">--:--</strong>
+                    <div style="text-align: right;">
+                        <div style="font-size: 12px; opacity: 0.7;">Tempo Total</div>
+                        <div style="font-size: 24px; font-weight: 700; color: #27ae60;" id="checkoutTempoTotal">--:--</div>
                     </div>
                 </div>
             </div>
 
-            <div class="control-group">
-                <label class="control-label"><i class="bx bx-question-circle"></i> Trabalho Concluído? *</label>
-                <div class="controls">
-                    <select id="checkoutConcluido" class="span12" style="height: 40px;">
-                        <option value="1">Sim, trabalho concluído</option>
-                        <option value="0">Não, preciso retornar</option>
-                    </select>
-                </div>
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #555;">
+                    <i class="icon-question-sign"></i> Trabalho Concluído? *
+                </label>
+                <select id="checkoutConcluido" class="wizard-input">
+                    <option value="1">Sim, trabalho concluído</option>
+                    <option value="0">Não, preciso retornar</option>
+                </select>
             </div>
 
-            <div class="control-group">
-                <label class="control-label"><i class="bx bx-detail"></i> Resumo do Trabalho</label>
-                <div class="controls">
-                    <textarea id="checkoutResumo" rows="3" class="span12" placeholder="Descreva o que foi realizado durante o atendimento..."></textarea>
-                </div>
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #555;">
+                    <i class="icon-edit"></i> Resumo do Trabalho
+                </label>
+                <textarea id="checkoutResumo" class="wizard-input" rows="3" placeholder="Descreva o que foi realizado durante o atendimento..."></textarea>
             </div>
 
-            <div class="control-group">
-                <label class="control-label"><i class="bx bx-error-circle"></i> Problemas/Pendências</label>
-                <div class="controls">
-                    <textarea id="checkoutPendencias" rows="2" class="span12" placeholder="Algum problema encontrado? Material faltando?"></textarea>
-                </div>
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #555;">
+                    <i class="icon-exclamation-sign"></i> Problemas/Pendências
+                </label>
+                <textarea id="checkoutPendencias" class="wizard-input" rows="2" placeholder="Algum problema encontrado? Material faltando?"></textarea>
             </div>
 
-            <div class="wizard-card" style="margin: 20px 0;">
-                <div class="wizard-card-title">
-                    <i class="bx bx-camera"></i> Foto de Saída (Opcional)
-                </div>
+            <div>
+                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #555;">
+                    <i class="icon-camera"></i> Foto de Saída (Opcional)
+                </label>
                 <div class="foto-upload-area" onclick="document.getElementById('checkoutFoto').click()" style="padding: 20px;">
-                    <i class="bx bx-camera" style="font-size: 32px;"></i>
-                    <p>Clique para adicionar foto de saída</p>
+                    <i class="icon-camera"></i>
+                    <h4 style="font-size: 14px;">Adicionar foto de saída</h4>
                     <input type="file" id="checkoutFoto" accept="image/*" capture="environment" style="display: none;" onchange="WizardAtendimento.previewFoto(this, 'checkoutPreview')">
                 </div>
                 <img id="checkoutPreview" class="foto-preview" style="display: none;">
             </div>
-
-            <div class="form-actions" style="text-align: right; margin: 20px 0 0 0; padding-top: 20px; border-top: 1px solid #eee;">
-                <button class="btn" onclick="WizardAtendimento.fecharModal('modalCheckout')">Voltar</button>
-                <button class="btn btn-success btn-large" onclick="WizardAtendimento.realizarCheckout()" style="padding: 12px 30px; background: linear-gradient(135deg, #27ae60 0%, #229954 100%); border: none;">
-                    <i class="bx bx-check-double"></i> FINALIZAR ATENDIMENTO
-                </button>
-            </div>
+        </div>
+        <div class="wizard-modal-footer">
+            <button class="wizard-btn secundario" onclick="WizardAtendimento.fecharModal('modalCheckout')">Voltar</button>
+            <button class="wizard-btn primario" onclick="WizardAtendimento.realizarCheckout()" style="background: linear-gradient(135deg, #27ae60 0%, #229954 100%);">
+                <i class="icon-signout"></i> FINALIZAR
+            </button>
         </div>
     </div>
 </div>
 
 <script>
-// WIZARD DE ATENDIMENTO MODERNO
+// WIZARD DE ATENDIMENTO - MESMO PADRÃO DE MINHAS_OBRAS
 window.WizardAtendimento = {
     obraId: <?= json_encode($obra->id) ?>,
     etapaSelecionadaId: null,
@@ -906,7 +1412,7 @@ window.WizardAtendimento = {
     iniciar: function() {
         this.stepAtual = 1;
         this.atualizarSteps();
-        document.getElementById('modalWizard').style.display = 'block';
+        document.getElementById('wizardModal').style.display = 'block';
         document.body.style.overflow = 'hidden';
         this.mostrarStep(1);
     },
@@ -915,7 +1421,7 @@ window.WizardAtendimento = {
     iniciarComEtapa: function(etapaId, etapaNome) {
         this.iniciar();
         setTimeout(function() {
-            var el = document.querySelector('.etapa-card[data-etapa-id="' + etapaId + '"]');
+            var el = document.querySelector('.etapa-wizard-card[data-etapa-id="' + etapaId + '"]');
             if (el) {
                 WizardAtendimento.selecionarEtapa(etapaId, etapaNome, el);
             }
@@ -931,7 +1437,7 @@ window.WizardAtendimento = {
 
         document.getElementById('etapaExecucaoNome').textContent = etapaNome || 'Atividade geral';
         document.getElementById('wizardTitle').textContent = 'Continuar Atendimento';
-        document.getElementById('modalWizard').style.display = 'block';
+        document.getElementById('wizardModal').style.display = 'block';
         document.body.style.overflow = 'hidden';
         this.atualizarSteps();
         this.mostrarStep(2);
@@ -940,7 +1446,7 @@ window.WizardAtendimento = {
 
     // FECHAR WIZARD
     fechar: function() {
-        document.getElementById('modalWizard').style.display = 'none';
+        document.getElementById('wizardModal').style.display = 'none';
         document.body.style.overflow = '';
         if (this.timerInterval) {
             clearInterval(this.timerInterval);
@@ -949,7 +1455,7 @@ window.WizardAtendimento = {
         // Reset
         this.etapaSelecionadaId = null;
         this.etapaSelecionadaNome = '';
-        document.querySelectorAll('.etapa-card').forEach(function(el) {
+        document.querySelectorAll('.etapa-wizard-card').forEach(function(el) {
             el.classList.remove('selecionada');
         });
         document.getElementById('btnIniciar').disabled = true;
@@ -986,7 +1492,7 @@ window.WizardAtendimento = {
         this.etapaSelecionadaNome = etapaNome;
         document.getElementById('checkinEtapaId').value = etapaId;
 
-        document.querySelectorAll('.etapa-card').forEach(function(el) {
+        document.querySelectorAll('.etapa-wizard-card').forEach(function(el) {
             el.classList.remove('selecionada');
         });
         elemento.classList.add('selecionada');
@@ -1037,7 +1543,7 @@ window.WizardAtendimento = {
         }
 
         var btn = document.getElementById('btnIniciar');
-        btn.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Iniciando...';
+        btn.innerHTML = '<i class="icon-refresh icon-spin"></i> Iniciando...';
         btn.disabled = true;
 
         var self = this;
@@ -1061,13 +1567,13 @@ window.WizardAtendimento = {
                 self.iniciarTimer();
             } else {
                 alert('Erro: ' + (data.message || 'Erro desconhecido'));
-                btn.innerHTML = '<i class="bx bx-play-circle"></i> INICIAR ATENDIMENTO';
+                btn.innerHTML = '<i class="icon-play"></i> INICIAR ATENDIMENTO';
                 btn.disabled = false;
             }
         })
         .catch(function(err) {
             alert('Erro ao iniciar: ' + err.message);
-            btn.innerHTML = '<i class="bx bx-play-circle"></i> INICIAR ATENDIMENTO';
+            btn.innerHTML = '<i class="icon-play"></i> INICIAR ATENDIMENTO';
             btn.disabled = false;
         });
     },
@@ -1172,17 +1678,14 @@ window.WizardAtendimento = {
         document.getElementById('contadorAtividades').textContent = this.atividadesRegistradas.length;
 
         var statusClass = atividade.status === 'executada' ? 'executada' : 'pendente';
-        var statusIcon = atividade.status === 'executada' ? 'bx-check' : 'bx-time';
+        var statusIcon = atividade.status === 'executada' ? 'icon-check' : 'icon-time';
         var statusColor = atividade.status === 'executada' ? '#27ae60' : '#f39c12';
 
-        var html = '<div class="atividade-item ' + statusClass + '">' +
-            '<div style="display: flex; justify-content: space-between; align-items: center;">' +
-            '<div>' +
-            '<i class="bx ' + statusIcon + '" style="color: ' + statusColor + '; margin-right: 8px;"></i>' +
-            '<strong>' + atividade.tipo + '</strong><br>' +
-            '<small style="color: #666;">' + atividade.descricao + '</small>' +
-            '</div>' +
-            '<small class="text-muted">' + atividade.data + '</small>' +
+        var html = '<div class="wizard-atividade-item ' + statusClass + '">' +
+            '<i class="' + statusIcon + '" style="color: ' + statusColor + ';"></i>' +
+            '<div class="wizard-atividade-info">' +
+            '<h5>' + atividade.tipo + '</h5>' +
+            '<p>' + atividade.descricao + '</p>' +
             '</div>' +
             '</div>';
 
@@ -1299,4 +1802,16 @@ window.WizardAtendimento = {
         });
     }
 };
+
+// Animate progress bars on load
+document.addEventListener('DOMContentLoaded', function() {
+    const progressBars = document.querySelectorAll('.etapa-barra-preenchida');
+    progressBars.forEach(bar => {
+        const width = bar.style.width;
+        bar.style.width = '0%';
+        setTimeout(() => {
+            bar.style.width = width;
+        }, 300);
+    });
+});
 </script>
