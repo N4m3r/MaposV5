@@ -1374,38 +1374,144 @@
 </div>
 
 <?php if ($wizard_em_andamento): ?>
-<!-- Wizard em Andamento -->
-<div class="alert alert-success" style="margin-bottom: 20px; padding: 20px;">
-    <div class="row-fluid">
-        <div class="span8">
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <div style="width: 50px; height: 50px; background: #27ae60; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                    <i class='bx bx-time-five' style="font-size: 24px; color: white;"></i>
-                </div>
-                <div>
-                    <div style="font-weight: 600; color: #27ae60; font-size: 16px;">Execução em Andamento</div>
-                    <div style="font-size: 13px; color: #666;">
-                        Iniciada às <strong><?php echo date('H:i', strtotime($wizard_em_andamento->hora_inicio)); ?></strong>
-                        <span id="timer-execucao" style="margin-left: 10px; color: #27ae60; font-weight: 600;"></span>
-                    </div>
-                    <div style="font-size: 12px; color: #888; margin-top: 2px;">
-                        <?php if ($wizard_em_andamento->etapa_nome): ?>
-                            Etapa: <?php echo htmlspecialchars($wizard_em_andamento->etapa_nome); ?>
-                        <?php else: ?>
-                            Atividade geral
-                        <?php endif; ?>
-                    </div>
+<!-- ============================================
+     BANNER: EXECUÇÃO EM ANDAMENTO - DESIGN MODERNO
+     ============================================ -->
+<style>
+    .wizard-executando-banner {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        border-radius: 15px;
+        padding: 25px 30px;
+        color: white;
+        margin-bottom: 25px;
+        box-shadow: 0 10px 40px rgba(17, 153, 142, 0.3);
+    }
+
+    .wizard-executando-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .wizard-executando-info {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .wizard-executando-icon {
+        width: 70px;
+        height: 70px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(10px);
+    }
+
+    .wizard-executando-icon i {
+        font-size: 35px;
+        color: white;
+    }
+
+    .wizard-executando-icon.pulsing {
+        animation: pulse-green 2s infinite;
+    }
+
+    @keyframes pulse-green {
+        0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4); }
+        70% { box-shadow: 0 0 0 20px rgba(255, 255, 255, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+    }
+
+    .wizard-executando-texto h3 {
+        margin: 0 0 5px 0;
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    .wizard-executando-texto p {
+        margin: 0;
+        opacity: 0.9;
+        font-size: 14px;
+    }
+
+    .wizard-executando-timer {
+        background: rgba(255,255,255,0.2);
+        padding: 8px 15px;
+        border-radius: 25px;
+        font-size: 13px;
+        margin-top: 8px;
+        display: inline-block;
+        backdrop-filter: blur(5px);
+    }
+
+    .wizard-executando-btn {
+        background: white;
+        color: #11998e;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 50px;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    }
+
+    .wizard-executando-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+    }
+
+    @media (max-width: 768px) {
+        .wizard-executando-content {
+            flex-direction: column;
+            text-align: center;
+        }
+        .wizard-executando-btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+
+<div class="wizard-executando-banner">
+    <div class="wizard-executando-content">
+        <div class="wizard-executando-info">
+            <div class="wizard-executando-icon pulsing">
+                <i class="bx bx-timer"></i>
+            </div>
+
+            <div class="wizard-executando-texto">
+                <h3><i class="bx bx-play-circle"></i> Trabalho em Andamento</h3>
+                <p>
+                    <?php if ($wizard_em_andamento->etapa_nome): ?>
+                        <i class="bx bx-map-pin"></i> Etapa: <strong><?php echo htmlspecialchars($wizard_em_andamento->etapa_nome); ?></strong>
+                    <?php else: ?>
+                        Atividade geral da obra
+                    <?php endif; ?>
+                </p>
+                <div class="wizard-executando-timer">
+                    <i class="bx bx-time"></i> Iniciado às <strong><?php echo date('H:i', strtotime($wizard_em_andamento->hora_inicio)); ?></strong>
+                    <span id="timer-execucao"></span>
                 </div>
             </div>
         </div>
 
-        <div class="span4" style="text-align: right;">
-            <button type="button" class="btn btn-success" onclick="WizardObra.continuarWizard()">
-                <i class='bx bx-refresh'></i> CONTINUAR NO WIZARD
-            </button>
-        </div>
+        <button class="wizard-executando-btn" onclick="WizardObra.continuarWizard()">
+            <i class="bx bx-fullscreen"></i>
+            ABRIR WIZARD
+        </button>
     </div>
-    <!-- Hidden input to store hora_inicio for JavaScript access -->
+
+    <!-- Hidden inputs -->
     <input type="hidden" id="wizardHoraInicioStored" value="<?php echo date('Y-m-d H:i:s', strtotime($wizard_em_andamento->hora_inicio)); ?>">
     <input type="hidden" id="wizardEtapaAtualStored" value="<?php echo htmlspecialchars($wizard_em_andamento->etapa_nome ?? 'Atividade geral'); ?>">
 </div>
@@ -1564,36 +1670,167 @@
             </div>
         <?php endif; ?>
 
-        <!-- Wizard de Execucao de Atividade -->
+        <!-- ============================================
+             BOTÃO PARA INICIAR WIZARD - DESIGN MODERNO
+             ============================================ -->
         <?php if (!$wizard_em_andamento): ?>
-        <!-- Opcao para iniciar no Wizard -->
-        <div class="widget-box" id="wizard-start-option" style="margin-top: 20px;">
-            <div class="widget-title">
-                <span class="icon"><i class="bx bx-timer"></i></span>
-                <h5>Wizard de Atendimento</h5>
+
+        <style>
+        .wizard-start-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            padding: 35px 30px;
+            text-align: center;
+            color: white;
+            margin-top: 25px;
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s;
+        }
+
+        .wizard-start-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 50px rgba(102, 126, 234, 0.4);
+        }
+
+        .wizard-start-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .wizard-start-icon i {
+            font-size: 40px;
+            color: white;
+        }
+
+        .wizard-start-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0 0 10px 0;
+        }
+
+        .wizard-start-subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+            margin: 0 0 25px 0;
+            line-height: 1.5;
+        }
+
+        .wizard-start-btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
+        .wizard-start-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+        }
+
+        .wizard-start-btn i {
+            font-size: 24px;
+        }
+
+        .wizard-start-features {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .wizard-feature-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        .wizard-feature-item i {
+            font-size: 18px;
+        }
+
+        .wizard-quick-btn {
+            background: transparent;
+            border: 2px dashed rgba(255,255,255,0.4);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-size: 13px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .wizard-quick-btn:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: white;
+        }
+        @media (max-width: 768px) {
+            .wizard-start-features {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .wizard-start-card {
+                padding: 25px 20px;
+            }
+            .wizard-start-btn {
+                padding: 15px 30px;
+                font-size: 14px;
+            }
+        }
+        </style>
+
+        <div class="wizard-start-card" id="wizard-start-option">
+            <div class="wizard-start-icon">
+                <i class="bx bx-timer"></i>
             </div>
-            <div class="widget-content" style="text-align: center; padding: 30px;">
-                <div style="width: 60px; height: 60px; background: #2c3e50; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 16px;">
-                    <i class='bx bx-rocket' style="font-size: 28px; color: white;"></i>
+            <h3 class="wizard-start-title">Iniciar Atendimento</h3>
+            <p class="wizard-start-subtitle">
+                Registre sua atividade com controle de tempo completo
+                <br>Check-in com foto → Timer em execução → Check-out com relatório
+            </p>
+
+            <button class="wizard-start-btn" onclick="WizardObra.iniciarWizard()">
+                <i class="bx bx-play-circle"></i>
+                INICIAR AGORA
+            </button>
+
+            <div class="wizard-start-features">
+                <div class="wizard-feature-item">
+                    <i class="bx bx-camera"></i> Registro de Fotos
                 </div>
-                <h4 style="margin: 0 0 8px 0;">Registrar Nova Atividade</h4>
-                <p style="margin: 0 0 20px 0; color: #666; font-size: 14px;">
-                    Use o Wizard de Atendimento para registrar sua atividade com controle de tempo (Hora Início/Fim)
-                </p>
-
-                <button type="button" class="btn btn-primary btn-large" onclick="WizardObra.iniciarWizard()" style="margin-bottom: 15px;">
-                    <i class='bx bx-play-circle'></i> INICIAR NO WIZARD DE ATENDIMENTO
-                </button>
-
-                <div class="alert alert-info" style="margin-top: 15px; margin-bottom: 15px;">
-                    <i class='bx bx-info-circle'></i>
-                    O wizard inclui: Check-in com foto → Registro de atividades → Check-out com relatório (tudo nesta página!)
+                <div class="wizard-feature-item">
+                    <i class="bx bx-time"></i> Controle de Tempo
                 </div>
-
-                <button type="button" class="btn" onclick="document.getElementById('wizardAtividade').style.display='block'; document.getElementById('wizard-start-option').style.display='none';">
-                    <i class='bx bx-edit'></i> Ou use o registro rápido (sem controle de tempo)
-                </button>
+                <div class="wizard-feature-item">
+                    <i class="bx bx-check-circle"></i> Check-out Fácil
+                </div>
             </div>
+
+            <button class="wizard-quick-btn" onclick="document.getElementById('wizardAtividade').style.display='block'; document.getElementById('wizard-start-option').style.display='none';">
+                <i class="bx bx-edit"></i> Ou use registro rápido (sem timer)
+            </button>
         </div>
 
         <!-- Wizard inline (registro rápido) -->
@@ -2722,159 +2959,496 @@ document.head.appendChild(style);
 </script>
 
 <!-- ============================================
-     WIZARD DE ATIVIDADES INLINE - TEMA MAPOS
+     WIZARD DE ATIVIDADES INLINE - FUNDO BRANCO
      ============================================ -->
-<div id="wizardObraModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 9999; overflow-y: auto;">
-    <div style="min-height: 100%; padding: 20px;">
-        <div class="row-fluid" style="max-width: 900px; margin: 0 auto;">
+<style>
+    /* Wizard Custom Styles - Fundo Branco */
+    .wizard-modal-bg {
+        background: rgba(255,255,255,0.95) !important;
+        backdrop-filter: blur(10px);
+    }
+
+    .wizard-header-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 12px;
+        padding: 25px 20px;
+        color: white;
+        text-align: center;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .wizard-step-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 35px;
+        height: 35px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 50%;
+        font-weight: bold;
+        margin-right: 10px;
+    }
+
+    .wizard-step-title {
+        font-size: 20px;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .wizard-section-card {
+        background: white;
+        border: 2px solid #e8e8e8;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        overflow: hidden;
+        transition: all 0.3s;
+    }
+
+    .wizard-section-card:hover {
+        border-color: #667eea;
+        box-shadow: 0 4px 20px rgba(102, 126, 234, 0.1);
+    }
+
+    .wizard-section-header {
+        background: #f8f9fa;
+        padding: 15px 20px;
+        border-bottom: 2px solid #e8e8e8;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .wizard-section-header i {
+        font-size: 24px;
+        color: #667eea;
+    }
+
+    .wizard-section-header h5 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .wizard-section-body {
+        padding: 20px;
+    }
+
+    .wizard-etapa-card-v2 {
+        background: #f8f9fa;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        padding: 20px;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-align: center;
+    }
+
+    .wizard-etapa-card-v2:hover {
+        border-color: #667eea;
+        background: #f0f3ff;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+    }
+
+    .wizard-etapa-card-v2.selecionada {
+        border-color: #667eea;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .wizard-etapa-card-v2.selecionada .etapa-percent {
+        background: rgba(255,255,255,0.3);
+        color: white;
+    }
+
+    .wizard-etapa-card-v2 .etapa-nome {
+        font-weight: 600;
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+
+    .wizard-etapa-card-v2 .etapa-percent {
+        display: inline-block;
+        background: #e3f2fd;
+        color: #1976d2;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .wizard-upload-area {
+        background: #fafafa;
+        border: 3px dashed #ddd;
+        border-radius: 12px;
+        padding: 50px 30px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .wizard-upload-area:hover {
+        border-color: #667eea;
+        background: #f0f3ff;
+    }
+
+    .wizard-upload-area i {
+        font-size: 60px;
+        color: #667eea;
+        margin-bottom: 15px;
+    }
+
+    .wizard-upload-area p {
+        margin: 0;
+        color: #666;
+        font-size: 16px;
+    }
+
+    .wizard-upload-area small {
+        color: #999;
+        font-size: 13px;
+    }
+
+    .wizard-btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 18px 30px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        width: 100%;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .wizard-btn-primary:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    }
+
+    .wizard-btn-primary:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+    }
+
+    /* Timer Styles */
+    .wizard-timer-card {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        border-radius: 15px;
+        padding: 30px;
+        color: white;
+        text-align: center;
+        margin-bottom: 25px;
+        box-shadow: 0 6px 20px rgba(17, 153, 142, 0.3);
+    }
+
+    .wizard-timer-display {
+        font-size: 56px;
+        font-weight: bold;
+        font-family: 'Courier New', monospace;
+        letter-spacing: 3px;
+        margin: 15px 0;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .wizard-timer-labels {
+        display: flex;
+        justify-content: center;
+        gap: 60px;
+        margin-top: 15px;
+        opacity: 0.9;
+    }
+
+    .wizard-timer-labels div {
+        text-align: center;
+    }
+
+    .wizard-timer-labels strong {
+        display: block;
+        font-size: 18px;
+        margin-bottom: 5px;
+    }
+
+    .wizard-timer-labels small {
+        font-size: 11px;
+        text-transform: uppercase;
+    }
+
+    .wizard-status-bar {
+        background: #e8f5e9;
+        border-left: 4px solid #27ae60;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .wizard-status-bar i {
+        font-size: 30px;
+        color: #27ae60;
+    }
+
+    .wizard-status-bar .status-title {
+        font-weight: 600;
+        color: #27ae60;
+        font-size: 16px;
+    }
+
+    .wizard-status-bar .status-subtitle {
+        color: #666;
+        font-size: 13px;
+    }
+
+    .wizard-action-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+    @media (max-width: 768px) {
+        .wizard-action-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    .wizard-action-btn {
+        background: white;
+        border: 2px solid #e8e8e8;
+        border-radius: 12px;
+        padding: 20px 15px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .wizard-action-btn:hover {
+        border-color: #667eea;
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    }
+
+    .wizard-action-btn i {
+        font-size: 32px;
+        display: block;
+        margin-bottom: 10px;
+        color: #667eea;
+    }
+
+    .wizard-action-btn strong {
+        font-size: 13px;
+        color: #333;
+    }
+
+    .wizard-action-btn.btn-pausar {
+        background: #fff8e1;
+        border-color: #ffc107;
+    }
+
+    .wizard-action-btn.btn-pausar i {
+        color: #f39c12;
+    }
+
+    .wizard-action-btn.btn-finalizar {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        border: none;
+        color: white;
+    }
+
+    .wizard-action-btn.btn-finalizar i,
+    .wizard-action-btn.btn-finalizar strong {
+        color: white;
+    }
+
+    .wizard-close-btn {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        width: 45px;
+        height: 45px;
+        background: rgba(0,0,0,0.5);
+        border: none;
+        border-radius: 50%;
+        color: white;
+        font-size: 24px;
+        cursor: pointer;
+        z-index: 10001;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s;
+    }
+
+    .wizard-close-btn:hover {
+        background: rgba(0,0,0,0.7);
+        transform: rotate(90deg);
+    }
+
+    .wizard-obs-textarea {
+        width: 100%;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 15px;
+        font-size: 14px;
+        resize: vertical;
+        transition: all 0.3s;
+    }
+
+    .wizard-obs-textarea:focus {
+        border-color: #667eea;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+</style>
+
+<button class="wizard-close-btn" onclick="WizardObra.fechar()"><i class="bx bx-x"></i></button>
+
+<div id="wizardObraModal" class="wizard-modal-bg" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; overflow-y: auto;">
+    <div style="min-height: 100%; padding: 40px 20px;">
+        <div class="row-fluid" style="max-width: 850px; margin: 0 auto;">
             <div class="span12">
 
                 <!-- Header do Wizard -->
-                <div class="widget-box" style="margin-top: 0;">
-                    <div class="widget-title" style="background: #2c3e50; color: white;">
-                        <span class="icon"><i class="bx bx-timer"></i></span>
-                        <h5>Wizard de Atendimento - <?= htmlspecialchars($obra->nome) ?></h5>
-                        <div class="buttons">
-                            <button class="btn btn-mini" onclick="WizardObra.fechar()" style="background: rgba(255,255,255,0.2); border: none; color: white;">
-                                <i class="bx bx-x"></i> Fechar
-                            </button>
+                <div class="wizard-header-card">
+                    <div style="font-size: 40px; margin-bottom: 10px;"><i class="bx bx-timer"></i></div>
+                    <h2 class="wizard-step-title">Wizard de Atendimento</h2>
+                    <p style="margin: 8px 0 0 0; opacity: 0.9; font-size: 14px;"><?= htmlspecialchars($obra->nome) ?></p>
+                </div>
+
+                <!-- STEP 1: CHECK-IN -->
+                <div id="wizardStepCheckin">
+
+                    <!-- Seleção de Etapa -->
+                    <div class="wizard-section-card">
+                        <div class="wizard-section-header">
+                            <div class="wizard-step-badge">1</div>
+                            <div>
+                                <h5>Selecione a Etapa</h5>
+                                <small style="color: #666;">Escolha qual etapa da obra você vai trabalhar *</small>
+                            </div>
+                        </div>
+                        <div class="wizard-section-body">
+                            <div id="wizardEtapasGrid" class="row-fluid">
+                                <?php foreach ($etapas as $etapa): ?
+                                <div class="span4" style="margin-bottom: 15px;">
+                                    <div class="wizard-etapa-card-v2" data-etapa-id="<?= $etapa->id ?>" onclick="WizardObra.selecionarEtapa(<?= $etapa->id ?>, '<?= htmlspecialchars($etapa->nome) ?>', this)">
+                                        <div class="etapa-nome"><?= htmlspecialchars($etapa->nome) ?></div>
+                                        <span class="etapa-percent"><?= isset($etapa->percentual_concluido) ? $etapa->percentual_concluido : 0 ?>% concluído</span>
+                                    </div>
+                                </div>
+                                <?php endforeach; ?>
+                            </div>
+                            <input type="hidden" id="wizardEtapaSelecionada" value="">
                         </div>
                     </div>
-                    <div class="widget-content">
 
-                        <!-- STEP 1: CHECK-IN -->
-                        <div id="wizardStepCheckin">
-                            <div class="row-fluid" style="margin-bottom: 20px;">
-                                <div class="span12" style="text-align: center;">
-                                    <div style="width: 80px; height: 80px; background: #27ae60; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 16px;">
-                                        <i class="bx bx-camera" style="font-size: 40px; color: white;"></i>
-                                    </div>
-                                    <h4 style="margin: 0 0 8px 0;">Check-in de Início</h4>
-                                    <p style="margin: 0; color: #666;">Selecione a etapa e tire uma foto do local</p>
-                                </div>
+                    <!-- Upload de Foto -->
+                    <div class="wizard-section-card">
+                        <div class="wizard-section-header">
+                            <div class="wizard-step-badge" style="background: rgba(0,0,0,0.1); color: #666;">2</div>
+                            <div>
+                                <h5>Foto do Local</h5>
+                                <small style="color: #666;">Registro visual do início (opcional)</small>
                             </div>
-
-                            <!-- Seleção de Etapa -->
-                            <div class="widget-box" style="margin-bottom: 20px;">
-                                <div class="widget-title">
-                                    <span class="icon"><i class="bx bx-list-check"></i></span>
-                                    <h5>1. Selecione a Etapa *</h5>
-                                </div>
-                                <div class="widget-content">
-                                    <div id="wizardEtapasGrid" class="row-fluid">
-                                        <?php foreach ($etapas as $etapa): ?>
-                                        <div class="span4" style="margin-bottom: 10px;">
-                                            <div class="wizard-etapa-card" data-etapa-id="<?= $etapa->id ?>" onclick="WizardObra.selecionarEtapa(<?= $etapa->id ?>, '<?= htmlspecialchars($etapa->nome) ?>', this)"
-                                                 style="background: #f8f9fa; border: 2px solid #ddd; border-radius: 8px; padding: 16px; cursor: pointer; transition: all 0.2s;">
-                                                <div style="font-weight: 600; margin-bottom: 4px;"><?= htmlspecialchars($etapa->nome) ?></div>
-                                                <span class="label label-info"><?= isset($etapa->percentual_concluido) ? $etapa->percentual_concluido : 0 ?>%</span>
-                                            </div>
-                                        </div>
-                                        <?php endforeach; ?>
-                                    </div>
-                                    <input type="hidden" id="wizardEtapaSelecionada" value="">
-                                </div>
+                        </div>
+                        <div class="wizard-section-body">
+                            <div class="wizard-upload-area" onclick="document.getElementById('wizardFotoInput').click()">
+                                <i class="bx bx-camera"></i>
+                                <p>Toque para tirar uma foto</p>
+                                <small>ou escolher da galeria</small>
+                                <input type="file" id="wizardFotoInput" accept="image/*" capture="environment" style="display: none;" onchange="WizardObra.previewFoto(this)">
                             </div>
+                            <img id="wizardFotoPreview" style="max-width: 100%; margin-top: 20px; border-radius: 10px; display: none; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                        </div>
+                    </div>
 
-                            <!-- Upload de Foto -->
-                            <div class="widget-box" style="margin-bottom: 20px;">
-                                <div class="widget-title">
-                                    <span class="icon"><i class="bx bx-camera"></i></span>
-                                    <h5>2. Foto do Local (opcional)</h5>
-                                </div>
-                                <div class="widget-content">
-                                    <div id="wizardUploadArea" onclick="document.getElementById('wizardFotoInput').click()"
-                                         style="border: 2px dashed #ddd; border-radius: 8px; padding: 40px; text-align: center; cursor: pointer;">
-                                        <i class="bx bx-camera" style="font-size: 48px; color: #2c3e50; margin-bottom: 12px; display: block;"></i>
-                                        <p style="margin: 0 0 8px 0; color: #666;">Clique para adicionar foto</p>
-                                        <p style="margin: 0; font-size: 12px; color: #999;">ou arraste e solte aqui</p>
-                                        <input type="file" id="wizardFotoInput" accept="image/*" capture="environment" style="display: none;" onchange="WizardObra.previewFoto(this)">
-                                    </div>
-                                    <img id="wizardFotoPreview" style="max-width: 100%; margin-top: 16px; border-radius: 8px; display: none;">
-                                </div>
+                    <!-- Observações -->
+                    <div class="wizard-section-card">
+                        <div class="wizard-section-header">
+                            <div class="wizard-step-badge" style="background: rgba(0,0,0,0.1); color: #666;">3</div>
+                            <div>
+                                <h5>Observações</h5>
+                                <small style="color: #666;">Notas sobre o local ou trabalho (opcional)</small>
                             </div>
+                        </div>
+                        <div class="wizard-section-body">
+                            <textarea id="wizardObservacoes" rows="4" class="wizard-obs-textarea" placeholder="Descreva as condições do local, materiais disponíveis, ou qualquer informação relevante sobre o trabalho a ser realizado..."></textarea>
+                        </div>
+                    </div>
 
-                            <!-- Observações -->
-                            <div class="widget-box" style="margin-bottom: 20px;">
-                                <div class="widget-title">
-                                    <span class="icon"><i class="bx bx-note"></i></span>
-                                    <h5>Observações (opcional)</h5>
-                                </div>
-                                <div class="widget-content">
-                                    <textarea id="wizardObservacoes" rows="3" placeholder="Condições do local, trabalho a ser realizado..." style="width: 100%; box-sizing: border-box;"></textarea>
-                                </div>
+                    <!-- Botão Iniciar -->
+                    <button id="wizardBtnIniciar" class="wizard-btn-primary" onclick="WizardObra.realizarCheckin()" disabled>
+                        <i class="bx bx-play-circle" style="font-size: 24px;"></i>
+                        <span>INICIAR TRABALHO AGORA</span>
+                    </button>
+                </div>
+
+                <!-- STEP 2: EXECUÇÃO EM ANDAMENTO -->
+                <div id="wizardStepExecucao" style="display: none;">
+
+                    <!-- Timer -->
+                    <div class="wizard-timer-card">
+                        <div style="font-size: 14px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.9; margin-bottom: 5px;"
+>
+                            ⏱️ Tempo de Execução
+                        </div>
+                        <div id="wizardTimer" class="wizard-timer-display">00:00:00</div>
+                        <div class="wizard-timer-labels">
+                            <div>
+                                <strong id="wizardHoraInicio">--:--</strong>
+                                <small>Início</small>
                             </div>
+                            <div>
+                                <strong>--:--</strong>
+                                <small>Término</small>
+                            </div>
+                        </div>
+                    </div>
 
-                            <!-- Botão Iniciar -->
-                            <button id="wizardBtnIniciar" class="btn btn-success btn-large btn-block" onclick="WizardObra.realizarCheckin()" disabled>
-                                <i class="bx bx-play"></i> INICIAR TRABALHO
-                            </button>
+                    <!-- Info da Atividade -->
+                    <div class="wizard-status-bar">
+                        <i class="bx bx-check-circle"></i>
+                        <div>
+                            <div class="status-title">Atividade em Andamento</div>
+                            <div id="wizardEtapaAtual" class="status-subtitle">Aguardando início...</div>
+                        </div>
+                    </div>
+
+                    <!-- Botões de Ação -->
+                    <div class="wizard-action-grid">
+                        <div class="wizard-action-btn" onclick="WizardObra.abrirModalNovaAtividade()">
+                            <i class="bx bx-plus-circle"></i>
+                            <strong>Nova
+                                <br>Atividade</strong>
                         </div>
 
-                        <!-- STEP 2: EXECUÇÃO EM ANDAMENTO -->
-                        <div id="wizardStepExecucao" style="display: none;">
+                        <div class="wizard-action-btn" onclick="WizardObra.abrirModalFoto()">
+                            <i class="bx bx-camera"></i>
+                            <strong>Adicionar
+                                <br>Foto</strong>
+                        </div>
 
-                            <!-- Timer -->
-                            <div class="widget-box" style="background: #2c3e50; color: white; text-align: center; margin-bottom: 20px;">
-                                <div class="widget-content" style="padding: 32px;">
-                                    <div style="font-size: 12px; text-transform: uppercase; opacity: 0.9; margin-bottom: 8px;">Tempo de Execução</div>
-                                    <div id="wizardTimer" style="font-size: 48px; font-weight: bold; font-family: 'Courier New', monospace; margin: 16px 0;">00:00:00</div>
-                                    <div class="row-fluid" style="margin-top: 20px;">
-                                        <div class="span6">
-                                            <div id="wizardHoraInicio" style="font-size: 20px; font-weight: 600;">--:--</div>
-                                            <div style="font-size: 11px; opacity: 0.8;">Início</div>
-                                        </div>
-                                        <div class="span6">
-                                            <div style="font-size: 20px; font-weight: 600;">--:--</div>
-                                            <div style="font-size: 11px; opacity: 0.8;">Término</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="wizard-action-btn btn-pausar" onclick="WizardObra.pausarAtividade()">
+                            <i class="bx bx-pause-circle"></i>
+                            <strong>Pausar
+                                <br>Trabalho</strong>
+                        </div>
 
-                            <!-- Info da Atividade -->
-                            <div id="wizardInfoAtividade" class="alert alert-success" style="margin-bottom: 20px;">
-                                <div style="display: flex; align-items: center; gap: 16px;">
-                                    <div style="width: 50px; height: 50px; background: #27ae60; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                        <i class='bx bx-wrench' style="font-size: 24px; color: white;"></i>
-                                    </div>
-                                    <div>
-                                        <div style="font-weight: 600; color: #27ae60; font-size: 16px;">Atividade em Andamento</div>
-                                        <div id="wizardEtapaAtual" style="font-size: 13px; color: #666; margin-top: 2px;">Etapa: --</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Botões de Ação -->
-                            <div class="row-fluid" style="margin-bottom: 20px;">
-                                <div class="span3">
-                                    <button class="btn btn-block" onclick="WizardObra.abrirModalNovaAtividade()" style="padding: 16px; margin-bottom: 10px;">
-                                        <i class='bx bx-plus' style="font-size: 24px; display: block; margin-bottom: 8px;"></i>
-                                        <strong>Nova Atividade</strong>
-                                    </button>
-                                </div>
-
-                                <div class="span3">
-                                    <button class="btn btn-block btn-info" onclick="WizardObra.abrirModalFoto()" style="padding: 16px; margin-bottom: 10px;">
-                                        <i class='bx bx-camera' style="font-size: 24px; display: block; margin-bottom: 8px;"></i>
-                                        <strong>Adicionar Foto</strong>
-                                    </button>
-                                </div>
-
-                                <div class="span3">
-                                    <button class="btn btn-block btn-warning" onclick="WizardObra.pausarAtividade()" style="padding: 16px; margin-bottom: 10px;">
-                                        <i class='bx bx-pause' style="font-size: 24px; display: block; margin-bottom: 8px;"></i>
-                                        <strong>Pausar</strong>
-                                    </button>
-                                </div>
-
-                                <div class="span3">
-                                    <button class="btn btn-block btn-success" onclick="WizardObra.abrirModalCheckout()" style="padding: 16px; margin-bottom: 10px;">
-                                        <i class='bx bx-log-out-circle' style="font-size: 24px; display: block; margin-bottom: 8px;"></i>
-                                        <strong>Finalizar</strong>
-                                    </button>
-                                </div>
-                            </div>
+                        <div class="wizard-action-btn btn-finalizar" onclick="WizardObra.abrirModalCheckout()">
+                            <i class="bx bx-check-circle"></i>
+                            <strong>Finalizar
+                                <br>Trabalho</strong>
+                        </div>
+                    </div>
 
                             <!-- Histórico de Atividades do Dia -->
                             <div class="widget-box">
@@ -2900,132 +3474,133 @@ document.head.appendChild(style);
     </div>
 </div>
 
+<!-- ============================================
+     MODAIS - DESIGN MODERNO COM FUNDO BRANCO
+     ============================================ -->
+
 <!-- Modal Nova Atividade -->
-<div id="modalNovaAtividade" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; align-items: center; justify-content: center;">
-    <div class="widget-box" style="width: 90%; max-width: 500px; max-height: 90vh; overflow: auto; margin: 0;">
-        <div class="widget-title">
-            <span class="icon"><i class="bx bx-plus"></i></span>
-            <h5>Nova Atividade</h5>
-            <div class="buttons">
-                <button class="btn btn-mini" onclick="WizardObra.fecharModal('modalNovaAtividade')"><i class="bx bx-x"></i></button>
-            </div>
+<div id="modalNovaAtividade" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); z-index: 10000; align-items: center; justify-content: center;">
+    <div style="width: 90%; max-width: 500px; background: white; border-radius: 16px; box-shadow: 0 10px 50px rgba(0,0,0,0.2); overflow: hidden;">
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 25px 20px; color: white; text-align: center; position: relative;">
+            <div style="font-size: 50px; margin-bottom: 10px;"><i class="bx bx-plus-circle"></i></div>
+            <h3 style="margin: 0; font-size: 22px;">Nova Atividade</h3>
+            <p style="margin: 5px 0 0 0; opacity: 0.9; font-size: 14px;">Registre o que você está fazendo</p>
+            <button onclick="WizardObra.fecharModal('modalNovaAtividade')" style="position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.2); border: none; color: white; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; font-size: 20px;"><i class="bx bx-x"></i></button>
         </div>
-        <div class="widget-content">
-            <div class="control-group">
-                <label class="control-label">Tipo de Atividade *</label>
-                <div class="controls">
-                    <select id="modalTipoAtividade" class="span12" style="margin-bottom: 15px;">
-                        <option value="">Selecione...</option>
-                        <?php foreach ($tipos_atividades as $tipo): ?>
-                        <option value="<?= is_object($tipo) ? $tipo->id : ($tipo['id'] ?? '') ?>"><?= htmlspecialchars(is_object($tipo) ? $tipo->nome : ($tipo['nome'] ?? '')) ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
+
+        <div style="padding: 30px;">
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; font-weight: 600; margin-bottom: 10px; color: #333; font-size: 14px;"><i class="bx bx-tag" style="color: #667eea;"></i> Tipo de Atividade *</label>
+                <select id="modalTipoAtividade" class="span12" style="padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
+                    <option value="">Selecione o tipo...</option>
+                    <?php foreach ($tipos_atividades as $tipo): ?>
+                    <option value="<?= is_object($tipo) ? $tipo->id : ($tipo['id'] ?? '') ?>"><?= htmlspecialchars(is_object($tipo) ? $tipo->nome : ($tipo['nome'] ?? '')) ?></option>
+                    <?php endforeach; ?>
+                </select>
             </div>
 
-            <div class="control-group">
-                <label class="control-label">Descrição</label>
-                <div class="controls">
-                    <textarea id="modalDescricaoAtividade" rows="4" class="span12" placeholder="Descreva a atividade realizada..."></textarea>
-                </div>
+            <div style="margin-bottom: 25px;">
+                <label style="display: block; font-weight: 600; margin-bottom: 10px; color: #333; font-size: 14px;"><i class="bx bx-detail" style="color: #667eea;"></i> Descrição do que foi feito</label>
+                <textarea id="modalDescricaoAtividade" rows="4" class="span12 wizard-obs-textarea" placeholder="Descreva detalhadamente a atividade que você realizou..."></textarea>
             </div>
 
-            <div class="form-actions" style="text-align: right; margin-top: 20px; margin-bottom: 0; border-top: none;">
-                <button class="btn" onclick="WizardObra.fecharModal('modalNovaAtividade')">Cancelar</button>
-                <button class="btn btn-primary" onclick="WizardObra.adicionarNovaAtividade()"><i class="bx bx-plus"></i> Adicionar</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal Adicionar Foto -->
-<div id="modalFoto" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; align-items: center; justify-content: center;">
-    <div class="widget-box" style="width: 90%; max-width: 500px; margin: 0;">
-        <div class="widget-title">
-            <span class="icon"><i class="bx bx-camera"></i></span>
-            <h5>Adicionar Foto</h5>
-            <div class="buttons">
-                <button class="btn btn-mini" onclick="WizardObra.fecharModal('modalFoto')"><i class="bx bx-x"></i></button>
-            </div>
-        </div>
-        <div class="widget-content">
-            <div class="control-group">
-                <input type="file" id="modalFotoInput" accept="image/*" capture="environment" class="span12" style="margin-bottom: 15px;">
-            </div>
-
-            <div class="control-group">
-                <label class="control-label">Descrição</label>
-                <div class="controls">
-                    <textarea id="modalDescricaoFoto" rows="3" class="span12" placeholder="Descrição da foto..."></textarea>
-                </div>
-            </div>
-
-            <div class="form-actions" style="text-align: right; margin-top: 20px; margin-bottom: 0; border-top: none;">
-                <button class="btn" onclick="WizardObra.fecharModal('modalFoto')">Cancelar</button>
-                <button class="btn btn-primary" onclick="WizardObra.adicionarFoto()"><i class="bx bx-plus"></i> Adicionar</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal Checkout -->
-<div id="modalCheckout" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; align-items: center; justify-content: center;">
-    <div class="widget-box" style="width: 90%; max-width: 600px; max-height: 90vh; overflow: auto; margin: 0;">
-        <div class="widget-title" style="background: #27ae60; color: white;">
-            <span class="icon"><i class="bx bx-log-out-circle"></i></span>
-            <h5>Finalizar Trabalho</h5>
-            <div class="buttons">
-                <button class="btn btn-mini" onclick="WizardObra.fecharModal('modalCheckout')" style="background: rgba(255,255,255,0.2); border: none; color: white;"><i class="bx bx-x"></i></button>
-            </div>
-        </div>
-        <div class="widget-content">
-            <div class="control-group">
-                <label class="control-label">Trabalho Concluído? *</label>
-                <div class="controls">
-                    <select id="modalConcluido" class="span12" style="margin-bottom: 15px;">
-                        <option value="1">Sim, trabalho concluído</option>
-                        <option value="0">Não, preciso retornar</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="control-group">
-                <label class="control-label">Resumo do Trabalho</label>
-                <div class="controls">
-                    <textarea id="modalResumo" rows="4" class="span12" placeholder="Descreva o que foi feito, pendências..."></textarea>
-                </div>
-            </div>
-
-            <div class="control-group">
-                <label class="control-label">Problemas/Pendências</label>
-                <div class="controls">
-                    <textarea id="modalPendencias" rows="3" class="span12" placeholder="Algum problema encontrado? Material faltando?"></textarea>
-                </div>
-            </div>
-
-            <!-- Resumo do Tempo -->
-            <div class="alert alert-info" style="margin-bottom: 20px;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                    <span>Hora de Início:</span>
-                    <strong id="checkoutHoraInicio">--:--</strong>
-                </div>
-                <div style="display: flex; justify-content: space-between;">
-                    <span>Tempo Decorrido:</span>
-                    <strong id="checkoutTempoDecorrido">--:--</strong>
-                </div>
-            </div>
-
-            <div class="form-actions" style="text-align: right; margin-bottom: 0; border-top: none;">
-                <button class="btn" onclick="WizardObra.fecharModal('modalCheckout')">Cancelar</button>
-                <button class="btn btn-success" onclick="WizardObra.realizarCheckout()">
-                    <i class="bx bx-check-double"></i> FINALIZAR
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button class="btn" onclick="WizardObra.fecharModal('modalNovaAtividade')" style="padding: 12px 25px;">Cancelar</button>
+                <button class="btn btn-primary" onclick="WizardObra.adicionarNovaAtividade()" style="padding: 12px 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
+                    <i class="bx bx-plus"></i> Adicionar Atividade
                 </button>
             </div>
         </div>
     </div>
 </div>
 
-<script>
+<!-- Modal Adicionar Foto -->
+<div id="modalFoto" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); z-index: 10000; align-items: center; justify-content: center;">
+    <div style="width: 90%; max-width: 500px; background: white; border-radius: 16px; box-shadow: 0 10px 50px rgba(0,0,0,0.2); overflow: hidden;">
+        <div style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); padding: 25px 20px; color: white; text-align: center; position: relative;">
+            <div style="font-size: 50px; margin-bottom: 10px;"><i class="bx bx-camera"></i></div>
+            <h3 style="margin: 0; font-size: 22px;">Adicionar Foto</h3>
+            <p style="margin: 5px 0 0 0; opacity: 0.9; font-size: 14px;">Registre evidências visuais do trabalho</p>
+            <button onclick="WizardObra.fecharModal('modalFoto')" style="position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.2); border: none; color: white; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; font-size: 20px;"><i class="bx bx-x"></i></button>
+        </div>
+
+        <div style="padding: 30px;">
+            <div style="margin-bottom: 25px;">
+                <label style="display: block; font-weight: 600; margin-bottom: 10px; color: #333; font-size: 14px;"><i class="bx bx-image" style="color: #11998e;"></i> Selecione a Foto</label>
+                <div style="background: #f8f9fa; border: 2px dashed #ddd; border-radius: 10px; padding: 30px; text-align: center;">
+                    <i class="bx bx-camera" style="font-size: 40px; color: #11998e; margin-bottom: 10px; display: block;"></i>
+                    <input type="file" id="modalFotoInput" accept="image/*" capture="environment" class="span12" style="padding: 10px; background: white; border-radius: 8px;">
+                </div>
+            </div>
+
+            <div style="margin-bottom: 25px;">
+                <label style="display: block; font-weight: 600; margin-bottom: 10px; color: #333; font-size: 14px;"><i class="bx bx-detail" style="color: #11998e;"></i> Descrição da Foto</label>
+                <textarea id="modalDescricaoFoto" rows="3" class="span12 wizard-obs-textarea" placeholder="Descreva o que está na foto..."></textarea>
+            </div>
+
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button class="btn" onclick="WizardObra.fecharModal('modalFoto')" style="padding: 12px 25px;">Cancelar</button>
+                <button class="btn btn-success" onclick="WizardObra.adicionarFoto()" style="padding: 12px 30px; background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); border: none;">
+                    <i class="bx bx-camera"></i> Adicionar Foto
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Checkout -->
+<div id="modalCheckout" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); z-index: 10000; align-items: center; justify-content: center;">
+    <div style="width: 90%; max-width: 550px; background: white; border-radius: 16px; box-shadow: 0 10px 50px rgba(0,0,0,0.2); overflow: hidden;">
+        <div style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); padding: 30px 20px; color: white; text-align: center; position: relative;">
+            <div style="font-size: 55px; margin-bottom: 10px;"><i class="bx bx-check-double"></i></div>
+            <h3 style="margin: 0; font-size: 24px;">Finalizar Trabalho</h3>
+            <p style="margin: 5px 0 0 0; opacity: 0.9; font-size: 14px;">Confirme a conclusão do seu trabalho</p>
+            <button onclick="WizardObra.fecharModal('modalCheckout')" style="position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.2); border: none; color: white; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; font-size: 20px;"><i class="bx bx-x"></i></button>
+        </div>
+
+        <div style="padding: 30px;">
+            <!-- Resumo do Tempo -->
+            <div style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); border: 2px solid #667eea; border-radius: 12px; padding: 20px; margin-bottom: 25px;">
+                <h4 style="margin: 0 0 15px 0; color: #667eea; font-size: 14px;"><i class="bx bx-time"></i> Resumo do Tempo</h4>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                    <span style="color: #666;">Hora de Início:</span>
+                    <strong id="checkoutHoraInicio" style="color: #333;">--:--</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="color: #666;">Tempo Total:</span>
+                    <strong id="checkoutTempoDecorrido" style="color: #667eea; font-size: 18px;">--:--</strong>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; font-weight: 600; margin-bottom: 10px; color: #333; font-size: 14px;"><i class="bx bx-question-mark" style="color: #11998e;"></i> Trabalho Concluído? *</label>
+                <select id="modalConcluido" class="span12" style="padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
+                    <option value="1">✅ Sim, trabalho concluído</option>
+                    <option value="0">🔄 Não, preciso retornar depois</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; font-weight: 600; margin-bottom: 10px; color: #333; font-size: 14px;"><i class="bx bx-edit" style="color: #11998e;"></i> Resumo do Trabalho Realizado</label>
+                <textarea id="modalResumo" rows="4" class="span12 wizard-obs-textarea" placeholder="Descreva tudo o que foi feito neste trabalho, serviços realizados, instalações concluídas, observações importantes..."></textarea>
+            </div>
+
+            <div style="margin-bottom: 25px;">
+                <label style="display: block; font-weight: 600; margin-bottom: 10px; color: #333; font-size: 14px;"><i class="bx bx-error-circle" style="color: #f39c12;"></i> Problemas ou Pendências</label>
+                <textarea id="modalPendencias" rows="3" class="span12 wizard-obs-textarea" placeholder="Algum problema encontrado? Material faltando? Algo que precisa de atenção na próxima visita?"></textarea>
+            </div>
+
+            <!-- Botões de Ação -->
+            <div style="display: flex; gap: 10px; justify-content: flex-end; border-top: 2px solid #eee; padding-top: 20px;">
+                <button class="btn" onclick="WizardObra.fecharModal('modalCheckout')" style="padding: 12px 25px;"><i class="bx bx-x"></i> Cancelar</button>
+                <button class="btn btn-success" onclick="WizardObra.realizarCheckout()" style="padding: 12px 30px; background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); border: none; font-size: 16px;">
+                    <i class="bx bx-check-double"></i> FINALIZAR TRABALHO
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+                <script>
 // Wizard de Atividades Inline - Sistema Completo
 window.WizardObra = {
     obraId: <?= json_encode($obra->id) ?>,
@@ -3101,13 +3676,12 @@ window.WizardObra = {
         this.etapaSelecionadaNome = etapaNome;
         document.getElementById('wizardEtapaSelecionada').value = etapaId;
 
-        // Visual feedback
-        document.querySelectorAll('.wizard-etapa-card').forEach(function(card) {
-            card.style.borderColor = '#e0e0e0';
-            card.style.background = '#f8f9fa';
+        // Visual feedback - remover seleção de todas as cards
+        document.querySelectorAll('.wizard-etapa-card-v2').forEach(function(card) {
+            card.classList.remove('selecionada');
         });
-        elemento.style.borderColor = '#667eea';
-        elemento.style.background = '#f0f3ff';
+        // Adicionar classe de seleção no elemento clicado
+        elemento.classList.add('selecionada');
 
         // Habilitar botão
         var btn = document.getElementById('wizardBtnIniciar');
