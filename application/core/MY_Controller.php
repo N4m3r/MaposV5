@@ -60,15 +60,24 @@ class MY_Controller extends CI_Controller
         }
         // Se for controller Tecnicos mas método protegido, verificar sessão do técnico
         elseif (strtolower($controller) === 'tecnicos') {
-            if ((! session_id()) || (! $this->session->userdata('logged_in') && ! $this->session->userdata('logado'))) {
+            // Verifica sessão de técnico: nova (tec_logado) ou legada (logged_in + tec_id)
+            $sessao_tecnico_valida = $this->session->userdata('tec_id') &&
+                                     ($this->session->userdata('tec_logado') || $this->session->userdata('logged_in'));
+            $sessao_admin_valida = $this->session->userdata('logado');
+            if ((! session_id()) || (! $sessao_tecnico_valida && ! $sessao_admin_valida)) {
                 redirect('tecnicos/login');
             }
         }
         // Para outros controllers, verificar sessão padrão (admin) OU sessão de técnico
-        elseif ((! session_id()) ||
-                (! $this->session->userdata('logado') &&
-                 ! ($this->session->userdata('tec_id') && $this->session->userdata('tec_logado')))) {
-            redirect('login');
+        else {
+            $sessao_admin = $this->session->userdata('logado');
+            // Verifica sessão de técnico: nova (tec_logado) ou legada (logged_in + tec_id)
+            $sessao_tecnico = $this->session->userdata('tec_id') &&
+                              ($this->session->userdata('tec_logado') || $this->session->userdata('logged_in'));
+
+            if ((! session_id()) || (! $sessao_admin && ! $sessao_tecnico)) {
+                redirect('login');
+            }
         }
 
         // Carregar library de permissoes

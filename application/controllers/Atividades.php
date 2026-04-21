@@ -21,7 +21,9 @@ class Atividades extends MY_Controller
 
         // Verifica login (admin ou tecnico)
         $is_admin = $this->session->userdata('logado');
-        $is_tecnico = $this->session->userdata('tec_id') && $this->session->userdata('tec_logado');
+        // Verifica sessão de técnico: nova (tec_logado) ou legada (logged_in + tec_id)
+        $is_tecnico = $this->session->userdata('tec_id') &&
+                      ($this->session->userdata('tec_logado') || $this->session->userdata('logged_in'));
 
         if (!$is_admin && !$is_tecnico) {
             redirect('login');
@@ -119,11 +121,8 @@ class Atividades extends MY_Controller
      */
     public function wizard_obra($obra_id = null, $etapa_id = null)
     {
-        // Detecta se é acesso via portal do técnico
-        $is_portal_tecnico = $this->session->userdata('tec_id') && $this->session->userdata('tec_logado');
-
         // Obtém ID do técnico (admin ou portal)
-        if ($is_portal_tecnico) {
+        if ($this->is_portal_tecnico) {
             $tecnico_id = $this->session->userdata('tec_id');
         } else {
             $tecnico_id = $this->session->userdata('idAdmin');
@@ -138,7 +137,7 @@ class Atividades extends MY_Controller
         // Se tem atividade em andamento, verifica se é da mesma obra
         if ($atividade_andamento && $atividade_andamento->obra_id != $obra_id) {
             $this->session->set_flashdata('error', 'Você já tem uma atividade em andamento. Finalize-a primeiro.');
-            if ($is_portal_tecnico) {
+            if ($this->is_portal_tecnico) {
                 redirect('tecnicos/executar_obra/' . $atividade_andamento->obra_id);
             } else {
                 redirect('obras_tecnico/obra/' . $atividade_andamento->obra_id);
@@ -147,7 +146,7 @@ class Atividades extends MY_Controller
 
         if (!$obra_id) {
             $this->session->set_flashdata('error', 'Selecione uma obra para iniciar.');
-            if ($is_portal_tecnico) {
+            if ($this->is_portal_tecnico) {
                 redirect('tecnicos/minhas_obras');
             } else {
                 redirect('obras_tecnico');
@@ -201,10 +200,10 @@ class Atividades extends MY_Controller
         $this->data['modo'] = 'obra';
 
         // Flag para a view saber se é portal do técnico
-        $this->data['is_portal_tecnico'] = $is_portal_tecnico;
+        $this->data['is_portal_tecnico'] = $this->is_portal_tecnico;
 
         // Usa layout diferente para portal do técnico
-        if ($is_portal_tecnico) {
+        if ($this->is_portal_tecnico) {
             $this->data['menuObras'] = 'active';
             $this->data['pageTitle'] = 'Wizard - ' . $this->data['obra']->nome;
             $this->load->view('tema/topo', $this->data);
@@ -380,9 +379,7 @@ class Atividades extends MY_Controller
             redirect('atividades');
         }
 
-        // Detecta se é acesso via portal do técnico
-        $is_portal_tecnico = $this->session->userdata('tec_id') && $this->session->userdata('tec_logado');
-        $tecnico_id = $is_portal_tecnico
+        $tecnico_id = $this->is_portal_tecnico
             ? $this->session->userdata('tec_id')
             : $this->session->userdata('idAdmin');
 
@@ -419,9 +416,7 @@ class Atividades extends MY_Controller
             redirect('atividades');
         }
 
-        // Detecta se é acesso via portal do técnico
-        $is_portal_tecnico = $this->session->userdata('tec_id') && $this->session->userdata('tec_logado');
-        $tecnico_id = $is_portal_tecnico
+        $tecnico_id = $this->is_portal_tecnico
             ? $this->session->userdata('tec_id')
             : $this->session->userdata('idAdmin');
 
@@ -565,9 +560,7 @@ class Atividades extends MY_Controller
             return;
         }
 
-        // Detecta se é acesso via portal do técnico
-        $is_portal_tecnico = $this->session->userdata('tec_id') && $this->session->userdata('tec_logado');
-        $tecnico_id = $is_portal_tecnico
+        $tecnico_id = $this->is_portal_tecnico
             ? $this->session->userdata('tec_id')
             : $this->session->userdata('idAdmin');
         $obra_id = $this->input->post('obra_id');
@@ -712,9 +705,7 @@ class Atividades extends MY_Controller
             redirect('atividades');
         }
 
-        // Detecta se é acesso via portal do técnico
-        $is_portal_tecnico = $this->session->userdata('tec_id') && $this->session->userdata('tec_logado');
-        $tecnico_id = $is_portal_tecnico
+        $tecnico_id = $this->is_portal_tecnico
             ? $this->session->userdata('tec_id')
             : $this->session->userdata('idAdmin');
         $obra_id = $this->input->post('obra_id');
@@ -898,9 +889,7 @@ class Atividades extends MY_Controller
             redirect('atividades');
         }
 
-        // Detecta se é acesso via portal do técnico
-        $is_portal_tecnico = $this->session->userdata('tec_id') && $this->session->userdata('tec_logado');
-        $tecnico_id = $is_portal_tecnico
+        $tecnico_id = $this->is_portal_tecnico
             ? $this->session->userdata('tec_id')
             : $this->session->userdata('idAdmin');
 
@@ -944,9 +933,7 @@ class Atividades extends MY_Controller
             redirect('atividades');
         }
 
-        // Detecta se é acesso via portal do técnico
-        $is_portal_tecnico = $this->session->userdata('tec_id') && $this->session->userdata('tec_logado');
-        $tecnico_id = $is_portal_tecnico
+        $tecnico_id = $this->is_portal_tecnico
             ? $this->session->userdata('tec_id')
             : $this->session->userdata('idAdmin');
 
