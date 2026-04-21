@@ -654,6 +654,63 @@ class Obras extends MY_Controller
     }
 
     /**
+     * Editar atividade
+     */
+    public function editarAtividade($atividade_id)
+    {
+        if (!$atividade_id || !is_numeric($atividade_id)) {
+            $this->session->set_flashdata('error', 'Atividade não encontrada.');
+            redirect('obras');
+        }
+
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')) {
+            $this->session->set_flashdata('error', 'Sem permissão para editar atividades.');
+            redirect('obras');
+        }
+
+        $this->load->model('usuarios_model');
+
+        $this->data['atividade'] = $this->obra_atividades_model->getById($atividade_id);
+
+        if (!$this->data['atividade']) {
+            $this->session->set_flashdata('error', 'Atividade não encontrada.');
+            redirect('obras');
+        }
+
+        $obra_id = $this->data['atividade']->obra_id;
+
+        // Carregar dados para o formulário
+        $this->data['obra'] = $this->obras_model->getById($obra_id);
+        $this->data['tecnicos'] = $this->usuarios_model->getAll();
+        $this->data['etapas'] = $this->obras_model->getEtapas($obra_id);
+
+        // Processar formulário
+        if ($this->input->post()) {
+            $dados = [
+                'titulo' => $this->input->post('titulo'),
+                'descricao' => $this->input->post('descricao'),
+                'data_atividade' => $this->input->post('data_atividade'),
+                'tipo' => $this->input->post('tipo') ?: 'trabalho',
+                'status' => $this->input->post('status') ?: 'agendada',
+                'tecnico_id' => $this->input->post('tecnico_id') ?: null,
+                'etapa_id' => $this->input->post('etapa_id') ?: null,
+                'percentual_concluido' => $this->input->post('percentual_concluido') ?: 0,
+                'visivel_cliente' => $this->input->post('visivel_cliente') ? 1 : 0,
+            ];
+
+            if ($this->obra_atividades_model->update($atividade_id, $dados)) {
+                $this->session->set_flashdata('success', 'Atividade atualizada com sucesso!');
+                redirect('obras/visualizarAtividade/' . $atividade_id);
+            } else {
+                $this->session->set_flashdata('error', 'Erro ao atualizar atividade.');
+            }
+        }
+
+        $this->data['view'] = 'obras/atividade_edit';
+        return $this->layout();
+    }
+
+    /**
      * Visualizar atividade
      */
     public function visualizarAtividade($atividade_id)
