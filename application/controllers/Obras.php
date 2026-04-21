@@ -670,9 +670,16 @@ class Obras extends MY_Controller
             redirect('obras');
         }
 
+        // Carregar checkins model sob demanda se não estiver carregado
+        if (!isset($this->obra_checkins_model)) {
+            if (file_exists(APPPATH . 'models/obra_checkins_model.php')) {
+                $this->load->model('obra_checkins_model');
+            }
+        }
+
         $this->data['obra'] = $this->obras_model->getById($this->data['atividade']->obra_id);
         $this->data['historico'] = $this->obra_atividades_model->getHistorico($atividade_id);
-        $this->data['checkins'] = $this->obra_checkins_model->getByAtividade($atividade_id);
+        $this->data['checkins'] = isset($this->obra_checkins_model) ? $this->obra_checkins_model->getByAtividade($atividade_id) : [];
         $this->data['view'] = 'obras/atividade_view';
 
         return $this->layout();
