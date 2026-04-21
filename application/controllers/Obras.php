@@ -447,14 +447,15 @@ class Obras extends MY_Controller
             redirect('obras');
         }
 
+        // Query direta igual ao verificarAtividades
+        $this->db->where('obra_id', $obra_id);
+        $query = $this->db->get('obra_atividades');
+        $this->data['atividades'] = $query ? $query->result() : [];
+
         // Log para debug
         log_message('debug', 'Atividades - Obra ID: ' . $obra_id);
-        log_message('debug', 'Atividades - Tabela existe: ' . ($this->db->table_exists('obra_atividades') ? 'Sim' : 'Nao'));
-
-        $this->data['atividades'] = $this->obra_atividades_model->getByObra($obra_id, [], 50);
-
-        // Log do resultado
-        log_message('debug', 'Atividades - Total encontradas: ' . count($this->data['atividades']));
+        log_message('debug', 'Atividades - Query: ' . $this->db->last_query());
+        log_message('debug', 'Atividades - Total: ' . count($this->data['atividades']));
 
         $this->data['tecnicos'] = $this->usuarios_model->getAll();
         $this->data['etapas'] = $this->obras_model->getEtapas($obra_id);
