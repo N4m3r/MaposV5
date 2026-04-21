@@ -595,8 +595,8 @@ class Atividades extends MY_Controller
         $this->data['title'] = 'Histórico de Atividades';
 
         $this->load->view('tema/topo', $this->data);
-        $this->load->view('tema/menu_portal_tecnico', $data);
-        $this->load->view('atividades/historico');
+        $this->load->view('tema/menu_portal_tecnico', $this->data);
+        $this->load->view('atividades/historico', $this->data);
         $this->load->view('tema/rodape');
     }
 
@@ -630,8 +630,8 @@ class Atividades extends MY_Controller
         $this->data['title'] = 'Relatório de Atividades';
 
         $this->load->view('tema/topo', $this->data);
-        $this->load->view('tema/menu_portal_tecnico', $data);
-        $this->load->view('atividades/relatorio');
+        $this->load->view('tema/menu_portal_tecnico', $this->data);
+        $this->load->view('atividades/relatorio', $this->data);
         $this->load->view('tema/rodape');
     }
 

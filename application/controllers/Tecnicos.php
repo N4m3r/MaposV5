@@ -327,7 +327,7 @@ class Tecnicos extends MY_Controller
 
                 // Agrupar atividades por etapa_id para o novo workflow
                 foreach ($minhas_atividades as $atv) {
-                    $etapa_id = $atv->etapa_id ?? 'sem_etapa';
+                    $etapa_id = isset($atv->etapa_id) && $atv->etapa_id ? $atv->etapa_id : 'sem_etapa';
                     if (!isset($atividades_por_etapa[$etapa_id])) {
                         $atividades_por_etapa[$etapa_id] = [];
                     }
