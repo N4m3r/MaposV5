@@ -698,9 +698,16 @@ if ($etapa_id && !empty($etapas)) {
 </div>
 
 <script>
+console.log('Wizard JS carregando...');
 // Dados das etapas - usando JSON_HEX_TAG para evitar que </script> nos dados quebre o código
-const etapasDados = <?= json_encode($etapas ?? [], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>;
-let etapaSelecionadaId = <?= $etapa_id ?: 'null' ?>;
+try {
+    const etapasDados = <?= json_encode($etapas ?? [], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>;
+    console.log('Etapas carregadas:', etapasDados ? etapasDados.length : 0);
+} catch (e) {
+    console.error('Erro ao carregar etapas:', e);
+    var etapasDados = [];
+}
+let etapaSelecionadaId = <?= $etapa_id ? json_encode($etapa_id) : 'null' ?>;
 
 // Helper para obter cookie CSRF
 function getCookie(name) {
@@ -709,8 +716,10 @@ function getCookie(name) {
 }
 
 // CSRF Token para requisições fetch
-const csrfTokenName = document.querySelector('meta[name="csrf-token-name"]')?.content || '<?= config_item("csrf_token_name") ?>';
-const csrfCookieName = document.querySelector('meta[name="csrf-cookie-name"]')?.content || '<?= config_item("csrf_cookie_name") ?>';
+const csrfMetaName = document.querySelector('meta[name="csrf-token-name"]');
+const csrfMetaCookie = document.querySelector('meta[name="csrf-cookie-name"]');
+const csrfTokenName = (csrfMetaName && csrfMetaName.content) ? csrfMetaName.content : '<?= config_item("csrf_token_name") ?>';
+const csrfCookieName = (csrfMetaCookie && csrfMetaCookie.content) ? csrfMetaCookie.content : '<?= config_item("csrf_cookie_name") ?>';
 const csrfToken = getCookie(csrfCookieName);
 
 // Função helper para adicionar CSRF ao FormData

@@ -121,12 +121,22 @@ class Atividades extends MY_Controller
      */
     public function wizard_obra($obra_id = null, $etapa_id = null)
     {
-        // Obtém ID do técnico (admin ou portal)
+        // Se for acesso via portal do técnico, redireciona para o controller Tecnicos
+        // que tem o layout moderno e integrado com o portal
         if ($this->is_portal_tecnico) {
-            $tecnico_id = $this->session->userdata('tec_id');
-        } else {
-            $tecnico_id = $this->session->userdata('idAdmin');
+            $obra_atividade_id = $this->input->get('obra_atividade_id');
+            $url = 'tecnicos/wizard_obra/' . $obra_id;
+            if ($etapa_id) {
+                $url .= '/' . $etapa_id;
+            }
+            if ($obra_atividade_id) {
+                $url .= '?obra_atividade_id=' . $obra_atividade_id;
+            }
+            redirect($url);
         }
+
+        // Obtém ID do técnico (admin ou portal)
+        $tecnico_id = $this->session->userdata('idAdmin');
 
         // Captura o ID da atividade de obra vinculada (se vier via GET)
         $obra_atividade_id = $this->input->get('obra_atividade_id');

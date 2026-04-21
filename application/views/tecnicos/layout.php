@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token-name" content="<?= config_item('csrf_token_name') ?>">
+    <meta name="csrf-cookie-name" content="<?= config_item('csrf_cookie_name') ?>">
     <title><?= $title ?? 'Portal do Técnico - Map-OS' ?></title>
     <link rel="shortcut icon" href="<?= base_url() ?>assets/img/favicon.png">
     <link rel="stylesheet" href="<?= base_url() ?>assets/css/bootstrap.min.css">
