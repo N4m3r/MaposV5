@@ -204,7 +204,7 @@
                                 <ul>
                                     <?php foreach ($atividades_por_etapa[$etapa->id] as $ativ): ?>
                                         <li>
-                                            <?= htmlspecialchars($ativ->nome) ?>
+                                            <?= htmlspecialchars($ativ->titulo ?? $ativ->descricao ?? 'Atividade #' . $ativ->id) ?>
                                             <span class="label <?= ($ativ->status ?? '') === 'concluida' ? 'label-success' : 'label-warning' ?>">
                                                 <?= ($ativ->status ?? '') === 'concluida' ? 'Concluída' : 'Pendente' ?>
                                             </span>
