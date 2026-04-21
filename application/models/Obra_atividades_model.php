@@ -42,36 +42,39 @@ class Obra_atividades_model extends CI_Model
         }
 
         try {
-            // Verificar se tabelas de join existem
-            $join_usuarios = $this->db->table_exists('usuarios');
-            $join_etapas = $this->db->table_exists('obra_etapas');
+            // Query simples primeiro
+            $this->db->where('id', $id);
+            $query = $this->db->get('obra_atividades');
 
-            // Selecionar todos os campos da atividade
-            $this->db->select('obra_atividades.*');
-
-            if ($join_usuarios) {
-                $this->db->select('u.nome as tecnico_nome');
-            }
-            if ($join_etapas) {
-                $this->db->select('oe.nome as etapa_nome, oe.numero_etapa');
+            if (!$query || $query->num_rows() == 0) {
+                return null;
             }
 
-            $this->db->from('obra_atividades');
+            $atividade = $query->row();
 
-            if ($join_usuarios) {
-                $this->db->join('usuarios u', 'u.idUsuarios = obra_atividades.tecnico_id', 'left');
+            // Buscar nome do técnico separadamente se existir
+            if (!empty($atividade->tecnico_id) && $this->db->table_exists('usuarios')) {
+                $this->db->select('nome');
+                $this->db->where('idUsuarios', $atividade->tecnico_id);
+                $tecnico_query = $this->db->get('usuarios');
+                if ($tecnico_query && $tecnico_query->num_rows() > 0) {
+                    $atividade->tecnico_nome = $tecnico_query->row()->nome;
+                }
             }
-            if ($join_etapas) {
-                $this->db->join('obra_etapas oe', 'oe.id = obra_atividades.etapa_id', 'left');
+
+            // Buscar nome da etapa separadamente se existir
+            if (!empty($atividade->etapa_id) && $this->db->table_exists('obra_etapas')) {
+                $this->db->select('nome, numero_etapa');
+                $this->db->where('id', $atividade->etapa_id);
+                $etapa_query = $this->db->get('obra_etapas');
+                if ($etapa_query && $etapa_query->num_rows() > 0) {
+                    $etapa = $etapa_query->row();
+                    $atividade->etapa_nome = $etapa->nome;
+                    $atividade->numero_etapa = $etapa->numero_etapa;
+                }
             }
 
-            $this->db->where('obra_atividades.id', $id);
-
-            $query = $this->db->get();
-
-            log_message('debug', 'getById atividade ID ' . $id . ': ' . $this->db->last_query());
-
-            return $query ? $query->row() : null;
+            return $atividade;
         } catch (Exception $e) {
             log_message('error', 'Erro ao buscar atividade: ' . $e->getMessage());
             return null;
