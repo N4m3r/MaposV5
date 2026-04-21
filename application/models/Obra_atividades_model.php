@@ -281,9 +281,17 @@ class Obra_atividades_model extends CI_Model
 
             foreach ($campos_opcionais as $campo) {
                 if (in_array($campo, $colunas_existentes)) {
-                    if (isset($dados[$campo]) && $dados[$campo] !== '') {
-                        $data[$campo] = $dados[$campo];
-                        log_message('debug', 'add atividade - campo ' . $campo . ' = ' . $dados[$campo]);
+                    // Usar array_key_exists para permitir valores NULL (diferente do isset que retorna false para null)
+                    if (array_key_exists($campo, $dados)) {
+                        // Se o valor não é null e não é string vazia, adicionar
+                        if ($dados[$campo] !== null && $dados[$campo] !== '') {
+                            $data[$campo] = $dados[$campo];
+                            log_message('debug', 'add atividade - campo ' . $campo . ' = ' . $dados[$campo]);
+                        } elseif ($dados[$campo] === null) {
+                            // Valor explicitamente null - salvar como null no banco
+                            $data[$campo] = null;
+                            log_message('debug', 'add atividade - campo ' . $campo . ' = NULL');
+                        }
                     } elseif (in_array($campo, ['status', 'tipo'])) {
                         // Valores padrão para campos ENUM
                         $data[$campo] = ($campo == 'status') ? 'agendada' : 'trabalho';
@@ -304,6 +312,7 @@ class Obra_atividades_model extends CI_Model
 
             // Log para debug
             log_message('debug', 'Inserindo atividade com dados: ' . json_encode($data));
+            log_message('debug', 'Dados array completo: ' . print_r($data, true));
 
             $this->db->insert('obra_atividades', $data);
             $id = $this->db->insert_id();

@@ -472,16 +472,21 @@ class Obras extends MY_Controller
             return;
         }
 
+        // Debug: verificar POST recebido
+        log_message('debug', 'adicionarAtividade - POST etapa_id: ' . var_export($this->input->post('etapa_id'), true));
+
         $dados = [
             'obra_id' => $obra_id,
-            'etapa_id' => $this->input->post('etapa_id') ?: null,
-            'tecnico_id' => $this->input->post('tecnico_id') ?: null,
+            'etapa_id' => $this->input->post('etapa_id') ? (int)$this->input->post('etapa_id') : null,
+            'tecnico_id' => $this->input->post('tecnico_id') ? (int)$this->input->post('tecnico_id') : null,
             'data_atividade' => $this->input->post('data_atividade'),
             'titulo' => $this->input->post('titulo'),
             'descricao' => $this->input->post('descricao'),
             'tipo' => $this->input->post('tipo') ?: 'trabalho',
             'visivel_cliente' => $this->input->post('visivel_cliente') ? 1 : 0,
         ];
+
+        log_message('debug', 'adicionarAtividade - Dados preparados: ' . print_r($dados, true));
 
         // Validar dados obrigatorios
         if (empty($dados['titulo'])) {
