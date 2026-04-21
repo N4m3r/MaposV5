@@ -247,6 +247,16 @@
     </div>
     <?php endif; ?>
 
+    <!-- DEBUG POST -->
+    <?php if ($_POST): ?>
+    <div style="background: #d4edda; border: 2px solid #28a745; color: #155724; padding: 15px; margin-bottom: 20px; border-radius: 8px; font-family: monospace; font-size: 12px;">
+        <div style="font-weight: bold; margin-bottom: 10px; font-size: 14px;">
+            <i class="icon-ok"></i> DEBUG - Dados Recebidos no POST
+        </div>
+        <pre style="margin: 0; background: #fff; padding: 10px; border-radius: 4px; overflow-x: auto;"><?php print_r($_POST); ?></pre>
+    </div>
+    <?php endif; ?>
+
     <!-- DEBUG PANEL -->
     <div style="background: #fff3cd; border: 2px solid #ffc107; color: #856404; padding: 15px; margin-bottom: 20px; border-radius: 8px; font-family: monospace; font-size: 12px;">
         <div style="font-weight: bold; margin-bottom: 10px; font-size: 14px;">
