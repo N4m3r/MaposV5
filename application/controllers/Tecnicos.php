@@ -165,6 +165,7 @@ class Tecnicos extends MY_Controller
             'nome_admin' => $tecnico->nome, // Para compatibilidade com o tema
             'url_image_user_admin' => $tecnico->foto_tecnico, // Para compatibilidade
             'logged_in' => true,
+            'tec_logado' => true, // Flag específica para sessão de técnico
         ];
         $this->session->set_userdata($sessao);
 
