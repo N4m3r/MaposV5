@@ -292,7 +292,7 @@
                 <h1><i class="icon-tasks"></i> <?php echo htmlspecialchars($atividade->titulo ?? 'Atividade #' . $atividade->id); ?></h1>
                 <div class="atividade-subtitle">
                     <i class="icon-user"></i> Técnico: <?php echo $atividade->tecnico_nome ?? 'Não atribuído'; ?> |
-                    <i class="icon-calendar"></i> Data: <?php echo $atividade->data_atividade ? date('d/m/Y', strtotime($atividade->data_atividade)) : 'N/A'; ?>
+                    <i class="icon-calendar"></i> Data: <?php echo ($atividade->data_atividade ?? null) ? date('d/m/Y', strtotime($atividade->data_atividade)) : 'N/A'; ?>
                 </div>
             </div>
             <div class="atividade-status-section">
@@ -306,7 +306,7 @@
                         'concluida' => 'Concluída',
                         'cancelada' => 'Cancelada'
                     ];
-                    echo $statusLabels[$atividade->status] ?? $atividade->status;
+                    echo $statusLabels[$atividade->status ?? 'agendada'] ?? ($atividade->status ?? 'Agendada');
                     ?>
                 </span>
             </div>
@@ -339,17 +339,17 @@
                                 'manutencao' => 'Manutenção',
                                 'outro' => 'Outro'
                             ];
-                            echo $tipoLabels[$atividade->tipo] ?? $atividade->tipo;
+                            echo $tipoLabels[$atividade->tipo ?? 'trabalho'] ?? ucfirst($atividade->tipo ?? 'trabalho');
                             ?>
                         </div>
                     </div>
                     <div class="info-item">
                         <div class="info-label">Hora Início</div>
-                        <div class="info-value"><?php echo $atividade->hora_inicio ? substr($atividade->hora_inicio, 0, 5) : '--:--'; ?></div>
+                        <div class="info-value"><?php echo ($atividade->hora_inicio ?? null) ? substr($atividade->hora_inicio, 0, 5) : '--:--'; ?></div>
                     </div>
                     <div class="info-item">
                         <div class="info-label">Hora Fim</div>
-                        <div class="info-value"><?php echo $atividade->hora_fim ? substr($atividade->hora_fim, 0, 5) : '--:--'; ?></div>
+                        <div class="info-value"><?php echo ($atividade->hora_fim ?? null) ? substr($atividade->hora_fim, 0, 5) : '--:--'; ?></div>
                     </div>
                     <div class="info-item">
                         <div class="info-label">Horas Trabalhadas</div>
@@ -358,12 +358,12 @@
                     <div class="info-item">
                         <div class="info-label">Visível ao Cliente</div>
                         <div class="info-value">
-                            <?php echo $atividade->visivel_cliente ? '<span style="color: #27ae60;"><i class="icon-eye-open"></i> Sim</span>' : '<span style="color: #e74c3c;"><i class="icon-eye-close"></i> Não</span>'; ?>
+                            <?php echo ($atividade->visivel_cliente ?? 0) ? '<span style="color: #27ae60;"><i class="icon-eye-open"></i> Sim</span>' : '<span style="color: #e74c3c;"><i class="icon-eye-close"></i> Não</span>'; ?>
                         </div>
                     </div>
                 </div>
 
-                <?php if ($atividade->descricao): ?>
+                <?php if ($atividade->descricao ?? null): ?>
                 <div style="margin-top: 20px;">
                     <div class="info-label">Descrição</div>
                     <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-top: 8px; line-height: 1.6;">
