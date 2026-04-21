@@ -240,7 +240,7 @@
             <tbody>
                 <?php foreach (array_slice($minhas_atividades, 0, 5) as $ativ): ?>
                     <tr>
-                        <td><?= date('d/m/Y', strtotime($ativ->data)) ?></td>
+                        <td><?= date('d/m/Y', strtotime($ativ->data_atividade ?? $ativ->created_at ?? 'now')) ?></td>
                         <td><?= htmlspecialchars($ativ->etapa_nome ?? 'Geral') ?></td>
                         <td><?= date('H:i', strtotime($ativ->hora_inicio)) ?> - <?= $ativ->hora_fim ? date('H:i', strtotime($ativ->hora_fim)) : '--:--' ?></td>
                         <td>
