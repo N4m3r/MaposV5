@@ -717,12 +717,26 @@
         </select>
     </div>
 
+    <!-- DEBUG GRID -->
+    <div style="background: #2c3e50; color: #fff; padding: 10px; margin-bottom: 10px; border-radius: 4px;">
+        <strong>DEBUG GRID:</strong> atividades existe: <?php echo isset($atividades) ? 'SIM' : 'NÃO'; ?> |
+        is_array: <?php echo (isset($atividades) && is_array($atividades)) ? 'SIM' : 'NÃO'; ?> |
+        count: <?php echo isset($atividades) ? count($atividades) : 0; ?>
+    </div>
+
     <!-- Grid de Atividades -->
     <?php if (isset($atividades) && !empty($atividades) && is_array($atividades)): ?>
     <div class="atividades-grid" id="atividadesGrid">
-        <?php foreach ($atividades as $atividade):
-            if (!is_object($atividade)) continue;
+        <?php
+        $count = 0;
+        foreach ($atividades as $atividade):
+            $count++;
+            if (!is_object($atividade)) {
+                echo '<div style="background: red; color: white; padding: 5px;">Atividade ' . $count . ' não é objeto!</div>';
+                continue;
+            }
         ?>
+        <!-- DEBUG: Processando atividade <?php echo $count; ?>, ID: <?php echo $atividade->id; ?> -->
         <?php
         $status = $atividade->status ?? 'agendada';
         $tipo = $atividade->tipo ?? 'trabalho';
@@ -816,6 +830,7 @@
             </div>
         </div>
         <?php endforeach; ?>
+        <!-- DEBUG: Loop finalizado. Total: <?php echo $count; ?> atividades -->
     </div>
     <?php else: ?>
     <div class="atividades-empty">
