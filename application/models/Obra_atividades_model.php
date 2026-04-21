@@ -52,6 +52,8 @@ class Obra_atividades_model extends CI_Model
 
             $atividade = $query->row();
 
+            log_message('debug', 'getById - Atividade ID ' . $id . ' encontrada. etapa_id=' . ($atividade->etapa_id ?? 'NULL') . ', tecnico_id=' . ($atividade->tecnico_id ?? 'NULL'));
+
             // Buscar nome do técnico separadamente se existir
             if (!empty($atividade->tecnico_id) && $this->db->table_exists('usuarios')) {
                 $this->db->select('nome');
@@ -64,6 +66,7 @@ class Obra_atividades_model extends CI_Model
 
             // Buscar nome da etapa separadamente se existir
             if (!empty($atividade->etapa_id) && $this->db->table_exists('obra_etapas')) {
+                log_message('debug', 'getById - Buscando etapa ID: ' . $atividade->etapa_id);
                 $this->db->select('nome, numero_etapa');
                 $this->db->where('id', $atividade->etapa_id);
                 $etapa_query = $this->db->get('obra_etapas');
@@ -71,7 +74,12 @@ class Obra_atividades_model extends CI_Model
                     $etapa = $etapa_query->row();
                     $atividade->etapa_nome = $etapa->nome;
                     $atividade->numero_etapa = $etapa->numero_etapa;
+                    log_message('debug', 'getById - Etapa encontrada: ' . $etapa->nome);
+                } else {
+                    log_message('debug', 'getById - Etapa não encontrada ou query falhou');
                 }
+            } else {
+                log_message('debug', 'getById - Sem etapa: etapa_id=' . ($atividade->etapa_id ?? 'NULL') . ', tabela existe=' . ($this->db->table_exists('obra_etapas') ? 'SIM' : 'NAO'));
             }
 
             return $atividade;
