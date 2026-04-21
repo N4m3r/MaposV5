@@ -34,16 +34,6 @@
                   }
               }
 
-              // DEBUG: Mostrar dados disponíveis se for página de atividades
-              if (strpos($view, 'atividades') !== false) {
-                  echo '<div style="background: #2c3e50; color: #fff; padding: 10px; margin-bottom: 10px; font-size: 12px;">';
-                  echo '<strong>DEBUG conteudo.php:</strong> ';
-                  echo 'view=' . $view . ' | ';
-                  echo 'obra existe: ' . (isset($view_data['obra']) ? 'SIM' : 'NÃO') . ' | ';
-                  echo 'atividades existe: ' . (isset($view_data['atividades']) ? 'SIM' : 'NÃO') . ' (' . (isset($view_data['atividades']) ? count($view_data['atividades']) : 0) . ')';
-                  echo '</div>';
-              }
-
               echo $this->load->view($view, $view_data, true);
           }
           ?>

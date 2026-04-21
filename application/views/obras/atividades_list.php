@@ -636,37 +636,6 @@
         </div>
     </div>
 
-    <!-- DEBUG PANEL -->
-    <div style="background: #2c3e50; color: #fff; padding: 15px; margin-bottom: 20px; border-radius: 8px; font-family: monospace; font-size: 12px;">
-        <div style="font-weight: bold; color: #e74c3c; margin-bottom: 10px; font-size: 14px;">
-            <i class="icon-bug"></i> DEBUG - Dados da View
-        </div>
-        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
-            <div><strong>Obra ID:</strong> <?php echo isset($obra) ? $obra->id : 'NÃO DEFINIDO'; ?></div>
-            <div><strong>Obra Nome:</strong> <?php echo isset($obra) ? $obra->nome : 'NÃO DEFINIDO'; ?></div>
-            <div><strong>Total Atividades:</strong> <?php echo isset($atividades) ? count($atividades) : 'NÃO DEFINIDO'; ?></div>
-            <div><strong>Total Técnicos:</strong> <?php echo isset($tecnicos) ? count($tecnicos) : 'NÃO DEFINIDO'; ?></div>
-            <div><strong>Total Etapas:</strong> <?php echo isset($etapas) ? count($etapas) : 'NÃO DEFINIDO'; ?></div>
-            <div><strong>Variável atividades existe:</strong> <?php echo isset($atividades) ? 'SIM' : 'NÃO'; ?></div>
-        </div>
-        <?php if (isset($atividades) && !empty($atividades)): ?>
-        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #34495e;">
-            <strong>Primeira atividade:</strong>
-            <pre style="margin: 5px 0; background: #1a252f; padding: 10px; border-radius: 4px; overflow-x: auto; font-size: 11px; max-height: 200px;"><?php print_r($atividades[0]); ?></pre>
-        </div>
-        <?php elseif (isset($atividades) && empty($atividades)): ?>
-        <div style="margin-top: 10px; color: #f39c12;">
-            <strong>⚠️ Array de atividades está VAZIO</strong><br>
-            <a href="<?php echo site_url('obras/verificarAtividades/' . (isset($obra) ? $obra->id : 0)); ?>" style="color: #3498db;">Verificar no Banco →</a>
-        </div>
-        <?php else: ?>
-        <div style="margin-top: 10px; color: #e74c3c;">
-            <strong>❌ Variável $atividades NÃO EXISTE</strong>
-        </div>
-        <?php endif; ?>
-    </div>
-
-    <!-- Info Panel -->
     <div style="background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; margin-bottom: 20px; font-size: 13px;">
         <strong><i class="icon-info-sign"></i> Informações:</strong>
         Obra ID: <code><?php echo isset($obra) ? $obra->id : 'N/A'; ?></code> |
@@ -725,13 +694,6 @@
         </select>
     </div>
 
-    <!-- DEBUG GRID -->
-    <div style="background: #2c3e50; color: #fff; padding: 10px; margin-bottom: 10px; border-radius: 4px;">
-        <strong>DEBUG GRID:</strong> atividades existe: <?php echo isset($atividades) ? 'SIM' : 'NÃO'; ?> |
-        is_array: <?php echo (isset($atividades) && is_array($atividades)) ? 'SIM' : 'NÃO'; ?> |
-        count: <?php echo isset($atividades) ? count($atividades) : 0; ?>
-    </div>
-
     <!-- Grid de Atividades -->
     <?php if (isset($atividades) && !empty($atividades) && is_array($atividades)): ?>
     <div class="atividades-grid" id="atividadesGrid">
@@ -744,7 +706,6 @@
                 continue;
             }
         ?>
-        <!-- DEBUG: Processando atividade <?php echo $count; ?>, ID: <?php echo $atividade->id; ?> -->
         <?php
         $status = $atividade->status ?? 'agendada';
         $tipo = $atividade->tipo ?? 'trabalho';
@@ -841,7 +802,6 @@
             </div>
         </div>
         <?php endforeach; ?>
-        <!-- DEBUG: Loop finalizado. Total: <?php echo $count; ?> atividades -->
     </div>
     <?php else: ?>
     <div class="atividades-empty">
