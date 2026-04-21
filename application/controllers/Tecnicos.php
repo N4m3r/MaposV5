@@ -348,6 +348,10 @@ class Tecnicos extends MY_Controller
             $this->data['hora_inicio'] = $wizard_em_andamento->hora_inicio;
         }
 
+        // Carregar tipos de atividades para o wizard inline
+        $this->load->model('Atividades_tipos_model', 'atividades_tipos');
+        $this->data['tipos_atividades'] = $this->atividades_tipos->listarPorCategoria();
+
         $this->data['obra'] = $obra;
         $this->data['etapas'] = $etapas;
         $this->data['minhas_os'] = $minhas_os;

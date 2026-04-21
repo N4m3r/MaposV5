@@ -1397,13 +1397,16 @@
             </div>
         </div>
 
-        <a href="<?php echo site_url('tecnicos/wizard_obra/' . $obra->id . '/' . $wizard_em_andamento->etapa_id); ?>"
-           style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;"
-           onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(17,153,142,0.3)';"
-           onmouseout="this.style.transform=''; this.style.boxShadow='';">
+        <button type="button" onclick="WizardObra.continuarWizard()"
+                style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; padding: 12px 24px; border-radius: 8px; border: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; cursor: pointer;"
+                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(17,153,142,0.3)';"
+                onmouseout="this.style.transform=''; this.style.boxShadow='';">
             <i class='bx bx-refresh'></i> CONTINUAR NO WIZARD
-        </a>
+        </button>
     </div>
+    <!-- Hidden input to store hora_inicio for JavaScript access -->
+    <input type="hidden" id="wizardHoraInicioStored" value="<?php echo date('Y-m-d H:i:s', strtotime($wizard_em_andamento->hora_inicio)); ?>">
+    <input type="hidden" id="wizardEtapaAtualStored" value="<?php echo htmlspecialchars($wizard_em_andamento->etapa_nome ?? 'Atividade geral'); ?>">
 </div>
 
 <script>
@@ -1573,17 +1576,17 @@
             </p>
 
             <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
-                <a href="<?php echo site_url('tecnicos/wizard_obra/' . $obra->id); ?>"
-                   style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;"
-                   onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(102,126,234,0.3)';"
-                   onmouseout="this.style.transform=''; this.style.boxShadow='';">
+                <button type="button" onclick="WizardObra.iniciarWizard()"
+                        style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 14px 28px; border-radius: 8px; border: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; cursor: pointer;"
+                        onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(102,126,234,0.3)';"
+                        onmouseout="this.style.transform=''; this.style.boxShadow='';">
                     <i class='bx bx-play-circle'></i> INICIAR NO WIZARD DE ATENDIMENTO
-                </a>
+                </button>
             </div>
 
             <div style="margin-top: 16px; padding: 12px; background: #f8f9fa; border-radius: 8px; font-size: 12px; color: #888;">
                 <i class='bx bx-info-circle'></i>
-                O wizard inclui: Check-in com foto → Registro de atividades → Check-out com relatório
+                O wizard inclui: Check-in com foto → Registro de atividades → Check-out com relatório (tudo nesta página!)
             </div>
 
             <div style="margin-top: 12px;">
@@ -2717,8 +2720,592 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-// Inicializar quando carregar
-document.addEventListener('DOMContentLoaded', function() {
-    wizard.init();
-});
+</script>
+
+<!-- ============================================
+     WIZARD DE ATIVIDADES INLINE - MODAL
+     ============================================ -->
+<div id="wizardObraModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 9999; overflow-y: auto;">
+    <div style="background: #f5f7fa; min-height: 100%; padding: 20px;">
+        <!-- Header do Wizard -->
+        <div style="max-width: 900px; margin: 0 auto; background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); overflow: hidden;">
+            <!-- Header -->
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px 24px; color: white; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h3 style="margin: 0; font-size: 20px;"><i class='bx bx-timer'></i> Wizard de Atendimento</h3>
+                    <p style="margin: 4px 0 0 0; opacity: 0.9; font-size: 14px;">Obra: <?= htmlspecialchars($obra->nome) ?></p>
+                </div>
+                <button onclick="WizardObra.fechar()" style="background: rgba(255,255,255,0.2); border: none; color: white; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 20px;"><i class='bx bx-x'></i></button>
+            </div>
+
+            <!-- Conteudo do Wizard -->
+            <div id="wizardContent" style="padding: 24px;">
+
+                <!-- STEP 1: CHECK-IN -->
+                <div id="wizardStepCheckin">
+                    <div style="text-align: center; margin-bottom: 24px;">
+                        <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+                            <i class='bx bx-camera' style="font-size: 40px; color: white;"></i>
+                        </div>
+                        <h4 style="margin: 0 0 8px 0; color: #333;">Check-in de Início</h4>
+                        <p style="margin: 0; color: #666; font-size: 14px;">Selecione a etapa e tire uma foto do local</p>
+                    </div>
+
+                    <!-- Seleção de Etapa -->
+                    <div style="margin-bottom: 24px;">
+                        <label style="display: block; font-weight: 600; margin-bottom: 12px; color: #333;">1. Selecione a Etapa *</label>
+                        <div id="wizardEtapasGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px;">
+                            <?php foreach ($etapas as $etapa): ?>
+                            <div class="wizard-etapa-card" data-etapa-id="<?= $etapa->id ?>" onclick="WizardObra.selecionarEtapa(<?= $etapa->id ?>, '<?= htmlspecialchars($etapa->nome) ?>', this)"
+                                 style="background: #f8f9fa; border: 2px solid #e0e0e0; border-radius: 10px; padding: 16px; cursor: pointer; transition: all 0.2s;">
+                                <div style="font-weight: 600; color: #333; margin-bottom: 4px;"><?= htmlspecialchars($etapa->nome) ?></div>
+                                <div style="font-size: 12px; color: #666;"><?= isset($etapa->percentual_concluido) ? $etapa->percentual_concluido : 0 ?>% concluído</div>
+                            </div>
+                            <?php endforeach; ?>
+                        </div>
+                        <input type="hidden" id="wizardEtapaSelecionada" value="">
+                    </div>
+
+                    <!-- Upload de Foto -->
+                    <div style="margin-bottom: 24px;">
+                        <label style="display: block; font-weight: 600; margin-bottom: 12px; color: #333;">2. Foto do Local (opcional)</label>
+                        <div id="wizardUploadArea" onclick="document.getElementById('wizardFotoInput').click()"
+                             style="border: 2px dashed #ddd; border-radius: 12px; padding: 40px; text-align: center; cursor: pointer; transition: all 0.3s;">
+                            <i class='bx bx-camera' style="font-size: 48px; color: #667eea; margin-bottom: 12px; display: block;"></i>
+                            <p style="margin: 0 0 8px 0; color: #666;">Clique para adicionar foto</p>
+                            <p style="margin: 0; font-size: 12px; color: #999;">ou arraste e solte aqui</p>
+                            <input type="file" id="wizardFotoInput" accept="image/*" capture="environment" style="display: none;" onchange="WizardObra.previewFoto(this)">
+                        </div>
+                        <img id="wizardFotoPreview" style="max-width: 100%; margin-top: 16px; border-radius: 8px; display: none;">
+                    </div>
+
+                    <!-- Observações -->
+                    <div style="margin-bottom: 24px;">
+                        <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333;">Observações (opcional)</label>
+                        <textarea id="wizardObservacoes" rows="3" placeholder="Condições do local, trabalho a ser realizado..."
+                                  style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-family: inherit; font-size: 14px; resize: vertical; box-sizing: border-box;"></textarea>
+                    </div>
+
+                    <!-- Botão Iniciar -->
+                    <button id="wizardBtnIniciar" onclick="WizardObra.realizarCheckin()" disabled
+                            style="width: 100%; background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; padding: 16px; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; opacity: 0.5; transition: all 0.2s;">
+                        <i class='bx bx-play'></i> INICIAR TRABALHO
+                    </button>
+                </div>
+
+                <!-- STEP 2: EXECUÇÃO EM ANDAMENTO -->
+                <div id="wizardStepExecucao" style="display: none;">
+
+                    <!-- Timer -->
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 16px; padding: 32px; text-align: center; color: white; margin-bottom: 24px;">
+                        <div style="font-size: 12px; text-transform: uppercase; opacity: 0.9; margin-bottom: 8px;">Tempo de Execução</div>
+                        <div id="wizardTimer" style="font-size: 56px; font-weight: bold; font-family: 'Courier New', monospace; margin: 16px 0;">00:00:00</div>
+                        <div style="display: flex; justify-content: center; gap: 40px; margin-top: 20px;">
+                            <div>
+                                <div id="wizardHoraInicio" style="font-size: 20px; font-weight: 600;">--:--</div>
+                                <div style="font-size: 11px; opacity: 0.8;">Início</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 20px; font-weight: 600;">--:--</div>
+                                <div style="font-size: 11px; opacity: 0.8;">Término</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Info da Atividade -->
+                    <div id="wizardInfoAtividade" style="background: #e8f5e9; border: 2px solid #11998e; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+                        <div style="display: flex; align-items: center; gap: 16px;">
+                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <i class='bx bx-wrench' style="font-size: 24px; color: white;"></i>
+                            </div>
+                            <div>
+                                <div style="font-weight: 600; color: #11998e; font-size: 16px;">Atividade em Andamento</div>
+                                <div id="wizardEtapaAtual" style="font-size: 13px; color: #666; margin-top: 2px;">Etapa: --</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botões de Ação -->
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 24px;">
+                        <button onclick="WizardObra.abrirModalNovaAtividade()" style="background: #f8f9fa; border: 2px solid #e0e0e0; padding: 16px; border-radius: 10px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                            <i class='bx bx-plus' style="font-size: 24px; color: #667eea;"></i>
+                            <span style="font-weight: 600; color: #333;">Nova Atividade</span>
+                        </button>
+
+                        <button onclick="WizardObra.abrirModalFoto()" style="background: #f8f9fa; border: 2px solid #e0e0e0; padding: 16px; border-radius: 10px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                            <i class='bx bx-camera' style="font-size: 24px; color: #667eea;"></i>
+                            <span style="font-weight: 600; color: #333;">Adicionar Foto</span>
+                        </button>
+
+                        <button onclick="WizardObra.pausarAtividade()" style="background: #fff3cd; border: 2px solid #ffc107; padding: 16px; border-radius: 10px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                            <i class='bx bx-pause' style="font-size: 24px; color: #f39c12;"></i>
+                            <span style="font-weight: 600; color: #856404;">Pausar</span>
+                        </button>
+
+                        <button onclick="WizardObra.abrirModalCheckout()" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); border: none; padding: 16px; border-radius: 10px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px; color: white;">
+                            <i class='bx bx-log-out-circle' style="font-size: 24px;"></i>
+                            <span style="font-weight: 600;">Finalizar</span>
+                        </button>
+                    </div>
+
+                    <!-- Histórico de Atividades do Dia -->
+                    <div>
+                        <h4 style="margin: 0 0 16px 0; color: #333;"><i class='bx bx-history'></i> Atividades de Hoje</h4>
+                        <div id="wizardHistoricoAtividades" style="max-height: 300px; overflow-y: auto;">
+                            <div style="text-align: center; padding: 40px; color: #888;">
+                                <i class='bx bx-info-circle' style="font-size: 32px; margin-bottom: 12px; display: block;"></i>
+                                As atividades aparecerão aqui após serem registradas.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Nova Atividade -->
+<div id="modalNovaAtividade" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; align-items: center; justify-content: center;">
+    <div style="background: white; border-radius: 16px; width: 90%; max-width: 500px; max-height: 90vh; overflow: auto;">
+        <div style="padding: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin: 0;"><i class='bx bx-plus'></i> Nova Atividade</h3>
+            <button onclick="WizardObra.fecharModal('modalNovaAtividade')" style="background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
+        </div>
+        <div style="padding: 20px;">
+            <label style="display: block; font-weight: 600; margin-bottom: 8px;">Tipo de Atividade *</label>
+            <select id="modalTipoAtividade" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; margin-bottom: 16px;">
+                <option value="">Selecione...</option>
+                <?php foreach ($tipos_atividades as $tipo): ?>
+                <option value="<?= is_object($tipo) ? $tipo->id : ($tipo['id'] ?? '') ?>"><?= htmlspecialchars(is_object($tipo) ? $tipo->nome : ($tipo['nome'] ?? '')) ?></option>
+                <?php endforeach; ?>
+            </select>
+
+            <label style="display: block; font-weight: 600; margin-bottom: 8px;">Descrição</label>
+            <textarea id="modalDescricaoAtividade" rows="4" placeholder="Descreva a atividade realizada..." style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; margin-bottom: 16px;"></textarea>
+        </div>
+        <div style="padding: 20px; border-top: 1px solid #eee; display: flex; gap: 12px; justify-content: flex-end;">
+            <button onclick="WizardObra.fecharModal('modalNovaAtividade')" style="padding: 12px 24px; border: 1px solid #ddd; background: #f8f9fa; border-radius: 8px; cursor: pointer;">Cancelar</button>
+            <button onclick="WizardObra.adicionarNovaAtividade()" style="padding: 12px 24px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">Adicionar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Adicionar Foto -->
+<div id="modalFoto" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; align-items: center; justify-content: center;">
+    <div style="background: white; border-radius: 16px; width: 90%; max-width: 500px;">
+        <div style="padding: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin: 0;"><i class='bx bx-camera'></i> Adicionar Foto</h3>
+            <button onclick="WizardObra.fecharModal('modalFoto')" style="background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
+        </div>
+        <div style="padding: 20px;">
+            <input type="file" id="modalFotoInput" accept="image/*" capture="environment" style="margin-bottom: 16px; width: 100%;">
+            <label style="display: block; font-weight: 600; margin-bottom: 8px;">Descrição</label>
+            <textarea id="modalDescricaoFoto" rows="3" placeholder="Descrição da foto..." style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; box-sizing: border-box;"></textarea>
+        </div>
+        <div style="padding: 20px; border-top: 1px solid #eee; display: flex; gap: 12px; justify-content: flex-end;">
+            <button onclick="WizardObra.fecharModal('modalFoto')" style="padding: 12px 24px; border: 1px solid #ddd; background: #f8f9fa; border-radius: 8px; cursor: pointer;">Cancelar</button>
+            <button onclick="WizardObra.adicionarFoto()" style="padding: 12px 24px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">Adicionar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Checkout -->
+<div id="modalCheckout" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; align-items: center; justify-content: center;">
+    <div style="background: white; border-radius: 16px; width: 90%; max-width: 600px; max-height: 90vh; overflow: auto;">
+        <div style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin: 0;"><i class='bx bx-log-out-circle'></i> Finalizar Trabalho</h3>
+            <button onclick="WizardObra.fecharModal('modalCheckout')" style="background: none; border: none; font-size: 24px; color: white; cursor: pointer;">&times;</button>
+        </div>
+        <div style="padding: 24px;">
+            <label style="display: block; font-weight: 600; margin-bottom: 8px;">Trabalho Concluído? *</label>
+            <select id="modalConcluido" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; margin-bottom: 20px;">
+                <option value="1">Sim, trabalho concluído</option>
+                <option value="0">Não, preciso retornar</option>
+            </select>
+
+            <label style="display: block; font-weight: 600; margin-bottom: 8px;">Resumo do Trabalho</label>
+            <textarea id="modalResumo" rows="4" placeholder="Descreva o que foi feito, pendências..." style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; margin-bottom: 20px; resize: vertical; box-sizing: border-box;"></textarea>
+
+            <label style="display: block; font-weight: 600; margin-bottom: 8px;">Problemas/Pendências</label>
+            <textarea id="modalPendencias" rows="3" placeholder="Algum problema encontrado? Material faltando?" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; margin-bottom: 20px; resize: vertical; box-sizing: border-box;"></textarea>
+
+            <!-- Resumo do Tempo -->
+            <div style="background: #f8f9fa; border-radius: 10px; padding: 16px; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="color: #666;">Hora de Início:</span>
+                    <span id="checkoutHoraInicio" style="font-weight: 600;">--:--</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="color: #666;">Tempo Decorrido:</span>
+                    <span id="checkoutTempoDecorrido" style="font-weight: 600; color: #667eea;">--:--</span>
+                </div>
+            </div>
+        </div>
+        <div style="padding: 20px; border-top: 1px solid #eee; display: flex; gap: 12px; justify-content: flex-end;">
+            <button onclick="WizardObra.fecharModal('modalCheckout')" style="padding: 12px 24px; border: 1px solid #ddd; background: #f8f9fa; border-radius: 8px; cursor: pointer;">Cancelar</button>
+            <button onclick="WizardObra.realizarCheckout()" style="padding: 12px 32px; background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 16px;">
+                <i class='bx bx-check-double'></i> FINALIZAR
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+// Wizard de Atividades Inline - Sistema Completo
+window.WizardObra = {
+    obraId: <?= json_encode($obra->id) ?>,
+    etapaSelecionadaId: null,
+    etapaSelecionadaNome: '',
+    atividadeEmAndamento: null,
+    timerInterval: null,
+    horaInicio: null,
+    csrfTokenName: '<?= config_item("csrf_token_name") ?>',
+    csrfCookieName: '<?= config_item("csrf_cookie_name") ?>',
+
+    getCookie: function(name) {
+        var match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+        return match ? match[2] : null;
+    },
+
+    getCsrfToken: function() {
+        return this.getCookie(this.csrfCookieName);
+    },
+
+    appendCsrf: function(formData) {
+        var token = this.getCsrfToken();
+        if (token) {
+            formData.append(this.csrfTokenName, token);
+        }
+        return formData;
+    },
+
+    iniciarWizard: function() {
+        document.getElementById('wizardObraModal').style.display = 'block';
+        document.body.style.overflow = 'hidden';
+        this.mostrarStep('checkin');
+    },
+
+    continuarWizard: function() {
+        // Recuperar hora de inicio do hidden input
+        var horaInicioStored = document.getElementById('wizardHoraInicioStored');
+        if (horaInicioStored && horaInicioStored.value) {
+            this.horaInicio = new Date(horaInicioStored.value);
+        } else {
+            this.horaInicio = new Date();
+        }
+
+        // Recuperar nome da etapa
+        var etapaStored = document.getElementById('wizardEtapaAtualStored');
+        if (etapaStored && etapaStored.value) {
+            this.etapaSelecionadaNome = etapaStored.value;
+            document.getElementById('wizardEtapaAtual').textContent = 'Etapa: ' + this.etapaSelecionadaNome;
+        }
+
+        document.getElementById('wizardObraModal').style.display = 'block';
+        document.body.style.overflow = 'hidden';
+        this.mostrarStep('execucao');
+        this.iniciarTimer();
+        this.carregarHistorico();
+    },
+
+    fechar: function() {
+        document.getElementById('wizardObraModal').style.display = 'none';
+        document.body.style.overflow = '';
+        if (this.timerInterval) {
+            clearInterval(this.timerInterval);
+        }
+    },
+
+    mostrarStep: function(step) {
+        document.getElementById('wizardStepCheckin').style.display = step === 'checkin' ? 'block' : 'none';
+        document.getElementById('wizardStepExecucao').style.display = step === 'execucao' ? 'block' : 'none';
+    },
+
+    selecionarEtapa: function(etapaId, etapaNome, elemento) {
+        this.etapaSelecionadaId = etapaId;
+        this.etapaSelecionadaNome = etapaNome;
+        document.getElementById('wizardEtapaSelecionada').value = etapaId;
+
+        // Visual feedback
+        document.querySelectorAll('.wizard-etapa-card').forEach(function(card) {
+            card.style.borderColor = '#e0e0e0';
+            card.style.background = '#f8f9fa';
+        });
+        elemento.style.borderColor = '#667eea';
+        elemento.style.background = '#f0f3ff';
+
+        // Habilitar botão
+        var btn = document.getElementById('wizardBtnIniciar');
+        btn.disabled = false;
+        btn.style.opacity = '1';
+    },
+
+    previewFoto: function(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            var self = this;
+            reader.onload = function(e) {
+                var img = document.getElementById('wizardFotoPreview');
+                img.src = e.target.result;
+                img.style.display = 'block';
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    },
+
+    realizarCheckin: function() {
+        var etapaId = this.etapaSelecionadaId;
+        if (!etapaId) {
+            alert('Por favor, selecione uma etapa.');
+            return;
+        }
+
+        var formData = new FormData();
+        formData = this.appendCsrf(formData);
+        formData.append('obra_id', this.obraId);
+        formData.append('etapa_id', etapaId);
+        formData.append('tipo_id', '1'); // Tipo padrão
+
+        var fotoInput = document.getElementById('wizardFotoInput');
+        if (fotoInput.files.length > 0) {
+            formData.append('foto', fotoInput.files[0]);
+        }
+
+        var observacoes = document.getElementById('wizardObservacoes').value;
+        if (observacoes) {
+            formData.append('observacoes', observacoes);
+        }
+
+        var btn = document.getElementById('wizardBtnIniciar');
+        btn.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Iniciando...';
+        btn.disabled = true;
+
+        var self = this;
+        fetch('<?= site_url("atividades/checkin_obra") ?>', {
+            method: 'POST',
+            body: formData
+        })
+        .then(function(r) {
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            return r.text().then(function(text) {
+                try {
+                    return JSON.parse(text);
+                } catch (e) {
+                    console.error('Resposta inválida:', text.substring(0, 500));
+                    throw new Error('Resposta inválida do servidor');
+                }
+            });
+        })
+        .then(function(data) {
+            if (data.success) {
+                self.mostrarStep('execucao');
+                self.horaInicio = new Date();
+                self.iniciarTimer();
+                self.carregarHistorico();
+                document.getElementById('wizardEtapaAtual').textContent = 'Etapa: ' + self.etapaSelecionadaNome;
+            } else {
+                alert('Erro: ' + (data.message || 'Erro desconhecido'));
+                btn.innerHTML = '<i class="bx bx-play"></i> INICIAR TRABALHO';
+                btn.disabled = false;
+            }
+        })
+        .catch(function(err) {
+            alert('Erro ao iniciar: ' + err.message);
+            console.error(err);
+            btn.innerHTML = '<i class="bx bx-play"></i> INICIAR TRABALHO';
+            btn.disabled = false;
+        });
+    },
+
+    iniciarTimer: function() {
+        var horaInicio = this.horaInicio || new Date();
+        document.getElementById('wizardHoraInicio').textContent = horaInicio.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+
+        var self = this;
+        this.timerInterval = setInterval(function() {
+            var agora = new Date();
+            var diff = agora - horaInicio;
+
+            var horas = Math.floor(diff / 3600000);
+            var minutos = Math.floor((diff % 3600000) / 60000);
+            var segundos = Math.floor((diff % 60000) / 1000);
+
+            var formatado =
+                String(horas).padStart(2, '0') + ':' +
+                String(minutos).padStart(2, '0') + ':' +
+                String(segundos).padStart(2, '0');
+
+            document.getElementById('wizardTimer').textContent = formatado;
+        }, 1000);
+    },
+
+    abrirModalNovaAtividade: function() {
+        document.getElementById('modalNovaAtividade').style.display = 'flex';
+    },
+
+    abrirModalFoto: function() {
+        document.getElementById('modalFoto').style.display = 'flex';
+    },
+
+    abrirModalCheckout: function() {
+        document.getElementById('modalCheckout').style.display = 'flex';
+        document.getElementById('checkoutHoraInicio').textContent = document.getElementById('wizardHoraInicio').textContent;
+        document.getElementById('checkoutTempoDecorrido').textContent = document.getElementById('wizardTimer').textContent;
+    },
+
+    fecharModal: function(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    },
+
+    adicionarNovaAtividade: function() {
+        var tipoId = document.getElementById('modalTipoAtividade').value;
+        var descricao = document.getElementById('modalDescricaoAtividade').value;
+
+        if (!tipoId) {
+            alert('Selecione o tipo de atividade.');
+            return;
+        }
+
+        var formData = new FormData();
+        formData = this.appendCsrf(formData);
+        formData.append('obra_id', this.obraId);
+        formData.append('tipo_id', tipoId);
+        formData.append('descricao', descricao);
+
+        var self = this;
+        fetch('<?= site_url("atividades/adicionar_atividade_obra") ?>', {
+            method: 'POST',
+            body: formData
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (data.success) {
+                self.fecharModal('modalNovaAtividade');
+                self.carregarHistorico();
+                document.getElementById('modalTipoAtividade').value = '';
+                document.getElementById('modalDescricaoAtividade').value = '';
+                alert('Atividade adicionada com sucesso!');
+            } else {
+                alert('Erro: ' + (data.message || 'Erro desconhecido'));
+            }
+        })
+        .catch(function(err) {
+            alert('Erro ao adicionar atividade.');
+            console.error(err);
+        });
+    },
+
+    adicionarFoto: function() {
+        var fotoInput = document.getElementById('modalFotoInput');
+        var descricao = document.getElementById('modalDescricaoFoto').value;
+
+        if (fotoInput.files.length === 0) {
+            alert('Selecione uma foto.');
+            return;
+        }
+
+        var formData = new FormData();
+        formData = this.appendCsrf(formData);
+        formData.append('obra_id', this.obraId);
+        formData.append('foto', fotoInput.files[0]);
+        formData.append('descricao', descricao);
+
+        var self = this;
+        fetch('<?= site_url("atividades/adicionar_foto_obra") ?>', {
+            method: 'POST',
+            body: formData
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (data.success) {
+                self.fecharModal('modalFoto');
+                alert('Foto adicionada com sucesso!');
+                fotoInput.value = '';
+                document.getElementById('modalDescricaoFoto').value = '';
+            } else {
+                alert('Erro: ' + (data.message || 'Erro desconhecido'));
+            }
+        })
+        .catch(function(err) {
+            alert('Erro ao adicionar foto.');
+            console.error(err);
+        });
+    },
+
+    pausarAtividade: function() {
+        if (!confirm('Deseja pausar esta atividade?')) return;
+
+        var body = 'obra_id=' + this.obraId;
+        var token = this.getCsrfToken();
+        if (token) {
+            body += '&' + this.csrfTokenName + '=' + encodeURIComponent(token);
+        }
+
+        var self = this;
+        fetch('<?= site_url("atividades/pausar") ?>', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: body
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (data.success) {
+                self.fechar();
+                location.reload();
+            } else {
+                alert('Erro: ' + (data.message || 'Erro desconhecido'));
+            }
+        })
+        .catch(function(err) {
+            alert('Erro ao pausar.');
+            console.error(err);
+        });
+    },
+
+    realizarCheckout: function() {
+        var concluida = document.getElementById('modalConcluido').value;
+        var resumo = document.getElementById('modalResumo').value;
+        var pendencias = document.getElementById('modalPendencias').value;
+
+        var formData = new FormData();
+        formData = this.appendCsrf(formData);
+        formData.append('obra_id', this.obraId);
+        formData.append('concluida', concluida);
+        formData.append('resumo_final', resumo);
+        formData.append('pendencias', pendencias);
+
+        var self = this;
+        fetch('<?= site_url("atividades/checkout_obra") ?>', {
+            method: 'POST',
+            body: formData
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (data.success) {
+                alert('Trabalho finalizado com sucesso!');
+                self.fechar();
+                location.reload();
+            } else {
+                alert('Erro: ' + (data.message || 'Erro desconhecido'));
+            }
+        })
+        .catch(function(err) {
+            alert('Erro ao finalizar trabalho.');
+            console.error(err);
+        });
+    },
+
+    carregarHistorico: function() {
+        // Implementação básica - pode ser expandida para carregar via AJAX
+        document.getElementById('wizardHistoricoAtividades').innerHTML =
+            '<div style="text-align: center; padding: 40px; color: #888;">' +
+            '<i class="bx bx-info-circle" style="font-size: 32px; margin-bottom: 12px; display: block;"></i>' +
+            'Histórico será atualizado após finalizar o trabalho.' +
+            '</div>';
+    }
+};
+
+// Inicializar quando carregar - WizardObra e auto-suficiente
+// Os metodos sao chamados diretamente via onclick handlers
 </script>
