@@ -937,6 +937,60 @@ class Tecnicos extends CI_Controller
     }
 
     /**
+     * Migrar coluna 'fotos' para 'fotos_atividade' na tabela obra_atividades
+     * Executar este método se houver erro "Unknown column 'fotos'"
+     */
+    public function migrar_fotos_atividades()
+    {
+        header('Content-Type: application/json');
+
+        // Verificar permissão de admin
+        if (!$this->session->userdata('permissao') || $this->session->userdata('permissao') > 2) {
+            echo json_encode(['success' => false, 'message' => 'Acesso restrito a administradores']);
+            return;
+        }
+
+        try {
+            // Verificar se tabela existe
+            if (!$this->db->table_exists('obra_atividades')) {
+                echo json_encode(['success' => false, 'message' => 'Tabela obra_atividades não existe']);
+                return;
+            }
+
+            $campos = $this->db->list_fields('obra_atividades');
+            $alteracoes = [];
+
+            // Se existe coluna 'fotos' antiga, renomear para 'fotos_atividade'
+            if (in_array('fotos', $campos)) {
+                $this->db->query("ALTER TABLE obra_atividades CHANGE fotos fotos_atividade TEXT");
+                $alteracoes[] = 'Renomeada: fotos -> fotos_atividade';
+            }
+
+            // Adicionar colunas faltantes
+            if (!in_array('fotos_checkin', $campos)) {
+                $this->db->query("ALTER TABLE obra_atividades ADD COLUMN fotos_checkin TEXT AFTER fotos_atividade");
+                $alteracoes[] = 'Adicionada: fotos_checkin';
+            }
+
+            if (!in_array('fotos_checkout', $campos)) {
+                $this->db->query("ALTER TABLE obra_atividades ADD COLUMN fotos_checkout TEXT AFTER fotos_checkin");
+                $alteracoes[] = 'Adicionada: fotos_checkout';
+            }
+
+            echo json_encode([
+                'success' => true,
+                'message' => 'Migração concluída',
+                'alteracoes' => $alteracoes,
+                'campos_atuais' => $this->db->list_fields('obra_atividades')
+            ]);
+
+        } catch (Exception $e) {
+            log_message('error', 'Erro na migração: ' . $e->getMessage());
+            echo json_encode(['success' => false, 'message' => 'Erro: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
      * Salvar item de checklist
      */
     public function salvar_checklist_item()
@@ -1757,7 +1811,9 @@ class Tecnicos extends CI_Controller
                 descricao TEXT NOT NULL,
                 tipo VARCHAR(50) DEFAULT 'execucao',
                 percentual_concluido INT DEFAULT 0,
-                fotos TEXT,
+                fotos_checkin TEXT,
+                fotos_atividade TEXT,
+                fotos_checkout TEXT,
                 data_atividade DATE NOT NULL,
                 created_at DATETIME NOT NULL,
                 ativo TINYINT(1) DEFAULT 1
@@ -1804,7 +1860,7 @@ class Tecnicos extends CI_Controller
             'titulo' => $titulo,
             'tipo' => $tipo ?: 'execucao',
             'percentual_concluido' => $percentual_concluido ?: 0,
-            'fotos' => json_encode($fotos_salvas),
+            'fotos_atividade' => json_encode($fotos_salvas),
             'data_atividade' => date('Y-m-d'),
             'created_at' => date('Y-m-d H:i:s'),
             'ativo' => 1
