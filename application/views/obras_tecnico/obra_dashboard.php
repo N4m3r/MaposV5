@@ -370,9 +370,26 @@
             <div class="obra-dash-card" style="border-left: 4px solid #11998e;">
                 <div class="obra-dash-card-header">
                     <div class="obra-dash-card-title">
-                        <i class="bx bx-timer" style="color: #11998e;"></i> Registro de Atividades
+                        <i class="bx bx-timer" style="color: #11998e;"></i> Registro de Atividades (Hora Início/Fim)
                     </div>
                 </div>
+
+                <?php if (!empty($atividade_novo_andamento)): ?>
+                <!-- Atividade em Andamento -->
+                <div style="background: linear-gradient(135deg, #ffc10715 0%, #ff980715 100%); padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid #ffc107;">
+                    <p style="margin: 0 0 10px 0; font-size: 14px;">
+                        <strong><i class="bx bx-time-five" style="color: #ffc107;"></i> Atividade em Andamento</strong>
+                        <br>Você tem uma atividade iniciada <strong><?php echo date('H:i', strtotime($atividade_novo_andamento->hora_inicio)); ?></strong>
+                        <?php if (!empty($atividade_novo_andamento->etapa_nome)): ?>
+                            na etapa: <strong><?php echo htmlspecialchars($atividade_novo_andamento->etapa_nome); ?></strong>
+                        <?php endif; ?>
+                    </p>
+                    <a href="<?php echo site_url('atividades/wizard_obra/' . $obra->id); ?>" class="btn-acao" style="background: linear-gradient(135deg, #ffc107 0%, #ff9807 100%); color: white;">
+                        <i class="bx bx-refresh"></i> Continuar Atividade
+                    </a>
+                </div>
+                <?php else: ?>
+                <!-- Sem atividade - Pode iniciar -->
                 <div style="background: linear-gradient(135deg, #11998e10 0%, #38ef7d10 100%); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
                     <p style="margin: 0 0 10px 0; font-size: 14px;">
                         <strong><i class="bx bx-info-circle"></i> Registre Hora Início e Hora Fim</strong>
@@ -382,6 +399,8 @@
                         <i class="bx bx-play"></i> Iniciar Atividade
                     </a>
                 </div>
+                <?php endif; ?>
+
                 <p style="font-size: 12px; color: #666; margin: 0;">
                     <i class="bx bx-check-circle"></i> Registro preciso de tempo<br>
                     <i class="bx bx-camera"></i> Fotos das atividades<br>

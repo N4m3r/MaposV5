@@ -249,7 +249,7 @@ class NotificacoesConfig extends MY_Controller
             'todos' => 'Todos'
         ];
         $this->data['variaveis_globais'] = $this->notificacoes_templates_model->getVariaveisGlobais();
-        $this->data['view'] = 'notificacoes/templates_adicionar';
+        $this->data['view'] = 'notificacoes/templates_adicionar_simple';
         $this->data['menuConfiguracoes'] = 'Notificações';
 
         return $this->layout();
