@@ -42,8 +42,35 @@ class Obra_atividades_model extends CI_Model
         }
 
         try {
-            $this->db->where('id', $id);
-            $query = $this->db->get('obra_atividades');
+            // Verificar se tabelas de join existem
+            $join_usuarios = $this->db->table_exists('usuarios');
+            $join_etapas = $this->db->table_exists('obra_etapas');
+
+            // Selecionar todos os campos da atividade
+            $this->db->select('obra_atividades.*');
+
+            if ($join_usuarios) {
+                $this->db->select('u.nome as tecnico_nome');
+            }
+            if ($join_etapas) {
+                $this->db->select('oe.nome as etapa_nome, oe.numero_etapa');
+            }
+
+            $this->db->from('obra_atividades');
+
+            if ($join_usuarios) {
+                $this->db->join('usuarios u', 'u.idUsuarios = obra_atividades.tecnico_id', 'left');
+            }
+            if ($join_etapas) {
+                $this->db->join('obra_etapas oe', 'oe.id = obra_atividades.etapa_id', 'left');
+            }
+
+            $this->db->where('obra_atividades.id', $id);
+
+            $query = $this->db->get();
+
+            log_message('debug', 'getById atividade ID ' . $id . ': ' . $this->db->last_query());
+
             return $query ? $query->row() : null;
         } catch (Exception $e) {
             log_message('error', 'Erro ao buscar atividade: ' . $e->getMessage());
