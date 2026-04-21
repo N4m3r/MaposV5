@@ -49,9 +49,10 @@ class Atividades extends CI_Controller
         $data['os_hoje'] = $this->Tec_os_model->getOsDoDia($tecnico_id);
 
         $data['title'] = 'Área do Técnico - Atividades';
-        $this->load->view('tema/header', $data);
+        $this->load->view('tema/topo', $data);
+        $this->load->view('tema/menu_portal_tecnico', $data);
         $this->load->view('atividades/dashboard');
-        $this->load->view('tema/footer');
+        $this->load->view('tema/rodape');
     }
 
     /**
@@ -92,9 +93,10 @@ class Atividades extends CI_Controller
         $data['etapa_id'] = null;
         $data['modo'] = 'os';
 
-        $this->load->view('tema/header', $data);
+        $this->load->view('tema/topo', $data);
+        $this->load->view('tema/menu_portal_tecnico', $data);
         $this->load->view('atividades/wizard');
-        $this->load->view('tema/footer');
+        $this->load->view('tema/rodape');
     }
 
     /**
@@ -151,9 +153,10 @@ class Atividades extends CI_Controller
         $data['os_id'] = null;
         $data['modo'] = 'obra';
 
-        $this->load->view('tema/header', $data);
+        $this->load->view('tema/topo', $data);
+        $this->load->view('tema/menu_portal_tecnico', $data);
         $this->load->view('atividades/wizard_obra');
-        $this->load->view('tema/footer');
+        $this->load->view('tema/rodape');
     }
 
     /**
@@ -173,9 +176,10 @@ class Atividades extends CI_Controller
 
         $data['title'] = 'Selecionar Ordem de Serviço';
 
-        $this->load->view('tema/header', $data);
+        $this->load->view('tema/topo', $data);
+        $this->load->view('tema/menu_portal_tecnico', $data);
         $this->load->view('atividades/selecionar_os');
-        $this->load->view('tema/footer');
+        $this->load->view('tema/rodape');
     }
 
     /**
@@ -590,9 +594,10 @@ class Atividades extends CI_Controller
 
         $data['title'] = 'Histórico de Atividades';
 
-        $this->load->view('tema/header', $data);
+        $this->load->view('tema/topo', $data);
+        $this->load->view('tema/menu_portal_tecnico', $data);
         $this->load->view('atividades/historico');
-        $this->load->view('tema/footer');
+        $this->load->view('tema/rodape');
     }
 
     /**
@@ -624,9 +629,10 @@ class Atividades extends CI_Controller
 
         $data['title'] = 'Relatório de Atividades';
 
-        $this->load->view('tema/header', $data);
+        $this->load->view('tema/topo', $data);
+        $this->load->view('tema/menu_portal_tecnico', $data);
         $this->load->view('atividades/relatorio');
-        $this->load->view('tema/footer');
+        $this->load->view('tema/rodape');
     }
 
     /**

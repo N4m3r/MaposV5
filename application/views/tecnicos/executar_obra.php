@@ -2203,12 +2203,6 @@ const wizard = {
         this.showToast(`Tipo selecionado: ${nome}`, 'success');
         setTimeout(() => this.nextStep(), 400);
     },
-                </div>
-            `;
-        });
-        html += '</div>';
-        container.innerHTML = html;
-    },
 
     // Atualizar Progresso com feedback
     updateProgress: function(value) {

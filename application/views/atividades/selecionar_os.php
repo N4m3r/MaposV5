@@ -111,8 +111,8 @@ $atividade_andamento = $atividade_andamento ?? null;
                 <h5>OS do Dia - <?= date('d/m/Y') ?></h5>
             </div>
             <div class="widget-content">
-                <?php if (count($os_hoje) > 0): ?
-                    <?php foreach ($os_hoje as $os): ?
+                <?php if (count($os_hoje) > 0): ?>
+                    <?php foreach ($os_hoje as $os): ?>
                         <?php
                             $status_class = 'pendente';
                             if (strpos(strtolower($os->status ?? ''), 'atendi') !== false) {
@@ -136,14 +136,14 @@ $atividade_andamento = $atividade_andamento ?? null;
                                 <a href="<?= site_url('atividades/wizard/' . $os->idOs) ?>" class="btn btn-success btn-iniciar">
                                     <i class="bx bx-play"></i> Iniciar Atendimento
                                 </a>
-                            <?php else: ?
+                            <?php else: ?>>
                                 <button class="btn disabled" disabled>
                                     <i class="bx bx-lock"></i> Finalize a atividade atual
                                 </button>
                             <?php endif; ?>
                         </div>
-                    <?php endforeach; ?
-                <?php else: ?
+                    <?php endforeach; ?>
+                <?php else: ?>
                     <div class="empty-state">
                         <i class="bx bx-calendar-x"></i>
                         <p>Nenhuma OS designada para hoje.</p>
@@ -160,7 +160,7 @@ $atividade_andamento = $atividade_andamento ?? null;
                 <h5>OS Pendentes</h5>
             </div>
             <div class="widget-content">
-                <?php if (count($os_pendentes) > 0): ?
+                <?php if (count($os_pendentes) > 0): ?>
                     <div class="row-fluid">
                         <?php foreach ($os_pendentes as $os): ?
                             <div class="span6">
@@ -181,9 +181,9 @@ $atividade_andamento = $atividade_andamento ?? null;
                                     <?php endif; ?>
                                 </div>
                             </div>
-                        <?php endforeach; ?
+                        <?php endforeach; ?>
                     </div>
-                <?php else: ?
+                <?php else: ?>
                     <div class="empty-state">
                         <i class="bx bx-check-circle"></i>
                         <p>Nenhuma OS pendente!</p>
