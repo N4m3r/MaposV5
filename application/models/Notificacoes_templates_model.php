@@ -131,6 +131,75 @@ class Notificacoes_templates_model extends CI_Model
     }
 
     /**
+     * Retorna variáveis globais disponíveis em todos os templates
+     */
+    public function getVariaveisGlobais()
+    {
+        return [
+            'cliente_nome' => 'Nome do cliente',
+            'cliente_telefone' => 'Telefone do cliente',
+            'cliente_email' => 'E-mail do cliente',
+            'cliente_documento' => 'CPF/CNPJ do cliente',
+            'data_atual' => 'Data atual (DD/MM/AAAA)',
+            'hora_atual' => 'Hora atual (HH:MM)',
+            'emitente_nome' => 'Nome da empresa emitente',
+            'emitente_telefone' => 'Telefone da empresa',
+            'emitente_endereco' => 'Endereço da empresa',
+            'emitente_horario' => 'Horário de funcionamento',
+            'link_sistema' => 'URL do sistema',
+        ];
+    }
+
+    /**
+     * Retorna variáveis específicas por categoria
+     */
+    public function getVariaveisPorCategoria($categoria)
+    {
+        $variaveis = [
+            'os' => [
+                'os_id' => 'Número da OS',
+                'equipamento' => 'Descrição do equipamento',
+                'defeito' => 'Defeito informado',
+                'data_previsao' => 'Data prevista para conclusão',
+                'status_atual' => 'Status atual da OS',
+                'status_anterior' => 'Status anterior da OS',
+                'valor_total' => 'Valor total da OS',
+                'valor_orcamento' => 'Valor do orçamento',
+                'tempo_estimado' => 'Tempo estimado para execução',
+                'pecas_aguardando' => 'Lista de peças aguardando',
+                'previsao_peca' => 'Previsão de chegada das peças',
+                'link_consulta' => 'Link para consulta pública da OS',
+                'link_aprovar' => 'Link para aprovar orçamento',
+                'link_recusar' => 'Link para recusar orçamento',
+            ],
+            'venda' => [
+                'venda_id' => 'Número da venda',
+                'valor_total' => 'Valor total da venda',
+                'data_venda' => 'Data da venda',
+                'produtos_lista' => 'Lista de produtos vendidos',
+                'vendedor_nome' => 'Nome do vendedor',
+            ],
+            'cobranca' => [
+                'referente' => 'Referência da cobrança (OS/Venda)',
+                'valor' => 'Valor da cobrança',
+                'data_vencimento' => 'Data de vencimento',
+                'dias' => 'Dias até o vencimento',
+                'link_pagamento' => 'Link para pagamento',
+                'codigo_barras' => 'Código de barras do boleto',
+                'linha_digitavel' => 'Linha digitável do boleto',
+            ],
+            'marketing' => [
+                'cupom_desconto' => 'Cupom de desconto oferecido',
+                'promocao_nome' => 'Nome da promoção',
+                'promocao_descricao' => 'Descrição da promoção',
+                'validade_oferta' => 'Data de validade da oferta',
+            ],
+        ];
+
+        return $variaveis[$categoria] ?? [];
+    }
+
+    /**
      * Lista templates por categoria
      */
     public function listarPorCategoria($categoria)

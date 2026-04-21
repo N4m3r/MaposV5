@@ -1961,14 +1961,6 @@ class Tecnicos extends CI_Controller
             $this->db->query("ALTER TABLE obra_atividades ADD COLUMN is_foradoscopo TINYINT(1) DEFAULT 0");
             $colunas_existentes[] = 'is_foradoscopo';
         }
-        if (!in_array('tempo_gasto', $colunas_existentes)) {
-            $this->db->query("ALTER TABLE obra_atividades ADD COLUMN tempo_gasto DECIMAL(5,2) NULL");
-            $colunas_existentes[] = 'tempo_gasto';
-        }
-        if (!in_array('tipo_tempo', $colunas_existentes)) {
-            $this->db->query("ALTER TABLE obra_atividades ADD COLUMN tipo_tempo VARCHAR(50) NULL");
-            $colunas_existentes[] = 'tipo_tempo';
-        }
         if (!in_array('solicitante', $colunas_existentes)) {
             $this->db->query("ALTER TABLE obra_atividades ADD COLUMN solicitante VARCHAR(255) NULL");
             $colunas_existentes[] = 'solicitante';
@@ -2038,8 +2030,6 @@ class Tecnicos extends CI_Controller
 
         // Receber dados de atividade fora do escopo
         $is_foradoscopo = $this->input->post('is_foradoscopo');
-        $tempo_gasto = $this->input->post('tempo_gasto');
-        $tipo_tempo = $this->input->post('tipo_tempo');
         $solicitante = $this->input->post('solicitante');
         $justificativa = $this->input->post('justificativa');
         $materiais_json = $this->input->post('materiais');
@@ -2063,12 +2053,6 @@ class Tecnicos extends CI_Controller
             $dados['is_foradoscopo'] = $is_foradoscopo ? 1 : 0;
         }
         if ($is_foradoscopo) {
-            if (in_array('tempo_gasto', $colunas_existentes) && $tempo_gasto) {
-                $dados['tempo_gasto'] = floatval($tempo_gasto);
-            }
-            if (in_array('tipo_tempo', $colunas_existentes) && $tipo_tempo) {
-                $dados['tipo_tempo'] = $tipo_tempo;
-            }
             if (in_array('solicitante', $colunas_existentes) && $solicitante) {
                 $dados['solicitante'] = $solicitante;
             }

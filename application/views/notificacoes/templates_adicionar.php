@@ -202,6 +202,39 @@
     .alert-info i {
         margin-right: 8px;
     }
+    .variable-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .variable-tag {
+        background: #e9ecef;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        padding: 4px 10px;
+        font-size: 13px;
+        color: #495057;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-family: monospace;
+    }
+    .variable-tag:hover {
+        background: #007bff;
+        color: white;
+        border-color: #007bff;
+    }
+    .variable-tag span {
+        font-size: 11px;
+        color: #6c757d;
+        margin-left: 5px;
+    }
+    .variable-tag:hover span {
+        color: rgba(255,255,255,0.8);
+        margin-bottom: 20px;
+    }
+    .alert-info i {
+        margin-right: 8px;
+    }
 </style>
 
 <div class="row-fluid" style="margin-top:0">
@@ -265,11 +298,27 @@
                         </div>
                     </div>
 
+                    <!-- Variáveis Globais Disponíveis -->
+                    <div class="form-section">
+                        <h4><i class="bx bx-globe"></i> Variáveis Globais Disponíveis</h4>
+                        <div class="help-text" style="margin-bottom: 10px;">
+                            Você pode usar estas variáveis em qualquer template. Clique para copiar:
+                        </div>
+                        <div class="variable-list" style="margin-bottom: 15px;">
+                            <?php foreach ($variaveis_globais as $chave => $descricao): ?>
+                                <span class="variable-tag" onclick="copiarVariavel('{<?php echo $chave; ?>}')" title="<?php echo htmlspecialchars($descricao); ?>">
+                                    {<?php echo $chave; ?>}
+                                    <span><?php echo htmlspecialchars($descricao); ?></span>
+                                </span>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+
                     <!-- Variáveis Personalizadas -->
                     <div class="form-section">
-                        <h4><i class="bx bx-variable"></i> Variáveis do Template</h4>
+                        <h4><i class="bx bx-variable"></i> Variáveis do Template (Personalizadas)</h4>
                         <div class="help-text" style="margin-bottom: 15px;">
-                            Defina as variáveis que serão usadas neste template. Exemplo: {cliente_nome}, {data_atual}
+                            Defina variáveis exclusivas deste template. Elas serão substituídas pelos valores reais no momento do envio.
                         </div>
 
                         <div class="variables-builder">
@@ -447,7 +496,29 @@ document.getElementById('formTemplate').addEventListener('submit', function(e) {
         alert('A chave deve conter apenas letras minúsculas, números e underline.');
         return false;
     }
-});
+});function copiarVariavel(variavel) {
+    const textarea = document.getElementById('mensagem');
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const text = textarea.value;
+
+    textarea.value = text.substring(0, start) + variavel + text.substring(end);
+    textarea.selectionStart = textarea.selectionEnd = start + variavel.length;
+    textarea.focus();
+
+    atualizarPreview();
+
+    // Feedback visual
+    const tag = event.target.closest('.variable-tag');
+    tag.style.background = '#28a745';
+    tag.style.color = 'white';
+    tag.style.borderColor = '#28a745';
+    setTimeout(() => {
+        tag.style.background = '';
+        tag.style.color = '';
+        tag.style.borderColor = '';
+    }, 300);
+}
 
 // Inicializa
 $(document).ready(function() {

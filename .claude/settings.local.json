@@ -67,7 +67,8 @@
       "Bash(sed -i '322s/\\\\\\\\n003e/>/' application/views/conecte/visualizar_os.php)",
       "Bash(sed -n '322p' application/views/conecte/visualizar_os.php)",
       "Bash(node -c /c/Users/thail/Desktop/IVMS-CRUD/MaposV5/application/views/tecnicos/executar_os.php)",
-      "WebFetch(domain:jj-ferreiras.com.br)"
+      "WebFetch(domain:jj-ferreiras.com.br)",
+      "Bash(xxd application/views/obras_tecnico/obra_dashboard.php)"
     ]
   }
 }

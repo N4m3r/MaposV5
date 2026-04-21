@@ -312,7 +312,7 @@
                     </div>
                 </div>
 
-                <?php if (!empty($minhas_atividades)): ?
+                <?php if (!empty($minhas_atividades)): ?>
                 <div class="atividades-list">
                     <?php foreach ($minhas_atividades as $ativ):
                     $statusClass = $ativ->status;
@@ -341,24 +341,24 @@
                         </div>
 
                         <div class="atividade-actions">
-                            <?php if ($ativ->status == 'agendada'): ?
+                            <?php if ($ativ->status == 'agendada'): ?>
                             <a href="<?php echo site_url('obras_tecnico/atividade/' . $ativ->id); ?>" class="btn-acao btn-acao-iniciar">
                                 <i class="icon-play"></i> Iniciar
                             </a>
-                            <?php elseif ($ativ->status == 'iniciada'): ?
+                            <?php elseif ($ativ->status == 'iniciada'): ?>
                             <a href="<?php echo site_url('obras_tecnico/atividade/' . $ativ->id); ?>" class="btn-acao btn-acao-continuar">
                                 <i class="icon-refresh"></i> Continuar
                             </a>
-                            <?php else: ?
+                            <?php else: ?>
                             <a href="<?php echo site_url('obras_tecnico/atividade/' . $ativ->id); ?>" class="btn-acao btn-acao-visualizar">
                                 <i class="icon-eye-open"></i> Ver
                             </a>
-                            <?php endif; ?
+                            <?php endif; ?>
                         </div>
                     </div>
                     <?php endforeach; ?
                 </div>
-                <?php else: ?
+                <?php else: ?>
                 <div class="empty-state">
                     <div class="empty-state-icon"><i class="icon-tasks"></i></div>
                     <div class="empty-state-text">Nenhuma atividade atribuída para você nesta obra.</div>
@@ -397,20 +397,20 @@
                     </div>
                 </div>
 
-                <?php if (!empty($etapas)): ?
+                <?php if (!empty($etapas)): ?>
                 <div class="etapas-list">
-                    <?php foreach ($etapas as $etapa): ?
+                    <?php foreach ($etapas as $etapa): ?>
                     <div class="etapa-item">
                         <div class="etapa-numero"><?php echo $etapa->numero_etapa; ?></div>
                         <div class="etapa-info">
                             <div class="etapa-nome"><?php echo $etapa->nome; ?></div>
                             <div class="etapa-meta">
-                                <?php if ($etapa->data_inicio_prevista): ?
+                                <?php if ($etapa->data_inicio_prevista): ?>
                                 Previsão: <?php echo date('d/m/Y', strtotime($etapa->data_inicio_prevista)); ?>
-                                <?php if ($etapa->data_fim_prevista): ?
+                                <?php if ($etapa->data_fim_prevista): ?>
                                 - <?php echo date('d/m/Y', strtotime($etapa->data_fim_prevista)); ?>
-                                <?php endif; ?
-                                <?php endif; ?
+                                <?php endif; ?>
+                                <?php endif; ?>
                             </div>
                         </div>
                         <div class="etapa-status <?php echo $etapa->status; ?>">
@@ -428,7 +428,7 @@
                     </div>
                     <?php endforeach; ?
                 </div>
-                <?php else: ?
+                <?php else: ?>
                 <div class="empty-state">
                     <div class="empty-state-icon"><i class="icon-road"></i></div>
                     <div class="empty-state-text">Nenhuma etapa cadastrada.</div>
@@ -488,7 +488,7 @@
                         </span>
                     </div>
 
-                    <?php if ($obra->observacoes): ?
+                    <?php if ($obra->observacoes): ?>
                     <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #f0f0f0;">
                         <div class="obra-tec-info-label" style="margin-bottom: 5px;">Observações</div>
                         <div style="font-size: 14px; color: #666; line-height: 1.5;">

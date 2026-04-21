@@ -1553,8 +1553,6 @@
                     <div class="step" data-step="6">6</div>
                     <div class="step-line" data-step="6"></div>
                     <div class="step" data-step="7">7</div>
-                    <div class="step-line" data-step="7"></div>
-                    <div class="step" data-step="8">8</div>
                 </div>
             </div>
 
@@ -1703,97 +1701,8 @@
                         </div>
                     </div>
 
-                    <!-- Step 5: Materiais Utilizados (Visivel apenas para atividades nao planejadas) -->
-                    <div class="wizard-step-content" data-step="5" id="stepMateriais">
-                        <div class="step-title"><i class='bx bx-package'></i> Materiais e Recursos Utilizados</div>
-                        <div class="step-subtitle">Registre os materiais, equipamentos e tempo gasto</div>
 
-                        <div style="background: #fff5f5; border-radius: 10px; padding: 15px; margin-bottom: 20px; border-left: 4px solid #ee5a5a;">
-                            <div style="font-size: 14px; color: #721c24; margin-bottom: 5px;">
-                                <i class='bx bx-error-alt'></i> <strong>Atividade Nao Planejada:</strong>
-                            </div>
-                            <div style="font-size: 13px; color: #856404;">
-                                Esta atividade nao estava prevista no escopo da obra. Documente os recursos extras utilizados para futura cobranca.
-                            </div>
-                        </div>
-
-                        <!-- Tempo Gasto -->
-                        <div style="margin-bottom: 20px;">
-                            <label style="display: block; margin-bottom: 10px; font-weight: 600; color: #555; font-size: 14px;">
-                                <i class='bx bx-time'></i> Tempo Gasto (horas)
-                            </label>
-                            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                                <input type="number" id="tempo_gasto" name="tempo_gasto" placeholder="Ex: 2.5" step="0.5" min="0.5" max="24"
-                                    style="flex: 1; min-width: 120px; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 14px;"
-                                    onfocus="this.style.borderColor='#667eea'" onblur="this.style.borderColor='#e0e0e0'">
-                                <select id="tipo_tempo" name="tipo_tempo"
-                                    style="flex: 1; min-width: 150px; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 14px; background: white;">
-                                    <option value="hora_extra">Hora Extra</option>
-                                    <option value="hora_normal">Hora Normal</option>
-                                    <option value="adicional">Servico Adicional</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- Materiais -->
-                        <div style="margin-bottom: 20px;">
-                            <label style="display: block; margin-bottom: 10px; font-weight: 600; color: #555; font-size: 14px;">
-                                <i class='bx bx-package'></i> Materiais Utilizados
-                            </label>
-
-                            <div id="materiaisList" style="margin-bottom: 15px;">
-                                <!-- Materiais serao adicionados aqui dinamicamente -->
-                                <div class="empty-materiais" style="text-align: center; padding: 20px; color: #888; background: #f8f9fa; border-radius: 10px; border: 2px dashed #e0e0e0;">
-                                    <i class='bx bx-package' style="font-size: 32px; display: block; margin-bottom: 8px; color: #ddd;"></i>
-                                    Nenhum material registrado ainda
-                                </div>
-                            </div>
-
-                            <div style="display: grid; gap: 10px; background: #f8f9fa; padding: 15px; border-radius: 10px;">
-                                <input type="text" id="material_nome" placeholder="Nome do material (Ex: Tubo PVC 25mm)"
-                                    style="padding: 10px 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 13px;"
-                                    onfocus="this.style.borderColor='#667eea'" onblur="this.style.borderColor='#e0e0e0'">
-                                <div style="display: flex; gap: 10px;">
-                                    <input type="number" id="material_qtd" placeholder="Qtd" min="1" step="1" value="1"
-                                        style="width: 80px; padding: 10px 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 13px;">
-                                    <input type="text" id="material_unidade" placeholder="Unidade (m, kg, un)" value="un"
-                                        style="width: 100px; padding: 10px 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 13px;">
-                                    <input type="text" id="material_valor" placeholder="Valor unit. (opcional)"
-                                        style="flex: 1; padding: 10px 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 13px;">
-                                </div>
-                                <button type="button" onclick="wizard.adicionarMaterial()"
-                                    style="padding: 10px 16px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                                    <i class='bx bx-plus'></i> Adicionar Material
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Justificativa -->
-                        <div style="margin-bottom: 20px;">
-                            <label style="display: block; margin-bottom: 10px; font-weight: 600; color: #555; font-size: 14px;">
-                                <i class='bx bx-comment-detail'></i> Justificativa / Solicitante
-                            </label>
-                            <input type="text" id="solicitante" name="solicitante" placeholder="Quem solicitou este servico? (Ex: Cliente, Gestor da obra, etc)"
-                                style="width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 14px; margin-bottom: 10px;"
-                                onfocus="this.style.borderColor='#667eea'" onblur="this.style.borderColor='#e0e0e0'">
-                            <textarea id="justificativa" name="justificativa" placeholder="Explique por que este servico foi necessario..."
-                                style="width: 100%; min-height: 80px; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 14px; resize: vertical;"
-                                onfocus="this.style.borderColor='#667eea'" onblur="this.style.borderColor='#e0e0e0'"></textarea>
-                        </div>
-
-                        <div class="dica-box" style="background: #fff3cd; border-radius: 8px; padding: 12px; font-size: 13px; color: #856404;">
-                            <i class='bx bx-bulb'></i> <strong>Importante:</strong> Este registro sera enviado para aprovacao. Guarde comprovantes de compra dos materiais se possivel.
-                        </div>
-
-                        <div style="margin-top: 20px; padding-top: 15px; border-top: 1px dashed #e0e0e0;">
-                            <button type="button" onclick="wizard.pularMateriais()"
-                                style="padding: 10px 20px; background: transparent; border: 1px dashed #999; color: #666; border-radius: 8px; cursor: pointer; font-size: 13px;">
-                                <i class='bx bx-skip-next'></i> Pular esta etapa
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Step 6: Fotos -->
+                    <!-- Step 5: Fotos -->
                     <div class="wizard-step-content" data-step="5">
                         <div class="step-title"><i class='bx bx-camera'></i> Anexe fotos da execucao</div>
                         <div class="step-subtitle">Registre visualmente o que foi realizado ou problemas encontrados</div>
@@ -1820,8 +1729,8 @@
                         </div>
                     </div>
 
-                    <!-- Step 7: Progresso -->
-                    <div class="wizard-step-content" data-step="7">
+                    <!-- Step 6: Progresso -->
+                    <div class="wizard-step-content" data-step="6">
                         <div class="step-title"><i class='bx bx-trending-up'></i> Qual o percentual de conclusao?</div>
                         <div class="step-subtitle">Ajuste o slider para indicar o progresso desta etapa</div>
 
@@ -1841,8 +1750,8 @@
                         </div>
                     </div>
 
-                    <!-- Step 8: Resumo -->
-                    <div class="wizard-step-content" data-step="8">
+                    <!-- Step 7: Resumo -->
+                    <div class="wizard-step-content" data-step="7">
                         <div class="step-title"><i class='bx bx-check-double'></i> Revise e confirme</div>
                         <div class="step-subtitle">Verifique as informacoes antes de finalizar</div>
 
@@ -1916,7 +1825,7 @@
 // Wizard de Execucao de Atividade - Versao Aprimorada
 const wizard = {
     currentStep: 1,
-    totalSteps: 8,
+    totalSteps: 7,
     data: {
         etapa_id: '',
         etapa_nome: '-',
@@ -1927,12 +1836,7 @@ const wizard = {
         tipo_nome: '',
         descricao: '',
         percentual: 0,
-        fotos: [],
-        materiais: [],
-        tempo_gasto: '',
-        tipo_tempo: 'hora_extra',
-        solicitante: '',
-        justificativa: ''
+        fotos: []
     },
     atividadesPorEtapa: <?= json_encode($atividades_por_etapa ?? []) ?>,
     isSubmitting: false,
@@ -2482,12 +2386,6 @@ const wizard = {
 
             setTimeout(() => {
                 this.currentStep++;
-
-                // Pular step de materiais (step 5) se nao for atividade fora do escopo
-                if (this.currentStep === 5 && this.devePularMateriais()) {
-                    this.currentStep++; // Pula para o step 6 (fotos)
-                }
-
                 this.updateUI();
             }, 200);
         }
@@ -2502,12 +2400,6 @@ const wizard = {
 
             setTimeout(() => {
                 this.currentStep--;
-
-                // Se estava no step 6 (fotos) e pulou materiais, volta para step 4 (descricao)
-                if (this.currentStep === 5 && this.devePularMateriais()) {
-                    this.currentStep--; // Volta para o step 4 (descricao)
-                }
-
                 this.updateUI();
             }, 200);
         }
@@ -2542,25 +2434,11 @@ const wizard = {
                 }
                 this.data.descricao = descricao;
                 return true;
-            case 5: // Materiais - validar campos se preenchidos, mas nao obrigatorios
-                if (this.data.tipo === 'fora_do_escopo') {
-                    // Salvar dados de materiais
-                    this.data.tempo_gasto = document.getElementById('tempo_gasto').value;
-                    this.data.tipo_tempo = document.getElementById('tipo_tempo').value;
-                    this.data.solicitante = document.getElementById('solicitante').value.trim();
-                    this.data.justificativa = document.getElementById('justificativa').value.trim();
-
-                    // Aviso se nao adicionou materiais
-                    if (this.data.materiais.length === 0) {
-                        this.showToast('Nenhum material registrado. Adicione materiais ou continue.', 'info');
-                    }
-                }
+            case 5: // Fotos - sempre valido (opcional)
                 return true;
-            case 6: // Fotos - sempre valido (opcional)
+            case 6: // Progresso - sempre valido
                 return true;
-            case 7: // Progresso - sempre valido
-                return true;
-            case 8: // Resumo - sempre valido
+            case 7: // Resumo - sempre valido
                 return true;
             default:
                 return true;
@@ -2742,13 +2620,9 @@ const wizard = {
                 materiaisTexto = 'Nenhum material registrado';
             }
 
-            // Adicionar tempo gasto
-            if (this.data.tempo_gasto) {
-                materiaisTexto += `<br><span style="font-size: 12px; color: #666;">Tempo: ${this.data.tempo_gasto}h (${this.data.tipo_tempo})`;
-                if (this.data.solicitante) {
-                    materiaisTexto += ` | Solicitante: ${this.escapeHtml(this.data.solicitante)}`;
-                }
-                materiaisTexto += '</span>';
+            // Adicionar solicitante
+            if (this.data.solicitante) {
+                materiaisTexto += `<br><span style="font-size: 12px; color: #666;">Solicitante: ${this.escapeHtml(this.data.solicitante)}</span>`;
             }
 
             resumoMateriaisEl.innerHTML = materiaisTexto;
@@ -2817,8 +2691,6 @@ const wizard = {
             // Adicionar dados de materiais (se for atividade fora do escopo)
             if (this.data.tipo === 'fora_do_escopo') {
                 formData.append('is_foradoscopo', '1');
-                formData.append('tempo_gasto', this.data.tempo_gasto || '');
-                formData.append('tipo_tempo', this.data.tipo_tempo || '');
                 formData.append('solicitante', this.data.solicitante || '');
                 formData.append('justificativa', this.data.justificativa || '');
                 if (this.data.materiais.length > 0) {

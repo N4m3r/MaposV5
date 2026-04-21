@@ -248,6 +248,7 @@ class NotificacoesConfig extends MY_Controller
             'sms' => 'SMS',
             'todos' => 'Todos'
         ];
+        $this->data['variaveis_globais'] = $this->notificacoes_templates_model->getVariaveisGlobais();
         $this->data['view'] = 'notificacoes/templates_adicionar';
         $this->data['menuConfiguracoes'] = 'Notificações';
 
@@ -331,6 +332,8 @@ class NotificacoesConfig extends MY_Controller
             'sms' => 'SMS',
             'todos' => 'Todos'
         ];
+        $this->data['variaveis_globais'] = $this->notificacoes_templates_model->getVariaveisGlobais();
+        $this->data['variaveis_categoria'] = $this->notificacoes_templates_model->getVariaveisPorCategoria($template->categoria);
         $this->data['view'] = 'notificacoes/templates_editar';
         $this->data['menuConfiguracoes'] = 'Notificações';
 

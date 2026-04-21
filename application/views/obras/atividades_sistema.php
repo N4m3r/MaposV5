@@ -294,7 +294,7 @@ $tipos_atividades = $tipos_atividades ?? [];
     </div>
 
     <!-- Estatísticas -->
-    <?php if ($estatisticas_atividades): ?
+    <?php if ($estatisticas_atividades): ?>
     <div class="estatisticas-atividades">
         <div class="stat-card-atividade">
             <div class="number"><?= $estatisticas_atividades['total_atividades'] ?></div>
@@ -316,9 +316,9 @@ $tipos_atividades = $tipos_atividades ?? [];
     <?php endif; ?>
 
     <!-- Timeline de Atividades -->
-    <?php if (count($atividades_sistema) > 0): ?
+    <?php if (count($atividades_sistema) > 0): ?>
     <div class="atividades-timeline">
-        <?php foreach ($atividades_sistema as $atv): ?
+        <?php foreach ($atividades_sistema as $atv): ?>
         <?php
             $classe_status = '';
             $badge_status = '';
@@ -358,14 +358,14 @@ $tipos_atividades = $tipos_atividades ?? [];
                     <div class="atividade-hora-box">
                         <i class="bx bx-play-circle"></i> <?= date('H:i', strtotime($atv->hora_inicio)) ?>
                     </div>
-                    <?php if ($atv->hora_fim): ?
+                    <?php if ($atv->hora_fim): ?>
                     <div class="atividade-hora-box destaque">
                         <i class="bx bx-stop-circle"></i> <?= date('H:i', strtotime($atv->hora_fim)) ?>
                     </div>
                     <div class="text-muted">
                         <?= formatar_duracao($atv->duracao_minutos) ?>
                     </div>
-                    <?php else: ?
+                    <?php else: ?>
                     <div class="atividade-hora-box" style="background: #ffc107; color: #000;">
                         <i class="bx bx-time"></i> Em andamento...
                     </div>
@@ -374,31 +374,31 @@ $tipos_atividades = $tipos_atividades ?? [];
             </div>
 
             <div class="atividade-info-sistema">
-                <?php if ($atv->equipamento): ?
+                <?php if ($atv->equipamento): ?>
                 <p><i class="bx bx-wrench"></i> <?= htmlspecialchars($atv->equipamento) ?></p>
                 <?php endif; ?>
 
-                <?php if ($atv->descricao): ?
+                <?php if ($atv->descricao): ?>
                 <p><i class="bx bx-detail"></i> <?= htmlspecialchars($atv->descricao) ?></p>
                 <?php endif; ?>
 
-                <?php if ($atv->nome_tecnico): ?
+                <?php if ($atv->nome_tecnico): ?>
                 <p><i class="bx bx-user"></i> Técnico: <?= htmlspecialchars($atv->nome_tecnico) ?></p>
                 <?php endif; ?>
 
-                <?php if ($atv->problemas_encontrados): ?
+                <?php if ($atv->problemas_encontrados): ?>
                 <p class="text-warning"><i class="bx bx-error"></i> Problemas: <?= htmlspecialchars($atv->problemas_encontrados) ?></p>
                 <?php endif; ?>
 
-                <?php if ($atv->solucao_aplicada): ?
+                <?php if ($atv->solucao_aplicada): ?>
                 <p class="text-success"><i class="bx bx-check-shield"></i> Solução: <?= htmlspecialchars($atv->solucao_aplicada) ?></p>
                 <?php endif; ?>
             </div>
 
             <!-- Fotos -->
-            <?php if (!empty($atv->fotos)): ?
+            <?php if (!empty($atv->fotos)): ?>
             <div class="atividade-fotos">
-                <?php foreach ($atv->fotos as $foto): ?
+                <?php foreach ($atv->fotos as $foto): ?>
                 <?php
                     $caminho = $foto->caminho_arquivo ?? '';
                     if ($caminho) {
@@ -407,26 +407,26 @@ $tipos_atividades = $tipos_atividades ?? [];
                         $url = $foto->foto_base64 ?? '';
                     }
                 ?>
-                <?php if ($url): ?
+                <?php if ($url): ?>
                 <img src="<?= $url ?>" class="atividade-foto-thumb" onclick="abrirFoto('<?= $url ?>')" title="<?= $foto->descricao ?? 'Foto' ?>">
                 <?php endif; ?>
                 <?php endforeach; ?>
             </div>
-            <?php endif; ?
+            <?php endif; ?>
 
             <!-- Materiais -->
-            <?php if (!empty($atv->materiais)): ?
+            <?php if (!empty($atv->materiais)): ?>
             <div class="atividade-materiais" style="margin-top: 10px;">
                 <strong><i class="bx bx-package"></i> Materiais utilizados:</strong><br>
-                <?php foreach ($atv->materiais as $mat): ?
+                <?php foreach ($atv->materiais as $mat): ?>
                 <span class="badge badge-info"><?= $mat->quantidade ?> <?= $mat->unidade ?> - <?= $mat->produto_descricao ?? $mat->nome_produto ?></span><br>
                 <?php endforeach; ?>
             </div>
-            <?php endif; ?
+            <?php endif; ?>
         </div>
         <?php endforeach; ?>
     </div>
-    <?php else: ?
+    <?php else: ?>
     <div class="empty-atividades">
         <i class="bx bx-clipboard"></i>
         <h4>Nenhuma atividade registrada</h4>
