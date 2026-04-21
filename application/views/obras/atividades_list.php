@@ -628,16 +628,46 @@
         </div>
     </div>
 
+    <!-- DEBUG PANEL -->
+    <div style="background: #2c3e50; color: #fff; padding: 15px; margin-bottom: 20px; border-radius: 8px; font-family: monospace; font-size: 12px;">
+        <div style="font-weight: bold; color: #e74c3c; margin-bottom: 10px; font-size: 14px;">
+            <i class="icon-bug"></i> DEBUG - Dados da View
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+            <div><strong>Obra ID:</strong> <?php echo isset($obra) ? $obra->id : 'NÃO DEFINIDO'; ?></div>
+            <div><strong>Obra Nome:</strong> <?php echo isset($obra) ? $obra->nome : 'NÃO DEFINIDO'; ?></div>
+            <div><strong>Total Atividades:</strong> <?php echo isset($atividades) ? count($atividades) : 'NÃO DEFINIDO'; ?></div>
+            <div><strong>Total Técnicos:</strong> <?php echo isset($tecnicos) ? count($tecnicos) : 'NÃO DEFINIDO'; ?></div>
+            <div><strong>Total Etapas:</strong> <?php echo isset($etapas) ? count($etapas) : 'NÃO DEFINIDO'; ?></div>
+            <div><strong>Variável atividades existe:</strong> <?php echo isset($atividades) ? 'SIM' : 'NÃO'; ?></div>
+        </div>
+        <?php if (isset($atividades) && !empty($atividades)): ?>
+        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #34495e;">
+            <strong>Primeira atividade:</strong>
+            <pre style="margin: 5px 0; background: #1a252f; padding: 10px; border-radius: 4px; overflow-x: auto; font-size: 11px; max-height: 200px;"><?php print_r($atividades[0]); ?></pre>
+        </div>
+        <?php elseif (isset($atividades) && empty($atividades)): ?>
+        <div style="margin-top: 10px; color: #f39c12;">
+            <strong>⚠️ Array de atividades está VAZIO</strong><br>
+            <a href="<?php echo site_url('obras/verificarAtividades/' . (isset($obra) ? $obra->id : 0)); ?>" style="color: #3498db;">Verificar no Banco →</a>
+        </div>
+        <?php else: ?>
+        <div style="margin-top: 10px; color: #e74c3c;">
+            <strong>❌ Variável $atividades NÃO EXISTE</strong>
+        </div>
+        <?php endif; ?>
+    </div>
+
     <!-- Info Panel -->
     <div style="background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; margin-bottom: 20px; font-size: 13px;">
         <strong><i class="icon-info-sign"></i> Informações:</strong>
-        Obra ID: <code><?php echo $obra->id; ?></code> |
-        Total de atividades: <code id="totalAtividadesCounter"><?php echo count($atividades); ?></code>
+        Obra ID: <code><?php echo isset($obra) ? $obra->id : 'N/A'; ?></code> |
+        Total de atividades: <code id="totalAtividadesCounter"><?php echo isset($atividades) ? count($atividades) : 0; ?></code>
         <button onclick="location.reload()" style="float: right; padding: 4px 12px; font-size: 12px;">
             <i class="icon-refresh"></i> Recarregar
         </button>
 
-        <?php if (empty($atividades)): ?>
+        <?php if (!isset($atividades) || empty($atividades)): ?>
         <div id="semAtividadesMsg" style="margin-top: 10px; padding: 15px; background: #fff3cd; border: 1px solid #ffc107; border-radius: 4px;">
             <i class="icon-warning-sign" style="font-size: 18px; color: #856404;"></i>
             <strong style="color: #856404;"> Nenhuma atividade cadastrada para esta obra!</strong><br><br>
@@ -649,10 +679,10 @@
                 </button>
                 <?php endif; ?>
 
-                <a href="<?php echo site_url('diagnostico/obras'); ?>" class="btn btn-mini">
+                <a href="<?php echo site_url('diagnostico'); ?>" class="btn btn-mini">
                     <i class="icon-wrench"></i> Diagnóstico
                 </a>
-                <a href="<?php echo site_url('obras/verificarAtividades/' . $obra->id); ?>" class="btn btn-mini btn-info" target="_blank">
+                <a href="<?php echo site_url('obras/verificarAtividades/' . (isset($obra) ? $obra->id : 0)); ?>" class="btn btn-mini btn-info" target="_blank">
                     <i class="icon-search"></i> Verificar Banco
                 </a>
             </div>
@@ -684,9 +714,11 @@
     </div>
 
     <!-- Grid de Atividades -->
-    <?php if (!empty($atividades)): ?>
+    <?php if (isset($atividades) && !empty($atividades) && is_array($atividades)): ?>
     <div class="atividades-grid" id="atividadesGrid">
-        <?php foreach ($atividades as $atividade): ?>
+        <?php foreach ($atividades as $atividade):
+            if (!is_object($atividade)) continue;
+        ?>
         <?php
         $status = $atividade->status ?? 'agendada';
         $tipo = $atividade->tipo ?? 'trabalho';
@@ -788,11 +820,16 @@
         </div>
         <h3>Nenhuma atividade encontrada</h3>
         <p>Adicione atividades para acompanhar o progresso do trabalho na obra.</p>
-        <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
+        <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?
         <button onclick="$('#modalAdicionar').modal('show')" class="atividades-btn atividades-btn-primary" style="display: inline-flex;">
             <i class="icon-plus"></i> Adicionar Primeira Atividade
         </button>
         <?php endif; ?>
+        <div style="margin-top: 20px;">
+            <a href="<?php echo site_url('diagnostico'); ?>" class="btn btn-warning">
+                <i class="icon-wrench"></i> Ir para Diagnóstico
+            </a>
+        </div>
     </div>
     <?php endif; ?>
 </div>

@@ -21,9 +21,22 @@
         <div class="span12">
           <?php if ($var = $this->session->flashdata('success')): ?><script>swal("Sucesso!", "<?php echo str_replace('"', '', $var); ?>", "success");</script><?php endif; ?>
           <?php if ($var = $this->session->flashdata('error')): ?><script>swal("Falha!", "<?php echo str_replace('"', '', $var); ?>", "error");</script><?php endif; ?>
-          <?php if (isset($view)) {
-              echo $this->load->view($view, $this->load->get_vars(), true);
-          } ?>
+          <?php
+          if (isset($view)) {
+              // Preparar dados para a view - incluir todas as variáveis disponíveis
+              $view_data = [];
+
+              // Capturar todas as variáveis definidas nesta view
+              $vars = get_defined_vars();
+              foreach ($vars as $key => $value) {
+                  if ($key !== 'view' && $key !== 'var') {
+                      $view_data[$key] = $value;
+                  }
+              }
+
+              echo $this->load->view($view, $view_data, true);
+          }
+          ?>
         </div>
       </div>
     </div>
