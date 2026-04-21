@@ -575,8 +575,8 @@ class Obras extends MY_Controller
             // Estatísticas das atividades registradas
             $this->data['estatisticas_registro'] = $this->atividades_sistema->getEstatisticasPorObra($obra_id);
 
-            // Tipos de atividades para o formulário de registro
-            $this->data['tipos_atividades'] = $this->Atividades_tipos_model->listarPorCategoria();
+            // Tipos de atividades para o formulário de registro (lista plana)
+            $this->data['tipos_atividades'] = $this->Atividades_tipos_model->listar([], true);
         } else {
             $this->data['atividades_registradas'] = [];
             $this->data['estatisticas_registro'] = null;
