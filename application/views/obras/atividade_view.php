@@ -286,14 +286,14 @@
             <div class="atividade-header-left">
                 <div class="atividade-breadcrumb">
                     <a href="<?php echo site_url('obras'); ?>">Obras</a> &raquo;
-                    <a href="<?php echo site_url('obras/visualizar/' . $obra->id); ?>"><?php echo $obra->nome; ?></a> &raquo;
-                    <a href="<?php echo site_url('obras/atividades/' . $obra->id); ?>">Atividades</a> &raquo;
+                    <a href="<?php echo site_url('obras/visualizar/' . ($obra->id ?? 0)); ?>"><?php echo htmlspecialchars($obra->nome ?? 'Obra'); ?></a> &raquo;
+                    <a href="<?php echo site_url('obras/atividades/' . ($obra->id ?? 0)); ?>">Atividades</a> &raquo;
                     <span>Detalhes</span>
                 </div>
-                <h1><i class="icon-tasks"></i> <?php echo htmlspecialchars($atividade->titulo ?? 'Atividade #' . $atividade->id); ?></h1>
+                <h1><i class="icon-tasks"></i> <?php echo htmlspecialchars($atividade->titulo ?? 'Atividade #' . ($atividade->id ?? '')); ?></h1>
                 <div class="atividade-subtitle">
-                    <i class="icon-user"></i> Técnico: <?php echo $atividade->tecnico_nome ?? 'Não atribuído'; ?> |
-                    <i class="icon-calendar"></i> Data: <?php echo ($atividade->data_atividade ?? null) ? date('d/m/Y', strtotime($atividade->data_atividade)) : 'N/A'; ?>
+                    <i class="icon-user"></i> Técnico: <?php echo htmlspecialchars($atividade->tecnico_nome ?? 'Não atribuído'); ?> |
+                    <i class="icon-calendar"></i> Data: <?php echo (!empty($atividade->data_atividade)) ? date('d/m/Y', strtotime($atividade->data_atividade)) : 'N/A'; ?>
                 </div>
             </div>
             <div class="atividade-status-section">
@@ -456,10 +456,10 @@
 
             <!-- Ações -->
             <div class="actions-bar">
-                <a href="<?php echo site_url('obras/atividades/' . $obra->id); ?>" class="action-btn action-btn-secondary">
+                <a href="<?php echo site_url('obras/atividades/' . ($obra->id ?? 0)); ?>" class="action-btn action-btn-secondary">
                     <i class="icon-arrow-left"></i> Voltar
                 </a>
-                <a href="<?php echo site_url('obras/editarAtividade/' . $atividade->id); ?>" class="action-btn action-btn-primary">
+                <a href="<?php echo site_url('obras/editarAtividade/' . ($atividade->id ?? 0)); ?>" class="action-btn action-btn-primary">
                     <i class="icon-edit"></i> Editar Atividade
                 </a>
             </div>
@@ -476,12 +476,12 @@
                 </div>
                 <div style="text-align: center; padding: 15px;">
                     <div style="font-size: 18px; font-weight: 600; color: #333; margin-bottom: 10px;">
-                        <?php echo $obra->nome; ?>
+                        <?php echo htmlspecialchars($obra->nome ?? 'Obra não definida'); ?>
                     </div>
                     <div style="color: #888; font-size: 14px; margin-bottom: 15px;">
-                        <?php echo $obra->cliente_nome ?? 'Cliente não definido'; ?>
+                        <?php echo htmlspecialchars($obra->cliente_nome ?? 'Cliente não definido'); ?>
                     </div>
-                    <a href="<?php echo site_url('obras/visualizar/' . $obra->id); ?>" class="action-btn action-btn-primary" style="display: inline-flex;">
+                    <a href="<?php echo site_url('obras/visualizar/' . ($obra->id ?? 0)); ?>" class="action-btn action-btn-primary" style="display: inline-flex;">
                         <i class="icon-eye-open"></i> Ver Obra
                     </a>
                 </div>
