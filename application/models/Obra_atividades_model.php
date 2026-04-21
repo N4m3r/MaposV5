@@ -232,9 +232,12 @@ class Obra_atividades_model extends CI_Model
                 return false;
             }
 
-            $data = [
-                'updated_at' => date('Y-m-d H:i:s')
-            ];
+            $data = [];
+
+            // Só adicionar updated_at se a coluna existir
+            if ($this->db->field_exists('updated_at', 'obra_atividades')) {
+                $data['updated_at'] = date('Y-m-d H:i:s');
+            }
 
             // Campos permitidos
             $campos = [
