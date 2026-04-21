@@ -52,6 +52,15 @@ class Obra_atividades_model extends CI_Model
 
             $atividade = $query->row();
 
+            // Compatibilidade: mapear usuario_id para tecnico_id se necessário
+            if (!isset($atividade->tecnico_id) && isset($atividade->usuario_id)) {
+                $atividade->tecnico_id = $atividade->usuario_id;
+            }
+            // Compatibilidade: mapear usuario_nome para tecnico_nome se necessário
+            if ((!isset($atividade->tecnico_nome) || empty($atividade->tecnico_nome)) && isset($atividade->usuario_nome)) {
+                $atividade->tecnico_nome = $atividade->usuario_nome;
+            }
+
             log_message('debug', 'getById - Atividade ID ' . $id . ' encontrada. etapa_id=' . ($atividade->etapa_id ?? 'NULL') . ', tecnico_id=' . ($atividade->tecnico_id ?? 'NULL'));
 
             // Buscar nome do técnico separadamente se existir
@@ -100,18 +109,23 @@ class Obra_atividades_model extends CI_Model
         }
 
         try {
+            // Detectar qual campo de técnico existe (compatibilidade com estrutura antiga)
+            $colunas = $this->db->list_fields('obra_atividades');
+            $campo_tecnico = in_array('tecnico_id', $colunas) ? 'tecnico_id' : (in_array('usuario_id', $colunas) ? 'usuario_id' : null);
+            $campo_tecnico_nome = in_array('usuario_nome', $colunas) ? 'usuario_nome' : null;
+
             // Query com joins para buscar nomes de técnico e etapa
-            $this->db->select('obra_atividades.*, u.nome as tecnico_nome, oe.nome as etapa_nome, oe.numero_etapa');
+            $this->db->select('obra_atividades.*, u.nome as tecnico_nome_join, oe.nome as etapa_nome, oe.numero_etapa');
             $this->db->from('obra_atividades');
             $this->db->where('obra_atividades.obra_id', $obra_id);
 
             // Join com usuarios (técnico) - LEFT JOIN para não perder atividades sem técnico
-            if ($this->db->table_exists('usuarios')) {
-                $this->db->join('usuarios u', 'u.idUsuarios = obra_atividades.tecnico_id', 'left');
+            if ($this->db->table_exists('usuarios') && $campo_tecnico) {
+                $this->db->join('usuarios u', 'u.idUsuarios = obra_atividades.' . $campo_tecnico, 'left');
             }
 
             // Join com obra_etapas - LEFT JOIN para não perder atividades sem etapa
-            if ($this->db->table_exists('obra_etapas')) {
+            if ($this->db->table_exists('obra_etapas') && in_array('etapa_id', $colunas)) {
                 $this->db->join('obra_etapas oe', 'oe.id = obra_atividades.etapa_id', 'left');
             }
 
@@ -162,6 +176,34 @@ class Obra_atividades_model extends CI_Model
             }
 
             $result = $query->result();
+
+            // Mapear campos antigos para novos
+            foreach ($result as $atividade) {
+                // Compatibilidade: mapear usuario_id para tecnico_id
+                if (!isset($atividade->tecnico_id) && isset($atividade->usuario_id)) {
+                    $atividade->tecnico_id = $atividade->usuario_id;
+                }
+                // Compatibilidade: mapear usuario_nome ou tecnico_nome_join para tecnico_nome
+                if ((!isset($atividade->tecnico_nome) || empty($atividade->tecnico_nome)) && isset($atividade->tecnico_nome_join)) {
+                    $atividade->tecnico_nome = $atividade->tecnico_nome_join;
+                }
+                if ((!isset($atividade->tecnico_nome) || empty($atividade->tecnico_nome)) && isset($atividade->usuario_nome)) {
+                    $atividade->tecnico_nome = $atividade->usuario_nome;
+                }
+                // Compatibilidade: garantir que status existe
+                if (!isset($atividade->status)) {
+                    $atividade->status = 'agendada';
+                }
+                // Compatibilidade: garantir que titulo existe
+                if (!isset($atividade->titulo)) {
+                    $atividade->titulo = $atividade->descricao ?? 'Atividade #' . $atividade->id;
+                }
+                // Compatibilidade: garantir que data_atividade existe
+                if (!isset($atividade->data_atividade) && isset($atividade->created_at)) {
+                    $atividade->data_atividade = date('Y-m-d', strtotime($atividade->created_at));
+                }
+            }
+
             log_message('debug', 'getByObra: Retornando ' . count($result) . ' registros');
 
             return $result;
@@ -216,12 +258,19 @@ class Obra_atividades_model extends CI_Model
 
             // Campos opcionais - só adicionar se a coluna existir e tiver valor
             $campos_opcionais = [
-                'etapa_id', 'tecnico_id', 'os_id', 'descricao', 'tipo', 'status',
+                'etapa_id', 'tecnico_id', 'usuario_id', 'os_id', 'descricao', 'tipo', 'status',
                 'percentual_concluido', 'visivel_cliente', 'hora_inicio', 'hora_fim',
                 'horas_trabalhadas', 'impedimento', 'motivo_impedimento', 'tipo_impedimento',
                 'checkin_lat', 'checkin_lng', 'checkout_lat', 'checkout_lng',
                 'fotos_checkin', 'fotos_atividade', 'fotos_checkout', 'ativo'
             ];
+
+            // Mapear tecnico_id para usuario_id se necessário (compatibilidade)
+            if (!in_array('tecnico_id', $colunas_existentes) && in_array('usuario_id', $colunas_existentes)) {
+                if (isset($dados['tecnico_id'])) {
+                    $dados['usuario_id'] = $dados['tecnico_id'];
+                }
+            }
 
             foreach ($campos_opcionais as $campo) {
                 if (in_array($campo, $colunas_existentes)) {
@@ -292,7 +341,7 @@ class Obra_atividades_model extends CI_Model
 
             // Campos permitidos - só adicionar se a coluna existir na tabela
             $campos_permitidos = [
-                'etapa_id', 'tecnico_id', 'titulo', 'descricao', 'tipo',
+                'etapa_id', 'tecnico_id', 'usuario_id', 'titulo', 'descricao', 'tipo',
                 'status', 'percentual_concluido', 'hora_inicio', 'hora_fim',
                 'horas_trabalhadas', 'impedimento', 'motivo_impedimento',
                 'tipo_impedimento', 'checkin_lat', 'checkin_lng',
@@ -303,6 +352,13 @@ class Obra_atividades_model extends CI_Model
 
             // Obter colunas reais da tabela
             $colunas_existentes = $this->db->list_fields('obra_atividades');
+
+            // Mapear tecnico_id para usuario_id se necessário (compatibilidade)
+            if (!in_array('tecnico_id', $colunas_existentes) && in_array('usuario_id', $colunas_existentes)) {
+                if (array_key_exists('tecnico_id', $dados)) {
+                    $dados['usuario_id'] = $dados['tecnico_id'];
+                }
+            }
 
             foreach ($campos_permitidos as $campo) {
                 if (array_key_exists($campo, $dados) && in_array($campo, $colunas_existentes)) {
