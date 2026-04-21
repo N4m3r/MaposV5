@@ -314,9 +314,25 @@ class Tecnicos extends CI_Controller
             $minhas_os = [];
         }
 
+        // Buscar minhas atividades na obra
+        $minhas_atividades = [];
+        try {
+            if ($this->db->table_exists('obra_atividades')) {
+                $this->db->where(['obra_id' => $obra_id, 'tecnico_id' => $tecnico_id]);
+                $this->db->order_by('data_atividade', 'DESC');
+                $this->db->order_by('created_at', 'DESC');
+                $query = $this->db->get('obra_atividades');
+                $minhas_atividades = $query ? $query->result() : [];
+            }
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao buscar atividades do tecnico na obra: ' . $e->getMessage());
+            $minhas_atividades = [];
+        }
+
         $this->data['obra'] = $obra;
         $this->data['etapas'] = $etapas;
         $this->data['minhas_os'] = $minhas_os;
+        $this->data['minhas_atividades'] = $minhas_atividades;
         $this->data['menuObras'] = 'active';
         $this->data['pageTitle'] = 'Executar Obra: ' . $obra->nome;
         $this->data['title'] = 'Executar Obra - Portal do Técnico';
@@ -2019,6 +2035,61 @@ class Tecnicos extends CI_Controller
         } else {
             log_message('error', '_salvar_foto_upload - Falha ao mover arquivo para: ' . $caminho_completo);
             return false;
+        }
+    }
+
+    /**
+     * API - Verificar atividades do técnico (diagnóstico)
+     */
+    public function api_verificar_atividades($obra_id = null)
+    {
+        header('Content-Type: application/json');
+
+        $tecnico_id = $this->session->userdata('tec_id');
+
+        if (!$obra_id) {
+            echo json_encode(['success' => false, 'message' => 'Obra não informada']);
+            return;
+        }
+
+        try {
+            // Verificar se tabela existe
+            $tabela_existe = $this->db->table_exists('obra_atividades');
+
+            if (!$tabela_existe) {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Tabela obra_atividades não existe',
+                    'tabela_existe' => false
+                ]);
+                return;
+            }
+
+            // Listar colunas
+            $colunas = $this->db->list_fields('obra_atividades');
+
+            // Buscar atividades do técnico
+            $this->db->where(['obra_id' => $obra_id, 'tecnico_id' => $tecnico_id]);
+            $this->db->order_by('data_atividade', 'DESC');
+            $query = $this->db->get('obra_atividades');
+            $atividades = $query ? $query->result() : [];
+
+            echo json_encode([
+                'success' => true,
+                'obra_id' => $obra_id,
+                'tecnico_id' => $tecnico_id,
+                'tabela_existe' => true,
+                'colunas' => $colunas,
+                'total_atividades' => count($atividades),
+                'atividades' => $atividades
+            ]);
+
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao verificar atividades: ' . $e->getMessage());
+            echo json_encode([
+                'success' => false,
+                'message' => 'Erro: ' . $e->getMessage()
+            ]);
         }
     }
 

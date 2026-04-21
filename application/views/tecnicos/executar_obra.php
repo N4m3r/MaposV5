@@ -1341,7 +1341,7 @@
         <?php endif; ?>
     </div>
 
-    <!-- Coluna Direita: Minhas OS e Registrar Atividade -->
+    <!-- Coluna Direita: Minhas OS, Atividades e Registrar Atividade -->
     <div>
         <h3 class="section-title"><i class='bx bx-clipboard'></i> Minhas OS nesta Obra</h3>
 
@@ -1366,6 +1366,68 @@
             <div class="empty-state">
                 <i class='bx bx-clipboard'></i>
                 <p>Voce nao tem OS nesta obra</p>
+            </div>
+        <?php endif; ?>
+
+        <!-- Minhas Atividades Registradas -->
+        <h3 class="section-title" style="margin-top: 30px;"><i class='bx bx-history'></i> Minhas Atividades</h3>
+
+        <?php if (!empty($minhas_atividades)): ?>
+            <div class="atividades-lista" style="max-height: 400px; overflow-y: auto;">
+                <?php
+                $tipo_labels = [
+                    'execucao' => 'Execução',
+                    'problema' => 'Problema',
+                    'observacao' => 'Observação'
+                ];
+                $tipo_cores = [
+                    'execucao' => '#27ae60',
+                    'problema' => '#e74c3c',
+                    'observacao' => '#3498db'
+                ];
+                foreach ($minhas_atividades as $atividade):
+                    $tipo = $atividade->tipo ?? 'execucao';
+                    $cor = $tipo_cores[$tipo] ?? '#666';
+                    $label = $tipo_labels[$tipo] ?? ucfirst($tipo);
+                    $tem_fotos = !empty($atividade->fotos_atividade) || !empty($atividade->fotos);
+                ?>
+                    <div class="atividade-item" style="background: #f8f9fa; border-radius: 10px; padding: 15px; margin-bottom: 10px; border-left: 4px solid <?= $cor ?>;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="background: <?= $cor ?>20; color: <?= $cor ?>; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">
+                                    <?= $label ?>
+                                </span>
+                                <span style="color: #888; font-size: 12px;">
+                                    <?= date('d/m/Y', strtotime($atividade->data_atividade)) ?>
+                                </span>
+                            </div>
+                            <?php if ($tem_fotos): ?>
+                                <i class='bx bx-camera' style="color: #667eea; font-size: 18px;"></i>
+                            <?php endif; ?>
+                        </div>
+                        <p style="margin: 0; font-size: 13px; color: #333; line-height: 1.4;">
+                            <?= htmlspecialchars(substr($atividade->descricao, 0, 100)) ?>
+                            <?= strlen($atividade->descricao) > 100 ? '...' : '' ?>
+                        </p>
+
+                        <?php if (($atividade->percentual_concluido ?? 0) > 0): ?>
+                            <div style="margin-top: 8px;">
+                                <div style="display: flex; justify-content: space-between; font-size: 11px; color: #666; margin-bottom: 3px;">
+                                    <span>Progresso</span>
+                                    <span><?= $atividade->percentual_concluido ?>%</span>
+                                </div>
+                                <div style="height: 4px; background: #e0e0e0; border-radius: 2px;">
+                                    <div style="width: <?= $atividade->percentual_concluido ?>%; height: 100%; background: <?= $cor ?>; border-radius: 2px;"></div>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        <?php else: ?>
+            <div class="empty-state" style="padding: 20px;">
+                <i class='bx bx-history' style="font-size: 32px; color: #ddd;"></i>
+                <p style="font-size: 13px;">Nenhuma atividade registrada hoje</p>
             </div>
         <?php endif; ?>
 
