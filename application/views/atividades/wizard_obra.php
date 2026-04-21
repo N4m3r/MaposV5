@@ -1,5 +1,5 @@
 <?php
-// View do Wizard de Atividades para Obras (integração com sistema de obras)
+// View do Wizard de Atividades para Obras - Design Moderno
 $obra = $obra ?? null;
 $etapa = $etapa ?? null;
 $etapas = $etapas ?? [];
@@ -9,6 +9,7 @@ $tipos_atividades = $tipos_atividades ?? [];
 $checkin_realizado = $checkin_realizado ?? false;
 $obra_id = $obra_id ?? 0;
 $etapa_id = $etapa_id ?? 0;
+$is_portal_tecnico = $is_portal_tecnico ?? false;
 
 // Busca atividades planejadas da etapa selecionada (se houver)
 $atividades_planejadas_etapa = [];
@@ -22,450 +23,682 @@ if ($etapa_id && !empty($etapas)) {
 }
 ?>
 
+<!-- Tema Moderno Obras -->
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/obras-modern-theme.css">
+
 <style>
-.wizard-obra-header {
-    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-    color: white;
-    padding: 20px;
-    border-radius: 12px;
-    margin-bottom: 20px;
-}
+    /* Header da Obra */
+    .obra-header {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        border-radius: 12px;
+        padding: 24px;
+        color: white;
+        margin-bottom: 24px;
+    }
+    .obra-header h2 {
+        margin: 0 0 8px 0;
+        font-size: 24px;
+    }
+    .obra-header p {
+        margin: 0;
+        opacity: 0.9;
+    }
+    .obra-status {
+        display: inline-block;
+        background: rgba(255,255,255,0.2);
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-top: 12px;
+    }
 
-.etapa-selecao {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 15px;
-    margin: 20px 0;
-}
+    .progress-section {
+        margin: 20px 0;
+    }
+    .progress-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+    }
+    .progress-bar {
+        height: 10px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 5px;
+        overflow: hidden;
+    }
+    .progress-fill {
+        height: 100%;
+        background: white;
+        border-radius: 5px;
+        transition: width 0.5s ease;
+    }
 
-.etapa-card {
-    background: #f8f9fa;
-    border: 3px solid transparent;
-    border-radius: 10px;
-    padding: 20px;
-    cursor: pointer;
-    transition: all 0.3s;
-    position: relative;
-}
+    /* Cards */
+    .wizard-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        margin-bottom: 20px;
+        overflow: hidden;
+    }
+    .wizard-card-header {
+        background: #f8f9fa;
+        padding: 16px 20px;
+        border-bottom: 1px solid #e0e0e0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .wizard-card-header h3 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+    }
+    .wizard-card-header .icon {
+        width: 32px;
+        height: 32px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+    }
+    .wizard-card-body {
+        padding: 20px;
+    }
 
-.etapa-card:hover {
-    border-color: #11998e;
-    transform: translateY(-3px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
+    /* Cronômetro */
+    .timer-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 24px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    .timer-display {
+        font-size: 48px;
+        font-weight: bold;
+        font-family: 'Courier New', monospace;
+        margin: 10px 0;
+    }
+    .timer-label {
+        font-size: 12px;
+        text-transform: uppercase;
+        opacity: 0.9;
+    }
+    .timer-row {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 20px;
+    }
+    .timer-col {
+        text-align: center;
+    }
+    .timer-col .time {
+        font-size: 24px;
+        font-weight: bold;
+    }
+    .timer-col .label {
+        font-size: 11px;
+        opacity: 0.9;
+    }
 
-.etapa-card.selected {
-    border-color: #11998e;
-    background: #e8f5e9;
-    box-shadow: 0 4px 15px rgba(17,153,142,0.3);
-}
+    /* Etapas */
+    .etapa-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 15px;
+    }
+    .etapa-card {
+        background: #f8f9fa;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        padding: 16px;
+        cursor: pointer;
+        transition: all 0.3s;
+        position: relative;
+    }
+    .etapa-card:hover {
+        border-color: #667eea;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .etapa-card.selected {
+        border-color: #11998e;
+        background: #e8f5e9;
+    }
+    .etapa-card .etapa-numero {
+        position: absolute;
+        top: -10px;
+        left: 15px;
+        background: #667eea;
+        color: white;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 12px;
+    }
+    .etapa-card.selected .etapa-numero {
+        background: #11998e;
+    }
+    .etapa-card h4 {
+        margin: 12px 0 8px 0;
+        font-size: 15px;
+        color: #333;
+    }
+    .etapa-card p {
+        margin: 0;
+        font-size: 13px;
+        color: #666;
+    }
+    .etapa-progress {
+        margin-top: 12px;
+    }
+    .etapa-progress-bar {
+        height: 6px;
+        background: #e0e0e0;
+        border-radius: 3px;
+        overflow: hidden;
+    }
+    .etapa-progress-fill {
+        height: 100%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 3px;
+    }
+    .etapa-card.selected .etapa-progress-fill {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    }
 
-.etapa-card.disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
+    /* Botões */
+    .btn-acao {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s;
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+    }
+    .btn-acao:hover {
+        transform: translateY(-1px);
+        text-decoration: none;
+    }
+    .btn-primary-tec {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+    .btn-primary-tec:hover {
+        color: white;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+    .btn-success-tec {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: white;
+    }
+    .btn-success-tec:hover {
+        color: white;
+        box-shadow: 0 4px 12px rgba(17, 153, 142, 0.4);
+    }
+    .btn-warning-tec {
+        background: linear-gradient(135deg, #f39c12 0%, #f1c40f 100%);
+        color: white;
+    }
+    .btn-danger-tec {
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        color: white;
+    }
+    .btn-secondary {
+        background: #f8f9fa;
+        color: #666;
+        border: 1px solid #ddd;
+    }
+    .btn-secondary:hover {
+        background: #e9ecef;
+    }
 
-.etapa-card .etapa-numero {
-    position: absolute;
-    top: -10px;
-    left: 15px;
-    background: #667eea;
-    color: white;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 14px;
-}
+    /* Atividade em Andamento */
+    .atividade-andamento-card {
+        background: linear-gradient(135deg, #11998e15 0%, #38ef7d15 100%);
+        border: 2px solid #11998e;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    .atividade-andamento-header {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+    .atividade-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 24px;
+    }
+    .atividade-info h4 {
+        margin: 0;
+        color: #11998e;
+        font-size: 16px;
+    }
+    .atividade-info p {
+        margin: 4px 0 0 0;
+        font-size: 13px;
+        color: #666;
+    }
 
-.etapa-card.selected .etapa-numero {
-    background: #11998e;
-}
+    /* Histórico */
+    .historico-item {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 10px;
+        border-left: 4px solid #ddd;
+    }
+    .historico-item.andamento {
+        border-left-color: #11998e;
+        background: #e8f5e9;
+    }
+    .historico-item.pausada {
+        border-left-color: #f39c12;
+        background: #fff3cd;
+    }
+    .historico-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+    .historico-tempo {
+        font-size: 12px;
+        color: #888;
+    }
+    .historico-tipo {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+    .tipo-execucao { background: #d4edda; color: #155724; }
+    .tipo-problema { background: #f8d7da; color: #721c24; }
+    .tipo-observacao { background: #fff3cd; color: #856404; }
 
-.etapa-card h5 {
-    margin: 10px 0 8px 0;
-    font-size: 16px;
-    color: #333;
-}
+    /* Form Elements */
+    .form-group {
+        margin-bottom: 20px;
+    }
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #333;
+        font-size: 14px;
+    }
+    .form-control {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 14px;
+        transition: all 0.3s;
+    }
+    .form-control:focus {
+        border-color: #667eea;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    textarea.form-control {
+        resize: vertical;
+        min-height: 100px;
+    }
 
-.etapa-card .progress {
-    height: 6px;
-    margin: 10px 0;
-    background: #e0e0e0;
-    border-radius: 3px;
-    overflow: hidden;
-}
+    /* Upload Area */
+    .upload-area {
+        border: 2px dashed #ddd;
+        border-radius: 10px;
+        padding: 30px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    .upload-area:hover {
+        border-color: #667eea;
+        background: #f8f9ff;
+    }
+    .upload-area i {
+        font-size: 40px;
+        color: #667eea;
+        margin-bottom: 10px;
+    }
 
-.etapa-card .progress-bar {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    transition: width 0.3s;
-}
+    /* Alertas */
+    .alert-modern {
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .alert-warning-modern {
+        background: #fff3cd;
+        color: #856404;
+        border-left: 4px solid #ffc107;
+    }
+    .alert-info-modern {
+        background: #e8f4fd;
+        color: #0c5460;
+        border-left: 4px solid #3498db;
+    }
 
-.etapa-card.selected .progress-bar {
-    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-}
+    /* Grid Layout */
+    .main-container {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
 
-.atividades-planejadas {
-    margin-top: 20px;
-    padding: 15px;
-    background: #fff3cd;
-    border-radius: 8px;
-    border-left: 4px solid #ffc107;
-}
+    @media (min-width: 1024px) {
+        .main-container {
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+    }
 
-.atividades-planejadas h6 {
-    margin: 0 0 10px 0;
-    color: #856404;
-    font-size: 14px;
-}
+    /* Ações Footer */
+    .acoes-footer {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 20px;
+    }
 
-.atividade-planejada-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 12px;
-    margin: 5px 0;
-    background: white;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.2s;
-    border: 2px solid transparent;
-}
-
-.atividade-planejada-item:hover {
-    border-color: #ffc107;
-    transform: translateX(3px);
-}
-
-.atividade-planejada-item.selecionada {
-    border-color: #11998e;
-    background: #e8f5e9;
-}
-
-.atividade-planejada-item input[type="radio"] {
-    margin: 0;
-}
-
-.painel-hora-obra {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 20px;
-    border-radius: 10px;
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.painel-hora-obra .hora-label {
-    font-size: 12px;
-    text-transform: uppercase;
-    opacity: 0.9;
-    margin-bottom: 5px;
-}
-
-.painel-hora-obra .hora-valor {
-    font-size: 36px;
-    font-weight: bold;
-    font-family: 'Courier New', monospace;
-}
-
-.painel-hora-obra .cronometro {
-    font-size: 48px;
-    font-weight: bold;
-    font-family: 'Courier New', monospace;
-}
-
-.historico-atividades-obra {
-    max-height: 400px;
-    overflow-y: auto;
-}
-
-.etapa-badge {
-    display: inline-block;
-    padding: 4px 12px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border-radius: 15px;
-    font-size: 12px;
-    margin-bottom: 10px;
-}
-
-.alert-etapa-obrigatoria {
-    background: #fff3cd;
-    color: #856404;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 15px;
-    border-left: 4px solid #ffc107;
-}
+    /* Atividades Planejadas */
+    .atividades-planejadas-box {
+        margin-top: 20px;
+        padding: 15px;
+        background: #fff3cd;
+        border-radius: 10px;
+        border-left: 4px solid #ffc107;
+    }
+    .atividade-planejada-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px;
+        margin: 8px 0;
+        background: white;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: 2px solid transparent;
+    }
+    .atividade-planejada-item:hover {
+        border-color: #ffc107;
+    }
+    .atividade-planejada-item.selecionada {
+        border-color: #11998e;
+        background: #e8f5e9;
+    }
 </style>
 
-<div class="row-fluid wizard-container">
-    <div class="span12">
-        <!-- Painel de Hora -->
-        <?php if ($atividade_em_andamento): ?>
-        <div class="painel-hora-obra">
-            <div class="row-fluid">
-                <div class="span4">
-                    <div class="hora-label">Hora Início</div>
-                    <div class="hora-valor" id="hora-inicio">
-                        <?= date('H:i', strtotime($atividade_em_andamento->hora_inicio)) ?>
-                    </div>
-                </div>
-                <div class="span4">
-                    <div class="hora-label">Tempo Decorrido</div>
-                    <div class="cronometro" id="cronometro">00:00:00</div>
-                </div>
-                <div class="span4">
-                    <div class="hora-label">Hora Fim</div>
-                    <div class="hora-valor" id="hora-fim">--:--</div>
-                </div>
-            </div>
-        </div>
-        <?php endif; ?>
+<!-- Header da Obra -->
+<div class="obra-header">
+    <h2><i class='bx bx-building-house'></i> <?= htmlspecialchars($obra->nome ?? 'Obra') ?></h2>
+    <p><i class='bx bx-map'></i> <?= htmlspecialchars($obra->endereco ?? 'Endereço não informado') ?></p>
+    <?php if ($etapa): ?>
+    <p style="margin-top: 8px;"><i class='bx bx-layer'></i> Etapa: <strong><?= htmlspecialchars($etapa->nome) ?></strong></p>
+    <?php endif; ?>
+    <span class="obra-status"><?= $obra->status ?? 'N/A' ?></span>
 
-        <!-- Obra Info -->
-        <div class="wizard-obra-header">
-            <h4><i class="bx bx-building-house"></i> <?= htmlspecialchars($obra->nome) ?></h4>
-            <p><i class="bx bx-map"></i> <?= htmlspecialchars($obra->endereco ?? 'N/A') ?></p>
-            <?php if ($etapa): ?>
-            <p><i class="bx bx-layer"></i> Etapa: <strong><?= htmlspecialchars($etapa->nome) ?></strong></p>
-            <?php endif; ?>
+    <div class="progress-section">
+        <div class="progress-header">
+            <span>Progresso Geral</span>
+            <span><?= $obra->percentual_concluido ?? 0 ?>%</span>
         </div>
-
-        <!-- Alerta de Etapa Obrigatória -->
-        <?php if (!$atividade_em_andamento && empty($etapa_id)): ?>
-        <div class="alert-etapa-obrigatoria">
-            <i class="bx bx-info-circle"></i>
-            <strong>Atenção:</strong> Para iniciar uma atividade, você deve selecionar a <strong>Etapa da Obra</strong> em que está trabalhando.
+        <div class="progress-bar">
+            <div class="progress-fill" style="width: <?= $obra->percentual_concluido ?? 0 ?>"></div>
         </div>
-        <?php endif; ?>
+    </div>
+</div>
 
+<?php if ($atividade_em_andamento): ?>
+<!-- Timer Card -->
+<div class="timer-card">
+    <div class="timer-label">Tempo de Execução</div>
+    <div class="timer-display" id="cronometro">00:00:00</div>
+    <div class="timer-row">
+        <div class="timer-col">
+            <div class="time" id="hora-inicio"><?= date('H:i', strtotime($atividade_em_andamento->hora_inicio)) ?></div>
+            <div class="label">Início</div>
+        </div>
+        <div class="timer-col">
+            <div class="time" id="hora-fim">--:--</div>
+            <div class="label">Término</div>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
+
+<div class="main-container">
+
+    <!-- Coluna Esquerda -->
+    <div>
         <?php if (!$atividade_em_andamento && !$checkin_realizado): ?>
-        <!-- PASSO 1: CHECK-IN E SELEÇÃO DE ETAPA -->
-        <div class="widget-box" id="step-checkin-obra">
-            <div class="widget-title">
-                <span class="icon"><i class="bx bx-log-in-circle"></i></span>
-                <h5>Check-in - Selecione a Etapa e Inicie o Trabalho</h5>
+        <!-- Seleção de Etapa -->
+        <div class="wizard-card">
+            <div class="wizard-card-header">
+                <div class="icon"><i class='bx bx-layer'></i></div>
+                <h3>Selecione a Etapa</h3>
             </div>
-            <div class="widget-content">
+            <div class="wizard-card-body">
+                <?php if (!empty($etapas)): ?>
                 <form id="form-checkin-obra">
                     <input type="hidden" name="obra_id" value="<?= $obra_id ?>">
                     <input type="hidden" name="etapa_id" id="etapa_selecionada" value="<?= $etapa_id ?>">
                     <input type="hidden" name="obra_atividade_id" id="obra_atividade_selecionada" value="">
-                    <input type="hidden" name="tipo_id" value="1"> <!-- Tipo: Check-in -->
+                    <input type="hidden" name="tipo_id" value="1">
                     <input type="hidden" name="latitude" id="latitude">
                     <input type="hidden" name="longitude" id="longitude">
 
-                    <?php if (count($etapas) > 0): ?>
-                    <!-- Seleção de Etapa (OBRIGATÓRIO) -->
-                    <div class="control-group">
-                        <label class="control-label">
-                            <i class="bx bx-layer"></i> Selecione a Etapa da Obra <span style="color: #dc3545;">*</span>
-                        </label>
-                        <div class="controls etapa-selecao" id="etapa-selecao-container">
-                            <?php foreach ($etapas as $index => $etapa_item): ?>
-                            <div class="etapa-card" data-etapa="<?= $etapa_item->id ?>" data-index="<?= $index ?>"
-                                 onclick="selecionarEtapa(<?= $etapa_item->id ?>, <?= $index ?>)">
-                                <div class="etapa-numero"><?= $etapa_item->numero_etapa ?? ($index + 1) ?></div>
-                                <h5><?= htmlspecialchars($etapa_item->nome) ?></h5>
-                                <p class="text-muted" style="font-size: 13px;"><?= htmlspecialchars($etapa_item->descricao ?? 'Sem descrição') ?></p>
-                                <div class="progress">
-                                    <div class="progress-bar" style="width: <?= $etapa_item->progresso_real ?? $etapa_item->percentual_concluido ?? 0 ?>%"></div>
+                    <div class="etapa-cards" id="etapa-selecao-container">
+                        <?php foreach ($etapas as $index => $etapa_item): ?>
+                        <div class="etapa-card" data-etapa="<?= $etapa_item->id ?>" data-index="<?= $index ?>"
+                             onclick="selecionarEtapa(<?= $etapa_item->id ?>, <?= $index ?>)">
+                            <div class="etapa-numero"><?= $etapa_item->numero_etapa ?? ($index + 1) ?></div>
+                            <h4><?= htmlspecialchars($etapa_item->nome) ?></h4>
+                            <p><?= htmlspecialchars($etapa_item->descricao ?? 'Sem descrição') ?></p>
+                            <div class="etapa-progress">
+                                <div class="etapa-progress-bar">
+                                    <div class="etapa-progress-fill" style="width: <?= $etapa_item->progresso_real ?? $etapa_item->percentual_concluido ?? 0 ?>"></div>
                                 </div>
-                                <small><?= $etapa_item->progresso_real ?? $etapa_item->percentual_concluido ?? 0 ?>% concluído</small>
+                                <small style="color: #888;"><?= $etapa_item->progresso_real ?? $etapa_item->percentual_concluido ?? 0 ?>% concluído</small>
                             </div>
-                            <?php endforeach; ?>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+
+                    <!-- Atividades Planejadas -->
+                    <div class="atividades-planejadas-box" id="atividades-planejadas-container" style="display: none;">
+                        <h5><i class='bx bx-task'></i> Atividades Planejadas</h5>
+                        <div id="atividades-planejadas-lista">
+                            <!-- Preenchido via JS -->
                         </div>
                     </div>
 
-                    <!-- Atividades Planejadas da Etapa Selecionada -->
-                    <div class="control-group" id="atividades-planejadas-container" style="display: none;">
-                        <label class="control-label">
-                            <i class="bx bx-task"></i> Selecione a Atividade Planejada (Opcional)
-                        </label>
-                        <div class="controls">
-                            <div class="atividades-planejadas" id="atividades-planejadas-lista">
-                                <!-- Preenchido via JavaScript -->
-                            </div>
-                        </div>
-                    </div>
-                    <?php else: ?>
-                    <div class="alert alert-warning">
-                        <i class="bx bx-error-circle"></i>
-                        <strong>Atenção:</strong> Esta obra não possui etapas cadastradas. Entre em contato com o administrador.
-                    </div>
-                    <?php endif; ?>
-
-                    <div class="row-fluid" style="margin-top: 20px;">
-                        <div class="span6">
-                            <div class="control-group">
-                                <label class="control-label">Foto do Local</label>
-                                <div class="controls">
-                                    <input type="file" name="foto" id="foto-local" accept="image/*" capture="environment" class="input-block-level">
-                                    <img id="preview-foto" style="max-width: 100%; margin-top: 10px; display: none;">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="span6">
-                            <div class="control-group">
-                                <label class="control-label">Localização GPS</label>
-                                <div class="controls">
-                                    <button type="button" class="btn btn-info" onclick="obterLocalizacao()">
-                                        <i class="bx bx-map-pin"></i> Atualizar Localização
-                                    </button>
-                                    <div id="info-gps" class="text-muted" style="margin-top: 10px;">
-                                        Nenhuma localização detectada
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="form-group" style="margin-top: 20px;">
+                        <label>Observações de Chegada</label>
+                        <textarea name="observacoes" class="form-control" rows="3"
+                            placeholder="Condições do local, trabalho a ser realizado..."></textarea>
                     </div>
 
-                    <div class="control-group">
-                        <label class="control-label">Observações de Chegada</label>
-                        <div class="controls">
-                            <textarea name="observacoes" class="input-block-level" rows="3" placeholder="Condições do local, trabalho a ser realizado, etc."></textarea>
+                    <div class="form-group">
+                        <label>Foto do Local</label>
+                        <div class="upload-area" onclick="document.getElementById('foto-local').click()">
+                            <i class='bx bx-camera'></i>
+                            <p>Toque para adicionar foto</p>
+                            <input type="file" name="foto" id="foto-local" accept="image/*" capture="environment"
+                                   style="display: none;" onchange="previewFoto(this)">
                         </div>
+                        <img id="preview-foto" style="max-width: 100%; margin-top: 15px; border-radius: 8px; display: none;">
                     </div>
 
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-success btn-large" id="btn-iniciar" disabled>
-                            <i class="bx bx-play"></i> INICIAR TRABALHO
+                    <div class="acoes-footer">
+                        <button type="button" class="btn-acao btn-success-tec" id="btn-iniciar" onclick="realizarCheckinObra()" disabled>
+                            <i class='bx bx-play'></i> INICIAR TRABALHO
                         </button>
-                        <a href="<?= site_url(($is_portal_tecnico ?? false) ? 'tecnicos/executar_obra/' . $obra_id : 'obras_tecnico/obra/' . $obra_id) ?>" class="btn">
-                            <i class="bx bx-arrow-back"></i> Voltar à Obra
+                        <a href="<?= site_url($is_portal_tecnico ? 'tecnicos/executar_obra/' . $obra_id : 'obras_tecnico/obra/' . $obra_id) ?>"
+                           class="btn-acao btn-secondary">
+                            <i class='bx bx-arrow-back'></i> Voltar
                         </a>
                     </div>
                 </form>
-            </div>
-        </div>
-
-        <?php else: ?>
-        <!-- PASSO 2: ATIVIDADES EM ANDAMENTO -->
-        <div class="widget-box">
-            <div class="widget-title">
-                <span class="icon"><i class="bx bx-time-five"></i></span>
-                <h5>Atividade em Andamento</h5>
-            </div>
-            <div class="widget-content">
-                <?php if ($atividade_em_andamento): ?>
-                <div class="etapa-badge" id="etapa-atual-badge">
-                    <i class="bx bx-layer"></i> <?= htmlspecialchars($atividade_em_andamento->etapa_nome ?? 'Etapa não definida') ?>
-                </div>
-                <div class="card-atividade em-andamento" id="card-atual">
-                    <div class="row-fluid">
-                        <div class="span8">
-                            <h4>
-                                <i class="bx <?= htmlspecialchars($atividade_em_andamento->tipo_icone ?? 'bx-wrench') ?>"
-                                   style="color: <?= htmlspecialchars($atividade_em_andamento->tipo_cor ?? '#007bff') ?>"></i>
-                                <?= htmlspecialchars($atividade_em_andamento->tipo_nome) ?>
-                            </h4>
-                            <p><strong>Início:</strong> <?= date('H:i', strtotime($atividade_em_andamento->hora_inicio)) ?></p>
-                            <p id="duracao-atual"><strong>Duração:</strong> Calculando...</p>
-                            <?php if ($atividade_em_andamento->equipamento): ?>
-                                <p><strong>Equipamento:</strong> <?= htmlspecialchars($atividade_em_andamento->equipamento) ?></p>
-                            <?php endif; ?>
-                        </div>
-                        <div class="span4 text-right">
-                            <button class="btn btn-warning" onclick="pausarAtividade(<?= $atividade_em_andamento->idAtividade ?>")>
-                                <i class="bx bx-pause"></i> Pausar
-                            </button>
-                            <button class="btn btn-danger" onclick="abrirModalFinalizar(<?= $atividade_em_andamento->idAtividade ?>")>
-                                <i class="bx bx-stop"></i> Finalizar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row-fluid" style="margin-top: 15px;">
-                    <div class="span6">
-                        <button class="btn btn-info" onclick="abrirModalNovaAtividade()">
-                            <i class="bx bx-plus"></i> Nova Atividade
-                        </button>
-                        <button class="btn" onclick="abrirModalFoto()">
-                            <i class="bx bx-camera"></i> Adicionar Foto
-                        </button>
-                    </div>
-                    <div class="span6 text-right">
-                        <button class="btn btn-success btn-large" onclick="abrirModalCheckoutObra()">
-                            <i class="bx bx-log-out-circle"></i> FINALIZAR TRABALHO
-                        </button>
-                    </div>
-                </div>
                 <?php else: ?>
-                <div class="alert alert-info">
-                    <i class="bx bx-info-circle"></i> Nenhuma atividade em andamento.
+                <div class="alert-modern alert-warning-modern">
+                    <i class='bx bx-error-circle' style="font-size: 24px;"></i>
+                    <div>
+                        <strong>Atenção:</strong> Esta obra não possui etapas cadastradas.
+                    </div>
                 </div>
-                <button class="btn btn-info" onclick="abrirModalNovaAtividade()">
-                    <i class="bx bx-plus"></i> Iniciar Nova Atividade
-                </button>
-                <button class="btn btn-success" onclick="abrirModalCheckoutObra()">
-                    <i class="bx bx-log-out-circle"></i> Finalizar Trabalho
-                </button>
                 <?php endif; ?>
             </div>
         </div>
+        <?php endif; ?>
 
-        <!-- HISTÓRICO -->
-        <div class="widget-box">
-            <div class="widget-title">
-                <span class="icon"><i class="bx bx-history"></i></span>
-                <h5>Histórico de Atividades nesta Obra</h5>
-            </div>
-            <div class="widget-content historico-atividades-obra">
-                <div class="historico-timeline" id="historico-atividades">
-                    <?php foreach ($atividades_lista as $atv): ?>
-                    <div class="timeline-item <?= $atv->status == 'em_andamento' ? 'andamento' : '' ?> <?= $atv->status == 'pausada' ? 'pausada' : '' ?>">
-                        <div class="row-fluid">
-                            <div class="span2">
-                                <strong><?= date('H:i', strtotime($atv->hora_inicio)) ?></strong>
-                                <?php if ($atv->hora_fim): ?>
-                                    <br><small>até <?= date('H:i', strtotime($atv->hora_fim)) ?></small>
-                                <?php endif; ?>
-                            </div>
-                            <div class="span7">
-                                <strong><?= htmlspecialchars($atv->tipo_nome) ?></strong>
-                                <?php if ($atv->duracao_minutos): ?>
-                                    <span class="label label-info"><?= floor($atv->duracao_minutos / 60) ?>h <?= $atv->duracao_minutos % 60 ?>min</span>
-                                <?php endif; ?>
-                                <?php if ($atv->concluida == 1): ?>
-                                    <span class="label label-success"><i class="bx bx-check"></i> Concluída</span>
-                                <?php elseif ($atv->concluida == 0 && $atv->status == 'finalizada'): ?>
-                                    <span class="label label-warning"><i class="bx bx-x"></i> Não Concluída</span>
-                                <?php endif; ?>
-                                <?php if ($atv->etapa_nome): ?>
-                                    <br><small class="text-muted"><i class="bx bx-layer"></i> <?= htmlspecialchars($atv->etapa_nome) ?></small>
-                                <?php endif; ?>
-                                <br>
-                                <small class="text-muted"><?= htmlspecialchars($atv->equipamento ?? '') ?></small>
-                            </div>
-                            <div class="span3 text-right">
-                                <?php if ($atv->status == 'pausada'): ?>
-                                    <button class="btn btn-small btn-info" onclick="retomarAtividade(<?= $atv->idAtividade ?>")>
-                                        <i class="bx bx-play"></i> Retomar
-                                    </button>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-                    </div>
-                    <?php endforeach; ?>
+        <?php if ($atividade_em_andamento): ?>
+        <!-- Atividade em Andamento -->
+        <div class="atividade-andamento-card">
+            <div class="atividade-andamento-header">
+                <div class="atividade-icon">
+                    <i class='bx <?= htmlspecialchars($atividade_em_andamento->tipo_icone ?? 'bx-wrench') ?>'></i>
                 </div>
+                <div class="atividade-info">
+                    <h4><?= htmlspecialchars($atividade_em_andamento->tipo_nome) ?></h4>
+                    <p>
+                        <i class='bx bx-layer'></i> <?= htmlspecialchars($atividade_em_andamento->etapa_nome ?? 'Etapa não definida') ?>
+                        <br>
+                        <i class='bx bx-time'></i> Iniciado às <?= date('H:i', strtotime($atividade_em_andamento->hora_inicio)) ?>
+                    </p>
+                </div>
+            </div>
+
+            <div class="acoes-footer">
+                <button class="btn-acao btn-warning-tec" onclick="pausarAtividade(<?= $atividade_em_andamento->idAtividade ?>)">
+                    <i class='bx bx-pause'></i> Pausar
+                </button>
+                <button class="btn-acao btn-success-tec" onclick="abrirModalNovaAtividade()">
+                    <i class='bx bx-plus'></i> Nova Atividade
+                </button>
+                <button class="btn-acao btn-primary-tec" onclick="abrirModalFoto()">
+                    <i class='bx bx-camera'></i> Foto
+                </button>
             </div>
         </div>
 
-        <!-- Botão Voltar -->
-        <a href="<?= site_url(($is_portal_tecnico ?? false) ? 'tecnicos/executar_obra/' . $obra_id : 'obras_tecnico/obra/' . $obra_id) ?>" class="btn">
-            <i class="bx bx-arrow-back"></i> Voltar à Obra
-        </a>
+        <div class="acoes-footer" style="justify-content: flex-end;">
+            <button class="btn-acao btn-success-tec" style="padding: 16px 32px; font-size: 16px;" onclick="abrirModalCheckoutObra()">
+                <i class='bx bx-log-out-circle'></i> FINALIZAR TRABALHO
+            </button>
+        </div>
         <?php endif; ?>
+
+        <!-- Botão Voltar -->
+        <div class="acoes-footer">
+            <a href="<?= site_url($is_portal_tecnico ? 'tecnicos/executar_obra/' . $obra_id : 'obras_tecnico/obra/' . $obra_id) ?>"
+               class="btn-acao btn-secondary">
+                <i class='bx bx-arrow-back'></i> Voltar à Obra
+            </a>
+        </div>
     </div>
+
+    <!-- Coluna Direita: Histórico -->
+    <div>
+        <div class="wizard-card">
+            <div class="wizard-card-header">
+                <div class="icon"><i class='bx bx-history'></i></div>
+                <h3>Histórico de Atividades</h3>
+            </div>
+            <div class="wizard-card-body" style="max-height: 500px; overflow-y: auto;">
+                <?php if (!empty($atividades_lista)): ?>
+                    <?php foreach ($atividades_lista as $atv): ?>
+                    <div class="historico-item <?= $atv->status ?>">
+                        <div class="historico-header">
+                            <span class="historico-tempo">
+                                <i class='bx bx-time'></i>
+                                <?= date('H:i', strtotime($atv->hora_inicio)) ?>
+                                <?php if ($atv->hora_fim): ?> - <?= date('H:i', strtotime($atv->hora_fim)) ?><?php endif; ?>
+                            </span>
+                            <span class="historico-tipo tipo-<?= strtolower($atv->categoria ?? 'execucao') ?>">
+                                <?= $atv->tipo_nome ?>
+                            </span>
+                        </div>
+                        <p style="margin: 0; font-size: 13px; color: #333;">
+                            <?= htmlspecialchars($atv->equipamento ?? '') ?>
+                        </p>
+                        <?php if ($atv->etapa_nome): ?>
+                        <small style="color: #888;">
+                            <i class='bx bx-layer'></i> <?= htmlspecialchars($atv->etapa_nome) ?>
+                        </small>
+                        <?php endif; ?>
+                        <div style="margin-top: 8px;">
+                            <?php if ($atv->duracao_minutos): ?>
+                                <span style="font-size: 12px; color: #667eea; font-weight: 600;">
+                                    <i class='bx bx-time-five'></i>
+                                    <?= floor($atv->duracao_minutos / 60) ?>h <?= $atv->duracao_minutos % 60 ?>min
+                                </span>
+                            <?php endif; ?>
+                            <?php if ($atv->concluida == 1): ?>
+                                <span style="font-size: 12px; color: #27ae60; margin-left: 10px;">
+                                    <i class='bx bx-check-circle'></i> Concluída
+                                </span>
+                            <?php elseif ($atv->concluida == 0 && $atv->status == 'finalizada'): ?>
+                                <span style="font-size: 12px; color: #f39c12; margin-left: 10px;">
+                                    <i class='bx bx-x-circle'></i> Não Concluída
+                                </span>
+                            <?php endif; ?>
+                        </div>
+                        <?php if ($atv->status == 'pausada'): ?>
+                        <div style="margin-top: 10px;">
+                            <button class="btn-acao btn-primary-tec" style="padding: 6px 12px; font-size: 12px;"
+                                    onclick="retomarAtividade(<?= $atv->idAtividade ?>)">
+                                <i class='bx bx-play'></i> Retomar
+                            </button>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div style="text-align: center; padding: 40px; color: #888;">
+                        <i class='bx bx-history' style="font-size: 48px; margin-bottom: 10px; display: block;"></i>
+                        <p>Nenhuma atividade registrada</p>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <script>
-// Dados das etapas e suas atividades planejadas
+// Dados das etapas
 const etapasDados = <?= json_encode($etapas ?? []) ?>;
 let etapaSelecionadaId = <?= $etapa_id ?: 'null' ?>;
 
@@ -480,7 +713,7 @@ function selecionarEtapa(etapaId, index) {
     });
     document.querySelector('.etapa-card[data-etapa="' + etapaId + '"]').classList.add('selected');
 
-    // Mostra atividades planejadas da etapa
+    // Mostra atividades planejadas
     mostrarAtividadesPlanejadas(index);
 }
 
@@ -494,12 +727,10 @@ function mostrarAtividadesPlanejadas(index) {
         return;
     }
 
-    let html = '<h6><i class="bx bx-list-check"></i> Atividades planejadas para esta etapa:</h6>';
-    html += '<div style="margin-bottom: 10px;">';
-    html += '<label class="atividade-planejada-item" onclick="selecionarAtividadePlanejada(null)">';
-    html += '<input type="radio" name="atividade_planejada_radio" value="" checked onchange="atualizarAtividadeSelecionada(null)">';
+    let html = '<p style="margin: 0 0 10px 0; font-size: 13px;">Selecione uma atividade (opcional):</p>';
+    html += '<div class="atividade-planejada-item" onclick="selecionarAtividadePlanejada(null)">';
+    html += '<input type="radio" name="atividade_radio" value="" checked> ';
     html += '<span>Nova atividade (não vinculada)</span>';
-    html += '</label>';
     html += '</div>';
 
     etapa.atividades.forEach(function(atv) {
@@ -508,13 +739,13 @@ function mostrarAtividadesPlanejadas(index) {
         const classe = isConcluida ? 'disabled' : '';
         const icone = isConcluida ? '<i class="bx bx-check-circle" style="color: #28a745;"></i>' : '<i class="bx bx-circle" style="color: #ffc107;"></i>';
 
-        html += '<label class="atividade-planejada-item ' + classe + '" onclick="selecionarAtividadePlanejada(' + atv.id + ')">';
-        html += '<input type="radio" name="atividade_planejada_radio" value="' + atv.id + '" ' + disabled + ' onchange="atualizarAtividadeSelecionada(' + atv.id + ')">';
+        html += '<div class="atividade-planejada-item ' + classe + '" onclick="selecionarAtividadePlanejada(' + atv.id + ')">';
+        html += '<input type="radio" name="atividade_radio" value="' + atv.id + '" ' + disabled + '> ';
         html += icone + ' <span>' + atv.titulo + '</span>';
         if (isConcluida) {
-            html += ' <span class="label label-success" style="margin-left: 10px;">Concluída</span>';
+            html += ' <span style="background: #28a745; color: white; padding: 2px 8px; border-radius: 10px; font-size: 10px; margin-left: 10px;">Concluída</span>';
         }
-        html += '</label>';
+        html += '</div>';
     });
 
     lista.innerHTML = html;
@@ -524,7 +755,6 @@ function mostrarAtividadesPlanejadas(index) {
 function selecionarAtividadePlanejada(atividadeId) {
     document.getElementById('obra_atividade_selecionada').value = atividadeId || '';
 
-    // Visual feedback
     document.querySelectorAll('.atividade-planejada-item').forEach(item => {
         item.classList.remove('selecionada');
     });
@@ -535,18 +765,12 @@ function selecionarAtividadePlanejada(atividadeId) {
     }
 }
 
-function atualizarAtividadeSelecionada(atividadeId) {
-    document.getElementById('obra_atividade_selecionada').value = atividadeId || '';
-}
-
-// Função de check-in específica para obra
 function realizarCheckinObra() {
     const form = document.getElementById('form-checkin-obra');
     const formData = new FormData(form);
 
-    // Validação de etapa obrigatória
     if (!formData.get('etapa_id')) {
-        alert('Por favor, selecione uma etapa da obra.');
+        alert('Por favor, selecione uma etapa.');
         return;
     }
 
@@ -563,56 +787,22 @@ function realizarCheckinObra() {
         }
     })
     .catch(err => {
-        alert('Erro ao realizar check-in. Tente novamente.');
+        alert('Erro ao realizar check-in.');
         console.error(err);
     });
 }
 
-// Event listener para o formulário
-document.getElementById('form-checkin-obra')?.addEventListener('submit', function(e) {
-    e.preventDefault();
-    realizarCheckinObra();
-});
-
-// GPS
-function obterLocalizacao() {
-    if ('geolocation' in navigator) {
-        navigator.geolocation.getCurrentPosition(
-            function(position) {
-                document.getElementById('latitude').value = position.coords.latitude;
-                document.getElementById('longitude').value = position.coords.longitude;
-                document.getElementById('info-gps').innerHTML =
-                    '<i class="bx bx-check-circle" style="color: #28a745;"></i> Localização obtida';
-            },
-            function(error) {
-                document.getElementById('info-gps').innerHTML =
-                    '<i class="bx bx-error-circle" style="color: #dc3545;"></i> Erro ao obter localização';
-            }
-        );
-    } else {
-        document.getElementById('info-gps').innerHTML =
-            '<i class="bx bx-error-circle" style="color: #dc3545;"></i> GPS não disponível';
-    }
-}
-
-// Preview da foto
 function previewFoto(input) {
     if (input.files && input.files[0]) {
         const reader = new FileReader();
         reader.onload = function(e) {
-            document.getElementById('preview-foto').src = e.target.result;
-            document.getElementById('preview-foto').style.display = 'block';
+            const img = document.getElementById('preview-foto');
+            img.src = e.target.result;
+            img.style.display = 'block';
         };
         reader.readAsDataURL(input.files[0]);
     }
 }
-
-// Event listener para preview da foto
-document.getElementById('foto-local')?.addEventListener('change', function() {
-    previewFoto(this);
-});
-
-// Funções adicionais para controle de atividades
 
 function pausarAtividade(id) {
     if (!confirm('Deseja pausar esta atividade?')) return;
@@ -649,43 +839,39 @@ function retomarAtividade(id) {
 }
 
 function abrirModalNovaAtividade() {
-    // Cria modal dinamicamente
     const modal = document.createElement('div');
     modal.id = 'modal-nova-atividade';
-    modal.className = 'modal fade';
+    modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; display: flex; align-items: center; justify-content: center;';
     modal.innerHTML = `
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" onclick="fecharModal('modal-nova-atividade')">&times;</button>
-                    <h4><i class="bx bx-plus"></i> Nova Atividade</h4>
-                </div>
-                <div class="modal-body">
-                    <form id="form-nova-atividade">
-                        <div class="control-group">
-                            <label>Tipo de Atividade</label>
-                            <select name="tipo_id" class="input-block-level" id="novo-tipo-id">
-                                <option value="">Selecione...</option>
-                                <?php foreach ($tipos_atividades as $tipo): ?>
-                                <option value="<?= is_object($tipo) ? $tipo->id : ($tipo['id'] ?? '') ?>"><?= htmlspecialchars(is_object($tipo) ? $tipo->nome : ($tipo['nome'] ?? '')) ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                        <div class="control-group">
-                            <label>Descrição</label>
-                            <textarea name="descricao" class="input-block-level" rows="3" placeholder="Descreva a atividade..."></textarea>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn" onclick="fecharModal('modal-nova-atividade')">Cancelar</button>
-                    <button class="btn btn-primary" onclick="adicionarNovaAtividade()">Adicionar</button>
-                </div>
+        <div style="background: white; border-radius: 12px; width: 90%; max-width: 500px; max-height: 90vh; overflow: auto;">
+            <div style="padding: 20px; border-bottom: 1px solid #e0e0e0; display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0;"><i class='bx bx-plus'></i> Nova Atividade</h3>
+                <button onclick="fecharModal('modal-nova-atividade')" style="background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
+            </div>
+            <div style="padding: 20px;">
+                <form id="form-nova-atividade">
+                    <div class="form-group">
+                        <label>Tipo de Atividade</label>
+                        <select name="tipo_id" class="form-control" id="novo-tipo-id">
+                            <option value="">Selecione...</option>
+                            <?php foreach ($tipos_atividades as $tipo): ?>
+                            <option value="<?= is_object($tipo) ? $tipo->id : ($tipo['id'] ?? '') ?>"><?= htmlspecialchars(is_object($tipo) ? $tipo->nome : ($tipo['nome'] ?? '')) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Descrição</label>
+                        <textarea name="descricao" class="form-control" rows="3" placeholder="Descreva a atividade..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div style="padding: 20px; border-top: 1px solid #e0e0e0; display: flex; gap: 10px; justify-content: flex-end;">
+                <button class="btn-acao btn-secondary" onclick="fecharModal('modal-nova-atividade')">Cancelar</button>
+                <button class="btn-acao btn-primary-tec" onclick="adicionarNovaAtividade()">Adicionar</button>
             </div>
         </div>
     `;
     document.body.appendChild(modal);
-    $('#modal-nova-atividade').modal('show');
 }
 
 function adicionarNovaAtividade() {
@@ -710,36 +896,33 @@ function adicionarNovaAtividade() {
 function abrirModalFoto() {
     const modal = document.createElement('div');
     modal.id = 'modal-foto';
-    modal.className = 'modal fade';
+    modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; display: flex; align-items: center; justify-content: center;';
     modal.innerHTML = `
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" onclick="fecharModal('modal-foto')">&times;</button>
-                    <h4><i class="bx bx-camera"></i> Adicionar Foto</h4>
-                </div>
-                <div class="modal-body">
-                    <form id="form-foto" enctype="multipart/form-data">
-                        <input type="hidden" name="obra_id" value="<?= $obra_id ?>">
-                        <div class="control-group">
-                            <label>Foto</label>
-                            <input type="file" name="foto" accept="image/*" capture="environment" class="input-block-level">
-                        </div>
-                        <div class="control-group">
-                            <label>Descrição</label>
-                            <textarea name="descricao" class="input-block-level" rows="2"></textarea>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn" onclick="fecharModal('modal-foto')">Cancelar</button>
-                    <button class="btn btn-primary" onclick="adicionarFoto()">Adicionar Foto</button>
-                </div>
+        <div style="background: white; border-radius: 12px; width: 90%; max-width: 500px;">
+            <div style="padding: 20px; border-bottom: 1px solid #e0e0e0; display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0;"><i class='bx bx-camera'></i> Adicionar Foto</h3>
+                <button onclick="fecharModal('modal-foto')" style="background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
+            </div>
+            <div style="padding: 20px;">
+                <form id="form-foto" enctype="multipart/form-data">
+                    <input type="hidden" name="obra_id" value="<?= $obra_id ?>">
+                    <div class="form-group">
+                        <label>Foto</label>
+                        <input type="file" name="foto" accept="image/*" capture="environment" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>Descrição</label>
+                        <textarea name="descricao" class="form-control" rows="2"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div style="padding: 20px; border-top: 1px solid #e0e0e0; display: flex; gap: 10px; justify-content: flex-end;">
+                <button class="btn-acao btn-secondary" onclick="fecharModal('modal-foto')">Cancelar</button>
+                <button class="btn-acao btn-primary-tec" onclick="adicionarFoto()">Adicionar</button>
             </div>
         </div>
     `;
     document.body.appendChild(modal);
-    $('#modal-foto').modal('show');
 }
 
 function adicionarFoto() {
@@ -761,62 +944,47 @@ function adicionarFoto() {
     });
 }
 
-function fecharModal(id) {
-    $('#' + id).modal('hide');
-    setTimeout(() => document.getElementById(id)?.remove(), 300);
-}
-
-// Modal de Checkout para Obra
 function abrirModalCheckoutObra() {
     const modal = document.createElement('div');
-    modal.id = 'modal-checkout-obra';
-    modal.className = 'modal fade';
+    modal.id = 'modal-checkout';
+    modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; display: flex; align-items: center; justify-content: center;';
     modal.innerHTML = `
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white;">
-                    <button type="button" class="close" onclick="fecharModal('modal-checkout-obra')" style="color: white; opacity: 0.8;">&times;</button>
-                    <h4><i class="bx bx-log-out-circle"></i> Finalizar Trabalho</h4>
-                </div>
-                <div class="modal-body">
-                    <form id="form-checkout-obra">
-                        <input type="hidden" name="obra_id" value="<?= $obra_id ?>">
-                        <div class="row-fluid">
-                            <div class="span6">
-                                <div class="control-group">
-                                    <label>Trabalho Concluído?</label>
-                                    <select name="concluida" class="input-block-level">
-                                        <option value="1">Sim, trabalho concluído</option>
-                                        <option value="0">Não, preciso retornar</option>
-                                    </select>
-                                </div>
-                                <div class="control-group">
-                                    <label>Resumo do Trabalho Realizado</label>
-                                    <textarea name="resumo_final" class="input-block-level" rows="4"
-                                        placeholder="Descreva o que foi feito, pendências, próximos passos..."></textarea>
-                                </div>
-                            </div>
-                            <div class="span6">
-                                <div class="control-group">
-                                    <label>Problemas/Pendências</label>
-                                    <textarea name="pendencias" class="input-block-level" rows="4"
-                                        placeholder="Algum problema encontrado? Material faltando?"></textarea>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-large" onclick="fecharModal('modal-checkout-obra')">Cancelar</button>
-                    <button class="btn btn-success btn-large" onclick="realizarCheckoutObra()">
-                        <i class="bx bx-check-double"></i> FINALIZAR TRABALHO
-                    </button>
-                </div>
+        <div style="background: white; border-radius: 12px; width: 90%; max-width: 600px; max-height: 90vh; overflow: auto;">
+            <div style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0;"><i class='bx bx-log-out-circle'></i> Finalizar Trabalho</h3>
+                <button onclick="fecharModal('modal-checkout')" style="background: none; border: none; font-size: 24px; color: white; cursor: pointer;">&times;</button>
+            </div>
+            <div style="padding: 20px;">
+                <form id="form-checkout-obra">
+                    <input type="hidden" name="obra_id" value="<?= $obra_id ?>">
+                    <div class="form-group">
+                        <label>Trabalho Concluído?</label>
+                        <select name="concluida" class="form-control">
+                            <option value="1">Sim, trabalho concluído</option>
+                            <option value="0">Não, preciso retornar</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Resumo do Trabalho</label>
+                        <textarea name="resumo_final" class="form-control" rows="3"
+                            placeholder="Descreva o que foi feito, pendências..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Problemas/Pendências</label>
+                        <textarea name="pendencias" class="form-control" rows="3"
+                            placeholder="Algum problema encontrado? Material faltando?"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div style="padding: 20px; border-top: 1px solid #e0e0e0; display: flex; gap: 10px; justify-content: flex-end;">
+                <button class="btn-acao btn-secondary" onclick="fecharModal('modal-checkout')">Cancelar</button>
+                <button class="btn-acao btn-success-tec" onclick="realizarCheckoutObra()">
+                    <i class='bx bx-check-double'></i> FINALIZAR
+                </button>
             </div>
         </div>
     `;
     document.body.appendChild(modal);
-    $('#modal-checkout-obra').modal('show');
 }
 
 function realizarCheckoutObra() {
@@ -831,8 +999,7 @@ function realizarCheckoutObra() {
     .then(data => {
         if (data.success) {
             alert('Trabalho finalizado com sucesso!');
-            // Redireciona para a página correta baseado no portal
-            <?php if ($is_portal_tecnico ?? false): ?>
+            <?php if ($is_portal_tecnico): ?>
             window.location.href = '<?= site_url("tecnicos/executar_obra/" . $obra_id) ?>';
             <?php else: ?>
             window.location.href = '<?= site_url("obras_tecnico/obra/" . $obra_id) ?>';
@@ -845,6 +1012,11 @@ function realizarCheckoutObra() {
         alert('Erro ao finalizar trabalho.');
         console.error(err);
     });
+}
+
+function fecharModal(id) {
+    const modal = document.getElementById(id);
+    if (modal) modal.remove();
 }
 
 <?php if ($atividade_em_andamento): ?>
@@ -867,12 +1039,6 @@ function atualizarCronometro() {
     const cronometro = document.getElementById('cronometro');
     if (cronometro) {
         cronometro.textContent = formatado;
-    }
-
-    // Atualiza duração da atividade atual
-    const duracaoAtual = document.getElementById('duracao-atual');
-    if (duracaoAtual) {
-        duracaoAtual.innerHTML = '<strong>Duração:</strong> ' + formatado;
     }
 }
 
