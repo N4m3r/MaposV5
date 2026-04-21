@@ -662,44 +662,101 @@ class Obras extends MY_Controller
             redirect('obras/visualizar/' . $obra_id);
         }
 
+        // Log dos dados recebidos
+        log_message('debug', 'salvarWizard - POST data: ' . print_r($this->input->post(), true));
+
         $this->db->trans_start();
 
         try {
-            // 1. Salvar a etapa
-            $etapa_data = [
-                'obra_id' => $obra_id,
-                'numero_etapa' => $this->input->post('etapa_numero'),
-                'nome' => $this->input->post('etapa_nome'),
-                'descricao' => $this->input->post('etapa_descricao'),
-                'data_inicio_prevista' => $this->input->post('etapa_data_inicio') ?: null,
-                'data_fim_prevista' => $this->input->post('etapa_data_fim') ?: null,
-                'status' => 'pendente',
-                'ativo' => 1
-            ];
+            // Verificar campos da tabela obra_etapas
+            $campos_etapas = $this->db->list_fields('obra_etapas');
+            log_message('debug', 'salvarWizard - Campos obra_etapas: ' . implode(', ', $campos_etapas));
+
+            // 1. Salvar a etapa - apenas com campos que existem
+            $etapa_data = ['obra_id' => $obra_id];
+
+            if (in_array('numero_etapa', $campos_etapas)) {
+                $etapa_data['numero_etapa'] = $this->input->post('etapa_numero') ?: 1;
+            }
+            if (in_array('nome', $campos_etapas)) {
+                $etapa_data['nome'] = $this->input->post('etapa_nome') ?: 'Nova Etapa';
+            }
+            if (in_array('descricao', $campos_etapas)) {
+                $etapa_data['descricao'] = $this->input->post('etapa_descricao') ?: '';
+            }
+            if (in_array('data_inicio_prevista', $campos_etapas)) {
+                $etapa_data['data_inicio_prevista'] = $this->input->post('etapa_data_inicio') ?: null;
+            }
+            if (in_array('data_fim_prevista', $campos_etapas)) {
+                $etapa_data['data_fim_prevista'] = $this->input->post('etapa_data_fim') ?: null;
+            }
+            if (in_array('status', $campos_etapas)) {
+                $etapa_data['status'] = 'pendente';
+            }
+            if (in_array('ativo', $campos_etapas)) {
+                $etapa_data['ativo'] = 1;
+            }
+            if (in_array('created_at', $campos_etapas)) {
+                $etapa_data['created_at'] = date('Y-m-d H:i:s');
+            }
+            if (in_array('updated_at', $campos_etapas)) {
+                $etapa_data['updated_at'] = date('Y-m-d H:i:s');
+            }
+
+            log_message('debug', 'salvarWizard - Dados etapa: ' . print_r($etapa_data, true));
 
             $this->db->insert('obra_etapas', $etapa_data);
+
+            // Verificar erro no insert
+            $error = $this->db->error();
+            if ($error['code'] != 0) {
+                throw new Exception('Erro SQL ao criar etapa: ' . $error['message']);
+            }
+
             $etapa_id = $this->db->insert_id();
 
             if (!$etapa_id) {
-                throw new Exception('Erro ao criar etapa');
+                throw new Exception('Erro ao criar etapa: insert_id retornou vazio');
             }
+
+            log_message('debug', 'salvarWizard - Etapa criada com ID: ' . $etapa_id);
 
             // 2. Salvar atividades (se houver)
             $atividades = $this->input->post('atividades');
             $total_atividades = 0;
 
             if (!empty($atividades) && is_array($atividades)) {
+                // Verificar campos da tabela obra_atividades
+                $campos_atividades = $this->db->list_fields('obra_atividades');
+                log_message('debug', 'salvarWizard - Campos obra_atividades: ' . implode(', ', $campos_atividades));
+
                 foreach ($atividades as $atividade) {
                     if (!empty($atividade['titulo'])) {
-                        $ativ_data = [
-                            'obra_id' => $obra_id,
-                            'etapa_id' => $etapa_id,
-                            'titulo' => $atividade['titulo'],
-                            'tipo' => $atividade['tipo'] ?? 'trabalho',
-                            'status' => 'agendada',
-                            'data_atividade' => date('Y-m-d'),
-                            'ativo' => 1
-                        ];
+                        $ativ_data = ['obra_id' => $obra_id];
+
+                        if (in_array('etapa_id', $campos_atividades)) {
+                            $ativ_data['etapa_id'] = $etapa_id;
+                        }
+                        if (in_array('titulo', $campos_atividades)) {
+                            $ativ_data['titulo'] = $atividade['titulo'];
+                        } elseif (in_array('descricao', $campos_atividades)) {
+                            $ativ_data['descricao'] = $atividade['titulo'];
+                        }
+                        if (in_array('tipo', $campos_atividades)) {
+                            $ativ_data['tipo'] = $atividade['tipo'] ?? 'trabalho';
+                        }
+                        if (in_array('status', $campos_atividades)) {
+                            $ativ_data['status'] = 'agendada';
+                        }
+                        if (in_array('data_atividade', $campos_atividades)) {
+                            $ativ_data['data_atividade'] = date('Y-m-d');
+                        }
+                        if (in_array('ativo', $campos_atividades)) {
+                            $ativ_data['ativo'] = 1;
+                        }
+                        if (in_array('created_at', $campos_atividades)) {
+                            $ativ_data['created_at'] = date('Y-m-d H:i:s');
+                        }
 
                         $this->db->insert('obra_atividades', $ativ_data);
                         $total_atividades++;
