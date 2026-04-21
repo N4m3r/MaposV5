@@ -19,10 +19,16 @@ class Atividades extends MY_Controller
         $this->load->model('Usuarios_model');
         $this->load->helper('atividades');
 
-        // Verifica login
-        if (!$this->session->userdata('logado')) {
+        // Verifica login (admin ou tecnico)
+        $is_admin = $this->session->userdata('logado');
+        $is_tecnico = $this->session->userdata('tec_id') && $this->session->userdata('tec_logado');
+
+        if (!$is_admin && !$is_tecnico) {
             redirect('login');
         }
+
+        // Flag para identificar se é acesso via portal do técnico
+        $this->is_portal_tecnico = $is_tecnico;
     }
 
     /**
@@ -105,7 +111,15 @@ class Atividades extends MY_Controller
      */
     public function wizard_obra($obra_id = null, $etapa_id = null)
     {
-        $tecnico_id = $this->session->userdata('idAdmin');
+        // Detecta se é acesso via portal do técnico
+        $is_portal_tecnico = $this->session->userdata('tec_id') && $this->session->userdata('tec_logado');
+
+        // Obtém ID do técnico (admin ou portal)
+        if ($is_portal_tecnico) {
+            $tecnico_id = $this->session->userdata('tec_id');
+        } else {
+            $tecnico_id = $this->session->userdata('idAdmin');
+        }
 
         // Captura o ID da atividade de obra vinculada (se vier via GET)
         $obra_atividade_id = $this->input->get('obra_atividade_id');
@@ -116,12 +130,20 @@ class Atividades extends MY_Controller
         // Se tem atividade em andamento, verifica se é da mesma obra
         if ($atividade_andamento && $atividade_andamento->obra_id != $obra_id) {
             $this->session->set_flashdata('error', 'Você já tem uma atividade em andamento. Finalize-a primeiro.');
-            redirect('obras_tecnico/obra/' . $atividade_andamento->obra_id);
+            if ($is_portal_tecnico) {
+                redirect('tecnicos/executar_obra/' . $atividade_andamento->obra_id);
+            } else {
+                redirect('obras_tecnico/obra/' . $atividade_andamento->obra_id);
+            }
         }
 
         if (!$obra_id) {
             $this->session->set_flashdata('error', 'Selecione uma obra para iniciar.');
-            redirect('obras_tecnico');
+            if ($is_portal_tecnico) {
+                redirect('tecnicos/minhas_obras');
+            } else {
+                redirect('obras_tecnico');
+            }
         }
 
         // Carrega dados da obra
@@ -134,7 +156,11 @@ class Atividades extends MY_Controller
         // Verifica se técnico tem acesso
         if (!$this->obras_model->tecnicoEstaNaEquipe($obra_id, $tecnico_id)) {
             $this->session->set_flashdata('error', 'Você não tem acesso a esta obra.');
-            redirect('obras_tecnico');
+            if ($is_portal_tecnico) {
+                redirect('tecnicos/minhas_obras');
+            } else {
+                redirect('obras_tecnico');
+            }
         }
 
         // Carrega etapa se especificada
@@ -166,10 +192,23 @@ class Atividades extends MY_Controller
         $this->data['os_id'] = null;
         $this->data['modo'] = 'obra';
 
-        $this->load->view('tema/topo', $this->data);
-        $this->load->view('tema/menu_portal_tecnico', $this->data);
-        $this->load->view('atividades/wizard_obra', $this->data);
-        $this->load->view('tema/rodape');
+        // Flag para a view saber se é portal do técnico
+        $this->data['is_portal_tecnico'] = $is_portal_tecnico;
+
+        // Usa layout diferente para portal do técnico
+        if ($is_portal_tecnico) {
+            $this->data['menuObras'] = 'active';
+            $this->data['pageTitle'] = 'Wizard - ' . $this->data['obra']->nome;
+            $this->load->view('tema/topo', $this->data);
+            $this->load->view('tema/menu_portal_tecnico', $this->data);
+            $this->load->view('atividades/wizard_obra', $this->data);
+            $this->load->view('tema/rodape', $this->data);
+        } else {
+            $this->load->view('tema/topo', $this->data);
+            $this->load->view('tema/menu_portal_tecnico', $this->data);
+            $this->load->view('atividades/wizard_obra', $this->data);
+            $this->load->view('tema/rodape');
+        }
     }
 
     /**
@@ -329,12 +368,25 @@ class Atividades extends MY_Controller
             redirect('atividades');
         }
 
+        // Detecta se é acesso via portal do técnico
+        $is_portal_tecnico = $this->session->userdata('tec_id') && $this->session->userdata('tec_logado');
+        $tecnico_id = $is_portal_tecnico
+            ? $this->session->userdata('tec_id')
+            : $this->session->userdata('idAdmin');
+
         $atividade_id = $this->input->post('atividade_id');
         $motivo = $this->input->post('motivo');
         $observacao = $this->input->post('observacao');
 
         if (!$atividade_id) {
             echo json_encode(['success' => false, 'message' => 'ID da atividade não informado.']);
+            return;
+        }
+
+        // Verifica se a atividade pertence ao técnico
+        $atividade = $this->atividades->getById($atividade_id);
+        if (!$atividade || $atividade->tecnico_id != $tecnico_id) {
+            echo json_encode(['success' => false, 'message' => 'Atividade não encontrada ou não pertence a você.']);
             return;
         }
 
@@ -355,10 +407,23 @@ class Atividades extends MY_Controller
             redirect('atividades');
         }
 
+        // Detecta se é acesso via portal do técnico
+        $is_portal_tecnico = $this->session->userdata('tec_id') && $this->session->userdata('tec_logado');
+        $tecnico_id = $is_portal_tecnico
+            ? $this->session->userdata('tec_id')
+            : $this->session->userdata('idAdmin');
+
         $atividade_id = $this->input->post('atividade_id');
 
         if (!$atividade_id) {
             echo json_encode(['success' => false, 'message' => 'ID da atividade não informado.']);
+            return;
+        }
+
+        // Verifica se a atividade pertence ao técnico
+        $atividade = $this->atividades->getById($atividade_id);
+        if (!$atividade || $atividade->tecnico_id != $tecnico_id) {
+            echo json_encode(['success' => false, 'message' => 'Atividade não encontrada ou não pertence a você.']);
             return;
         }
 
@@ -484,7 +549,11 @@ class Atividades extends MY_Controller
             return;
         }
 
-        $tecnico_id = $this->session->userdata('idAdmin');
+        // Detecta se é acesso via portal do técnico
+        $is_portal_tecnico = $this->session->userdata('tec_id') && $this->session->userdata('tec_logado');
+        $tecnico_id = $is_portal_tecnico
+            ? $this->session->userdata('tec_id')
+            : $this->session->userdata('idAdmin');
         $obra_id = $this->input->post('obra_id');
         $etapa_id = $this->input->post('etapa_id');
 
@@ -627,7 +696,11 @@ class Atividades extends MY_Controller
             redirect('atividades');
         }
 
-        $tecnico_id = $this->session->userdata('idAdmin');
+        // Detecta se é acesso via portal do técnico
+        $is_portal_tecnico = $this->session->userdata('tec_id') && $this->session->userdata('tec_logado');
+        $tecnico_id = $is_portal_tecnico
+            ? $this->session->userdata('tec_id')
+            : $this->session->userdata('idAdmin');
         $obra_id = $this->input->post('obra_id');
 
         // Busca atividade em andamento do técnico na obra
@@ -787,6 +860,112 @@ class Atividades extends MY_Controller
         }
 
         $result = $this->atividades->adicionarFoto($this->input->post('atividade_id'), $dados);
+
+        echo json_encode([
+            'success' => (bool) $result,
+            'message' => $result ? 'Foto adicionada.' : 'Erro ao adicionar foto.'
+        ]);
+    }
+
+    /**
+     * Adiciona atividade em uma obra (para wizard obra)
+     */
+    public function adicionar_atividade_obra()
+    {
+        if (!$this->input->is_ajax_request()) {
+            redirect('atividades');
+        }
+
+        // Detecta se é acesso via portal do técnico
+        $is_portal_tecnico = $this->session->userdata('tec_id') && $this->session->userdata('tec_logado');
+        $tecnico_id = $is_portal_tecnico
+            ? $this->session->userdata('tec_id')
+            : $this->session->userdata('idAdmin');
+
+        $obra_id = $this->input->post('obra_id');
+        $tipo_id = $this->input->post('tipo_id');
+        $descricao = $this->input->post('descricao');
+
+        if (!$obra_id || !$tipo_id) {
+            echo json_encode(['success' => false, 'message' => 'Dados incompletos.']);
+            return;
+        }
+
+        $tipo = $this->atividades_tipos->getById($tipo_id);
+
+        $dados = [
+            'obra_id' => $obra_id,
+            'tecnico_id' => $tecnico_id,
+            'tipo_id' => $tipo_id,
+            'tipo_atividade' => $tipo ? $tipo->nome : 'Atividade',
+            'categoria' => $tipo ? $tipo->categoria : 'geral',
+            'descricao' => $descricao,
+            'hora_inicio' => date('Y-m-d H:i:s'),
+            'status' => 'em_andamento',
+        ];
+
+        $result = $this->atividades->iniciarNaObra($obra_id, $this->input->post('etapa_id'), $dados);
+
+        echo json_encode([
+            'success' => (bool) $result,
+            'message' => $result ? 'Atividade adicionada.' : 'Erro ao adicionar atividade.',
+            'atividade_id' => $result
+        ]);
+    }
+
+    /**
+     * Adiciona foto à atividade em obra (para wizard obra)
+     */
+    public function adicionar_foto_obra()
+    {
+        if (!$this->input->is_ajax_request()) {
+            redirect('atividades');
+        }
+
+        // Detecta se é acesso via portal do técnico
+        $is_portal_tecnico = $this->session->userdata('tec_id') && $this->session->userdata('tec_logado');
+        $tecnico_id = $is_portal_tecnico
+            ? $this->session->userdata('tec_id')
+            : $this->session->userdata('idAdmin');
+
+        $obra_id = $this->input->post('obra_id');
+        $descricao = $this->input->post('descricao');
+
+        if (!$obra_id) {
+            echo json_encode(['success' => false, 'message' => 'Obra não informada.']);
+            return;
+        }
+
+        // Busca atividade em andamento na obra
+        $atividade = $this->atividades->getAtividadeEmAndamentoNaObra($tecnico_id, $obra_id);
+
+        if (!$atividade) {
+            echo json_encode(['success' => false, 'message' => 'Nenhuma atividade em andamento.']);
+            return;
+        }
+
+        $dados = [
+            'os_id' => $atividade->os_id,
+            'tecnico_id' => $tecnico_id,
+            'descricao' => $descricao,
+            'tipo_foto' => 'execucao',
+            'etapa' => 'durante',
+        ];
+
+        // Processa foto
+        if (!empty($_FILES['foto']['tmp_name'])) {
+            $foto_path = $this->upload_foto_arquivo('foto');
+            if ($foto_path) {
+                $dados['caminho_arquivo'] = $foto_path;
+            }
+        }
+
+        // Ou foto em base64
+        if ($this->input->post('foto_base64')) {
+            $dados['foto_base64'] = $this->input->post('foto_base64');
+        }
+
+        $result = $this->atividades->adicionarFoto($atividade->idAtividade, $dados);
 
         echo json_encode([
             'success' => (bool) $result,

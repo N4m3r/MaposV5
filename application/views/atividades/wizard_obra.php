@@ -335,7 +335,7 @@ if ($etapa_id && !empty($etapas)) {
                         <button type="submit" class="btn btn-success btn-large" id="btn-iniciar" disabled>
                             <i class="bx bx-play"></i> INICIAR TRABALHO
                         </button>
-                        <a href="<?= site_url('obras_tecnico/obra/' . $obra_id) ?>" class="btn">
+                        <a href="<?= site_url(($is_portal_tecnico ?? false) ? 'tecnicos/executar_obra/' . $obra_id : 'obras_tecnico/obra/' . $obra_id) ?>" class="btn">
                             <i class="bx bx-arrow-back"></i> Voltar à Obra
                         </a>
                     </div>
@@ -457,7 +457,7 @@ if ($etapa_id && !empty($etapas)) {
         </div>
 
         <!-- Botão Voltar -->
-        <a href="<?= site_url('obras_tecnico/obra/' . $obra_id) ?>" class="btn">
+        <a href="<?= site_url(($is_portal_tecnico ?? false) ? 'tecnicos/executar_obra/' . $obra_id : 'obras_tecnico/obra/' . $obra_id) ?>" class="btn">
             <i class="bx bx-arrow-back"></i> Voltar à Obra
         </a>
         <?php endif; ?>
@@ -612,8 +612,240 @@ document.getElementById('foto-local')?.addEventListener('change', function() {
     previewFoto(this);
 });
 
-// Outras funções são iguais ao wizard original (pausar, retomar, finalizar, etc.)
-// ...
+// Funções adicionais para controle de atividades
+
+function pausarAtividade(id) {
+    if (!confirm('Deseja pausar esta atividade?')) return;
+
+    fetch('<?= site_url("atividades/pausar") ?>', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: 'atividade_id=' + id
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Erro: ' + data.message);
+        }
+    });
+}
+
+function retomarAtividade(id) {
+    fetch('<?= site_url("atividades/retomar") ?>', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: 'atividade_id=' + id
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Erro: ' + data.message);
+        }
+    });
+}
+
+function abrirModalNovaAtividade() {
+    // Cria modal dinamicamente
+    const modal = document.createElement('div');
+    modal.id = 'modal-nova-atividade';
+    modal.className = 'modal fade';
+    modal.innerHTML = `
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" onclick="fecharModal('modal-nova-atividade')">&times;</button>
+                    <h4><i class="bx bx-plus"></i> Nova Atividade</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="form-nova-atividade">
+                        <div class="control-group">
+                            <label>Tipo de Atividade</label>
+                            <select name="tipo_id" class="input-block-level" id="novo-tipo-id">
+                                <option value="">Selecione...</option>
+                                <?php foreach ($tipos_atividades as $tipo): ?>
+                                <option value="<?= $tipo->id ?>"><?= htmlspecialchars($tipo->nome) ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label>Descrição</label>
+                            <textarea name="descricao" class="input-block-level" rows="3" placeholder="Descreva a atividade..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn" onclick="fecharModal('modal-nova-atividade')">Cancelar</button>
+                    <button class="btn btn-primary" onclick="adicionarNovaAtividade()">Adicionar</button>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    $('#modal-nova-atividade').modal('show');
+}
+
+function adicionarNovaAtividade() {
+    const form = document.getElementById('form-nova-atividade');
+    const formData = new FormData(form);
+    formData.append('obra_id', '<?= $obra_id ?>');
+
+    fetch('<?= site_url("atividades/adicionar_atividade_obra") ?>', {
+        method: 'POST',
+        body: formData
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Erro: ' + data.message);
+        }
+    });
+}
+
+function abrirModalFoto() {
+    const modal = document.createElement('div');
+    modal.id = 'modal-foto';
+    modal.className = 'modal fade';
+    modal.innerHTML = `
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" onclick="fecharModal('modal-foto')">&times;</button>
+                    <h4><i class="bx bx-camera"></i> Adicionar Foto</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="form-foto" enctype="multipart/form-data">
+                        <input type="hidden" name="obra_id" value="<?= $obra_id ?>">
+                        <div class="control-group">
+                            <label>Foto</label>
+                            <input type="file" name="foto" accept="image/*" capture="environment" class="input-block-level">
+                        </div>
+                        <div class="control-group">
+                            <label>Descrição</label>
+                            <textarea name="descricao" class="input-block-level" rows="2"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn" onclick="fecharModal('modal-foto')">Cancelar</button>
+                    <button class="btn btn-primary" onclick="adicionarFoto()">Adicionar Foto</button>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    $('#modal-foto').modal('show');
+}
+
+function adicionarFoto() {
+    const form = document.getElementById('form-foto');
+    const formData = new FormData(form);
+
+    fetch('<?= site_url("atividades/adicionar_foto_obra") ?>', {
+        method: 'POST',
+        body: formData
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            fecharModal('modal-foto');
+            alert('Foto adicionada com sucesso!');
+        } else {
+            alert('Erro: ' + data.message);
+        }
+    });
+}
+
+function fecharModal(id) {
+    $('#' + id).modal('hide');
+    setTimeout(() => document.getElementById(id)?.remove(), 300);
+}
+
+// Modal de Checkout para Obra
+function abrirModalCheckoutObra() {
+    const modal = document.createElement('div');
+    modal.id = 'modal-checkout-obra';
+    modal.className = 'modal fade';
+    modal.innerHTML = `
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white;">
+                    <button type="button" class="close" onclick="fecharModal('modal-checkout-obra')" style="color: white; opacity: 0.8;">&times;</button>
+                    <h4><i class="bx bx-log-out-circle"></i> Finalizar Trabalho</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="form-checkout-obra">
+                        <input type="hidden" name="obra_id" value="<?= $obra_id ?>">
+                        <div class="row-fluid">
+                            <div class="span6">
+                                <div class="control-group">
+                                    <label>Trabalho Concluído?</label>
+                                    <select name="concluida" class="input-block-level">
+                                        <option value="1">Sim, trabalho concluído</option>
+                                        <option value="0">Não, preciso retornar</option>
+                                    </select>
+                                </div>
+                                <div class="control-group">
+                                    <label>Resumo do Trabalho Realizado</label>
+                                    <textarea name="resumo_final" class="input-block-level" rows="4"
+                                        placeholder="Descreva o que foi feito, pendências, próximos passos..."></textarea>
+                                </div>
+                            </div>
+                            <div class="span6">
+                                <div class="control-group">
+                                    <label>Problemas/Pendências</label>
+                                    <textarea name="pendencias" class="input-block-level" rows="4"
+                                        placeholder="Algum problema encontrado? Material faltando?"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-large" onclick="fecharModal('modal-checkout-obra')">Cancelar</button>
+                    <button class="btn btn-success btn-large" onclick="realizarCheckoutObra()">
+                        <i class="bx bx-check-double"></i> FINALIZAR TRABALHO
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    $('#modal-checkout-obra').modal('show');
+}
+
+function realizarCheckoutObra() {
+    const form = document.getElementById('form-checkout-obra');
+    const formData = new FormData(form);
+
+    fetch('<?= site_url("atividades/checkout_obra") ?>', {
+        method: 'POST',
+        body: formData
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            alert('Trabalho finalizado com sucesso!');
+            // Redireciona para a página correta baseado no portal
+            <?php if ($is_portal_tecnico ?? false): ?>
+            window.location.href = '<?= site_url("tecnicos/executar_obra/" . $obra_id) ?>';
+            <?php else: ?>
+            window.location.href = '<?= site_url("obras_tecnico/obra/" . $obra_id) ?>';
+            <?php endif; ?>
+        } else {
+            alert('Erro: ' + data.message);
+        }
+    })
+    .catch(err => {
+        alert('Erro ao finalizar trabalho.');
+        console.error(err);
+    });
+}
 
 <?php if ($atividade_em_andamento): ?>
 // Cronômetro
