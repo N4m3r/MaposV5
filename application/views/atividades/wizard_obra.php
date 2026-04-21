@@ -667,7 +667,7 @@ function abrirModalNovaAtividade() {
                             <select name="tipo_id" class="input-block-level" id="novo-tipo-id">
                                 <option value="">Selecione...</option>
                                 <?php foreach ($tipos_atividades as $tipo): ?>
-                                <option value="<?= $tipo->id ?>"><?= htmlspecialchars($tipo->nome) ?></option>
+                                <option value="<?= is_object($tipo) ? $tipo->id : ($tipo['id'] ?? '') ?>"><?= htmlspecialchars(is_object($tipo) ? $tipo->nome : ($tipo['nome'] ?? '')) ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
