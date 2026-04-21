@@ -101,14 +101,19 @@ class Atividades extends MY_Controller
 
     /**
      * Wizard de Atividades para Obras - Integração com sistema de obras
+     * Recebe obra_atividade_id via GET para vincular com atividade planejada
      */
     public function wizard_obra($obra_id = null, $etapa_id = null)
     {
         $tecnico_id = $this->session->userdata('idAdmin');
 
+        // Captura o ID da atividade de obra vinculada (se vier via GET)
+        $obra_atividade_id = $this->input->get('obra_atividade_id');
+
         // Verifica se já tem atividade em andamento
         $atividade_andamento = $this->atividades->getAtividadeEmAndamento($tecnico_id);
 
+        // Se tem atividade em andamento, verifica se é da mesma obra
         if ($atividade_andamento && $atividade_andamento->obra_id != $obra_id) {
             $this->session->set_flashdata('error', 'Você já tem uma atividade em andamento. Finalize-a primeiro.');
             redirect('obras_tecnico/obra/' . $atividade_andamento->obra_id);
@@ -140,6 +145,14 @@ class Atividades extends MY_Controller
 
         // Carrega etapas para seleção
         $this->data['etapas'] = $this->obras_model->getEtapas($obra_id);
+
+        // Carrega dados da atividade de obra vinculada (se houver)
+        $this->data['obra_atividade'] = null;
+        if ($obra_atividade_id) {
+            $this->load->model('obra_atividades_model');
+            $this->data['obra_atividade'] = $this->obra_atividades_model->getById($obra_atividade_id);
+            $this->data['obra_atividade_id'] = $obra_atividade_id;
+        }
 
         // Dados para o wizard
         $this->data['atividade_em_andamento'] = $atividade_andamento;

@@ -784,4 +784,43 @@ class Atividades_model extends CI_Model
 
         return $this->db->get()->row();
     }
+
+    /**
+     * Obtém registros de execução (Hora Início/Fim) vinculados a uma atividade planejada
+     */
+    public function getRegistrosPorObraAtividade($obra_atividade_id)
+    {
+        $this->db->select('os_atividades.*,
+                           atividades_tipos.nome as tipo_nome,
+                           atividades_tipos.icone as tipo_icone,
+                           obra_etapas.nome as etapa_nome,
+                           obra_etapas.numero_etapa');
+        $this->db->from($this->table);
+        $this->db->join('atividades_tipos', 'atividades_tipos.idTipo = os_atividades.tipo_id', 'left');
+        $this->db->join('obra_etapas', 'obra_etapas.id = os_atividades.etapa_id', 'left');
+        $this->db->where('os_atividades.obra_atividade_id', $obra_atividade_id);
+        $this->db->order_by('os_atividades.hora_inicio', 'DESC');
+
+        return $this->db->get()->result();
+    }
+
+    /**
+     * Obtém o registro de execução em andamento vinculado a uma obra_atividade
+     */
+    public function getRegistroEmAndamentoPorObraAtividade($obra_atividade_id, $tecnico_id)
+    {
+        $this->db->select('os_atividades.*,
+                           atividades_tipos.nome as tipo_nome,
+                           atividades_tipos.icone as tipo_icone,
+                           obra_etapas.nome as etapa_nome');
+        $this->db->from($this->table);
+        $this->db->join('atividades_tipos', 'atividades_tipos.idTipo = os_atividades.tipo_id', 'left');
+        $this->db->join('obra_etapas', 'obra_etapas.id = os_atividades.etapa_id', 'left');
+        $this->db->where('os_atividades.obra_atividade_id', $obra_atividade_id);
+        $this->db->where('os_atividades.tecnico_id', $tecnico_id);
+        $this->db->where('os_atividades.status', 'em_andamento');
+        $this->db->limit(1);
+
+        return $this->db->get()->row();
+    }
 }

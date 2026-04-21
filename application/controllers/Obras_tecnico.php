@@ -123,6 +123,29 @@ class Obras_tecnico extends CI_Controller
         // Calcular tempo trabalhado
         $this->data['tempo_trabalhado'] = $this->obra_checkins_model->calcularTempoTrabalhado($id);
 
+        // Carrega registros do sistema de Hora Início/Fim (Wizard) se disponível
+        if (file_exists(APPPATH . 'models/Atividades_model.php')) {
+            $this->load->model('Atividades_model', 'atividades_sistema');
+            $this->load->model('Atividades_tipos_model');
+
+            // Busca registros de execução vinculados a esta atividade
+            $this->data['registros_execucao'] = $this->atividades_sistema->getRegistrosPorObraAtividade($id);
+
+            // Verifica se há registro em andamento vinculado a esta obra_atividade
+            $this->data['registro_em_andamento'] = $this->atividades_sistema->getRegistroEmAndamentoPorObraAtividade($id, $tecnico_id);
+
+            // Verifica se há alguma atividade em andamento no wizard para este técnico nesta obra
+            $this->data['wizard_em_andamento'] = $this->atividades_sistema->getAtividadeEmAndamentoNaObra($tecnico_id, $this->data['atividade']->obra_id);
+
+            // Tipos de atividades para iniciar novo registro
+            $this->data['tipos_atividades'] = $this->Atividades_tipos_model->listar([], true);
+        } else {
+            $this->data['registros_execucao'] = [];
+            $this->data['registro_em_andamento'] = null;
+            $this->data['wizard_em_andamento'] = null;
+            $this->data['tipos_atividades'] = [];
+        }
+
         $this->load->view('obras_tecnico/atividade_execucao', $this->data);
     }
 
@@ -131,7 +154,7 @@ class Obras_tecnico extends CI_Controller
     // ============================================
 
     /**
-     * Iniciar atividade
+     * Iniciar atividade - Redireciona para o Wizard de Atendimento
      */
     public function iniciarAtividade()
     {
@@ -149,6 +172,7 @@ class Obras_tecnico extends CI_Controller
             redirect('obras_tecnico/minhasObras');
         }
 
+        // Atualiza status da atividade para iniciada
         $dados = [
             'hora_inicio' => date('H:i:s'),
             'latitude' => $this->input->post('latitude'),
@@ -157,15 +181,17 @@ class Obras_tecnico extends CI_Controller
         ];
 
         if ($this->obra_atividades_model->iniciarAtividade($atividade_id, $tecnico_id, $dados)) {
-            // Registrar check-in
+            // Registrar check-in no sistema antigo
             $this->obra_checkins_model->registrarCheckin($atividade_id, $tecnico_id, $dados);
 
-            $this->session->set_flashdata('success', 'Atividade iniciada com sucesso!');
+            $this->session->set_flashdata('success', 'Atividade iniciada! Redirecionando para o registro de execução...');
+
+            // Redireciona para o wizard de atendimento vinculado a esta atividade
+            redirect('atividades/wizard_obra/' . $atividade->obra_id . '/' . $atividade->etapa_id . '?obra_atividade_id=' . $atividade_id);
         } else {
             $this->session->set_flashdata('error', 'Erro ao iniciar atividade.');
+            redirect('obras_tecnico/atividade/' . $atividade_id);
         }
-
-        redirect('obras_tecnico/atividade/' . $atividade_id);
     }
 
     /**

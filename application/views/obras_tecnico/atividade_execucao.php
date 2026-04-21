@@ -307,7 +307,7 @@
     </div>
 
     <!-- Timer (apenas se iniciada) -->
-    <?php if ($atividade->status == 'iniciada' || $atividade->status == 'pausada'): ?
+    <?php if ($atividade->status == 'iniciada' || $atividade->status == 'pausada'): ?>
     <div class="timer-display">
         <div class="timer-label">Tempo Trabalhado</div>
         <div class="timer-value <?php echo $atividade->status; ?>" id="timer">
@@ -346,7 +346,7 @@
             </div>
         </div>
 
-        <?php if ($atividade->descricao): ?
+        <?php if ($atividade->descricao): ?>
         <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #f0f0f0;">
             <div class="exec-info-label">Descrição</div>
             <div style="margin-top: 8px; color: #666; line-height: 1.6;">
@@ -356,8 +356,166 @@
         <?php endif; ?>
     </div>
 
-    <!-- Ações -->
-    <?php if ($atividade->status == 'agendada'): ?
+    <!-- Sistema de Registro de Tempo (Wizard de Atendimento) -->
+    <?php if (file_exists(APPPATH . 'models/Atividades_model.php')): ?>
+    <div class="exec-card" style="border-left: 4px solid #11998e;">
+        <div class="exec-card-header">
+            <div class="exec-card-title">
+                <i class="bx bx-timer" style="color: #11998e;"></i> Registro de Execução (Wizard de Atendimento)
+            </div>
+        </div>
+
+        <!-- Wizard em Andamento -->
+        <?php if ($wizard_em_andamento): ?>
+        <div style="background: linear-gradient(135deg, #11998e15 0%, #38ef7d15 100%); padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 2px solid #11998e;">
+            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
+                <div style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #11998e, #38ef7d); display: flex; align-items: center; justify-content: center; color: white; font-size: 28px; animation: pulse 2s infinite;">
+                    <i class="bx bx-play"></i>
+                </div>
+                <div style="flex: 1;">
+                    <div style="font-weight: 700; color: #11998e; font-size: 18px;">Execução em Andamento no Wizard</div>
+                    <div style="color: #666; font-size: 14px; margin-top: 4px;">
+                        <i class="bx bx-time"></i> Iniciado às <?php echo date('H:i', strtotime($wizard_em_andamento->hora_inicio)); ?>
+                        <?php if ($wizard_em_andamento->etapa_nome): ?>
+                            <br><i class="bx bx-layer"></i> <?php echo $wizard_em_andamento->etapa_nome; ?>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+
+            <div style="background: white; padding: 25px; border-radius: 10px; text-align: center; margin-bottom: 20px;">
+                <div style="font-size: 13px; color: #888; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;">Tempo Decorrido</div>
+                <div id="timerWizard" style="font-size: 48px; font-weight: 700; color: #11998e; font-family: 'Courier New', monospace;">
+                    00:00:00
+                </div>
+                <div style="font-size: 12px; color: #11998e; margin-top: 8px;">
+                    <i class="bx bx-info-circle"></i> Clique no botão abaixo para continuar e finalizar no wizard
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr; gap: 10px;">
+                <a href="<?php echo site_url('atividades/wizard_obra/' . $obra->id . '/' . $wizard_em_andamento->etapa_id . '?obra_atividade_id=' . $atividade->id); ?>"
+                   class="exec-btn exec-btn-primary"
+                   style="text-align: center; text-decoration: none;">
+                    <i class="bx bx-refresh"></i> CONTINUAR NO WIZARD DE ATENDIMENTO
+                </a>
+            </div>
+        </div>
+
+        <script>
+            (function() {
+                const horaInicio = new Date('<?php echo $wizard_em_andamento->hora_inicio; ?>').getTime();
+                const timerEl = document.getElementById('timerWizard');
+
+                function atualizarTimer() {
+                    const agora = new Date().getTime();
+                    const diff = agora - horaInicio;
+
+                    const hrs = Math.floor(diff / 3600000);
+                    const mins = Math.floor((diff % 3600000) / 60000);
+                    const secs = Math.floor((diff % 60000) / 1000);
+
+                    timerEl.textContent = String(hrs).padStart(2, '0') + ':' +
+                                           String(mins).padStart(2, '0') + ':' +
+                                           String(secs).padStart(2, '0');
+                }
+
+                atualizarTimer();
+                setInterval(atualizarTimer, 1000);
+            })();
+        </script>
+
+        <?php else: ?>
+        <!-- Iniciar Novo Registro no Wizard -->
+        <div style="text-align: center; padding: 30px 20px;">
+            <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; color: white; font-size: 36px;">
+                <i class="bx bx-play"></i>
+            </div>
+
+            <div style="font-weight: 700; color: #333; font-size: 18px; margin-bottom: 10px;">Iniciar Execução da Atividade</div>
+            <div style="color: #666; font-size: 14px; margin-bottom: 25px; line-height: 1.6;">
+                O sistema abrirá o <strong>Wizard de Atendimento</strong> para registro completo:
+                <br>Check-in &#8594; Registro de Atividades &#8594; Check-out com Relatório
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px;">
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                    <div style="font-size: 24px; color: #11998e; margin-bottom: 5px;"><i class="bx bx-check-circle"></i></div>
+                    <div style="font-size: 12px; color: #666;">Check-in com Hora Início</div>
+                </div>
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                    <div style="font-size: 24px; color: #3498db; margin-bottom: 5px;"><i class="bx bx-task"></i></div>
+                    <div style="font-size: 12px; color: #666;">Registro de Atividades</div>
+                </div>
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                    <div style="font-size: 24px; color: #27ae60; margin-bottom: 5px;"><i class="bx bx-check-double"></i></div>
+                    <div style="font-size: 12px; color: #666;">Check-out com Relatório</div>
+                </div>
+            </div>
+
+            <div style="background: #e8f5e9; border: 1px solid #4caf50; border-radius: 8px; padding: 15px; margin-bottom: 25px;">
+                <div style="font-size: 13px; color: #2e7d32;">
+                    <i class="bx bx-info-circle"></i> <strong>Etapa vinculada:</strong>
+                    <?php echo $atividade->etapa_nome ?? 'N/A'; ?>
+                    <?php if ($atividade->numero_etapa): ?>(#<?php echo $atividade->numero_etapa; ?>)<?php endif; ?>
+                </div>
+            </div>
+
+            <a href="<?php echo site_url('atividades/wizard_obra/' . $obra->id . '/' . $atividade->etapa_id . '?obra_atividade_id=' . $atividade->id); ?>"
+               class="exec-btn exec-btn-primary"
+               style="text-align: center; text-decoration: none; width: 100%;">
+                <i class="bx bx-play-circle"></i> INICIAR EXECUÇÃO NO WIZARD
+            </a>
+        </div>
+        <?php endif; ?>
+
+        <!-- Histórico de Execuções no Wizard -->
+        <?php if (!empty($registros_execucao)): ?>
+        <div style="margin-top: 25px; padding-top: 25px; border-top: 1px solid #f0f0f0;">
+            <div style="font-weight: 700; color: #333; margin-bottom: 15px; font-size: 16px;">
+                <i class="bx bx-history"></i> Histórico de Execuções Realizadas
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <?php foreach ($registros_execucao as $reg): ?>
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; border-left: 4px solid <?php echo $reg->status == 'concluida' ? '#27ae60' : ($reg->status == 'pausada' ? '#f39c12' : '#3498db'); ?>;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-weight: 600; color: #333;"><?php echo $reg->tipo_atividade; ?></div>
+                            <div style="font-size: 12px; color: #888; margin-top: 3px;">
+                                <i class="bx bx-calendar"></i> <?php echo date('d/m/Y', strtotime($reg->hora_inicio)); ?>
+                                <?php if ($reg->etapa_nome): ?> | <i class="bx bx-layer"></i> <?php echo $reg->etapa_nome; ?>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 20px; font-weight: 700; color: #667eea; font-family: monospace;">
+                                <?php
+                                if ($reg->hora_fim) {
+                                    $inicio = strtotime($reg->hora_inicio);
+                                    $fim = strtotime($reg->hora_fim);
+                                    $duracao = $fim - $inicio;
+                                    echo gmdate('H:i:s', $duracao);
+                                } else {
+                                    echo 'Em andamento';
+                                }
+                                ?>
+                            </div>
+                            <div style="font-size: 12px; color: #888;">
+                                <?php echo substr($reg->hora_inicio, 0, 5); ?> - <?php echo $reg->hora_fim ? substr($reg->hora_fim, 0, 5) : '--:--'; ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+        <?php endif; ?>
+    </div>
+    <?php endif; ?>
+
+    <!-- Ações do Sistema Antigo -->
+    <?php if ($atividade->status == 'agendada'): ?>
     <!-- Iniciar Atividade -->
     <form action="<?php echo site_url('obras_tecnico/iniciarAtividade'); ?>" method="post" id="formIniciar">
         <input type="hidden" name="atividade_id" value="<?php echo $atividade->id; ?>">
@@ -390,7 +548,7 @@
         </div>
     </form>
 
-    <?php elseif ($atividade->status == 'iniciada'): ?
+    <?php elseif ($atividade->status == 'iniciada'): ?>
     <!-- Ações durante execução -->
     <div class="exec-actions">
         <!-- Pausar -->
@@ -444,7 +602,7 @@
         </form>
     </div>
 
-    <?php elseif ($atividade->status == 'pausada'): ?
+    <?php elseif ($atividade->status == 'pausada'): ?>
     <!-- Retomar -->
     <form action="<?php echo site_url('obras_tecnico/retomarAtividade'); ?>" method="post">
         <input type="hidden" name="atividade_id" value="<?php echo $atividade->id; ?>">
