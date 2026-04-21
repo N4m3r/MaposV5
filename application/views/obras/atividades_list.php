@@ -677,6 +677,10 @@
                 <button onclick="$('#modalAdicionar').modal('show')" class="btn btn-success">
                     <i class="icon-plus"></i> Adicionar Primeira Atividade
                 </button>
+
+                <a href="<?php echo site_url('obras/criarAtividadeTeste/' . (isset($obra) ? $obra->id : 0)); ?>" class="btn btn-info">
+                    <i class="icon-magic"></i> Criar Atividade de Teste
+                </a>
                 <?php endif; ?>
 
                 <a href="<?php echo site_url('diagnostico'); ?>" class="btn btn-mini">

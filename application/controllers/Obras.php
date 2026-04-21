@@ -640,10 +640,84 @@ class Obras extends MY_Controller
         }
 
         echo '<hr>';
-        echo '<div style="display: flex; gap: 10px;">';
+
+        // Verificar se há atividades em outras obras
+        echo '<h3>Verificação em Outras Obras</h3>';
+        $this->db->select('obra_id, COUNT(*) as total');
+        $this->db->group_by('obra_id');
+        $query = $this->db->get('obra_atividades');
+        $atividades_por_obra = $query->result();
+
+        if (!empty($atividades_por_obra)) {
+            echo '<table border="1" cellpadding="10" style="border-collapse: collapse;">';
+            echo '<tr><th>Obra ID</th><th>Total Atividades</th><th>Ação</th></tr>';
+            foreach ($atividades_por_obra as $row) {
+                echo '<tr>';
+                echo '<td>' . $row->obra_id . '</td>';
+                echo '<td>' . $row->total . '</td>';
+                echo '<td><a href="' . site_url('obras/verificarAtividades/' . $row->obra_id) . '">Verificar</a></td>';
+                echo '</tr>';
+            }
+            echo '</table>';
+        } else {
+            echo '<p style="color: orange;">Nenhuma atividade encontrada em NENHUMA obra.</p>';
+        }
+
+        echo '<hr>';
+        echo '<div style="display: flex; gap: 10px; flex-wrap: wrap;">';
         echo '<a href="' . site_url('obras/atividades/' . $obra_id) . '" class="btn">Voltar para Atividades</a>';
-        echo '<a href="' . site_url('obras/migrarAtividades') . '" class="btn" style="background: #28a745; color: white; padding: 5px 10px; text-decoration: none;">Migrar Tabela</a>';
+        echo '<a href="' . site_url('obras/criarAtividadeTeste/' . $obra_id) . '" class="btn" style="background: #17a2b8; color: white; padding: 5px 10px; text-decoration: none;">Criar Atividade de Teste</a>';
+        echo '<a href="' . site_url('diagnostico') . '" class="btn" style="background: #ffc107; color: #000; padding: 5px 10px; text-decoration: none;">Diagnóstico</a>';
         echo '</div>';
+    }
+
+    /**
+     * Criar atividade de teste
+     */
+    public function criarAtividadeTeste($obra_id)
+    {
+        if (!$obra_id || !is_numeric($obra_id)) {
+            echo 'Obra ID inválido';
+            return;
+        }
+
+        // Verificar se tabela existe
+        if (!$this->db->table_exists('obra_atividades')) {
+            echo '<p style="color: red;">Tabela não existe!</p>';
+            return;
+        }
+
+        $dados = [
+            'obra_id' => $obra_id,
+            'titulo' => 'Atividade de Teste ' . date('H:i:s'),
+            'descricao' => 'Esta é uma atividade de teste criada automaticamente',
+            'tipo' => 'trabalho',
+            'status' => 'agendada',
+            'data_atividade' => date('Y-m-d'),
+            'percentual_concluido' => 0,
+            'visivel_cliente' => 1,
+            'created_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s')
+        ];
+
+        // Verificar campos existentes
+        $colunas = $this->db->list_fields('obra_atividades');
+        $dados_filtrados = [];
+        foreach ($dados as $campo => $valor) {
+            if (in_array($campo, $colunas)) {
+                $dados_filtrados[$campo] = $valor;
+            }
+        }
+
+        $this->db->insert('obra_atividades', $dados_filtrados);
+        $id = $this->db->insert_id();
+
+        if ($id) {
+            echo '<p style="color: green;">✅ Atividade de teste criada com sucesso! ID: ' . $id . '</p>';
+            echo '<a href="' . site_url('obras/verificarAtividades/' . $obra_id) . '">Verificar Atividades</a>';
+        } else {
+            echo '<p style="color: red;">❌ Erro ao criar atividade</p>';
+        }
     }
 
     /**
