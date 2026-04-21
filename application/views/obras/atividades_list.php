@@ -607,17 +607,17 @@
         </div>
     </div>
 
-    <!-- Debug Info -->
+    <!-- Info Panel -->
     <div style="background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; margin-bottom: 20px; font-size: 13px;">
-        <strong><i class="icon-info-sign"></i> Debug:</strong>
+        <strong><i class="icon-info-sign"></i> Informações:</strong>
         Obra ID: <code><?php echo $obra->id; ?></code> |
-        Total de atividades: <code><?php echo count($atividades); ?></code> |
-        Tabela existe: <code><?php echo $this->db->table_exists('obra_atividades') ? 'Sim' : 'Não'; ?></code>
+        Total de atividades: <code id="totalAtividadesCounter"><?php echo count($atividades); ?></code>
         <button onclick="location.reload()" style="float: right; padding: 4px 12px; font-size: 12px;">
             <i class="icon-refresh"></i> Recarregar
         </button>
+
         <?php if (empty($atividades)): ?>
-        <div style="margin-top: 10px; padding: 15px; background: #fff3cd; border: 1px solid #ffc107; border-radius: 4px;">
+        <div id="semAtividadesMsg" style="margin-top: 10px; padding: 15px; background: #fff3cd; border: 1px solid #ffc107; border-radius: 4px;">
             <i class="icon-warning-sign" style="font-size: 18px; color: #856404;"></i>
             <strong style="color: #856404;"> Nenhuma atividade cadastrada para esta obra!</strong><br><br>
 
@@ -635,10 +635,6 @@
                     <i class="icon-search"></i> Verificar Banco
                 </a>
             </div>
-        </div>
-        <?php else: ?>
-        <div style="margin-top: 10px; color: #28a745;">
-            <i class="icon-ok"></i> <strong><?php echo count($atividades); ?> atividade(s) encontrada(s)</strong>
         </div>
         <?php endif; ?>
         <div style="clear: both;"></div>

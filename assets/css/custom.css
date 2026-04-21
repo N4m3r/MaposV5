@@ -470,3 +470,92 @@ textarea {
    FIM MENU BADGE
    ============================================ */
 
+/* ============================================
+   ESTILOS GLOBAIS PARA SELECTS
+   ============================================ */
+
+/* Estilo padrão para todos os selects do sistema */
+select {
+    height: 46px !important;
+    padding: 10px 35px 10px 15px !important;
+    border: 2px solid #e8e8e8 !important;
+    border-radius: 10px !important;
+    font-size: 14px !important;
+    background-color: white !important;
+    color: #000 !important;
+    line-height: 1.4 !important;
+    cursor: pointer !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23667eea' d='M6 8L1 3h10z'/%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 12px center !important;
+    background-size: 12px !important;
+    box-sizing: border-box !important;
+}
+
+/* Remove a seta padrão do IE */
+select::-ms-expand {
+    display: none !important;
+}
+
+/* Estilo quando o select está em foco */
+select:focus {
+    border-color: #667eea !important;
+    outline: none !important;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+}
+
+/* Estilo para as options dentro do select */
+select option {
+    color: #000 !important;
+    background: white !important;
+    padding: 10px !important;
+    font-size: 14px !important;
+}
+
+/* Primeira option (placeholder) */
+select option:first-child {
+    color: #999 !important;
+}
+
+/* Estilo quando o select está desabilitado */
+select:disabled {
+    background-color: #f5f5f5 !important;
+    color: #666 !important;
+    cursor: not-allowed !important;
+}
+
+/* Para selects com classes específicas do sistema antigo */
+select.span12,
+select.span6,
+select.span5,
+select.span4,
+select.span3 {
+    height: 46px !important;
+    color: #000 !important;
+    padding: 10px 35px 10px 15px !important;
+}
+
+/* Corrige selects dentro de controls (formulários antigos) */
+.controls select {
+    height: 46px !important;
+    color: #000 !important;
+    padding: 10px 35px 10px 15px !important;
+}
+
+/* Ajuste para formulários em linha */
+.form-horizontal select {
+    margin-bottom: 0 !important;
+}
+
+/* Estilo específico para selects com a classe form-select */
+select.form-select {
+    width: 100% !important;
+}
+
+/* ============================================
+   FIM ESTILOS GLOBAIS PARA SELECTS
+   ============================================ */
+

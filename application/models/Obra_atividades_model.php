@@ -57,6 +57,7 @@ class Obra_atividades_model extends CI_Model
     public function getByObra($obra_id, $filtros = [], $limit = null, $offset = 0)
     {
         if (!$this->tabelaExiste('obra_atividades')) {
+            log_message('error', 'getByObra: Tabela obra_atividades nao existe');
             return [];
         }
 
@@ -65,20 +66,34 @@ class Obra_atividades_model extends CI_Model
             $join_usuarios = $this->db->table_exists('usuarios');
             $join_etapas = $this->db->table_exists('obra_etapas');
 
-            if ($join_usuarios && $join_etapas) {
-                $this->db->select('obra_atividades.*, u.nome as tecnico_nome, oe.nome as etapa_nome');
-                $this->db->from('obra_atividades');
-                $this->db->join('usuarios u', 'u.idUsuarios = obra_atividades.tecnico_id', 'left');
-                $this->db->join('obra_etapas oe', 'oe.id = obra_atividades.etapa_id', 'left');
-            } else {
-                // Query simples sem joins se tabelas não existirem
-                $this->db->select('*');
-                $this->db->from('obra_atividades');
+            // Sempre selecionar todos os campos da obra_atividades
+            $this->db->select('obra_atividades.*');
+
+            if ($join_usuarios) {
+                $this->db->select('u.nome as tecnico_nome');
+            }
+            if ($join_etapas) {
+                $this->db->select('oe.nome as etapa_nome');
             }
 
-            $this->db->where('obra_id', $obra_id);
+            $this->db->from('obra_atividades');
 
-            // Filtros
+            if ($join_usuarios) {
+                $this->db->join('usuarios u', 'u.idUsuarios = obra_atividades.tecnico_id', 'left');
+            }
+            if ($join_etapas) {
+                $this->db->join('obra_etapas oe', 'oe.id = obra_atividades.etapa_id', 'left');
+            }
+
+            // Filtro obrigatório por obra_id
+            $this->db->where('obra_atividades.obra_id', $obra_id);
+
+            // Filtro ativo - só mostrar atividades ativas
+            if ($this->db->field_exists('ativo', 'obra_atividades')) {
+                $this->db->where('obra_atividades.ativo', 1);
+            }
+
+            // Filtros opcionais
             if (!empty($filtros['status'])) {
                 $this->db->where('obra_atividades.status', $filtros['status']);
             }
@@ -96,17 +111,33 @@ class Obra_atividades_model extends CI_Model
                 $this->db->where('obra_atividades.etapa_id', $filtros['etapa_id']);
             }
 
-            // Ordenação
+            // Ordenação - mais recentes primeiro
             $this->db->order_by('obra_atividades.data_atividade', 'DESC');
-            $this->db->order_by('obra_atividades.hora_inicio', 'DESC');
+
+            // Verificar se campo hora_inicio existe antes de ordenar
+            if ($this->db->field_exists('hora_inicio', 'obra_atividades')) {
+                $this->db->order_by('obra_atividades.hora_inicio', 'DESC');
+            }
 
             if ($limit) {
                 $this->db->limit($limit, $offset);
             }
 
             $query = $this->db->get();
-            log_message('debug', 'SQL getByObra obra_id=' . $obra_id . ': ' . $this->db->last_query());
-            return $query ? $query->result() : [];
+
+            // Log da query para debug
+            $last_query = $this->db->last_query();
+            log_message('debug', 'SQL getByObra obra_id=' . $obra_id . ': ' . $last_query);
+
+            if (!$query) {
+                log_message('error', 'getByObra: Query retornou false');
+                return [];
+            }
+
+            $result = $query->result();
+            log_message('debug', 'getByObra: Retornando ' . count($result) . ' registros');
+
+            return $result;
         } catch (Exception $e) {
             log_message('error', 'Erro ao listar atividades: ' . $e->getMessage());
             return [];
