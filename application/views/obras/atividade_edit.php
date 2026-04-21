@@ -251,9 +251,15 @@
     <?php if ($_POST): ?>
     <div style="background: #d4edda; border: 2px solid #28a745; color: #155724; padding: 15px; margin-bottom: 20px; border-radius: 8px; font-family: monospace; font-size: 12px;">
         <div style="font-weight: bold; margin-bottom: 10px; font-size: 14px;">
-            <i class="icon-ok"></i> DEBUG - Dados Recebidos no POST
+            <i class="icon-ok"></i> DEBUG - POST Recebido
         </div>
         <pre style="margin: 0; background: #fff; padding: 10px; border-radius: 4px; overflow-x: auto;"><?php print_r($_POST); ?></pre>
+    </div>
+    <?php else: ?>
+    <div style="background: #cce5ff; border: 2px solid #007bff; color: #004085; padding: 15px; margin-bottom: 20px; border-radius: 8px; font-family: monospace; font-size: 12px;">
+        <div style="font-weight: bold;">
+            <i class="icon-info-sign"></i> Sem POST - Formulário não enviado
+        </div>
     </div>
     <?php endif; ?>
 
@@ -354,7 +360,8 @@
                     <select name="tecnico_id" class="form-select">
                         <option value="">Selecione um técnico...</option>
                         <?php foreach ($tecnicos as $t): ?>
-                        <option value="<?php echo $t->idUsuarios; ?>" <?php echo (int)($atividade->tecnico_id ?? 0) == (int)$t->idUsuarios ? 'selected' : ''; ?>>
+                        <option value="<?php echo $t->idUsuarios; ?>" <?php echo (int)($atividade->tecnico_id ?? 0) == (int)$t->idUsuarios ? 'selected' : ''; ?>
+                            data-id="<?php echo $t->idUsuarios; ?>">
                             <?php echo $t->nome; ?>
                         </option>
                         <?php endforeach; ?>
@@ -367,7 +374,8 @@
                         <option value="">Selecione uma etapa...</option>
                         <?php if (isset($etapas) && !empty($etapas)): ?>
                             <?php foreach ($etapas as $e): ?>
-                            <option value="<?php echo $e->id; ?>" <?php echo (int)($atividade->etapa_id ?? 0) == (int)$e->id ? 'selected' : ''; ?>>
+                            <option value="<?php echo $e->id; ?>" <?php echo (int)($atividade->etapa_id ?? 0) == (int)$e->id ? 'selected' : ''; ?>
+                                data-id="<?php echo $e->id; ?>">
                                 #<?php echo $e->numero_etapa; ?> - <?php echo $e->nome; ?>
                             </option>
                             <?php endforeach; ?>
@@ -412,7 +420,20 @@
 const progressInput = document.getElementById('progressInput');
 const progressValue = document.getElementById('progressValue');
 
-progressInput.addEventListener('input', function() {
-    progressValue.textContent = this.value + '%';
+if (progressInput && progressValue) {
+    progressInput.addEventListener('input', function() {
+        progressValue.textContent = this.value + '%';
+    });
+}
+
+// Debug antes de enviar o formulário
+document.getElementById('formEditarAtividade').addEventListener('submit', function(e) {
+    const formData = new FormData(this);
+    const data = {};
+    for (let [key, value] of formData.entries()) {
+        data[key] = value;
+    }
+    console.log('Dados do formulário:', data);
+    alert('Enviando dados:\n' + JSON.stringify(data, null, 2));
 });
 </script>
