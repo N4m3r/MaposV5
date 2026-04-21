@@ -937,15 +937,16 @@ class Tecnicos extends CI_Controller
     }
 
     /**
-     * Migrar coluna 'fotos' para 'fotos_atividade' na tabela obra_atividades
-     * Executar este método se houver erro "Unknown column 'fotos'"
+     * Migrar colunas de fotos na tabela obra_atividades
+     * Executar este método se houver erro "Unknown column 'fotos' ou 'fotos_atividade'"
      */
     public function migrar_fotos_atividades()
     {
         header('Content-Type: application/json');
 
         // Verificar permissão de admin
-        if (!$this->session->userdata('permissao') || $this->session->userdata('permissao') > 2) {
+        $permissao = $this->session->userdata('permissao');
+        if (!$permissao || $permissao > 2) {
             echo json_encode(['success' => false, 'message' => 'Acesso restrito a administradores']);
             return;
         }
@@ -953,28 +954,83 @@ class Tecnicos extends CI_Controller
         try {
             // Verificar se tabela existe
             if (!$this->db->table_exists('obra_atividades')) {
-                echo json_encode(['success' => false, 'message' => 'Tabela obra_atividades não existe']);
+                // Criar tabela com estrutura completa
+                $this->db->query("CREATE TABLE obra_atividades (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    obra_id INT NOT NULL,
+                    etapa_id INT,
+                    tecnico_id INT NOT NULL,
+                    descricao TEXT NOT NULL,
+                    tipo VARCHAR(50) DEFAULT 'execucao',
+                    percentual_concluido INT DEFAULT 0,
+                    fotos_checkin TEXT,
+                    fotos_atividade TEXT,
+                    fotos_checkout TEXT,
+                    data_atividade DATE NOT NULL,
+                    created_at DATETIME,
+                    ativo TINYINT(1) DEFAULT 1,
+                    INDEX idx_obra_id (obra_id),
+                    INDEX idx_tecnico_id (tecnico_id),
+                    INDEX idx_data_atividade (data_atividade)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'Tabela obra_atividades criada com sucesso',
+                    'campos' => $this->db->list_fields('obra_atividades')
+                ]);
                 return;
             }
 
             $campos = $this->db->list_fields('obra_atividades');
             $alteracoes = [];
 
-            // Se existe coluna 'fotos' antiga, renomear para 'fotos_atividade'
-            if (in_array('fotos', $campos)) {
+            // Se existe coluna 'fotos' antiga (sem sufixo), renomear para 'fotos_atividade'
+            if (in_array('fotos', $campos) && !in_array('fotos_atividade', $campos)) {
                 $this->db->query("ALTER TABLE obra_atividades CHANGE fotos fotos_atividade TEXT");
                 $alteracoes[] = 'Renomeada: fotos -> fotos_atividade';
             }
 
             // Adicionar colunas faltantes
+            if (!in_array('fotos_atividade', $campos) && !in_array('fotos', $campos)) {
+                $this->db->query("ALTER TABLE obra_atividades ADD COLUMN fotos_atividade TEXT");
+                $alteracoes[] = 'Adicionada: fotos_atividade';
+            }
+
             if (!in_array('fotos_checkin', $campos)) {
-                $this->db->query("ALTER TABLE obra_atividades ADD COLUMN fotos_checkin TEXT AFTER fotos_atividade");
+                $this->db->query("ALTER TABLE obra_atividades ADD COLUMN fotos_checkin TEXT");
                 $alteracoes[] = 'Adicionada: fotos_checkin';
             }
 
             if (!in_array('fotos_checkout', $campos)) {
-                $this->db->query("ALTER TABLE obra_atividades ADD COLUMN fotos_checkout TEXT AFTER fotos_checkin");
+                $this->db->query("ALTER TABLE obra_atividades ADD COLUMN fotos_checkout TEXT");
                 $alteracoes[] = 'Adicionada: fotos_checkout';
+            }
+
+            // Adicionar outras colunas que podem estar faltando
+            if (!in_array('titulo', $campos)) {
+                $this->db->query("ALTER TABLE obra_atividades ADD COLUMN titulo VARCHAR(255) AFTER descricao");
+                $alteracoes[] = 'Adicionada: titulo';
+            }
+
+            if (!in_array('tipo', $campos)) {
+                $this->db->query("ALTER TABLE obra_atividades ADD COLUMN tipo VARCHAR(50) DEFAULT 'execucao' AFTER titulo");
+                $alteracoes[] = 'Adicionada: tipo';
+            }
+
+            if (!in_array('percentual_concluido', $campos)) {
+                $this->db->query("ALTER TABLE obra_atividades ADD COLUMN percentual_concluido INT DEFAULT 0 AFTER tipo");
+                $alteracoes[] = 'Adicionada: percentual_concluido';
+            }
+
+            if (!in_array('created_at', $campos)) {
+                $this->db->query("ALTER TABLE obra_atividades ADD COLUMN created_at DATETIME");
+                $alteracoes[] = 'Adicionada: created_at';
+            }
+
+            if (!in_array('ativo', $campos)) {
+                $this->db->query("ALTER TABLE obra_atividades ADD COLUMN ativo TINYINT(1) DEFAULT 1");
+                $alteracoes[] = 'Adicionada: ativo';
             }
 
             echo json_encode([
@@ -1851,22 +1907,51 @@ class Tecnicos extends CI_Controller
         // Preparar título a partir da descrição
         $titulo = substr($descricao, 0, 100);
 
-        // Inserir atividade
+        // Verificar quais colunas existem na tabela (para compatibilidade)
+        $colunas_existentes = $this->db->list_fields('obra_atividades');
+        log_message('debug', 'Colunas existentes: ' . implode(', ', $colunas_existentes));
+
+        // Inserir atividade - apenas com colunas que existem
         $dados = [
             'obra_id' => $obra_id,
-            'etapa_id' => $etapa_id ?: null,
             'tecnico_id' => $tecnico_id,
             'descricao' => $descricao,
-            'titulo' => $titulo,
-            'tipo' => $tipo ?: 'execucao',
-            'percentual_concluido' => $percentual_concluido ?: 0,
-            'fotos_atividade' => json_encode($fotos_salvas),
             'data_atividade' => date('Y-m-d'),
-            'created_at' => date('Y-m-d H:i:s'),
-            'ativo' => 1
         ];
 
+        // Campos opcionais - só adicionar se a coluna existir
+        if (in_array('etapa_id', $colunas_existentes)) {
+            $dados['etapa_id'] = $etapa_id ?: null;
+        }
+        if (in_array('titulo', $colunas_existentes)) {
+            $dados['titulo'] = $titulo;
+        }
+        if (in_array('tipo', $colunas_existentes)) {
+            $dados['tipo'] = $tipo ?: 'execucao';
+        }
+        if (in_array('percentual_concluido', $colunas_existentes)) {
+            $dados['percentual_concluido'] = $percentual_concluido ?: 0;
+        }
+
+        // Fotos - verificar qual coluna existe
+        if (!empty($fotos_salvas)) {
+            $fotos_json = json_encode($fotos_salvas);
+            if (in_array('fotos_atividade', $colunas_existentes)) {
+                $dados['fotos_atividade'] = $fotos_json;
+            } elseif (in_array('fotos', $colunas_existentes)) {
+                $dados['fotos'] = $fotos_json;
+            }
+        }
+
+        if (in_array('created_at', $colunas_existentes)) {
+            $dados['created_at'] = date('Y-m-d H:i:s');
+        }
+        if (in_array('ativo', $colunas_existentes)) {
+            $dados['ativo'] = 1;
+        }
+
         log_message('info', 'api_registrar_atividade_obra - Inserindo atividade: obra_id=' . $obra_id . ', tecnico=' . $tecnico_id);
+        log_message('debug', 'Dados para INSERT: ' . print_r($dados, true));
 
         $result = $this->db->insert('obra_atividades', $dados);
         if ($result) {
