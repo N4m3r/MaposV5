@@ -339,6 +339,14 @@ class Tecnicos extends MY_Controller
             $minhas_atividades = [];
         }
 
+        // Carregar modelo de atividades para verificar execução em andamento (wizard)
+        $this->load->model('atividades_model');
+        $wizard_em_andamento = $this->atividades_model->getAtividadeEmAndamentoNaObra($tecnico_id, $obra_id);
+        $this->data['wizard_em_andamento'] = $wizard_em_andamento;
+        if ($wizard_em_andamento) {
+            $this->data['hora_inicio'] = $wizard_em_andamento->hora_inicio;
+        }
+
         $this->data['obra'] = $obra;
         $this->data['etapas'] = $etapas;
         $this->data['minhas_os'] = $minhas_os;

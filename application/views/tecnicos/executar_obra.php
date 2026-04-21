@@ -1358,7 +1358,7 @@
 
 <!-- Header da Obra -->
 <div class="obra-header">
-    <h2><i class='bx bx-building'></i> <php echo htmlspecialchars(isset($obra->nome) ? $obra->nome : 'Obra'); ?></h2>
+    <h2><i class='bx bx-building'></i> <?php echo htmlspecialchars(isset($obra->nome) ? $obra->nome : 'Obra'); ?></h2>
     <p><i class='bx bx-user'></i> <?php echo htmlspecialchars(isset($obra->cliente_nome) ? $obra->cliente_nome : 'Cliente nao informado'); ?></p>
     <span class="obra-status"><?php echo isset($obra->status) ? $obra->status : 'N/A'; ?></span>
 
@@ -1372,6 +1372,60 @@
         </div>
     </div>
 </div>
+
+<?php if ($wizard_em_andamento): ?>
+<!-- Wizard em Andamento -->
+<div style="background: linear-gradient(135deg, #11998e15 0%, #38ef7d15 100%); padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 2px solid #11998e;">
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px;">
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                <i class='bx bx-time-five' style="font-size: 24px; color: white;"></i>
+            </div>
+            <div>
+                <div style="font-weight: 600; color: #11998e; font-size: 16px;">Execução em Andamento</div>
+                <div style="font-size: 13px; color: #666;">
+                    Iniciada às <strong><?php echo date('H:i', strtotime($wizard_em_andamento->hora_inicio)); ?></strong>
+                    <span id="timer-execucao" style="margin-left: 10px; color: #11998e; font-weight: 600;"></span>
+                </div>
+                <div style="font-size: 12px; color: #888; margin-top: 2px;">
+                    <?php if ($wizard_em_andamento->etapa_nome): ?>
+                        Etapa: <?php echo htmlspecialchars($wizard_em_andamento->etapa_nome); ?>
+                    <?php else: ?>
+                        Atividade geral
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+
+        <a href="<?php echo site_url('atividades/wizard_obra/' . $obra->id . '/' . $wizard_em_andamento->etapa_id); ?>"
+           style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;"
+           onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(17,153,142,0.3)';"
+           onmouseout="this.style.transform=''; this.style.boxShadow='';">
+            <i class='bx bx-refresh'></i> CONTINUAR NO WIZARD
+        </a>
+    </div>
+</div>
+
+<script>
+(function() {
+    var horaInicio = new Date('<?php echo date('Y-m-d H:i:s', strtotime($wizard_em_andamento->hora_inicio)); ?>').getTime();
+
+    function atualizarTimer() {
+        var agora = new Date().getTime();
+        var diff = agora - horaInicio;
+
+        var horas = Math.floor(diff / (1000 * 60 * 60));
+        var minutos = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+        document.getElementById('timer-execucao').textContent =
+            '(' + horas.toString().padStart(2, '0') + ':' + minutos.toString().padStart(2, '0') + ' decorridos)';
+    }
+
+    atualizarTimer();
+    setInterval(atualizarTimer, 60000);
+})();
+</script>
+<?php endif; ?>
 
 <div class="main-container">
 
@@ -1507,12 +1561,45 @@
         <?php endif; ?>
 
         <!-- Wizard de Execucao de Atividade -->
-        <div class="wizard-container" id="wizardAtividade">
-            <div class="wizard-header">
-                <h4><i class='bx bx-play-circle'></i> Registrar Execucao</h4>
-                <p>Siga os passos para registrar sua atividade</p>
+        <?php if (!$wizard_em_andamento): ?>
+        <!-- Opcao para iniciar no Wizard -->
+        <div id="wizard-start-option" style="background: white; border-radius: 12px; padding: 24px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-top: 20px;">
+            <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+                <i class='bx bx-rocket' style="font-size: 28px; color: white;"></i>
+            </div>
+            <h4 style="margin: 0 0 8px 0; color: #333;">Registrar Nova Atividade</h4>
+            <p style="margin: 0 0 20px 0; color: #666; font-size: 14px;">
+                Use o Wizard de Atendimento para registrar sua atividade com controle de tempo (Hora Início/Fim)
+            </p>
+
+            <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                <a href="<?php echo site_url('atividades/wizard_obra/' . $obra->id); ?>"
+                   style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;"
+                   onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(102,126,234,0.3)';"
+                   onmouseout="this.style.transform=''; this.style.boxShadow='';">
+                    <i class='bx bx-play-circle'></i> INICIAR NO WIZARD DE ATENDIMENTO
+                </a>
             </div>
 
+            <div style="margin-top: 16px; padding: 12px; background: #f8f9fa; border-radius: 8px; font-size: 12px; color: #888;">
+                <i class='bx bx-info-circle'></i>
+                O wizard inclui: Check-in com foto → Registro de atividades → Check-out com relatório
+            </div>
+
+            <div style="margin-top: 12px;">
+                <button type="button" onclick="document.getElementById('wizardAtividade').style.display='block'; document.getElementById('wizard-start-option').style.display='none';"
+                        style="background: transparent; border: 1px dashed #999; color: #666; padding: 10px 20px; border-radius: 6px; font-size: 13px; cursor: pointer;">
+                    <i class='bx bx-edit'></i> Ou use o registro rápido (sem controle de tempo)
+                </button>
+            </div>
+        </div>
+
+        <!-- Wizard inline (registro rápido) -->
+        <div class="wizard-container" id="wizardAtividade" style="display: none;">
+            <div class="wizard-header">
+                <h4><i class='bx bx-play-circle'></i> Registrar Execucao Rapida</h4>
+                <p>Registro simplificado sem controle de tempo</p>
+            </div>
             <!-- Progress Steps -->
             <div class="wizard-steps">
                 <div class="step-indicator">
@@ -1792,10 +1879,18 @@
                 <kbd style="background: white; padding: 2px 6px; border-radius: 4px; border: 1px solid #ddd; margin: 0 4px;">Alt + ←</kbd> Voltar
                 <kbd style="background: white; padding: 2px 6px; border-radius: 4px; border: 1px solid #ddd; margin: 0 4px;">Ctrl + Enter</kbd> Finalizar
             </div>
+        </div><!-- /wizard-container -->
+    <?php else: ?>
+        <!-- Quando tem execucao em andamento, mostrar mensagem -->
+        <div style="background: #f8f9fa; border-radius: 12px; padding: 20px; text-align: center; margin-top: 20px;">
+            <i class='bx bx-info-circle' style="font-size: 32px; color: #667eea; margin-bottom: 10px; display: block;"></i>
+            <p style="margin: 0; color: #666;">
+                Finalize a execução em andamento no wizard antes de registrar uma nova atividade.
+            </p>
         </div>
-    </div>
-
-</div>
+    <?php endif; ?>
+    </div><!-- /Coluna Direita -->
+</div><!-- /main-container -->
 
 <script>
 // Wizard de Execucao de Atividade - Versao Aprimorada
