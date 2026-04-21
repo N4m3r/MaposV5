@@ -970,8 +970,12 @@
             <i class="icon-group"></i> Gerenciar Equipe
         </a>
 
+        <a href="<?php echo site_url('obras/etapas/' . $obra->id); ?>" class="obra-action-btn btn-etapas">
+            <i class="icon-tasks"></i> Gerenciar Etapas
+        </a>
+
         <a href="<?php echo site_url('obras/atividades/' . $obra->id); ?>" class="obra-action-btn btn-atividades">
-            <i class="icon-tasks"></i> Todas Atividades
+            <i class="icon-check"></i> Todas Atividades
         </a>
 
         <a href="<?php echo site_url('obras/editar/' . $obra->id); ?>" class="obra-action-btn btn-editar">
@@ -1047,9 +1051,9 @@
                         <i class="icon-tasks"></i>
                         Etapas da Obra
                     </div>
-                    <button class="obra-section-action" onclick="abrirWizard()">
-                        <i class="icon-plus"></i> Nova Etapa
-                    </button>
+                    <a href="<?php echo site_url('obras/etapas/' . $obra->id); ?>" class="obra-section-action">
+                        <i class="icon-eye-open"></i> Ver Todas
+                    </a>
                 </div>
 
                 <?php if (!empty($etapas)): ?>>
