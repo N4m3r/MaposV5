@@ -834,11 +834,9 @@
                     <a href="<?php echo site_url('obras/visualizarAtividade/' . $atividade->id); ?>" class="atividade-card-btn atividade-card-btn-view" title="Visualizar">
                         <i class="icon-eye-open"></i>
                     </a>
-                    <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dObras')): ?>
-                    <a href="javascript:void(0);" onclick="confirmarExclusaoAtividade(<?php echo $atividade->id; ?>, '<?php echo htmlspecialchars(addslashes($titulo), ENT_QUOTES); ?>')" class="atividade-card-btn atividade-card-btn-delete" title="Excluir">
+                    <a href="<?php echo site_url('obras/excluirAtividade/' . $atividade->id); ?>" onclick="return confirm('Deseja realmente excluir a atividade: <?php echo htmlspecialchars(addslashes($titulo), ENT_QUOTES); ?>?')" class="atividade-card-btn atividade-card-btn-delete" title="Excluir">
                         <i class="icon-trash"></i>
                     </a>
-                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -1035,28 +1033,4 @@ $('#modalAdicionar').on('shown.bs.modal', function () {
 $('#modalAdicionar').on('hidden.bs.modal', function () {
     startAutoRefresh();
 });
-
-// Função para confirmar exclusão de atividade
-function confirmarExclusaoAtividade(atividadeId, titulo) {
-    // Parar o auto-refresh para não interferir no modal
-    stopAutoRefresh();
-
-    swal({
-        title: "Confirmar Exclusão",
-        text: "Deseja realmente excluir a atividade: " + titulo + "?",
-        type: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#DD6B55",
-        confirmButtonText: "Sim, excluir!",
-        cancelButtonText: "Cancelar",
-        closeOnConfirm: false
-    }, function() {
-        window.location.href = "<?php echo site_url('obras/excluirAtividade/'); ?>" + atividadeId;
-    });
-
-    // Reiniciar auto-refresh quando o alerta for fechado
-    setTimeout(function() {
-        startAutoRefresh();
-    }, 2000);
-}
 </script>

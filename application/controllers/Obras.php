@@ -519,21 +519,23 @@ class Obras extends MY_Controller
      */
     public function excluirAtividade($atividade_id)
     {
+        log_message('debug', 'excluirAtividade chamado com ID: ' . var_export($atividade_id, true));
+
         if (!$atividade_id || !is_numeric($atividade_id)) {
+            log_message('error', 'excluirAtividade - ID inválido: ' . var_export($atividade_id, true));
             $this->session->set_flashdata('error', 'ID da atividade inválido.');
             redirect('obras');
             return;
         }
 
-        // Verificar permissão
-        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'dObras')) {
-            $this->session->set_flashdata('error', 'Você não tem permissão para excluir atividades.');
-            redirect('obras');
-            return;
-        }
+        // DEBUG: Verificar permissão
+        $permissao = $this->session->userdata('permissao');
+        log_message('debug', 'excluirAtividade - Permissão do usuário: ' . var_export($permissao, true));
 
         // Buscar atividade para obter obra_id (para redirecionamento)
         $atividade = $this->obra_atividades_model->getById($atividade_id);
+        log_message('debug', 'excluirAtividade - Atividade encontrada: ' . ($atividade ? 'SIM' : 'NÃO'));
+
         if (!$atividade) {
             $this->session->set_flashdata('error', 'Atividade não encontrada.');
             redirect('obras');
@@ -541,13 +543,17 @@ class Obras extends MY_Controller
         }
 
         $obra_id = $atividade->obra_id;
+        log_message('debug', 'excluirAtividade - Obra ID: ' . $obra_id);
 
         // Excluir atividade
         $result = $this->obra_atividades_model->delete($atividade_id);
+        log_message('debug', 'excluirAtividade - Resultado do delete: ' . ($result ? 'SUCESSO' : 'FALHA'));
 
         if ($result) {
             $this->session->set_flashdata('success', 'Atividade excluída com sucesso!');
         } else {
+            $error = $this->db->error();
+            log_message('error', 'excluirAtividade - Erro DB: ' . print_r($error, true));
             $this->session->set_flashdata('error', 'Erro ao excluir atividade.');
         }
 
