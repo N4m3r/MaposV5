@@ -324,12 +324,6 @@
                         <i class="icon-info-sign"></i> Informações da Atividade
                     </div>
                 </div>
-                <!-- Mensagem de status -->
-                <?php if (($atividade->status ?? 'agendada') == 'agendada'): ?>
-                <div style="background: #fff3cd; border: 1px solid #ffc107; color: #856404; padding: 12px 15px; border-radius: 8px; margin-bottom: 20px;">
-                    <i class="icon-info-sign"></i> <strong>Atividade agendada</strong> - Ainda não foi iniciada. As informações de horário e execução serão preenchidas automaticamente quando o técnico iniciar a atividade.
-                </div>
-                <?php endif; ?>
 
                 <div class="info-grid">
                     <div class="info-item">
