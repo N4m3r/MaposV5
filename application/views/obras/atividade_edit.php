@@ -247,65 +247,6 @@
     </div>
     <?php endif; ?>
 
-    <!-- DEBUG POST -->
-    <?php if ($_POST): ?>
-    <div style="background: #d4edda; border: 2px solid #28a745; color: #155724; padding: 15px; margin-bottom: 20px; border-radius: 8px; font-family: monospace; font-size: 12px;">
-        <div style="font-weight: bold; margin-bottom: 10px; font-size: 14px;">
-            <i class="icon-ok"></i> DEBUG - POST Recebido
-        </div>
-        <pre style="margin: 0; background: #fff; padding: 10px; border-radius: 4px; overflow-x: auto;"><?php print_r($_POST); ?></pre>
-    </div>
-    <?php else: ?>
-    <div style="background: #cce5ff; border: 2px solid #007bff; color: #004085; padding: 15px; margin-bottom: 20px; border-radius: 8px; font-family: monospace; font-size: 12px;">
-        <div style="font-weight: bold;">
-            <i class="icon-info-sign"></i> Sem POST - Formulário não enviado
-        </div>
-    </div>
-    <?php endif; ?>
-
-    <!-- DEBUG PANEL -->
-    <div style="background: #fff3cd; border: 2px solid #ffc107; color: #856404; padding: 15px; margin-bottom: 20px; border-radius: 8px; font-family: monospace; font-size: 12px;">
-        <div style="font-weight: bold; margin-bottom: 10px; font-size: 14px;">
-            <i class="icon-bug"></i> DEBUG - Dados da Atividade
-        </div>
-        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
-            <div><strong>ID:</strong> <?php echo $atividade->id; ?></div>
-            <div><strong>Titulo:</strong> <?php echo $atividade->titulo ?? 'N/A'; ?></div>
-            <div><strong>Etapa ID (salvo):</strong> <?php echo $atividade->etapa_id ?? 'NULL'; ?> (<?php echo gettype($atividade->etapa_id ?? null); ?>)</div>
-            <div><strong>Tecnico ID (salvo):</strong> <?php echo $atividade->tecnico_id ?? 'NULL'; ?> (<?php echo gettype($atividade->tecnico_id ?? null); ?>)</div>
-            <div><strong>Status:</strong> <?php echo $atividade->status ?? 'N/A'; ?></div>
-            <div><strong>Tipo:</strong> <?php echo $atividade->tipo ?? 'N/A'; ?></div>
-        </div>
-        <div style="margin-top: 10px;">
-            <strong>Etapas disponíveis:</strong>
-            <?php
-            if (!empty($etapas)) {
-                echo '<ul style="margin: 5px 0; padding-left: 20px;">';
-                foreach ($etapas as $e) {
-                    echo '<li>ID: ' . $e->id . ' - ' . $e->nome . '</li>';
-                }
-                echo '</ul>';
-            } else {
-                echo ' Nenhuma etapa cadastrada';
-            }
-            ?>
-        </div>
-        <div style="margin-top: 10px;">
-            <strong>Técnicos disponíveis:</strong>
-            <?php
-            if (!empty($tecnicos)) {
-                echo '<ul style="margin: 5px 0; padding-left: 20px;">';
-                foreach ($tecnicos as $t) {
-                    echo '<li>ID: ' . $t->idUsuarios . ' - ' . $t->nome . '</li>';
-                }
-                echo '</ul>';
-            } else {
-                echo ' Nenhum técnico cadastrado';
-            }
-            ?>
-        </div>
-    </div>
-
     <form method="post" action="" id="formEditarAtividade">
         <!-- Dados da Atividade -->
         <div class="edit-card">
@@ -425,15 +366,4 @@ if (progressInput && progressValue) {
         progressValue.textContent = this.value + '%';
     });
 }
-
-// Debug antes de enviar o formulário
-document.getElementById('formEditarAtividade').addEventListener('submit', function(e) {
-    const formData = new FormData(this);
-    const data = {};
-    for (let [key, value] of formData.entries()) {
-        data[key] = value;
-    }
-    console.log('Dados do formulário:', data);
-    alert('Enviando dados:\n' + JSON.stringify(data, null, 2));
-});
 </script>

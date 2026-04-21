@@ -100,45 +100,57 @@ class Obra_atividades_model extends CI_Model
         }
 
         try {
-            // Query simples primeiro (igual ao verificarAtividades)
-            $this->db->where('obra_id', $obra_id);
+            // Query com joins para buscar nomes de técnico e etapa
+            $this->db->select('obra_atividades.*, u.nome as tecnico_nome, oe.nome as etapa_nome, oe.numero_etapa');
+            $this->db->from('obra_atividades');
+            $this->db->where('obra_atividades.obra_id', $obra_id);
+
+            // Join com usuarios (técnico) - LEFT JOIN para não perder atividades sem técnico
+            if ($this->db->table_exists('usuarios')) {
+                $this->db->join('usuarios u', 'u.idUsuarios = obra_atividades.tecnico_id', 'left');
+            }
+
+            // Join com obra_etapas - LEFT JOIN para não perder atividades sem etapa
+            if ($this->db->table_exists('obra_etapas')) {
+                $this->db->join('obra_etapas oe', 'oe.id = obra_atividades.etapa_id', 'left');
+            }
 
             // Filtro ativo - só mostrar atividades ativas (se o campo existir)
             if ($this->db->field_exists('ativo', 'obra_atividades')) {
-                $this->db->where('ativo', 1);
+                $this->db->where('obra_atividades.ativo', 1);
             }
 
             // Filtros opcionais
             if (!empty($filtros['status'])) {
-                $this->db->where('status', $filtros['status']);
+                $this->db->where('obra_atividades.status', $filtros['status']);
             }
             if (!empty($filtros['tecnico_id'])) {
-                $this->db->where('tecnico_id', $filtros['tecnico_id']);
+                $this->db->where('obra_atividades.tecnico_id', $filtros['tecnico_id']);
             }
             if (!empty($filtros['data_inicio']) && !empty($filtros['data_fim'])) {
-                $this->db->where('data_atividade >=', $filtros['data_inicio']);
-                $this->db->where('data_atividade <=', $filtros['data_fim']);
+                $this->db->where('obra_atividades.data_atividade >=', $filtros['data_inicio']);
+                $this->db->where('obra_atividades.data_atividade <=', $filtros['data_fim']);
             }
             if (!empty($filtros['tipo'])) {
-                $this->db->where('tipo', $filtros['tipo']);
+                $this->db->where('obra_atividades.tipo', $filtros['tipo']);
             }
             if (!empty($filtros['etapa_id'])) {
-                $this->db->where('etapa_id', $filtros['etapa_id']);
+                $this->db->where('obra_atividades.etapa_id', $filtros['etapa_id']);
             }
 
             // Ordenação - mais recentes primeiro
-            $this->db->order_by('data_atividade', 'DESC');
+            $this->db->order_by('obra_atividades.data_atividade', 'DESC');
 
             // Verificar se campo hora_inicio existe antes de ordenar
             if ($this->db->field_exists('hora_inicio', 'obra_atividades')) {
-                $this->db->order_by('hora_inicio', 'DESC');
+                $this->db->order_by('obra_atividades.hora_inicio', 'DESC');
             }
 
             if ($limit) {
                 $this->db->limit($limit, $offset);
             }
 
-            $query = $this->db->get('obra_atividades');
+            $query = $this->db->get();
 
             // Log da query para debug
             $last_query = $this->db->last_query();
@@ -293,7 +305,7 @@ class Obra_atividades_model extends CI_Model
             $colunas_existentes = $this->db->list_fields('obra_atividades');
 
             foreach ($campos_permitidos as $campo) {
-                if (isset($dados[$campo]) && in_array($campo, $colunas_existentes)) {
+                if (array_key_exists($campo, $dados) && in_array($campo, $colunas_existentes)) {
                     $data[$campo] = $dados[$campo];
                 }
             }

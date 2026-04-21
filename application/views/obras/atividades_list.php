@@ -628,35 +628,6 @@
         </div>
     </div>
 
-    <!-- DEBUG PANEL AMARELO -->
-    <div style="background: #fff3cd; border: 2px solid #ffc107; color: #856404; padding: 15px; margin-bottom: 20px; border-radius: 8px; font-family: monospace; font-size: 12px;">
-        <div style="font-weight: bold; color: #856404; margin-bottom: 10px; font-size: 14px;">
-            <i class="icon-bug"></i> DEBUG SQL - Atividades
-        </div>
-        <div style="margin-bottom: 10px;">
-            <strong>Query:</strong> <br>
-            <code style="background: #fff; padding: 5px; display: block; margin-top: 5px; word-break: break-all;"><?php echo $debug_query; ?></code>
-        </div>
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 10px;">
-            <div><strong>Tabela existe:</strong> <?php echo $debug_tabela_existe ? 'SIM' : 'NAO'; ?></div>
-            <div><strong>Total registros:</strong> <?php echo $debug_total; ?></div>
-            <div><strong>Obra ID:</strong> <?php echo $obra->id; ?></div>
-        </div>
-        <div style="margin-bottom: 10px;">
-            <strong>Colunas na tabela:</strong> <?php echo implode(', ', $debug_campos); ?>
-        </div>
-        <?php if (!empty($atividades)): ?>
-        <div>
-            <strong>Dados retornados:</strong>
-            <pre style="background: #fff; padding: 10px; margin-top: 5px; overflow-x: auto; font-size: 11px;"><?php print_r($atividades); ?></pre>
-        </div>
-        <?php else: ?>
-        <div style="color: #dc3545; font-weight: bold;">
-            <i class="icon-warning-sign"></i> NENHUMA ATIVIDADE RETORNADA DO BANCO!
-        </div>
-        <?php endif; ?>
-    </div>
-
     <!-- Info Panel -->
     <div style="background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; margin-bottom: 20px; font-size: 13px;">
         <strong><i class="icon-info-sign"></i> Informações:</strong>
