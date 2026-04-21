@@ -587,9 +587,15 @@
     <!-- Stats -->
     <?php
     $total = count($atividades);
-    $hoje = count(array_filter($atividades, function($a) { return $a->data_atividade == date('Y-m-d'); }));
-    $agendadas = count(array_filter($atividades, function($a) { return $a->status == 'agendada'; }));
-    $concluidas = count(array_filter($atividades, function($a) { return $a->status == 'concluida'; }));
+    $hoje = count(array_filter($atividades, function($a) {
+        return isset($a->data_atividade) && $a->data_atividade == date('Y-m-d');
+    }));
+    $agendadas = count(array_filter($atividades, function($a) {
+        return isset($a->status) && $a->status == 'agendada';
+    }));
+    $concluidas = count(array_filter($atividades, function($a) {
+        return isset($a->status) && $a->status == 'concluida';
+    }));
     ?>
     <div class="atividades-stats">
         <div class="atividades-stat-card">
@@ -682,7 +688,16 @@
     <div class="atividades-grid" id="atividadesGrid">
         <?php foreach ($atividades as $atividade): ?>
         <?php
-        $status_class = $atividade->status;
+        $status = $atividade->status ?? 'agendada';
+        $tipo = $atividade->tipo ?? 'trabalho';
+        $titulo = $atividade->titulo ?? 'Atividade #' . $atividade->id;
+        $data_atividade = $atividade->data_atividade ?? null;
+        $descricao = $atividade->descricao ?? null;
+        $tecnico_nome = $atividade->tecnico_nome ?? null;
+        $horas_trabalhadas = $atividade->horas_trabalhadas ?? null;
+        $visivel_cliente = $atividade->visivel_cliente ?? 0;
+        $percentual_concluido = $atividade->percentual_concluido ?? 0;
+
         $tipo_icons = [
             'trabalho' => 'icon-wrench',
             'impedimento' => 'icon-exclamation-sign',
@@ -690,9 +705,9 @@
             'manutencao' => 'icon-cog',
             'outro' => 'icon-question-sign'
         ];
-        $tipo_icon = $tipo_icons[$atividade->tipo] ?? 'icon-question-sign';
+        $tipo_icon = $tipo_icons[$tipo] ?? 'icon-question-sign';
 
-        $progresso = $atividade->percentual_concluido ?? 0;
+        $progresso = $percentual_concluido;
         if ($progresso < 30) {
             $progressoColor = 'linear-gradient(90deg, #ff6b6b, #ee5a52)';
         } elseif ($progresso < 70) {
@@ -701,47 +716,47 @@
             $progressoColor = 'linear-gradient(90deg, #1dd1a1, #10ac84)';
         }
         ?>
-        <div class="atividade-card <?php echo $status_class; ?>" data-status="<?php echo $atividade->status ?? 'agendada'; ?>" data-tipo="<?php echo $atividade->tipo ?? 'trabalho'; ?>" data-titulo="<?php echo strtolower($atividade->titulo ?? 'Atividade'); ?>">
+        <div class="atividade-card <?php echo $status; ?>" data-status="<?php echo $status; ?>" data-tipo="<?php echo $tipo; ?>" data-titulo="<?php echo strtolower($titulo); ?>">
             <!-- Visibilidade -->
-            <div class="atividade-visibilidade <?php echo $atividade->visivel_cliente ? 'visivel' : 'oculto'; ?>" title="<?php echo $atividade->visivel_cliente ? 'Visível ao cliente' : 'Oculto do cliente'; ?>">
-                <i class="icon-<?php echo $atividade->visivel_cliente ? 'eye-open' : 'eye-close'; ?>"></i>
+            <div class="atividade-visibilidade <?php echo $visivel_cliente ? 'visivel' : 'oculto'; ?>" title="<?php echo $visivel_cliente ? 'Visível ao cliente' : 'Oculto do cliente'; ?>">
+                <i class="icon-<?php echo $visivel_cliente ? 'eye-open' : 'eye-close'; ?>"></i>
             </div>
 
             <div class="atividade-card-header">
                 <div class="atividade-card-title-section">
                     <div class="atividade-card-date">
                         <i class="icon-calendar"></i>
-                        <?php echo $atividade->data_atividade ? date('d/m/Y', strtotime($atividade->data_atividade)) : 'N/A'; ?>
+                        <?php echo $data_atividade ? date('d/m/Y', strtotime($data_atividade)) : 'N/A'; ?>
                     </div>
-                    <h3 class="atividade-card-title"><?php echo htmlspecialchars($atividade->titulo ?? 'Atividade #' . $atividade->id); ?></h3>
+                    <h3 class="atividade-card-title"><?php echo htmlspecialchars($titulo); ?></h3>
                 </div>
-                <span class="atividade-status-badge <?php echo $status_class; ?>">
-                    <?php echo ucfirst($atividade->status ?? 'agendada'); ?>
+                <span class="atividade-status-badge <?php echo $status; ?>">
+                    <?php echo ucfirst($status); ?>
                 </span>
             </div>
 
             <div class="atividade-card-body">
-                <?php if ($atividade->descricao): ?>
+                <?php if ($descricao): ?>
                 <div class="atividade-card-desc">
-                    <?php echo htmlspecialchars($atividade->descricao); ?>
+                    <?php echo htmlspecialchars($descricao); ?>
                 </div>
                 <?php endif; ?>
 
                 <div class="atividade-card-meta">
-                    <div class="atividade-meta-item tipo-<?php echo $atividade->tipo ?? 'trabalho'; ?>">
+                    <div class="atividade-meta-item tipo-<?php echo $tipo; ?>">
                         <i class="<?php echo $tipo_icon; ?>"></i>
-                        <span><?php echo ucfirst($atividade->tipo ?? 'trabalho'); ?></span>
+                        <span><?php echo ucfirst($tipo); ?></span>
                     </div>
-                    <?php if ($atividade->tecnico_nome): ?>
+                    <?php if ($tecnico_nome): ?>
                     <div class="atividade-meta-item">
                         <i class="icon-user"></i>
-                        <span><?php echo htmlspecialchars($atividade->tecnico_nome); ?></span>
+                        <span><?php echo htmlspecialchars($tecnico_nome); ?></span>
                     </div>
                     <?php endif; ?>
-                    <?php if ($atividade->horas_trabalhadas): ?>
+                    <?php if ($horas_trabalhadas): ?>
                     <div class="atividade-meta-item">
                         <i class="icon-time"></i>
-                        <span><?php echo $atividade->horas_trabalhadas; ?>h</span>
+                        <span><?php echo $horas_trabalhadas; ?>h</span>
                     </div>
                     <?php endif; ?>
                 </div>
