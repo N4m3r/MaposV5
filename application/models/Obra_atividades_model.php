@@ -243,7 +243,8 @@ class Obra_atividades_model extends CI_Model
                 'horas_trabalhadas', 'impedimento', 'motivo_impedimento',
                 'tipo_impedimento', 'checkin_lat', 'checkin_lng',
                 'checkout_lat', 'checkout_lng', 'fotos_checkin',
-                'fotos_atividade', 'fotos_checkout', 'visivel_cliente'
+                'fotos_atividade', 'fotos_checkout', 'visivel_cliente',
+                'data_atividade'
             ];
 
             foreach ($campos as $campo) {
@@ -253,20 +254,28 @@ class Obra_atividades_model extends CI_Model
             }
 
             $this->db->where('id', $id);
-            $result = $this->db->update('obra_atividades', $data);
+            $this->db->update('obra_atividades', $data);
+
+            // Verificar se houve erro real na query
+            $error = $this->db->error();
+            if ($error['code'] != 0) {
+                log_message('error', 'Erro SQL ao atualizar atividade ID ' . $id . ': ' . print_r($error, true));
+                log_message('error', 'Dados: ' . print_r($data, true));
+                return false;
+            }
 
             // Registrar mudança de percentual no histórico
-            if ($result && isset($dados['percentual_concluido'])) {
-                if ($dados['percentual_concluido'] != $atividade_atual->percentual_concluido) {
+            if (isset($dados['percentual_concluido'])) {
+                if ($dados['percentual_concluido'] != ($atividade_atual->percentual_concluido ?? 0)) {
                     $this->registrarHistorico($id, 'progresso', $dados['tecnico_id'] ?? null, [
                         'descricao' => 'Progresso atualizado',
-                        'percentual_anterior' => $atividade_atual->percentual_concluido,
+                        'percentual_anterior' => $atividade_atual->percentual_concluido ?? 0,
                         'percentual_novo' => $dados['percentual_concluido']
                     ]);
                 }
             }
 
-            return $result;
+            return true;
         } catch (Exception $e) {
             log_message('error', 'Erro ao atualizar atividade: ' . $e->getMessage());
             return false;
