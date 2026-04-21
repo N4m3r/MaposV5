@@ -239,8 +239,8 @@ class Obra_atividades_model extends CI_Model
                 $data['updated_at'] = date('Y-m-d H:i:s');
             }
 
-            // Campos permitidos
-            $campos = [
+            // Campos permitidos - só adicionar se a coluna existir na tabela
+            $campos_permitidos = [
                 'etapa_id', 'tecnico_id', 'titulo', 'descricao', 'tipo',
                 'status', 'percentual_concluido', 'hora_inicio', 'hora_fim',
                 'horas_trabalhadas', 'impedimento', 'motivo_impedimento',
@@ -250,8 +250,11 @@ class Obra_atividades_model extends CI_Model
                 'data_atividade'
             ];
 
-            foreach ($campos as $campo) {
-                if (isset($dados[$campo])) {
+            // Obter colunas reais da tabela
+            $colunas_existentes = $this->db->list_fields('obra_atividades');
+
+            foreach ($campos_permitidos as $campo) {
+                if (isset($dados[$campo]) && in_array($campo, $colunas_existentes)) {
                     $data[$campo] = $dados[$campo];
                 }
             }
