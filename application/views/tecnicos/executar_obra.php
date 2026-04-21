@@ -1346,30 +1346,6 @@
         border: 2px dashed #e0e0e0;
     }
 
-    /* Estilos para o step de Materiais */
-    .material-item {
-        animation: fadeIn 0.3s ease;
-    }
-
-    #stepMateriais {
-        display: none;
-    }
-
-    #stepMateriais.active {
-        display: block;
-    }
-
-    .material-form input:focus,
-    .material-form select:focus,
-    .material-form textarea:focus {
-        outline: none;
-        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
-    }
-
-    .empty-materiais {
-        animation: pulse 2s infinite;
-    }
-
     .select-card.selected-foradoscopo {
         border-color: #ff6b6b !important;
         background: linear-gradient(135deg, #fff5f5 0%, #fff 100%);
@@ -2486,50 +2462,6 @@ const wizard = {
         }
         document.getElementById('resumoTipo').innerHTML = tipoTexto;
 
-        // Resumo de materiais (apenas para atividades fora do escopo)
-        let resumoMateriaisEl = document.getElementById('resumoMateriais');
-        if (this.data.tipo === 'fora_do_escopo') {
-            if (!resumoMateriaisEl) {
-                // Criar elemento dinamicamente
-                const resumoBox = document.getElementById('resumoBox');
-                const novoItem = document.createElement('div');
-                novoItem.className = 'resumo-item';
-                novoItem.id = 'resumoMateriaisItem';
-                novoItem.innerHTML = `
-                    <span class="resumo-label">Materiais:</span>
-                    <span class="resumo-value" id="resumoMateriais">-</span>
-                `;
-                // Inserir antes do Progresso
-                const progressoItem = resumoBox.querySelector('.resumo-item:nth-child(5)');
-                if (progressoItem) {
-                    resumoBox.insertBefore(novoItem, progressoItem);
-                }
-                resumoMateriaisEl = document.getElementById('resumoMateriais');
-            }
-
-            let materiaisTexto = '';
-            if (this.data.materiais.length > 0) {
-                materiaisTexto = `${this.data.materiais.length} item(s)`;
-                const totalValor = this.data.materiais.reduce((sum, m) => sum + ((m.valor || 0) * m.qtd), 0);
-                if (totalValor > 0) {
-                    materiaisTexto += ` | Total: R$ ${totalValor.toFixed(2)}`;
-                }
-            } else {
-                materiaisTexto = 'Nenhum material registrado';
-            }
-
-            // Adicionar solicitante
-            if (this.data.solicitante) {
-                materiaisTexto += `<br><span style="font-size: 12px; color: #666;">Solicitante: ${this.escapeHtml(this.data.solicitante)}</span>`;
-            }
-
-            resumoMateriaisEl.innerHTML = materiaisTexto;
-        } else if (resumoMateriaisEl) {
-            // Remover elemento se nao for fora do escopo
-            const item = document.getElementById('resumoMateriaisItem');
-            if (item) item.remove();
-        }
-
         // Resumo de fotos com ícone
         const resumoFotos = document.getElementById('resumoFotos');
         if (this.data.fotos.length > 0) {
@@ -2585,16 +2517,6 @@ const wizard = {
             formData.append('tipo', this.data.tipo);
             formData.append('descricao', this.data.descricao);
             formData.append('percentual_concluido', this.data.percentual);
-
-            // Adicionar dados de materiais (se for atividade fora do escopo)
-            if (this.data.tipo === 'fora_do_escopo') {
-                formData.append('is_foradoscopo', '1');
-                formData.append('solicitante', this.data.solicitante || '');
-                formData.append('justificativa', this.data.justificativa || '');
-                if (this.data.materiais.length > 0) {
-                    formData.append('materiais', JSON.stringify(this.data.materiais));
-                }
-            }
 
             // Adicionar fotos
             this.data.fotos.forEach((foto, index) => {

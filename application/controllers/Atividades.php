@@ -45,8 +45,8 @@ class Atividades extends CI_Controller
         $data['estatisticas'] = $this->atividades->getEstatisticasTecnico($tecnico_id);
 
         // OS do dia para o técnico
-        $this->load->model('Atendimentos_model');
-        $data['os_hoje'] = $this->Atendimentos_model->getOsDoDia($tecnico_id);
+        $this->load->model('Tec_os_model');
+        $data['os_hoje'] = $this->Tec_os_model->getOsDoDia($tecnico_id);
 
         $data['title'] = 'Área do Técnico - Atividades';
         $this->load->view('tema/header', $data);
@@ -164,9 +164,9 @@ class Atividades extends CI_Controller
         $tecnico_id = $this->session->userdata('idAdmin');
 
         // Carrega OS designadas para o técnico
-        $this->load->model('Atendimentos_model');
-        $data['os_pendentes'] = $this->Atendimentos_model->getOsPendentes($tecnico_id);
-        $data['os_hoje'] = $this->Atendimentos_model->getOsDoDia($tecnico_id);
+        $this->load->model('Tec_os_model');
+        $data['os_pendentes'] = $this->Tec_os_model->getOsPendentes($tecnico_id);
+        $data['os_hoje'] = $this->Tec_os_model->getOsDoDia($tecnico_id);
 
         // Verifica atividade em andamento
         $data['atividade_andamento'] = $this->atividades->getAtividadeEmAndamento($tecnico_id);
