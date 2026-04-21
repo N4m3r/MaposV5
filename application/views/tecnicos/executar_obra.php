@@ -3338,7 +3338,7 @@ document.head.appendChild(style);
                         </div>
                         <div class="wizard-section-body">
                             <div id="wizardEtapasGrid" class="row-fluid">
-                                <?php foreach ($etapas as $etapa): ?
+                                <?php foreach ($etapas as $etapa): ?>
                                 <div class="span4" style="margin-bottom: 15px;">
                                     <div class="wizard-etapa-card-v2" data-etapa-id="<?= $etapa->id ?>" onclick="WizardObra.selecionarEtapa(<?= $etapa->id ?>, '<?= htmlspecialchars($etapa->nome) ?>', this)">
                                         <div class="etapa-nome"><?= htmlspecialchars($etapa->nome) ?></div>
