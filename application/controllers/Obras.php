@@ -721,6 +721,73 @@ class Obras extends MY_Controller
     }
 
     /**
+     * Migrar tabela de atividades - adicionar colunas faltantes
+     */
+    public function migrarAtividades()
+    {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cObras')) {
+            echo 'Sem permissão';
+            return;
+        }
+
+        echo '<h2>Migração - Tabela obra_atividades</h2>';
+        echo '<hr>';
+
+        // Verificar colunas existentes
+        $colunas_existentes = $this->db->list_fields('obra_atividades');
+        echo '<p><strong>Colunas atuais:</strong> ' . implode(', ', $colunas_existentes) . '</p>';
+
+        // Colunas a adicionar
+        $colunas_para_adicionar = [
+            'titulo' => "VARCHAR(255) AFTER obra_id",
+            'etapa_id' => "INT NULL AFTER titulo",
+            'tecnico_id' => "INT NULL AFTER etapa_id",
+            'status' => "VARCHAR(50) DEFAULT 'agendada' AFTER tipo",
+            'data_atividade' => "DATE AFTER status",
+            'percentual_concluido' => "INT DEFAULT 0 AFTER data_atividade",
+            'visivel_cliente' => "TINYINT(1) DEFAULT 1 AFTER percentual_concluido",
+            'updated_at' => "DATETIME AFTER created_at"
+        ];
+
+        $adicionadas = [];
+        $existentes = [];
+
+        foreach ($colunas_para_adicionar as $coluna => $definicao) {
+            if (!in_array($coluna, $colunas_existentes)) {
+                $sql = "ALTER TABLE obra_atividades ADD COLUMN {$coluna} {$definicao}";
+                if ($this->db->query($sql)) {
+                    $adicionadas[] = $coluna;
+                }
+            } else {
+                $existentes[] = $coluna;
+            }
+        }
+
+        echo '<h3>Resultado:</h3>';
+        if (!empty($adicionadas)) {
+            echo '<p style="color: green;"><strong>Colunas adicionadas:</strong> ' . implode(', ', $adicionadas) . '</p>';
+        }
+        if (!empty($existentes)) {
+            echo '<p style="color: blue;"><strong>Já existiam:</strong> ' . implode(', ', $existentes) . '</p>';
+        }
+
+        // Atualizar registros existentes - copiar descricao para titulo
+        if (in_array('descricao', $colunas_existentes) && in_array('titulo', $adicionadas)) {
+            $this->db->query("UPDATE obra_atividades SET titulo = SUBSTRING(descricao, 1, 255) WHERE titulo IS NULL OR titulo = ''");
+            echo '<p style="color: orange;">Registros atualizados: titulo copiado de descricao</p>';
+        }
+
+        // Atualizar registros existentes - data_atividade = created_at
+        if (in_array('data_atividade', $adicionadas) && in_array('created_at', $colunas_existentes)) {
+            $this->db->query("UPDATE obra_atividades SET data_atividade = DATE(created_at) WHERE data_atividade IS NULL");
+            echo '<p style="color: orange;">Registros atualizados: data_atividade definida</p>';
+        }
+
+        echo '<hr>';
+        echo '<a href="' . site_url('obras/atividades/3') . '">Voltar para Atividades</a>';
+    }
+
+    /**
      * Visualizar atividade
      */
     public function visualizarAtividade($atividade_id)
