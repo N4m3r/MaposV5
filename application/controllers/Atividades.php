@@ -452,6 +452,249 @@ class Atividades extends MY_Controller
     }
 
     /**
+     * Check-in em Obra (início do trabalho com etapa obrigatória)
+     */
+    public function checkin_obra()
+    {
+        if (!$this->input->is_ajax_request()) {
+            redirect('atividades');
+        }
+
+        $this->load->library('form_validation');
+
+        $this->form_validation->set_rules('obra_id', 'Obra', 'required|integer');
+        $this->form_validation->set_rules('etapa_id', 'Etapa', 'required|integer');
+        $this->form_validation->set_rules('tipo_id', 'Tipo de Atividade', 'required|integer');
+
+        if ($this->form_validation->run() == false) {
+            echo json_encode(['success' => false, 'message' => validation_errors()]);
+            return;
+        }
+
+        $tecnico_id = $this->session->userdata('idAdmin');
+        $obra_id = $this->input->post('obra_id');
+        $etapa_id = $this->input->post('etapa_id');
+
+        // Verifica se já tem atividade em andamento
+        if ($this->atividades->hasAtividadeEmAndamento($tecnico_id)) {
+            echo json_encode(['success' => false, 'message' => 'Já existe uma atividade em andamento.']);
+            return;
+        }
+
+        // Verifica se técnico tem acesso à obra
+        $this->load->model('obras_model');
+        if (!$this->obras_model->tecnicoEstaNaEquipe($obra_id, $tecnico_id)) {
+            echo json_encode(['success' => false, 'message' => 'Você não tem acesso a esta obra.']);
+            return;
+        }
+
+        $tipo = $this->atividades_tipos->getById($this->input->post('tipo_id'));
+
+        $dados = [
+            'obra_id' => $obra_id,
+            'etapa_id' => $etapa_id,
+            'tecnico_id' => $tecnico_id,
+            'tipo_id' => $this->input->post('tipo_id'),
+            'tipo_atividade' => $tipo->nome ?? 'Atividade na Obra',
+            'categoria' => $tipo->categoria ?? 'geral',
+            'descricao' => $this->input->post('descricao') ?? 'Check-in - Início do trabalho',
+            'equipamento' => $this->input->post('equipamento'),
+            'latitude' => $this->input->post('latitude'),
+            'longitude' => $this->input->post('longitude'),
+            'observacoes' => $this->input->post('observacoes'),
+        ];
+
+        // Vincula a atividade planejada se informada
+        $obra_atividade_id = $this->input->post('obra_atividade_id');
+        if ($obra_atividade_id) {
+            $dados['obra_atividade_id'] = $obra_atividade_id;
+        }
+
+        // Processa foto se enviada
+        if (!empty($_FILES['foto']['tmp_name'])) {
+            $foto = $this->upload_foto('foto');
+            if ($foto) {
+                $dados['foto_checkin'] = $foto;
+            }
+        }
+
+        $atividade_id = $this->atividades->iniciar($dados);
+
+        if ($atividade_id) {
+            echo json_encode([
+                'success' => true,
+                'atividade_id' => $atividade_id,
+                'message' => 'Check-in realizado com sucesso!'
+            ]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Erro ao realizar check-in.']);
+        }
+    }
+
+    /**
+     * Finaliza atividade em obra (com atualização de etapa)
+     */
+    public function finalizar_atividade_obra()
+    {
+        if (!$this->input->is_ajax_request()) {
+            redirect('atividades');
+        }
+
+        $this->load->library('form_validation');
+
+        $this->form_validation->set_rules('atividade_id', 'Atividade', 'required|integer');
+        $this->form_validation->set_rules('concluida', 'Status', 'required|in_list[1,0]');
+
+        if ($this->form_validation->run() == false) {
+            echo json_encode(['success' => false, 'message' => validation_errors()]);
+            return;
+        }
+
+        $atividade_id = $this->input->post('atividade_id');
+        $concluida = $this->input->post('concluida');
+
+        $dados = [
+            'concluida' => $concluida,
+            'problemas_encontrados' => $this->input->post('problemas_encontrados'),
+            'solucao_aplicada' => $this->input->post('solucao_aplicada'),
+            'motivo_nao_concluida' => $concluida == '0' ? $this->input->post('motivo_nao_concluida') : null,
+            'observacoes' => $this->input->post('observacoes_final'),
+        ];
+
+        // Processa assinatura se enviada
+        if ($this->input->post('assinatura_tecnico')) {
+            $dados['assinatura_tecnico'] = $this->input->post('assinatura_tecnico');
+        }
+
+        $result = $this->atividades->finalizar($atividade_id, $dados);
+
+        if ($result) {
+            // Atualiza o progresso da etapa automaticamente
+            $atividade = $this->atividades->getById($atividade_id);
+            if ($atividade && $atividade->etapa_id) {
+                $this->atualizarProgressoEtapa($atividade->etapa_id, $atividade->obra_id);
+            }
+
+            echo json_encode([
+                'success' => true,
+                'message' => 'Atividade finalizada com sucesso!'
+            ]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Erro ao finalizar atividade.']);
+        }
+    }
+
+    /**
+     * Atualiza o progresso da etapa baseado nas atividades concluídas
+     */
+    private function atualizarProgressoEtapa($etapa_id, $obra_id)
+    {
+        // Obtém estatísticas da etapa
+        $estatisticas = $this->atividades->getEstatisticasPorEtapa($etapa_id);
+
+        // Calcula progresso baseado em atividades concluídas
+        $progresso = $estatisticas['progresso_percentual'];
+
+        // Atualiza a etapa
+        $this->load->model('obras_model');
+        $this->obras_model->atualizarEtapa($etapa_id, [
+            'progresso_real' => $progresso,
+            'status' => $progresso >= 100 ? 'Concluida' : 'EmAndamento'
+        ]);
+
+        return true;
+    }
+
+    /**
+     * Check-out - Finaliza trabalho na obra
+     */
+    public function checkout_obra()
+    {
+        if (!$this->input->is_ajax_request()) {
+            redirect('atividades');
+        }
+
+        $tecnico_id = $this->session->userdata('idAdmin');
+        $obra_id = $this->input->post('obra_id');
+
+        // Busca atividade em andamento do técnico na obra
+        $atividade = $this->atividades->getAtividadeEmAndamentoNaObra($tecnico_id, $obra_id);
+
+        if (!$atividade) {
+            echo json_encode(['success' => false, 'message' => 'Nenhuma atividade em andamento nesta obra.']);
+            return;
+        }
+
+        $dados = [
+            'concluida' => $this->input->post('concluida') ?? 1,
+            'observacoes' => $this->input->post('resumo_final'),
+            'problemas_encontrados' => $this->input->post('pendencias'),
+        ];
+
+        // Processa assinatura do cliente
+        if ($this->input->post('assinatura_cliente_saida')) {
+            $dados['assinatura_cliente'] = $this->input->post('assinatura_cliente_saida');
+        }
+
+        $result = $this->atividades->finalizar($atividade->idAtividade, $dados);
+
+        if ($result) {
+            // Atualiza o progresso da etapa
+            if ($atividade->etapa_id) {
+                $this->atualizarProgressoEtapa($atividade->etapa_id, $obra_id);
+            }
+
+            echo json_encode([
+                'success' => true,
+                'message' => 'Trabalho finalizado com sucesso!'
+            ]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Erro ao finalizar trabalho.']);
+        }
+    }
+
+    /**
+     * Vincula atividade realizada a uma atividade planejada da etapa
+     */
+    public function vincular_atividade_planejada()
+    {
+        if (!$this->input->is_ajax_request()) {
+            redirect('atividades');
+        }
+
+        $this->load->library('form_validation');
+
+        $this->form_validation->set_rules('atividade_realizada_id', 'Atividade Realizada', 'required|integer');
+        $this->form_validation->set_rules('obra_atividade_id', 'Atividade Planejada', 'required|integer');
+        $this->form_validation->set_rules('etapa_id', 'Etapa', 'required|integer');
+        $this->form_validation->set_rules('obra_id', 'Obra', 'required|integer');
+
+        if ($this->form_validation->run() == false) {
+            echo json_encode(['success' => false, 'message' => validation_errors()]);
+            return;
+        }
+
+        $tecnico_id = $this->session->userdata('idAdmin');
+
+        $result = $this->atividades->vincularAtividadePlanejada(
+            $this->input->post('atividade_realizada_id'),
+            $this->input->post('obra_atividade_id'),
+            $this->input->post('etapa_id'),
+            $this->input->post('obra_id'),
+            $tecnico_id
+        );
+
+        if ($result) {
+            echo json_encode([
+                'success' => true,
+                'message' => 'Atividade vinculada com sucesso!'
+            ]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Erro ao vincular atividade.']);
+        }
+    }
+
+    /**
      * Adiciona material à atividade
      */
     public function adicionar_material()

@@ -2057,6 +2057,7 @@ const wizard = {
             `;
         } else {
             let html = '<div class="atividades-grid" style="display: grid; gap: 12px;">';
+            var self = this;
             atividades.forEach(function(atv) {
                 const tipoLabels = { 'execucao': 'Execução', 'problema': 'Problema', 'observacao': 'Observação' };
                 const tipoCores = { 'execucao': '#27ae60', 'problema': '#e74c3c', 'observacao': '#f39c12' };
@@ -2069,7 +2070,7 @@ const wizard = {
 
                 html += `
                     <div class="atividade-card-wizard" data-atividade-id="${atv.id}"
-                        onclick="wizard.selectAtividade('${atv.id}', '${this.escapeHtml(titulo)}')"
+                        onclick="wizard.selectAtividade('${atv.id}', '${self.escapeHtml(titulo)}')"
                         style="background: white; border: 2px solid #e0e0e0; border-radius: 12px; padding: 15px; cursor: pointer; transition: all 0.3s;"
                         onmouseover="this.style.borderColor='#667eea'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)';"
                         onmouseout="if(!this.classList.contains('selected')){this.style.borderColor='#e0e0e0'; this.style.transform=''; this.style.boxShadow='';}"
@@ -2082,7 +2083,7 @@ const wizard = {
                             <span style="font-size: 12px; color: #888;">${new Date(atv.data_atividade).toLocaleDateString('pt-BR')}</span>
                         </div>
                         <p style="margin: 0; font-size: 13px; color: #333; line-height: 1.4; margin-bottom: 8px;">
-                            ${this.escapeHtml(titulo)}
+                            ${self.escapeHtml(titulo)}
                         </p>
                         ${percentual > 0 ? `
                             <div style="display: flex; align-items: center; gap: 10px;">

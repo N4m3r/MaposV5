@@ -598,4 +598,190 @@ class Atividades_model extends CI_Model
         $this->db->where('idAtividade', $atividade_id);
         return $this->db->update($this->table, $update);
     }
+
+    // =========================================================
+    // MÉTODOS DE INTEGRAÇÃO COM ETAPAS DA OBRA
+    // =========================================================
+
+    /**
+     * Lista atividades por obra agrupadas por etapa
+     */
+    public function listarPorObraAgrupadoPorEtapa($obra_id, $limite_por_etapa = 20)
+    {
+        // Busca etapas da obra
+        $this->db->where('obra_id', $obra_id);
+        $etapas = $this->db->get('obra_etapas')->result();
+
+        $resultado = [];
+
+        foreach ($etapas as $etapa) {
+            $this->db->select('os_atividades.*,
+                                   atividades_tipos.nome as tipo_nome,
+                                   atividades_tipos.icone as tipo_icone,
+                                   atividades_tipos.cor as tipo_cor,
+                                   usuarios.nome as nome_tecnico,
+                                   obra_atividades.titulo as atividade_planejada_titulo');
+            $this->db->from($this->table);
+            $this->db->join('atividades_tipos', 'atividades_tipos.idTipo = os_atividades.tipo_id', 'left');
+            $this->db->join('usuarios', 'usuarios.idUsuarios = os_atividades.tecnico_id', 'left');
+            $this->db->join('obra_atividades', 'obra_atividades.id = os_atividades.obra_atividade_id', 'left');
+            $this->db->where('os_atividades.obra_id', $obra_id);
+            $this->db->where('os_atividades.etapa_id', $etapa->id);
+            $this->db->order_by('os_atividades.hora_inicio', 'DESC');
+            $this->db->limit($limite_por_etapa);
+
+            $atividades = $this->db->get()->result();
+
+            $resultado[] = [
+                'etapa' => $etapa,
+                'atividades' => $atividades,
+                'total_atividades' => count($atividades),
+            ];
+        }
+
+        return $resultado;
+    }
+
+    /**
+     * Vincula atividade realizada a uma etapa e opcionalmente a uma atividade planejada
+     */
+    public function vincularEtapa($atividade_id, $etapa_id, $obra_id, $obra_atividade_id = null)
+    {
+        $dados = [
+            'etapa_id' => $etapa_id,
+            'obra_id' => $obra_id,
+        ];
+
+        if ($obra_atividade_id) {
+            $dados['obra_atividade_id'] = $obra_atividade_id;
+        }
+
+        $this->db->where('idAtividade', $atividade_id);
+        return $this->db->update($this->table, $dados);
+    }
+
+    /**
+     * Vincula atividade realizada a uma atividade planejada específica
+     */
+    public function vincularAtividadePlanejada($atividade_realizada_id, $obra_atividade_id, $etapa_id, $obra_id, $tecnico_id)
+    {
+        // Atualiza a atividade realizada
+        $this->db->where('idAtividade', $atividade_realizada_id);
+        $this->db->update($this->table, [
+            'obra_atividade_id' => $obra_atividade_id,
+            'etapa_id' => $etapa_id,
+            'obra_id' => $obra_id,
+        ]);
+
+        // Insere registro na tabela de vínculo
+        $this->db->insert('obra_atividades_vinculo', [
+            'atividade_realizada_id' => $atividade_realizada_id,
+            'obra_atividade_id' => $obra_atividade_id,
+            'etapa_id' => $etapa_id,
+            'obra_id' => $obra_id,
+            'tecnico_id' => $tecnico_id,
+            'data_vinculo' => date('Y-m-d H:i:s'),
+        ]);
+
+        return $this->db->insert_id();
+    }
+
+    /**
+     * Obtém estatísticas de atividades por etapa da obra
+     */
+    public function getEstatisticasPorEtapa($etapa_id)
+    {
+        // Total de atividades na etapa
+        $this->db->where('etapa_id', $etapa_id);
+        $total = $this->db->count_all_results($this->table);
+
+        // Atividades concluídas
+        $this->db->where('etapa_id', $etapa_id);
+        $this->db->where('status', 'finalizada');
+        $this->db->where('concluida', 1);
+        $concluidas = $this->db->count_all_results($this->table);
+
+        // Total de minutos trabalhados na etapa
+        $this->db->select_sum('duracao_minutos', 'total');
+        $this->db->where('etapa_id', $etapa_id);
+        $this->db->where('status', 'finalizada');
+        $minutos = $this->db->get($this->table)->row()->total;
+
+        // Atividades em andamento
+        $this->db->where('etapa_id', $etapa_id);
+        $this->db->where('status', 'em_andamento');
+        $em_andamento = $this->db->count_all_results($this->table);
+
+        // Calcula progresso (se houver atividades planejadas vinculadas)
+        $progresso = 0;
+        if ($total > 0) {
+            $progresso = round(($concluidas / $total) * 100);
+        }
+
+        return [
+            'etapa_id' => $etapa_id,
+            'total_atividades' => $total,
+            'concluidas' => $concluidas,
+            'em_andamento' => $em_andamento,
+            'pendentes' => $total - $concluidas - $em_andamento,
+            'tempo_total_minutos' => $minutos ?: 0,
+            'tempo_total_horas' => round(($minutos ?: 0) / 60, 2),
+            'progresso_percentual' => $progresso,
+        ];
+    }
+
+    /**
+     * Obtém atividades de uma etapa específica
+     */
+    public function listarPorEtapa($etapa_id, $filtros = [])
+    {
+        $this->db->select('os_atividades.*,
+                               atividades_tipos.nome as tipo_nome,
+                               atividades_tipos.icone as tipo_icone,
+                               atividades_tipos.cor as tipo_cor,
+                               usuarios.nome as nome_tecnico,
+                               obra_atividades.titulo as atividade_planejada_titulo');
+        $this->db->from($this->table);
+        $this->db->join('atividades_tipos', 'atividades_tipos.idTipo = os_atividades.tipo_id', 'left');
+        $this->db->join('usuarios', 'usuarios.idUsuarios = os_atividades.tecnico_id', 'left');
+        $this->db->join('obra_atividades', 'obra_atividades.id = os_atividades.obra_atividade_id', 'left');
+        $this->db->where('os_atividades.etapa_id', $etapa_id);
+
+        if (isset($filtros['status'])) {
+            $this->db->where('os_atividades.status', $filtros['status']);
+        }
+
+        if (isset($filtros['tecnico_id'])) {
+            $this->db->where('os_atividades.tecnico_id', $filtros['tecnico_id']);
+        }
+
+        if (isset($filtros['data'])) {
+            $this->db->where('DATE(os_atividades.hora_inicio)', $filtros['data']);
+        }
+
+        $this->db->order_by('os_atividades.hora_inicio', 'DESC');
+
+        return $this->db->get()->result();
+    }
+
+    /**
+     * Obtém a atividade em andamento de um técnico em uma obra específica
+     */
+    public function getAtividadeEmAndamentoNaObra($tecnico_id, $obra_id)
+    {
+        $this->db->select('os_atividades.*,
+                               atividades_tipos.nome as tipo_nome,
+                               atividades_tipos.icone as tipo_icone,
+                               atividades_tipos.cor as tipo_cor,
+                               obra_etapas.nome as etapa_nome');
+        $this->db->from($this->table);
+        $this->db->join('atividades_tipos', 'atividades_tipos.idTipo = os_atividades.tipo_id', 'left');
+        $this->db->join('obra_etapas', 'obra_etapas.id = os_atividades.etapa_id', 'left');
+        $this->db->where('os_atividades.tecnico_id', $tecnico_id);
+        $this->db->where('os_atividades.obra_id', $obra_id);
+        $this->db->where('os_atividades.status', 'em_andamento');
+        $this->db->limit(1);
+
+        return $this->db->get()->row();
+    }
 }
