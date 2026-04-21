@@ -247,6 +247,49 @@
     </div>
     <?php endif; ?>
 
+    <!-- DEBUG PANEL -->
+    <div style="background: #fff3cd; border: 2px solid #ffc107; color: #856404; padding: 15px; margin-bottom: 20px; border-radius: 8px; font-family: monospace; font-size: 12px;">
+        <div style="font-weight: bold; margin-bottom: 10px; font-size: 14px;">
+            <i class="icon-bug"></i> DEBUG - Dados da Atividade
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+            <div><strong>ID:</strong> <?php echo $atividade->id; ?></div>
+            <div><strong>Titulo:</strong> <?php echo $atividade->titulo ?? 'N/A'; ?></div>
+            <div><strong>Etapa ID (salvo):</strong> <?php echo $atividade->etapa_id ?? 'NULL'; ?> (<?php echo gettype($atividade->etapa_id ?? null); ?>)</div>
+            <div><strong>Tecnico ID (salvo):</strong> <?php echo $atividade->tecnico_id ?? 'NULL'; ?> (<?php echo gettype($atividade->tecnico_id ?? null); ?>)</div>
+            <div><strong>Status:</strong> <?php echo $atividade->status ?? 'N/A'; ?></div>
+            <div><strong>Tipo:</strong> <?php echo $atividade->tipo ?? 'N/A'; ?></div>
+        </div>
+        <div style="margin-top: 10px;">
+            <strong>Etapas disponíveis:</strong>
+            <?php
+            if (!empty($etapas)) {
+                echo '<ul style="margin: 5px 0; padding-left: 20px;">';
+                foreach ($etapas as $e) {
+                    echo '<li>ID: ' . $e->id . ' - ' . $e->nome . '</li>';
+                }
+                echo '</ul>';
+            } else {
+                echo ' Nenhuma etapa cadastrada';
+            }
+            ?>
+        </div>
+        <div style="margin-top: 10px;">
+            <strong>Técnicos disponíveis:</strong>
+            <?php
+            if (!empty($tecnicos)) {
+                echo '<ul style="margin: 5px 0; padding-left: 20px;">';
+                foreach ($tecnicos as $t) {
+                    echo '<li>ID: ' . $t->idUsuarios . ' - ' . $t->nome . '</li>';
+                }
+                echo '</ul>';
+            } else {
+                echo ' Nenhum técnico cadastrado';
+            }
+            ?>
+        </div>
+    </div>
+
     <form method="post" action="" id="formEditarAtividade">
         <!-- Dados da Atividade -->
         <div class="edit-card">
@@ -301,7 +344,7 @@
                     <select name="tecnico_id" class="form-select">
                         <option value="">Selecione um técnico...</option>
                         <?php foreach ($tecnicos as $t): ?>
-                        <option value="<?php echo $t->idUsuarios; ?>" <?php echo ($atividade->tecnico_id ?? '') == $t->idUsuarios ? 'selected' : ''; ?>>
+                        <option value="<?php echo $t->idUsuarios; ?>" <?php echo (int)($atividade->tecnico_id ?? 0) == (int)$t->idUsuarios ? 'selected' : ''; ?>>
                             <?php echo $t->nome; ?>
                         </option>
                         <?php endforeach; ?>
@@ -314,7 +357,7 @@
                         <option value="">Selecione uma etapa...</option>
                         <?php if (isset($etapas) && !empty($etapas)): ?>
                             <?php foreach ($etapas as $e): ?>
-                            <option value="<?php echo $e->id; ?>" <?php echo ($atividade->etapa_id ?? '') == $e->id ? 'selected' : ''; ?>>
+                            <option value="<?php echo $e->id; ?>" <?php echo (int)($atividade->etapa_id ?? 0) == (int)$e->id ? 'selected' : ''; ?>>
                                 #<?php echo $e->numero_etapa; ?> - <?php echo $e->nome; ?>
                             </option>
                             <?php endforeach; ?>

@@ -695,9 +695,9 @@ class Obras extends MY_Controller
                 'data_atividade' => $this->input->post('data_atividade'),
                 'tipo' => $this->input->post('tipo') ?: 'trabalho',
                 'status' => $this->input->post('status') ?: 'agendada',
-                'tecnico_id' => $this->input->post('tecnico_id') ?: null,
-                'etapa_id' => $this->input->post('etapa_id') ?: null,
-                'percentual_concluido' => $this->input->post('percentual_concluido') ?: 0,
+                'tecnico_id' => $this->input->post('tecnico_id') ? (int)$this->input->post('tecnico_id') : null,
+                'etapa_id' => $this->input->post('etapa_id') ? (int)$this->input->post('etapa_id') : null,
+                'percentual_concluido' => (int)($this->input->post('percentual_concluido') ?: 0),
                 'visivel_cliente' => $this->input->post('visivel_cliente') ? 1 : 0,
             ];
 
