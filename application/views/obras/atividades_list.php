@@ -820,7 +820,7 @@
         </div>
         <h3>Nenhuma atividade encontrada</h3>
         <p>Adicione atividades para acompanhar o progresso do trabalho na obra.</p>
-        <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?
+        <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
         <button onclick="$('#modalAdicionar').modal('show')" class="atividades-btn atividades-btn-primary" style="display: inline-flex;">
             <i class="icon-plus"></i> Adicionar Primeira Atividade
         </button>
