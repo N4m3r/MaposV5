@@ -69,13 +69,21 @@ class Obras_tecnico extends CI_Controller
         $this->data['obra'] = $this->obras_model->getById($id);
         $this->data['etapas'] = $this->obras_model->getEtapas($id);
 
-        // Atividades do técnico nesta obra
+        // Atividades do técnico nesta obra (sistema antigo)
         $this->data['minhas_atividades'] = $this->obra_atividades_model->getByObra($id, [
             'tecnico_id' => $tecnico_id
         ], 20);
 
         // Atividades de hoje
         $this->data['atividades_hoje'] = $this->obra_atividades_model->getAtividadesDoDia($tecnico_id);
+
+        // Verifica se há atividade em andamento no novo sistema (Hora Início/Fim)
+        if (file_exists(APPPATH . 'models/Atividades_model.php')) {
+            $this->load->model('Atividades_model', 'atividades_novo');
+            $this->data['atividade_novo_andamento'] = $this->atividades_novo->getAtividadeEmAndamentoNaObra($tecnico_id, $id);
+        } else {
+            $this->data['atividade_novo_andamento'] = null;
+        }
 
         $this->load->view('obras_tecnico/obra_dashboard', $this->data);
     }

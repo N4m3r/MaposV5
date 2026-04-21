@@ -387,6 +387,95 @@ class Obras_model extends CI_Model
     }
 
     /**
+     * Atualiza o progresso real da etapa baseado nas atividades registradas
+     */
+    public function atualizarProgressoEtapaPorAtividades($etapa_id, $obra_id)
+    {
+        if (!$this->tabelaExiste('obra_etapas') || !$this->tabelaExiste('os_atividades')) {
+            return false;
+        }
+
+        try {
+            // Busca estatísticas das atividades da etapa
+            $this->db->select('COUNT(*) as total, SUM(CASE WHEN concluida = 1 THEN 1 ELSE 0 END) as concluidas');
+            $this->db->where('etapa_id', $etapa_id);
+            $this->db->where('obra_id', $obra_id);
+            $this->db->where('status', 'finalizada');
+            $result = $this->db->get('os_atividades')->row();
+
+            if (!$result || $result->total == 0) {
+                return false;
+            }
+
+            $total = (int) $result->total;
+            $concluidas = (int) $result->concluidas;
+            $progresso = $total > 0 ? round(($concluidas / $total) * 100) : 0;
+
+            // Determina o status baseado no progresso
+            $status = 'NaoIniciada';
+            if ($progresso >= 100) {
+                $status = 'Concluida';
+            } elseif ($progresso > 0) {
+                $status = 'EmAndamento';
+            }
+
+            // Atualiza a etapa
+            $data = [
+                'progresso_real' => $progresso,
+                'status' => $status,
+            ];
+
+            if ($this->db->field_exists('updated_at', 'obra_etapas')) {
+                $data['updated_at'] = date('Y-m-d H:i:s');
+            }
+
+            $this->db->where('id', $etapa_id);
+            $this->db->update('obra_etapas', $data);
+
+            // Recalcula o progresso geral da obra
+            $this->atualizarProgressoObra($obra_id);
+
+            return true;
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao atualizar progresso da etapa: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Atualiza o progresso geral da obra baseado nas etapas
+     */
+    public function atualizarProgressoObra($obra_id)
+    {
+        if (!$this->tabelaExiste('obra_etapas')) {
+            return false;
+        }
+
+        try {
+            // Calcula média do progresso das etapas
+            $this->db->select_avg('COALESCE(progresso_real, percentual_concluido, 0)', 'progresso_medio');
+            $this->db->where('obra_id', $obra_id);
+            $result = $this->db->get('obra_etapas')->row();
+
+            if ($result) {
+                $progresso = round($result->progresso_medio);
+
+                // Atualiza a obra
+                $this->db->where('id', $obra_id);
+                $this->db->update('obras', [
+                    'percentual_concluido' => $progresso,
+                    'updated_at' => date('Y-m-d H:i:s')
+                ]);
+            }
+
+            return true;
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao atualizar progresso da obra: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
      * Excluir etapa
      */
     public function excluirEtapa($etapa_id)

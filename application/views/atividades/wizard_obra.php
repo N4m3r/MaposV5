@@ -9,6 +9,17 @@ $tipos_atividades = $tipos_atividades ?? [];
 $checkin_realizado = $checkin_realizado ?? false;
 $obra_id = $obra_id ?? 0;
 $etapa_id = $etapa_id ?? 0;
+
+// Busca atividades planejadas da etapa selecionada (se houver)
+$atividades_planejadas_etapa = [];
+if ($etapa_id && !empty($etapas)) {
+    foreach ($etapas as $e) {
+        if ($e->id == $etapa_id && isset($e->atividades)) {
+            $atividades_planejadas_etapa = $e->atividades;
+            break;
+        }
+    }
+}
 ?>
 
 <style>
@@ -22,18 +33,19 @@ $etapa_id = $etapa_id ?? 0;
 
 .etapa-selecao {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 15px;
     margin: 20px 0;
 }
 
 .etapa-card {
     background: #f8f9fa;
-    border: 2px solid transparent;
+    border: 3px solid transparent;
     border-radius: 10px;
-    padding: 15px;
+    padding: 20px;
     cursor: pointer;
     transition: all 0.3s;
+    position: relative;
 }
 
 .etapa-card:hover {
@@ -45,6 +57,96 @@ $etapa_id = $etapa_id ?? 0;
 .etapa-card.selected {
     border-color: #11998e;
     background: #e8f5e9;
+    box-shadow: 0 4px 15px rgba(17,153,142,0.3);
+}
+
+.etapa-card.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.etapa-card .etapa-numero {
+    position: absolute;
+    top: -10px;
+    left: 15px;
+    background: #667eea;
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.etapa-card.selected .etapa-numero {
+    background: #11998e;
+}
+
+.etapa-card h5 {
+    margin: 10px 0 8px 0;
+    font-size: 16px;
+    color: #333;
+}
+
+.etapa-card .progress {
+    height: 6px;
+    margin: 10px 0;
+    background: #e0e0e0;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.etapa-card .progress-bar {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    transition: width 0.3s;
+}
+
+.etapa-card.selected .progress-bar {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+}
+
+.atividades-planejadas {
+    margin-top: 20px;
+    padding: 15px;
+    background: #fff3cd;
+    border-radius: 8px;
+    border-left: 4px solid #ffc107;
+}
+
+.atividades-planejadas h6 {
+    margin: 0 0 10px 0;
+    color: #856404;
+    font-size: 14px;
+}
+
+.atividade-planejada-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    margin: 5px 0;
+    background: white;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+}
+
+.atividade-planejada-item:hover {
+    border-color: #ffc107;
+    transform: translateX(3px);
+}
+
+.atividade-planejada-item.selecionada {
+    border-color: #11998e;
+    background: #e8f5e9;
+}
+
+.atividade-planejada-item input[type="radio"] {
+    margin: 0;
 }
 
 .painel-hora-obra {
@@ -79,17 +181,37 @@ $etapa_id = $etapa_id ?? 0;
     max-height: 400px;
     overflow-y: auto;
 }
+
+.etapa-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 15px;
+    font-size: 12px;
+    margin-bottom: 10px;
+}
+
+.alert-etapa-obrigatoria {
+    background: #fff3cd;
+    color: #856404;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    border-left: 4px solid #ffc107;
+}
 </style>
 
 <div class="row-fluid wizard-container">
     <div class="span12">
         <!-- Painel de Hora -->
+        <?php if ($atividade_em_andamento): ?>
         <div class="painel-hora-obra">
             <div class="row-fluid">
                 <div class="span4">
                     <div class="hora-label">Hora Início</div>
                     <div class="hora-valor" id="hora-inicio">
-                        <?= $atividade_em_andamento ? date('H:i', strtotime($atividade_em_andamento->hora_inicio)) : '--:--' ?>
+                        <?= date('H:i', strtotime($atividade_em_andamento->hora_inicio)) ?>
                     </div>
                 </div>
                 <div class="span4">
@@ -102,6 +224,7 @@ $etapa_id = $etapa_id ?? 0;
                 </div>
             </div>
         </div>
+        <?php endif; ?>
 
         <!-- Obra Info -->
         <div class="wizard-obra-header">
@@ -112,41 +235,71 @@ $etapa_id = $etapa_id ?? 0;
             <?php endif; ?>
         </div>
 
+        <!-- Alerta de Etapa Obrigatória -->
+        <?php if (!$atividade_em_andamento && empty($etapa_id)): ?>
+        <div class="alert-etapa-obrigatoria">
+            <i class="bx bx-info-circle"></i>
+            <strong>Atenção:</strong> Para iniciar uma atividade, você deve selecionar a <strong>Etapa da Obra</strong> em que está trabalhando.
+        </div>
+        <?php endif; ?>
+
         <?php if (!$atividade_em_andamento && !$checkin_realizado): ?>
         <!-- PASSO 1: CHECK-IN E SELEÇÃO DE ETAPA -->
         <div class="widget-box" id="step-checkin-obra">
             <div class="widget-title">
                 <span class="icon"><i class="bx bx-log-in-circle"></i></span>
-                <h5>Check-in - Início do Trabalho na Obra</h5>
+                <h5>Check-in - Selecione a Etapa e Inicie o Trabalho</h5>
             </div>
             <div class="widget-content">
                 <form id="form-checkin-obra">
                     <input type="hidden" name="obra_id" value="<?= $obra_id ?>">
                     <input type="hidden" name="etapa_id" id="etapa_selecionada" value="<?= $etapa_id ?>">
+                    <input type="hidden" name="obra_atividade_id" id="obra_atividade_selecionada" value="">
                     <input type="hidden" name="tipo_id" value="1"> <!-- Tipo: Check-in -->
                     <input type="hidden" name="latitude" id="latitude">
                     <input type="hidden" name="longitude" id="longitude">
 
-                    <?php if (!$etapa && count($etapas) > 0): ?>
-                    <!-- Seleção de Etapa -->
+                    <?php if (count($etapas) > 0): ?>
+                    <!-- Seleção de Etapa (OBRIGATÓRIO) -->
                     <div class="control-group">
-                        <label class="control-label">Selecione a Etapa da Obra</label>
-                        <div class="controls etapa-selecao">
-                            <?php foreach ($etapas as $etapa_item): ?>
-                            <div class="etapa-card" data-etapa="<?= $etapa_item->id ?>" onclick="selecionarEtapa(<?= $etapa_item->id ?>)">
+                        <label class="control-label">
+                            <i class="bx bx-layer"></i> Selecione a Etapa da Obra <span style="color: #dc3545;">*</span>
+                        </label>
+                        <div class="controls etapa-selecao" id="etapa-selecao-container">
+                            <?php foreach ($etapas as $index => $etapa_item): ?>
+                            <div class="etapa-card" data-etapa="<?= $etapa_item->id ?>" data-index="<?= $index ?>"
+                                 onclick="selecionarEtapa(<?= $etapa_item->id ?>, <?= $index ?>)">
+                                <div class="etapa-numero"><?= $etapa_item->numero_etapa ?? ($index + 1) ?></div>
                                 <h5><?= htmlspecialchars($etapa_item->nome) ?></h5>
-                                <p class="text-muted"><?= htmlspecialchars($etapa_item->descricao ?? 'Sem descrição') ?></p>
-                                <div class="progress" style="margin-top: 10px;">
-                                    <div class="bar" style="width: <?= $etapa_item->percentual_concluido ?? 0 ?>%"></div>
+                                <p class="text-muted" style="font-size: 13px;"><?= htmlspecialchars($etapa_item->descricao ?? 'Sem descrição') ?></p>
+                                <div class="progress">
+                                    <div class="progress-bar" style="width: <?= $etapa_item->progresso_real ?? $etapa_item->percentual_concluido ?? 0 ?>%"></div>
                                 </div>
-                                <small><?= $etapa_item->percentual_concluido ?? 0 ?>% concluído</small>
+                                <small><?= $etapa_item->progresso_real ?? $etapa_item->percentual_concluido ?? 0 ?>% concluído</small>
                             </div>
                             <?php endforeach; ?>
                         </div>
                     </div>
+
+                    <!-- Atividades Planejadas da Etapa Selecionada -->
+                    <div class="control-group" id="atividades-planejadas-container" style="display: none;">
+                        <label class="control-label">
+                            <i class="bx bx-task"></i> Selecione a Atividade Planejada (Opcional)
+                        </label>
+                        <div class="controls">
+                            <div class="atividades-planejadas" id="atividades-planejadas-lista">
+                                <!-- Preenchido via JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                    <?php else: ?>
+                    <div class="alert alert-warning">
+                        <i class="bx bx-error-circle"></i>
+                        <strong>Atenção:</strong> Esta obra não possui etapas cadastradas. Entre em contato com o administrador.
+                    </div>
                     <?php endif; ?>
 
-                    <div class="row-fluid">
+                    <div class="row-fluid" style="margin-top: 20px;">
                         <div class="span6">
                             <div class="control-group">
                                 <label class="control-label">Foto do Local</label>
@@ -179,11 +332,11 @@ $etapa_id = $etapa_id ?? 0;
                     </div>
 
                     <div class="form-actions">
-                        <button type="submit" class="btn btn-success btn-large" <?= !$etapa && count($etapas) > 0 ? 'disabled id="btn-iniciar"' : '' ?>>
+                        <button type="submit" class="btn btn-success btn-large" id="btn-iniciar" disabled>
                             <i class="bx bx-play"></i> INICIAR TRABALHO
                         </button>
                         <a href="<?= site_url('obras_tecnico/obra/' . $obra_id) ?>" class="btn">
-                            <i class="bx bx-arrow-back"></i> Voltar
+                            <i class="bx bx-arrow-back"></i> Voltar à Obra
                         </a>
                     </div>
                 </form>
@@ -199,6 +352,9 @@ $etapa_id = $etapa_id ?? 0;
             </div>
             <div class="widget-content">
                 <?php if ($atividade_em_andamento): ?>
+                <div class="etapa-badge" id="etapa-atual-badge">
+                    <i class="bx bx-layer"></i> <?= htmlspecialchars($atividade_em_andamento->etapa_nome ?? 'Etapa não definida') ?>
+                </div>
                 <div class="card-atividade em-andamento" id="card-atual">
                     <div class="row-fluid">
                         <div class="span8">
@@ -214,10 +370,10 @@ $etapa_id = $etapa_id ?? 0;
                             <?php endif; ?>
                         </div>
                         <div class="span4 text-right">
-                            <button class="btn btn-warning" onclick="pausarAtividade(<?= $atividade_em_andamento->idAtividade ?>)">
+                            <button class="btn btn-warning" onclick="pausarAtividade(<?= $atividade_em_andamento->idAtividade ?>")>
                                 <i class="bx bx-pause"></i> Pausar
                             </button>
-                            <button class="btn btn-danger" onclick="abrirModalFinalizar(<?= $atividade_em_andamento->idAtividade ?>)">
+                            <button class="btn btn-danger" onclick="abrirModalFinalizar(<?= $atividade_em_andamento->idAtividade ?>")>
                                 <i class="bx bx-stop"></i> Finalizar
                             </button>
                         </div>
@@ -280,12 +436,15 @@ $etapa_id = $etapa_id ?? 0;
                                 <?php elseif ($atv->concluida == 0 && $atv->status == 'finalizada'): ?>
                                     <span class="label label-warning"><i class="bx bx-x"></i> Não Concluída</span>
                                 <?php endif; ?>
+                                <?php if ($atv->etapa_nome): ?>
+                                    <br><small class="text-muted"><i class="bx bx-layer"></i> <?= htmlspecialchars($atv->etapa_nome) ?></small>
+                                <?php endif; ?>
                                 <br>
                                 <small class="text-muted"><?= htmlspecialchars($atv->equipamento ?? '') ?></small>
                             </div>
                             <div class="span3 text-right">
                                 <?php if ($atv->status == 'pausada'): ?>
-                                    <button class="btn btn-small btn-info" onclick="retomarAtividade(<?= $atv->idAtividade ?>)">
+                                    <button class="btn btn-small btn-info" onclick="retomarAtividade(<?= $atv->idAtividade ?>")>
                                         <i class="bx bx-play"></i> Retomar
                                     </button>
                                 <?php endif; ?>
@@ -305,28 +464,91 @@ $etapa_id = $etapa_id ?? 0;
     </div>
 </div>
 
-<!-- Modais (iguais ao wizard.php original) -->
-<?php // Os modais são os mesmos do wizard.php - Nova Atividade, Finalizar, Checkout, Foto ?>
-
 <script>
-// Funções específicas para obra
-let etapaSelecionada = <?= $etapa_id ? 'true' : 'false' ?>;
+// Dados das etapas e suas atividades planejadas
+const etapasDados = <?= json_encode($etapas ?? []) ?>;
+let etapaSelecionadaId = <?= $etapa_id ?: 'null' ?>;
 
-function selecionarEtapa(id) {
-    document.getElementById('etapa_selecionada').value = id;
+function selecionarEtapa(etapaId, index) {
+    etapaSelecionadaId = etapaId;
+    document.getElementById('etapa_selecionada').value = etapaId;
     document.getElementById('btn-iniciar').disabled = false;
 
     // Visual feedback
     document.querySelectorAll('.etapa-card').forEach(card => {
         card.classList.remove('selected');
     });
-    document.querySelector('.etapa-card[data-etapa="' + id + '"]').classList.add('selected');
+    document.querySelector('.etapa-card[data-etapa="' + etapaId + '"]').classList.add('selected');
+
+    // Mostra atividades planejadas da etapa
+    mostrarAtividadesPlanejadas(index);
+}
+
+function mostrarAtividadesPlanejadas(index) {
+    const etapa = etapasDados[index];
+    const container = document.getElementById('atividades-planejadas-container');
+    const lista = document.getElementById('atividades-planejadas-lista');
+
+    if (!etapa || !etapa.atividades || etapa.atividades.length === 0) {
+        container.style.display = 'none';
+        return;
+    }
+
+    let html = '<h6><i class="bx bx-list-check"></i> Atividades planejadas para esta etapa:</h6>';
+    html += '<div style="margin-bottom: 10px;">';
+    html += '<label class="atividade-planejada-item" onclick="selecionarAtividadePlanejada(null)">';
+    html += '<input type="radio" name="atividade_planejada_radio" value="" checked onchange="atualizarAtividadeSelecionada(null)">';
+    html += '<span>Nova atividade (não vinculada)</span>';
+    html += '</label>';
+    html += '</div>';
+
+    etapa.atividades.forEach(function(atv) {
+        const isConcluida = atv.status === 'concluida';
+        const disabled = isConcluida ? 'disabled' : '';
+        const classe = isConcluida ? 'disabled' : '';
+        const icone = isConcluida ? '<i class="bx bx-check-circle" style="color: #28a745;"></i>' : '<i class="bx bx-circle" style="color: #ffc107;"></i>';
+
+        html += '<label class="atividade-planejada-item ' + classe + '" onclick="selecionarAtividadePlanejada(' + atv.id + ')">';
+        html += '<input type="radio" name="atividade_planejada_radio" value="' + atv.id + '" ' + disabled + ' onchange="atualizarAtividadeSelecionada(' + atv.id + ')">';
+        html += icone + ' <span>' + atv.titulo + '</span>';
+        if (isConcluida) {
+            html += ' <span class="label label-success" style="margin-left: 10px;">Concluída</span>';
+        }
+        html += '</label>';
+    });
+
+    lista.innerHTML = html;
+    container.style.display = 'block';
+}
+
+function selecionarAtividadePlanejada(atividadeId) {
+    document.getElementById('obra_atividade_selecionada').value = atividadeId || '';
+
+    // Visual feedback
+    document.querySelectorAll('.atividade-planejada-item').forEach(item => {
+        item.classList.remove('selecionada');
+    });
+
+    if (atividadeId) {
+        const item = document.querySelector('input[value="' + atividadeId + '"]').closest('.atividade-planejada-item');
+        if (item) item.classList.add('selecionada');
+    }
+}
+
+function atualizarAtividadeSelecionada(atividadeId) {
+    document.getElementById('obra_atividade_selecionada').value = atividadeId || '';
 }
 
 // Função de check-in específica para obra
 function realizarCheckinObra() {
     const form = document.getElementById('form-checkin-obra');
     const formData = new FormData(form);
+
+    // Validação de etapa obrigatória
+    if (!formData.get('etapa_id')) {
+        alert('Por favor, selecione uma etapa da obra.');
+        return;
+    }
 
     fetch('<?= site_url("atividades/checkin_obra") ?>', {
         method: 'POST',
@@ -339,14 +561,90 @@ function realizarCheckinObra() {
         } else {
             alert('Erro: ' + data.message);
         }
+    })
+    .catch(err => {
+        alert('Erro ao realizar check-in. Tente novamente.');
+        console.error(err);
     });
 }
 
-// Checkout específico para obra
-function abrirModalCheckoutObra() {
-    $('#modal-checkout').modal('show');
+// Event listener para o formulário
+document.getElementById('form-checkin-obra')?.addEventListener('submit', function(e) {
+    e.preventDefault();
+    realizarCheckinObra();
+});
+
+// GPS
+function obterLocalizacao() {
+    if ('geolocation' in navigator) {
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                document.getElementById('latitude').value = position.coords.latitude;
+                document.getElementById('longitude').value = position.coords.longitude;
+                document.getElementById('info-gps').innerHTML =
+                    '<i class="bx bx-check-circle" style="color: #28a745;"></i> Localização obtida';
+            },
+            function(error) {
+                document.getElementById('info-gps').innerHTML =
+                    '<i class="bx bx-error-circle" style="color: #dc3545;"></i> Erro ao obter localização';
+            }
+        );
+    } else {
+        document.getElementById('info-gps').innerHTML =
+            '<i class="bx bx-error-circle" style="color: #dc3545;"></i> GPS não disponível';
+    }
 }
 
+// Preview da foto
+function previewFoto(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('preview-foto').src = e.target.result;
+            document.getElementById('preview-foto').style.display = 'block';
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+// Event listener para preview da foto
+document.getElementById('foto-local')?.addEventListener('change', function() {
+    previewFoto(this);
+});
+
 // Outras funções são iguais ao wizard original (pausar, retomar, finalizar, etc.)
-// ... copiar do wizard.php
+// ...
+
+<?php if ($atividade_em_andamento): ?>
+// Cronômetro
+let cronometroIniciado = new Date('<?= $atividade_em_andamento->hora_inicio ?>');
+
+function atualizarCronometro() {
+    const agora = new Date();
+    const diff = agora - cronometroIniciado;
+
+    const horas = Math.floor(diff / 3600000);
+    const minutos = Math.floor((diff % 3600000) / 60000);
+    const segundos = Math.floor((diff % 60000) / 1000);
+
+    const formatado =
+        String(horas).padStart(2, '0') + ':' +
+        String(minutos).padStart(2, '0') + ':' +
+        String(segundos).padStart(2, '0');
+
+    const cronometro = document.getElementById('cronometro');
+    if (cronometro) {
+        cronometro.textContent = formatado;
+    }
+
+    // Atualiza duração da atividade atual
+    const duracaoAtual = document.getElementById('duracao-atual');
+    if (duracaoAtual) {
+        duracaoAtual.innerHTML = '<strong>Duração:</strong> ' + formatado;
+    }
+}
+
+setInterval(atualizarCronometro, 1000);
+atualizarCronometro();
+<?php endif; ?>
 </script>

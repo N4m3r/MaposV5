@@ -1799,7 +1799,7 @@
 
 <script>
 // Wizard de Execucao de Atividade - Versao Aprimorada
-const wizard = {
+window.wizard = {
     currentStep: 1,
     totalSteps: 7,
     data: {
