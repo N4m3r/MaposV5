@@ -162,7 +162,7 @@ $atividade_andamento = $atividade_andamento ?? null;
             <div class="widget-content">
                 <?php if (count($os_pendentes) > 0): ?>
                     <div class="row-fluid">
-                        <?php foreach ($os_pendentes as $os): ?
+                        <?php foreach ($os_pendentes as $os): ?>
                             <div class="span6">
                                 <div class="os-card">
                                     <div class="os-header">

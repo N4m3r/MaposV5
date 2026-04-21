@@ -1358,17 +1358,17 @@
 
 <!-- Header da Obra -->
 <div class="obra-header">
-    <h2><i class='bx bx-building'></i> <?= htmlspecialchars($obra->nome ?? 'Obra') ?></h2>
-    <p><i class='bx bx-user'></i> <?= htmlspecialchars($obra->cliente_nome ?? 'Cliente nao informado') ?></p>
-    <span class="obra-status"><?= $obra->status ?? 'N/A' ?></span>
+    <h2><i class='bx bx-building'></i> <php echo htmlspecialchars(isset($obra->nome) ? $obra->nome : 'Obra'); ?></h2>
+    <p><i class='bx bx-user'></i> <?php echo htmlspecialchars(isset($obra->cliente_nome) ? $obra->cliente_nome : 'Cliente nao informado'); ?></p>
+    <span class="obra-status"><?php echo isset($obra->status) ? $obra->status : 'N/A'; ?></span>
 
     <div class="progress-section">
         <div class="progress-header">
             <span>Progresso</span>
-            <span><?= $obra->percentual_concluido ?? 0 ?>%</span>
+            <span><?php echo isset($obra->percentual_concluido) ? $obra->percentual_concluido : 0; ?>%</span>
         </div>
         <div class="progress-bar">
-            <div class="progress-fill" style="width: <?= $obra->percentual_concluido ?? 0 ?>%"></div>
+            <div class="progress-fill" style="width: <?php echo isset($obra->percentual_concluido) ? $obra->percentual_concluido : 0; ?>%"></div>
         </div>
     </div>
 </div>
@@ -1395,14 +1395,14 @@
                             <?= htmlspecialchars($etapa->descricao) ?>
                         </p>
                     <?php endif; ?>
-                    <?php if (($etapa->percentual_concluido ?? 0) > 0): ?>
+                    <?php if ((isset($etapa->percentual_concluido) ? $etapa->percentual_concluido : 0) > 0): ?>
                         <div style="margin-top: 10px;">
                             <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
                                 <span>Progresso</span>
-                                <span><?= $etapa->percentual_concluido ?? 0 ?>%</span>
+                                <span><?php echo isset($etapa->percentual_concluido) ? $etapa->percentual_concluido : 0; ?>%</span>
                             </div>
                             <div style="height: 6px; background: #e0e0e0; border-radius: 3px;">
-                                <div style="width: <?= $etapa->percentual_concluido ?? 0 ?>%; height: 100%; background: linear-gradient(90deg, #667eea, #764ba2); border-radius: 3px;"></div>
+                                <div style="width: <?php echo isset($etapa->percentual_concluido) ? $etapa->percentual_concluido : 0; ?>%; height: 100%; background: linear-gradient(90deg, #667eea, #764ba2); border-radius: 3px;"></div>
                             </div>
                         </div>
                     <?php endif; ?>
@@ -1461,9 +1461,9 @@
                     'observacao' => '#3498db'
                 ];
                 foreach ($minhas_atividades as $atividade):
-                    $tipo = $atividade->tipo ?? 'execucao';
-                    $cor = $tipo_cores[$tipo] ?? '#666';
-                    $label = $tipo_labels[$tipo] ?? ucfirst($tipo);
+                    $tipo = isset($atividade->tipo) ? $atividade->tipo : 'execucao';
+                    $cor = isset($tipo_cores[$tipo]) ? $tipo_cores[$tipo] : '#666';
+                    $label = isset($tipo_labels[$tipo]) ? $tipo_labels[$tipo] : ucfirst($tipo);
                     $tem_fotos = !empty($atividade->fotos_atividade) || !empty($atividade->fotos);
                 ?>
                     <div class="atividade-item" style="background: #f8f9fa; border-radius: 10px; padding: 15px; margin-bottom: 10px; border-left: 4px solid <?= $cor ?>;">
@@ -1485,7 +1485,7 @@
                             <?= strlen($atividade->descricao) > 100 ? '...' : '' ?>
                         </p>
 
-                        <?php if (($atividade->percentual_concluido ?? 0) > 0): ?>
+                        <?php if ((isset($atividade->percentual_concluido) ? $atividade->percentual_concluido : 0) > 0): ?>
                             <div style="margin-top: 8px;">
                                 <div style="display: flex; justify-content: space-between; font-size: 11px; color: #666; margin-bottom: 3px;">
                                     <span>Progresso</span>
@@ -1560,7 +1560,7 @@
                                     </span>
                                 </div>
                                 <div class="etapa-card-progress">
-                                    Progresso: <?= $etapa->percentual_concluido ?? 0 ?>%
+                                    Progresso: <?php echo isset($etapa->percentual_concluido) ? $etapa->percentual_concluido : 0; ?>%
                                 </div>
                             </div>
                             <?php endforeach; endif; ?>
@@ -1814,7 +1814,7 @@ const wizard = {
         percentual: 0,
         fotos: []
     },
-    atividadesPorEtapa: <?= json_encode($atividades_por_etapa ?? []) ?>,
+    atividadesPorEtapa: <?php echo json_encode(isset($atividades_por_etapa) ? $atividades_por_etapa : [], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE); ?>,
     isSubmitting: false,
 
     init: function() {
@@ -1823,7 +1823,7 @@ const wizard = {
         if (progressFill) {
             const width = progressFill.style.width;
             progressFill.style.width = '0%';
-            setTimeout(() => {
+            setTimeout(function() {
                 progressFill.style.width = width;
             }, 300);
         }
@@ -1839,28 +1839,29 @@ const wizard = {
         const uploadArea = document.getElementById('photoUploadArea');
         if (!uploadArea) return;
 
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            uploadArea.addEventListener(eventName, (e) => {
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(function(eventName) {
+            uploadArea.addEventListener(eventName, function(e) {
                 e.preventDefault();
                 e.stopPropagation();
             }, false);
         });
 
-        ['dragenter', 'dragover'].forEach(eventName => {
-            uploadArea.addEventListener(eventName, () => {
+        ['dragenter', 'dragover'].forEach(function(eventName) {
+            uploadArea.addEventListener(eventName, function() {
                 uploadArea.classList.add('dragover');
             }, false);
         });
 
-        ['dragleave', 'drop'].forEach(eventName => {
-            uploadArea.addEventListener(eventName, () => {
+        ['dragleave', 'drop'].forEach(function(eventName) {
+            uploadArea.addEventListener(eventName, function() {
                 uploadArea.classList.remove('dragover');
             }, false);
         });
 
-        uploadArea.addEventListener('drop', (e) => {
-            const files = Array.from(e.dataTransfer.files);
-            this.processPhotoFiles(files);
+        var self = this;
+        uploadArea.addEventListener('drop', function(e) {
+            var files = Array.from(e.dataTransfer.files);
+            self.processPhotoFiles(files);
         }, false);
     },
 
@@ -1877,7 +1878,7 @@ const wizard = {
         this.showToast(`Processando ${files.length} foto(s)...`, 'info');
 
         let processed = 0;
-        files.forEach(file => {
+        files.forEach(function(file) {
             if (!file.type.startsWith('image/')) {
                 this.showToast(`${file.name} não é uma imagem`, 'warning');
                 return;
@@ -1889,7 +1890,7 @@ const wizard = {
             }
 
             const reader = new FileReader();
-            reader.onload = (e) => {
+            var self = this; reader.onload = function(e) {
                 this.data.fotos.push({
                     file: file,
                     preview: e.target.result,
@@ -1902,7 +1903,7 @@ const wizard = {
                     this.showToast(`${processed} foto(s) adicionada(s)`, 'success');
                 }
             };
-            reader.onerror = () => {
+            reader.onerror = function() {
                 this.showToast(`Erro ao ler: ${file.name}`, 'error');
             };
             reader.readAsDataURL(file);
@@ -1922,7 +1923,7 @@ const wizard = {
             document.body.appendChild(container);
 
             // Atualizar posição ao redimensionar
-            window.addEventListener('resize', () => {
+            window.addEventListener('resize', function() {
                 const isMobileNow = window.innerWidth <= 768;
                 if (isMobileNow) {
                     container.style.cssText = 'position:fixed;left:16px;right:16px;bottom:80px;z-index:9999;';
@@ -2064,7 +2065,7 @@ const wizard = {
                 const label = tipoLabels[tipo] || tipo;
                 const temFotos = atv.fotos_atividade || atv.fotos;
                 const percentual = atv.percentual_concluido || 0;
-                const titulo = atv.titulo || atv.descricao?.substring(0, 50) || 'Atividade';
+                const titulo = atv.titulo || (atv.descricao ? atv.descricao.substring(0, 50) : '') || 'Atividade';
 
                 html += `
                     <div class="atividade-card-wizard" data-atividade-id="${atv.id}"
@@ -2252,7 +2253,7 @@ const wizard = {
                 currentContent.style.animation = 'fadeOut 0.2s ease';
             }
 
-            setTimeout(() => {
+            setTimeout(function() {
                 this.currentStep++;
                 this.updateUI();
             }, 200);
@@ -2266,7 +2267,7 @@ const wizard = {
                 currentContent.style.animation = 'fadeOutRight 0.2s ease';
             }
 
-            setTimeout(() => {
+            setTimeout(function() {
                 this.currentStep--;
                 this.updateUI();
             }, 200);
@@ -2295,7 +2296,7 @@ const wizard = {
                     this.showToast('Por favor, descreva a atividade com pelo menos 10 caracteres', 'warning');
                     document.getElementById('descricao').focus();
                     document.getElementById('descricao').style.borderColor = '#e74c3c';
-                    setTimeout(() => {
+                    setTimeout(function() {
                         document.getElementById('descricao').style.borderColor = '';
                     }, 2000);
                     return false;
@@ -2324,7 +2325,7 @@ const wizard = {
         const foto = this.data.fotos[index];
         this.data.fotos.splice(index, 1);
         this.updatePhotoPreview();
-        this.showToast(`Foto removida: ${foto?.name || 'imagem'}`, 'info');
+        this.showToast('Foto removida: ' + (foto && foto.name ? foto.name : 'imagem'), 'info');
     },
 
     updatePhotoPreview: function() {
@@ -2541,7 +2542,7 @@ const wizard = {
                 this.showToast('Atividade registrada com sucesso!', 'success');
 
                 // Recarregar após 2 segundos
-                setTimeout(() => {
+                setTimeout(function() {
                     window.location.reload();
                 }, 2000);
             } else {

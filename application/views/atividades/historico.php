@@ -171,7 +171,7 @@ $filtros = $filtros ?? ['data_inicio' => date('Y-m-01'), 'data_fim' => date('Y-m
 
             <!-- Categorias -->
             <div style="text-align: center; margin-top: 20px;">
-                <?php foreach ($estatisticas['por_categoria'] ?? [] as $cat): ?
+                <?php foreach ($estatisticas['por_categoria'] ?? [] as $cat): ?>
                     <?php
                         $cores = [
                             'rede' => '#007bff',
@@ -236,15 +236,15 @@ $filtros = $filtros ?? ['data_inicio' => date('Y-m-01'), 'data_fim' => date('Y-m
                 krsort($atividades_por_data);
                 ?>
 
-                <?php if (count($atividades_por_data) > 0): ?
+                <?php if (count($atividades_por_data) > 0): ?>
                     <div class="timeline-container">
-                        <?php foreach ($atividades_por_data as $data => $atvs_dia): ?
+                        <?php foreach ($atividades_por_data as $data => $atvs_dia): ?>
                             <div class="timeline-date">
                                 <?= date('d/m/Y', strtotime($data)) ?> -
                                 <?= strftime('%A', strtotime($data)) ?>
                             </div>
 
-                            <?php foreach ($atvs_dia as $atv): ?
+                            <?php foreach ($atvs_dia as $atv): ?>
                                 <?php
                                     $classe_status = '';
                                     if ($atv->status == 'finalizada') {
@@ -257,20 +257,20 @@ $filtros = $filtros ?? ['data_inicio' => date('Y-m-01'), 'data_fim' => date('Y-m
                                     <div class="atividade-header">
                                         <div>
                                             <strong><i class="bx bx-wrench"></i> <?= htmlspecialchars($atv->tipo_nome) ?></strong>
-                                            <?php if ($atv->concluida == 1): ?
+                                            <?php if ($atv->concluida == 1): ?>
                                                 <span class="label label-success"><i class="bx bx-check"></i> Concluída</span>
-                                            <?php elseif ($atv->status == 'finalizada'): ?
+                                            <?php elseif ($atv->status == 'finalizada'): ?>
                                                 <span class="label label-important"><i class="bx bx-x"></i> Não Concluída</span>
-                                            <?php elseif ($atv->status == 'pausada'): ?
+                                            <?php elseif ($atv->status == 'pausada'): ?>
                                                 <span class="label"><i class="bx bx-pause"></i> Pausada</span>
                                             <?php endif; ?>
                                         </div>
                                         <div class="atividade-tempo">
                                             <span class="hora"><?= date('H:i', strtotime($atv->hora_inicio)) ?></span>
-                                            <?php if ($atv->hora_fim): ?
+                                            <?php if ($atv->hora_fim): ?>
                                                 <span> até </span>
                                                 <span class="hora"><?= date('H:i', strtotime($atv->hora_fim)) ?></span>
-                                            <?php else: ?
+                                            <?php else: ?>
                                                 <span> -- </span>
                                                 <span class="hora">--:--</span>
                                             <?php endif; ?>
@@ -278,44 +278,44 @@ $filtros = $filtros ?? ['data_inicio' => date('Y-m-01'), 'data_fim' => date('Y-m
                                     </div>
 
                                     <div class="atividade-duracao">
-                                        <?php if ($atv->duracao_minutos): ?
+                                        <?php if ($atv->duracao_minutos): ?>
                                             <i class="bx bx-time"></i> Duração:
                                             <strong><?= formatar_duracao($atv->duracao_minutos) ?></strong>
-                                        <?php else: ?
+                                        <?php else: ?>
                                             <i class="bx bx-time"></i> Sem duração registrada
                                         <?php endif; ?>
                                     </div>
 
-                                    <?php if ($atv->os_id): ?
+                                    <?php if ($atv->os_id): ?>
                                     <div class="atividade-info">
                                         <p><i class="bx bx-file"></i> OS #<?= $atv->os_id ?></p>
-                                        <?php if ($atv->os_equipamento): ?
+                                        <?php if ($atv->os_equipamento): ?>
                                             <p><i class="bx bx-package"></i> <?= htmlspecialchars($atv->os_equipamento) ?></p>
                                         <?php endif; ?>
-                                        <?php if ($atv->nomeCliente): ?
+                                        <?php if ($atv->nomeCliente): ?>
                                             <p><i class="bx bx-user"></i> <?= htmlspecialchars($atv->nomeCliente) ?></p>
                                         <?php endif; ?>
-                                        <?php if ($atv->equipamento): ?
+                                        <?php if ($atv->equipamento): ?>
                                             <p><i class="bx bx-wrench"></i> Equipamento: <?= htmlspecialchars($atv->equipamento) ?></p>
                                         <?php endif; ?>
-                                        <?php if ($atv->descricao): ?
+                                        <?php if ($atv->descricao): ?>
                                             <p><i class="bx bx-detail"></i> <?= htmlspecialchars($atv->descricao) ?></p>
                                         <?php endif; ?>
 
-                                        <?php if ($atv->problemas_encontrados): ?
+                                        <?php if ($atv->problemas_encontrados): ?>
                                             <p class="text-warning"><i class="bx bx-error"></i> Problemas: <?= htmlspecialchars($atv->problemas_encontrados) ?></p>
                                         <?php endif; ?>
 
-                                        <?php if ($atv->solucao_aplicada): ?
+                                        <?php if ($atv->solucao_aplicada): ?>
                                             <p class="text-success"><i class="bx bx-check-shield"></i> Solução: <?= htmlspecialchars($atv->solucao_aplicada) ?></p>
                                         <?php endif; ?>
                                     </div>
-                                    <?php endif; ?
+                                    <?php endif; ?>
                                 </div>
-                            <?php endforeach; ?
-                        <?php endforeach; ?
+                            <?php endforeach; ?>
+                        <?php endforeach; ?>
                     </div>
-                <?php else: ?
+                <?php else: ?>
                     <div class="empty-state">
                         <i class="bx bx-inbox"></i>
                         <h3>Nenhuma atividade encontrada</h3>

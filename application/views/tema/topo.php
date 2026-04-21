@@ -2,7 +2,7 @@
 <html lang="pt-br">
 
 <head>
-  <title><?= $configuration['app_name'] ?: 'Map-OS' ?></title>
+  <title><?= ($configuration['app_name'] ?? null) ?: 'Map-OS' ?></title>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="csrf-token-name" content="<?= config_item("csrf_token_name") ?>">
@@ -15,22 +15,22 @@
   <link rel="stylesheet" href="<?= base_url(); ?>assets/css/custom.css" />
   <link href="<?= base_url(); ?>assets/font-awesome/css/font-awesome.css" rel="stylesheet" />
   <link rel="stylesheet" href="<?= base_url(); ?>assets/css/fullcalendar.css" />
-  <?php if ($configuration['app_theme'] == 'white') { ?>
+  <?php if (($configuration['app_theme'] ?? null) == 'white') { ?>
     <link rel="stylesheet" href="<?= base_url(); ?>assets/css/tema-white.css" />
   <?php } ?>
-  <?php if ($configuration['app_theme'] == 'puredark') { ?>
+  <?php if (($configuration['app_theme'] ?? null) == 'puredark') { ?>
     <link rel="stylesheet" href="<?= base_url(); ?>assets/css/tema-pure-dark.css" />
   <?php } ?>
-  <?php if ($configuration['app_theme'] == 'darkviolet') { ?>
+  <?php if (($configuration['app_theme'] ?? null) == 'darkviolet') { ?>
     <link rel="stylesheet" href="<?= base_url(); ?>assets/css/tema-dark-violet.css" />
   <?php } ?>
-  <?php if ($configuration['app_theme'] == 'darkorange') { ?>
+  <?php if (($configuration['app_theme'] ?? null) == 'darkorange') { ?>
     <link rel="stylesheet" href="<?= base_url(); ?>assets/css/tema-dark-orange.css" />
   <?php } ?>
-  <?php if ($configuration['app_theme'] == 'whitegreen') { ?>
+  <?php if (($configuration['app_theme'] ?? null) == 'whitegreen') { ?>
     <link rel="stylesheet" href="<?= base_url(); ?>assets/css/tema-white-green.css" />
   <?php } ?>
-  <?php if ($configuration['app_theme'] == 'whiteblack') { ?>
+  <?php if (($configuration['app_theme'] ?? null) == 'whiteblack') { ?>
     <link rel="stylesheet" href="<?= base_url(); ?>assets/css/tema-white-black.css" />
   <?php } ?>
   <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700,800' rel='stylesheet' type='text/css'>
@@ -103,7 +103,7 @@
   </style>
 </head>
 
-<body data-theme="<?= isset($configuration['app_theme']) ? $configuration['app_theme'] : 'default' ?>">
+<body data-theme="<?= $configuration['app_theme'] ?? 'default' ?>">
   <!--top-Header-menu-->
 
   <?php if (isset($is_area_tecnico) && $is_area_tecnico): ?>

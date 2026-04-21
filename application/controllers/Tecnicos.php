@@ -13,7 +13,7 @@ if (!defined('BASEPATH')) {
  * - Documentação fotográfica
  * - Assinatura digital
  */
-class Tecnicos extends CI_Controller
+class Tecnicos extends MY_Controller
 {
     public function __construct()
     {
@@ -189,7 +189,7 @@ class Tecnicos extends CI_Controller
      */
     private function _load_tec_layout($content_view, $data = [])
     {
-        $data['content'] = $this->load->view('tecnicos/' . $content_view, $data, true);
+        $this->data['content'] = $this->load->view('tecnicos/' . $content_view, $data, true);
         $this->load->view('tecnicos/layout', array_merge($this->data, $data));
     }
 
@@ -1385,17 +1385,17 @@ class Tecnicos extends CI_Controller
             $this->load->model('fotosatendimento_model');
             $this->load->model('assinaturas_model');
 
-            $data['os'] = $os;
-            $data['cliente'] = $this->clientes_model->getById($os->clientes_id);
-            $data['produtos'] = $this->tec_os_model->getProdutosOs($os_id);
-            $data['servicos'] = $this->tec_os_model->getServicosOs($os_id);
-            $data['execucoes'] = $this->tec_os_model->getExecucoesByOs($os_id);
-            $data['emitente'] = $this->mapos_model->getEmitente();
-            $data['checkins'] = $this->checkin_model->getAllByOs($os_id);
+            $this->data['os'] = $os;
+            $this->data['cliente'] = $this->clientes_model->getById($os->clientes_id);
+            $this->data['produtos'] = $this->tec_os_model->getProdutosOs($os_id);
+            $this->data['servicos'] = $this->tec_os_model->getServicosOs($os_id);
+            $this->data['execucoes'] = $this->tec_os_model->getExecucoesByOs($os_id);
+            $this->data['emitente'] = $this->mapos_model->getEmitente();
+            $this->data['checkins'] = $this->checkin_model->getAllByOs($os_id);
 
             // Carregar fotos organizadas por etapa (limitado para PDF)
             $fotos = $this->fotosatendimento_model->getByOs($os_id);
-            $data['fotosPorEtapa'] = [
+            $this->data['fotosPorEtapa'] = [
                 'entrada' => [],
                 'durante' => [],
                 'saida' => []
@@ -1404,21 +1404,21 @@ class Tecnicos extends CI_Controller
             $fotos_count = 0;
             foreach ($fotos as $foto) {
                 if ($fotos_count < 15) {
-                    $data['fotosPorEtapa'][$foto->etapa][] = $foto;
+                    $this->data['fotosPorEtapa'][$foto->etapa][] = $foto;
                     $fotos_count++;
                 }
             }
 
             // Carregar assinaturas
             $assinaturas = $this->assinaturas_model->getByOs($os_id);
-            $data['assinaturasPorTipo'] = [];
+            $this->data['assinaturasPorTipo'] = [];
             if (!empty($assinaturas)) {
                 foreach ($assinaturas as $assinatura) {
-                    $data['assinaturasPorTipo'][$assinatura->tipo] = $assinatura;
+                    $this->data['assinaturasPorTipo'][$assinatura->tipo] = $assinatura;
                 }
             }
 
-            $data['fotosTecnico'] = []; // Não carregar fotos do técnico no PDF para economizar espaço
+            $this->data['fotosTecnico'] = []; // Não carregar fotos do técnico no PDF para economizar espaço
 
             // Verificar se view existe
             $view_path = APPPATH . 'views/tecnicos/pdf_relatorio_execucao.php';
@@ -1470,7 +1470,7 @@ class Tecnicos extends CI_Controller
             // Montar mensagem para WhatsApp
             $mensagem = urlencode(
                 "*Relatório de Execução - OS #{$os_id}*\n\n" .
-                "📋 *Cliente:* " . ($data['cliente']->nomeCliente ?? 'N/A') . "\n" .
+                "📋 *Cliente:* " . ($this->data['cliente']->nomeCliente ?? 'N/A') . "\n" .
                 "📅 *Data:* " . date('d/m/Y') . "\n" .
                 "🔧 *Serviço:* " . ($os->descricaoProduto ?? 'Manutenção') . "\n\n" .
                 "📎 *Relatório em PDF:* " . $pdf_url . "\n\n" .
@@ -2225,7 +2225,7 @@ class Tecnicos extends CI_Controller
         // Extrair dados da string base64
         if (strpos($base64_string, ',') !== false) {
             $data = explode(',', $base64_string);
-            $base64_data = isset($data[1]) ? $data[1] : $data[0];
+            $base64_data = isset($this->data[1]) ? $this->data[1] : $this->data[0];
         } else {
             $base64_data = $base64_string;
         }

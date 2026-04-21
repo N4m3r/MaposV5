@@ -8,7 +8,7 @@ if (!defined('BASEPATH')) {
  * Controller para Sistema de Atividades de Técnicos
  * Gerencia check-in, registro de atividades e check-out
  */
-class Atividades extends CI_Controller
+class Atividades extends MY_Controller
 {
     public function __construct()
     {
@@ -33,24 +33,24 @@ class Atividades extends CI_Controller
         $tecnico_id = $this->session->userdata('idAdmin');
 
         // Verifica se é técnico ou admin
-        $data['is_admin'] = $this->session->userdata('permissao') == 1;
+        $this->data['is_admin'] = $this->session->userdata('permissao') == 1;
 
         // Atividade em andamento
-        $data['atividade_em_andamento'] = $this->atividades->getAtividadeEmAndamento($tecnico_id);
+        $this->data['atividade_em_andamento'] = $this->atividades->getAtividadeEmAndamento($tecnico_id);
 
         // Resumo do dia
-        $data['resumo_dia'] = $this->atividades->getResumoDia($tecnico_id);
+        $this->data['resumo_dia'] = $this->atividades->getResumoDia($tecnico_id);
 
         // Estatísticas do mês
-        $data['estatisticas'] = $this->atividades->getEstatisticasTecnico($tecnico_id);
+        $this->data['estatisticas'] = $this->atividades->getEstatisticasTecnico($tecnico_id);
 
         // OS do dia para o técnico
         $this->load->model('Tec_os_model');
-        $data['os_hoje'] = $this->Tec_os_model->getOsDoDia($tecnico_id);
+        $this->data['os_hoje'] = $this->Tec_os_model->getOsDoDia($tecnico_id);
 
-        $data['title'] = 'Área do Técnico - Atividades';
-        $this->load->view('tema/topo', $data);
-        $this->load->view('tema/menu_portal_tecnico', $data);
+        $this->data['title'] = 'Área do Técnico - Atividades';
+        $this->load->view('tema/topo', $this->data);
+        $this->load->view('tema/menu_portal_tecnico', $this->data);
         $this->load->view('atividades/dashboard');
         $this->load->view('tema/rodape');
     }
@@ -76,24 +76,24 @@ class Atividades extends CI_Controller
         }
 
         // Carrega dados da OS
-        $data['os'] = $this->Os_model->getById($os_id);
-        if (!$data['os']) {
+        $this->data['os'] = $this->Os_model->getById($os_id);
+        if (!$this->data['os']) {
             show_404();
         }
 
         // Dados para o wizard
-        $data['atividade_em_andamento'] = $atividade_andamento;
-        $data['atividades_lista'] = $this->atividades->listarPorOS($os_id);
-        $data['tipos_atividades'] = $this->atividades_tipos->listarPorCategoria();
-        $data['checkin_realizado'] = count($data['atividades_lista']) > 0;
+        $this->data['atividade_em_andamento'] = $atividade_andamento;
+        $this->data['atividades_lista'] = $this->atividades->listarPorOS($os_id);
+        $this->data['tipos_atividades'] = $this->atividades_tipos->listarPorCategoria();
+        $this->data['checkin_realizado'] = count($this->data['atividades_lista']) > 0;
 
-        $data['title'] = 'Wizard de Atividades - OS #' . $os_id;
-        $data['os_id'] = $os_id;
-        $data['obra_id'] = null;
-        $data['etapa_id'] = null;
-        $data['modo'] = 'os';
+        $this->data['title'] = 'Wizard de Atividades - OS #' . $os_id;
+        $this->data['os_id'] = $os_id;
+        $this->data['obra_id'] = null;
+        $this->data['etapa_id'] = null;
+        $this->data['modo'] = 'os';
 
-        $this->load->view('tema/topo', $data);
+        $this->load->view('tema/topo', $this->data);
         $this->load->view('tema/menu_portal_tecnico', $data);
         $this->load->view('atividades/wizard');
         $this->load->view('tema/rodape');
@@ -121,8 +121,8 @@ class Atividades extends CI_Controller
 
         // Carrega dados da obra
         $this->load->model('obras_model');
-        $data['obra'] = $this->obras_model->getById($obra_id);
-        if (!$data['obra']) {
+        $this->data['obra'] = $this->obras_model->getById($obra_id);
+        if (!$this->data['obra']) {
             show_404();
         }
 
@@ -133,27 +133,27 @@ class Atividades extends CI_Controller
         }
 
         // Carrega etapa se especificada
-        $data['etapa'] = null;
+        $this->data['etapa'] = null;
         if ($etapa_id) {
-            $data['etapa'] = $this->obras_model->getEtapaById($etapa_id);
+            $this->data['etapa'] = $this->obras_model->getEtapaById($etapa_id);
         }
 
         // Carrega etapas para seleção
-        $data['etapas'] = $this->obras_model->getEtapas($obra_id);
+        $this->data['etapas'] = $this->obras_model->getEtapas($obra_id);
 
         // Dados para o wizard
-        $data['atividade_em_andamento'] = $atividade_andamento;
-        $data['atividades_lista'] = $this->atividades->listarPorObra($obra_id);
-        $data['tipos_atividades'] = $this->atividades_tipos->listarPorCategoria();
-        $data['checkin_realizado'] = count($data['atividades_lista']) > 0;
+        $this->data['atividade_em_andamento'] = $atividade_andamento;
+        $this->data['atividades_lista'] = $this->atividades->listarPorObra($obra_id);
+        $this->data['tipos_atividades'] = $this->atividades_tipos->listarPorCategoria();
+        $this->data['checkin_realizado'] = count($this->data['atividades_lista']) > 0;
 
-        $data['title'] = 'Wizard de Atividades - Obra: ' . $data['obra']->nome;
-        $data['obra_id'] = $obra_id;
-        $data['etapa_id'] = $etapa_id;
-        $data['os_id'] = null;
-        $data['modo'] = 'obra';
+        $this->data['title'] = 'Wizard de Atividades - Obra: ' . $this->data['obra']->nome;
+        $this->data['obra_id'] = $obra_id;
+        $this->data['etapa_id'] = $etapa_id;
+        $this->data['os_id'] = null;
+        $this->data['modo'] = 'obra';
 
-        $this->load->view('tema/topo', $data);
+        $this->load->view('tema/topo', $this->data);
         $this->load->view('tema/menu_portal_tecnico', $data);
         $this->load->view('atividades/wizard_obra');
         $this->load->view('tema/rodape');
@@ -168,15 +168,15 @@ class Atividades extends CI_Controller
 
         // Carrega OS designadas para o técnico
         $this->load->model('Tec_os_model');
-        $data['os_pendentes'] = $this->Tec_os_model->getOsPendentes($tecnico_id);
-        $data['os_hoje'] = $this->Tec_os_model->getOsDoDia($tecnico_id);
+        $this->data['os_pendentes'] = $this->Tec_os_model->getOsPendentes($tecnico_id);
+        $this->data['os_hoje'] = $this->Tec_os_model->getOsDoDia($tecnico_id);
 
         // Verifica atividade em andamento
-        $data['atividade_andamento'] = $this->atividades->getAtividadeEmAndamento($tecnico_id);
+        $this->data['atividade_andamento'] = $this->atividades->getAtividadeEmAndamento($tecnico_id);
 
-        $data['title'] = 'Selecionar Ordem de Serviço';
+        $this->data['title'] = 'Selecionar Ordem de Serviço';
 
-        $this->load->view('tema/topo', $data);
+        $this->load->view('tema/topo', $this->data);
         $this->load->view('tema/menu_portal_tecnico', $data);
         $this->load->view('atividades/selecionar_os');
         $this->load->view('tema/rodape');
@@ -588,13 +588,13 @@ class Atividades extends CI_Controller
             'data_fim' => $this->input->get('data_fim') ?? date('Y-m-t'),
         ];
 
-        $data['atividades'] = $this->atividades->listarPorTecnico($tecnico_id, $filtros);
-        $data['estatisticas'] = $this->atividades->getEstatisticasTecnico($tecnico_id, $filtros['data_inicio'], $filtros['data_fim']);
-        $data['filtros'] = $filtros;
+        $this->data['atividades'] = $this->atividades->listarPorTecnico($tecnico_id, $filtros);
+        $this->data['estatisticas'] = $this->atividades->getEstatisticasTecnico($tecnico_id, $filtros['data_inicio'], $filtros['data_fim']);
+        $this->data['filtros'] = $filtros;
 
-        $data['title'] = 'Histórico de Atividades';
+        $this->data['title'] = 'Histórico de Atividades';
 
-        $this->load->view('tema/topo', $data);
+        $this->load->view('tema/topo', $this->data);
         $this->load->view('tema/menu_portal_tecnico', $data);
         $this->load->view('atividades/historico');
         $this->load->view('tema/rodape');
@@ -623,13 +623,13 @@ class Atividades extends CI_Controller
             $filtros['tecnico_id'] = $this->input->get('tecnico_id');
         }
 
-        $data['tecnicos'] = $this->Usuarios_model->getAll();
-        $data['atividades'] = $this->atividades->gerarRelatorio($filtros);
-        $data['filtros'] = $filtros;
+        $this->data['tecnicos'] = $this->Usuarios_model->getAll();
+        $this->data['atividades'] = $this->atividades->gerarRelatorio($filtros);
+        $this->data['filtros'] = $filtros;
 
-        $data['title'] = 'Relatório de Atividades';
+        $this->data['title'] = 'Relatório de Atividades';
 
-        $this->load->view('tema/topo', $data);
+        $this->load->view('tema/topo', $this->data);
         $this->load->view('tema/menu_portal_tecnico', $data);
         $this->load->view('atividades/relatorio');
         $this->load->view('tema/rodape');

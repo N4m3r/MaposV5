@@ -221,8 +221,8 @@ setInterval(function() {
         <div class="dashboard-card">
             <h4><i class="bx bx-list-ul"></i> Ordens de Serviço - Hoje</h4>
 
-            <?php if (count($os_hoje) > 0): ?
-                <?php foreach ($os_hoje as $os): ?
+            <?php if (count($os_hoje) > 0): ?>
+                <?php foreach ($os_hoje as $os): ?>
                     <?php
                         $prioridade = 'baixa';
                         if (strpos(strtolower($os->descricaoProduto ?? ''), 'urgente') !== false) {
@@ -238,27 +238,27 @@ setInterval(function() {
                                 <?= htmlspecialchars($os->nomeCliente ?? 'N/A') ?>
                                 <br>
                                 <small><i class="bx bx-wrench"></i> <?= htmlspecialchars($os->descricaoProduto ?? 'N/A') ?></small>
-                                <?php if ($os->garantia ?? false): ?
+                                <?php if ($os->garantia ?? false): ?>
                                     <span class="label label-warning"><i class="bx bx-shield"></i> Garantia</span>
                                 <?php endif; ?>
                             </div>
                             <div class="span4 text-right">
-                                <?php if ($atividade_em_andamento && $atividade_em_andamento->os_id == $os->idOs): ?
+                                <?php if ($atividade_em_andamento && $atividade_em_andamento->os_id == $os->idOs): ?>
                                     <a href="<?= site_url('atividades/wizard/' . $os->idOs) ?>" class="btn btn-warning btn-small">
                                         <i class="bx bx-play-circle"></i> Continuar
                                     </a>
-                                <?php elseif (!$atividade_em_andamento): ?
+                                <?php elseif (!$atividade_em_andamento): ?>
                                     <a href="<?= site_url('atividades/wizard/' . $os->idOs) ?>" class="btn btn-success btn-small">
                                         <i class="bx bx-play"></i> Iniciar
                                     </a>
-                                <?php else: ?
+                                <?php else: ?>
                                     <span class="label">Em outra OS</span>
                                 <?php endif; ?>
                             </div>
                         </div>
                     </div>
-                <?php endforeach; ?
-            <?php else: ?
+                <?php endforeach; ?>
+            <?php else: ?>
                 <div class="alert alert-info">
                     <i class="bx bx-info-circle"></i> Nenhuma OS designada para hoje.
                 </div>
@@ -278,7 +278,7 @@ setInterval(function() {
             <hr>
 
             <h5>Por Categoria:</h5>
-            <?php foreach ($estatisticas['por_categoria'] ?? [] as $cat): ?
+            <?php foreach ($estatisticas['por_categoria'] ?? [] as $cat): ?>
                 <div class="categoria-badge" style="background: <?= $cat->categoria ?>20; color: <?= $cat->categoria ?>;">
                     <?= ucfirst($cat->categoria) ?>: <?= $cat->total ?>
                 </div>
@@ -293,7 +293,7 @@ setInterval(function() {
             <a href="<?= site_url('atividades/historico') ?>" class="btn btn-block">
                 <i class="bx bx-history"></i> Ver Histórico
             </a>
-            <?php if ($is_admin): ?
+            <?php if ($is_admin): ?>
                 <a href="<?= site_url('atividades/relatorio') ?>" class="btn btn-block">
                     <i class="bx bx-chart"></i> Relatórios Admin
                 </a>
