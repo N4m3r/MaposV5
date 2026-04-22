@@ -4,6 +4,12 @@ $atividades_sistema = $atividades_sistema ?? [];
 $estatisticas_atividades = $estatisticas_atividades ?? null;
 $obra_id = $obra->id ?? 0;
 $tipos_atividades = $tipos_atividades ?? [];
+
+// Carregar helper de atividades se necessário
+if (!function_exists('formatar_duracao')) {
+    $CI = &get_instance();
+    $CI->load->helper('atividades');
+}
 ?>
 
 <style>
