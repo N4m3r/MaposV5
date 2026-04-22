@@ -873,7 +873,7 @@ textarea.wizard-input {
         <a href="<?= site_url('tecnicos/minhas_obras') ?>" class="btn-voltar">
             <i class="icon-arrow-left"></i> Voltar
         </a>
-        <h1><i class="icon-building"></i> <?= htmlspecialchars($obra->nome) ?></h1>
+        <h1><i class="icon-building"></i> <?= htmlspecialchars($obra->nome ?? 'Obra sem nome') ?></h1>
         <p><i class="icon-user"></i> <?= htmlspecialchars($obra->cliente_nome ?? 'Cliente não informado') ?></p>
     </div>
 
@@ -886,9 +886,12 @@ textarea.wizard-input {
             <?= htmlspecialchars($wizard_em_andamento->titulo ?? $wizard_em_andamento->descricao ?? '') ?><br>
             <small>Iniciado às <?= date('H:i', strtotime($wizard_em_andamento->hora_inicio)) ?> - <?= date('d/m/Y', strtotime($wizard_em_andamento->data_atividade ?? 'now')) ?></small>
         </p>
-        <button class="btn-continuar" onclick="WizardAtendimento.continuar(<?= $wizard_em_andamento->id ?>)">
+        <?php $ativAndamentoId = $wizard_em_andamento->id ?? $wizard_em_andamento->idAtividade ?? null; ?>
+        <?php if ($ativAndamentoId): ?>
+        <button class="btn-continuar" onclick="WizardAtendimento.continuar(<?= $ativAndamentoId ?>)">
             <i class="icon-play"></i> CONTINUAR ATENDIMENTO
         </button>
+        <?php endif; ?>
     </div>
     <?php endif; ?>
 
@@ -896,6 +899,12 @@ textarea.wizard-input {
     <div class="etapas-section">
         <h3 class="section-title"><i class="icon-list"></i> Etapas da Obra</h3>
 
+        <?php
+        // Normalize etapas to array
+        if (!is_array($etapas)) {
+            $etapas = is_object($etapas) ? [$etapas] : [];
+        }
+        ?>
         <?php if (empty($etapas)): ?>
         <div class="wizard-card">
             <div class="empty-state">
@@ -906,9 +915,20 @@ textarea.wizard-input {
         </div>
         <?php else: ?>
         <div class="etapas-lista">
-            <?php foreach ($etapas as $etapa): ?>
+            <?php
+            // Ensure $etapas is iterable
+            if (!is_array($etapas) && !is_object($etapas)) {
+                $etapas = [];
+            }
+            foreach ($etapas as $etapa): ?>
                 <?php
-                $etapaId = $etapa->id ?? $etapa->idEtapa ?? null;
+                // Skip invalid etapas
+                if (!is_object($etapa)) continue;
+
+                // Debug: log available properties on first iteration
+                // var_dump(get_object_vars($etapa)); die();
+
+                $etapaId = property_exists($etapa, 'id') ? $etapa->id : (property_exists($etapa, 'idEtapa') ? $etapa->idEtapa : null);
                 if (!$etapaId) continue;
 
                 $statusEtapa = $etapa->status ?? 'aberto';
@@ -969,16 +989,17 @@ textarea.wizard-input {
                                         <i class="icon-<?= ($statusAtiv === 'concluida' || $statusAtiv === 'concluida') ? 'check' : (($statusAtiv === 'em_andamento' || $statusAtiv === 'iniciada') ? 'play' : 'time') ?>"></i>
                                     </div>
                                     <div class="atividade-info">
-                                        <h5><?= htmlspecialchars($ativ->titulo ?? $ativ->descricao ?? 'Atividade #' . $ativ->id) ?></h5>
+                                        <?php $ativId = $ativ->id ?? $ativ->idAtividade ?? null; ?>
+                                        <h5><?= htmlspecialchars($ativ->titulo ?? $ativ->descricao ?? 'Atividade #' . ($ativId ?? 'N/A')) ?></h5>
                                         <p><?= $statusAtivLabel ?> • <?= !empty($ativ->hora_inicio) ? date('H:i', strtotime($ativ->hora_inicio)) : '--:--' ?></p>
                                     </div>
                                     <div class="atividade-acoes">
-                                        <?php if ($podeIniciar): ?>
-                                        <button class="btn-acao iniciar" onclick="WizardAtendimento.iniciar(<?= $etapaId ?>, '<?= htmlspecialchars($etapa->nome ?? 'Etapa') ?>', <?= $ativ->id ?>, '<?= htmlspecialchars($ativ->titulo ?? $ativ->descricao ?? 'Atividade') ?>')">
+                                        <?php if ($podeIniciar && $ativId): ?>
+                                        <button class="btn-acao iniciar" onclick="WizardAtendimento.iniciar(<?= $etapaId ?>, '<?= htmlspecialchars($etapa->nome ?? 'Etapa') ?>', <?= $ativId ?>, '<?= htmlspecialchars($ativ->titulo ?? $ativ->descricao ?? 'Atividade') ?>')">
                                             <i class="icon-play"></i> Iniciar
                                         </button>
-                                        <?php elseif ($statusAtiv === 'em_andamento' || $statusAtiv === 'iniciada'): ?>
-                                        <button class="btn-acao finalizar" onclick="WizardAtendimento.continuar(<?= $ativ->id ?>)">
+                                        <?php elseif (($statusAtiv === 'em_andamento' || $statusAtiv === 'iniciada') && $ativId): ?>
+                                        <button class="btn-acao finalizar" onclick="WizardAtendimento.continuar(<?= $ativId ?>)">
                                             <i class="icon-stop"></i> Finalizar
                                         </button>
                                         <?php else: ?>
@@ -1055,8 +1076,13 @@ textarea.wizard-input {
                         <i class="icon-list"></i> Selecione a Etapa
                     </div>
                     <div class="etapas-grid" id="etapasGrid">
-                        <?php foreach ($etapas as $etapa):
-                            $etapaId = $etapa->id ?? $etapa->idEtapa ?? null;
+                        <?php
+                        // Ensure $etapas is iterable
+                        if (!is_array($etapas) && !is_object($etapas)) {
+                            $etapas = [];
+                        }
+                        foreach ($etapas as $etapa):
+                            $etapaId = property_exists($etapa, 'id') ? $etapa->id : (property_exists($etapa, 'idEtapa') ? $etapa->idEtapa : null);
                             if (!$etapaId) continue;
                         ?>
                         <div class="etapa-selecao" data-etapa-id="<?= $etapaId ?>" onclick="WizardAtendimento.selecionarEtapa(this)">
@@ -1280,9 +1306,9 @@ textarea.wizard-input {
 <script>
 // Dados da obra e etapas
 const dadosObra = {
-    obraId: <?= json_encode($obra->id) ?>,
-    etapas: <?= json_encode($etapas) ?>,
-    atividadesPorEtapa: <?= json_encode($atividades_por_etapa) ?>,
+    obraId: <?= json_encode($obra->id ?? null) ?>,
+    etapas: <?= json_encode($etapas ?? []) ?>,
+    atividadesPorEtapa: <?= json_encode($atividades_por_etapa ?? []) ?>,
     atividadeAndamento: <?= json_encode($wizard_em_andamento) ?>
 };
 
