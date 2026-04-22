@@ -1174,8 +1174,13 @@ class Obras extends MY_Controller
     /**
      * Visualizar atividade
      */
-    public function visualizarAtividade($atividade_id)
+    public function visualizarAtividade($atividade_id = null)
     {
+        // Pegar ID do parâmetro ou do URI
+        if (!$atividade_id) {
+            $atividade_id = $this->uri->segment(3);
+        }
+
         if (!$atividade_id || !is_numeric($atividade_id)) {
             $this->session->set_flashdata('error', 'Atividade não encontrada.');
             redirect('obras');

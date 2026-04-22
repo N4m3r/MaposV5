@@ -1409,6 +1409,129 @@ textarea.wizard-input {
     </div>
 </div>
 
+<!-- Modal de Confirmação - Pausar Atividade -->
+<div id="modalConfirmarPausar" class="wizard-overlay" style="z-index: 10001; display: none;">
+    <div class="wizard-container" style="justify-content: center;">
+        <div class="wizard-card" style="max-width: 450px; margin: 0 auto; text-align: center;">
+            <div style="font-size: 60px; color: #f39c12; margin-bottom: 20px;">
+                <i class="icon-pause-circle"></i>
+            </div>
+            <h3 style="margin: 0 0 10px 0; font-size: 20px;">Pausar Atividade?</h3>
+            <p style="color: #666; margin-bottom: 20px;">
+                Você está prestes a pausar a atividade atual.<br>
+                <strong id="confirmarPausarAtividade">--</strong>
+            </p>
+
+            <div class="resumo-box" style="margin-bottom: 20px;">
+                <div class="resumo-item">
+                    <span>Tempo decorrido:</span>
+                    <strong class="tempo" id="confirmarPausarTempo">00:00</strong>
+                </div>
+            </div>
+
+            <div style="background: #fff3cd; border-radius: 10px; padding: 15px; margin-bottom: 20px; text-align: left;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #856404;">
+                    <i class="icon-edit"></i> Motivo da pausa (opcional):
+                </label>
+                <textarea id="motivoPausa" class="wizard-input" rows="3" placeholder="Informe o motivo da pausa..."></textarea>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button class="wizard-btn-principal" style="background: #95a5a6; flex: 1;" onclick="document.getElementById('modalConfirmarPausar').style.display='none'">
+                    <i class="icon-remove"></i> Continuar
+                </button>
+                <button class="wizard-btn-principal" style="flex: 1; background: linear-gradient(135deg, #f39c12 0%, #f1c40f 100%);" onclick="WizardAtendimento.confirmarPausar()">
+                    <i class="icon-pause"></i> Pausar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Confirmação - Registrar Progresso -->
+<div id="modalConfirmarProgresso" class="wizard-overlay" style="z-index: 10001; display: none;">
+    <div class="wizard-container" style="justify-content: center;">
+        <div class="wizard-card" style="max-width: 500px; margin: 0 auto;">
+            <div style="font-size: 50px; color: #3498db; margin-bottom: 15px; text-align: center;">
+                <i class="icon-edit-sign"></i>
+            </div>
+            <h3 style="margin: 0 0 10px 0; font-size: 20px; text-align: center;">Registrar Progresso</h3>
+            <p style="color: #666; margin-bottom: 20px; text-align: center;">
+                Descreva o que foi realizado até o momento:
+            </p>
+
+            <div style="background: #e3f2fd; border-radius: 10px; padding: 15px; margin-bottom: 20px;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                    <i class="icon-tasks" style="color: #3498db;"></i>
+                    <span id="confirmarProgressoAtividade" style="font-weight: 600;">--</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #666;">
+                    <i class="icon-time" style="color: #3498db;"></i>
+                    <span id="confirmarProgressoTempo">Tempo: 00:00</span>
+                </div>
+            </div>
+
+            <textarea id="textoProgressoModal" class="wizard-input" rows="4" placeholder="Descreva o progresso realizado, o que foi concluído, dificuldades encontradas..."></textarea>
+
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="wizard-btn-principal" style="background: #95a5a6; flex: 1;" onclick="document.getElementById('modalConfirmarProgresso').style.display='none'">
+                    <i class="icon-remove"></i> Cancelar
+                </button>
+                <button class="wizard-btn-principal" style="flex: 1; background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);" onclick="WizardAtendimento.confirmarRegistrarProgresso()">
+                    <i class="icon-save"></i> Registrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Confirmação - Avançar para Checkout -->
+<div id="modalConfirmarCheckout" class="wizard-overlay" style="z-index: 10001; display: none;">
+    <div class="wizard-container" style="justify-content: center;">
+        <div class="wizard-card" style="max-width: 450px; margin: 0 auto; text-align: center;">
+            <div style="font-size: 60px; color: #27ae60; margin-bottom: 20px;">
+                <i class="icon-signout"></i>
+            </div>
+            <h3 style="margin: 0 0 10px 0; font-size: 20px;">Finalizar Atividade?</h3>
+            <p style="color: #666; margin-bottom: 20px;">
+                Você está prestes a encerrar:<br>
+                <strong id="confirmarCheckoutAtividade">--</strong>
+            </p>
+
+            <div class="resumo-box" style="margin-bottom: 20px;">
+                <div class="resumo-item">
+                    <span>Início:</span>
+                    <strong id="confirmarCheckoutHoraInicio">--:--</strong>
+                </div>
+                <div class="resumo-item">
+                    <span>Tempo Total:</span>
+                    <strong class="tempo" id="confirmarCheckoutTempo">00:00</strong>
+                </div>
+            </div>
+
+            <div style="background: #fff3cd; border-radius: 10px; padding: 15px; margin-bottom: 20px; text-align: left;">
+                <p style="margin: 0; color: #856404; font-size: 13px;">
+                    <i class="icon-info-sign"></i> <strong>Atenção:</strong> Ao prosseguir, você será direcionado para o checkout onde poderá:
+                </p>
+                <ul style="margin: 10px 0 0 0; padding-left: 20px; color: #856404; font-size: 13px;">
+                    <li>Marcar a atividade como concluída, pendente ou não realizada</li>
+                    <li>Adicionar fotos do trabalho realizado</li>
+                    <li>Registrar observações finais</li>
+                </ul>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button class="wizard-btn-principal" style="background: #95a5a6; flex: 1;" onclick="document.getElementById('modalConfirmarCheckout').style.display='none'">
+                    <i class="icon-remove"></i> Voltar
+                </button>
+                <button class="wizard-btn-principal" style="flex: 1; background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);" onclick="WizardAtendimento.confirmarAvancarCheckout()">
+                    <i class="icon-arrow-right"></i> Prosseguir
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 // Dados da obra e etapas
 const dadosObra = {
@@ -2086,18 +2209,19 @@ const WizardAtendimento = {
         this.pararTimer();
 
         const csrfToken = this.getCsrfToken();
-        const atividadeId = this.atividadeSelecionada ? this.atividadeSelecionada.id :
-                       (dadosObra.atividadeAndamento ? dadosObra.atividadeAndamento.id : 0);
+
+        // Buscar atividade em andamento nos dados da obra
+        const atividadeEmAndamento = dadosObra.atividadeAndamento;
+        const atividadeId = atividadeEmAndamento ? (atividadeEmAndamento.id || atividadeEmAndamento.idAtividade) : null;
 
         console.log('Debug pausar:', {
             obraId: dadosObra.obraId,
             atividadeId: atividadeId,
-            atividadeSelecionada: this.atividadeSelecionada,
-            atividadeAndamento: dadosObra.atividadeAndamento
+            atividadeEmAndamento: atividadeEmAndamento
         });
 
-        if (!atividadeId || atividadeId === 0) {
-            alert('Nenhuma atividade selecionada para pausar.');
+        if (!atividadeId) {
+            alert('Nenhuma atividade em andamento para pausar.');
             return;
         }
 
