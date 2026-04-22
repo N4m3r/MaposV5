@@ -318,22 +318,70 @@
                 </div>
             </div>
             <div class="atividade-status-section">
-                <span class="atividade-status-badge">
+                <span class="atividade-status-badge" id="statusBadge">
                     <i class="icon-time"></i>
-                    <?php
-                    $statusLabels = [
-                        'agendada' => 'Agendada',
-                        'iniciada' => 'Em Execução',
-                        'pausada' => 'Pausada',
-                        'concluida' => 'Concluída',
-                        'cancelada' => 'Cancelada'
-                    ];
-                    echo $statusLabels[$atividade->status ?? 'agendada'] ?? ($atividade->status ?? 'Agendada');
-                    ?>
+                    <span id="statusText">
+                        <?php
+                        $statusLabels = [
+                            'agendada' => 'Agendada',
+                            'iniciada' => 'Em Execução',
+                            'pausada' => 'Pausada',
+                            'concluida' => 'Concluída',
+                            'cancelada' => 'Cancelada'
+                        ];
+                        echo $statusLabels[$atividade->status ?? 'agendada'] ?? ($atividade->status ?? 'Agendada');
+                        ?>
+                    </span>
                 </span>
+
+                <!-- Botão para alterar status -->
+                <button type="button" class="action-btn" style="margin-top: 10px; background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3);" onclick="toggleStatusForm()">
+                    <i class="icon-edit"></i> Alterar Status
+                </button>
+
+                <!-- Formulário de alteração de status -->
+                <div id="statusForm" style="display: none; margin-top: 15px; padding: 15px; background: rgba(255,255,255,0.15); border-radius: 10px; backdrop-filter: blur(10px);">
+                    <form action="<?php echo site_url('obras/atualizarStatusAtividade/' . ($atividade->id ?? 0)); ?>" method="POST">
+                        <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>">
+
+                        <div style="margin-bottom: 10px;">
+                            <label style="display: block; color: white; font-size: 13px; margin-bottom: 5px;">Novo Status:</label>
+                            <select name="novo_status" style="width: 100%; padding: 10px; border-radius: 8px; border: none; font-size: 14px;">
+                                <option value="agendada" <?php echo ($atividade->status ?? 'agendada') === 'agendada' ? 'selected' : ''; ?>>📅 Agendada</option>
+                                <option value="iniciada" <?php echo ($atividade->status ?? '') === 'iniciada' ? 'selected' : ''; ?>>🟡 Em Execução</option>
+                                <option value="pausada" <?php echo ($atividade->status ?? '') === 'pausada' ? 'selected' : ''; ?>>⏸️ Pausada</option>
+                                <option value="concluida" <?php echo ($atividade->status ?? '') === 'concluida' ? 'selected' : ''; ?>>✅ Concluída</option>
+                                <option value="cancelada" <?php echo ($atividade->status ?? '') === 'cancelada' ? 'selected' : ''; ?>>❌ Cancelada</option>
+                            </select>
+                        </div>
+
+                        <div style="margin-bottom: 10px;">
+                            <label style="display: block; color: white; font-size: 13px; margin-bottom: 5px;">Motivo/Observação (opcional):</label>
+                            <textarea name="observacao_status" rows="2" style="width: 100%; padding: 10px; border-radius: 8px; border: none; font-size: 13px; resize: vertical;"></textarea>
+                        </div>
+
+                        <div style="display: flex; gap: 8px;">
+                            <button type="submit" class="action-btn" style="flex: 1; background: #27ae60; color: white; border: none; padding: 10px;">
+                                <i class="icon-save"></i> Salvar
+                            </button>
+                            <button type="button" class="action-btn" style="flex: 1; background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 10px;" onclick="toggleStatusForm()">
+                                <i class="icon-remove"></i> Cancelar
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
+
+    <script>
+    function toggleStatusForm() {
+        var form = document.getElementById('statusForm');
+        if (form) {
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        }
+    }
+    </script>
 
     <div class="atividade-grid">
         <!-- Main Content -->

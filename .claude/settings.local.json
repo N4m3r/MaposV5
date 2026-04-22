@@ -69,7 +69,8 @@
       "Bash(node -c /c/Users/thail/Desktop/IVMS-CRUD/MaposV5/application/views/tecnicos/executar_os.php)",
       "WebFetch(domain:jj-ferreiras.com.br)",
       "Bash(xxd application/views/obras_tecnico/obra_dashboard.php)",
-      "Bash(git commit *)"
+      "Bash(git commit *)",
+      "Bash(git checkout *)"
     ]
   }
 }
