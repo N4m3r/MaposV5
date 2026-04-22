@@ -119,96 +119,6 @@ $is_admin = $is_admin ?? false;
                             <i class="bx bx-chart"></i> Relatórios
                         </a>
                     <?php endif; ?>
-                    <a href="<?= site_url('atividades/historico') ?>" class="btn">
-                        <i class="bx bx-history"></i> Histórico
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<?php if ($atividade_em_andamento): ?>
-<!-- ATIVIDADE EM ANDAMENTO -->
-<div class="row-fluid">
-    <div class="span12">
-        <div class="atividade-card">
-            <div class="row-fluid">
-                <div class="span8">
-                    <h4><i class="bx bx-wrench"></i> Atividade em Andamento</h4>
-                    <h3><?= htmlspecialchars($atividade_em_andamento->tipo_nome) ?></h3>
-                    <p>
-                        <strong>OS #<?= $atividade_em_andamento->os_id ?></strong> -
-                        <?= htmlspecialchars($atividade_em_andamento->nomeCliente) ?>
-                    </p>
-                    <p><i class="bx bx-map"></i> <?= htmlspecialchars($atividade_em_andamento->os_equipamento ?? 'N/A') ?></p>
-                    <p>
-                        <i class="bx bx-time"></i> Início: <strong><?= date('H:i', strtotime($atividade_em_andamento->hora_inicio)) ?></strong>
-                        <span id="duracao-atual" style="margin-left: 20px;">Calculando...</span>
-                    </p>
-                </div>
-                <div class="span4 text-right">
-                    <div class="hora-display" id="cronometro">00:00:00</div>
-                    <br>
-                    <a href="<?= site_url('atividades/wizard/' . $atividade_em_andamento->os_id) ?>" class="btn btn-large btn-light">
-                        <i class="bx bx-play-circle"></i> Continuar Atendimento
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-// Cronômetro para atividade em andamento
-const horaInicio = new Date('<?= $atividade_em_andamento->hora_inicio ?>');
-setInterval(function() {
-    const agora = new Date();
-    const diff = agora - horaInicio;
-    const horas = Math.floor(diff / 3600000);
-    const minutos = Math.floor((diff % 3600000) / 60000);
-    const segundos = Math.floor((diff % 60000) / 1000);
-
-    document.getElementById('cronometro').textContent =
-        String(horas).padStart(2, '0') + ':' +
-        String(minutos).padStart(2, '0') + ':' +
-        String(segundos).padStart(2, '0');
-
-    document.getElementById('duracao-atual').textContent =
-        'Duração: ' + horas + 'h ' + minutos + 'min';
-}, 1000);
-</script>
-<?php endif; ?>
-
-<!-- ESTATÍSTICAS DO DIA -->
-<div class="row-fluid">
-    <div class="span12">
-        <div class="dashboard-card">
-            <h4><i class="bx bx-calendar-check"></i> Resumo de Hoje (<?= date('d/m/Y') ?>)</h4>
-            <div class="row-fluid">
-                <div class="span3">
-                    <div class="stat-box">
-                        <div class="stat-number"><?= $resumo_dia['total_atividades'] ?></div>
-                        <div class="stat-label">Atividades Hoje</div>
-                    </div>
-                </div>
-                <div class="span3">
-                    <div class="stat-box">
-                        <div class="stat-number"><?= count($resumo_dia['atividades_finalizadas'] ?? []) ?></div>
-                        <div class="stat-label">Finalizadas</div>
-                    </div>
-                </div>
-                <div class="span3">
-                    <div class="stat-box">
-                        <div class="stat-number"><?= $resumo_dia['tempo_trabalhado_horas'] ?></div>
-                        <div class="stat-label">Horas Trabalhadas</div>
-                    </div>
-                </div>
-                <div class="span3">
-                    <div class="stat-box">
-                        <div class="stat-number"><?= $atividade_em_andamento ? '1' : '0' ?></div>
-                        <div class="stat-label">Em Andamento</div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -243,17 +153,9 @@ setInterval(function() {
                                 <?php endif; ?>
                             </div>
                             <div class="span4 text-right">
-                                <?php if ($atividade_em_andamento && $atividade_em_andamento->os_id == $os->idOs): ?>
-                                    <a href="<?= site_url('atividades/wizard/' . $os->idOs) ?>" class="btn btn-warning btn-small">
-                                        <i class="bx bx-play-circle"></i> Continuar
-                                    </a>
-                                <?php elseif (!$atividade_em_andamento): ?>
-                                    <a href="<?= site_url('atividades/wizard/' . $os->idOs) ?>" class="btn btn-success btn-small">
-                                        <i class="bx bx-play"></i> Iniciar
-                                    </a>
-                                <?php else: ?>
-                                    <span class="label">Em outra OS</span>
-                                <?php endif; ?>
+                                <a href="<?= site_url('os/visualizar/' . $os->idOs) ?>" class="btn btn-info btn-small">
+                                    <i class="bx bx-eye"></i> Ver OS
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -287,11 +189,8 @@ setInterval(function() {
 
         <div class="dashboard-card">
             <h4><i class="bx bx-link"></i> Acesso Rápido</h4>
-            <a href="<?= site_url('atividades/selecionar_os') ?>" class="btn btn-block">
-                <i class="bx bx-search"></i> Selecionar OS
-            </a>
-            <a href="<?= site_url('atividades/historico') ?>" class="btn btn-block">
-                <i class="bx bx-history"></i> Ver Histórico
+            <a href="<?= site_url('os') ?>" class="btn btn-block">
+                <i class="bx bx-list-ul"></i> Lista de OS
             </a>
             <?php if ($is_admin): ?>
                 <a href="<?= site_url('atividades/relatorio') ?>" class="btn btn-block">

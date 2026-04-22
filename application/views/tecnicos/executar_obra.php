@@ -941,30 +941,40 @@ textarea.wizard-input {
                         <p class="etapa-descricao"><?= nl2br(htmlspecialchars($etapa->descricao)) ?></p>
                         <?php endif; ?>
 
+                        <!-- Botão Iniciar Atendimento Geral -->
+                        <?php if (empty($wizard_em_andamento)): ?>
+                        <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #ddd;">
+                            <button class="btn-acao iniciar" onclick="WizardAtendimento.iniciar(<?= $etapa->id ?>, '<?= htmlspecialchars($etapa->nome) ?>', null, null)" style="width: 100%; justify-content: center;">
+                                <i class="icon-play"></i> Iniciar Atendimento nesta Etapa
+                            </button>
+                        </div>
+                        <?php endif; ?>
+
                         <!-- Lista de Atividades -->
                         <?php if (!empty($atividadesEtapa)): ?>
                         <div class="atividades-lista">
-                            <h4>Atividades</h4>
+                            <h4>Atividades Cadastradas</h4>
                             <?php foreach ($atividadesEtapa as $ativ): ?>
                                 <?php
-                                $statusAtiv = $ativ->status ?? 'aberto';
-                                $statusAtivClass = $statusAtiv === 'concluida' ? 'concluida' : ($statusAtiv === 'em_andamento' ? 'andamento' : 'aberto');
-                                $statusAtivLabel = $statusAtiv === 'concluida' ? 'Concluída' : ($statusAtiv === 'em_andamento' ? 'Em Andamento' : 'Aberta');
+                                $statusAtiv = $ativ->status ?? 'agendada';
+                                $statusAtivClass = ($statusAtiv === 'concluida' || $statusAtiv === 'concluida') ? 'concluida' : (($statusAtiv === 'em_andamento' || $statusAtiv === 'iniciada') ? 'andamento' : 'aberto');
+                                $statusAtivLabel = ($statusAtiv === 'concluida' || $statusAtiv === 'concluida') ? 'Concluída' : (($statusAtiv === 'em_andamento' || $statusAtiv === 'iniciada') ? 'Em Andamento' : 'Aberta');
+                                $podeIniciar = (in_array($statusAtiv, ['agendada', 'aberto', 'iniciada']) || empty($statusAtiv)) && empty($wizard_em_andamento);
                                 ?>
                                 <div class="atividade-item">
                                     <div class="atividade-icon <?= $statusAtivClass ?>">
-                                        <i class="icon-<?= $statusAtiv === 'concluida' ? 'check' : ($statusAtiv === 'em_andamento' ? 'play' : 'time') ?>"></i>
+                                        <i class="icon-<?= ($statusAtiv === 'concluida' || $statusAtiv === 'concluida') ? 'check' : (($statusAtiv === 'em_andamento' || $statusAtiv === 'iniciada') ? 'play' : 'time') ?>"></i>
                                     </div>
                                     <div class="atividade-info">
                                         <h5><?= htmlspecialchars($ativ->titulo ?? $ativ->descricao ?? 'Atividade #' . $ativ->id) ?></h5>
                                         <p><?= $statusAtivLabel ?> • <?= !empty($ativ->hora_inicio) ? date('H:i', strtotime($ativ->hora_inicio)) : '--:--' ?></p>
                                     </div>
                                     <div class="atividade-acoes">
-                                        <?php if ($statusAtiv === 'aberto' && empty($wizard_em_andamento)): ?>
+                                        <?php if ($podeIniciar): ?>
                                         <button class="btn-acao iniciar" onclick="WizardAtendimento.iniciar(<?= $etapa->id ?>, '<?= htmlspecialchars($etapa->nome) ?>', <?= $ativ->id ?>, '<?= htmlspecialchars($ativ->titulo ?? $ativ->descricao ?? 'Atividade') ?>')">
                                             <i class="icon-play"></i> Iniciar
                                         </button>
-                                        <?php elseif ($statusAtiv === 'em_andamento'): ?>
+                                        <?php elseif ($statusAtiv === 'em_andamento' || $statusAtiv === 'iniciada'): ?>
                                         <button class="btn-acao finalizar" onclick="WizardAtendimento.continuar(<?= $ativ->id ?>)">
                                             <i class="icon-stop"></i> Finalizar
                                         </button>
@@ -980,6 +990,11 @@ textarea.wizard-input {
                         <?php else: ?>
                         <div class="empty-state" style="padding: 20px;">
                             <p>Nenhuma atividade cadastrada nesta etapa</p>
+                            <?php if (empty($wizard_em_andamento)): ?>
+                            <button class="btn-acao iniciar" onclick="WizardAtendimento.iniciar(<?= $etapa->id ?>, '<?= htmlspecialchars($etapa->nome) ?>', null, null)" style="margin-top: 10px;">
+                                <i class="icon-play"></i> Iniciar Atendimento Geral
+                            </button>
+                            <?php endif; ?>
                         </div>
                         <?php endif; ?>
                     </div>
@@ -1279,10 +1294,14 @@ const WizardAtendimento = {
         this.etapaSelecionada = etapaId ? { id: etapaId, nome: etapaNome } : null;
         this.atividadeSelecionada = atividadeId ? { id: atividadeId, nome: atividadeNome } : null;
 
-        document.getElementById('wizardModal').style.display = 'block';
+        // Abrir modal
+        var modal = document.getElementById('wizardModal');
+        if (modal) {
+            modal.style.display = 'block';
+        }
         document.body.style.overflow = 'hidden';
 
-        // Se já tem etapa selecionada, pular para step 2
+        // Se já tem etapa selecionada, marcar e avançar
         if (this.etapaSelecionada) {
             // Marcar etapa selecionada visualmente
             document.querySelectorAll('.etapa-selecao').forEach(el => {
@@ -1291,12 +1310,19 @@ const WizardAtendimento = {
                     el.classList.add('selecionada');
                 }
             });
-            document.getElementById('etapaSelecionadaId').value = etapaId;
-            document.getElementById('etapaSelecionadaNome').value = etapaNome;
-            document.getElementById('btnAvancarEtapa').disabled = false;
 
-            // Se tem atividade, ir direto para checkin
+            var etapaIdInput = document.getElementById('etapaSelecionadaId');
+            var etapaNomeInput = document.getElementById('etapaSelecionadaNome');
+            var btnAvancar = document.getElementById('btnAvancarEtapa');
+
+            if (etapaIdInput) etapaIdInput.value = etapaId;
+            if (etapaNomeInput) etapaNomeInput.value = etapaNome;
+            if (btnAvancar) btnAvancar.disabled = false;
+
+            // Se tem atividade específica, ir direto para checkin
+            // Se não tem atividade, mostrar seleção de atividades da etapa
             if (this.atividadeSelecionada) {
+                this.atividadeSelecionada = { id: atividadeId, nome: atividadeNome };
                 this.avancarParaCheckin();
             } else {
                 this.avancarParaAtividade();
@@ -1311,17 +1337,37 @@ const WizardAtendimento = {
     // Continuar atividade em andamento
     continuar: function(atividadeId) {
         this.stepAtual = 4;
-        document.getElementById('wizardModal').style.display = 'block';
-        document.body.style.overflow = 'hidden';
-        document.getElementById('wizardTitulo').innerHTML = '<i class="icon-play"></i> Execução em Andamento';
-        document.getElementById('wizardSubtitulo').textContent = 'Finalize ou registre o progresso da atividade';
 
-        // Preencher info
+        // Abrir modal
+        var modal = document.getElementById('wizardModal');
+        if (modal) {
+            modal.style.display = 'block';
+        }
+        document.body.style.overflow = 'hidden';
+
+        // Atualizar título
+        var titulo = document.getElementById('wizardTitulo');
+        var subtitulo = document.getElementById('wizardSubtitulo');
+        if (titulo) titulo.innerHTML = '<i class="icon-play"></i> Execução em Andamento';
+        if (subtitulo) subtitulo.textContent = 'Finalize ou registre o progresso da atividade';
+
+        // Preencher info da atividade em andamento
         const atividade = dadosObra.atividadeAndamento;
         if (atividade) {
             this.horaInicio = new Date(atividade.hora_inicio);
-            document.getElementById('infoAtividadeExecucao').textContent =
-                (atividade.etapa_nome || 'Etapa') + ' - ' + (atividade.titulo || atividade.descricao || 'Atividade');
+            this.etapaSelecionada = {
+                id: atividade.etapa_id || 0,
+                nome: atividade.etapa_nome || 'Etapa'
+            };
+            this.atividadeSelecionada = {
+                id: atividade.id || atividadeId,
+                nome: atividade.titulo || atividade.descricao || 'Atividade'
+            };
+
+            var infoAtividade = document.getElementById('infoAtividadeExecucao');
+            if (infoAtividade) {
+                infoAtividade.textContent = this.etapaSelecionada.nome + ' - ' + this.atividadeSelecionada.nome;
+            }
             this.iniciarTimer();
         }
 
@@ -1331,7 +1377,8 @@ const WizardAtendimento = {
 
     // Fechar wizard
     fechar: function() {
-        document.getElementById('wizardModal').style.display = 'none';
+        var modal = document.getElementById('wizardModal');
+        if (modal) modal.style.display = 'none';
         document.body.style.overflow = '';
         this.pararTimer();
         this.resetarWizard();
@@ -1348,18 +1395,36 @@ const WizardAtendimento = {
         this.atividadesConcluidas = [];
 
         // Limpar seleções
-        document.querySelectorAll('.etapa-selecao, .atividade-selecao').forEach(el => el.classList.remove('selecionada'));
-        document.querySelectorAll('input[type="hidden"]').forEach(el => el.value = '');
-        document.querySelectorAll('textarea').forEach(el => el.value = '');
-        document.querySelectorAll('.foto-preview').forEach(el => el.style.display = 'none');
-        document.getElementById('boxJustificativa').style.display = 'none';
-        document.querySelectorAll('input[type="radio"][name="tipoExecucao"]').forEach(el => el.checked = el.value === 'normal');
+        document.querySelectorAll('.etapa-selecao, .atividade-selecao').forEach(el => {
+            if (el) el.classList.remove('selecionada');
+        });
+        document.querySelectorAll('input[type="hidden"]').forEach(el => {
+            if (el && el.id !== 'etapaSelecionadaId' && el.id !== 'atividadeSelecionadaId') el.value = '';
+        });
+        document.querySelectorAll('textarea').forEach(el => {
+            if (el) el.value = '';
+        });
+        document.querySelectorAll('.foto-preview').forEach(el => {
+            if (el) el.style.display = 'none';
+        });
+        var boxJust = document.getElementById('boxJustificativa');
+        if (boxJust) boxJust.style.display = 'none';
+        document.querySelectorAll('input[type="radio"][name="tipoExecucao"]').forEach(el => {
+            if (el) el.checked = el.value === 'normal';
+        });
     },
 
     // Mostrar step
     mostrarStep: function(step) {
-        document.querySelectorAll('.wizard-step-content').forEach(el => el.style.display = 'none');
-        document.getElementById('step' + step).style.display = 'block';
+        // Esconder todos os steps
+        document.querySelectorAll('.wizard-step-content').forEach(el => {
+            if (el) el.style.display = 'none';
+        });
+        // Mostrar o step atual
+        var stepEl = document.getElementById('step' + step);
+        if (stepEl) {
+            stepEl.style.display = 'block';
+        }
         this.stepAtual = step;
         this.atualizarSteps();
     },
@@ -1367,6 +1432,7 @@ const WizardAtendimento = {
     // Atualizar indicadores de step
     atualizarSteps: function() {
         document.querySelectorAll('.wizard-step').forEach((el, index) => {
+            if (!el) return;
             const stepNum = index + 1;
             el.classList.remove('active', 'completed');
             if (stepNum < this.stepAtual) {
@@ -1379,17 +1445,24 @@ const WizardAtendimento = {
 
     // Selecionar etapa
     selecionarEtapa: function(elemento) {
-        document.querySelectorAll('.etapa-selecao').forEach(el => el.classList.remove('selecionada'));
+        document.querySelectorAll('.etapa-selecao').forEach(el => {
+            if (el) el.classList.remove('selecionada');
+        });
         elemento.classList.add('selecionada');
 
+        var h4 = elemento.querySelector('h4');
         this.etapaSelecionada = {
             id: parseInt(elemento.dataset.etapaId),
-            nome: elemento.querySelector('h4').textContent
+            nome: h4 ? h4.textContent : 'Etapa'
         };
 
-        document.getElementById('etapaSelecionadaId').value = this.etapaSelecionada.id;
-        document.getElementById('etapaSelecionadaNome').value = this.etapaSelecionada.nome;
-        document.getElementById('btnAvancarEtapa').disabled = false;
+        var etapaIdInput = document.getElementById('etapaSelecionadaId');
+        var etapaNomeInput = document.getElementById('etapaSelecionadaNome');
+        var btnAvancar = document.getElementById('btnAvancarEtapa');
+
+        if (etapaIdInput) etapaIdInput.value = this.etapaSelecionada.id;
+        if (etapaNomeInput) etapaNomeInput.value = this.etapaSelecionada.nome;
+        if (btnAvancar) btnAvancar.disabled = false;
     },
 
     // Avançar para seleção de atividade
@@ -1400,27 +1473,37 @@ const WizardAtendimento = {
         const atividades = dadosObra.atividadesPorEtapa[this.etapaSelecionada.id] || [];
         const grid = document.getElementById('atividadesGrid');
 
-        if (atividades.length === 0) {
-            // Se não tem atividades, criar uma genérica
+        // Filtrar apenas atividades que podem ser iniciadas (não concluídas)
+        const atividadesDisponiveis = atividades.filter(atv => {
+            const status = atv.status || 'agendada';
+            return status !== 'concluida' && status !== 'concluida';
+        });
+
+        if (atividadesDisponiveis.length === 0) {
+            // Se não tem atividades disponíveis, criar opção de atividade geral
             grid.innerHTML = `
                 <div class="atividade-selecao" data-atividade-id="0" onclick="WizardAtendimento.selecionarAtividade(this)">
                     <i class="icon-tasks"></i>
                     <div class="atividade-selecao-info">
-                        <h5>Atividade Geral</h5>
-                        <p>Execução de trabalhos diversos na etapa</p>
+                        <h5>Atividade Geral na Etapa</h5>
+                        <p>Execução de trabalhos diversos em ${this.etapaSelecionada.nome}</p>
                     </div>
                 </div>
             `;
         } else {
-            grid.innerHTML = atividades.map(atv => `
+            grid.innerHTML = atividadesDisponiveis.map(atv => {
+                const status = atv.status || 'agendada';
+                const statusLabel = (status === 'concluida' || status === 'concluida') ? 'Concluída' :
+                                     ((status === 'em_andamento' || status === 'iniciada') ? 'Em Andamento' : 'Aberta');
+                return `
                 <div class="atividade-selecao" data-atividade-id="${atv.id}" onclick="WizardAtendimento.selecionarAtividade(this)">
-                    <i class="icon-${atv.status === 'concluida' ? 'check' : (atv.status === 'em_andamento' ? 'play' : 'time')}"></i>
+                    <i class="icon-${(status === 'concluida' || status === 'concluida') ? 'check' : ((status === 'em_andamento' || status === 'iniciada') ? 'play' : 'time')}"></i>
                     <div class="atividade-selecao-info">
                         <h5>${atv.titulo || atv.descricao || 'Atividade #' + atv.id}</h5>
-                        <p>${atv.status === 'concluida' ? 'Concluída' : (atv.status === 'em_andamento' ? 'Em Andamento' : 'Aberta')}</p>
+                        <p>${statusLabel}</p>
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
         }
 
         this.mostrarStep(2);
@@ -1436,21 +1519,53 @@ const WizardAtendimento = {
             nome: elemento.querySelector('h5').textContent
         };
 
-        document.getElementById('atividadeSelecionadaId').value = this.atividadeSelecionada.id;
-        document.getElementById('atividadeSelecionadaNome').value = this.atividadeSelecionada.nome;
-        document.getElementById('btnAvancarAtividade').disabled = false;
+        var atividadeIdInput = document.getElementById('atividadeSelecionadaId');
+        var atividadeNomeInput = document.getElementById('atividadeSelecionadaNome');
+        var btnAvancar = document.getElementById('btnAvancarAtividade');
+
+        if (atividadeIdInput) atividadeIdInput.value = this.atividadeSelecionada.id;
+        if (atividadeNomeInput) atividadeNomeInput.value = this.atividadeSelecionada.nome;
+        if (btnAvancar) btnAvancar.disabled = false;
     },
 
     // Avançar para check-in
     avancarParaCheckin: function() {
-        document.getElementById('horaEntrada').textContent = new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
+        // Se não tem atividade selecionada (veio de atividade geral), marcar a primeira disponível ou criar uma
+        if (!this.atividadeSelecionada) {
+            const atividades = dadosObra.atividadesPorEtapa[this.etapaSelecionada?.id] || [];
+            const atividadesDisponiveis = atividades.filter(atv => {
+                const status = atv.status || 'agendada';
+                return status !== 'concluida' && status !== 'concluida';
+            });
+
+            if (atividadesDisponiveis.length > 0) {
+                this.atividadeSelecionada = {
+                    id: atividadesDisponiveis[0].id,
+                    nome: atividadesDisponiveis[0].titulo || atividadesDisponiveis[0].descricao || 'Atividade'
+                };
+            } else {
+                // Atividade geral - ID 0
+                this.atividadeSelecionada = {
+                    id: 0,
+                    nome: 'Atividade Geral'
+                };
+            }
+        }
+
+        var horaEntrada = document.getElementById('horaEntrada');
+        if (horaEntrada) {
+            horaEntrada.textContent = new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
+        }
         this.mostrarStep(3);
     },
 
     // Selecionar tipo de execução
     selecionarTipoExecucao: function(tipo) {
         this.tipoExecucao = tipo;
-        document.getElementById('boxJustificativa').style.display = tipo === 'impedimento' ? 'block' : 'none';
+        var boxJust = document.getElementById('boxJustificativa');
+        if (boxJust) {
+            boxJust.style.display = tipo === 'impedimento' ? 'block' : 'none';
+        }
     },
 
     // Preview de foto
@@ -1513,7 +1628,19 @@ const WizardAtendimento = {
             method: 'POST',
             body: formData
         })
-        .then(r => r.json())
+        .then(r => {
+            // Verificar se a resposta é JSON
+            const contentType = r.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                return r.json();
+            } else {
+                // Se não for JSON, mostrar o erro
+                return r.text().then(text => {
+                    console.error('Resposta não-JSON:', text.substring(0, 500));
+                    throw new Error('Resposta do servidor não é JSON válido');
+                });
+            }
+        })
         .then(data => {
             if (data.success) {
                 this.horaInicio = new Date();
@@ -1524,10 +1651,17 @@ const WizardAtendimento = {
                     location.reload();
                 } else {
                     // Ir para execução
-                    document.getElementById('wizardTitulo').innerHTML = '<i class="icon-play"></i> Execução em Andamento';
-                    document.getElementById('wizardSubtitulo').textContent = 'Atividade iniciada com sucesso';
-                    document.getElementById('infoAtividadeExecucao').textContent =
-                        this.etapaSelecionada.nome + ' - ' + this.atividadeSelecionada.nome;
+                    var tituloEl = document.getElementById('wizardTitulo');
+                    var subtituloEl = document.getElementById('wizardSubtitulo');
+                    var infoEl = document.getElementById('infoAtividadeExecucao');
+
+                    if (tituloEl) tituloEl.innerHTML = '<i class="icon-play"></i> Execução em Andamento';
+                    if (subtituloEl) subtituloEl.textContent = 'Atividade iniciada com sucesso';
+                    if (infoEl) {
+                        var nomeEtapa = this.etapaSelecionada ? this.etapaSelecionada.nome : 'Etapa';
+                        var nomeAtividade = this.atividadeSelecionada ? this.atividadeSelecionada.nome : 'Atividade';
+                        infoEl.textContent = nomeEtapa + ' - ' + nomeAtividade;
+                    }
 
                     this.mostrarStep(4);
                     this.iniciarTimer();
@@ -1538,24 +1672,29 @@ const WizardAtendimento = {
         })
         .catch(err => {
             console.error('Erro:', err);
-            alert('Erro ao comunicar com o servidor. Tente novamente.');
+            alert('Erro ao comunicar com o servidor. Verifique o console para mais detalhes.');
         });
     },
 
     // Iniciar timer
     iniciarTimer: function() {
-        this.timerInterval = setInterval(() => {
+        var self = this;
+        this.timerInterval = setInterval(function() {
+            if (!self.horaInicio) return;
             const agora = new Date();
-            const diff = agora - this.horaInicio;
+            const diff = agora - self.horaInicio;
 
             const horas = Math.floor(diff / 3600000);
             const minutos = Math.floor((diff % 3600000) / 60000);
             const segundos = Math.floor((diff % 60000) / 1000);
 
-            document.getElementById('timerExecucao').textContent =
-                String(horas).padStart(2, '0') + ':' +
-                String(minutos).padStart(2, '0') + ':' +
-                String(segundos).padStart(2, '0');
+            var timerEl = document.getElementById('timerExecucao');
+            if (timerEl) {
+                timerEl.textContent =
+                    String(horas).padStart(2, '0') + ':' +
+                    String(minutos).padStart(2, '0') + ':' +
+                    String(segundos).padStart(2, '0');
+            }
         }, 1000);
     },
 
@@ -1569,12 +1708,16 @@ const WizardAtendimento = {
 
     // Registrar progresso
     registrarProgresso: function() {
-        document.getElementById('modalProgresso').style.display = 'block';
+        var modal = document.getElementById('modalProgresso');
+        if (modal) modal.style.display = 'block';
     },
 
     // Salvar progresso
     salvarProgresso: function() {
-        const texto = document.getElementById('textoProgresso').value;
+        var textoEl = document.getElementById('textoProgresso');
+        if (!textoEl) return;
+
+        const texto = textoEl.value;
         if (!texto.trim()) {
             alert('Por favor, descreva o progresso.');
             return;
@@ -1591,25 +1734,37 @@ const WizardAtendimento = {
             method: 'POST',
             body: formData
         })
-        .then(r => r.json())
+        .then(r => {
+            const contentType = r.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                return r.json();
+            } else {
+                return r.text().then(text => {
+                    console.error('Resposta não-JSON:', text.substring(0, 500));
+                    throw new Error('Resposta do servidor não é JSON válido');
+                });
+            }
+        })
         .then(data => {
             if (data.success) {
                 alert('Progresso registrado com sucesso!');
-                document.getElementById('modalProgresso').style.display = 'none';
-                document.getElementById('textoProgresso').value = '';
+                var modal = document.getElementById('modalProgresso');
+                if (modal) modal.style.display = 'none';
+                textoEl.value = '';
             } else {
-                alert('Erro ao registrar progresso.');
+                alert('Erro ao registrar progresso: ' + (data.message || 'Erro desconhecido'));
             }
         })
         .catch(err => {
             console.error('Erro:', err);
-            alert('Erro ao salvar. Tente novamente.');
+            alert('Erro ao salvar. Verifique o console para mais detalhes.');
         });
     },
 
     // Adicionar foto durante execução
     adicionarFoto: function() {
-        document.getElementById('fotoCheckout').click();
+        var fotoInput = document.getElementById('fotoCheckout');
+        if (fotoInput) fotoInput.click();
     },
 
     // Pausar execução
@@ -1620,70 +1775,91 @@ const WizardAtendimento = {
 
         const formData = new FormData();
         formData.append('obra_id', dadosObra.obraId);
-        formData.append('atividade_id', dadosObra.atividadeAndamento ? dadosObra.atividadeAndamento.id : 0);
+        formData.append('atividade_id', this.atividadeSelecionada ? this.atividadeSelecionada.id :
+                       (dadosObra.atividadeAndamento ? dadosObra.atividadeAndamento.id : 0));
         formData.append('<?= $this->security->get_csrf_token_name() ?>', '<?= $this->security->get_csrf_hash() ?>');
 
         fetch('<?= site_url("atividades/pausar") ?>', {
             method: 'POST',
             body: formData
         })
-        .then(r => r.json())
+        .then(r => {
+            const contentType = r.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                return r.json();
+            } else {
+                return r.text().then(text => {
+                    console.error('Resposta não-JSON:', text.substring(0, 500));
+                    throw new Error('Resposta do servidor não é JSON válido');
+                });
+            }
+        })
         .then(data => {
             if (data.success) {
                 alert('Atividade pausada!');
                 this.fechar();
                 location.reload();
             } else {
-                alert('Erro ao pausar.');
+                alert('Erro ao pausar: ' + (data.message || 'Erro desconhecido'));
             }
         })
         .catch(err => {
             console.error('Erro:', err);
-            alert('Erro ao pausar. Tente novamente.');
+            alert('Erro ao pausar. Verifique o console para mais detalhes.');
         });
     },
 
     // Avançar para checkout
     avancarParaCheckout: function() {
         // Preencher resumo
+        var horaInicioEl = document.getElementById('checkoutHoraInicio');
+        var tempoTotalEl = document.getElementById('checkoutTempoTotal');
+
         if (this.horaInicio) {
-            document.getElementById('checkoutHoraInicio').textContent =
-                this.horaInicio.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
+            if (horaInicioEl) {
+                horaInicioEl.textContent = this.horaInicio.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
+            }
 
             const agora = new Date();
             const diff = agora - this.horaInicio;
             const horas = Math.floor(diff / 3600000);
             const minutos = Math.floor((diff % 3600000) / 60000);
 
-            document.getElementById('checkoutTempoTotal').textContent =
-                String(horas).padStart(2, '0') + ':' + String(minutos).padStart(2, '0');
+            if (tempoTotalEl) {
+                tempoTotalEl.textContent = String(horas).padStart(2, '0') + ':' + String(minutos).padStart(2, '0');
+            }
+        } else {
+            if (horaInicioEl) horaInicioEl.textContent = '--:--';
+            if (tempoTotalEl) tempoTotalEl.textContent = '00:00';
         }
 
         // Carregar atividades para marcar
         const lista = document.getElementById('checkoutAtividades');
         const atividades = dadosObra.atividadesPorEtapa[this.etapaSelecionada?.id] || [];
 
-        if (atividades.length === 0) {
-            lista.innerHTML = `
-                <div class="empty-state" style="padding: 20px;">
-                    <p>Nenhuma atividade específica para marcar</p>
-                </div>
-            `;
-        } else {
-            lista.innerHTML = atividades.map(atv => `
-                <div class="checkout-item">
-                    <input type="checkbox" id="chk_${atv.id}" checked onchange="WizardAtendimento.atualizarStatusAtividade(${atv.id})">
-                    <div class="checkout-item-info">
-                        <h5>${atv.titulo || atv.descricao || 'Atividade #' + atv.id}</h5>
-                        <p>Marcar como concluída</p>
+        if (lista) {
+            if (atividades.length === 0) {
+                lista.innerHTML = `
+                    <div class="empty-state" style="padding: 20px;">
+                        <p>Nenhuma atividade específica para marcar</p>
                     </div>
-                    <select class="status-select" id="status_${atv.id}" onchange="WizardAtendimento.atualizarStatusAtividade(${atv.id})">
-                        <option value="concluida">Concluída</option>
-                        <option value="pendente">Pendente</option>
-                        <option value="nao_realizada">Não Realizada</option>
-                    </select>
-                </div>
-            `).join('');
+                `;
+            } else {
+                lista.innerHTML = atividades.map(atv => `
+                    <div class="checkout-item">
+                        <input type="checkbox" id="chk_${atv.id}" checked onchange="WizardAtendimento.atualizarStatusAtividade(${atv.id})">
+                        <div class="checkout-item-info">
+                            <h5>${atv.titulo || atv.descricao || 'Atividade #' + atv.id}</h5>
+                            <p>Marcar como concluída</p>
+                        </div>
+                        <select class="status-select" id="status_${atv.id}" onchange="WizardAtendimento.atualizarStatusAtividade(${atv.id})">
+                            <option value="concluida">Concluída</option>
+                            <option value="pendente">Pendente</option>
+                            <option value="nao_realizada">Não Realizada</option>
+                        </select>
+                    </div>
+                `).join('');
+            }
         }
 
         this.mostrarStep(5);
@@ -1691,8 +1867,10 @@ const WizardAtendimento = {
 
     // Atualizar status da atividade
     atualizarStatusAtividade: function(atividadeId) {
-        const checkbox = document.getElementById('chk_' + atividadeId);
-        const select = document.getElementById('status_' + atividadeId);
+        var checkbox = document.getElementById('chk_' + atividadeId);
+        var select = document.getElementById('status_' + atividadeId);
+
+        if (!checkbox || !select) return;
 
         // Sincronizar checkbox com select
         if (select.value === 'concluida') {
@@ -1725,22 +1903,35 @@ const WizardAtendimento = {
         // Coletar status das atividades
         const statusAtividades = [];
         document.querySelectorAll('.checkout-item').forEach(item => {
-            const id = item.querySelector('input[type="checkbox"]').id.replace('chk_', '');
-            const status = document.getElementById('status_' + id).value;
-            statusAtividades.push({ id: id, status: status });
+            const checkbox = item.querySelector('input[type="checkbox"]');
+            if (checkbox) {
+                const id = checkbox.id.replace('chk_', '');
+                const select = document.getElementById('status_' + id);
+                if (select) {
+                    statusAtividades.push({ id: id, status: select.value });
+                }
+            }
         });
+
+        // Pegar observações
+        var obsEl = document.getElementById('observacoesCheckout');
+        var observacoes = obsEl ? obsEl.value : '';
+
+        // Pegar atividade ID
+        var atividadeId = this.atividadeSelecionada ? this.atividadeSelecionada.id :
+                           (dadosObra.atividadeAndamento ? dadosObra.atividadeAndamento.id : 0);
 
         const formData = new FormData();
         formData.append('obra_id', dadosObra.obraId);
-        formData.append('atividade_id', dadosObra.atividadeAndamento ? dadosObra.atividadeAndamento.id : 0);
+        formData.append('atividade_id', atividadeId);
         formData.append('status_atividades', JSON.stringify(statusAtividades));
-        formData.append('observacoes', document.getElementById('observacoesCheckout').value || '');
+        formData.append('observacoes', observacoes);
         formData.append('latitude', lat || '');
         formData.append('longitude', lng || '');
         formData.append('<?= $this->security->get_csrf_token_name() ?>', '<?= $this->security->get_csrf_hash() ?>');
 
         const fotoInput = document.getElementById('fotoCheckout');
-        if (fotoInput.files.length > 0) {
+        if (fotoInput && fotoInput.files.length > 0) {
             formData.append('foto_saida', fotoInput.files[0]);
         }
 
@@ -1748,7 +1939,19 @@ const WizardAtendimento = {
             method: 'POST',
             body: formData
         })
-        .then(r => r.json())
+        .then(r => {
+            // Verificar se a resposta é JSON
+            const contentType = r.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                return r.json();
+            } else {
+                // Se não for JSON, mostrar o erro
+                return r.text().then(text => {
+                    console.error('Resposta não-JSON:', text.substring(0, 500));
+                    throw new Error('Resposta do servidor não é JSON válido');
+                });
+            }
+        })
         .then(data => {
             if (data.success) {
                 alert('Atendimento finalizado com sucesso!');
@@ -1760,7 +1963,7 @@ const WizardAtendimento = {
         })
         .catch(err => {
             console.error('Erro:', err);
-            alert('Erro ao finalizar. Tente novamente.');
+            alert('Erro ao finalizar. Verifique o console para mais detalhes.');
         });
     }
 };
