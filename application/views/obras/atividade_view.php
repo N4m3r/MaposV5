@@ -49,6 +49,8 @@
     opacity: 0.9;
     font-size: 15px;
 }
+
+/* Status Badge com cores diferentes */
 .atividade-status-badge {
     display: inline-flex;
     align-items: center;
@@ -61,6 +63,11 @@
     background: rgba(255,255,255,0.25);
     backdrop-filter: blur(10px);
 }
+.atividade-status-badge.agendada { background: linear-gradient(135deg, #95a5a6, #7f8c8d); }
+.atividade-status-badge.iniciada { background: linear-gradient(135deg, #f39c12, #e67e22); }
+.atividade-status-badge.pausada { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+.atividade-status-badge.concluida { background: linear-gradient(135deg, #27ae60, #2ecc71); }
+.atividade-status-badge.cancelada { background: linear-gradient(135deg, #34495e, #2c3e50); }
 
 /* Content Grid */
 .atividade-grid {
@@ -106,6 +113,7 @@
     padding: 15px;
     background: #f8f9fa;
     border-radius: 12px;
+    border-left: 4px solid #667eea;
 }
 .info-label {
     font-size: 12px;
@@ -117,6 +125,65 @@
     font-size: 16px;
     font-weight: 600;
     color: #333;
+}
+
+/* Wizard Info Section - Destacado */
+.wizard-info-section {
+    background: linear-gradient(135deg, #f0fff4 0%, #e6fffa 100%);
+    border: 2px solid #11998e;
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 25px;
+}
+.wizard-info-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px dashed #11998e;
+}
+.wizard-info-header i {
+    font-size: 28px;
+    color: #11998e;
+}
+.wizard-info-header h2 {
+    margin: 0;
+    font-size: 20px;
+    color: #11998e;
+}
+.wizard-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+.wizard-info-item {
+    background: white;
+    border-radius: 10px;
+    padding: 15px;
+    border-left: 4px solid;
+}
+.wizard-info-item.etapa { border-color: #9b59b6; }
+.wizard-info-item.tipo { border-color: #3498db; }
+.wizard-info-item.inicio { border-color: #27ae60; }
+.wizard-info-item.fim { border-color: #e74c3c; }
+.wizard-info-item.duracao { border-color: #667eea; grid-column: span 2; }
+.wizard-info-item.visivel { border-color: #f39c12; }
+
+.wizard-info-item .label {
+    font-size: 11px;
+    color: #888;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+}
+.wizard-info-item .value {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+.wizard-info-item.duracao .value {
+    font-size: 24px;
+    color: #667eea;
 }
 
 /* Progress Section */
@@ -142,108 +209,105 @@
 }
 .progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, #667eea, #764ba2);
+    background: linear-gradient(90deg, #11998e, #38ef7d);
     border-radius: 6px;
     transition: width 0.5s ease;
 }
 
-/* Timeline */
-.timeline {
-    position: relative;
-    padding-left: 30px;
+/* Fotos Section */
+.fotos-section {
+    margin-top: 20px;
 }
-.timeline::before {
-    content: '';
-    position: absolute;
-    left: 8px;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background: linear-gradient(180deg, #667eea, #764ba2);
+.fotos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
 }
-.timeline-item {
+.foto-item {
     position: relative;
-    margin-bottom: 20px;
-    padding: 15px;
-    background: #f8f9fa;
     border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
-.timeline-item::before {
-    content: '';
+.foto-item img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    display: block;
+}
+.foto-item .tipo-badge {
     position: absolute;
-    left: -26px;
-    top: 20px;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: #667eea;
-    border: 3px solid white;
-    box-shadow: 0 0 0 2px #667eea;
+    bottom: 10px;
+    left: 10px;
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-size: 11px;
+    font-weight: 600;
+    color: white;
 }
-.timeline-item.inicio::before { background: #27ae60; }
-.timeline-item.pausa::before { background: #f39c12; }
-.timeline-item.retorno::before { background: #3498db; }
-.timeline-item.conclusao::before { background: #9b59b6; }
-.timeline-item.impedimento::before { background: #e74c3c; }
-.timeline-item.andamento::before { background: #27ae60; animation: pulse 2s infinite; }
-.timeline-item.concluido::before { background: #9b59b6; }
-.timeline-item.pausado::before { background: #f39c12; }
+.foto-item .tipo-badge.checkin { background: #11998e; }
+.foto-item .tipo-badge.checkout { background: #e74c3c; }
+.foto-item .tipo-badge.execucao { background: #667eea; }
 
-@keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.7; transform: scale(1.1); }
+/* Localização */
+.localizacao-box {
+    background: #e3f2fd;
+    border-radius: 10px;
+    padding: 15px;
+    margin-top: 20px;
+}
+.localizacao-box .titulo {
+    color: #1976d2;
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-.timeline-header {
+/* Anotações */
+.anotacoes-section {
+    margin-top: 20px;
+}
+.anotacao-item {
+    background: white;
+    border-left: 4px solid #3498db;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+.anotacao-item.problema { border-left-color: #f39c12; }
+.anotacao-item.solucao { border-left-color: #27ae60; }
+.anotacao-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-size: 12px;
+    color: #888;
     margin-bottom: 8px;
 }
-.timeline-title {
-    font-weight: 600;
-    color: #333;
-}
-.timeline-time {
-    font-size: 12px;
-    color: #888;
-}
-.timeline-content {
+.anotacao-content {
     font-size: 14px;
-    color: #666;
+    color: #333;
+    line-height: 1.5;
 }
 
-/* Checkins */
-.checkin-card {
-    display: flex;
-    gap: 15px;
+/* Status Form */
+.status-form-container {
+    margin-top: 15px;
     padding: 15px;
-    background: #f8f9fa;
-    border-radius: 12px;
-    margin-bottom: 15px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
 }
-.checkin-icon {
-    width: 50px;
-    height: 50px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-}
-.checkin-icon.entrada, .checkin-icon.checkin { background: linear-gradient(135deg, #11998e, #38ef7d); color: white; }
-.checkin-icon.saida, .checkin-icon.checkout { background: linear-gradient(135deg, #9b59b6, #8e44ad); color: white; }
-.checkin-icon.pausa { background: linear-gradient(135deg, #f39c12, #e67e22); color: white; }
-.checkin-icon.retorno { background: linear-gradient(135deg, #3498db, #2980b9); color: white; }
-.checkin-content { flex: 1; }
-.checkin-title {
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 5px;
-}
-.checkin-meta {
-    font-size: 13px;
-    color: #888;
+.status-form-container select,
+.status-form-container textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    margin-bottom: 10px;
+    font-size: 14px;
 }
 
 /* Actions */
@@ -279,11 +343,17 @@
     background: #f5f5f5;
     color: #666;
 }
+.action-btn-success {
+    background: linear-gradient(135deg, #11998e, #38ef7d);
+    color: white;
+}
 
 /* Responsive */
 @media (max-width: 768px) {
     .atividade-grid { grid-template-columns: 1fr; }
     .info-grid { grid-template-columns: 1fr; }
+    .wizard-info-grid { grid-template-columns: 1fr; }
+    .wizard-info-item.duracao { grid-column: span 1; }
 }
 </style>
 
@@ -308,17 +378,17 @@
                 <div class="atividade-breadcrumb">
                     <a href="<?php echo site_url('obras'); ?>">Obras</a> &raquo;
                     <a href="<?php echo site_url('obras/visualizar/' . ($obra->id ?? 0)); ?>"><?php echo htmlspecialchars($obra->nome ?? 'Obra'); ?></a> &raquo;
-                    <a href="<?php echo site_url('obras/atividades/' . ($obra->id ?? 0)); ?>">Atividades</a> &raquo;
-                    <span>Detalhes</span>
+                    <span>Atividade #<?php echo $atividade->id ?? ''; ?></span>
                 </div>
-                <h1><i class="icon-tasks"></i> <?php echo htmlspecialchars($atividade->titulo ?? 'Atividade #' . ($atividade->id ?? '')); ?></h1>
+                <h1><i class="icon-tasks"></i> <?php echo htmlspecialchars($atividade->titulo ?? 'Atividade sem nome'); ?></h1>
                 <div class="atividade-subtitle">
-                    <i class="icon-user"></i> Técnico: <?php echo htmlspecialchars($atividade->tecnico_nome ?? 'Não atribuído'); ?> |
-                    <i class="icon-calendar"></i> Data: <?php echo (!empty($atividade->data_atividade)) ? date('d/m/Y', strtotime($atividade->data_atividade)) : 'N/A'; ?>
+                    <i class="icon-user"></i> Técnico: <?php echo htmlspecialchars($atividade_real->nome_tecnico ?? $atividade->tecnico_nome ?? 'Não atribuído'); ?>
+                    | <i class="icon-calendar"></i> Data: <?php echo (!empty($atividade_real->hora_inicio)) ? date('d/m/Y', strtotime($atividade_real->hora_inicio)) : date('d/m/Y', strtotime($atividade->data_atividade ?? 'now')); ?>
                 </div>
             </div>
             <div class="atividade-status-section">
-                <span class="atividade-status-badge" id="statusBadge">
+                <?php $status_atual = $atividade->status ?? 'agendada'; ?>
+                <span class="atividade-status-badge <?php echo $status_atual; ?>" id="statusBadge">
                     <i class="icon-time"></i>
                     <span id="statusText">
                         <?php
@@ -329,7 +399,7 @@
                             'concluida' => 'Concluída',
                             'cancelada' => 'Cancelada'
                         ];
-                        echo $statusLabels[$atividade->status ?? 'agendada'] ?? ($atividade->status ?? 'Agendada');
+                        echo $statusLabels[$status_atual] ?? ucfirst($status_atual);
                         ?>
                     </span>
                 </span>
@@ -340,31 +410,25 @@
                 </button>
 
                 <!-- Formulário de alteração de status -->
-                <div id="statusForm" style="display: none; margin-top: 15px; padding: 15px; background: rgba(255,255,255,0.15); border-radius: 10px; backdrop-filter: blur(10px);">
+                <div id="statusForm" class="status-form-container" style="display: none;">
                     <form action="<?php echo site_url('obras/atualizarStatusAtividade/' . ($atividade->id ?? 0)); ?>" method="POST">
                         <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>">
 
-                        <div style="margin-bottom: 10px;">
-                            <label style="display: block; color: white; font-size: 13px; margin-bottom: 5px;">Novo Status:</label>
-                            <select name="novo_status" style="width: 100%; padding: 10px; border-radius: 8px; border: none; font-size: 14px;">
-                                <option value="agendada" <?php echo ($atividade->status ?? 'agendada') === 'agendada' ? 'selected' : ''; ?>>📅 Agendada</option>
-                                <option value="iniciada" <?php echo ($atividade->status ?? '') === 'iniciada' ? 'selected' : ''; ?>>🟡 Em Execução</option>
-                                <option value="pausada" <?php echo ($atividade->status ?? '') === 'pausada' ? 'selected' : ''; ?>>⏸️ Pausada</option>
-                                <option value="concluida" <?php echo ($atividade->status ?? '') === 'concluida' ? 'selected' : ''; ?>>✅ Concluída</option>
-                                <option value="cancelada" <?php echo ($atividade->status ?? '') === 'cancelada' ? 'selected' : ''; ?>>❌ Cancelada</option>
-                            </select>
-                        </div>
+                        <select name="novo_status" required>
+                            <option value="agendada" <?php echo $status_atual === 'agendada' ? 'selected' : ''; ?>>📅 Agendada</option>
+                            <option value="iniciada" <?php echo $status_atual === 'iniciada' ? 'selected' : ''; ?>>🟡 Em Execução</option>
+                            <option value="pausada" <?php echo $status_atual === 'pausada' ? 'selected' : ''; ?>>⏸️ Pausada</option>
+                            <option value="concluida" <?php echo $status_atual === 'concluida' ? 'selected' : ''; ?>>✅ Concluída</option>
+                            <option value="cancelada" <?php echo $status_atual === 'cancelada' ? 'selected' : ''; ?>>❌ Cancelada</option>
+                        </select>
 
-                        <div style="margin-bottom: 10px;">
-                            <label style="display: block; color: white; font-size: 13px; margin-bottom: 5px;">Motivo/Observação (opcional):</label>
-                            <textarea name="observacao_status" rows="2" style="width: 100%; padding: 10px; border-radius: 8px; border: none; font-size: 13px; resize: vertical;"></textarea>
-                        </div>
+                        <textarea name="observacao_status" rows="2" placeholder="Motivo da alteração (opcional)"></textarea>
 
                         <div style="display: flex; gap: 8px;">
-                            <button type="submit" class="action-btn" style="flex: 1; background: #27ae60; color: white; border: none; padding: 10px;">
+                            <button type="submit" class="action-btn action-btn-success" style="flex: 1; padding: 10px;">
                                 <i class="icon-save"></i> Salvar
                             </button>
-                            <button type="button" class="action-btn" style="flex: 1; background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 10px;" onclick="toggleStatusForm()">
+                            <button type="button" class="action-btn" style="flex: 1; background: rgba(255,255,255,0.2); color: white; padding: 10px;" onclick="toggleStatusForm()">
                                 <i class="icon-remove"></i> Cancelar
                             </button>
                         </div>
@@ -374,186 +438,109 @@
         </div>
     </div>
 
-    <script>
-    function toggleStatusForm() {
-        var form = document.getElementById('statusForm');
-        if (form) {
-            form.style.display = form.style.display === 'none' ? 'block' : 'none';
-        }
-    }
-    </script>
-
     <div class="atividade-grid">
         <!-- Main Content -->
         <div class="atividade-main">
-            <!-- Informações da Atividade -->
-            <div class="atividade-card">
-                <div class="atividade-card-header">
-                    <div class="atividade-card-title">
-                        <i class="icon-info-sign"></i> Informações da Atividade
-                    </div>
+
+            <!-- Informações do Wizard de Atendimento -->
+            <?php if (!empty($atividade_real)): ?>
+            <div class="wizard-info-section">
+                <div class="wizard-info-header">
+                    <i class="icon-time"></i>
+                    <h2>Registro do Wizard de Atendimento</h2>
                 </div>
 
-                <div class="info-grid">
-                    <div class="info-item">
-                        <div class="info-label">Etapa</div>
-                        <div class="info-value">
+                <div class="wizard-info-grid">
+                    <!-- Etapa -->
+                    <div class="wizard-info-item etapa">
+                        <div class="label"><i class="icon-hard-hat"></i> Etapa</div>
+                        <div class="value">
                             <?php
-                            if ($atividade->etapa_nome ?? null) {
-                                echo '#' . ($atividade->numero_etapa ?? '') . ' ' . $atividade->etapa_nome;
+                            if (!empty($atividade_real->etapa_nome)) {
+                                echo htmlspecialchars($atividade_real->etapa_nome);
+                            } elseif (!empty($atividade->etapa_nome)) {
+                                echo htmlspecialchars($atividade->etapa_nome);
                             } else {
                                 echo 'N/A';
                             }
                             ?>
                         </div>
                     </div>
-                    <div class="info-item">
-                        <div class="info-label">Tipo</div>
-                        <div class="info-value">
+
+                    <!-- Tipo -->
+                    <div class="wizard-info-item tipo">
+                        <div class="label"><i class="icon-tasks"></i> Tipo</div>
+                        <div class="value">
                             <?php
-                            $tipoLabels = [
-                                'trabalho' => 'Trabalho',
-                                'impedimento' => 'Impedimento',
-                                'visita' => 'Visita',
-                                'manutencao' => 'Manutenção',
-                                'outro' => 'Outro'
-                            ];
-                            echo $tipoLabels[$atividade->tipo ?? 'trabalho'] ?? ucfirst($atividade->tipo ?? 'trabalho');
+                            $tipo_execucao = ($atividade_real->impedimento ?? 0) ? 'impedimento' : 'trabalho';
+                            $tipo_icon = $tipo_execucao === 'impedimento' ? 'warning-sign' : 'wrench';
+                            $tipo_cor = $tipo_execucao === 'impedimento' ? '#e74c3c' : '#27ae60';
+                            $tipo_label = $tipo_execucao === 'impedimento' ? 'Impedimento' : 'Trabalho';
+                            ?>
+                            <span style="color: <?php echo $tipo_cor; ?>; font-weight: 600;">
+                                <i class="icon-<?php echo $tipo_icon; ?>"></i> <?php echo $tipo_label; ?>
+                            </span>
+                            <?php if (!empty($atividade_real->tipo_nome)): ?>
+                            <br><small style="color: #666;"><?php echo htmlspecialchars($atividade_real->tipo_nome); ?></small>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+
+                    <!-- Hora Início -->
+                    <div class="wizard-info-item inicio">
+                        <div class="label"><i class="icon-signin"></i> Hora Início</div>
+                        <div class="value" style="color: #27ae60;">
+                            <?php echo !empty($atividade_real->hora_inicio) ? date('d/m/Y H:i', strtotime($atividade_real->hora_inicio)) : '--:--'; ?>
+                        </div>
+                    </div>
+
+                    <!-- Hora Fim -->
+                    <div class="wizard-info-item fim">
+                        <div class="label"><i class="icon-signout"></i> Hora Fim</div>
+                        <div class="value" style="color: #e74c3c;">
+                            <?php echo !empty($atividade_real->hora_fim) ? date('d/m/Y H:i', strtotime($atividade_real->hora_fim)) : '--:--'; ?>
+                        </div>
+                    </div>
+
+                    <!-- Horas Trabalhadas -->
+                    <div class="wizard-info-item duracao">
+                        <div class="label"><i class="icon-time"></i> Horas Trabalhadas</div>
+                        <div class="value">
+                            <?php
+                            if (!empty($atividade_real->duracao_minutos)) {
+                                $horas = floor($atividade_real->duracao_minutos / 60);
+                                $minutos = $atividade_real->duracao_minutos % 60;
+                                echo sprintf('%02d:%02d', $horas, $minutos);
+                                echo ' <small style="font-size: 14px; color: #888;">(' . $atividade_real->duracao_minutos . ' min)</small>';
+                            } elseif (!empty($atividade_real->hora_inicio) && !empty($atividade_real->hora_fim)) {
+                                $inicio = strtotime($atividade_real->hora_inicio);
+                                $fim = strtotime($atividade_real->hora_fim);
+                                $duracao = $fim - $inicio;
+                                $horas = floor($duracao / 3600);
+                                $minutos = floor(($duracao % 3600) / 60);
+                                echo sprintf('%02d:%02d', $horas, $minutos);
+                            } else {
+                                echo '--:--';
+                            }
                             ?>
                         </div>
                     </div>
-                    <div class="info-item">
-                        <div class="info-label">Hora Início</div>
-                        <div class="info-value"><?php echo ($atividade->hora_inicio ?? null) ? substr($atividade->hora_inicio, 0, 5) : '--:--'; ?></div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Hora Fim</div>
-                        <div class="info-value"><?php echo ($atividade->hora_fim ?? null) ? substr($atividade->hora_fim, 0, 5) : '--:--'; ?></div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Horas Trabalhadas</div>
-                        <div class="info-value"><?php echo $atividade->horas_trabalhadas ?? 0; ?>h</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Visível ao Cliente</div>
-                        <div class="info-value">
-                            <?php echo ($atividade->visivel_cliente ?? 0) ? '<span style="color: #27ae60;"><i class="icon-eye-open"></i> Sim</span>' : '<span style="color: #e74c3c;"><i class="icon-eye-close"></i> Não</span>'; ?>
+
+                    <!-- Visível ao Cliente -->
+                    <div class="wizard-info-item visivel">
+                        <div class="label"><i class="icon-eye-open"></i> Visível ao Cliente</div>
+                        <div class="value">
+                            <?php if ($atividade->visivel_cliente ?? 0): ?>
+                                <span style="color: #27ae60;"><i class="icon-check"></i> Sim</span>
+                            <?php else: ?>
+                                <span style="color: #e74c3c;"><i class="icon-remove"></i> Não</span>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
-
-                <?php if ($atividade->descricao ?? null): ?>
-                <div style="margin-top: 20px;">
-                    <div class="info-label">Descrição</div>
-                    <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-top: 8px; line-height: 1.6;">
-                        <?php echo nl2br(htmlspecialchars($atividade->descricao)); ?>
-                    </div>
-                </div>
-                <?php endif; ?>
-
-                <?php if ($atividade->impedimento ?? null): ?>
-                <div style="margin-top: 20px; background: #fff5f5; border-left: 4px solid #e74c3c; padding: 15px; border-radius: 10px;">
-                    <div style="color: #e74c3c; font-weight: 600; margin-bottom: 5px;">
-                        <i class="icon-warning-sign"></i> Impedimento Registrado
-                    </div>
-                    <div style="color: #666;">
-                        <strong>Tipo:</strong> <?php echo $atividade->tipo_impedimento ?? 'N/A'; ?><br>
-                        <strong>Motivo:</strong> <?php echo nl2br(htmlspecialchars($atividade->motivo_impedimento ?? '')); ?>
-                    </div>
-                </div>
-                <?php endif; ?>
-
-                <!-- Anotações do Wizard -->
-                <?php
-                // Processar observações do campo observacoes (formato: [data] texto)
-                $anotacoes = [];
-                if (!empty($atividade->observacoes)) {
-                    preg_match_all('/\[(\d{2}\/\d{2}\/\d{4} \d{2}:\d{2})\] (.*?)(?=\[\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}\]|$)/s', $atividade->observacoes, $matches, PREG_SET_ORDER);
-                    if (!empty($matches)) {
-                        foreach ($matches as $match) {
-                            $anotacoes[] = [
-                                'data' => $match[1],
-                                'texto' => trim($match[2])
-                            ];
-                        }
-                    } else {
-                        $anotacoes[] = [
-                            'data' => date('d/m/Y H:i', strtotime($atividade->hora_inicio ?? 'now')),
-                            'texto' => $atividade->observacoes
-                        ];
-                    }
-                }
-                // Buscar anotações dos checkins
-                $anotacoes_checkins = [];
-                if (!empty($checkins_processar)) {
-                    foreach ($checkins_processar as $check) {
-                        if (!empty($check->observacao)) {
-                            $anotacoes_checkins[] = [
-                                'data' => date('d/m/Y H:i', strtotime($check->created_at)),
-                                'texto' => $check->observacao,
-                                'tipo' => $check->tipo,
-                                'tecnico' => $check->tecnico_nome ?? 'Técnico'
-                            ];
-                        }
-                    }
-                }
-                ?>
-
-                <?php if (!empty($anotacoes) || !empty($anotacoes_checkins)): ?>
-                <div style="margin-top: 20px; background: #f0f7ff; border-left: 4px solid #3498db; padding: 20px; border-radius: 10px;">
-                    <div style="color: #3498db; font-weight: 600; margin-bottom: 15px; font-size: 16px;">
-                        <i class="icon-edit"></i> Anotações do Wizard
-                        <span style="font-size: 12px; color: #666; font-weight: normal; margin-left: 10px;">(Registros durante a execução)</span>
-                    </div>
-
-                    <?php if (!empty($anotacoes)): ?>
-                    <div style="margin-bottom: 20px;">
-                        <?php foreach ($anotacoes as $anotacao): ?>
-                        <div style="background: white; border-radius: 8px; padding: 15px; margin-bottom: 10px; border-left: 3px solid #3498db; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                                <span style="font-size: 12px; color: #888;">
-                                    <i class="icon-calendar"></i> <?php echo $anotacao['data']; ?>
-                                </span>
-                                <span class="label label-info" style="font-size: 10px;">Anotação</span>
-                            </div>
-                            <div style="color: #333; line-height: 1.5;">
-                                <?php echo nl2br(htmlspecialchars($anotacao['texto'])); ?>
-                            </div>
-                        </div>
-                        <?php endforeach; ?>
-                    </div>
-                    <?php endif; ?>
-
-                    <?php if (!empty($anotacoes_checkins)): ?>
-                    <div>
-                        <h5 style="color: #666; font-size: 13px; margin-bottom: 10px;">
-                            <i class="icon-time"></i> Registros durante Check-ins
-                        </h5>
-                        <?php foreach ($anotacoes_checkins as $anot): ?>
-                        <div style="background: white; border-radius: 8px; padding: 12px; margin-bottom: 8px; border-left: 3px solid #27ae60; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-                                <span style="font-size: 11px; color: #888;">
-                                    <i class="icon-calendar"></i> <?php echo $anot['data']; ?>
-                                    <?php if (!empty($anot['tecnico'])): ?>
-                                    <span style="margin-left: 8px;"><i class="icon-user"></i> <?php echo htmlspecialchars($anot['tecnico']); ?></span>
-                                    <?php endif; ?>
-                                </span>
-                                <span class="label" style="font-size: 10px; background: #27ae60;">
-                                    <?php echo ucfirst($anot['tipo'] ?? 'Registro'); ?>
-                                </span>
-                            </div>
-                            <div style="color: #333; font-size: 13px; line-height: 1.4;">
-                                <?php echo nl2br(htmlspecialchars($anot['texto'])); ?>
-                            </div>
-                        </div>
-                        <?php endforeach; ?>
-                    </div>
-                    <?php endif; ?>
-                </div>
-                <?php endif; ?>
 
                 <!-- Progresso -->
-                <div class="progress-section">
+                <div class="progress-section" style="margin-top: 20px; background: white;">
                     <div class="progress-header">
                         <span class="progress-label">Progresso da Atividade</span>
                         <span class="progress-value"><?php echo $atividade->percentual_concluido ?? 0; ?>%</span>
@@ -562,415 +549,135 @@
                         <div class="progress-fill" style="width: <?php echo $atividade->percentual_concluido ?? 0; ?>%"></div>
                     </div>
                 </div>
-            </div>
 
-            <!-- ================= REGISTRO DE EXECUÇÃO ================= -->
-            <?php
-            $checkins_processar = $checkins ?? [];
-            $atividade_real = $atividade_real ?? null;
-
-            // Separar checkins por tipo
-            $checkins_inicio = [];
-            $checkins_pausas = [];
-            $checkins_retornos = [];
-            $checkins_fim = [];
-            $todas_fotos = [];
-
-            foreach ($checkins_processar as $check) {
-                if ($check->tipo == 'checkin') {
-                    $checkins_inicio[] = $check;
-                } elseif ($check->tipo == 'pausa') {
-                    $checkins_pausas[] = $check;
-                } elseif ($check->tipo == 'retorno') {
-                    $checkins_retornos[] = $check;
-                } elseif ($check->tipo == 'checkout') {
-                    $checkins_fim[] = $check;
-                }
-                if (!empty($check->foto_url)) {
-                    $todas_fotos[] = [
-                        'url' => $check->foto_url,
-                        'tipo' => $check->tipo,
-                        'data' => $check->created_at,
-                        'tecnico' => $check->tecnico_nome ?? 'Técnico'
-                    ];
-                }
-            }
-
-            // Processar períodos de trabalho
-            $periodos = [];
-            $checkin_atual = null;
-            foreach ($checkins_processar as $check) {
-                if (in_array($check->tipo, ['checkin', 'retorno'])) {
-                    $checkin_atual = $check;
-                } elseif (in_array($check->tipo, ['checkout', 'pausa']) && $checkin_atual) {
-                    $inicio = strtotime($checkin_atual->created_at);
-                    $fim = strtotime($check->created_at);
-                    $duracao = $fim - $inicio;
-                    $periodos[] = [
-                        'inicio' => $checkin_atual,
-                        'fim' => $check,
-                        'duracao' => $duracao,
-                        'tipo' => $check->tipo == 'checkout' ? 'concluido' : 'pausado'
-                    ];
-                    $checkin_atual = null;
-                }
-            }
-            if ($checkin_atual) {
-                $inicio = strtotime($checkin_atual->created_at);
-                $fim = time();
-                $duracao = $fim - $inicio;
-                $periodos[] = [
-                    'inicio' => $checkin_atual,
-                    'fim' => null,
-                    'duracao' => $duracao,
-                    'tipo' => 'andamento'
-                ];
-            }
-            $tempo_total = array_sum(array_column($periodos, 'duracao'));
-            $tempo_total_h = floor($tempo_total / 3600);
-            $tempo_total_m = floor(($tempo_total % 3600) / 60);
-            ?>
-
-            <?php if (!empty($checkins_processar) || !empty($atividade_real)): ?>
-
-            <!-- SEÇÃO 1: RESUMO DA EXECUÇÃO -->
-            <div class="atividade-card">
-                <div class="atividade-card-header">
-                    <div class="atividade-card-title">
-                        <i class="icon-tasks" style="color: #667eea;"></i> Resumo da Execução
+                <!-- Localização -->
+                <?php if (!empty($atividade_real->latitude) && !empty($atividade_real->longitude)): ?>
+                <div class="localizacao-box">
+                    <div class="titulo">
+                        <i class="icon-map-marker"></i> Localização Registrada
                     </div>
-                </div>
-
-                <div class="info-grid" style="margin-bottom: 20px;">
-                    <div class="info-item" style="background: linear-gradient(135deg, #11998e20, #38ef7d20); border-left: 4px solid #11998e;">
-                        <div class="info-label"><i class="icon-time"></i> Tempo Total</div>
-                        <div class="info-value" style="color: #11998e; font-size: 28px;">
-                            <?php echo sprintf('%02d:%02d', $tempo_total_h, $tempo_total_m); ?>
-                            <small style="font-size: 14px; display: block; margin-top: 5px;"><?php echo $tempo_total_h; ?> horas <?php echo $tempo_total_m; ?> minutos</small>
-                        </div>
-                    </div>
-                    <div class="info-item" style="background: linear-gradient(135deg, #667eea20, #764ba220); border-left: 4px solid #667eea;">
-                        <div class="info-label"><i class="icon-list-ol"></i> Períodos</div>
-                        <div class="info-value" style="color: #667eea; font-size: 28px;">
-                            <?php echo count($periodos); ?>
-                            <small style="font-size: 14px; display: block; margin-top: 5px;">execução(ões) registrada(s)</small>
-                        </div>
-                    </div>
-                    <div class="info-item" style="background: linear-gradient(135deg, #f39c1220, #f1c40f20); border-left: 4px solid #f39c12;">
-                        <div class="info-label"><i class="icon-pause"></i> Pausas</div>
-                        <div class="info-value" style="color: #f39c12; font-size: 28px;">
-                            <?php echo count($checkins_pausas); ?>
-                            <small style="font-size: 14px; display: block; margin-top: 5px;">registrada(s)</small>
-                        </div>
-                    </div>
-                    <div class="info-item" style="background: linear-gradient(135deg, #9b59b620, #8e44ad20); border-left: 4px solid #9b59b6;">
-                        <div class="info-label"><i class="icon-camera"></i> Fotos</div>
-                        <div class="info-value" style="color: #9b59b6; font-size: 28px;">
-                            <?php echo count($todas_fotos); ?>
-                            <small style="font-size: 14px; display: block; margin-top: 5px;">registrada(s)</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- SEÇÃO 2: TIMELINE DE EXECUÇÃO -->
-            <?php if (!empty($periodos)): ?>
-            <div class="atividade-card">
-                <div class="atividade-card-header">
-                    <div class="atividade-card-title">
-                        <i class="icon-time" style="color: #3498db;"></i> Timeline de Execução
-                    </div>
-                </div>
-
-                <div class="timeline">
-                    <?php foreach ($periodos as $i => $periodo): ?>
-                    <div class="timeline-item <?php echo $periodo['tipo']; ?>">
-                        <div class="timeline-header">
-                            <span class="timeline-title">
-                                <?php if ($periodo['tipo'] == 'andamento'): ?>
-                                    <i class="icon-play" style="color: #27ae60;"></i> Período em Andamento
-                                <?php elseif ($periodo['tipo'] == 'pausado'): ?>
-                                    <i class="icon-pause" style="color: #f39c12;"></i> Período Pausado
-                                <?php else: ?>
-                                    <i class="icon-check" style="color: #9b59b6;"></i> Período Concluído
-                                <?php endif; ?>
-                            </span>
-                            <span class="timeline-time"># <?php echo $i + 1; ?></span>
-                        </div>
-                        <div class="timeline-content">
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                                <div style="background: #f8f9fa; padding: 12px; border-radius: 8px;">
-                                    <div style="font-size: 11px; color: #888; text-transform: uppercase; margin-bottom: 4px;">
-                                        <i class="icon-signin"></i> Início
-                                    </div>
-                                    <div style="font-weight: 600; color: #333; font-size: 15px;">
-                                        <?php echo date('d/m/Y', strtotime($periodo['inicio']->created_at)); ?>
-                                        <span style="color: #27ae60;"><?php echo date('H:i', strtotime($periodo['inicio']->created_at)); ?></span>
-                                    </div>
-                                    <?php if ($periodo['inicio']->tecnico_nome): ?>
-                                    <div style="font-size: 12px; color: #666; margin-top: 5px;">
-                                        <i class="icon-user"></i> <?php echo htmlspecialchars($periodo['inicio']->tecnico_nome); ?>
-                                    </div>
-                                    <?php endif; ?>
-                                </div>
-                                <div style="background: #f8f9fa; padding: 12px; border-radius: 8px;">
-                                    <div style="font-size: 11px; color: #888; text-transform: uppercase; margin-bottom: 4px;">
-                                        <i class="icon-signout"></i> <?php echo $periodo['fim'] ? 'Fim' : 'Status'; ?>
-                                    </div>
-                                    <div style="font-weight: 600; color: #333; font-size: 15px;">
-                                        <?php if ($periodo['fim']): ?>
-                                            <?php echo date('d/m/Y', strtotime($periodo['fim']->created_at)); ?>
-                                            <span style="color: #e74c3c;"><?php echo date('H:i', strtotime($periodo['fim']->created_at)); ?></span>
-                                        <?php else: ?>
-                                            <span style="color: #27ae60;"><i class="icon-play"></i> Em execução...</span>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <?php if ($periodo['duracao'] > 0): ?>
-                            <div style="background: linear-gradient(135deg, #667eea15, #764ba215); padding: 12px; border-radius: 8px; margin-top: 15px; border-left: 3px solid #667eea;">
-                                <div style="display: flex; justify-content: space-between; align-items: center;">
-                                    <span style="font-size: 13px; color: #666;">
-                                        <i class="icon-time" style="color: #667eea;"></i> Duração do Período
-                                    </span>
-                                    <span style="font-weight: 700; color: #667eea; font-size: 20px;">
-                                        <?php
-                                        $h = floor($periodo['duracao'] / 3600);
-                                        $m = floor(($periodo['duracao'] % 3600) / 60);
-                                        echo sprintf('%02d:%02d', $h, $m);
-                                        ?>
-                                    </span>
-                                </div>
-                            </div>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-            <?php endif; ?>
-
-            <!-- SEÇÃO 3: CHECK-IN -->
-            <?php if (!empty($checkins_inicio)): ?>
-            <div class="atividade-card">
-                <div class="atividade-card-header">
-                    <div class="atividade-card-title">
-                        <i class="icon-signin" style="color: #27ae60;"></i> Check-in de Entrada
-                    </div>
-                </div>
-                <div style="display: flex; flex-direction: column; gap: 10px;">
-                    <?php foreach ($checkins_inicio as $checkin): ?>
-                    <div class="checkin-card">
-                        <div class="checkin-icon checkin" style="background: linear-gradient(135deg, #27ae60, #2ecc71);">
-                            <i class="icon-signin"></i>
-                        </div>
-                        <div class="checkin-content">
-                            <div class="checkin-title">
-                                Início da Atividade
-                                <?php if ($checkin->tecnico_nome): ?>
-                                <span style="font-size: 12px; color: #888; margin-left: 10px;">
-                                    <i class="icon-user"></i> <?php echo htmlspecialchars($checkin->tecnico_nome); ?>
-                                </span>
-                                <?php endif; ?>
-                            </div>
-                            <div class="checkin-meta">
-                                <i class="icon-calendar"></i> <?php echo date('d/m/Y', strtotime($checkin->created_at)); ?>
-                                <i class="icon-time" style="margin-left: 10px;"></i> <?php echo date('H:i:s', strtotime($checkin->created_at)); ?>
-                                <?php if ($checkin->endereco_detectado): ?>
-                                | <i class="icon-map-marker"></i> <?php echo htmlspecialchars($checkin->endereco_detectado); ?>
-                                <?php endif; ?>
-                            </div>
-                            <?php if ($checkin->observacao): ?>
-                            <div style="margin-top: 8px; font-size: 13px; color: #666; background: #f8f9fa; padding: 8px; border-radius: 6px;">
-                                <strong>Observação:</strong> <?php echo htmlspecialchars($checkin->observacao); ?>
-                            </div>
-                            <?php endif; ?>
-                            <?php if ($checkin->foto_url): ?>
-                            <div style="margin-top: 10px;">
-                                <a href="<?php echo base_url($checkin->foto_url); ?>" target="_blank">
-                                    <img src="<?php echo base_url($checkin->foto_url); ?>" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; cursor: pointer; border: 2px solid #27ae60;"
-                                         title="Foto de check-in">
-                                </a>
-                            </div>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-            <?php endif; ?>
-
-            <!-- SEÇÃO 4: PAUSAS -->
-            <?php if (!empty($checkins_pausas)): ?>
-            <div class="atividade-card">
-                <div class="atividade-card-header">
-                    <div class="atividade-card-title">
-                        <i class="icon-pause" style="color: #f39c12;"></i> Pausas Registradas
-                    </div>
-                </div>
-                <div style="display: flex; flex-direction: column; gap: 10px;">
-                    <?php foreach ($checkins_pausas as $checkin): ?>
-                    <div class="checkin-card">
-                        <div class="checkin-icon pausa" style="background: linear-gradient(135deg, #f39c12, #e67e22);">
-                            <i class="icon-pause"></i>
-                        </div>
-                        <div class="checkin-content">
-                            <div class="checkin-title">
-                                Pausa na Execução
-                                <?php if ($checkin->tecnico_nome): ?>
-                                <span style="font-size: 12px; color: #888; margin-left: 10px;">
-                                    <i class="icon-user"></i> <?php echo htmlspecialchars($checkin->tecnico_nome); ?>
-                                </span>
-                                <?php endif; ?>
-                            </div>
-                            <div class="checkin-meta">
-                                <i class="icon-calendar"></i> <?php echo date('d/m/Y', strtotime($checkin->created_at)); ?>
-                                <i class="icon-time" style="margin-left: 10px;"></i> <?php echo date('H:i:s', strtotime($checkin->created_at)); ?>
-                                <?php if ($checkin->endereco_detectado): ?>
-                                | <i class="icon-map-marker"></i> <?php echo htmlspecialchars($checkin->endereco_detectado); ?>
-                                <?php endif; ?>
-                            </div>
-                            <?php if ($checkin->observacao): ?>
-                            <div style="margin-top: 8px; font-size: 13px; color: #666; background: #fff3cd; padding: 8px; border-radius: 6px; border-left: 3px solid #f39c12;">
-                                <strong>Motivo da Pausa:</strong> <?php echo htmlspecialchars($checkin->observacao); ?>
-                            </div>
-                            <?php endif; ?>
-                            <?php if ($checkin->foto_url): ?>
-                            <div style="margin-top: 10px;">
-                                <a href="<?php echo base_url($checkin->foto_url); ?>" target="_blank">
-                                    <img src="<?php echo base_url($checkin->foto_url); ?>" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; cursor: pointer; border: 2px solid #f39c12;"
-                                         title="Foto da pausa">
-                                </a>
-                            </div>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-            <?php endif; ?>
-
-            <!-- SEÇÃO 5: RETORNOS -->
-            <?php if (!empty($checkins_retornos)): ?>
-            <div class="atividade-card">
-                <div class="atividade-card-header">
-                    <div class="atividade-card-title">
-                        <i class="icon-play" style="color: #3498db;"></i> Retornos
-                    </div>
-                </div>
-                <div style="display: flex; flex-direction: column; gap: 10px;">
-                    <?php foreach ($checkins_retornos as $checkin): ?>
-                    <div class="checkin-card">
-                        <div class="checkin-icon retorno" style="background: linear-gradient(135deg, #3498db, #2980b9);">
-                            <i class="icon-play"></i>
-                        </div>
-                        <div class="checkin-content">
-                            <div class="checkin-title">
-                                Retorno à Atividade
-                                <?php if ($checkin->tecnico_nome): ?>
-                                <span style="font-size: 12px; color: #888; margin-left: 10px;">
-                                    <i class="icon-user"></i> <?php echo htmlspecialchars($checkin->tecnico_nome); ?>
-                                </span>
-                                <?php endif; ?>
-                            </div>
-                            <div class="checkin-meta">
-                                <i class="icon-calendar"></i> <?php echo date('d/m/Y', strtotime($checkin->created_at)); ?>
-                                <i class="icon-time" style="margin-left: 10px;"></i> <?php echo date('H:i:s', strtotime($checkin->created_at)); ?>
-                                <?php if ($checkin->endereco_detectado): ?>
-                                | <i class="icon-map-marker"></i> <?php echo htmlspecialchars($checkin->endereco_detectado); ?>
-                                <?php endif; ?>
-                            </div>
-                            <?php if ($checkin->observacao): ?>
-                            <div style="margin-top: 8px; font-size: 13px; color: #666; background: #f8f9fa; padding: 8px; border-radius: 6px;">
-                                <strong>Observação:</strong> <?php echo htmlspecialchars($checkin->observacao); ?>
-                            </div>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-            <?php endif; ?>
-
-            <!-- SEÇÃO 6: FINALIZAÇÃO -->
-            <?php if (!empty($checkins_fim)): ?>
-            <div class="atividade-card" style="border-left: 4px solid #9b59b6;">
-                <div class="atividade-card-header">
-                    <div class="atividade-card-title">
-                        <i class="icon-signout" style="color: #9b59b6;"></i> Finalização (Check-out)
-                    </div>
-                </div>
-                <div style="display: flex; flex-direction: column; gap: 10px;">
-                    <?php foreach ($checkins_fim as $checkin): ?>
-                    <div class="checkin-card">
-                        <div class="checkin-icon checkout" style="background: linear-gradient(135deg, #9b59b6, #8e44ad);">
-                            <i class="icon-signout"></i>
-                        </div>
-                        <div class="checkin-content">
-                            <div class="checkin-title">
-                                Atividade Finalizada
-                                <?php if ($checkin->tecnico_nome): ?>
-                                <span style="font-size: 12px; color: #888; margin-left: 10px;">
-                                    <i class="icon-user"></i> <?php echo htmlspecialchars($checkin->tecnico_nome); ?>
-                                </span>
-                                <?php endif; ?>
-                            </div>
-                            <div class="checkin-meta">
-                                <i class="icon-calendar"></i> <?php echo date('d/m/Y', strtotime($checkin->created_at)); ?>
-                                <i class="icon-time" style="margin-left: 10px;"></i> <?php echo date('H:i:s', strtotime($checkin->created_at)); ?>
-                                <?php if ($checkin->endereco_detectado): ?>
-                                | <i class="icon-map-marker"></i> <?php echo htmlspecialchars($checkin->endereco_detectado); ?>
-                                <?php endif; ?>
-                            </div>
-                            <?php if ($checkin->observacao): ?>
-                            <div style="margin-top: 8px; font-size: 13px; color: #666; background: #f5eef8; padding: 8px; border-radius: 6px; border-left: 3px solid #9b59b6;">
-                                <strong>Relatório Final:</strong> <?php echo nl2br(htmlspecialchars($checkin->observacao)); ?>
-                            </div>
-                            <?php endif; ?>
-                            <?php if ($checkin->foto_url): ?>
-                            <div style="margin-top: 10px;">
-                                <a href="<?php echo base_url($checkin->foto_url); ?>" target="_blank">
-                                    <img src="<?php echo base_url($checkin->foto_url); ?>" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px; cursor: pointer; border: 2px solid #9b59b6;"
-                                         title="Foto de conclusão">
-                                </a>
-                                <span style="font-size: 11px; color: #666; margin-left: 10px;">Foto de finalização</span>
-                            </div>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-            <?php endif; ?>
-
-            <!-- SEÇÃO 7: GALERIA DE FOTOS -->
-            <?php if (!empty($todas_fotos)): ?>
-            <div class="atividade-card">
-                <div class="atividade-card-header">
-                    <div class="atividade-card-title">
-                        <i class="icon-camera" style="color: #e74c3c;"></i> Galeria de Fotos
-                        <span style="font-size: 13px; color: #888; margin-left: 10px;">(<?php echo count($todas_fotos); ?> foto(s))</span>
-                    </div>
-                </div>
-                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px;">
-                    <?php foreach ($todas_fotos as $foto): ?>
-                    <div style="position: relative;">
-                        <a href="<?php echo base_url($foto['url']); ?>" target="_blank">
-                            <img src="<?php echo base_url($foto['url']); ?>"
-                                 style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1);"
-                                 title="Clique para ampliar">
+                    <div style="font-size: 13px; color: #555;">
+                        <strong>Latitude:</strong> <?php echo $atividade_real->latitude; ?> |
+                        <strong>Longitude:</strong> <?php echo $atividade_real->longitude; ?>
+                        <a href="https://www.google.com/maps?q=<?php echo $atividade_real->latitude; ?>,<?php echo $atividade_real->longitude; ?>"
+                           target="_blank"
+                           style="margin-left: 10px; color: #3498db; text-decoration: none;">
+                            <i class="icon-external-link"></i> Ver no Maps
                         </a>
-                        <div style="position: absolute; bottom: 5px; left: 5px; right: 5px; background: rgba(0,0,0,0.7); color: white; font-size: 10px; padding: 4px 6px; border-radius: 4px;">
-                            <i class="icon-<?php echo $foto['tipo'] == 'checkin' ? 'signin' : ($foto['tipo'] == 'checkout' ? 'signout' : ($foto['tipo'] == 'pausa' ? 'pause' : 'play')); ?>"></i>
-                            <?php echo date('H:i', strtotime($foto['data'])); ?>
-                        </div>
                     </div>
-                    <?php endforeach; ?>
+                </div>
+                <?php endif; ?>
+            </div>
+
+            <!-- Fotos -->
+            <?php if (!empty($fotos_atividade) && count($fotos_atividade) > 0): ?>
+            <div class="atividade-card">
+                <div class="atividade-card-header">
+                    <div class="atividade-card-title">
+                        <i class="icon-camera"></i> Fotos Registradas (<?php echo count($fotos_atividade); ?>)
+                    </div>
+                </div>
+                <div class="fotos-section">
+                    <div class="fotos-grid">
+                        <?php foreach ($fotos_atividade as $foto): ?>
+                        <div class="foto-item">
+                            <?php
+                            $url_foto = '';
+                            if (!empty($foto->caminho_arquivo)) {
+                                $url_foto = base_url('assets/atividades/fotos/' . $foto->caminho_arquivo);
+                            } elseif (!empty($foto->foto_base64)) {
+                                $url_foto = $foto->foto_base64;
+                            }
+                            ?>
+                            <?php if ($url_foto): ?>
+                            <a href="<?php echo $url_foto; ?>" target="_blank">
+                                <img src="<?php echo $url_foto; ?>" alt="Foto da atividade">
+                            </a>
+                            <?php endif; ?>
+
+                            <?php
+                            $tipo_foto = $foto->tipo_foto ?? 'execucao';
+                            $tipo_class = '';
+                            $tipo_text = '';
+                            switch($tipo_foto) {
+                                case 'checkin':
+                                    $tipo_class = 'checkin';
+                                    $tipo_text = 'Check-in';
+                                    break;
+                                case 'checkout':
+                                    $tipo_class = 'checkout';
+                                    $tipo_text = 'Check-out';
+                                    break;
+                                default:
+                                    $tipo_class = 'execucao';
+                                    $tipo_text = 'Execução';
+                            }
+                            ?>
+                            <span class="tipo-badge <?php echo $tipo_class; ?>"><?php echo $tipo_text; ?></span>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
                 </div>
             </div>
             <?php endif; ?>
 
+            <!-- Anotações e Registros -->
+            <?php if (!empty($atividade_real->observacoes) || !empty($atividade_real->problemas_encontrados) || !empty($atividade_real->solucao_aplicada)): ?>
+            <div class="atividade-card">
+                <div class="atividade-card-header">
+                    <div class="atividade-card-title">
+                        <i class="icon-edit"></i> Anotações e Registros
+                    </div>
+                </div>
+                <div class="anotacoes-section">
+                    <?php if (!empty($atividade_real->observacoes)): ?>
+                    <div class="anotacao-item">
+                        <div class="anotacao-header">
+                            <span><i class="icon-comment"></i> Observações Gerais</span>
+                        </div>
+                        <div class="anotacao-content">
+                            <?php echo nl2br(htmlspecialchars($atividade_real->observacoes)); ?>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+
+                    <?php if (!empty($atividade_real->problemas_encontrados)): ?>
+                    <div class="anotacao-item problema">
+                        <div class="anotacao-header">
+                            <span><i class="icon-warning-sign"></i> Problemas Encontrados</span>
+                        </div>
+                        <div class="anotacao-content">
+                            <?php echo nl2br(htmlspecialchars($atividade_real->problemas_encontrados)); ?>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+
+                    <?php if (!empty($atividade_real->solucao_aplicada)): ?>
+                    <div class="anotacao-item solucao">
+                        <div class="anotacao-header">
+                            <span><i class="icon-check"></i> Solução Aplicada</span>
+                        </div>
+                        <div class="anotacao-content">
+                            <?php echo nl2br(htmlspecialchars($atividade_real->solucao_aplicada)); ?>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <?php endif; ?>
+
+            <?php else: ?>
+            <!-- Mensagem quando não há registro do wizard -->
+            <div class="atividade-card" style="text-align: center; padding: 40px;">
+                <i class="icon-info-sign" style="font-size: 48px; color: #95a5a6;"></i>
+                <h3 style="margin: 15px 0; color: #666;">Sem Registro do Wizard</h3>
+                <p style="color: #888;">Esta atividade ainda não foi executada através do wizard de atendimento.</p>
+                <?php if ($atividade->status === 'agendada'): ?>
+                <a href="<?php echo site_url('tecnicos/executar_obra/' . ($obra->id ?? 0)); ?>" class="action-btn action-btn-success" style="display: inline-flex; margin-top: 20px;">
+                    <i class="icon-play"></i> Iniciar Atendimento
+                </a>
+                <?php endif; ?>
+            </div>
             <?php endif; ?>
 
             <!-- Ações -->
@@ -986,7 +693,7 @@
 
         <!-- Sidebar -->
         <div class="atividade-sidebar">
-            <!-- Obra Info -->
+            <!-- Info da Obra -->
             <div class="atividade-card">
                 <div class="atividade-card-header">
                     <div class="atividade-card-title">
@@ -1006,7 +713,7 @@
                 </div>
             </div>
 
-            <!-- Histórico -->
+            <!-- Histórico de Alterações -->
             <?php if (!empty($historico)): ?>
             <div class="atividade-card">
                 <div class="atividade-card-header">
@@ -1014,33 +721,15 @@
                         <i class="icon-history"></i> Histórico
                     </div>
                 </div>
-                <div class="timeline">
+                <div style="max-height: 300px; overflow-y: auto;">
                     <?php foreach ($historico as $hist): ?>
-                    <div class="timeline-item <?php echo $hist->tipo_alteracao; ?>">
-                        <div class="timeline-header">
-                            <span class="timeline-title">
-                                <?php
-                                $tipoAlt = [
-                                    'inicio' => 'Início',
-                                    'pausa' => 'Pausa',
-                                    'retorno' => 'Retorno',
-                                    'conclusao' => 'Conclusão',
-                                    'impedimento' => 'Impedimento',
-                                    'foto' => 'Foto Adicionada',
-                                    'observacao' => 'Observação'
-                                ];
-                                echo $tipoAlt[$hist->tipo_alteracao] ?? $hist->tipo_alteracao;
-                                ?>
-                            </span>
-                            <span class="timeline-time">
-                                <?php echo date('d/m H:i', strtotime($hist->created_at)); ?>
-                            </span>
+                    <div style="padding: 10px; border-bottom: 1px solid #f0f0f0; font-size: 13px;">
+                        <div style="color: #888; font-size: 11px; margin-bottom: 3px;">
+                            <?php echo date('d/m/Y H:i', strtotime($hist->created_at)); ?>
                         </div>
-                        <?php if ($hist->descricao): ?>
-                        <div class="timeline-content">
-                            <?php echo htmlspecialchars($hist->descricao); ?>
+                        <div style="color: #333;">
+                            <?php echo htmlspecialchars($hist->descricao ?? ''); ?>
                         </div>
-                        <?php endif; ?>
                     </div>
                     <?php endforeach; ?>
                 </div>
@@ -1049,3 +738,12 @@
         </div>
     </div>
 </div>
+
+<script>
+function toggleStatusForm() {
+    var form = document.getElementById('statusForm');
+    if (form) {
+        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    }
+}
+</script>
