@@ -1858,11 +1858,25 @@ const WizardAtendimento = {
         this.pararTimer();
 
         const csrfToken = this.getCsrfToken();
+        const atividadeId = this.atividadeSelecionada ? this.atividadeSelecionada.id :
+                       (dadosObra.atividadeAndamento ? dadosObra.atividadeAndamento.id : 0);
+
+        console.log('Debug pausar:', {
+            obraId: dadosObra.obraId,
+            atividadeId: atividadeId,
+            atividadeSelecionada: this.atividadeSelecionada,
+            atividadeAndamento: dadosObra.atividadeAndamento
+        });
+
+        if (!atividadeId || atividadeId === 0) {
+            alert('Nenhuma atividade selecionada para pausar.');
+            return;
+        }
+
         const formData = new FormData();
         formData.append('MAPOS_TOKEN', csrfToken);
         formData.append('obra_id', dadosObra.obraId);
-        formData.append('atividade_id', this.atividadeSelecionada ? this.atividadeSelecionada.id :
-                       (dadosObra.atividadeAndamento ? dadosObra.atividadeAndamento.id : 0));
+        formData.append('atividade_id', atividadeId);
 
         fetch('<?= site_url("atividades/pausar") ?>', {
             method: 'POST',

@@ -65,20 +65,26 @@ class Atividades_model extends CI_Model
     public function pausar($atividade_id, $motivo = null, $observacao = null)
     {
         $this->db->where('idAtividade', $atividade_id);
-        $this->db->update($this->table, [
+        $result = $this->db->update($this->table, [
             'status' => 'pausada',
             'pausado_em' => date('Y-m-d H:i:s'),
         ]);
 
-        // Registra na tabela de pausas
-        $this->db->insert('atividades_pausas', [
-            'atividade_id' => $atividade_id,
-            'pausa_inicio' => date('Y-m-d H:i:s'),
-            'motivo' => $motivo,
-            'observacao' => $observacao,
-        ]);
+        // Registra na tabela de pausas (se existir)
+        if ($this->db->table_exists('atividades_pausas')) {
+            try {
+                $this->db->insert('atividades_pausas', [
+                    'atividade_id' => $atividade_id,
+                    'pausa_inicio' => date('Y-m-d H:i:s'),
+                    'motivo' => $motivo,
+                    'observacao' => $observacao,
+                ]);
+            } catch (Exception $e) {
+                log_message('error', 'Erro ao registrar pausa: ' . $e->getMessage());
+            }
+        }
 
-        return $this->db->insert_id();
+        return $result;
     }
 
     /**
@@ -86,14 +92,20 @@ class Atividades_model extends CI_Model
      */
     public function retomar($atividade_id)
     {
-        // Atualiza a pausa mais recente
-        $this->db->where('atividade_id', $atividade_id);
-        $this->db->where('pausa_fim IS NULL');
-        $this->db->order_by('idPausa', 'DESC');
-        $this->db->limit(1);
-        $this->db->update('atividades_pausas', [
-            'pausa_fim' => date('Y-m-d H:i:s'),
-        ]);
+        // Atualiza a pausa mais recente (se a tabela existir)
+        if ($this->db->table_exists('atividades_pausas')) {
+            try {
+                $this->db->where('atividade_id', $atividade_id);
+                $this->db->where('pausa_fim IS NULL');
+                $this->db->order_by('idPausa', 'DESC');
+                $this->db->limit(1);
+                $this->db->update('atividades_pausas', [
+                    'pausa_fim' => date('Y-m-d H:i:s'),
+                ]);
+            } catch (Exception $e) {
+                log_message('error', 'Erro ao atualizar pausa: ' . $e->getMessage());
+            }
+        }
 
         // Atualiza a atividade
         $this->db->where('idAtividade', $atividade_id);

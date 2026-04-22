@@ -388,47 +388,62 @@ class Atividades extends MY_Controller
      */
     public function pausar()
     {
-        if (!$this->input->is_ajax_request()) {
-            redirect('atividades');
-        }
+        // Desabilitar exibição de erros para não quebrar o JSON
+        error_reporting(0);
+        ini_set('display_errors', 0);
 
-        header('Content-Type: application/json');
-
-        $tecnico_id = $this->is_portal_tecnico
-            ? $this->session->userdata('tec_id')
-            : $this->session->userdata('idAdmin');
-
-        $atividade_id = $this->input->post('atividade_id');
-        $obra_id = $this->input->post('obra_id');
-        $motivo = $this->input->post('motivo');
-        $observacao = $this->input->post('observacao');
-
-        // Se não recebeu atividade_id, busca a atividade em andamento na obra
-        if (!$atividade_id && $obra_id) {
-            $atividade = $this->atividades->getAtividadeEmAndamentoNaObra($tecnico_id, $obra_id);
-            if ($atividade) {
-                $atividade_id = $atividade->idAtividade;
+        try {
+            if (!$this->input->is_ajax_request()) {
+                redirect('atividades');
             }
+
+            header('Content-Type: application/json');
+
+            $tecnico_id = $this->is_portal_tecnico
+                ? $this->session->userdata('tec_id')
+                : $this->session->userdata('idAdmin');
+
+            if (!$tecnico_id) {
+                echo json_encode(['success' => false, 'message' => 'Sessão inválida. Faça login novamente.']);
+                return;
+            }
+
+            $atividade_id = $this->input->post('atividade_id');
+            $obra_id = $this->input->post('obra_id');
+            $motivo = $this->input->post('motivo');
+            $observacao = $this->input->post('observacao');
+
+            // Se não recebeu atividade_id, busca a atividade em andamento na obra
+            if (!$atividade_id && $obra_id) {
+                $atividade = $this->atividades->getAtividadeEmAndamentoNaObra($tecnico_id, $obra_id);
+                if ($atividade) {
+                    $atividade_id = $atividade->idAtividade ?? $atividade->id ?? null;
+                }
+            }
+
+            if (!$atividade_id) {
+                echo json_encode(['success' => false, 'message' => 'ID da atividade não informado.']);
+                return;
+            }
+
+            // Verifica se a atividade pertence ao técnico
+            $atividade = $this->atividades->getById($atividade_id);
+            if (!$atividade || $atividade->tecnico_id != $tecnico_id) {
+                echo json_encode(['success' => false, 'message' => 'Atividade não encontrada ou não pertence a você.']);
+                return;
+            }
+
+            $result = $this->atividades->pausar($atividade_id, $motivo, $observacao);
+
+            echo json_encode([
+                'success' => (bool) $result,
+                'message' => $result ? 'Atividade pausada.' : 'Erro ao pausar atividade.'
+            ]);
+        } catch (Exception $e) {
+            log_message('error', 'Erro em pausar: ' . $e->getMessage());
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'message' => 'Erro interno: ' . $e->getMessage()]);
         }
-
-        if (!$atividade_id) {
-            echo json_encode(['success' => false, 'message' => 'ID da atividade não informado.']);
-            return;
-        }
-
-        // Verifica se a atividade pertence ao técnico
-        $atividade = $this->atividades->getById($atividade_id);
-        if (!$atividade || $atividade->tecnico_id != $tecnico_id) {
-            echo json_encode(['success' => false, 'message' => 'Atividade não encontrada ou não pertence a você.']);
-            return;
-        }
-
-        $result = $this->atividades->pausar($atividade_id, $motivo, $observacao);
-
-        echo json_encode([
-            'success' => (bool) $result,
-            'message' => $result ? 'Atividade pausada.' : 'Erro ao pausar atividade.'
-        ]);
     }
 
     /**
