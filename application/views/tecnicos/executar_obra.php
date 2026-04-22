@@ -1001,7 +1001,6 @@ textarea.wizard-input {
                                 $statusAtiv = $ativ->status ?? 'agendada';
                                 $statusAtivClass = ($statusAtiv === 'concluida' || $statusAtiv === 'concluida') ? 'concluida' : (($statusAtiv === 'em_andamento' || $statusAtiv === 'iniciada') ? 'andamento' : 'aberto');
                                 $statusAtivLabel = ($statusAtiv === 'concluida' || $statusAtiv === 'concluida') ? 'Concluída' : (($statusAtiv === 'em_andamento' || $statusAtiv === 'iniciada') ? 'Em Andamento' : 'Aberta');
-                                $podeIniciar = (in_array($statusAtiv, ['agendada', 'aberto', 'iniciada']) || empty($statusAtiv)) && empty($wizard_em_andamento);
                                 ?>
                                 <div class="atividade-item">
                                     <div class="atividade-icon <?= $statusAtivClass ?>">
@@ -1029,11 +1028,6 @@ textarea.wizard-input {
                         <?php else: ?>
                         <div class="empty-state" style="padding: 20px;">
                             <p>Nenhuma atividade cadastrada nesta etapa</p>
-                            <?php if (empty($wizard_em_andamento)): ?>
-                            <button class="btn-acao iniciar" onclick="WizardAtendimento.iniciar(<?= $etapaId ?>, '<?= htmlspecialchars($etapa->nome ?? 'Etapa') ?>', null, null)" style="margin-top: 10px;">
-                                <i class="icon-play"></i> Iniciar Atendimento Geral
-                            </button>
-                            <?php endif; ?>
                         </div>
                         <?php endif; ?>
                     </div>

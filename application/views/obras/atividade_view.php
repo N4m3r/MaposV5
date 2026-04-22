@@ -351,8 +351,27 @@
                         <div class="info-label">Etapa</div>
                         <div class="info-value">
                             <?php
-                            if ($atividade->etapa_nome ?? null) {
-                                echo '#' . ($atividade->numero_etapa ?? '') . ' ' . $atividade->etapa_nome;
+                            // Tentar obter nome da etapa de várias fontes
+                            $etapa_nome = '';
+                            $numero_etapa = '';
+
+                            if (!empty($atividade->etapa_nome)) {
+                                $etapa_nome = $atividade->etapa_nome;
+                                $numero_etapa = $atividade->numero_etapa ?? '';
+                            } elseif (!empty($atividade_real->etapa_nome)) {
+                                $etapa_nome = $atividade_real->etapa_nome;
+                                $numero_etapa = $atividade_real->numero_etapa ?? '';
+                            } elseif (!empty($atividade->etapa_id)) {
+                                // Buscar nome da etapa pelo ID
+                                $etapa_info = $this->db->where('id', $atividade->etapa_id)->get('obra_etapas')->row();
+                                if ($etapa_info) {
+                                    $etapa_nome = $etapa_info->nome;
+                                    $numero_etapa = $etapa_info->numero_etapa ?? '';
+                                }
+                            }
+
+                            if ($etapa_nome) {
+                                echo ($numero_etapa ? '#' . $numero_etapa . ' ' : '') . htmlspecialchars($etapa_nome);
                             } else {
                                 echo 'N/A';
                             }
@@ -393,6 +412,66 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Informações do Wizard de Atendimento -->
+                <?php if (!empty($atividade_real)): ?>
+                <div style="margin-top: 25px; padding: 20px; background: linear-gradient(135deg, #f0fff4, #e6fffa); border: 2px solid #11998e; border-radius: 12px;">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px; color: #11998e; font-weight: 700; font-size: 16px;">
+                        <i class="icon-time" style="font-size: 20px;"></i>
+                        Registro do Wizard de Atendimento
+                    </div>
+                    <div class="info-grid" style="margin: 0;">
+                        <div class="info-item" style="background: white; border-left: 4px solid #27ae60;">
+                            <div class="info-label"><i class="icon-signin"></i> Hora Início (Registrada)</div>
+                            <div class="info-value" style="font-size: 20px; color: #27ae60;">
+                                <?php echo !empty($atividade_real->hora_inicio) ? date('d/m/Y H:i', strtotime($atividade_real->hora_inicio)) : '--:--'; ?>
+                            </div>
+                        </div>
+                        <div class="info-item" style="background: white; border-left: 4px solid #e74c3c;">
+                            <div class="info-label"><i class="icon-signout"></i> Hora Fim (Registrada)</div>
+                            <div class="info-value" style="font-size: 20px; color: #e74c3c;">
+                                <?php echo !empty($atividade_real->hora_fim) ? date('d/m/Y H:i', strtotime($atividade_real->hora_fim)) : '--:--'; ?>
+                            </div>
+                        </div>
+                        <?php if (!empty($atividade_real->duracao_minutos)): ?>
+                        <div class="info-item" style="background: white; border-left: 4px solid #667eea; grid-column: span 2;">
+                            <div class="info-label"><i class="icon-time"></i> Duração Total</div>
+                            <div class="info-value" style="font-size: 24px; color: #667eea;">
+                                <?php
+                                $horas = floor($atividade_real->duracao_minutos / 60);
+                                $minutos = $atividade_real->duracao_minutos % 60;
+                                echo sprintf('%02d:%02d', $horas, $minutos) . ' (' . $atividade_real->duracao_minutos . ' minutos)';
+                                ?>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+
+                    <?php if (!empty($atividade_real->tipo_nome)): ?>
+                    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #11998e;">
+                        <div class="info-label">Tipo de Atividade</div>
+                        <div style="display: flex; align-items: center; gap: 10px; margin-top: 5px;">
+                            <span style="background: <?php echo $atividade_real->tipo_cor ?? '#667eea'; ?>; color: white; padding: 5px 12px; border-radius: 15px; font-size: 13px;">
+                                <i class="icon-tag"></i> <?php echo htmlspecialchars($atividade_real->tipo_nome); ?>
+                            </span>
+                            <span style="color: #666; font-size: 13px;">Categoria: <?php echo ucfirst($atividade_real->categoria ?? 'Geral'); ?></span>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+
+                    <?php if (!empty($atividade_real->latitude) && !empty($atividade_real->longitude)): ?>
+                    <div style="margin-top: 15px;">
+                        <div class="info-label"><i class="icon-map-marker"></i> Localização Registrada</div>
+                        <div style="font-size: 13px; color: #666; margin-top: 5px;">
+                            Lat: <?php echo $atividade_real->latitude; ?>, Lng: <?php echo $atividade_real->longitude; ?>
+                            <a href="https://www.google.com/maps?q=<?php echo $atividade_real->latitude; ?>,<?php echo $atividade_real->longitude; ?>" target="_blank" style="margin-left: 10px; color: #3498db;">
+                                <i class="icon-external-link"></i> Ver no Maps
+                            </a>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+                </div>
+                <?php endif; ?>
 
                 <?php if ($atividade->descricao ?? null): ?>
                 <div style="margin-top: 20px;">

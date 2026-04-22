@@ -1221,6 +1221,24 @@ class Obras extends MY_Controller
                 $this->data['atividade']->observacoes = $this->data['atividade_real']->observacoes;
             }
 
+            // Mesclar horários de início e fim da atividade real
+            if (!empty($this->data['atividade_real']->hora_inicio)) {
+                $this->data['atividade']->hora_inicio = $this->data['atividade_real']->hora_inicio;
+            }
+            if (!empty($this->data['atividade_real']->hora_fim)) {
+                $this->data['atividade']->hora_fim = $this->data['atividade_real']->hora_fim;
+            }
+
+            // Calcular horas trabalhadas
+            if (!empty($this->data['atividade_real']->duracao_minutos)) {
+                $this->data['atividade']->horas_trabalhadas = round($this->data['atividade_real']->duracao_minutos / 60, 2);
+            } elseif (!empty($this->data['atividade_real']->hora_inicio) && !empty($this->data['atividade_real']->hora_fim)) {
+                $inicio = strtotime($this->data['atividade_real']->hora_inicio);
+                $fim = strtotime($this->data['atividade_real']->hora_fim);
+                $duracao_segundos = $fim - $inicio;
+                $this->data['atividade']->horas_trabalhadas = round($duracao_segundos / 3600, 2);
+            }
+
             // Buscar checkins da atividade real também
             $checkins_real = $this->obra_checkins_model->getByAtividade($atividade_real->idAtividade);
             if (!empty($checkins_real)) {
