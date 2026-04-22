@@ -232,7 +232,7 @@
     font-size: 24px;
 }
 .checkin-icon.entrada, .checkin-icon.checkin { background: linear-gradient(135deg, #11998e, #38ef7d); color: white; }
-.checkin-icon.saida, .checkin-icon.checkout { background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; }
+.checkin-icon.saida, .checkin-icon.checkout { background: linear-gradient(135deg, #9b59b6, #8e44ad); color: white; }
 .checkin-icon.pausa { background: linear-gradient(135deg, #f39c12, #e67e22); color: white; }
 .checkin-icon.retorno { background: linear-gradient(135deg, #3498db, #2980b9); color: white; }
 .checkin-content { flex: 1; }
@@ -351,27 +351,8 @@
                         <div class="info-label">Etapa</div>
                         <div class="info-value">
                             <?php
-                            // Tentar obter nome da etapa de várias fontes
-                            $etapa_nome = '';
-                            $numero_etapa = '';
-
-                            if (!empty($atividade->etapa_nome)) {
-                                $etapa_nome = $atividade->etapa_nome;
-                                $numero_etapa = $atividade->numero_etapa ?? '';
-                            } elseif (!empty($atividade_real->etapa_nome)) {
-                                $etapa_nome = $atividade_real->etapa_nome;
-                                $numero_etapa = $atividade_real->numero_etapa ?? '';
-                            } elseif (!empty($atividade->etapa_id)) {
-                                // Buscar nome da etapa pelo ID
-                                $etapa_info = $this->db->where('id', $atividade->etapa_id)->get('obra_etapas')->row();
-                                if ($etapa_info) {
-                                    $etapa_nome = $etapa_info->nome;
-                                    $numero_etapa = $etapa_info->numero_etapa ?? '';
-                                }
-                            }
-
-                            if ($etapa_nome) {
-                                echo ($numero_etapa ? '#' . $numero_etapa . ' ' : '') . htmlspecialchars($etapa_nome);
+                            if ($atividade->etapa_nome ?? null) {
+                                echo '#' . ($atividade->numero_etapa ?? '') . ' ' . $atividade->etapa_nome;
                             } else {
                                 echo 'N/A';
                             }
@@ -413,173 +394,6 @@
                     </div>
                 </div>
 
-                <!-- Informações do Wizard de Atendimento -->
-                <?php if (!empty($atividade_real)): ?
-                <div style="margin-top: 25px; padding: 20px; background: linear-gradient(135deg, #f0fff4, #e6fffa); border: 2px solid #11998e; border-radius: 12px;">
-                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px; color: #11998e; font-weight: 700; font-size: 16px;">
-                        <i class="icon-time" style="font-size: 20px;"></i>
-                        Registro do Wizard de Atendimento
-                    </div>
-                    <div class="info-grid" style="margin: 0;">
-                        <!-- Etapa -->
-                        <div class="info-item" style="background: white; border-left: 4px solid #9b59b6;">
-                            <div class="info-label"><i class="icon-hard-hat"></i> Etapa</div>
-                            <div class="info-value" style="font-size: 16px; color: #333;">
-                                <?php
-                                if (!empty($atividade_real->etapa_nome)) {
-                                    echo htmlspecialchars($atividade_real->etapa_nome);
-                                } elseif (!empty($atividade->etapa_nome)) {
-                                    echo htmlspecialchars($atividade->etapa_nome);
-                                } else {
-                                    echo 'N/A';
-                                }
-                                ?>
-                            </div>
-                        </div>
-
-                        <!-- Tipo (Trabalho/Impedimento) -->
-                        <div class="info-item" style="background: white; border-left: 4px solid #3498db;">
-                            <div class="info-label"><i class="icon-tasks"></i> Tipo</div>
-                            <div class="info-value" style="font-size: 16px;">
-                                <?php
-                                $tipo_execucao = $atividade_real->impedimento ?? 0 ? 'impedimento' : 'trabalho';
-                                $tipo_labels = [
-                                    'trabalho' => ['label' => 'Trabalho', 'cor' => '#27ae60', 'icon' => 'wrench'],
-                                    'impedimento' => ['label' => 'Impedimento', 'cor' => '#e74c3c', 'icon' => 'warning-sign']
-                                ];
-                                $tipo_info = $tipo_labels[$tipo_execucao] ?? $tipo_labels['trabalho'];
-                                ?>
-                                <span style="background: <?php echo $tipo_info['cor']; ?>; color: white; padding: 4px 10px; border-radius: 12px; font-size: 13px;">
-                                    <i class="icon-<?php echo $tipo_info['icon']; ?>"></i> <?php echo $tipo_info['label']; ?>
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="info-item" style="background: white; border-left: 4px solid #27ae60;">
-                            <div class="info-label"><i class="icon-signin"></i> Hora Início (Registrada)</div>
-                            <div class="info-value" style="font-size: 18px; color: #27ae60;">
-                                <?php echo !empty($atividade_real->hora_inicio) ? date('d/m/Y H:i', strtotime($atividade_real->hora_inicio)) : '--:--'; ?>
-                            </div>
-                        </div>
-                        <div class="info-item" style="background: white; border-left: 4px solid #e74c3c;">
-                            <div class="info-label"><i class="icon-signout"></i> Hora Fim (Registrada)</div>
-                            <div class="info-value" style="font-size: 18px; color: #e74c3c;">
-                                <?php echo !empty($atividade_real->hora_fim) ? date('d/m/Y H:i', strtotime($atividade_real->hora_fim)) : '--:--'; ?>
-                            </div>
-                        </div>
-                        <?php if (!empty($atividade_real->duracao_minutos)): ?>
-                        <div class="info-item" style="background: white; border-left: 4px solid #667eea; grid-column: span 2;">
-                            <div class="info-label"><i class="icon-time"></i> Duração Total</div>
-                            <div class="info-value" style="font-size: 22px; color: #667eea;">
-                                <?php
-                                $horas = floor($atividade_real->duracao_minutos / 60);
-                                $minutos = $atividade_real->duracao_minutos % 60;
-                                echo sprintf('%02d:%02d', $horas, $minutos) . ' (' . $atividade_real->duracao_minutos . ' minutos)';
-                                ?>
-                            </div>
-                        </div>
-                        <?php endif; ?>
-                    </div>
-
-                    <!-- Tipo de Atividade (categoria) -->
-                    <?php if (!empty($atividade_real->tipo_nome)): ?>
-                    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #11998e;">
-                        <div class="info-label">Categoria da Atividade</div>
-                        <div style="display: flex; align-items: center; gap: 10px; margin-top: 5px;">
-                            <span style="background: <?php echo $atividade_real->tipo_cor ?? '#667eea'; ?>; color: white; padding: 5px 12px; border-radius: 15px; font-size: 13px;">
-                                <i class="icon-tag"></i> <?php echo htmlspecialchars($atividade_real->tipo_nome); ?>
-                            </span>
-                            <span style="color: #666; font-size: 13px;"><?php echo ucfirst($atividade_real->categoria ?? 'Geral'); ?></span>
-                        </div>
-                    </div>
-                    <?php endif; ?>
-
-                    <!-- Localização -->
-                    <?php if (!empty($atividade_real->latitude) && !empty($atividade_real->longitude)): ?>
-                    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #11998e;">
-                        <div class="info-label"><i class="icon-map-marker"></i> Localização Registrada</div>
-                        <div style="font-size: 13px; color: #666; margin-top: 5px;">
-                            Lat: <?php echo $atividade_real->latitude; ?>, Lng: <?php echo $atividade_real->longitude; ?>
-                            <a href="https://www.google.com/maps?q=<?php echo $atividade_real->latitude; ?>,<?php echo $atividade_real->longitude; ?>" target="_blank" style="margin-left: 10px; color: #3498db;">
-                                <i class="icon-external-link"></i> Ver no Maps
-                            </a>
-                        </div>
-                    </div>
-                    <?php endif; ?>
-
-                    <!-- Fotos da Atividade -->
-                    <?php if (!empty($fotos_atividade)): ?>
-                    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #11998e;">
-                        <div class="info-label" style="margin-bottom: 10px;">
-                            <i class="icon-camera"></i> Fotos Registradas (<?php echo count($fotos_atividade); ?>)
-                        </div>
-                        <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-                            <?php foreach ($fotos_atividade as $foto): ?>
-                            <div style="position: relative;">
-                                <?php
-                                $url_foto = '';
-                                if (!empty($foto->caminho_arquivo)) {
-                                    $url_foto = base_url('assets/atividades/fotos/' . $foto->caminho_arquivo);
-                                } elseif (!empty($foto->foto_base64)) {
-                                    $url_foto = $foto->foto_base64;
-                                }
-                                ?>
-                                <?php if ($url_foto): ?>
-                                <a href="<?php echo $url_foto; ?>" target="_blank" title="<?php echo htmlspecialchars($foto->descricao ?? 'Foto da atividade'); ?>">
-                                    <img src="<?php echo $url_foto; ?>"
-                                         style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px; border: 2px solid #11998e; cursor: pointer;">
-                                </a>
-                                <?php endif; ?>
-
-                                <?php if ($foto->tipo_foto ?? '' === 'checkin'): ?>
-                                <span style="position: absolute; bottom: 5px; left: 5px; background: #11998e; color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px;">Check-in</span>
-                                <?php elseif ($foto->tipo_foto ?? '' === 'checkout'): ?>
-                                <span style="position: absolute; bottom: 5px; left: 5px; background: #e74c3c; color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px;">Check-out</span>
-                                <?php endif; ?>
-                            </div>
-                            <?php endforeach; ?>
-                        </div>
-                    </div>
-                    <?php endif; ?>
-
-                    <!-- Anotações/Observações -->
-                    <?php if (!empty($atividade_real->observacoes) || !empty($atividade_real->problemas_encontrados) || !empty($atividade_real->solucao_aplicada)): ?>
-                    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #11998e;">
-                        <div class="info-label" style="margin-bottom: 10px;">
-                            <i class="icon-edit"></i> Anotações e Registros
-                        </div>
-
-                        <?php if (!empty($atividade_real->observacoes)): ?>
-                        <div style="background: white; border-radius: 8px; padding: 12px; margin-bottom: 10px; border-left: 3px solid #3498db;">
-                            <div style="font-size: 12px; color: #3498db; margin-bottom: 5px; font-weight: 600;">Observações</div>
-                            <div style="font-size: 13px; color: #333; line-height: 1.5;">
-                                <?php echo nl2br(htmlspecialchars($atividade_real->observacoes)); ?>
-                            </div>
-                        </div>
-                        <?php endif; ?>
-
-                        <?php if (!empty($atividade_real->problemas_encontrados)): ?>
-                        <div style="background: white; border-radius: 8px; padding: 12px; margin-bottom: 10px; border-left: 3px solid #f39c12;">
-                            <div style="font-size: 12px; color: #f39c12; margin-bottom: 5px; font-weight: 600;">Problemas Encontrados</div>
-                            <div style="font-size: 13px; color: #333; line-height: 1.5;">
-                                <?php echo nl2br(htmlspecialchars($atividade_real->problemas_encontrados)); ?>
-                            </div>
-                        </div>
-                        <?php endif; ?>
-
-                        <?php if (!empty($atividade_real->solucao_aplicada)): ?>
-                        <div style="background: white; border-radius: 8px; padding: 12px; margin-bottom: 10px; border-left: 3px solid #27ae60;">
-                            <div style="font-size: 12px; color: #27ae60; margin-bottom: 5px; font-weight: 600;">Solução Aplicada</div>
-                            <div style="font-size: 13px; color: #333; line-height: 1.5;">
-                                <?php echo nl2br(htmlspecialchars($atividade_real->solucao_aplicada)); ?>
-                            </div>
-                        </div>
-                        <?php endif; ?>
-                    </div>
-                    <?php endif; ?>
-                </div>
-                <?php endif; ?>
-
                 <?php if ($atividade->descricao ?? null): ?>
                 <div style="margin-top: 20px;">
                     <div class="info-label">Descrição</div>
@@ -606,7 +420,6 @@
                 // Processar observações do campo observacoes (formato: [data] texto)
                 $anotacoes = [];
                 if (!empty($atividade->observacoes)) {
-                    // Tentar extrair anotações no formato [data] texto
                     preg_match_all('/\[(\d{2}\/\d{2}\/\d{4} \d{2}:\d{2})\] (.*?)(?=\[\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}\]|$)/s', $atividade->observacoes, $matches, PREG_SET_ORDER);
                     if (!empty($matches)) {
                         foreach ($matches as $match) {
@@ -616,14 +429,13 @@
                             ];
                         }
                     } else {
-                        // Se não conseguiu extrair no formato padrão, mostrar como uma anotação única
                         $anotacoes[] = [
                             'data' => date('d/m/Y H:i', strtotime($atividade->hora_inicio ?? 'now')),
                             'texto' => $atividade->observacoes
                         ];
                     }
                 }
-                // Também buscar anotações dos checkins (registros de progresso)
+                // Buscar anotações dos checkins
                 $anotacoes_checkins = [];
                 if (!empty($checkins_processar)) {
                     foreach ($checkins_processar as $check) {
@@ -646,7 +458,6 @@
                         <span style="font-size: 12px; color: #666; font-weight: normal; margin-left: 10px;">(Registros durante a execução)</span>
                     </div>
 
-                    <!-- Anotações do campo observacoes -->
                     <?php if (!empty($anotacoes)): ?>
                     <div style="margin-bottom: 20px;">
                         <?php foreach ($anotacoes as $anotacao): ?>
@@ -665,7 +476,6 @@
                     </div>
                     <?php endif; ?>
 
-                    <!-- Anotações dos checkins -->
                     <?php if (!empty($anotacoes_checkins)): ?>
                     <div>
                         <h5 style="color: #666; font-size: 13px; margin-bottom: 10px;">
@@ -706,15 +516,39 @@
                 </div>
             </div>
 
-            <!-- Registro de Execução -->
+            <!-- ================= REGISTRO DE EXECUÇÃO ================= -->
             <?php
-            // Usar checkins passados do controller (inclui registros da execução da obra)
             $checkins_processar = $checkins ?? [];
-            ?>
+            $atividade_real = $atividade_real ?? null;
 
-            <?php if (!empty($checkins_processar)): ?>
-            <?php
-            // Processar checkins para mostrar períodos de trabalho
+            // Separar checkins por tipo
+            $checkins_inicio = [];
+            $checkins_pausas = [];
+            $checkins_retornos = [];
+            $checkins_fim = [];
+            $todas_fotos = [];
+
+            foreach ($checkins_processar as $check) {
+                if ($check->tipo == 'checkin') {
+                    $checkins_inicio[] = $check;
+                } elseif ($check->tipo == 'pausa') {
+                    $checkins_pausas[] = $check;
+                } elseif ($check->tipo == 'retorno') {
+                    $checkins_retornos[] = $check;
+                } elseif ($check->tipo == 'checkout') {
+                    $checkins_fim[] = $check;
+                }
+                if (!empty($check->foto_url)) {
+                    $todas_fotos[] = [
+                        'url' => $check->foto_url,
+                        'tipo' => $check->tipo,
+                        'data' => $check->created_at,
+                        'tecnico' => $check->tecnico_nome ?? 'Técnico'
+                    ];
+                }
+            }
+
+            // Processar períodos de trabalho
             $periodos = [];
             $checkin_atual = null;
             foreach ($checkins_processar as $check) {
@@ -733,7 +567,6 @@
                     $checkin_atual = null;
                 }
             }
-            // Se ainda estiver em andamento
             if ($checkin_atual) {
                 $inicio = strtotime($checkin_atual->created_at);
                 $fim = time();
@@ -745,41 +578,61 @@
                     'tipo' => 'andamento'
                 ];
             }
-            // Calcular tempo total
             $tempo_total = array_sum(array_column($periodos, 'duracao'));
             $tempo_total_h = floor($tempo_total / 3600);
             $tempo_total_m = floor(($tempo_total % 3600) / 60);
             ?>
 
-            <!-- Resumo da Execução -->
+            <?php if (!empty($checkins_processar) || !empty($atividade_real)): ?>
+
+            <!-- SEÇÃO 1: RESUMO DA EXECUÇÃO -->
             <div class="atividade-card">
                 <div class="atividade-card-header">
                     <div class="atividade-card-title">
-                        <i class="icon-tasks"></i> Resumo da Execução
+                        <i class="icon-tasks" style="color: #667eea;"></i> Resumo da Execução
                     </div>
                 </div>
 
                 <div class="info-grid" style="margin-bottom: 20px;">
                     <div class="info-item" style="background: linear-gradient(135deg, #11998e20, #38ef7d20); border-left: 4px solid #11998e;">
-                        <div class="info-label">Tempo Total Trabalhado</div>
-                        <div class="info-value" style="color: #11998e; font-size: 24px;">
+                        <div class="info-label"><i class="icon-time"></i> Tempo Total</div>
+                        <div class="info-value" style="color: #11998e; font-size: 28px;">
                             <?php echo sprintf('%02d:%02d', $tempo_total_h, $tempo_total_m); ?>
-                            <small style="font-size: 14px;">(<?php echo $tempo_total_h; ?>h <?php echo $tempo_total_m; ?>min)</small>
+                            <small style="font-size: 14px; display: block; margin-top: 5px;"><?php echo $tempo_total_h; ?> horas <?php echo $tempo_total_m; ?> minutos</small>
                         </div>
                     </div>
                     <div class="info-item" style="background: linear-gradient(135deg, #667eea20, #764ba220); border-left: 4px solid #667eea;">
-                        <div class="info-label">Períodos Registrados</div>
-                        <div class="info-value" style="color: #667eea; font-size: 24px;">
+                        <div class="info-label"><i class="icon-list-ol"></i> Períodos</div>
+                        <div class="info-value" style="color: #667eea; font-size: 28px;">
                             <?php echo count($periodos); ?>
-                            <small style="font-size: 14px;">execução(ões)</small>
+                            <small style="font-size: 14px; display: block; margin-top: 5px;">execução(ões) registrada(s)</small>
+                        </div>
+                    </div>
+                    <div class="info-item" style="background: linear-gradient(135deg, #f39c1220, #f1c40f20); border-left: 4px solid #f39c12;">
+                        <div class="info-label"><i class="icon-pause"></i> Pausas</div>
+                        <div class="info-value" style="color: #f39c12; font-size: 28px;">
+                            <?php echo count($checkins_pausas); ?>
+                            <small style="font-size: 14px; display: block; margin-top: 5px;">registrada(s)</small>
+                        </div>
+                    </div>
+                    <div class="info-item" style="background: linear-gradient(135deg, #9b59b620, #8e44ad20); border-left: 4px solid #9b59b6;">
+                        <div class="info-label"><i class="icon-camera"></i> Fotos</div>
+                        <div class="info-value" style="color: #9b59b6; font-size: 28px;">
+                            <?php echo count($todas_fotos); ?>
+                            <small style="font-size: 14px; display: block; margin-top: 5px;">registrada(s)</small>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <?php if (!empty($periodos)): ?>
-                <h4 style="margin: 20px 0 15px 0; font-size: 16px; color: #333;">
-                    <i class="icon-time" style="color: #667eea;"></i> Linha do Tempo de Execução
-                </h4>
+            <!-- SEÇÃO 2: TIMELINE DE EXECUÇÃO -->
+            <?php if (!empty($periodos)): ?>
+            <div class="atividade-card">
+                <div class="atividade-card-header">
+                    <div class="atividade-card-title">
+                        <i class="icon-time" style="color: #3498db;"></i> Timeline de Execução
+                    </div>
+                </div>
 
                 <div class="timeline">
                     <?php foreach ($periodos as $i => $periodo): ?>
@@ -787,49 +640,53 @@
                         <div class="timeline-header">
                             <span class="timeline-title">
                                 <?php if ($periodo['tipo'] == 'andamento'): ?>
-                                    <i class="icon-play" style="color: #27ae60;"></i> Em Execução
+                                    <i class="icon-play" style="color: #27ae60;"></i> Período em Andamento
                                 <?php elseif ($periodo['tipo'] == 'pausado'): ?>
-                                    <i class="icon-pause" style="color: #f39c12;"></i> Execução Pausada
+                                    <i class="icon-pause" style="color: #f39c12;"></i> Período Pausado
                                 <?php else: ?>
-                                    <i class="icon-check" style="color: #9b59b6;"></i> Execução Concluída
+                                    <i class="icon-check" style="color: #9b59b6;"></i> Período Concluído
                                 <?php endif; ?>
                             </span>
-                            <span class="timeline-time">
-                                #<?php echo $i + 1; ?>
-                            </span>
+                            <span class="timeline-time"># <?php echo $i + 1; ?></span>
                         </div>
                         <div class="timeline-content">
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 10px;">
-                                <div>
-                                    <div style="font-size: 12px; color: #888; margin-bottom: 3px;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div style="background: #f8f9fa; padding: 12px; border-radius: 8px;">
+                                    <div style="font-size: 11px; color: #888; text-transform: uppercase; margin-bottom: 4px;">
                                         <i class="icon-signin"></i> Início
                                     </div>
-                                    <div style="font-weight: 600; color: #333;">
-                                        <?php echo date('d/m/Y H:i', strtotime($periodo['inicio']->created_at)); ?>
+                                    <div style="font-weight: 600; color: #333; font-size: 15px;">
+                                        <?php echo date('d/m/Y', strtotime($periodo['inicio']->created_at)); ?>
+                                        <span style="color: #27ae60;"><?php echo date('H:i', strtotime($periodo['inicio']->created_at)); ?></span>
                                     </div>
                                     <?php if ($periodo['inicio']->tecnico_nome): ?>
-                                    <div style="font-size: 12px; color: #666; margin-top: 3px;">
+                                    <div style="font-size: 12px; color: #666; margin-top: 5px;">
                                         <i class="icon-user"></i> <?php echo htmlspecialchars($periodo['inicio']->tecnico_nome); ?>
                                     </div>
                                     <?php endif; ?>
                                 </div>
-                                <div>
-                                    <div style="font-size: 12px; color: #888; margin-bottom: 3px;">
-                                        <i class="icon-signout"></i> <?php echo $periodo['fim'] ? 'Fim' : 'Atual'; ?>
+                                <div style="background: #f8f9fa; padding: 12px; border-radius: 8px;">
+                                    <div style="font-size: 11px; color: #888; text-transform: uppercase; margin-bottom: 4px;">
+                                        <i class="icon-signout"></i> <?php echo $periodo['fim'] ? 'Fim' : 'Status'; ?>
                                     </div>
-                                    <div style="font-weight: 600; color: #333;">
-                                        <?php echo $periodo['fim'] ? date('d/m/Y H:i', strtotime($periodo['fim']->created_at)) : 'Em andamento...'; ?>
+                                    <div style="font-weight: 600; color: #333; font-size: 15px;">
+                                        <?php if ($periodo['fim']): ?>
+                                            <?php echo date('d/m/Y', strtotime($periodo['fim']->created_at)); ?>
+                                            <span style="color: #e74c3c;"><?php echo date('H:i', strtotime($periodo['fim']->created_at)); ?></span>
+                                        <?php else: ?>
+                                            <span style="color: #27ae60;"><i class="icon-play"></i> Em execução...</span>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                             </div>
 
                             <?php if ($periodo['duracao'] > 0): ?>
-                            <div style="background: #f8f9fa; padding: 10px 15px; border-radius: 8px; margin-top: 10px;">
+                            <div style="background: linear-gradient(135deg, #667eea15, #764ba215); padding: 12px; border-radius: 8px; margin-top: 15px; border-left: 3px solid #667eea;">
                                 <div style="display: flex; justify-content: space-between; align-items: center;">
                                     <span style="font-size: 13px; color: #666;">
-                                        <i class="icon-time" style="color: #667eea;"></i> Duração
+                                        <i class="icon-time" style="color: #667eea;"></i> Duração do Período
                                     </span>
-                                    <span style="font-weight: 700; color: #667eea; font-size: 18px;">
+                                    <span style="font-weight: 700; color: #667eea; font-size: 20px;">
                                         <?php
                                         $h = floor($periodo['duracao'] / 3600);
                                         $m = floor(($periodo['duracao'] % 3600) / 60);
@@ -839,103 +696,30 @@
                                 </div>
                             </div>
                             <?php endif; ?>
-
-                            <!-- Fotos do período -->
-                            <?php if ($periodo['inicio']->foto_url || ($periodo['fim'] && $periodo['fim']->foto_url)): ?>
-                            <div style="margin-top: 15px;">
-                                <div style="font-size: 12px; color: #888; margin-bottom: 8px;">
-                                    <i class="icon-camera"></i> Fotos do Registro
-                                </div>
-                                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                                    <?php if ($periodo['inicio']->foto_url): ?>
-                                    <div style="position: relative;">
-                                        <a href="<?php echo base_url($periodo['inicio']->foto_url); ?>" target="_blank">
-                                            <img src="<?php echo base_url($periodo['inicio']->foto_url); ?>"
-                                                 style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px; cursor: pointer; border: 2px solid #11998e;"
-                                                 title="Foto de entrada - Clique para ampliar">
-                                        </a>
-                                        <span style="position: absolute; bottom: 5px; left: 5px; background: #11998e; color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px;">
-                                            Entrada
-                                        </span>
-                                    </div>
-                                    <?php endif; ?>
-                                    <?php if ($periodo['fim'] && $periodo['fim']->foto_url): ?>
-                                    <div style="position: relative;">
-                                        <a href="<?php echo base_url($periodo['fim']->foto_url); ?>" target="_blank">
-                                            <img src="<?php echo base_url($periodo['fim']->foto_url); ?>"
-                                                 style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px; cursor: pointer; border: 2px solid #e74c3c;"
-                                                 title="Foto de saída - Clique para ampliar">
-                                        </a>
-                                        <span style="position: absolute; bottom: 5px; left: 5px; background: #e74c3c; color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px;">
-                                            Saída
-                                        </span>
-                                    </div>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-                            <?php endif; ?>
-
-                            <!-- Observações -->
-                            <?php if ($periodo['inicio']->observacao || ($periodo['fim'] && $periodo['fim']->observacao)): ?>
-                            <div style="margin-top: 15px; padding: 12px; background: #fffbeb; border-left: 3px solid #f39c12; border-radius: 8px;">
-                                <div style="font-size: 12px; color: #888; margin-bottom: 5px;">
-                                    <i class="icon-comment"></i> Observações
-                                </div>
-                                <?php if ($periodo['inicio']->observacao): ?>
-                                <div style="font-size: 13px; color: #666; margin-bottom: 5px;">
-                                    <strong>Início:</strong> <?php echo htmlspecialchars($periodo['inicio']->observacao); ?>
-                                </div>
-                                <?php endif; ?>
-                                <?php if ($periodo['fim'] && $periodo['fim']->observacao): ?>
-                                <div style="font-size: 13px; color: #666;">
-                                    <strong>Fim:</strong> <?php echo htmlspecialchars($periodo['fim']->observacao); ?>
-                                </div>
-                                <?php endif; ?>
-                            </div>
-                            <?php endif; ?>
-
-                            <!-- Localização GPS -->
-                            <?php if (($periodo['inicio']->latitude && $periodo['inicio']->longitude) || ($periodo['fim'] && $periodo['fim']->latitude && $periodo['fim']->longitude)): ?>
-                            <div style="margin-top: 10px; padding: 10px; background: #e3f2fd; border-radius: 8px; font-size: 12px; color: #666;">
-                                <i class="icon-map-marker" style="color: #3498db;"></i>
-                                <?php if ($periodo['inicio']->endereco_detectado): ?>
-                                    <?php echo htmlspecialchars($periodo['inicio']->endereco_detectado); ?>
-                                <?php else: ?>
-                                    Coordenadas registradas
-                                <?php endif; ?>
-                            </div>
-                            <?php endif; ?>
                         </div>
                     </div>
                     <?php endforeach; ?>
                 </div>
-                <?php endif; ?>
             </div>
+            <?php endif; ?>
 
-            <!-- Todos os Registros (Check-ins individuais) -->
+            <!-- SEÇÃO 3: CHECK-IN -->
+            <?php if (!empty($checkins_inicio)): ?>
             <div class="atividade-card">
                 <div class="atividade-card-header">
                     <div class="atividade-card-title">
-                        <i class="icon-list-ul"></i> Todos os Registros de Check-in
+                        <i class="icon-signin" style="color: #27ae60;"></i> Check-in de Entrada
                     </div>
                 </div>
                 <div style="display: flex; flex-direction: column; gap: 10px;">
-                    <?php foreach ($checkins_processar as $checkin): ?>
+                    <?php foreach ($checkins_inicio as $checkin): ?>
                     <div class="checkin-card">
-                        <div class="checkin-icon <?php echo $checkin->tipo; ?>">
-                            <i class="icon-<?php echo $checkin->tipo == 'checkin' ? 'signin' : ($checkin->tipo == 'checkout' ? 'signout' : ($checkin->tipo == 'pausa' ? 'pause' : 'play')); ?>"></i>
+                        <div class="checkin-icon checkin" style="background: linear-gradient(135deg, #27ae60, #2ecc71);">
+                            <i class="icon-signin"></i>
                         </div>
                         <div class="checkin-content">
                             <div class="checkin-title">
-                                <?php
-                                $tipoCheckin = [
-                                    'checkin' => 'Check-in Inicial',
-                                    'checkout' => 'Check-out Final',
-                                    'pausa' => 'Pausa',
-                                    'retorno' => 'Retorno'
-                                ];
-                                echo $tipoCheckin[$checkin->tipo] ?? $checkin->tipo;
-                                ?>
+                                Início da Atividade
                                 <?php if ($checkin->tecnico_nome): ?>
                                 <span style="font-size: 12px; color: #888; margin-left: 10px;">
                                     <i class="icon-user"></i> <?php echo htmlspecialchars($checkin->tecnico_nome); ?>
@@ -943,22 +727,22 @@
                                 <?php endif; ?>
                             </div>
                             <div class="checkin-meta">
-                                <i class="icon-time"></i> <?php echo date('d/m/Y H:i:s', strtotime($checkin->created_at)); ?>
+                                <i class="icon-calendar"></i> <?php echo date('d/m/Y', strtotime($checkin->created_at)); ?>
+                                <i class="icon-time" style="margin-left: 10px;"></i> <?php echo date('H:i:s', strtotime($checkin->created_at)); ?>
                                 <?php if ($checkin->endereco_detectado): ?>
                                 | <i class="icon-map-marker"></i> <?php echo htmlspecialchars($checkin->endereco_detectado); ?>
                                 <?php endif; ?>
                             </div>
                             <?php if ($checkin->observacao): ?>
                             <div style="margin-top: 8px; font-size: 13px; color: #666; background: #f8f9fa; padding: 8px; border-radius: 6px;">
-                                <?php echo htmlspecialchars($checkin->observacao); ?>
+                                <strong>Observação:</strong> <?php echo htmlspecialchars($checkin->observacao); ?>
                             </div>
                             <?php endif; ?>
                             <?php if ($checkin->foto_url): ?>
                             <div style="margin-top: 10px;">
                                 <a href="<?php echo base_url($checkin->foto_url); ?>" target="_blank">
-                                    <img src="<?php echo base_url($checkin->foto_url); ?>"
-                                         style="width: 60px; height: 60px; object-fit: cover; border-radius: 6px; cursor: pointer;"
-                                         title="Clique para ampliar">
+                                    <img src="<?php echo base_url($checkin->foto_url); ?>" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; cursor: pointer; border: 2px solid #27ae60;"
+                                         title="Foto de check-in">
                                 </a>
                             </div>
                             <?php endif; ?>
@@ -967,6 +751,178 @@
                     <?php endforeach; ?>
                 </div>
             </div>
+            <?php endif; ?>
+
+            <!-- SEÇÃO 4: PAUSAS -->
+            <?php if (!empty($checkins_pausas)): ?>
+            <div class="atividade-card">
+                <div class="atividade-card-header">
+                    <div class="atividade-card-title">
+                        <i class="icon-pause" style="color: #f39c12;"></i> Pausas Registradas
+                    </div>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <?php foreach ($checkins_pausas as $checkin): ?>
+                    <div class="checkin-card">
+                        <div class="checkin-icon pausa" style="background: linear-gradient(135deg, #f39c12, #e67e22);">
+                            <i class="icon-pause"></i>
+                        </div>
+                        <div class="checkin-content">
+                            <div class="checkin-title">
+                                Pausa na Execução
+                                <?php if ($checkin->tecnico_nome): ?>
+                                <span style="font-size: 12px; color: #888; margin-left: 10px;">
+                                    <i class="icon-user"></i> <?php echo htmlspecialchars($checkin->tecnico_nome); ?>
+                                </span>
+                                <?php endif; ?>
+                            </div>
+                            <div class="checkin-meta">
+                                <i class="icon-calendar"></i> <?php echo date('d/m/Y', strtotime($checkin->created_at)); ?>
+                                <i class="icon-time" style="margin-left: 10px;"></i> <?php echo date('H:i:s', strtotime($checkin->created_at)); ?>
+                                <?php if ($checkin->endereco_detectado): ?>
+                                | <i class="icon-map-marker"></i> <?php echo htmlspecialchars($checkin->endereco_detectado); ?>
+                                <?php endif; ?>
+                            </div>
+                            <?php if ($checkin->observacao): ?>
+                            <div style="margin-top: 8px; font-size: 13px; color: #666; background: #fff3cd; padding: 8px; border-radius: 6px; border-left: 3px solid #f39c12;">
+                                <strong>Motivo da Pausa:</strong> <?php echo htmlspecialchars($checkin->observacao); ?>
+                            </div>
+                            <?php endif; ?>
+                            <?php if ($checkin->foto_url): ?>
+                            <div style="margin-top: 10px;">
+                                <a href="<?php echo base_url($checkin->foto_url); ?>" target="_blank">
+                                    <img src="<?php echo base_url($checkin->foto_url); ?>" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; cursor: pointer; border: 2px solid #f39c12;"
+                                         title="Foto da pausa">
+                                </a>
+                            </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+            <?php endif; ?>
+
+            <!-- SEÇÃO 5: RETORNOS -->
+            <?php if (!empty($checkins_retornos)): ?>
+            <div class="atividade-card">
+                <div class="atividade-card-header">
+                    <div class="atividade-card-title">
+                        <i class="icon-play" style="color: #3498db;"></i> Retornos
+                    </div>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <?php foreach ($checkins_retornos as $checkin): ?>
+                    <div class="checkin-card">
+                        <div class="checkin-icon retorno" style="background: linear-gradient(135deg, #3498db, #2980b9);">
+                            <i class="icon-play"></i>
+                        </div>
+                        <div class="checkin-content">
+                            <div class="checkin-title">
+                                Retorno à Atividade
+                                <?php if ($checkin->tecnico_nome): ?>
+                                <span style="font-size: 12px; color: #888; margin-left: 10px;">
+                                    <i class="icon-user"></i> <?php echo htmlspecialchars($checkin->tecnico_nome); ?>
+                                </span>
+                                <?php endif; ?>
+                            </div>
+                            <div class="checkin-meta">
+                                <i class="icon-calendar"></i> <?php echo date('d/m/Y', strtotime($checkin->created_at)); ?>
+                                <i class="icon-time" style="margin-left: 10px;"></i> <?php echo date('H:i:s', strtotime($checkin->created_at)); ?>
+                                <?php if ($checkin->endereco_detectado): ?>
+                                | <i class="icon-map-marker"></i> <?php echo htmlspecialchars($checkin->endereco_detectado); ?>
+                                <?php endif; ?>
+                            </div>
+                            <?php if ($checkin->observacao): ?>
+                            <div style="margin-top: 8px; font-size: 13px; color: #666; background: #f8f9fa; padding: 8px; border-radius: 6px;">
+                                <strong>Observação:</strong> <?php echo htmlspecialchars($checkin->observacao); ?>
+                            </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+            <?php endif; ?>
+
+            <!-- SEÇÃO 6: FINALIZAÇÃO -->
+            <?php if (!empty($checkins_fim)): ?>
+            <div class="atividade-card" style="border-left: 4px solid #9b59b6;">
+                <div class="atividade-card-header">
+                    <div class="atividade-card-title">
+                        <i class="icon-signout" style="color: #9b59b6;"></i> Finalização (Check-out)
+                    </div>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <?php foreach ($checkins_fim as $checkin): ?>
+                    <div class="checkin-card">
+                        <div class="checkin-icon checkout" style="background: linear-gradient(135deg, #9b59b6, #8e44ad);">
+                            <i class="icon-signout"></i>
+                        </div>
+                        <div class="checkin-content">
+                            <div class="checkin-title">
+                                Atividade Finalizada
+                                <?php if ($checkin->tecnico_nome): ?>
+                                <span style="font-size: 12px; color: #888; margin-left: 10px;">
+                                    <i class="icon-user"></i> <?php echo htmlspecialchars($checkin->tecnico_nome); ?>
+                                </span>
+                                <?php endif; ?>
+                            </div>
+                            <div class="checkin-meta">
+                                <i class="icon-calendar"></i> <?php echo date('d/m/Y', strtotime($checkin->created_at)); ?>
+                                <i class="icon-time" style="margin-left: 10px;"></i> <?php echo date('H:i:s', strtotime($checkin->created_at)); ?>
+                                <?php if ($checkin->endereco_detectado): ?>
+                                | <i class="icon-map-marker"></i> <?php echo htmlspecialchars($checkin->endereco_detectado); ?>
+                                <?php endif; ?>
+                            </div>
+                            <?php if ($checkin->observacao): ?>
+                            <div style="margin-top: 8px; font-size: 13px; color: #666; background: #f5eef8; padding: 8px; border-radius: 6px; border-left: 3px solid #9b59b6;">
+                                <strong>Relatório Final:</strong> <?php echo nl2br(htmlspecialchars($checkin->observacao)); ?>
+                            </div>
+                            <?php endif; ?>
+                            <?php if ($checkin->foto_url): ?>
+                            <div style="margin-top: 10px;">
+                                <a href="<?php echo base_url($checkin->foto_url); ?>" target="_blank">
+                                    <img src="<?php echo base_url($checkin->foto_url); ?>" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px; cursor: pointer; border: 2px solid #9b59b6;"
+                                         title="Foto de conclusão">
+                                </a>
+                                <span style="font-size: 11px; color: #666; margin-left: 10px;">Foto de finalização</span>
+                            </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+            <?php endif; ?>
+
+            <!-- SEÇÃO 7: GALERIA DE FOTOS -->
+            <?php if (!empty($todas_fotos)): ?>
+            <div class="atividade-card">
+                <div class="atividade-card-header">
+                    <div class="atividade-card-title">
+                        <i class="icon-camera" style="color: #e74c3c;"></i> Galeria de Fotos
+                        <span style="font-size: 13px; color: #888; margin-left: 10px;">(<?php echo count($todas_fotos); ?> foto(s))</span>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px;">
+                    <?php foreach ($todas_fotos as $foto): ?>
+                    <div style="position: relative;">
+                        <a href="<?php echo base_url($foto['url']); ?>" target="_blank">
+                            <img src="<?php echo base_url($foto['url']); ?>"
+                                 style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1);"
+                                 title="Clique para ampliar">
+                        </a>
+                        <div style="position: absolute; bottom: 5px; left: 5px; right: 5px; background: rgba(0,0,0,0.7); color: white; font-size: 10px; padding: 4px 6px; border-radius: 4px;">
+                            <i class="icon-<?php echo $foto['tipo'] == 'checkin' ? 'signin' : ($foto['tipo'] == 'checkout' ? 'signout' : ($foto['tipo'] == 'pausa' ? 'pause' : 'play')); ?>"></i>
+                            <?php echo date('H:i', strtotime($foto['data'])); ?>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+            <?php endif; ?>
+
             <?php endif; ?>
 
             <!-- Ações -->
