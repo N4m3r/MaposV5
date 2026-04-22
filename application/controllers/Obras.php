@@ -1224,6 +1224,13 @@ class Obras extends MY_Controller
             // Mesclar etapa da atividade real
             if (!empty($this->data['atividade_real']->etapa_nome)) {
                 $this->data['atividade']->etapa_nome = $this->data['atividade_real']->etapa_nome;
+            } elseif (!empty($this->data['atividade_real']->etapa_id)) {
+                // Buscar nome da etapa pelo ID para atividades antigas
+                $etapa = $this->db->get_where('obra_etapas', ['id' => $this->data['atividade_real']->etapa_id])->row();
+                if ($etapa) {
+                    $this->data['atividade']->etapa_nome = $etapa->nome;
+                    $this->data['atividade_real']->etapa_nome = $etapa->nome;
+                }
             }
 
             // Mesclar horários de início e fim da atividade real

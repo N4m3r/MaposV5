@@ -456,13 +456,34 @@
                         <div class="label"><i class="icon-hard-hat"></i> Etapa</div>
                         <div class="value">
                             <?php
+                            $etapa_nome = null;
+
+                            // Prioridade 1: etapa_nome da atividade real
                             if (!empty($atividade_real->etapa_nome)) {
-                                echo htmlspecialchars($atividade_real->etapa_nome);
-                            } elseif (!empty($atividade->etapa_nome)) {
-                                echo htmlspecialchars($atividade->etapa_nome);
-                            } else {
-                                echo 'N/A';
+                                $etapa_nome = $atividade_real->etapa_nome;
                             }
+                            // Prioridade 2: etapa_nome da atividade planejada
+                            elseif (!empty($atividade->etapa_nome)) {
+                                $etapa_nome = $atividade->etapa_nome;
+                            }
+                            // Prioridade 3: buscar pelo etapa_id da atividade real
+                            elseif (!empty($atividade_real->etapa_id)) {
+                                $etapa_query = $this->db->get_where('obra_etapas', ['id' => $atividade_real->etapa_id]);
+                                $etapa_row = $etapa_query->row();
+                                if ($etapa_row) {
+                                    $etapa_nome = $etapa_row->nome;
+                                }
+                            }
+                            // Prioridade 4: buscar pelo etapa_id da atividade planejada
+                            elseif (!empty($atividade->etapa_id)) {
+                                $etapa_query = $this->db->get_where('obra_etapas', ['id' => $atividade->etapa_id]);
+                                $etapa_row = $etapa_query->row();
+                                if ($etapa_row) {
+                                    $etapa_nome = $etapa_row->nome;
+                                }
+                            }
+
+                            echo $etapa_nome ? htmlspecialchars($etapa_nome) : 'N/A';
                             ?>
                         </div>
                     </div>
@@ -472,7 +493,9 @@
                         <div class="label"><i class="icon-tasks"></i> Tipo</div>
                         <div class="value">
                             <?php
-                            $tipo_execucao = ($atividade_real->impedimento ?? 0) ? 'impedimento' : 'trabalho';
+                            // Verificar impedimento em ambas as atividades (real e planejada)
+                            $impedimento = ($atividade_real->impedimento ?? $atividade->impedimento ?? 0);
+                            $tipo_execucao = $impedimento ? 'impedimento' : 'trabalho';
                             $tipo_icon = $tipo_execucao === 'impedimento' ? 'warning-sign' : 'wrench';
                             $tipo_cor = $tipo_execucao === 'impedimento' ? '#e74c3c' : '#27ae60';
                             $tipo_label = $tipo_execucao === 'impedimento' ? 'Impedimento' : 'Trabalho';
@@ -551,15 +574,19 @@
                 </div>
 
                 <!-- Localização -->
-                <?php if (!empty($atividade_real->latitude) && !empty($atividade_real->longitude)): ?>
+                <?php
+                // Buscar latitude/longitude da atividade real ou planejada
+                $latitude = $atividade_real->latitude ?? $atividade->latitude ?? null;
+                $longitude = $atividade_real->longitude ?? $atividade->longitude ?? null;
+                if (!empty($latitude) && !empty($longitude)): ?>
                 <div class="localizacao-box">
                     <div class="titulo">
                         <i class="icon-map-marker"></i> Localização Registrada
                     </div>
                     <div style="font-size: 13px; color: #555;">
-                        <strong>Latitude:</strong> <?php echo $atividade_real->latitude; ?> |
-                        <strong>Longitude:</strong> <?php echo $atividade_real->longitude; ?>
-                        <a href="https://www.google.com/maps?q=<?php echo $atividade_real->latitude; ?>,<?php echo $atividade_real->longitude; ?>"
+                        <strong>Latitude:</strong> <?php echo $latitude; ?> |
+                        <strong>Longitude:</strong> <?php echo $longitude; ?>
+                        <a href="https://www.google.com/maps?q=<?php echo $latitude; ?>,<?php echo $longitude; ?>"
                            target="_blank"
                            style="margin-left: 10px; color: #3498db; text-decoration: none;">
                             <i class="icon-external-link"></i> Ver no Maps
@@ -622,7 +649,13 @@
             <?php endif; ?>
 
             <!-- Anotações e Registros -->
-            <?php if (!empty($atividade_real->observacoes) || !empty($atividade_real->problemas_encontrados) || !empty($atividade_real->solucao_aplicada)): ?>
+            <?php
+            // Buscar anotações de ambas as fontes
+            $observacoes = $atividade_real->observacoes ?? $atividade->observacoes ?? null;
+            $problemas = $atividade_real->problemas_encontrados ?? $atividade->problemas_encontrados ?? null;
+            $solucao = $atividade_real->solucao_aplicada ?? $atividade->solucao_aplicada ?? null;
+
+            if (!empty($observacoes) || !empty($problemas) || !empty($solucao)): ?>
             <div class="atividade-card">
                 <div class="atividade-card-header">
                     <div class="atividade-card-title">
@@ -630,35 +663,35 @@
                     </div>
                 </div>
                 <div class="anotacoes-section">
-                    <?php if (!empty($atividade_real->observacoes)): ?>
+                    <?php if (!empty($observacoes)): ?>
                     <div class="anotacao-item">
                         <div class="anotacao-header">
                             <span><i class="icon-comment"></i> Observações Gerais</span>
                         </div>
                         <div class="anotacao-content">
-                            <?php echo nl2br(htmlspecialchars($atividade_real->observacoes)); ?>
+                            <?php echo nl2br(htmlspecialchars($observacoes)); ?>
                         </div>
                     </div>
                     <?php endif; ?>
 
-                    <?php if (!empty($atividade_real->problemas_encontrados)): ?>
+                    <?php if (!empty($problemas)): ?>
                     <div class="anotacao-item problema">
                         <div class="anotacao-header">
                             <span><i class="icon-warning-sign"></i> Problemas Encontrados</span>
                         </div>
                         <div class="anotacao-content">
-                            <?php echo nl2br(htmlspecialchars($atividade_real->problemas_encontrados)); ?>
+                            <?php echo nl2br(htmlspecialchars($problemas)); ?>
                         </div>
                     </div>
                     <?php endif; ?>
 
-                    <?php if (!empty($atividade_real->solucao_aplicada)): ?>
+                    <?php if (!empty($solucao)): ?>
                     <div class="anotacao-item solucao">
                         <div class="anotacao-header">
                             <span><i class="icon-check"></i> Solução Aplicada</span>
                         </div>
                         <div class="anotacao-content">
-                            <?php echo nl2br(htmlspecialchars($atividade_real->solucao_aplicada)); ?>
+                            <?php echo nl2br(htmlspecialchars($solucao)); ?>
                         </div>
                     </div>
                     <?php endif; ?>
