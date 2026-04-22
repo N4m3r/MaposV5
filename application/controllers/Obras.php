@@ -1198,9 +1198,37 @@ class Obras extends MY_Controller
             $this->load->model('obra_checkins_model');
         }
 
+        // Carregar Atividades_model para buscar execução real do wizard
+        $this->load->model('Atividades_model', 'atividades');
+
         $this->data['obra'] = $this->obras_model->getById($this->data['atividade']->obra_id);
         $this->data['historico'] = $this->obra_atividades_model->getHistorico($atividade_id);
         $this->data['checkins'] = $this->obra_checkins_model->getByAtividade($atividade_id);
+
+        // Buscar atividade real (execução do wizard) vinculada a esta atividade planejada
+        // A vinculação é feita pelo campo obra_atividade_id na tabela os_atividades
+        $this->db->where('obra_atividade_id', $atividade_id);
+        $this->db->order_by('idAtividade', 'DESC');
+        $query = $this->db->get('os_atividades');
+        $atividade_real = $query ? $query->row() : null;
+
+        if ($atividade_real) {
+            // Buscar dados completos da atividade real (incluindo observações)
+            $this->data['atividade_real'] = $this->atividades->getByIdCompleto($atividade_real->idAtividade);
+
+            // Mesclar observações da atividade real com a atividade planejada
+            if (!empty($this->data['atividade_real']->observacoes)) {
+                $this->data['atividade']->observacoes = $this->data['atividade_real']->observacoes;
+            }
+
+            // Buscar checkins da atividade real também
+            $checkins_real = $this->obra_checkins_model->getByAtividade($atividade_real->idAtividade);
+            if (!empty($checkins_real)) {
+                // Mesclar checkins
+                $this->data['checkins'] = array_merge($this->data['checkins'], $checkins_real);
+            }
+        }
+
         $this->data['view'] = 'obras/atividade_view';
 
         return $this->layout();

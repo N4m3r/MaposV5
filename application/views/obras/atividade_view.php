@@ -415,6 +415,99 @@
                 </div>
                 <?php endif; ?>
 
+                <!-- Anotações do Wizard -->
+                <?php
+                // Processar observações do campo observacoes (formato: [data] texto)
+                $anotacoes = [];
+                if (!empty($atividade->observacoes)) {
+                    // Tentar extrair anotações no formato [data] texto
+                    preg_match_all('/\[(\d{2}\/\d{2}\/\d{4} \d{2}:\d{2})\] (.*?)(?=\[\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}\]|$)/s', $atividade->observacoes, $matches, PREG_SET_ORDER);
+                    if (!empty($matches)) {
+                        foreach ($matches as $match) {
+                            $anotacoes[] = [
+                                'data' => $match[1],
+                                'texto' => trim($match[2])
+                            ];
+                        }
+                    } else {
+                        // Se não conseguiu extrair no formato padrão, mostrar como uma anotação única
+                        $anotacoes[] = [
+                            'data' => date('d/m/Y H:i', strtotime($atividade->hora_inicio ?? 'now')),
+                            'texto' => $atividade->observacoes
+                        ];
+                    }
+                }
+                // Também buscar anotações dos checkins (registros de progresso)
+                $anotacoes_checkins = [];
+                if (!empty($checkins_processar)) {
+                    foreach ($checkins_processar as $check) {
+                        if (!empty($check->observacao)) {
+                            $anotacoes_checkins[] = [
+                                'data' => date('d/m/Y H:i', strtotime($check->created_at)),
+                                'texto' => $check->observacao,
+                                'tipo' => $check->tipo,
+                                'tecnico' => $check->tecnico_nome ?? 'Técnico'
+                            ];
+                        }
+                    }
+                }
+                ?>
+
+                <?php if (!empty($anotacoes) || !empty($anotacoes_checkins)): ?>
+                <div style="margin-top: 20px; background: #f0f7ff; border-left: 4px solid #3498db; padding: 20px; border-radius: 10px;">
+                    <div style="color: #3498db; font-weight: 600; margin-bottom: 15px; font-size: 16px;">
+                        <i class="icon-edit"></i> Anotações do Wizard
+                        <span style="font-size: 12px; color: #666; font-weight: normal; margin-left: 10px;">(Registros durante a execução)</span>
+                    </div>
+
+                    <!-- Anotações do campo observacoes -->
+                    <?php if (!empty($anotacoes)): ?>
+                    <div style="margin-bottom: 20px;">
+                        <?php foreach ($anotacoes as $anotacao): ?>
+                        <div style="background: white; border-radius: 8px; padding: 15px; margin-bottom: 10px; border-left: 3px solid #3498db; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <span style="font-size: 12px; color: #888;">
+                                    <i class="icon-calendar"></i> <?php echo $anotacao['data']; ?>
+                                </span>
+                                <span class="label label-info" style="font-size: 10px;">Anotação</span>
+                            </div>
+                            <div style="color: #333; line-height: 1.5;">
+                                <?php echo nl2br(htmlspecialchars($anotacao['texto'])); ?>
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                    <?php endif; ?>
+
+                    <!-- Anotações dos checkins -->
+                    <?php if (!empty($anotacoes_checkins)): ?>
+                    <div>
+                        <h5 style="color: #666; font-size: 13px; margin-bottom: 10px;">
+                            <i class="icon-time"></i> Registros durante Check-ins
+                        </h5>
+                        <?php foreach ($anotacoes_checkins as $anot): ?>
+                        <div style="background: white; border-radius: 8px; padding: 12px; margin-bottom: 8px; border-left: 3px solid #27ae60; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                <span style="font-size: 11px; color: #888;">
+                                    <i class="icon-calendar"></i> <?php echo $anot['data']; ?>
+                                    <?php if (!empty($anot['tecnico'])): ?>
+                                    <span style="margin-left: 8px;"><i class="icon-user"></i> <?php echo htmlspecialchars($anot['tecnico']); ?></span>
+                                    <?php endif; ?>
+                                </span>
+                                <span class="label" style="font-size: 10px; background: #27ae60;">
+                                    <?php echo ucfirst($anot['tipo'] ?? 'Registro'); ?>
+                                </span>
+                            </div>
+                            <div style="color: #333; font-size: 13px; line-height: 1.4;">
+                                <?php echo nl2br(htmlspecialchars($anot['texto'])); ?>
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                    <?php endif; ?>
+                </div>
+                <?php endif; ?>
+
                 <!-- Progresso -->
                 <div class="progress-section">
                     <div class="progress-header">

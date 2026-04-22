@@ -1224,11 +1224,13 @@ class Atividades extends MY_Controller
         }
 
         $dados = [
-            'os_id' => $atividade->os_id,
+            'os_id' => $atividade->os_id ?? 0,
             'tecnico_id' => $tecnico_id,
             'descricao' => $descricao,
-            'tipo_foto' => 'execucao',
-            'etapa' => 'durante',
+            'tipo_foto' => $this->input->post('tipo_foto') ?? 'execucao',
+            'etapa' => $this->input->post('etapa') ?? 'durante',
+            'latitude' => $this->input->post('latitude'),
+            'longitude' => $this->input->post('longitude'),
         ];
 
         // Processa foto

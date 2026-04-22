@@ -2272,8 +2272,167 @@ const WizardAtendimento = {
 
     // Adicionar foto durante execução
     adicionarFoto: function() {
-        var fotoInput = document.getElementById('fotoCheckout');
-        if (fotoInput) fotoInput.click();
+        var fotoInput = document.getElementById('fotoExecucaoInput');
+        if (!fotoInput) return;
+
+        // Limpar seleção anterior
+        fotoInput.value = '';
+
+        // Configurar evento change para processar a foto
+        fotoInput.onchange = function(e) {
+            if (e.target.files && e.target.files[0]) {
+                WizardAtendimento.processarFotoExecucao(e.target.files[0]);
+            }
+        };
+
+        fotoInput.click();
+    },
+
+    // Processar e enviar foto de execução
+    processarFotoExecucao: function(file) {
+        // Validar tamanho (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            alert('A foto deve ter no máximo 5MB.');
+            return;
+        }
+
+        // Validar tipo
+        if (!file.type.startsWith('image/')) {
+            alert('Por favor, selecione apenas arquivos de imagem.');
+            return;
+        }
+
+        const self = this;
+
+        // Criar preview
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            self.enviarFotoExecucao(file, e.target.result);
+        };
+        reader.readAsDataURL(file);
+    },
+
+    // Enviar foto para o servidor
+    enviarFotoExecucao: function(file, previewBase64) {
+        const csrfToken = this.getCsrfToken();
+        const atividadeEmAndamento = dadosObra.atividadeAndamento;
+
+        // Buscar ID da atividade
+        const atividadeId = atividadeEmAndamento
+            ? (atividadeEmAndamento.id || atividadeEmAndamento.idAtividade)
+            : (this.atividadeSelecionada ? this.atividadeSelecionada.id : null);
+
+        if (!atividadeId) {
+            alert('Nenhuma atividade em andamento para vincular a foto.');
+            return;
+        }
+
+        // Obter localização
+        const self = this;
+        const enviar = function(lat, lng) {
+            const formData = new FormData();
+            formData.append('MAPOS_TOKEN', csrfToken);
+            formData.append('obra_id', dadosObra.obraId);
+            formData.append('atividade_id', atividadeId);
+            formData.append('tipo_foto', 'execucao');
+            formData.append('etapa', 'durante');
+            formData.append('foto', file);
+            formData.append('latitude', lat || '');
+            formData.append('longitude', lng || '');
+
+            // Mostrar loading
+            const loading = document.createElement('div');
+            loading.id = 'fotoLoading';
+            loading.innerHTML = '<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:99999;display:flex;align-items:center;justify-content:center;"><div style="background:white;padding:20px;border-radius:10px;text-align:center;"><i class="icon-spinner icon-spin" style="font-size:30px;color:#9b59b6;"></i><p>Salvando foto...</p></div></div>';
+            document.body.appendChild(loading);
+
+            fetch('<?= site_url("atividades/adicionar_foto_obra") ?>', {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: formData
+            })
+            .then(r => {
+                document.getElementById('fotoLoading')?.remove();
+                const contentType = r.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    return r.json();
+                } else {
+                    return r.text().then(text => {
+                        console.error('Resposta não-JSON:', text.substring(0, 500));
+                        throw new Error('Resposta do servidor não é JSON válido');
+                    });
+                }
+            })
+            .then(data => {
+                if (data.success) {
+                    // Mostrar modal de confirmação
+                    self.mostrarModalFotoSalva(previewBase64, lat, lng);
+                } else {
+                    alert('Erro ao salvar foto: ' + (data.message || 'Erro desconhecido'));
+                }
+            })
+            .catch(err => {
+                document.getElementById('fotoLoading')?.remove();
+                console.error('Erro:', err);
+                alert('Erro ao salvar foto. Verifique o console para mais detalhes.');
+            });
+        };
+
+        // Obter localização
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    enviar(position.coords.latitude, position.coords.longitude);
+                },
+                (error) => {
+                    console.warn('Erro ao obter localização:', error);
+                    enviar(null, null);
+                }
+            );
+        } else {
+            enviar(null, null);
+        }
+    },
+
+    // Mostrar modal de foto salva
+    mostrarModalFotoSalva: function(previewBase64, lat, lng) {
+        // Atualizar preview
+        var previewEl = document.getElementById('previewFotoSalva');
+        if (previewEl) {
+            previewEl.src = previewBase64;
+        }
+
+        // Atualizar localização
+        var locEl = document.getElementById('fotoLocalizacao');
+        if (locEl) {
+            if (lat && lng) {
+                locEl.textContent = 'Lat: ' + lat.toFixed(6) + ', Lng: ' + lng.toFixed(6);
+            } else {
+                locEl.textContent = 'Localização não disponível';
+            }
+        }
+
+        // Atualizar data/hora
+        var dataHoraEl = document.getElementById('fotoDataHora');
+        if (dataHoraEl) {
+            dataHoraEl.textContent = new Date().toLocaleString('pt-BR');
+        }
+
+        // Abrir modal
+        var modal = document.getElementById('modalFotoSalva');
+        if (modal) {
+            modal.style.display = 'block';
+        }
+    },
+
+    // Fechar modal de foto
+    fecharModalFoto: function() {
+        var modal = document.getElementById('modalFotoSalva');
+        if (modal) {
+            modal.style.display = 'none';
+        }
     },
 
     // Pausar execução
@@ -2603,6 +2762,7 @@ document.addEventListener('click', function(e) {
     var modalProgresso = document.getElementById('modalConfirmarProgresso');
     var modalCheckout = document.getElementById('modalConfirmarCheckout');
     var modalProgressoAntigo = document.getElementById('modalProgresso');
+    var modalFoto = document.getElementById('modalFotoSalva');
 
     if (modalIniciar && e.target === modalIniciar) {
         modalIniciar.style.display = 'none';
@@ -2622,12 +2782,15 @@ document.addEventListener('click', function(e) {
     if (modalProgressoAntigo && e.target === modalProgressoAntigo) {
         modalProgressoAntigo.style.display = 'none';
     }
+    if (modalFoto && e.target === modalFoto) {
+        modalFoto.style.display = 'none';
+    }
 });
 
 // Fechar modais ao pressionar ESC
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
-        var modais = ['modalConfirmarIniciar', 'modalConfirmarFinalizar', 'modalConfirmarPausar', 'modalConfirmarProgresso', 'modalConfirmarCheckout', 'modalProgresso'];
+        var modais = ['modalConfirmarIniciar', 'modalConfirmarFinalizar', 'modalConfirmarPausar', 'modalConfirmarProgresso', 'modalConfirmarCheckout', 'modalProgresso', 'modalFotoSalva'];
         modais.forEach(function(id) {
             var modal = document.getElementById(id);
             if (modal) modal.style.display = 'none';
