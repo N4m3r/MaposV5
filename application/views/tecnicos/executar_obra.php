@@ -908,12 +908,15 @@ textarea.wizard-input {
         <div class="etapas-lista">
             <?php foreach ($etapas as $etapa): ?>
                 <?php
+                $etapaId = $etapa->id ?? $etapa->idEtapa ?? null;
+                if (!$etapaId) continue;
+
                 $statusEtapa = $etapa->status ?? 'aberto';
                 $statusClass = $statusEtapa === 'concluida' ? 'concluida' : ($statusEtapa === 'em-andamento' ? 'em-andamento' : 'aberto');
                 $statusLabel = $statusEtapa === 'concluida' ? 'Concluída' : ($statusEtapa === 'em-andamento' ? 'Em Andamento' : 'Aberta');
 
                 // Buscar atividades desta etapa
-                $atividadesEtapa = $atividades_por_etapa[$etapa->id] ?? [];
+                $atividadesEtapa = $atividades_por_etapa[$etapaId] ?? [];
                 $atividadeAndamento = null;
                 foreach ($atividadesEtapa as $ativ) {
                     if (($ativ->status ?? '') === 'em_andamento') {
@@ -925,8 +928,8 @@ textarea.wizard-input {
                 <div class="etapa-card">
                     <div class="etapa-header <?= $statusClass ?>">
                         <span class="etapa-status-badge"><?= $statusLabel ?></span>
-                        <div class="etapa-numero"><i class="icon-hard-hat"></i> Etapa #<?= $etapa->numero_etapa ?? $etapa->id ?></div>
-                        <h2 class="etapa-nome"><?= htmlspecialchars($etapa->nome) ?></h2>
+                        <div class="etapa-numero"><i class="icon-hard-hat"></i> Etapa #<?= $etapa->numero_etapa ?? $etapaId ?></div>
+                        <h2 class="etapa-nome"><?= htmlspecialchars($etapa->nome ?? 'Etapa sem nome') ?></h2>
                         <div class="etapa-progresso">
                             <i class="icon-chart"></i> <?= $etapa->percentual_concluido ?? 0 ?>% concluído
                         </div>
@@ -944,7 +947,7 @@ textarea.wizard-input {
                         <!-- Botão Iniciar Atendimento Geral -->
                         <?php if (empty($wizard_em_andamento)): ?>
                         <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #ddd;">
-                            <button class="btn-acao iniciar" onclick="WizardAtendimento.iniciar(<?= $etapa->id ?>, '<?= htmlspecialchars($etapa->nome) ?>', null, null)" style="width: 100%; justify-content: center;">
+                            <button class="btn-acao iniciar" onclick="WizardAtendimento.iniciar(<?= $etapaId ?>, '<?= htmlspecialchars($etapa->nome ?? 'Etapa') ?>', null, null)" style="width: 100%; justify-content: center;">
                                 <i class="icon-play"></i> Iniciar Atendimento nesta Etapa
                             </button>
                         </div>
@@ -971,7 +974,7 @@ textarea.wizard-input {
                                     </div>
                                     <div class="atividade-acoes">
                                         <?php if ($podeIniciar): ?>
-                                        <button class="btn-acao iniciar" onclick="WizardAtendimento.iniciar(<?= $etapa->id ?>, '<?= htmlspecialchars($etapa->nome) ?>', <?= $ativ->id ?>, '<?= htmlspecialchars($ativ->titulo ?? $ativ->descricao ?? 'Atividade') ?>')">
+                                        <button class="btn-acao iniciar" onclick="WizardAtendimento.iniciar(<?= $etapaId ?>, '<?= htmlspecialchars($etapa->nome ?? 'Etapa') ?>', <?= $ativ->id ?>, '<?= htmlspecialchars($ativ->titulo ?? $ativ->descricao ?? 'Atividade') ?>')">
                                             <i class="icon-play"></i> Iniciar
                                         </button>
                                         <?php elseif ($statusAtiv === 'em_andamento' || $statusAtiv === 'iniciada'): ?>
@@ -991,7 +994,7 @@ textarea.wizard-input {
                         <div class="empty-state" style="padding: 20px;">
                             <p>Nenhuma atividade cadastrada nesta etapa</p>
                             <?php if (empty($wizard_em_andamento)): ?>
-                            <button class="btn-acao iniciar" onclick="WizardAtendimento.iniciar(<?= $etapa->id ?>, '<?= htmlspecialchars($etapa->nome) ?>', null, null)" style="margin-top: 10px;">
+                            <button class="btn-acao iniciar" onclick="WizardAtendimento.iniciar(<?= $etapaId ?>, '<?= htmlspecialchars($etapa->nome ?? 'Etapa') ?>', null, null)" style="margin-top: 10px;">
                                 <i class="icon-play"></i> Iniciar Atendimento Geral
                             </button>
                             <?php endif; ?>
@@ -1052,10 +1055,13 @@ textarea.wizard-input {
                         <i class="icon-list"></i> Selecione a Etapa
                     </div>
                     <div class="etapas-grid" id="etapasGrid">
-                        <?php foreach ($etapas as $etapa): ?>
-                        <div class="etapa-selecao" data-etapa-id="<?= $etapa->id ?>" onclick="WizardAtendimento.selecionarEtapa(this)">
+                        <?php foreach ($etapas as $etapa):
+                            $etapaId = $etapa->id ?? $etapa->idEtapa ?? null;
+                            if (!$etapaId) continue;
+                        ?>
+                        <div class="etapa-selecao" data-etapa-id="<?= $etapaId ?>" onclick="WizardAtendimento.selecionarEtapa(this)">
                             <i class="icon-hard-hat"></i>
-                            <h4><?= htmlspecialchars($etapa->nome) ?></h4>
+                            <h4><?= htmlspecialchars($etapa->nome ?? 'Etapa') ?></h4>
                             <p><?= $etapa->percentual_concluido ?? 0 ?>% concluído</p>
                         </div>
                         <?php endforeach; ?>
