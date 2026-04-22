@@ -750,42 +750,40 @@ class Atividades extends MY_Controller
                 return;
             }
 
-        try {
+            $obra_id = $this->input->post('obra_id');
+            $atividade_id = $this->input->post('atividade_id');
+            $observacao = $this->input->post('observacao');
 
-        $obra_id = $this->input->post('obra_id');
-        $atividade_id = $this->input->post('atividade_id');
-        $observacao = $this->input->post('observacao');
-
-        if (!$observacao) {
-            echo json_encode(['success' => false, 'message' => 'Observação não informada.']);
-            return;
-        }
-
-        // Busca atividade em andamento na obra
-        $atividade = $this->atividades->getAtividadeEmAndamentoNaObra($tecnico_id, $obra_id);
-
-        if (!$atividade) {
-            // Tenta buscar pela ID específica
-            $atividade = $this->atividades->getById($atividade_id);
-            if (!$atividade || $atividade->tecnico_id != $tecnico_id) {
-                echo json_encode(['success' => false, 'message' => 'Atividade não encontrada ou não pertence a você.']);
+            if (!$observacao) {
+                echo json_encode(['success' => false, 'message' => 'Observação não informada.']);
                 return;
             }
-        }
 
-        // Atualiza observações
-        $observacoes_atual = $atividade->observacoes ?? '';
-        $nova_observacao = $observacoes_atual ? $observacoes_atual . "\n\n[" . date('d/m/Y H:i') . "] " . $observacao : "[" . date('d/m/Y H:i') . "] " . $observacao;
+            // Busca atividade em andamento na obra
+            $atividade = $this->atividades->getAtividadeEmAndamentoNaObra($tecnico_id, $obra_id);
 
-        $result = $this->atividades->atualizar($atividade->idAtividade, [
-            'observacoes' => $nova_observacao
-        ]);
+            if (!$atividade) {
+                // Tenta buscar pela ID específica
+                $atividade = $this->atividades->getById($atividade_id);
+                if (!$atividade || $atividade->tecnico_id != $tecnico_id) {
+                    echo json_encode(['success' => false, 'message' => 'Atividade não encontrada ou não pertence a você.']);
+                    return;
+                }
+            }
 
-        if ($result) {
-            echo json_encode(['success' => true, 'message' => 'Observação registrada com sucesso!']);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'Erro ao registrar observação.']);
-        }
+            // Atualiza observações
+            $observacoes_atual = $atividade->observacoes ?? '';
+            $nova_observacao = $observacoes_atual ? $observacoes_atual . "\n\n[" . date('d/m/Y H:i') . "] " . $observacao : "[" . date('d/m/Y H:i') . "] " . $observacao;
+
+            $result = $this->atividades->atualizar($atividade->idAtividade, [
+                'observacoes' => $nova_observacao
+            ]);
+
+            if ($result) {
+                echo json_encode(['success' => true, 'message' => 'Observação registrada com sucesso!']);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Erro ao registrar observação.']);
+            }
         } catch (Exception $e) {
             log_message('error', 'Erro em registrar_observacao: ' . $e->getMessage());
             header('Content-Type: application/json');
@@ -919,10 +917,8 @@ class Atividades extends MY_Controller
                 return;
             }
 
-        try {
-
-        $obra_id = $this->input->post('obra_id');
-        $atividade_id = $this->input->post('atividade_id');
+            $obra_id = $this->input->post('obra_id');
+            $atividade_id = $this->input->post('atividade_id');
 
         // Busca atividade em andamento do técnico na obra
         $atividade = $this->atividades->getAtividadeEmAndamentoNaObra($tecnico_id, $obra_id);
