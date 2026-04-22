@@ -56,6 +56,8 @@ class Migration_Create_atividades_tables extends CI_Migration
             `motivo_nao_concluida` TEXT,
             `assinatura_cliente` TEXT COMMENT 'base64 da assinatura',
             `assinatura_tecnico` TEXT COMMENT 'base64 da assinatura',
+            `foto_checkin` VARCHAR(255) COMMENT 'caminho da foto de entrada',
+            `foto_checkout` VARCHAR(255) COMMENT 'caminho da foto de saída',
             `latitude` DECIMAL(10,8),
             `longitude` DECIMAL(11,8),
             `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

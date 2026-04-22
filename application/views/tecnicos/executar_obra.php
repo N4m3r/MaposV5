@@ -740,6 +740,33 @@
     border-color: #11998e;
 }
 
+/* ===== Botão Remover Foto ===== */
+.btn-remover-foto {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 30px;
+    height: 30px;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);
+    transition: all 0.2s;
+    z-index: 10;
+}
+.btn-remover-foto:hover {
+    background: #c0392b;
+    transform: scale(1.1);
+}
+.btn-remover-foto i {
+    font-size: 14px;
+}
+
 /* ===== Botões Principais ===== */
 .wizard-btn-principal {
     display: block;
@@ -1158,13 +1185,18 @@ textarea.wizard-input {
                         <div class="wizard-card-titulo">
                             <i class="icon-camera"></i> Foto de Registro (Opcional)
                         </div>
-                        <div class="foto-upload" onclick="document.getElementById('fotoCheckin').click()">
+                        <div class="foto-upload" id="uploadCheckin" onclick="document.getElementById('fotoCheckin').click()">
                             <i class="icon-camera"></i>
                             <h4>Clique para adicionar foto</h4>
                             <p>Registre o estado inicial do local</p>
-                            <input type="file" id="fotoCheckin" accept="image/*" capture="environment" style="display: none;" onchange="WizardAtendimento.previewFoto(this, 'previewCheckin')">
+                            <input type="file" id="fotoCheckin" accept="image/*" capture="environment" style="display: none;" onchange="WizardAtendimento.previewFoto(this, 'previewCheckin', 'uploadCheckin')">
                         </div>
-                        <img id="previewCheckin" class="foto-preview" style="display: none;">
+                        <div id="containerPreviewCheckin" style="display: none; position: relative; margin-top: 15px;">
+                            <img id="previewCheckin" class="foto-preview" style="width: 100%; max-width: 300px; border-radius: 10px;">
+                            <button type="button" class="btn-remover-foto" onclick="WizardAtendimento.removerFoto('fotoCheckin', 'previewCheckin', 'containerPreviewCheckin', 'uploadCheckin')" title="Remover foto">
+                                <i class="icon-remove"></i>
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Info de Localização -->
@@ -1253,13 +1285,18 @@ textarea.wizard-input {
                     <div class="wizard-card-titulo">
                         <i class="icon-camera"></i> Fotos de Registro
                     </div>
-                    <div class="foto-upload" onclick="document.getElementById('fotoCheckout').click()">
+                    <div class="foto-upload" id="uploadCheckout" onclick="document.getElementById('fotoCheckout').click()">
                         <i class="icon-camera"></i>
                         <h4>Adicionar foto de saída</h4>
                         <p>Documente o trabalho realizado</p>
-                        <input type="file" id="fotoCheckout" accept="image/*" capture="environment" style="display: none;" onchange="WizardAtendimento.previewFoto(this, 'previewCheckout')">
+                        <input type="file" id="fotoCheckout" accept="image/*" capture="environment" style="display: none;" onchange="WizardAtendimento.previewFoto(this, 'previewCheckout', 'uploadCheckout')">
                     </div>
-                    <img id="previewCheckout" class="foto-preview" style="display: none;">
+                    <div id="containerPreviewCheckout" style="display: none; position: relative; margin-top: 15px;">
+                        <img id="previewCheckout" class="foto-preview" style="width: 100%; max-width: 300px; border-radius: 10px;">
+                        <button type="button" class="btn-remover-foto" onclick="WizardAtendimento.removerFoto('fotoCheckout', 'previewCheckout', 'containerPreviewCheckout', 'uploadCheckout')" title="Remover foto">
+                            <i class="icon-remove"></i>
+                        </button>
+                    </div>
 
                     <!-- Galeria de fotos já tiradas -->
                     <div id="galeriaFotos" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px;">
@@ -1740,15 +1777,67 @@ const WizardAtendimento = {
     },
 
     // Preview de foto
-    previewFoto: function(input, previewId) {
+    previewFoto: function(input, previewId, uploadId) {
         if (input.files && input.files[0]) {
+            // Validar tamanho (max 5MB)
+            if (input.files[0].size > 5 * 1024 * 1024) {
+                alert('A foto deve ter no máximo 5MB.');
+                input.value = '';
+                return;
+            }
+
+            // Validar tipo
+            if (!input.files[0].type.startsWith('image/')) {
+                alert('Por favor, selecione apenas arquivos de imagem.');
+                input.value = '';
+                return;
+            }
+
             const reader = new FileReader();
             reader.onload = function(e) {
                 const img = document.getElementById(previewId);
+                const container = document.getElementById('containerPreview' + previewId.replace('preview', ''));
+                const upload = document.getElementById(uploadId);
+
                 img.src = e.target.result;
-                img.style.display = 'block';
+
+                // Mostrar container do preview e esconder upload
+                if (container) container.style.display = 'block';
+                if (upload) upload.style.display = 'none';
+            };
+            reader.onerror = function() {
+                alert('Erro ao ler a foto. Tente novamente.');
+                input.value = '';
             };
             reader.readAsDataURL(input.files[0]);
+        }
+    },
+
+    // Remover foto selecionada
+    removerFoto: function(inputId, previewId, containerId, uploadId) {
+        const input = document.getElementById(inputId);
+        const preview = document.getElementById(previewId);
+        const container = document.getElementById(containerId);
+        const upload = document.getElementById(uploadId);
+
+        // Limpar input file
+        if (input) {
+            input.value = '';
+        }
+
+        // Limpar preview
+        if (preview) {
+            preview.src = '';
+        }
+
+        // Esconder container do preview
+        if (container) {
+            container.style.display = 'none';
+        }
+
+        // Mostrar botão de upload novamente
+        if (upload) {
+            upload.style.display = 'block';
         }
     },
 
@@ -1834,7 +1923,10 @@ const WizardAtendimento = {
 
         const fotoInput = document.getElementById('fotoCheckin');
         if (fotoInput.files.length > 0) {
+            console.log('Enviando foto:', fotoInput.files[0].name, 'Tamanho:', fotoInput.files[0].size);
             formData.append('foto', fotoInput.files[0]);
+        } else {
+            console.log('Nenhuma foto selecionada');
         }
 
         fetch('<?= site_url("atividades/checkin_obra") ?>', {
@@ -2175,7 +2267,10 @@ const WizardAtendimento = {
 
         const fotoInput = document.getElementById('fotoCheckout');
         if (fotoInput && fotoInput.files.length > 0) {
+            console.log('Enviando foto checkout:', fotoInput.files[0].name, 'Tamanho:', fotoInput.files[0].size);
             formData.append('foto_saida', fotoInput.files[0]);
+        } else {
+            console.log('Nenhuma foto de saída selecionada');
         }
 
         fetch('<?= site_url("atividades/checkout_obra") ?>', {

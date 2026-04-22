@@ -1377,15 +1377,28 @@ class Atividades extends MY_Controller
         $config['encrypt_name'] = true;
 
         if (!is_dir($config['upload_path'])) {
-            mkdir($config['upload_path'], 0755, true);
+            if (!mkdir($config['upload_path'], 0755, true)) {
+                log_message('error', 'Falha ao criar diretório: ' . $config['upload_path']);
+                return null;
+            }
+        }
+
+        // Verificar permissões do diretório
+        if (!is_writable($config['upload_path'])) {
+            log_message('error', 'Diretório sem permissão de escrita: ' . $config['upload_path']);
+            return null;
         }
 
         $this->load->library('upload', $config);
 
         if ($this->upload->do_upload($input_name)) {
-            return $this->upload->data('file_name');
+            $data = $this->upload->data();
+            log_message('info', 'Foto upload: ' . $data['file_name']);
+            return $data['file_name'];
         }
 
+        $error = $this->upload->display_errors('', '');
+        log_message('error', 'Erro upload foto: ' . $error);
         return null;
     }
 

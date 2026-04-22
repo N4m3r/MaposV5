@@ -636,41 +636,6 @@
         </div>
     </div>
 
-    <div style="background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; margin-bottom: 20px; font-size: 13px;">
-        <strong><i class="icon-info-sign"></i> Informações:</strong>
-        Obra ID: <code><?php echo isset($obra) ? $obra->id : 'N/A'; ?></code> |
-        Total de atividades: <code id="totalAtividadesCounter"><?php echo isset($atividades) ? count($atividades) : 0; ?></code>
-        <button onclick="location.reload()" style="float: right; padding: 4px 12px; font-size: 12px;">
-            <i class="icon-refresh"></i> Recarregar
-        </button>
-
-        <?php if (!isset($atividades) || empty($atividades)): ?>
-        <div id="semAtividadesMsg" style="margin-top: 10px; padding: 15px; background: #fff3cd; border: 1px solid #ffc107; border-radius: 4px;">
-            <i class="icon-warning-sign" style="font-size: 18px; color: #856404;"></i>
-            <strong style="color: #856404;"> Nenhuma atividade cadastrada para esta obra!</strong><br><br>
-
-            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
-                <button onclick="$('#modalAdicionar').modal('show')" class="btn btn-success">
-                    <i class="icon-plus"></i> Adicionar Primeira Atividade
-                </button>
-
-                <a href="<?php echo site_url('obras/criarAtividadeTeste/' . (isset($obra) ? $obra->id : 0)); ?>" class="btn btn-info">
-                    <i class="icon-magic"></i> Criar Atividade de Teste
-                </a>
-                <?php endif; ?>
-
-                <a href="<?php echo site_url('diagnostico'); ?>" class="btn btn-mini">
-                    <i class="icon-wrench"></i> Diagnóstico
-                </a>
-                <a href="<?php echo site_url('obras/verificarAtividades/' . (isset($obra) ? $obra->id : 0)); ?>" class="btn btn-mini btn-info" target="_blank">
-                    <i class="icon-search"></i> Verificar Banco
-                </a>
-            </div>
-        </div>
-        <?php endif; ?>
-        <div style="clear: both;"></div>
-    </div>
 
     <!-- Filtros -->
     <div class="atividades-filters">
@@ -836,11 +801,8 @@
     <?php if (isset($atividades) && !empty($atividades) && is_array($atividades)): ?>
     <div class="atividades-grid" id="atividadesGrid">
         <?php
-        $count = 0;
         foreach ($atividades as $atividade):
-            $count++;
             if (!is_object($atividade)) {
-                echo '<div style="background: red; color: white; padding: 5px;">Atividade ' . $count . ' não é objeto!</div>';
                 continue;
             }
         ?>
@@ -953,11 +915,6 @@
             <i class="icon-plus"></i> Adicionar Primeira Atividade
         </button>
         <?php endif; ?>
-        <div style="margin-top: 20px;">
-            <a href="<?php echo site_url('diagnostico'); ?>" class="btn btn-warning">
-                <i class="icon-wrench"></i> Ir para Diagnóstico
-            </a>
-        </div>
     </div>
     <?php endif; ?>
 </div>

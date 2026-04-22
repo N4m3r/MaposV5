@@ -371,10 +371,6 @@ if (!function_exists('formatar_duracao')) {
                     <div class="text-muted">
                         <?= formatar_duracao($atv->duracao_minutos) ?>
                     </div>
-                    <?php else: ?>
-                    <div class="atividade-hora-box" style="background: #ffc107; color: #000;">
-                        <i class="bx bx-time"></i> Em andamento...
-                    </div>
                     <?php endif; ?>
                 </div>
             </div>
