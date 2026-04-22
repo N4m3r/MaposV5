@@ -1303,6 +1303,75 @@ textarea.wizard-input {
     </div>
 </div>
 
+<!-- Modal de Confirmação - Iniciar Atividade -->
+<div id="modalConfirmarIniciar" class="wizard-overlay" style="z-index: 10001; display: none;">
+    <div class="wizard-container" style="justify-content: center;">
+        <div class="wizard-card" style="max-width: 450px; margin: 0 auto; text-align: center;">
+            <div style="font-size: 60px; color: #11998e; margin-bottom: 20px;">
+                <i class="icon-play-circle"></i>
+            </div>
+            <h3 style="margin: 0 0 10px 0; font-size: 20px;">Iniciar Atendimento?</h3>
+            <p style="color: #666; margin-bottom: 20px;">
+                Você está prestes a iniciar:<br>
+                <strong id="confirmarIniciarTexto">--</strong>
+            </p>
+
+            <div class="wizard-info-box" style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                    <i class="icon-hard-hat" style="color: #11998e;"></i>
+                    <span id="confirmarIniciarEtapa">--</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <i class="icon-tasks" style="color: #11998e;"></i>
+                    <span id="confirmarIniciarAtividade">--</span>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button class="wizard-btn-principal" style="background: #95a5a6; flex: 1;" onclick="document.getElementById('modalConfirmarIniciar').style.display='none'">
+                    <i class="icon-remove"></i> Cancelar
+                </button>
+                <button class="wizard-btn-principal" style="flex: 1;" onclick="WizardAtendimento.confirmarIniciar()">
+                    <i class="icon-play"></i> Iniciar Agora
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Confirmação - Finalizar Atividade -->
+<div id="modalConfirmarFinalizar" class="wizard-overlay" style="z-index: 10001; display: none;">
+    <div class="wizard-container" style="justify-content: center;">
+        <div class="wizard-card" style="max-width: 450px; margin: 0 auto; text-align: center;">
+            <div style="font-size: 60px; color: #27ae60; margin-bottom: 20px;">
+                <i class="icon-stop-circle"></i>
+            </div>
+
+            <h3 style="margin: 0 0 10px 0; font-size: 20px;">Finalizar Atendimento?</h3>
+
+            <p style="color: #666; margin-bottom: 20px;">
+                Deseja encerrar a atividade atual e prosseguir para o checkout?
+            </p>
+
+            <div class="resumo-box" style="margin-bottom: 20px;">
+                <div class="resumo-item">
+                    <span>Tempo de execução:</span>
+                    <strong class="tempo" id="confirmarFinalizarTempo">00:00</strong>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button class="wizard-btn-principal" style="background: #95a5a6; flex: 1;" onclick="document.getElementById('modalConfirmarFinalizar').style.display='none'">
+                    <i class="icon-remove"></i> Continuar
+                </button>
+                <button class="wizard-btn-principal" style="flex: 1; background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);" onclick="WizardAtendimento.confirmarFinalizar()">
+                    <i class="icon-stop"></i> Finalizar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 // Dados da obra e etapas
 const dadosObra = {
@@ -1329,25 +1398,60 @@ const WizardAtendimento = {
         return tokenEl ? tokenEl.value : '';
     },
 
-    // Iniciar wizard
-    iniciar: function(etapaId = null, etapaNome = null, atividadeId = null, atividadeNome = null) {
-        this.stepAtual = 1;
-        this.etapaSelecionada = etapaId ? { id: etapaId, nome: etapaNome } : null;
-        this.atividadeSelecionada = atividadeId ? { id: atividadeId, nome: atividadeNome } : null;
+    // Dados temporários para confirmação
+    _dadosConfirmacao: null,
 
-        // Abrir modal
-        var modal = document.getElementById('wizardModal');
-        if (modal) {
-            modal.style.display = 'block';
+    // Iniciar wizard - mostra modal de confirmação
+    iniciar: function(etapaId = null, etapaNome = null, atividadeId = null, atividadeNome = null) {
+        // Guardar dados para confirmação
+        this._dadosConfirmacao = {
+            etapaId: etapaId,
+            etapaNome: etapaNome,
+            atividadeId: atividadeId,
+            atividadeNome: atividadeNome
+        };
+
+        // Atualizar modal de confirmação
+        var etapaEl = document.getElementById('confirmarIniciarEtapa');
+        var atividadeEl = document.getElementById('confirmarIniciarAtividade');
+        var textoEl = document.getElementById('confirmarIniciarTexto');
+
+        if (etapaEl) etapaEl.textContent = etapaNome || 'Etapa Geral';
+        if (atividadeEl) atividadeEl.textContent = atividadeNome || 'Atendimento Geral';
+        if (textoEl) {
+            textoEl.textContent = atividadeNome
+                ? 'Atividade: ' + atividadeNome
+                : 'Atendimento na etapa: ' + (etapaNome || 'Geral');
         }
+
+        // Abrir modal de confirmação
+        var modal = document.getElementById('modalConfirmarIniciar');
+        if (modal) modal.style.display = 'block';
+    },
+
+    // Confirmar início após modal
+    confirmarIniciar: function() {
+        // Fechar modal de confirmação
+        var modalConfirm = document.getElementById('modalConfirmarIniciar');
+        if (modalConfirm) modalConfirm.style.display = 'none';
+
+        var dados = this._dadosConfirmacao;
+        if (!dados) return;
+
+        this.stepAtual = 1;
+        this.etapaSelecionada = dados.etapaId ? { id: dados.etapaId, nome: dados.etapaNome } : null;
+        this.atividadeSelecionada = dados.atividadeId ? { id: dados.atividadeId, nome: dados.atividadeNome } : null;
+
+        // Abrir wizard principal
+        var modal = document.getElementById('wizardModal');
+        if (modal) modal.style.display = 'block';
         document.body.style.overflow = 'hidden';
 
-        // Se já tem etapa selecionada, marcar e avançar
+        // Se já tem etapa selecionada
         if (this.etapaSelecionada) {
-            // Marcar etapa selecionada visualmente
             document.querySelectorAll('.etapa-selecao').forEach(el => {
                 el.classList.remove('selecionada');
-                if (parseInt(el.dataset.etapaId) === etapaId) {
+                if (parseInt(el.dataset.etapaId) === dados.etapaId) {
                     el.classList.add('selecionada');
                 }
             });
@@ -1356,14 +1460,11 @@ const WizardAtendimento = {
             var etapaNomeInput = document.getElementById('etapaSelecionadaNome');
             var btnAvancar = document.getElementById('btnAvancarEtapa');
 
-            if (etapaIdInput) etapaIdInput.value = etapaId;
-            if (etapaNomeInput) etapaNomeInput.value = etapaNome;
+            if (etapaIdInput) etapaIdInput.value = dados.etapaId;
+            if (etapaNomeInput) etapaNomeInput.value = dados.etapaNome;
             if (btnAvancar) btnAvancar.disabled = false;
 
-            // Se tem atividade específica, ir direto para checkin
-            // Se não tem atividade, mostrar seleção de atividades da etapa
             if (this.atividadeSelecionada) {
-                this.atividadeSelecionada = { id: atividadeId, nome: atividadeNome };
                 this.avancarParaCheckin();
             } else {
                 this.avancarParaAtividade();
@@ -1375,15 +1476,44 @@ const WizardAtendimento = {
         this.atualizarSteps();
     },
 
-    // Continuar atividade em andamento
+    // Continuar atividade em andamento - mostra modal de confirmação
     continuar: function(atividadeId) {
+        // Guardar ID para confirmação
+        this._atividadeFinalizarId = atividadeId;
+
+        // Calcular tempo decorrido
+        const atividade = dadosObra.atividadeAndamento;
+        var tempoTexto = '00:00';
+        if (atividade && atividade.hora_inicio) {
+            const inicio = new Date(atividade.hora_inicio);
+            const agora = new Date();
+            const diff = agora - inicio;
+            const horas = Math.floor(diff / 3600000);
+            const minutos = Math.floor((diff % 3600000) / 60000);
+            tempoTexto = String(horas).padStart(2, '0') + ':' + String(minutos).padStart(2, '0');
+        }
+
+        // Atualizar modal de confirmação
+        var tempoEl = document.getElementById('confirmarFinalizarTempo');
+        if (tempoEl) tempoEl.textContent = tempoTexto;
+
+        // Abrir modal de confirmação
+        var modal = document.getElementById('modalConfirmarFinalizar');
+        if (modal) modal.style.display = 'block';
+    },
+
+    // Confirmar finalização e abrir wizard
+    confirmarFinalizar: function() {
+        // Fechar modal de confirmação
+        var modalConfirm = document.getElementById('modalConfirmarFinalizar');
+        if (modalConfirm) modalConfirm.style.display = 'none';
+
+        var atividadeId = this._atividadeFinalizarId;
         this.stepAtual = 4;
 
-        // Abrir modal
+        // Abrir wizard
         var modal = document.getElementById('wizardModal');
-        if (modal) {
-            modal.style.display = 'block';
-        }
+        if (modal) modal.style.display = 'block';
         document.body.style.overflow = 'hidden';
 
         // Atualizar título
@@ -1953,14 +2083,15 @@ const WizardAtendimento = {
                     </div>
                 `;
             } else {
-                lista.innerHTML = atividades.map(atv => `
-                    <div class="checkout-item">
-                        <input type="checkbox" id="chk_${atv.id}" checked onchange="WizardAtendimento.atualizarStatusAtividade(${atv.id})">
+                // Radio buttons - apenas uma atividade pode ser selecionada
+                lista.innerHTML = atividades.map((atv, index) => `
+                    <div class="checkout-item" onclick="WizardAtendimento.selecionarAtividadeCheckout(${atv.id})">
+                        <input type="radio" name="atividade_checkout" id="chk_${atv.id}" value="${atv.id}" ${index === 0 ? 'checked' : ''}>
                         <div class="checkout-item-info">
                             <h5>${atv.titulo || atv.descricao || 'Atividade #' + atv.id}</h5>
-                            <p>Marcar como concluída</p>
+                            <p>Selecione para marcar o status</p>
                         </div>
-                        <select class="status-select" id="status_${atv.id}" onchange="WizardAtendimento.atualizarStatusAtividade(${atv.id})">
+                        <select class="status-select" id="status_${atv.id}" onchange="WizardAtendimento.atualizarStatusAtividade(${atv.id})" onclick="event.stopPropagation()">
                             <option value="concluida">Concluída</option>
                             <option value="pendente">Pendente</option>
                             <option value="nao_realizada">Não Realizada</option>
@@ -1973,19 +2104,23 @@ const WizardAtendimento = {
         this.mostrarStep(5);
     },
 
+    // Selecionar atividade no checkout (radio button)
+    selecionarAtividadeCheckout: function(atividadeId) {
+        var radio = document.getElementById('chk_' + atividadeId);
+        if (radio) {
+            radio.checked = true;
+        }
+    },
+
     // Atualizar status da atividade
     atualizarStatusAtividade: function(atividadeId) {
-        var checkbox = document.getElementById('chk_' + atividadeId);
+        var radio = document.getElementById('chk_' + atividadeId);
         var select = document.getElementById('status_' + atividadeId);
 
-        if (!checkbox || !select) return;
+        if (!radio || !select) return;
 
-        // Sincronizar checkbox com select
-        if (select.value === 'concluida') {
-            checkbox.checked = true;
-        } else {
-            checkbox.checked = false;
-        }
+        // Se mudou o status, seleciona o radio
+        radio.checked = true;
     },
 
     // Realizar checkout final
@@ -2008,18 +2143,17 @@ const WizardAtendimento = {
 
     // Enviar checkout
     enviarCheckout: function(lat, lng) {
-        // Coletar status das atividades
+        // Coletar status da atividade selecionada (apenas uma)
         const statusAtividades = [];
-        document.querySelectorAll('.checkout-item').forEach(item => {
-            const checkbox = item.querySelector('input[type="checkbox"]');
-            if (checkbox) {
-                const id = checkbox.id.replace('chk_', '');
-                const select = document.getElementById('status_' + id);
-                if (select) {
-                    statusAtividades.push({ id: id, status: select.value });
-                }
+        const radioSelecionado = document.querySelector('input[name="atividade_checkout"]:checked');
+
+        if (radioSelecionado) {
+            const id = radioSelecionado.value;
+            const select = document.getElementById('status_' + id);
+            if (select) {
+                statusAtividades.push({ id: id, status: select.value });
             }
-        });
+        }
 
         // Pegar observações
         var obsEl = document.getElementById('observacoesCheckout');
@@ -2079,6 +2213,23 @@ const WizardAtendimento = {
         });
     }
 };
+
+// Fechar modais ao clicar fora
+document.addEventListener('click', function(e) {
+    var modalIniciar = document.getElementById('modalConfirmarIniciar');
+    var modalFinalizar = document.getElementById('modalConfirmarFinalizar');
+    var modalProgresso = document.getElementById('modalProgresso');
+
+    if (modalIniciar && e.target === modalIniciar) {
+        modalIniciar.style.display = 'none';
+    }
+    if (modalFinalizar && e.target === modalFinalizar) {
+        modalFinalizar.style.display = 'none';
+    }
+    if (modalProgresso && e.target === modalProgresso) {
+        modalProgresso.style.display = 'none';
+    }
+});
 
 // Animação das barras de progresso ao carregar
 document.addEventListener('DOMContentLoaded', function() {
