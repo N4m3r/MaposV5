@@ -82,9 +82,6 @@ class MY_Controller extends CI_Controller
 
         // Carregar library de permissoes
         $this->load->library('permission');
-
-        // Carregar security library para CSRF
-        $this->load->library('security');
     }
 
     private function load_configuration()
