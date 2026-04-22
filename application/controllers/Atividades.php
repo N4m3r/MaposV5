@@ -565,35 +565,51 @@ class Atividades extends MY_Controller
     }
 
     /**
+     * Teste de conexão AJAX - método simples para verificar se o controller está respondendo
+     */
+    public function teste_ajax()
+    {
+        header('Content-Type: application/json');
+        echo json_encode([
+            'success' => true,
+            'message' => 'Controller respondendo',
+            'session_tec_id' => $this->session->userdata('tec_id'),
+            'is_portal_tecnico' => $this->is_portal_tecnico,
+            'post_received' => $this->input->post()
+        ]);
+        exit;
+    }
+
+    /**
      * Check-in em Obra (início do trabalho com etapa obrigatória)
      * Versão para wizard de atendimento do portal do técnico
      */
     public function checkin_obra()
     {
-        try {
-            if (!$this->input->is_ajax_request()) {
-                redirect('atividades');
-            }
+        // Desabilitar exibição de erros para não quebrar o JSON
+        error_reporting(0);
+        ini_set('display_errors', 0);
 
+        try {
             header('Content-Type: application/json');
 
-            // Log para debug
-            log_message('debug', 'checkin_obra - Iniciando');
-            log_message('debug', 'checkin_obra - POST: ' . print_r($this->input->post(), true));
-            log_message('debug', 'checkin_obra - Session: tec_id=' . $this->session->userdata('tec_id') . ', logado=' . $this->session->userdata('logado'));
-
+            // Verificar sessão primeiro
             $tecnico_id = $this->is_portal_tecnico
                 ? $this->session->userdata('tec_id')
                 : $this->session->userdata('idAdmin');
+
+            if (!$tecnico_id) {
+                echo json_encode(['success' => false, 'message' => 'Sessão inválida. Faça login novamente.']);
+                return;
+            }
+
             $obra_id = $this->input->post('obra_id');
             $etapa_id = $this->input->post('etapa_id');
             $atividade_id = $this->input->post('atividade_id');
 
-            log_message('debug', 'checkin_obra - tecnico_id: ' . $tecnico_id . ', obra_id: ' . $obra_id . ', etapa_id: ' . $etapa_id);
-
             // Validação básica
             if (!$obra_id || !$etapa_id) {
-                echo json_encode(['success' => false, 'message' => 'Obra e etapa são obrigatórios.']);
+                echo json_encode(['success' => false, 'message' => 'Obra e etapa são obrigatórios.', 'post' => $this->input->post()]);
                 return;
             }
 

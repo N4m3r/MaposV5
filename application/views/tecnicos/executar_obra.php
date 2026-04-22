@@ -1010,6 +1010,9 @@ textarea.wizard-input {
 <div id="wizardModal" class="wizard-overlay">
     <div class="wizard-container">
 
+        <!-- CSRF Token para requisições AJAX -->
+        <input type="hidden" name="MAPOS_TOKEN" value="<?= $this->security->get_csrf_hash() ?>">
+
         <!-- Header -->
         <div class="wizard-header">
             <button class="btn-fechar-wizard" onclick="WizardAtendimento.fechar()">
@@ -1287,6 +1290,12 @@ const WizardAtendimento = {
     timerInterval: null,
     fotosRegistradas: [],
     atividadesConcluidas: [],
+
+    // Obter token CSRF
+    getCsrfToken: function() {
+        const tokenEl = document.querySelector('input[name="MAPOS_TOKEN"]');
+        return tokenEl ? tokenEl.value : '';
+    },
 
     // Iniciar wizard
     iniciar: function(etapaId = null, etapaNome = null, atividadeId = null, atividadeNome = null) {
@@ -1609,7 +1618,50 @@ const WizardAtendimento = {
 
     // Enviar check-in para o servidor
     enviarCheckin: function(lat, lng) {
+        const self = this;
+        const csrfToken = this.getCsrfToken();
+
+        // Primeiro testar se o controller responde
+        const testFormData = new FormData();
+        testFormData.append('MAPOS_TOKEN', csrfToken);
+        testFormData.append('test', '1');
+
+        fetch('<?= site_url("atividades/teste_ajax") ?>', {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: testFormData
+        })
+        .then(r => {
+            if (!r.ok) throw new Error('HTTP error: ' + r.status);
+            return r.text();
+        })
+        .then(text => {
+            try {
+                const testData = JSON.parse(text);
+                console.log('Teste AJAX:', testData);
+                if (testData.success) {
+                    self._enviarCheckinReal(lat, lng);
+                } else {
+                    alert('Erro de conexão: ' + (testData.message || 'Desconhecido'));
+                }
+            } catch (e) {
+                console.error('Resposta não é JSON:', text.substring(0, 500));
+                alert('Erro: servidor retornou resposta inválida.');
+            }
+        })
+        .catch(err => {
+            console.error('Erro no teste AJAX:', err);
+            alert('Erro ao conectar com o servidor. Verifique sua conexão.');
+        });
+    },
+
+    // Enviar check-in real para o servidor
+    _enviarCheckinReal: function(lat, lng) {
+        const csrfToken = this.getCsrfToken();
         const formData = new FormData();
+        formData.append('MAPOS_TOKEN', csrfToken);
         formData.append('obra_id', dadosObra.obraId);
         formData.append('etapa_id', this.etapaSelecionada.id);
         formData.append('atividade_id', this.atividadeSelecionada.id || 0);
@@ -1723,7 +1775,9 @@ const WizardAtendimento = {
         }
 
         // Enviar para o servidor
+        const csrfToken = this.getCsrfToken();
         const formData = new FormData();
+        formData.append('MAPOS_TOKEN', csrfToken);
         formData.append('obra_id', dadosObra.obraId);
         formData.append('atividade_id', this.atividadeSelecionada ? this.atividadeSelecionada.id : (dadosObra.atividadeAndamento ? dadosObra.atividadeAndamento.id : 0));
         formData.append('observacao', texto);
@@ -1771,7 +1825,9 @@ const WizardAtendimento = {
 
         this.pararTimer();
 
+        const csrfToken = this.getCsrfToken();
         const formData = new FormData();
+        formData.append('MAPOS_TOKEN', csrfToken);
         formData.append('obra_id', dadosObra.obraId);
         formData.append('atividade_id', this.atividadeSelecionada ? this.atividadeSelecionada.id :
                        (dadosObra.atividadeAndamento ? dadosObra.atividadeAndamento.id : 0));
@@ -1918,7 +1974,9 @@ const WizardAtendimento = {
         var atividadeId = this.atividadeSelecionada ? this.atividadeSelecionada.id :
                            (dadosObra.atividadeAndamento ? dadosObra.atividadeAndamento.id : 0);
 
+        const csrfToken = this.getCsrfToken();
         const formData = new FormData();
+        formData.append('MAPOS_TOKEN', csrfToken);
         formData.append('obra_id', dadosObra.obraId);
         formData.append('atividade_id', atividadeId);
         formData.append('status_atividades', JSON.stringify(statusAtividades));
