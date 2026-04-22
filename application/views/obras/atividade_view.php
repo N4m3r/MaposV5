@@ -414,29 +414,63 @@
                 </div>
 
                 <!-- Informações do Wizard de Atendimento -->
-                <?php if (!empty($atividade_real)): ?>
+                <?php if (!empty($atividade_real)): ?
                 <div style="margin-top: 25px; padding: 20px; background: linear-gradient(135deg, #f0fff4, #e6fffa); border: 2px solid #11998e; border-radius: 12px;">
                     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px; color: #11998e; font-weight: 700; font-size: 16px;">
                         <i class="icon-time" style="font-size: 20px;"></i>
                         Registro do Wizard de Atendimento
                     </div>
                     <div class="info-grid" style="margin: 0;">
+                        <!-- Etapa -->
+                        <div class="info-item" style="background: white; border-left: 4px solid #9b59b6;">
+                            <div class="info-label"><i class="icon-hard-hat"></i> Etapa</div>
+                            <div class="info-value" style="font-size: 16px; color: #333;">
+                                <?php
+                                if (!empty($atividade_real->etapa_nome)) {
+                                    echo htmlspecialchars($atividade_real->etapa_nome);
+                                } elseif (!empty($atividade->etapa_nome)) {
+                                    echo htmlspecialchars($atividade->etapa_nome);
+                                } else {
+                                    echo 'N/A';
+                                }
+                                ?>
+                            </div>
+                        </div>
+
+                        <!-- Tipo (Trabalho/Impedimento) -->
+                        <div class="info-item" style="background: white; border-left: 4px solid #3498db;">
+                            <div class="info-label"><i class="icon-tasks"></i> Tipo</div>
+                            <div class="info-value" style="font-size: 16px;">
+                                <?php
+                                $tipo_execucao = $atividade_real->impedimento ?? 0 ? 'impedimento' : 'trabalho';
+                                $tipo_labels = [
+                                    'trabalho' => ['label' => 'Trabalho', 'cor' => '#27ae60', 'icon' => 'wrench'],
+                                    'impedimento' => ['label' => 'Impedimento', 'cor' => '#e74c3c', 'icon' => 'warning-sign']
+                                ];
+                                $tipo_info = $tipo_labels[$tipo_execucao] ?? $tipo_labels['trabalho'];
+                                ?>
+                                <span style="background: <?php echo $tipo_info['cor']; ?>; color: white; padding: 4px 10px; border-radius: 12px; font-size: 13px;">
+                                    <i class="icon-<?php echo $tipo_info['icon']; ?>"></i> <?php echo $tipo_info['label']; ?>
+                                </span>
+                            </div>
+                        </div>
+
                         <div class="info-item" style="background: white; border-left: 4px solid #27ae60;">
                             <div class="info-label"><i class="icon-signin"></i> Hora Início (Registrada)</div>
-                            <div class="info-value" style="font-size: 20px; color: #27ae60;">
+                            <div class="info-value" style="font-size: 18px; color: #27ae60;">
                                 <?php echo !empty($atividade_real->hora_inicio) ? date('d/m/Y H:i', strtotime($atividade_real->hora_inicio)) : '--:--'; ?>
                             </div>
                         </div>
                         <div class="info-item" style="background: white; border-left: 4px solid #e74c3c;">
                             <div class="info-label"><i class="icon-signout"></i> Hora Fim (Registrada)</div>
-                            <div class="info-value" style="font-size: 20px; color: #e74c3c;">
+                            <div class="info-value" style="font-size: 18px; color: #e74c3c;">
                                 <?php echo !empty($atividade_real->hora_fim) ? date('d/m/Y H:i', strtotime($atividade_real->hora_fim)) : '--:--'; ?>
                             </div>
                         </div>
                         <?php if (!empty($atividade_real->duracao_minutos)): ?>
                         <div class="info-item" style="background: white; border-left: 4px solid #667eea; grid-column: span 2;">
                             <div class="info-label"><i class="icon-time"></i> Duração Total</div>
-                            <div class="info-value" style="font-size: 24px; color: #667eea;">
+                            <div class="info-value" style="font-size: 22px; color: #667eea;">
                                 <?php
                                 $horas = floor($atividade_real->duracao_minutos / 60);
                                 $minutos = $atividade_real->duracao_minutos % 60;
@@ -447,20 +481,22 @@
                         <?php endif; ?>
                     </div>
 
+                    <!-- Tipo de Atividade (categoria) -->
                     <?php if (!empty($atividade_real->tipo_nome)): ?>
                     <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #11998e;">
-                        <div class="info-label">Tipo de Atividade</div>
+                        <div class="info-label">Categoria da Atividade</div>
                         <div style="display: flex; align-items: center; gap: 10px; margin-top: 5px;">
                             <span style="background: <?php echo $atividade_real->tipo_cor ?? '#667eea'; ?>; color: white; padding: 5px 12px; border-radius: 15px; font-size: 13px;">
                                 <i class="icon-tag"></i> <?php echo htmlspecialchars($atividade_real->tipo_nome); ?>
                             </span>
-                            <span style="color: #666; font-size: 13px;">Categoria: <?php echo ucfirst($atividade_real->categoria ?? 'Geral'); ?></span>
+                            <span style="color: #666; font-size: 13px;"><?php echo ucfirst($atividade_real->categoria ?? 'Geral'); ?></span>
                         </div>
                     </div>
                     <?php endif; ?>
 
+                    <!-- Localização -->
                     <?php if (!empty($atividade_real->latitude) && !empty($atividade_real->longitude)): ?>
-                    <div style="margin-top: 15px;">
+                    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #11998e;">
                         <div class="info-label"><i class="icon-map-marker"></i> Localização Registrada</div>
                         <div style="font-size: 13px; color: #666; margin-top: 5px;">
                             Lat: <?php echo $atividade_real->latitude; ?>, Lng: <?php echo $atividade_real->longitude; ?>
@@ -468,6 +504,77 @@
                                 <i class="icon-external-link"></i> Ver no Maps
                             </a>
                         </div>
+                    </div>
+                    <?php endif; ?>
+
+                    <!-- Fotos da Atividade -->
+                    <?php if (!empty($fotos_atividade)): ?>
+                    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #11998e;">
+                        <div class="info-label" style="margin-bottom: 10px;">
+                            <i class="icon-camera"></i> Fotos Registradas (<?php echo count($fotos_atividade); ?>)
+                        </div>
+                        <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                            <?php foreach ($fotos_atividade as $foto): ?>
+                            <div style="position: relative;">
+                                <?php
+                                $url_foto = '';
+                                if (!empty($foto->caminho_arquivo)) {
+                                    $url_foto = base_url('assets/atividades/fotos/' . $foto->caminho_arquivo);
+                                } elseif (!empty($foto->foto_base64)) {
+                                    $url_foto = $foto->foto_base64;
+                                }
+                                ?>
+                                <?php if ($url_foto): ?>
+                                <a href="<?php echo $url_foto; ?>" target="_blank" title="<?php echo htmlspecialchars($foto->descricao ?? 'Foto da atividade'); ?>">
+                                    <img src="<?php echo $url_foto; ?>"
+                                         style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px; border: 2px solid #11998e; cursor: pointer;">
+                                </a>
+                                <?php endif; ?>
+
+                                <?php if ($foto->tipo_foto ?? '' === 'checkin'): ?>
+                                <span style="position: absolute; bottom: 5px; left: 5px; background: #11998e; color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px;">Check-in</span>
+                                <?php elseif ($foto->tipo_foto ?? '' === 'checkout'): ?>
+                                <span style="position: absolute; bottom: 5px; left: 5px; background: #e74c3c; color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px;">Check-out</span>
+                                <?php endif; ?>
+                            </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+
+                    <!-- Anotações/Observações -->
+                    <?php if (!empty($atividade_real->observacoes) || !empty($atividade_real->problemas_encontrados) || !empty($atividade_real->solucao_aplicada)): ?>
+                    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #11998e;">
+                        <div class="info-label" style="margin-bottom: 10px;">
+                            <i class="icon-edit"></i> Anotações e Registros
+                        </div>
+
+                        <?php if (!empty($atividade_real->observacoes)): ?>
+                        <div style="background: white; border-radius: 8px; padding: 12px; margin-bottom: 10px; border-left: 3px solid #3498db;">
+                            <div style="font-size: 12px; color: #3498db; margin-bottom: 5px; font-weight: 600;">Observações</div>
+                            <div style="font-size: 13px; color: #333; line-height: 1.5;">
+                                <?php echo nl2br(htmlspecialchars($atividade_real->observacoes)); ?>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+
+                        <?php if (!empty($atividade_real->problemas_encontrados)): ?>
+                        <div style="background: white; border-radius: 8px; padding: 12px; margin-bottom: 10px; border-left: 3px solid #f39c12;">
+                            <div style="font-size: 12px; color: #f39c12; margin-bottom: 5px; font-weight: 600;">Problemas Encontrados</div>
+                            <div style="font-size: 13px; color: #333; line-height: 1.5;">
+                                <?php echo nl2br(htmlspecialchars($atividade_real->problemas_encontrados)); ?>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+
+                        <?php if (!empty($atividade_real->solucao_aplicada)): ?>
+                        <div style="background: white; border-radius: 8px; padding: 12px; margin-bottom: 10px; border-left: 3px solid #27ae60;">
+                            <div style="font-size: 12px; color: #27ae60; margin-bottom: 5px; font-weight: 600;">Solução Aplicada</div>
+                            <div style="font-size: 13px; color: #333; line-height: 1.5;">
+                                <?php echo nl2br(htmlspecialchars($atividade_real->solucao_aplicada)); ?>
+                            </div>
+                        </div>
+                        <?php endif; ?>
                     </div>
                     <?php endif; ?>
                 </div>
@@ -858,20 +965,6 @@
                         </div>
                     </div>
                     <?php endforeach; ?>
-                </div>
-            </div>
-            <?php else: ?>
-            <!-- Sem registros de execução -->
-            <div class="atividade-card" style="background: #f8f9fa; border-left: 4px solid #95a5a6;">
-                <div class="atividade-card-header">
-                    <div class="atividade-card-title">
-                        <i class="icon-info-sign" style="color: #95a5a6;"></i> Registro de Execução
-                    </div>
-                </div>
-                <div style="text-align: center; padding: 30px; color: #666;">
-                    <i class="icon-time" style="font-size: 48px; color: #ddd; display: block; margin-bottom: 15px;"></i>
-                    <p>Nenhum registro de execução encontrado para esta atividade.</p>
-                    <p style="font-size: 13px; color: #999;">Os registros são criados quando um técnico inicia o atendimento através da tela de execução.</p>
                 </div>
             </div>
             <?php endif; ?>

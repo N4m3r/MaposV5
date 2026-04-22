@@ -464,7 +464,7 @@
 .atividades-grid {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
 }
 .atividade-selecao {
     background: #f8f9fa;
@@ -476,34 +476,81 @@
     display: flex;
     align-items: center;
     gap: 12px;
+    position: relative;
 }
 .atividade-selecao:hover {
     border-color: #3498db;
     background: #ebf5fb;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2);
 }
 .atividade-selecao.selecionada {
-    border-color: #3498db;
-    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    border-color: #11998e;
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
     color: white;
+    box-shadow: 0 4px 15px rgba(17, 153, 142, 0.3);
 }
-.atividade-selecao i {
-    font-size: 24px;
+.atividade-selecao.selecionada::after {
+    content: '\2713';
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 28px;
+    background: white;
+    color: #11998e;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 16px;
+}
+.atividade-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e9ecef;
+    flex-shrink: 0;
+}
+.atividade-icon i {
+    font-size: 20px;
     color: #95a5a6;
 }
-.atividade-selecao.selecionada i {
+.atividade-icon.aberta { background: #fff3cd; }
+.atividade-icon.aberta i { color: #856404; }
+.atividade-icon.andamento { background: #cce5ff; }
+.atividade-icon.andamento i { color: #004085; }
+.atividade-icon.concluida { background: #d4edda; }
+.atividade-icon.concluida i { color: #155724; }
+.atividade-selecao.selecionada .atividade-icon {
+    background: rgba(255,255,255,0.2);
+}
+.atividade-selecao.selecionada .atividade-icon i {
     color: white;
 }
 .atividade-selecao-info {
     flex: 1;
 }
 .atividade-selecao-info h5 {
-    margin: 0 0 3px 0;
-    font-size: 14px;
+    margin: 0 0 5px 0;
+    font-size: 15px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
 }
 .atividade-selecao-info p {
     margin: 0;
     font-size: 12px;
     opacity: 0.8;
+    color: #666;
+}
+.atividade-selecao.selecionada .atividade-selecao-info p {
+    color: rgba(255,255,255,0.9);
 }
 
 /* ===== Opções de Atividade ===== */
@@ -1829,6 +1876,18 @@ const WizardAtendimento = {
             return status !== 'concluida' && status !== 'concluida';
         });
 
+        // Atualizar título com contador
+        const tituloStep2 = document.querySelector('#step2 .wizard-card-titulo');
+        if (tituloStep2) {
+            if (atividadesDisponiveis.length === 0) {
+                tituloStep2.innerHTML = '<i class="icon-tasks"></i> Selecione a Atividade (Atividade Geral)';
+            } else if (atividadesDisponiveis.length === 1) {
+                tituloStep2.innerHTML = '<i class="icon-tasks"></i> Selecione a Atividade (1 disponível)';
+            } else {
+                tituloStep2.innerHTML = '<i class="icon-tasks"></i> Selecione uma das ' + atividadesDisponiveis.length + ' Atividades';
+            }
+        }
+
         if (atividadesDisponiveis.length === 0) {
             // Se não tem atividades disponíveis, criar opção de atividade geral
             grid.innerHTML = `
@@ -1840,21 +1899,40 @@ const WizardAtendimento = {
                     </div>
                 </div>
             `;
+            // Auto-selecionar atividade geral
+            setTimeout(() => {
+                const atvGeral = grid.querySelector('.atividade-selecao');
+                if (atvGeral) this.selecionarAtividade(atvGeral);
+            }, 100);
         } else {
-            grid.innerHTML = atividadesDisponiveis.map(atv => {
+            grid.innerHTML = atividadesDisponiveis.map((atv, index) => {
                 const status = atv.status || 'agendada';
                 const statusLabel = (status === 'concluida' || status === 'concluida') ? 'Concluída' :
                                      ((status === 'em_andamento' || status === 'iniciada') ? 'Em Andamento' : 'Aberta');
+                const statusClass = (status === 'concluida' || status === 'concluida') ? 'concluida' :
+                                     ((status === 'em_andamento' || status === 'iniciada') ? 'andamento' : 'aberta');
+                const isRecomendada = index === 0 ? '<span style="background:#11998e;color:white;font-size:10px;padding:2px 6px;border-radius:10px;margin-left:8px;">RECOMENDADA</span>' : '';
                 return `
-                <div class="atividade-selecao" data-atividade-id="${atv.id}" onclick="WizardAtendimento.selecionarAtividade(this)">
-                    <i class="icon-${(status === 'concluida' || status === 'concluida') ? 'check' : ((status === 'em_andamento' || status === 'iniciada') ? 'play' : 'time')}"></i>
+                <div class="atividade-selecao" data-atividade-id="${atv.id}" data-atividade-index="${index}" onclick="WizardAtendimento.selecionarAtividade(this)">
+                    <div class="atividade-icon ${statusClass}">
+                        <i class="icon-${(status === 'concluida' || status === 'concluida') ? 'check' : ((status === 'em_andamento' || status === 'iniciada') ? 'play' : 'time')}"></i>
+                    </div>
                     <div class="atividade-selecao-info">
-                        <h5>${atv.titulo || atv.descricao || 'Atividade #' + atv.id}</h5>
-                        <p>${statusLabel}</p>
+                        <h5>${atv.titulo || atv.descricao || 'Atividade #' + atv.id}${isRecomendada}</h5>
+                        <p>${statusLabel} ${atv.hora_inicio ? '- Início: ' + atv.hora_inicio.substring(0,5) : ''}</p>
                     </div>
                 </div>
             `}).join('');
         }
+
+        // Resetar seleção anterior
+        this.atividadeSelecionada = null;
+        var atividadeIdInput = document.getElementById('atividadeSelecionadaId');
+        var atividadeNomeInput = document.getElementById('atividadeSelecionadaNome');
+        var btnAvancar = document.getElementById('btnAvancarAtividade');
+        if (atividadeIdInput) atividadeIdInput.value = '';
+        if (atividadeNomeInput) atividadeNomeInput.value = '';
+        if (btnAvancar) btnAvancar.disabled = true;
 
         this.mostrarStep(2);
     },

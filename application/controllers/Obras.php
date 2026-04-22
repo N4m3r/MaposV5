@@ -1245,6 +1245,11 @@ class Obras extends MY_Controller
                 // Mesclar checkins
                 $this->data['checkins'] = array_merge($this->data['checkins'], $checkins_real);
             }
+
+            // Buscar fotos da atividade real
+            $this->data['fotos_atividade'] = $this->atividades->getFotos($atividade_real->idAtividade);
+        } else {
+            $this->data['fotos_atividade'] = [];
         }
 
         $this->data['view'] = 'obras/atividade_view';
