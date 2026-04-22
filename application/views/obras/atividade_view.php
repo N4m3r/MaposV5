@@ -700,11 +700,6 @@
                     <i class="icon-time" style="font-size: 48px; color: #ddd; display: block; margin-bottom: 15px;"></i>
                     <p>Nenhum registro de execução encontrado para esta atividade.</p>
                     <p style="font-size: 13px; color: #999;">Os registros são criados quando um técnico inicia o atendimento através da tela de execução.</p>
-                    <?php if (isset($atividade->obra_id) && isset($atividade->id)): ?>
-                    <a href="<?php echo site_url('tecnicos/executar_obra/' . $atividade->obra_id); ?>" class="action-btn action-btn-primary" style="display: inline-flex; margin-top: 15px;">
-                        <i class="icon-play"></i> Iniciar Execução
-                    </a>
-                    <?php endif; ?>
                 </div>
             </div>
             <?php endif; ?>
