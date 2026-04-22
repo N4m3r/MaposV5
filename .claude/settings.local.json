@@ -70,7 +70,8 @@
       "WebFetch(domain:jj-ferreiras.com.br)",
       "Bash(xxd application/views/obras_tecnico/obra_dashboard.php)",
       "Bash(git commit *)",
-      "Bash(git checkout *)"
+      "Bash(git checkout *)",
+      "Bash(git restore *)"
     ]
   }
 }
