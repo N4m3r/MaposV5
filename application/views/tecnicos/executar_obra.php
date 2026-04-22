@@ -1532,6 +1532,43 @@ textarea.wizard-input {
     </div>
 </div>
 
+<!-- Modal de Confirmação - Foto Salva -->
+<div id="modalFotoSalva" class="wizard-overlay" style="z-index: 10002; display: none;">
+    <div class="wizard-container" style="justify-content: center;">
+        <div class="wizard-card" style="max-width: 400px; margin: 0 auto; text-align: center;">
+            <div style="font-size: 60px; color: #9b59b6; margin-bottom: 20px;">
+                <i class="icon-camera"></i>
+            </div>
+            <h3 style="margin: 0 0 10px 0; font-size: 20px;">Foto Registrada!</h3>
+            <p style="color: #666; margin-bottom: 20px;">
+                A foto foi salva com sucesso na atividade.
+            </p>
+
+            <!-- Preview da foto salva -->
+            <div style="background: #f8f9fa; border-radius: 10px; padding: 15px; margin-bottom: 20px;">
+                <img id="previewFotoSalva" src="" alt="Foto salva" style="max-width: 100%; max-height: 200px; border-radius: 8px;">
+            </div>
+
+            <div style="background: #e3f2fd; border-radius: 10px; padding: 15px; margin-bottom: 20px; text-align: left;">
+                <p style="margin: 0; color: #1976d2; font-size: 13px;">
+                    <i class="icon-info-sign"></i> <strong>Localização registrada:</strong><br>
+                    <span id="fotoLocalizacao">--</span>
+                </p>
+                <p style="margin: 8px 0 0 0; color: #1976d2; font-size: 13px;">
+                    <i class="icon-time"></i> <strong>Data/Hora:</strong> <span id="fotoDataHora">--</span>
+                </p>
+            </div>
+
+            <button class="wizard-btn-principal" onclick="WizardAtendimento.fecharModalFoto()">
+                <i class="icon-ok"></i> OK, Entendido
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Input escondido para upload de foto durante execução -->
+<input type="file" id="fotoExecucaoInput" accept="image/*" capture="environment" style="display: none;">
+
 <script>
 // Dados da obra e etapas
 const dadosObra = {
