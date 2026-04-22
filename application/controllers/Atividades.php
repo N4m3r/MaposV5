@@ -393,10 +393,6 @@ class Atividades extends MY_Controller
         ini_set('display_errors', 0);
 
         try {
-            if (!$this->input->is_ajax_request()) {
-                redirect('atividades');
-            }
-
             header('Content-Type: application/json');
 
             $tecnico_id = $this->is_portal_tecnico
@@ -738,15 +734,23 @@ class Atividades extends MY_Controller
      */
     public function registrar_observacao()
     {
-        if (!$this->input->is_ajax_request()) {
-            redirect('atividades');
-        }
+        // Desabilitar exibição de erros para não quebrar o JSON
+        error_reporting(0);
+        ini_set('display_errors', 0);
 
-        header('Content-Type: application/json');
+        try {
+            header('Content-Type: application/json');
 
-        $tecnico_id = $this->is_portal_tecnico
-            ? $this->session->userdata('tec_id')
-            : $this->session->userdata('idAdmin');
+            $tecnico_id = $this->is_portal_tecnico
+                ? $this->session->userdata('tec_id')
+                : $this->session->userdata('idAdmin');
+
+            if (!$tecnico_id) {
+                echo json_encode(['success' => false, 'message' => 'Sessão inválida. Faça login novamente.']);
+                return;
+            }
+
+        try {
 
         $obra_id = $this->input->post('obra_id');
         $atividade_id = $this->input->post('atividade_id');
@@ -781,6 +785,11 @@ class Atividades extends MY_Controller
             echo json_encode(['success' => true, 'message' => 'Observação registrada com sucesso!']);
         } else {
             echo json_encode(['success' => false, 'message' => 'Erro ao registrar observação.']);
+        }
+        } catch (Exception $e) {
+            log_message('error', 'Erro em registrar_observacao: ' . $e->getMessage());
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'message' => 'Erro interno: ' . $e->getMessage()]);
         }
     }
 
@@ -894,15 +903,24 @@ class Atividades extends MY_Controller
      */
     public function checkout_obra()
     {
-        if (!$this->input->is_ajax_request()) {
-            redirect('atividades');
-        }
+        // Desabilitar exibição de erros para não quebrar o JSON
+        error_reporting(0);
+        ini_set('display_errors', 0);
 
-        header('Content-Type: application/json');
+        try {
+            header('Content-Type: application/json');
 
-        $tecnico_id = $this->is_portal_tecnico
-            ? $this->session->userdata('tec_id')
-            : $this->session->userdata('idAdmin');
+            $tecnico_id = $this->is_portal_tecnico
+                ? $this->session->userdata('tec_id')
+                : $this->session->userdata('idAdmin');
+
+            if (!$tecnico_id) {
+                echo json_encode(['success' => false, 'message' => 'Sessão inválida. Faça login novamente.']);
+                return;
+            }
+
+        try {
+
         $obra_id = $this->input->post('obra_id');
         $atividade_id = $this->input->post('atividade_id');
 
@@ -994,6 +1012,11 @@ class Atividades extends MY_Controller
             ]);
         } else {
             echo json_encode(['success' => false, 'message' => 'Erro ao finalizar trabalho.']);
+        }
+        } catch (Exception $e) {
+            log_message('error', 'Erro em checkout_obra: ' . $e->getMessage());
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'message' => 'Erro interno: ' . $e->getMessage()]);
         }
     }
 

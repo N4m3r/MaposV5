@@ -1709,6 +1709,9 @@ const WizardAtendimento = {
 
         fetch('<?= site_url("atividades/checkin_obra") ?>', {
             method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
             body: formData
         })
         .then(r => {
@@ -1816,6 +1819,9 @@ const WizardAtendimento = {
 
         fetch('<?= site_url("atividades/registrar_observacao") ?>', {
             method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
             body: formData
         })
         .then(r => {
@@ -1880,6 +1886,9 @@ const WizardAtendimento = {
 
         fetch('<?= site_url("atividades/pausar") ?>', {
             method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
             body: formData
         })
         .then(r => {
@@ -2037,6 +2046,9 @@ const WizardAtendimento = {
 
         fetch('<?= site_url("atividades/checkout_obra") ?>', {
             method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
             body: formData
         })
         .then(r => {
