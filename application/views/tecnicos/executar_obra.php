@@ -991,14 +991,6 @@ textarea.wizard-input {
                         <p class="etapa-descricao"><?= nl2br(htmlspecialchars($etapa->descricao)) ?></p>
                         <?php endif; ?>
 
-                        <!-- Botão Iniciar Atendimento Geral -->
-                        <?php if (empty($wizard_em_andamento)): ?>
-                        <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #ddd;">
-                            <button class="btn-acao iniciar" onclick="WizardAtendimento.iniciar(<?= $etapaId ?>, '<?= htmlspecialchars($etapa->nome ?? 'Etapa') ?>', null, null)" style="width: 100%; justify-content: center;">
-                                <i class="icon-play"></i> Iniciar Atendimento nesta Etapa
-                            </button>
-                        </div>
-                        <?php endif; ?>
 
                         <!-- Lista de Atividades -->
                         <?php if (!empty($atividadesEtapa)): ?>
@@ -1021,11 +1013,7 @@ textarea.wizard-input {
                                         <p><?= $statusAtivLabel ?> • <?= !empty($ativ->hora_inicio) ? date('H:i', strtotime($ativ->hora_inicio)) : '--:--' ?></p>
                                     </div>
                                     <div class="atividade-acoes">
-                                        <?php if ($podeIniciar && $ativId): ?>
-                                        <button class="btn-acao iniciar" onclick="WizardAtendimento.iniciar(<?= $etapaId ?>, '<?= htmlspecialchars($etapa->nome ?? 'Etapa') ?>', <?= $ativId ?>, '<?= htmlspecialchars($ativ->titulo ?? $ativ->descricao ?? 'Atividade') ?>')">
-                                            <i class="icon-play"></i> Iniciar
-                                        </button>
-                                        <?php elseif (($statusAtiv === 'em_andamento' || $statusAtiv === 'iniciada') && $ativId): ?>
+                                        <?php if (($statusAtiv === 'em_andamento' || $statusAtiv === 'iniciada') && $ativId): ?>
                                         <button class="btn-acao finalizar" onclick="WizardAtendimento.continuar(<?= $ativId ?>)">
                                             <i class="icon-stop"></i> Finalizar
                                         </button>
@@ -2353,19 +2341,21 @@ const WizardAtendimento = {
                 },
                 body: formData
             })
-            .then(r => {
-                document.getElementById('fotoLoading')?.remove();
-                const contentType = r.headers.get('content-type');
-                if (contentType && contentType.includes('application/json')) {
-                    return r.json();
-                } else {
-                    return r.text().then(text => {
+            .then(function(r) {
+                var loading = document.getElementById('fotoLoading');
+                if (loading) loading.remove();
+
+                // Tentar obter JSON de qualquer forma
+                return r.text().then(function(text) {
+                    try {
+                        return JSON.parse(text);
+                    } catch (e) {
                         console.error('Resposta não-JSON:', text.substring(0, 500));
                         throw new Error('Resposta do servidor não é JSON válido');
-                    });
-                }
+                    }
+                });
             })
-            .then(data => {
+            .then(function(data) {
                 if (data.success) {
                     // Mostrar modal de confirmação
                     self.mostrarModalFotoSalva(previewBase64, lat, lng);
@@ -2373,8 +2363,9 @@ const WizardAtendimento = {
                     alert('Erro ao salvar foto: ' + (data.message || 'Erro desconhecido'));
                 }
             })
-            .catch(err => {
-                document.getElementById('fotoLoading')?.remove();
+            .catch(function(err) {
+                var loading = document.getElementById('fotoLoading');
+                if (loading) loading.remove();
                 console.error('Erro:', err);
                 alert('Erro ao salvar foto. Verifique o console para mais detalhes.');
             });

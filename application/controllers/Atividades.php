@@ -1199,59 +1199,77 @@ class Atividades extends MY_Controller
      */
     public function adicionar_foto_obra()
     {
-        if (!$this->input->is_ajax_request()) {
-            redirect('atividades');
-        }
+        // Desabilitar exibição de erros para não quebrar o JSON
+        error_reporting(0);
+        ini_set('display_errors', 0);
 
-        $tecnico_id = $this->is_portal_tecnico
-            ? $this->session->userdata('tec_id')
-            : $this->session->userdata('idAdmin');
+        try {
+            header('Content-Type: application/json');
 
-        $obra_id = $this->input->post('obra_id');
-        $descricao = $this->input->post('descricao');
-
-        if (!$obra_id) {
-            echo json_encode(['success' => false, 'message' => 'Obra não informada.']);
-            return;
-        }
-
-        // Busca atividade em andamento na obra
-        $atividade = $this->atividades->getAtividadeEmAndamentoNaObra($tecnico_id, $obra_id);
-
-        if (!$atividade) {
-            echo json_encode(['success' => false, 'message' => 'Nenhuma atividade em andamento.']);
-            return;
-        }
-
-        $dados = [
-            'os_id' => $atividade->os_id ?? 0,
-            'tecnico_id' => $tecnico_id,
-            'descricao' => $descricao,
-            'tipo_foto' => $this->input->post('tipo_foto') ?? 'execucao',
-            'etapa' => $this->input->post('etapa') ?? 'durante',
-            'latitude' => $this->input->post('latitude'),
-            'longitude' => $this->input->post('longitude'),
-        ];
-
-        // Processa foto
-        if (!empty($_FILES['foto']['tmp_name'])) {
-            $foto_path = $this->upload_foto_arquivo('foto');
-            if ($foto_path) {
-                $dados['caminho_arquivo'] = $foto_path;
+            if (!$this->input->is_ajax_request()) {
+                echo json_encode(['success' => false, 'message' => 'Requisição inválida.']);
+                return;
             }
+
+            $tecnico_id = $this->is_portal_tecnico
+                ? $this->session->userdata('tec_id')
+                : $this->session->userdata('idAdmin');
+
+            if (!$tecnico_id) {
+                echo json_encode(['success' => false, 'message' => 'Sessão inválida. Faça login novamente.']);
+                return;
+            }
+
+            $obra_id = $this->input->post('obra_id');
+            $descricao = $this->input->post('descricao');
+
+            if (!$obra_id) {
+                echo json_encode(['success' => false, 'message' => 'Obra não informada.']);
+                return;
+            }
+
+            // Busca atividade em andamento na obra
+            $atividade = $this->atividades->getAtividadeEmAndamentoNaObra($tecnico_id, $obra_id);
+
+            if (!$atividade) {
+                echo json_encode(['success' => false, 'message' => 'Nenhuma atividade em andamento.']);
+                return;
+            }
+
+            $dados = [
+                'os_id' => $atividade->os_id ?? 0,
+                'tecnico_id' => $tecnico_id,
+                'descricao' => $descricao,
+                'tipo_foto' => $this->input->post('tipo_foto') ?? 'execucao',
+                'etapa' => $this->input->post('etapa') ?? 'durante',
+                'latitude' => $this->input->post('latitude'),
+                'longitude' => $this->input->post('longitude'),
+            ];
+
+            // Processa foto
+            if (!empty($_FILES['foto']['tmp_name'])) {
+                $foto_path = $this->upload_foto_arquivo('foto');
+                if ($foto_path) {
+                    $dados['caminho_arquivo'] = $foto_path;
+                }
+            }
+
+            // Ou foto em base64
+            if ($this->input->post('foto_base64')) {
+                $dados['foto_base64'] = $this->input->post('foto_base64');
+            }
+
+            $result = $this->atividades->adicionarFoto($atividade->idAtividade, $dados);
+
+            echo json_encode([
+                'success' => (bool) $result,
+                'message' => $result ? 'Foto adicionada.' : 'Erro ao adicionar foto.'
+            ]);
+        } catch (Exception $e) {
+            log_message('error', 'Erro em adicionar_foto_obra: ' . $e->getMessage());
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'message' => 'Erro interno: ' . $e->getMessage()]);
         }
-
-        // Ou foto em base64
-        if ($this->input->post('foto_base64')) {
-            $dados['foto_base64'] = $this->input->post('foto_base64');
-        }
-
-        $result = $this->atividades->adicionarFoto($atividade->idAtividade, $dados);
-
-        echo json_encode([
-            'success' => (bool) $result,
-            'message' => $result ? 'Foto adicionada.' : 'Erro ao adicionar foto.'
-        ]);
     }
 
     /**
