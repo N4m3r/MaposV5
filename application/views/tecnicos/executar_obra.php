@@ -1617,7 +1617,6 @@ const WizardAtendimento = {
         formData.append('justificativa', document.getElementById('justificativaTexto').value || '');
         formData.append('latitude', lat || '');
         formData.append('longitude', lng || '');
-        formData.append('<?= $this->security->get_csrf_token_name() ?>', '<?= $this->security->get_csrf_hash() ?>');
 
         const fotoInput = document.getElementById('fotoCheckin');
         if (fotoInput.files.length > 0) {
@@ -1728,7 +1727,6 @@ const WizardAtendimento = {
         formData.append('obra_id', dadosObra.obraId);
         formData.append('atividade_id', this.atividadeSelecionada ? this.atividadeSelecionada.id : (dadosObra.atividadeAndamento ? dadosObra.atividadeAndamento.id : 0));
         formData.append('observacao', texto);
-        formData.append('<?= $this->security->get_csrf_token_name() ?>', '<?= $this->security->get_csrf_hash() ?>');
 
         fetch('<?= site_url("atividades/registrar_observacao") ?>', {
             method: 'POST',
@@ -1777,7 +1775,6 @@ const WizardAtendimento = {
         formData.append('obra_id', dadosObra.obraId);
         formData.append('atividade_id', this.atividadeSelecionada ? this.atividadeSelecionada.id :
                        (dadosObra.atividadeAndamento ? dadosObra.atividadeAndamento.id : 0));
-        formData.append('<?= $this->security->get_csrf_token_name() ?>', '<?= $this->security->get_csrf_hash() ?>');
 
         fetch('<?= site_url("atividades/pausar") ?>', {
             method: 'POST',
@@ -1928,7 +1925,6 @@ const WizardAtendimento = {
         formData.append('observacoes', observacoes);
         formData.append('latitude', lat || '');
         formData.append('longitude', lng || '');
-        formData.append('<?= $this->security->get_csrf_token_name() ?>', '<?= $this->security->get_csrf_hash() ?>');
 
         const fotoInput = document.getElementById('fotoCheckout');
         if (fotoInput && fotoInput.files.length > 0) {

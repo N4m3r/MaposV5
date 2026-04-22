@@ -26,6 +26,12 @@ class Atividades extends MY_Controller
                       ($this->session->userdata('tec_logado') || $this->session->userdata('logged_in'));
 
         if (!$is_admin && !$is_tecnico) {
+            // Se for requisição AJAX, retorna JSON em vez de redirecionar
+            if ($this->input->is_ajax_request()) {
+                header('Content-Type: application/json');
+                echo json_encode(['success' => false, 'message' => 'Sessão expirada. Faça login novamente.']);
+                exit;
+            }
             redirect('login');
         }
 
@@ -564,122 +570,135 @@ class Atividades extends MY_Controller
      */
     public function checkin_obra()
     {
-        if (!$this->input->is_ajax_request()) {
-            redirect('atividades');
-        }
-
-        header('Content-Type: application/json');
-
-        $tecnico_id = $this->is_portal_tecnico
-            ? $this->session->userdata('tec_id')
-            : $this->session->userdata('idAdmin');
-        $obra_id = $this->input->post('obra_id');
-        $etapa_id = $this->input->post('etapa_id');
-        $atividade_id = $this->input->post('atividade_id');
-
-        // Validação básica
-        if (!$obra_id || !$etapa_id) {
-            echo json_encode(['success' => false, 'message' => 'Obra e etapa são obrigatórios.']);
-            return;
-        }
-
-        // Verifica se já tem atividade em andamento
-        if ($this->atividades->hasAtividadeEmAndamento($tecnico_id)) {
-            echo json_encode(['success' => false, 'message' => 'Já existe uma atividade em andamento.']);
-            return;
-        }
-
-        // Verifica se técnico tem acesso à obra
-        $this->load->model('obras_model');
-        if (!$this->obras_model->tecnicoEstaNaEquipe($obra_id, $tecnico_id)) {
-            echo json_encode(['success' => false, 'message' => 'Você não tem acesso a esta obra.']);
-            return;
-        }
-
-        // Busca o primeiro tipo de atividade disponível ou usa um padrão
-        $tipo_id = $this->input->post('tipo_id');
-        if (!$tipo_id) {
-            $tipos = $this->atividades_tipos->listar(['ativo' => 1], 1);
-            $tipo_id = $tipos[0]->idTipo ?? 1;
-        }
-
-        $tipo = $this->atividades_tipos->getById($tipo_id);
-
-        // Verifica se é impedimento
-        $tipo_execucao = $this->input->post('tipo_execucao');
-        $is_impedimento = ($tipo_execucao === 'impedimento');
-
-        $dados = [
-            'obra_id' => $obra_id,
-            'etapa_id' => $etapa_id,
-            'tecnico_id' => $tecnico_id,
-            'tipo_id' => $tipo_id,
-            'tipo_atividade' => $tipo->nome ?? 'Atividade na Obra',
-            'categoria' => $tipo->categoria ?? 'geral',
-            'descricao' => $is_impedimento ? 'Impedimento: ' . ($this->input->post('justificativa') ?? '') : ($this->input->post('descricao') ?? 'Check-in - Início do trabalho'),
-            'equipamento' => $this->input->post('equipamento'),
-            'latitude' => $this->input->post('latitude'),
-            'longitude' => $this->input->post('longitude'),
-            'observacoes' => $this->input->post('observacoes') ?? $this->input->post('justificativa'),
-        ];
-
-        // Se for impedimento, atualiza status
-        if ($is_impedimento) {
-            $dados['impedimento'] = 1;
-            $dados['motivo_impedimento'] = $this->input->post('justificativa');
-            $dados['tipo_impedimento'] = 'outro';
-        }
-
-        // Vincula a atividade planejada se informada
-        if ($atividade_id && $atividade_id != 0) {
-            $dados['obra_atividade_id'] = $atividade_id;
-        }
-
-        // Processa foto se enviada
-        if (!empty($_FILES['foto']['tmp_name'])) {
-            $foto = $this->upload_foto('foto');
-            if ($foto) {
-                $dados['foto_checkin'] = $foto;
+        try {
+            if (!$this->input->is_ajax_request()) {
+                redirect('atividades');
             }
-        }
 
-        // Também processa foto em base64
-        $foto_base64 = $this->input->post('foto_base64');
-        if ($foto_base64) {
-            $foto_path = $this->_salvar_foto_base64($foto_base64, 'checkin_obra');
-            if ($foto_path) {
-                $dados['foto_checkin'] = $foto_path;
+            header('Content-Type: application/json');
+
+            // Log para debug
+            log_message('debug', 'checkin_obra - Iniciando');
+            log_message('debug', 'checkin_obra - POST: ' . print_r($this->input->post(), true));
+            log_message('debug', 'checkin_obra - Session: tec_id=' . $this->session->userdata('tec_id') . ', logado=' . $this->session->userdata('logado'));
+
+            $tecnico_id = $this->is_portal_tecnico
+                ? $this->session->userdata('tec_id')
+                : $this->session->userdata('idAdmin');
+            $obra_id = $this->input->post('obra_id');
+            $etapa_id = $this->input->post('etapa_id');
+            $atividade_id = $this->input->post('atividade_id');
+
+            log_message('debug', 'checkin_obra - tecnico_id: ' . $tecnico_id . ', obra_id: ' . $obra_id . ', etapa_id: ' . $etapa_id);
+
+            // Validação básica
+            if (!$obra_id || !$etapa_id) {
+                echo json_encode(['success' => false, 'message' => 'Obra e etapa são obrigatórios.']);
+                return;
             }
-        }
 
-        $atividade_realizada_id = $this->atividades->iniciar($dados);
+            // Verifica se já tem atividade em andamento
+            if ($this->atividades->hasAtividadeEmAndamento($tecnico_id)) {
+                echo json_encode(['success' => false, 'message' => 'Já existe uma atividade em andamento.']);
+                return;
+            }
 
-        if ($atividade_realizada_id) {
-            // Se for impedimento, já finaliza a atividade
+            // Verifica se técnico tem acesso à obra
+            $this->load->model('obras_model');
+            if (!$this->obras_model->tecnicoEstaNaEquipe($obra_id, $tecnico_id)) {
+                echo json_encode(['success' => false, 'message' => 'Você não tem acesso a esta obra.']);
+                return;
+            }
+
+            // Busca o primeiro tipo de atividade disponível ou usa um padrão
+            $tipo_id = $this->input->post('tipo_id');
+            if (!$tipo_id) {
+                $tipos = $this->atividades_tipos->listar(['ativo' => 1], 1);
+                $tipo_id = $tipos[0]->idTipo ?? 1;
+            }
+
+            $tipo = $this->atividades_tipos->getById($tipo_id);
+
+            // Verifica se é impedimento
+            $tipo_execucao = $this->input->post('tipo_execucao');
+            $is_impedimento = ($tipo_execucao === 'impedimento');
+
+            $dados = [
+                'obra_id' => $obra_id,
+                'etapa_id' => $etapa_id,
+                'tecnico_id' => $tecnico_id,
+                'tipo_id' => $tipo_id,
+                'tipo_atividade' => $tipo->nome ?? 'Atividade na Obra',
+                'categoria' => $tipo->categoria ?? 'geral',
+                'descricao' => $is_impedimento ? 'Impedimento: ' . ($this->input->post('justificativa') ?? '') : ($this->input->post('descricao') ?? 'Check-in - Início do trabalho'),
+                'equipamento' => $this->input->post('equipamento'),
+                'latitude' => $this->input->post('latitude'),
+                'longitude' => $this->input->post('longitude'),
+                'observacoes' => $this->input->post('observacoes') ?? $this->input->post('justificativa'),
+            ];
+
+            // Se for impedimento, atualiza status
             if ($is_impedimento) {
-                $this->atividades->finalizar($atividade_realizada_id, [
-                    'concluida' => 0,
-                    'observacoes' => 'Impedimento registrado: ' . $this->input->post('justificativa')
-                ]);
+                $dados['impedimento'] = 1;
+                $dados['motivo_impedimento'] = $this->input->post('justificativa');
+                $dados['tipo_impedimento'] = 'outro';
+            }
 
-                // Atualiza também a atividade planejada
-                if ($atividade_id && $atividade_id != 0) {
-                    $this->load->model('obra_atividades_model');
-                    $this->obra_atividades_model->update($atividade_id, [
-                        'status' => 'pausada',
-                        'impedimento' => 1,
-                        'motivo_impedimento' => $this->input->post('justificativa')
-                    ]);
+            // Vincula a atividade planejada se informada
+            if ($atividade_id && $atividade_id != 0) {
+                $dados['obra_atividade_id'] = $atividade_id;
+            }
+
+            // Processa foto se enviada
+            if (!empty($_FILES['foto']['tmp_name'])) {
+                $foto = $this->upload_foto('foto');
+                if ($foto) {
+                    $dados['foto_checkin'] = $foto;
                 }
             }
 
-            echo json_encode([
-                'success' => true,
-                'atividade_id' => $atividade_realizada_id,
-                'message' => $is_impedimento ? 'Impedimento registrado com sucesso!' : 'Check-in realizado com sucesso!'
-            ]);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'Erro ao realizar check-in.']);
+            // Também processa foto em base64
+            $foto_base64 = $this->input->post('foto_base64');
+            if ($foto_base64) {
+                $foto_path = $this->_salvar_foto_base64($foto_base64, 'checkin_obra');
+                if ($foto_path) {
+                    $dados['foto_checkin'] = $foto_path;
+                }
+            }
+
+            $atividade_realizada_id = $this->atividades->iniciar($dados);
+
+            if ($atividade_realizada_id) {
+                // Se for impedimento, já finaliza a atividade
+                if ($is_impedimento) {
+                    $this->atividades->finalizar($atividade_realizada_id, [
+                        'concluida' => 0,
+                        'observacoes' => 'Impedimento registrado: ' . $this->input->post('justificativa')
+                    ]);
+
+                    // Atualiza também a atividade planejada
+                    if ($atividade_id && $atividade_id != 0) {
+                        $this->load->model('obra_atividades_model');
+                        $this->obra_atividades_model->update($atividade_id, [
+                            'status' => 'pausada',
+                            'impedimento' => 1,
+                            'motivo_impedimento' => $this->input->post('justificativa')
+                        ]);
+                    }
+                }
+
+                echo json_encode([
+                    'success' => true,
+                    'atividade_id' => $atividade_realizada_id,
+                    'message' => $is_impedimento ? 'Impedimento registrado com sucesso!' : 'Check-in realizado com sucesso!'
+                ]);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Erro ao realizar check-in.']);
+            }
+        } catch (Exception $e) {
+            log_message('error', 'Erro em checkin_obra: ' . $e->getMessage());
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'message' => 'Erro interno: ' . $e->getMessage()]);
         }
     }
 

@@ -460,6 +460,10 @@ $config['csrf_exclude_uris'] = [
     'tecnicos/finalizar_execucao',
     'tecnicos/adicionar_foto',
     'tecnicos/api_registrar_atividade_obra',
+    'atividades/checkin_obra',
+    'atividades/checkout_obra',
+    'atividades/pausar',
+    'atividades/registrar_observacao',
 ];
 
 /*
