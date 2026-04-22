@@ -1257,6 +1257,70 @@ class Obras extends MY_Controller
         return $this->layout();
     }
 
+    /**
+     * Atualizar status de uma atividade
+     */
+    public function atualizarStatusAtividade($atividade_id = null)
+    {
+        if (!$atividade_id || !is_numeric($atividade_id)) {
+            $this->session->set_flashdata('error', 'Atividade não encontrada.');
+            redirect('obras');
+        }
+
+        $novo_status = $this->input->post('novo_status');
+        $observacao = $this->input->post('observacao_status');
+
+        // Validar status permitidos
+        $status_permitidos = ['agendada', 'iniciada', 'pausada', 'concluida', 'cancelada'];
+        if (!in_array($novo_status, $status_permitidos)) {
+            $this->session->set_flashdata('error', 'Status inválido.');
+            redirect('obras/visualizarAtividade/' . $atividade_id);
+        }
+
+        // Buscar atividade
+        $atividade = $this->obra_atividades_model->getById($atividade_id);
+        if (!$atividade) {
+            $this->session->set_flashdata('error', 'Atividade não encontrada.');
+            redirect('obras');
+        }
+
+        // Preparar dados para atualização
+        $dados = ['status' => $novo_status];
+
+        // Se estiver reabrindo (concluida/cancelada -> agendada/iniciada), limpar datas de conclusão
+        if (in_array($novo_status, ['agendada', 'iniciada']) && in_array($atividade->status, ['concluida', 'cancelada'])) {
+            $dados['data_conclusao'] = null;
+            $dados['percentual_concluido'] = 0;
+            $this->session->set_flashdata('success', 'Atividade reaberta com sucesso!');
+        } else {
+            // Registrar no histórico
+            $status_labels = [
+                'agendada' => 'Agendada',
+                'iniciada' => 'Em Execução',
+                'pausada' => 'Pausada',
+                'concluida' => 'Concluída',
+                'cancelada' => 'Cancelada'
+            ];
+
+            $descricao = 'Status alterado para: ' . ($status_labels[$novo_status] ?? $novo_status);
+            if ($observacao) {
+                $descricao .= '. Observação: ' . $observacao;
+            }
+
+            $this->obra_atividades_model->adicionarHistorico($atividade_id, 'status_alterado', $descricao);
+            $this->session->set_flashdata('success', 'Status atualizado com sucesso!');
+        }
+
+        // Atualizar atividade
+        $result = $this->obra_atividades_model->update($atividade_id, $dados);
+
+        if (!$result) {
+            $this->session->set_flashdata('error', 'Erro ao atualizar status.');
+        }
+
+        redirect('obras/visualizarAtividade/' . $atividade_id);
+    }
+
     // ============================================
     // RELATÓRIOS
     // ============================================
