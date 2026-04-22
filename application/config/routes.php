@@ -379,3 +379,4 @@ $route['atividades/listar_por_obra/(:num)'] = 'atividades/listar_por_obra/$1';
 
 /* End of file routes.php */
 /* Location: ./application/config/routes.php */
+$route['modulos'] = 'modulos';

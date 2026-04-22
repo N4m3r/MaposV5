@@ -14,6 +14,11 @@ class Obras extends MY_Controller
         $this->load->model('obras_model');
         $this->load->model('obra_atividades_model');
 
+        // Carregar helper de atividades
+        if (file_exists(APPPATH . 'helpers/atividades_helper.php')) {
+            $this->load->helper('atividades');
+        }
+
         // Carregar models opcionais apenas se existirem
         if (file_exists(APPPATH . 'models/obra_checkins_model.php')) {
             $this->load->model('obra_checkins_model');

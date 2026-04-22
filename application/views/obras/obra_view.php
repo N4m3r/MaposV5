@@ -5,7 +5,7 @@
 
 <style>
 /* ============================================
-   VISUALIZAÇÃO DA OBRA - TEMA UNIFICADO
+   VISUALIZACAO DA OBRA - TEMA UNIFICADO
    ============================================ */
 
 .obra-view-container {
@@ -149,7 +149,7 @@
     font-weight: 700;
 }
 
-/* Barra de ações rápidas */
+/* Barra de acoes rapidas */
 .obra-actions-quick {
     display: flex;
     gap: 12px;
@@ -189,7 +189,7 @@
     padding: 14px 28px;
 }
 
-/* Grid de conteúdo */
+/* Grid de conteudo */
 .obra-content-grid {
     display: grid;
     grid-template-columns: 2fr 1fr;
@@ -199,7 +199,7 @@
 .obra-main-column { display: flex; flex-direction: column; gap: 24px; }
 .obra-sidebar-column { display: flex; flex-direction: column; gap: 24px; }
 
-/* Cards de seção */
+/* Cards de secao */
 .obra-section-card {
     background: var(--widget-box, #ffffff);
     border-radius: var(--radius-xl, 20px);
@@ -252,7 +252,7 @@
     transform: translateY(-2px);
 }
 
-/* Grid de informações */
+/* Grid de informacoes */
 .obra-info-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -411,55 +411,425 @@
     font-weight: 600;
 }
 
-/* Lista de atividades rápidas */
-.atividades-lista-rapida { display: flex; flex-direction: column; gap: 12px; }
+/* ============================================
+   ATIVIDADES DO SISTEMA (WIZARD)
+   ============================================ */
 
-.atividade-item-rapido {
+.atividades-wizard-section {
+    background: var(--widget-box, #ffffff);
+    border-radius: var(--radius-xl, 20px);
+    padding: 28px;
+    box-shadow: var(--shadow-md, 0 4px 6px rgba(0,0,0,0.07));
+    border: 1px solid var(--border-color, rgba(0,0,0,0.05));
+}
+
+.atividades-wizard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--border-color, #f0f0f0);
+}
+
+.atividades-wizard-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--title, #333);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.atividades-wizard-title i {
+    color: #11998e;
+    font-size: 24px;
+}
+
+/* Estatisticas das atividades */
+.atividades-estatisticas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 15px;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.stat-card.success {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+}
+
+.stat-card.warning {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.stat-card.info {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.stat-card .number {
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.stat-card .label {
+    font-size: 13px;
+    opacity: 0.9;
+    margin-top: 4px;
+}
+
+/* Cards de atividade */
+.atividade-execution-card {
+    background: var(--body-color, #f8f9fa);
+    border-radius: 16px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    border: 1px solid var(--border-color, #e8e8e8);
+}
+
+.atividade-execution-card:last-child {
+    margin-bottom: 0;
+}
+
+.atividade-execution-header {
+    padding: 20px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-bottom: 1px solid var(--border-color, #e0e0e0);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.atividade-execution-card.status-concluida .atividade-execution-header {
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+}
+
+.atividade-execution-card.status-em_andamento .atividade-execution-header {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeeba 100%);
+}
+
+.atividade-execution-card.status-pausada .atividade-execution-header {
+    background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+}
+
+.atividade-execution-title {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 14px;
-    background: var(--body-color, #f8f9fa);
-    border-radius: var(--radius-md, 10px);
-    border-left: 3px solid #667eea;
-    transition: all 0.3s;
 }
 
-.atividade-item-rapido:hover {
-    transform: translateX(5px);
-    background: var(--border-color, #e8e8e8);
-}
-
-.atividade-item-rapido.concluida { border-left-color: #27ae60; }
-.atividade-item-rapido.agendada { border-left-color: #95a5a6; }
-
-.atividade-icon {
+.atividade-execution-title i {
     width: 40px;
     height: 40px;
-    border-radius: 50%;
-    background: var(--gradient-primary, linear-gradient(135deg, #667eea 0%, #764ba2 100%));
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-    flex-shrink: 0;
+    font-size: 20px;
 }
 
-.atividade-content { flex: 1; min-width: 0; }
-
-.atividade-titulo {
-    font-weight: 600;
+.atividade-execution-title h4 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
     color: var(--title, #333);
-    font-size: 14px;
+}
+
+.atividade-execution-title small {
+    display: block;
+    font-size: 12px;
+    color: var(--subtitle, #666);
+    margin-top: 2px;
+}
+
+.atividade-status-tag {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.atividade-status-tag.concluida {
+    background: #27ae60;
+    color: white;
+}
+
+.atividade-status-tag.em_andamento {
+    background: #f39c12;
+    color: white;
+}
+
+.atividade-status-tag.pausada {
+    background: #e74c3c;
+    color: white;
+}
+
+.atividade-status-tag.finalizada {
+    background: #95a5a6;
+    color: white;
+}
+
+/* Grid de sessoes da atividade */
+.atividade-sections-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    padding: 20px;
+}
+
+@media (max-width: 768px) {
+    .atividade-sections-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.atividade-section-box {
+    background: white;
+    border-radius: 12px;
+    padding: 16px;
+    border-left: 4px solid;
+}
+
+.atividade-section-box.registro { border-left-color: #667eea; }
+.atividade-section-box.fotos { border-left-color: #11998e; }
+.atividade-section-box.pausas { border-left-color: #f39c12; }
+.atividade-section-box.finalizacao { border-left-color: #27ae60; }
+.atividade-section-box.materiais { border-left-color: #9b59b6; }
+.atividade-section-box.observacoes { border-left-color: #3498db; }
+
+.atividade-section-header-small {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--title, #333);
+}
+
+.atividade-section-header-small i {
+    font-size: 16px;
+}
+
+.atividade-section-box.registro .atividade-section-header-small i { color: #667eea; }
+.atividade-section-box.fotos .atividade-section-header-small i { color: #11998e; }
+.atividade-section-box.pausas .atividade-section-header-small i { color: #f39c12; }
+.atividade-section-box.finalizacao .atividade-section-header-small i { color: #27ae60; }
+.atividade-section-box.materiais .atividade-section-header-small i { color: #9b59b6; }
+.atividade-section-box.observacoes .atividade-section-header-small i { color: #3498db; }
+
+/* Info de registro */
+.registro-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.registro-info-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.registro-info-item.full-width {
+    grid-column: span 2;
+}
+
+.registro-info-label {
+    font-size: 11px;
+    color: #888;
+    text-transform: uppercase;
     margin-bottom: 2px;
 }
 
-.atividade-meta {
-    font-size: 12px;
-    color: var(--subtitle, #888);
+.registro-info-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
 }
 
-/* Cards de equipe */
+.registro-info-value.inicio { color: #27ae60; }
+.registro-info-value.fim { color: #e74c3c; }
+
+/* Fotos */
+.fotos-grid-small {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    gap: 8px;
+}
+
+.foto-thumb-small {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 8px;
+    object-fit: cover;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.foto-thumb-small:hover {
+    transform: scale(1.05);
+}
+
+.foto-count-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #e9ecef;
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+    color: #666;
+}
+
+/* Pausas */
+.pausas-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.pausa-item {
+    background: #f8f9fa;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+}
+
+.pausa-item.em_andamento {
+    background: #fff3cd;
+    border-left: 3px solid #f39c12;
+}
+
+.pausa-motivo {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.pausa-tempo {
+    color: #666;
+    font-size: 12px;
+}
+
+.pausa-observacao {
+    color: #888;
+    font-size: 11px;
+    margin-top: 4px;
+    font-style: italic;
+}
+
+/* Finalizacao */
+.finalizacao-info {
+    font-size: 13px;
+}
+
+.finalizacao-info p {
+    margin: 4px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.finalizacao-info i {
+    color: #27ae60;
+    width: 16px;
+}
+
+/* Materiais */
+.materiais-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.material-badge {
+    background: #9b59b6;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-size: 11px;
+}
+
+/* Observacoes */
+.observacao-text {
+    font-size: 13px;
+    color: #555;
+    line-height: 1.5;
+}
+
+.observacao-text.problema {
+    color: #e67e22;
+}
+
+.observacao-text.solucao {
+    color: #27ae60;
+}
+
+/* Timeline de execucao */
+.timeline-execution {
+    position: relative;
+    padding-left: 24px;
+}
+
+.timeline-execution::before {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #e9ecef;
+}
+
+.timeline-item {
+    position: relative;
+    padding-bottom: 16px;
+}
+
+.timeline-item:last-child {
+    padding-bottom: 0;
+}
+
+.timeline-dot {
+    position: absolute;
+    left: -22px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #667eea;
+    border: 2px solid white;
+}
+
+.timeline-dot.inicio { background: #27ae60; }
+.timeline-dot.pausa { background: #f39c12; }
+.timeline-dot.retorno { background: #3498db; }
+.timeline-dot.fim { background: #e74c3c; }
+
+.timeline-content {
+    font-size: 13px;
+}
+
+.timeline-time {
+    font-weight: 600;
+    color: #333;
+}
+
+.timeline-action {
+    color: #666;
+}
+
+/* Equipe */
 .equipe-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -504,8 +874,22 @@
     color: var(--subtitle, #888);
 }
 
+/* Empty state */
+.empty-state {
+    text-align: center;
+    padding: 40px;
+    color: var(--subtitle, #888);
+}
+
+.empty-state i {
+    font-size: 48px;
+    margin-bottom: 16px;
+    display: block;
+    opacity: 0.5;
+}
+
 /* ============================================
-   WIZARD MODAL - CRIAÇÃO DE ETAPAS/ATIVIDADES
+   WIZARD MODAL - CRIACAO DE ETAPAS/ATIVIDADES
    ============================================ */
 
 .wizard-modal .modal-header {
@@ -598,7 +982,7 @@
     background: #27ae60;
 }
 
-/* Conteúdo do wizard */
+/* Conteudo do wizard */
 .wizard-content { display: none; }
 .wizard-content.active { display: block; animation: fadeIn 0.3s ease; }
 
@@ -619,7 +1003,7 @@
 
 .wizard-title i { color: #667eea; }
 
-/* Formulários do wizard */
+/* Formularios do wizard */
 .wizard-form-group {
     margin-bottom: 20px;
 }
@@ -727,7 +1111,7 @@
     color: #667eea;
 }
 
-/* Revisão do wizard */
+/* Revisao do wizard */
 .wizard-resumo {
     background: var(--widget-box, white);
     border-radius: var(--radius-lg, 16px);
@@ -764,7 +1148,7 @@
     color: var(--title, #333);
 }
 
-/* Botões do wizard */
+/* Botoes do wizard */
 .wizard-btn {
     padding: 12px 24px;
     border-radius: var(--radius-md, 10px);
@@ -812,7 +1196,10 @@
    ============================================ */
 
 [data-theme="dark"] .obra-section-card,
-[data-theme="dark"] .wizard-modal .modal-footer {
+[data-theme="dark"] .atividades-wizard-section,
+[data-theme="dark"] .wizard-modal .modal-footer,
+[data-theme="dark"] .atividade-execution-card,
+[data-theme="dark"] .atividade-section-box {
     background: var(--dark-2, #2d3748);
     border-color: var(--dark-4, #4a5568);
 }
@@ -820,33 +1207,41 @@
 [data-theme="dark"] .obra-section-title,
 [data-theme="dark"] .obra-info-value,
 [data-theme="dark"] .etapa-title,
-[data-theme="dark"] .atividade-titulo,
 [data-theme="dark"] .equipe-nome,
 [data-theme="dark"] .wizard-title,
 [data-theme="dark"] .wizard-resumo-value,
-[data-theme="dark"] .wizard-form-label {
+[data-theme="dark"] .wizard-form-label,
+[data-theme="dark"] .atividades-wizard-title,
+[data-theme="dark"] .atividade-execution-title h4,
+[data-theme="dark"] .atividade-section-header-small,
+[data-theme="dark"] .registro-info-value,
+[data-theme="dark"] .timeline-time {
     color: var(--white, #fff);
 }
 
 [data-theme="dark"] .obra-info-item,
 [data-theme="dark"] .etapa-timeline-content,
-[data-theme="dark"] .atividade-item-rapido,
 [data-theme="dark"] .equipe-card,
 [data-theme="dark"] .wizard-modal .modal-body,
 [data-theme="dark"] .wizard-atividade-item,
 [data-theme="dark"] .wizard-btn-adicionar,
-[data-theme="dark"] .wizard-btn-secondary {
+[data-theme="dark"] .wizard-btn-secondary,
+[data-theme="dark"] .atividade-execution-header,
+[data-theme="dark"] .pausa-item {
     background: var(--dark-3, #3d4852);
 }
 
 [data-theme="dark"] .obra-info-label,
 [data-theme="dark"] .obra-section-title i,
 [data-theme="dark"] .etapa-meta,
-[data-theme="dark"] .atividade-meta,
 [data-theme="dark"] .equipe-funcao,
 [data-theme="dark"] .wizard-resumo-title,
 [data-theme="dark"] .wizard-resumo-label,
-[data-theme="dark"] .wizard-step-label {
+[data-theme="dark"] .wizard-step-label,
+[data-theme="dark"] .atividade-execution-title small,
+[data-theme="dark"] .registro-info-label,
+[data-theme="dark"] .timeline-action,
+[data-theme="dark"] .observacao-text {
     color: var(--dark-7, #a0aec0);
 }
 
@@ -862,7 +1257,8 @@
 }
 
 [data-theme="dark"] .etapas-timeline::before,
-[data-theme="dark"] .wizard-step-line {
+[data-theme="dark"] .wizard-step-line,
+[data-theme="dark"] .timeline-execution::before {
     background: var(--dark-4, #4a5568);
 }
 
@@ -870,6 +1266,11 @@
     background: var(--dark-4, #4a5568);
     border-color: var(--dark-2, #2d3748);
     box-shadow: 0 0 0 3px var(--dark-4, #4a5568);
+}
+
+[data-theme="dark"] .foto-count-badge {
+    background: var(--dark-3, #3d4852);
+    color: var(--dark-7, #a0aec0);
 }
 
 /* Responsividade */
@@ -881,6 +1282,7 @@
     .wizard-form-row { grid-template-columns: 1fr; }
     .wizard-steps { flex-wrap: wrap; }
     .wizard-step-line { display: none; }
+    .atividades-estatisticas { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 768px) {
@@ -890,6 +1292,7 @@
     .obra-info-grid { grid-template-columns: 1fr; }
     .obra-info-item.full-width { grid-column: span 1; }
     .equipe-grid { grid-template-columns: repeat(2, 1fr); }
+    .atividade-sections-grid { grid-template-columns: 1fr; }
 }
 </style>
 
@@ -905,7 +1308,7 @@
             break;
         case 'concluida':
             $status_header_class = 'concluida';
-            $status_label = 'Concluída';
+            $status_label = 'Concluida';
             break;
         case 'paralisada':
             $status_header_class = 'paralisada';
@@ -913,7 +1316,7 @@
             break;
         case 'prospeccao':
             $status_header_class = 'prospeccao';
-            $status_label = 'Prospecção';
+            $status_label = 'Prospeccao';
             break;
         default:
             $status_header_class = '';
@@ -959,7 +1362,7 @@
         </div>
     </div>
 
-    <!-- Barra de Ações -->
+    <!-- Barra de Acoes -->
     <div class="obra-actions-quick">
         <button class="obra-action-btn btn-wizard" onclick="abrirWizard()">
             <i class="icon-magic"></i>
@@ -987,26 +1390,26 @@
         </a>
     </div>
 
-    <!-- Grid de Conteúdo -->
+    <!-- Grid de Conteudo -->
     <div class="obra-content-grid">
         <!-- Coluna Principal -->
         <div class="obra-main-column">
 
-            <!-- Informações da Obra -->
+            <!-- Informacoes da Obra -->
             <div class="obra-section-card">
                 <div class="obra-section-header">
                     <div class="obra-section-title">
                         <i class="icon-info-sign"></i>
-                        Informações Gerais
+                        Informacoes Gerais
                     </div>
                 </div>
 
                 <div class="obra-info-grid">
                     <div class="obra-info-item">
-                        <div class="obra-info-label">Código da Obra</div>
+                        <div class="obra-info-label">Codigo da Obra</div>
                         <div class="obra-info-value">
                             <i class="icon-barcode"></i>
-                            <?php echo htmlspecialchars($obra->codigo ?? 'Não definido'); ?>
+                            <?php echo htmlspecialchars($obra->codigo ?? 'Nao definido'); ?>
                         </div>
                     </div>
 
@@ -1014,31 +1417,31 @@
                         <div class="obra-info-label">Tipo</div>
                         <div class="obra-info-value">
                             <i class="icon-cog"></i>
-                            <?php echo htmlspecialchars($obra->tipo_obra ?? 'Não definido'); ?>
+                            <?php echo htmlspecialchars($obra->tipo_obra ?? 'Nao definido'); ?>
                         </div>
                     </div>
 
                     <div class="obra-info-item full-width">
-                        <div class="obra-info-label">Endereço</div>
+                        <div class="obra-info-label">Endereco</div>
                         <div class="obra-info-value">
                             <i class="icon-map-marker"></i>
-                            <?php echo htmlspecialchars($obra->endereco ?? 'Não informado'); ?>
+                            <?php echo htmlspecialchars($obra->endereco ?? 'Nao informado'); ?>
                         </div>
                     </div>
 
                     <div class="obra-info-item">
-                        <div class="obra-info-label">Data de Início</div>
+                        <div class="obra-info-label">Data de Inicio</div>
                         <div class="obra-info-value">
                             <i class="icon-calendar"></i>
-                            <?php echo $obra->data_inicio_contrato ? date('d/m/Y', strtotime($obra->data_inicio_contrato)) : 'Não definido'; ?>
+                            <?php echo $obra->data_inicio_contrato ? date('d/m/Y', strtotime($obra->data_inicio_contrato)) : 'Nao definido'; ?>
                         </div>
                     </div>
 
                     <div class="obra-info-item">
-                        <div class="obra-info-label">Previsão de Término</div>
+                        <div class="obra-info-label">Previsao de Termino</div>
                         <div class="obra-info-value">
                             <i class="icon-flag-checkered"></i>
-                            <?php echo $obra->data_fim_prevista ? date('d/m/Y', strtotime($obra->data_fim_prevista)) : 'Não definido'; ?>
+                            <?php echo $obra->data_fim_prevista ? date('d/m/Y', strtotime($obra->data_fim_prevista)) : 'Nao definido'; ?>
                         </div>
                     </div>
                 </div>
@@ -1056,9 +1459,9 @@
                     </a>
                 </div>
 
-                <?php if (!empty($etapas)): ?>>
+                <?php if (!empty($etapas)): ?>
                 <div class="etapas-timeline">
-                    <?php foreach ($etapas as $etapa): ?>>
+                    <?php foreach ($etapas as $etapa): ?>
                     <?php
                     $etapa_status = $etapa->status ?? 'pendente';
                     $etapa_class = '';
@@ -1095,12 +1498,12 @@
                                 <i class="icon-calendar"></i>
                                 <?php
                                 if ($etapa->data_inicio_prevista) {
-                                    echo 'Início: ' . date('d/m/Y', strtotime($etapa->data_inicio_prevista));
+                                    echo 'Inicio: ' . date('d/m/Y', strtotime($etapa->data_inicio_prevista));
                                     if ($etapa->data_fim_prevista) {
-                                        echo ' | Término: ' . date('d/m/Y', strtotime($etapa->data_fim_prevista));
+                                        echo ' | Termino: ' . date('d/m/Y', strtotime($etapa->data_fim_prevista));
                                     }
                                 } else {
-                                    echo 'Datas não definidas';
+                                    echo 'Datas nao definidas';
                                 }
                                 ?>
                             </div>
@@ -1113,13 +1516,279 @@
                     </div>
                     <?php endforeach; ?>
                 </div>
-                <?php else: ?>>
-                <div style="text-align: center; padding: 40px; color: var(--subtitle, #888);">
-                    <i class="icon-tasks" style="font-size: 48px; margin-bottom: 16px; display: block; opacity: 0.5;"></i>
+                <?php else: ?>
+                <div class="empty-state">
+                    <i class="icon-tasks"></i>
                     <p>Nenhuma etapa cadastrada</p>
                     <button onclick="abrirWizard()" class="obra-section-action" style="margin-top: 16px;">
                         <i class="icon-plus"></i> Criar Primeira Etapa
                     </button>
+                </div>
+                <?php endif; ?>
+            </div>
+
+            <!-- ATIVIDADES DO SISTEMA (Wizard) -->
+            <div class="atividades-wizard-section">
+                <div class="atividades-wizard-header">
+                    <div class="atividades-wizard-title">
+                        <i class="icon-time"></i>
+                        Registro de Atividades (Wizard)
+                    </div>
+                    <a href="<?php echo site_url('atividades/relatorio?obra_id=' . $obra->id); ?>" class="obra-section-action">
+                        <i class="icon-file-alt"></i> Relatorio Completo
+                    </a>
+                </div>
+
+                <!-- Estatisticas -->
+                <?php if ($estatisticas_atividades): ?>
+                <div class="atividades-estatisticas">
+                    <div class="stat-card">
+                        <div class="number"><?php echo $estatisticas_atividades['total_atividades'] ?? 0; ?></div>
+                        <div class="label">Total</div>
+                    </div>
+                    <div class="stat-card success">
+                        <div class="number"><?php echo $estatisticas_atividades['concluidas'] ?? 0; ?></div>
+                        <div class="label">Concluidas</div>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="number"><?php echo $estatisticas_atividades['em_andamento'] ?? 0; ?></div>
+                        <div class="label">Em Andamento</div>
+                    </div>
+                    <div class="stat-card info">
+                        <div class="number"><?php echo round(($estatisticas_atividades['tempo_total_minutos'] ?? 0) / 60, 1); ?>h</div>
+                        <div class="label">Horas Trabalhadas</div>
+                    </div>
+                </div>
+                <?php endif; ?>
+
+                <!-- Lista de Atividades -->
+                <?php if (!empty($atividades_sistema)): ?>
+                <div class="atividades-execution-list">
+                    <?php foreach ($atividades_sistema as $atv): ?>
+                    <?php
+                    // Determinar classe de status
+                    $card_status_class = '';
+                    $status_tag_class = '';
+                    $status_tag_text = '';
+
+                    if ($atv->status == 'finalizada' && $atv->concluida == 1) {
+                        $card_status_class = 'status-concluida';
+                        $status_tag_class = 'concluida';
+                        $status_tag_text = 'Concluida';
+                    } elseif ($atv->status == 'em_andamento') {
+                        $card_status_class = 'status-em_andamento';
+                        $status_tag_class = 'em_andamento';
+                        $status_tag_text = 'Em Andamento';
+                    } elseif ($atv->status == 'pausada') {
+                        $card_status_class = 'status-pausada';
+                        $status_tag_class = 'pausada';
+                        $status_tag_text = 'Pausada';
+                    } else {
+                        $card_status_class = '';
+                        $status_tag_class = 'finalizada';
+                        $status_tag_text = 'Finalizada';
+                    }
+
+                    $cor_tipo = $atv->tipo_cor ?? '#667eea';
+                    $icone_tipo = $atv->tipo_icone ?? 'bx-wrench';
+
+                    // Carregar dados completos da atividade
+                    $CI = &get_instance();
+                    $CI->load->model('Atividades_model', 'ativ_model');
+                    $atv_completa = $CI->ativ_model->getByIdCompleto($atv->idAtividade);
+                    ?>
+                    <div class="atividade-execution-card <?php echo $card_status_class; ?>">
+                        <!-- Header da Atividade -->
+                        <div class="atividade-execution-header">
+                            <div class="atividade-execution-title">
+                                <i class="bx <?php echo $icone_tipo; ?>" style="background: <?php echo $cor_tipo; ?>"></i>
+                                <div>
+                                    <h4><?php echo htmlspecialchars($atv->tipo_nome ?? 'Atividade'); ?></h4>
+                                    <small>
+                                        <i class="bx bx-user"></i> <?php echo htmlspecialchars($atv->nome_tecnico ?? 'Tecnico nao informado'); ?>
+                                        | <i class="bx bx-calendar"></i> <?php echo date('d/m/Y', strtotime($atv->hora_inicio)); ?>
+                                    </small>
+                                </div>
+                            </div>
+                            <span class="atividade-status-tag <?php echo $status_tag_class; ?>">
+                                <?php echo $status_tag_text; ?>
+                            </span>
+                        </div>
+
+                        <!-- Grid de Secoes -->
+                        <div class="atividade-sections-grid">
+                            <!-- Secao: Registro (Hora Inicio/Fim) -->
+                            <div class="atividade-section-box registro">
+                                <div class="atividade-section-header-small">
+                                    <i class="bx bx-time-five"></i>
+                                    Registro de Tempo
+                                </div>
+                                <div class="registro-info-grid">
+                                    <div class="registro-info-item">
+                                        <span class="registro-info-label">Inicio</span>
+                                        <span class="registro-info-value inicio">
+                                            <?php echo date('H:i', strtotime($atv->hora_inicio)); ?>
+                                        </span>
+                                    </div>
+                                    <div class="registro-info-item">
+                                        <span class="registro-info-label">Termino</span>
+                                        <span class="registro-info-value fim">
+                                            <?php echo $atv->hora_fim ? date('H:i', strtotime($atv->hora_fim)) : '--:--'; ?>
+                                        </span>
+                                    </div>
+                                    <div class="registro-info-item full-width">
+                                        <span class="registro-info-label">Duracao</span>
+                                        <span class="registro-info-value">
+                                            <?php
+                                            if ($atv->duracao_minutos) {
+                                                $h = floor($atv->duracao_minutos / 60);
+                                                $m = $atv->duracao_minutos % 60;
+                                                echo sprintf('%02d:%02d', $h, $m);
+                                                echo ' <small>(' . $atv->duracao_minutos . ' min)</small>';
+                                            } else {
+                                                echo '--:--';
+                                            }
+                                            ?>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Secao: Fotos -->
+                            <div class="atividade-section-box fotos">
+                                <div class="atividade-section-header-small">
+                                    <i class="bx bx-camera"></i>
+                                    Fotos
+                                    <?php if (!empty($atv_completa->fotos)): ?>
+                                    <span class="foto-count-badge">
+                                        <i class="bx bx-image"></i> <?php echo count($atv_completa->fotos); ?>
+                                    </span>
+                                    <?php endif; ?>
+                                </div>
+                                <?php if (!empty($atv_completa->fotos)): ?>
+                                <div class="fotos-grid-small">
+                                    <?php foreach (array_slice($atv_completa->fotos, 0, 4) as $foto): ?>
+                                    <?php
+                                    $url_foto = '';
+                                    if (!empty($foto->caminho_arquivo)) {
+                                        $url_foto = base_url('assets/atividades/fotos/' . $foto->caminho_arquivo);
+                                    } elseif (!empty($foto->foto_base64)) {
+                                        $url_foto = $foto->foto_base64;
+                                    }
+                                    ?>
+                                    <?php if ($url_foto): ?>
+                                    <img src="<?php echo $url_foto; ?>" class="foto-thumb-small" onclick="abrirFotoModal('<?php echo $url_foto; ?>')">
+                                    <?php endif; ?>
+                                    <?php endforeach; ?>
+                                </div>
+                                <?php else: ?>
+                                <p style="color: #888; font-size: 12px; margin: 0;">Nenhuma foto registrada</p>
+                                <?php endif; ?>
+                            </div>
+
+                            <!-- Secao: Pausas -->
+                            <div class="atividade-section-box pausas">
+                                <div class="atividade-section-header-small">
+                                    <i class="bx bx-pause-circle"></i>
+                                    Pausas
+                                </div>
+                                <?php if (!empty($atv_completa->pausas)): ?>
+                                <div class="pausas-list">
+                                    <?php foreach ($atv_completa->pausas as $pausa): ?>
+                                    <div class="pausa-item <?php echo empty($pausa->pausa_fim) ? 'em_andamento' : ''; ?>">
+                                        <div class="pausa-motivo"><?php echo htmlspecialchars($pausa->motivo ?? 'Pausa'); ?></div>
+                                        <div class="pausa-tempo">
+                                            <?php echo date('H:i', strtotime($pausa->pausa_inicio)); ?>
+                                            <?php if ($pausa->pausa_fim): ?>
+                                            - <?php echo date('H:i', strtotime($pausa->pausa_fim)); ?>
+                                            <?php else: ?>
+                                            (em andamento)
+                                            <?php endif; ?>
+                                        </div>
+                                        <?php if ($pausa->observacao): ?>
+                                        <div class="pausa-observacao"><?php echo htmlspecialchars($pausa->observacao); ?></div>
+                                        <?php endif; ?>
+                                    </div>
+                                    <?php endforeach; ?>
+                                </div>
+                                <?php else: ?>
+                                <p style="color: #888; font-size: 12px; margin: 0;">Nenhuma pausa registrada</p>
+                                <?php endif; ?>
+                            </div>
+
+                            <!-- Secao: Finalizacao -->
+                            <div class="atividade-section-box finalizacao">
+                                <div class="atividade-section-header-small">
+                                    <i class="bx bx-check-circle"></i>
+                                    Finalizacao
+                                </div>
+                                <div class="finalizacao-info">
+                                    <?php if ($atv->hora_fim): ?>
+                                    <p><i class="bx bx-calendar-check"></i> Finalizada em <?php echo date('d/m/Y H:i', strtotime($atv->hora_fim)); ?></p>
+                                    <?php if ($atv->concluida): ?>
+                                    <p><i class="bx bx-check-shield"></i> Atividade concluida com sucesso</p>
+                                    <?php endif; ?>
+                                    <?php else: ?>
+                                    <p style="color: #888;"><i class="bx bx-hourglass"></i> Aguardando finalizacao</p>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+
+                            <!-- Secao: Materiais (se existir) -->
+                            <?php if (!empty($atv_completa->materiais)): ?>
+                            <div class="atividade-section-box materiais">
+                                <div class="atividade-section-header-small">
+                                    <i class="bx bx-package"></i>
+                                    Materiais
+                                </div>
+                                <div class="materiais-list">
+                                    <?php foreach ($atv_completa->materiais as $mat): ?>
+                                    <span class="material-badge">
+                                        <?php echo $mat->quantidade; ?> <?php echo $mat->unidade; ?> - <?php echo htmlspecialchars($mat->produto_descricao ?? $mat->nome_produto ?? 'Material'); ?>
+                                    </span>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                            <?php endif; ?>
+
+                            <!-- Secao: Observacoes (se existir) -->
+                            <?php if (!empty($atv->observacoes) || !empty($atv->problemas_encontrados) || !empty($atv->solucao_aplicada)): ?>
+                            <div class="atividade-section-box observacoes">
+                                <div class="atividade-section-header-small">
+                                    <i class="bx bx-note"></i>
+                                    Observacoes
+                                </div>
+                                <div class="observacao-content">
+                                    <?php if (!empty($atv->observacoes)): ?>
+                                    <p class="observacao-text"><?php echo nl2br(htmlspecialchars($atv->observacoes)); ?></p>
+                                    <?php endif; ?>
+                                    <?php if (!empty($atv->problemas_encontrados)): ?>
+                                    <p class="observacao-text problema"><i class="bx bx-error"></i> <?php echo htmlspecialchars($atv->problemas_encontrados); ?></p>
+                                    <?php endif; ?>
+                                    <?php if (!empty($atv->solucao_aplicada)): ?>
+                                    <p class="observacao-text solucao"><i class="bx bx-check"></i> <?php echo htmlspecialchars($atv->solucao_aplicada); ?></p>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+
+                <?php if (count($atividades_sistema) >= 20): ?>
+                <div style="text-align: center; margin-top: 20px;">
+                    <a href="<?php echo site_url('atividades/relatorio?obra_id=' . $obra->id); ?>" class="obra-section-action">
+                        <i class="icon-eye-open"></i> Ver Todas as Atividades
+                    </a>
+                </div>
+                <?php endif; ?>
+
+                <?php else: ?>
+                <div class="empty-state">
+                    <i class="icon-clipboard"></i>
+                    <h4>Nenhuma atividade registrada</h4>
+                    <p>As atividades executadas aparecerao aqui automaticamente.</p>
                 </div>
                 <?php endif; ?>
             </div>
@@ -1129,12 +1798,12 @@
         <!-- Sidebar -->
         <div class="obra-sidebar-column">
 
-            <!-- Atividades Recentes -->
+            <!-- Atividades Planejadas (obra_atividades) -->
             <div class="obra-section-card">
                 <div class="obra-section-header">
                     <div class="obra-section-title">
                         <i class="icon-calendar"></i>
-                        Atividades Recentes
+                        Atividades Planejadas
                     </div>
                     <a href="<?php echo site_url('obras/atividades/' . $obra->id); ?>" class="obra-section-action">
                         Ver Todas
@@ -1144,8 +1813,9 @@
                 <?php if (!empty($atividades_recentes)): ?>
                 <div class="atividades-lista-rapida">
                     <?php foreach (array_slice($atividades_recentes, 0, 5) as $atividade): ?>
-                    <?php $ativ_class = ($atividade->status == 'concluida') ? 'concluida' : 'agendada'; ?>
-
+                    <?php
+                    $ativ_class = ($atividade->status == 'concluida') ? 'concluida' : 'agendada';
+                    ?>
                     <div class="atividade-item-rapido <?php echo $ativ_class; ?>">
                         <div class="atividade-icon">
                             <i class="icon-tasks"></i>
@@ -1156,7 +1826,7 @@
                             <div class="atividade-meta">
                                 <i class="icon-calendar"></i>
                                 <?php echo date('d/m/Y', strtotime($atividade->data_atividade)); ?>
-                                <?php if ($atividade->tecnico_nome): ?>>
+                                <?php if ($atividade->tecnico_nome): ?>
                                 <span>| <i class="icon-user"></i> <?php echo htmlspecialchars($atividade->tecnico_nome); ?></span>
                                 <?php endif; ?>
                             </div>
@@ -1165,8 +1835,8 @@
                     <?php endforeach; ?>
                 </div>
                 <?php else: ?>
-                <div style="text-align: center; padding: 30px; color: var(--subtitle, #888);">
-                    <p>Nenhuma atividade recente</p>
+                <div class="empty-state" style="padding: 30px;">
+                    <p>Nenhuma atividade planejada</p>
                 </div>
                 <?php endif; ?>
             </div>
@@ -1191,12 +1861,12 @@
                             <i class="icon-user"></i>
                         </div>
                         <div class="equipe-nome"><?php echo htmlspecialchars($membro->nome ?? $membro->tecnico_nome ?? 'Sem nome'); ?></div>
-                        <div class="equipe-funcao"><?php echo htmlspecialchars($membro->funcao ?? 'Técnico'); ?></div>
+                        <div class="equipe-funcao"><?php echo htmlspecialchars($membro->funcao ?? 'Tecnico'); ?></div>
                     </div>
                     <?php endforeach; ?>
                 </div>
                 <?php else: ?>
-                <div style="text-align: center; padding: 30px; color: var(--subtitle, #888);">
+                <div class="empty-state" style="padding: 30px;">
                     <p>Nenhum membro na equipe</p>
                     <a href="<?php echo site_url('obras/equipe/' . $obra->id); ?>" class="obra-section-action" style="margin-top: 16px; display: inline-block;">
                         <i class="icon-plus"></i> Adicionar
@@ -1205,15 +1875,21 @@
                 <?php endif; ?>
             </div>
 
-            <!-- ATIVIDADES SISTEMA (Hora Início/Fim) -->
-            <?php $this->load->view('obras/atividades_sistema', [
-                'atividades_sistema' => $atividades_sistema ?? [],
-                'estatisticas_atividades' => $estatisticas_atividades ?? null,
-                'obra' => $obra,
-                'tipos_atividades' => $tipos_atividades ?? []
-            ]); ?>
-
         </div>
+    </div>
+</div>
+
+<!-- Modal para visualizar foto -->
+<div id="modalFoto" class="modal hide fade" tabindex="-1" role="dialog">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3>Foto da Atividade</h3>
+    </div>
+    <div class="modal-body" style="text-align: center;">
+        <img id="imgFotoModal" src="" style="max-width: 100%; max-height: 70vh; border-radius: 8px;">
+    </div>
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal">Fechar</button>
     </div>
 </div>
 
@@ -1248,21 +1924,21 @@
 
                 <div class="wizard-step" data-step="3">
                     <div class="wizard-step-number">3</div>
-                    <span class="wizard-step-label">Revisão</span>
+                    <span class="wizard-step-label">Revisao</span>
                 </div>
             </div>
 
-            <!-- Passo 1: Informações da Etapa -->
+            <!-- Passo 1: Informacoes da Etapa -->
             <div id="wizardStep1" class="wizard-content active">
                 <div class="wizard-title">
                     <i class="icon-tasks"></i>
-                    Informações da Etapa
+                    Informacoes da Etapa
                 </div>
 
                 <div class="wizard-form-row">
                     <div class="wizard-form-group">
                         <label class="wizard-form-label">
-                            Número da Etapa <span class="required">*</span>
+                            Numero da Etapa <span class="required">*</span>
                         </label>
                         <input type="number" name="etapa_numero" class="wizard-form-input"
                                value="<?php echo (count($etapas ?? []) + 1); ?>" min="1" required>
@@ -1273,24 +1949,24 @@
                             Nome da Etapa <span class="required">*</span>
                         </label>
                         <input type="text" name="etapa_nome" class="wizard-form-input"
-                               placeholder="Ex: Fundação, Estrutura, Acabamento..." required>
+                               placeholder="Ex: Fundacao, Estrutura, Acabamento..." required>
                     </div>
                 </div>
 
                 <div class="wizard-form-group">
-                    <label class="wizard-form-label">Descrição</label>
+                    <label class="wizard-form-label">Descricao</label>
                     <textarea name="etapa_descricao" class="wizard-form-textarea"
-                              placeholder="Descreva o que será feito nesta etapa..."></textarea>
+                              placeholder="Descreva o que sera feito nesta etapa..."></textarea>
                 </div>
 
                 <div class="wizard-form-row">
                     <div class="wizard-form-group">
-                        <label class="wizard-form-label">Data de Início Prevista</label>
+                        <label class="wizard-form-label">Data de Inicio Prevista</label>
                         <input type="date" name="etapa_data_inicio" class="wizard-form-input">
                     </div>
 
                     <div class="wizard-form-group">
-                        <label class="wizard-form-label">Data de Término Prevista</label>
+                        <label class="wizard-form-label">Data de Termino Prevista</label>
                         <input type="date" name="etapa_data_fim" class="wizard-form-input">
                     </div>
                 </div>
@@ -1304,11 +1980,11 @@
                 </div>
 
                 <p style="margin-bottom: 16px; color: var(--subtitle, #888); font-size: 14px;">
-                    Adicione as atividades que serão realizadas nesta etapa. Você pode adicionar quantas quiser.
+                    Adicione as atividades que serao realizadas nesta etapa. Voce pode adicionar quantas quiser.
                 </p>
 
                 <div id="wizardAtividadesLista" class="wizard-atividades-lista">
-                    <!-- Atividades serão adicionadas aqui -->
+                    <!-- Atividades serao adicionadas aqui -->
                 </div>
 
                 <button type="button" class="wizard-btn-adicionar" onclick="adicionarAtividadeWizard()">
@@ -1316,11 +1992,11 @@
                 </button>
             </div>
 
-            <!-- Passo 3: Revisão -->
+            <!-- Passo 3: Revisao -->
             <div id="wizardStep3" class="wizard-content">
                 <div class="wizard-title">
                     <i class="icon-check"></i>
-                    Revisão e Confirmação
+                    Revisao e Confirmacao
                 </div>
 
                 <div class="wizard-resumo">
@@ -1328,7 +2004,7 @@
                         <div class="wizard-resumo-title">Etapa</div>
 
                         <div class="wizard-resumo-item">
-                            <span class="wizard-resumo-label">Número:</span>
+                            <span class="wizard-resumo-label">Numero:</span>
                             <span id="resumoEtapaNumero" class="wizard-resumo-value"></span>
                         </div>
 
@@ -1338,7 +2014,7 @@
                         </div>
 
                         <div class="wizard-resumo-item">
-                            <span class="wizard-resumo-label">Descrição:</span>
+                            <span class="wizard-resumo-label">Descricao:</span>
                             <span id="resumoEtapaDescricao" class="wizard-resumo-value"></span>
                         </div>
                     </div>
@@ -1364,7 +2040,7 @@
 
             <div>
                 <button type="button" id="wizardBtnProximo" class="wizard-btn wizard-btn-primary" onclick="wizardProximo()">
-                    Próximo <i class="icon-arrow-right"></i>
+                    Proximo <i class="icon-arrow-right"></i>
                 </button>
 
                 <button type="submit" id="wizardBtnSalvar" class="wizard-btn wizard-btn-success" style="display: none;">
@@ -1376,7 +2052,13 @@
 </div>
 
 <script>
-// Variáveis do wizard
+// Funcao para abrir modal de foto
+function abrirFotoModal(url) {
+    document.getElementById('imgFotoModal').src = url;
+    $('#modalFoto').modal('show');
+}
+
+// Variaveis do wizard
 let wizardStepAtual = 1;
 const wizardTotalSteps = 3;
 
@@ -1395,7 +2077,7 @@ function wizardReset() {
     adicionarAtividadeWizard(); // Adiciona primeira atividade
 }
 
-// Navegação
+// Navegacao
 function wizardProximo() {
     if (validarStepAtual()) {
         if (wizardStepAtual < wizardTotalSteps) {
@@ -1412,14 +2094,14 @@ function wizardAnterior() {
     }
 }
 
-// Validação
+// Validacao
 function validarStepAtual() {
     if (wizardStepAtual === 1) {
         const numero = document.querySelector('[name="etapa_numero"]').value;
         const nome = document.querySelector('[name="etapa_nome"]').value;
 
         if (!numero || !nome) {
-            alert('Preencha o número e o nome da etapa.');
+            alert('Preencha o numero e o nome da etapa.');
             return false;
         }
     }
@@ -1440,13 +2122,13 @@ function atualizarWizardUI() {
         }
     });
 
-    // Mostrar/esconder conteúdos
+    // Mostrar/esconder conteudos
     document.querySelectorAll('.wizard-content').forEach(content => {
         content.classList.remove('active');
     });
     document.getElementById('wizardStep' + wizardStepAtual).classList.add('active');
 
-    // Atualizar botões
+    // Atualizar botoes
     document.getElementById('wizardBtnAnterior').style.display = wizardStepAtual > 1 ? 'flex' : 'none';
     document.getElementById('wizardBtnProximo').style.display = wizardStepAtual < wizardTotalSteps ? 'flex' : 'none';
     document.getElementById('wizardBtnSalvar').style.display = wizardStepAtual === wizardTotalSteps ? 'flex' : 'none';
@@ -1466,11 +2148,11 @@ function adicionarAtividadeWizard() {
         <div class="wizard-atividade-item" data-index="${index}">
             <input type="text" name="atividades[${index}][titulo]"
                    class="wizard-atividade-input"
-                   placeholder="Título da atividade" required>
+                   placeholder="Titulo da atividade" required>
             <select name="atividades[${index}][tipo]" class="wizard-atividade-input" style="width: 120px;">
                 <option value="trabalho">Trabalho</option>
                 <option value="visita">Visita</option>
-                <option value="manutencao">Manutenção</option>
+                <option value="manutencao">Manutencao</option>
                 <option value="impedimento">Impedimento</option>
             </select>
             <button type="button" class="wizard-btn-remover" onclick="removerAtividadeWizard(${index})">
@@ -1504,7 +2186,7 @@ function atualizarResumo() {
 
     let html = '';
     atividades.forEach((item, index) => {
-        const titulo = item.querySelector('input').value || '(sem título)';
+        const titulo = item.querySelector('input').value || '(sem titulo)';
         const tipo = item.querySelector('select').value;
         html += `
             <div class="wizard-resumo-item" style="padding-left: 16px;">
@@ -1515,9 +2197,9 @@ function atualizarResumo() {
     document.getElementById('resumoAtividadesLista').innerHTML = html;
 }
 
-// Animação de entrada dos cards
+// Animacao de entrada dos cards
 $(document).ready(function() {
-    $('.obra-section-card').each(function(index) {
+    $('.obra-section-card, .atividades-wizard-section').each(function(index) {
         $(this).hide().delay(index * 150).fadeIn(500);
     });
 });

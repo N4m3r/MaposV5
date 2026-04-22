@@ -650,6 +650,10 @@ class Atividades extends MY_Controller
             $tipo_execucao = $this->input->post('tipo_execucao');
             $is_impedimento = ($tipo_execucao === 'impedimento');
 
+            // Recebe título ou usa descrição como título
+            $titulo = $this->input->post('titulo');
+            $descricao = $this->input->post('descricao') ?? 'Atividade registrada via wizard';
+
             $dados = [
                 'obra_id' => $obra_id,
                 'etapa_id' => $etapa_id,
@@ -657,7 +661,8 @@ class Atividades extends MY_Controller
                 'tipo_id' => $tipo_id,
                 'tipo_atividade' => $tipo->nome ?? 'Atividade na Obra',
                 'categoria' => $tipo->categoria ?? 'geral',
-                'descricao' => $is_impedimento ? 'Impedimento: ' . ($this->input->post('justificativa') ?? '') : ($this->input->post('descricao') ?? 'Check-in - Início do trabalho'),
+                'titulo' => $titulo ?: ($tipo->nome ?? 'Atividade'),
+                'descricao' => $is_impedimento ? 'Impedimento: ' . ($this->input->post('justificativa') ?? '') : $descricao,
                 'equipamento' => $this->input->post('equipamento'),
                 'latitude' => $this->input->post('latitude'),
                 'longitude' => $this->input->post('longitude'),

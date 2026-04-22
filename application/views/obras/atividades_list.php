@@ -660,123 +660,8 @@
     </div>
 
 
-    <!-- Grid de Atividades -->
-    <?php if (isset($atividades) && !empty($atividades) && is_array($atividades)): ?>
-    <div class="atividades-grid" id="atividadesGrid">
-        <?php
-        foreach ($atividades as $atividade):
-            if (!is_object($atividade)) {
-                continue;
-            }
-        ?>
-        <?php
-        $status = $atividade->status ?? 'agendada';
-        $tipo = $atividade->tipo ?? 'trabalho';
-        $titulo = $atividade->titulo ?? 'Atividade #' . $atividade->id;
-        $data_atividade = $atividade->data_atividade ?? null;
-        $descricao = $atividade->descricao ?? null;
-        $tecnico_nome = $atividade->tecnico_nome ?? null;
-        $horas_trabalhadas = $atividade->horas_trabalhadas ?? null;
-        $visivel_cliente = $atividade->visivel_cliente ?? 0;
-        $percentual_concluido = $atividade->percentual_concluido ?? 0;
-
-        $tipo_icons = [
-            'trabalho' => 'icon-wrench',
-            'impedimento' => 'icon-exclamation-sign',
-            'visita' => 'icon-user',
-            'manutencao' => 'icon-cog',
-            'outro' => 'icon-question-sign'
-        ];
-        $tipo_icon = $tipo_icons[$tipo] ?? 'icon-question-sign';
-
-        $progresso = $percentual_concluido;
-        if ($progresso < 30) {
-            $progressoColor = 'linear-gradient(90deg, #ff6b6b, #ee5a52)';
-        } elseif ($progresso < 70) {
-            $progressoColor = 'linear-gradient(90deg, #feca57, #ff9f43)';
-        } else {
-            $progressoColor = 'linear-gradient(90deg, #1dd1a1, #10ac84)';
-        }
-        ?>
-        <div class="atividade-card <?php echo $status; ?>" data-status="<?php echo $status; ?>" data-tipo="<?php echo $tipo; ?>" data-titulo="<?php echo strtolower($titulo); ?>">
-            <!-- Visibilidade -->
-            <div class="atividade-visibilidade <?php echo $visivel_cliente ? 'visivel' : 'oculto'; ?>" title="<?php echo $visivel_cliente ? 'Visível ao cliente' : 'Oculto do cliente'; ?>">
-                <i class="icon-<?php echo $visivel_cliente ? 'eye-open' : 'eye-close'; ?>"></i>
-            </div>
-
-            <div class="atividade-card-header">
-                <div class="atividade-card-title-section">
-                    <div class="atividade-card-date">
-                        <i class="icon-calendar"></i>
-                        <?php echo $data_atividade ? date('d/m/Y', strtotime($data_atividade)) : 'N/A'; ?>
-                    </div>
-                    <h3 class="atividade-card-title"><?php echo htmlspecialchars($titulo); ?></h3>
-                </div>
-                <span class="atividade-status-badge <?php echo $status; ?>">
-                    <?php echo ucfirst($status); ?>
-                </span>
-            </div>
-
-            <div class="atividade-card-body">
-                <?php if ($descricao): ?>
-                <div class="atividade-card-desc">
-                    <?php echo htmlspecialchars($descricao); ?>
-                </div>
-                <?php endif; ?>
-
-                <div class="atividade-card-meta">
-                    <div class="atividade-meta-item tipo-<?php echo $tipo; ?>">
-                        <i class="<?php echo $tipo_icon; ?>"></i>
-                        <span><?php echo ucfirst($tipo); ?></span>
-                    </div>
-                    <?php if ($tecnico_nome): ?>
-                    <div class="atividade-meta-item">
-                        <i class="icon-user"></i>
-                        <span><?php echo htmlspecialchars($tecnico_nome); ?></span>
-                    </div>
-                    <?php endif; ?>
-                    <?php if ($horas_trabalhadas): ?>
-                    <div class="atividade-meta-item">
-                        <i class="icon-time"></i>
-                        <span><?php echo $horas_trabalhadas; ?>h</span>
-                    </div>
-                    <?php endif; ?>
-                </div>
-            </div>
-
-            <div class="atividade-card-footer">
-                <div class="atividade-progress-section">
-                    <div class="atividade-progress-header">
-                        <span class="atividade-progress-label">Progresso</span>
-                        <span class="atividade-progress-value"><?php echo $progresso; ?>%</span>
-                    </div>
-                    <div class="atividade-progress-bar">
-                        <div class="atividade-progress-fill" style="width: <?php echo $progresso; ?>%; background: <?php echo $progressoColor; ?>"></div>
-                    </div>
-                </div>
-                <div class="atividade-card-actions">
-                    <a href="<?php echo site_url('obras/visualizarAtividade/' . $atividade->id); ?>" class="atividade-card-btn atividade-card-btn-view" title="Visualizar">
-                        <i class="icon-eye-open"></i>
-                    </a>
-                    <a href="<?php echo site_url('obras/excluirAtividade/' . $atividade->id); ?>" onclick="return confirm('Deseja realmente excluir a atividade: <?php echo htmlspecialchars(addslashes($titulo), ENT_QUOTES); ?>?')" class="atividade-card-btn atividade-card-btn-delete" title="Excluir">
-                        <i class="icon-trash"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-        <?php endforeach; ?>
-    </div>
-    <?php else: ?>
-    <div class="atividades-empty">
-        <div class="atividades-empty-icon">
-            <i class="icon-calendar-empty"></i>
-        </div>
-        <h3>Nenhuma atividade encontrada</h3>
-        <p>Adicione atividades para acompanhar o progresso do trabalho na obra.</p>
-        <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
-        <button onclick="$('#modalAdicionar').modal('show')" class="atividades-btn atividades-btn-primary" style="display: inline-flex;">
-            <i class="icon-plus"></i> Adicionar Primeira Atividade
-        </button>
+    <!-- Grid de Atividades (Mesclado: Sistema Antigo + Wizard) -->
+    <?php $this->load->view('obras/atividades_list_new'); ?>
         <?php endif; ?>
     </div>
     <?php endif; ?>
@@ -1001,99 +886,139 @@ function iniciarRegistroAtividade(event) {
 }
 </script>
 
-<!-- Modal Adicionar Atividade -->
+<!-- Modal Adicionar Atividade (Integrado com Wizard) -->
 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
 <div id="modalAdicionar" class="modal hide fade modal-atividades" tabindex="-1" role="dialog" aria-labelledby="modalAtividadeLabel" aria-hidden="true">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h3 id="modalAtividadeLabel"><i class="icon-plus-sign"></i> Nova Atividade</h3>
+        <h3 id="modalAtividadeLabel"><i class="icon-plus-sign"></i> Nova Atividade - Wizard</h3>
     </div>
 
-    <form action="<?php echo site_url('obras/adicionarAtividade'); ?>" method="post">
+    <form id="formAdicionarAtividade" onsubmit="return salvarAtividadeWizard(event)">
         <div class="modal-body">
+            <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>">
             <input type="hidden" name="obra_id" value="<?php echo $obra->id; ?>">
+            <input type="hidden" name="latitude" id="nova_latitude">
+            <input type="hidden" name="longitude" id="nova_longitude">
+
+            <!-- Alerta informativo -->
+            <div style="background: #e3f2fd; border-left: 4px solid #2196f3; padding: 12px 15px; margin-bottom: 20px; border-radius: 0 8px 8px 0;">
+                <i class="icon-info-sign" style="color: #2196f3;"></i>
+                <strong>Modo Wizard:</strong> Esta atividade será criada no sistema de atendimento técnico.
+            </div>
+
+            <!-- Seleção de Etapa (OBRIGATÓRIA) -->
+            <div class="atividades-form-group">
+                <label class="atividades-form-label" for="etapa_id_nova">
+                    <i class="icon-tasks"></i> Etapa da Obra <span style="color: #dc3545;">*</span>
+                </label>
+                <select name="etapa_id" id="etapa_id_nova" class="atividades-form-select" required>
+                    <option value="">Selecione uma etapa...</option>
+                    <?php if (isset($etapas) && !empty($etapas)): ?>
+                        <?php foreach ($etapas as $e): ?>
+                        <option value="<?php echo $e->id; ?>">
+                            #<?php echo $e->numero_etapa ?? 'N/A'; ?> - <?php echo $e->nome; ?>
+                            <?php if (isset($e->progresso_real) && $e->progresso_real > 0): ?>
+                                (<?php echo $e->progresso_real; ?>%)
+                            <?php endif; ?>
+                        </option>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <option value="" disabled>Nenhuma etapa cadastrada</option>
+                    <?php endif; ?>
+                </select>
+                <div class="atividades-form-hint">
+                    <i class="icon-info-sign"></i> Selecione a etapa em que a atividade será executada.
+                </div>
+            </div>
+
+            <!-- Tipo de Atividade (do wizard) -->
+            <?php if (!empty($tipos_atividades)): ?>
+            <div class="atividades-form-group">
+                <label class="atividades-form-label" for="tipo_id_nova">
+                    <i class="icon-wrench"></i> Tipo de Atividade <span style="color: #dc3545;">*</span>
+                </label>
+                <select name="tipo_id" id="tipo_id_nova" class="atividades-form-select" required>
+                    <option value="">Selecione o tipo...</option>
+                    <?php foreach ($tipos_atividades as $tipo): ?>
+                    <option value="<?php echo $tipo->idTipo; ?>" data-categoria="<?php echo $tipo->categoria ?? 'geral'; ?>">
+                        <?php echo $tipo->nome; ?>
+                    </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <?php else: ?>
+            <input type="hidden" name="tipo_id" value="1">
+            <?php endif; ?>
 
             <!-- Título -->
             <div class="atividades-form-group">
-                <label class="atividades-form-label" for="titulo">
-                    <i class="icon-tag"></i> Título da Atividade <span class="required">*</span>
+                <label class="atividades-form-label" for="titulo_nova">
+                    <i class="icon-tag"></i> Título da Atividade <span style="color: #dc3545;">*</span>
                 </label>
-                <input type="text" name="titulo" id="titulo" class="atividades-form-input" placeholder="Ex: Instalação elétrica, Reunião com cliente..." required>
+                <input type="text" name="titulo" id="titulo_nova" class="atividades-form-input" placeholder="Ex: Instalação elétrica..." required>
             </div>
 
             <!-- Descrição -->
             <div class="atividades-form-group">
-                <label class="atividades-form-label" for="descricao">
-                    <i class="icon-align-left"></i> Descrição
+                <label class="atividades-form-label" for="descricao_nova">
+                    <i class="icon-align-left"></i> Descrição da Atividade
                 </label>
-                <textarea name="descricao" id="descricao" class="atividades-form-textarea" placeholder="Descreva os detalhes desta atividade..."></textarea>
+                <textarea name="descricao" id="descricao_nova" class="atividades-form-textarea" rows="2" placeholder="Descreva o trabalho que será realizado..."></textarea>
             </div>
 
-            <div class="atividades-form-row">
-                <!-- Data -->
-                <div class="atividades-form-group">
-                    <label class="atividades-form-label" for="data_atividade">
-                        <i class="icon-calendar"></i> Data da Atividade <span class="required">*</span>
-                    </label>
-                    <input type="date" name="data_atividade" id="data_atividade" class="atividades-form-input" value="<?php echo date('Y-m-d'); ?>" required>
-                </div>
+            <!-- Equipamento/Local -->
+            <div class="atividades-form-group">
+                <label class="atividades-form-label" for="equipamento_nova">
+                    <i class="icon-wrench"></i> Equipamento/Local
+                </label>
+                <input type="text" name="equipamento" id="equipamento_nova" class="atividades-form-input" placeholder="Ex: Rack principal, Câmera 1, Sala do servidor...">
+            </div>
 
-                <!-- Tipo -->
-                <div class="atividades-form-group">
-                    <label class="atividades-form-label" for="tipo">
-                        <i class="icon-wrench"></i> Tipo de Atividade
-                    </label>
-                    <select name="tipo" id="tipo" class="atividades-form-select">
-                        <option value="trabalho">🔧 Trabalho</option>
-                        <option value="visita">👤 Visita Técnica</option>
-                        <option value="manutencao">🔨 Manutenção</option>
-                        <option value="impedimento">⚠️ Impedimento</option>
-                        <option value="outro">❓ Outro</option>
-                    </select>
+            <!-- Localização GPS -->
+            <div class="atividades-form-group">
+                <label class="atividades-form-label">
+                    <i class="icon-map-marker"></i> Localização GPS
+                </label>
+                <button type="button" class="btn btn-info" onclick="obterLocalizacaoNovaAtividade()" style="margin-bottom: 10px;">
+                    <i class="icon-map-marker"></i> Obter Localização Atual
+                </button>
+                <div id="gps_info_nova" class="atividades-form-hint">
+                    <i class="icon-info-sign"></i> Clique para registrar a localização.
                 </div>
             </div>
 
+            <hr style="margin: 20px 0; border-color: #e0e0e0;">
+
+            <!-- Campos adicionais -->
             <div class="atividades-form-row">
-                <!-- Técnico -->
+                <!-- Técnico Responsável -->
                 <div class="atividades-form-group">
-                    <label class="atividades-form-label" for="tecnico_id">
+                    <label class="atividades-form-label" for="tecnico_id_nova">
                         <i class="icon-user"></i> Técnico Responsável
                     </label>
-                    <select name="tecnico_id" id="tecnico_id" class="atividades-form-select">
+                    <select name="tecnico_id" id="tecnico_id_nova" class="atividades-form-select">
                         <option value="">Selecione um técnico...</option>
-                        <?php foreach ($tecnicos as $t): ?>
-                        <option value="<?php echo $t->idUsuarios; ?>"><?php echo $t->nome; ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-
-                <!-- Etapa -->
-                <div class="atividades-form-group">
-                    <label class="atividades-form-label" for="etapa_id">
-                        <i class="icon-tasks"></i> Etapa Relacionada
-                    </label>
-                    <select name="etapa_id" id="etapa_id" class="atividades-form-select">
-                        <option value="">Selecione uma etapa...</option>
-                        <?php if (isset($etapas) && !empty($etapas)): ?>
-                            <?php foreach ($etapas as $e): ?>
-                            <option value="<?php echo $e->id; ?>">#<?php echo $e->numero_etapa; ?> - <?php echo $e->nome; ?></option>
+                        <?php if (!empty($tecnicos)): ?>
+                            <?php foreach ($tecnicos as $t): ?>
+                            <option value="<?php echo $t->idUsuarios; ?>"><?php echo $t->nome; ?></option>
                             <?php endforeach; ?>
                         <?php endif; ?>
                     </select>
                 </div>
-            </div>
 
-            <!-- Visível ao cliente -->
-            <div class="atividades-form-group">
-                <label class="atividades-form-checkbox" style="margin: 0;">
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <input type="checkbox" name="visivel_cliente" value="1" checked style="width: 20px; height: 20px; margin: 0;">
-                        <div>
-                            <div class="atividades-form-checkbox-label">Visível ao cliente</div>
-                            <div class="atividades-form-checkbox-hint">Marque para que o cliente possa ver esta atividade no portal</div>
+                <!-- Visível ao Cliente -->
+                <div class="atividades-form-group">
+                    <label class="atividades-form-checkbox" style="margin: 10px 0 0 0;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <input type="checkbox" name="visivel_cliente" value="1" checked style="width: 20px; height: 20px; margin: 0;">
+                            <div>
+                                <div class="atividades-form-checkbox-label">Visível ao cliente</div>
+                                <div class="atividades-form-checkbox-hint">O cliente poderá ver esta atividade</div>
+                            </div>
                         </div>
-                    </div>
-                </label>
+                    </label>
+                </div>
             </div>
         </div>
 
@@ -1101,13 +1026,100 @@ function iniciarRegistroAtividade(event) {
             <button type="button" class="atividades-btn-cancel" data-dismiss="modal">
                 <i class="icon-remove"></i> Cancelar
             </button>
-            <button type="submit" class="atividades-btn-submit">
-                <i class="icon-save"></i> Salvar Atividade
+            <button type="submit" class="atividades-btn-submit" id="btnSalvarAtividade" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                <i class="icon-save"></i> CRIAR ATIVIDADE
             </button>
         </div>
     </form>
 </div>
 <?php endif; ?>
+
+<script>
+// Função para obter localização GPS
+function obterLocalizacaoNovaAtividade() {
+    if ('geolocation' in navigator) {
+        document.getElementById('gps_info_nova').innerHTML = '<i class="icon-time"></i> Obtendo localização...';
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                document.getElementById('nova_latitude').value = position.coords.latitude;
+                document.getElementById('nova_longitude').value = position.coords.longitude;
+                document.getElementById('gps_info_nova').innerHTML = '<i class="icon-ok" style="color: #28a745;"></i> Localização: ' + position.coords.latitude.toFixed(6) + ', ' + position.coords.longitude.toFixed(6);
+            },
+            function(error) {
+                document.getElementById('gps_info_nova').innerHTML = '<i class="icon-remove" style="color: #dc3545;"></i> Erro: ' + error.message;
+            },
+            { enableHighAccuracy: true, timeout: 10000 }
+        );
+    } else {
+        document.getElementById('gps_info_nova').innerHTML = '<i class="icon-remove" style="color: #dc3545;"></i> GPS não disponível.';
+    }
+}
+
+// Função para salvar atividade no formato do wizard
+function salvarAtividadeWizard(event) {
+    event.preventDefault();
+
+    const form = document.getElementById('formAdicionarAtividade');
+    const formData = new FormData(form);
+
+    // Validação
+    const etapaId = formData.get('etapa_id');
+    const tipoId = formData.get('tipo_id');
+    const titulo = formData.get('titulo');
+
+    if (!etapaId) {
+        alert('Por favor, selecione uma etapa da obra.');
+        document.getElementById('etapa_id_nova').focus();
+        return false;
+    }
+
+    if (!tipoId) {
+        alert('Por favor, selecione o tipo de atividade.');
+        document.getElementById('tipo_id_nova').focus();
+        return false;
+    }
+
+    if (!titulo || titulo.trim() === '') {
+        alert('Por favor, informe o título da atividade.');
+        document.getElementById('titulo_nova').focus();
+        return false;
+    }
+
+    // Desabilita botão para evitar duplo clique
+    const btn = document.getElementById('btnSalvarAtividade');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="icon-time"></i> Salvando...';
+
+    // Envia requisição AJAX
+    fetch('<?php echo site_url("atividades/checkin_obra"); ?>', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            $('#modalAdicionar').modal('hide');
+            alert('Atividade criada com sucesso no sistema de atendimento!');
+            location.reload();
+        } else {
+            alert('Erro: ' + (data.message || 'Erro ao criar atividade'));
+            btn.disabled = false;
+            btn.innerHTML = '<i class="icon-save"></i> CRIAR ATIVIDADE';
+        }
+    })
+    .catch(error => {
+        console.error('Erro:', error);
+        alert('Erro ao criar atividade. Tente novamente.');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="icon-save"></i> CRIAR ATIVIDADE';
+    });
+
+    return false;
+}
+</script>
 
 <script>
 // Filtro de atividades
