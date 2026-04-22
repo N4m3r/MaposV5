@@ -132,10 +132,12 @@ class Atividades_model extends CI_Model
                            atividades_tipos.nome as tipo_nome,
                            atividades_tipos.icone as tipo_icone,
                            atividades_tipos.cor as tipo_cor,
-                           usuarios.nome as nome_tecnico');
+                           usuarios.nome as nome_tecnico,
+                           obra_etapas.nome as etapa_nome');
         $this->db->from($this->table);
         $this->db->join('atividades_tipos', 'atividades_tipos.idTipo = os_atividades.tipo_id', 'left');
         $this->db->join('usuarios', 'usuarios.idUsuarios = os_atividades.tecnico_id', 'left');
+        $this->db->join('obra_etapas', 'obra_etapas.id = os_atividades.etapa_id', 'left');
         $this->db->where('os_atividades.idAtividade', $id);
 
         $atividade = $this->db->get()->row();

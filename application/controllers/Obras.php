@@ -1221,6 +1221,11 @@ class Obras extends MY_Controller
                 $this->data['atividade']->observacoes = $this->data['atividade_real']->observacoes;
             }
 
+            // Mesclar etapa da atividade real
+            if (!empty($this->data['atividade_real']->etapa_nome)) {
+                $this->data['atividade']->etapa_nome = $this->data['atividade_real']->etapa_nome;
+            }
+
             // Mesclar horários de início e fim da atividade real
             if (!empty($this->data['atividade_real']->hora_inicio)) {
                 $this->data['atividade']->hora_inicio = $this->data['atividade_real']->hora_inicio;
