@@ -2137,15 +2137,47 @@ const WizardAtendimento = {
         }
     },
 
-    // Registrar progresso
+    // Registrar progresso - abre modal de confirmação
     registrarProgresso: function() {
-        var modal = document.getElementById('modalProgresso');
+        const atividadeEmAndamento = dadosObra.atividadeAndamento;
+
+        // Calcular tempo decorrido
+        const inicio = atividadeEmAndamento && atividadeEmAndamento.hora_inicio
+            ? new Date(atividadeEmAndamento.hora_inicio)
+            : this.horaInicio;
+        var tempoTexto = '00:00';
+        if (inicio) {
+            const agora = new Date();
+            const diff = agora - inicio;
+            const horas = Math.floor(diff / 3600000);
+            const minutos = Math.floor((diff % 3600000) / 60000);
+            tempoTexto = String(horas).padStart(2, '0') + ':' + String(minutos).padStart(2, '0');
+        }
+
+        // Atualizar modal
+        const atividadeEl = document.getElementById('confirmarProgressoAtividade');
+        const tempoEl = document.getElementById('confirmarProgressoTempo');
+
+        if (atividadeEl) {
+            const nomeAtividade = atividadeEmAndamento
+                ? (atividadeEmAndamento.titulo || atividadeEmAndamento.descricao || 'Atividade em andamento')
+                : (this.atividadeSelecionada ? this.atividadeSelecionada.nome : 'Atividade');
+            atividadeEl.textContent = nomeAtividade;
+        }
+        if (tempoEl) tempoEl.textContent = 'Tempo: ' + tempoTexto;
+
+        // Limpar campo de texto
+        const textoEl = document.getElementById('textoProgressoModal');
+        if (textoEl) textoEl.value = '';
+
+        // Abrir modal de confirmação
+        var modal = document.getElementById('modalConfirmarProgresso');
         if (modal) modal.style.display = 'block';
     },
 
-    // Salvar progresso
-    salvarProgresso: function() {
-        var textoEl = document.getElementById('textoProgresso');
+    // Confirmar registro de progresso no modal
+    confirmarRegistrarProgresso: function() {
+        var textoEl = document.getElementById('textoProgressoModal');
         if (!textoEl) return;
 
         const texto = textoEl.value;
@@ -2183,7 +2215,7 @@ const WizardAtendimento = {
         .then(data => {
             if (data.success) {
                 alert('Progresso registrado com sucesso!');
-                var modal = document.getElementById('modalProgresso');
+                var modal = document.getElementById('modalConfirmarProgresso');
                 if (modal) modal.style.display = 'none';
                 textoEl.value = '';
             } else {
@@ -2196,6 +2228,11 @@ const WizardAtendimento = {
         });
     },
 
+    // Salvar progresso (mantido para compatibilidade)
+    salvarProgresso: function() {
+        this.confirmarRegistrarProgresso();
+    },
+
     // Adicionar foto durante execução
     adicionarFoto: function() {
         var fotoInput = document.getElementById('fotoCheckout');
@@ -2204,31 +2241,67 @@ const WizardAtendimento = {
 
     // Pausar execução
     pausarExecucao: function() {
-        if (!confirm('Deseja pausar a execução desta atividade?')) return;
+        // Buscar atividade em andamento
+        const atividadeEmAndamento = dadosObra.atividadeAndamento;
+        if (!atividadeEmAndamento) {
+            alert('Nenhuma atividade em andamento.');
+            return;
+        }
 
+        // Calcular tempo decorrido
+        const inicio = atividadeEmAndamento.hora_inicio ? new Date(atividadeEmAndamento.hora_inicio) : this.horaInicio;
+        var tempoTexto = '00:00';
+        if (inicio) {
+            const agora = new Date();
+            const diff = agora - inicio;
+            const horas = Math.floor(diff / 3600000);
+            const minutos = Math.floor((diff % 3600000) / 60000);
+            tempoTexto = String(horas).padStart(2, '0') + ':' + String(minutos).padStart(2, '0');
+        }
+
+        // Atualizar modal
+        const atividadeEl = document.getElementById('confirmarPausarAtividade');
+        const tempoEl = document.getElementById('confirmarPausarTempo');
+
+        if (atividadeEl) {
+            const nomeAtividade = atividadeEmAndamento.titulo || atividadeEmAndamento.descricao || 'Atividade em andamento';
+            atividadeEl.textContent = nomeAtividade;
+        }
+        if (tempoEl) tempoEl.textContent = tempoTexto;
+
+        // Limpar campo de motivo
+        const motivoEl = document.getElementById('motivoPausa');
+        if (motivoEl) motivoEl.value = '';
+
+        // Abrir modal
+        var modal = document.getElementById('modalConfirmarPausar');
+        if (modal) modal.style.display = 'block';
+    },
+
+    // Confirmar pausa no modal
+    confirmarPausar: function() {
         this.pararTimer();
 
         const csrfToken = this.getCsrfToken();
 
-        // Buscar atividade em andamento nos dados da obra
+        // Buscar atividade em andamento
         const atividadeEmAndamento = dadosObra.atividadeAndamento;
         const atividadeId = atividadeEmAndamento ? (atividadeEmAndamento.id || atividadeEmAndamento.idAtividade) : null;
-
-        console.log('Debug pausar:', {
-            obraId: dadosObra.obraId,
-            atividadeId: atividadeId,
-            atividadeEmAndamento: atividadeEmAndamento
-        });
 
         if (!atividadeId) {
             alert('Nenhuma atividade em andamento para pausar.');
             return;
         }
 
+        // Pegar motivo da pausa
+        const motivoEl = document.getElementById('motivoPausa');
+        const motivo = motivoEl ? motivoEl.value : '';
+
         const formData = new FormData();
         formData.append('MAPOS_TOKEN', csrfToken);
         formData.append('obra_id', dadosObra.obraId);
         formData.append('atividade_id', atividadeId);
+        formData.append('observacao', motivo);
 
         fetch('<?= site_url("atividades/pausar") ?>', {
             method: 'POST',
@@ -2250,7 +2323,10 @@ const WizardAtendimento = {
         })
         .then(data => {
             if (data.success) {
-                alert('Atividade pausada!');
+                // Fechar modal
+                var modal = document.getElementById('modalConfirmarPausar');
+                if (modal) modal.style.display = 'none';
+
                 this.fechar();
                 location.reload();
             } else {
@@ -2263,9 +2339,58 @@ const WizardAtendimento = {
         });
     },
 
-    // Avançar para checkout
+    // Avançar para checkout - mostra modal de confirmação primeiro
     avancarParaCheckout: function() {
-        // Preencher resumo
+        const atividadeEmAndamento = dadosObra.atividadeAndamento;
+
+        // Calcular tempo e dados para o modal
+        var horaInicioTexto = '--:--';
+        var tempoTotalTexto = '00:00';
+
+        if (this.horaInicio) {
+            horaInicioTexto = this.horaInicio.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
+            const agora = new Date();
+            const diff = agora - this.horaInicio;
+            const horas = Math.floor(diff / 3600000);
+            const minutos = Math.floor((diff % 3600000) / 60000);
+            tempoTotalTexto = String(horas).padStart(2, '0') + ':' + String(minutos).padStart(2, '0');
+        } else if (atividadeEmAndamento && atividadeEmAndamento.hora_inicio) {
+            const inicio = new Date(atividadeEmAndamento.hora_inicio);
+            horaInicioTexto = inicio.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
+            const agora = new Date();
+            const diff = agora - inicio;
+            const horas = Math.floor(diff / 3600000);
+            const minutos = Math.floor((diff % 3600000) / 60000);
+            tempoTotalTexto = String(horas).padStart(2, '0') + ':' + String(minutos).padStart(2, '0');
+        }
+
+        // Atualizar modal
+        const atividadeEl = document.getElementById('confirmarCheckoutAtividade');
+        const horaInicioEl = document.getElementById('confirmarCheckoutHoraInicio');
+        const tempoEl = document.getElementById('confirmarCheckoutTempo');
+
+        if (atividadeEl) {
+            const nomeAtividade = atividadeEmAndamento
+                ? (atividadeEmAndamento.titulo || atividadeEmAndamento.descricao || 'Atividade em andamento')
+                : (this.atividadeSelecionada ? this.atividadeSelecionada.nome : 'Atividade');
+            const nomeEtapa = this.etapaSelecionada ? this.etapaSelecionada.nome : 'Etapa';
+            atividadeEl.textContent = nomeEtapa + ' - ' + nomeAtividade;
+        }
+        if (horaInicioEl) horaInicioEl.textContent = horaInicioTexto;
+        if (tempoEl) tempoEl.textContent = tempoTotalTexto;
+
+        // Abrir modal de confirmação
+        var modal = document.getElementById('modalConfirmarCheckout');
+        if (modal) modal.style.display = 'block';
+    },
+
+    // Confirmar avanço para checkout no modal
+    confirmarAvancarCheckout: function() {
+        // Fechar modal de confirmação
+        var modalConfirm = document.getElementById('modalConfirmarCheckout');
+        if (modalConfirm) modalConfirm.style.display = 'none';
+
+        // Preencher resumo no step 5
         var horaInicioEl = document.getElementById('checkoutHoraInicio');
         var tempoTotalEl = document.getElementById('checkoutTempoTotal');
 
@@ -2437,7 +2562,10 @@ const WizardAtendimento = {
 document.addEventListener('click', function(e) {
     var modalIniciar = document.getElementById('modalConfirmarIniciar');
     var modalFinalizar = document.getElementById('modalConfirmarFinalizar');
-    var modalProgresso = document.getElementById('modalProgresso');
+    var modalPausar = document.getElementById('modalConfirmarPausar');
+    var modalProgresso = document.getElementById('modalConfirmarProgresso');
+    var modalCheckout = document.getElementById('modalConfirmarCheckout');
+    var modalProgressoAntigo = document.getElementById('modalProgresso');
 
     if (modalIniciar && e.target === modalIniciar) {
         modalIniciar.style.display = 'none';
@@ -2445,8 +2573,28 @@ document.addEventListener('click', function(e) {
     if (modalFinalizar && e.target === modalFinalizar) {
         modalFinalizar.style.display = 'none';
     }
+    if (modalPausar && e.target === modalPausar) {
+        modalPausar.style.display = 'none';
+    }
     if (modalProgresso && e.target === modalProgresso) {
         modalProgresso.style.display = 'none';
+    }
+    if (modalCheckout && e.target === modalCheckout) {
+        modalCheckout.style.display = 'none';
+    }
+    if (modalProgressoAntigo && e.target === modalProgressoAntigo) {
+        modalProgressoAntigo.style.display = 'none';
+    }
+});
+
+// Fechar modais ao pressionar ESC
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        var modais = ['modalConfirmarIniciar', 'modalConfirmarFinalizar', 'modalConfirmarPausar', 'modalConfirmarProgresso', 'modalConfirmarCheckout', 'modalProgresso'];
+        modais.forEach(function(id) {
+            var modal = document.getElementById(id);
+            if (modal) modal.style.display = 'none';
+        });
     }
 });
 

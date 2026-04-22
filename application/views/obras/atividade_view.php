@@ -289,6 +289,18 @@
 
 <div class="atividade-view">
 
+    <!-- Verificar se atividade existe -->
+    <?php if (empty($atividade)): ?>
+    <div class="atividade-card" style="text-align: center; padding: 60px 20px;">
+        <i class="icon-warning-sign" style="font-size: 48px; color: #e74c3c;"></i>
+        <h2 style="margin: 20px 0; color: #333;">Atividade não encontrada</h2>
+        <p style="color: #666;">A atividade solicitada não existe ou foi removida.</p>
+        <a href="<?php echo site_url('obras'); ?>" class="action-btn action-btn-primary" style="display: inline-flex; margin-top: 20px;">
+            <i class="icon-arrow-left"></i> Voltar para Obras
+        </a>
+    </div>
+    <?php return; endif; ?>
+
     <!-- Header -->
     <div class="atividade-header">
         <div class="atividade-header-content">
@@ -416,12 +428,17 @@
             </div>
 
             <!-- Registro de Execução -->
-            <?php if (!empty($checkins)): ?>
+            <?php
+            // Usar checkins passados do controller (inclui registros da execução da obra)
+            $checkins_processar = $checkins ?? [];
+            ?>
+
+            <?php if (!empty($checkins_processar)): ?>
             <?php
             // Processar checkins para mostrar períodos de trabalho
             $periodos = [];
             $checkin_atual = null;
-            foreach ($checkins as $check) {
+            foreach ($checkins_processar as $check) {
                 if (in_array($check->tipo, ['checkin', 'retorno'])) {
                     $checkin_atual = $check;
                 } elseif (in_array($check->tipo, ['checkout', 'pausa']) && $checkin_atual) {
@@ -624,7 +641,7 @@
                     </div>
                 </div>
                 <div style="display: flex; flex-direction: column; gap: 10px;">
-                    <?php foreach ($checkins as $checkin): ?>
+                    <?php foreach ($checkins_processar as $checkin): ?>
                     <div class="checkin-card">
                         <div class="checkin-icon <?php echo $checkin->tipo; ?>">
                             <i class="icon-<?php echo $checkin->tipo == 'checkin' ? 'signin' : ($checkin->tipo == 'checkout' ? 'signout' : ($checkin->tipo == 'pausa' ? 'pause' : 'play')); ?>"></i>
@@ -669,6 +686,25 @@
                         </div>
                     </div>
                     <?php endforeach; ?>
+                </div>
+            </div>
+            <?php else: ?>
+            <!-- Sem registros de execução -->
+            <div class="atividade-card" style="background: #f8f9fa; border-left: 4px solid #95a5a6;">
+                <div class="atividade-card-header">
+                    <div class="atividade-card-title">
+                        <i class="icon-info-sign" style="color: #95a5a6;"></i> Registro de Execução
+                    </div>
+                </div>
+                <div style="text-align: center; padding: 30px; color: #666;">
+                    <i class="icon-time" style="font-size: 48px; color: #ddd; display: block; margin-bottom: 15px;"></i>
+                    <p>Nenhum registro de execução encontrado para esta atividade.</p>
+                    <p style="font-size: 13px; color: #999;">Os registros são criados quando um técnico inicia o atendimento através da tela de execução.</p>
+                    <?php if (isset($atividade->obra_id) && isset($atividade->id)): ?>
+                    <a href="<?php echo site_url('tecnicos/executar_obra/' . $atividade->obra_id); ?>" class="action-btn action-btn-primary" style="display: inline-flex; margin-top: 15px;">
+                        <i class="icon-play"></i> Iniciar Execução
+                    </a>
+                    <?php endif; ?>
                 </div>
             </div>
             <?php endif; ?>
