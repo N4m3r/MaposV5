@@ -1206,6 +1206,7 @@ class Tecnicos extends MY_Controller
     {
         $tecnico_id = $this->session->userdata('tec_id');
 
+        $this->data['menuEstoque'] = 'active';
         $this->data['estoque'] = $this->tecnicos_model->getEstoqueVeiculo($tecnico_id);
         $this->data['historico'] = $this->tecnicos_model->getHistoricoEstoque($tecnico_id, 30);
 

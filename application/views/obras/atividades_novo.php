@@ -192,18 +192,38 @@
 }
 </style>
 
+<!-- DEBUG CONSOLE - Remover em produção -->
+<div id="debugConsole" style="position:fixed; bottom:10px; right:10px; background:#333; color:#0f0; padding:10px; font-family:monospace; font-size:12px; max-width:400px; max-height:200px; overflow:auto; z-index:99999; border-radius:5px; display:block;">
+  <strong>DEBUG JS:</strong> <button onclick="document.getElementById('debugConsole').style.display='none'" style="float:right;color:red;">X</button>
+  <div id="debugOutput">Inicializando...</div>
+</div>
+
+<script>
+// Debug helper
+var debugMsgs = [];
+function logDebug(msg) {
+    debugMsgs.push(new Date().toLocaleTimeString() + ': ' + msg);
+    var out = document.getElementById('debugOutput');
+    if (out) out.innerHTML = debugMsgs.join('<br>');
+    console.log('[DEBUG]', msg);
+}
+window.onerror = function(msg, url, line) {
+    logDebug('ERRO JS: ' + msg + ' (linha ' + line + ')');
+};
+</script>
+
 <div class="atividades-wrapper">
     <!-- Header -->
     <div class="atividades-header">
-        <h1><i class='bx bx-calendar-check'></i> Atividades da Obra</h1>
+        <h1><i class='icon icon-calendar'></i> Atividades da Obra</h1>
         <p><?php echo htmlspecialchars($obra->nome ?? 'Obra'); ?></p>
         <div class="actions">
             <a href="<?php echo site_url('obras/visualizar/' . ($obra->id ?? 0)); ?>" class="btn btn-secondary">
-                <i class='bx bx-arrow-back'></i> Voltar à Obra
+                <i class='icon icon-arrow-left'></i> Voltar à Obra
             </a>
             <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
             <button class="btn btn-primary" onclick="abrirModalNova()">
-                <i class='bx bx-plus'></i> Nova Atividade
+                <i class='icon icon-plus'></i> Nova Atividade
             </button>
             <?php endif; ?>
         </div>
@@ -229,28 +249,28 @@
         }
         ?>
         <div class="stat-box">
-            <div class="stat-icon blue"><i class='bx bx-calendar'></i></div>
+            <div class="stat-icon blue"><i class='icon icon-calendar'></i></div>
             <div class="stat-info">
                 <h3><?php echo $total; ?></h3>
                 <span>Total Atividades</span>
             </div>
         </div>
         <div class="stat-box">
-            <div class="stat-icon green"><i class='bx bx-check-circle'></i></div>
+            <div class="stat-icon green"><i class='icon icon-ok'></i></div>
             <div class="stat-info">
                 <h3><?php echo $concluidas; ?></h3>
                 <span>Concluídas</span>
             </div>
         </div>
         <div class="stat-box">
-            <div class="stat-icon orange"><i class='bx bx-time'></i></div>
+            <div class="stat-icon orange"><i class='icon icon-time'></i></div>
             <div class="stat-info">
                 <h3><?php echo $em_andamento; ?></h3>
                 <span>Em Andamento</span>
             </div>
         </div>
         <div class="stat-box">
-            <div class="stat-icon gray"><i class='bx bx-hourglass'></i></div>
+            <div class="stat-icon gray"><i class='icon icon-time'></i></div>
             <div class="stat-info">
                 <h3><?php echo $pendentes; ?></h3>
                 <span>Pendentes</span>
@@ -335,12 +355,12 @@
         if (empty($todas_atividades)):
         ?>
         <div class="empty-state">
-            <i class='bx bx-calendar-x'></i>
+            <i class='icon icon-remove' style="font-size:60px;color:#667eea;margin-bottom:15px;display:block;"></i>
             <h3>Nenhuma atividade encontrada</h3>
             <p>Esta obra ainda não possui atividades registradas.</p>
             <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
             <button class="btn btn-primary" onclick="abrirModalNova()">
-                <i class='bx bx-plus'></i> Adicionar Primeira Atividade
+                <i class='icon icon-plus'></i> Adicionar Primeira Atividade
             </button>
             <?php endif; ?>
         </div>
@@ -349,13 +369,14 @@
         <?php foreach ($todas_atividades as $atv):
             $status_class = $atv['status'];
             $status_label = ucfirst($atv['status']);
-            $atv_json = htmlspecialchars(json_encode($atv), ENT_QUOTES, 'UTF-8');
+            // Codificar JSON em base64 para evitar problemas com aspas no HTML
+            $atv_json_base64 = base64_encode(json_encode($atv));
         ?>
         <div class="atv-card <?php echo $status_class; ?>"
              data-titulo="<?php echo strtolower($atv['titulo']); ?>"
              data-status="<?php echo $atv['status']; ?>"
              data-tipo="<?php echo $atv['tipo']; ?>"
-             onclick="abrirDetalhes('<?php echo $atv['sistema']; ?>', <?php echo $atv['id']; ?>, '<?php echo $atv_json; ?>')">
+             onclick="abrirDetalhes('<?php echo $atv['sistema']; ?>', <?php echo $atv['id']; ?>, '<?php echo $atv_json_base64; ?>')">
 
             <div class="atv-card-header">
                 <div class="atv-card-titulo"><?php echo htmlspecialchars($atv['titulo']); ?></div>
@@ -363,11 +384,11 @@
             </div>
 
             <div class="atv-card-info">
-                <span><i class='bx bx-calendar'></i> <?php echo date('d/m/Y', strtotime($atv['data'])); ?></span>
-                <span><i class='bx bx-user'></i> <?php echo htmlspecialchars($atv['tecnico']); ?></span>
-                <span><i class='bx bx-layer'></i> <?php echo htmlspecialchars($atv['etapa']); ?></span>
+                <span><i class='icon icon-calendar'></i> <?php echo date('d/m/Y', strtotime($atv['data'])); ?></span>
+                <span><i class='icon icon-user'></i> <?php echo htmlspecialchars($atv['tecnico']); ?></span>
+                <span><i class='icon icon-tasks'></i> <?php echo htmlspecialchars($atv['etapa']); ?></span>
                 <?php if (!empty($atv['duracao'])): ?>
-                <span><i class='bx bx-time'></i> <?php echo floor($atv['duracao']/60) . 'h ' . ($atv['duracao']%60) . 'min'; ?></span>
+                <span><i class='icon icon-time'></i> <?php echo floor($atv['duracao']/60) . 'h ' . ($atv['duracao']%60) . 'min'; ?></span>
                 <?php endif; ?>
             </div>
 
@@ -383,11 +404,11 @@
                 </div>
                 <div class="atv-card-badges">
                     <?php if ($atv['sistema'] == 'novo'): ?>
-                    <span class="atv-card-badge wizard" title="Sistema Wizard"><i class='bx bx-timer'></i></span>
+                    <span class="atv-card-badge wizard" title="Sistema Wizard"><i class='icon icon-time'></i></span>
                     <?php endif; ?>
-                    <span class="atv-card-badge view" title="Ver detalhes"><i class='bx bx-eye'></i></span>
+                    <span class="atv-card-badge view" title="Ver detalhes"><i class='icon icon-eye-open'></i></span>
                     <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
-                    <span class="atv-card-badge delete" title="Excluir" onclick="event.stopPropagation(); excluirAtividade('<?php echo $atv['sistema']; ?>', <?php echo $atv['id']; ?>)"><i class='bx bx-trash'></i></span>
+                    <span class="atv-card-badge delete" title="Excluir" onclick="event.stopPropagation(); excluirAtividade('<?php echo $atv['sistema']; ?>', <?php echo $atv['id']; ?>)"><i class='icon icon-trash'></i></span>
                     <?php endif; ?>
                 </div>
             </div>
@@ -402,7 +423,7 @@
 <div class="modal-overlay" id="modalDetalhes">
     <div class="modal-box">
         <div class="modal-header">
-            <h3><i class='bx bx-calendar-check'></i> Detalhes da Atividade</h3>
+            <h3><i class='icon icon-check'></i> Detalhes da Atividade</h3>
             <button class="fechar" onclick="fecharModal()">&times;</button>
         </div>
         <div class="modal-body" id="modalBody">
@@ -418,7 +439,7 @@
 <div class="modal-overlay" id="modalNova">
     <div class="modal-box">
         <div class="modal-header">
-            <h3><i class='bx bx-plus'></i> Nova Atividade</h3>
+            <h3><i class='icon icon-plus'></i> Nova Atividade</h3>
             <button class="fechar" onclick="fecharModalNova()">&times;</button>
         </div>
         <div class="modal-body">
@@ -477,7 +498,7 @@
         <div class="modal-footer">
             <button class="btn btn-secondary" onclick="fecharModalNova()">Cancelar</button>
             <button class="btn btn-primary" onclick="salvarNovaAtividade()">
-                <i class='bx bx-save'></i> Salvar
+                <i class='icon icon-save'></i> Salvar
             </button>
         </div>
     </div>
@@ -509,12 +530,18 @@ function filtrarAtividades() {
 }
 
 // Abrir modal de detalhes
-function abrirDetalhes(sistema, id, dadosJson) {
+function abrirDetalhes(sistema, id, dadosBase64) {
+    logDebug('abrindoDetalhes: sistema=' + sistema + ', id=' + id);
+
     sistemaAtual = sistema;
 
     try {
-        atividadeAtual = JSON.parse(dadosJson);
+        // Decodificar base64
+        var jsonStr = atob(dadosBase64);
+        atividadeAtual = JSON.parse(jsonStr);
+        logDebug('Dados parseados: ' + JSON.stringify(atividadeAtual).substring(0, 100));
     } catch(e) {
+        logDebug('ERRO parse JSON: ' + e.message);
         atividadeAtual = { id: id, sistema: sistema };
     }
 
@@ -522,12 +549,19 @@ function abrirDetalhes(sistema, id, dadosJson) {
     var body = document.getElementById('modalBody');
     var footer = document.getElementById('modalFooter');
 
+    logDebug('Elementos: modal=' + (modal ? 'ok' : 'NULO') + ', body=' + (body ? 'ok' : 'NULO'));
+
+    if (!modal || !body) {
+        alert('Erro: Modal não encontrado no DOM');
+        return;
+    }
+
     // Conteúdo baseado no sistema
     var html = '';
 
     if (sistema === 'novo') {
         // Sistema novo - buscar via AJAX
-        body.innerHTML = '<p style="text-align:center;"><i class="bx bx-loader-alt bx-spin" style="font-size:30px;color:#667eea;"></i><br>Carregando...</p>';
+        body.innerHTML = '<p style="text-align:center;"><i class="icon icon-refresh icon-spin" style="font-size:30px;color:#667eea;"></i><br>Carregando...</p>';
         modal.classList.add('ativo');
 
         fetch('<?php echo site_url("atividades/detalhes/"); ?>' + id, {
@@ -566,7 +600,7 @@ function renderizarDetalhesNovo(atv, body, footer) {
     var html = '';
 
     html += '<div class="secao-info">';
-    html += '<h4><i class="bx bx-info-circle"></i> Informações Gerais</h4>';
+    html += '<h4><i class="icon icon-info-sign"></i> Informações Gerais</h4>';
     html += '<p><strong>Status:</strong> <span class="info-badge">' + statusText + '</span></p>';
     html += '<p><strong>Tipo:</strong> ' + (atv.tipo_atividade || '-') + '</p>';
     html += '<p><strong>Técnico:</strong> ' + (atv.nome_tecnico || '-') + '</p>';
@@ -575,7 +609,7 @@ function renderizarDetalhesNovo(atv, body, footer) {
 
     if (atv.hora_inicio) {
         html += '<div class="secao-info">';
-        html += '<h4><i class="bx bx-time"></i> Registro de Tempo</h4>';
+        html += '<h4><i class="icon icon-time"></i> Registro de Tempo</h4>';
         html += '<div class="form-row">';
         html += '<p><strong>Início:</strong> ' + formatarDataHora(atv.hora_inicio) + '</p>';
         html += '<p><strong>Fim:</strong> ' + (atv.hora_fim ? formatarDataHora(atv.hora_fim) : 'Em andamento') + '</p>';
@@ -590,7 +624,7 @@ function renderizarDetalhesNovo(atv, body, footer) {
 
     if (atv.descricao || atv.observacoes) {
         html += '<div class="secao-info">';
-        html += '<h4><i class="bx bx-detail"></i> Observações</h4>';
+        html += '<h4><i class="icon icon-list-alt"></i> Observações</h4>';
         html += '<p>' + (atv.descricao || atv.observacoes || '-') + '</p>';
         html += '</div>';
     }
@@ -603,19 +637,29 @@ function renderizarDetalhesNovo(atv, body, footer) {
 
 // Renderizar detalhes sistema antigo
 function renderizarDetalhesAntigo(atv) {
+    logDebug('renderizarDetalhesAntigo: ' + JSON.stringify(atv).substring(0, 100));
+
     var html = '';
 
+    // Verificar se atv é válido
+    if (!atv) {
+        logDebug('ERRO: atv é nulo');
+        return '<p style="color:red">Erro: dados da atividade inválidos</p>';
+    }
+
     html += '<div class="secao-info">';
-    html += '<h4><i class="bx bx-info-circle"></i> Informações Gerais</h4>';
+    html += '<h4><i class="icon icon-info-sign"></i> Informações Gerais</h4>';
     html += '<div class="form-row">';
     html += '<div class="form-group">';
     html += '<label class="form-label">Título</label>';
-    html += '<input type="text" class="form-input view-field" value="' + (atv.titulo || '').replace(/"/g, '&quot;') + '" readonly>';
-    html += '<input type="text" class="form-input edit-field" id="edit_titulo" value="' + (atv.titulo || '').replace(/"/g, '&quot;') + '" style="display:none;">';
+    var titulo = (atv.titulo || atv.titulo || '');
+    html += '<input type="text" class="form-input view-field" value="' + titulo.replace(/"/g, '&quot;') + '" readonly>';
+    html += '<input type="text" class="form-input edit-field" id="edit_titulo" value="' + titulo.replace(/"/g, '&quot;') + '" style="display:none;">';
     html += '</div>';
     html += '<div class="form-group">';
     html += '<label class="form-label">Status</label>';
-    html += '<span class="info-badge">' + (atv.status ? atv.status.toUpperCase() : 'AGENDADA') + '</span>';
+    var statusVal = atv.status || 'agendada';
+    html += '<span class="info-badge">' + statusVal.toUpperCase() + '</span>';
     html += '</div>';
     html += '</div>';
 
@@ -627,7 +671,7 @@ function renderizarDetalhesAntigo(atv) {
     html += '</div>';
 
     html += '<div class="secao-info">';
-    html += '<h4><i class="bx bx-calendar"></i> Execução</h4>';
+    html += '<h4><i class="icon icon-calendar"></i> Execução</h4>';
     html += '<div class="form-row">';
     html += '<div class="form-group">';
     html += '<label class="form-label">Data</label>';
@@ -650,7 +694,7 @@ function renderizarDetalhesAntigo(atv) {
     html += '</div>';
 
     html += '<div class="secao-info">';
-    html += '<h4><i class="bx bx-user"></i> Responsáveis</h4>';
+    html += '<h4><i class="icon icon-user"></i> Responsáveis</h4>';
     html += '<p><strong>Técnico:</strong> ' + (atv.tecnico || '-') + '</p>';
     html += '<p><strong>Etapa:</strong> ' + (atv.etapa || '-') + '</p>';
     html += '</div>';
@@ -810,4 +854,7 @@ function formatarDataHora(dataHoraStr) {
     if (isNaN(data.getTime())) return dataHoraStr;
     return data.toLocaleString('pt-BR');
 }
+
+// Log de inicialização
+logDebug('JS inicializado. Total cards: ' + document.querySelectorAll('.atv-card').length);
 </script>
