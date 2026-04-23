@@ -193,6 +193,8 @@ $route['obras/relatorioDiario/(:num)'] = 'obras/relatorioDiario/$1';
 $route['obras/api/atualizarProgresso/(:num)'] = 'obras/api_atualizarProgresso/$1';
 $route['obras/api/dadosGrafico/(:num)'] = 'obras/api_dadosGrafico/$1';
 $route['obras/api/getCliente/(:num)'] = 'obras/api_getCliente/$1';
+$route['obras/api/getAtividade/(:num)'] = 'obras/api_getAtividade/$1';
+$route['obras/api/salvarAtividade'] = 'obras/api_salvarAtividade';
 
 // Equipe
 $route['obras/equipe/(:num)'] = 'obras/equipe/$1';
