@@ -665,9 +665,8 @@ class Atividades extends MY_Controller
                 'etapa_id' => $etapa_id,
                 'tecnico_id' => $tecnico_id,
                 'tipo_id' => $tipo_id,
-                'tipo_atividade' => $tipo->nome ?? 'Atividade na Obra',
+                'tipo_atividade' => $titulo ?: ($tipo->nome ?? 'Atividade na Obra'),
                 'categoria' => $tipo->categoria ?? 'geral',
-                'titulo' => $titulo ?: ($tipo->nome ?? 'Atividade'),
                 'descricao' => $is_impedimento ? 'Impedimento: ' . ($this->input->post('justificativa') ?? '') : $descricao,
                 'equipamento' => $this->input->post('equipamento'),
                 'latitude' => $this->input->post('latitude'),
@@ -675,16 +674,14 @@ class Atividades extends MY_Controller
                 'observacoes' => $this->input->post('observacoes') ?? $this->input->post('justificativa'),
             ];
 
-            // Se for impedimento, atualiza status
+            // Se for impedimento, adiciona nas observacoes
             if ($is_impedimento) {
-                $dados['impedimento'] = 1;
-                $dados['motivo_impedimento'] = $this->input->post('justificativa');
-                $dados['tipo_impedimento'] = 'outro';
+                $dados['observacoes'] = 'IMPEDIMENTO: ' . $this->input->post('justificativa');
             }
 
-            // Vincula a atividade planejada se informada
+            // Vincula a atividade planejada se informada (armazenado em observacoes ou descricao)
             if ($atividade_id && $atividade_id != 0) {
-                $dados['obra_atividade_id'] = $atividade_id;
+                $dados['observacoes'] = ($dados['observacoes'] ?? '') . ' | Atividade planejada ID: ' . $atividade_id;
             }
 
             // Processa foto se enviada

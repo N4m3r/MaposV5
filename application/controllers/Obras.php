@@ -1706,6 +1706,56 @@ class Obras extends MY_Controller
         return $this->layout();
     }
 
+    /**
+     * Relatório Geral em formato de impressão (abre em nova janela)
+     */
+    public function imprimirRelatorio($obra_id)
+    {
+        if (!$obra_id || !is_numeric($obra_id)) {
+            $this->session->set_flashdata('error', 'Obra não encontrada.');
+            redirect('obras');
+        }
+
+        $this->load->model('mapos_model');
+        $this->load->model('usuarios_model');
+
+        // Dados da obra
+        $this->data['obra'] = $this->obras_model->getByIdCompleto($obra_id);
+
+        if (!$this->data['obra']) {
+            $this->session->set_flashdata('error', 'Obra não encontrada.');
+            redirect('obras');
+        }
+
+        // Estatísticas
+        $this->data['estatisticas'] = $this->obra_atividades_model->getEstatisticas($obra_id);
+
+        // Etapas com estatísticas
+        $this->data['etapas'] = $this->obras_model->getEtapasComEstatisticas($obra_id);
+
+        // Equipe
+        $this->data['equipe'] = $this->obras_model->getEquipe($obra_id);
+
+        // Atividades do sistema antigo
+        $this->data['atividades'] = $this->obra_atividades_model->getByObra($obra_id, [], 100);
+
+        // Atividades do novo sistema (Hora Início/Fim)
+        if (file_exists(APPPATH . 'models/Atividades_model.php')) {
+            $this->load->model('Atividades_model', 'atividades_novas');
+            $this->data['atividades_sistema'] = $this->atividades_novas->listarPorObra($obra_id, [], 50);
+            $this->data['estatisticas_atividades'] = $this->atividades_novas->getEstatisticasPorObra($obra_id);
+        } else {
+            $this->data['atividades_sistema'] = [];
+            $this->data['estatisticas_atividades'] = null;
+        }
+
+        // Emitente para cabeçalho
+        $this->data['emitente'] = $this->mapos_model->getEmitente();
+
+        // Carregar view de impressão (sem layout)
+        $this->load->view('obras/relatorios/geral_print', $this->data);
+    }
+
     // ============================================
     // API AJAX
     // ============================================

@@ -887,9 +887,9 @@ $emitente_logo = $emitente->url_logo ?? '';
         <a href="<?php echo site_url('obras/visualizar/' . $obra->id); ?>" class="relatorio-btn relatorio-btn-secondary">
             <i class="icon-arrow-left"></i> Voltar à Obra
         </a>
-        <button onclick="window.print()" class="relatorio-btn relatorio-btn-primary">
+        <a href="<?php echo site_url('obras/imprimirRelatorio/' . $obra->id); ?>" target="_blank" class="relatorio-btn relatorio-btn-primary">
             <i class="icon-print"></i> Imprimir / PDF
-        </button>
+        </a>
     </div>
 
     <!-- INDICADORES PRINCIPAIS -->

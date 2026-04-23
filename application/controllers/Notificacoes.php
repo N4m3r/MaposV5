@@ -38,7 +38,7 @@ class Notificacoes extends MY_Controller
             return;
         }
 
-        $notificacoes = $this->notificacoes_model->getNotificacoes($usuario_id, 15, $tipo_usuario);
+        $notificacoes = $this->notificacoes_model->getNotificacoes($usuario_id, 15, false, $tipo_usuario);
         $nao_lidas = $this->notificacoes_model->countNaoLidas($usuario_id, $tipo_usuario);
 
         echo json_encode([
@@ -93,6 +93,7 @@ class Notificacoes extends MY_Controller
             return;
         }
 
+        $this->load->database();
         $this->db->where('config', 'app_theme');
         $this->db->update('configuracoes', ['valor' => $tema]);
 
