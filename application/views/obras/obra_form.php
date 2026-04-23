@@ -347,16 +347,17 @@
                     <?php if (isset($result)): ?>
                     <div class="form-group">
                         <label class="form-label">Status</label>
-                        <select name="status" class="form-select">
-                            <option value="Prospeccao" <?php echo $result->status == 'Prospeccao' ? 'selected' : ''; ?>>Prospecção</option>
-                            <option value="Orcamentacao" <?php echo $result->status == 'Orcamentacao' ? 'selected' : ''; ?>>Orçamentação</option>
-                            <option value="Contratada" <?php echo $result->status == 'Contratada' ? 'selected' : ''; ?>>Contratada</option>
-                            <option value="EmExecucao" <?php echo $result->status == 'EmExecucao' ? 'selected' : ''; ?>>Em Execução</option>
-                            <option value="Paralisada" <?php echo $result->status == 'Paralisada' ? 'selected' : ''; ?>>Paralisada</option>
-                            <option value="Finalizada" <?php echo $result->status == 'Finalizada' ? 'selected' : ''; ?>>Finalizada</option>
-                            <option value="Entregue" <?php echo $result->status == 'Entregue' ? 'selected' : ''; ?>>Entregue</option>
-                            <option value="Garantia" <?php echo $result->status == 'Garantia' ? 'selected' : ''; ?>>Garantia</option>
+                        <select name="status" class="form-select" id="statusSelect">
+                            <option value="prospeccao" <?php echo ($result->status == 'prospeccao' || $result->status == 'Prospeccao') ? 'selected' : ''; ?>>Prospecção</option>
+                            <option value="contratada" <?php echo ($result->status == 'contratada' || $result->status == 'Contratada') ? 'selected' : ''; ?>>Contratada</option>
+                            <option value="em-andamento" <?php echo ($result->status == 'em-andamento' || $result->status == 'EmExecucao' || $result->status == 'em execucao') ? 'selected' : ''; ?>>Em Andamento</option>
+                            <option value="paralisada" <?php echo ($result->status == 'paralisada' || $result->status == 'Paralisada') ? 'selected' : ''; ?>>Paralisada</option>
+                            <option value="concluida" <?php echo ($result->status == 'concluida' || $result->status == 'Concluida' || $result->status == 'Finalizada' || $result->status == 'Entregue') ? 'selected' : ''; ?>>Concluída</option>
+                            <option value="cancelada" <?php echo ($result->status == 'cancelada' || $result->status == 'Cancelada') ? 'selected' : ''; ?>>Cancelada</option>
                         </select>
+                        <small style="display: block; margin-top: 5px; color: #888; font-size: 12px;">
+                            <i class="icon-info-sign"></i> Status atual: <strong><?php echo ucfirst($result->status); ?></strong>
+                        </small>
                     </div>
 
                     <div class="form-group">

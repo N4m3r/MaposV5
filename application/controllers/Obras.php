@@ -1788,6 +1788,78 @@ class Obras extends MY_Controller
     }
 
     /**
+     * AJAX: Atualizar status da obra (edição rápida)
+     */
+    public function ajax_atualizar_status()
+    {
+        if (!$this->input->is_ajax_request()) {
+            show_404();
+        }
+
+        // Verificar permissão
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Sem permissão para editar obras'
+            ]);
+            return;
+        }
+
+        $obra_id = $this->input->post('obra_id');
+        $novo_status = $this->input->post('status');
+
+        // Validar dados
+        if (!$obra_id || !is_numeric($obra_id)) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'ID da obra inválido'
+            ]);
+            return;
+        }
+
+        if (!$novo_status) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Status não informado'
+            ]);
+            return;
+        }
+
+        // Status permitidos
+        $status_permitidos = ['prospeccao', 'contratada', 'em-andamento', 'paralisada', 'concluida', 'cancelada'];
+        if (!in_array($novo_status, $status_permitidos)) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Status inválido: ' . $novo_status
+            ]);
+            return;
+        }
+
+        // Atualizar status
+        $dados = [
+            'status' => $novo_status,
+            'updated_at' => date('Y-m-d H:i:s')
+        ];
+
+        if ($this->obras_model->update($obra_id, $dados)) {
+            log_info('Status da obra atualizado. ID: ' . $obra_id . ' - Novo status: ' . $novo_status);
+            echo json_encode([
+                'success' => true,
+                'message' => 'Status atualizado com sucesso',
+                'obra_id' => $obra_id,
+                'status' => $novo_status
+            ]);
+        } else {
+            $error = $this->db->error();
+            log_message('error', 'Erro ao atualizar status da obra: ' . print_r($error, true));
+            echo json_encode([
+                'success' => false,
+                'message' => 'Erro ao atualizar status no banco de dados'
+            ]);
+        }
+    }
+
+    /**
      * API: Dados para gráfico
      */
     public function api_dadosGrafico($obra_id)

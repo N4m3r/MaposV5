@@ -544,6 +544,161 @@ $obras = isset($obras) ? $obras : (isset($results) ? $results : []);
     transform: translateY(-2px);
 }
 
+/* Ações Rápidas - Dropdown */
+.obra-quick-actions {
+    position: relative;
+}
+
+.obra-card-btn.quick-action-toggle {
+    background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+    flex: 0 0 auto;
+}
+
+.obra-card-btn.quick-action-toggle:hover {
+    background: linear-gradient(135deg, #8e44ad 0%, #7d3c98 100%);
+}
+
+.obra-quick-menu {
+    display: none;
+    position: absolute;
+    bottom: 100%;
+    right: 0;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+    min-width: 220px;
+    z-index: 1000;
+    margin-bottom: 8px;
+    border: 1px solid rgba(0,0,0,0.08);
+    overflow: hidden;
+}
+
+.obra-quick-menu.active {
+    display: block;
+    animation: slideUpFade 0.2s ease;
+}
+
+@keyframes slideUpFade {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.obra-quick-menu-header {
+    padding: 12px 16px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-weight: 600;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.obra-quick-menu-item {
+    padding: 12px 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: #333;
+    transition: all 0.15s ease;
+    text-decoration: none;
+}
+
+.obra-quick-menu-item:hover {
+    background: #f8f9fa;
+    color: #667eea;
+}
+
+.obra-quick-menu-divider {
+    height: 1px;
+    background: #e8e8e8;
+    margin: 8px 0;
+}
+
+.obra-status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+/* Toast de notificação */
+.obra-toast {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: white;
+    border-radius: 12px;
+    padding: 16px 24px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 9999;
+    transform: translateX(400px);
+    transition: transform 0.3s ease;
+    border-left: 4px solid #667eea;
+}
+
+.obra-toast.show {
+    transform: translateX(0);
+}
+
+.obra-toast.success {
+    border-left-color: #11998e;
+}
+
+.obra-toast.error {
+    border-left-color: #ff6b6b;
+}
+
+.obra-toast-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(102, 126, 234, 0.1);
+    color: #667eea;
+    font-size: 18px;
+}
+
+.obra-toast.success .obra-toast-icon {
+    background: rgba(17, 153, 142, 0.1);
+    color: #11998e;
+}
+
+.obra-toast.error .obra-toast-icon {
+    background: rgba(255, 107, 107, 0.1);
+    color: #ff6b6b;
+}
+
+.obra-toast-content {
+    flex: 1;
+}
+
+.obra-toast-title {
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 4px 0;
+    font-size: 15px;
+}
+
+.obra-toast-message {
+    color: #666;
+    font-size: 13px;
+    margin: 0;
+}
+
 /* Empty state */
 .obras-empty-state {
     text-align: center;
@@ -636,6 +791,46 @@ $obras = isset($obras) ? $obras : (isset($results) ? $results : []);
 
 [data-theme="dark"] .obra-card-progress-bar {
     background: var(--dark-4, #4a5568);
+}
+
+[data-theme="dark"] .obra-quick-menu {
+    background: var(--dark-2, #2d3748);
+    border-color: var(--dark-4, #4a5568);
+}
+
+[data-theme="dark"] .obra-quick-menu-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+[data-theme="dark"] .obra-quick-menu-item {
+    color: var(--white, #fff);
+}
+
+[data-theme="dark"] .obra-quick-menu-item:hover {
+    background: var(--dark-3, #3d4852);
+    color: #a8b2ff;
+}
+
+[data-theme="dark"] .obra-quick-menu-divider {
+    background: var(--dark-4, #4a5568);
+}
+
+[data-theme="dark"] .obra-toast {
+    background: var(--dark-2, #2d3748);
+    border-color: var(--dark-4, #4a5568);
+}
+
+[data-theme="dark"] .obra-toast-title {
+    color: var(--white, #fff);
+}
+
+[data-theme="dark"] .obra-toast-message {
+    color: var(--dark-7, #a0aec0);
+}
+
+[data-theme="dark"] .obra-card-footer {
+    background: var(--dark-3, #3d4852);
+    border-color: var(--dark-4, #4a5568);
 }
 
 /* Responsividade */
@@ -910,6 +1105,39 @@ $obras = isset($obras) ? $obras : (isset($results) ? $results : []);
                 <a href="<?php echo site_url('obras/editar/' . $obra->id); ?>" class="obra-card-btn edit">
                     <i class="icon-edit"></i> Editar
                 </a>
+                <!-- Botão de Ações Rápidas -->
+                <div class="obra-quick-actions">
+                    <button type="button" class="obra-card-btn quick-action-toggle" onclick="toggleQuickMenu(<?php echo $obra->id; ?>)">
+                        <i class="icon-chevron-down"></i> Ações
+                    </button>
+                    <div class="obra-quick-menu" id="quickMenu_<?php echo $obra->id; ?>">
+                        <div class="obra-quick-menu-header">
+                            <i class="icon-bolt"></i> Ações Rápidas
+                        </div>
+                        <div class="obra-quick-menu-item" onclick="atualizarStatusRapido(<?php echo $obra->id; ?>, 'prospeccao')">
+                            <span class="obra-status-dot" style="background: #a8edea;"></span> Prospecção
+                        </div>
+                        <div class="obra-quick-menu-item" onclick="atualizarStatusRapido(<?php echo $obra->id; ?>, 'contratada')">
+                            <span class="obra-status-dot" style="background: #f39c12;"></span> Contratada
+                        </div>
+                        <div class="obra-quick-menu-item" onclick="atualizarStatusRapido(<?php echo $obra->id; ?>, 'em-andamento')">
+                            <span class="obra-status-dot" style="background: #4facfe;"></span> Em Andamento
+                        </div>
+                        <div class="obra-quick-menu-item" onclick="atualizarStatusRapido(<?php echo $obra->id; ?>, 'paralisada')">
+                            <span class="obra-status-dot" style="background: #ff6b6b;"></span> Paralisada
+                        </div>
+                        <div class="obra-quick-menu-item" onclick="atualizarStatusRapido(<?php echo $obra->id; ?>, 'concluida')">
+                            <span class="obra-status-dot" style="background: #11998e;"></span> Concluída
+                        </div>
+                        <div class="obra-quick-menu-item" onclick="atualizarStatusRapido(<?php echo $obra->id; ?>, 'cancelada')">
+                            <span class="obra-status-dot" style="background: #636e72;"></span> Cancelada
+                        </div>
+                        <div class="obra-quick-menu-divider"></div>
+                        <a href="<?php echo site_url('obras/relatorioGeral/' . $obra->id); ?>" class="obra-quick-menu-item">
+                            <i class="icon-file-alt" style="color: #667eea;"></i> Relatório Geral
+                        </a>
+                    </div>
+                </div>
                 <?php endif; ?>
             </div>
         </div>
@@ -1090,4 +1318,124 @@ $(document).ready(function() {
     // Atualização manual (para debug)
     window.atualizarCardsManual = atualizarCards;
 })();
+
+// Menu de Ações Rápidas - Toggle
+function toggleQuickMenu(obraId) {
+    const menu = document.getElementById('quickMenu_' + obraId);
+    const allMenus = document.querySelectorAll('.obra-quick-menu');
+
+    // Fechar todos os outros menus
+    allMenus.forEach(function(m) {
+        if (m !== menu && m.classList.contains('active')) {
+            m.classList.remove('active');
+        }
+    });
+
+    // Toggle do menu atual
+    if (menu) {
+        menu.classList.toggle('active');
+    }
+
+    // Fechar menu ao clicar fora
+    function closeMenu(e) {
+        if (!e.target.closest('.obra-quick-actions')) {
+            allMenus.forEach(function(m) {
+                m.classList.remove('active');
+            });
+            document.removeEventListener('click', closeMenu);
+        }
+    }
+
+    // Adicionar listener após um pequeno delay para não fechar imediatamente
+    setTimeout(function() {
+        document.addEventListener('click', closeMenu);
+    }, 100);
+}
+
+// Atualizar status via AJAX
+function atualizarStatusRapido(obraId, novoStatus) {
+    // Fechar menu
+    const menu = document.getElementById('quickMenu_' + obraId);
+    if (menu) {
+        menu.classList.remove('active');
+    }
+
+    // Mostrar loading
+    mostrarToast('Atualizando...', 'Alterando status da obra', 'info');
+
+    // Enviar requisição AJAX
+    $.ajax({
+        url: '<?php echo site_url("obras/ajax_atualizar_status"); ?>',
+        method: 'POST',
+        dataType: 'json',
+        data: {
+            obra_id: obraId,
+            status: novoStatus,
+            '<?php echo $this->security->get_csrf_token_name(); ?>': '<?php echo $this->security->get_csrf_hash(); ?>'
+        },
+        success: function(response) {
+            if (response.success) {
+                mostrarToast('Sucesso!', 'Status atualizado com sucesso', 'success');
+                // Recarregar cards após 1 segundo
+                setTimeout(function() {
+                    if (typeof atualizarCardsManual === 'function') {
+                        atualizarCardsManual();
+                    } else {
+                        location.reload();
+                    }
+                }, 1000);
+            } else {
+                mostrarToast('Erro!', response.message || 'Erro ao atualizar status', 'error');
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('Erro ao atualizar status:', error);
+            mostrarToast('Erro!', 'Falha na comunicação com o servidor', 'error');
+        }
+    });
+}
+
+// Função para mostrar toast de notificação
+function mostrarToast(titulo, mensagem, tipo) {
+    // Remover toasts anteriores
+    const toastsAnteriores = document.querySelectorAll('.obra-toast');
+    toastsAnteriores.forEach(function(t) {
+        t.remove();
+    });
+
+    // Criar novo toast
+    const toast = document.createElement('div');
+    toast.className = 'obra-toast ' + tipo;
+
+    let iconClass = 'icon-info-sign';
+    if (tipo === 'success') iconClass = 'icon-check';
+    if (tipo === 'error') iconClass = 'icon-remove';
+
+    toast.innerHTML = `
+        <div class="obra-toast-icon">
+            <i class="${iconClass}"></i>
+        </div>
+        <div class="obra-toast-content">
+            <h4 class="obra-toast-title">${titulo}</h4>
+            <p class="obra-toast-message">${mensagem}</p>
+        </div>
+    `;
+
+    document.body.appendChild(toast);
+
+    // Animar entrada
+    setTimeout(function() {
+        toast.classList.add('show');
+    }, 10);
+
+    // Remover após 3 segundos (se não for tipo info)
+    if (tipo !== 'info') {
+        setTimeout(function() {
+            toast.classList.remove('show');
+            setTimeout(function() {
+                toast.remove();
+            }, 300);
+        }, 3000);
+    }
+}
 </script>
