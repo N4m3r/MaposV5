@@ -50,11 +50,18 @@ class Modulos extends MY_Controller
         // Verificar cache
         $commits = $this->session->userdata('cache_total_commits');
         if (!$commits) {
-            // Executar comando git
-            $output = [];
-            $return = 0;
-            exec('git -C ' . FCPATH . ' rev-list --count HEAD 2>&1', $output, $return);
-            $commits = ($return === 0 && !empty($output[0])) ? (int)$output[0] : 494;
+            $commits = 494; // Valor padrão
+
+            // Verificar se exec() está disponível
+            if (function_exists('exec')) {
+                // Executar comando git
+                $output = [];
+                $return = 0;
+                @exec('git -C ' . FCPATH . ' rev-list --count HEAD 2>&1', $output, $return);
+                if ($return === 0 && !empty($output[0])) {
+                    $commits = (int)$output[0];
+                }
+            }
 
             // Cache por 1 hora
             $this->session->set_userdata('cache_total_commits', $commits);
@@ -72,33 +79,36 @@ class Modulos extends MY_Controller
             return $cache;
         }
 
-        // Commit inicial do Map-OS
-        $commitInicial = '162ec5ec841a0efcd9fbd456d5e5b9d0ed67034c';
-
-        $output = [];
-        $return = 0;
-        exec('git -C ' . FCPATH . ' diff --stat ' . $commitInicial . '..HEAD 2>&1 | tail -1', $output, $return);
-
         $stats = [
             'arquivos' => 360,
             'adicionadas' => 92414,
             'removidas' => 14134,
         ];
 
-        if ($return === 0 && !empty($output[0])) {
-            // Parse do output: "360 files changed, 92414 insertions(+), 14134 deletions(-)"
-            preg_match('/([\d,]+)\s+insertions/', $output[0], $matchesAdicionadas);
-            preg_match('/([\d,]+)\s+deletions/', $output[0], $matchesRemovidas);
-            preg_match('/([\d,]+)\s+files?\s+changed/', $output[0], $matchesArquivos);
+        // Verificar se exec() está disponível
+        if (function_exists('exec')) {
+            // Commit inicial do Map-OS
+            $commitInicial = '162ec5ec841a0efcd9fbd456d5e5b9d0ed67034c';
 
-            if (!empty($matchesAdicionadas[1])) {
-                $stats['adicionadas'] = (int)str_replace(',', '', $matchesAdicionadas[1]);
-            }
-            if (!empty($matchesRemovidas[1])) {
-                $stats['removidas'] = (int)str_replace(',', '', $matchesRemovidas[1]);
-            }
-            if (!empty($matchesArquivos[1])) {
-                $stats['arquivos'] = (int)str_replace(',', '', $matchesArquivos[1]);
+            $output = [];
+            $return = 0;
+            @exec('git -C ' . FCPATH . ' diff --stat ' . $commitInicial . '..HEAD 2>&1 | tail -1', $output, $return);
+
+            if ($return === 0 && !empty($output[0])) {
+                // Parse do output: "360 files changed, 92414 insertions(+), 14134 deletions(-)"
+                preg_match('/([\d,]+)\s+insertions/', $output[0], $matchesAdicionadas);
+                preg_match('/([\d,]+)\s+deletions/', $output[0], $matchesRemovidas);
+                preg_match('/([\d,]+)\s+files?\s+changed/', $output[0], $matchesArquivos);
+
+                if (!empty($matchesAdicionadas[1])) {
+                    $stats['adicionadas'] = (int)str_replace(',', '', $matchesAdicionadas[1]);
+                }
+                if (!empty($matchesRemovidas[1])) {
+                    $stats['removidas'] = (int)str_replace(',', '', $matchesRemovidas[1]);
+                }
+                if (!empty($matchesArquivos[1])) {
+                    $stats['arquivos'] = (int)str_replace(',', '', $matchesArquivos[1]);
+                }
             }
         }
 
