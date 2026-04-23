@@ -95,7 +95,7 @@ class Obras extends MY_Controller
 
         // Carregar listas configuráveis
         $this->data['tipos_obra'] = $this->obras_model->getTiposObra() ?? [];
-        $this->data['tipos_atividades'] = $this->atividades_tipos_model->getAll() ?? [];
+        $this->data['tipos_atividades'] = $this->atividades_tipos_model->listar() ?? [];
         $this->data['status_obra'] = $this->obras_model->getStatusObra() ?? [];
         $this->data['status_atividade'] = $this->atividades_model->getStatusAtividade() ?? [];
         $this->data['especialidades'] = $this->obras_model->getEspecialidades() ?? [];
