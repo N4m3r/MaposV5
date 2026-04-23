@@ -1570,11 +1570,24 @@ class Obras_model extends CI_Model
 
     /**
      * Obter tipos de obra cadastrados
-     * TODO: Implementar tabela obra_tipos se necessário
+     * Retorna do banco ou valores padrão
      */
     public function getTiposObra()
     {
-        return [];
+        // Verificar se tabela existe
+        if ($this->db->table_exists('obra_tipos')) {
+            $this->db->where('ativo', 1);
+            $this->db->order_by('nome', 'ASC');
+            return $this->db->get('obra_tipos')->result();
+        }
+        // Retornar valores padrão
+        return [
+            (object)['id' => 1, 'nome' => 'Reforma', 'descricao' => 'Reformas e renovações', 'cor' => '#3498db', 'icone' => 'bx-brush'],
+            (object)['id' => 2, 'nome' => 'Construção', 'descricao' => 'Obras novas', 'cor' => '#27ae60', 'icone' => 'bx-building'],
+            (object)['id' => 3, 'nome' => 'Instalação', 'descricao' => 'Instalações técnicas', 'cor' => '#9b59b6', 'icone' => 'bx-plug'],
+            (object)['id' => 4, 'nome' => 'Manutenção', 'descricao' => 'Manutenções corretivas e preventivas', 'cor' => '#f39c12', 'icone' => 'bx-wrench'],
+            (object)['id' => 5, 'nome' => 'Outro', 'descricao' => 'Outros tipos', 'cor' => '#95a5a6', 'icone' => 'bx-box'],
+        ];
     }
 
     /**
@@ -1582,7 +1595,20 @@ class Obras_model extends CI_Model
      */
     public function getStatusObra()
     {
-        return [];
+        // Verificar se tabela existe
+        if ($this->db->table_exists('obra_status')) {
+            $this->db->where('ativo', 1);
+            $this->db->order_by('ordem', 'ASC');
+            return $this->db->get('obra_status')->result();
+        }
+        // Retornar valores padrão
+        return [
+            (object)['id' => 1, 'nome' => 'Prospecção', 'descricao' => 'Obra em fase inicial/orçamento', 'cor' => '#95a5a6', 'icone' => 'bx-search', 'ordem' => 1, 'finalizado' => false],
+            (object)['id' => 2, 'nome' => 'Em Andamento', 'descricao' => 'Obra sendo executada', 'cor' => '#3498db', 'icone' => 'bx-play-circle', 'ordem' => 2, 'finalizado' => false],
+            (object)['id' => 3, 'nome' => 'Paralisada', 'descricao' => 'Obra temporariamente parada', 'cor' => '#f39c12', 'icone' => 'bx-pause-circle', 'ordem' => 3, 'finalizado' => false],
+            (object)['id' => 4, 'nome' => 'Concluída', 'descricao' => 'Obra finalizada com sucesso', 'cor' => '#27ae60', 'icone' => 'bx-check-circle', 'ordem' => 4, 'finalizado' => true],
+            (object)['id' => 5, 'nome' => 'Cancelada', 'descricao' => 'Obra cancelada', 'cor' => '#e74c3c', 'icone' => 'bx-x-circle', 'ordem' => 5, 'finalizado' => true],
+        ];
     }
 
     /**
@@ -1590,7 +1616,21 @@ class Obras_model extends CI_Model
      */
     public function getEspecialidades()
     {
-        return [];
+        // Verificar se tabela existe
+        if ($this->db->table_exists('obra_especialidades')) {
+            $this->db->where('ativo', 1);
+            $this->db->order_by('nome', 'ASC');
+            return $this->db->get('obra_especialidades')->result();
+        }
+        // Retornar valores padrão
+        return [
+            (object)['id' => 1, 'nome' => 'Elétrica', 'descricao' => 'Instalações elétricas', 'cor' => '#f1c40f', 'icone' => 'bx-bolt-circle'],
+            (object)['id' => 2, 'nome' => 'Hidráulica', 'descricao' => 'Instalações hidráulicas', 'cor' => '#3498db', 'icone' => 'bx-water'],
+            (object)['id' => 3, 'nome' => 'Estrutural', 'descricao' => 'Estrutura da obra', 'cor' => '#7f8c8d', 'icone' => 'bx-building'],
+            (object)['id' => 4, 'nome' => 'Acabamento', 'descricao' => 'Acabamentos finais', 'cor' => '#e67e22', 'icone' => 'bx-paint'],
+            (object)['id' => 5, 'nome' => 'Paisagismo', 'descricao' => 'Áreas externas e jardinagem', 'cor' => '#27ae60', 'icone' => 'bx-leaf'],
+            (object)['id' => 6, 'nome' => 'Segurança', 'descricao' => 'Sistemas de segurança', 'cor' => '#e74c3c', 'icone' => 'bx-shield'],
+        ];
     }
 
     /**
@@ -1598,7 +1638,23 @@ class Obras_model extends CI_Model
      */
     public function getFuncoesEquipe()
     {
-        return [];
+        // Verificar se tabela existe
+        if ($this->db->table_exists('obra_funcoes')) {
+            $this->db->where('ativo', 1);
+            $this->db->order_by('nome', 'ASC');
+            return $this->db->get('obra_funcoes')->result();
+        }
+        // Retornar valores padrão
+        return [
+            (object)['id' => 1, 'nome' => 'Engenheiro Responsável', 'descricao' => 'Responsável técnico pela obra', 'nivel' => 'alto'],
+            (object)['id' => 2, 'nome' => 'Mestre de Obras', 'descricao' => 'Coordenação de equipe de trabalho', 'nivel' => 'medio'],
+            (object)['id' => 3, 'nome' => 'Técnico de Segurança', 'descricao' => 'Responsável por normas de segurança', 'nivel' => 'medio'],
+            (object)['id' => 4, 'nome' => 'Pedreiro', 'descricao' => 'Execução de serviços de alvenaria', 'nivel' => 'baixo'],
+            (object)['id' => 5, 'nome' => 'Eletricista', 'descricao' => 'Instalações elétricas', 'nivel' => 'baixo'],
+            (object)['id' => 6, 'nome' => 'Encanador', 'descricao' => 'Instalações hidráulicas', 'nivel' => 'baixo'],
+            (object)['id' => 7, 'nome' => 'Pintor', 'descricao' => 'Serviços de pintura', 'nivel' => 'baixo'],
+            (object)['id' => 8, 'nome' => 'Auxiliar', 'descricao' => 'Apoio geral na obra', 'nivel' => 'baixo'],
+        ];
     }
 }
 

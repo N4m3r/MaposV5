@@ -31,6 +31,14 @@ class Atividades_model extends CI_Model
         $dados = array_merge($padrao, $dados);
 
         $this->db->insert($this->table, $dados);
+
+        // Verificar erro
+        $error = $this->db->error();
+        if ($error['code'] != 0) {
+            log_message('error', 'Erro ao iniciar atividade: ' . print_r($error, true) . ' Dados: ' . print_r($dados, true));
+            return false;
+        }
+
         return $this->db->insert_id();
     }
 
@@ -1110,8 +1118,20 @@ class Atividades_model extends CI_Model
      */
     public function getStatusAtividade()
     {
-        // Retorna array vazio - implementar tabela de status se necessário
-        // Por enquanto usa valores padrão na view
-        return [];
+        // Verificar se tabela existe
+        if ($this->db->table_exists('atividade_status')) {
+            $this->db->where('ativo', 1);
+            $this->db->order_by('ordem', 'ASC');
+            return $this->db->get('atividade_status')->result();
+        }
+        // Retornar valores padrão
+        return [
+            (object)['id' => 1, 'nome' => 'Agendada', 'descricao' => 'Atividade agendada para execução futura', 'cor' => '#95a5a6', 'icone' => 'bx-calendar', 'fluxo' => 'inicial'],
+            (object)['id' => 2, 'nome' => 'Iniciada', 'descricao' => 'Atividade em execução', 'cor' => '#3498db', 'icone' => 'bx-play-circle', 'fluxo' => 'execucao'],
+            (object)['id' => 3, 'nome' => 'Pausada', 'descricao' => 'Atividade temporariamente pausada', 'cor' => '#f39c12', 'icone' => 'bx-pause-circle', 'fluxo' => 'execucao'],
+            (object)['id' => 4, 'nome' => 'Concluída', 'descricao' => 'Atividade finalizada com sucesso', 'cor' => '#27ae60', 'icone' => 'bx-check-circle', 'fluxo' => 'final'],
+            (object)['id' => 5, 'nome' => 'Cancelada', 'descricao' => 'Atividade cancelada', 'cor' => '#e74c3c', 'icone' => 'bx-x-circle', 'fluxo' => 'final'],
+            (object)['id' => 6, 'nome' => 'Reaberta', 'descricao' => 'Atividade reaberta para reatendimento', 'cor' => '#9b59b6', 'icone' => 'bx-refresh', 'fluxo' => 'especial'],
+        ];
     }
 }

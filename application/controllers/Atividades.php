@@ -660,6 +660,7 @@ class Atividades extends MY_Controller
             $descricao = $this->input->post('descricao') ?? 'Atividade registrada via wizard';
 
             $dados = [
+                'os_id' => 0, // Atividades em obras não precisam de OS vinculada
                 'obra_id' => $obra_id,
                 'etapa_id' => $etapa_id,
                 'tecnico_id' => $tecnico_id,
@@ -703,7 +704,12 @@ class Atividades extends MY_Controller
                 }
             }
 
+            // Log dos dados para debug
+            log_message('debug', 'checkin_obra - Dados para iniciar: ' . print_r($dados, true));
+
             $atividade_realizada_id = $this->atividades->iniciar($dados);
+
+            log_message('debug', 'checkin_obra - Resultado iniciar: ' . ($atividade_realizada_id ? 'ID ' . $atividade_realizada_id : 'FALSO'));
 
             if ($atividade_realizada_id) {
                 // Se for impedimento, já finaliza a atividade
@@ -730,7 +736,13 @@ class Atividades extends MY_Controller
                     'message' => $is_impedimento ? 'Impedimento registrado com sucesso!' : 'Check-in realizado com sucesso!'
                 ]);
             } else {
-                echo json_encode(['success' => false, 'message' => 'Erro ao realizar check-in.']);
+                $db_error = $this->db->error();
+                log_message('error', 'checkin_obra - Erro ao iniciar atividade. DB Error: ' . print_r($db_error, true));
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Erro ao realizar check-in.',
+                    'debug' => ENVIRONMENT === 'development' ? $db_error : null
+                ]);
             }
         } catch (Exception $e) {
             log_message('error', 'Erro em checkin_obra: ' . $e->getMessage());
