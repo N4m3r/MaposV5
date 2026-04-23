@@ -1,857 +1,1122 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
 
 <style>
-.atividades-wrapper { padding: 20px; max-width: 1400px; margin: 0 auto; }
-.atividades-header {
+/* ===== ESTILOS PRINCIPAIS ===== */
+.obras-container { padding: 24px; max-width: 1600px; margin: 0 auto; }
+
+/* Header */
+.obra-header {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 15px;
-    padding: 25px;
+    border-radius: 16px;
+    padding: 32px;
     color: white;
-    margin-bottom: 25px;
-    box-shadow: 0 8px 30px rgba(102, 126, 234, 0.3);
+    margin-bottom: 24px;
+    box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
 }
-.atividades-header h1 { margin: 0; font-size: 24px; display: flex; align-items: center; gap: 10px; }
-.atividades-header p { margin: 8px 0 0 0; opacity: 0.9; font-size: 14px; }
-.atividades-header .actions { margin-top: 15px; display: flex; gap: 10px; }
 
-/* Stats */
-.stats-row { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }
-.stat-box {
+.obra-header-content { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 20px; }
+.obra-header-left { flex: 1; }
+.obra-breadcrumb { font-size: 14px; opacity: 0.9; margin-bottom: 8px; }
+.obra-breadcrumb a { color: rgba(255,255,255,0.8); text-decoration: none; }
+.obra-breadcrumb a:hover { color: white; text-decoration: underline; }
+.obra-header h1 { margin: 0; font-size: 28px; font-weight: 700; display: flex; align-items: center; gap: 12px; }
+.obra-header-subtitle { margin-top: 8px; opacity: 0.9; font-size: 15px; display: flex; gap: 20px; flex-wrap: wrap; }
+.obra-header-subtitle span { display: flex; align-items: center; gap: 6px; }
+
+/* Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.stat-card {
     background: white;
     border-radius: 12px;
     padding: 20px;
-    min-width: 150px;
-    flex: 1;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-    display: flex;
-    align-items: center;
-    gap: 15px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    border-left: 4px solid #667eea;
+    transition: transform 0.2s;
 }
-.stat-icon { width: 45px; height: 45px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px; color: white; }
-.stat-icon.blue { background: linear-gradient(135deg, #667eea, #764ba2); }
-.stat-icon.green { background: linear-gradient(135deg, #11998e, #38ef7d); }
-.stat-icon.orange { background: linear-gradient(135deg, #f093fb, #f5576c); }
-.stat-icon.gray { background: linear-gradient(135deg, #a8edea, #fed6e3); color: #555; }
-.stat-info h3 { margin: 0; font-size: 26px; font-weight: 700; color: #333; }
-.stat-info span { font-size: 13px; color: #888; }
 
-/* Filtros */
-.filtros-box {
-    background: white;
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-    display: flex;
-    gap: 15px;
-    flex-wrap: wrap;
-    align-items: center;
-}
-.filtros-box input, .filtros-box select {
-    padding: 10px 15px;
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    font-size: 14px;
-    min-width: 200px;
-    flex: 1;
-}
-.filtros-box input:focus, .filtros-box select:focus { border-color: #667eea; outline: none; }
+.stat-card:hover { transform: translateY(-2px); }
+.stat-card.success { border-left-color: #27ae60; }
+.stat-card.warning { border-left-color: #f39c12; }
+.stat-card.danger { border-left-color: #e74c3c; }
+.stat-card.info { border-left-color: #3498db; }
+.stat-card.purple { border-left-color: #9b59b6; }
+
+.stat-value { font-size: 28px; font-weight: 700; color: #333; margin-bottom: 4px; }
+.stat-label { font-size: 13px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
 
 /* Cards */
-.atividades-lista { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; }
-.atv-card {
+.card {
     background: white;
     border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-    border-left: 4px solid #ddd;
-    cursor: pointer;
-    transition: all 0.3s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    margin-bottom: 24px;
 }
-.atv-card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.12); }
-.atv-card.agendada { border-left-color: #95a5a6; }
-.atv-card.iniciada { border-left-color: #3498db; background: #f8fbff; }
-.atv-card.pausada { border-left-color: #f39c12; background: #fffbf0; }
-.atv-card.concluida { border-left-color: #27ae60; background: #f0fff4; }
-.atv-card.cancelada { border-left-color: #e74c3c; background: #fff5f5; }
 
-.atv-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
-.atv-card-titulo { font-size: 16px; font-weight: 600; color: #333; flex: 1; margin-right: 10px; }
-.atv-card-status {
-    padding: 5px 12px;
+.card-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.card-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.card-title i { color: #667eea; font-size: 22px; }
+.card-body { padding: 24px; }
+
+/* Filtros */
+.filtros-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.filtro-group { display: flex; flex-direction: column; gap: 6px; }
+.filtro-group label { font-size: 12px; color: #666; text-transform: uppercase; font-weight: 600; }
+.filtro-group select,
+.filtro-group input {
+    padding: 10px 14px;
+    border: 2px solid #e8e8e8;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.2s;
+}
+
+.filtro-group select:focus,
+.filtro-group input:focus { border-color: #667eea; }
+
+/* Tabela de Atividades */
+.atividades-table { width: 100%; border-collapse: collapse; }
+.atividades-table th {
+    background: #f8f9fa;
+    padding: 14px 16px;
+    text-align: left;
+    font-size: 12px;
+    color: #666;
+    text-transform: uppercase;
+    font-weight: 600;
+    border-bottom: 2px solid #e8e8e8;
+}
+
+.atividades-table td {
+    padding: 16px;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: middle;
+}
+
+.atividades-table tr:hover { background: #f8f9fa; }
+
+/* Status Badges */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
     border-radius: 20px;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
     text-transform: uppercase;
 }
-.atv-card-status.agendada { background: #ecf0f1; color: #7f8c8d; }
-.atv-card-status.iniciada { background: #3498db; color: white; }
-.atv-card-status.pausada { background: #f39c12; color: white; }
-.atv-card-status.concluida { background: #27ae60; color: white; }
-.atv-card-status.cancelada { background: #e74c3c; color: white; }
 
-.atv-card-info { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 12px; font-size: 13px; color: #666; }
-.atv-card-info i { color: #667eea; margin-right: 5px; }
-.atv-card-info span { display: flex; align-items: center; }
+.status-badge::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
 
-.atv-card-desc { font-size: 13px; color: #666; margin-bottom: 12px; line-height: 1.5; }
+.status-badge.agendada { background: #f8f9fa; color: #666; }
+.status-badge.agendada::before { background: #95a5a6; }
 
-.atv-card-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px solid #eee; }
-.atv-card-progresso { flex: 1; margin-right: 15px; }
-.atv-card-progresso-barra { height: 6px; background: #e0e0e0; border-radius: 3px; overflow: hidden; }
-.atv-card-progresso-fill { height: 100%; border-radius: 3px; transition: width 0.5s; }
-.atv-card-badges { display: flex; gap: 8px; }
-.atv-card-badge { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
-.atv-card-badge:hover { transform: scale(1.1); }
-.atv-card-badge.view { background: #e3f2fd; color: #1976d2; }
-.atv-card-badge.delete { background: #ffebee; color: #c62828; }
-.atv-card-badge.wizard { background: #f3e5f5; color: #7b1fa2; }
+.status-badge.iniciada { background: #fff8e6; color: #f39c12; }
+.status-badge.iniciada::before { background: #f39c12; }
 
-.empty-state { text-align: center; padding: 60px 20px; background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
-.empty-state i { font-size: 60px; color: #667eea; margin-bottom: 15px; display: block; }
-.empty-state h3 { margin: 0 0 10px 0; color: #333; }
-.empty-state p { color: #888; margin: 0 0 20px 0; }
+.status-badge.pausada { background: #ffebee; color: #e74c3c; }
+.status-badge.pausada::before { background: #e74c3c; }
 
-/* Modal */
-.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center; }
-.modal-overlay.ativo { display: flex; }
-.modal-box {
-    background: white;
-    border-radius: 15px;
-    width: 90%;
-    max-width: 700px;
-    max-height: 90vh;
+.status-badge.concluida { background: #e8f5e9; color: #27ae60; }
+.status-badge.concluida::before { background: #27ae60; }
+
+.status-badge.cancelada { background: #eceff1; color: #546e7f; }
+.status-badge.cancelada::before { background: #546e7f; }
+
+.status-badge.reaberta { background: #f3e5f5; color: #9b59b6; }
+.status-badge.reaberta::before { background: #9b59b6; }
+
+/* Progresso */
+.progress-wrapper { display: flex; align-items: center; gap: 10px; }
+.progress-bar-bg {
+    flex: 1;
+    height: 8px;
+    background: #e8e8e8;
+    border-radius: 4px;
     overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-    animation: modalEntrar 0.3s ease;
+    max-width: 100px;
 }
-@keyframes modalEntrar { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-.modal-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 20px 25px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-.modal-header h3 { margin: 0; font-size: 18px; display: flex; align-items: center; gap: 10px; }
-.modal-header .fechar { background: none; border: none; color: white; font-size: 28px; cursor: pointer; opacity: 0.8; }
-.modal-header .fechar:hover { opacity: 1; }
-.modal-body { padding: 25px; max-height: 60vh; overflow-y: auto; }
-.modal-footer { padding: 20px 25px; background: #f8f9fa; border-top: 1px solid #eee; display: flex; justify-content: flex-end; gap: 10px; }
 
-.form-group { margin-bottom: 20px; }
-.form-label { display: block; font-weight: 600; margin-bottom: 8px; color: #333; font-size: 14px; }
-.form-input, .form-select, .form-textarea {
-    width: 100%;
-    padding: 12px 15px;
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    font-size: 14px;
-    box-sizing: border-box;
+.progress-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.3s;
 }
-.form-input:focus, .form-select:focus, .form-textarea:focus { border-color: #667eea; outline: none; }
-.form-textarea { min-height: 80px; resize: vertical; }
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-@media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
 
+.progress-bar-fill.low { background: #e74c3c; }
+.progress-bar-fill.medium { background: #f39c12; }
+.progress-bar-fill.high { background: #27ae60; }
+
+.progress-text { font-size: 13px; font-weight: 600; color: #666; min-width: 40px; }
+
+/* Botões */
 .btn {
-    padding: 12px 24px;
-    border: none;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
     display: inline-flex;
     align-items: center;
     gap: 8px;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
     transition: all 0.2s;
 }
-.btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.15); }
+
+.btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+
 .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
 .btn-success { background: linear-gradient(135deg, #11998e, #38ef7d); color: white; }
+.btn-warning { background: linear-gradient(135deg, #f39c12, #e67e22); color: white; }
 .btn-danger { background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; }
-.btn-secondary { background: #f0f0f0; color: #666; }
+.btn-secondary { background: #f5f5f5; color: #666; }
+.btn-info { background: linear-gradient(135deg, #3498db, #2980b9); color: white; }
 
-.secao-info {
+.btn-sm { padding: 6px 12px; font-size: 13px; }
+.btn-xs { padding: 4px 10px; font-size: 12px; }
+
+.btn-icon {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+}
+
+/* Ações em linha */
+.acoes-cell { display: flex; gap: 6px; flex-wrap: wrap; }
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #888;
+}
+
+.empty-state-icon {
+    width: 80px;
+    height: 80px;
+    background: #f0f0f0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 36px;
+    color: #bbb;
+}
+
+.empty-state h4 { margin: 0 0 8px 0; color: #666; font-weight: 500; }
+.empty-state p { margin: 0 0 20px 0; font-size: 14px; }
+
+/* Modal */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.modal-overlay.active { display: flex; }
+
+.modal-container {
+    background: white;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 700px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-header {
+    padding: 24px;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.modal-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.modal-close {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: #f5f5f5;
+    color: #666;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    transition: all 0.2s;
+}
+
+.modal-close:hover { background: #e8e8e8; color: #333; }
+
+.modal-body { padding: 24px; }
+
+.modal-footer {
+    padding: 20px 24px;
+    border-top: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+/* Form no modal */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.form-group { display: flex; flex-direction: column; gap: 8px; }
+.form-group.full-width { grid-column: span 2; }
+
+.form-group label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.form-group label .required { color: #e74c3c; }
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    padding: 12px 16px;
+    border: 2px solid #e8e8e8;
+    border-radius: 10px;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus { border-color: #667eea; }
+
+.form-group textarea { resize: vertical; min-height: 100px; }
+
+.checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
     background: #f8f9fa;
     border-radius: 8px;
-    padding: 15px;
-    margin-bottom: 15px;
 }
-.secao-info h4 { margin: 0 0 10px 0; color: #667eea; font-size: 14px; }
-.secao-info p { margin: 5px 0; font-size: 14px; color: #555; }
-.info-badge {
-    display: inline-block;
+
+.checkbox-wrapper input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: #667eea;
+}
+
+.checkbox-wrapper label {
+    margin: 0;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+/* Reatendimento indicator */
+.reatendimento-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
     padding: 4px 10px;
-    background: #e3f2fd;
-    color: #1976d2;
-    border-radius: 15px;
-    font-size: 12px;
+    background: linear-gradient(135deg, #9b59b6, #8e44ad);
+    color: white;
+    border-radius: 20px;
+    font-size: 11px;
     font-weight: 600;
 }
-</style>
 
-<?php
-// Preparar dados no PHP
-$obra_id = $obra->id ?? 0;
-$obra_nome = htmlspecialchars($obra->nome ?? 'Obra');
-$tem_permissao_edicao = $this->permission->checkPermission($this->session->userdata('permissao'), 'eObras');
-
-// Mesclar atividades
-$todas_atividades = [];
-
-// Sistema antigo
-foreach ($atividades ?? [] as $ativ) {
-    $todas_atividades[] = [
-        'id' => $ativ->id ?? 0,
-        'titulo' => $ativ->titulo ?? 'Atividade',
-        'descricao' => $ativ->descricao ?? '',
-        'status' => $ativ->status ?? 'agendada',
-        'tipo' => $ativ->tipo ?? 'trabalho',
-        'data' => $ativ->data_atividade ?? $ativ->data_criacao ?? date('Y-m-d'),
-        'tecnico' => $ativ->nome_tecnico ?? $ativ->tecnico_nome ?? 'Não atribuído',
-        'etapa' => $ativ->nome_etapa ?? $ativ->etapa_nome ?? 'Geral',
-        'progresso' => $ativ->percentual_concluido ?? 0,
-        'sistema' => 'antigo'
-    ];
+/* Info tooltips */
+.info-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
-// Sistema novo
-foreach ($atividades_registradas ?? [] as $ativ) {
-    $status = 'agendada';
-    if (!empty($ativ->hora_fim) && ($ativ->status ?? '') == 'finalizada') {
-        $status = 'concluida';
-    } elseif (!empty($ativ->hora_inicio)) {
-        $status = 'iniciada';
+.info-primary { font-weight: 600; color: #333; font-size: 14px; }
+.info-secondary { font-size: 12px; color: #888; }
+.info-tertiary { font-size: 11px; color: #aaa; }
+
+/* Tabs */
+.tabs-nav {
+    display: flex;
+    gap: 4px;
+    padding: 0 24px;
+    border-bottom: 1px solid #f0f0f0;
+    background: #f8f9fa;
+}
+
+.tab-btn {
+    padding: 14px 20px;
+    border: none;
+    background: transparent;
+    color: #666;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s;
+}
+
+.tab-btn:hover { color: #667eea; }
+.tab-btn.active {
+    color: #667eea;
+    font-weight: 600;
+}
+
+.tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    border-radius: 3px 3px 0 0;
+}
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* Responsividade */
+@media (max-width: 1200px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .form-group.full-width { grid-column: span 1; }
+}
+
+@media (max-width: 768px) {
+    .obras-container { padding: 16px; }
+    .obra-header { padding: 20px; }
+    .obra-header h1 { font-size: 22px; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .filtros-grid { grid-template-columns: 1fr; }
+
+    .atividades-table {
+        display: block;
+        overflow-x: auto;
     }
 
-    $todas_atividades[] = [
-        'id' => $ativ->idAtividade ?? 0,
-        'titulo' => $ativ->titulo ?? $ativ->tipo_atividade ?? 'Atividade Técnica',
-        'descricao' => $ativ->descricao ?? '',
-        'status' => $status,
-        'tipo' => $ativ->categoria ?? 'trabalho',
-        'data' => date('Y-m-d', strtotime($ativ->hora_inicio ?? 'now')),
-        'tecnico' => $ativ->nome_tecnico ?? 'Não atribuído',
-        'etapa' => $ativ->etapa_nome ?? 'Geral',
-        'progresso' => ($ativ->status == 'finalizada' && ($ativ->concluida ?? 0)) ? 100 : (empty($ativ->hora_fim) && !empty($ativ->hora_inicio) ? 50 : 0),
-        'sistema' => 'novo',
-        'hora_inicio' => $ativ->hora_inicio ?? null,
-        'hora_fim' => $ativ->hora_fim ?? null,
-        'duracao' => $ativ->duracao_minutos ?? null
-    ];
+    .acoes-cell { flex-direction: column; }
+    .btn-icon { width: 32px; height: 32px; }
 }
 
-// Ordenar por data
-usort($todas_atividades, function($a, $b) {
-    return strtotime($b['data']) - strtotime($a['data']);
-});
+/* Dark Mode */
+body[data-theme="dark"] .card,
+body[data-theme="dark"] .stat-card,
+body[data-theme="dark"] .modal-container { background: #1a1d29; }
 
-// Calcular estatísticas
-$total = count($todas_atividades);
-$concluidas = 0;
-$em_andamento = 0;
-$pendentes = 0;
+body[data-theme="dark"] .card-header,
+body[data-theme="dark"] .modal-header,
+body[data-theme="dark"] .modal-footer,
+body[data-theme="dark"] .tabs-nav { border-color: #2d3347; }
 
-foreach ($todas_atividades as $a) {
-    if ($a['status'] == 'concluida') $concluidas++;
-    elseif ($a['status'] == 'iniciada') $em_andamento++;
-    else $pendentes++;
+body[data-theme="dark"] .tabs-nav { background: #252a3a; }
+
+body[data-theme="dark"] .card-title,
+body[data-theme="dark"] .modal-title,
+body[data-theme="dark"] .info-primary,
+body[data-theme="dark"] .stat-value { color: #e2e8f0; }
+
+body[data-theme="dark"] .atividades-table th { background: #252a3a; border-color: #2d3347; color: #a0aec0; }
+body[data-theme="dark"] .atividades-table td { border-color: #2d3347; }
+body[data-theme="dark"] .atividades-table tr:hover { background: #252a3a; }
+
+body[data-theme="dark"] .filtro-group input,
+body[data-theme="dark"] .filtro-group select,
+body[data-theme="dark"] .form-group input,
+body[data-theme="dark"] .form-group select,
+body[data-theme="dark"] .form-group textarea {
+    background: #252a3a;
+    border-color: #4a5568;
+    color: #e2e8f0;
 }
-?>
 
-<!-- DEBUG CONSOLE -->
-<div id="debugConsole" style="position:fixed; bottom:10px; right:10px; background:#333; color:#0f0; padding:10px; font-family:monospace; font-size:12px; max-width:400px; max-height:200px; overflow:auto; z-index:99999; border-radius:5px; display:block;">
-  <strong>DEBUG JS:</strong> <button onclick="document.getElementById('debugConsole').style.display='none'" style="float:right;color:red;">X</button>
-  <div id="debugOutput">Inicializando...</div>
-</div>
+body[data-theme="dark"] .empty-state-icon { background: #252a3a; color: #4a5568; }
+body[data-theme="dark"] .empty-state h4 { color: #a0aec0; }
 
-<div class="atividades-wrapper">
+body[data-theme="dark"] .btn-secondary { background: #252a3a; color: #e2e8f0; }
+body[data-theme="dark"] .modal-close { background: #252a3a; color: #a0aec0; }
+</style>
+
+<div class="obras-container">
+
     <!-- Header -->
-    <div class="atividades-header">
-        <h1><i class='icon icon-calendar'></i> Atividades da Obra</h1>
-        <p><?php echo $obra_nome; ?></p>
-        <div class="actions">
-            <a href="<?php echo site_url('obras/visualizar/' . $obra_id); ?>" class="btn btn-secondary">
-                <i class='icon icon-arrow-left'></i> Voltar à Obra
-            </a>
-            <button class="btn btn-primary" onclick="abrirModalNova()">
-                <i class='icon icon-plus'></i> Nova Atividade
-            </button>
+    <div class="obra-header">
+        <div class="obra-header-content">
+            <div class="obra-header-left">
+                <div class="obra-breadcrumb">
+                    <a href="<?php echo site_url('obras'); ?>">Obras</a> &raquo;
+                    <a href="<?php echo site_url('obras/visualizar/' . $obra->id); ?>"><?php echo htmlspecialchars($obra->nome); ?></a> &raquo;
+                    <span>Atividades</span>
+                </div>
+                <h1><i class='bx bx-task'></i> Atividades da Obra</h1>
+                <div class="obra-header-subtitle">
+                    <span><i class='bx bx-building'></i> <?php echo htmlspecialchars($obra->nome); ?></span>
+                    <span><i class='bx bx-user'></i> <?php echo htmlspecialchars($obra->cliente_nome ?? 'Cliente não definido'); ?></span>
+                    <span><i class='bx bx-calendar'></i> <?php echo count($atividades); ?> atividade(s)</span>
+                </div>
+            </div>
+            <div>
+                <a href="<?php echo site_url('obras/visualizar/' . $obra->id); ?>" class="btn btn-secondary">
+                    <i class='bx bx-arrow-back'></i> Voltar à Obra
+                </a>
+            </div>
         </div>
     </div>
 
     <!-- Stats -->
-    <div class="stats-row">
-        <div class="stat-box">
-            <div class="stat-icon blue"><i class='icon icon-calendar'></i></div>
-            <div class="stat-info">
-                <h3><?php echo $total; ?></h3>
-                <span>Total Atividades</span>
-            </div>
+    <div class="stats-grid">
+        <?php
+        $total = count($atividades);
+        $concluidas = count(array_filter($atividades, fn($a) => $a->status === 'concluida'));
+        $em_andamento = count(array_filter($atividades, fn($a) => in_array($a->status, ['iniciada', 'pausada'])));
+        $agendadas = count(array_filter($atividades, fn($a) => $a->status === 'agendada'));
+        $reabertas = count(array_filter($atividades, fn($a) => $a->status === 'reaberta'));
+        $percentual = $total > 0 ? round(($concluidas / $total) * 100) : 0;
+        ?>
+        <div class="stat-card success">
+            <div class="stat-value"><?php echo $concluidas; ?></div>
+            <div class="stat-label">Concluídas</div>
         </div>
-        <div class="stat-box">
-            <div class="stat-icon green"><i class='icon icon-ok'></i></div>
-            <div class="stat-info">
-                <h3><?php echo $concluidas; ?></h3>
-                <span>Concluídas</span>
-            </div>
+        <div class="stat-card warning">
+            <div class="stat-value"><?php echo $em_andamento; ?></div>
+            <div class="stat-label">Em Andamento</div>
         </div>
-        <div class="stat-box">
-            <div class="stat-icon orange"><i class='icon icon-time'></i></div>
-            <div class="stat-info">
-                <h3><?php echo $em_andamento; ?></h3>
-                <span>Em Andamento</span>
-            </div>
+        <div class="stat-card info">
+            <div class="stat-value"><?php echo $agendadas; ?></div>
+            <div class="stat-label">Agendadas</div>
         </div>
-        <div class="stat-box">
-            <div class="stat-icon gray"><i class='icon icon-time'></i></div>
-            <div class="stat-info">
-                <h3><?php echo $pendentes; ?></h3>
-                <span>Pendentes</span>
-            </div>
+        <div class="stat-card purple">
+            <div class="stat-value"><?php echo $reabertas; ?></div>
+            <div class="stat-label">Reabertas</div>
+        </div>
+        <div class="stat-card <?php echo $percentual >= 80 ? 'success' : ($percentual >= 50 ? 'warning' : 'danger'); ?>">
+            <div class="stat-value"><?php echo $percentual; ?>%</div>
+            <div class="stat-label">Progresso</div>
         </div>
     </div>
 
-    <!-- Filtros -->
-    <div class="filtros-box">
-        <input type="text" id="filtroBusca" placeholder="Buscar atividade..." onkeyup="filtrarAtividades()">
-        <select id="filtroStatus" onchange="filtrarAtividades()">
-            <option value="">Todos os Status</option>
-            <option value="agendada">Agendada</option>
-            <option value="iniciada">Iniciada</option>
-            <option value="pausada">Pausada</option>
-            <option value="concluida">Concluída</option>
-            <option value="cancelada">Cancelada</option>
-        </select>
-        <select id="filtroTipo" onchange="filtrarAtividades()">
-            <option value="">Todos os Tipos</option>
-            <option value="trabalho">Trabalho</option>
-            <option value="visita">Visita Técnica</option>
-            <option value="manutencao">Manutenção</option>
-            <option value="impedimento">Impedimento</option>
-            <option value="outro">Outro</option>
-        </select>
-    </div>
+    <!-- Card Principal -->
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">
+                <i class='bx bx-list-ul'></i> Lista de Atividades
+            </div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button class="btn btn-primary btn-sm" onclick="abrirModalNovaAtividade()">
+                    <i class='bx bx-plus'></i> Nova Atividade
+                </button>
+                <a href="<?php echo site_url('obras/salvarWizard/' . $obra->id); ?>" class="btn btn-success btn-sm">
+                    <i class='bx bx-wizard'></i> Wizard de Etapas
+                </a>
+            </div>
+        </div>
 
-    <!-- Lista de Atividades -->
-    <div class="atividades-lista" id="listaAtividades">
-        <?php if (empty($todas_atividades)): ?>
-        <div class="empty-state">
-            <i class='icon icon-remove' style="font-size:60px;color:#667eea;margin-bottom:15px;display:block;"></i>
-            <h3>Nenhuma atividade encontrada</h3>
-            <p>Esta obra ainda não possui atividades registradas.</p>
-            <button class="btn btn-primary" onclick="abrirModalNova()">
-                <i class='icon icon-plus'></i> Adicionar Primeira Atividade
+        <!-- Tabs -->
+        <div class="tabs-nav">
+            <button class="tab-btn active" onclick="switchTab('todas', this)">
+                <i class='bx bx-grid-alt'></i> Todas (<?php echo $total; ?>)
+            </button>
+            <button class="tab-btn" onclick="switchTab('agendadas', this)">
+                <i class='bx bx-calendar'></i> Agendadas (<?php echo $agendadas; ?>)
+            </button>
+            <button class="tab-btn" onclick="switchTab('andamento', this)">
+                <i class='bx bx-play-circle'></i> Em Andamento (<?php echo $em_andamento; ?>)
+            </button>
+            <button class="tab-btn" onclick="switchTab('concluidas', this)">
+                <i class='bx bx-check-circle'></i> Concluídas (<?php echo $concluidas; ?>)
+            </button>
+            <button class="tab-btn" onclick="switchTab('reabertas', this)">
+                <i class='bx bx-refresh'></i> Reabertas (<?php echo $reabertas; ?>)
             </button>
         </div>
-        <?php else: ?>
-            <?php foreach ($todas_atividades as $atv):
-                $status_class = $atv['status'];
-                $status_label = ucfirst($atv['status']);
-            ?>
-            <div class="atv-card <?php echo $status_class; ?>"
-                 data-titulo="<?php echo strtolower($atv['titulo']); ?>"
-                 data-status="<?php echo $atv['status']; ?>"
-                 data-tipo="<?php echo $atv['tipo']; ?>"
-                 data-id="<?php echo $atv['id']; ?>"
-                 data-sistema="<?php echo $atv['sistema']; ?>"
-                 onclick="cardClicado(this)">
 
-                <div class="atv-card-header">
-                    <div class="atv-card-titulo"><?php echo htmlspecialchars($atv['titulo']); ?></div>
-                    <span class="atv-card-status <?php echo $status_class; ?>"><?php echo $status_label; ?></span>
+        <div class="card-body">
+            <!-- Filtros -->
+            <div class="filtros-grid">
+                <div class="filtro-group">
+                    <label>Buscar</label>
+                    <input type="text" id="filtroBusca" placeholder="Título, descrição..." onkeyup="filtrarAtividades()">
                 </div>
-
-                <div class="atv-card-info">
-                    <span><i class='icon icon-calendar'></i> <?php echo date('d/m/Y', strtotime($atv['data'])); ?></span>
-                    <span><i class='icon icon-user'></i> <?php echo htmlspecialchars($atv['tecnico']); ?></span>
-                    <span><i class='icon icon-tasks'></i> <?php echo htmlspecialchars($atv['etapa']); ?></span>
-                    <?php if (!empty($atv['duracao'])): ?>
-                    <span><i class='icon icon-time'></i> <?php echo floor($atv['duracao']/60) . 'h ' . ($atv['duracao']%60) . 'min'; ?></span>
-                    <?php endif; ?>
+                <div class="filtro-group">
+                    <label>Técnico</label>
+                    <select id="filtroTecnico" onchange="filtrarAtividades()">
+                        <option value="">Todos</option>
+                        <?php foreach ($tecnicos as $t): ?>
+                        <option value="<?php echo $t->idUsuarios; ?>"><?php echo htmlspecialchars($t->nome); ?></option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
-
-                <?php if ($atv['descricao']): ?>
-                <div class="atv-card-desc"><?php echo htmlspecialchars(substr($atv['descricao'], 0, 100)) . (strlen($atv['descricao']) > 100 ? '...' : ''); ?></div>
-                <?php endif; ?>
-
-                <div class="atv-card-footer">
-                    <div class="atv-card-progresso">
-                        <div class="atv-card-progresso-barra">
-                            <div class="atv-card-progresso-fill" style="width: <?php echo $atv['progresso']; ?>%; background: <?php echo $atv['progresso'] >= 100 ? '#27ae60' : ($atv['progresso'] > 0 ? '#3498db' : '#95a5a6'); ?>"></div>
-                        </div>
-                    </div>
-                    <div class="atv-card-badges">
-                        <?php if ($atv['sistema'] == 'novo'): ?>
-                        <span class="atv-card-badge wizard" title="Sistema Wizard"><i class='icon icon-time'></i></span>
-                        <?php endif; ?>
-                        <span class="atv-card-badge view" title="Ver detalhes" onclick="event.stopPropagation()"><i class='icon icon-eye-open'></i></span>
-                        <span class="atv-card-badge delete" title="Excluir" onclick="event.stopPropagation(); excluirAtividade('<?php echo $atv['sistema']; ?>', <?php echo $atv['id']; ?>)"><i class='icon icon-trash'></i></span>
-                    </div>
+                <div class="filtro-group">
+                    <label>Etapa</label>
+                    <select id="filtroEtapa" onchange="filtrarAtividades()">
+                        <option value="">Todas</option>
+                        <?php foreach ($etapas as $e): ?>
+                        <option value="<?php echo $e->id; ?>"><?php echo htmlspecialchars($e->nome); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="filtro-group">
+                    <label>Tipo</label>
+                    <select id="filtroTipo" onchange="filtrarAtividades()">
+                        <option value="">Todos</option>
+                        <option value="trabalho">Trabalho</option>
+                        <option value="impedimento">Impedimento</option>
+                        <option value="outro">Outro</option>
+                    </select>
                 </div>
             </div>
-            <?php endforeach; ?>
-        <?php endif; ?>
-    </div>
-</div>
 
-<!-- Modal de Detalhes -->
-<div class="modal-overlay" id="modalDetalhes">
-    <div class="modal-box">
-        <div class="modal-header">
-            <h3><i class='icon icon-check'></i> Detalhes da Atividade</h3>
-            <button class="fechar" onclick="fecharModal()">&times;</button>
-        </div>
-        <div class="modal-body" id="modalBody">
-            <p>Carregando...</p>
-        </div>
-        <div class="modal-footer" id="modalFooter">
-            <button class="btn btn-secondary" onclick="fecharModal()">Fechar</button>
-        </div>
-    </div>
-</div>
-
-<!-- Modal Nova Atividade -->
-<div class="modal-overlay" id="modalNova">
-    <div class="modal-box">
-        <div class="modal-header">
-            <h3><i class='icon icon-plus'></i> Nova Atividade</h3>
-            <button class="fechar" onclick="fecharModalNova()">&times;</button>
-        </div>
-        <div class="modal-body">
-            <form id="formNovaAtividade" action="<?php echo site_url('obras/adicionarAtividade'); ?>" method="post">
-                <input type="hidden" name="obra_id" value="<?php echo $obra_id; ?>">
-
-                <div class="form-group">
-                    <label class="form-label">Título *</label>
-                    <input type="text" name="titulo" class="form-input" required>
+            <!-- Tabela -->
+            <?php if (empty($atividades)): ?>
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class='bx bx-task-x'></i>
                 </div>
+                <h4>Nenhuma atividade encontrada</h4>
+                <p>Esta obra ainda não possui atividades cadastradas.</p>
+                <button class="btn btn-primary" onclick="abrirModalNovaAtividade()">
+                    <i class='bx bx-plus'></i> Criar Primeira Atividade
+                </button>
+            </div>
+            <?php else: ?>
+            <div style="overflow-x: auto;">
+                <table class="atividades-table" id="tabelaAtividades">
+                    <thead>
+                        <tr>
+                            <th style="width: 40px;">#</th>
+                            <th>Atividade</th>
+                            <th style="width: 120px;">Status</th>
+                            <th style="width: 100px;">Progresso</th>
+                            <th>Técnico</th>
+                            <th>Etapa</th>
+                            <th style="width: 180px;">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($atividades as $atividade):
+                            $statusClass = $atividade->status ?? 'agendada';
+                            $progresso = $atividade->percentual_concluido ?? 0;
+                            $progressoClass = $progresso >= 80 ? 'high' : ($progresso >= 50 ? 'medium' : 'low');
+                        ?>
+                        <tr class="atividade-row"
+                            data-status="<?php echo $statusClass; ?>"
+                            data-tecnico="<?php echo $atividade->tecnico_id ?? ''; ?>"
+                            data-etapa="<?php echo $atividade->etapa_id ?? ''; ?>"
+                            data-tipo="<?php echo $atividade->tipo ?? 'trabalho'; ?>"
+                            data-busca="<?php echo strtolower(htmlspecialchars(($atividade->titulo ?? '') . ' ' . ($atividade->descricao ?? ''))); ?>">
+                            <td><?php echo $atividade->id; ?></td>
+                            <td>
+                                <div class="info-cell">
+                                    <span class="info-primary"><?php echo htmlspecialchars($atividade->titulo ?? 'Sem título'); ?></span>
+                                    <span class="info-secondary"><?php echo htmlspecialchars(substr($atividade->descricao ?? '', 0, 60)) . (strlen($atividade->descricao ?? '') > 60 ? '...' : ''); ?></span>
+                                    <span class="info-tertiary">
+                                        <i class='bx bx-calendar'></i> <?php echo date('d/m/Y', strtotime($atividade->data_atividade ?? 'now')); ?>
+                                        <?php if ($atividade->tipo === 'impedimento'): ?>
+                                            <span style="color: #e74c3c; margin-left: 8px;"><i class='bx bx-error'></i> Impedimento</span>
+                                        <?php endif; ?>
+                                    </span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="status-badge <?php echo $statusClass; ?>">
+                                    <?php echo ucfirst($statusClass); ?>
+                                </span>
+                                <?php if ($statusClass === 'reaberta'): ?>
+                                    <div class="reatendimento-badge" style="margin-top: 6px;">
+                                        <i class='bx bx-refresh'></i> Reatendimento
+                                    </div>
+                                <?php endif; ?>
+                            </td>
+                            <td>
+                                <div class="progress-wrapper">
+                                    <div class="progress-bar-bg">
+                                        <div class="progress-bar-fill <?php echo $progressoClass; ?>" style="width: <?php echo $progresso; ?>%"></div>
+                                    </div>
+                                    <span class="progress-text"><?php echo $progresso; ?>%</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="info-cell">
+                                    <span class="info-primary"><?php echo htmlspecialchars($atividade->tecnico_nome ?? 'Não atribuído'); ?></span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="info-cell">
+                                    <span class="info-primary"><?php echo htmlspecialchars($atividade->etapa_nome ?? 'Sem etapa'); ?></span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="acoes-cell">
+                                    <button class="btn btn-primary btn-xs btn-icon" onclick="abrirModalEditar(<?php echo $atividade->id; ?>)" title="Editar Rápido">
+                                        <i class='bx bx-edit'></i>
+                                    </button>
+                                    <a href="<?php echo site_url('obras/visualizarAtividade/' . $atividade->id); ?>" class="btn btn-info btn-xs btn-icon" title="Visualizar Completo">
+                                        <i class='bx bx-eye'></i>
+                                    </a>
+                                    <?php if (in_array($statusClass, ['concluida', 'cancelada', 'reaberta'])): ?>
+                                    <button class="btn btn-warning btn-xs" onclick="reabrirAtividade(<?php echo $atividade->id; ?>)" title="Reabrir/Reatendimento">
+                                        <i class='bx bx-refresh'></i> Reabrir
+                                    </button>
+                                    <?php endif; ?>
+                                    <?php if ($statusClass === 'agendada'): ?>
+                                    <a href="<?php echo site_url('tecnicos/executar_obra/' . $obra->id . '?atividade=' . $atividade->id); ?>" class="btn btn-success btn-xs" title="Iniciar Execução">
+                                        <i class='bx bx-play'></i>
+                                    </a>
+                                    <?php endif; ?>
+                                </div>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+            <?php endif; ?>
+        </div>
+    </div>
 
-                <div class="form-row">
+    <!-- Atividades Registradas (Hora Início/Fim) -->
+    <?php if (!empty($atividades_registradas)): ?>
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">
+                <i class='bx bx-time'></i> Registros de Execução (Wizard)
+            </div>
+            <span class="badge-count" style="background: #27ae60; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px;">
+                <?php echo count($atividades_registradas); ?> registros
+            </span>
+        </div>
+        <div class="card-body">
+            <div style="overflow-x: auto;">
+                <table class="atividades-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tipo</th>
+                            <th>Técnico</th>
+                            <th>Início</th>
+                            <th>Fim</th>
+                            <th>Duração</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($atividades_registradas as $reg): ?>
+                        <tr>
+                            <td><?php echo $reg->idAtividade; ?></td>
+                            <td><?php echo htmlspecialchars($reg->tipo_nome ?? 'N/A'); ?></td>
+                            <td><?php echo htmlspecialchars($reg->nome_tecnico ?? 'N/A'); ?></td>
+                            <td><?php echo $reg->hora_inicio ? date('d/m/Y H:i', strtotime($reg->hora_inicio)) : '-'; ?></td>
+                            <td><?php echo $reg->hora_fim ? date('d/m/Y H:i', strtotime($reg->hora_fim)) : '-'; ?></td>
+                            <td>
+                                <?php if ($reg->duracao_minutos): ?>
+                                    <?php echo floor($reg->duracao_minutos / 60); ?>h <?php echo $reg->duracao_minutos % 60; ?>m
+                                <?php else: ?>
+                                    -
+                                <?php endif; ?>
+                            </td>
+                            <td>
+                                <span class="status-badge <?php echo $reg->status ?? 'em_andamento'; ?>">
+                                    <?php echo ucfirst(str_replace('_', ' ', $reg->status ?? 'em_andamento')); ?>
+                                </span>
+                            </td>
+                            <td>
+                                <a href="<?php echo site_url('obras/visualizarAtividade/' . $reg->obra_atividade_id); ?>" class="btn btn-info btn-xs btn-icon">
+                                    <i class='bx bx-eye'></i>
+                                </a>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
+
+</div>
+
+<!-- Modal: Editar Atividade -->
+<div class="modal-overlay" id="modalEditar">
+    <div class="modal-container">
+        <div class="modal-header">
+            <div class="modal-title">
+                <i class='bx bx-edit'></i> Editar Atividade
+            </div>
+            <button class="modal-close" onclick="fecharModal('modalEditar')">
+                <i class='bx bx-x'></i>
+            </button>
+        </div>
+        <form id="formEditar" method="POST">
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label>Título <span class="required">*</span></label>
+                        <input type="text" name="titulo" id="edit_titulo" required>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Descrição</label>
+                        <textarea name="descricao" id="edit_descricao" rows="3"></textarea>
+                    </div>
                     <div class="form-group">
-                        <label class="form-label">Etapa *</label>
-                        <select name="etapa_id" class="form-select" required>
-                            <option value="">Selecione...</option>
-                            <?php foreach ($etapas ?? [] as $e): ?>
-                            <option value="<?php echo $e->id; ?>">#<?php echo $e->numero_etapa ?? '?'; ?> - <?php echo htmlspecialchars($e->nome); ?></option>
-                            <?php endforeach; ?>
+                        <label>Status</label>
+                        <select name="status" id="edit_status">
+                            <option value="agendada">Agendada</option>
+                            <option value="iniciada">Em Execução</option>
+                            <option value="pausada">Pausada</option>
+                            <option value="concluida">Concluída</option>
+                            <option value="cancelada">Cancelada</option>
+                            <option value="reaberta">Reaberta (Reatendimento)</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Tipo</label>
-                        <select name="tipo" class="form-select">
-                            <option value="trabalho">Trabalho</option>
-                            <option value="visita">Visita Técnica</option>
-                            <option value="manutencao">Manutenção</option>
-                            <option value="impedimento">Impedimento</option>
-                            <option value="outro">Outro</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Data</label>
-                        <input type="date" name="data_atividade" class="form-input" value="<?php echo date('Y-m-d'); ?>">
+                        <label>Data</label>
+                        <input type="date" name="data_atividade" id="edit_data">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Técnico Responsável</label>
-                        <select name="tecnico_id" class="form-select">
-                            <option value="">Selecione...</option>
-                            <?php foreach ($tecnicos ?? [] as $t): ?>
+                        <label>Técnico</label>
+                        <select name="tecnico_id" id="edit_tecnico">
+                            <option value="">Não atribuído</option>
+                            <?php foreach ($tecnicos as $t): ?>
                             <option value="<?php echo $t->idUsuarios; ?>"><?php echo htmlspecialchars($t->nome); ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
+                    <div class="form-group">
+                        <label>Etapa</label>
+                        <select name="etapa_id" id="edit_etapa">
+                            <option value="">Sem etapa</option>
+                            <?php foreach ($etapas as $e): ?>
+                            <option value="<?php echo $e->id; ?>"><?php echo htmlspecialchars($e->nome); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo</label>
+                        <select name="tipo" id="edit_tipo">
+                            <option value="trabalho">Trabalho</option>
+                            <option value="impedimento">Impedimento</option>
+                            <option value="outro">Outro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Progresso (%)</label>
+                        <input type="number" name="percentual_concluido" id="edit_progresso" min="0" max="100" value="0">
+                    </div>
+                    <div class="form-group full-width">
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox" name="visivel_cliente" id="edit_visivel" value="1">
+                            <label for="edit_visivel">Visível ao cliente</label>
+                        </div>
+                    </div>
                 </div>
-
-                <div class="form-group">
-                    <label class="form-label">Descrição</label>
-                    <textarea name="descricao" class="form-textarea" rows="3"></textarea>
-                </div>
-            </form>
-        </div>
-        <div class="modal-footer">
-            <button class="btn btn-secondary" onclick="fecharModalNova()">Cancelar</button>
-            <button class="btn btn-primary" onclick="salvarNovaAtividade()">
-                <i class='icon icon-save'></i> Salvar
-            </button>
-        </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="fecharModal('modalEditar')">Cancelar</button>
+                <button type="submit" class="btn btn-primary">
+                    <i class='bx bx-save'></i> Salvar Alterações
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 
-<script type="text/javascript">
-// URLs
-var URL_DETALHES = '<?php echo site_url("atividades/detalhes/"); ?>';
-var URL_SALVAR_ATIVIDADE = '<?php echo site_url("obras/api_salvarAtividade"); ?>';
-var URL_ADICIONAR_ATIVIDADE = '<?php echo site_url("obras/adicionarAtividade"); ?>';
-var URL_EXCLUIR_NOVO = '<?php echo site_url("atividades/excluir/"); ?>';
-var URL_EXCLUIR_ANTIGO = '<?php echo site_url("obras/excluirAtividade/"); ?>';
+<!-- Modal: Nova Atividade -->
+<div class="modal-overlay" id="modalNova">
+    <div class="modal-container">
+        <div class="modal-header">
+            <div class="modal-title">
+                <i class='bx bx-plus'></i> Nova Atividade
+            </div>
+            <button class="modal-close" onclick="fecharModal('modalNova')">
+                <i class='bx bx-x'></i>
+            </button>
+        </div>
+        <form action="<?php echo site_url('obras/adicionarAtividade'); ?>" method="POST">
+            <input type="hidden" name="obra_id" value="<?php echo $obra->id; ?>">
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label>Título <span class="required">*</span></label>
+                        <input type="text" name="titulo" required placeholder="Nome da atividade...">
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Descrição</label>
+                        <textarea name="descricao" rows="3" placeholder="Descreva a atividade..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo</label>
+                        <select name="tipo">
+                            <option value="trabalho">Trabalho</option>
+                            <option value="impedimento">Impedimento</option>
+                            <option value="outro">Outro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Data</label>
+                        <input type="date" name="data_atividade" value="<?php echo date('Y-m-d'); ?>">
+                    </div>
+                    <div class="form-group">
+                        <label>Técnico</label>
+                        <select name="tecnico_id">
+                            <option value="">Não atribuído</option>
+                            <?php foreach ($tecnicos as $t): ?>
+                            <option value="<?php echo $t->idUsuarios; ?>"><?php echo htmlspecialchars($t->nome); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Etapa</label>
+                        <select name="etapa_id">
+                            <option value="">Sem etapa</option>
+                            <?php foreach ($etapas as $e): ?>
+                            <option value="<?php echo $e->id; ?>"><?php echo htmlspecialchars($e->nome); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox" name="visivel_cliente" value="1" checked>
+                            <label>Visível ao cliente</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="fecharModal('modalNova')">Cancelar</button>
+                <button type="submit" class="btn btn-primary">
+                    <i class='bx bx-save'></i> Criar Atividade
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 
-// Dados das atividades (JSON seguro)
-var ATIVIDADES_DATA = <?php echo json_encode($todas_atividades); ?>;
+<!-- Modal: Reabrir Atividade (Reatendimento) -->
+<div class="modal-overlay" id="modalReabrir">
+    <div class="modal-container" style="max-width: 500px;">
+        <div class="modal-header" style="background: linear-gradient(135deg, #9b59b6, #8e44ad); color: white;">
+            <div class="modal-title" style="color: white;">
+                <i class='bx bx-refresh'></i> Reabrir Atividade - Reatendimento
+            </div>
+            <button class="modal-close" onclick="fecharModal('modalReabrir')" style="background: rgba(255,255,255,0.2); color: white;">
+                <i class='bx bx-x'></i>
+            </button>
+        </div>
+        <form id="formReabrir" method="POST" action="">
+            <div class="modal-body">
+                <div style="background: #f8f9fa; padding: 16px; border-radius: 8px; margin-bottom: 20px;">
+                    <p style="margin: 0; font-size: 14px; color: #666;">
+                        <i class='bx bx-info-circle'></i>
+                        Ao reabrir esta atividade, um <strong>reatendimento</strong> será criado para permitir nova execução.
+                        O histórico anterior será preservado.
+                    </p>
+                </div>
+                <div class="form-group full-width">
+                    <label>Motivo da Reabertura <span class="required">*</span></label>
+                    <textarea name="observacao_status" rows="3" required placeholder="Informe o motivo da reabertura..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="fecharModal('modalReabrir')">Cancelar</button>
+                <button type="submit" class="btn" style="background: linear-gradient(135deg, #9b59b6, #8e44ad); color: white;">
+                    <i class='bx bx-refresh'></i> Confirmar Reabertura
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 
-// Debug
-function logDebug(msg) {
-    console.log('[DEBUG]', msg);
-    var out = document.getElementById('debugOutput');
-    if (out) {
-        var time = new Date().toLocaleTimeString();
-        out.innerHTML += time + ': ' + msg + '<br>';
-    }
-}
+<script>
+// Dados das atividades para edição rápida
+const atividadesData = <?php echo json_encode(array_map(function($a) {
+    return [
+        'id' => $a->id,
+        'titulo' => $a->titulo ?? '',
+        'descricao' => $a->descricao ?? '',
+        'status' => $a->status ?? 'agendada',
+        'data_atividade' => $a->data_atividade ?? date('Y-m-d'),
+        'tecnico_id' => $a->tecnico_id ?? '',
+        'etapa_id' => $a->etapa_id ?? '',
+        'tipo' => $a->tipo ?? 'trabalho',
+        'percentual_concluido' => $a->percentual_concluido ?? 0,
+        'visivel_cliente' => $a->visivel_cliente ?? 0
+    ];
+}, $atividades)); ?>;
 
-// Variáveis globais
-var atividadeAtual = null;
-var sistemaAtual = null;
+// Abrir modal de edição
+function abrirModalEditar(id) {
+    const atividade = atividadesData.find(a => a.id == id);
+    if (!atividade) return;
 
-// Log inicial
-logDebug('JS carregado. Atividades: ' + (ATIVIDADES_DATA ? ATIVIDADES_DATA.length : 0));
+    document.getElementById('edit_titulo').value = atividade.titulo;
+    document.getElementById('edit_descricao').value = atividade.descricao;
+    document.getElementById('edit_status').value = atividade.status;
+    document.getElementById('edit_data').value = atividade.data_atividade;
+    document.getElementById('edit_tecnico').value = atividade.tecnico_id || '';
+    document.getElementById('edit_etapa').value = atividade.etapa_id || '';
+    document.getElementById('edit_tipo').value = atividade.tipo;
+    document.getElementById('edit_progresso').value = atividade.percentual_concluido;
+    document.getElementById('edit_visivel').checked = atividade.visivel_cliente == 1;
 
-// Filtrar atividades
-function filtrarAtividades() {
-    var busca = document.getElementById('filtroBusca').value.toLowerCase();
-    var status = document.getElementById('filtroStatus').value;
-    var tipo = document.getElementById('filtroTipo').value;
-    var cards = document.querySelectorAll('.atv-card');
+    document.getElementById('formEditar').action = '<?php echo site_url('obras/editarAtividade/'); ?>' + id;
 
-    for (var i = 0; i < cards.length; i++) {
-        var card = cards[i];
-        var titulo = card.getAttribute('data-titulo') || '';
-        var cardStatus = card.getAttribute('data-status') || '';
-        var cardTipo = card.getAttribute('data-tipo') || '';
-
-        var matchBusca = !busca || titulo.indexOf(busca) !== -1;
-        var matchStatus = !status || cardStatus === status;
-        var matchTipo = !tipo || cardTipo === tipo;
-
-        card.style.display = (matchBusca && matchStatus && matchTipo) ? 'block' : 'none';
-    }
-}
-
-// Card clicado - abrir modal
-function cardClicado(element) {
-    var id = element.getAttribute('data-id');
-    var sistema = element.getAttribute('data-sistema');
-
-    logDebug('Card clicado: id=' + id + ', sistema=' + sistema);
-
-    // Encontrar dados da atividade
-    var atv = null;
-    for (var i = 0; i < ATIVIDADES_DATA.length; i++) {
-        if (ATIVIDADES_DATA[i].id == id && ATIVIDADES_DATA[i].sistema == sistema) {
-            atv = ATIVIDADES_DATA[i];
-            break;
-        }
-    }
-
-    if (!atv) {
-        logDebug('ERRO: Atividade não encontrada nos dados');
-        alert('Erro: Atividade não encontrada');
-        return;
-    }
-
-    abrirDetalhes(sistema, id, atv);
-}
-
-// Abrir modal de detalhes
-function abrirDetalhes(sistema, id, atv) {
-    logDebug('abrirDetalhes: sistema=' + sistema + ', id=' + id);
-
-    sistemaAtual = sistema;
-    atividadeAtual = atv;
-
-    var modal = document.getElementById('modalDetalhes');
-    var body = document.getElementById('modalBody');
-    var footer = document.getElementById('modalFooter');
-
-    if (!modal || !body) {
-        logDebug('ERRO: Modal ou body não encontrado');
-        alert('Erro: Modal não encontrado');
-        return;
-    }
-
-    if (sistema === 'novo') {
-        // Sistema novo - buscar via AJAX
-        body.innerHTML = '<p style="text-align:center;"><i class="icon icon-refresh icon-spin" style="font-size:30px;color:#667eea;"></i><br>Carregando...</p>';
-        modal.classList.add('ativo');
-
-        fetch(URL_DETALHES + id, {
-            headers: { 'X-Requested-With': 'XMLHttpRequest' }
-        })
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
-            if (data.success) {
-                renderizarDetalhesNovo(data.atividade, body, footer);
-            } else {
-                body.innerHTML = '<p style="color:red;">Erro ao carregar atividade.</p>';
-            }
-        })
-        .catch(function(err) {
-            logDebug('ERRO fetch: ' + err);
-            body.innerHTML = '<p style="color:red;">Erro ao carregar atividade.</p>';
-        });
-    } else {
-        // Sistema antigo
-        var html = renderizarDetalhesAntigo(atv);
-        body.innerHTML = html;
-
-        // Botões
-        var botoes = '<button class="btn btn-secondary" onclick="fecharModal()">Fechar</button>';
-        botoes += '<button class="btn btn-primary" onclick="editarAtividade()">Editar</button>';
-        footer.innerHTML = botoes;
-
-        modal.classList.add('ativo');
-    }
-}
-
-// Renderizar detalhes sistema novo
-function renderizarDetalhesNovo(atv, body, footer) {
-    var statusText = (atv.status || 'N/A').toUpperCase();
-    var html = '';
-
-    html += '<div class="secao-info">';
-    html += '<h4><i class="icon icon-info-sign"></i> Informações Gerais</h4>';
-    html += '<p><strong>Status:</strong> <span class="info-badge">' + statusText + '</span></p>';
-    html += '<p><strong>Tipo:</strong> ' + (atv.tipo_atividade || '-') + '</p>';
-    html += '<p><strong>Técnico:</strong> ' + (atv.nome_tecnico || '-') + '</p>';
-    html += '<p><strong>Etapa:</strong> ' + (atv.etapa_nome || '-') + '</p>';
-    html += '</div>';
-
-    if (atv.hora_inicio) {
-        html += '<div class="secao-info">';
-        html += '<h4><i class="icon icon-time"></i> Registro de Tempo</h4>';
-        html += '<div class="form-row">';
-        html += '<p><strong>Início:</strong> ' + formatarDataHora(atv.hora_inicio) + '</p>';
-        html += '<p><strong>Fim:</strong> ' + (atv.hora_fim ? formatarDataHora(atv.hora_fim) : 'Em andamento') + '</p>';
-        html += '</div>';
-        if (atv.duracao_minutos) {
-            var h = Math.floor(atv.duracao_minutos / 60);
-            var m = atv.duracao_minutos % 60;
-            html += '<p><strong>Duração:</strong> ' + h + 'h ' + m + 'min</p>';
-        }
-        html += '</div>';
-    }
-
-    if (atv.descricao || atv.observacoes) {
-        html += '<div class="secao-info">';
-        html += '<h4><i class="icon icon-list-alt"></i> Observações</h4>';
-        html += '<p>' + (atv.descricao || atv.observacoes || '-') + '</p>';
-        html += '</div>';
-    }
-
-    body.innerHTML = html;
-    footer.innerHTML = '<button class="btn btn-secondary" onclick="fecharModal()">Fechar</button>';
-}
-
-// Renderizar detalhes sistema antigo
-function renderizarDetalhesAntigo(atv) {
-    if (!atv) {
-        return '<p style="color:red">Erro: dados inválidos</p>';
-    }
-
-    var html = '';
-
-    html += '<div class="secao-info">';
-    html += '<h4><i class="icon icon-info-sign"></i> Informações Gerais</h4>';
-    html += '<div class="form-row">';
-    html += '<div class="form-group">';
-    html += '<label class="form-label">Título</label>';
-    var titulo = atv.titulo || '';
-    html += '<input type="text" class="form-input view-field" value="' + titulo.replace(/"/g, '&quot;') + '" readonly>';
-    html += '<input type="text" class="form-input edit-field" id="edit_titulo" value="' + titulo.replace(/"/g, '&quot;') + '" style="display:none;">';
-    html += '</div>';
-    html += '<div class="form-group">';
-    html += '<label class="form-label">Status</label>';
-    var statusVal = atv.status || 'agendada';
-    html += '<span class="info-badge">' + statusVal.toUpperCase() + '</span>';
-    html += '</div>';
-    html += '</div>';
-
-    html += '<div class="form-group">';
-    html += '<label class="form-label">Descrição</label>';
-    html += '<textarea class="form-textarea view-field" readonly>' + (atv.descricao || '-') + '</textarea>';
-    html += '<textarea class="form-textarea edit-field" id="edit_descricao" style="display:none;">' + (atv.descricao || '') + '</textarea>';
-    html += '</div>';
-    html += '</div>';
-
-    html += '<div class="secao-info">';
-    html += '<h4><i class="icon icon-calendar"></i> Execução</h4>';
-    html += '<div class="form-row">';
-    html += '<div class="form-group">';
-    html += '<label class="form-label">Data</label>';
-    html += '<input type="text" class="form-input view-field" value="' + formatarData(atv.data) + '" readonly>';
-    html += '<input type="date" class="form-input edit-field" id="edit_data" value="' + (atv.data || '') + '" style="display:none;">';
-    html += '</div>';
-    html += '<div class="form-group">';
-    html += '<label class="form-label">Tipo</label>';
-    var tipoLabel = atv.tipo ? atv.tipo.charAt(0).toUpperCase() + atv.tipo.slice(1) : '-';
-    html += '<input type="text" class="form-input view-field" value="' + tipoLabel + '" readonly>';
-    html += '<select class="form-select edit-field" id="edit_tipo" style="display:none;">';
-    var tipos = ['trabalho', 'visita', 'manutencao', 'impedimento', 'outro'];
-    var tiposLabels = ['Trabalho', 'Visita Técnica', 'Manutenção', 'Impedimento', 'Outro'];
-    for (var i = 0; i < tipos.length; i++) {
-        var selected = atv.tipo === tipos[i] ? 'selected' : '';
-        html += '<option value="' + tipos[i] + '" ' + selected + '>' + tiposLabels[i] + '</option>';
-    }
-    html += '</select>';
-    html += '</div>';
-    html += '</div>';
-    html += '</div>';
-
-    html += '<div class="secao-info">';
-    html += '<h4><i class="icon icon-user"></i> Responsáveis</h4>';
-    html += '<p><strong>Técnico:</strong> ' + (atv.tecnico || '-') + '</p>';
-    html += '<p><strong>Etapa:</strong> ' + (atv.etapa || '-') + '</p>';
-    html += '</div>';
-
-    return html;
-}
-
-// Editar atividade
-function editarAtividade() {
-    var viewFields = document.querySelectorAll('.view-field');
-    var editFields = document.querySelectorAll('.edit-field');
-
-    for (var i = 0; i < viewFields.length; i++) {
-        viewFields[i].style.display = 'none';
-    }
-    for (var i = 0; i < editFields.length; i++) {
-        editFields[i].style.display = 'block';
-    }
-
-    var footer = document.getElementById('modalFooter');
-    footer.innerHTML = '<button class="btn btn-secondary" onclick="cancelarEdicao()">Cancelar</button>' +
-                       '<button class="btn btn-success" onclick="salvarEdicao()">Salvar</button>';
-}
-
-// Cancelar edição
-function cancelarEdicao() {
-    abrirDetalhes(sistemaAtual, atividadeAtual.id, atividadeAtual);
-}
-
-// Salvar edição
-function salvarEdicao() {
-    var dados = {
-        id: atividadeAtual.id,
-        titulo: document.getElementById('edit_titulo').value,
-        descricao: document.getElementById('edit_descricao').value,
-        data_atividade: document.getElementById('edit_data').value,
-        tipo: document.getElementById('edit_tipo').value
-    };
-
-    fetch(URL_SALVAR_ATIVIDADE, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'X-Requested-With': 'XMLHttpRequest'
-        },
-        body: new URLSearchParams(dados)
-    })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-        if (data.success) {
-            alert('Atividade atualizada com sucesso!');
-            fecharModal();
-            location.reload();
-        } else {
-            alert('Erro: ' + (data.message || 'Não foi possível salvar'));
-        }
-    })
-    .catch(function(err) {
-        logDebug('ERRO salvar: ' + err);
-        alert('Erro ao salvar atividade');
-    });
-}
-
-// Fechar modal
-function fecharModal() {
-    document.getElementById('modalDetalhes').classList.remove('ativo');
+    document.getElementById('modalEditar').classList.add('active');
 }
 
 // Abrir modal nova atividade
-function abrirModalNova() {
-    document.getElementById('modalNova').classList.add('ativo');
+function abrirModalNovaAtividade() {
+    document.getElementById('modalNova').classList.add('active');
 }
 
-// Fechar modal nova
-function fecharModalNova() {
-    document.getElementById('modalNova').classList.remove('ativo');
-}
+// Reabrir atividade (reatendimento)
+function reabrirAtividade(id) {
+    // Limpar formulário anterior
+    const form = document.getElementById('formReabrir');
+    form.action = '<?php echo site_url('obras/atualizarStatusAtividade/'); ?>' + id;
 
-// Salvar nova atividade
-function salvarNovaAtividade() {
-    var form = document.getElementById('formNovaAtividade');
-
-    // Validar
-    var titulo = form.elements['titulo'].value;
-    if (!titulo) {
-        alert('Título é obrigatório');
-        return;
+    // Adicionar input hidden para o status
+    let statusInput = form.querySelector('input[name="novo_status"]');
+    if (!statusInput) {
+        statusInput = document.createElement('input');
+        statusInput.type = 'hidden';
+        statusInput.name = 'novo_status';
+        form.appendChild(statusInput);
     }
+    statusInput.value = 'reaberta';
 
-    // Submeter form normalmente (não AJAX)
-    form.submit();
+    document.getElementById('modalReabrir').classList.add('active');
 }
 
-// Excluir atividade
-function excluirAtividade(sistema, id) {
-    if (!confirm('Tem certeza que deseja excluir esta atividade?')) {
-        return;
+// Fechar modal
+function fecharModal(modalId) {
+    document.getElementById(modalId).classList.remove('active');
+}
+
+// Fechar modal ao clicar fora
+window.onclick = function(event) {
+    if (event.target.classList.contains('modal-overlay')) {
+        event.target.classList.remove('active');
     }
+}
 
-    var url = sistema === 'novo' ? URL_EXCLUIR_NOVO + id : URL_EXCLUIR_ANTIGO + id;
+// Switch tabs
+function switchTab(tabName, btn) {
+    // Remove active de todos os tabs
+    document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
 
-    fetch(url, {
-        method: 'POST',
-        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-    })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-        if (data.success) {
-            location.reload();
+    // Filtrar por status
+    const rows = document.querySelectorAll('.atividade-row');
+    rows.forEach(row => {
+        if (tabName === 'todas') {
+            row.style.display = '';
+        } else if (tabName === 'andamento') {
+            const status = row.dataset.status;
+            row.style.display = (status === 'iniciada' || status === 'pausada') ? '' : 'none';
+        } else if (tabName === 'reabertas') {
+            row.style.display = (row.dataset.status === 'reaberta') ? '' : 'none';
         } else {
-            alert('Erro: ' + (data.message || 'Não foi possível excluir'));
+            row.style.display = (row.dataset.status === tabName) ? '' : 'none';
         }
-    })
-    .catch(function() {
-        location.reload();
     });
 }
 
-// Fechar modais ao clicar fora
-window.onclick = function(event) {
-    var modal1 = document.getElementById('modalDetalhes');
-    var modal2 = document.getElementById('modalNova');
-    if (event.target === modal1) fecharModal();
-    if (event.target === modal2) fecharModalNova();
-};
+// Filtrar atividades
+function filtrarAtividades() {
+    const busca = document.getElementById('filtroBusca').value.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+    const tecnico = document.getElementById('filtroTecnico').value;
+    const etapa = document.getElementById('filtroEtapa').value;
+    const tipo = document.getElementById('filtroTipo').value;
 
-// Tecla ESC para fechar
-document.onkeydown = function(e) {
+    const rows = document.querySelectorAll('.atividade-row');
+    rows.forEach(row => {
+        const rowBusca = row.dataset.busca.normalize('NFD').replace(/[̀-ͯ]/g, '');
+        const matchBusca = !busca || rowBusca.includes(busca);
+        const matchTecnico = !tecnico || row.dataset.tecnico === tecnico;
+        const matchEtapa = !etapa || row.dataset.etapa === etapa;
+        const matchTipo = !tipo || row.dataset.tipo === tipo;
+
+        row.style.display = (matchBusca && matchTecnico && matchEtapa && matchTipo) ? '' : 'none';
+    });
+}
+
+// Atalho de teclado ESC para fechar modais
+document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
-        fecharModal();
-        fecharModalNova();
+        document.querySelectorAll('.modal-overlay.active').forEach(m => m.classList.remove('active'));
     }
-};
-
-// Utilitários
-function formatarData(dataStr) {
-    if (!dataStr) return '-';
-    var parts = dataStr.split('-');
-    if (parts.length !== 3) return dataStr;
-    return parts[2] + '/' + parts[1] + '/' + parts[0];
-}
-
-function formatarDataHora(dataHoraStr) {
-    if (!dataHoraStr) return '-';
-    var data = new Date(dataHoraStr);
-    if (isNaN(data.getTime())) return dataHoraStr;
-    return data.toLocaleString('pt-BR');
-}
-
-// Log final
-logDebug('JS inicializado completamente');
+});
 </script>

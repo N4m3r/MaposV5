@@ -670,6 +670,7 @@
 .acao-btn i { font-size: 14px; }
 
 .acao-wizard { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+.acao-relatorio { background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); }
 .acao-etapas { background: #667eea; }
 .acao-equipe { background: #764ba2; }
 .acao-atividades { background: #f39c12; }
@@ -896,6 +897,9 @@
 
     <!-- Ações Rápidas -->
     <div class="acoes-bar">
+        <a href="<?php echo site_url('obras/relatorioGeral/' . $obra->id); ?>" class="acao-btn acao-relatorio">
+            <i class="icon-file-alt"></i> Relatório Geral
+        </a>
         <a href="<?php echo site_url('obras/etapas/' . $obra->id); ?>" class="acao-btn acao-etapas">
             <i class="icon-tasks"></i> Gerenciar Etapas
         </a>
