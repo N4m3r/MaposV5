@@ -1348,7 +1348,8 @@ body[data-theme="dark"] .config-grid-item:hover {
     </div>
 </div>
 
-<script>
+<!-- INICIO DO SCRIPT DE CONFIGURACOES -->
+<script type="text/javascript">
 // Log inicial para confirmar carregamento
 console.log('=== SCRIPT DE CONFIGURACOES CARREGADO ===');
 
@@ -1361,6 +1362,20 @@ window.addEventListener('error', function(e) {
     console.error('Coluna:', e.colno);
     console.error('Stack:', e.error ? e.error.stack : 'N/A');
     console.error('=== FIM ERRO GLOBAL ===');
+});
+
+// Aguardar DOM estar pronto
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('=== DOM CARREGADO ===');
+
+    // Verificação inicial de elementos
+    console.log('=== VERIFICAÇÃO INICIAL ===');
+    console.log('Total .config-tab-item:', document.querySelectorAll('.config-tab-item').length);
+    console.log('Total .config-content:', document.querySelectorAll('.config-content').length);
+    document.querySelectorAll('.config-content').forEach(function(el, i) {
+        console.log('Content ' + i + ': id=' + el.id + ', classes=' + el.className);
+    });
+    console.log('=== FIM VERIFICAÇÃO ===');
 });
 
 // Navegação entre abas
@@ -1435,15 +1450,6 @@ function switchTab(tabName, element) {
     }
     console.log('=== FIM LOAD DEBUG ===');
 })();
-
-// Verificação inicial de elementos
-console.log('=== VERIFICAÇÃO INICIAL ===');
-console.log('Total .config-tab-item:', document.querySelectorAll('.config-tab-item').length);
-console.log('Total .config-content:', document.querySelectorAll('.config-content').length);
-document.querySelectorAll('.config-content').forEach(function(el, i) {
-    console.log('Content ' + i + ': id=' + el.id + ', classes=' + el.className);
-});
-console.log('=== FIM VERIFICAÇÃO ===');
 
 // Modal functions
 function abrirModal(title, content) {
@@ -1690,3 +1696,4 @@ document.addEventListener('keydown', function(e) {
     }
 });
 </script>
+<!-- FIM DO SCRIPT DE CONFIGURACOES -->
