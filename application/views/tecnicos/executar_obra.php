@@ -236,6 +236,10 @@
     background: #ffeaa7;
     color: #d68910;
 }
+.atividade-icon.pausada {
+    background: #f8d7da;
+    color: #721c24;
+}
 .atividade-info {
     flex: 1;
 }
@@ -303,6 +307,14 @@
 .btn-acao.reabrir:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
+}
+.btn-acao.continuar {
+    background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+    color: white;
+}
+.btn-acao.continuar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(155, 89, 182, 0.3);
 }
 .btn-acao:disabled {
     opacity: 0.6;
@@ -554,6 +566,8 @@
 .atividade-icon.concluida i { color: #155724; }
 .atividade-icon.reaberta { background: #fff3cd; }
 .atividade-icon.reaberta i { color: #856404; }
+.atividade-icon.pausada { background: #f8d7da; }
+.atividade-icon.pausada i { color: #721c24; }
 .atividade-selecao.selecionada .atividade-icon {
     background: rgba(255,255,255,0.2);
 }
@@ -1075,17 +1089,20 @@ textarea.wizard-input {
                                 $statusAtiv = $ativ->status ?? 'agendada';
                                 $statusAtivClass = ($statusAtiv === 'concluida' || $statusAtiv === 'concluido') ? 'concluida' :
                                                     (($statusAtiv === 'em_andamento' || $statusAtiv === 'iniciada') ? 'andamento' :
-                                                    (($statusAtiv === 'reaberta' || $statusAtiv === 'reaberto') ? 'reaberta' : 'aberto'));
+                                                    (($statusAtiv === 'reaberta' || $statusAtiv === 'reaberto') ? 'reaberta' :
+                                                    (($statusAtiv === 'pausada' || $statusAtiv === 'pausado') ? 'pausada' : 'aberto')));
                                 $statusAtivLabel = ($statusAtiv === 'concluida' || $statusAtiv === 'concluido') ? 'Concluída' :
                                                     (($statusAtiv === 'em_andamento' || $statusAtiv === 'iniciada') ? 'Em Andamento' :
-                                                    (($statusAtiv === 'reaberta' || $statusAtiv === 'reaberto') ? 'Reaberta' : 'Aberta'));
+                                                    (($statusAtiv === 'reaberta' || $statusAtiv === 'reaberto') ? 'Reaberta' :
+                                                    (($statusAtiv === 'pausada' || $statusAtiv === 'pausado') ? 'Pausada' : 'Aberta')));
                                 ?>
                                 <div class="atividade-item">
                                     <div class="atividade-icon <?= $statusAtivClass ?>">
                                         <i class="icon-<?=
                                             ($statusAtiv === 'concluida' || $statusAtiv === 'concluido') ? 'check' :
                                             (($statusAtiv === 'em_andamento' || $statusAtiv === 'iniciada') ? 'play' :
-                                            (($statusAtiv === 'reaberta' || $statusAtiv === 'reaberto') ? 'refresh' : 'time'))
+                                            (($statusAtiv === 'reaberta' || $statusAtiv === 'reaberto') ? 'refresh' :
+                                            (($statusAtiv === 'pausada' || $statusAtiv === 'pausado') ? 'pause' : 'time')))
                                         ?>"></i>
                                     </div>
                                     <div class="atividade-info">
@@ -1101,6 +1118,10 @@ textarea.wizard-input {
                                         <?php elseif ($statusAtiv === 'concluida' && $ativId): ?>
                                         <button class="btn-acao reabrir" onclick="reabrirAtividade(<?= $ativId ?>, '<?= htmlspecialchars($ativ->titulo ?? $ativ->descricao ?? 'Atividade #' . $ativId, ENT_QUOTES) ?>')">
                                             <i class="icon-refresh"></i> Reabrir
+                                        </button>
+                                        <?php elseif (($statusAtiv === 'pausada' || $statusAtiv === 'pausado') && $ativId): ?>
+                                        <button class="btn-acao continuar" onclick="WizardAtendimento.continuar(<?= $ativId ?>)">
+                                            <i class="icon-play"></i> Continuar
                                         </button>
                                         <?php elseif (in_array($statusAtiv, ['agendada', 'pendente', 'aberta', 'reaberta', 'reaberto', 'nao_iniciada', 'nao_iniciado']) && $ativId): ?>
                                         <button class="btn-acao iniciar" onclick="WizardAtendimento.iniciarAtividade(<?= $ativId ?>)">
@@ -2021,8 +2042,33 @@ const WizardAtendimento = {
         // Guardar ID para confirmação
         this._atividadeFinalizarId = atividadeId;
 
+        // Buscar atividade em andamento ou nas atividades por etapa
+        var atividade = dadosObra.atividadeAndamento;
+        var atividadePausada = null;
+
+        // Se não está em andamento, buscar nas atividades por etapa (pode estar pausada)
+        if (!atividade || (atividade.id != atividadeId && atividade.idAtividade != atividadeId)) {
+            for (var eid in dadosObra.atividadesPorEtapa) {
+                var atvs = dadosObra.atividadesPorEtapa[eid] || [];
+                for (var i = 0; i < atvs.length; i++) {
+                    if ((atvs[i].id || atvs[i].idAtividade) == atividadeId) {
+                        atividade = atvs[i];
+                        break;
+                    }
+                }
+                if (atividade) break;
+            }
+        }
+
+        // Verificar se a atividade está pausada
+        var status = atividade ? (atividade.status || '') : '';
+        if (status === 'pausada' || status === 'pausado') {
+            // Retomar atividade antes de continuar
+            this.retomarAtividade(atividadeId);
+            return;
+        }
+
         // Calcular tempo decorrido
-        const atividade = dadosObra.atividadeAndamento;
         var tempoTexto = '00:00';
         if (atividade && atividade.hora_inicio) {
             const inicio = this.converterDataHoraLocal(atividade.hora_inicio);
@@ -2040,6 +2086,46 @@ const WizardAtendimento = {
         // Abrir modal de confirmação
         var modal = document.getElementById('modalConfirmarFinalizar');
         if (modal) modal.style.display = 'block';
+    },
+
+    // Retomar atividade pausada
+    retomarAtividade: function(atividadeId) {
+        const csrfToken = this.getCsrfToken();
+
+        const formData = new FormData();
+        formData.append('MAPOS_TOKEN', csrfToken);
+        formData.append('atividade_id', atividadeId);
+
+        fetch('<?= site_url("atividades/retomar") ?>', {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: formData
+        })
+        .then(r => {
+            const contentType = r.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                return r.json();
+            } else {
+                return r.text().then(text => {
+                    console.error('Resposta não-JSON:', text.substring(0, 500));
+                    throw new Error('Resposta do servidor não é JSON válido');
+                });
+            }
+        })
+        .then(data => {
+            if (data.success) {
+                // Recarregar página para atualizar dados
+                location.reload();
+            } else {
+                alert('Erro ao retomar: ' + (data.message || 'Erro desconhecido'));
+            }
+        })
+        .catch(err => {
+            console.error('Erro:', err);
+            alert('Erro ao retomar atividade. Verifique o console para mais detalhes.');
+        });
     },
 
     // Confirmar finalização e abrir wizard
