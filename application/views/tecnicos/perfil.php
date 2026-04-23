@@ -343,16 +343,25 @@
     color: white;
 }
 
-/* Modal de Foto */
+/* Modal de Foto - Base */
+.foto-modal {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
 .foto-modal .modal-header {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     border-radius: 6px 6px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .foto-modal .modal-header h3 {
     margin: 0;
     font-weight: 600;
+    font-size: 16px;
 }
 
 .foto-modal .nav-tabs {
@@ -366,6 +375,9 @@
     color: #666;
     border: none;
     background: transparent;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .foto-modal .nav-tabs > li.active > a {
@@ -425,11 +437,24 @@
     cursor: pointer;
     transition: all 0.3s ease;
     margin-top: 15px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
 }
 
 .btn-capturar:hover {
     transform: scale(1.05);
     box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.btn-capturar:active {
+    transform: scale(0.95);
+}
+
+.btn-capturar:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
 }
 
 #preview-img {
@@ -744,6 +769,261 @@
         font-size: 12px;
         padding: 6px 10px;
     }
+
+    /* ===== MODAL FOTO MOBILE ===== */
+    .foto-modal {
+        width: 100% !important;
+        left: 0 !important;
+        right: 0 !important;
+        margin: 0 !important;
+        top: 0 !important;
+        bottom: 0 !important;
+        border-radius: 0 !important;
+        position: fixed !important;
+    }
+
+    .foto-modal .modal-header {
+        padding: 15px 20px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+
+    .foto-modal .modal-header h3 {
+        font-size: 16px;
+    }
+
+    .foto-modal .modal-body {
+        padding: 15px !important;
+        height: calc(100vh - 120px);
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .foto-modal .modal-footer {
+        padding: 15px 20px;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: white;
+        border-top: 1px solid #e8e8e8;
+        box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+        z-index: 100;
+        display: flex;
+        gap: 10px;
+    }
+
+    .foto-modal .modal-footer .btn {
+        flex: 1;
+        padding: 14px 20px;
+        font-size: 16px;
+        min-height: 48px;
+    }
+
+    .foto-modal .modal-footer .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+    }
+
+    /* Abas no mobile */
+    .foto-modal .nav-tabs {
+        display: flex;
+        margin: -15px -15px 15px -15px;
+        border-bottom: 2px solid #eee;
+    }
+
+    .foto-modal .nav-tabs > li {
+        flex: 1;
+        text-align: center;
+    }
+
+    .foto-modal .nav-tabs > li > a {
+        padding: 15px 10px;
+        font-size: 14px;
+        display: block;
+    }
+
+    .foto-modal .nav-tabs > li > a i {
+        display: block;
+        font-size: 20px;
+        margin-bottom: 5px;
+    }
+
+    /* Preview area mobile */
+    .foto-preview-area {
+        padding: 30px 20px;
+        margin: 0 -15px 15px -15px;
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+    }
+
+    .foto-preview-area i {
+        font-size: 56px;
+    }
+
+    .foto-preview-area p {
+        font-size: 14px;
+        margin-bottom: 15px;
+    }
+
+    /* Botão capturar maior para touch */
+    .btn-capturar {
+        width: 100%;
+        padding: 16px 24px;
+        font-size: 16px;
+        border-radius: 10px;
+        margin-top: 20px;
+    }
+
+    /* Esconder botão flutuante no mobile por padrão */
+    .btn-captura-mobile {
+        display: none;
+    }
+
+    /* Container de vídeo mobile */
+    .video-container {
+        width: 100%;
+        border-radius: 0;
+        margin: 0 -15px;
+        width: calc(100% + 30px);
+    }
+
+    #video {
+        width: 100%;
+        max-height: 60vh;
+        object-fit: cover;
+    }
+
+    /* Botão tirar foto flutuante no mobile */
+    #camera-on {
+        position: relative;
+    }
+
+    #camera-on .btn-capturar {
+        position: fixed;
+        bottom: 80px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: calc(100% - 40px);
+        max-width: 300px;
+        z-index: 50;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+        border-radius: 30px;
+        font-size: 18px;
+        padding: 18px 30px;
+    }
+
+    #camera-on .btn-capturar:active {
+        transform: translateX(-50%) scale(0.95);
+    }
+
+    /* Botão de captura flutuante */
+    .btn-captura-mobile {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background: white;
+        border: 4px solid #667eea;
+        color: #667eea;
+        font-size: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        z-index: 10;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-captura-mobile:active {
+        transform: translateX(-50%) scale(0.9);
+        background: #f0f4ff;
+    }
+
+    /* Esconder botão desktop no mobile */
+    .btn-capturar-desktop {
+        display: none !important;
+    }
+
+    /* Preview upload mobile */
+    #upload-preview {
+        padding-bottom: 60px;
+    }
+
+    #preview-img {
+        max-height: 50vh;
+        width: 100%;
+        object-fit: contain;
+    }
+
+    #upload-preview .btn {
+        width: 100%;
+        padding: 14px 20px;
+        font-size: 16px;
+        margin-top: 15px;
+    }
+}
+
+@media (max-width: 380px) {
+    .foto-modal .nav-tabs > li > a {
+        font-size: 12px;
+        padding: 12px 8px;
+    }
+
+    .foto-modal .nav-tabs > li > a i {
+        font-size: 18px;
+    }
+
+    .foto-preview-area i {
+        font-size: 48px;
+    }
+}
+
+/* Desktop - esconder botão flutuante */
+@media (min-width: 769px) {
+    .btn-captura-mobile {
+        display: none !important;
+    }
+
+    .btn-capturar-desktop {
+        display: inline-flex !important;
+    }
+}
+
+/* ===== AJUSTES iOS ESPECÍFICOS ===== */
+@supports (-webkit-touch-callout: none) {
+    /* iOS Safari específico */
+    .foto-modal .modal-body {
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .btn-capturar, .btn-captura-mobile {
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Fix para câmera no iOS */
+    #video {
+        object-fit: cover;
+        width: 100% !important;
+        height: auto !important;
+    }
+
+    /* Fix para input file no iOS */
+    #input-foto {
+        font-size: 16px; /* Evita zoom no iOS */
+    }
+
+    /* Melhorar área de preview no iOS */
+    .foto-preview-area {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+    }
 }
 </style>
 
@@ -962,8 +1242,13 @@
                 <div class="text-center" id="camera-on" style="display: none;">
                     <div class="video-container">
                         <video id="video" autoplay playsinline></video>
+                        <!-- Botão de captura flutuante no mobile -->
+                        <button type="button" class="btn-captura-mobile" onclick="capturarDaCamera()" title="Tirar Foto">
+                            <i class="icon-camera"></i>
+                        </button>
                     </div>
-                    <button type="button" class="btn-capturar" onclick="capturarDaCamera()">
+                    <!-- Botão fallback desktop -->
+                    <button type="button" class="btn-capturar btn-capturar-desktop" onclick="capturarDaCamera()">
                         <i class="icon-camera"></i> Tirar Foto
                     </button>
                 </div>
@@ -973,10 +1258,17 @@
             <div class="tab-pane" id="tab-upload">
                 <div class="foto-preview-area" id="upload-placeholder">
                     <i class="icon-picture"></i>
-                    <p>Selecione uma foto da galeria</p>
+                    <p>Selecione uma foto da galeria ou tire uma foto agora</p>
                     <input type="file" id="input-foto" accept="image/*" style="display: none;" onchange="previewUpload(this)">
-                    <button type="button" class="btn-capturar" onclick="document.getElementById('input-foto').click()">
-                        <i class="icon-folder-open"></i> Selecionar Arquivo
+
+                    <!-- Botão Galeria -->
+                    <button type="button" class="btn-capturar" onclick="selecionarArquivo('gallery')" style="margin-bottom: 10px;">
+                        <i class="icon-folder-open"></i> Abrir Galeria
+                    </button>
+
+                    <!-- Botão Câmera (fallback para mobile) -->
+                    <button type="button" class="btn-capturar" onclick="selecionarArquivo('camera')" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                        <i class="icon-camera"></i> Tirar Foto Agora
                     </button>
                 </div>
                 <div class="text-center" id="upload-preview" style="display: none;">
@@ -1029,45 +1321,188 @@ function abrirCamera() {
     document.getElementById('upload-preview').style.display = 'none';
     document.getElementById('input-foto').value = '';
 
+    // Detectar mobile e ajustar comportamento inicial
+    var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    // Prevenir scroll do body quando modal está aberto
+    document.body.style.overflow = 'hidden';
+
     jQuery('#cameraModal').modal('show');
+
+    // No mobile, pré-carregar aba galeria se câmera não estiver disponível
+    if (isMobile) {
+        setTimeout(function() {
+            // Verificar se câmera pode estar bloqueada
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                // Mudar para aba galeria automaticamente
+                jQuery('#fotoTab a[href="#tab-upload"]').tab('show');
+            }
+        }, 100);
+    }
 }
 
-// Iniciar câmera
+// Selecionar arquivo da galeria ou câmera (para mobile)
+function selecionarArquivo(tipo) {
+    var input = document.getElementById('input-foto');
+
+    if (tipo === 'camera') {
+        // Tentar usar capture no mobile
+        input.setAttribute('capture', 'environment');
+    } else {
+        // Remover capture para galeria
+        input.removeAttribute('capture');
+    }
+
+    // Trigger click
+    input.click();
+}
+
+// Iniciar câmera - otimizado para mobile
 function iniciarCamera() {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        alert('Seu navegador não suporta acesso à câmera');
+        alert('Seu navegador não suporta acesso à câmera. Tente usar a opção "Galeria".');
+        // Mudar automaticamente para aba galeria
+        jQuery('#fotoTab a[href="#tab-upload"]').tab('show');
         return;
     }
 
-    navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'user' }
-    }).then(function(mediaStream) {
+    // Detectar se é mobile
+    var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    var constraints = {
+        video: {
+            facingMode: isMobile ? 'environment' : 'user', // Câmera traseira no mobile
+            width: { ideal: 1280 },
+            height: { ideal: 720 }
+        }
+    };
+
+    // Mostrar loading
+    var btnIniciar = document.querySelector('#camera-off .btn-capturar');
+    if (btnIniciar) {
+        btnIniciar.innerHTML = '<i class="icon-spinner icon-spin"></i> Iniciando...';
+        btnIniciar.disabled = true;
+    }
+
+    navigator.mediaDevices.getUserMedia(constraints)
+    .then(function(mediaStream) {
         stream = mediaStream;
         var video = document.getElementById('video');
         if (video) {
             video.srcObject = stream;
-            document.getElementById('camera-off').style.display = 'none';
-            document.getElementById('camera-on').style.display = 'block';
-            habilitarSalvar();
+
+            // Esperar o vídeo estar pronto
+            video.onloadedmetadata = function() {
+                document.getElementById('camera-off').style.display = 'none';
+                document.getElementById('camera-on').style.display = 'block';
+
+                // Fullscreen no mobile
+                if (isMobile && video.requestFullscreen) {
+                    video.requestFullscreen().catch(function(err) {
+                        // Ignora erro de fullscreen
+                    });
+                }
+
+                habilitarSalvar();
+            };
         }
     }).catch(function(err) {
         console.error('Erro ao abrir câmera:', err);
-        alert('Não foi possível acessar a câmera');
+
+        // Tentar câmera frontal se a traseira falhar
+        if (isMobile) {
+            navigator.mediaDevices.getUserMedia({
+                video: { facingMode: 'user' }
+            }).then(function(mediaStream) {
+                stream = mediaStream;
+                var video = document.getElementById('video');
+                if (video) {
+                    video.srcObject = stream;
+                    video.onloadedmetadata = function() {
+                        document.getElementById('camera-off').style.display = 'none';
+                        document.getElementById('camera-on').style.display = 'block';
+                        habilitarSalvar();
+                    };
+                }
+            }).catch(function() {
+                alert('Não foi possível acessar a câmera. Por favor, use a opção "Galeria" para selecionar uma foto.');
+                jQuery('#fotoTab a[href="#tab-upload"]').tab('show');
+            });
+        } else {
+            alert('Não foi possível acessar a câmera. Por favor, use a opção "Galeria" para selecionar uma foto.');
+            jQuery('#fotoTab a[href="#tab-upload"]').tab('show');
+        }
+    }).finally(function() {
+        // Restaurar botão
+        if (btnIniciar) {
+            btnIniciar.innerHTML = '<i class="icon-camera"></i> Iniciar Câmera';
+            btnIniciar.disabled = false;
+        }
     });
 }
 
-// Preview de upload
+// Preview de upload - otimizado para mobile
 function previewUpload(input) {
     if (input.files && input.files[0]) {
+        var file = input.files[0];
+
+        // Verificar tamanho (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            alert('A imagem é muito grande. Por favor, selecione uma imagem menor que 5MB.');
+            input.value = '';
+            return;
+        }
+
+        // Mostrar loading
+        var placeholder = document.getElementById('upload-placeholder');
+        placeholder.innerHTML = '<i class="icon-spinner icon-spin"></i><p>Processando imagem...</p>';
+
         var reader = new FileReader();
         reader.onload = function(e) {
             fotoCapturada = e.target.result;
-            document.getElementById('preview-img').src = fotoCapturada;
-            document.getElementById('upload-placeholder').style.display = 'none';
-            document.getElementById('upload-preview').style.display = 'block';
-            habilitarSalvar();
+
+            // Redimensionar imagem se for muito grande (para melhor performance)
+            var img = new Image();
+            img.onload = function() {
+                var maxWidth = 800;
+                var maxHeight = 800;
+                var width = img.width;
+                var height = img.height;
+
+                if (width > maxWidth || height > maxHeight) {
+                    var canvas = document.createElement('canvas');
+                    var ctx = canvas.getContext('2d');
+
+                    if (width > height) {
+                        if (width > maxWidth) {
+                            height *= maxWidth / width;
+                            width = maxWidth;
+                        }
+                    } else {
+                        if (height > maxHeight) {
+                            width *= maxHeight / height;
+                            height = maxHeight;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    ctx.drawImage(img, 0, 0, width, height);
+                    fotoCapturada = canvas.toDataURL('image/jpeg', 0.8);
+                }
+
+                document.getElementById('preview-img').src = fotoCapturada;
+                placeholder.style.display = 'none';
+                document.getElementById('upload-preview').style.display = 'block';
+
+                // Restaurar placeholder
+                placeholder.innerHTML = '<i class="icon-picture"></i><p>Selecione uma foto da galeria ou tire uma foto agora</p><input type="file" id="input-foto" accept="image/*" style="display: none;" onchange="previewUpload(this)"><button type="button" class="btn-capturar" onclick="selecionarArquivo(\'gallery\')" style="margin-bottom: 10px;"><i class="icon-folder-open"></i> Abrir Galeria</button><button type="button" class="btn-capturar" onclick="selecionarArquivo(\'camera\')" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);"><i class="icon-camera"></i> Tirar Foto Agora</button>';
+
+                habilitarSalvar();
+            };
+            img.src = fotoCapturada;
         };
-        reader.readAsDataURL(input.files[0]);
+        reader.readAsDataURL(file);
     }
 }
 
@@ -1089,6 +1524,23 @@ function habilitarSalvar() {
 function capturarDaCamera() {
     var video = document.getElementById('video');
     if (!video) return;
+
+    // Feedback visual no mobile
+    var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    if (isMobile && navigator.vibrate) {
+        navigator.vibrate(30);
+    }
+
+    // Animação de flash
+    var flash = document.createElement('div');
+    flash.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:white;opacity:0.8;z-index:10000;pointer-events:none;transition:opacity 0.3s;';
+    document.body.appendChild(flash);
+    setTimeout(function() {
+        flash.style.opacity = '0';
+        setTimeout(function() {
+            flash.remove();
+        }, 300);
+    }, 50);
 
     var canvas = document.createElement('canvas');
     canvas.width = video.videoWidth || 640;
@@ -1118,12 +1570,18 @@ function capturarDaCamera() {
     jQuery('#fotoTab a[href="#tab-upload"]').tab('show');
 }
 
-// Salvar foto
+// Salvar foto com loading
 function salvarFoto() {
     if (!fotoCapturada) {
         alert('Selecione ou capture uma foto primeiro');
         return;
     }
+
+    // Mostrar loading no botão
+    var btnSalvar = document.getElementById('btn-salvar-foto');
+    var textoOriginal = btnSalvar.innerHTML;
+    btnSalvar.innerHTML = '<i class="icon-spinner icon-spin"></i> Salvando...';
+    btnSalvar.disabled = true;
 
     var formData = new FormData();
     formData.append('foto', fotoCapturada);
@@ -1141,13 +1599,29 @@ function salvarFoto() {
             if (avatar) {
                 avatar.innerHTML = '<img src="' + fotoCapturada + '" alt="Foto">';
             }
+
+            // Feedback visual suave no mobile
+            var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            if (isMobile) {
+                // Vibração se suportada
+                if (navigator.vibrate) {
+                    navigator.vibrate(50);
+                }
+            }
+
             fecharCamera();
-            alert('Foto atualizada com sucesso!');
+            setTimeout(function() {
+                alert('Foto atualizada com sucesso!');
+            }, 300);
         } else {
             alert('Erro ao atualizar foto: ' + (data.message || 'Erro desconhecido'));
+            btnSalvar.innerHTML = textoOriginal;
+            btnSalvar.disabled = false;
         }
     }).catch(function(err) {
         alert('Erro ao enviar foto: ' + err.message);
+        btnSalvar.innerHTML = textoOriginal;
+        btnSalvar.disabled = false;
     });
 }
 
@@ -1161,7 +1635,69 @@ function fecharCamera() {
         }
         stream = null;
     }
+
+    // Restaurar scroll do body
+    document.body.style.overflow = '';
+
+    // Sair do fullscreen se estiver
+    if (document.exitFullscreen && document.fullscreenElement) {
+        document.exitFullscreen().catch(function() {
+            // Ignora erro
+        });
+    }
+
+    // Resetar estado
+    setTimeout(function() {
+        document.getElementById('camera-off').style.display = 'block';
+        document.getElementById('camera-on').style.display = 'none';
+        resetUpload();
+    }, 300);
 }
+
+// ===== GESTOS MOBILE E TECLADO =====
+(function() {
+    var touchStartY = 0;
+    var touchEndY = 0;
+    var minSwipeDistance = 100;
+
+    document.addEventListener('touchstart', function(e) {
+        touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+
+    document.addEventListener('touchend', function(e) {
+        touchEndY = e.changedTouches[0].screenY;
+        handleSwipe();
+    }, { passive: true });
+
+    function handleSwipe() {
+        var swipeDistance = touchEndY - touchStartY;
+
+        // Swipe para baixo fecha o modal (se estiver aberto)
+        if (swipeDistance > minSwipeDistance) {
+            var fotoModal = jQuery('#cameraModal');
+            if (fotoModal.hasClass('in')) {
+                fecharCamera();
+            }
+        }
+    }
+
+    // Tecla ESC fecha o modal
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            var fotoModal = jQuery('#cameraModal');
+            if (fotoModal.hasClass('in')) {
+                fecharCamera();
+            }
+        }
+    });
+
+    // Fechar modal ao clicar fora (backdrop)
+    jQuery('#cameraModal').on('click', function(e) {
+        if (e.target === this) {
+            fecharCamera();
+        }
+    });
+})();
 
 // ===== FUNÇÕES DE EDIÇÃO DE PERFIL =====
 

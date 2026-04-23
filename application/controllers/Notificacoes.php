@@ -19,9 +19,27 @@ class Notificacoes extends MY_Controller
             show_404();
         }
 
+        // Detectar se é técnico logado no portal ou admin
         $usuario_id = $this->session->userdata('id_admin');
-        $notificacoes = $this->notificacoes_model->getNotificacoes($usuario_id, 15);
-        $nao_lidas = $this->notificacoes_model->countNaoLidas($usuario_id);
+        $tipo_usuario = 'admin';
+
+        if (!$usuario_id && $this->session->userdata('logado_tecnico')) {
+            $usuario_id = $this->session->userdata('tec_id');
+            $tipo_usuario = 'tecnico';
+        }
+
+        if (!$usuario_id) {
+            echo json_encode([
+                'success' => false,
+                'error' => 'Usuário não autenticado',
+                'nao_lidas' => 0,
+                'notificacoes' => []
+            ]);
+            return;
+        }
+
+        $notificacoes = $this->notificacoes_model->getNotificacoes($usuario_id, 15, $tipo_usuario);
+        $nao_lidas = $this->notificacoes_model->countNaoLidas($usuario_id, $tipo_usuario);
 
         echo json_encode([
             'success' => true,
@@ -37,12 +55,25 @@ class Notificacoes extends MY_Controller
         }
 
         $id = $this->input->post('id');
+
+        // Detectar se é técnico logado no portal ou admin
         $usuario_id = $this->session->userdata('id_admin');
+        $tipo_usuario = 'admin';
+
+        if (!$usuario_id && $this->session->userdata('logado_tecnico')) {
+            $usuario_id = $this->session->userdata('tec_id');
+            $tipo_usuario = 'tecnico';
+        }
+
+        if (!$usuario_id) {
+            echo json_encode(['success' => false, 'error' => 'Usuário não autenticado']);
+            return;
+        }
 
         if ($id) {
-            $this->notificacoes_model->marcarLida($id, $usuario_id);
+            $this->notificacoes_model->marcarLida($id, $usuario_id, $tipo_usuario);
         } else {
-            $this->notificacoes_model->marcarTodasLidas($usuario_id);
+            $this->notificacoes_model->marcarTodasLidas($usuario_id, $tipo_usuario);
         }
 
         echo json_encode(['success' => true]);

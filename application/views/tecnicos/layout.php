@@ -743,10 +743,21 @@
 
                 <div class="tec-navbar-right">
                     <!-- Notificações -->
-                    <a href="#" class="tec-nav-btn" title="Notificações">
-                        <i class='bx bx-bell'></i>
-                        <span class="tec-badge" id="notifCount" style="display:none">0</span>
-                    </a>
+                    <div class="tec-notif-container">
+                        <button class="tec-nav-btn" onclick="toggleNotificacoes(event)" title="Notificações" id="notifBtn">
+                            <i class='bx bx-bell'></i>
+                            <span class="tec-badge" id="notifCount" style="display:none">0</span>
+                        </button>
+                        <div class="tec-notif-dropdown" id="notifDropdown">
+                            <div class="tec-notif-header">
+                                <span>Notificações</span>
+                                <a href="#" onclick="marcarTodasLidas(event)">Marcar todas como lidas</a>
+                            </div>
+                            <div class="tec-notif-list" id="notifList">
+                                <div class="tec-notif-empty">Nenhuma notificação</div>
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- Tema -->
                     <button class="tec-nav-btn" onclick="toggleTheme()" title="Alternar Tema">

@@ -11,13 +11,14 @@ class Notificacoes_model extends CI_Model
         parent::__construct();
     }
 
-    public function getNotificacoes($usuario_id, $limite = 10, $nao_lidas = false)
+    public function getNotificacoes($usuario_id, $limite = 10, $nao_lidas = false, $tipo_usuario = 'admin')
     {
         if (!$this->db->table_exists('notificacoes')) {
             return [];
         }
 
         $this->db->where('usuario_id', $usuario_id);
+        $this->db->where('tipo_usuario', $tipo_usuario);
         if ($nao_lidas) {
             $this->db->where('lida', 0);
         }
@@ -27,13 +28,14 @@ class Notificacoes_model extends CI_Model
         return $this->db->get('notificacoes')->result();
     }
 
-    public function countNaoLidas($usuario_id)
+    public function countNaoLidas($usuario_id, $tipo_usuario = 'admin')
     {
         if (!$this->db->table_exists('notificacoes')) {
             return 0;
         }
 
         $this->db->where('usuario_id', $usuario_id);
+        $this->db->where('tipo_usuario', $tipo_usuario);
         $this->db->where('lida', 0);
         return $this->db->count_all_results('notificacoes');
     }
@@ -46,6 +48,7 @@ class Notificacoes_model extends CI_Model
 
         return $this->db->insert('notificacoes', [
             'usuario_id' => $dados['usuario_id'],
+            'tipo_usuario' => $dados['tipo_usuario'] ?? 'admin',
             'titulo' => $dados['titulo'],
             'mensagem' => $dados['mensagem'],
             'url' => $dados['url'] ?? null,
@@ -56,16 +59,18 @@ class Notificacoes_model extends CI_Model
         ]);
     }
 
-    public function marcarLida($id, $usuario_id)
+    public function marcarLida($id, $usuario_id, $tipo_usuario = 'admin')
     {
         $this->db->where('id', $id);
         $this->db->where('usuario_id', $usuario_id);
+        $this->db->where('tipo_usuario', $tipo_usuario);
         return $this->db->update('notificacoes', ['lida' => 1]);
     }
 
-    public function marcarTodasLidas($usuario_id)
+    public function marcarTodasLidas($usuario_id, $tipo_usuario = 'admin')
     {
         $this->db->where('usuario_id', $usuario_id);
+        $this->db->where('tipo_usuario', $tipo_usuario);
         $this->db->where('lida', 0);
         return $this->db->update('notificacoes', ['lida' => 1]);
     }
@@ -79,6 +84,7 @@ class Notificacoes_model extends CI_Model
         $usuarios = $this->db->select('idUsuarios')->get('usuarios')->result();
         foreach ($usuarios as $u) {
             $dados['usuario_id'] = $u->idUsuarios;
+            $dados['tipo_usuario'] = 'admin';
             $this->adicionar($dados);
         }
     }
@@ -104,6 +110,7 @@ class Notificacoes_model extends CI_Model
             CREATE TABLE IF NOT EXISTS `notificacoes` (
               `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
               `usuario_id` INT(11) NOT NULL,
+              `tipo_usuario` VARCHAR(20) DEFAULT 'admin',
               `titulo` VARCHAR(200) NOT NULL,
               `mensagem` TEXT NOT NULL,
               `url` VARCHAR(500) NULL,
@@ -112,9 +119,29 @@ class Notificacoes_model extends CI_Model
               `lida` TINYINT(1) DEFAULT 0,
               `data_notificacao` DATETIME NOT NULL,
               PRIMARY KEY (`id`),
-              INDEX `idx_usuario_lida` (`usuario_id`, `lida`),
+              INDEX `idx_usuario_tipo_lida` (`usuario_id`, `tipo_usuario`, `lida`),
               INDEX `idx_data` (`data_notificacao`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
         ");
+
+        // Verificar se a coluna tipo_usuario existe na tabela existente
+        $campos = $this->db->field_data('notificacoes');
+        $tem_tipo_usuario = false;
+        foreach ($campos as $campo) {
+            if ($campo->name === 'tipo_usuario') {
+                $tem_tipo_usuario = true;
+                break;
+            }
+        }
+
+        // Adicionar coluna tipo_usuario se não existir
+        if (!$tem_tipo_usuario && $this->db->table_exists('notificacoes')) {
+            $this->db->query("
+                ALTER TABLE `notificacoes`
+                ADD COLUMN `tipo_usuario` VARCHAR(20) DEFAULT 'admin' AFTER `usuario_id`,
+                DROP INDEX IF EXISTS `idx_usuario_lida`,
+                ADD INDEX `idx_usuario_tipo_lida` (`usuario_id`, `tipo_usuario`, `lida`)
+            ");
+        }
     }
 }
