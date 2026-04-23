@@ -208,7 +208,7 @@ class Obras extends MY_Controller
                 $dados = [
                     'nome' => $this->input->post('nome'),
                     'cliente_id' => $this->input->post('cliente_id'),
-                    'tipo_obra' => $this->input->post('tipo_obra') ?? 'Outro',
+                    'tipo_obra' => $this->input->post('tipo_obra') ?? 'Condominio',
                     'endereco' => $this->input->post('endereco'),
                     'bairro' => $this->input->post('bairro'),
                     'cidade' => $this->input->post('cidade'),

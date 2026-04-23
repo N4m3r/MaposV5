@@ -305,11 +305,11 @@
                 <div class="form-grid">
                     <div class="form-group">
                         <label class="form-label">Gestor Responsável</label>
-                        <select name="gestor_id" class="form-select">
-                            <option value="" disabled <?php echo (!isset($result) || empty($result->gestor_id)) ? 'selected' : ''; ?>>Selecione o gestor...</option>
+                        <select name="gestor_obra_id" class="form-select">
+                            <option value="" disabled <?php echo (!isset($result) || empty($result->gestor_obra_id)) ? 'selected' : ''; ?>>Selecione o gestor...</option>
                             <?php foreach ($tecnicos as $t): ?>
                                 <option value="<?php echo $t->idUsuarios; ?>"
-                                    <?php echo (isset($result) && $result->gestor_id == $t->idUsuarios) ? 'selected' : ''; ?>
+                                    <?php echo (isset($result) && $result->gestor_obra_id == $t->idUsuarios) ? 'selected' : ''; ?>
                                     ><?php echo $t->nome; ?>
                                 </option>
                             <?php endforeach; ?>
@@ -340,7 +340,7 @@
                             <label class="form-label">Previsão de Término</label>
                             <input type="date" name="data_previsao_fim" class="form-input"
                                    value="<?php echo isset($result) ? $result->data_fim_prevista : ''; ?>"
-003e
+                                   >
                         </div>
                     </div>
 
@@ -349,10 +349,13 @@
                         <label class="form-label">Status</label>
                         <select name="status" class="form-select">
                             <option value="Prospeccao" <?php echo $result->status == 'Prospeccao' ? 'selected' : ''; ?>>Prospecção</option>
-                            <option value="Em Andamento" <?php echo $result->status == 'Em Andamento' ? 'selected' : ''; ?>>Em Andamento</option>
+                            <option value="Orcamentacao" <?php echo $result->status == 'Orcamentacao' ? 'selected' : ''; ?>>Orçamentação</option>
+                            <option value="Contratada" <?php echo $result->status == 'Contratada' ? 'selected' : ''; ?>>Contratada</option>
+                            <option value="EmExecucao" <?php echo $result->status == 'EmExecucao' ? 'selected' : ''; ?>>Em Execução</option>
                             <option value="Paralisada" <?php echo $result->status == 'Paralisada' ? 'selected' : ''; ?>>Paralisada</option>
-                            <option value="Concluida" <?php echo in_array($result->status, ['Concluida', 'Concluída']) ? 'selected' : ''; ?>>Concluída</option>
-                            <option value="Cancelada" <?php echo $result->status == 'Cancelada' ? 'selected' : ''; ?>>Cancelada</option>
+                            <option value="Finalizada" <?php echo $result->status == 'Finalizada' ? 'selected' : ''; ?>>Finalizada</option>
+                            <option value="Entregue" <?php echo $result->status == 'Entregue' ? 'selected' : ''; ?>>Entregue</option>
+                            <option value="Garantia" <?php echo $result->status == 'Garantia' ? 'selected' : ''; ?>>Garantia</option>
                         </select>
                     </div>
 

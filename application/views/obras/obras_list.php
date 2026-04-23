@@ -851,11 +851,32 @@ $(document).ready(function() {
     let autoUpdateInterval = null;
     let isUpdating = false;
     let lastUpdateTime = null;
+    const $indicator = $('#autoUpdateIndicator');
+
+    // Função para mostrar indicador de atualização
+    function mostrarIndicador() {
+        if ($indicator.length) {
+            $indicator.addClass('active');
+            $indicator.find('.update-text').text('Atualizando...');
+        }
+    }
+
+    // Função para esconder indicador de atualização
+    function esconderIndicador() {
+        if ($indicator.length) {
+            $indicator.removeClass('active');
+            if (lastUpdateTime) {
+                const hora = new Date(lastUpdateTime).toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+                $indicator.find('.update-text').text('Atualizado às ' + hora);
+            }
+        }
+    }
 
     // Função para atualizar os cards
     function atualizarCards() {
         if (isUpdating) return;
         isUpdating = true;
+        mostrarIndicador();
 
         const url = '<?php echo site_url("obras/ajax_atualizar_cards"); ?>';
         const params = new URLSearchParams(window.location.search);
@@ -865,6 +886,9 @@ $(document).ready(function() {
             url: ajaxUrl,
             method: 'GET',
             dataType: 'json',
+            beforeSend: function() {
+                mostrarIndicador();
+            },
             success: function(response) {
                 if (response.success) {
                     // Atualizar cards de estatísticas
@@ -901,17 +925,22 @@ $(document).ready(function() {
             },
             complete: function() {
                 isUpdating = false;
+                esconderIndicador();
             }
         });
     }
 
     // Iniciar atualização automática
     function iniciarAutoUpdate() {
-        // Primeira atualização após 5 segundos
-        setTimeout(atualizarCards, 5000);
+        // Mostrar indicador inicialmente
+        mostrarIndicador();
 
-        // Atualização periódica a cada 30 segundos
-        autoUpdateInterval = setInterval(atualizarCards, 30000);
+        // Primeira atualização após 3 segundos
+        setTimeout(function() {
+            atualizarCards();
+            // Atualização periódica a cada 30 segundos
+            autoUpdateInterval = setInterval(atualizarCards, 30000);
+        }, 3000);
     }
 
     // Parar atualização automática

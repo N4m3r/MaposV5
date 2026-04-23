@@ -1124,10 +1124,12 @@ class Obras_model extends CI_Model
         try {
             $this->db->select('o.*, c.nomeCliente as cliente_nome, c.documento as cliente_documento,
                 c.email as cliente_email, c.telefone as cliente_telefone,
-                u.nome as gestor_nome, u.telefone as gestor_telefone');
+                u.nome as gestor_nome, u.telefone as gestor_telefone,
+                rt.nome as responsavel_tecnico_nome');
             $this->db->from('obras o');
             $this->db->join('clientes c', 'c.idClientes = o.cliente_id', 'left');
-            $this->db->join('usuarios u', 'u.idUsuarios = o.gestor_id', 'left');
+            $this->db->join('usuarios u', 'u.idUsuarios = o.gestor_obra_id', 'left');
+            $this->db->join('usuarios rt', 'rt.idUsuarios = o.responsavel_tecnico_id', 'left');
             $this->db->where('o.id', $id);
             $this->db->where('o.ativo', 1);
             $query = $this->db->get();

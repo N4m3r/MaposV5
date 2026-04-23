@@ -861,6 +861,8 @@ body[data-theme="dark"] .config-grid-item:hover {
                             foreach ($tipos_atv as $tipo):
                                 // Converter objeto para array se necessário
                                 $tipo = (array) $tipo;
+                                // Mapear campos do banco para o formato padronizado
+                                $tipo['id'] = $tipo['idTipo'] ?? $tipo['id'] ?? null;
                             ?>
                             <div class="config-item">
                                 <div class="config-item-icon" style="background: <?php echo $tipo['cor']; ?>20; color: <?php echo $tipo['cor']; ?>;">
