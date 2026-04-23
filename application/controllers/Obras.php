@@ -1861,4 +1861,164 @@ class Obras extends MY_Controller
             echo json_encode(['success' => false, 'message' => 'Erro ao atualizar atividade']);
         }
     }
+
+    /**
+     * AJAX - Atualizar cards de obras em tempo real
+     * Retorna dados atualizados dos cards e lista de obras
+     */
+    public function ajax_atualizar_cards()
+    {
+        if (!$this->input->is_ajax_request()) {
+            show_404();
+        }
+
+        header('Content-Type: application/json');
+
+        // Filtros (mesmos da listagem principal)
+        $filtros = [];
+        $status = $this->input->get('status');
+        $cliente = $this->input->get('cliente');
+
+        if ($status) {
+            $filtros['status'] = $status;
+        }
+        if ($cliente) {
+            $filtros['cliente_id'] = $cliente;
+        }
+
+        // Buscar todas as obras
+        $obras = $this->obras_model->getAll($filtros);
+
+        // Calcular estatísticas
+        $total_obras = count($obras);
+        $obras_em_andamento = count(array_filter($obras, function($o) { return $o->status == 'em-andamento'; }));
+        $obras_contratadas = count(array_filter($obras, function($o) { return $o->status == 'contratada'; }));
+        $obras_concluidas = count(array_filter($obras, function($o) { return $o->status == 'concluida'; }));
+
+        // Preparar HTML dos cards de estatísticas
+        $stats_html = '
+        <div class="obras-stat-card" data-stat="total">
+            <div class="obras-stat-icon blue"><i class="icon-building"></i></div>
+            <div class="obras-stat-info">
+                <div class="obras-stat-value">' . $total_obras . '</div>
+                <div class="obras-stat-label">Total de Obras</div>
+            </div>
+        </div>
+        <div class="obras-stat-card" data-stat="andamento">
+            <div class="obras-stat-icon cyan"><i class="icon-road"></i></div>
+            <div class="obras-stat-info">
+                <div class="obras-stat-value">' . $obras_em_andamento . '</div>
+                <div class="obras-stat-label">Em Andamento</div>
+            </div>
+        </div>
+        <div class="obras-stat-card" data-stat="contratadas">
+            <div class="obras-stat-icon orange"><i class="icon-file-alt"></i></div>
+            <div class="obras-stat-info">
+                <div class="obras-stat-value">' . $obras_contratadas . '</div>
+                <div class="obras-stat-label">Contratadas</div>
+            </div>
+        </div>
+        <div class="obras-stat-card" data-stat="concluidas">
+            <div class="obras-stat-icon green"><i class="icon-check"></i></div>
+            <div class="obras-stat-info">
+                <div class="obras-stat-value">' . $obras_concluidas . '</div>
+                <div class="obras-stat-label">Concluídas</div>
+            </div>
+        </div>';
+
+        // Preparar HTML dos cards de obras
+        $cards_html = '';
+        foreach ($obras as $obra) {
+            // Determinar classe do header baseada no status
+            $header_class = '';
+            $status_label = '';
+            $status_class = '';
+            switch ($obra->status) {
+                case 'em-andamento':
+                    $header_class = 'andamento';
+                    $status_label = 'Em Andamento';
+                    $status_class = 'info';
+                    break;
+                case 'concluida':
+                    $header_class = 'concluida';
+                    $status_label = 'Concluída';
+                    $status_class = 'success';
+                    break;
+                case 'contratada':
+                    $header_class = 'contratada';
+                    $status_label = 'Contratada';
+                    $status_class = 'warning';
+                    break;
+                case 'cancelada':
+                    $header_class = 'cancelada';
+                    $status_label = 'Cancelada';
+                    $status_class = 'danger';
+                    break;
+                default:
+                    $header_class = 'aberta';
+                    $status_label = 'Aberta';
+                    $status_class = 'secondary';
+            }
+
+            $cards_html .= '
+            <div class="obra-item-card" data-obra-id="' . $obra->id . '" data-status="' . $obra->status . '">
+                <div class="obra-card-header ' . $header_class . '">
+                    <div class="obra-card-header-content">
+                        <div class="obra-card-title-row">
+                            <h3 class="obra-card-title">' . htmlspecialchars($obra->obra_nome ?? $obra->nome ?? 'Obra #' . $obra->id) . '</h3>
+                            <span class="obra-card-status ' . $status_class . '">' . $status_label . '</span>
+                        </div>
+                        <div class="obra-card-cliente">
+                            <i class="icon-user"></i> ' . htmlspecialchars($obra->cliente_nome ?? $obra->cliente ?? 'Cliente não definido') . '
+                        </div>
+                    </div>
+                </div>
+                <div class="obra-card-body">
+                    <div class="obra-card-info-grid">
+                        <div class="obra-info-item">
+                            <div class="obra-info-label"><i class="icon-calendar"></i> Início</div>
+                            <div class="obra-info-value">' . ($obra->data_inicio ? date('d/m/Y', strtotime($obra->data_inicio)) : 'Não definida') . '</div>
+                        </div>
+                        <div class="obra-info-item">
+                            <div class="obra-info-label"><i class="icon-calendar-alt"></i> Previsão</div>
+                            <div class="obra-info-value">' . ($obra->data_previsao_fim ? date('d/m/Y', strtotime($obra->data_previsao_fim)) : 'Não definida') . '</div>
+                        </div>
+                        <div class="obra-info-item">
+                            <div class="obra-info-label"><i class="icon-tasks"></i> Atividades</div>
+                            <div class="obra-info-value">' . ($obra->total_atividades ?? 0) . ' total</div>
+                        </div>
+                        <div class="obra-info-item">
+                            <div class="obra-info-label"><i class="icon-percent"></i> Progresso</div>
+                            <div class="obra-info-value">' . ($obra->percentual_concluido ?? 0) . '%</div>
+                        </div>
+                    </div>
+                    <div class="obra-card-progress">
+                        <div class="obra-progress-bar">
+                            <div class="obra-progress-fill" style="width: ' . ($obra->percentual_concluido ?? 0) . '%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="obra-card-footer">
+                    <a href="' . site_url('obras/visualizar/' . $obra->id) . '" class="obra-btn-acao">
+                        <i class="icon-eye"></i> Ver Detalhes
+                    </a>
+                </div>
+            </div>';
+        }
+
+        // Retornar JSON
+        echo json_encode([
+            'success' => true,
+            'stats' => [
+                'total' => $total_obras,
+                'em_andamento' => $obras_em_andamento,
+                'contratadas' => $obras_contratadas,
+                'concluidas' => $obras_concluidas
+            ],
+            'stats_html' => $stats_html,
+            'cards_html' => $cards_html,
+            'total_cards' => count($obras),
+            'timestamp' => date('Y-m-d H:i:s')
+        ]);
+    }
 }

@@ -904,7 +904,7 @@ $emitente_logo = $emitente->url_logo ?? '';
                     <div class="relatorio-progress-value"><?php echo $percentual_concluido; ?><small?>%</small></div>
                 </div>
                 <div class="relatorio-progress-bar">
-                    <div class="relatorio-progress-fill" style="width: <?php echo $percentual_concluido; ?>%>"</div>
+                    <div class="relatorio-progress-fill" style="width: <?php echo $percentual_concluido; ?>%>"></div>
                 </div>
             </div>
         </div>
