@@ -190,7 +190,7 @@ $numero_relatorio = 'REL-' . date('Y') . '-' . str_pad($obra->id, 4, '0', STR_PA
                 </div>
                 <div class="rel-progress-linear">
                     <div class="rel-progress-bar">
-                        <div class="rel-progress-fill" style="width: <?php echo $percentual_concluido; ?%"></div>
+                        <div class="rel-progress-fill" style="width: <?php echo $percentual_concluido; ?>%"></div>
                     </div>
                     <div class="rel-progress-labels">
                         <span>Início</span>
@@ -217,7 +217,7 @@ $numero_relatorio = 'REL-' . date('Y') . '-' . str_pad($obra->id, 4, '0', STR_PA
                     <span class="rel-crono-value"><?php echo $dias_decorridos; ?> dias</span>
                 </div>
                 <div class="rel-crono-bar">
-                    <div class="rel-crono-fill" style="width: <?php echo $percentual_tempo; ?%"></div>
+                    <div class="rel-crono-fill" style="width: <?php echo $percentual_tempo; ?>%"></div>
                 </div>
                 <div class="rel-crono-variacao <?php echo $variacao >= 0 ? 'positiva' : 'negativa'; ?>">
                     <i class="icon-<?php echo $variacao >= 0 ? 'arrow-up' : 'arrow-down'; ?>"></i>
@@ -345,7 +345,7 @@ $numero_relatorio = 'REL-' . date('Y') . '-' . str_pad($obra->id, 4, '0', STR_PA
                     <td class="col-progresso">
                         <div class="rel-table-progress">
                             <div class="rel-table-bar">
-                                <div class="rel-table-fill" style="width: <?php echo $etapa_pct; ?%"></div>
+                                <div class="rel-table-fill" style="width: <?php echo $etapa_pct; ?>%"></div>
                             </div>
                             <span><?php echo $etapa_pct; ?>%</span>
                         </div>
@@ -361,7 +361,7 @@ $numero_relatorio = 'REL-' . date('Y') . '-' . str_pad($obra->id, 4, '0', STR_PA
                     <td class="col-progresso">
                         <div class="rel-table-progress">
                             <div class="rel-table-bar">
-                                <div class="rel-table-fill destaque" style="width: <?php echo $percentual_concluido; ?%"></div>
+                                <div class="rel-table-fill destaque" style="width: <?php echo $percentual_concluido; ?>%"></div>
                             </div>
                             <span><?php echo $percentual_concluido; ?>%</span>
                         </div>

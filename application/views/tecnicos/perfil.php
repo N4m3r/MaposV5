@@ -1,5 +1,10 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
 
+<!-- Meta tags adicionais para mobile -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="format-detection" content="telephone=no">
+
 <!-- Perfil do Técnico - Design Moderno -->
 <style>
 /* Container Principal */
@@ -599,6 +604,111 @@
     .info-grid {
         grid-template-columns: 1fr;
     }
+
+    /* Modal Edição Mobile */
+    .modal-edicao {
+        width: 100% !important;
+        left: 0 !important;
+        right: 0 !important;
+        margin: 0 !important;
+        top: 0 !important;
+        bottom: 0 !important;
+        border-radius: 0 !important;
+        position: fixed !important;
+    }
+
+    .modal-edicao .modal-body {
+        padding: 15px !important;
+        max-height: calc(100vh - 120px);
+        overflow-y: auto;
+    }
+
+    .modal-edicao .modal-header {
+        padding: 15px 20px;
+    }
+
+    .modal-edicao .modal-header h3 {
+        font-size: 16px;
+    }
+
+    .modal-edicao .modal-footer {
+        padding: 15px 20px;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: white;
+        border-top: 1px solid #e8e8e8;
+    }
+
+    .abas-navegacao {
+        flex-wrap: wrap;
+        gap: 5px;
+        margin-bottom: 15px;
+    }
+
+    .aba-btn {
+        padding: 8px 12px;
+        font-size: 13px;
+        flex: 1;
+        min-width: 120px;
+    }
+
+    .aba-btn i {
+        display: none;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-label {
+        font-size: 12px;
+    }
+
+    .form-input {
+        padding: 10px 12px;
+        font-size: 16px;
+    }
+
+    .btn-salvar {
+        width: 100%;
+        padding: 14px 20px;
+        font-size: 16px;
+    }
+
+    .msg-sucesso,
+    .msg-erro {
+        padding: 10px 15px;
+        font-size: 13px;
+    }
+
+    .btn-editar {
+        padding: 8px 15px;
+        font-size: 13px;
+    }
+
+    .btn-editar i {
+        display: none;
+    }
+
+    /* Botão editar mais visível no mobile */
+    .btn-editar {
+        position: relative !important;
+        top: auto !important;
+        right: auto !important;
+        display: block !important;
+        width: 100% !important;
+        margin-top: 15px !important;
+        background: rgba(255,255,255,0.25) !important;
+        border: 2px solid rgba(255,255,255,0.4) !important;
+        text-align: center;
+    }
+
+    .btn-editar:active {
+        background: rgba(255,255,255,0.35) !important;
+        transform: scale(0.98);
+    }
 }
 
 @media (max-width: 480px) {
@@ -610,6 +720,15 @@
     .section-header {
         flex-direction: column;
         text-align: center;
+    }
+
+    .modal-edicao .modal-header h3 {
+        font-size: 14px;
+    }
+
+    .aba-btn {
+        font-size: 12px;
+        padding: 6px 10px;
     }
 }
 </style>
@@ -1034,13 +1153,47 @@ function fecharCamera() {
 
 function abrirModalEdicao() {
     jQuery('#edicaoModal').modal('show');
+    // Adicionar hash na URL para permitir fechar com botão voltar no mobile
+    if (window.innerWidth <= 768) {
+        history.pushState({modal: 'edicao'}, '', '#editar-perfil');
+    }
 }
 
 function fecharModalEdicao() {
     jQuery('#edicaoModal').modal('hide');
     document.getElementById('msg-sucesso').style.display = 'none';
     document.getElementById('msg-erro').style.display = 'none';
+    // Remover hash da URL se existir
+    if (window.location.hash === '#editar-perfil') {
+        history.back();
+    }
 }
+
+// Capturar botão voltar do navegador no mobile
+window.addEventListener('popstate', function(e) {
+    if (jQuery('#edicaoModal').hasClass('in')) {
+        fecharModalEdicao();
+    }
+});
+
+// Máscara para telefone no mobile
+(function() {
+    var telefoneInput = document.getElementById('edit-telefone');
+    if (telefoneInput) {
+        telefoneInput.addEventListener('input', function(e) {
+            var valor = e.target.value.replace(/\D/g, '');
+            if (valor.length <= 11) {
+                if (valor.length > 2) {
+                    valor = '(' + valor.substring(0, 2) + ') ' + valor.substring(2);
+                }
+                if (valor.length > 9) {
+                    valor = valor.substring(0, 9) + '-' + valor.substring(9, 13);
+                }
+                e.target.value = valor;
+            }
+        });
+    }
+})();
 
 function trocarAba(aba) {
     // Esconder todas as abas
@@ -1197,13 +1350,20 @@ function mostrarErro(msg) {
 
                 <div class="form-group">
                     <label class="form-label">Telefone</label>
-                    <input type="tel" class="form-input" id="edit-telefone" value="<?php echo htmlspecialchars($tecnico->telefone ?? ''); ?>" placeholder="(00) 00000-0000">
+                    <input type="tel" class="form-input" id="edit-telefone" value="<?php echo htmlspecialchars($tecnico->telefone ?? ''); ?>" placeholder="(00) 00000-0000" inputmode="tel" autocomplete="tel">
                 </div>
             </div>
 
             <div class="form-group">
                 <label class="form-label">Data de Nascimento</label>
-                <input type="date" class="form-input" id="edit-nascimento" value="<?php echo htmlspecialchars($tecnico->data_nascimento ?? ''); ?>">
+                <?php
+                // Formatar data para o formato do input date (YYYY-MM-DD)
+                $data_nasc = '';
+                if (!empty($tecnico->data_nascimento)) {
+                    $data_nasc = date('Y-m-d', strtotime($tecnico->data_nascimento));
+                }
+                ?>
+                <input type="date" class="form-input" id="edit-nascimento" value="<?php echo $data_nasc; ?>">
             </div>
 
             <div class="form-group">
