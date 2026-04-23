@@ -1619,5 +1619,3 @@ document.addEventListener('keydown', function(e) {
     }
 });
 </script>
-</div>
-</div>

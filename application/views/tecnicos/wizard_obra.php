@@ -601,9 +601,15 @@ if ($etapa_id && !empty($etapas)) {
             </div>
 
             <div class="acoes-footer">
+                <?php if ($atividade_em_andamento->status === 'pausada'): ?>
+                <button class="btn-acao btn-success-tec" onclick="retomarAtividade(<?= $atividade_em_andamento->idAtividade ?>)">
+                    <i class='bx bx-play'></i> Continuar
+                </button>
+                <?php else: ?>
                 <button class="btn-acao btn-warning-tec" onclick="pausarAtividade(<?= $atividade_em_andamento->idAtividade ?>)">
                     <i class='bx bx-pause'></i> Pausar
                 </button>
+                <?php endif; ?>
                 <button class="btn-acao btn-success-tec" onclick="abrirModalNovaAtividade()">
                     <i class='bx bx-plus'></i> Nova Atividade
                 </button>

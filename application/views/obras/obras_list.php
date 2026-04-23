@@ -999,40 +999,69 @@ $obras = isset($obras) ? $obras : (isset($results) ? $results : []);
         <?php
         $status_class = '';
         $status_label = '';
-        switch ($obra->status) {
+        $status_normalized = ''; // Valor normalizado para o filtro
+
+        // Converter status para lowercase para comparação case-insensitive
+        $status_lower = strtolower(trim($obra->status ?? ''));
+
+        switch ($status_lower) {
             case 'em-andamento':
+            case 'em-andamento':
+            case 'em_execucao':
             case 'em execucao':
+            case 'emexecucao':
+            case 'execucao':
                 $status_class = 'andamento';
                 $status_label = 'Em Andamento';
+                $status_normalized = 'em-andamento';
                 break;
             case 'concluida':
+            case 'concluída':
+            case 'finalizada':
+            case 'entregue':
+            case 'concluido':
                 $status_class = 'concluida';
                 $status_label = 'Concluída';
+                $status_normalized = 'concluida';
                 break;
             case 'paralisada':
+            case 'pausada':
+            case 'suspensa':
                 $status_class = 'paralisada';
                 $status_label = 'Paralisada';
+                $status_normalized = 'paralisada';
                 break;
             case 'prospeccao':
-            case 'Prospeccao':
+            case 'prospecção':
+            case 'prospectacao':
+            case 'novo':
+            case 'nova':
                 $status_class = 'prospeccao';
                 $status_label = 'Prospecção';
+                $status_normalized = 'prospeccao';
                 break;
             case 'contratada':
+            case 'aprovada':
+            case 'iniciada':
                 $status_class = 'contratada';
                 $status_label = 'Contratada';
+                $status_normalized = 'contratada';
                 break;
             case 'cancelada':
+            case 'cancelado':
+            case 'encerrada':
                 $status_class = 'cancelada';
                 $status_label = 'Cancelada';
+                $status_normalized = 'cancelada';
                 break;
             default:
                 $status_class = '';
                 $status_label = ucfirst($obra->status);
+                $status_normalized = $obra->status;
         }
         $progresso = $obra->percentual_concluido ?? 0;
         ?>
-        <div class="obra-item-card" data-nome="<?php echo strtolower($obra->nome); ?>" data-status="<?php echo $obra->status; ?>">
+        <div class="obra-item-card" data-nome="<?php echo strtolower($obra->nome); ?>" data-status="<?php echo $status_normalized; ?>">
             <div class="obra-card-header <?php echo $status_class; ?>">
                 <span class="obra-card-status-badge"><?php echo $status_label; ?></span>
                 <h3 class="obra-card-title"><?php echo htmlspecialchars($obra->nome); ?></h3>

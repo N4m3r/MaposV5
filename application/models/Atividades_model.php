@@ -249,19 +249,20 @@ class Atividades_model extends CI_Model
         $this->db->join('os', 'os.idOs = os_atividades.os_id', 'left');
         $this->db->join('clientes', 'clientes.idClientes = os.clientes_id', 'left');
         $this->db->where('os_atividades.tecnico_id', $tecnico_id);
-        $this->db->where('os_atividades.status', 'em_andamento');
+        $this->db->where_in('os_atividades.status', ['em_andamento', 'pausada']);
+        $this->db->order_by('os_atividades.idAtividade', 'DESC');
         $this->db->limit(1);
 
         return $this->db->get()->row();
     }
 
     /**
-     * Verifica se técnico tem atividade em andamento
+     * Verifica se técnico tem atividade em andamento (incluindo pausadas)
      */
     public function hasAtividadeEmAndamento($tecnico_id)
     {
         $this->db->where('tecnico_id', $tecnico_id);
-        $this->db->where('status', 'em_andamento');
+        $this->db->where_in('status', ['em_andamento', 'pausada']);
         return $this->db->count_all_results($this->table) > 0;
     }
 
@@ -805,7 +806,8 @@ class Atividades_model extends CI_Model
         $this->db->join('obra_etapas', 'obra_etapas.id = os_atividades.etapa_id', 'left');
         $this->db->where('os_atividades.tecnico_id', $tecnico_id);
         $this->db->where('os_atividades.obra_id', $obra_id);
-        $this->db->where('os_atividades.status', 'em_andamento');
+        $this->db->where_in('os_atividades.status', ['em_andamento', 'pausada']);
+        $this->db->order_by('os_atividades.idAtividade', 'DESC');
         $this->db->limit(1);
 
         return $this->db->get()->row();

@@ -2022,11 +2022,20 @@ class Obras extends MY_Controller
         // Buscar todas as obras
         $obras = $this->obras_model->getAll($filtros);
 
-        // Calcular estatísticas
+        // Calcular estatísticas com normalização de status
         $total_obras = count($obras);
-        $obras_em_andamento = count(array_filter($obras, function($o) { return $o->status == 'em-andamento'; }));
-        $obras_contratadas = count(array_filter($obras, function($o) { return $o->status == 'contratada'; }));
-        $obras_concluidas = count(array_filter($obras, function($o) { return $o->status == 'concluida'; }));
+        $obras_em_andamento = count(array_filter($obras, function($o) {
+            $status_lower = strtolower(trim($o->status ?? ''));
+            return in_array($status_lower, ['em-andamento', 'em execucao', 'emexecucao', 'execucao']);
+        }));
+        $obras_contratadas = count(array_filter($obras, function($o) {
+            $status_lower = strtolower(trim($o->status ?? ''));
+            return in_array($status_lower, ['contratada', 'aprovada', 'iniciada']);
+        }));
+        $obras_concluidas = count(array_filter($obras, function($o) {
+            $status_lower = strtolower(trim($o->status ?? ''));
+            return in_array($status_lower, ['concluida', 'concluída', 'finalizada', 'entregue', 'concluido']);
+        }));
 
         // Preparar HTML dos cards de estatísticas
         $stats_html = '
@@ -2062,51 +2071,79 @@ class Obras extends MY_Controller
         // Preparar HTML dos cards de obras
         $cards_html = '';
         foreach ($obras as $obra) {
-            // Determinar classe do header baseada no status
+            // Determinar classe do header baseada no status (com normalização)
             $header_class = '';
             $status_label = '';
             $status_class = '';
-            switch ($obra->status) {
+            $status_normalized = '';
+
+            $status_lower = strtolower(trim($obra->status ?? ''));
+
+            switch ($status_lower) {
                 case 'em-andamento':
+                case 'em-andamento':
+                case 'em_execucao':
                 case 'em execucao':
+                case 'emexecucao':
+                case 'execucao':
                     $header_class = 'andamento';
                     $status_label = 'Em Andamento';
                     $status_class = 'info';
+                    $status_normalized = 'em-andamento';
                     break;
                 case 'concluida':
+                case 'concluída':
+                case 'finalizada':
+                case 'entregue':
+                case 'concluido':
                     $header_class = 'concluida';
                     $status_label = 'Concluída';
                     $status_class = 'success';
+                    $status_normalized = 'concluida';
                     break;
                 case 'contratada':
+                case 'aprovada':
+                case 'iniciada':
                     $header_class = 'contratada';
                     $status_label = 'Contratada';
                     $status_class = 'warning';
+                    $status_normalized = 'contratada';
                     break;
                 case 'paralisada':
+                case 'pausada':
+                case 'suspensa':
                     $header_class = 'paralisada';
                     $status_label = 'Paralisada';
                     $status_class = 'danger';
+                    $status_normalized = 'paralisada';
                     break;
                 case 'cancelada':
+                case 'cancelado':
+                case 'encerrada':
                     $header_class = 'cancelada';
                     $status_label = 'Cancelada';
                     $status_class = 'danger';
+                    $status_normalized = 'cancelada';
                     break;
                 case 'prospeccao':
-                case 'Prospeccao':
+                case 'prospecção':
+                case 'prospectacao':
+                case 'novo':
+                case 'nova':
                     $header_class = 'prospeccao';
                     $status_label = 'Prospecção';
                     $status_class = 'secondary';
+                    $status_normalized = 'prospeccao';
                     break;
                 default:
                     $header_class = 'aberta';
-                    $status_label = ucfirst($obra->status);
+                    $status_label = ucfirst($obra->status ?? 'Aberta');
                     $status_class = 'secondary';
+                    $status_normalized = $obra->status;
             }
 
             $cards_html .= '
-            <div class="obra-item-card" data-obra-id="' . $obra->id . '" data-status="' . $obra->status . '">
+            <div class="obra-item-card" data-obra-id="' . $obra->id . '" data-status="' . $status_normalized . '">
                 <div class="obra-card-header ' . $header_class . '">
                     <div class="obra-card-header-content">
                         <div class="obra-card-title-row">

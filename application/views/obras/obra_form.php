@@ -345,18 +345,38 @@
                     </div>
 
                     <?php if (isset($result)): ?>
+                    <?php
+                    // Normalizar status atual para seleção correta
+                    $status_atual_lower = strtolower(trim($result->status ?? ''));
+                    $status_selecionado = 'prospeccao'; // default
+
+                    if (in_array($status_atual_lower, ['em-andamento', 'em-andamento', 'em_execucao', 'em execucao', 'emexecucao', 'execucao', 'emexecucao'])) {
+                        $status_selecionado = 'em-andamento';
+                    } elseif (in_array($status_atual_lower, ['contratada', 'aprovada', 'iniciada'])) {
+                        $status_selecionado = 'contratada';
+                    } elseif (in_array($status_atual_lower, ['concluida', 'concluída', 'finalizada', 'entregue', 'concluido'])) {
+                        $status_selecionado = 'concluida';
+                    } elseif (in_array($status_atual_lower, ['paralisada', 'pausada', 'suspensa'])) {
+                        $status_selecionado = 'paralisada';
+                    } elseif (in_array($status_atual_lower, ['cancelada', 'cancelado', 'encerrada'])) {
+                        $status_selecionado = 'cancelada';
+                    } elseif (in_array($status_atual_lower, ['prospeccao', 'prospecção', 'prospectacao', 'novo', 'nova'])) {
+                        $status_selecionado = 'prospeccao';
+                    }
+                    ?>
                     <div class="form-group">
                         <label class="form-label">Status</label>
                         <select name="status" class="form-select" id="statusSelect">
-                            <option value="prospeccao" <?php echo ($result->status == 'prospeccao' || $result->status == 'Prospeccao') ? 'selected' : ''; ?>>Prospecção</option>
-                            <option value="contratada" <?php echo ($result->status == 'contratada' || $result->status == 'Contratada') ? 'selected' : ''; ?>>Contratada</option>
-                            <option value="em-andamento" <?php echo ($result->status == 'em-andamento' || $result->status == 'EmExecucao' || $result->status == 'em execucao') ? 'selected' : ''; ?>>Em Andamento</option>
-                            <option value="paralisada" <?php echo ($result->status == 'paralisada' || $result->status == 'Paralisada') ? 'selected' : ''; ?>>Paralisada</option>
-                            <option value="concluida" <?php echo ($result->status == 'concluida' || $result->status == 'Concluida' || $result->status == 'Finalizada' || $result->status == 'Entregue') ? 'selected' : ''; ?>>Concluída</option>
-                            <option value="cancelada" <?php echo ($result->status == 'cancelada' || $result->status == 'Cancelada') ? 'selected' : ''; ?>>Cancelada</option>
+                            <option value="prospeccao" <?php echo ($status_selecionado == 'prospeccao') ? 'selected' : ''; ?>>Prospecção</option>
+                            <option value="contratada" <?php echo ($status_selecionado == 'contratada') ? 'selected' : ''; ?>>Contratada</option>
+                            <option value="em-andamento" <?php echo ($status_selecionado == 'em-andamento') ? 'selected' : ''; ?>>Em Andamento</option>
+                            <option value="paralisada" <?php echo ($status_selecionado == 'paralisada') ? 'selected' : ''; ?>>Paralisada</option>
+                            <option value="concluida" <?php echo ($status_selecionado == 'concluida') ? 'selected' : ''; ?>>Concluída</option>
+                            <option value="cancelada" <?php echo ($status_selecionado == 'cancelada') ? 'selected' : ''; ?>>Cancelada</option>
                         </select>
                         <small style="display: block; margin-top: 5px; color: #888; font-size: 12px;">
-                            <i class="icon-info-sign"></i> Status atual: <strong><?php echo ucfirst($result->status); ?></strong>
+                            <i class="icon-info-sign"></i> Status atual no banco: <strong><?php echo htmlspecialchars($result->status); ?></strong>
+                            <span style="color: #667eea;">(mapeado para: <?php echo $status_selecionado; ?>)</span>
                         </small>
                     </div>
 
