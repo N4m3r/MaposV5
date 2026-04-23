@@ -952,7 +952,7 @@ $emitente_logo = $emitente->url_logo ?? '';
                         <span style="font-weight: 600;"><?php echo $dias_decorridos; ?> dias</span>
                     </div>
                     <div class="relatorio-progress-bar">
-                        <div class="relatorio-progress-fill" style="width: <?php echo $percentual_tempo; ??>%; background: #3498db;"></div>
+                        <div class="relatorio-progress-fill" style="width: <?php echo $percentual_tempo; ?>%; background: #3498db;"></div>
                     </div>
                 </div>
                 <div style="display: flex; justify-content: space-between; font-size: 12px; color: #6c757d;">
@@ -1138,7 +1138,7 @@ $emitente_logo = $emitente->url_logo ?? '';
                                     <div class="relatorio-table-bar">
                                         <div class="relatorio-table-fill" style="width: <?php echo $etapa_pct; ?>%>"></div>
                                     </div>
-                                    <span style="font-size: 12px; font-weight: 600;"><?php echo $etapa_pct; ??>%</span>
+                                    <span style="font-size: 12px; font-weight: 600;"><?php echo $etapa_pct; ?>%</span>
                                 </div>
                             </td>
                         </tr>
