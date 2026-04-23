@@ -638,7 +638,7 @@ class Obras extends MY_Controller
 
         $this->data['tecnicos'] = $this->usuarios_model->getAll();
         $this->data['etapas'] = $this->obras_model->getEtapas($obra_id);
-        $this->data['view'] = 'obras/atividades_list';
+        $this->data['view'] = 'obras/atividades_novo';
 
         return $this->layout();
     }
