@@ -71,7 +71,8 @@
       "Bash(xxd application/views/obras_tecnico/obra_dashboard.php)",
       "Bash(git commit *)",
       "Bash(git checkout *)",
-      "Bash(git restore *)"
+      "Bash(git restore *)",
+      "PowerShell(Set-Content *)"
     ]
   }
 }

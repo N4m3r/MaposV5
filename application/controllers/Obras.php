@@ -1508,4 +1508,86 @@ class Obras extends MY_Controller
             echo json_encode(['success' => false, 'message' => 'Cliente não encontrado']);
         }
     }
+
+    /**
+     * API: Buscar detalhes da atividade (para modal)
+     */
+    public function api_getAtividade($atividade_id)
+    {
+        if (!$this->input->is_ajax_request()) {
+            show_404();
+        }
+
+        $atividade = $this->obra_atividades_model->getById($atividade_id);
+
+        if (!$atividade) {
+            echo json_encode(['success' => false, 'message' => 'Atividade não encontrada']);
+            return;
+        }
+
+        // Buscar dados do sistema novo (execução real) se existir
+        $execucao_real = null;
+        if (file_exists(APPPATH . 'models/Atividades_model.php')) {
+            $this->load->model('Atividades_model', 'atividades_execucao');
+            $this->db->where('obra_atividade_id', $atividade_id);
+            $this->db->order_by('idAtividade', 'DESC');
+            $query = $this->db->get('os_atividades');
+            if ($query && $query->num_rows() > 0) {
+                $execucao = $query->row();
+                $execucao_real = $this->atividades_execucao->getByIdCompleto($execucao->idAtividade);
+            }
+        }
+
+        echo json_encode([
+            'success' => true,
+            'atividade' => $atividade,
+            'execucao_real' => $execucao_real
+        ]);
+    }
+
+    /**
+     * API: Salvar edição da atividade
+     */
+    public function api_salvarAtividade()
+    {
+        if (!$this->input->is_ajax_request()) {
+            show_404();
+        }
+
+        $atividade_id = $this->input->post('id');
+        if (!$atividade_id) {
+            echo json_encode(['success' => false, 'message' => 'ID da atividade não informado']);
+            return;
+        }
+
+        // Verificar permissão
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')) {
+            echo json_encode(['success' => false, 'message' => 'Sem permissão para editar']);
+            return;
+        }
+
+        $dados = [
+            'titulo' => $this->input->post('titulo'),
+            'descricao' => $this->input->post('descricao'),
+            'tipo' => $this->input->post('tipo'),
+            'status' => $this->input->post('status'),
+            'data_atividade' => $this->input->post('data_atividade'),
+            'hora_inicio' => $this->input->post('hora_inicio') ?: null,
+            'hora_fim' => $this->input->post('hora_fim') ?: null,
+            'percentual_concluido' => $this->input->post('percentual_concluido') ?: 0,
+            'tecnico_id' => $this->input->post('tecnico_id') ?: null,
+            'etapa_id' => $this->input->post('etapa_id') ?: null,
+        ];
+
+        // Remover campos nulos
+        $dados = array_filter($dados, function($v) { return $v !== null; });
+
+        $result = $this->obra_atividades_model->update($atividade_id, $dados);
+
+        if ($result) {
+            echo json_encode(['success' => true, 'message' => 'Atividade atualizada com sucesso']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Erro ao atualizar atividade']);
+        }
+    }
 }

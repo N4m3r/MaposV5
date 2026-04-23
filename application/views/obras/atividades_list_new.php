@@ -185,8 +185,8 @@ function verDetalhesAtividade(id, sistema) {
         // Abrir em nova aba a visualização da atividade no sistema novo
         window.open('<?php echo site_url('atividades/detalhes/'); ?>' + id, '_blank');
     } else {
-        // Para sistema antigo, mostrar alerta com informações básicas
-        alert('Atividade do sistema antigo (ID: ' + id + ')');
+        // Para sistema antigo, redirecionar para a página de visualização
+        window.location.href = '<?php echo site_url('obras/visualizarAtividade/'); ?>' + id;
     }
 }
 
