@@ -1349,3 +1349,131 @@ $(document).ready(function() {
     });
 });
 </script>
+
+<!-- Wizard Modal -->
+<div id="wizardModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="wizardModalLabel" aria-hidden="true" style="width: 800px; max-width: 90%; left: 50%; margin-left: -400px;">
+    <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 4px 4px 0 0;">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true" style="color: white; opacity: 0.8;">&times;</button>
+        <h3 id="wizardModalLabel"><i class="icon-magic"></i> Nova Etapa + Atividades</h3>
+    </div>
+    <form id="wizardForm" action="<?php echo site_url('obras/salvarWizard/' . $obra->id); ?>" method="post">
+        <div class="modal-body" style="max-height: 500px; overflow-y: auto;">
+            <div class="row-fluid">
+                <div class="span12">
+                    <h4><i class="icon-tasks"></i> Informações da Etapa</h4>
+                    <hr style="margin: 10px 0;">
+
+                    <div class="row-fluid">
+                        <div class="span2">
+                            <label for="etapa_numero">Número <span class="required">*</span></label>
+                            <input type="number" name="etapa_numero" id="etapa_numero" class="span12" value="<?php echo (count($etapas ?? []) + 1); ?>" min="1" required>
+                        </div>
+                        <div class="span10">
+                            <label for="etapa_nome">Nome da Etapa <span class="required">*</span></label>
+                            <input type="text" name="etapa_nome" id="etapa_nome" class="span12" placeholder="Ex: Fundação, Estrutura, Acabamento..." required>
+                        </div>
+                    </div>
+
+                    <div class="row-fluid" style="margin-top: 10px;">
+                        <div class="span12">
+                            <label for="etapa_descricao">Descrição</label>
+                            <textarea name="etapa_descricao" id="etapa_descricao" class="span12" rows="2" placeholder="Descreva o que será feito nesta etapa..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="row-fluid" style="margin-top: 10px;">
+                        <div class="span6">
+                            <label for="etapa_data_inicio">Data de Início Prevista</label>
+                            <input type="date" name="etapa_data_inicio" id="etapa_data_inicio" class="span12">
+                        </div>
+                        <div class="span6">
+                            <label for="etapa_data_fim">Data de Término Prevista</label>
+                            <input type="date" name="etapa_data_fim" id="etapa_data_fim" class="span12">
+                        </div>
+                    </div>
+
+                    <h4 style="margin-top: 25px;"><i class="icon-check"></i> Atividades da Etapa</h4>
+                    <hr style="margin: 10px 0;">
+
+                    <div id="atividadesContainer">
+                        <!-- Atividades serão adicionadas aqui -->
+                    </div>
+
+                    <button type="button" class="btn btn-block" onclick="adicionarAtividade()" style="margin-top: 10px; border: 2px dashed #ddd; background: #f9f9f9; color: #666;">
+                        <i class="icon-plus"></i> Adicionar Atividade
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn" data-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary"><i class="icon-save"></i> Salvar Etapa e Atividades</button>
+        </div>
+    </form>
+</div>
+
+<script>
+// Variáveis do wizard
+let atividadeCount = 0;
+
+// Abrir modal do wizard
+function abrirWizard() {
+    $('#wizardModal').modal('show');
+    // Limpar e adicionar primeira atividade
+    document.getElementById('atividadesContainer').innerHTML = '';
+    adicionarAtividade();
+}
+
+// Abrir modal do wizard (compatibilidade)
+window.abrirWizardModal = abrirWizard;
+
+// Adicionar campo de atividade
+function adicionarAtividade() {
+    const container = document.getElementById('atividadesContainer');
+    const index = atividadeCount++;
+
+    const html = `
+        <div class="row-fluid atividade-item" style="margin-bottom: 10px;" id="atividade-${index}">
+            <div class="span8">
+                <input type="text" name="atividades[${index}][titulo]" class="span12" placeholder="Título da atividade" required>
+            </div>
+            <div class="span3">
+                <select name="atividades[${index}][tipo]" class="span12">
+                    <option value="trabalho">Trabalho</option>
+                    <option value="visita">Visita</option>
+                    <option value="manutencao">Manutenção</option>
+                    <option value="impedimento">Impedimento</option>
+                    <option value="outro">Outro</option>
+                </select>
+            </div>
+            <div class="span1">
+                <button type="button" class="btn btn-danger btn-block" onclick="removerAtividade(${index})" title="Remover">
+                    <i class="icon-trash"></i>
+                </button>
+            </div>
+        </div>
+    `;
+
+    container.insertAdjacentHTML('beforeend', html);
+}
+
+// Remover campo de atividade
+function removerAtividade(index) {
+    const item = document.getElementById('atividade-' + index);
+    if (item) {
+        item.remove();
+    }
+}
+
+// Validar formulário antes de enviar
+document.getElementById('wizardForm').addEventListener('submit', function(e) {
+    const numero = document.getElementById('etapa_numero').value;
+    const nome = document.getElementById('etapa_nome').value;
+
+    if (!numero || !nome) {
+        e.preventDefault();
+        alert('Preencha o número e o nome da etapa.');
+        return false;
+    }
+});
+</script>

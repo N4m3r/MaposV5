@@ -247,18 +247,37 @@ class Obras extends MY_Controller
 
         $this->data['etapas'] = $this->obras_model->getEtapasComEstatisticas($id);
         $this->data['equipe'] = $this->obras_model->getEquipe($id);
-        $this->data['atividades_recentes'] = $this->obra_atividades_model->getByObra($id, [], 10);
+
+        // Buscar atividades recentes organizadas por etapa
+        $atividades = $this->obra_atividades_model->getByObra($id, [], 50);
+        $this->data['atividades_recentes'] = $atividades;
+
+        // Organizar atividades por etapa para fácil acesso na view
+        $this->data['atividades_por_etapa'] = [];
+        foreach ($atividades as $atividade) {
+            $etapa_id = $atividade->etapa_id ?? 0;
+            if (!isset($this->data['atividades_por_etapa'][$etapa_id])) {
+                $this->data['atividades_por_etapa'][$etapa_id] = [];
+            }
+            $this->data['atividades_por_etapa'][$etapa_id][] = $atividade;
+        }
 
         // Atividades do novo sistema (Hora Início/Fim)
-        $this->load->model('Atividades_model', 'atividades_novas');
-        $this->data['atividades_sistema'] = $this->atividades_novas->listarPorObra($id, [], 20);
+        if (file_exists(APPPATH . 'models/Atividades_model.php')) {
+            $this->load->model('Atividades_model', 'atividades_novas');
+            $this->data['atividades_sistema'] = $this->atividades_novas->listarPorObra($id, [], 20);
 
-        // Estatísticas das atividades do novo sistema
-        $this->data['estatisticas_atividades'] = $this->atividades_novas->getEstatisticasPorObra($id);
+            // Estatísticas das atividades do novo sistema
+            $this->data['estatisticas_atividades'] = $this->atividades_novas->getEstatisticasPorObra($id);
 
-        // Tipos de atividades para iniciar trabalho
-        $this->load->model('Atividades_tipos_model');
-        $this->data['tipos_atividades'] = $this->Atividades_tipos_model->listarPorCategoria();
+            // Tipos de atividades para iniciar trabalho
+            $this->load->model('Atividades_tipos_model');
+            $this->data['tipos_atividades'] = $this->Atividades_tipos_model->listarPorCategoria();
+        } else {
+            $this->data['atividades_sistema'] = [];
+            $this->data['estatisticas_atividades'] = null;
+            $this->data['tipos_atividades'] = [];
+        }
 
         $this->data['view'] = 'obras/obra_view';
         return $this->layout();

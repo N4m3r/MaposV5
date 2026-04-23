@@ -1367,11 +1367,9 @@ class Atividades extends MY_Controller
         $this->data['filtros'] = $filtros;
 
         $this->data['title'] = 'Relatório de Atividades';
+        $this->data['view'] = 'atividades/relatorio';
 
-        $this->load->view('tema/topo', $this->data);
-        $this->load->view('tema/menu_portal_tecnico', $this->data);
-        $this->load->view('atividades/relatorio', $this->data);
-        $this->load->view('tema/rodape');
+        $this->layout();
     }
 
     /**
