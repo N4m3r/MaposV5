@@ -740,8 +740,9 @@ class Atividades extends MY_Controller
                 log_message('error', 'checkin_obra - Erro ao iniciar atividade. DB Error: ' . print_r($db_error, true));
                 echo json_encode([
                     'success' => false,
-                    'message' => 'Erro ao realizar check-in.',
-                    'debug' => ENVIRONMENT === 'development' ? $db_error : null
+                    'message' => 'Erro ao realizar check-in: ' . ($db_error['message'] ?? 'Erro desconhecido'),
+                    'debug' => $db_error,
+                    'dados_enviados' => $dados
                 ]);
             }
         } catch (Exception $e) {
