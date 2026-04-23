@@ -464,6 +464,7 @@ $config['csrf_exclude_uris'] = [
     'atividades/checkin_obra',
     'atividades/checkout_obra',
     'atividades/pausar',
+    'atividades/retomar',
     'atividades/registrar_observacao',
     'atividades/adicionar_foto_obra',
 ];

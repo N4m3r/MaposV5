@@ -892,7 +892,10 @@ window.retomarAtividade = function(id) {
     const bodyRetomar = 'atividade_id=' + id + (csrfToken && csrfTokenName ? '&' + csrfTokenName + '=' + encodeURIComponent(csrfToken) : '');
     fetch('<?= site_url("atividades/retomar") ?>', {
         method: 'POST',
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
         body: bodyRetomar
     })
     .then(r => {
