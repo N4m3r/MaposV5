@@ -321,8 +321,37 @@ class Obras extends MY_Controller
             redirect('obras');
         }
 
+        $this->load->model('mapos_model');
+
         $this->data['obra'] = $this->obras_model->getById($obra_id);
-        $this->data['etapas'] = $this->obras_model->getEtapas($obra_id);
+
+        if (!$this->data['obra']) {
+            $this->session->set_flashdata('error', 'Obra não encontrada.');
+            redirect('obras');
+        }
+
+        $this->data['etapas'] = $this->obras_model->getEtapasComEstatisticas($obra_id);
+        $this->data['equipe'] = $this->obras_model->getEquipe($obra_id);
+        $this->data['atividades_recentes'] = $this->obra_atividades_model->getByObra($obra_id, [], 20);
+
+        // Atividades do novo sistema (Hora Início/Fim)
+        if (file_exists(APPPATH . 'models/Atividades_model.php')) {
+            $this->load->model('Atividades_model', 'atividades_novas');
+            $this->data['estatisticas_atividades'] = $this->atividades_novas->getEstatisticasPorObra($obra_id);
+        } else {
+            $this->data['estatisticas_atividades'] = null;
+        }
+
+        // Organizar atividades por etapa
+        $this->data['atividades_por_etapa'] = [];
+        foreach ($this->data['atividades_recentes'] as $atividade) {
+            $etapa_id = $atividade->etapa_id ?? 0;
+            if (!isset($this->data['atividades_por_etapa'][$etapa_id])) {
+                $this->data['atividades_por_etapa'][$etapa_id] = [];
+            }
+            $this->data['atividades_por_etapa'][$etapa_id][] = $atividade;
+        }
+
         $this->data['view'] = 'obras/etapas_list';
 
         return $this->layout();

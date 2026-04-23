@@ -662,9 +662,6 @@
 
     <!-- Grid de Atividades (Mesclado: Sistema Antigo + Wizard) -->
     <?php $this->load->view('obras/atividades_list_new'); ?>
-        <?php endif; ?>
-    </div>
-    <?php endif; ?>
 </div>
 
 <!-- Modal Iniciar Registro de Atividade (Hora Início/Fim) -->
