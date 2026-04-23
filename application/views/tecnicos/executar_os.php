@@ -555,6 +555,8 @@
 
     </div>
 </div>
+</div>
+</div>
 
 <!-- Modal de Impedimento - Não pode realizar OS -->
 <div id="modalImpedimento" class="modal-overlay" style="display: none;">

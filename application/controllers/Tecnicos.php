@@ -2692,4 +2692,154 @@ class Tecnicos extends MY_Controller
 
         echo json_encode($result, JSON_PRETTY_PRINT);
     }
+
+    /**
+     * Atualizar informações pessoais do técnico via AJAX
+     */
+    public function atualizar_perfil()
+    {
+        header('Content-Type: application/json');
+
+        // Verificar se é uma requisição AJAX
+        if (!$this->input->is_ajax_request()) {
+            echo json_encode(['success' => false, 'message' => 'Requisição inválida']);
+            return;
+        }
+
+        // Verificar login
+        if (!$this->session->userdata('logado_tecnico')) {
+            echo json_encode(['success' => false, 'message' => 'Sessão expirada. Faça login novamente.']);
+            return;
+        }
+
+        $tecnico_id = $this->session->userdata('tec_id');
+
+        // Receber dados
+        $email = $this->input->post('email', true);
+        $telefone = $this->input->post('telefone', true);
+        $data_nascimento = $this->input->post('data_nascimento', true);
+
+        // Validações
+        if (empty($email)) {
+            echo json_encode(['success' => false, 'message' => 'E-mail é obrigatório']);
+            return;
+        }
+
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            echo json_encode(['success' => false, 'message' => 'E-mail inválido']);
+            return;
+        }
+
+        // Verificar se email já existe em outro técnico
+        $this->db->where('email', $email);
+        $this->db->where('idTecnicos !=', $tecnico_id);
+        $existe_email = $this->db->get('tecnicos')->row();
+
+        if ($existe_email) {
+            echo json_encode(['success' => false, 'message' => 'Este e-mail já está em uso por outro técnico']);
+            return;
+        }
+
+        // Preparar dados para atualização
+        $dados = [
+            'email' => $email,
+            'telefone' => $telefone ? $telefone : null,
+        ];
+
+        // Data de nascimento - validar e formatar
+        if (!empty($data_nascimento)) {
+            $data_parts = explode('/', $data_nascimento);
+            if (count($data_parts) === 3) {
+                $data_formatada = $data_parts[2] . '-' . $data_parts[1] . '-' . $data_parts[0];
+                $dados['data_nascimento'] = $data_formatada;
+            }
+        }
+
+        // Atualizar no banco
+        $this->db->where('idTecnicos', $tecnico_id);
+        $atualizado = $this->db->update('tecnicos', $dados);
+
+        if ($atualizado) {
+            // Atualizar dados da sessão
+            $this->session->set_userdata('email', $email);
+
+            log_info('Técnico atualizou perfil - ID: ' . $tecnico_id);
+            echo json_encode(['success' => true, 'message' => 'Informações atualizadas com sucesso!']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Erro ao atualizar informações. Tente novamente.']);
+        }
+    }
+
+    /**
+     * Trocar senha do técnico via AJAX
+     */
+    public function trocar_senha()
+    {
+        header('Content-Type: application/json');
+
+        // Verificar se é uma requisição AJAX
+        if (!$this->input->is_ajax_request()) {
+            echo json_encode(['success' => false, 'message' => 'Requisição inválida']);
+            return;
+        }
+
+        // Verificar login
+        if (!$this->session->userdata('logado_tecnico')) {
+            echo json_encode(['success' => false, 'message' => 'Sessão expirada. Faça login novamente.']);
+            return;
+        }
+
+        $tecnico_id = $this->session->userdata('tec_id');
+
+        // Receber dados
+        $senha_atual = $this->input->post('senha_atual');
+        $nova_senha = $this->input->post('nova_senha');
+        $confirmar_senha = $this->input->post('confirmar_senha');
+
+        // Validações
+        if (empty($senha_atual) || empty($nova_senha) || empty($confirmar_senha)) {
+            echo json_encode(['success' => false, 'message' => 'Todos os campos de senha são obrigatórios']);
+            return;
+        }
+
+        if (strlen($nova_senha) < 6) {
+            echo json_encode(['success' => false, 'message' => 'A nova senha deve ter pelo menos 6 caracteres']);
+            return;
+        }
+
+        if ($nova_senha !== $confirmar_senha) {
+            echo json_encode(['success' => false, 'message' => 'A nova senha e a confirmação não coincidem']);
+            return;
+        }
+
+        // Buscar técnico para verificar senha atual
+        $this->db->where('idTecnicos', $tecnico_id);
+        $tecnico = $this->db->get('tecnicos')->row();
+
+        if (!$tecnico) {
+            echo json_encode(['success' => false, 'message' => 'Técnico não encontrado']);
+            return;
+        }
+
+        // Verificar senha atual (usando o mesmo método de criptografia do sistema)
+        $senha_atual_hash = md5($senha_atual);
+        if ($senha_atual_hash !== $tecnico->senha) {
+            echo json_encode(['success' => false, 'message' => 'Senha atual incorreta']);
+            return;
+        }
+
+        // Gerar hash da nova senha
+        $nova_senha_hash = md5($nova_senha);
+
+        // Atualizar senha
+        $this->db->where('idTecnicos', $tecnico_id);
+        $atualizado = $this->db->update('tecnicos', ['senha' => $nova_senha_hash]);
+
+        if ($atualizado) {
+            log_info('Técnico alterou senha - ID: ' . $tecnico_id);
+            echo json_encode(['success' => true, 'message' => 'Senha alterada com sucesso!']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Erro ao alterar senha. Tente novamente.']);
+        }
+    }
 }

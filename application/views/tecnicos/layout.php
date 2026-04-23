@@ -828,6 +828,27 @@
             }
         });
 
+        // Swipe para fechar menu em dispositivos touch
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', function(e) {
+            touchStartX = e.changedTouches[0].screenX;
+        }, false);
+
+        document.addEventListener('touchend', function(e) {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, false);
+
+        function handleSwipe() {
+            const sidebar = document.getElementById('tecSidebar');
+            // Se o menu está aberto e o swipe é da esquerda para direita (menos de -50px)
+            if (sidebar.classList.contains('open') && touchEndX - touchStartX < -50) {
+                closeMobileMenu();
+            }
+        }
+
         // Toggle Theme
         function toggleTheme() {
             const body = document.body;
