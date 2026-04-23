@@ -994,12 +994,13 @@ textarea.wizard-input {
 
     <!-- Alerta de Atividade em Andamento -->
     <?php if (!empty($wizard_em_andamento)): ?>
-    <div class="atividade-andamento">
-        <h3><i class="icon-time"></i> Atividade em Andamento</h3>
+    <div class="atividade-andamento <?= ($wizard_em_andamento->status === 'pausada') ? 'atividade-pausada' : '' ?>">
+        <h3><i class="icon-time"></i> <?= ($wizard_em_andamento->status === 'pausada') ? 'Atividade Pausada' : 'Atividade em Andamento' ?></h3>
         <p>
             <strong><?= htmlspecialchars($wizard_em_andamento->etapa_nome ?? 'Atividade Geral') ?></strong><br>
             <?= htmlspecialchars($wizard_em_andamento->titulo ?? $wizard_em_andamento->descricao ?? '') ?><br>
             <small>Iniciado às <?= date('H:i', strtotime($wizard_em_andamento->hora_inicio)) ?> - <?= date('d/m/Y', strtotime($wizard_em_andamento->data_atividade ?? 'now')) ?></small>
+            <?php if ($wizard_em_andamento->status === 'pausada'): ?><br><span style="color: #e74c3c; font-weight: bold;">⏸️ Atividade pausada</span><?php endif; ?>
         </p>
         <?php $ativAndamentoId = $wizard_em_andamento->id ?? $wizard_em_andamento->idAtividade ?? null; ?>
         <?php if ($ativAndamentoId): ?>
@@ -1086,7 +1087,9 @@ textarea.wizard-input {
                             <h4>Atividades Cadastradas</h4>
                             <?php foreach ($atividadesEtapa as $ativ): ?>
                                 <?php
-                                $statusAtiv = $ativ->status ?? 'agendada';
+                                // Usar status da execução vinculada (os_atividades) se existir
+                                $statusAtiv = $ativ->status_execucao ?? $ativ->status ?? 'agendada';
+                                $horaInicioAtiv = $ativ->hora_inicio_execucao ?? $ativ->hora_inicio ?? null;
                                 $statusAtivClass = ($statusAtiv === 'concluida' || $statusAtiv === 'concluido') ? 'concluida' :
                                                     (($statusAtiv === 'em_andamento' || $statusAtiv === 'iniciada') ? 'andamento' :
                                                     (($statusAtiv === 'reaberta' || $statusAtiv === 'reaberto') ? 'reaberta' :
@@ -1108,7 +1111,7 @@ textarea.wizard-input {
                                     <div class="atividade-info">
                                         <?php $ativId = $ativ->id ?? $ativ->idAtividade ?? null; ?>
                                         <h5><?= htmlspecialchars($ativ->titulo ?? $ativ->descricao ?? 'Atividade #' . ($ativId ?? 'N/A')) ?></h5>
-                                        <p><?= $statusAtivLabel ?> • <?= !empty($ativ->hora_inicio) ? date('H:i', strtotime($ativ->hora_inicio)) : '--:--' ?></p>
+                                        <p><?= $statusAtivLabel ?> • <?= !empty($horaInicioAtiv) ? date('H:i', strtotime($horaInicioAtiv)) : '--:--' ?></p>
                                     </div>
                                     <div class="atividade-acoes">
                                         <?php if (($statusAtiv === 'em_andamento' || $statusAtiv === 'iniciada') && $ativId): ?>

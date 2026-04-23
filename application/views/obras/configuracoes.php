@@ -1349,30 +1349,88 @@ body[data-theme="dark"] .config-grid-item:hover {
 </div>
 
 <script>
+// Captura global de erros
+window.addEventListener('error', function(e) {
+    console.error('=== ERRO GLOBAL CAPTURADO ===');
+    console.error('Mensagem:', e.message);
+    console.error('Arquivo:', e.filename);
+    console.error('Linha:', e.lineno);
+    console.error('Coluna:', e.colno);
+    console.error('Stack:', e.error?.stack);
+    console.error('=== FIM ERRO GLOBAL ===');
+});
+
 // Navegação entre abas
 function switchTab(tabName, element) {
-    // Remove active de todas as abas
-    document.querySelectorAll('.config-tab-item').forEach(tab => tab.classList.remove('active'));
-    document.querySelectorAll('.config-content').forEach(content => content.classList.remove('active'));
+    console.log('=== SWITCH TAB DEBUG ===');
+    console.log('TabName:', tabName);
+    console.log('Element:', element);
+    console.log('Element text:', element ? element.textContent?.trim() : 'null');
 
-    // Adiciona active na aba clicada
-    element.classList.add('active');
-    document.getElementById('tab-' + tabName).classList.add('active');
+    try {
+        // Remove active de todas as abas
+        const allTabs = document.querySelectorAll('.config-tab-item');
+        const allContents = document.querySelectorAll('.config-content');
+        console.log('Total tabs encontradas:', allTabs.length);
+        console.log('Total contents encontrados:', allContents.length);
 
-    // Salva preferência no localStorage
-    localStorage.setItem('obras_config_tab', tabName);
+        allTabs.forEach(tab => tab.classList.remove('active'));
+        allContents.forEach(content => content.classList.remove('active'));
+
+        // Adiciona active na aba clicada
+        element.classList.add('active');
+        console.log('Classe active adicionada ao elemento clicado');
+
+        const targetContent = document.getElementById('tab-' + tabName);
+        console.log('Target content (tab-' + tabName + '):', targetContent);
+
+        if (targetContent) {
+            targetContent.classList.add('active');
+            console.log('Classe active adicionada ao conteúdo');
+        } else {
+            console.error('ERRO: Elemento #tab-' + tabName + ' não encontrado!');
+        }
+
+        // Salva preferência no localStorage
+        localStorage.setItem('obras_config_tab', tabName);
+        console.log('Tab salva no localStorage');
+    } catch (error) {
+        console.error('ERRO ao trocar aba:', error);
+    }
+    console.log('=== FIM DEBUG ===');
 }
 
 // Carrega aba salva
 (function loadSavedTab() {
+    console.log('=== LOAD SAVED TAB DEBUG ===');
     const savedTab = localStorage.getItem('obras_config_tab');
+    console.log('Saved tab from localStorage:', savedTab);
+
     if (savedTab) {
-        const tabElement = document.querySelector(`.config-tab-item[onclick*="${savedTab}"]`);
+        const selector = `.config-tab-item[onclick*="${savedTab}"]`;
+        console.log('Selector:', selector);
+        const tabElement = document.querySelector(selector);
+        console.log('Tab element found:', tabElement);
+
         if (tabElement) {
             switchTab(savedTab, tabElement);
+        } else {
+            console.error('ERRO: Não encontrou elemento da aba salva com selector:', selector);
         }
+    } else {
+        console.log('Nenhuma aba salva no localStorage');
     }
+    console.log('=== FIM LOAD DEBUG ===');
 })();
+
+// Verificação inicial de elementos
+console.log('=== VERIFICAÇÃO INICIAL ===');
+console.log('Total .config-tab-item:', document.querySelectorAll('.config-tab-item').length);
+console.log('Total .config-content:', document.querySelectorAll('.config-content').length);
+document.querySelectorAll('.config-content').forEach((el, i) => {
+    console.log(`Content ${i}: id=${el.id}, classes=${el.className}`);
+});
+console.log('=== FIM VERIFICAÇÃO ===');
 
 // Modal functions
 function abrirModal(title, content) {

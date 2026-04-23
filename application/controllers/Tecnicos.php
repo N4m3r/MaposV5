@@ -318,6 +318,7 @@ class Tecnicos extends MY_Controller
         // Buscar minhas atividades na obra
         $minhas_atividades = [];
         $atividades_por_etapa = []; // Agrupadas por etapa para o novo workflow
+        $status_execucao = []; // Status das execuções vinculadas (obra_atividade_id => status)
         try {
             if ($this->db->table_exists('obra_atividades')) {
                 $this->db->where(['obra_id' => $obra_id, 'tecnico_id' => $tecnico_id]);
@@ -326,8 +327,34 @@ class Tecnicos extends MY_Controller
                 $query = $this->db->get('obra_atividades');
                 $minhas_atividades = $query ? $query->result() : [];
 
+                // Buscar status das execuções vinculadas em os_atividades
+                if ($this->db->table_exists('os_atividades')) {
+                    $ids_atividades = array_column($minhas_atividades, 'id');
+                    if (!empty($ids_atividades)) {
+                        $this->db->select('obra_atividade_id, status, hora_inicio');
+                        $this->db->from('os_atividades');
+                        $this->db->where('tecnico_id', $tecnico_id);
+                        $this->db->where_in('obra_atividade_id', $ids_atividades);
+                        $this->db->where_in('status', ['em_andamento', 'pausada']);
+                        $query_exec = $this->db->get();
+                        if ($query_exec) {
+                            foreach ($query_exec->result() as $exec) {
+                                $status_execucao[$exec->obra_atividade_id] = [
+                                    'status' => $exec->status,
+                                    'hora_inicio' => $exec->hora_inicio
+                                ];
+                            }
+                        }
+                    }
+                }
+
                 // Agrupar atividades por etapa_id para o novo workflow
                 foreach ($minhas_atividades as $atv) {
+                    // Atualizar status se houver execução vinculada
+                    if (isset($status_execucao[$atv->id])) {
+                        $atv->status_execucao = $status_execucao[$atv->id]['status'];
+                        $atv->hora_inicio_execucao = $status_execucao[$atv->id]['hora_inicio'];
+                    }
                     $etapa_id = $atv->etapa_id ?? 'sem_etapa';
                     if (!isset($atividades_por_etapa[$etapa_id])) {
                         $atividades_por_etapa[$etapa_id] = [];
