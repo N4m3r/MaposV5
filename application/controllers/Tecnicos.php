@@ -2924,6 +2924,9 @@ class Tecnicos extends MY_Controller
             return;
         }
 
+        // Atualizar técnico da atividade para o técnico que está reabrindo
+        $this->obra_atividades_model->update($atividade_id, ['tecnico_id' => $tecnico_id]);
+
         // Reabrir a atividade
         $result = $this->obra_atividades_model->reabrirParaReatendimento($atividade_id, $tecnico_id, $motivo);
 

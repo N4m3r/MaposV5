@@ -232,6 +232,10 @@
     background: #d4edda;
     color: #155724;
 }
+.atividade-icon.reaberta {
+    background: #ffeaa7;
+    color: #d68910;
+}
 .atividade-info {
     flex: 1;
 }
@@ -283,6 +287,14 @@
 }
 .btn-acao.detalhes:hover {
     background: #e9ecef;
+}
+.btn-acao.iniciar {
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    color: white;
+}
+.btn-acao.iniciar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
 }
 .btn-acao.reabrir {
     background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
@@ -540,6 +552,8 @@
 .atividade-icon.andamento i { color: #004085; }
 .atividade-icon.concluida { background: #d4edda; }
 .atividade-icon.concluida i { color: #155724; }
+.atividade-icon.reaberta { background: #fff3cd; }
+.atividade-icon.reaberta i { color: #856404; }
 .atividade-selecao.selecionada .atividade-icon {
     background: rgba(255,255,255,0.2);
 }
@@ -1059,12 +1073,20 @@ textarea.wizard-input {
                             <?php foreach ($atividadesEtapa as $ativ): ?>
                                 <?php
                                 $statusAtiv = $ativ->status ?? 'agendada';
-                                $statusAtivClass = ($statusAtiv === 'concluida' || $statusAtiv === 'concluida') ? 'concluida' : (($statusAtiv === 'em_andamento' || $statusAtiv === 'iniciada') ? 'andamento' : 'aberto');
-                                $statusAtivLabel = ($statusAtiv === 'concluida' || $statusAtiv === 'concluida') ? 'Concluída' : (($statusAtiv === 'em_andamento' || $statusAtiv === 'iniciada') ? 'Em Andamento' : 'Aberta');
+                                $statusAtivClass = ($statusAtiv === 'concluida' || $statusAtiv === 'concluido') ? 'concluida' :
+                                                    (($statusAtiv === 'em_andamento' || $statusAtiv === 'iniciada') ? 'andamento' :
+                                                    (($statusAtiv === 'reaberta' || $statusAtiv === 'reaberto') ? 'reaberta' : 'aberto'));
+                                $statusAtivLabel = ($statusAtiv === 'concluida' || $statusAtiv === 'concluido') ? 'Concluída' :
+                                                    (($statusAtiv === 'em_andamento' || $statusAtiv === 'iniciada') ? 'Em Andamento' :
+                                                    (($statusAtiv === 'reaberta' || $statusAtiv === 'reaberto') ? 'Reaberta' : 'Aberta'));
                                 ?>
                                 <div class="atividade-item">
                                     <div class="atividade-icon <?= $statusAtivClass ?>">
-                                        <i class="icon-<?= ($statusAtiv === 'concluida' || $statusAtiv === 'concluida') ? 'check' : (($statusAtiv === 'em_andamento' || $statusAtiv === 'iniciada') ? 'play' : 'time') ?>"></i>
+                                        <i class="icon-<?=
+                                            ($statusAtiv === 'concluida' || $statusAtiv === 'concluido') ? 'check' :
+                                            (($statusAtiv === 'em_andamento' || $statusAtiv === 'iniciada') ? 'play' :
+                                            (($statusAtiv === 'reaberta' || $statusAtiv === 'reaberto') ? 'refresh' : 'time'))
+                                        ?>"></i>
                                     </div>
                                     <div class="atividade-info">
                                         <?php $ativId = $ativ->id ?? $ativ->idAtividade ?? null; ?>
@@ -1079,6 +1101,10 @@ textarea.wizard-input {
                                         <?php elseif ($statusAtiv === 'concluida' && $ativId): ?>
                                         <button class="btn-acao reabrir" onclick="reabrirAtividade(<?= $ativId ?>, '<?= htmlspecialchars($ativ->titulo ?? $ativ->descricao ?? 'Atividade #' . $ativId, ENT_QUOTES) ?>')">
                                             <i class="icon-refresh"></i> Reabrir
+                                        </button>
+                                        <?php elseif (in_array($statusAtiv, ['agendada', 'pendente', 'aberta', 'reaberta', 'reaberto', 'nao_iniciada', 'nao_iniciado']) && $ativId): ?>
+                                        <button class="btn-acao iniciar" onclick="WizardAtendimento.iniciarAtividade(<?= $ativId ?>)">
+                                            <i class="icon-play"></i> Iniciar
                                         </button>
                                         <?php else: ?>
                                         <span class="btn-acao detalhes">
@@ -1719,6 +1745,44 @@ const WizardAtendimento = {
         this.atualizarSteps();
     },
 
+    // Iniciar atividade específica (para atividades reabertas/pendentes)
+    iniciarAtividade: function(atividadeId) {
+        // Buscar a atividade nos dados disponíveis
+        var atividade = null;
+        var etapaId = null;
+        var etapaNome = null;
+
+        // Procurar em todas as etapas
+        for (var eid in dadosObra.atividadesPorEtapa) {
+            var atvs = dadosObra.atividadesPorEtapa[eid] || [];
+            for (var i = 0; i < atvs.length; i++) {
+                var atv = atvs[i];
+                if ((atv.id || atv.idAtividade) == atividadeId) {
+                    atividade = atv;
+                    etapaId = eid;
+                    // Buscar nome da etapa (compatível com ES5)
+                    var etapaNome = 'Etapa';
+                    for (var j = 0; j < dadosObra.etapas.length; j++) {
+                        if (dadosObra.etapas[j].id == eid) {
+                            etapaNome = dadosObra.etapas[j].nome || dadosObra.etapas[j].titulo || 'Etapa';
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+            if (atividade) break;
+        }
+
+        if (!atividade) {
+            alert('Atividade não encontrada. Recarregue a página e tente novamente.');
+            return;
+        }
+
+        // Iniciar o wizard com a atividade selecionada
+        this.iniciar(etapaId, etapaNome, atividadeId, atividade.titulo || atividade.descricao || 'Atividade');
+    },
+
     // Continuar atividade em andamento - mostra modal de confirmação
     continuar: function(atividadeId) {
         // Guardar ID para confirmação
@@ -1924,15 +1988,20 @@ const WizardAtendimento = {
         } else {
             grid.innerHTML = atividadesDisponiveis.map((atv, index) => {
                 const status = atv.status || 'agendada';
-                const statusLabel = (status === 'concluida' || status === 'concluida') ? 'Concluída' :
-                                     ((status === 'em_andamento' || status === 'iniciada') ? 'Em Andamento' : 'Aberta');
-                const statusClass = (status === 'concluida' || status === 'concluida') ? 'concluida' :
-                                     ((status === 'em_andamento' || status === 'iniciada') ? 'andamento' : 'aberta');
+                const statusLabel = (status === 'concluida' || status === 'concluido') ? 'Concluída' :
+                                     ((status === 'em_andamento' || status === 'iniciada') ? 'Em Andamento' :
+                                     ((status === 'reaberta' || status === 'reaberto') ? 'Reaberta' : 'Aberta'));
+                const statusClass = (status === 'concluida' || status === 'concluido') ? 'concluida' :
+                                     ((status === 'em_andamento' || status === 'iniciada') ? 'andamento' :
+                                     ((status === 'reaberta' || status === 'reaberto') ? 'reaberta' : 'aberta'));
+                const iconName = (status === 'concluida' || status === 'concluido') ? 'check' :
+                                  ((status === 'em_andamento' || status === 'iniciada') ? 'play' :
+                                  ((status === 'reaberta' || status === 'reaberto') ? 'refresh' : 'time'));
                 const isRecomendada = index === 0 ? '<span style="background:#11998e;color:white;font-size:10px;padding:2px 6px;border-radius:10px;margin-left:8px;">RECOMENDADA</span>' : '';
                 return `
                 <div class="atividade-selecao" data-atividade-id="${atv.id}" data-atividade-index="${index}" onclick="WizardAtendimento.selecionarAtividade(this)">
                     <div class="atividade-icon ${statusClass}">
-                        <i class="icon-${(status === 'concluida' || status === 'concluida') ? 'check' : ((status === 'em_andamento' || status === 'iniciada') ? 'play' : 'time')}"></i>
+                        <i class="icon-${iconName}"></i>
                     </div>
                     <div class="atividade-selecao-info">
                         <h5>${atv.titulo || atv.descricao || 'Atividade #' + atv.id}${isRecomendada}</h5>
