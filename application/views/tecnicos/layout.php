@@ -12,6 +12,7 @@
     <link href="<?= base_url() ?>assets/font-awesome/css/font-awesome.css" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
     <script src="<?= base_url() ?>assets/js/jquery-1.12.4.min.js"></script>
+    <script src="<?= base_url() ?>assets/js/bootstrap.min.js"></script>
     <style>
         /* RESET E BASE */
         * { margin: 0; padding: 0; box-sizing: border-box; }
