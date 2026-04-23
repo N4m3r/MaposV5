@@ -521,6 +521,7 @@ class Atividades_model extends CI_Model
         }
 
         if (isset($filtros['tecnico_id'])) {
+            // Incluir atividades onde o técnico é o responsável (incluindo reatendimentos)
             $this->db->where('os_atividades.tecnico_id', $filtros['tecnico_id']);
         }
 
@@ -532,6 +533,9 @@ class Atividades_model extends CI_Model
             $this->db->where('DATE(os_atividades.hora_inicio) <=', $filtros['data_fim']);
         }
 
+        // Ordenação: reabertas (reatendimentos) primeiro, depois por hora_inicio
+        // Usando FIELD para dar prioridade ao status 'reaberta'
+        $this->db->order_by("FIELD(os_atividades.status, 'reaberta', 'em_andamento', 'pausada', 'finalizada')", '', FALSE);
         $this->db->order_by('os_atividades.hora_inicio', 'DESC');
 
         if ($limite) {

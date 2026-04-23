@@ -2862,4 +2862,108 @@ class Tecnicos extends MY_Controller
             'icone' => $icone
         ]);
     }
+
+    /**
+     * Reabrir atividade para reatendimento via AJAX
+     * Permite que o técnico reabra uma atividade concluída
+     */
+    public function reabrir_atividade()
+    {
+        header('Content-Type: application/json');
+
+        // Verificar se é uma requisição AJAX
+        if (!$this->input->is_ajax_request()) {
+            echo json_encode(['success' => false, 'message' => 'Requisição inválida']);
+            return;
+        }
+
+        // Verificar login do técnico
+        if (!$this->session->userdata('logado_tecnico')) {
+            echo json_encode(['success' => false, 'message' => 'Sessão expirada. Faça login novamente.']);
+            return;
+        }
+
+        $tecnico_id = $this->session->userdata('tec_id');
+        $atividade_id = $this->input->post('atividade_id');
+        $motivo = $this->input->post('motivo');
+
+        if (!$atividade_id) {
+            echo json_encode(['success' => false, 'message' => 'Atividade não informada']);
+            return;
+        }
+
+        // Carregar model
+        $this->load->model('obra_atividades_model');
+
+        // Buscar atividade
+        $atividade = $this->obra_atividades_model->getById($atividade_id);
+        if (!$atividade) {
+            echo json_encode(['success' => false, 'message' => 'Atividade não encontrada']);
+            return;
+        }
+
+        // Verificar se o técnico tem permissão (é o técnico da atividade ou está na equipe da obra)
+        if ($atividade->tecnico_id != $tecnico_id) {
+            // Verificar se técnico está na equipe da obra
+            $this->load->model('obras_model');
+            if (!$this->obras_model->tecnicoNaEquipe($atividade->obra_id, $tecnico_id)) {
+                echo json_encode(['success' => false, 'message' => 'Você não tem permissão para reabrir esta atividade']);
+                return;
+            }
+        }
+
+        // Verificar se a atividade está concluída
+        $status_permitidos = ['concluida', 'concluido', 'finalizada', 'finalizado'];
+        $status_atual = strtolower($atividade->status ?? '');
+
+        if (!in_array($status_atual, $status_permitidos)) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Apenas atividades concluídas podem ser reabertas. Status atual: ' . ($atividade->status ?? 'desconhecido')
+            ]);
+            return;
+        }
+
+        // Reabrir a atividade
+        $result = $this->obra_atividades_model->reabrirParaReatendimento($atividade_id, $tecnico_id, $motivo);
+
+        if ($result) {
+            // Criar reatendimento no sistema de atividades (wizard)
+            $this->load->model('atividades_model');
+
+            // Verificar se já existe um reatendimento ativo
+            $reatendimento_existente = $this->atividades_model->getAtividadeEmAndamentoNaObra($tecnico_id, $atividade->obra_id);
+
+            if (!$reatendimento_existente) {
+                // Criar novo reatendimento
+                $reatendimento_id = $this->atividades_model->criarReatendimento([
+                    'obra_atividade_id' => $atividade_id,
+                    'obra_id' => $atividade->obra_id,
+                    'etapa_id' => $atividade->etapa_id,
+                    'titulo' => $atividade->titulo ?? 'Reatendimento #' . $atividade_id,
+                    'descricao' => 'Reatendimento da atividade reaberta: ' . ($motivo ?: 'Sem motivo especificado'),
+                    'status' => 'reaberta',
+                    'motivo_reabertura' => $motivo ?: 'Reabertura para reexecução',
+                    'tecnico_id' => $tecnico_id,
+                ]);
+
+                if ($reatendimento_id) {
+                    log_info('Técnico reabriu atividade e criou reatendimento - Técnico: ' . $tecnico_id . ', Atividade: ' . $atividade_id);
+                    echo json_encode([
+                        'success' => true,
+                        'message' => 'Atividade reaberta com sucesso! Um novo reatendimento foi criado. Você pode iniciar a execução agora.'
+                    ]);
+                    return;
+                }
+            }
+
+            log_info('Técnico reabriu atividade - Técnico: ' . $tecnico_id . ', Atividade: ' . $atividade_id);
+            echo json_encode([
+                'success' => true,
+                'message' => 'Atividade reaberta com sucesso! Você pode iniciar um novo atendimento.'
+            ]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Erro ao reabrir atividade. Tente novamente.']);
+        }
+    }
 }

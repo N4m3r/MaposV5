@@ -2888,4 +2888,76 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 300);
     });
 });
+
+// ===== FUNÇÃO DE REABERTURA DE ATIVIDADE =====
+function reabrirAtividade(atividadeId, tituloAtividade) {
+    // Confirmar com o técnico
+    var motivo = prompt(
+        'Reabrir atividade: ' + tituloAtividade + '\n\n' +
+        'Informe o motivo da reabertura (opcional):'
+    );
+
+    // Se clicou em cancelar, aborta
+    if (motivo === null) {
+        return;
+    }
+
+    // Desabilitar o botão para evitar cliques duplos
+    var btn = document.querySelector('button[onclick*="reabrirAtividade(' + atividadeId + '"]');
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="icon-refresh icon-spin"></i> Reabrindo...';
+    }
+
+    // Preparar dados para envio
+    var formData = new FormData();
+    formData.append('atividade_id', atividadeId);
+    formData.append('motivo', motivo);
+
+    // Obter token CSRF do input hidden no wizard ou da meta tag
+    var csrfToken = '';
+    var csrfInput = document.querySelector('input[name="MAPOS_TOKEN"]');
+    if (csrfInput) {
+        csrfToken = csrfInput.value;
+    }
+    formData.append('MAPOS_TOKEN', csrfToken);
+
+    // Fazer requisição AJAX
+    fetch('<?= site_url("tecnicos/reabrir_atividade") ?>', {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: formData
+    })
+    .then(function(r) {
+        if (!r.ok) {
+            throw new Error('HTTP error: ' + r.status);
+        }
+        return r.json();
+    })
+    .then(function(data) {
+        if (data.success) {
+            alert('Atividade reaberta com sucesso!\n\n' + (data.message || 'Você pode iniciar um novo atendimento para esta atividade.'));
+            // Recarregar a página para mostrar a atividade como reaberta
+            location.reload();
+        } else {
+            alert('Erro ao reabrir atividade: ' + (data.message || 'Erro desconhecido'));
+            // Reabilitar o botão em caso de erro
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="icon-refresh"></i> Reabrir';
+            }
+        }
+    })
+    .catch(function(err) {
+        console.error('Erro:', err);
+        alert('Erro ao reabrir atividade. Verifique sua conexão e tente novamente.');
+        // Reabilitar o botão em caso de erro
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="icon-refresh"></i> Reabrir';
+        }
+    });
+}
 </script>
