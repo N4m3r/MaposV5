@@ -1365,6 +1365,11 @@ class Obras extends MY_Controller
 
             // Criar registro de reatendimento - preservar histórico da execução anterior
             $this->load->model('atividades_model');
+
+            // Buscar o técnico da última execução da atividade para atribuir o reatendimento a ele
+            $ultimaExecucao = $this->atividades_model->getUltimaExecucao($atividade_id);
+            $tecnico_id = $ultimaExecucao ? $ultimaExecucao->tecnico_id : $atividade->tecnico_id;
+
             $reatendimento_id = $this->atividades_model->criarReatendimento([
                 'obra_atividade_id' => $atividade_id,
                 'obra_id' => $atividade->obra_id,
@@ -1373,10 +1378,16 @@ class Obras extends MY_Controller
                 'descricao' => 'Reatendimento da atividade reaberta',
                 'status' => 'reaberta',
                 'motivo_reabertura' => $observacao ?? 'Reabertura para reexecução',
+                'tecnico_id' => $tecnico_id, // Atribuir automaticamente ao técnico da execução anterior
             ]);
 
+            // Atualizar o técnico da obra_atividade para o mesmo técnico do reatendimento
+            if ($tecnico_id) {
+                $this->obra_atividades_model->update($atividade_id, ['tecnico_id' => $tecnico_id]);
+            }
+
             if ($reatendimento_id) {
-                $this->session->set_flashdata('success', 'Atividade reaberta com sucesso! Um novo reatendimento foi criado e está pronto para execução.');
+                $this->session->set_flashdata('success', 'Atividade reaberta com sucesso! Um novo reatendimento foi criado e atribuído ao técnico responsável.');
             } else {
                 $this->session->set_flashdata('success', 'Atividade reaberta com sucesso!');
             }
