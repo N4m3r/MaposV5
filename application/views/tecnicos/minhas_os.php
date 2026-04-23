@@ -1,25 +1,50 @@
 <!-- Minhas OS - Portal do Técnico -->
-<div id="content">
 <style>
-.portal-tecnico-content { margin-top: 15px !important; }
-@media (max-width: 768px) { .portal-tecnico-content { margin-top: 10px !important; } }
+.portal-tecnico-content { margin-top: 0 !important; }
+@media (max-width: 768px) { .portal-tecnico-content { margin-top: 0 !important; } }
+
+/* Remove estilos antigos que conflitam com o layout moderno */
+.widget-box { border: none !important; margin: 0 !important; }
+.widget-title { display: none !important; }
+.widget-content { padding: 0 !important; border: none !important; }
+
+/* Header moderno */
+.os-page-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+    color: white;
+}
+.os-page-header h2 {
+    margin: 0 0 8px 0;
+    font-size: 22px;
+    font-weight: 600;
+}
+.os-page-header p {
+    margin: 0;
+    opacity: 0.9;
+    font-size: 14px;
+}
 </style>
 
-<div class="row-fluid portal-tecnico-content">
-    <div class="span12">
+<div class="portal-tecnico-content">
 
-        <!-- Header da Página -->
-        <div class="widget-box">
-            <div class="widget-title">
-                <span class="icon"><i class="bx bx-clipboard"></i></span>
-                <h5>Minhas Ordens de Serviço</h5>
-                <div class="buttons">
-                    <a href="<?php echo site_url('tecnicos/dashboard'); ?>" class="btn btn-mini btn-info">
-                        <i class="bx bx-arrow-back"></i> Voltar
-                    </a>
-                </div>
+    <!-- Header da Página -->
+    <div class="os-page-header">
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+            <div>
+                <h2><i class='bx bx-clipboard' style="margin-right: 8px;"></i>Minhas Ordens de Serviço</h2>
+                <p>Gerencie suas ordens de serviço</p>
             </div>
-            <div class="widget-content">
+            <a href="<?php echo site_url('tecnicos/dashboard'); ?>" class="btn btn-mini btn-info" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none;">
+                <i class="bx bx-arrow-back"></i> Voltar
+            </a>
+        </div>
+    </div>
+
+    <div class="tec-card">
+        <div class="tec-card-body">
 
                 <!-- Filtros -->
                 <div class="filter-tabs">

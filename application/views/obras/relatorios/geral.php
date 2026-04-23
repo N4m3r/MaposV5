@@ -252,7 +252,7 @@ $valor_formatado = $valor_contrato ? 'R$ ' . number_format($valor_contrato, 2, '
             <div class="etapa-number"><?php echo $index + 1; ?></div>
             <div class="etapa-content">
                 <div class="etapa-header">
-                    <h4 class="etapa-nome"><?php echo htmlspecialchars($etapa->nome); ?></h4>
+                    <h4 class="etapa-nome"><?php echo htmlspecialchars($etapa->nome ?? 'Sem nome'); ?></h4>
                     <span class="etapa-status <?php echo $etapa_config['class']; ?>">
                         <?php echo $etapa_config['label']; ?>
                     </span>
@@ -271,11 +271,11 @@ $valor_formatado = $valor_contrato ? 'R$ ' . number_format($valor_contrato, 2, '
                         <i class="icon-clock"></i>
                         <?php echo $etapa->horas_trabalhadas ?? 0; ?>h trabalhadas
                     </div>
-                    <?php if ($etapa->data_inicio_prevista): ?>
+                    <?php if ($etapa->data_inicio_prevista ?? false): ?>
                     <div class="etapa-stat">
                         <i class="icon-calendar"></i>
                         <?php echo date('d/m/Y', strtotime($etapa->data_inicio_prevista)); ?>
-                        <?php if ($etapa->data_fim_prevista): ?>
+                        <?php if ($etapa->data_fim_prevista ?? false): ?>
                             - <?php echo date('d/m/Y', strtotime($etapa->data_fim_prevista)); ?>
                         <?php endif; ?>
                     </div>
@@ -316,9 +316,9 @@ $valor_formatado = $valor_contrato ? 'R$ ' . number_format($valor_contrato, 2, '
                 <i class="icon-user"></i>
             </div>
             <div class="membro-info">
-                <h4><?php echo htmlspecialchars($membro->nome); ?></h4>
+                <h4><?php echo htmlspecialchars($membro->nome ?? $membro->nomeUsuario ?? 'Sem nome'); ?></h4>
                 <span class="membro-funcao"><?php echo htmlspecialchars($membro->funcao ?? 'Técnico'); ?></span>
-                <?php if ($membro->telefone): ?>
+                <?php if ($membro->telefone ?? false): ?>
                 <span class="membro-contato">
                     <i class="icon-phone"></i> <?php echo htmlspecialchars($membro->telefone); ?>
                 </span>
@@ -405,7 +405,7 @@ $valor_formatado = $valor_contrato ? 'R$ ' . number_format($valor_contrato, 2, '
             $etapa_percentual = $etapa->percentual_concluido ?? 0;
         ?>
         <div class="barra-etapa" style="flex: 1;">
-            <div class="barra-etapa-label"><?php echo htmlspecialchars($etapa->nome); ?></div>
+            <div class="barra-etapa-label"><?php echo htmlspecialchars($etapa->nome ?? 'Sem nome'); ?></div>
             <div class="barra-etapa-container">
                 <div class="barra-etapa-preenchida" style="height: <?php echo $etapa_percentual; ?>%;"></div>
             </div>
@@ -420,13 +420,13 @@ $valor_formatado = $valor_contrato ? 'R$ ' . number_format($valor_contrato, 2, '
 <?php if (isset($emitente) && $emitente): ?>
 <div class="emitente-section">
     <div class="emitente-content">
-        <strong><?php echo $emitente->nome; ?></strong>
-        <?php if ($emitente->cnpj): ?>
+        <strong><?php echo $emitente->nome ?? 'Emitente não cadastrado'; ?></strong>
+        <?php if ($emitente->cnpj ?? false): ?>
             <span>CNPJ: <?php echo $emitente->cnpj; ?></span>
         <?php endif; ?>
-        <span><?php echo $emitente->rua; ?>, <?php echo $emitente->numero; ?> - <?php echo $emitente->bairro; ?></span>
-        <span><?php echo $emitente->cidade; ?>/<?php echo $emitente->uf; ?></span>
-        <?php if ($emitente->telefone): ?>
+        <span><?php echo $emitente->rua ?? ''; ?>, <?php echo $emitente->numero ?? ''; ?> - <?php echo $emitente->bairro ?? ''; ?></span>
+        <span><?php echo $emitente->cidade ?? ''; ?>/<?php echo $emitente->uf ?? ''; ?></span>
+        <?php if ($emitente->telefone ?? false): ?>
             <span>Tel: <?php echo $emitente->telefone; ?></span>
         <?php endif; ?>
     </div>
@@ -449,7 +449,7 @@ $valor_formatado = $valor_contrato ? 'R$ ' . number_format($valor_contrato, 2, '
     </div>
     <div class="relatorio-footer">
         <p>Relatório gerado em <?php echo date('d/m/Y H:i:s'); ?></p>
-        <?php if (isset($emitente) && $emitente->nome): ?>
+        <?php if (isset($emitente) && ($emitente->nome ?? false)): ?>
             <p><?php echo $emitente->nome; ?></p>
         <?php endif; ?>
     </div>

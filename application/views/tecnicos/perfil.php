@@ -1029,4 +1029,221 @@ function fecharCamera() {
         stream = null;
     }
 }
+
+// ===== FUNÇÕES DE EDIÇÃO DE PERFIL =====
+
+function abrirModalEdicao() {
+    jQuery('#edicaoModal').modal('show');
+}
+
+function fecharModalEdicao() {
+    jQuery('#edicaoModal').modal('hide');
+    document.getElementById('msg-sucesso').style.display = 'none';
+    document.getElementById('msg-erro').style.display = 'none';
+}
+
+function trocarAba(aba) {
+    // Esconder todas as abas
+    var abas = document.querySelectorAll('.aba-conteudo');
+    for (var i = 0; i < abas.length; i++) {
+        abas[i].classList.remove('active');
+    }
+
+    // Remover active de todos os botões
+    var botoes = document.querySelectorAll('.aba-btn');
+    for (var i = 0; i < botoes.length; i++) {
+        botoes[i].classList.remove('active');
+    }
+
+    // Mostrar aba selecionada
+    document.getElementById('aba-' + aba).classList.add('active');
+    document.querySelector('[data-aba="' + aba + '"]').classList.add('active');
+}
+
+function salvarInformacoes() {
+    var dados = {
+        email: document.getElementById('edit-email').value,
+        telefone: document.getElementById('edit-telefone').value,
+        data_nascimento: document.getElementById('edit-nascimento').value
+    };
+
+    // Validar email
+    if (!dados.email || dados.email.indexOf('@') === -1) {
+        mostrarErro('Por favor, informe um e-mail válido');
+        return;
+    }
+
+    var formData = new FormData();
+    for (var key in dados) {
+        if (dados[key]) {
+            formData.append(key, dados[key]);
+        }
+    }
+    formData.append(CSRF_TOKEN_NAME, CSRF_HASH);
+
+    fetch('<?php echo site_url("tecnicos/atualizar_perfil"); ?>', {
+        method: 'POST',
+        body: formData
+    }).then(function(response) {
+        return response.json();
+    }).then(function(data) {
+        if (data.success) {
+            mostrarSucesso('Informações atualizadas com sucesso!');
+            setTimeout(function() {
+                location.reload();
+            }, 1500);
+        } else {
+            mostrarErro(data.message || 'Erro ao atualizar informações');
+        }
+    }).catch(function(err) {
+        mostrarErro('Erro ao salvar: ' + err.message);
+    });
+}
+
+function trocarSenha() {
+    var senhaAtual = document.getElementById('senha-atual').value;
+    var novaSenha = document.getElementById('nova-senha').value;
+    var confirmarSenha = document.getElementById('confirmar-senha').value;
+
+    // Validar
+    if (!senhaAtual || !novaSenha || !confirmarSenha) {
+        mostrarErro('Por favor, preencha todos os campos de senha');
+        return;
+    }
+
+    if (novaSenha.length < 6) {
+        mostrarErro('A nova senha deve ter pelo menos 6 caracteres');
+        return;
+    }
+
+    if (novaSenha !== confirmarSenha) {
+        mostrarErro('As senhas não conferem');
+        return;
+    }
+
+    var formData = new FormData();
+    formData.append('senha_atual', senhaAtual);
+    formData.append('nova_senha', novaSenha);
+    formData.append(CSRF_TOKEN_NAME, CSRF_HASH);
+
+    fetch('<?php echo site_url("tecnicos/trocar_senha"); ?>', {
+        method: 'POST',
+        body: formData
+    }).then(function(response) {
+        return response.json();
+    }).then(function(data) {
+        if (data.success) {
+            mostrarSucesso('Senha alterada com sucesso!');
+            document.getElementById('senha-atual').value = '';
+            document.getElementById('nova-senha').value = '';
+            document.getElementById('confirmar-senha').value = '';
+        } else {
+            mostrarErro(data.message || 'Erro ao alterar senha');
+        }
+    }).catch(function(err) {
+        mostrarErro('Erro ao trocar senha: ' + err.message);
+    });
+}
+
+function mostrarSucesso(msg) {
+    var el = document.getElementById('msg-sucesso');
+    el.textContent = msg;
+    el.style.display = 'block';
+    document.getElementById('msg-erro').style.display = 'none';
+}
+
+function mostrarErro(msg) {
+    var el = document.getElementById('msg-erro');
+    el.textContent = msg;
+    el.style.display = 'block';
+    document.getElementById('msg-sucesso').style.display = 'none';
+}
 </script>
+
+<!-- Modal de Edição de Perfil -->
+<div class="modal hide modal-edicao" id="edicaoModal">
+    <div class="modal-header">
+        <button type="button" class="close" onclick="fecharModalEdicao()" style="color: white; opacity: 0.8;">&times;</button>
+        <h3><i class="icon icon-pencil"></i> Editar Perfil</h3>
+    </div>
+    <div class="modal-body" style="padding: 25px;">
+        <!-- Mensagens -->
+        <div id="msg-sucesso" class="msg-sucesso"></div>
+        <div id="msg-erro" class="msg-erro"></div>
+
+        <!-- Abas -->
+        <div class="abas-navegacao">
+            <button class="aba-btn active" data-aba="info" onclick="trocarAba('info')">
+                <i class="icon icon-user"></i> Informações
+            </button>
+            <button class="aba-btn" data-aba="senha" onclick="trocarAba('senha')">
+                <i class="icon icon-lock"></i> Trocar Senha
+            </button>
+        </div>
+
+        <!-- Aba Informações -->
+        <div id="aba-info" class="aba-conteudo active">
+            <div class="form-group">
+                <label class="form-label">Nome Completo</label>
+                <input type="text" class="form-input" value="<?php echo htmlspecialchars($tecnico->nome ?? ''); ?>" disabled style="background: #f5f5f5;">
+                <small style="color: #888;">O nome só pode ser alterado pelo administrador</small>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">E-mail *</label>
+                    <input type="email" class="form-input" id="edit-email" value="<?php echo htmlspecialchars($tecnico->email ?? ''); ?>">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Telefone</label>
+                    <input type="tel" class="form-input" id="edit-telefone" value="<?php echo htmlspecialchars($tecnico->telefone ?? ''); ?>" placeholder="(00) 00000-0000">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Data de Nascimento</label>
+                <input type="date" class="form-input" id="edit-nascimento" value="<?php echo htmlspecialchars($tecnico->data_nascimento ?? ''); ?>">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">CPF</label>
+                <input type="text" class="form-input" value="<?php echo htmlspecialchars($tecnico->cpf ?? ''); ?>" disabled style="background: #f5f5f5;">
+                <small style="color: #888;">O CPF não pode ser alterado</small>
+            </div>
+
+            <div style="text-align: right; margin-top: 25px;">
+                <button type="button" class="btn btn-salvar" onclick="salvarInformacoes()">
+                    <i class="icon icon-ok"></i> Salvar Alterações
+                </button>
+            </div>
+        </div>
+
+        <!-- Aba Trocar Senha -->
+        <div id="aba-senha" class="aba-conteudo">
+            <div class="form-group">
+                <label class="form-label">Senha Atual *</label>
+                <input type="password" class="form-input" id="senha-atual" placeholder="Digite sua senha atual">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Nova Senha *</label>
+                <input type="password" class="form-input" id="nova-senha" placeholder="Mínimo 6 caracteres">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Confirmar Nova Senha *</label>
+                <input type="password" class="form-input" id="confirmar-senha" placeholder="Digite novamente a nova senha">
+            </div>
+
+            <div style="text-align: right; margin-top: 25px;">
+                <button type="button" class="btn btn-salvar" onclick="trocarSenha()">
+                    <i class="icon icon-ok"></i> Trocar Senha
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn" onclick="fecharModalEdicao()">Fechar</button>
+    </div>
+</div>
