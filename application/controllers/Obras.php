@@ -555,6 +555,24 @@ class Obras extends MY_Controller
 
         if ($this->obras_model->adicionarTecnicoEquipe($obra_id, $tecnico_id, $funcao)) {
             $this->session->set_flashdata('success', 'Técnico adicionado à equipe com sucesso!');
+
+            // Buscar informações da obra para a notificação
+            $obra = $this->obras_model->getById($obra_id);
+            $obra_nome = $obra ? ($obra->obra_nome ?? $obra->nome ?? 'Obra #' . $obra_id) : 'Obra #' . $obra_id;
+
+            // Enviar notificação ao técnico
+            $this->load->model('notificacoes_model');
+            $this->notificacoes_model->ensureTableExists();
+
+            $this->notificacoes_model->adicionar([
+                'usuario_id' => $tecnico_id,
+                'tipo_usuario' => 'tecnico',
+                'titulo' => 'Adicionado à Equipe',
+                'mensagem' => 'Você foi adicionado à equipe da obra: ' . $obra_nome . ' como ' . $funcao,
+                'url' => site_url('tecnicos/minhas_obras'),
+                'tipo' => 'success',
+                'icone' => 'bx-building'
+            ]);
         } else {
             $this->session->set_flashdata('error', 'Erro ao adicionar técnico à equipe.');
         }
@@ -1426,7 +1444,14 @@ class Obras extends MY_Controller
      */
     public function iniciarReatendimento($reatendimento_id = null)
     {
+        // Verificar se é requisição AJAX
+        $is_ajax = $this->input->is_ajax_request();
+
         if (!$reatendimento_id || !is_numeric($reatendimento_id)) {
+            if ($is_ajax) {
+                $this->output->json(['success' => false, 'message' => 'Reatendimento não encontrado.']);
+                return;
+            }
             $this->session->set_flashdata('error', 'Reatendimento não encontrado.');
             redirect('obras');
         }
@@ -1435,18 +1460,46 @@ class Obras extends MY_Controller
 
         $reatendimento = $this->atividades_model->getById($reatendimento_id);
         if (!$reatendimento) {
+            if ($is_ajax) {
+                $this->output->json(['success' => false, 'message' => 'Reatendimento não encontrado.']);
+                return;
+            }
             $this->session->set_flashdata('error', 'Reatendimento não encontrado.');
             redirect('obras');
         }
 
         // Verificar se está no status correto
         if ($reatendimento->status !== 'reaberta') {
+            if ($is_ajax) {
+                $this->output->json(['success' => false, 'message' => 'Este reatendimento não pode ser iniciado. Status atual: ' . $reatendimento->status]);
+                return;
+            }
             $this->session->set_flashdata('error', 'Este reatendimento não pode ser iniciado. Status atual: ' . $reatendimento->status);
             redirect('obras/visualizarAtividade/' . $reatendimento->obra_atividade_id);
         }
 
+        // Verificar se o técnico logado é o técnico atribuído ao reatendimento
+        $tecnico_id = $this->session->userdata('tec_id') ?? $this->session->userdata('idUsuario');
+        if ($reatendimento->tecnico_id && $reatendimento->tecnico_id != $tecnico_id) {
+            if ($is_ajax) {
+                $this->output->json(['success' => false, 'message' => 'Este reatendimento está atribuído a outro técnico.']);
+                return;
+            }
+            $this->session->set_flashdata('error', 'Este reatendimento está atribuído a outro técnico.');
+            redirect('obras/visualizarAtividade/' . $reatendimento->obra_atividade_id);
+        }
+
         // Iniciar o reatendimento
-        $result = $this->atividades_model->iniciarReatendimento($reatendimento_id, $this->session->userdata('idUsuario') ?? 1);
+        $result = $this->atividades_model->iniciarReatendimento($reatendimento_id, $tecnico_id ?? 1);
+
+        if ($is_ajax) {
+            if ($result) {
+                $this->output->json(['success' => true, 'message' => 'Reatendimento iniciado com sucesso!', 'status' => 'success']);
+            } else {
+                $this->output->json(['success' => false, 'message' => 'Erro ao iniciar o reatendimento.']);
+            }
+            return;
+        }
 
         if ($result) {
             $this->session->set_flashdata('success', 'Reatendimento iniciado com sucesso! A atividade está agora em execução.');

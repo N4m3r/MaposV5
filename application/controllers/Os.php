@@ -1624,6 +1624,21 @@ class Os extends MY_Controller
 
             $this->session->set_flashdata('success', 'Técnico atribuído à OS #' . $os_id . ' com sucesso!');
             log_info('Atribuiu técnico ' . $tecnico_id . ' à OS #' . $os_id);
+
+            // Enviar notificação ao técnico
+            $this->load->model('notificacoes_model');
+            $this->notificacoes_model->ensureTableExists();
+
+            $url_os = site_url('tecnicos/ver_os/' . $os_id);
+            $this->notificacoes_model->adicionar([
+                'usuario_id' => $tecnico_id,
+                'tipo_usuario' => 'tecnico',
+                'titulo' => 'Nova OS Atribuída',
+                'mensagem' => 'Você foi designado para a OS #' . $os_id . ($os_atual && $os_atual->nomeCliente ? ' - ' . $os_atual->nomeCliente : ''),
+                'url' => $url_os,
+                'tipo' => 'info',
+                'icone' => 'bx-clipboard'
+            ]);
         } else {
             $this->session->set_flashdata('error', 'Erro ao atribuir técnico. Verifique se já não está atribuído.');
         }

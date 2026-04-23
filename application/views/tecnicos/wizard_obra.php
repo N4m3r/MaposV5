@@ -683,6 +683,18 @@ if ($etapa_id && !empty($etapas)) {
                             </button>
                         </div>
                         <?php endif; ?>
+
+                        <?php if ($atv->status == 'reaberta'): ?>
+                        <div style="margin-top: 10px;">
+                            <span style="font-size: 12px; color: #9b59b6; margin-right: 8px;">
+                                <i class='bx bx-refresh'></i> Reatendimento Aguardando
+                            </span>
+                            <button class="btn-acao btn-primary-tec" style="padding: 6px 12px; font-size: 12px; background: linear-gradient(135deg, #9b59b6, #8e44ad);"
+                                    onclick="iniciarReatendimento(<?= $atv->idAtividade ?>)">
+                                <i class='bx bx-play'></i> Iniciar
+                            </button>
+                        </div>
+                        <?php endif; ?>
                     </div>
                     <?php endforeach; ?>
                 <?php else: ?>
@@ -1098,6 +1110,40 @@ window.realizarCheckoutObra = function() {
 window.fecharModal = function(id) {
     const modal = document.getElementById(id);
     if (modal) modal.remove();
+}
+
+// Iniciar reatendimento (reatividade reaberta)
+window.iniciarReatendimento = function(reatendimentoId) {
+    if (!confirm('Iniciar reatendimento desta atividade?')) return;
+
+    fetch('<?= site_url("obras/iniciarReatendimento/") ?>' + reatendimentoId, {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            '<?= config_item('csrf_token_name') ?>': getCookie('<= config_item('csrf_cookie_name') ?>')
+        }
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success || data.status === 'success') {
+            alert('Reatendimento iniciado com sucesso!');
+            window.location.reload();
+        } else {
+            alert('Erro: ' + (data.message || 'Erro desconhecido'));
+        }
+    })
+    .catch(err => {
+        alert('Erro ao iniciar reatendimento: ' + err.message);
+        console.error(err);
+    });
+}
+
+// Helper para pegar cookie (CSRF)
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+    return '';
 }
 
 <?php if ($atividade_em_andamento): ?>

@@ -426,7 +426,8 @@ class Tecnicos extends MY_Controller
         $this->data['etapa'] = $etapa;
         $this->data['etapas'] = $etapas;
         $this->data['atividade_em_andamento'] = $atividade_andamento;
-        $this->data['atividades_lista'] = $this->atividades->listarPorObra($obra_id);
+        // Listar apenas atividades do técnico logado (incluindo reatendimentos atribuídos a ele)
+        $this->data['atividades_lista'] = $this->atividades->listarPorObra($obra_id, ['tecnico_id' => $tecnico_id]);
         $this->data['tipos_atividades'] = $this->atividades_tipos->listarPorCategoria();
         $this->data['checkin_realizado'] = count($this->data['atividades_lista']) > 0;
         $this->data['obra_atividade'] = $obra_atividade;
@@ -2841,5 +2842,24 @@ class Tecnicos extends MY_Controller
         } else {
             echo json_encode(['success' => false, 'message' => 'Erro ao alterar senha. Tente novamente.']);
         }
+    }
+
+    /**
+     * Helper para enviar notificação a um técnico
+     */
+    private function _notificarTecnico($tecnico_id, $titulo, $mensagem, $url = null, $tipo = 'info', $icone = 'bx-bell')
+    {
+        $this->load->model('notificacoes_model');
+        $this->notificacoes_model->ensureTableExists();
+
+        return $this->notificacoes_model->adicionar([
+            'usuario_id' => $tecnico_id,
+            'tipo_usuario' => 'tecnico',
+            'titulo' => $titulo,
+            'mensagem' => $mensagem,
+            'url' => $url,
+            'tipo' => $tipo,
+            'icone' => $icone
+        ]);
     }
 }

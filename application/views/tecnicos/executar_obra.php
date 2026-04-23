@@ -284,6 +284,19 @@
 .btn-acao.detalhes:hover {
     background: #e9ecef;
 }
+.btn-acao.reabrir {
+    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+    color: white;
+}
+.btn-acao.reabrir:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
+}
+.btn-acao:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
 
 /* ===== Modal Wizard ===== */
 .wizard-overlay {
@@ -1062,6 +1075,10 @@ textarea.wizard-input {
                                         <?php if (($statusAtiv === 'em_andamento' || $statusAtiv === 'iniciada') && $ativId): ?>
                                         <button class="btn-acao finalizar" onclick="WizardAtendimento.continuar(<?= $ativId ?>)">
                                             <i class="icon-stop"></i> Finalizar
+                                        </button>
+                                        <?php elseif ($statusAtiv === 'concluida' && $ativId): ?>
+                                        <button class="btn-acao reabrir" onclick="reabrirAtividade(<?= $ativId ?>, '<?= htmlspecialchars($ativ->titulo ?? $ativ->descricao ?? 'Atividade #' . $ativId, ENT_QUOTES) ?>')">
+                                            <i class="icon-refresh"></i> Reabrir
                                         </button>
                                         <?php else: ?>
                                         <span class="btn-acao detalhes">

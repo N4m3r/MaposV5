@@ -1085,11 +1085,137 @@
             }
         })();
 
-        // Carregar notificações
+        // NOTIFICAÇÕES
+        let notifAberto = false;
+
+        function toggleNotificacoes(e) {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            const dropdown = document.getElementById('notifDropdown');
+            notifAberto = !notifAberto;
+
+            if (notifAberto) {
+                dropdown.classList.add('active');
+                carregarListaNotificacoes();
+            } else {
+                dropdown.classList.remove('active');
+            }
+        }
+
+        // Fechar notificações ao clicar fora
+        document.addEventListener('click', function(e) {
+            const container = document.querySelector('.tec-notif-container');
+            const dropdown = document.getElementById('notifDropdown');
+
+            if (container && !container.contains(e.target) && notifAberto) {
+                dropdown.classList.remove('active');
+                notifAberto = false;
+            }
+        });
+
+        function carregarListaNotificacoes() {
+            const listEl = document.getElementById('notifList');
+            listEl.innerHTML = '<div class="tec-notif-empty">Carregando...</div>';
+
+            $.getJSON('<?= base_url() ?>index.php/notificacoes/listar', function(resp) {
+                if (resp.success && resp.notificacoes && resp.notificacoes.length > 0) {
+                    listEl.innerHTML = '';
+
+                    resp.notificacoes.forEach(function(n) {
+                        const item = document.createElement('div');
+                        item.className = 'tec-notif-item' + (n.lida == 0 ? ' nao-lida' : '');
+                        item.onclick = function() { abrirNotificacao(n.id, n.url); };
+
+                        // Ícone baseado no tipo
+                        const icones = {
+                            'info': 'bx-info-circle',
+                            'success': 'bx-check-circle',
+                            'warning': 'bx-error',
+                            'danger': 'bx-x-circle'
+                        };
+                        const icone = icones[n.tipo] || 'bx-bell';
+
+                        item.innerHTML = `
+                            <div class="tec-notif-icon ${n.tipo}">
+                                <i class='bx ${icone}'></i>
+                            </div>
+                            <div class="tec-notif-content">
+                                <div class="tec-notif-titulo">${escapeHtml(n.titulo)}</div>
+                                <div class="tec-notif-mensagem">${escapeHtml(n.mensagem)}</div>
+                                <div class="tec-notif-data">${formatarData(n.data_notificacao)}</div>
+                            </div>
+                        `;
+
+                        listEl.appendChild(item);
+                    });
+                } else {
+                    listEl.innerHTML = '<div class="tec-notif-empty">Nenhuma notificação</div>';
+                }
+            }).fail(function() {
+                listEl.innerHTML = '<div class="tec-notif-empty">Erro ao carregar notificações</div>';
+            });
+        }
+
+        function abrirNotificacao(id, url) {
+            // Marcar como lida
+            $.post('<?= base_url() ?>index.php/notificacoes/marcar_lida', {
+                id: id,
+                '<?= $this->security->get_csrf_token_name() ?>': '<?= $this->security->get_csrf_hash() ?>'
+            }, function() {
+                loadNotifications();
+                if (url && url !== '#') {
+                    window.location.href = url;
+                }
+            });
+        }
+
+        function marcarTodasLidas(e) {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            $.post('<?= base_url() ?>index.php/notificacoes/marcar_lida', {
+                '<?= $this->security->get_csrf_token_name() ?>': '<?= $this->security->get_csrf_hash() ?>'
+            }, function() {
+                loadNotifications();
+                carregarListaNotificacoes();
+            });
+        }
+
+        // Escape HTML para evitar XSS
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Formatar data relativa
+        function formatarData(dataStr) {
+            if (!dataStr) return '';
+            const data = new Date(dataStr);
+            const agora = new Date();
+            const diff = Math.floor((agora - data) / 1000);
+
+            if (diff < 60) return 'Agora mesmo';
+            if (diff < 3600) return Math.floor(diff / 60) + ' min atrás';
+            if (diff < 86400) return Math.floor(diff / 3600) + ' horas atrás';
+            if (diff < 604800) return Math.floor(diff / 86400) + ' dias atrás';
+
+            return data.toLocaleDateString('pt-BR');
+        }
+
+        // Carregar contador de notificações
         function loadNotifications() {
             $.getJSON('<?= base_url() ?>index.php/notificacoes/listar', function(resp) {
                 if (resp.success && resp.nao_lidas > 0) {
                     $('#notifCount').text(resp.nao_lidas > 99 ? '99+' : resp.nao_lidas).show();
+                } else {
+                    $('#notifCount').hide();
                 }
             });
         }
