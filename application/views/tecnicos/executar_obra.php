@@ -61,6 +61,13 @@
     color: white;
     box-shadow: 0 5px 20px rgba(243, 156, 18, 0.3);
 }
+.atividade-andamento.atividade-pausada {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    box-shadow: 0 5px 20px rgba(231, 76, 60, 0.3);
+}
+.atividade-andamento.atividade-pausada .btn-continuar {
+    color: #e74c3c;
+}
 .atividade-andamento h3 {
     margin: 0 0 10px 0;
     font-size: 18px;

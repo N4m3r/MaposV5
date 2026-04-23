@@ -1349,6 +1349,9 @@ body[data-theme="dark"] .config-grid-item:hover {
 </div>
 
 <script>
+// Log inicial para confirmar carregamento
+console.log('=== SCRIPT DE CONFIGURACOES CARREGADO ===');
+
 // Captura global de erros
 window.addEventListener('error', function(e) {
     console.error('=== ERRO GLOBAL CAPTURADO ===');
@@ -1356,7 +1359,7 @@ window.addEventListener('error', function(e) {
     console.error('Arquivo:', e.filename);
     console.error('Linha:', e.lineno);
     console.error('Coluna:', e.colno);
-    console.error('Stack:', e.error?.stack);
+    console.error('Stack:', e.error ? e.error.stack : 'N/A');
     console.error('=== FIM ERRO GLOBAL ===');
 });
 
@@ -1365,7 +1368,7 @@ function switchTab(tabName, element) {
     console.log('=== SWITCH TAB DEBUG ===');
     console.log('TabName:', tabName);
     console.log('Element:', element);
-    console.log('Element text:', element ? element.textContent?.trim() : 'null');
+    console.log('Element text:', element && element.textContent ? element.textContent.trim() : 'null');
 
     try {
         // Remove active de todas as abas
@@ -1403,22 +1406,32 @@ function switchTab(tabName, element) {
 // Carrega aba salva
 (function loadSavedTab() {
     console.log('=== LOAD SAVED TAB DEBUG ===');
-    const savedTab = localStorage.getItem('obras_config_tab');
-    console.log('Saved tab from localStorage:', savedTab);
+    try {
+        const savedTab = localStorage.getItem('obras_config_tab');
+        console.log('Saved tab from localStorage:', savedTab);
 
-    if (savedTab) {
-        const selector = `.config-tab-item[onclick*="${savedTab}"]`;
-        console.log('Selector:', selector);
-        const tabElement = document.querySelector(selector);
-        console.log('Tab element found:', tabElement);
+        if (savedTab) {
+            // Verificar se o savedTab é seguro (apenas letras, hífen e underscore)
+            if (/^[a-zA-Z0-9_-]+$/.test(savedTab)) {
+                const selector = '.config-tab-item[onclick*="' + savedTab + '"]';
+                console.log('Selector:', selector);
+                const tabElement = document.querySelector(selector);
+                console.log('Tab element found:', tabElement);
 
-        if (tabElement) {
-            switchTab(savedTab, tabElement);
+                if (tabElement) {
+                    switchTab(savedTab, tabElement);
+                } else {
+                    console.error('ERRO: Não encontrou elemento da aba salva com selector:', selector);
+                }
+            } else {
+                console.error('ERRO: Valor inválido no localStorage:', savedTab);
+                localStorage.removeItem('obras_config_tab');
+            }
         } else {
-            console.error('ERRO: Não encontrou elemento da aba salva com selector:', selector);
+            console.log('Nenhuma aba salva no localStorage');
         }
-    } else {
-        console.log('Nenhuma aba salva no localStorage');
+    } catch (e) {
+        console.error('ERRO ao carregar aba salva:', e);
     }
     console.log('=== FIM LOAD DEBUG ===');
 })();
@@ -1427,8 +1440,8 @@ function switchTab(tabName, element) {
 console.log('=== VERIFICAÇÃO INICIAL ===');
 console.log('Total .config-tab-item:', document.querySelectorAll('.config-tab-item').length);
 console.log('Total .config-content:', document.querySelectorAll('.config-content').length);
-document.querySelectorAll('.config-content').forEach((el, i) => {
-    console.log(`Content ${i}: id=${el.id}, classes=${el.className}`);
+document.querySelectorAll('.config-content').forEach(function(el, i) {
+    console.log('Content ' + i + ': id=' + el.id + ', classes=' + el.className);
 });
 console.log('=== FIM VERIFICAÇÃO ===');
 
