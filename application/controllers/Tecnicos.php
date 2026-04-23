@@ -1279,11 +1279,12 @@ class Tecnicos extends MY_Controller
         $tecnico_id = $this->session->userdata('tec_id');
         $this->data['tecnico'] = $this->tecnicos_model->getById($tecnico_id);
         $this->data['menuPerfil'] = 'Perfil';
+        $this->data['title'] = 'Meu Perfil - Portal do Técnico';
 
-        $this->load->view('tema/topo', $this->data);
-        $this->load->view('tema/menu_portal_tecnico', $this->data);
-        $this->load->view('tecnicos/perfil', $this->data);
-        $this->load->view('tema/rodape', $this->data);
+        // Usar layout do portal do técnico
+        $this->load->view('tecnicos/layout', array_merge($this->data, [
+            'content' => $this->load->view('tecnicos/perfil', $this->data, true)
+        ]));
     }
 
     /**
