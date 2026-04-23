@@ -1200,7 +1200,7 @@ class Tecnicos extends MY_Controller
     }
 
     /**
-     * Página de estoque do veículo
+     * Página de estoque do veículo - NOVO LAYOUT
      */
     public function meu_estoque()
     {
@@ -1209,11 +1209,11 @@ class Tecnicos extends MY_Controller
         $this->data['menuEstoque'] = 'active';
         $this->data['estoque'] = $this->tecnicos_model->getEstoqueVeiculo($tecnico_id);
         $this->data['historico'] = $this->tecnicos_model->getHistoricoEstoque($tecnico_id, 30);
+        $this->data['tecnico'] = $this->tecnicos_model->getById($tecnico_id);
+        $this->data['pageTitle'] = 'Meu Estoque';
+        $this->data['title'] = 'Meu Estoque - Portal do Técnico';
 
-        $this->load->view('tema/topo', $this->data);
-        $this->load->view('tema/menu_portal_tecnico', $this->data);
-        $this->load->view('tecnicos/meu_estoque', $this->data);
-        $this->load->view('tema/rodape', $this->data);
+        $this->_load_tec_layout('meu_estoque', $this->data);
     }
 
     /**

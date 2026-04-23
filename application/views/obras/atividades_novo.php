@@ -198,7 +198,7 @@
   <div id="debugOutput">Inicializando...</div>
 </div>
 
-<script>
+<script type="text/javascript">
 // Debug helper
 var debugMsgs = [];
 function logDebug(msg) {
@@ -207,9 +207,6 @@ function logDebug(msg) {
     if (out) out.innerHTML = debugMsgs.join('<br>');
     console.log('[DEBUG]', msg);
 }
-window.onerror = function(msg, url, line) {
-    logDebug('ERRO JS: ' + msg + ' (linha ' + line + ')');
-};
 </script>
 
 <div class="atividades-wrapper">
@@ -221,11 +218,9 @@ window.onerror = function(msg, url, line) {
             <a href="<?php echo site_url('obras/visualizar/' . ($obra->id ?? 0)); ?>" class="btn btn-secondary">
                 <i class='icon icon-arrow-left'></i> Voltar à Obra
             </a>
-            <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
             <button class="btn btn-primary" onclick="abrirModalNova()">
                 <i class='icon icon-plus'></i> Nova Atividade
             </button>
-            <?php endif; ?>
         </div>
     </div>
 
@@ -358,11 +353,9 @@ window.onerror = function(msg, url, line) {
             <i class='icon icon-remove' style="font-size:60px;color:#667eea;margin-bottom:15px;display:block;"></i>
             <h3>Nenhuma atividade encontrada</h3>
             <p>Esta obra ainda não possui atividades registradas.</p>
-            <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
             <button class="btn btn-primary" onclick="abrirModalNova()">
                 <i class='icon icon-plus'></i> Adicionar Primeira Atividade
             </button>
-            <?php endif; ?>
         </div>
         <?php else: ?>
 
@@ -407,9 +400,7 @@ window.onerror = function(msg, url, line) {
                     <span class="atv-card-badge wizard" title="Sistema Wizard"><i class='icon icon-time'></i></span>
                     <?php endif; ?>
                     <span class="atv-card-badge view" title="Ver detalhes"><i class='icon icon-eye-open'></i></span>
-                    <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
                     <span class="atv-card-badge delete" title="Excluir" onclick="event.stopPropagation(); excluirAtividade('<?php echo $atv['sistema']; ?>', <?php echo $atv['id']; ?>)"><i class='icon icon-trash'></i></span>
-                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -504,10 +495,13 @@ window.onerror = function(msg, url, line) {
     </div>
 </div>
 
-<script>
+<script type="text/javascript">
 // Variáveis globais
 var atividadeAtual = null;
 var sistemaAtual = null;
+
+// Log inicial
+logDebug('JavaScript carregado');
 
 // Filtrar atividades
 function filtrarAtividades() {
@@ -516,7 +510,8 @@ function filtrarAtividades() {
     var tipo = document.getElementById('filtroTipo').value;
     var cards = document.querySelectorAll('.atv-card');
 
-    cards.forEach(function(card) {
+    for (var i = 0; i < cards.length; i++) {
+        var card = cards[i];
         var titulo = card.getAttribute('data-titulo') || '';
         var cardStatus = card.getAttribute('data-status') || '';
         var cardTipo = card.getAttribute('data-tipo') || '';
@@ -526,7 +521,7 @@ function filtrarAtividades() {
         var matchTipo = !tipo || cardTipo === tipo;
 
         card.style.display = (matchBusca && matchStatus && matchTipo) ? 'block' : 'none';
-    });
+    }
 }
 
 // Abrir modal de detalhes
@@ -585,9 +580,7 @@ function abrirDetalhes(sistema, id, dadosBase64) {
 
         // Botões para sistema antigo
         var botoes = '<button class="btn btn-secondary" onclick="fecharModal()">Fechar</button>';
-        <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
-        botoes += '<button class="btn btn-primary" onclick="editarAtividade()">Editar</button>';
-        <?php endif; ?>
+        botoes += '<button class="btn btn-primary" onclick="editarAtividade()" id="btnEditarAtv">Editar</button>';
         footer.innerHTML = botoes;
 
         modal.classList.add('ativo');
@@ -707,8 +700,12 @@ function editarAtividade() {
     var viewFields = document.querySelectorAll('.view-field');
     var editFields = document.querySelectorAll('.edit-field');
 
-    viewFields.forEach(function(el) { el.style.display = 'none'; });
-    editFields.forEach(function(el) { el.style.display = 'block'; });
+    for (var i = 0; i < viewFields.length; i++) {
+        viewFields[i].style.display = 'none';
+    }
+    for (var i = 0; i < editFields.length; i++) {
+        editFields[i].style.display = 'block';
+    }
 
     // Mudar botões
     var footer = document.getElementById('modalFooter');
@@ -856,5 +853,18 @@ function formatarDataHora(dataHoraStr) {
 }
 
 // Log de inicialização
-logDebug('JS inicializado. Total cards: ' + document.querySelectorAll('.atv-card').length);
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    logDebug('JS inicializado. Cards: ' + document.querySelectorAll('.atv-card').length);
+} else {
+    // Aguardar DOM estar pronto
+    if (window.addEventListener) {
+        window.addEventListener('load', function() {
+            logDebug('JS inicializado (onload). Cards: ' + document.querySelectorAll('.atv-card').length);
+        });
+    } else if (window.attachEvent) {
+        window.attachEvent('onload', function() {
+            logDebug('JS inicializado (onload). Cards: ' + document.querySelectorAll('.atv-card').length);
+        });
+    }
+}
 </script>
