@@ -1854,6 +1854,40 @@ const WizardAtendimento = {
     fotosRegistradas: [],
     atividadesConcluidas: [],
 
+    // Converter data do MySQL para objeto Date considerando o fuso local
+    // Evita problemas de contagem negativa devido a diferenças de timezone
+    converterDataHoraLocal: function(dataHoraString) {
+        if (!dataHoraString) return null;
+
+        // Se já for um objeto Date, retorna cópia
+        if (dataHoraString instanceof Date) {
+            return new Date(dataHoraString.getTime());
+        }
+
+        // Converte string do MySQL (formato: "2024-04-23 14:30:00") para Date local
+        // Parse manual para evitar problemas de fuso horário
+        var partes = dataHoraString.split(' ');
+        if (partes.length !== 2) return new Date(dataHoraString); // fallback
+
+        var dataPartes = partes[0].split('-');
+        var horaPartes = partes[1].split(':');
+
+        if (dataPartes.length !== 3 || horaPartes.length < 2) {
+            return new Date(dataHoraString); // fallback
+        }
+
+        var ano = parseInt(dataPartes[0], 10);
+        var mes = parseInt(dataPartes[1], 10) - 1; // meses são 0-indexed
+        var dia = parseInt(dataPartes[2], 10);
+        var hora = parseInt(horaPartes[0], 10);
+        var minuto = parseInt(horaPartes[1], 10);
+        var segundo = parseInt(horaPartes[2] || '0', 10);
+
+        // Cria a data no fuso local (sem conversão UTC)
+        var dataLocal = new Date(ano, mes, dia, hora, minuto, segundo);
+        return dataLocal;
+    },
+
     // Obter token CSRF
     getCsrfToken: function() {
         const tokenEl = document.querySelector('input[name="MAPOS_TOKEN"]');
@@ -1991,7 +2025,7 @@ const WizardAtendimento = {
         const atividade = dadosObra.atividadeAndamento;
         var tempoTexto = '00:00';
         if (atividade && atividade.hora_inicio) {
-            const inicio = new Date(atividade.hora_inicio);
+            const inicio = this.converterDataHoraLocal(atividade.hora_inicio);
             const agora = new Date();
             const diff = agora - inicio;
             const horas = Math.floor(diff / 3600000);
@@ -2031,7 +2065,7 @@ const WizardAtendimento = {
         // Preencher info da atividade em andamento
         const atividade = dadosObra.atividadeAndamento;
         if (atividade) {
-            this.horaInicio = new Date(atividade.hora_inicio);
+            this.horaInicio = this.converterDataHoraLocal(atividade.hora_inicio);
             this.etapaSelecionada = {
                 id: atividade.etapa_id || 0,
                 nome: atividade.etapa_nome || 'Etapa'
@@ -2569,7 +2603,7 @@ const WizardAtendimento = {
 
         // Calcular tempo decorrido
         const inicio = atividadeEmAndamento && atividadeEmAndamento.hora_inicio
-            ? new Date(atividadeEmAndamento.hora_inicio)
+            ? this.converterDataHoraLocal(atividadeEmAndamento.hora_inicio)
             : this.horaInicio;
         var tempoTexto = '00:00';
         if (inicio) {
@@ -2837,7 +2871,7 @@ const WizardAtendimento = {
         }
 
         // Calcular tempo decorrido
-        const inicio = atividadeEmAndamento.hora_inicio ? new Date(atividadeEmAndamento.hora_inicio) : this.horaInicio;
+        const inicio = atividadeEmAndamento.hora_inicio ? this.converterDataHoraLocal(atividadeEmAndamento.hora_inicio) : this.horaInicio;
         var tempoTexto = '00:00';
         if (inicio) {
             const agora = new Date();
@@ -2943,7 +2977,7 @@ const WizardAtendimento = {
             const minutos = Math.floor((diff % 3600000) / 60000);
             tempoTotalTexto = String(horas).padStart(2, '0') + ':' + String(minutos).padStart(2, '0');
         } else if (atividadeEmAndamento && atividadeEmAndamento.hora_inicio) {
-            const inicio = new Date(atividadeEmAndamento.hora_inicio);
+            const inicio = this.converterDataHoraLocal(atividadeEmAndamento.hora_inicio);
             horaInicioTexto = inicio.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
             const agora = new Date();
             const diff = agora - inicio;
