@@ -231,11 +231,11 @@
                         <label class="form-label">Tipo de Obra</label>
                         <select name="tipo_obra" class="form-select">
                             <option value="" disabled <?php echo (!isset($result) || empty($result->tipo_obra)) ? 'selected' : ''; ?>>Selecione o tipo...</option>
-                            <option value="Reforma" <?php echo (isset($result) && $result->tipo_obra == 'Reforma') ? 'selected' : ''; ?>>Reforma</option>
-                            <option value="Construcao" <?php echo (isset($result) && $result->tipo_obra == 'Construcao') ? 'selected' : ''; ?>>Construção</option>
-                            <option value="Instalacao" <?php echo (isset($result) && $result->tipo_obra == 'Instalacao') ? 'selected' : ''; ?>>Instalação</option>
-                            <option value="Manutencao" <?php echo (isset($result) && $result->tipo_obra == 'Manutencao') ? 'selected' : ''; ?>>Manutenção</option>
-                            <option value="Outro" <?php echo (isset($result) && $result->tipo_obra == 'Outro') ? 'selected' : ''; ?>>Outro</option>
+                            <option value="Condominio" <?php echo (isset($result) && $result->tipo_obra == 'Condominio') ? 'selected' : ''; ?>>Condomínio</option>
+                            <option value="Comercio" <?php echo (isset($result) && $result->tipo_obra == 'Comercio') ? 'selected' : ''; ?>>Comércio</option>
+                            <option value="Residencia" <?php echo (isset($result) && $result->tipo_obra == 'Residencia') ? 'selected' : ''; ?>>Residência</option>
+                            <option value="Industrial" <?php echo (isset($result) && $result->tipo_obra == 'Industrial') ? 'selected' : ''; ?>>Industrial</option>
+                            <option value="Publica" <?php echo (isset($result) && $result->tipo_obra == 'Publica') ? 'selected' : ''; ?>>Pública</option>
                         </select>
                     </div>
 

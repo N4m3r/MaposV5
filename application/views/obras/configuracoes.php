@@ -800,6 +800,7 @@ body[data-theme="dark"] .config-grid-item:hover {
                             ];
                             $tipos = $tipos_obra ?? $tipos_obra_padrao;
                             foreach ($tipos as $tipo):
+                                $tipo = (array) $tipo;
                             ?>
                             <div class="config-item">
                                 <div class="config-item-icon" style="background: <?php echo $tipo['cor']; ?>20; color: <?php echo $tipo['cor']; ?>;">
@@ -858,6 +859,8 @@ body[data-theme="dark"] .config-grid-item:hover {
                             ];
                             $tipos_atv = $tipos_atividades ?? $tipos_atv_padrao;
                             foreach ($tipos_atv as $tipo):
+                                // Converter objeto para array se necessário
+                                $tipo = (array) $tipo;
                             ?>
                             <div class="config-item">
                                 <div class="config-item-icon" style="background: <?php echo $tipo['cor']; ?>20; color: <?php echo $tipo['cor']; ?>;">
@@ -921,6 +924,7 @@ body[data-theme="dark"] .config-grid-item:hover {
                             ];
                             $status_list = $status_obra ?? $status_obra_padrao;
                             foreach ($status_list as $status):
+                                $status = (array) $status;
                             ?>
                             <div class="config-item">
                                 <div class="config-item-icon" style="background: <?php echo $status['cor']; ?>20; color: <?php echo $status['cor']; ?>;">
@@ -986,6 +990,7 @@ body[data-theme="dark"] .config-grid-item:hover {
                             ];
                             $status_atv_list = $status_atividade ?? $status_atv_padrao;
                             foreach ($status_atv_list as $status):
+                                $status = (array) $status;
                             ?>
                             <div class="config-item">
                                 <div class="config-item-icon" style="background: <?php echo $status['cor']; ?>20; color: <?php echo $status['cor']; ?>;">
@@ -1051,6 +1056,7 @@ body[data-theme="dark"] .config-grid-item:hover {
                             ];
                             $esp_list = $especialidades ?? $especialidades_padrao;
                             foreach ($esp_list as $esp):
+                                $esp = (array) $esp;
                             ?>
                             <div class="config-grid-item">
                                 <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
@@ -1114,6 +1120,7 @@ body[data-theme="dark"] .config-grid-item:hover {
                             ];
                             $funcoes = $funcoes_equipe ?? $funcoes_padrao;
                             foreach ($funcoes as $funcao):
+                                $funcao = (array) $funcao;
                                 $nivel_cor = ['alto' => '#e74c3c', 'medio' => '#f39c12', 'baixo' => '#27ae60'][$funcao['nivel'] ?? 'baixo'];
                             ?>
                             <div class="config-item">

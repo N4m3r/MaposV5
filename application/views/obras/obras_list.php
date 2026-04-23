@@ -546,16 +546,21 @@ $obras = isset($obras) ? $obras : (isset($results) ? $results : []);
                 <h1><i class="icon-building"></i> Gerenciamento de Obras</h1>
                 <p>Acompanhe e gerencie todas as obras do sistema</p>
             </div>
-            <div style="display: flex; gap: 12px;">
+            <div style="display: flex; gap: 12px; align-items: center;">
+                <!-- Indicador de atualização automática -->
+                <div id="autoUpdateIndicator" class="auto-update-indicator" title="Atualização automática ativa">
+                    <span class="update-dot"></span>
+                    <span class="update-text">Atualizando...</span>
+                </div>
                 <a href="<?php echo site_url('obras/adicionar'); ?>" class="obras-filter-btn obras-add-btn">
                     <i class="icon-plus"></i> Nova Obra
                 </a>
-                <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cObras')): ?>
-                <a href="<?php echo site_url('obras/configuracoes'); ?>" class="obras-filter-btn" style="background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); color: white;">
-                    <i class="icon-cog"></i> Configurações
-                </a>
-                <?php endif; ?>
-            </div>
+                &lt;?php if ($this-&gt;permission-&gt;checkPermission($this-&gt;session-&gt;userdata('permissao'), 'cObras')): ?&gt;
+                &lt;a href="&lt;?php echo site_url('obras/configuracoes'); ?>" class="obras-filter-btn" style="background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); color: white;"&gt;
+                    &lt;i class="icon-cog"&gt;&lt;/i&gt; Configurações
+                &lt;/a&gt;
+                &lt;?php endif; ?&gt;
+            &lt;/div&gt;
         </div>
     </div>
 
@@ -601,6 +606,58 @@ $obras = isset($obras) ? $obras : (isset($results) ? $results : []);
             </div>
         </div>
     </div>
+
+    <!-- CSS do Indicador de Atualização -->
+    <style>
+    .auto-update-indicator {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255,255,255,0.2);
+        padding: 8px 16px;
+        border-radius: 50px;
+        font-size: 13px;
+        color: white;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    .auto-update-indicator.active {
+        opacity: 1;
+    }
+    .auto-update-indicator .update-dot {
+        width: 8px;
+        height: 8px;
+        background: #38ef7d;
+        border-radius: 50%;
+        animation: pulse-dot 1.5s infinite;
+    }
+    @keyframes pulse-dot {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.5; transform: scale(0.8); }
+    }
+    .auto-update-indicator .update-text {
+        font-weight: 500;
+    }
+    /* Indicador de última atualização */
+    .last-update-info {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: rgba(0,0,0,0.8);
+        color: white;
+        padding: 10px 16px;
+        border-radius: 8px;
+        font-size: 12px;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.3s ease;
+        z-index: 9999;
+    }
+    .last-update-info.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    </style>
 
     <!-- Filtros -->
     <div class="obras-filter-bar">
