@@ -1350,94 +1350,211 @@ body[data-theme="dark"] .config-grid-item:hover {
 
 <!-- INICIO DO SCRIPT DE CONFIGURACOES -->
 <script type="text/javascript">
-// Log inicial para confirmar carregamento
-console.log('=== SCRIPT DE CONFIGURACOES CARREGADO ===');
-
-// Captura global de erros
-window.addEventListener('error', function(e) {
-    console.error('=== ERRO GLOBAL CAPTURADO ===');
-    console.error('Mensagem:', e.message);
-    console.error('Arquivo:', e.filename);
-    console.error('Linha:', e.lineno);
-    console.error('Coluna:', e.colno);
-    console.error('Stack:', e.error ? e.error.stack : 'N/A');
-    console.error('=== FIM ERRO GLOBAL ===');
-});
-
-// Aguardar DOM estar pronto
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('=== DOM CARREGADO ===');
-});
+// Log inicial
+console.log('SCRIPT CARREGADO');
 
 // Navegação entre abas
 function switchTab(tabName, element) {
-    console.log('=== SWITCH TAB DEBUG ===');
-    console.log('TabName:', tabName);
-    console.log('Element:', element);
+    console.log('Clicou na aba:', tabName);
 
     if (!element) {
-        console.error('ERRO: Elemento não fornecido!');
-        return;
+        console.error('Elemento não encontrado');
+        return false;
     }
 
-    try {
-        // Remove active de todas as abas
-        var allTabs = document.querySelectorAll('.config-tab-item');
-        var allContents = document.querySelectorAll('.config-content');
-        console.log('Total tabs:', allTabs.length);
-        console.log('Total contents:', allContents.length);
+    // Busca todas as abas e conteúdos
+    var tabs = document.getElementsByClassName('config-tab-item');
+    var contents = document.getElementsByClassName('config-content');
 
-        // Remover classe active de todas as tabs
-        for (var i = 0; i < allTabs.length; i++) {
-            allTabs[i].classList.remove('active');
-        }
+    console.log('Tabs encontradas:', tabs.length);
+    console.log('Contents encontrados:', contents.length);
 
-        // Remover classe active de todos os conteúdos
-        for (var i = 0; i < allContents.length; i++) {
-            allContents[i].classList.remove('active');
-        }
+    // Remove active de todas as abas
+    for (var i = 0; i < tabs.length; i++) {
+        tabs[i].classList.remove('active');
+    }
 
-        // Adiciona active na aba clicada
-        element.classList.add('active');
-        console.log('Tab ativada');
+    // Remove active de todos os conteúdos
+    for (var i = 0; i < contents.length; i++) {
+        contents[i].classList.remove('active');
+    }
 
-        // Ativa o conteúdo correspondente
-        var targetContent = document.getElementById('tab-' + tabName);
-        console.log('Target content:', targetContent);
+    // Adiciona active na aba clicada
+    element.classList.add('active');
 
-        if (targetContent) {
-            targetContent.classList.add('active');
-            console.log('Conteúdo ativado');
-        } else {
-            console.error('ERRO: Elemento #tab-' + tabName + ' não encontrado!');
-        }
+    // Ativa o conteúdo correspondente
+    var targetId = 'tab-' + tabName;
+    var target = document.getElementById(targetId);
 
-        // Salva preferência no localStorage
+    if (target) {
+        target.classList.add('active');
+        console.log('Aba ativada com sucesso:', targetId);
+
+        // Salva no localStorage
         try {
             localStorage.setItem('obras_config_tab', tabName);
-            console.log('Tab salva no localStorage');
-        } catch (e) {
-            console.warn('Não foi possível salvar no localStorage:', e);
-        }
-    } catch (error) {
-        console.error('ERRO ao trocar aba:', error);
-        alert('Erro ao trocar aba: ' + error.message);
+        } catch(e) {}
+    } else {
+        console.error('Conteúdo não encontrado:', targetId);
     }
-    console.log('=== FIM DEBUG ===');
+
+    return false;
 }
 
 // Carrega aba salva
 function loadSavedTab() {
-    console.log('=== LOAD SAVED TAB DEBUG ===');
     try {
         var savedTab = localStorage.getItem('obras_config_tab');
-        console.log('Saved tab from localStorage:', savedTab);
-
         if (savedTab) {
-            // Verificar se o savedTab é seguro (apenas letras, hífen e underscore)
-            var regex = /^[a-zA-Z0-9_-]+$/;
-            if (regex.test(savedTab)) {
-                var selector = '.config-tab-item[onclick*="' + savedTab + '"]';
+            // Encontra a tab pelo onclick
+            var tabs = document.getElementsByClassName('config-tab-item');
+            for (var i = 0; i < tabs.length; i++) {
+                var onclick = tabs[i].getAttribute('onclick');
+                if (onclick && onclick.indexOf(savedTab) > -1) {
+                    switchTab(savedTab, tabs[i]);
+                    break;
+                }
+            }
+        }
+    } catch (e) {
+        console.error('Erro ao carregar aba:', e);
+    }
+}
+
+// Executa quando DOM estiver pronto
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadSavedTab);
+} else {
+    loadSavedTab();
+}
+
+// Modal functions
+function abrirModal(title, content) {
+    document.getElementById('modalTitle').innerHTML = title;
+    document.getElementById('modalBody').innerHTML = content;
+    document.getElementById('modalConfig').classList.add('active');
+}
+
+function fecharModal() {
+    document.getElementById('modalConfig').classList.remove('active');
+}
+
+function salvarModal() {
+    alert('Função de salvar será implementada');
+    fecharModal();
+}
+
+// Funções específicas para cada tipo
+function abrirModalTipoObra() {
+    var content = '<div class="config-form-group"><label>Nome do Tipo</label><input type="text" class="config-form-control" placeholder="Ex: Reforma Residencial"></div><div class="config-form-group"><label>Descrição</label><textarea class="config-form-control" rows="2" placeholder="Descrição breve"></textarea></div><div class="config-grid" style="grid-template-columns: repeat(2, 1fr);"><div class="config-form-group"><label>Cor</label><input type="color" class="config-form-control" value="#3498db"></div><div class="config-form-group"><label>Ícone (classe Boxicons)</label><input type="text" class="config-form-control" value="bx-building" placeholder="Ex: bx-building"></div></div>';
+    abrirModal("<i class='bx bx-plus-circle'></i> Novo Tipo de Obra", content);
+}
+
+function abrirModalTipoAtividade() {
+    var content = '<div class="config-form-group"><label>Nome do Tipo</label><input type="text" class="config-form-control" placeholder="Ex: Instalação"></div><div class="config-form-group"><label>Descrição</label><textarea class="config-form-control" rows="2"></textarea></div><div class="config-grid" style="grid-template-columns: repeat(2, 1fr);"><div class="config-form-group"><label>Cor</label><input type="color" class="config-form-control" value="#3498db"></div><div class="config-form-group"><label>Categoria</label><select class="config-form-control"><option value="execucao">Execução</option><option value="visita">Visita</option><option value="manutencao">Manutenção</option><option value="impedimento">Impedimento</option><option value="outro">Outro</option></select></div></div>';
+    abrirModal("<i class='bx bx-plus-circle'></i> Novo Tipo de Atividade", content);
+}
+
+function abrirModalStatusObra() {
+    var content = '<div class="config-form-group"><label>Nome do Status</label><input type="text" class="config-form-control" placeholder="Ex: Em Aprovação"></div><div class="config-form-group"><label>Descrição</label><textarea class="config-form-control" rows="2"></textarea></div><div class="config-form-group"><label>Cor</label><input type="color" class="config-form-control" value="#95a5a6"></div><div class="config-form-group"><label class="config-toggle"><input type="checkbox" checked><span class="toggle-slider"></span><span style="margin-left: 12px;">Status finalizado (obra concluída/cancelada)</span></label></div>';
+    abrirModal("<i class='bx bx-plus-circle'></i> Novo Status de Obra", content);
+}
+
+function abrirModalStatusAtividade() {
+    var content = '<div class="config-form-group"><label>Nome do Status</label><input type="text" class="config-form-control" placeholder="Ex: Aguardando Material"></div><div class="config-form-group"><label>Descrição</label><textarea class="config-form-control" rows="2"></textarea></div><div class="config-grid" style="grid-template-columns: repeat(2, 1fr);"><div class="config-form-group"><label>Cor</label><input type="color" class="config-form-control" value="#f39c12"></div><div class="config-form-group"><label>Fluxo</label><select class="config-form-control"><option value="inicial">Inicial</option><option value="execucao">Em Execução</option><option value="final">Final</option><option value="especial">Especial</option></select></div></div>';
+    abrirModal("<i class='bx bx-plus-circle'></i> Novo Status de Atividade", content);
+}
+
+function abrirModalEspecialidade() {
+    var content = '<div class="config-form-group"><label>Nome da Especialidade</label><input type="text" class="config-form-control" placeholder="Ex: Gesso"></div><div class="config-form-group"><label>Descrição</label><textarea class="config-form-control" rows="2"></textarea></div><div class="config-form-group"><label>Cor</label><input type="color" class="config-form-control" value="#e67e22"></div>';
+    abrirModal("<i class='bx bx-plus-circle'></i> Nova Especialidade", content);
+}
+
+function abrirModalFuncao() {
+    var content = '<div class="config-form-group"><label>Nome da Função</label><input type="text" class="config-form-control" placeholder="Ex: Gesseiro"></div><div class="config-form-group"><label>Descrição</label><textarea class="config-form-control" rows="2"></textarea></div><div class="config-form-group"><label>Nível de Acesso</label><select class="config-form-control"><option value="baixo">Baixo - Apenas execução</option><option value="medio">Médio - Coordenação</option><option value="alto">Alto - Gestão</option></select></div>';
+    abrirModal("<i class='bx bx-plus-circle'></i> Nova Função", content);
+}
+
+// Funções de edição e exclusão
+function editarTipoObra(id) {
+    alert('Editar tipo de obra ID: ' + id);
+}
+
+function excluirTipoObra(id) {
+    if (confirm('Tem certeza que deseja excluir este tipo de obra?')) {
+        alert('Excluir tipo de obra ID: ' + id);
+    }
+}
+
+function editarTipoAtividade(id) {
+    alert('Editar tipo de atividade ID: ' + id);
+}
+
+function excluirTipoAtividade(id) {
+    if (confirm('Tem certeza que deseja excluir este tipo de atividade?')) {
+        alert('Excluir tipo de atividade ID: ' + id);
+    }
+}
+
+function editarStatusObra(id) {
+    alert('Editar status de obra ID: ' + id);
+}
+
+function excluirStatusObra(id) {
+    if (confirm('Tem certeza que deseja excluir este status?')) {
+        alert('Excluir status de obra ID: ' + id);
+    }
+}
+
+function editarStatusAtividade(id) {
+    alert('Editar status de atividade ID: ' + id);
+}
+
+function excluirStatusAtividade(id) {
+    if (confirm('Tem certeza que deseja excluir este status?')) {
+        alert('Excluir status de atividade ID: ' + id);
+    }
+}
+
+function editarEspecialidade(id) {
+    alert('Editar especialidade ID: ' + id);
+}
+
+function excluirEspecialidade(id) {
+    if (confirm('Tem certeza que deseja excluir esta especialidade?')) {
+        alert('Excluir especialidade ID: ' + id);
+    }
+}
+
+function editarFuncao(id) {
+    alert('Editar função ID: ' + id);
+}
+
+function excluirFuncao(id) {
+    if (confirm('Tem certeza que deseja excluir esta função?')) {
+        alert('Excluir função ID: ' + id);
+    }
+}
+
+function configurarPermissoes(perfilId) {
+    alert('Configurar permissões do perfil ID: ' + perfilId);
+}
+
+// Fechar modal ao clicar fora
+window.onclick = function(event) {
+    if (event.target.classList.contains('config-modal-overlay')) {
+        fecharModal();
+    }
+};
+
+// Atalho ESC para fechar modal
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        fecharModal();
+    }
+});
+</script>
+<!-- FIM DO SCRIPT DE CONFIGURACOES -->
                 console.log('Selector:', selector);
                 var tabElement = document.querySelector(selector);
                 console.log('Tab element found:', tabElement);

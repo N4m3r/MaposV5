@@ -1916,7 +1916,40 @@ const WizardAtendimento = {
 
         // Cria a data no fuso local (sem conversão UTC)
         var dataLocal = new Date(ano, mes, dia, hora, minuto, segundo);
+
+        // Validação: se a data resultante for inválida, tenta fallback
+        if (isNaN(dataLocal.getTime())) {
+            console.warn('Data inválida após conversão, usando fallback:', dataHoraString);
+            return new Date(dataHoraString);
+        }
+
         return dataLocal;
+    },
+
+    // Calcular tempo decorrido garantindo que não seja negativo
+    calcularTempoDecorrido: function(dataInicio) {
+        if (!dataInicio) return { horas: 0, minutos: 0, segundos: 0, texto: '00:00:00' };
+
+        const agora = new Date();
+        var diff = agora - dataInicio;
+
+        // Se a diferença for negativa (horário do servidor > horário local), ajusta para 0
+        if (diff < 0) {
+            console.warn('Tempo negativo detectado, ajustando para 0. Diff:', diff, 'Inicio:', dataInicio, 'Agora:', agora);
+            diff = 0;
+        }
+
+        const horas = Math.floor(diff / 3600000);
+        const minutos = Math.floor((diff % 3600000) / 60000);
+        const segundos = Math.floor((diff % 60000) / 1000);
+
+        return {
+            horas: horas,
+            minutos: minutos,
+            segundos: segundos,
+            texto: String(horas).padStart(2, '0') + ':' + String(minutos).padStart(2, '0') + ':' + String(segundos).padStart(2, '0'),
+            diff: diff
+        };
     },
 
     // Obter token CSRF
@@ -2082,11 +2115,8 @@ const WizardAtendimento = {
         var tempoTexto = '00:00';
         if (atividade && atividade.hora_inicio) {
             const inicio = this.converterDataHoraLocal(atividade.hora_inicio);
-            const agora = new Date();
-            const diff = agora - inicio;
-            const horas = Math.floor(diff / 3600000);
-            const minutos = Math.floor((diff % 3600000) / 60000);
-            tempoTexto = String(horas).padStart(2, '0') + ':' + String(minutos).padStart(2, '0');
+            const tempo = this.calcularTempoDecorrido(inicio);
+            tempoTexto = String(tempo.horas).padStart(2, '0') + ':' + String(tempo.minutos).padStart(2, '0');
         }
 
         // Atualizar modal de confirmação
@@ -2664,19 +2694,11 @@ const WizardAtendimento = {
         var self = this;
         this.timerInterval = setInterval(function() {
             if (!self.horaInicio) return;
-            const agora = new Date();
-            const diff = agora - self.horaInicio;
-
-            const horas = Math.floor(diff / 3600000);
-            const minutos = Math.floor((diff % 3600000) / 60000);
-            const segundos = Math.floor((diff % 60000) / 1000);
+            const tempo = self.calcularTempoDecorrido(self.horaInicio);
 
             var timerEl = document.getElementById('timerExecucao');
             if (timerEl) {
-                timerEl.textContent =
-                    String(horas).padStart(2, '0') + ':' +
-                    String(minutos).padStart(2, '0') + ':' +
-                    String(segundos).padStart(2, '0');
+                timerEl.textContent = tempo.texto;
             }
         }, 1000);
     },
