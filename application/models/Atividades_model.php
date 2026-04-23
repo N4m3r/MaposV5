@@ -800,6 +800,136 @@ class Atividades_model extends CI_Model
     }
 
     /**
+     * Cria um registro de reatendimento quando uma atividade é reaberta
+     * Isso permite reexecutar a atividade preservando o histórico anterior
+     */
+    public function criarReatendimento($dados)
+    {
+        // Dados padrão para reatendimento
+        $padrao = [
+            'hora_inicio' => null, // Aguardando novo início
+            'hora_fim' => null,
+            'status' => 'reaberta',
+            'concluida' => 0,
+            'reatendimento' => 1, // Flag indicando que é reatendimento
+            'obra_atividade_id' => null,
+            'obra_id' => null,
+            'etapa_id' => null,
+            'tipo_id' => null,
+            'tecnico_id' => null,
+            'descricao' => 'Reatendimento criado automaticamente',
+            'motivo_reabertura' => null,
+            'created_at' => date('Y-m-d H:i:s'),
+        ];
+
+        $dados = array_merge($padrao, $dados);
+
+        // Inserir na tabela de atividades
+        $this->db->insert($this->table, $dados);
+        $reatendimento_id = $this->db->insert_id();
+
+        // Registrar no histórico da obra_atividade se houver vínculo
+        if ($reatendimento_id && !empty($dados['obra_atividade_id'])) {
+            $this->registrarReatendimentoNoHistorico($dados['obra_atividade_id'], $reatendimento_id, $dados['motivo_reabertura']);
+        }
+
+        return $reatendimento_id;
+    }
+
+    /**
+     * Registra o reatendimento no histórico da atividade planejada
+     */
+    private function registrarReatendimentoNoHistorico($obra_atividade_id, $reatendimento_id, $motivo = null)
+    {
+        if (!$this->db->table_exists('obra_atividades_historico')) {
+            return false;
+        }
+
+        try {
+            $this->db->insert('obra_atividades_historico', [
+                'atividade_id' => $obra_atividade_id,
+                'tipo_alteracao' => 'reatendimento',
+                'descricao' => 'Reatendimento criado: ' . ($motivo ?? 'Reabertura para reexecução'),
+                'reatendimento_id' => $reatendimento_id,
+                'created_at' => date('Y-m-d H:i:s'),
+            ]);
+            return $this->db->insert_id();
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao registrar reatendimento no histórico: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Busca histórico completo de execuções (incluindo reatendimentos) de uma atividade
+     */
+    public function getHistoricoExecucoes($obra_atividade_id)
+    {
+        $this->db->select('os_atividades.*,
+                           atividades_tipos.nome as tipo_nome,
+                           atividades_tipos.icone as tipo_icone,
+                           atividades_tipos.cor as tipo_cor,
+                           usuarios.nome as nome_tecnico,
+                           obra_etapas.nome as etapa_nome');
+        $this->db->from($this->table);
+        $this->db->join('atividades_tipos', 'atividades_tipos.idTipo = os_atividades.tipo_id', 'left');
+        $this->db->join('usuarios', 'usuarios.idUsuarios = os_atividades.tecnico_id', 'left');
+        $this->db->join('obra_etapas', 'obra_etapas.id = os_atividades.etapa_id', 'left');
+        $this->db->where('os_atividades.obra_atividade_id', $obra_atividade_id);
+        $this->db->order_by('os_atividades.hora_inicio', 'DESC');
+
+        return $this->db->get()->result();
+    }
+
+    /**
+     * Lista reatendimentos de uma atividade planejada
+     */
+    public function listarReatendimentos($obra_atividade_id)
+    {
+        $this->db->select('os_atividades.*,
+                           atividades_tipos.nome as tipo_nome,
+                           atividades_tipos.icone as tipo_icone,
+                           usuarios.nome as nome_tecnico,
+                           obra_etapas.nome as etapa_nome');
+        $this->db->from($this->table);
+        $this->db->join('atividades_tipos', 'atividades_tipos.idTipo = os_atividades.tipo_id', 'left');
+        $this->db->join('usuarios', 'usuarios.idUsuarios = os_atividades.tecnico_id', 'left');
+        $this->db->join('obra_etapas', 'obra_etapas.id = os_atividades.etapa_id', 'left');
+        $this->db->where('os_atividades.obra_atividade_id', $obra_atividade_id);
+        $this->db->where('os_atividades.reatendimento', 1);
+        $this->db->order_by('os_atividades.created_at', 'DESC');
+
+        return $this->db->get()->result();
+    }
+
+    /**
+     * Inicia um reatendimento (reatendimento em execução)
+     */
+    public function iniciarReatendimento($reatendimento_id, $tecnico_id, $dados = [])
+    {
+        $atividade = $this->getById($reatendimento_id);
+        if (!$atividade || $atividade->status !== 'reaberta') {
+            return false;
+        }
+
+        $update = [
+            'status' => 'em_andamento',
+            'hora_inicio' => date('Y-m-d H:i:s'),
+            'tecnico_id' => $tecnico_id,
+        ];
+
+        if (!empty($dados['latitude'])) {
+            $update['checkin_lat'] = $dados['latitude'];
+        }
+        if (!empty($dados['longitude'])) {
+            $update['checkin_lng'] = $dados['longitude'];
+        }
+
+        $this->db->where('idAtividade', $reatendimento_id);
+        return $this->db->update($this->table, $update);
+    }
+
+    /**
      * Obtém registros de execução (Hora Início/Fim) vinculados a uma atividade planejada
      */
     public function getRegistrosPorObraAtividade($obra_atividade_id)

@@ -1335,8 +1335,8 @@ class Obras extends MY_Controller
         $novo_status = $this->input->post('novo_status');
         $observacao = $this->input->post('observacao_status');
 
-        // Validar status permitidos
-        $status_permitidos = ['agendada', 'iniciada', 'pausada', 'concluida', 'cancelada'];
+        // Validar status permitidos (incluindo reaberta para reatendimento)
+        $status_permitidos = ['agendada', 'iniciada', 'pausada', 'concluida', 'cancelada', 'reaberta'];
         if (!in_array($novo_status, $status_permitidos)) {
             $this->session->set_flashdata('error', 'Status inválido.');
             redirect('obras/visualizarAtividade/' . $atividade_id);
@@ -1352,11 +1352,31 @@ class Obras extends MY_Controller
         // Preparar dados para atualização
         $dados = ['status' => $novo_status];
 
-        // Se estiver reabrindo (concluida/cancelada -> agendada/iniciada), limpar datas de conclusão
-        if (in_array($novo_status, ['agendada', 'iniciada']) && in_array($atividade->status, ['concluida', 'cancelada'])) {
+        // Se estiver reabrindo (concluida/cancelada -> agendada/iniciada/reaberta), limpar datas de conclusão e criar reatendimento
+        if (in_array($novo_status, ['agendada', 'iniciada', 'reaberta']) && in_array($atividade->status, ['concluida', 'cancelada', 'reaberta'])) {
             $dados['data_conclusao'] = null;
             $dados['percentual_concluido'] = 0;
-            $this->session->set_flashdata('success', 'Atividade reaberta com sucesso!');
+            $dados['hora_fim'] = null;
+            $dados['hora_inicio'] = null;
+            $dados['horas_trabalhadas'] = 0;
+
+            // Criar registro de reatendimento - preservar histórico da execução anterior
+            $this->load->model('atividades_model');
+            $reatendimento_id = $this->atividades_model->criarReatendimento([
+                'obra_atividade_id' => $atividade_id,
+                'obra_id' => $atividade->obra_id,
+                'etapa_id' => $atividade->etapa_id,
+                'titulo' => $atividade->titulo ?? 'Reatendimento #' . $atividade_id,
+                'descricao' => 'Reatendimento da atividade reaberta',
+                'status' => 'reaberta',
+                'motivo_reabertura' => $observacao ?? 'Reabertura para reexecução',
+            ]);
+
+            if ($reatendimento_id) {
+                $this->session->set_flashdata('success', 'Atividade reaberta com sucesso! Um novo reatendimento foi criado e está pronto para execução.');
+            } else {
+                $this->session->set_flashdata('success', 'Atividade reaberta com sucesso!');
+            }
         } else {
             // Registrar no histórico
             $status_labels = [
@@ -1364,7 +1384,8 @@ class Obras extends MY_Controller
                 'iniciada' => 'Em Execução',
                 'pausada' => 'Pausada',
                 'concluida' => 'Concluída',
-                'cancelada' => 'Cancelada'
+                'cancelada' => 'Cancelada',
+                'reaberta' => 'Reaberta (Reatendimento)'
             ];
 
             $descricao = 'Status alterado para: ' . ($status_labels[$novo_status] ?? $novo_status);

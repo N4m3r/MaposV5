@@ -146,7 +146,7 @@
                 </a>
                 <?php if ($this->session->userdata('permissao') == 1): ?>
                 <a href="javascript:void(0)" class="atividade-card-btn atividade-card-btn-delete" title="Excluir"
-                   onclick="excluirAtividade(<?php echo $atividade['id']; ?>, '<?php echo $atividade['sistema']; ?>')">
+                   onclick="event.stopPropagation(); excluirAtividade(<?php echo $atividade['id']; ?>, '<?php echo $atividade['sistema']; ?>')">
                     <i class="bx bx-trash"></i>
                 </a>
                 <?php endif; ?>
@@ -209,14 +209,14 @@
 </div>
 
 <script>
-// Variável global para armazenar dados da atividade atual
-var atividadeAtual = null;
-var modoEdicao = false;
+// Garantir que as funções estejam no escopo global
+window.window.atividadeAtual = null;
+window.window.modoEdicao = false;
 
 // Função para abrir modal da atividade
-function abrirModalAtividade(id, sistema) {
-    atividadeAtual = { id: id, sistema: sistema };
-    modoEdicao = false;
+window.abrirModalAtividade = function(id, sistema) {
+    window.window.atividadeAtual = { id: id, sistema: sistema };
+    window.window.modoEdicao = false;
 
     // Resetar modal
     document.getElementById('modalVerBody').innerHTML = '<div style="text-align: center; padding: 40px;"><i class="bx bx-loader-alt bx-spin" style="font-size: 40px; color: #667eea;"></i><p style="margin-top: 15px; color: #666;">Carregando...</p></div>';
@@ -252,8 +252,8 @@ function abrirModalAtividade(id, sistema) {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                atividadeAtual.dados = data.atividade;
-                atividadeAtual.execucao = data.execucao_real;
+                window.atividadeAtual.dados = data.atividade;
+                window.atividadeAtual.execucao = data.execucao_real;
                 renderizarAtividadeAntigo(data.atividade, data.execucao_real);
             } else {
                 document.getElementById('modalVerBody').innerHTML = '<div style="text-align: center; padding: 40px; color: #dc3545;"><i class="bx bx-error-circle" style="font-size: 40px;"></i><p>' + (data.message || 'Erro ao carregar') + '</p></div>';
@@ -429,10 +429,10 @@ function renderizarAtividadeNovo(atividade) {
 }
 
 // Alternar entre modo visualização e edição
-function toggleEdicao() {
-    modoEdicao = !modoEdicao;
+window.toggleEdicao = function() {
+    window.modoEdicao = !window.modoEdicao;
 
-    if (modoEdicao) {
+    if (window.modoEdicao) {
         // Mostrar campos de edição
         document.querySelectorAll('.view-field').forEach(el => el.style.display = 'none');
         document.querySelectorAll('.edit-field').forEach(el => el.style.display = 'block');
@@ -448,15 +448,15 @@ function toggleEdicao() {
 }
 
 // Salvar alterações da atividade
-function salvarAtividade() {
-    if (!atividadeAtual || !atividadeAtual.id) {
+window.salvarAtividade = function() {
+    if (!window.atividadeAtual || !window.atividadeAtual.id) {
         alert('Erro: Nenhuma atividade selecionada');
         return;
     }
 
     // Coletar dados dos campos de edição
     var dados = {
-        id: atividadeAtual.id,
+        id: window.atividadeAtual.id,
         titulo: document.querySelector('input[name="titulo"]')?.value || '',
         descricao: document.querySelector('textarea[name="descricao"]')?.value || '',
         data_atividade: document.querySelector('input[name="data_atividade"]')?.value || '',
@@ -498,22 +498,21 @@ function salvarAtividade() {
 }
 
 // Função auxiliar para formatar data
-function formatarData(dataStr) {
+window.formatarData = function(dataStr) {
     if (!dataStr) return '-';
     var parts = dataStr.split('-');
     return parts[2] + '/' + parts[1] + '/' + parts[0];
 }
 
 // Função auxiliar para formatar data e hora
-function formatarDataHora(dataHoraStr) {
+window.formatarDataHora = function(dataHoraStr) {
     if (!dataHoraStr) return '-';
     var data = new Date(dataHoraStr);
     return data.toLocaleString('pt-BR');
 }
 
 // Função para excluir atividade
-function excluirAtividade(id, sistema) {
-    event.stopPropagation();
+window.excluirAtividade = function(id, sistema) {
 
     if (confirm('Tem certeza que deseja excluir esta atividade?')) {
         var url = sistema === 'novo'

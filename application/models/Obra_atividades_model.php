@@ -725,6 +725,61 @@ class Obra_atividades_model extends CI_Model
     }
 
     /**
+     * Reabrir atividade para reatendimento
+     * Cria uma nova instância de execução mantendo o histórico
+     */
+    public function reabrirParaReatendimento($id, $tecnico_id, $motivo = null)
+    {
+        $atividade = $this->getById($id);
+        if (!$atividade) {
+            return false;
+        }
+
+        // Atualizar status para reaberta
+        $update_data = [
+            'status' => 'reaberta',
+            'data_conclusao' => null,
+            'percentual_concluido' => 0,
+            'hora_fim' => null,
+        ];
+
+        $result = $this->update($id, $update_data);
+
+        if ($result) {
+            // Registrar no histórico
+            $this->registrarHistorico($id, 'reatendimento', $tecnico_id, [
+                'descricao' => 'Atividade reaberta para reatendimento: ' . ($motivo ?? 'Sem motivo especificado'),
+            ]);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Buscar histórico de reatendimentos de uma atividade
+     */
+    public function getReatendimentos($obra_atividade_id)
+    {
+        if (!$this->tabelaExiste('obra_atividades_historico')) {
+            return [];
+        }
+
+        try {
+            $this->db->select('obra_atividades_historico.*, u.nome as tecnico_nome');
+            $this->db->from('obra_atividades_historico');
+            $this->db->join('usuarios u', 'u.idUsuarios = obra_atividades_historico.tecnico_id', 'left');
+            $this->db->where('obra_atividades_historico.atividade_id', $obra_atividade_id);
+            $this->db->where('obra_atividades_historico.tipo_alteracao', 'reatendimento');
+            $this->db->order_by('obra_atividades_historico.created_at', 'DESC');
+            $query = $this->db->get();
+            return $query ? $query->result() : [];
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao buscar reatendimentos: ' . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
      * Contar atividades por status
      */
     public function countByStatus($obra_id)
