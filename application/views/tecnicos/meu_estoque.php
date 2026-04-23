@@ -487,7 +487,7 @@ if (!empty($estoque_baixo)): ?>
     </div>
 
     <div class="estoque-card-body" style="padding: 0;">
-        <?php if (empty($estoque)): ?
+        <?php if (empty($estoque)): ?>
             <div class="empty-state">
                 <div class="empty-state-icon">
                     <i class='bx bx-package'></i>
@@ -495,7 +495,7 @@ if (!empty($estoque_baixo)): ?>
                 <h4>Estoque Vazio</h4>
                 <p>Nenhum item em seu veículo</p>
             </div>
-        <?php else: ?
+        <?php else: ?>
             <div class="estoque-lista">
                 <?php foreach ($estoque as $item):
                     $statusClass = $item->quantidade <= 2 ? 'baixo' : ($item->quantidade <= 5 ? 'alerta' : 'ok');
@@ -508,7 +508,7 @@ if (!empty($estoque_baixo)): ?>
                             <i class='bx bx-error-circle'></i>
                         <?php elseif ($item->quantidade <= 5): ?>
                             <i class='bx bx-error'></i>
-                        <?php else: ?>
+                        <?php else: ?>>
                             <i class='bx bx-check-circle'></i>
                         <?php endif; ?>
                     </div>
@@ -525,7 +525,7 @@ if (!empty($estoque_baixo)): ?>
 
                     <div class="estoque-qtd">
                         <div class="estoque-qtd-numero <?php echo $statusClass; ?>">
-                            <?php echo $item->quantidade; ?
+                            <?php echo $item->quantidade; ?>
                         </div>
                         <div class="estoque-qtd-label">unidades</div>
                     </div>
@@ -545,12 +545,12 @@ if (!empty($estoque_baixo)): ?>
     </div>
 
     <div class="estoque-card-body">
-        <?php if (empty($historico)): ?
+        <?php if (empty($historico)): ?>
             <div class="empty-state" style="padding: 40px 20px;">
                 <i class='bx bx-history' style="font-size: 32px; margin-bottom: 12px; opacity: 0.5;"></i>
                 <p>Nenhum movimento no período</p>
             </div>
-        <?php else: ?
+        <?php else: ?>
             <div class="historico-lista">
                 <?php foreach (array_slice($historico, 0, 10) as $mov):
                     $isEntrada = $mov->tipo == 'entrada';
@@ -559,7 +559,7 @@ if (!empty($estoque_baixo)): ?>
                     <div class="historico-icon <?php echo $mov->tipo; ?>">
                         <?php if ($isEntrada): ?>
                             <i class='bx bx-down-arrow-alt'></i>
-                        <?php else: ?>
+                        <?php else: ?>>
                             <i class='bx bx-up-arrow-alt'></i>
                         <?php endif; ?>
                     </div>

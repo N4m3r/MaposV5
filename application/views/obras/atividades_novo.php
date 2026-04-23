@@ -192,30 +192,88 @@
 }
 </style>
 
-<!-- DEBUG CONSOLE - Remover em produção -->
+<?php
+// Preparar dados no PHP
+$obra_id = $obra->id ?? 0;
+$obra_nome = htmlspecialchars($obra->nome ?? 'Obra');
+$tem_permissao_edicao = $this->permission->checkPermission($this->session->userdata('permissao'), 'eObras');
+
+// Mesclar atividades
+$todas_atividades = [];
+
+// Sistema antigo
+foreach ($atividades ?? [] as $ativ) {
+    $todas_atividades[] = [
+        'id' => $ativ->id ?? 0,
+        'titulo' => $ativ->titulo ?? 'Atividade',
+        'descricao' => $ativ->descricao ?? '',
+        'status' => $ativ->status ?? 'agendada',
+        'tipo' => $ativ->tipo ?? 'trabalho',
+        'data' => $ativ->data_atividade ?? $ativ->data_criacao ?? date('Y-m-d'),
+        'tecnico' => $ativ->nome_tecnico ?? $ativ->tecnico_nome ?? 'Não atribuído',
+        'etapa' => $ativ->nome_etapa ?? $ativ->etapa_nome ?? 'Geral',
+        'progresso' => $ativ->percentual_concluido ?? 0,
+        'sistema' => 'antigo'
+    ];
+}
+
+// Sistema novo
+foreach ($atividades_registradas ?? [] as $ativ) {
+    $status = 'agendada';
+    if (!empty($ativ->hora_fim) && ($ativ->status ?? '') == 'finalizada') {
+        $status = 'concluida';
+    } elseif (!empty($ativ->hora_inicio)) {
+        $status = 'iniciada';
+    }
+
+    $todas_atividades[] = [
+        'id' => $ativ->idAtividade ?? 0,
+        'titulo' => $ativ->titulo ?? $ativ->tipo_atividade ?? 'Atividade Técnica',
+        'descricao' => $ativ->descricao ?? '',
+        'status' => $status,
+        'tipo' => $ativ->categoria ?? 'trabalho',
+        'data' => date('Y-m-d', strtotime($ativ->hora_inicio ?? 'now')),
+        'tecnico' => $ativ->nome_tecnico ?? 'Não atribuído',
+        'etapa' => $ativ->etapa_nome ?? 'Geral',
+        'progresso' => ($ativ->status == 'finalizada' && ($ativ->concluida ?? 0)) ? 100 : (empty($ativ->hora_fim) && !empty($ativ->hora_inicio) ? 50 : 0),
+        'sistema' => 'novo',
+        'hora_inicio' => $ativ->hora_inicio ?? null,
+        'hora_fim' => $ativ->hora_fim ?? null,
+        'duracao' => $ativ->duracao_minutos ?? null
+    ];
+}
+
+// Ordenar por data
+usort($todas_atividades, function($a, $b) {
+    return strtotime($b['data']) - strtotime($a['data']);
+});
+
+// Calcular estatísticas
+$total = count($todas_atividades);
+$concluidas = 0;
+$em_andamento = 0;
+$pendentes = 0;
+
+foreach ($todas_atividades as $a) {
+    if ($a['status'] == 'concluida') $concluidas++;
+    elseif ($a['status'] == 'iniciada') $em_andamento++;
+    else $pendentes++;
+}
+?>
+
+<!-- DEBUG CONSOLE -->
 <div id="debugConsole" style="position:fixed; bottom:10px; right:10px; background:#333; color:#0f0; padding:10px; font-family:monospace; font-size:12px; max-width:400px; max-height:200px; overflow:auto; z-index:99999; border-radius:5px; display:block;">
   <strong>DEBUG JS:</strong> <button onclick="document.getElementById('debugConsole').style.display='none'" style="float:right;color:red;">X</button>
   <div id="debugOutput">Inicializando...</div>
 </div>
 
-<script type="text/javascript">
-// Debug helper
-var debugMsgs = [];
-function logDebug(msg) {
-    debugMsgs.push(new Date().toLocaleTimeString() + ': ' + msg);
-    var out = document.getElementById('debugOutput');
-    if (out) out.innerHTML = debugMsgs.join('<br>');
-    console.log('[DEBUG]', msg);
-}
-</script>
-
 <div class="atividades-wrapper">
     <!-- Header -->
     <div class="atividades-header">
         <h1><i class='icon icon-calendar'></i> Atividades da Obra</h1>
-        <p><?php echo htmlspecialchars($obra->nome ?? 'Obra'); ?></p>
+        <p><?php echo $obra_nome; ?></p>
         <div class="actions">
-            <a href="<?php echo site_url('obras/visualizar/' . ($obra->id ?? 0)); ?>" class="btn btn-secondary">
+            <a href="<?php echo site_url('obras/visualizar/' . $obra_id); ?>" class="btn btn-secondary">
                 <i class='icon icon-arrow-left'></i> Voltar à Obra
             </a>
             <button class="btn btn-primary" onclick="abrirModalNova()">
@@ -226,23 +284,6 @@ function logDebug(msg) {
 
     <!-- Stats -->
     <div class="stats-row">
-        <?php
-        $total = count($atividades ?? []) + count($atividades_registradas ?? []);
-        $concluidas = 0;
-        $em_andamento = 0;
-        $pendentes = 0;
-
-        foreach ($atividades ?? [] as $a) {
-            if (($a->status ?? '') == 'concluida') $concluidas++;
-            elseif (($a->status ?? '') == 'iniciada') $em_andamento++;
-            else $pendentes++;
-        }
-        foreach ($atividades_registradas ?? [] as $a) {
-            if (($a->status ?? '') == 'finalizada' && ($a->concluida ?? 0)) $concluidas++;
-            elseif (!empty($a->hora_inicio) && empty($a->hora_fim)) $em_andamento++;
-            else $pendentes++;
-        }
-        ?>
         <div class="stat-box">
             <div class="stat-icon blue"><i class='icon icon-calendar'></i></div>
             <div class="stat-info">
@@ -296,59 +337,7 @@ function logDebug(msg) {
 
     <!-- Lista de Atividades -->
     <div class="atividades-lista" id="listaAtividades">
-        <?php
-        // Mesclar atividades
-        $todas_atividades = [];
-
-        // Sistema antigo
-        foreach ($atividades ?? [] as $ativ) {
-            $todas_atividades[] = [
-                'id' => $ativ->id ?? 0,
-                'titulo' => $ativ->titulo ?? 'Atividade',
-                'descricao' => $ativ->descricao ?? '',
-                'status' => $ativ->status ?? 'agendada',
-                'tipo' => $ativ->tipo ?? 'trabalho',
-                'data' => $ativ->data_atividade ?? $ativ->data_criacao ?? date('Y-m-d'),
-                'tecnico' => $ativ->nome_tecnico ?? $ativ->tecnico_nome ?? 'Não atribuído',
-                'etapa' => $ativ->nome_etapa ?? $ativ->etapa_nome ?? 'Geral',
-                'progresso' => $ativ->percentual_concluido ?? 0,
-                'sistema' => 'antigo'
-            ];
-        }
-
-        // Sistema novo
-        foreach ($atividades_registradas ?? [] as $ativ) {
-            $status = 'agendada';
-            if (!empty($ativ->hora_fim) && ($ativ->status ?? '') == 'finalizada') {
-                $status = 'concluida';
-            } elseif (!empty($ativ->hora_inicio)) {
-                $status = 'iniciada';
-            }
-
-            $todas_atividades[] = [
-                'id' => $ativ->idAtividade ?? 0,
-                'titulo' => $ativ->titulo ?? $ativ->tipo_atividade ?? 'Atividade Técnica',
-                'descricao' => $ativ->descricao ?? '',
-                'status' => $status,
-                'tipo' => $ativ->categoria ?? 'trabalho',
-                'data' => date('Y-m-d', strtotime($ativ->hora_inicio ?? 'now')),
-                'tecnico' => $ativ->nome_tecnico ?? 'Não atribuído',
-                'etapa' => $ativ->etapa_nome ?? 'Geral',
-                'progresso' => ($ativ->status == 'finalizada' && ($ativ->concluida ?? 0)) ? 100 : (empty($ativ->hora_fim) && !empty($ativ->hora_inicio) ? 50 : 0),
-                'sistema' => 'novo',
-                'hora_inicio' => $ativ->hora_inicio ?? null,
-                'hora_fim' => $ativ->hora_fim ?? null,
-                'duracao' => $ativ->duracao_minutos ?? null
-            ];
-        }
-
-        // Ordenar por data
-        usort($todas_atividades, function($a, $b) {
-            return strtotime($b['data']) - strtotime($a['data']);
-        });
-
-        if (empty($todas_atividades)):
-        ?>
+        <?php if (empty($todas_atividades)): ?>
         <div class="empty-state">
             <i class='icon icon-remove' style="font-size:60px;color:#667eea;margin-bottom:15px;display:block;"></i>
             <h3>Nenhuma atividade encontrada</h3>
@@ -358,54 +347,52 @@ function logDebug(msg) {
             </button>
         </div>
         <?php else: ?>
+            <?php foreach ($todas_atividades as $atv):
+                $status_class = $atv['status'];
+                $status_label = ucfirst($atv['status']);
+            ?>
+            <div class="atv-card <?php echo $status_class; ?>"
+                 data-titulo="<?php echo strtolower($atv['titulo']); ?>"
+                 data-status="<?php echo $atv['status']; ?>"
+                 data-tipo="<?php echo $atv['tipo']; ?>"
+                 data-id="<?php echo $atv['id']; ?>"
+                 data-sistema="<?php echo $atv['sistema']; ?>"
+                 onclick="cardClicado(this)">
 
-        <?php foreach ($todas_atividades as $atv):
-            $status_class = $atv['status'];
-            $status_label = ucfirst($atv['status']);
-            // Codificar JSON em base64 para evitar problemas com aspas no HTML
-            $atv_json_base64 = base64_encode(json_encode($atv));
-        ?>
-        <div class="atv-card <?php echo $status_class; ?>"
-             data-titulo="<?php echo strtolower($atv['titulo']); ?>"
-             data-status="<?php echo $atv['status']; ?>"
-             data-tipo="<?php echo $atv['tipo']; ?>"
-             onclick="abrirDetalhes('<?php echo $atv['sistema']; ?>', <?php echo $atv['id']; ?>, '<?php echo $atv_json_base64; ?>')">
+                <div class="atv-card-header">
+                    <div class="atv-card-titulo"><?php echo htmlspecialchars($atv['titulo']); ?></div>
+                    <span class="atv-card-status <?php echo $status_class; ?>"><?php echo $status_label; ?></span>
+                </div>
 
-            <div class="atv-card-header">
-                <div class="atv-card-titulo"><?php echo htmlspecialchars($atv['titulo']); ?></div>
-                <span class="atv-card-status <?php echo $status_class; ?>"><?php echo $status_label; ?></span>
-            </div>
+                <div class="atv-card-info">
+                    <span><i class='icon icon-calendar'></i> <?php echo date('d/m/Y', strtotime($atv['data'])); ?></span>
+                    <span><i class='icon icon-user'></i> <?php echo htmlspecialchars($atv['tecnico']); ?></span>
+                    <span><i class='icon icon-tasks'></i> <?php echo htmlspecialchars($atv['etapa']); ?></span>
+                    <?php if (!empty($atv['duracao'])): ?>
+                    <span><i class='icon icon-time'></i> <?php echo floor($atv['duracao']/60) . 'h ' . ($atv['duracao']%60) . 'min'; ?></span>
+                    <?php endif; ?>
+                </div>
 
-            <div class="atv-card-info">
-                <span><i class='icon icon-calendar'></i> <?php echo date('d/m/Y', strtotime($atv['data'])); ?></span>
-                <span><i class='icon icon-user'></i> <?php echo htmlspecialchars($atv['tecnico']); ?></span>
-                <span><i class='icon icon-tasks'></i> <?php echo htmlspecialchars($atv['etapa']); ?></span>
-                <?php if (!empty($atv['duracao'])): ?>
-                <span><i class='icon icon-time'></i> <?php echo floor($atv['duracao']/60) . 'h ' . ($atv['duracao']%60) . 'min'; ?></span>
+                <?php if ($atv['descricao']): ?>
+                <div class="atv-card-desc"><?php echo htmlspecialchars(substr($atv['descricao'], 0, 100)) . (strlen($atv['descricao']) > 100 ? '...' : ''); ?></div>
                 <?php endif; ?>
-            </div>
 
-            <?php if ($atv['descricao']): ?>
-            <div class="atv-card-desc"><?php echo htmlspecialchars(substr($atv['descricao'], 0, 100)) . (strlen($atv['descricao']) > 100 ? '...' : ''); ?></div>
-            <?php endif; ?>
-
-            <div class="atv-card-footer">
-                <div class="atv-card-progresso">
-                    <div class="atv-card-progresso-barra">
-                        <div class="atv-card-progresso-fill" style="width: <?php echo $atv['progresso']; ?>%; background: <?php echo $atv['progresso'] >= 100 ? '#27ae60' : ($atv['progresso'] > 0 ? '#3498db' : '#95a5a6'); ?>"></div>
+                <div class="atv-card-footer">
+                    <div class="atv-card-progresso">
+                        <div class="atv-card-progresso-barra">
+                            <div class="atv-card-progresso-fill" style="width: <?php echo $atv['progresso']; ?>%; background: <?php echo $atv['progresso'] >= 100 ? '#27ae60' : ($atv['progresso'] > 0 ? '#3498db' : '#95a5a6'); ?>"></div>
+                        </div>
+                    </div>
+                    <div class="atv-card-badges">
+                        <?php if ($atv['sistema'] == 'novo'): ?>
+                        <span class="atv-card-badge wizard" title="Sistema Wizard"><i class='icon icon-time'></i></span>
+                        <?php endif; ?>
+                        <span class="atv-card-badge view" title="Ver detalhes" onclick="event.stopPropagation()"><i class='icon icon-eye-open'></i></span>
+                        <span class="atv-card-badge delete" title="Excluir" onclick="event.stopPropagation(); excluirAtividade('<?php echo $atv['sistema']; ?>', <?php echo $atv['id']; ?>)"><i class='icon icon-trash'></i></span>
                     </div>
                 </div>
-                <div class="atv-card-badges">
-                    <?php if ($atv['sistema'] == 'novo'): ?>
-                    <span class="atv-card-badge wizard" title="Sistema Wizard"><i class='icon icon-time'></i></span>
-                    <?php endif; ?>
-                    <span class="atv-card-badge view" title="Ver detalhes"><i class='icon icon-eye-open'></i></span>
-                    <span class="atv-card-badge delete" title="Excluir" onclick="event.stopPropagation(); excluirAtividade('<?php echo $atv['sistema']; ?>', <?php echo $atv['id']; ?>)"><i class='icon icon-trash'></i></span>
-                </div>
             </div>
-        </div>
-        <?php endforeach; ?>
-
+            <?php endforeach; ?>
         <?php endif; ?>
     </div>
 </div>
@@ -434,8 +421,8 @@ function logDebug(msg) {
             <button class="fechar" onclick="fecharModalNova()">&times;</button>
         </div>
         <div class="modal-body">
-            <form id="formNovaAtividade">
-                <input type="hidden" name="obra_id" value="<?php echo $obra->id ?? 0; ?>">
+            <form id="formNovaAtividade" action="<?php echo site_url('obras/adicionarAtividade'); ?>" method="post">
+                <input type="hidden" name="obra_id" value="<?php echo $obra_id; ?>">
 
                 <div class="form-group">
                     <label class="form-label">Título *</label>
@@ -496,12 +483,32 @@ function logDebug(msg) {
 </div>
 
 <script type="text/javascript">
+// URLs
+var URL_DETALHES = '<?php echo site_url("atividades/detalhes/"); ?>';
+var URL_SALVAR_ATIVIDADE = '<?php echo site_url("obras/api_salvarAtividade"); ?>';
+var URL_ADICIONAR_ATIVIDADE = '<?php echo site_url("obras/adicionarAtividade"); ?>';
+var URL_EXCLUIR_NOVO = '<?php echo site_url("atividades/excluir/"); ?>';
+var URL_EXCLUIR_ANTIGO = '<?php echo site_url("obras/excluirAtividade/"); ?>';
+
+// Dados das atividades (JSON seguro)
+var ATIVIDADES_DATA = <?php echo json_encode($todas_atividades); ?>;
+
+// Debug
+function logDebug(msg) {
+    console.log('[DEBUG]', msg);
+    var out = document.getElementById('debugOutput');
+    if (out) {
+        var time = new Date().toLocaleTimeString();
+        out.innerHTML += time + ': ' + msg + '<br>';
+    }
+}
+
 // Variáveis globais
 var atividadeAtual = null;
 var sistemaAtual = null;
 
 // Log inicial
-logDebug('JavaScript carregado');
+logDebug('JS carregado. Atividades: ' + (ATIVIDADES_DATA ? ATIVIDADES_DATA.length : 0));
 
 // Filtrar atividades
 function filtrarAtividades() {
@@ -524,42 +531,54 @@ function filtrarAtividades() {
     }
 }
 
+// Card clicado - abrir modal
+function cardClicado(element) {
+    var id = element.getAttribute('data-id');
+    var sistema = element.getAttribute('data-sistema');
+
+    logDebug('Card clicado: id=' + id + ', sistema=' + sistema);
+
+    // Encontrar dados da atividade
+    var atv = null;
+    for (var i = 0; i < ATIVIDADES_DATA.length; i++) {
+        if (ATIVIDADES_DATA[i].id == id && ATIVIDADES_DATA[i].sistema == sistema) {
+            atv = ATIVIDADES_DATA[i];
+            break;
+        }
+    }
+
+    if (!atv) {
+        logDebug('ERRO: Atividade não encontrada nos dados');
+        alert('Erro: Atividade não encontrada');
+        return;
+    }
+
+    abrirDetalhes(sistema, id, atv);
+}
+
 // Abrir modal de detalhes
-function abrirDetalhes(sistema, id, dadosBase64) {
-    logDebug('abrindoDetalhes: sistema=' + sistema + ', id=' + id);
+function abrirDetalhes(sistema, id, atv) {
+    logDebug('abrirDetalhes: sistema=' + sistema + ', id=' + id);
 
     sistemaAtual = sistema;
-
-    try {
-        // Decodificar base64
-        var jsonStr = atob(dadosBase64);
-        atividadeAtual = JSON.parse(jsonStr);
-        logDebug('Dados parseados: ' + JSON.stringify(atividadeAtual).substring(0, 100));
-    } catch(e) {
-        logDebug('ERRO parse JSON: ' + e.message);
-        atividadeAtual = { id: id, sistema: sistema };
-    }
+    atividadeAtual = atv;
 
     var modal = document.getElementById('modalDetalhes');
     var body = document.getElementById('modalBody');
     var footer = document.getElementById('modalFooter');
 
-    logDebug('Elementos: modal=' + (modal ? 'ok' : 'NULO') + ', body=' + (body ? 'ok' : 'NULO'));
-
     if (!modal || !body) {
-        alert('Erro: Modal não encontrado no DOM');
+        logDebug('ERRO: Modal ou body não encontrado');
+        alert('Erro: Modal não encontrado');
         return;
     }
-
-    // Conteúdo baseado no sistema
-    var html = '';
 
     if (sistema === 'novo') {
         // Sistema novo - buscar via AJAX
         body.innerHTML = '<p style="text-align:center;"><i class="icon icon-refresh icon-spin" style="font-size:30px;color:#667eea;"></i><br>Carregando...</p>';
         modal.classList.add('ativo');
 
-        fetch('<?php echo site_url("atividades/detalhes/"); ?>' + id, {
+        fetch(URL_DETALHES + id, {
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
         })
         .then(function(r) { return r.json(); })
@@ -570,17 +589,18 @@ function abrirDetalhes(sistema, id, dadosBase64) {
                 body.innerHTML = '<p style="color:red;">Erro ao carregar atividade.</p>';
             }
         })
-        .catch(function() {
+        .catch(function(err) {
+            logDebug('ERRO fetch: ' + err);
             body.innerHTML = '<p style="color:red;">Erro ao carregar atividade.</p>';
         });
     } else {
         // Sistema antigo
-        html = renderizarDetalhesAntigo(atividadeAtual);
+        var html = renderizarDetalhesAntigo(atv);
         body.innerHTML = html;
 
-        // Botões para sistema antigo
+        // Botões
         var botoes = '<button class="btn btn-secondary" onclick="fecharModal()">Fechar</button>';
-        botoes += '<button class="btn btn-primary" onclick="editarAtividade()" id="btnEditarAtv">Editar</button>';
+        botoes += '<button class="btn btn-primary" onclick="editarAtividade()">Editar</button>';
         footer.innerHTML = botoes;
 
         modal.classList.add('ativo');
@@ -623,29 +643,23 @@ function renderizarDetalhesNovo(atv, body, footer) {
     }
 
     body.innerHTML = html;
-
-    // Apenas fechar para sistema novo (edição é no wizard)
     footer.innerHTML = '<button class="btn btn-secondary" onclick="fecharModal()">Fechar</button>';
 }
 
 // Renderizar detalhes sistema antigo
 function renderizarDetalhesAntigo(atv) {
-    logDebug('renderizarDetalhesAntigo: ' + JSON.stringify(atv).substring(0, 100));
+    if (!atv) {
+        return '<p style="color:red">Erro: dados inválidos</p>';
+    }
 
     var html = '';
-
-    // Verificar se atv é válido
-    if (!atv) {
-        logDebug('ERRO: atv é nulo');
-        return '<p style="color:red">Erro: dados da atividade inválidos</p>';
-    }
 
     html += '<div class="secao-info">';
     html += '<h4><i class="icon icon-info-sign"></i> Informações Gerais</h4>';
     html += '<div class="form-row">';
     html += '<div class="form-group">';
     html += '<label class="form-label">Título</label>';
-    var titulo = (atv.titulo || atv.titulo || '');
+    var titulo = atv.titulo || '';
     html += '<input type="text" class="form-input view-field" value="' + titulo.replace(/"/g, '&quot;') + '" readonly>';
     html += '<input type="text" class="form-input edit-field" id="edit_titulo" value="' + titulo.replace(/"/g, '&quot;') + '" style="display:none;">';
     html += '</div>';
@@ -668,12 +682,13 @@ function renderizarDetalhesAntigo(atv) {
     html += '<div class="form-row">';
     html += '<div class="form-group">';
     html += '<label class="form-label">Data</label>';
-    html += '<input type="text" class="form-input view-field" value="' + (atv.data ? formatarData(atv.data) : '-') + '" readonly>';
+    html += '<input type="text" class="form-input view-field" value="' + formatarData(atv.data) + '" readonly>';
     html += '<input type="date" class="form-input edit-field" id="edit_data" value="' + (atv.data || '') + '" style="display:none;">';
     html += '</div>';
     html += '<div class="form-group">';
     html += '<label class="form-label">Tipo</label>';
-    html += '<input type="text" class="form-input view-field" value="' + (atv.tipo ? atv.tipo.charAt(0).toUpperCase() + atv.tipo.slice(1) : '-') + '" readonly>';
+    var tipoLabel = atv.tipo ? atv.tipo.charAt(0).toUpperCase() + atv.tipo.slice(1) : '-';
+    html += '<input type="text" class="form-input view-field" value="' + tipoLabel + '" readonly>';
     html += '<select class="form-select edit-field" id="edit_tipo" style="display:none;">';
     var tipos = ['trabalho', 'visita', 'manutencao', 'impedimento', 'outro'];
     var tiposLabels = ['Trabalho', 'Visita Técnica', 'Manutenção', 'Impedimento', 'Outro'];
@@ -707,7 +722,6 @@ function editarAtividade() {
         editFields[i].style.display = 'block';
     }
 
-    // Mudar botões
     var footer = document.getElementById('modalFooter');
     footer.innerHTML = '<button class="btn btn-secondary" onclick="cancelarEdicao()">Cancelar</button>' +
                        '<button class="btn btn-success" onclick="salvarEdicao()">Salvar</button>';
@@ -715,8 +729,7 @@ function editarAtividade() {
 
 // Cancelar edição
 function cancelarEdicao() {
-    // Recarregar detalhes originais
-    abrirDetalhes(sistemaAtual, atividadeAtual.id, JSON.stringify(atividadeAtual));
+    abrirDetalhes(sistemaAtual, atividadeAtual.id, atividadeAtual);
 }
 
 // Salvar edição
@@ -729,7 +742,7 @@ function salvarEdicao() {
         tipo: document.getElementById('edit_tipo').value
     };
 
-    fetch('<?php echo site_url("obras/api_salvarAtividade"); ?>', {
+    fetch(URL_SALVAR_ATIVIDADE, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -747,7 +760,8 @@ function salvarEdicao() {
             alert('Erro: ' + (data.message || 'Não foi possível salvar'));
         }
     })
-    .catch(function() {
+    .catch(function(err) {
+        logDebug('ERRO salvar: ' + err);
         alert('Erro ao salvar atividade');
     });
 }
@@ -770,28 +784,16 @@ function fecharModalNova() {
 // Salvar nova atividade
 function salvarNovaAtividade() {
     var form = document.getElementById('formNovaAtividade');
-    var formData = new FormData(form);
 
-    fetch('<?php echo site_url("obras/adicionarAtividade"); ?>', {
-        method: 'POST',
-        body: formData,
-        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-    })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-        if (data.success) {
-            alert('Atividade criada com sucesso!');
-            fecharModalNova();
-            location.reload();
-        } else {
-            alert('Erro: ' + (data.message || 'Não foi possível criar'));
-        }
-    })
-    .catch(function() {
-        // Se falhar, tentar redirecionar
-        alert('Atividade criada! Recarregando...');
-        location.reload();
-    });
+    // Validar
+    var titulo = form.elements['titulo'].value;
+    if (!titulo) {
+        alert('Título é obrigatório');
+        return;
+    }
+
+    // Submeter form normalmente (não AJAX)
+    form.submit();
 }
 
 // Excluir atividade
@@ -800,9 +802,7 @@ function excluirAtividade(sistema, id) {
         return;
     }
 
-    var url = sistema === 'novo'
-        ? '<?php echo site_url("atividades/excluir/"); ?>' + id
-        : '<?php echo site_url("obras/excluirAtividade/"); ?>' + id;
+    var url = sistema === 'novo' ? URL_EXCLUIR_NOVO + id : URL_EXCLUIR_ANTIGO + id;
 
     fetch(url, {
         method: 'POST',
@@ -852,19 +852,6 @@ function formatarDataHora(dataHoraStr) {
     return data.toLocaleString('pt-BR');
 }
 
-// Log de inicialização
-if (document.readyState === 'complete' || document.readyState === 'interactive') {
-    logDebug('JS inicializado. Cards: ' + document.querySelectorAll('.atv-card').length);
-} else {
-    // Aguardar DOM estar pronto
-    if (window.addEventListener) {
-        window.addEventListener('load', function() {
-            logDebug('JS inicializado (onload). Cards: ' + document.querySelectorAll('.atv-card').length);
-        });
-    } else if (window.attachEvent) {
-        window.attachEvent('onload', function() {
-            logDebug('JS inicializado (onload). Cards: ' + document.querySelectorAll('.atv-card').length);
-        });
-    }
-}
+// Log final
+logDebug('JS inicializado completamente');
 </script>
