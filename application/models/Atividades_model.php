@@ -1083,4 +1083,21 @@ class Atividades_model extends CI_Model
 
         return $this->db->get()->row();
     }
+
+    /**
+     * Obtém a última execução (mais recente) de uma obra_atividade
+     * Usado para identificar o técnico que realizou a última execução
+     */
+    public function getUltimaExecucao($obra_atividade_id)
+    {
+        $this->db->select('os_atividades.*, u.nome as tecnico_nome');
+        $this->db->from($this->table);
+        $this->db->join('usuarios u', 'u.idUsuarios = os_atividades.tecnico_id', 'left');
+        $this->db->where('os_atividades.obra_atividade_id', $obra_atividade_id);
+        $this->db->where('os_atividades.tecnico_id IS NOT NULL');
+        $this->db->order_by('os_atividades.hora_fim', 'DESC');
+        $this->db->limit(1);
+
+        return $this->db->get()->row();
+    }
 }

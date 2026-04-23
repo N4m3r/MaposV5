@@ -580,6 +580,194 @@
         }
 
         /* ============================================
+           NOTIFICAÇÕES
+           ============================================ */
+
+        .tec-notif-container {
+            position: relative;
+        }
+
+        .tec-notif-dropdown {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: -10px;
+            width: 360px;
+            max-width: 90vw;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s ease;
+        }
+
+        .tec-notif-dropdown.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .tec-notif-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e8e8e8;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .tec-notif-header a {
+            font-size: 12px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .tec-notif-header a:hover {
+            text-decoration: underline;
+        }
+
+        .tec-notif-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .tec-notif-empty {
+            padding: 40px 20px;
+            text-align: center;
+            color: #888;
+            font-size: 14px;
+        }
+
+        .tec-notif-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 15px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tec-notif-item:hover {
+            background: #f8f9ff;
+        }
+
+        .tec-notif-item.nao-lida {
+            background: #f0f4ff;
+            border-left: 3px solid #667eea;
+        }
+
+        .tec-notif-item.nao-lida:hover {
+            background: #e8ecff;
+        }
+
+        .tec-notif-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .tec-notif-icon.info { background: #e3f2fd; color: #1976d2; }
+        .tec-notif-icon.success { background: #e8f5e9; color: #388e3c; }
+        .tec-notif-icon.warning { background: #fff3e0; color: #f57c00; }
+        .tec-notif-icon.danger { background: #ffebee; color: #d32f2f; }
+
+        .tec-notif-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .tec-notif-titulo {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .tec-notif-mensagem {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .tec-notif-data {
+            font-size: 11px;
+            color: #888;
+            margin-top: 4px;
+        }
+
+        /* Notificações Mobile */
+        @media (max-width: 768px) {
+            .tec-notif-dropdown {
+                position: fixed;
+                top: 60px;
+                left: 10px;
+                right: 10px;
+                width: auto;
+                max-width: none;
+            }
+
+            .tec-notif-list {
+                max-height: calc(100vh - 150px);
+            }
+        }
+
+        /* Dark Mode Notificações */
+        body[data-theme="dark"] .tec-notif-dropdown {
+            background: #1a1d29;
+            border: 1px solid #2d3347;
+        }
+
+        body[data-theme="dark"] .tec-notif-header {
+            border-bottom-color: #2d3347;
+            color: #e8e8e8;
+        }
+
+        body[data-theme="dark"] .tec-notif-item {
+            border-bottom-color: #2d3347;
+        }
+
+        body[data-theme="dark"] .tec-notif-item:hover {
+            background: #252a3a;
+        }
+
+        body[data-theme="dark"] .tec-notif-item.nao-lida {
+            background: #252a3a;
+        }
+
+        body[data-theme="dark"] .tec-notif-item.nao-lida:hover {
+            background: #2d3347;
+        }
+
+        body[data-theme="dark"] .tec-notif-titulo {
+            color: #e8e8e8;
+        }
+
+        body[data-theme="dark"] .tec-notif-mensagem {
+            color: #a0a0a0;
+        }
+
+        body[data-theme="dark"] .tec-notif-empty {
+            color: #666;
+        }
+
+        /* ============================================
            MODO ESCURO (DARK MODE)
            ============================================ */
 
