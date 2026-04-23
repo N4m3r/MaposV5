@@ -31,8 +31,8 @@
                     <select name="tecnico_id" class="input-block-level">
                         <option value="">Todos</option>
                         <?php foreach ($tecnicos as $tec): ?>
-                        <option value="<?php echo $tec->idAdmin; ?>"
-                                <?php echo ($filtros['tecnico_id'] ?? '') == $tec->idAdmin ? 'selected' : ''; ?>>
+                        <option value="<?php echo $tec->idUsuarios; ?>"
+                                <?php echo ($filtros['tecnico_id'] ?? '') == $tec->idUsuarios ? 'selected' : ''; ?>>
                             <?php echo htmlspecialchars($tec->nome); ?>
                         </option>
                         <?php endforeach; ?>
