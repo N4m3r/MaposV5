@@ -546,9 +546,16 @@ $obras = isset($obras) ? $obras : (isset($results) ? $results : []);
                 <h1><i class="icon-building"></i> Gerenciamento de Obras</h1>
                 <p>Acompanhe e gerencie todas as obras do sistema</p>
             </div>
-            <a href="<?php echo site_url('obras/adicionar'); ?>" class="obras-filter-btn obras-add-btn">
-                <i class="icon-plus"></i> Nova Obra
-            </a>
+            <div style="display: flex; gap: 12px;">
+                <a href="<?php echo site_url('obras/adicionar'); ?>" class="obras-filter-btn obras-add-btn">
+                    <i class="icon-plus"></i> Nova Obra
+                </a>
+                <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cObras')): ?>
+                <a href="<?php echo site_url('obras/configuracoes'); ?>" class="obras-filter-btn" style="background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); color: white;">
+                    <i class="icon-cog"></i> Configurações
+                </a>
+                <?php endif; ?>
+            </div>
         </div>
     </div>
 

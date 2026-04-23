@@ -1396,5 +1396,207 @@ class Obras_model extends CI_Model
             return false;
         }
     }
+
+    // =========================================================
+    // MÉTODOS DE CONFIGURAÇÃO DO SISTEMA DE OBRAS
+    // =========================================================
+
+    /**
+     * Obter configurações gerais do sistema de obras
+     * Armazena em configurações do Map-OS com prefixo 'obra_'
+     */
+    public function getConfiguracoes()
+    {
+        $config_padrao = [
+            'nome_sistema' => 'Gestão de Obras',
+            'prazo_inicio_padrao' => 7,
+            'prazo_execucao_padrao' => 30,
+            'habilitar_atividades' => true,
+            'habilitar_etapas' => true,
+            'habilitar_checkin' => true,
+            'habilitar_gps' => true,
+            'habilitar_reatendimento' => true,
+            'habilitar_portal_tecnico' => true,
+        ];
+
+        try {
+            $this->db->where_in('config', [
+                'obra_nome_sistema',
+                'obra_prazo_inicio_padrao',
+                'obra_prazo_execucao_padrao',
+                'obra_habilitar_atividades',
+                'obra_habilitar_etapas',
+                'obra_habilitar_checkin',
+                'obra_habilitar_gps',
+                'obra_habilitar_reatendimento',
+                'obra_habilitar_portal_tecnico',
+            ]);
+            $query = $this->db->get('configuracoes');
+
+            $config = $config_padrao;
+            if ($query) {
+                foreach ($query->result() as $row) {
+                    $key = str_replace('obra_', '', $row->config);
+                    $config[$key] = $this->_parseConfigValue($row->valor);
+                }
+            }
+
+            return $config;
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao carregar configurações de obras: ' . $e->getMessage());
+            return $config_padrao;
+        }
+    }
+
+    /**
+     * Obter configurações de notificações
+     */
+    public function getConfiguracoesNotificacoes()
+    {
+        $config_padrao = [
+            'nova_obra' => true,
+            'obra_concluida' => true,
+            'atividade_atrasada' => true,
+            'atividade_reaberta' => true,
+            'checkin' => false,
+            'impedimento' => true,
+            'canal_email' => true,
+            'canal_whatsapp' => false,
+            'canal_sistema' => true,
+        ];
+
+        try {
+            $this->db->where_in('config', [
+                'obra_notif_nova_obra',
+                'obra_notif_obra_concluida',
+                'obra_notif_atividade_atrasada',
+                'obra_notif_atividade_reaberta',
+                'obra_notif_checkin',
+                'obra_notif_impedimento',
+                'obra_notif_canal_email',
+                'obra_notif_canal_whatsapp',
+                'obra_notif_canal_sistema',
+            ]);
+            $query = $this->db->get('configuracoes');
+
+            $config = $config_padrao;
+            if ($query) {
+                foreach ($query->result() as $row) {
+                    $key = str_replace('obra_notif_', '', $row->config);
+                    $config[$key] = $this->_parseConfigValue($row->valor);
+                }
+            }
+
+            return $config;
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao carregar configurações de notificações: ' . $e->getMessage());
+            return $config_padrao;
+        }
+    }
+
+    /**
+     * Salvar configurações gerais
+     */
+    public function salvarConfiguracoes($config)
+    {
+        try {
+            foreach ($config as $key => $value) {
+                $config_key = 'obra_' . $key;
+                $config_value = is_bool($value) ? ($value ? '1' : '0') : $value;
+
+                // Verificar se config existe
+                $this->db->where('config', $config_key);
+                $exists = $this->db->get('configuracoes')->num_rows() > 0;
+
+                if ($exists) {
+                    $this->db->where('config', $config_key);
+                    $this->db->update('configuracoes', ['valor' => $config_value]);
+                } else {
+                    $this->db->insert('configuracoes', [
+                        'config' => $config_key,
+                        'valor' => $config_value,
+                    ]);
+                }
+            }
+            return true;
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao salvar configurações: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Salvar configurações de notificações
+     */
+    public function salvarConfiguracoesNotificacoes($config)
+    {
+        try {
+            foreach ($config as $key => $value) {
+                $config_key = 'obra_notif_' . $key;
+                $config_value = is_bool($value) ? ($value ? '1' : '0') : $value;
+
+                $this->db->where('config', $config_key);
+                $exists = $this->db->get('configuracoes')->num_rows() > 0;
+
+                if ($exists) {
+                    $this->db->where('config', $config_key);
+                    $this->db->update('configuracoes', ['valor' => $config_value]);
+                } else {
+                    $this->db->insert('configuracoes', [
+                        'config' => $config_key,
+                        'valor' => $config_value,
+                    ]);
+                }
+            }
+            return true;
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao salvar configurações de notificações: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Converter valor de configuração
+     */
+    private function _parseConfigValue($value)
+    {
+        if ($value === '1' || $value === 'true') return true;
+        if ($value === '0' || $value === 'false' || $value === null) return false;
+        if (is_numeric($value)) return (int) $value;
+        return $value;
+    }
+
+    /**
+     * Obter tipos de obra cadastrados
+     * TODO: Implementar tabela obra_tipos se necessário
+     */
+    public function getTiposObra()
+    {
+        return [];
+    }
+
+    /**
+     * Obter status de obra cadastrados
+     */
+    public function getStatusObra()
+    {
+        return [];
+    }
+
+    /**
+     * Obter especialidades cadastradas
+     */
+    public function getEspecialidades()
+    {
+        return [];
+    }
+
+    /**
+     * Obter funções de equipe cadastradas
+     */
+    public function getFuncoesEquipe()
+    {
+        return [];
+    }
 }
 

@@ -1864,7 +1864,11 @@ const WizardAtendimento = {
     _dadosConfirmacao: null,
 
     // Iniciar wizard - mostra modal de confirmação
-    iniciar: function(etapaId = null, etapaNome = null, atividadeId = null, atividadeNome = null) {
+    iniciar: function(etapaId, etapaNome, atividadeId, atividadeNome) {
+        console.log('=== iniciar chamado ===');
+        console.log('etapaId:', etapaId, 'etapaNome:', etapaNome);
+        console.log('atividadeId:', atividadeId, 'atividadeNome:', atividadeNome);
+
         // Guardar dados para confirmação
         this._dadosConfirmacao = {
             etapaId: etapaId,
@@ -1887,16 +1891,22 @@ const WizardAtendimento = {
 
     // Confirmar início após modal
     confirmarIniciar: function() {
+        console.log('=== confirmarIniciar chamado ===');
+
         // Fechar modal de confirmação
         var modalConfirm = document.getElementById('modalConfirmarIniciar');
         if (modalConfirm) modalConfirm.style.display = 'none';
 
         var dados = this._dadosConfirmacao;
+        console.log('_dadosConfirmacao:', dados);
         if (!dados) return;
 
         this.stepAtual = 1;
         this.etapaSelecionada = dados.etapaId ? { id: dados.etapaId, nome: dados.etapaNome } : null;
         this.atividadeSelecionada = dados.atividadeId ? { id: dados.atividadeId, nome: dados.atividadeNome } : null;
+
+        console.log('etapaSelecionada:', this.etapaSelecionada);
+        console.log('atividadeSelecionada:', this.atividadeSelecionada);
 
         // Abrir wizard principal
         var modal = document.getElementById('wizardModal');
@@ -1948,7 +1958,7 @@ const WizardAtendimento = {
                     atividade = atv;
                     etapaId = eid;
                     // Buscar nome da etapa (compatível com ES5)
-                    var etapaNome = 'Etapa';
+                    etapaNome = 'Etapa';
                     for (var j = 0; j < dadosObra.etapas.length; j++) {
                         if (dadosObra.etapas[j].id == eid) {
                             etapaNome = dadosObra.etapas[j].nome || dadosObra.etapas[j].titulo || 'Etapa';
@@ -1960,6 +1970,8 @@ const WizardAtendimento = {
             }
             if (atividade) break;
         }
+
+        console.log('iniciarAtividade - encontrada:', atividade ? 'sim' : 'nao', 'etapaId:', etapaId, 'etapaNome:', etapaNome);
 
         if (!atividade) {
             alert('Atividade não encontrada. Recarregue a página e tente novamente.');
@@ -2336,9 +2348,14 @@ const WizardAtendimento = {
 
     // Realizar check-in
     realizarCheckin: function() {
+        console.log('=== realizarCheckin chamado ===');
+        console.log('tipoExecucao:', this.tipoExecucao);
+
         if (this.tipoExecucao === 'impedimento') {
-            const justificativa = document.getElementById('justificativaTexto').value;
-            if (!justificativa.trim()) {
+            const justificativa = document.getElementById('justificativaTexto');
+            const justificativaValor = justificativa ? justificativa.value : '';
+            console.log('justificativa:', justificativaValor);
+            if (!justificativaValor || !justificativaValor.trim()) {
                 alert('Por favor, informe a justificativa do impedimento.');
                 return;
             }
@@ -2346,8 +2363,10 @@ const WizardAtendimento = {
 
         // Obter localização
         if (navigator.geolocation) {
+            console.log('Solicitando geolocalização...');
             navigator.geolocation.getCurrentPosition(
                 (position) => {
+                    console.log('Geolocalização obtida:', position.coords.latitude, position.coords.longitude);
                     this.enviarCheckin(position.coords.latitude, position.coords.longitude);
                 },
                 (error) => {
@@ -2356,6 +2375,7 @@ const WizardAtendimento = {
                 }
             );
         } else {
+            console.log('Geolocalização não suportada');
             this.enviarCheckin(null, null);
         }
     },
@@ -2403,19 +2423,51 @@ const WizardAtendimento = {
 
     // Enviar check-in real para o servidor
     _enviarCheckinReal: function(lat, lng) {
+        console.log('=== _enviarCheckinReal chamado ===');
+        console.log('lat:', lat, 'lng:', lng);
+        console.log('etapaSelecionada:', this.etapaSelecionada);
+        console.log('atividadeSelecionada:', this.atividadeSelecionada);
+        console.log('tipoExecucao:', this.tipoExecucao);
+        console.log('obraId:', dadosObra.obraId);
+
         const csrfToken = this.getCsrfToken();
+        console.log('CSRF Token:', csrfToken ? 'OK (presente)' : 'FALTANDO');
+
+        // Normalizar etapa_id - converter 'sem_etapa' ou string para número
+        var etapaId = this.etapaSelecionada ? this.etapaSelecionada.id : 0;
+        if (etapaId === 'sem_etapa' || etapaId === 'null' || etapaId === '' || etapaId === null) {
+            etapaId = 0;
+        } else {
+            etapaId = parseInt(etapaId) || 0;
+        }
+
+        // Normalizar atividade_id
+        var atividadeId = this.atividadeSelecionada ? this.atividadeSelecionada.id : 0;
+        if (atividadeId === '' || atividadeId === null || atividadeId === 'null') {
+            atividadeId = 0;
+        } else {
+            atividadeId = parseInt(atividadeId) || 0;
+        }
+
+        console.log('etapaId normalizado:', etapaId);
+        console.log('atividadeId normalizado:', atividadeId);
+
         const formData = new FormData();
         formData.append('MAPOS_TOKEN', csrfToken);
         formData.append('obra_id', dadosObra.obraId);
-        formData.append('etapa_id', this.etapaSelecionada.id);
-        formData.append('atividade_id', this.atividadeSelecionada.id || 0);
+        formData.append('etapa_id', etapaId);
+        formData.append('atividade_id', atividadeId);
         formData.append('tipo_execucao', this.tipoExecucao);
-        formData.append('justificativa', document.getElementById('justificativaTexto').value || '');
+
+        const justificativaEl = document.getElementById('justificativaTexto');
+        formData.append('justificativa', justificativaEl ? (justificativaEl.value || '') : '');
         formData.append('latitude', lat || '');
         formData.append('longitude', lng || '');
 
+        console.log('FormData preparado. Enviando para checkin_obra...');
+
         const fotoInput = document.getElementById('fotoCheckin');
-        if (fotoInput.files.length > 0) {
+        if (fotoInput && fotoInput.files.length > 0) {
             console.log('Enviando foto:', fotoInput.files[0].name, 'Tamanho:', fotoInput.files[0].size);
             formData.append('foto', fotoInput.files[0]);
         } else {
@@ -2430,19 +2482,22 @@ const WizardAtendimento = {
             body: formData
         })
         .then(r => {
+            console.log('Resposta HTTP:', r.status, r.statusText);
             // Verificar se a resposta é JSON
             const contentType = r.headers.get('content-type');
+            console.log('Content-Type:', contentType);
             if (contentType && contentType.includes('application/json')) {
                 return r.json();
             } else {
                 // Se não for JSON, mostrar o erro
                 return r.text().then(text => {
-                    console.error('Resposta não-JSON:', text.substring(0, 500));
-                    throw new Error('Resposta do servidor não é JSON válido');
+                    console.error('Resposta não-JSON:', text.substring(0, 1000));
+                    throw new Error('Resposta do servidor não é JSON válido. Verifique o console.');
                 });
             }
         })
         .then(data => {
+            console.log('Resposta do servidor:', data);
             if (data.success) {
                 this.horaInicio = new Date();
 
@@ -2468,12 +2523,13 @@ const WizardAtendimento = {
                     this.iniciarTimer();
                 }
             } else {
+                console.error('Erro retornado pelo servidor:', data);
                 alert('Erro: ' + (data.message || 'Erro ao iniciar atividade'));
             }
         })
         .catch(err => {
-            console.error('Erro:', err);
-            alert('Erro ao comunicar com o servidor. Verifique o console para mais detalhes.');
+            console.error('Erro na requisição:', err);
+            alert('Erro ao comunicar com o servidor: ' + err.message + '. Verifique o console para mais detalhes.');
         });
     },
 

@@ -1104,4 +1104,14 @@ class Atividades_model extends CI_Model
 
         return $this->db->get()->row();
     }
+
+    /**
+     * Obtém status de atividade disponíveis para configuração
+     */
+    public function getStatusAtividade()
+    {
+        // Retorna array vazio - implementar tabela de status se necessário
+        // Por enquanto usa valores padrão na view
+        return [];
+    }
 }

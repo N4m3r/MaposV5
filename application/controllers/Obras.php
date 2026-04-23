@@ -77,6 +77,102 @@ class Obras extends MY_Controller
     }
 
     /**
+     * Configurações do sistema de obras
+     * Gerencia tipos, status, especialidades, funções e preferências
+     */
+    public function configuracoes()
+    {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cObras')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para acessar as configurações de obras.');
+            redirect('obras');
+        }
+
+        $this->load->model('atividades_tipos_model');
+
+        // Carregar configurações existentes ou valores padrão
+        $this->data['config'] = $this->obras_model->getConfiguracoes() ?? [];
+        $this->data['config_notif'] = $this->obras_model->getConfiguracoesNotificacoes() ?? [];
+
+        // Carregar listas configuráveis
+        $this->data['tipos_obra'] = $this->obras_model->getTiposObra() ?? [];
+        $this->data['tipos_atividades'] = $this->atividades_tipos_model->getAll() ?? [];
+        $this->data['status_obra'] = $this->obras_model->getStatusObra() ?? [];
+        $this->data['status_atividade'] = $this->atividades_model->getStatusAtividade() ?? [];
+        $this->data['especialidades'] = $this->obras_model->getEspecialidades() ?? [];
+        $this->data['funcoes_equipe'] = $this->obras_model->getFuncoesEquipe() ?? [];
+
+        $this->data['view'] = 'obras/configuracoes';
+
+        return $this->layout();
+    }
+
+    /**
+     * Salvar configurações gerais do sistema de obras
+     */
+    public function salvarConfiguracao()
+    {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cObras')) {
+            $this->session->set_flashdata('error', 'Sem permissão.');
+            redirect('obras');
+        }
+
+        $config = [
+            'nome_sistema' => $this->input->post('nome_sistema'),
+            'prazo_inicio_padrao' => $this->input->post('prazo_inicio_padrao'),
+            'prazo_execucao_padrao' => $this->input->post('prazo_execucao_padrao'),
+            'habilitar_atividades' => $this->input->post('habilitar_atividades') ? true : false,
+            'habilitar_etapas' => $this->input->post('habilitar_etapas') ? true : false,
+            'habilitar_checkin' => $this->input->post('habilitar_checkin') ? true : false,
+            'habilitar_gps' => $this->input->post('habilitar_gps') ? true : false,
+            'habilitar_reatendimento' => $this->input->post('habilitar_reatendimento') ? true : false,
+            'habilitar_portal_tecnico' => $this->input->post('habilitar_portal_tecnico') ? true : false,
+        ];
+
+        $result = $this->obras_model->salvarConfiguracoes($config);
+
+        if ($result) {
+            $this->session->set_flashdata('success', 'Configurações salvas com sucesso!');
+        } else {
+            $this->session->set_flashdata('error', 'Erro ao salvar configurações.');
+        }
+
+        redirect('obras/configuracoes');
+    }
+
+    /**
+     * Salvar configurações de notificações
+     */
+    public function salvarConfiguracaoNotificacoes()
+    {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cObras')) {
+            $this->session->set_flashdata('error', 'Sem permissão.');
+            redirect('obras');
+        }
+
+        $config = [
+            'nova_obra' => $this->input->post('notif_nova_obra') ? true : false,
+            'obra_concluida' => $this->input->post('notif_obra_concluida') ? true : false,
+            'atividade_atrasada' => $this->input->post('notif_atividade_atrasada') ? true : false,
+            'atividade_reaberta' => $this->input->post('notif_atividade_reaberta') ? true : false,
+            'checkin' => $this->input->post('notif_checkin') ? true : false,
+            'impedimento' => $this->input->post('notif_impedimento') ? true : false,
+            'canal_email' => $this->input->post('canal_email') ? true : false,
+            'canal_whatsapp' => $this->input->post('canal_whatsapp') ? true : false,
+            'canal_sistema' => $this->input->post('canal_sistema') ? true : false,
+        ];
+
+        $result = $this->obras_model->salvarConfiguracoesNotificacoes($config);
+
+        if ($result) {
+            $this->session->set_flashdata('success', 'Configurações de notificações salvas com sucesso!');
+        } else {
+            $this->session->set_flashdata('error', 'Erro ao salvar configurações.');
+        }
+
+        redirect('obras/configuracoes');
+    }
+
+    /**
      * Adicionar obra
      */
     public function adicionar()

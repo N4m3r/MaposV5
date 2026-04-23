@@ -901,10 +901,10 @@ $emitente_logo = $emitente->url_logo ?? '';
             </div>
             <div class="relatorio-ind-body">
                 <div class="relatorio-progress-circle" style="--progress: <?php echo $percentual_concluido; ?>">
-                    <div class="relatorio-progress-value"><?php echo $percentual_concluido; ?><small>%</small></div>
+                    <div class="relatorio-progress-value"><?php echo $percentual_concluido; ?><small?>%</small></div>
                 </div>
                 <div class="relatorio-progress-bar">
-                    <div class="relatorio-progress-fill" style="width: <?php echo $percentual_concluido; ?%>"></div>
+                    <div class="relatorio-progress-fill" style="width: <?php echo $percentual_concluido; ?>%>"</div>
                 </div>
             </div>
         </div>
@@ -952,7 +952,7 @@ $emitente_logo = $emitente->url_logo ?? '';
                         <span style="font-weight: 600;"><?php echo $dias_decorridos; ?> dias</span>
                     </div>
                     <div class="relatorio-progress-bar">
-                        <div class="relatorio-progress-fill" style="width: <?php echo $percentual_tempo; ?>%; background: #3498db;"></div>
+                        <div class="relatorio-progress-fill" style="width: <?php echo $percentual_tempo; ??>%; background: #3498db;"></div>
                     </div>
                 </div>
                 <div style="display: flex; justify-content: space-between; font-size: 12px; color: #6c757d;">
@@ -1103,7 +1103,7 @@ $emitente_logo = $emitente->url_logo ?? '';
                             <th width="120">STATUS</th>
                             <th width="100">ATIVIDADES</th>
                             <th width="80">HORAS</th>
-                            <th width="120">% EXECUÇÃO</th>
+                            <th width="120"?>% EXECUÇÃO</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -1136,9 +1136,9 @@ $emitente_logo = $emitente->url_logo ?? '';
                             <td>
                                 <div class="relatorio-table-progress">
                                     <div class="relatorio-table-bar">
-                                        <div class="relatorio-table-fill" style="width: <?php echo $etapa_pct; ?%>"></div>
+                                        <div class="relatorio-table-fill" style="width: <?php echo $etapa_pct; ?>%>"></div>
                                     </div>
-                                    <span style="font-size: 12px; font-weight: 600;"><?php echo $etapa_pct; ?>%</span>
+                                    <span style="font-size: 12px; font-weight: 600;"><?php echo $etapa_pct; ??>%</span>
                                 </div>
                             </td>
                         </tr>

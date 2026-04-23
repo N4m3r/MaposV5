@@ -618,10 +618,15 @@ class Atividades extends MY_Controller
             $etapa_id = $this->input->post('etapa_id');
             $atividade_id = $this->input->post('atividade_id');
 
-            // Validação básica
-            if (!$obra_id || !$etapa_id) {
-                echo json_encode(['success' => false, 'message' => 'Obra e etapa são obrigatórios.', 'post' => $this->input->post()]);
+            // Validação básica - etapa pode ser 0 ou 'sem_etapa' para atividades sem etapa definida
+            if (!$obra_id) {
+                echo json_encode(['success' => false, 'message' => 'Obra é obrigatória.', 'post' => $this->input->post()]);
                 return;
+            }
+
+            // Converter etapa 'sem_etapa' para 0
+            if ($etapa_id === 'sem_etapa' || $etapa_id === 'null' || $etapa_id === '') {
+                $etapa_id = 0;
             }
 
             // Verifica se já tem atividade em andamento
