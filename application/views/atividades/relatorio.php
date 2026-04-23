@@ -74,7 +74,7 @@
                             <?php foreach ($atividades as $atv): ?>
                             <tr>
                                 <td>
-                                    <?php echo date('d/m/Y', strtotime($atv->data_criacao)); ?>
+                                    <?php echo date('d/m/Y', strtotime($atv->hora_inicio)); ?>
                                 </td>
                                 <td><?php echo htmlspecialchars($atv->nome_tecnico ?? 'N/A'); ?></td>
                                 <td>
