@@ -1392,6 +1392,16 @@ class Obras extends MY_Controller
                 $this->data['atividade']->observacoes = $this->data['atividade_real']->observacoes;
             }
 
+            // Mesclar problemas encontrados
+            if (!empty($this->data['atividade_real']->problemas_encontrados)) {
+                $this->data['atividade']->problemas_encontrados = $this->data['atividade_real']->problemas_encontrados;
+            }
+
+            // Mesclar solução aplicada
+            if (!empty($this->data['atividade_real']->solucao_aplicada)) {
+                $this->data['atividade']->solucao_aplicada = $this->data['atividade_real']->solucao_aplicada;
+            }
+
             // Mesclar etapa da atividade real
             if (!empty($this->data['atividade_real']->etapa_nome)) {
                 $this->data['atividade']->etapa_nome = $this->data['atividade_real']->etapa_nome;

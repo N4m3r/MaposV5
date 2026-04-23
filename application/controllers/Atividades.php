@@ -679,8 +679,9 @@ class Atividades extends MY_Controller
                 $dados['observacoes'] = 'IMPEDIMENTO: ' . $this->input->post('justificativa');
             }
 
-            // Vincula a atividade planejada se informada (armazenado em observacoes ou descricao)
+            // Vincula a atividade planejada se informada
             if ($atividade_id && $atividade_id != 0) {
+                $dados['obra_atividade_id'] = $atividade_id;
                 $dados['observacoes'] = ($dados['observacoes'] ?? '') . ' | Atividade planejada ID: ' . $atividade_id;
             }
 
