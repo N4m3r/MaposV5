@@ -1996,6 +1996,7 @@ class Obras extends MY_Controller
             $status_class = '';
             switch ($obra->status) {
                 case 'em-andamento':
+                case 'em execucao':
                     $header_class = 'andamento';
                     $status_label = 'Em Andamento';
                     $status_class = 'info';
@@ -2010,14 +2011,25 @@ class Obras extends MY_Controller
                     $status_label = 'Contratada';
                     $status_class = 'warning';
                     break;
+                case 'paralisada':
+                    $header_class = 'paralisada';
+                    $status_label = 'Paralisada';
+                    $status_class = 'danger';
+                    break;
                 case 'cancelada':
                     $header_class = 'cancelada';
                     $status_label = 'Cancelada';
                     $status_class = 'danger';
                     break;
+                case 'prospeccao':
+                case 'Prospeccao':
+                    $header_class = 'prospeccao';
+                    $status_label = 'Prospecção';
+                    $status_class = 'secondary';
+                    break;
                 default:
                     $header_class = 'aberta';
-                    $status_label = 'Aberta';
+                    $status_label = ucfirst($obra->status);
                     $status_class = 'secondary';
             }
 
@@ -2026,11 +2038,11 @@ class Obras extends MY_Controller
                 <div class="obra-card-header ' . $header_class . '">
                     <div class="obra-card-header-content">
                         <div class="obra-card-title-row">
-                            <h3 class="obra-card-title">' . htmlspecialchars($obra->obra_nome ?? $obra->nome ?? 'Obra #' . $obra->id) . '</h3>
+                            <h3 class="obra-card-title">' . htmlspecialchars($obra->nome ?? 'Obra #' . $obra->id) . '</h3>
                             <span class="obra-card-status ' . $status_class . '">' . $status_label . '</span>
                         </div>
                         <div class="obra-card-cliente">
-                            <i class="icon-user"></i> ' . htmlspecialchars($obra->cliente_nome ?? $obra->cliente ?? 'Cliente não definido') . '
+                            <i class="icon-user"></i> ' . htmlspecialchars($obra->cliente_nome ?? 'Cliente não definido') . '
                         </div>
                     </div>
                 </div>
@@ -2038,11 +2050,11 @@ class Obras extends MY_Controller
                     <div class="obra-card-info-grid">
                         <div class="obra-info-item">
                             <div class="obra-info-label"><i class="icon-calendar"></i> Início</div>
-                            <div class="obra-info-value">' . ($obra->data_inicio ? date('d/m/Y', strtotime($obra->data_inicio)) : 'Não definida') . '</div>
+                            <div class="obra-info-value">' . ($obra->data_inicio_contrato ? date('d/m/Y', strtotime($obra->data_inicio_contrato)) : 'Não definida') . '</div>
                         </div>
                         <div class="obra-info-item">
                             <div class="obra-info-label"><i class="icon-calendar-alt"></i> Previsão</div>
-                            <div class="obra-info-value">' . ($obra->data_previsao_fim ? date('d/m/Y', strtotime($obra->data_previsao_fim)) : 'Não definida') . '</div>
+                            <div class="obra-info-value">' . ($obra->data_fim_prevista ? date('d/m/Y', strtotime($obra->data_fim_prevista)) : 'Não definida') . '</div>
                         </div>
                         <div class="obra-info-item">
                             <div class="obra-info-label"><i class="icon-tasks"></i> Atividades</div>
@@ -2061,7 +2073,7 @@ class Obras extends MY_Controller
                 </div>
                 <div class="obra-card-footer">
                     <a href="' . site_url('obras/visualizar/' . $obra->id) . '" class="obra-btn-acao">
-                        <i class="icon-eye"></i> Ver Detalhes
+                        <i class="icon-eye-open"></i> Ver Detalhes
                     </a>
                 </div>
             </div>';

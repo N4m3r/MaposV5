@@ -253,9 +253,18 @@ $obras = isset($obras) ? $obras : (isset($results) ? $results : []);
     background: var(--gradient-danger, linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%));
 }
 
+.obra-card-header.cancelada {
+    background: linear-gradient(135deg, #636e72 0%, #2d3436 100%);
+}
+
 .obra-card-header.prospeccao {
     background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
     color: #333;
+}
+
+.obra-card-header.contratada {
+    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+    color: white;
 }
 
 .obra-card-status-badge {
@@ -385,6 +394,110 @@ $obras = isset($obras) ? $obras : (isset($results) ? $results : []);
     font-size: 11px;
     color: var(--subtitle, #888);
     text-transform: uppercase;
+}
+
+/* Grid de info (usado no AJAX) */
+.obra-card-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.obra-info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.obra-info-label {
+    font-size: 12px;
+    color: var(--subtitle, #888);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.obra-info-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--title, #333);
+}
+
+/* Footer do card (usado no AJAX) */
+.obra-card-footer {
+    display: flex;
+    gap: 8px;
+    padding: 16px 24px;
+    background: var(--body-color, #f8f9fa);
+    border-top: 1px solid var(--border-color, rgba(0,0,0,0.05));
+}
+
+.obra-card-header-content {
+    width: 100%;
+}
+
+.obra-card-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.obra-card-status {
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: rgba(255,255,255,0.3);
+    color: white;
+    white-space: nowrap;
+}
+
+.obra-card-status.info { background: rgba(79, 172, 254, 0.3); }
+.obra-card-status.success { background: rgba(17, 153, 142, 0.3); }
+.obra-card-status.warning { background: rgba(243, 156, 18, 0.3); }
+.obra-card-status.danger { background: rgba(255, 107, 107, 0.3); }
+.obra-card-status.secondary { background: rgba(108, 117, 125, 0.3); }
+
+.obra-btn-acao {
+    flex: 1;
+    padding: 10px;
+    border-radius: var(--radius-md, 10px);
+    border: none;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    text-decoration: none;
+    transition: all var(--transition-fast, 0.15s ease);
+    color: white;
+    background: #667eea;
+}
+
+.obra-btn-acao:hover {
+    background: #5568d3;
+    transform: translateY(-2px);
+}
+
+/* Barra de progresso (usado no AJAX) */
+.obra-progress-bar {
+    height: 8px;
+    background: var(--body-color, #e9ecef);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.obra-progress-fill {
+    height: 100%;
+    background: var(--gradient-primary, linear-gradient(90deg, #667eea 0%, #764ba2 100%));
+    border-radius: 10px;
+    transition: width 0.5s ease;
 }
 
 /* Ações do card */
@@ -555,12 +668,12 @@ $obras = isset($obras) ? $obras : (isset($results) ? $results : []);
                 <a href="<?php echo site_url('obras/adicionar'); ?>" class="obras-filter-btn obras-add-btn">
                     <i class="icon-plus"></i> Nova Obra
                 </a>
-                &lt;?php if ($this-&gt;permission-&gt;checkPermission($this-&gt;session-&gt;userdata('permissao'), 'cObras')): ?&gt;
-                &lt;a href="&lt;?php echo site_url('obras/configuracoes'); ?>" class="obras-filter-btn" style="background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); color: white;"&gt;
-                    &lt;i class="icon-cog"&gt;&lt;/i&gt; Configurações
-                &lt;/a&gt;
-                &lt;?php endif; ?&gt;
-            &lt;/div&gt;
+                <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cObras')): ?>
+                <a href="<?php echo site_url('obras/configuracoes'); ?>" class="obras-filter-btn" style="background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); color: white;">
+                    <i class="icon-cog"></i> Configurações
+                </a>
+                <?php endif; ?>
+            </div>
         </div>
     </div>
 
@@ -675,6 +788,7 @@ $obras = isset($obras) ? $obras : (isset($results) ? $results : []);
                 <option value="em-andamento">Em Andamento</option>
                 <option value="concluida">Concluída</option>
                 <option value="paralisada">Paralisada</option>
+                <option value="cancelada">Cancelada</option>
             </select>
         </div>
 
@@ -705,8 +819,17 @@ $obras = isset($obras) ? $obras : (isset($results) ? $results : []);
                 $status_label = 'Paralisada';
                 break;
             case 'prospeccao':
+            case 'Prospeccao':
                 $status_class = 'prospeccao';
                 $status_label = 'Prospecção';
+                break;
+            case 'contratada':
+                $status_class = 'contratada';
+                $status_label = 'Contratada';
+                break;
+            case 'cancelada':
+                $status_class = 'cancelada';
+                $status_label = 'Cancelada';
                 break;
             default:
                 $status_class = '';
@@ -758,7 +881,7 @@ $obras = isset($obras) ? $obras : (isset($results) ? $results : []);
                         <span class="obra-card-progress-value"><?php echo $progresso; ?>%</span>
                     </div>
                     <div class="obra-card-progress-bar">
-                        <div class="obra-card-progress-fill" style="width: <?php echo $progresso; ?>"></div>
+                        <div class="obra-card-progress-fill" style="width: <?php echo $progresso; ?>%"></div>
                     </div>
                 </div>
 
@@ -818,7 +941,7 @@ $obras = isset($obras) ? $obras : (isset($results) ? $results : []);
 <script>
 // Filtro de obras
 function filtrarObras() {
-    const search = document.getElementById('searchObra').value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    const search = document.getElementById('searchObra').value.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
     const status = document.getElementById('filterStatus').value;
     const cards = document.querySelectorAll('.obra-item-card');
 
