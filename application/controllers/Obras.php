@@ -218,7 +218,7 @@ class Obras extends MY_Controller
                     'data_fim_prevista' => $this->input->post('data_previsao_fim'),
                     'observacoes' => $this->input->post('observacoes'),
                     'valor_contrato' => $valor_contrato,
-                    'gestor_id' => $this->input->post('gestor_id'),
+                    'gestor_obra_id' => $this->input->post('gestor_obra_id'),
                     'responsavel_tecnico_id' => $this->input->post('responsavel_tecnico_id'),
                     'status' => 'Prospeccao',
                 ];
@@ -296,7 +296,7 @@ class Obras extends MY_Controller
                     'observacoes' => $this->input->post('observacoes'),
                     'status' => $this->input->post('status'),
                     'valor_contrato' => $valor_contrato,
-                    'gestor_id' => $this->input->post('gestor_id'),
+                    'gestor_obra_id' => $this->input->post('gestor_obra_id'),
                     'responsavel_tecnico_id' => $this->input->post('responsavel_tecnico_id'),
                 ];
 
