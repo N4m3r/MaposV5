@@ -1,5 +1,27 @@
 <!-- Perfil - Portal do Técnico -->
 <div id="content">
+
+<!-- DEBUG CONSOLE - Remover em produção -->
+<div id="debugConsole" style="position:fixed; bottom:10px; right:10px; background:#333; color:#0f0; padding:10px; font-family:monospace; font-size:12px; max-width:400px; max-height:200px; overflow:auto; z-index:99999; border-radius:5px; display:block;">
+  <strong>DEBUG JS:</strong> <button onclick="document.getElementById('debugConsole').style.display='none'" style="float:right;color:red;">X</button>
+  <div id="debugOutput">Inicializando...</div>
+</div>
+
+<script type="text/javascript">
+function logDebug(msg) {
+    console.log('[DEBUG]', msg);
+    var out = document.getElementById('debugOutput');
+    if (out) {
+        var time = new Date().toLocaleTimeString();
+        out.innerHTML += time + ': ' + msg + '<br>';
+    }
+}
+window.onerror = function(msg, url, line) {
+    logDebug('ERRO JS: ' + msg + ' (linha ' + line + ')');
+};
+logDebug('Página de perfil carregada');
+</script>
+
 <style>
 .portal-tecnico-content { margin-top: 15px !important; }
 @media (max-width: 768px) { .portal-tecnico-content { margin-top: 10px !important; } }
@@ -15,11 +37,11 @@
                     <img src="<?php echo base_url($tecnico->foto_tecnico); ?>?v=<?php echo time(); ?>" alt="Foto">
                 <?php else: ?>
                     <div class="avatar-placeholder">
-                        <i class="bx bx-user"></i>
+                        <i class="icon icon-user"></i>
                     </div>
                 <?php endif; ?>
                 <div class="avatar-overlay">
-                    <i class="bx bx-camera"></i>
+                    <i class="icon icon-camera"></i>
                     <span>Alterar</span>
                 </div>
             </div>
@@ -27,7 +49,7 @@
             <h3 class="profile-name"><?php echo htmlspecialchars($tecnico->nome ?? '', ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></h3>
             <p class="profile-level">
                 <span class="label label-info">
-                    <i class="bx bx-star"></i> Técnico Nível <?php echo $tecnico->nivel_tecnico; ?>
+                    <i class="icon icon-star"></i> Técnico Nível <?php echo $tecnico->nivel_tecnico; ?>
                 </span>
             </p>
         </div>
@@ -35,21 +57,21 @@
         <!-- Informações Pessoais -->
         <div class="widget-box">
             <div class="widget-title">
-                <span class="icon"><i class="bx bx-user"></i></span>
+                <span class="icon"><i class="icon icon-user"></i></span>
                 <h5>Informações Pessoais</h5>
             </div>
             <div class="widget-content">
                 <div class="info-list">
                     <div class="info-item">
                         <span class="info-label">
-                            <i class="bx bx-envelope"></i> E-mail
+                            <i class="icon icon-envelope"></i> E-mail
                         </span>
                         <span class="info-value"><?php echo htmlspecialchars($tecnico->email ?? '', ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></span>
                     </div>
 
                     <div class="info-item">
                         <span class="info-label">
-                            <i class="bx bx-phone"></i> Telefone
+                            <i class="icon icon-phone"></i> Telefone
                         </span>
                         <span class="info-value">
                             <?php echo htmlspecialchars($tecnico->telefone ?? 'Não informado', ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?>
@@ -58,7 +80,7 @@
 
                     <div class="info-item">
                         <span class="info-label">
-                            <i class="bx bx-id-card"></i> CPF
+                            <i class="icon icon-credit-card"></i> CPF
                         </span>
                         <span class="info-value">
                             <?php echo htmlspecialchars($tecnico->cpf ?? 'Não informado', ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?>
@@ -71,14 +93,14 @@
         <!-- Informações Profissionais -->
         <div class="widget-box">
             <div class="widget-title">
-                <span class="icon"><i class="bx bx-wrench"></i></span>
+                <span class="icon"><i class="icon icon-wrench"></i></span>
                 <h5>Informações Profissionais</h5>
             </div>
             <div class="widget-content">
                 <div class="info-list">
                     <div class="info-item">
                         <span class="info-label">
-                            <i class="bx bx-star"></i> Nível
+                            <i class="icon icon-star"></i> Nível
                         </span>
                         <span class="label label-primary">Nível <?php echo $tecnico->nivel_tecnico; ?></span>
                     </div>
@@ -86,7 +108,7 @@
                     <?php if ($tecnico->especialidades): ?>
                     <div class="info-item info-item-block">
                         <span class="info-label">
-                            <i class="bx bx-bulb"></i> Especialidades
+                            <i class="icon icon-lightbulb"></i> Especialidades
                         </span>
                         <div class="specialties-list">
                             <?php $especialidades = explode(',', $tecnico->especialidades); ?>
@@ -100,7 +122,7 @@
                     <?php if ($tecnico->veiculo_placa): ?>
                     <div class="info-item">
                         <span class="info-label">
-                            <i class="bx bx-car"></i> Veículo
+                            <i class="icon icon-truck"></i> Veículo
                         </span>
                         <span class="info-value">
                             <?php echo htmlspecialchars(($tecnico->veiculo_tipo ?? '') . ' - ' . ($tecnico->veiculo_placa ?? ''), ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?>
@@ -110,7 +132,7 @@
 
                     <div class="info-item">
                         <span class="info-label">
-                            <i class="bx bx-time"></i> Plantão 24h
+                            <i class="icon icon-time"></i> Plantão 24h
                         </span>
                         <span class="label <?php echo $tecnico->plantao_24h ? 'label-success' : 'label-default'; ?>">
                             <?php echo $tecnico->plantao_24h ? 'Sim' : 'Não'; ?>
@@ -139,14 +161,14 @@
         <!-- Configurações -->
         <div class="widget-box">
             <div class="widget-title">
-                <span class="icon"><i class="bx bx-cog"></i></span>
+                <span class="icon"><i class="icon icon-cog"></i></span>
                 <h5>Configurações</h5>
             </div>
             <div class="widget-content">
                 <div class="info-list">
                     <div class="info-item">
                         <span class="info-label">
-                            <i class="bx bx-time-five"></i> Último acesso
+                            <i class="icon icon-time"></i> Último acesso
                         </span>
                         <span class="info-value">
                             <?php echo $tecnico->ultimo_acesso_app ? date('d/m/Y H:i', strtotime($tecnico->ultimo_acesso_app)) : 'Nunca'; ?>
@@ -155,7 +177,7 @@
 
                     <div class="info-item">
                         <span class="info-label">
-                            <i class="bx bx-mobile"></i> Versão do App
+                            <i class="icon icon-mobile-phone"></i> Versão do App
                         </span>
                         <span class="info-value">v1.0.0</span>
                     </div>
@@ -166,7 +188,7 @@
         <!-- Logout -->
         <div class="logout-section">
             <a href="<?php echo site_url('tecnicos/logout'); ?>" class="btn btn-danger btn-large btn-block">
-                <i class="bx bx-log-out"></i> Sair do Sistema
+                <i class="icon icon-signout"></i> Sair do Sistema
             </a>
         </div>
 
@@ -185,7 +207,7 @@
     <div class="modal-footer">
         <button type="button" class="btn" onclick="fecharCamera()">Cancelar</button>
         <button type="button" class="btn btn-primary" onclick="capturarFoto()">
-            <i class="bx bx-camera"></i> Capturar
+            <i class="icon icon-camera"></i> Capturar
         </button>
     </div>
 </div>
@@ -396,61 +418,106 @@
 }
 </style>
 
-<script>
-let stream = null;
+<?php
+// Preparar dados no PHP
+$csrf_token_name = $this->security->get_csrf_token_name();
+$csrf_hash = $this->security->get_csrf_hash();
+$url_atualizar_foto = site_url("tecnicos/atualizar_foto");
+?>
 
-async function abrirCamera() {
+<script type="text/javascript">
+var stream = null;
+var URL_ATUALIZAR_FOTO = '<?php echo $url_atualizar_foto; ?>';
+var CSRF_TOKEN_NAME = '<?php echo $csrf_token_name; ?>';
+var CSRF_HASH = '<?php echo $csrf_hash; ?>';
+
+function abrirCamera() {
+    logDebug('Abrindo câmera...');
     jQuery('#cameraModal').modal('show');
-    try {
-        stream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: 'user' }
-        });
-        document.getElementById('video').srcObject = stream;
-    } catch (err) {
+
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        logDebug('ERRO: getUserMedia não suportado');
+        alert('Seu navegador não suporta acesso à câmera');
+        return;
+    }
+
+    navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'user' }
+    }).then(function(mediaStream) {
+        stream = mediaStream;
+        var video = document.getElementById('video');
+        if (video) {
+            video.srcObject = stream;
+        }
+        logDebug('Câmera aberta com sucesso');
+    }).catch(function(err) {
+        logDebug('Erro ao abrir câmera: ' + err.message);
         console.error('Erro ao abrir câmera:', err);
         alert('Não foi possível acessar a câmera');
-    }
+    });
 }
 
 function fecharCamera() {
+    logDebug('Fechando câmera...');
     jQuery('#cameraModal').modal('hide');
     if (stream) {
-        stream.getTracks().forEach(track => track.stop());
+        var tracks = stream.getTracks();
+        for (var i = 0; i < tracks.length; i++) {
+            tracks[i].stop();
+        }
         stream = null;
     }
 }
 
-async function capturarFoto() {
-    const video = document.getElementById('video');
-    const canvas = document.createElement('canvas');
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    canvas.getContext('2d').drawImage(video, 0, 0);
+function capturarFoto() {
+    logDebug('Capturando foto...');
+    var video = document.getElementById('video');
+    if (!video) {
+        logDebug('ERRO: Elemento video não encontrado');
+        alert('Erro: vídeo não encontrado');
+        return;
+    }
 
-    const foto = canvas.toDataURL('image/jpeg', 0.8);
+    var canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth || 640;
+    canvas.height = video.videoHeight || 480;
+    var ctx = canvas.getContext('2d');
+    if (ctx) {
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    }
 
-    const formData = new FormData();
+    var foto = canvas.toDataURL('image/jpeg', 0.8);
+    logDebug('Foto capturada, enviando...');
+
+    var formData = new FormData();
     formData.append('foto', foto);
-    formData.append('<?php echo $this->security->get_csrf_token_name(); ?>', '<?php echo $this->security->get_csrf_hash(); ?>');
+    formData.append(CSRF_TOKEN_NAME, CSRF_HASH);
 
-    try {
-        const response = await fetch('<?php echo site_url("tecnicos/atualizar_foto"); ?>', {
-            method: 'POST',
-            body: formData
-        });
-
-        const data = await response.json();
-
+    fetch(URL_ATUALIZAR_FOTO, {
+        method: 'POST',
+        body: formData
+    }).then(function(response) {
+        return response.json();
+    }).then(function(data) {
+        logDebug('Resposta recebida: ' + JSON.stringify(data));
         if (data.success) {
             // Atualizar preview
-            document.querySelector('.profile-avatar').innerHTML = `<img src="${foto}"><div class="avatar-overlay"><i class="bx bx-camera"></i><span>Alterar</span></div>`;
+            var avatar = document.querySelector('.profile-avatar');
+            if (avatar) {
+                avatar.innerHTML = '<img src="' + foto + '" alt="Foto"><div class="avatar-overlay"><i class="icon icon-camera"></i><span>Alterar</span></div>';
+            }
             fecharCamera();
+            logDebug('Foto atualizada com sucesso');
         } else {
-            alert('Erro ao atualizar foto');
+            logDebug('ERRO ao atualizar foto: ' + (data.message || 'Erro desconhecido'));
+            alert('Erro ao atualizar foto: ' + (data.message || 'Erro desconhecido'));
         }
-    } catch (err) {
+    }).catch(function(err) {
+        logDebug('ERRO ao enviar foto: ' + err.message);
         alert('Erro ao enviar foto: ' + err.message);
-    }
+    });
 }
+
+logDebug('JavaScript do perfil carregado');
 </script>
 </div>
