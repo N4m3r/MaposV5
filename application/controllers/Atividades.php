@@ -54,7 +54,21 @@ class Atividades extends MY_Controller
         $this->data['is_admin'] = !$is_portal_tecnico && $this->session->userdata('permissao') == 1;
 
         // Atividade em andamento
-        $this->data['atividade_em_andamento'] = $this->atividades->getAtividadeEmAndamento($tecnico_id);
+        $atividade_em_andamento = $this->atividades->getAtividadeEmAndamento($tecnico_id);
+
+        // Formatar datas para evitar conversão UTC no json_encode
+        if ($atividade_em_andamento) {
+            if (isset($atividade_em_andamento->hora_inicio)) {
+                $atividade_em_andamento->hora_inicio = date('Y-m-d H:i:s', strtotime($atividade_em_andamento->hora_inicio));
+            }
+            if (isset($atividade_em_andamento->hora_fim)) {
+                $atividade_em_andamento->hora_fim = date('Y-m-d H:i:s', strtotime($atividade_em_andamento->hora_fim));
+            }
+            if (isset($atividade_em_andamento->pausado_em)) {
+                $atividade_em_andamento->pausado_em = date('Y-m-d H:i:s', strtotime($atividade_em_andamento->pausado_em));
+            }
+        }
+        $this->data['atividade_em_andamento'] = $atividade_em_andamento;
 
         // Resumo do dia
         $this->data['resumo_dia'] = $this->atividades->getResumoDia($tecnico_id);
@@ -86,6 +100,19 @@ class Atividades extends MY_Controller
 
         // Verifica se já tem atividade em andamento
         $atividade_andamento = $this->atividades->getAtividadeEmAndamento($tecnico_id);
+
+        // Formatar datas para evitar conversão UTC no json_encode
+        if ($atividade_andamento) {
+            if (isset($atividade_andamento->hora_inicio)) {
+                $atividade_andamento->hora_inicio = date('Y-m-d H:i:s', strtotime($atividade_andamento->hora_inicio));
+            }
+            if (isset($atividade_andamento->hora_fim)) {
+                $atividade_andamento->hora_fim = date('Y-m-d H:i:s', strtotime($atividade_andamento->hora_fim));
+            }
+            if (isset($atividade_andamento->pausado_em)) {
+                $atividade_andamento->pausado_em = date('Y-m-d H:i:s', strtotime($atividade_andamento->pausado_em));
+            }
+        }
 
         if ($atividade_andamento && $atividade_andamento->os_id != $os_id) {
             $this->session->set_flashdata('error', 'Você já tem uma atividade em andamento na OS #' . $atividade_andamento->os_id);
@@ -149,6 +176,19 @@ class Atividades extends MY_Controller
 
         // Verifica se já tem atividade em andamento
         $atividade_andamento = $this->atividades->getAtividadeEmAndamento($tecnico_id);
+
+        // Formatar datas para evitar conversão UTC no json_encode
+        if ($atividade_andamento) {
+            if (isset($atividade_andamento->hora_inicio)) {
+                $atividade_andamento->hora_inicio = date('Y-m-d H:i:s', strtotime($atividade_andamento->hora_inicio));
+            }
+            if (isset($atividade_andamento->hora_fim)) {
+                $atividade_andamento->hora_fim = date('Y-m-d H:i:s', strtotime($atividade_andamento->hora_fim));
+            }
+            if (isset($atividade_andamento->pausado_em)) {
+                $atividade_andamento->pausado_em = date('Y-m-d H:i:s', strtotime($atividade_andamento->pausado_em));
+            }
+        }
 
         // Se tem atividade em andamento, verifica se é da mesma obra
         if ($atividade_andamento && $atividade_andamento->obra_id != $obra_id) {

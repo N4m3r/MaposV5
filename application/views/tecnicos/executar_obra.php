@@ -1917,36 +1917,29 @@ const WizardAtendimento = {
         var minuto = parseInt(horaPartes[1], 10);
         var segundo = parseInt(horaPartes[2] || '0', 10);
 
-        // Cria a data em UTC-4 (Manaus)
-        // Usa Date.UTC e ajusta para UTC-4 (adiciona 4 horas para compensar)
-        var dataUTC4 = new Date(Date.UTC(ano, mes, dia, hora + 4, minuto, segundo));
+        // Cria a data localmente (o servidor já envia no timezone correto America/Manaus)
+        var dataLocal = new Date(ano, mes, dia, hora, minuto, segundo);
 
         // Validação: se a data resultante for inválida, tenta fallback
-        if (isNaN(dataUTC4.getTime())) {
-            console.warn('Data inválida após conversão UTC-4, usando fallback:', dataHoraString);
+        if (isNaN(dataLocal.getTime())) {
+            console.warn('Data inválida após conversão, usando fallback:', dataHoraString);
             return new Date(dataHoraString);
         }
 
-        return dataUTC4;
+        return dataLocal;
     },
 
-    // Calcular tempo decorrido garantindo que não seja negativo (UTC-4)
+    // Calcular tempo decorrido garantindo que não seja negativo
     calcularTempoDecorrido: function(dataInicio) {
         if (!dataInicio) return { horas: 0, minutos: 0, segundos: 0, texto: '00:00:00' };
 
-        // Obtém hora atual em UTC-4 (Manaus)
+        // Usa hora local do navegador (assumindo que servidor e navegador estão em UTC-4)
         var agora = new Date();
-        var offsetLocal = agora.getTimezoneOffset(); // em minutos
-        var offsetUTC4 = 240; // UTC-4 = 240 minutos de offset
-
-        // Ajusta para UTC-4
-        var agoraUTC4 = new Date(agora.getTime() + (offsetLocal - offsetUTC4) * 60000);
-
-        var diff = agoraUTC4 - dataInicio;
+        var diff = agora - dataInicio;
 
         // Se a diferença for negativa, ajusta para 0
         if (diff < 0) {
-            console.warn('Tempo negativo detectado, ajustando para 0. Diff:', diff, 'Inicio:', dataInicio, 'Agora UTC-4:', agoraUTC4);
+            console.warn('Tempo negativo detectado, ajustando para 0. Diff:', diff, 'Inicio:', dataInicio, 'Agora:', agora);
             diff = 0;
         }
 

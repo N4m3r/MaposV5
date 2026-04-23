@@ -613,7 +613,25 @@ $checkin_realizado = $checkin_realizado ?? false;
 // ========== VARIÁVEIS GLOBAIS ==========
 let atividadeAtual = <?= $atividade_em_andamento ? json_encode($atividade_em_andamento) : 'null' ?>;
 let cronometroInterval = null;
-let tempoInicio = atividadeAtual ? new Date(atividadeAtual.hora_inicio) : null;
+
+// Converte data do MySQL (Y-m-d H:i:s) para Date local
+function converterDataHoraWizard(dataHoraString) {
+    if (!dataHoraString) return null;
+    var partes = dataHoraString.split(' ');
+    if (partes.length !== 2) return new Date(dataHoraString);
+    var dataPartes = partes[0].split('-');
+    var horaPartes = partes[1].split(':');
+    if (dataPartes.length !== 3 || horaPartes.length < 2) return new Date(dataHoraString);
+    var ano = parseInt(dataPartes[0], 10);
+    var mes = parseInt(dataPartes[1], 10) - 1;
+    var dia = parseInt(dataPartes[2], 10);
+    var hora = parseInt(horaPartes[0], 10);
+    var minuto = parseInt(horaPartes[1], 10);
+    var segundo = parseInt(horaPartes[2] || '0', 10);
+    return new Date(ano, mes, dia, hora, minuto, segundo);
+}
+
+let tempoInicio = atividadeAtual ? converterDataHoraWizard(atividadeAtual.hora_inicio) : null;
 
 // ========== INICIALIZAÇÃO ==========
 $(document).ready(function() {
@@ -925,9 +943,11 @@ function abrirModalFinalizar(id) {
     // Calcula informações de tempo
     const atividade = atividadeAtual;
     if (atividade) {
-        const inicio = new Date(atividade.hora_inicio);
+        const inicio = converterDataHoraWizard(atividade.hora_inicio);
         const agora = new Date();
-        const diff = Math.floor((agora - inicio) / 60000); // minutos
+        var diffMs = agora - inicio;
+        if (diffMs < 0) diffMs = 0; // Evita tempo negativo
+        const diff = Math.floor(diffMs / 60000); // minutos
 
         $('#info-hora-inicio').text(inicio.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}));
         $('#info-hora-fim').text(agora.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}));

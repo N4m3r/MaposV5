@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
-/* ===== ESTILOS DA PÁGINA DE CONFIGURAÇÕES ===== */
+/* ===== ESTILOS DA PAGINA DE CONFIGURACOES ===== */
 .config-container {
     padding: 24px;
     max-width: 1400px;
@@ -44,7 +44,7 @@
     font-size: 15px;
 }
 
-/* Layout com Abas */
+/* Layout com Abas - Sistema CSS-only usando :target */
 .config-layout {
     display: grid;
     grid-template-columns: 280px 1fr;
@@ -104,15 +104,48 @@
     font-weight: 600;
 }
 
-/* Conteúdo das Abas */
+/* Conteudo das Abas - Sistema :target */
 .config-content {
     display: none;
+    animation: fadeIn 0.3s ease;
 }
 
-.config-content.active {
+/* Mostra a aba quando e alvo do link */
+.config-content:target {
     display: block;
 }
 
+/* Se nenhuma aba estiver selecionada, mostra a primeira (Geral) */
+.config-content-wrapper:not(:has(.config-content:target)) #tab-geral {
+    display: block;
+}
+
+/* Quando uma aba especifica e alvo, esconde a geral */
+.config-content-wrapper:has(.config-content:target) #tab-geral {
+    display: none;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Estilo para aba ativa no menu baseada no :target */
+#tab-geral:target ~ .config-tabs .config-tab-item[href="#geral"],
+#tab-tipos-obra:target ~ .config-tabs .config-tab-item[href="#tipos-obra"],
+#tab-tipos-atividade:target ~ .config-tabs .config-tab-item[href="#tipos-atividade"],
+#tab-status-obra:target ~ .config-tabs .config-tab-item[href="#status-obra"],
+#tab-status-atividade:target ~ .config-tabs .config-tab-item[href="#status-atividade"],
+#tab-especialidades:target ~ .config-tabs .config-tab-item[href="#especialidades"],
+#tab-funcoes:target ~ .config-tabs .config-tab-item[href="#funcoes"],
+#tab-notificacoes:target ~ .config-tabs .config-tab-item[href="#notificacoes"],
+#tab-permissoes:target ~ .config-tabs .config-tab-item[href="#permissoes"] {
+    background: #f0f4ff;
+    color: #667eea;
+    border-left-color: #667eea;
+}
+
+/* Cards */
 .config-card {
     background: white;
     border-radius: 12px;
@@ -149,7 +182,7 @@
     padding: 24px;
 }
 
-/* Formulários */
+/* Formularios */
 .config-form-group {
     margin-bottom: 20px;
 }
@@ -179,11 +212,6 @@
     border-color: #667eea;
 }
 
-.config-form-control:disabled {
-    background: #f5f5f5;
-    cursor: not-allowed;
-}
-
 select.config-form-control {
     cursor: pointer;
     appearance: none;
@@ -193,7 +221,7 @@ select.config-form-control {
     padding-right: 36px;
 }
 
-/* Lista de Itens Configuráveis */
+/* Lista de Itens Configuraveis */
 .config-items-list {
     display: flex;
     flex-direction: column;
@@ -260,6 +288,7 @@ select.config-form-control {
     display: inline-flex;
     align-items: center;
     gap: 6px;
+    text-decoration: none;
 }
 
 .config-btn-primary {
@@ -290,21 +319,9 @@ select.config-form-control {
     background: #fcc;
 }
 
-.config-btn-success {
-    background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
-    color: white;
-}
-
 .config-btn-sm {
     padding: 6px 12px;
     font-size: 12px;
-}
-
-.config-btn-icon {
-    width: 36px;
-    height: 36px;
-    padding: 0;
-    justify-content: center;
 }
 
 /* Grid de Cards */
@@ -326,15 +343,6 @@ select.config-form-control {
     border-color: #667eea;
     background: white;
     transform: translateY(-2px);
-}
-
-.config-grid-item.active {
-    border-color: #27ae60;
-    background: #f0fff4;
-}
-
-.config-grid-item.inactive {
-    opacity: 0.7;
 }
 
 /* Cores para tipos */
@@ -453,14 +461,8 @@ select.config-form-control {
 }
 
 @keyframes modalSlideIn {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .config-modal-header {
@@ -600,11 +602,11 @@ body[data-theme="dark"] .config-grid-item:hover {
     <div class="config-header">
         <div class="config-header-content">
             <div>
-                <h1><i class='bx bx-cog'></i> Configurações do Sistema de Obras</h1>
-                <p>Gerencie tipos, status, especialidades e preferências do sistema</p>
+                <h1><i class='bx bx-cog'></i> Configuracoes do Sistema de Obras</h1>
+                <p>Gerencie tipos, status, especialidades e preferencias do sistema</p>
             </div>
             <a href="<?php echo site_url('obras'); ?>" class="btn" style="background: rgba(255,255,255,0.2); color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none;">
-                <i class='bx bx-arrow-back'></i> Voltar às Obras
+                <i class='bx bx-arrow-back'></i> Voltar as Obras
             </a>
         </div>
     </div>
@@ -613,76 +615,76 @@ body[data-theme="dark"] .config-grid-item:hover {
     <div class="config-layout">
         <!-- Sidebar de Abas -->
         <div class="config-tabs">
-            <div class="config-tab-item active" onclick="switchTab('geral', this)">
+            <a href="#geral" class="config-tab-item" data-tab="geral">
                 <i class='bx bx-slider'></i>
                 <span>Geral</span>
-            </div>
-            <div class="config-tab-item" onclick="switchTab('tipos-obra', this)">
+            </a>
+            <a href="#tipos-obra" class="config-tab-item" data-tab="tipos-obra">
                 <i class='bx bx-building-house'></i>
                 <span>Tipos de Obra</span>
                 <span class="badge-count"><?php echo count($tipos_obra ?? ['Reforma', 'Construcao', 'Instalacao', 'Manutencao', 'Outro']); ?></span>
-            </div>
-            <div class="config-tab-item" onclick="switchTab('tipos-atividade', this)">
+            </a>
+            <a href="#tipos-atividade" class="config-tab-item" data-tab="tipos-atividade">
                 <i class='bx bx-task'></i>
                 <span>Tipos de Atividade</span>
                 <span class="badge-count"><?php echo count($tipos_atividades ?? []); ?></span>
-            </div>
-            <div class="config-tab-item" onclick="switchTab('status-obra', this)">
+            </a>
+            <a href="#status-obra" class="config-tab-item" data-tab="status-obra">
                 <i class='bx bx-flag'></i>
                 <span>Status de Obra</span>
                 <span class="badge-count"><?php echo count($status_obra ?? ['Prospeccao', 'Em Andamento', 'Paralisada', 'Concluida', 'Cancelada']); ?></span>
-            </div>
-            <div class="config-tab-item" onclick="switchTab('status-atividade', this)">
+            </a>
+            <a href="#status-atividade" class="config-tab-item" data-tab="status-atividade">
                 <i class='bx bx-check-circle'></i>
                 <span>Status de Atividade</span>
                 <span class="badge-count"><?php echo count($status_atividade ?? ['agendada', 'iniciada', 'pausada', 'concluida', 'cancelada', 'reaberta']); ?></span>
-            </div>
-            <div class="config-tab-item" onclick="switchTab('especialidades', this)">
+            </a>
+            <a href="#especialidades" class="config-tab-item" data-tab="especialidades">
                 <i class='bx bx-hard-hat'></i>
                 <span>Especialidades</span>
                 <span class="badge-count"><?php echo count($especialidades ?? []); ?></span>
-            </div>
-            <div class="config-tab-item" onclick="switchTab('funcoes', this)">
+            </a>
+            <a href="#funcoes" class="config-tab-item" data-tab="funcoes">
                 <i class='bx bx-group'></i>
-                <span>Funções da Equipe</span>
+                <span>Funcoes da Equipe</span>
                 <span class="badge-count"><?php echo count($funcoes_equipe ?? []); ?></span>
-            </div>
-            <div class="config-tab-item" onclick="switchTab('notificacoes', this)">
+            </a>
+            <a href="#notificacoes" class="config-tab-item" data-tab="notificacoes">
                 <i class='bx bx-bell'></i>
-                <span>Notificações</span>
-            </div>
-            <div class="config-tab-item" onclick="switchTab('permissoes', this)">
+                <span>Notificacoes</span>
+            </a>
+            <a href="#permissoes" class="config-tab-item" data-tab="permissoes">
                 <i class='bx bx-lock'></i>
-                <span>Permissões</span>
-            </div>
+                <span>Permissoes</span>
+            </a>
         </div>
 
-        <!-- Conteúdo -->
+        <!-- Conteudo -->
         <div class="config-content-wrapper">
             <!-- ABA: GERAL -->
-            <div id="tab-geral" class="config-content active">
+            <div id="geral" class="config-content">
                 <div class="config-card">
                     <div class="config-card-header">
                         <div class="config-card-title">
                             <i class='bx bx-slider'></i>
-                            Configurações Gerais
+                            Configuracoes Gerais
                         </div>
                     </div>
                     <div class="config-card-body">
                         <form id="form-config-geral" method="post" action="<?php echo site_url('obras/salvarConfiguracao'); ?>">
                             <div class="config-form-group">
                                 <label>Nome do Sistema de Obras</label>
-                                <input type="text" name="nome_sistema" class="config-form-control" value="<?php echo $config['nome_sistema'] ?? 'Gestão de Obras'; ?>" placeholder="Ex: Gestão de Obras">
+                                <input type="text" name="nome_sistema" class="config-form-control" value="<?php echo $config['nome_sistema'] ?? 'Gestao de Obras'; ?>" placeholder="Ex: Gestao de Obras">
                             </div>
 
                             <div class="config-grid" style="grid-template-columns: repeat(2, 1fr);">
                                 <div class="config-form-group">
-                                    <label>Prazo Padrão para Início (dias)</label>
+                                    <label>Prazo Padrao para Inicio (dias)</label>
                                     <input type="number" name="prazo_inicio_padrao" class="config-form-control" value="<?php echo $config['prazo_inicio_padrao'] ?? 7; ?>" min="0">
                                 </div>
 
                                 <div class="config-form-group">
-                                    <label>Prazo Padrão para Execução (dias)</label>
+                                    <label>Prazo Padrao para Execucao (dias)</label>
                                     <input type="number" name="prazo_execucao_padrao" class="config-form-control" value="<?php echo $config['prazo_execucao_padrao'] ?? 30; ?>" min="1">
                                 </div>
                             </div>
@@ -706,7 +708,7 @@ body[data-theme="dark"] .config-grid-item:hover {
                                 <div class="config-item">
                                     <div class="config-item-info">
                                         <div class="config-item-name">Sistema de Etapas</div>
-                                        <div class="config-item-meta">Divide a obra em etapas/fases executáveis</div>
+                                        <div class="config-item-meta">Divide a obra em etapas/fases executaveis</div>
                                     </div>
                                     <label class="config-toggle">
                                         <input type="checkbox" name="habilitar_etapas" <?php echo ($config['habilitar_etapas'] ?? true) ? 'checked' : ''; ?>>
@@ -717,7 +719,7 @@ body[data-theme="dark"] .config-grid-item:hover {
                                 <div class="config-item">
                                     <div class="config-item-info">
                                         <div class="config-item-name">Check-in/Check-out</div>
-                                        <div class="config-item-meta">Registro de presença e tempo dos técnicos</div>
+                                        <div class="config-item-meta">Registro de presenca e tempo dos tecnicos</div>
                                     </div>
                                     <label class="config-toggle">
                                         <input type="checkbox" name="habilitar_checkin" <?php echo ($config['habilitar_checkin'] ?? true) ? 'checked' : ''; ?>>
@@ -727,8 +729,8 @@ body[data-theme="dark"] .config-grid-item:hover {
 
                                 <div class="config-item">
                                     <div class="config-item-info">
-                                        <div class="config-item-name">Geolocalização</div>
-                                        <div class="config-item-meta">Captura localização GPS nas atividades</div>
+                                        <div class="config-item-name">Geolocalizacao</div>
+                                        <div class="config-item-meta">Captura localizacao GPS nas atividades</div>
                                     </div>
                                     <label class="config-toggle">
                                         <input type="checkbox" name="habilitar_gps" <?php echo ($config['habilitar_gps'] ?? true) ? 'checked' : ''; ?>>
@@ -739,7 +741,7 @@ body[data-theme="dark"] .config-grid-item:hover {
                                 <div class="config-item">
                                     <div class="config-item-info">
                                         <div class="config-item-name">Reatendimento</div>
-                                        <div class="config-item-meta">Permite reabrir atividades para nova execução</div>
+                                        <div class="config-item-meta">Permite reabrir atividades para nova execucao</div>
                                     </div>
                                     <label class="config-toggle">
                                         <input type="checkbox" name="habilitar_reatendimento" <?php echo ($config['habilitar_reatendimento'] ?? true) ? 'checked' : ''; ?>>
@@ -749,8 +751,8 @@ body[data-theme="dark"] .config-grid-item:hover {
 
                                 <div class="config-item">
                                     <div class="config-item-info">
-                                        <div class="config-item-name">Portal do Técnico</div>
-                                        <div class="config-item-meta">Acesso mobile para técnicos executarem atividades</div>
+                                        <div class="config-item-name">Portal do Tecnico</div>
+                                        <div class="config-item-meta">Acesso mobile para tecnicos executarem atividades</div>
                                     </div>
                                     <label class="config-toggle">
                                         <input type="checkbox" name="habilitar_portal_tecnico" <?php echo ($config['habilitar_portal_tecnico'] ?? true) ? 'checked' : ''; ?>>
@@ -761,7 +763,7 @@ body[data-theme="dark"] .config-grid-item:hover {
 
                             <div style="margin-top: 24px; text-align: right;">
                                 <button type="submit" class="config-btn config-btn-primary">
-                                    <i class='bx bx-save'></i> Salvar Configurações
+                                    <i class='bx bx-save'></i> Salvar Configuracoes
                                 </button>
                             </div>
                         </form>
@@ -770,14 +772,14 @@ body[data-theme="dark"] .config-grid-item:hover {
             </div>
 
             <!-- ABA: TIPOS DE OBRA -->
-            <div id="tab-tipos-obra" class="config-content">
+            <div id="tipos-obra" class="config-content">
                 <div class="config-card">
                     <div class="config-card-header">
                         <div class="config-card-title">
                             <i class='bx bx-building-house'></i>
                             Tipos de Obra
                         </div>
-                        <button class="config-btn config-btn-primary config-btn-sm" onclick="abrirModalTipoObra()">
+                        <button class="config-btn config-btn-primary config-btn-sm" onclick="abrirModal('Novo Tipo de Obra', 'form-tipo-obra')">
                             <i class='bx bx-plus'></i> Novo Tipo
                         </button>
                     </div>
@@ -785,17 +787,17 @@ body[data-theme="dark"] .config-grid-item:hover {
                         <div class="config-alert config-alert-info">
                             <i class='bx bx-info-circle'></i>
                             <div>
-                                <strong>Tipos de Obra</strong> são usados para categorizar as obras no cadastro e relatórios.
+                                <strong>Tipos de Obra</strong> sao usados para categorizar as obras no cadastro e relatorios.
                             </div>
                         </div>
 
                         <div class="config-items-list">
                             <?php
                             $tipos_obra_padrao = [
-                                ['id' => 1, 'nome' => 'Reforma', 'descricao' => 'Reformas e renovações', 'cor' => '#3498db', 'icone' => 'bx-brush'],
-                                ['id' => 2, 'nome' => 'Construção', 'descricao' => 'Obras novas', 'cor' => '#27ae60', 'icone' => 'bx-building'],
-                                ['id' => 3, 'nome' => 'Instalação', 'descricao' => 'Instalações técnicas', 'cor' => '#9b59b6', 'icone' => 'bx-plug'],
-                                ['id' => 4, 'nome' => 'Manutenção', 'descricao' => 'Manutenções corretivas e preventivas', 'cor' => '#f39c12', 'icone' => 'bx-wrench'],
+                                ['id' => 1, 'nome' => 'Reforma', 'descricao' => 'Reformas e renovacoes', 'cor' => '#3498db', 'icone' => 'bx-brush'],
+                                ['id' => 2, 'nome' => 'Construcao', 'descricao' => 'Obras novas', 'cor' => '#27ae60', 'icone' => 'bx-building'],
+                                ['id' => 3, 'nome' => 'Instalacao', 'descricao' => 'Instalacoes tecnicas', 'cor' => '#9b59b6', 'icone' => 'bx-plug'],
+                                ['id' => 4, 'nome' => 'Manutencao', 'descricao' => 'Manutencoes corretivas e preventivas', 'cor' => '#f39c12', 'icone' => 'bx-wrench'],
                                 ['id' => 5, 'nome' => 'Outro', 'descricao' => 'Outros tipos', 'cor' => '#95a5a6', 'icone' => 'bx-box'],
                             ];
                             $tipos = $tipos_obra ?? $tipos_obra_padrao;
@@ -814,10 +816,10 @@ body[data-theme="dark"] .config-grid-item:hover {
                                     <div class="config-item-meta"><?php echo htmlspecialchars($tipo['descricao'] ?? ''); ?></div>
                                 </div>
                                 <div class="config-item-actions">
-                                    <button class="config-btn config-btn-secondary config-btn-sm" onclick="editarTipoObra(<?php echo $tipo['id']; ?>)">
+                                    <button class="config-btn config-btn-secondary config-btn-sm" onclick="alert('Editar tipo ID: <?php echo $tipo['id']; ?>')">
                                         <i class='bx bx-edit'></i>
                                     </button>
-                                    <button class="config-btn config-btn-danger config-btn-sm" onclick="excluirTipoObra(<?php echo $tipo['id']; ?>)">
+                                    <button class="config-btn config-btn-danger config-btn-sm" onclick="if(confirm('Tem certeza?')) alert('Excluir tipo ID: <?php echo $tipo['id']; ?>')">
                                         <i class='bx bx-trash'></i>
                                     </button>
                                 </div>
@@ -829,14 +831,14 @@ body[data-theme="dark"] .config-grid-item:hover {
             </div>
 
             <!-- ABA: TIPOS DE ATIVIDADE -->
-            <div id="tab-tipos-atividade" class="config-content">
+            <div id="tipos-atividade" class="config-content">
                 <div class="config-card">
                     <div class="config-card-header">
                         <div class="config-card-title">
                             <i class='bx bx-task'></i>
                             Tipos de Atividade
                         </div>
-                        <button class="config-btn config-btn-primary config-btn-sm" onclick="abrirModalTipoAtividade()">
+                        <button class="config-btn config-btn-primary config-btn-sm" onclick="abrirModal('Novo Tipo de Atividade', 'form-tipo-atividade')">
                             <i class='bx bx-plus'></i> Novo Tipo
                         </button>
                     </div>
@@ -851,17 +853,15 @@ body[data-theme="dark"] .config-grid-item:hover {
                         <div class="config-items-list">
                             <?php
                             $tipos_atv_padrao = [
-                                ['id' => 1, 'nome' => 'Trabalho', 'descricao' => 'Execução de serviços técnicos', 'cor' => '#3498db', 'icone' => 'bx-wrench', 'categoria' => 'execucao'],
-                                ['id' => 2, 'nome' => 'Visita Técnica', 'descricao' => 'Visitas de inspeção e levantamento', 'cor' => '#9b59b6', 'icone' => 'bx-search', 'categoria' => 'visita'],
-                                ['id' => 3, 'nome' => 'Manutenção', 'descricao' => 'Manutenção preventiva ou corretiva', 'cor' => '#27ae60', 'icone' => 'bx-cog', 'categoria' => 'manutencao'],
+                                ['id' => 1, 'nome' => 'Trabalho', 'descricao' => 'Execucao de servicos tecnicos', 'cor' => '#3498db', 'icone' => 'bx-wrench', 'categoria' => 'execucao'],
+                                ['id' => 2, 'nome' => 'Visita Tecnica', 'descricao' => 'Visitas de inspecao e levantamento', 'cor' => '#9b59b6', 'icone' => 'bx-search', 'categoria' => 'visita'],
+                                ['id' => 3, 'nome' => 'Manutencao', 'descricao' => 'Manutencao preventiva ou corretiva', 'cor' => '#27ae60', 'icone' => 'bx-cog', 'categoria' => 'manutencao'],
                                 ['id' => 4, 'nome' => 'Impedimento', 'descricao' => 'Registro de impedimentos encontrados', 'cor' => '#e74c3c', 'icone' => 'bx-block', 'categoria' => 'impedimento'],
                                 ['id' => 5, 'nome' => 'Outro', 'descricao' => 'Outras atividades', 'cor' => '#95a5a6', 'icone' => 'bx-help-circle', 'categoria' => 'outro'],
                             ];
                             $tipos_atv = $tipos_atividades ?? $tipos_atv_padrao;
                             foreach ($tipos_atv as $tipo):
-                                // Converter objeto para array se necessário
                                 $tipo = (array) $tipo;
-                                // Mapear campos do banco para o formato padronizado
                                 $tipo['id'] = $tipo['idTipo'] ?? $tipo['id'] ?? null;
                             ?>
                             <div class="config-item">
@@ -881,10 +881,10 @@ body[data-theme="dark"] .config-grid-item:hover {
                                     </div>
                                 </div>
                                 <div class="config-item-actions">
-                                    <button class="config-btn config-btn-secondary config-btn-sm" onclick="editarTipoAtividade(<?php echo $tipo['id']; ?>)">
+                                    <button class="config-btn config-btn-secondary config-btn-sm" onclick="alert('Editar tipo ID: <?php echo $tipo['id']; ?>')">
                                         <i class='bx bx-edit'></i>
                                     </button>
-                                    <button class="config-btn config-btn-danger config-btn-sm" onclick="excluirTipoAtividade(<?php echo $tipo['id']; ?>)">
+                                    <button class="config-btn config-btn-danger config-btn-sm" onclick="if(confirm('Tem certeza?')) alert('Excluir tipo ID: <?php echo $tipo['id']; ?>')">
                                         <i class='bx bx-trash'></i>
                                     </button>
                                 </div>
@@ -896,14 +896,14 @@ body[data-theme="dark"] .config-grid-item:hover {
             </div>
 
             <!-- ABA: STATUS DE OBRA -->
-            <div id="tab-status-obra" class="config-content">
+            <div id="status-obra" class="config-content">
                 <div class="config-card">
                     <div class="config-card-header">
                         <div class="config-card-title">
                             <i class='bx bx-flag'></i>
                             Status de Obra
                         </div>
-                        <button class="config-btn config-btn-primary config-btn-sm" onclick="abrirModalStatusObra()">
+                        <button class="config-btn config-btn-primary config-btn-sm" onclick="abrirModal('Novo Status de Obra', 'form-status-obra')">
                             <i class='bx bx-plus'></i> Novo Status
                         </button>
                     </div>
@@ -911,17 +911,17 @@ body[data-theme="dark"] .config-grid-item:hover {
                         <div class="config-alert config-alert-warning">
                             <i class='bx bx-error-circle'></i>
                             <div>
-                                <strong>Atenção:</strong> Alterar status padrão pode afetar relatórios e fluxos de trabalho existentes.
+                                <strong>Atencao:</strong> Alterar status padrao pode afetar relatorios e fluxos de trabalho existentes.
                             </div>
                         </div>
 
                         <div class="config-items-list">
                             <?php
                             $status_obra_padrao = [
-                                ['id' => 1, 'nome' => 'Prospecção', 'descricao' => 'Obra em fase inicial/orçamento', 'cor' => '#95a5a6', 'icone' => 'bx-search', 'ordem' => 1, 'finalizado' => false],
+                                ['id' => 1, 'nome' => 'Prospeccao', 'descricao' => 'Obra em fase inicial/orcamento', 'cor' => '#95a5a6', 'icone' => 'bx-search', 'ordem' => 1, 'finalizado' => false],
                                 ['id' => 2, 'nome' => 'Em Andamento', 'descricao' => 'Obra sendo executada', 'cor' => '#3498db', 'icone' => 'bx-play-circle', 'ordem' => 2, 'finalizado' => false],
                                 ['id' => 3, 'nome' => 'Paralisada', 'descricao' => 'Obra temporariamente parada', 'cor' => '#f39c12', 'icone' => 'bx-pause-circle', 'ordem' => 3, 'finalizado' => false],
-                                ['id' => 4, 'nome' => 'Concluída', 'descricao' => 'Obra finalizada com sucesso', 'cor' => '#27ae60', 'icone' => 'bx-check-circle', 'ordem' => 4, 'finalizado' => true],
+                                ['id' => 4, 'nome' => 'Concluida', 'descricao' => 'Obra finalizada com sucesso', 'cor' => '#27ae60', 'icone' => 'bx-check-circle', 'ordem' => 4, 'finalizado' => true],
                                 ['id' => 5, 'nome' => 'Cancelada', 'descricao' => 'Obra cancelada', 'cor' => '#e74c3c', 'icone' => 'bx-x-circle', 'ordem' => 5, 'finalizado' => true],
                             ];
                             $status_list = $status_obra ?? $status_obra_padrao;
@@ -944,11 +944,11 @@ body[data-theme="dark"] .config-grid-item:hover {
                                     <div class="config-item-meta"><?php echo htmlspecialchars($status['descricao'] ?? ''); ?> • Ordem: <?php echo $status['ordem']; ?></div>
                                 </div>
                                 <div class="config-item-actions">
-                                    <button class="config-btn config-btn-secondary config-btn-sm" onclick="editarStatusObra(<?php echo $status['id']; ?>)">
+                                    <button class="config-btn config-btn-secondary config-btn-sm" onclick="alert('Editar status ID: <?php echo $status['id']; ?>')">
                                         <i class='bx bx-edit'></i>
                                     </button>
-                                    <?php if (!in_array($status['nome'], ['Prospecção', 'Em Andamento', 'Concluída'])): ?>
-                                    <button class="config-btn config-btn-danger config-btn-sm" onclick="excluirStatusObra(<?php echo $status['id']; ?>)">
+                                    <?php if (!in_array($status['nome'], ['Prospeccao', 'Em Andamento', 'Concluida'])): ?>
+                                    <button class="config-btn config-btn-danger config-btn-sm" onclick="if(confirm('Tem certeza?')) alert('Excluir status ID: <?php echo $status['id']; ?>')">
                                         <i class='bx bx-trash'></i>
                                     </button>
                                     <?php endif; ?>
@@ -961,14 +961,14 @@ body[data-theme="dark"] .config-grid-item:hover {
             </div>
 
             <!-- ABA: STATUS DE ATIVIDADE -->
-            <div id="tab-status-atividade" class="config-content">
+            <div id="status-atividade" class="config-content">
                 <div class="config-card">
                     <div class="config-card-header">
                         <div class="config-card-title">
                             <i class='bx bx-check-circle'></i>
                             Status de Atividade
                         </div>
-                        <button class="config-btn config-btn-primary config-btn-sm" onclick="abrirModalStatusAtividade()">
+                        <button class="config-btn config-btn-primary config-btn-sm" onclick="abrirModal('Novo Status de Atividade', 'form-status-atividade')">
                             <i class='bx bx-plus'></i> Novo Status
                         </button>
                     </div>
@@ -976,17 +976,17 @@ body[data-theme="dark"] .config-grid-item:hover {
                         <div class="config-alert config-alert-info">
                             <i class='bx bx-info-circle'></i>
                             <div>
-                                <strong>Fluxo padrão:</strong> Agendada → Iniciada → Pausada (opcional) → Concluída/Cancelada
+                                <strong>Fluxo padrao:</strong> Agendada → Iniciada → Pausada (opcional) → Concluida/Cancelada
                             </div>
                         </div>
 
                         <div class="config-items-list">
                             <?php
                             $status_atv_padrao = [
-                                ['id' => 1, 'nome' => 'Agendada', 'descricao' => 'Atividade agendada para execução futura', 'cor' => '#95a5a6', 'icone' => 'bx-calendar', 'fluxo' => 'inicial'],
-                                ['id' => 2, 'nome' => 'Iniciada', 'descricao' => 'Atividade em execução', 'cor' => '#3498db', 'icone' => 'bx-play-circle', 'fluxo' => 'execucao'],
+                                ['id' => 1, 'nome' => 'Agendada', 'descricao' => 'Atividade agendada para execucao futura', 'cor' => '#95a5a6', 'icone' => 'bx-calendar', 'fluxo' => 'inicial'],
+                                ['id' => 2, 'nome' => 'Iniciada', 'descricao' => 'Atividade em execucao', 'cor' => '#3498db', 'icone' => 'bx-play-circle', 'fluxo' => 'execucao'],
                                 ['id' => 3, 'nome' => 'Pausada', 'descricao' => 'Atividade temporariamente pausada', 'cor' => '#f39c12', 'icone' => 'bx-pause-circle', 'fluxo' => 'execucao'],
-                                ['id' => 4, 'nome' => 'Concluída', 'descricao' => 'Atividade finalizada com sucesso', 'cor' => '#27ae60', 'icone' => 'bx-check-circle', 'fluxo' => 'final'],
+                                ['id' => 4, 'nome' => 'Concluida', 'descricao' => 'Atividade finalizada com sucesso', 'cor' => '#27ae60', 'icone' => 'bx-check-circle', 'fluxo' => 'final'],
                                 ['id' => 5, 'nome' => 'Cancelada', 'descricao' => 'Atividade cancelada', 'cor' => '#e74c3c', 'icone' => 'bx-x-circle', 'fluxo' => 'final'],
                                 ['id' => 6, 'nome' => 'Reaberta', 'descricao' => 'Atividade reaberta para reatendimento', 'cor' => '#9b59b6', 'icone' => 'bx-refresh', 'fluxo' => 'especial'],
                             ];
@@ -1010,11 +1010,11 @@ body[data-theme="dark"] .config-grid-item:hover {
                                     <div class="config-item-meta"><?php echo htmlspecialchars($status['descricao'] ?? ''); ?></div>
                                 </div>
                                 <div class="config-item-actions">
-                                    <button class="config-btn config-btn-secondary config-btn-sm" onclick="editarStatusAtividade(<?php echo $status['id']; ?>)">
+                                    <button class="config-btn config-btn-secondary config-btn-sm" onclick="alert('Editar status ID: <?php echo $status['id']; ?>')">
                                         <i class='bx bx-edit'></i>
                                     </button>
-                                    <?php if (!in_array($status['nome'], ['Agendada', 'Iniciada', 'Concluída'])): ?>
-                                    <button class="config-btn config-btn-danger config-btn-sm" onclick="excluirStatusAtividade(<?php echo $status['id']; ?>)">
+                                    <?php if (!in_array($status['nome'], ['Agendada', 'Iniciada', 'Concluida'])): ?>
+                                    <button class="config-btn config-btn-danger config-btn-sm" onclick="if(confirm('Tem certeza?')) alert('Excluir status ID: <?php echo $status['id']; ?>')">
                                         <i class='bx bx-trash'></i>
                                     </button>
                                     <?php endif; ?>
@@ -1027,14 +1027,14 @@ body[data-theme="dark"] .config-grid-item:hover {
             </div>
 
             <!-- ABA: ESPECIALIDADES -->
-            <div id="tab-especialidades" class="config-content">
+            <div id="especialidades" class="config-content">
                 <div class="config-card">
                     <div class="config-card-header">
                         <div class="config-card-title">
                             <i class='bx bx-hard-hat'></i>
                             Especialidades (Etapas)
                         </div>
-                        <button class="config-btn config-btn-primary config-btn-sm" onclick="abrirModalEspecialidade()">
+                        <button class="config-btn config-btn-primary config-btn-sm" onclick="abrirModal('Nova Especialidade', 'form-especialidade')">
                             <i class='bx bx-plus'></i> Nova Especialidade
                         </button>
                     </div>
@@ -1042,19 +1042,19 @@ body[data-theme="dark"] .config-grid-item:hover {
                         <div class="config-alert config-alert-info">
                             <i class='bx bx-info-circle'></i>
                             <div>
-                                <strong>Especialidades</strong> são usadas para classificar as etapas da obra (Ex: Elétrica, Hidráulica, Acabamento).
+                                <strong>Especialidades</strong> sao usadas para classificar as etapas da obra (Ex: Eletrica, Hidraulica, Acabamento).
                             </div>
                         </div>
 
                         <div class="config-grid">
                             <?php
                             $especialidades_padrao = [
-                                ['id' => 1, 'nome' => 'Elétrica', 'descricao' => 'Instalações elétricas', 'cor' => '#f1c40f', 'icone' => 'bx-bolt-circle'],
-                                ['id' => 2, 'nome' => 'Hidráulica', 'descricao' => 'Instalações hidráulicas', 'cor' => '#3498db', 'icone' => 'bx-water'],
+                                ['id' => 1, 'nome' => 'Eletrica', 'descricao' => 'Instalacoes eletricas', 'cor' => '#f1c40f', 'icone' => 'bx-bolt-circle'],
+                                ['id' => 2, 'nome' => 'Hidraulica', 'descricao' => 'Instalacoes hidraulicas', 'cor' => '#3498db', 'icone' => 'bx-water'],
                                 ['id' => 3, 'nome' => 'Estrutural', 'descricao' => 'Estrutura da obra', 'cor' => '#7f8c8d', 'icone' => 'bx-building'],
                                 ['id' => 4, 'nome' => 'Acabamento', 'descricao' => 'Acabamentos finais', 'cor' => '#e67e22', 'icone' => 'bx-paint'],
-                                ['id' => 5, 'nome' => 'Paisagismo', 'descricao' => 'Áreas externas e jardinagem', 'cor' => '#27ae60', 'icone' => 'bx-leaf'],
-                                ['id' => 6, 'nome' => 'Segurança', 'descricao' => 'Sistemas de segurança', 'cor' => '#e74c3c', 'icone' => 'bx-shield'],
+                                ['id' => 5, 'nome' => 'Paisagismo', 'descricao' => 'Areas externas e jardinagem', 'cor' => '#27ae60', 'icone' => 'bx-leaf'],
+                                ['id' => 6, 'nome' => 'Seguranca', 'descricao' => 'Sistemas de seguranca', 'cor' => '#e74c3c', 'icone' => 'bx-shield'],
                             ];
                             $esp_list = $especialidades ?? $especialidades_padrao;
                             foreach ($esp_list as $esp):
@@ -1074,10 +1074,10 @@ body[data-theme="dark"] .config-grid-item:hover {
                                     <?php echo htmlspecialchars($esp['descricao'] ?? ''); ?>
                                 </div>
                                 <div style="display: flex; gap: 8px;">
-                                    <button class="config-btn config-btn-secondary config-btn-sm" style="flex: 1;" onclick="editarEspecialidade(<?php echo $esp['id']; ?>)">
+                                    <button class="config-btn config-btn-secondary config-btn-sm" style="flex: 1;" onclick="alert('Editar especialidade ID: <?php echo $esp['id']; ?>')">
                                         <i class='bx bx-edit'></i> Editar
                                     </button>
-                                    <button class="config-btn config-btn-danger config-btn-sm" onclick="excluirEspecialidade(<?php echo $esp['id']; ?>)">
+                                    <button class="config-btn config-btn-danger config-btn-sm" onclick="if(confirm('Tem certeza?')) alert('Excluir especialidade ID: <?php echo $esp['id']; ?>')">
                                         <i class='bx bx-trash'></i>
                                     </button>
                                 </div>
@@ -1088,36 +1088,36 @@ body[data-theme="dark"] .config-grid-item:hover {
                 </div>
             </div>
 
-            <!-- ABA: FUNÇÕES DA EQUIPE -->
-            <div id="tab-funcoes" class="config-content">
+            <!-- ABA: FUNCOES DA EQUIPE -->
+            <div id="funcoes" class="config-content">
                 <div class="config-card">
                     <div class="config-card-header">
                         <div class="config-card-title">
                             <i class='bx bx-group'></i>
-                            Funções da Equipe
+                            Funcoes da Equipe
                         </div>
-                        <button class="config-btn config-btn-primary config-btn-sm" onclick="abrirModalFuncao()">
-                            <i class='bx bx-plus'></i> Nova Função
+                        <button class="config-btn config-btn-primary config-btn-sm" onclick="abrirModal('Nova Funcao', 'form-funcao')">
+                            <i class='bx bx-plus'></i> Nova Funcao
                         </button>
                     </div>
                     <div class="config-card-body">
                         <div class="config-alert config-alert-info">
                             <i class='bx bx-info-circle'></i>
                             <div>
-                                <strong>Funções</strong> definem os papéis dos membros da equipe na obra (Ex: Engenheiro, Mestre de Obras, Auxiliar).
+                                <strong>Funcoes</strong> definem os papeis dos membros da equipe na obra (Ex: Engenheiro, Mestre de Obras, Auxiliar).
                             </div>
                         </div>
 
                         <div class="config-items-list">
                             <?php
                             $funcoes_padrao = [
-                                ['id' => 1, 'nome' => 'Engenheiro Responsável', 'descricao' => 'Responsável técnico pela obra', 'nivel' => 'alto'],
-                                ['id' => 2, 'nome' => 'Mestre de Obras', 'descricao' => 'Coordenação de equipe de trabalho', 'nivel' => 'medio'],
-                                ['id' => 3, 'nome' => 'Técnico de Segurança', 'descricao' => 'Responsável por normas de segurança', 'nivel' => 'medio'],
-                                ['id' => 4, 'nome' => 'Pedreiro', 'descricao' => 'Execução de serviços de alvenaria', 'nivel' => 'baixo'],
-                                ['id' => 5, 'nome' => 'Eletricista', 'descricao' => 'Instalações elétricas', 'nivel' => 'baixo'],
-                                ['id' => 6, 'nome' => 'Encanador', 'descricao' => 'Instalações hidráulicas', 'nivel' => 'baixo'],
-                                ['id' => 7, 'nome' => 'Pintor', 'descricao' => 'Serviços de pintura', 'nivel' => 'baixo'],
+                                ['id' => 1, 'nome' => 'Engenheiro Responsavel', 'descricao' => 'Responsavel tecnico pela obra', 'nivel' => 'alto'],
+                                ['id' => 2, 'nome' => 'Mestre de Obras', 'descricao' => 'Coordenacao de equipe de trabalho', 'nivel' => 'medio'],
+                                ['id' => 3, 'nome' => 'Tecnico de Seguranca', 'descricao' => 'Responsavel por normas de seguranca', 'nivel' => 'medio'],
+                                ['id' => 4, 'nome' => 'Pedreiro', 'descricao' => 'Execucao de servicos de alvenaria', 'nivel' => 'baixo'],
+                                ['id' => 5, 'nome' => 'Eletricista', 'descricao' => 'Instalacoes eletricas', 'nivel' => 'baixo'],
+                                ['id' => 6, 'nome' => 'Encanador', 'descricao' => 'Instalacoes hidraulicas', 'nivel' => 'baixo'],
+                                ['id' => 7, 'nome' => 'Pintor', 'descricao' => 'Servicos de pintura', 'nivel' => 'baixo'],
                                 ['id' => 8, 'nome' => 'Auxiliar', 'descricao' => 'Apoio geral na obra', 'nivel' => 'baixo'],
                             ];
                             $funcoes = $funcoes_equipe ?? $funcoes_padrao;
@@ -1139,10 +1139,10 @@ body[data-theme="dark"] .config-grid-item:hover {
                                     <div class="config-item-meta"><?php echo htmlspecialchars($funcao['descricao'] ?? ''); ?></div>
                                 </div>
                                 <div class="config-item-actions">
-                                    <button class="config-btn config-btn-secondary config-btn-sm" onclick="editarFuncao(<?php echo $funcao['id']; ?>)">
+                                    <button class="config-btn config-btn-secondary config-btn-sm" onclick="alert('Editar funcao ID: <?php echo $funcao['id']; ?>')">
                                         <i class='bx bx-edit'></i>
                                     </button>
-                                    <button class="config-btn config-btn-danger config-btn-sm" onclick="excluirFuncao(<?php echo $funcao['id']; ?>)">
+                                    <button class="config-btn config-btn-danger config-btn-sm" onclick="if(confirm('Tem certeza?')) alert('Excluir funcao ID: <?php echo $funcao['id']; ?>')">
                                         <i class='bx bx-trash'></i>
                                     </button>
                                 </div>
@@ -1153,18 +1153,18 @@ body[data-theme="dark"] .config-grid-item:hover {
                 </div>
             </div>
 
-            <!-- ABA: NOTIFICAÇÕES -->
-            <div id="tab-notificacoes" class="config-content">
+            <!-- ABA: NOTIFICACOES -->
+            <div id="notificacoes" class="config-content">
                 <div class="config-card">
                     <div class="config-card-header">
                         <div class="config-card-title">
                             <i class='bx bx-bell'></i>
-                            Configurações de Notificações
+                            Configuracoes de Notificacoes
                         </div>
                     </div>
                     <div class="config-card-body">
                         <form id="form-config-notificacoes" method="post" action="<?php echo site_url('obras/salvarConfiguracaoNotificacoes'); ?>">
-                            <h4 style="margin: 0 0 16px 0; color: #333;">Eventos que geram notificações</h4>
+                            <h4 style="margin: 0 0 16px 0; color: #333;">Eventos que geram notificacoes</h4>
 
                             <div class="config-items-list">
                                 <div class="config-item">
@@ -1180,7 +1180,7 @@ body[data-theme="dark"] .config-grid-item:hover {
 
                                 <div class="config-item">
                                     <div class="config-item-info">
-                                        <div class="config-item-name">Obra concluída</div>
+                                        <div class="config-item-name">Obra concluida</div>
                                         <div class="config-item-meta">Notificar quando uma obra for finalizada</div>
                                     </div>
                                     <label class="config-toggle">
@@ -1213,8 +1213,8 @@ body[data-theme="dark"] .config-grid-item:hover {
 
                                 <div class="config-item">
                                     <div class="config-item-info">
-                                        <div class="config-item-name">Check-in do técnico</div>
-                                        <div class="config-item-meta">Notificar entrada de técnicos na obra</div>
+                                        <div class="config-item-name">Check-in do tecnico</div>
+                                        <div class="config-item-meta">Notificar entrada de tecnicos na obra</div>
                                     </div>
                                     <label class="config-toggle">
                                         <input type="checkbox" name="notif_checkin" <?php echo ($config_notif['checkin'] ?? false) ? 'checked' : ''; ?>>
@@ -1225,7 +1225,7 @@ body[data-theme="dark"] .config-grid-item:hover {
                                 <div class="config-item">
                                     <div class="config-item-info">
                                         <div class="config-item-name">Impedimento registrado</div>
-                                        <div class="config-item-meta">Alerta imediato quando um técnico registrar impedimento</div>
+                                        <div class="config-item-meta">Alerta imediato quando um tecnico registrar impedimento</div>
                                     </div>
                                     <label class="config-toggle">
                                         <input type="checkbox" name="notif_impedimento" <?php echo ($config_notif['impedimento'] ?? true) ? 'checked' : ''; ?>>
@@ -1236,7 +1236,7 @@ body[data-theme="dark"] .config-grid-item:hover {
 
                             <hr style="border: none; border-top: 1px solid #f0f0f0; margin: 24px 0;">
 
-                            <h4 style="margin: 0 0 16px 0; color: #333;">Canais de Notificação</h4>
+                            <h4 style="margin: 0 0 16px 0; color: #333;">Canais de Notificacao</h4>
 
                             <div class="config-grid" style="grid-template-columns: repeat(3, 1fr);">
                                 <div class="config-item">
@@ -1261,7 +1261,7 @@ body[data-theme="dark"] .config-grid-item:hover {
 
                                 <div class="config-item">
                                     <div class="config-item-info">
-                                        <div class="config-item-name">Notificação no Sistema</div>
+                                        <div class="config-item-name">Notificacao no Sistema</div>
                                     </div>
                                     <label class="config-toggle">
                                         <input type="checkbox" name="canal_sistema" <?php echo ($config_notif['canal_sistema'] ?? true) ? 'checked' : ''; ?>>
@@ -1272,7 +1272,7 @@ body[data-theme="dark"] .config-grid-item:hover {
 
                             <div style="margin-top: 24px; text-align: right;">
                                 <button type="submit" class="config-btn config-btn-primary">
-                                    <i class='bx bx-save'></i> Salvar Configurações
+                                    <i class='bx bx-save'></i> Salvar Configuracoes
                                 </button>
                             </div>
                         </form>
@@ -1280,20 +1280,20 @@ body[data-theme="dark"] .config-grid-item:hover {
                 </div>
             </div>
 
-            <!-- ABA: PERMISSÕES -->
-            <div id="tab-permissoes" class="config-content">
+            <!-- ABA: PERMISSOES -->
+            <div id="permissoes" class="config-content">
                 <div class="config-card">
                     <div class="config-card-header">
                         <div class="config-card-title">
                             <i class='bx bx-lock'></i>
-                            Permissões por Perfil
+                            Permissoes por Perfil
                         </div>
                     </div>
                     <div class="config-card-body">
                         <div class="config-alert config-alert-warning">
                             <i class='bx bx-error-circle'></i>
                             <div>
-                                <strong>Atenção:</strong> Alterar permissões afeta o acesso de todos os usuários do sistema.
+                                <strong>Atencao:</strong> Alterar permissoes afeta o acesso de todos os usuarios do sistema.
                             </div>
                         </div>
 
@@ -1302,7 +1302,7 @@ body[data-theme="dark"] .config-grid-item:hover {
                             $perfis = [
                                 ['id' => 1, 'nome' => 'Administrador', 'descricao' => 'Acesso total ao sistema', 'cor' => '#e74c3c'],
                                 ['id' => 2, 'nome' => 'Gestor de Obras', 'descricao' => 'Gerencia obras, etapas e equipes', 'cor' => '#3498db'],
-                                ['id' => 3, 'nome' => 'Técnico', 'descricao' => 'Executa atividades e registra presença', 'cor' => '#27ae60'],
+                                ['id' => 3, 'nome' => 'Tecnico', 'descricao' => 'Executa atividades e registra presenca', 'cor' => '#27ae60'],
                                 ['id' => 4, 'nome' => 'Cliente', 'descricao' => 'Visualiza progresso da obra', 'cor' => '#f39c12'],
                             ];
                             foreach ($perfis as $perfil):
@@ -1316,7 +1316,7 @@ body[data-theme="dark"] .config-grid-item:hover {
                                     <div class="config-item-meta"><?php echo htmlspecialchars($perfil['descricao']); ?></div>
                                 </div>
                                 <div class="config-item-actions">
-                                    <button class="config-btn config-btn-secondary config-btn-sm" onclick="configurarPermissoes(<?php echo $perfil['id']; ?>)">
+                                    <button class="config-btn config-btn-secondary config-btn-sm" onclick="alert('Configurar permissoes do perfil ID: <?php echo $perfil['id']; ?>')">
                                         <i class='bx bx-cog'></i> Configurar
                                     </button>
                                 </div>
@@ -1330,14 +1330,14 @@ body[data-theme="dark"] .config-grid-item:hover {
     </div>
 </div>
 
-<!-- Modal Genérico -->
+<!-- Modal Generico -->
 <div class="config-modal-overlay" id="modalConfig">
     <div class="config-modal">
         <div class="config-modal-header">
             <h3 id="modalTitle"><i class='bx bx-plus-circle'></i> <span>Novo Item</span></h3>
         </div>
         <div class="config-modal-body" id="modalBody">
-            <!-- Conteúdo dinâmico -->
+            <!-- Conteudo dinamico -->
         </div>
         <div class="config-modal-footer">
             <button class="config-btn config-btn-secondary" onclick="fecharModal()">Cancelar</button>
@@ -1348,90 +1348,27 @@ body[data-theme="dark"] .config-grid-item:hover {
     </div>
 </div>
 
-
-<!-- INICIO DO SCRIPT DE CONFIGURACOES -->
+<!-- Script minimo para modal e destaque de aba ativa -->
 <script type="text/javascript">
-// Script de Configuracoes - Versao Compativel
-window.switchTab = function(tabName, element) {
-    console.log('Clicou na aba:', tabName);
-
-    if (!element) {
-        console.error('Elemento nao encontrado');
-        return false;
-    }
-
-    // Busca todas as abas e conteudos
-    var tabs = document.getElementsByClassName('config-tab-item');
-    var contents = document.getElementsByClassName('config-content');
-
-    console.log('Tabs encontradas:', tabs.length);
-    console.log('Contents encontrados:', contents.length);
-
-    // Remove active de todas as abas
-    var i;
-    for (i = 0; i < tabs.length; i++) {
-        tabs[i].classList.remove('active');
-    }
-
-    // Remove active de todos os conteudos
-    for (i = 0; i < contents.length; i++) {
-        contents[i].classList.remove('active');
-    }
-
-    // Adiciona active na aba clicada
-    element.classList.add('active');
-
-    // Ativa o conteudo correspondente
-    var targetId = 'tab-' + tabName;
-    var target = document.getElementById(targetId);
-
-    if (target) {
-        target.classList.add('active');
-        console.log('Aba ativada com sucesso:', targetId);
-
-        // Salva no localStorage
-        try {
-            localStorage.setItem('obras_config_tab', tabName);
-        } catch(e) {}
-    } else {
-        console.error('Conteudo nao encontrado:', targetId);
-    }
-
-    return false;
-};
-
-// Carrega aba salva
-function loadSavedTab() {
-    try {
-        var savedTab = localStorage.getItem('obras_config_tab');
-        if (savedTab) {
-            // Encontra a tab pelo onclick
-            var tabs = document.getElementsByClassName('config-tab-item');
-            var i;
-            for (i = 0; i < tabs.length; i++) {
-                var onclick = tabs[i].getAttribute('onclick');
-                if (onclick && onclick.indexOf(savedTab) > -1) {
-                    switchTab(savedTab, tabs[i]);
-                    break;
-                }
-            }
+// Destacar aba ativa baseada na URL
+function destacarAbaAtiva() {
+    var hash = window.location.hash || '#geral';
+    var abas = document.querySelectorAll('.config-tab-item');
+    abas.forEach(function(aba) {
+        aba.classList.remove('active');
+        if (aba.getAttribute('href') === hash) {
+            aba.classList.add('active');
         }
-    } catch (e) {
-        console.error('Erro ao carregar aba:', e);
-    }
+    });
 }
 
-// Executa quando DOM estiver pronto
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', loadSavedTab);
-} else {
-    loadSavedTab();
-}
+// Executar ao carregar e quando hash mudar
+window.addEventListener('load', destacarAbaAtiva);
+window.addEventListener('hashchange', destacarAbaAtiva);
 
-// Modal functions
-function abrirModal(title, content) {
-    document.getElementById('modalTitle').innerHTML = title;
-    document.getElementById('modalBody').innerHTML = content;
+// Funcoes do modal
+function abrirModal(titulo, tipo) {
+    document.getElementById('modalTitle').innerHTML = "<i class='bx bx-plus-circle'></i> " + titulo;
     document.getElementById('modalConfig').classList.add('active');
 }
 
@@ -1442,102 +1379,6 @@ function fecharModal() {
 function salvarModal() {
     alert('Funcao de salvar sera implementada');
     fecharModal();
-}
-
-// Funcoes especificas para cada tipo
-function abrirModalTipoObra() {
-    var content = '<div class="config-form-group"><label>Nome do Tipo</label><input type="text" class="config-form-control" placeholder="Ex: Reforma Residencial"></div><div class="config-form-group"><label>Descricao</label><textarea class="config-form-control" rows="2" placeholder="Descricao breve"></textarea></div><div class="config-grid" style="grid-template-columns: repeat(2, 1fr);"><div class="config-form-group"><label>Cor</label><input type="color" class="config-form-control" value="#3498db"></div><div class="config-form-group"><label>Icone (classe Boxicons)</label><input type="text" class="config-form-control" value="bx-building" placeholder="Ex: bx-building"></div></div>';
-    abrirModal("<i class='bx bx-plus-circle'></i> Novo Tipo de Obra", content);
-}
-
-function abrirModalTipoAtividade() {
-    var content = '<div class="config-form-group"><label>Nome do Tipo</label><input type="text" class="config-form-control" placeholder="Ex: Instalacao"></div><div class="config-form-group"><label>Descricao</label><textarea class="config-form-control" rows="2"></textarea></div><div class="config-grid" style="grid-template-columns: repeat(2, 1fr);"><div class="config-form-group"><label>Cor</label><input type="color" class="config-form-control" value="#3498db"></div><div class="config-form-group"><label>Categoria</label><select class="config-form-control"><option value="execucao">Execucao</option><option value="visita">Visita</option><option value="manutencao">Manutencao</option><option value="impedimento">Impedimento</option><option value="outro">Outro</option></select></div></div>';
-    abrirModal("<i class='bx bx-plus-circle'></i> Novo Tipo de Atividade", content);
-}
-
-function abrirModalStatusObra() {
-    var content = '<div class="config-form-group"><label>Nome do Status</label><input type="text" class="config-form-control" placeholder="Ex: Em Aprovacao"></div><div class="config-form-group"><label>Descricao</label><textarea class="config-form-control" rows="2"></textarea></div><div class="config-form-group"><label>Cor</label><input type="color" class="config-form-control" value="#95a5a6"></div><div class="config-form-group"><label class="config-toggle"><input type="checkbox" checked><span class="toggle-slider"></span><span style="margin-left: 12px;">Status finalizado (obra concluida/cancelada)</span></label></div>';
-    abrirModal("<i class='bx bx-plus-circle'></i> Novo Status de Obra", content);
-}
-
-function abrirModalStatusAtividade() {
-    var content = '<div class="config-form-group"><label>Nome do Status</label><input type="text" class="config-form-control" placeholder="Ex: Aguardando Material"></div><div class="config-form-group"><label>Descricao</label><textarea class="config-form-control" rows="2"></textarea></div><div class="config-grid" style="grid-template-columns: repeat(2, 1fr);"><div class="config-form-group"><label>Cor</label><input type="color" class="config-form-control" value="#f39c12"></div><div class="config-form-group"><label>Fluxo</label><select class="config-form-control"><option value="inicial">Inicial</option><option value="execucao">Em Execucao</option><option value="final">Final</option><option value="especial">Especial</option></select></div></div>';
-    abrirModal("<i class='bx bx-plus-circle'></i> Novo Status de Atividade", content);
-}
-
-function abrirModalEspecialidade() {
-    var content = '<div class="config-form-group"><label>Nome da Especialidade</label><input type="text" class="config-form-control" placeholder="Ex: Gesso"></div><div class="config-form-group"><label>Descricao</label><textarea class="config-form-control" rows="2"></textarea></div><div class="config-form-group"><label>Cor</label><input type="color" class="config-form-control" value="#e67e22"></div>';
-    abrirModal("<i class='bx bx-plus-circle'></i> Nova Especialidade", content);
-}
-
-function abrirModalFuncao() {
-    var content = '<div class="config-form-group"><label>Nome da Funcao</label><input type="text" class="config-form-control" placeholder="Ex: Gesseiro"></div><div class="config-form-group"><label>Descricao</label><textarea class="config-form-control" rows="2"></textarea></div><div class="config-form-group"><label>Nivel de Acesso</label><select class="config-form-control"><option value="baixo">Baixo - Apenas execucao</option><option value="medio">Medio - Coordenacao</option><option value="alto">Alto - Gestao</option></select></div>';
-    abrirModal("<i class='bx bx-plus-circle'></i> Nova Funcao", content);
-}
-
-// Funcoes de edicao e exclusao
-function editarTipoObra(id) {
-    alert('Editar tipo de obra ID: ' + id);
-}
-
-function excluirTipoObra(id) {
-    if (confirm('Tem certeza que deseja excluir este tipo de obra?')) {
-        alert('Excluir tipo de obra ID: ' + id);
-    }
-}
-
-function editarTipoAtividade(id) {
-    alert('Editar tipo de atividade ID: ' + id);
-}
-
-function excluirTipoAtividade(id) {
-    if (confirm('Tem certeza que deseja excluir este tipo de atividade?')) {
-        alert('Excluir tipo de atividade ID: ' + id);
-    }
-}
-
-function editarStatusObra(id) {
-    alert('Editar status de obra ID: ' + id);
-}
-
-function excluirStatusObra(id) {
-    if (confirm('Tem certeza que deseja excluir este status?')) {
-        alert('Excluir status de obra ID: ' + id);
-    }
-}
-
-function editarStatusAtividade(id) {
-    alert('Editar status de atividade ID: ' + id);
-}
-
-function excluirStatusAtividade(id) {
-    if (confirm('Tem certeza que deseja excluir este status?')) {
-        alert('Excluir status de atividade ID: ' + id);
-    }
-}
-
-function editarEspecialidade(id) {
-    alert('Editar especialidade ID: ' + id);
-}
-
-function excluirEspecialidade(id) {
-    if (confirm('Tem certeza que deseja excluir esta especialidade?')) {
-        alert('Excluir especialidade ID: ' + id);
-    }
-}
-
-function editarFuncao(id) {
-    alert('Editar funcao ID: ' + id);
-}
-
-function excluirFuncao(id) {
-    if (confirm('Tem certeza que deseja excluir esta funcao?')) {
-        alert('Excluir funcao ID: ' + id);
-    }
-}
-
-function configurarPermissoes(perfilId) {
-    alert('Configurar permissoes do perfil ID: ' + perfilId);
 }
 
 // Fechar modal ao clicar fora
@@ -1554,4 +1395,3 @@ document.addEventListener('keydown', function(e) {
     }
 });
 </script>
-<!-- FIM DO SCRIPT DE CONFIGURACOES -->

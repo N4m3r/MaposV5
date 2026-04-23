@@ -404,12 +404,30 @@
 
         <script>
             (function() {
-                const horaInicio = new Date('<?php echo $wizard_em_andamento->hora_inicio; ?>').getTime();
+                // Converte data do MySQL (Y-m-d H:i:s) para Date local
+                function converterDataHora(dataHoraString) {
+                    if (!dataHoraString) return null;
+                    var partes = dataHoraString.split(' ');
+                    if (partes.length !== 2) return new Date(dataHoraString);
+                    var dataPartes = partes[0].split('-');
+                    var horaPartes = partes[1].split(':');
+                    if (dataPartes.length !== 3 || horaPartes.length < 2) return new Date(dataHoraString);
+                    var ano = parseInt(dataPartes[0], 10);
+                    var mes = parseInt(dataPartes[1], 10) - 1;
+                    var dia = parseInt(dataPartes[2], 10);
+                    var hora = parseInt(horaPartes[0], 10);
+                    var minuto = parseInt(horaPartes[1], 10);
+                    var segundo = parseInt(horaPartes[2] || '0', 10);
+                    return new Date(ano, mes, dia, hora, minuto, segundo);
+                }
+
+                const horaInicio = converterDataHora('<?php echo $wizard_em_andamento->hora_inicio; ?>').getTime();
                 const timerEl = document.getElementById('timerWizard');
 
                 function atualizarTimer() {
                     const agora = new Date().getTime();
-                    const diff = agora - horaInicio;
+                    var diff = agora - horaInicio;
+                    if (diff < 0) diff = 0; // Evita tempo negativo
 
                     const hrs = Math.floor(diff / 3600000);
                     const mins = Math.floor((diff % 3600000) / 60000);

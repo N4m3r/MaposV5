@@ -1101,12 +1101,30 @@ window.fecharModal = function(id) {
 }
 
 <?php if ($atividade_em_andamento): ?>
+// Converte data do MySQL (Y-m-d H:i:s) para Date local
+function converterDataHoraAtividades(dataHoraString) {
+    if (!dataHoraString) return null;
+    var partes = dataHoraString.split(' ');
+    if (partes.length !== 2) return new Date(dataHoraString);
+    var dataPartes = partes[0].split('-');
+    var horaPartes = partes[1].split(':');
+    if (dataPartes.length !== 3 || horaPartes.length < 2) return new Date(dataHoraString);
+    var ano = parseInt(dataPartes[0], 10);
+    var mes = parseInt(dataPartes[1], 10) - 1;
+    var dia = parseInt(dataPartes[2], 10);
+    var hora = parseInt(horaPartes[0], 10);
+    var minuto = parseInt(horaPartes[1], 10);
+    var segundo = parseInt(horaPartes[2] || '0', 10);
+    return new Date(ano, mes, dia, hora, minuto, segundo);
+}
+
 // Cronômetro
-var cronometroIniciado = new Date('<?= $atividade_em_andamento->hora_inicio ?>');
+var cronometroIniciado = converterDataHoraAtividades('<?= $atividade_em_andamento->hora_inicio ?>');
 
 window.atualizarCronometro = function() {
     const agora = new Date();
-    const diff = agora - cronometroIniciado;
+    var diff = agora - cronometroIniciado;
+    if (diff < 0) diff = 0; // Evita tempo negativo
 
     const horas = Math.floor(diff / 3600000);
     const minutos = Math.floor((diff % 3600000) / 60000);

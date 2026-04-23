@@ -370,6 +370,20 @@ class Tecnicos extends MY_Controller
         // Carregar modelo de atividades para verificar execução em andamento (wizard)
         $this->load->model('atividades_model');
         $wizard_em_andamento = $this->atividades_model->getAtividadeEmAndamentoNaObra($tecnico_id, $obra_id);
+
+        // Formatar datas para evitar conversão UTC no json_encode
+        if ($wizard_em_andamento) {
+            if (isset($wizard_em_andamento->hora_inicio)) {
+                $wizard_em_andamento->hora_inicio = date('Y-m-d H:i:s', strtotime($wizard_em_andamento->hora_inicio));
+            }
+            if (isset($wizard_em_andamento->hora_fim)) {
+                $wizard_em_andamento->hora_fim = date('Y-m-d H:i:s', strtotime($wizard_em_andamento->hora_fim));
+            }
+            if (isset($wizard_em_andamento->pausado_em)) {
+                $wizard_em_andamento->pausado_em = date('Y-m-d H:i:s', strtotime($wizard_em_andamento->pausado_em));
+            }
+        }
+
         $this->data['wizard_em_andamento'] = $wizard_em_andamento;
         if ($wizard_em_andamento) {
             $this->data['hora_inicio'] = $wizard_em_andamento->hora_inicio;
@@ -424,6 +438,19 @@ class Tecnicos extends MY_Controller
 
         // Verifica se já tem atividade em andamento
         $atividade_andamento = $this->atividades->getAtividadeEmAndamento($tecnico_id);
+
+        // Formatar datas para evitar conversão UTC no json_encode
+        if ($atividade_andamento) {
+            if (isset($atividade_andamento->hora_inicio)) {
+                $atividade_andamento->hora_inicio = date('Y-m-d H:i:s', strtotime($atividade_andamento->hora_inicio));
+            }
+            if (isset($atividade_andamento->hora_fim)) {
+                $atividade_andamento->hora_fim = date('Y-m-d H:i:s', strtotime($atividade_andamento->hora_fim));
+            }
+            if (isset($atividade_andamento->pausado_em)) {
+                $atividade_andamento->pausado_em = date('Y-m-d H:i:s', strtotime($atividade_andamento->pausado_em));
+            }
+        }
 
         // Se tem atividade em andamento em outra obra, redirecionar
         if ($atividade_andamento && $atividade_andamento->obra_id != $obra_id) {

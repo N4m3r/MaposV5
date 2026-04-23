@@ -135,7 +135,21 @@ class Obras_tecnico extends CI_Controller
             $this->data['registro_em_andamento'] = $this->atividades_sistema->getRegistroEmAndamentoPorObraAtividade($id, $tecnico_id);
 
             // Verifica se há alguma atividade em andamento no wizard para este técnico nesta obra
-            $this->data['wizard_em_andamento'] = $this->atividades_sistema->getAtividadeEmAndamentoNaObra($tecnico_id, $this->data['atividade']->obra_id);
+            $wizard_em_andamento = $this->atividades_sistema->getAtividadeEmAndamentoNaObra($tecnico_id, $this->data['atividade']->obra_id);
+
+            // Formatar datas para evitar conversão UTC no json_encode
+            if ($wizard_em_andamento) {
+                if (isset($wizard_em_andamento->hora_inicio)) {
+                    $wizard_em_andamento->hora_inicio = date('Y-m-d H:i:s', strtotime($wizard_em_andamento->hora_inicio));
+                }
+                if (isset($wizard_em_andamento->hora_fim)) {
+                    $wizard_em_andamento->hora_fim = date('Y-m-d H:i:s', strtotime($wizard_em_andamento->hora_fim));
+                }
+                if (isset($wizard_em_andamento->pausado_em)) {
+                    $wizard_em_andamento->pausado_em = date('Y-m-d H:i:s', strtotime($wizard_em_andamento->pausado_em));
+                }
+            }
+            $this->data['wizard_em_andamento'] = $wizard_em_andamento;
 
             // Tipos de atividades para iniciar novo registro
             $this->data['tipos_atividades'] = $this->Atividades_tipos_model->listar([], true);

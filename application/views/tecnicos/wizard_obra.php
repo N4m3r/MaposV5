@@ -1156,10 +1156,7 @@ function getCookie(name) {
 }
 
 <?php if ($atividade_em_andamento): ?>
-// Configuração de timezone UTC-4 (Manaus)
-const CONFIG_TIMEZONE_OFFSET_WIZARD = -4;
-
-// Converter data do MySQL para objeto Date considerando o fuso UTC-4 (Manaus)
+// Converter data do MySQL para objeto Date (servidor já envia no timezone America/Manaus)
 function converterDataHoraLocalWizard(dataHoraString) {
     if (!dataHoraString) return null;
     if (dataHoraString instanceof Date) return new Date(dataHoraString.getTime());
@@ -1178,23 +1175,16 @@ function converterDataHoraLocalWizard(dataHoraString) {
     var minuto = parseInt(horaPartes[1], 10);
     var segundo = parseInt(horaPartes[2] || '0', 10);
 
-    // Cria a data em UTC-4 (Manaus)
-    return new Date(Date.UTC(ano, mes, dia, hora + 4, minuto, segundo));
+    // Cria a data localmente
+    return new Date(ano, mes, dia, hora, minuto, segundo);
 }
 
-// Calcular tempo decorrido garantindo que não seja negativo (UTC-4)
+// Calcular tempo decorrido garantindo que não seja negativo
 function calcularTempoDecorridoWizard(dataInicio) {
     if (!dataInicio) return { horas: 0, minutos: 0, segundos: 0 };
 
-    // Obtém hora atual em UTC-4
     var agora = new Date();
-    var offsetLocal = agora.getTimezoneOffset(); // em minutos
-    var offsetUTC4 = 240; // UTC-4 = 240 minutos
-
-    // Ajusta para UTC-4
-    var agoraUTC4 = new Date(agora.getTime() + (offsetLocal - offsetUTC4) * 60000);
-
-    var diff = agoraUTC4 - dataInicio;
+    var diff = agora - dataInicio;
     if (diff < 0) diff = 0; // Evita tempo negativo
 
     return {
