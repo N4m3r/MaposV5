@@ -68,7 +68,7 @@
          data-status="<?php echo $atividade['status']; ?>"
          data-tipo="<?php echo $atividade['tipo']; ?>"
          data-sistema="<?php echo $atividade['sistema']; ?>"
-         onclick="abrirModalAtividade(<?php echo $atividade['id']; ?>, '<?php echo $atividade['sistema']; ?>')"
+         onclick="abrirModalAtividade(<?php echo (int)($atividade['id'] ?? 0); ?>, '<?php echo htmlspecialchars($atividade['sistema'] ?? 'antigo'); ?>')"
          style="cursor: pointer;">
 
         <div class="atividade-card-header">
@@ -141,12 +141,12 @@
 
             <div class="atividade-card-actions" onclick="event.stopPropagation();">
                 <a href="javascript:void(0)" class="atividade-card-btn atividade-card-btn-view" title="Ver detalhes"
-                   onclick="abrirModalAtividade(<?php echo $atividade['id']; ?>, '<?php echo $atividade['sistema']; ?>')">
+                   onclick="abrirModalAtividade(<?php echo (int)($atividade['id'] ?? 0); ?>, '<?php echo htmlspecialchars($atividade['sistema'] ?? 'antigo'); ?>')">
                     <i class="bx bx-eye"></i>
                 </a>
                 <?php if ($this->session->userdata('permissao') == 1): ?>
                 <a href="javascript:void(0)" class="atividade-card-btn atividade-card-btn-delete" title="Excluir"
-                   onclick="event.stopPropagation(); excluirAtividade(<?php echo $atividade['id']; ?>, '<?php echo $atividade['sistema']; ?>')">
+                   onclick="event.stopPropagation(); excluirAtividade(<?php echo (int)($atividade['id'] ?? 0); ?>, '<?php echo htmlspecialchars($atividade['sistema'] ?? 'antigo'); ?>')">
                     <i class="bx bx-trash"></i>
                 </a>
                 <?php endif; ?>
@@ -210,13 +210,13 @@
 
 <script>
 // Garantir que as funções estejam no escopo global
-window.window.atividadeAtual = null;
-window.window.modoEdicao = false;
+window.atividadeAtual = null;
+window.modoEdicao = false;
 
 // Função para abrir modal da atividade
 window.abrirModalAtividade = function(id, sistema) {
-    window.window.atividadeAtual = { id: id, sistema: sistema };
-    window.window.modoEdicao = false;
+    window.atividadeAtual = { id: id, sistema: sistema };
+    window.modoEdicao = false;
 
     // Resetar modal
     document.getElementById('modalVerBody').innerHTML = '<div style="text-align: center; padding: 40px;"><i class="bx bx-loader-alt bx-spin" style="font-size: 40px; color: #667eea;"></i><p style="margin-top: 15px; color: #666;">Carregando...</p></div>';

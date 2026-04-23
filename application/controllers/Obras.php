@@ -1258,6 +1258,9 @@ class Obras extends MY_Controller
         $this->data['historico'] = $this->obra_atividades_model->getHistorico($atividade_id);
         $this->data['checkins'] = $this->obra_checkins_model->getByAtividade($atividade_id);
 
+        // Buscar histórico completo de execuções (incluindo reatendimentos)
+        $this->data['historico_execucoes'] = $this->atividades->getHistoricoExecucoes($atividade_id);
+
         // Buscar atividade real (execução do wizard) vinculada a esta atividade planejada
         // A vinculação é feita pelo campo obra_atividade_id na tabela os_atividades
         $this->db->where('obra_atividade_id', $atividade_id);
@@ -1405,6 +1408,42 @@ class Obras extends MY_Controller
         }
 
         redirect('obras/visualizarAtividade/' . $atividade_id);
+    }
+
+    /**
+     * Iniciar um reatendimento (reatendimento com status 'reaberta' -> 'em_andamento')
+     */
+    public function iniciarReatendimento($reatendimento_id = null)
+    {
+        if (!$reatendimento_id || !is_numeric($reatendimento_id)) {
+            $this->session->set_flashdata('error', 'Reatendimento não encontrado.');
+            redirect('obras');
+        }
+
+        $this->load->model('atividades_model');
+
+        $reatendimento = $this->atividades_model->getById($reatendimento_id);
+        if (!$reatendimento) {
+            $this->session->set_flashdata('error', 'Reatendimento não encontrado.');
+            redirect('obras');
+        }
+
+        // Verificar se está no status correto
+        if ($reatendimento->status !== 'reaberta') {
+            $this->session->set_flashdata('error', 'Este reatendimento não pode ser iniciado. Status atual: ' . $reatendimento->status);
+            redirect('obras/visualizarAtividade/' . $reatendimento->obra_atividade_id);
+        }
+
+        // Iniciar o reatendimento
+        $result = $this->atividades_model->iniciarReatendimento($reatendimento_id, $this->session->userdata('idUsuario') ?? 1);
+
+        if ($result) {
+            $this->session->set_flashdata('success', 'Reatendimento iniciado com sucesso! A atividade está agora em execução.');
+        } else {
+            $this->session->set_flashdata('error', 'Erro ao iniciar o reatendimento.');
+        }
+
+        redirect('obras/visualizarAtividade/' . $reatendimento->obra_atividade_id);
     }
 
     // ============================================

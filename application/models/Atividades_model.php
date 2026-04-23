@@ -805,13 +805,15 @@ class Atividades_model extends CI_Model
      */
     public function criarReatendimento($dados)
     {
+        // Verificar se a coluna reatendimento existe, se não, criar
+        $this->verificarECriarColunaReatendimento();
+
         // Dados padrão para reatendimento
         $padrao = [
             'hora_inicio' => null, // Aguardando novo início
             'hora_fim' => null,
             'status' => 'reaberta',
             'concluida' => 0,
-            'reatendimento' => 1, // Flag indicando que é reatendimento
             'obra_atividade_id' => null,
             'obra_id' => null,
             'etapa_id' => null,
@@ -819,7 +821,6 @@ class Atividades_model extends CI_Model
             'tecnico_id' => null,
             'descricao' => 'Reatendimento criado automaticamente',
             'motivo_reabertura' => null,
-            'created_at' => date('Y-m-d H:i:s'),
         ];
 
         $dados = array_merge($padrao, $dados);
@@ -828,12 +829,52 @@ class Atividades_model extends CI_Model
         $this->db->insert($this->table, $dados);
         $reatendimento_id = $this->db->insert_id();
 
-        // Registrar no histórico da obra_atividade se houver vínculo
-        if ($reatendimento_id && !empty($dados['obra_atividade_id'])) {
-            $this->registrarReatendimentoNoHistorico($dados['obra_atividade_id'], $reatendimento_id, $dados['motivo_reabertura']);
+        // Marcar como reatendimento usando metadata se a coluna não existir
+        if ($reatendimento_id) {
+            $this->marcarComoReatendimento($reatendimento_id);
+            // Registrar no histórico da obra_atividade se houver vínculo
+            if (!empty($dados['obra_atividade_id'])) {
+                $this->registrarReatendimentoNoHistorico($dados['obra_atividade_id'], $reatendimento_id, $dados['motivo_reabertura']);
+            }
         }
 
         return $reatendimento_id;
+    }
+
+    /**
+     * Verifica e cria a coluna reatendimento se não existir
+     */
+    private function verificarECriarColunaReatendimento()
+    {
+        try {
+            $colunas = $this->db->list_fields($this->table);
+            if (!in_array('reatendimento', $colunas)) {
+                $this->db->query("ALTER TABLE {$this->table} ADD COLUMN reatendimento TINYINT(1) DEFAULT 0 AFTER concluida");
+                log_message('debug', 'Coluna reatendimento criada na tabela ' . $this->table);
+            }
+            if (!in_array('motivo_reabertura', $colunas)) {
+                $this->db->query("ALTER TABLE {$this->table} ADD COLUMN motivo_reabertura TEXT NULL AFTER descricao");
+                log_message('debug', 'Coluna motivo_reabertura criada na tabela ' . $this->table);
+            }
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao verificar/criar colunas: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Marca uma atividade como reatendimento
+     */
+    private function marcarComoReatendimento($atividade_id)
+    {
+        try {
+            $colunas = $this->db->list_fields($this->table);
+            if (in_array('reatendimento', $colunas)) {
+                $this->db->where('idAtividade', $atividade_id);
+                $this->db->update($this->table, ['reatendimento' => 1]);
+            }
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao marcar reatendimento: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -846,13 +887,22 @@ class Atividades_model extends CI_Model
         }
 
         try {
-            $this->db->insert('obra_atividades_historico', [
+            // Verificar se a coluna reatendimento_id existe
+            $colunas = $this->db->list_fields('obra_atividades_historico');
+            $hasReatendimentoId = in_array('reatendimento_id', $colunas);
+
+            $data = [
                 'atividade_id' => $obra_atividade_id,
                 'tipo_alteracao' => 'reatendimento',
                 'descricao' => 'Reatendimento criado: ' . ($motivo ?? 'Reabertura para reexecução'),
-                'reatendimento_id' => $reatendimento_id,
                 'created_at' => date('Y-m-d H:i:s'),
-            ]);
+            ];
+
+            if ($hasReatendimentoId) {
+                $data['reatendimento_id'] = $reatendimento_id;
+            }
+
+            $this->db->insert('obra_atividades_historico', $data);
             return $this->db->insert_id();
         } catch (Exception $e) {
             log_message('error', 'Erro ao registrar reatendimento no histórico: ' . $e->getMessage());
@@ -865,6 +915,10 @@ class Atividades_model extends CI_Model
      */
     public function getHistoricoExecucoes($obra_atividade_id)
     {
+        // Verificar se coluna reatendimento existe
+        $colunas = $this->db->list_fields($this->table);
+        $hasReatendimento = in_array('reatendimento', $colunas);
+
         $this->db->select('os_atividades.*,
                            atividades_tipos.nome as tipo_nome,
                            atividades_tipos.icone as tipo_icone,
@@ -878,7 +932,17 @@ class Atividades_model extends CI_Model
         $this->db->where('os_atividades.obra_atividade_id', $obra_atividade_id);
         $this->db->order_by('os_atividades.hora_inicio', 'DESC');
 
-        return $this->db->get()->result();
+        $resultados = $this->db->get()->result();
+
+        // Garantir que reatendimento seja preenchido
+        if (!$hasReatendimento) {
+            foreach ($resultados as $r) {
+                // Se o status for 'reaberta', considerar como reatendimento
+                $r->reatendimento = ($r->status === 'reaberta') ? 1 : 0;
+            }
+        }
+
+        return $resultados;
     }
 
     /**
@@ -886,6 +950,10 @@ class Atividades_model extends CI_Model
      */
     public function listarReatendimentos($obra_atividade_id)
     {
+        // Verificar se coluna reatendimento existe
+        $colunas = $this->db->list_fields($this->table);
+        $hasReatendimento = in_array('reatendimento', $colunas);
+
         $this->db->select('os_atividades.*,
                            atividades_tipos.nome as tipo_nome,
                            atividades_tipos.icone as tipo_icone,
@@ -896,19 +964,28 @@ class Atividades_model extends CI_Model
         $this->db->join('usuarios', 'usuarios.idUsuarios = os_atividades.tecnico_id', 'left');
         $this->db->join('obra_etapas', 'obra_etapas.id = os_atividades.etapa_id', 'left');
         $this->db->where('os_atividades.obra_atividade_id', $obra_atividade_id);
-        $this->db->where('os_atividades.reatendimento', 1);
-        $this->db->order_by('os_atividades.created_at', 'DESC');
+
+        // Se a coluna reatendimento existir, filtrar por ela, senão usar status 'reaberta'
+        if ($hasReatendimento) {
+            $this->db->where('os_atividades.reatendimento', 1);
+        } else {
+            $this->db->where('os_atividades.status', 'reaberta');
+        }
+
+        $this->db->order_by('os_atividades.hora_inicio', 'DESC');
 
         return $this->db->get()->result();
     }
 
     /**
      * Inicia um reatendimento (reatendimento em execução)
+     * Transforma o status de 'reaberta' para 'em_andamento' e inicia o contador
      */
     public function iniciarReatendimento($reatendimento_id, $tecnico_id, $dados = [])
     {
         $atividade = $this->getById($reatendimento_id);
         if (!$atividade || $atividade->status !== 'reaberta') {
+            log_message('error', 'Tentativa de iniciar reatendimento ID ' . $reatendimento_id . ' com status inválido: ' . ($atividade->status ?? 'null'));
             return false;
         }
 
@@ -923,6 +1000,45 @@ class Atividades_model extends CI_Model
         }
         if (!empty($dados['longitude'])) {
             $update['checkin_lng'] = $dados['longitude'];
+        }
+
+        $this->db->where('idAtividade', $reatendimento_id);
+        $result = $this->db->update($this->table, $update);
+
+        if ($result) {
+            log_message('debug', 'Reatendimento ID ' . $reatendimento_id . ' iniciado pelo técnico ' . $tecnico_id);
+        } else {
+            log_message('error', 'Falha ao iniciar reatendimento ID ' . $reatendimento_id);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Finaliza um reatendimento
+     * Similar ao finalizar() mas específico para reatendimentos
+     */
+    public function finalizarReatendimento($reatendimento_id, $dados = [])
+    {
+        $atividade = $this->getById($reatendimento_id);
+        if (!$atividade || !in_array($atividade->status, ['em_andamento', 'pausada'])) {
+            return false;
+        }
+
+        $hora_fim = date('Y-m-d H:i:s');
+
+        // Calcular duração
+        $duracao_minutos = $this->calcularDuracao($atividade->hora_inicio, $hora_fim, $reatendimento_id);
+
+        $update = [
+            'hora_fim' => $hora_fim,
+            'status' => 'finalizada',
+            'concluida' => 1,
+            'duracao_minutos' => $duracao_minutos,
+        ];
+
+        if (!empty($dados['observacoes'])) {
+            $update['observacoes'] = $dados['observacoes'];
         }
 
         $this->db->where('idAtividade', $reatendimento_id);

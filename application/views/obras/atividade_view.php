@@ -68,6 +68,7 @@
 .atividade-status-badge.pausada { background: linear-gradient(135deg, #e74c3c, #c0392b); }
 .atividade-status-badge.concluida { background: linear-gradient(135deg, #27ae60, #2ecc71); }
 .atividade-status-badge.cancelada { background: linear-gradient(135deg, #34495e, #2c3e50); }
+.atividade-status-badge.reaberta { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
 
 /* Content Grid */
 .atividade-grid {
@@ -397,7 +398,8 @@
                             'iniciada' => 'Em Execução',
                             'pausada' => 'Pausada',
                             'concluida' => 'Concluída',
-                            'cancelada' => 'Cancelada'
+                            'cancelada' => 'Cancelada',
+                            'reaberta' => 'Reaberta (Reatendimento)'
                         ];
                         echo $statusLabels[$status_atual] ?? ucfirst($status_atual);
                         ?>
@@ -420,6 +422,7 @@
                             <option value="pausada" <?php echo $status_atual === 'pausada' ? 'selected' : ''; ?>>⏸️ Pausada</option>
                             <option value="concluida" <?php echo $status_atual === 'concluida' ? 'selected' : ''; ?>>✅ Concluída</option>
                             <option value="cancelada" <?php echo $status_atual === 'cancelada' ? 'selected' : ''; ?>>❌ Cancelada</option>
+                            <option value="reaberta" <?php echo $status_atual === 'reaberta' ? 'selected' : ''; ?> style="color: #9b59b6; font-weight: bold;">🔄 Reaberta (Reatendimento)</option>
                         </select>
 
                         <textarea name="observacao_status" rows="2" placeholder="Motivo da alteração (opcional)"></textarea>
@@ -644,6 +647,114 @@
                         </div>
                         <?php endforeach; ?>
                     </div>
+                </div>
+            </div>
+            <?php endif; ?>
+
+            <!-- Histórico de Reatendimentos -->
+            <?php if (!empty($historico_execucoes) && count($historico_execucoes) > 0): ?>
+            <div class="atividade-card" style="background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%); border-color: #9b59b6;">
+                <div class="atividade-card-header">
+                    <div class="atividade-card-title" style="color: #9b59b6;">
+                        <i class="icon-refresh"></i> Histórico de Execuções e Reatendimentos
+                        <span style="background: #9b59b6; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; margin-left: 10px;">
+                            <?php echo count($historico_execucoes); ?> registro(s)
+                        </span>
+                    </div>
+                </div>
+
+                <div style="max-height: 400px; overflow-y: auto;">
+                    <?php foreach ($historico_execucoes as $index => $exec): ?
+                    <div style="padding: 15px; margin-bottom: 15px; background: white; border-radius: 12px; border-left: 4px solid <?php echo $exec->reatendimento ? '#9b59b6' : '#27ae60'; ?>; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span style="background: <?php echo $exec->reatendimento ? '#9b59b6' : '#27ae60'; ?>; color: white; padding: 4px 12px; border-radius: 15px; font-size: 12px; font-weight: 600;">
+                                    <i class="icon-<?php echo $exec->reatendimento ? 'refresh' : 'ok'; ?>"></i>
+                                    <?php echo $exec->reatendimento ? 'Reatendimento #' . ($index + 1) : 'Execução Original'; ?>
+                                </span>
+                                <span style="font-size: 13px; color: #666;">
+                                    <i class="icon-user"></i> <?php echo htmlspecialchars($exec->nome_tecnico ?? 'Técnico não definido'); ?>
+                                </span>
+                            </div>
+                            <div style="font-size: 12px; color: #888;">
+                                ID: #<?php echo $exec->idAtividade; ?>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 10px;">
+                            <div>
+                                <div style="font-size: 11px; color: #888; text-transform: uppercase;">Início</div>
+                                <div style="font-size: 14px; font-weight: 600; color: #333;">
+                                    <?php echo !empty($exec->hora_inicio) ? date('d/m/Y H:i', strtotime($exec->hora_inicio)) : '--:--'; ?>
+                                </div>
+                            </div>
+                            <div>
+                                <div style="font-size: 11px; color: #888; text-transform: uppercase;">Fim</div>
+                                <div style="font-size: 14px; font-weight: 600; color: #333;">
+                                    <?php echo !empty($exec->hora_fim) ? date('d/m/Y H:i', strtotime($exec->hora_fim)) : '--:--'; ?>
+                                </div>
+                            </div>
+                            <div>
+                                <div style="font-size: 11px; color: #888; text-transform: uppercase;">Status</div>
+                                <div style="font-size: 14px; font-weight: 600;">
+                                    <?php
+                                    $execStatusClass = [
+                                        'reaberta' => '#9b59b6',
+                                        'em_andamento' => '#f39c12',
+                                        'finalizada' => '#27ae60',
+                                        'pausada' => '#e74c3c'
+                                    ][$exec->status] ?? '#95a5a6';
+                                    ?>
+                                    <span style="color: <?php echo $execStatusClass; ?>;">
+                                        <i class="icon-time"></i>
+                                        <?php
+                                        echo [
+                                            'reaberta' => 'Reaberta',
+                                            'em_andamento' => 'Em Andamento',
+                                            'finalizada' => 'Finalizada',
+                                            'pausada' => 'Pausada'
+                                        ][$exec->status] ?? ucfirst($exec->status);
+                                        ?>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <?php if (!empty($exec->duracao_minutos)): ?>
+                        <div style="background: #f8f9fa; padding: 10px 15px; border-radius: 8px; margin-top: 10px;">
+                            <span style="font-size: 12px; color: #666;">
+                                <i class="icon-time" style="color: #667eea;"></i>
+                                Duração:
+                                <strong>
+                                    <?php
+                                    $horas = floor($exec->duracao_minutos / 60);
+                                    $minutos = $exec->duracao_minutos % 60;
+                                    echo sprintf('%02d:%02d', $horas, $minutos);
+                                    ?>
+                                </strong>
+                                (<?php echo $exec->duracao_minutos; ?> minutos)
+                            </span>
+                        </div>
+                        <?php endif; ?>
+
+                        <?php if (!empty($exec->motivo_reabertura)): ?>
+                        <div style="background: #fff3e0; padding: 10px 15px; border-radius: 8px; margin-top: 10px; border-left: 3px solid #ff9800;">
+                            <span style="font-size: 12px; color: #e65100;">
+                                <i class="icon-info-sign"></i>
+                                <strong>Motivo da Reabertura:</strong> <?php echo htmlspecialchars($exec->motivo_reabertura); ?>
+                            </span>
+                        </div>
+                        <?php endif; ?>
+
+                        <?php if ($exec->status === 'reaberta'): ?>
+                        <div style="margin-top: 10px; text-align: right;">
+                            <a href="<?php echo site_url('obras/iniciarReatendimento/' . $exec->idAtividade); ?>" class="action-btn action-btn-success" style="display: inline-flex; padding: 8px 16px; font-size: 13px;">
+                                <i class="icon-play"></i> Iniciar Reatendimento
+                            </a>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                    <?php endforeach; ?>
                 </div>
             </div>
             <?php endif; ?>
