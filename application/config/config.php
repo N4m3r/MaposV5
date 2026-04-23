@@ -20,7 +20,8 @@ $config['app_subname'] = $_ENV['APP_SUBNAME'] ?? 'Sistema de Controle de Ordens 
 /**
  * Definição da hora local.
  */
-date_default_timezone_set($_ENV['APP_TIMEZONE'] ?? 'America/Sao_Paulo');
+// Timezone UTC-4 (Manaus/América do Sul)
+date_default_timezone_set($_ENV['APP_TIMEZONE'] ?? 'America/Manaus');
 
 /*
 |--------------------------------------------------------------------------
@@ -502,7 +503,7 @@ $config['compress_output'] = isset($_ENV['APP_COMPRESS_OUTPUT']) ? filter_var($_
 | helper' page of the user guide for information regarding date handling.
 |
 */
-$config['time_reference'] = $_ENV['APP_TIMEZONE'] ?? 'America/Sao_Paulo';
+$config['time_reference'] = $_ENV['APP_TIMEZONE'] ?? 'America/Manaus';
 
 /*
 |--------------------------------------------------------------------------

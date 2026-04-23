@@ -1866,6 +1866,9 @@ textarea.wizard-input {
 <input type="file" id="fotoExecucaoInput" accept="image/*" capture="environment" style="display: none;">
 
 <script>
+// Configuração de timezone UTC-4 (Manaus)
+const CONFIG_TIMEZONE_OFFSET = -4; // UTC-4 em horas
+
 // Dados da obra e etapas
 const dadosObra = {
     obraId: <?= json_encode($obra->id ?? null) ?>,
@@ -1885,7 +1888,7 @@ const WizardAtendimento = {
     fotosRegistradas: [],
     atividadesConcluidas: [],
 
-    // Converter data do MySQL para objeto Date considerando o fuso local
+    // Converter data do MySQL para objeto Date considerando o fuso UTC-4 (Manaus)
     // Evita problemas de contagem negativa devido a diferenças de timezone
     converterDataHoraLocal: function(dataHoraString) {
         if (!dataHoraString) return null;
@@ -1895,7 +1898,7 @@ const WizardAtendimento = {
             return new Date(dataHoraString.getTime());
         }
 
-        // Converte string do MySQL (formato: "2024-04-23 14:30:00") para Date local
+        // Converte string do MySQL (formato: "2024-04-23 14:30:00") para Date UTC-4
         // Parse manual para evitar problemas de fuso horário
         var partes = dataHoraString.split(' ');
         if (partes.length !== 2) return new Date(dataHoraString); // fallback
@@ -1914,28 +1917,36 @@ const WizardAtendimento = {
         var minuto = parseInt(horaPartes[1], 10);
         var segundo = parseInt(horaPartes[2] || '0', 10);
 
-        // Cria a data no fuso local (sem conversão UTC)
-        var dataLocal = new Date(ano, mes, dia, hora, minuto, segundo);
+        // Cria a data em UTC-4 (Manaus)
+        // Usa Date.UTC e ajusta para UTC-4 (adiciona 4 horas para compensar)
+        var dataUTC4 = new Date(Date.UTC(ano, mes, dia, hora + 4, minuto, segundo));
 
         // Validação: se a data resultante for inválida, tenta fallback
-        if (isNaN(dataLocal.getTime())) {
-            console.warn('Data inválida após conversão, usando fallback:', dataHoraString);
+        if (isNaN(dataUTC4.getTime())) {
+            console.warn('Data inválida após conversão UTC-4, usando fallback:', dataHoraString);
             return new Date(dataHoraString);
         }
 
-        return dataLocal;
+        return dataUTC4;
     },
 
-    // Calcular tempo decorrido garantindo que não seja negativo
+    // Calcular tempo decorrido garantindo que não seja negativo (UTC-4)
     calcularTempoDecorrido: function(dataInicio) {
         if (!dataInicio) return { horas: 0, minutos: 0, segundos: 0, texto: '00:00:00' };
 
-        const agora = new Date();
-        var diff = agora - dataInicio;
+        // Obtém hora atual em UTC-4 (Manaus)
+        var agora = new Date();
+        var offsetLocal = agora.getTimezoneOffset(); // em minutos
+        var offsetUTC4 = 240; // UTC-4 = 240 minutos de offset
 
-        // Se a diferença for negativa (horário do servidor > horário local), ajusta para 0
+        // Ajusta para UTC-4
+        var agoraUTC4 = new Date(agora.getTime() + (offsetLocal - offsetUTC4) * 60000);
+
+        var diff = agoraUTC4 - dataInicio;
+
+        // Se a diferença for negativa, ajusta para 0
         if (diff < 0) {
-            console.warn('Tempo negativo detectado, ajustando para 0. Diff:', diff, 'Inicio:', dataInicio, 'Agora:', agora);
+            console.warn('Tempo negativo detectado, ajustando para 0. Diff:', diff, 'Inicio:', dataInicio, 'Agora UTC-4:', agoraUTC4);
             diff = 0;
         }
 
@@ -2721,11 +2732,8 @@ const WizardAtendimento = {
             : this.horaInicio;
         var tempoTexto = '00:00';
         if (inicio) {
-            const agora = new Date();
-            const diff = agora - inicio;
-            const horas = Math.floor(diff / 3600000);
-            const minutos = Math.floor((diff % 3600000) / 60000);
-            tempoTexto = String(horas).padStart(2, '0') + ':' + String(minutos).padStart(2, '0');
+            const tempo = this.calcularTempoDecorrido(inicio);
+            tempoTexto = String(tempo.horas).padStart(2, '0') + ':' + String(tempo.minutos).padStart(2, '0');
         }
 
         // Atualizar modal
@@ -2988,11 +2996,8 @@ const WizardAtendimento = {
         const inicio = atividadeEmAndamento.hora_inicio ? this.converterDataHoraLocal(atividadeEmAndamento.hora_inicio) : this.horaInicio;
         var tempoTexto = '00:00';
         if (inicio) {
-            const agora = new Date();
-            const diff = agora - inicio;
-            const horas = Math.floor(diff / 3600000);
-            const minutos = Math.floor((diff % 3600000) / 60000);
-            tempoTexto = String(horas).padStart(2, '0') + ':' + String(minutos).padStart(2, '0');
+            const tempo = this.calcularTempoDecorrido(inicio);
+            tempoTexto = String(tempo.horas).padStart(2, '0') + ':' + String(tempo.minutos).padStart(2, '0');
         }
 
         // Atualizar modal
@@ -3081,19 +3086,13 @@ const WizardAtendimento = {
 
         if (this.horaInicio) {
             horaInicioTexto = this.horaInicio.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
-            const agora = new Date();
-            const diff = agora - this.horaInicio;
-            const horas = Math.floor(diff / 3600000);
-            const minutos = Math.floor((diff % 3600000) / 60000);
-            tempoTotalTexto = String(horas).padStart(2, '0') + ':' + String(minutos).padStart(2, '0');
+            const tempo = this.calcularTempoDecorrido(this.horaInicio);
+            tempoTotalTexto = String(tempo.horas).padStart(2, '0') + ':' + String(tempo.minutos).padStart(2, '0');
         } else if (atividadeEmAndamento && atividadeEmAndamento.hora_inicio) {
             const inicio = this.converterDataHoraLocal(atividadeEmAndamento.hora_inicio);
             horaInicioTexto = inicio.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
-            const agora = new Date();
-            const diff = agora - inicio;
-            const horas = Math.floor(diff / 3600000);
-            const minutos = Math.floor((diff % 3600000) / 60000);
-            tempoTotalTexto = String(horas).padStart(2, '0') + ':' + String(minutos).padStart(2, '0');
+            const tempo = this.calcularTempoDecorrido(inicio);
+            tempoTotalTexto = String(tempo.horas).padStart(2, '0') + ':' + String(tempo.minutos).padStart(2, '0');
         }
 
         // Atualizar modal
@@ -3131,13 +3130,10 @@ const WizardAtendimento = {
                 horaInicioEl.textContent = this.horaInicio.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
             }
 
-            const agora = new Date();
-            const diff = agora - this.horaInicio;
-            const horas = Math.floor(diff / 3600000);
-            const minutos = Math.floor((diff % 3600000) / 60000);
+            const tempo = this.calcularTempoDecorrido(this.horaInicio);
 
             if (tempoTotalEl) {
-                tempoTotalEl.textContent = String(horas).padStart(2, '0') + ':' + String(minutos).padStart(2, '0');
+                tempoTotalEl.textContent = String(tempo.horas).padStart(2, '0') + ':' + String(tempo.minutos).padStart(2, '0');
             }
         } else {
             if (horaInicioEl) horaInicioEl.textContent = '--:--';

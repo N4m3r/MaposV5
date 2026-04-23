@@ -1156,21 +1156,64 @@ function getCookie(name) {
 }
 
 <?php if ($atividade_em_andamento): ?>
+// Configuração de timezone UTC-4 (Manaus)
+const CONFIG_TIMEZONE_OFFSET_WIZARD = -4;
+
+// Converter data do MySQL para objeto Date considerando o fuso UTC-4 (Manaus)
+function converterDataHoraLocalWizard(dataHoraString) {
+    if (!dataHoraString) return null;
+    if (dataHoraString instanceof Date) return new Date(dataHoraString.getTime());
+
+    var partes = dataHoraString.split(' ');
+    if (partes.length !== 2) return new Date(dataHoraString);
+
+    var dataPartes = partes[0].split('-');
+    var horaPartes = partes[1].split(':');
+    if (dataPartes.length !== 3 || horaPartes.length < 2) return new Date(dataHoraString);
+
+    var ano = parseInt(dataPartes[0], 10);
+    var mes = parseInt(dataPartes[1], 10) - 1;
+    var dia = parseInt(dataPartes[2], 10);
+    var hora = parseInt(horaPartes[0], 10);
+    var minuto = parseInt(horaPartes[1], 10);
+    var segundo = parseInt(horaPartes[2] || '0', 10);
+
+    // Cria a data em UTC-4 (Manaus)
+    return new Date(Date.UTC(ano, mes, dia, hora + 4, minuto, segundo));
+}
+
+// Calcular tempo decorrido garantindo que não seja negativo (UTC-4)
+function calcularTempoDecorridoWizard(dataInicio) {
+    if (!dataInicio) return { horas: 0, minutos: 0, segundos: 0 };
+
+    // Obtém hora atual em UTC-4
+    var agora = new Date();
+    var offsetLocal = agora.getTimezoneOffset(); // em minutos
+    var offsetUTC4 = 240; // UTC-4 = 240 minutos
+
+    // Ajusta para UTC-4
+    var agoraUTC4 = new Date(agora.getTime() + (offsetLocal - offsetUTC4) * 60000);
+
+    var diff = agoraUTC4 - dataInicio;
+    if (diff < 0) diff = 0; // Evita tempo negativo
+
+    return {
+        horas: Math.floor(diff / 3600000),
+        minutos: Math.floor((diff % 3600000) / 60000),
+        segundos: Math.floor((diff % 60000) / 1000)
+    };
+}
+
 // Cronômetro
-var cronometroIniciado = new Date('<?= $atividade_em_andamento->hora_inicio ?>');
+var cronometroIniciado = converterDataHoraLocalWizard('<?= $atividade_em_andamento->hora_inicio ?>');
 
 window.atualizarCronometro = function() {
-    const agora = new Date();
-    const diff = agora - cronometroIniciado;
-
-    const horas = Math.floor(diff / 3600000);
-    const minutos = Math.floor((diff % 3600000) / 60000);
-    const segundos = Math.floor((diff % 60000) / 1000);
+    const tempo = calcularTempoDecorridoWizard(cronometroIniciado);
 
     const formatado =
-        String(horas).padStart(2, '0') + ':' +
-        String(minutos).padStart(2, '0') + ':' +
-        String(segundos).padStart(2, '0');
+        String(tempo.horas).padStart(2, '0') + ':' +
+        String(tempo.minutos).padStart(2, '0') + ':' +
+        String(tempo.segundos).padStart(2, '0');
 
     const cronometro = document.getElementById('cronometro');
     if (cronometro) {

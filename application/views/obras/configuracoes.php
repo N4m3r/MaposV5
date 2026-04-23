@@ -1348,21 +1348,19 @@ body[data-theme="dark"] .config-grid-item:hover {
     </div>
 </div>
 
+
 <!-- INICIO DO SCRIPT DE CONFIGURACOES -->
 <script type="text/javascript">
-// Log inicial
-console.log('SCRIPT CARREGADO');
-
-// Navegação entre abas
-function switchTab(tabName, element) {
+// Script de Configuracoes - Versao Compativel
+window.switchTab = function(tabName, element) {
     console.log('Clicou na aba:', tabName);
 
     if (!element) {
-        console.error('Elemento não encontrado');
+        console.error('Elemento nao encontrado');
         return false;
     }
 
-    // Busca todas as abas e conteúdos
+    // Busca todas as abas e conteudos
     var tabs = document.getElementsByClassName('config-tab-item');
     var contents = document.getElementsByClassName('config-content');
 
@@ -1370,19 +1368,20 @@ function switchTab(tabName, element) {
     console.log('Contents encontrados:', contents.length);
 
     // Remove active de todas as abas
-    for (var i = 0; i < tabs.length; i++) {
+    var i;
+    for (i = 0; i < tabs.length; i++) {
         tabs[i].classList.remove('active');
     }
 
-    // Remove active de todos os conteúdos
-    for (var i = 0; i < contents.length; i++) {
+    // Remove active de todos os conteudos
+    for (i = 0; i < contents.length; i++) {
         contents[i].classList.remove('active');
     }
 
     // Adiciona active na aba clicada
     element.classList.add('active');
 
-    // Ativa o conteúdo correspondente
+    // Ativa o conteudo correspondente
     var targetId = 'tab-' + tabName;
     var target = document.getElementById(targetId);
 
@@ -1395,11 +1394,11 @@ function switchTab(tabName, element) {
             localStorage.setItem('obras_config_tab', tabName);
         } catch(e) {}
     } else {
-        console.error('Conteúdo não encontrado:', targetId);
+        console.error('Conteudo nao encontrado:', targetId);
     }
 
     return false;
-}
+};
 
 // Carrega aba salva
 function loadSavedTab() {
@@ -1408,7 +1407,8 @@ function loadSavedTab() {
         if (savedTab) {
             // Encontra a tab pelo onclick
             var tabs = document.getElementsByClassName('config-tab-item');
-            for (var i = 0; i < tabs.length; i++) {
+            var i;
+            for (i = 0; i < tabs.length; i++) {
                 var onclick = tabs[i].getAttribute('onclick');
                 if (onclick && onclick.indexOf(savedTab) > -1) {
                     switchTab(savedTab, tabs[i]);
@@ -1440,42 +1440,42 @@ function fecharModal() {
 }
 
 function salvarModal() {
-    alert('Função de salvar será implementada');
+    alert('Funcao de salvar sera implementada');
     fecharModal();
 }
 
-// Funções específicas para cada tipo
+// Funcoes especificas para cada tipo
 function abrirModalTipoObra() {
-    var content = '<div class="config-form-group"><label>Nome do Tipo</label><input type="text" class="config-form-control" placeholder="Ex: Reforma Residencial"></div><div class="config-form-group"><label>Descrição</label><textarea class="config-form-control" rows="2" placeholder="Descrição breve"></textarea></div><div class="config-grid" style="grid-template-columns: repeat(2, 1fr);"><div class="config-form-group"><label>Cor</label><input type="color" class="config-form-control" value="#3498db"></div><div class="config-form-group"><label>Ícone (classe Boxicons)</label><input type="text" class="config-form-control" value="bx-building" placeholder="Ex: bx-building"></div></div>';
+    var content = '<div class="config-form-group"><label>Nome do Tipo</label><input type="text" class="config-form-control" placeholder="Ex: Reforma Residencial"></div><div class="config-form-group"><label>Descricao</label><textarea class="config-form-control" rows="2" placeholder="Descricao breve"></textarea></div><div class="config-grid" style="grid-template-columns: repeat(2, 1fr);"><div class="config-form-group"><label>Cor</label><input type="color" class="config-form-control" value="#3498db"></div><div class="config-form-group"><label>Icone (classe Boxicons)</label><input type="text" class="config-form-control" value="bx-building" placeholder="Ex: bx-building"></div></div>';
     abrirModal("<i class='bx bx-plus-circle'></i> Novo Tipo de Obra", content);
 }
 
 function abrirModalTipoAtividade() {
-    var content = '<div class="config-form-group"><label>Nome do Tipo</label><input type="text" class="config-form-control" placeholder="Ex: Instalação"></div><div class="config-form-group"><label>Descrição</label><textarea class="config-form-control" rows="2"></textarea></div><div class="config-grid" style="grid-template-columns: repeat(2, 1fr);"><div class="config-form-group"><label>Cor</label><input type="color" class="config-form-control" value="#3498db"></div><div class="config-form-group"><label>Categoria</label><select class="config-form-control"><option value="execucao">Execução</option><option value="visita">Visita</option><option value="manutencao">Manutenção</option><option value="impedimento">Impedimento</option><option value="outro">Outro</option></select></div></div>';
+    var content = '<div class="config-form-group"><label>Nome do Tipo</label><input type="text" class="config-form-control" placeholder="Ex: Instalacao"></div><div class="config-form-group"><label>Descricao</label><textarea class="config-form-control" rows="2"></textarea></div><div class="config-grid" style="grid-template-columns: repeat(2, 1fr);"><div class="config-form-group"><label>Cor</label><input type="color" class="config-form-control" value="#3498db"></div><div class="config-form-group"><label>Categoria</label><select class="config-form-control"><option value="execucao">Execucao</option><option value="visita">Visita</option><option value="manutencao">Manutencao</option><option value="impedimento">Impedimento</option><option value="outro">Outro</option></select></div></div>';
     abrirModal("<i class='bx bx-plus-circle'></i> Novo Tipo de Atividade", content);
 }
 
 function abrirModalStatusObra() {
-    var content = '<div class="config-form-group"><label>Nome do Status</label><input type="text" class="config-form-control" placeholder="Ex: Em Aprovação"></div><div class="config-form-group"><label>Descrição</label><textarea class="config-form-control" rows="2"></textarea></div><div class="config-form-group"><label>Cor</label><input type="color" class="config-form-control" value="#95a5a6"></div><div class="config-form-group"><label class="config-toggle"><input type="checkbox" checked><span class="toggle-slider"></span><span style="margin-left: 12px;">Status finalizado (obra concluída/cancelada)</span></label></div>';
+    var content = '<div class="config-form-group"><label>Nome do Status</label><input type="text" class="config-form-control" placeholder="Ex: Em Aprovacao"></div><div class="config-form-group"><label>Descricao</label><textarea class="config-form-control" rows="2"></textarea></div><div class="config-form-group"><label>Cor</label><input type="color" class="config-form-control" value="#95a5a6"></div><div class="config-form-group"><label class="config-toggle"><input type="checkbox" checked><span class="toggle-slider"></span><span style="margin-left: 12px;">Status finalizado (obra concluida/cancelada)</span></label></div>';
     abrirModal("<i class='bx bx-plus-circle'></i> Novo Status de Obra", content);
 }
 
 function abrirModalStatusAtividade() {
-    var content = '<div class="config-form-group"><label>Nome do Status</label><input type="text" class="config-form-control" placeholder="Ex: Aguardando Material"></div><div class="config-form-group"><label>Descrição</label><textarea class="config-form-control" rows="2"></textarea></div><div class="config-grid" style="grid-template-columns: repeat(2, 1fr);"><div class="config-form-group"><label>Cor</label><input type="color" class="config-form-control" value="#f39c12"></div><div class="config-form-group"><label>Fluxo</label><select class="config-form-control"><option value="inicial">Inicial</option><option value="execucao">Em Execução</option><option value="final">Final</option><option value="especial">Especial</option></select></div></div>';
+    var content = '<div class="config-form-group"><label>Nome do Status</label><input type="text" class="config-form-control" placeholder="Ex: Aguardando Material"></div><div class="config-form-group"><label>Descricao</label><textarea class="config-form-control" rows="2"></textarea></div><div class="config-grid" style="grid-template-columns: repeat(2, 1fr);"><div class="config-form-group"><label>Cor</label><input type="color" class="config-form-control" value="#f39c12"></div><div class="config-form-group"><label>Fluxo</label><select class="config-form-control"><option value="inicial">Inicial</option><option value="execucao">Em Execucao</option><option value="final">Final</option><option value="especial">Especial</option></select></div></div>';
     abrirModal("<i class='bx bx-plus-circle'></i> Novo Status de Atividade", content);
 }
 
 function abrirModalEspecialidade() {
-    var content = '<div class="config-form-group"><label>Nome da Especialidade</label><input type="text" class="config-form-control" placeholder="Ex: Gesso"></div><div class="config-form-group"><label>Descrição</label><textarea class="config-form-control" rows="2"></textarea></div><div class="config-form-group"><label>Cor</label><input type="color" class="config-form-control" value="#e67e22"></div>';
+    var content = '<div class="config-form-group"><label>Nome da Especialidade</label><input type="text" class="config-form-control" placeholder="Ex: Gesso"></div><div class="config-form-group"><label>Descricao</label><textarea class="config-form-control" rows="2"></textarea></div><div class="config-form-group"><label>Cor</label><input type="color" class="config-form-control" value="#e67e22"></div>';
     abrirModal("<i class='bx bx-plus-circle'></i> Nova Especialidade", content);
 }
 
 function abrirModalFuncao() {
-    var content = '<div class="config-form-group"><label>Nome da Função</label><input type="text" class="config-form-control" placeholder="Ex: Gesseiro"></div><div class="config-form-group"><label>Descrição</label><textarea class="config-form-control" rows="2"></textarea></div><div class="config-form-group"><label>Nível de Acesso</label><select class="config-form-control"><option value="baixo">Baixo - Apenas execução</option><option value="medio">Médio - Coordenação</option><option value="alto">Alto - Gestão</option></select></div>';
-    abrirModal("<i class='bx bx-plus-circle'></i> Nova Função", content);
+    var content = '<div class="config-form-group"><label>Nome da Funcao</label><input type="text" class="config-form-control" placeholder="Ex: Gesseiro"></div><div class="config-form-group"><label>Descricao</label><textarea class="config-form-control" rows="2"></textarea></div><div class="config-form-group"><label>Nivel de Acesso</label><select class="config-form-control"><option value="baixo">Baixo - Apenas execucao</option><option value="medio">Medio - Coordenacao</option><option value="alto">Alto - Gestao</option></select></div>';
+    abrirModal("<i class='bx bx-plus-circle'></i> Nova Funcao", content);
 }
 
-// Funções de edição e exclusão
+// Funcoes de edicao e exclusao
 function editarTipoObra(id) {
     alert('Editar tipo de obra ID: ' + id);
 }
@@ -1527,17 +1527,17 @@ function excluirEspecialidade(id) {
 }
 
 function editarFuncao(id) {
-    alert('Editar função ID: ' + id);
+    alert('Editar funcao ID: ' + id);
 }
 
 function excluirFuncao(id) {
-    if (confirm('Tem certeza que deseja excluir esta função?')) {
-        alert('Excluir função ID: ' + id);
+    if (confirm('Tem certeza que deseja excluir esta funcao?')) {
+        alert('Excluir funcao ID: ' + id);
     }
 }
 
 function configurarPermissoes(perfilId) {
-    alert('Configurar permissões do perfil ID: ' + perfilId);
+    alert('Configurar permissoes do perfil ID: ' + perfilId);
 }
 
 // Fechar modal ao clicar fora
@@ -1546,281 +1546,6 @@ window.onclick = function(event) {
         fecharModal();
     }
 };
-
-// Atalho ESC para fechar modal
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-        fecharModal();
-    }
-});
-</script>
-<!-- FIM DO SCRIPT DE CONFIGURACOES -->
-                console.log('Selector:', selector);
-                var tabElement = document.querySelector(selector);
-                console.log('Tab element found:', tabElement);
-
-                if (tabElement) {
-                    switchTab(savedTab, tabElement);
-                } else {
-                    console.error('ERRO: Não encontrou elemento da aba salva');
-                }
-            } else {
-                console.error('ERRO: Valor inválido no localStorage:', savedTab);
-                localStorage.removeItem('obras_config_tab');
-            }
-        } else {
-            console.log('Nenhuma aba salva no localStorage');
-        }
-    } catch (e) {
-        console.error('ERRO ao carregar aba salva:', e);
-    }
-    console.log('=== FIM LOAD DEBUG ===');
-}
-
-// Executar após DOM carregar
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', loadSavedTab);
-} else {
-    loadSavedTab();
-}
-
-// Modal functions
-function abrirModal(title, content) {
-    document.getElementById('modalTitle').innerHTML = title;
-    document.getElementById('modalBody').innerHTML = content;
-    document.getElementById('modalConfig').classList.add('active');
-}
-
-function fecharModal() {
-    document.getElementById('modalConfig').classList.remove('active');
-}
-
-function salvarModal() {
-    // Implementar salvamento via AJAX
-    alert('Função de salvar será implementada conforme a estrutura do banco de dados');
-    fecharModal();
-}
-
-// Funções específicas para cada tipo
-function abrirModalTipoObra() {
-    const content = `
-        <div class="config-form-group">
-            <label>Nome do Tipo</label>
-            <input type="text" class="config-form-control" placeholder="Ex: Reforma Residencial">
-        </div>
-        <div class="config-form-group">
-            <label>Descrição</label>
-            <textarea class="config-form-control" rows="2" placeholder="Descrição breve"></textarea>
-        </div>
-        <div class="config-grid" style="grid-template-columns: repeat(2, 1fr);">
-            <div class="config-form-group">
-                <label>Cor</label>
-                <input type="color" class="config-form-control" value="#3498db">
-            </div>
-            <div class="config-form-group">
-                <label>Ícone (classe Boxicons)</label>
-                <input type="text" class="config-form-control" value="bx-building" placeholder="Ex: bx-building">
-            </div>
-        </div>
-    `;
-    abrirModal("<i class='bx bx-plus-circle'></i> Novo Tipo de Obra", content);
-}
-
-function abrirModalTipoAtividade() {
-    const content = `
-        <div class="config-form-group">
-            <label>Nome do Tipo</label>
-            <input type="text" class="config-form-control" placeholder="Ex: Instalação">
-        </div>
-        <div class="config-form-group">
-            <label>Descrição</label>
-            <textarea class="config-form-control" rows="2"></textarea>
-        </div>
-        <div class="config-grid" style="grid-template-columns: repeat(2, 1fr);">
-            <div class="config-form-group">
-                <label>Cor</label>
-                <input type="color" class="config-form-control" value="#3498db">
-            </div>
-            <div class="config-form-group">
-                <label>Categoria</label>
-                <select class="config-form-control">
-                    <option value="execucao">Execução</option>
-                    <option value="visita">Visita</option>
-                    <option value="manutencao">Manutenção</option>
-                    <option value="impedimento">Impedimento</option>
-                    <option value="outro">Outro</option>
-                </select>
-            </div>
-        </div>
-    `;
-    abrirModal("<i class='bx bx-plus-circle'></i> Novo Tipo de Atividade", content);
-}
-
-function abrirModalStatusObra() {
-    const content = `
-        <div class="config-form-group">
-            <label>Nome do Status</label>
-            <input type="text" class="config-form-control" placeholder="Ex: Em Aprovação">
-        </div>
-        <div class="config-form-group">
-            <label>Descrição</label>
-            <textarea class="config-form-control" rows="2"></textarea>
-        </div>
-        <div class="config-form-group">
-            <label>Cor</label>
-            <input type="color" class="config-form-control" value="#95a5a6">
-        </div>
-        <div class="config-form-group">
-            <label class="config-toggle">
-                <input type="checkbox" checked>
-                <span class="toggle-slider"></span>
-                <span style="margin-left: 12px;">Status finalizado (obra concluída/cancelada)</span>
-            </label>
-        </div>
-    `;
-    abrirModal("<i class='bx bx-plus-circle'></i> Novo Status de Obra", content);
-}
-
-function abrirModalStatusAtividade() {
-    const content = `
-        <div class="config-form-group">
-            <label>Nome do Status</label>
-            <input type="text" class="config-form-control" placeholder="Ex: Aguardando Material">
-        </div>
-        <div class="config-form-group">
-            <label>Descrição</label>
-            <textarea class="config-form-control" rows="2"></textarea>
-        </div>
-        <div class="config-grid" style="grid-template-columns: repeat(2, 1fr);">
-            <div class="config-form-group">
-                <label>Cor</label>
-                <input type="color" class="config-form-control" value="#f39c12">
-            </div>
-            <div class="config-form-group">
-                <label>Fluxo</label>
-                <select class="config-form-control">
-                    <option value="inicial">Inicial</option>
-                    <option value="execucao">Em Execução</option>
-                    <option value="final">Final</option>
-                    <option value="especial">Especial</option>
-                </select>
-            </div>
-        </div>
-    `;
-    abrirModal("<i class='bx bx-plus-circle'></i> Novo Status de Atividade", content);
-}
-
-function abrirModalEspecialidade() {
-    const content = `
-        <div class="config-form-group">
-            <label>Nome da Especialidade</label>
-            <input type="text" class="config-form-control" placeholder="Ex: Gesso">
-        </div>
-        <div class="config-form-group">
-            <label>Descrição</label>
-            <textarea class="config-form-control" rows="2"></textarea>
-        </div>
-        <div class="config-form-group">
-            <label>Cor</label>
-            <input type="color" class="config-form-control" value="#e67e22">
-        </div>
-    `;
-    abrirModal("<i class='bx bx-plus-circle'></i> Nova Especialidade", content);
-}
-
-function abrirModalFuncao() {
-    const content = `
-        <div class="config-form-group">
-            <label>Nome da Função</label>
-            <input type="text" class="config-form-control" placeholder="Ex: Gesseiro">
-        </div>
-        <div class="config-form-group">
-            <label>Descrição</label>
-            <textarea class="config-form-control" rows="2"></textarea>
-        </div>
-        <div class="config-form-group">
-            <label>Nível de Acesso</label>
-            <select class="config-form-control">
-                <option value="baixo">Baixo - Apenas execução</option>
-                <option value="medio">Médio - Coordenação</option>
-                <option value="alto">Alto - Gestão</option>
-            </select>
-        </div>
-    `;
-    abrirModal("<i class='bx bx-plus-circle'></i> Nova Função", content);
-}
-
-// Funções de edição e exclusão
-function editarTipoObra(id) {
-    alert('Editar tipo de obra ID: ' + id);
-}
-
-function excluirTipoObra(id) {
-    if (confirm('Tem certeza que deseja excluir este tipo de obra?')) {
-        alert('Excluir tipo de obra ID: ' + id);
-    }
-}
-
-function editarTipoAtividade(id) {
-    alert('Editar tipo de atividade ID: ' + id);
-}
-
-function excluirTipoAtividade(id) {
-    if (confirm('Tem certeza que deseja excluir este tipo de atividade?')) {
-        alert('Excluir tipo de atividade ID: ' + id);
-    }
-}
-
-function editarStatusObra(id) {
-    alert('Editar status de obra ID: ' + id);
-}
-
-function excluirStatusObra(id) {
-    if (confirm('Tem certeza que deseja excluir este status?')) {
-        alert('Excluir status de obra ID: ' + id);
-    }
-}
-
-function editarStatusAtividade(id) {
-    alert('Editar status de atividade ID: ' + id);
-}
-
-function excluirStatusAtividade(id) {
-    if (confirm('Tem certeza que deseja excluir este status?')) {
-        alert('Excluir status de atividade ID: ' + id);
-    }
-}
-
-function editarEspecialidade(id) {
-    alert('Editar especialidade ID: ' + id);
-}
-
-function excluirEspecialidade(id) {
-    if (confirm('Tem certeza que deseja excluir esta especialidade?')) {
-        alert('Excluir especialidade ID: ' + id);
-    }
-}
-
-function editarFuncao(id) {
-    alert('Editar função ID: ' + id);
-}
-
-function excluirFuncao(id) {
-    if (confirm('Tem certeza que deseja excluir esta função?')) {
-        alert('Excluir função ID: ' + id);
-    }
-}
-
-function configurarPermissoes(perfilId) {
-    alert('Configurar permissões do perfil ID: ' + perfilId);
-}
-
-// Fechar modal ao clicar fora
-window.onclick = function(event) {
-    if (event.target.classList.contains('config-modal-overlay')) {
-        fecharModal();
-    }
-}
 
 // Atalho ESC para fechar modal
 document.addEventListener('keydown', function(e) {
