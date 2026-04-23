@@ -664,7 +664,7 @@
                 </div>
 
                 <div style="max-height: 400px; overflow-y: auto;">
-                    <?php foreach ($historico_execucoes as $index => $exec): ?
+                    <?php foreach ($historico_execucoes as $index => $exec): ?>
                     <div style="padding: 15px; margin-bottom: 15px; background: white; border-radius: 12px; border-left: 4px solid <?php echo $exec->reatendimento ? '#9b59b6' : '#27ae60'; ?>; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                             <div style="display: flex; align-items: center; gap: 10px;">
