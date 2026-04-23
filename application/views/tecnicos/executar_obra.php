@@ -1415,38 +1415,231 @@ textarea.wizard-input {
 <!-- Modal de Confirmação - Iniciar Atividade -->
 <div id="modalConfirmarIniciar" class="wizard-overlay" style="z-index: 10001; display: none;">
     <div class="wizard-container" style="justify-content: center;">
-        <div class="wizard-card" style="max-width: 450px; margin: 0 auto; text-align: center;">
-            <div style="font-size: 60px; color: #11998e; margin-bottom: 20px;">
+        <div class="confirm-modal-card">
+            <div class="confirm-modal-icon">
                 <i class="icon-play-circle"></i>
             </div>
-            <h3 style="margin: 0 0 10px 0; font-size: 20px;">Iniciar Atendimento?</h3>
-            <p style="color: #666; margin-bottom: 20px;">
-                Você está prestes a iniciar:<br>
-                <strong id="confirmarIniciarTexto">--</strong>
+            <h3 class="confirm-modal-titulo">Iniciar Atendimento?</h3>
+            <p class="confirm-modal-subtitulo">
+                Você está prestes a iniciar
             </p>
 
-            <div class="wizard-info-box" style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
-                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-                    <i class="icon-hard-hat" style="color: #11998e;"></i>
+            <div class="confirm-modal-info-box">
+                <div class="confirm-modal-info-item">
+                    <i class="icon-hard-hat"></i>
                     <span id="confirmarIniciarEtapa">--</span>
                 </div>
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <i class="icon-tasks" style="color: #11998e;"></i>
+                <div class="confirm-modal-divider"></div>
+                <div class="confirm-modal-info-item highlight">
+                    <i class="icon-tasks"></i>
                     <span id="confirmarIniciarAtividade">--</span>
                 </div>
             </div>
 
-            <div style="display: flex; gap: 10px;">
-                <button class="wizard-btn-principal" style="background: #95a5a6; flex: 1;" onclick="document.getElementById('modalConfirmarIniciar').style.display='none'">
+            <div class="confirm-modal-botoes">
+                <button class="confirm-modal-btn cancelar" onclick="document.getElementById('modalConfirmarIniciar').style.display='none'">
                     <i class="icon-remove"></i> Cancelar
                 </button>
-                <button class="wizard-btn-principal" style="flex: 1;" onclick="WizardAtendimento.confirmarIniciar()">
+                <button class="confirm-modal-btn confirmar" onclick="WizardAtendimento.confirmarIniciar()">
                     <i class="icon-play"></i> Iniciar Agora
                 </button>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+/* ===== Modal de Confirmação - Design Aprimorado ===== */
+.confirm-modal-card {
+    max-width: 480px;
+    width: 90%;
+    margin: 0 auto;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border-radius: 20px;
+    padding: 35px 30px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3), 0 0 0 1px rgba(17,153,142,0.1);
+    border: 2px solid rgba(17,153,142,0.15);
+    animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.confirm-modal-icon {
+    width: 90px;
+    height: 90px;
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    box-shadow: 0 8px 25px rgba(17,153,142,0.35);
+}
+
+.confirm-modal-icon i {
+    font-size: 45px;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.confirm-modal-titulo {
+    margin: 0 0 12px 0;
+    font-size: 26px;
+    font-weight: 700;
+    color: #2c3e50;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    letter-spacing: -0.3px;
+}
+
+.confirm-modal-subtitulo {
+    color: #5a6c7d;
+    font-size: 16px;
+    margin: 0 0 25px 0;
+    font-weight: 500;
+}
+
+.confirm-modal-info-box {
+    background: linear-gradient(135deg, #f0f9f7 0%, #e8f5f2 100%);
+    border: 2px solid rgba(17,153,142,0.2);
+    border-radius: 15px;
+    padding: 22px 20px;
+    margin-bottom: 25px;
+    text-align: left;
+    box-shadow: inset 0 2px 4px rgba(255,255,255,0.8), 0 2px 8px rgba(17,153,142,0.08);
+}
+
+.confirm-modal-info-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 16px;
+    color: #34495e;
+    font-weight: 600;
+    padding: 8px 0;
+}
+
+.confirm-modal-info-item i {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 18px;
+    flex-shrink: 0;
+    box-shadow: 0 3px 8px rgba(17,153,142,0.25);
+}
+
+.confirm-modal-info-item.highlight {
+    font-size: 18px;
+    color: #11998e;
+    font-weight: 700;
+}
+
+.confirm-modal-divider {
+    height: 2px;
+    background: linear-gradient(90deg, transparent 0%, rgba(17,153,142,0.3) 50%, transparent 100%);
+    margin: 12px 0;
+}
+
+.confirm-modal-botoes {
+    display: flex;
+    gap: 15px;
+}
+
+.confirm-modal-btn {
+    flex: 1;
+    padding: 16px 20px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.confirm-modal-btn.cancelar {
+    background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(127,140,141,0.3);
+}
+
+.confirm-modal-btn.cancelar:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(127,140,141,0.4);
+}
+
+.confirm-modal-btn.confirmar {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: white;
+    box-shadow: 0 4px 20px rgba(17,153,142,0.4);
+}
+
+.confirm-modal-btn.confirmar:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(17,153,142,0.5);
+}
+
+.confirm-modal-btn:active {
+    transform: translateY(-1px);
+}
+
+/* Responsivo */
+@media (max-width: 480px) {
+    .confirm-modal-card {
+        padding: 25px 20px;
+        border-radius: 16px;
+    }
+
+    .confirm-modal-icon {
+        width: 75px;
+        height: 75px;
+    }
+
+    .confirm-modal-icon i {
+        font-size: 38px;
+    }
+
+    .confirm-modal-titulo {
+        font-size: 22px;
+    }
+
+    .confirm-modal-subtitulo {
+        font-size: 14px;
+    }
+
+    .confirm-modal-info-item {
+        font-size: 15px;
+    }
+
+    .confirm-modal-info-item.highlight {
+        font-size: 16px;
+    }
+
+    .confirm-modal-btn {
+        padding: 14px 16px;
+        font-size: 15px;
+    }
+}
+</style>
 
 <!-- Modal de Confirmação - Finalizar Atividade -->
 <div id="modalConfirmarFinalizar" class="wizard-overlay" style="z-index: 10001; display: none;">
@@ -1683,15 +1876,9 @@ const WizardAtendimento = {
         // Atualizar modal de confirmação
         var etapaEl = document.getElementById('confirmarIniciarEtapa');
         var atividadeEl = document.getElementById('confirmarIniciarAtividade');
-        var textoEl = document.getElementById('confirmarIniciarTexto');
 
         if (etapaEl) etapaEl.textContent = etapaNome || 'Etapa Geral';
         if (atividadeEl) atividadeEl.textContent = atividadeNome || 'Atendimento Geral';
-        if (textoEl) {
-            textoEl.textContent = atividadeNome
-                ? 'Atividade: ' + atividadeNome
-                : 'Atendimento na etapa: ' + (etapaNome || 'Geral');
-        }
 
         // Abrir modal de confirmação
         var modal = document.getElementById('modalConfirmarIniciar');
