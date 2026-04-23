@@ -1136,7 +1136,7 @@ $emitente_logo = $emitente->url_logo ?? '';
                             <td>
                                 <div class="relatorio-table-progress">
                                     <div class="relatorio-table-bar">
-                                        <div class="relatorio-table-fill" style="width: <?php echo $etapa_pct; ?%"></div>
+                                        <div class="relatorio-table-fill" style="width: <?php echo $etapa_pct; ?%>"></div>
                                     </div>
                                     <span style="font-size: 12px; font-weight: 600;"><?php echo $etapa_pct; ?>%</span>
                                 </div>
