@@ -195,19 +195,59 @@ logDebug('Página de perfil carregada');
     </div>
 </div>
 
-<!-- Modal da Câmera -->
+<!-- Modal da Foto -->
 <div class="modal hide" id="cameraModal">
     <div class="modal-header">
         <button type="button" class="close" onclick="fecharCamera()">×</button>
-        <h3>Atualizar Foto</h3>
+        <h3><i class="icon icon-camera"></i> Atualizar Foto</h3>
     </div>
-    <div class="modal-body text-center">
-        <video id="video" autoplay playsinline style="width: 100%; max-width: 400px; border-radius: 8px;"></video>
+    <div class="modal-body">
+        <!-- Abas -->
+        <ul class="nav nav-tabs" id="fotoTab">
+            <li class="active"><a href="#tab-camera" data-toggle="tab"><i class="icon icon-camera"></i> Câmera</a></li>
+            <li><a href="#tab-upload" data-toggle="tab"><i class="icon icon-upload"></i> Galeria</a></li>
+        </ul>
+
+        <div class="tab-content">
+            <!-- Aba Câmera -->
+            <div class="tab-pane active" id="tab-camera">
+                <div class="text-center" style="padding: 20px;">
+                    <video id="video" autoplay playsinline style="width: 100%; max-width: 400px; border-radius: 8px; display: none;"></video>
+                    <div id="camera-off" style="padding: 40px; color: #888;">
+                        <i class="icon icon-camera" style="font-size: 48px; display: block; margin-bottom: 10px;"></i>
+                        <p>Clique em "Iniciar Câmera" para tirar uma foto</p>
+                        <button type="button" class="btn btn-primary" onclick="iniciarCamera()">
+                            <i class="icon icon-camera"></i> Iniciar Câmera
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Aba Upload -->
+            <div class="tab-pane" id="tab-upload">
+                <div class="text-center" style="padding: 20px;">
+                    <div id="upload-preview" style="margin-bottom: 15px; display: none;">
+                        <img id="preview-img" src="" style="max-width: 100%; max-height: 300px; border-radius: 8px;">
+                    </div>
+                    <div id="upload-placeholder" style="padding: 40px; border: 2px dashed #ddd; border-radius: 8px; color: #888;">
+                        <i class="icon icon-picture" style="font-size: 48px; display: block; margin-bottom: 10px;"></i>
+                        <p>Selecione uma foto da galeria</p>
+                    </div>
+
+                    <div class="file-input-wrapper" style="margin-top: 15px;">
+                        <input type="file" id="input-foto" accept="image/*" style="display: none;" onchange="previewUpload(this)">
+                        <button type="button" class="btn btn-primary" onclick="document.getElementById('input-foto').click()">
+                            <i class="icon icon-upload"></i> Selecionar Arquivo
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="modal-footer">
         <button type="button" class="btn" onclick="fecharCamera()">Cancelar</button>
-        <button type="button" class="btn btn-primary" onclick="capturarFoto()">
-            <i class="icon icon-camera"></i> Capturar
+        <button type="button" class="btn btn-primary" id="btn-salvar-foto" onclick="salvarFoto()" disabled>
+            <i class="icon icon-ok"></i> Salvar Foto
         </button>
     </div>
 </div>
@@ -381,6 +421,38 @@ logDebug('Página de perfil carregada');
     padding: 15px;
 }
 
+/* Estilos do Modal de Foto */
+#cameraModal .modal-body {
+    padding: 0;
+}
+
+#cameraModal .nav-tabs {
+    margin: 0;
+    border-bottom: 1px solid #ddd;
+}
+
+#cameraModal .nav-tabs > li > a {
+    padding: 12px 20px;
+    color: #666;
+    font-weight: 500;
+}
+
+#cameraModal .nav-tabs > li.active > a {
+    color: #667eea;
+    font-weight: 600;
+    background: #f8f9ff;
+}
+
+#cameraModal .tab-content {
+    padding: 0;
+}
+
+#cameraModal #upload-placeholder:hover,
+#cameraModal #camera-off:hover {
+    border-color: #667eea;
+    background: #f8f9ff;
+}
+
 /* Responsividade Mobile */
 @media (max-width: 768px) {
     .profile-header {
@@ -431,9 +503,34 @@ var URL_ATUALIZAR_FOTO = '<?php echo $url_atualizar_foto; ?>';
 var CSRF_TOKEN_NAME = '<?php echo $csrf_token_name; ?>';
 var CSRF_HASH = '<?php echo $csrf_hash; ?>';
 
+// Variáveis para controle
+var fotoCapturada = null;
+var stream = null;
+
+// Abrir modal de foto
 function abrirCamera() {
-    logDebug('Abrindo câmera...');
+    logDebug('Abrindo modal de foto...');
+    fotoCapturada = null;
+    document.getElementById('btn-salvar-foto').disabled = true;
+
+    // Resetar abas
+    jQuery('#fotoTab a:first').tab('show');
+
+    // Resetar preview
+    document.getElementById('video').style.display = 'none';
+    document.getElementById('camera-off').style.display = 'block';
+
+    // Resetar upload
+    document.getElementById('upload-preview').style.display = 'none';
+    document.getElementById('upload-placeholder').style.display = 'block';
+    document.getElementById('input-foto').value = '';
+
     jQuery('#cameraModal').modal('show');
+}
+
+// Iniciar câmera
+function iniciarCamera() {
+    logDebug('Iniciando câmera...');
 
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         logDebug('ERRO: getUserMedia não suportado');
@@ -448,8 +545,11 @@ function abrirCamera() {
         var video = document.getElementById('video');
         if (video) {
             video.srcObject = stream;
+            video.style.display = 'block';
+            document.getElementById('camera-off').style.display = 'none';
         }
         logDebug('Câmera aberta com sucesso');
+        habilitarSalvar();
     }).catch(function(err) {
         logDebug('Erro ao abrir câmera: ' + err.message);
         console.error('Erro ao abrir câmera:', err);
@@ -457,25 +557,35 @@ function abrirCamera() {
     });
 }
 
-function fecharCamera() {
-    logDebug('Fechando câmera...');
-    jQuery('#cameraModal').modal('hide');
-    if (stream) {
-        var tracks = stream.getTracks();
-        for (var i = 0; i < tracks.length; i++) {
-            tracks[i].stop();
-        }
-        stream = null;
+// Preview de upload
+function previewUpload(input) {
+    logDebug('Arquivo selecionado...');
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            fotoCapturada = e.target.result;
+            document.getElementById('preview-img').src = fotoCapturada;
+            document.getElementById('upload-preview').style.display = 'block';
+            document.getElementById('upload-placeholder').style.display = 'none';
+            habilitarSalvar();
+            logDebug('Preview carregado');
+        };
+        reader.readAsDataURL(input.files[0]);
     }
 }
 
-function capturarFoto() {
-    logDebug('Capturando foto...');
+// Habilitar botão salvar
+function habilitarSalvar() {
+    document.getElementById('btn-salvar-foto').disabled = false;
+}
+
+// Capturar foto da câmera
+function capturarDaCamera() {
     var video = document.getElementById('video');
-    if (!video) {
-        logDebug('ERRO: Elemento video não encontrado');
-        alert('Erro: vídeo não encontrado');
-        return;
+    if (!video || video.style.display === 'none') {
+        logDebug('Câmera não está ativa');
+        alert('Inicie a câmera primeiro');
+        return null;
     }
 
     var canvas = document.createElement('canvas');
@@ -486,8 +596,32 @@ function capturarFoto() {
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
     }
 
-    var foto = canvas.toDataURL('image/jpeg', 0.8);
-    logDebug('Foto capturada, enviando...');
+    return canvas.toDataURL('image/jpeg', 0.8);
+}
+
+// Salvar foto (tanto da câmera quanto do upload)
+function salvarFoto() {
+    logDebug('Salvando foto...');
+
+    // Verificar qual aba está ativa
+    var abaAtiva = jQuery('#fotoTab .active a').attr('href');
+    var foto = null;
+
+    if (abaAtiva === '#tab-camera') {
+        foto = capturarDaCamera();
+        if (!foto) {
+            alert('Inicie a câmera e aguarde o vídeo carregar');
+            return;
+        }
+    } else {
+        foto = fotoCapturada;
+        if (!foto) {
+            alert('Selecione uma imagem primeiro');
+            return;
+        }
+    }
+
+    logDebug('Enviando foto...');
 
     var formData = new FormData();
     formData.append('foto', foto);
@@ -508,6 +642,7 @@ function capturarFoto() {
             }
             fecharCamera();
             logDebug('Foto atualizada com sucesso');
+            alert('Foto atualizada com sucesso!');
         } else {
             logDebug('ERRO ao atualizar foto: ' + (data.message || 'Erro desconhecido'));
             alert('Erro ao atualizar foto: ' + (data.message || 'Erro desconhecido'));
@@ -516,6 +651,19 @@ function capturarFoto() {
         logDebug('ERRO ao enviar foto: ' + err.message);
         alert('Erro ao enviar foto: ' + err.message);
     });
+}
+
+// Fechar modal
+function fecharCamera() {
+    logDebug('Fechando modal...');
+    jQuery('#cameraModal').modal('hide');
+    if (stream) {
+        var tracks = stream.getTracks();
+        for (var i = 0; i < tracks.length; i++) {
+            tracks[i].stop();
+        }
+        stream = null;
+    }
 }
 
 logDebug('JavaScript do perfil carregado');

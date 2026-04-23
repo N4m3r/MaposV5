@@ -1278,6 +1278,7 @@ class Tecnicos extends MY_Controller
     {
         $tecnico_id = $this->session->userdata('tec_id');
         $this->data['tecnico'] = $this->tecnicos_model->getById($tecnico_id);
+        $this->data['menuPerfil'] = 'Perfil';
 
         $this->load->view('tema/topo', $this->data);
         $this->load->view('tema/menu_portal_tecnico', $this->data);

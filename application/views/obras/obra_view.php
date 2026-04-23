@@ -896,9 +896,6 @@
 
     <!-- Ações Rápidas -->
     <div class="acoes-bar">
-        <button class="acao-btn acao-wizard" onclick="abrirWizard()">
-            <i class="icon-magic"></i> Nova Etapa + Atividades
-        </button>
         <a href="<?php echo site_url('obras/etapas/' . $obra->id); ?>" class="acao-btn acao-etapas">
             <i class="icon-tasks"></i> Gerenciar Etapas
         </a>
