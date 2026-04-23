@@ -788,4 +788,97 @@ $(document).ready(function() {
         $(this).hide().delay(index * 100).fadeIn(400);
     });
 });
+
+// Atualização automática dos cards - polling a cada 30 segundos
+(function() {
+    let autoUpdateInterval = null;
+    let isUpdating = false;
+    let lastUpdateTime = null;
+
+    // Função para atualizar os cards
+    function atualizarCards() {
+        if (isUpdating) return;
+        isUpdating = true;
+
+        const url = '<?php echo site_url("obras/ajax_atualizar_cards"); ?>';
+        const params = new URLSearchParams(window.location.search);
+        const ajaxUrl = url + (params.toString() ? '?' + params.toString() : '');
+
+        $.ajax({
+            url: ajaxUrl,
+            method: 'GET',
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    // Atualizar cards de estatísticas
+                    if (response.stats_html) {
+                        $('.obras-stats-row').html(response.stats_html);
+                    }
+
+                    // Atualizar grid de cards de obras
+                    if (response.cards_html) {
+                        const grid = $('.obras-cards-grid');
+                        const searchValue = $('#searchObra').val().toLowerCase();
+                        const statusFilter = $('#filterStatus').val();
+
+                        // Preservar os filtros atuais
+                        grid.html(response.cards_html);
+
+                        // Reaplicar filtros se existirem
+                        if (searchValue || statusFilter) {
+                            filtrarObras();
+                        }
+
+                        // Animação suave nos cards atualizados
+                        $('.obra-item-card').each(function(index) {
+                            $(this).hide().delay(index * 50).fadeIn(300);
+                        });
+                    }
+
+                    lastUpdateTime = response.timestamp;
+                    console.log('Cards atualizados em:', lastUpdateTime);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Erro ao atualizar cards:', error);
+            },
+            complete: function() {
+                isUpdating = false;
+            }
+        });
+    }
+
+    // Iniciar atualização automática
+    function iniciarAutoUpdate() {
+        // Primeira atualização após 5 segundos
+        setTimeout(atualizarCards, 5000);
+
+        // Atualização periódica a cada 30 segundos
+        autoUpdateInterval = setInterval(atualizarCards, 30000);
+    }
+
+    // Parar atualização automática
+    function pararAutoUpdate() {
+        if (autoUpdateInterval) {
+            clearInterval(autoUpdateInterval);
+            autoUpdateInterval = null;
+        }
+    }
+
+    // Iniciar quando o documento estiver pronto
+    iniciarAutoUpdate();
+
+    // Pausar atualização quando a aba não estiver visível
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            pararAutoUpdate();
+        } else {
+            iniciarAutoUpdate();
+            atualizarCards(); // Atualizar imediatamente ao voltar
+        }
+    });
+
+    // Atualização manual (para debug)
+    window.atualizarCardsManual = atualizarCards;
+})();
 </script>

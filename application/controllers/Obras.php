@@ -88,6 +88,7 @@ class Obras extends MY_Controller
         }
 
         $this->load->model('atividades_tipos_model');
+        $this->load->model('atividades_model');
 
         // Carregar configurações existentes ou valores padrão
         $this->data['config'] = $this->obras_model->getConfiguracoes() ?? [];
