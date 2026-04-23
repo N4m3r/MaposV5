@@ -67,14 +67,14 @@ $valor_formatado = $valor_contrato ? 'R$ ' . number_format($valor_contrato, 2, '
                 </span>
                 <span class="obra-meta-item">
                     <i class="icon-map-marker"></i> <?php echo htmlspecialchars($obra->endereco ?? 'Endereço não definido'); ?>
-                    <?php if ($obra->cidade): ?>
-                        , <?php echo htmlspecialchars($obra->cidade); ?>/<?php echo htmlspecialchars($obra->estado); ?>
+                    <?php if ($obra->cidade ?? false): ?>
+                        , <?php echo htmlspecialchars($obra->cidade); ?>/<?php echo htmlspecialchars($obra->estado ?? ''); ?>
                     <?php endif; ?>
                 </span>
                 <span class="obra-meta-item">
                     <i class="icon-user-md"></i> Gestor: <?php echo htmlspecialchars($obra->gestor_nome ?? 'Não definido'); ?>
                 </span>
-                <?php if ($obra->responsavel_tecnico_nome): ?>
+                <?php if ($obra->responsavel_tecnico_nome ?? false): ?>
                 <span class="obra-meta-item">
                     <i class="icon-wrench"></i> Resp. Técnico: <?php echo htmlspecialchars($obra->responsavel_tecnico_nome); ?>
                 </span>
@@ -114,7 +114,7 @@ $valor_formatado = $valor_contrato ? 'R$ ' . number_format($valor_contrato, 2, '
                 <?php echo $data_prevista ? date('d/m/Y', strtotime($data_prevista)) : 'Não definida'; ?>
             </span>
         </div>
-        <?php if ($obra->data_fim_real): ?>
+        <?php if ($obra->data_fim_real ?? false): ?>
         <div class="detalhe-item">
             <span class="detalhe-label">Data de Conclusão</span>
             <span class="detalhe-valor">
@@ -124,7 +124,7 @@ $valor_formatado = $valor_contrato ? 'R$ ' . number_format($valor_contrato, 2, '
         <?php endif; ?>
     </div>
 
-    <?php if ($obra->observacoes): ?>
+    <?php if ($obra->observacoes ?? false): ?>
     <div class="obra-observacoes">
         <h4><i class="icon-info-sign"></i> Observações</h4>
         <p><?php echo nl2br(htmlspecialchars($obra->observacoes)); ?></p>

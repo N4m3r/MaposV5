@@ -434,7 +434,145 @@
     box-shadow: 0 8px 30px rgba(0,0,0,0.15);
 }
 
-/* Responsividade */
+/* Botão Editar */
+.btn-editar {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255,255,255,0.2);
+    color: white;
+    border: 2px solid rgba(255,255,255,0.3);
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+.btn-editar:hover {
+    background: rgba(255,255,255,0.3);
+    border-color: white;
+}
+
+/* Modal de Edição */
+.modal-edicao .modal-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 6px 6px 0 0;
+}
+
+.modal-edicao .modal-header h3 {
+    margin: 0;
+    font-weight: 600;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-label {
+    display: block;
+    font-size: 13px;
+    color: #666;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.form-input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e8e8e8;
+    border-radius: 10px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+}
+
+.form-input:focus {
+    border-color: #667eea;
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+.abas-navegacao {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+    border-bottom: 2px solid #e8e8e8;
+    padding-bottom: 10px;
+}
+
+.aba-btn {
+    padding: 10px 20px;
+    border: none;
+    background: transparent;
+    color: #666;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.aba-btn.active,
+.aba-btn:hover {
+    background: #f0f4ff;
+    color: #667eea;
+}
+
+.aba-conteudo {
+    display: none;
+}
+
+.aba-conteudo.active {
+    display: block;
+}
+
+.btn-salvar {
+    background: linear-gradient(135deg, #27ae60, #229954);
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-salvar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(39, 174, 96, 0.3);
+}
+
+.msg-sucesso {
+    background: #d4edda;
+    color: #155724;
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: none;
+}
+
+.msg-erro {
+    background: #f8d7da;
+    color: #721c24;
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: none;
+}
 @media (max-width: 768px) {
     .perfil-container {
         padding: 15px;
@@ -479,6 +617,10 @@
 <div class="perfil-container">
     <!-- Header com Avatar -->
     <div class="perfil-header">
+        <button class="btn-editar" onclick="abrirModalEdicao()">
+            <i class="icon icon-pencil"></i> Editar Perfil
+        </button>
+
         <div class="perfil-avatar-wrapper">
             <div class="perfil-avatar" onclick="abrirCamera()">
                 <?php if (!empty($tecnico->foto_tecnico) && file_exists(FCPATH . $tecnico->foto_tecnico)): ?>

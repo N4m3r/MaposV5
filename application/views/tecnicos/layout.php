@@ -430,22 +430,92 @@
             margin-left: 12px;
         }
 
-        /* RESPONSIVO */
+        /* MENU MOBILE TOGGLE */
+        .tec-mobile-menu-btn {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tec-mobile-menu-btn:hover {
+            background: #f5f7fa;
+            color: #333;
+        }
+
+        .tec-mobile-menu-btn i {
+            font-size: 24px;
+        }
+
+        /* OVERLAY PARA FECHAR SIDEBAR */
+        .tec-sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .tec-sidebar-overlay.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* RESPONSIVO - MOBILE */
         @media (max-width: 768px) {
+            .tec-mobile-menu-btn {
+                display: flex;
+            }
+
             .tec-sidebar {
                 transform: translateX(-100%);
+                width: 280px;
+                transition: transform 0.3s ease;
             }
 
             .tec-sidebar.open {
                 transform: translateX(0);
             }
 
+            .tec-sidebar.collapsed {
+                width: 280px;
+            }
+
+            .tec-sidebar.collapsed .tec-menu-item span {
+                display: inline;
+            }
+
+            .tec-sidebar-toggle {
+                display: none;
+            }
+
             .tec-main {
+                margin-left: 0;
+            }
+
+            .tec-sidebar.collapsed ~ .tec-main {
                 margin-left: 0;
             }
 
             .tec-navbar {
                 padding: 0 16px;
+                height: 60px;
+            }
+
+            .tec-page-title {
+                font-size: 16px;
             }
 
             .tec-user-name,
@@ -455,6 +525,56 @@
 
             .tec-content {
                 padding: 16px;
+            }
+
+            .tec-stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+
+            .tec-stat-value {
+                font-size: 22px;
+            }
+
+            .tec-quick-actions {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .tec-action-btn {
+                padding: 16px;
+            }
+
+            .tec-action-btn i {
+                font-size: 24px;
+            }
+
+            .tec-action-btn span {
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .tec-stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tec-quick-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .tec-navbar-right {
+                gap: 8px;
+            }
+
+            .tec-nav-btn {
+                width: 36px;
+                height: 36px;
+            }
+
+            .tec-user-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 12px;
             }
         }
 
@@ -484,6 +604,20 @@
 
         body[data-theme="dark"] .tec-nav-btn {
             color: #a0a0a0;
+        }
+
+        body[data-theme="dark"] .tec-nav-btn:hover {
+            background: #252a3a;
+            color: #e8e8e8;
+        }
+
+        body[data-theme="dark"] .tec-mobile-menu-btn {
+            color: #a0a0a0;
+        }
+
+        body[data-theme="dark"] .tec-mobile-menu-btn:hover {
+            background: #252a3a;
+            color: #e8e8e8;
         }
 
         body[data-theme="dark"] .tec-nav-btn:hover {
@@ -557,6 +691,9 @@
     </style>
 </head>
 <body>
+    <!-- Overlay para fechar sidebar mobile -->
+    <div class="tec-sidebar-overlay" id="sidebarOverlay" onclick="closeMobileMenu()"></div>
+
     <div class="tec-wrapper">
         <!-- Sidebar -->
         <aside class="tec-sidebar" id="tecSidebar">
@@ -597,6 +734,9 @@
             <!-- Navbar Compacta -->
             <header class="tec-navbar">
                 <div class="tec-navbar-left">
+                    <button class="tec-mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu">
+                        <i class='bx bx-menu'></i>
+                    </button>
                     <h1 class="tec-page-title"><?= $pageTitle ?? 'Dashboard' ?></h1>
                 </div>
 
@@ -638,20 +778,55 @@
     </div>
 
     <script>
-        // Toggle Sidebar
+        // Toggle Sidebar Desktop
         function toggleSidebar() {
             const sidebar = document.getElementById('tecSidebar');
             const icon = document.getElementById('toggleIcon');
-            sidebar.classList.toggle('collapsed');
 
-            if (sidebar.classList.contains('collapsed')) {
-                icon.classList.remove('bx-chevron-left');
-                icon.classList.add('bx-chevron-right');
-            } else {
-                icon.classList.remove('bx-chevron-right');
-                icon.classList.add('bx-chevron-left');
+            // Só funciona em desktop
+            if (window.innerWidth > 768) {
+                sidebar.classList.toggle('collapsed');
+
+                if (sidebar.classList.contains('collapsed')) {
+                    icon.classList.remove('bx-chevron-left');
+                    icon.classList.add('bx-chevron-right');
+                } else {
+                    icon.classList.remove('bx-chevron-right');
+                    icon.classList.add('bx-chevron-left');
+                }
             }
         }
+
+        // Toggle Menu Mobile
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('tecSidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+
+            if (sidebar.classList.contains('open')) {
+                closeMobileMenu();
+            } else {
+                sidebar.classList.add('open');
+                overlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        // Fechar Menu Mobile
+        function closeMobileMenu() {
+            const sidebar = document.getElementById('tecSidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Fechar menu ao redimensionar para desktop
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                closeMobileMenu();
+            }
+        });
 
         // Toggle Theme
         function toggleTheme() {
