@@ -2114,15 +2114,11 @@ const WizardAtendimento = {
             body: formData
         })
         .then(r => {
-            const contentType = r.headers.get('content-type');
-            if (contentType && contentType.includes('application/json')) {
-                return r.json();
-            } else {
-                return r.text().then(text => {
-                    console.error('Resposta não-JSON:', text.substring(0, 500));
-                    throw new Error('Resposta do servidor não é JSON válido');
-                });
-            }
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            return r.json().catch(() => r.text().then(text => {
+                console.error('Resposta não-JSON:', text.substring(0, 500));
+                throw new Error('Resposta do servidor não é JSON válido');
+            }));
         })
         .then(data => {
             if (data.success) {
@@ -3029,15 +3025,11 @@ const WizardAtendimento = {
             body: formData
         })
         .then(r => {
-            const contentType = r.headers.get('content-type');
-            if (contentType && contentType.includes('application/json')) {
-                return r.json();
-            } else {
-                return r.text().then(text => {
-                    console.error('Resposta não-JSON:', text.substring(0, 500));
-                    throw new Error('Resposta do servidor não é JSON válido');
-                });
-            }
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            return r.json().catch(() => r.text().then(text => {
+                console.error('Resposta não-JSON:', text.substring(0, 500));
+                throw new Error('Resposta do servidor não é JSON válido');
+            }));
         })
         .then(data => {
             if (data.success) {

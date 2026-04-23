@@ -1367,15 +1367,6 @@ window.addEventListener('error', function(e) {
 // Aguardar DOM estar pronto
 document.addEventListener('DOMContentLoaded', function() {
     console.log('=== DOM CARREGADO ===');
-
-    // Verificação inicial de elementos
-    console.log('=== VERIFICAÇÃO INICIAL ===');
-    console.log('Total .config-tab-item:', document.querySelectorAll('.config-tab-item').length);
-    console.log('Total .config-content:', document.querySelectorAll('.config-content').length);
-    document.querySelectorAll('.config-content').forEach(function(el, i) {
-        console.log('Content ' + i + ': id=' + el.id + ', classes=' + el.className);
-    });
-    console.log('=== FIM VERIFICAÇÃO ===');
 });
 
 // Navegação entre abas
@@ -1383,60 +1374,78 @@ function switchTab(tabName, element) {
     console.log('=== SWITCH TAB DEBUG ===');
     console.log('TabName:', tabName);
     console.log('Element:', element);
-    console.log('Element text:', element && element.textContent ? element.textContent.trim() : 'null');
+
+    if (!element) {
+        console.error('ERRO: Elemento não fornecido!');
+        return;
+    }
 
     try {
         // Remove active de todas as abas
-        const allTabs = document.querySelectorAll('.config-tab-item');
-        const allContents = document.querySelectorAll('.config-content');
-        console.log('Total tabs encontradas:', allTabs.length);
-        console.log('Total contents encontrados:', allContents.length);
+        var allTabs = document.querySelectorAll('.config-tab-item');
+        var allContents = document.querySelectorAll('.config-content');
+        console.log('Total tabs:', allTabs.length);
+        console.log('Total contents:', allContents.length);
 
-        allTabs.forEach(tab => tab.classList.remove('active'));
-        allContents.forEach(content => content.classList.remove('active'));
+        // Remover classe active de todas as tabs
+        for (var i = 0; i < allTabs.length; i++) {
+            allTabs[i].classList.remove('active');
+        }
+
+        // Remover classe active de todos os conteúdos
+        for (var i = 0; i < allContents.length; i++) {
+            allContents[i].classList.remove('active');
+        }
 
         // Adiciona active na aba clicada
         element.classList.add('active');
-        console.log('Classe active adicionada ao elemento clicado');
+        console.log('Tab ativada');
 
-        const targetContent = document.getElementById('tab-' + tabName);
-        console.log('Target content (tab-' + tabName + '):', targetContent);
+        // Ativa o conteúdo correspondente
+        var targetContent = document.getElementById('tab-' + tabName);
+        console.log('Target content:', targetContent);
 
         if (targetContent) {
             targetContent.classList.add('active');
-            console.log('Classe active adicionada ao conteúdo');
+            console.log('Conteúdo ativado');
         } else {
             console.error('ERRO: Elemento #tab-' + tabName + ' não encontrado!');
         }
 
         // Salva preferência no localStorage
-        localStorage.setItem('obras_config_tab', tabName);
-        console.log('Tab salva no localStorage');
+        try {
+            localStorage.setItem('obras_config_tab', tabName);
+            console.log('Tab salva no localStorage');
+        } catch (e) {
+            console.warn('Não foi possível salvar no localStorage:', e);
+        }
     } catch (error) {
         console.error('ERRO ao trocar aba:', error);
+        alert('Erro ao trocar aba: ' + error.message);
     }
     console.log('=== FIM DEBUG ===');
 }
 
 // Carrega aba salva
-(function loadSavedTab() {
+function loadSavedTab() {
     console.log('=== LOAD SAVED TAB DEBUG ===');
     try {
-        const savedTab = localStorage.getItem('obras_config_tab');
+        var savedTab = localStorage.getItem('obras_config_tab');
         console.log('Saved tab from localStorage:', savedTab);
 
         if (savedTab) {
             // Verificar se o savedTab é seguro (apenas letras, hífen e underscore)
-            if (/^[a-zA-Z0-9_-]+$/.test(savedTab)) {
-                const selector = '.config-tab-item[onclick*="' + savedTab + '"]';
+            var regex = /^[a-zA-Z0-9_-]+$/;
+            if (regex.test(savedTab)) {
+                var selector = '.config-tab-item[onclick*="' + savedTab + '"]';
                 console.log('Selector:', selector);
-                const tabElement = document.querySelector(selector);
+                var tabElement = document.querySelector(selector);
                 console.log('Tab element found:', tabElement);
 
                 if (tabElement) {
                     switchTab(savedTab, tabElement);
                 } else {
-                    console.error('ERRO: Não encontrou elemento da aba salva com selector:', selector);
+                    console.error('ERRO: Não encontrou elemento da aba salva');
                 }
             } else {
                 console.error('ERRO: Valor inválido no localStorage:', savedTab);
@@ -1449,7 +1458,14 @@ function switchTab(tabName, element) {
         console.error('ERRO ao carregar aba salva:', e);
     }
     console.log('=== FIM LOAD DEBUG ===');
-})();
+}
+
+// Executar após DOM carregar
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadSavedTab);
+} else {
+    loadSavedTab();
+}
 
 // Modal functions
 function abrirModal(title, content) {
