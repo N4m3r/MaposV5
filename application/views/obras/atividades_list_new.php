@@ -27,7 +27,6 @@
     // Atividades do novo sistema (registradas com Hora Início/Fim)
     if (!empty($atividades_registradas)) {
         foreach ($atividades_registradas as $ativ) {
-            // Determinar o status baseado nos dados
             $status = 'agendada';
             if (!empty($ativ->hora_fim)) {
                 $status = 'concluida';
@@ -62,13 +61,15 @@
         foreach ($todas_atividades as $atividade):
             $status_class = $atividade['status'];
             $status_label = ucfirst($atividade['status']);
+            $atividade_id = (int)$atividade['id'];
+            $atividade_sistema = htmlspecialchars($atividade['sistema'] ?? 'antigo');
     ?>
     <div class="atividade-card <?php echo $status_class; ?>"
          data-titulo="<?php echo strtolower(str_replace('"', '', $atividade['titulo'])); ?>"
          data-status="<?php echo $atividade['status']; ?>"
          data-tipo="<?php echo $atividade['tipo']; ?>"
-         data-sistema="<?php echo $atividade['sistema']; ?>"
-         onclick="abrirModalAtividade(<?php echo (int)($atividade['id'] ?? 0); ?>, '<?php echo htmlspecialchars($atividade['sistema'] ?? 'antigo'); ?>')"
+         data-sistema="<?php echo $atividade_sistema; ?>"
+         onclick="abrirModalAtividade(<?php echo $atividade_id; ?>, '<?php echo $atividade_sistema; ?>')"
          style="cursor: pointer;">
 
         <div class="atividade-card-header">
@@ -141,12 +142,12 @@
 
             <div class="atividade-card-actions" onclick="event.stopPropagation();">
                 <a href="javascript:void(0)" class="atividade-card-btn atividade-card-btn-view" title="Ver detalhes"
-                   onclick="abrirModalAtividade(<?php echo (int)($atividade['id'] ?? 0); ?>, '<?php echo htmlspecialchars($atividade['sistema'] ?? 'antigo'); ?>')">
+                   onclick="abrirModalAtividade(<?php echo $atividade_id; ?>, '<?php echo $atividade_sistema; ?>')">
                     <i class="bx bx-eye"></i>
                 </a>
                 <?php if ($this->session->userdata('permissao') == 1): ?>
                 <a href="javascript:void(0)" class="atividade-card-btn atividade-card-btn-delete" title="Excluir"
-                   onclick="event.stopPropagation(); excluirAtividade(<?php echo (int)($atividade['id'] ?? 0); ?>, '<?php echo htmlspecialchars($atividade['sistema'] ?? 'antigo'); ?>')">
+                   onclick="event.stopPropagation(); excluirAtividade(<?php echo $atividade_id; ?>, '<?php echo $atividade_sistema; ?>')">
                     <i class="bx bx-trash"></i>
                 </a>
                 <?php endif; ?>
@@ -188,7 +189,6 @@
     </div>
 
     <div class="modal-body" id="modalVerBody" style="max-height: 500px; overflow-y: auto;">
-        <!-- Conteúdo carregado via AJAX -->
         <div style="text-align: center; padding: 40px;">
             <i class="bx bx-loader-alt bx-spin" style="font-size: 40px; color: #667eea;"></i>
             <p style="margin-top: 15px; color: #666;">Carregando...</p>
@@ -208,69 +208,63 @@
     </div>
 </div>
 
-<script>
-// Garantir que as funções estejam no escopo global
-window.atividadeAtual = null;
-window.modoEdicao = false;
+<script type="text/javascript">
+// Variáveis globais
+var atividadeAtual = null;
+var modoEdicao = false;
 
-// Função para abrir modal da atividade
-window.abrirModalAtividade = function(id, sistema) {
-    window.atividadeAtual = { id: id, sistema: sistema };
-    window.modoEdicao = false;
+function abrirModalAtividade(id, sistema) {
+    atividadeAtual = { id: id, sistema: sistema };
+    modoEdicao = false;
 
-    // Resetar modal
     document.getElementById('modalVerBody').innerHTML = '<div style="text-align: center; padding: 40px;"><i class="bx bx-loader-alt bx-spin" style="font-size: 40px; color: #667eea;"></i><p style="margin-top: 15px; color: #666;">Carregando...</p></div>';
     document.getElementById('btnEditarAtividade').style.display = 'inline-block';
     document.getElementById('btnSalvarAtividade').style.display = 'none';
 
-    // Abrir modal
-    $('#modalVerAtividade').modal('show');
+    jQuery('#modalVerAtividade').modal('show');
 
-    // Carregar dados
     if (sistema === 'novo') {
-        // Sistema novo - buscar via controller atividades
-        fetch('<?php echo site_url("atividades/detalhes/"); ?>' + id, {
-            headers: { 'X-Requested-With': 'XMLHttpRequest' }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                renderizarAtividadeNovo(data.atividade);
-            } else {
+        jQuery.ajax({
+            url: '<?php echo site_url("atividades/detalhes/"); ?>' + id,
+            type: 'GET',
+            dataType: 'json',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            success: function(data) {
+                if (data.success) {
+                    renderizarAtividadeNovo(data.atividade);
+                } else {
+                    document.getElementById('modalVerBody').innerHTML = '<div style="text-align: center; padding: 40px; color: #dc3545;"><i class="bx bx-error-circle" style="font-size: 40px;"></i><p>Erro ao carregar atividade</p></div>';
+                }
+            },
+            error: function() {
                 document.getElementById('modalVerBody').innerHTML = '<div style="text-align: center; padding: 40px; color: #dc3545;"><i class="bx bx-error-circle" style="font-size: 40px;"></i><p>Erro ao carregar atividade</p></div>';
             }
-        })
-        .catch(error => {
-            console.error('Erro:', error);
-            document.getElementById('modalVerBody').innerHTML = '<div style="text-align: center; padding: 40px; color: #dc3545;"><i class="bx bx-error-circle" style="font-size: 40px;"></i><p>Erro ao carregar atividade</p></div>';
         });
     } else {
-        // Sistema antigo - buscar via API do controller obras
-        fetch('<?php echo site_url("obras/api_getAtividade/"); ?>' + id, {
-            headers: { 'X-Requested-With': 'XMLHttpRequest' }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                window.atividadeAtual.dados = data.atividade;
-                window.atividadeAtual.execucao = data.execucao_real;
-                renderizarAtividadeAntigo(data.atividade, data.execucao_real);
-            } else {
-                document.getElementById('modalVerBody').innerHTML = '<div style="text-align: center; padding: 40px; color: #dc3545;"><i class="bx bx-error-circle" style="font-size: 40px;"></i><p>' + (data.message || 'Erro ao carregar') + '</p></div>';
+        jQuery.ajax({
+            url: '<?php echo site_url("obras/api_getAtividade/"); ?>' + id,
+            type: 'GET',
+            dataType: 'json',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            success: function(data) {
+                if (data.success) {
+                    atividadeAtual.dados = data.atividade;
+                    atividadeAtual.execucao = data.execucao_real;
+                    renderizarAtividadeAntigo(data.atividade, data.execucao_real);
+                } else {
+                    document.getElementById('modalVerBody').innerHTML = '<div style="text-align: center; padding: 40px; color: #dc3545;"><i class="bx bx-error-circle" style="font-size: 40px;"></i><p>' + (data.message || 'Erro ao carregar') + '</p></div>';
+                }
+            },
+            error: function() {
+                document.getElementById('modalVerBody').innerHTML = '<div style="text-align: center; padding: 40px; color: #dc3545;"><i class="bx bx-error-circle" style="font-size: 40px;"></i><p>Erro ao carregar atividade</p></div>';
             }
-        })
-        .catch(error => {
-            console.error('Erro:', error);
-            document.getElementById('modalVerBody').innerHTML = '<div style="text-align: center; padding: 40px; color: #dc3545;"><i class="bx bx-error-circle" style="font-size: 40px;"></i><p>Erro ao carregar atividade</p></div>';
         });
     }
 }
 
-// Renderizar atividade do sistema antigo
 function renderizarAtividadeAntigo(atividade, execucao) {
     var html = '<div id="atividadeView">';
 
-    // Cabeçalho com status
     var statusClass = atividade.status || 'agendada';
     var statusLabel = statusClass.charAt(0).toUpperCase() + statusClass.slice(1);
 
@@ -279,11 +273,10 @@ function renderizarAtividadeAntigo(atividade, execucao) {
     html += '<div style="color: #666; font-size: 13px;">ID: #' + atividade.id + '</div>';
     html += '</div>';
 
-    // Campos visualização
     html += '<div class="atividades-form-group">';
     html += '<label class="atividades-form-label"><i class="bx bx-tag"></i> Título</label>';
     html += '<div class="view-field" style="padding: 12px; background: #f5f5f5; border-radius: 8px; border: 1px solid #e0e0e0;">' + (atividade.titulo || '-') + '</div>';
-    html += '<input type="text" name="titulo" class="atividades-form-input edit-field" value="' + (atividade.titulo || '') + '" style="display: none;">';
+    html += '<input type="text" name="titulo" class="atividades-form-input edit-field" value="' + (atividade.titulo || '').replace(/"/g, '&quot;') + '" style="display: none;">';
     html += '</div>';
 
     html += '<div class="atividades-form-group">';
@@ -312,7 +305,6 @@ function renderizarAtividadeAntigo(atividade, execucao) {
     html += '</div>';
     html += '</div>';
 
-    // Se houver execução real (sistema novo vinculado)
     if (execucao && execucao.idAtividade) {
         html += '<hr style="margin: 25px 0; border-color: #e0e0e0;">';
         html += '<div style="background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%); padding: 20px; border-radius: 10px; border-left: 4px solid #667eea;">';
@@ -348,17 +340,10 @@ function renderizarAtividadeAntigo(atividade, execucao) {
         html += '</div>';
     }
 
-    html += '</div>'; // fim atividadeView
-
-    // Form de edição (campos ocultos inicialmente)
-    html += '<div id="atividadeEdit" style="display: none;">';
-    // Campos de edição serão mostrados via toggle
     html += '</div>';
-
     document.getElementById('modalVerBody').innerHTML = html;
 }
 
-// Renderizar atividade do sistema novo
 function renderizarAtividadeNovo(atividade) {
     var html = '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 10px;">';
     html += '<div><strong>Status:</strong> <span class="label label-info">' + (atividade.status ? atividade.status.toUpperCase() : 'N/A') + '</span></div>';
@@ -397,7 +382,6 @@ function renderizarAtividadeNovo(atividade) {
         }
     }
 
-    // Técnico
     if (atividade.nome_tecnico) {
         html += '<div class="atividades-form-group" style="margin-top: 15px;">';
         html += '<label class="atividades-form-label"><i class="bx bx-user"></i> Técnico</label>';
@@ -405,7 +389,6 @@ function renderizarAtividadeNovo(atividade) {
         html += '</div>';
     }
 
-    // Etapa
     if (atividade.etapa_nome) {
         html += '<div class="atividades-form-group">';
         html += '<label class="atividades-form-label"><i class="bx bx-layer"></i> Etapa</label>';
@@ -413,7 +396,6 @@ function renderizarAtividadeNovo(atividade) {
         html += '</div>';
     }
 
-    // Observações
     if (atividade.observacoes) {
         html += '<div class="atividades-form-group">';
         html += '<label class="atividades-form-label"><i class="bx bx-note"></i> Observações</label>';
@@ -422,122 +404,112 @@ function renderizarAtividadeNovo(atividade) {
     }
 
     document.getElementById('modalVerBody').innerHTML = html;
-
-    // Esconder botão de editar para sistema novo (editar via outra tela)
     document.getElementById('btnEditarAtividade').style.display = 'none';
     document.getElementById('btnSalvarAtividade').style.display = 'none';
 }
 
-// Alternar entre modo visualização e edição
-window.toggleEdicao = function() {
-    window.modoEdicao = !window.modoEdicao;
+function toggleEdicao() {
+    modoEdicao = !modoEdicao;
 
-    if (window.modoEdicao) {
-        // Mostrar campos de edição
-        document.querySelectorAll('.view-field').forEach(el => el.style.display = 'none');
-        document.querySelectorAll('.edit-field').forEach(el => el.style.display = 'block');
+    if (modoEdicao) {
+        jQuery('.view-field').hide();
+        jQuery('.edit-field').show();
         document.getElementById('btnEditarAtividade').style.display = 'none';
         document.getElementById('btnSalvarAtividade').style.display = 'inline-block';
     } else {
-        // Mostrar campos de visualização
-        document.querySelectorAll('.view-field').forEach(el => el.style.display = 'block');
-        document.querySelectorAll('.edit-field').forEach(el => el.style.display = 'none');
+        jQuery('.view-field').show();
+        jQuery('.edit-field').hide();
         document.getElementById('btnEditarAtividade').style.display = 'inline-block';
         document.getElementById('btnSalvarAtividade').style.display = 'none';
     }
 }
 
-// Salvar alterações da atividade
-window.salvarAtividade = function() {
-    if (!window.atividadeAtual || !window.atividadeAtual.id) {
+function salvarAtividade() {
+    if (!atividadeAtual || !atividadeAtual.id) {
         alert('Erro: Nenhuma atividade selecionada');
         return;
     }
 
-    // Coletar dados dos campos de edição
+    var tituloEl = document.querySelector('input[name="titulo"]');
+    var descricaoEl = document.querySelector('textarea[name="descricao"]');
+    var dataEl = document.querySelector('input[name="data_atividade"]');
+    var tipoEl = document.querySelector('select[name="tipo"]');
+
     var dados = {
-        id: window.atividadeAtual.id,
-        titulo: document.querySelector('input[name="titulo"]')?.value || '',
-        descricao: document.querySelector('textarea[name="descricao"]')?.value || '',
-        data_atividade: document.querySelector('input[name="data_atividade"]')?.value || '',
-        tipo: document.querySelector('select[name="tipo"]')?.value || ''
+        id: atividadeAtual.id,
+        titulo: tituloEl ? tituloEl.value : '',
+        descricao: descricaoEl ? descricaoEl.value : '',
+        data_atividade: dataEl ? dataEl.value : '',
+        tipo: tipoEl ? tipoEl.value : ''
     };
 
-    // Desabilitar botão
     var btn = document.getElementById('btnSalvarAtividade');
     btn.disabled = true;
     btn.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Salvando...';
 
-    // Enviar para API
-    fetch('<?php echo site_url("obras/api_salvarAtividade"); ?>', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'X-Requested-With': 'XMLHttpRequest'
+    jQuery.ajax({
+        url: '<?php echo site_url("obras/api_salvarAtividade"); ?>',
+        type: 'POST',
+        dataType: 'json',
+        data: dados,
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        success: function(data) {
+            if (data.success) {
+                alert('Atividade atualizada com sucesso!');
+                jQuery('#modalVerAtividade').modal('hide');
+                window.location.reload();
+            } else {
+                alert('Erro: ' + (data.message || 'Não foi possível salvar'));
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bx bx-save"></i> Salvar';
+            }
         },
-        body: new URLSearchParams(dados)
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert('Atividade atualizada com sucesso!');
-            $('#modalVerAtividade').modal('hide');
-            location.reload();
-        } else {
-            alert('Erro: ' + (data.message || 'Não foi possível salvar'));
+        error: function() {
+            alert('Erro ao salvar atividade');
             btn.disabled = false;
             btn.innerHTML = '<i class="bx bx-save"></i> Salvar';
         }
-    })
-    .catch(error => {
-        console.error('Erro:', error);
-        alert('Erro ao salvar atividade');
-        btn.disabled = false;
-        btn.innerHTML = '<i class="bx bx-save"></i> Salvar';
     });
 }
 
-// Função auxiliar para formatar data
-window.formatarData = function(dataStr) {
+function formatarData(dataStr) {
     if (!dataStr) return '-';
     var parts = dataStr.split('-');
+    if (parts.length !== 3) return dataStr;
     return parts[2] + '/' + parts[1] + '/' + parts[0];
 }
 
-// Função auxiliar para formatar data e hora
-window.formatarDataHora = function(dataHoraStr) {
+function formatarDataHora(dataHoraStr) {
     if (!dataHoraStr) return '-';
     var data = new Date(dataHoraStr);
+    if (isNaN(data.getTime())) return dataHoraStr;
     return data.toLocaleString('pt-BR');
 }
 
-// Função para excluir atividade
-window.excluirAtividade = function(id, sistema) {
+function excluirAtividade(id, sistema) {
+    if (!confirm('Tem certeza que deseja excluir esta atividade?')) {
+        return;
+    }
 
-    if (confirm('Tem certeza que deseja excluir esta atividade?')) {
-        var url = sistema === 'novo'
-            ? '<?php echo site_url('atividades/excluir/'); ?>' + id
-            : '<?php echo site_url('obras/excluirAtividade/'); ?>' + id;
+    var url = sistema === 'novo'
+        ? '<?php echo site_url('atividades/excluir/'); ?>' + id
+        : '<?php echo site_url('obras/excluirAtividade/'); ?>' + id;
 
-        fetch(url, {
-            method: 'POST',
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
+    jQuery.ajax({
+        url: url,
+        type: 'POST',
+        dataType: 'json',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        success: function(data) {
             if (data.success) {
-                location.reload();
+                window.location.reload();
             } else {
                 alert('Erro: ' + (data.message || 'Não foi possível excluir'));
             }
-        })
-        .catch(error => {
-            console.error('Erro:', error);
-            // Tentar redirecionar mesmo assim
-            location.reload();
-        });
-    }
+        },
+        error: function() {
+            window.location.reload();
+        }
+    });
 }
 </script>
