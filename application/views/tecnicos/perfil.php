@@ -492,6 +492,9 @@
     border-radius: 10px;
     font-size: 15px;
     transition: all 0.3s ease;
+    -webkit-appearance: none;
+    -webkit-tap-highlight-color: transparent;
+    min-height: 44px;
 }
 
 .form-input:focus {
@@ -529,12 +532,18 @@
     cursor: pointer;
     border-radius: 8px;
     transition: all 0.3s ease;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
 }
 
 .aba-btn.active,
 .aba-btn:hover {
     background: #f0f4ff;
     color: #667eea;
+}
+
+.aba-btn:active {
+    transform: scale(0.98);
 }
 
 .aba-conteudo {
@@ -619,8 +628,9 @@
 
     .modal-edicao .modal-body {
         padding: 15px !important;
-        max-height: calc(100vh - 120px);
+        max-height: calc(100vh - 140px);
         overflow-y: auto;
+        padding-bottom: 80px !important;
     }
 
     .modal-edicao .modal-header {
@@ -639,6 +649,8 @@
         right: 0;
         background: white;
         border-top: 1px solid #e8e8e8;
+        box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+        z-index: 10;
     }
 
     .abas-navegacao {
@@ -667,8 +679,10 @@
     }
 
     .form-input {
-        padding: 10px 12px;
+        padding: 12px 15px;
         font-size: 16px;
+        min-height: 44px;
+        border-radius: 8px;
     }
 
     .btn-salvar {
@@ -737,7 +751,7 @@
     <!-- Header com Avatar -->
     <div class="perfil-header">
         <button class="btn-editar" onclick="abrirModalEdicao()">
-            <i class="icon icon-pencil"></i> Editar Perfil
+            <i class="icon-pencil"></i> Editar Perfil
         </button>
 
         <div class="perfil-avatar-wrapper">
@@ -746,19 +760,19 @@
                     <img src="<?php echo base_url($tecnico->foto_tecnico); ?>?v=<?php echo time(); ?>" alt="Foto">
                 <?php else: ?>
                     <div class="avatar-placeholder">
-                        <i class="icon icon-user"></i>
+                        <i class="icon-user"></i>
                     </div>
                 <?php endif; ?>
             </div>
             <div class="avatar-edit-badge" onclick="abrirCamera()" title="Alterar Foto">
-                <i class="icon icon-camera"></i>
+                <i class="icon-camera"></i>
             </div>
         </div>
 
         <h3 class="perfil-nome"><?php echo htmlspecialchars($tecnico->nome ?? 'Técnico', ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></h3>
 
         <div class="perfil-nivel">
-            <i class="icon icon-star"></i>
+            <i class="icon-star"></i>
             <span>Técnico Nível <?php echo $tecnico->nivel_tecnico ?? 1; ?></span>
         </div>
     </div>
@@ -767,7 +781,7 @@
     <div class="perfil-section">
         <div class="section-header">
             <div class="section-icon">
-                <i class="icon icon-user"></i>
+                <i class="icon-user"></i>
             </div>
             <h4 class="section-title">Informações Pessoais</h4>
         </div>
@@ -775,7 +789,7 @@
         <div class="info-grid">
             <div class="info-card">
                 <div class="info-card-icon">
-                    <i class="icon icon-envelope"></i>
+                    <i class="icon-envelope"></i>
                 </div>
                 <div class="info-card-content">
                     <div class="info-card-label">E-mail</div>
@@ -785,7 +799,7 @@
 
             <div class="info-card">
                 <div class="info-card-icon">
-                    <i class="icon icon-phone"></i>
+                    <i class="icon-phone"></i>
                 </div>
                 <div class="info-card-content">
                     <div class="info-card-label">Telefone</div>
@@ -795,7 +809,7 @@
 
             <div class="info-card">
                 <div class="info-card-icon">
-                    <i class="icon icon-credit-card"></i>
+                    <i class="icon-credit-card"></i>
                 </div>
                 <div class="info-card-content">
                     <div class="info-card-label">CPF</div>
@@ -809,7 +823,7 @@
     <div class="perfil-section">
         <div class="section-header">
             <div class="section-icon">
-                <i class="icon icon-wrench"></i>
+                <i class="icon-wrench"></i>
             </div>
             <h4 class="section-title">Informações Profissionais</h4>
         </div>
@@ -818,14 +832,14 @@
             <?php if (!empty($tecnico->especialidades)): ?>
             <div class="info-card" style="grid-column: 1 / -1;">
                 <div class="info-card-icon">
-                    <i class="icon icon-lightbulb"></i>
+                    <i class="icon-lightbulb"></i>
                 </div>
                 <div class="info-card-content">
                     <div class="info-card-label">Especialidades</div>
                     <div class="especialidades-list">
                         <?php foreach (explode(',', $tecnico->especialidades) as $esp): ?>
                             <span class="especialidade-tag">
-                                <i class="icon icon-ok"></i>
+                                <i class="icon-ok"></i>
                                 <?php echo trim(htmlspecialchars($esp, ENT_COMPAT | ENT_HTML5, 'UTF-8')); ?>
                             </span>
                         <?php endforeach; ?>
@@ -837,7 +851,7 @@
             <?php if ($tecnico->veiculo_placa): ?>
             <div class="info-card">
                 <div class="info-card-icon">
-                    <i class="icon icon-truck"></i>
+                    <i class="icon-truck"></i>
                 </div>
                 <div class="info-card-content">
                     <div class="info-card-label">Veículo</div>
@@ -850,7 +864,7 @@
 
             <div class="info-card">
                 <div class="info-card-icon">
-                    <i class="icon icon-time"></i>
+                    <i class="icon-time"></i>
                 </div>
                 <div class="info-card-content">
                     <div class="info-card-label">Plantão 24h</div>
@@ -885,7 +899,7 @@
     <div class="perfil-section">
         <div class="section-header">
             <div class="section-icon">
-                <i class="icon icon-cog"></i>
+                <i class="icon-cog"></i>
             </div>
             <h4 class="section-title">Configurações</h4>
         </div>
@@ -893,7 +907,7 @@
         <div class="info-grid">
             <div class="info-card">
                 <div class="info-card-icon">
-                    <i class="icon icon-time"></i>
+                    <i class="icon-time"></i>
                 </div>
                 <div class="info-card-content">
                     <div class="info-card-label">Último Acesso</div>
@@ -905,7 +919,7 @@
 
             <div class="info-card">
                 <div class="info-card-icon">
-                    <i class="icon icon-mobile-phone"></i>
+                    <i class="icon-mobile-phone"></i>
                 </div>
                 <div class="info-card-content">
                     <div class="info-card-label">Versão do App</div>
@@ -917,7 +931,7 @@
 
     <!-- Botão Sair -->
     <a href="<?php echo site_url('tecnicos/logout'); ?>" class="btn-logout">
-        <i class="icon icon-signout"></i>
+        <i class="icon-signout"></i>
         <span>Sair do Sistema</span>
     </a>
 </div>
@@ -926,23 +940,23 @@
 <div class="modal hide foto-modal" id="cameraModal">
     <div class="modal-header">
         <button type="button" class="close" onclick="fecharCamera()" style="color: white; opacity: 0.8;">&times;</button>
-        <h3><i class="icon icon-camera"></i> Atualizar Foto de Perfil</h3>
+        <h3><i class="icon-camera"></i> Atualizar Foto de Perfil</h3>
     </div>
     <div class="modal-body">
         <!-- Abas -->
         <ul class="nav nav-tabs" id="fotoTab">
-            <li class="active"><a href="#tab-camera" data-toggle="tab"><i class="icon icon-camera"></i> Câmera</a></li>
-            <li><a href="#tab-upload" data-toggle="tab"><i class="icon icon-upload"></i> Galeria</a></li>
+            <li class="active"><a href="#tab-camera" data-toggle="tab"><i class="icon-camera"></i> Câmera</a></li>
+            <li><a href="#tab-upload" data-toggle="tab"><i class="icon-upload"></i> Galeria</a></li>
         </ul>
 
         <div class="tab-content">
             <!-- Aba Câmera -->
             <div class="tab-pane active" id="tab-camera">
                 <div class="foto-preview-area" id="camera-off">
-                    <i class="icon icon-camera"></i>
+                    <i class="icon-camera"></i>
                     <p>Clique no botão abaixo para iniciar a câmera</p>
                     <button type="button" class="btn-capturar" onclick="iniciarCamera()">
-                        <i class="icon icon-camera"></i> Iniciar Câmera
+                        <i class="icon-camera"></i> Iniciar Câmera
                     </button>
                 </div>
                 <div class="text-center" id="camera-on" style="display: none;">
@@ -950,7 +964,7 @@
                         <video id="video" autoplay playsinline></video>
                     </div>
                     <button type="button" class="btn-capturar" onclick="capturarDaCamera()">
-                        <i class="icon icon-camera"></i> Tirar Foto
+                        <i class="icon-camera"></i> Tirar Foto
                     </button>
                 </div>
             </div>
@@ -958,18 +972,18 @@
             <!-- Aba Upload -->
             <div class="tab-pane" id="tab-upload">
                 <div class="foto-preview-area" id="upload-placeholder">
-                    <i class="icon icon-picture"></i>
+                    <i class="icon-picture"></i>
                     <p>Selecione uma foto da galeria</p>
                     <input type="file" id="input-foto" accept="image/*" style="display: none;" onchange="previewUpload(this)">
                     <button type="button" class="btn-capturar" onclick="document.getElementById('input-foto').click()">
-                        <i class="icon icon-folder-open"></i> Selecionar Arquivo
+                        <i class="icon-folder-open"></i> Selecionar Arquivo
                     </button>
                 </div>
                 <div class="text-center" id="upload-preview" style="display: none;">
                     <img id="preview-img" src="" alt="Preview">
                     <br><br>
                     <button type="button" class="btn" onclick="resetUpload()">
-                        <i class="icon icon-remove"></i> Escolher Outra
+                        <i class="icon-remove"></i> Escolher Outra
                     </button>
                 </div>
             </div>
@@ -978,7 +992,7 @@
     <div class="modal-footer">
         <button type="button" class="btn" onclick="fecharCamera()">Cancelar</button>
         <button type="button" class="btn btn-primary" id="btn-salvar-foto" onclick="salvarFoto()" disabled>
-            <i class="icon icon-ok"></i> Salvar Foto
+            <i class="icon-ok"></i> Salvar Foto
         </button>
     </div>
 </div>
@@ -1317,7 +1331,7 @@ function mostrarErro(msg) {
 <div class="modal hide modal-edicao" id="edicaoModal">
     <div class="modal-header">
         <button type="button" class="close" onclick="fecharModalEdicao()" style="color: white; opacity: 0.8;">&times;</button>
-        <h3><i class="icon icon-pencil"></i> Editar Perfil</h3>
+        <h3><i class="icon-pencil"></i> Editar Perfil</h3>
     </div>
     <div class="modal-body" style="padding: 25px;">
         <!-- Mensagens -->
@@ -1327,10 +1341,10 @@ function mostrarErro(msg) {
         <!-- Abas -->
         <div class="abas-navegacao">
             <button class="aba-btn active" data-aba="info" onclick="trocarAba('info')">
-                <i class="icon icon-user"></i> Informações
+                <i class="icon-user"></i> Informações
             </button>
             <button class="aba-btn" data-aba="senha" onclick="trocarAba('senha')">
-                <i class="icon icon-lock"></i> Trocar Senha
+                <i class="icon-lock"></i> Trocar Senha
             </button>
         </div>
 
@@ -1345,7 +1359,7 @@ function mostrarErro(msg) {
             <div class="form-row">
                 <div class="form-group">
                     <label class="form-label">E-mail *</label>
-                    <input type="email" class="form-input" id="edit-email" value="<?php echo htmlspecialchars($tecnico->email ?? ''); ?>">
+                    <input type="email" class="form-input" id="edit-email" value="<?php echo htmlspecialchars($tecnico->email ?? ''); ?>" autocomplete="email" inputmode="email">
                 </div>
 
                 <div class="form-group">
@@ -1374,7 +1388,7 @@ function mostrarErro(msg) {
 
             <div style="text-align: right; margin-top: 25px;">
                 <button type="button" class="btn btn-salvar" onclick="salvarInformacoes()">
-                    <i class="icon icon-ok"></i> Salvar Alterações
+                    <i class="icon-ok"></i> Salvar Alterações
                 </button>
             </div>
         </div>
@@ -1383,22 +1397,22 @@ function mostrarErro(msg) {
         <div id="aba-senha" class="aba-conteudo">
             <div class="form-group">
                 <label class="form-label">Senha Atual *</label>
-                <input type="password" class="form-input" id="senha-atual" placeholder="Digite sua senha atual">
+                <input type="password" class="form-input" id="senha-atual" placeholder="Digite sua senha atual" autocomplete="current-password">
             </div>
 
             <div class="form-group">
                 <label class="form-label">Nova Senha *</label>
-                <input type="password" class="form-input" id="nova-senha" placeholder="Mínimo 6 caracteres">
+                <input type="password" class="form-input" id="nova-senha" placeholder="Mínimo 6 caracteres" autocomplete="new-password">
             </div>
 
             <div class="form-group">
                 <label class="form-label">Confirmar Nova Senha *</label>
-                <input type="password" class="form-input" id="confirmar-senha" placeholder="Digite novamente a nova senha">
+                <input type="password" class="form-input" id="confirmar-senha" placeholder="Digite novamente a nova senha" autocomplete="new-password">
             </div>
 
             <div style="text-align: right; margin-top: 25px;">
                 <button type="button" class="btn btn-salvar" onclick="trocarSenha()">
-                    <i class="icon icon-ok"></i> Trocar Senha
+                    <i class="icon-ok"></i> Trocar Senha
                 </button>
             </div>
         </div>

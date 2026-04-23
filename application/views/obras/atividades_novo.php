@@ -1,6 +1,31 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
 
+<!-- Font Awesome como fallback para ícones -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 <style>
+/* ===== FALLBACK PARA ÍCONES ===== */
+.bx, .fa {
+    display: inline-block;
+    min-width: 1em;
+    min-height: 1em;
+    font-style: normal;
+    font-weight: normal;
+    line-height: 1;
+    text-align: center;
+}
+
+/* Garantir que ícones não quebrem layout */
+i.bx, i.fa {
+    font-size: inherit;
+    vertical-align: middle;
+}
+
+/* Fallback: se Boxicons falhar, mostrar Font Awesome */
+.bx:not(:before) {
+    font-family: 'Font Awesome 6 Free' !important;
+}
+
 /* ===== ESTILOS PRINCIPAIS ===== */
 .obras-container { padding: 24px; max-width: 1600px; margin: 0 auto; }
 
@@ -578,7 +603,7 @@ body[data-theme="dark"] .modal-close { background: #252a3a; color: #a0aec0; }
                     <i class='bx bx-plus'></i> Nova Atividade
                 </button>
                 <a href="<?php echo site_url('obras/salvarWizard/' . $obra->id); ?>" class="btn btn-success btn-sm">
-                    <i class='bx bx-wizard'></i> Wizard de Etapas
+                    <i class='bx bx-layer'></i> Wizard de Etapas
                 </a>
             </div>
         </div>
@@ -1119,4 +1144,54 @@ document.addEventListener('keydown', function(e) {
         document.querySelectorAll('.modal-overlay.active').forEach(m => m.classList.remove('active'));
     }
 });
+
+// Verificar se Boxicons carregou, senão usar Font Awesome
+(function checkIcons() {
+    // Mapeamento de ícones Boxicons → Font Awesome
+    const iconMap = {
+        'bx-task': 'fa-tasks',
+        'bx-building': 'fa-building',
+        'bx-user': 'fa-user',
+        'bx-calendar': 'fa-calendar',
+        'bx-arrow-back': 'fa-arrow-left',
+        'bx-list-ul': 'fa-list-ul',
+        'bx-plus': 'fa-plus',
+        'bx-layer': 'fa-layer-group',
+        'bx-grid-alt': 'fa-th',
+        'bx-play-circle': 'fa-play-circle',
+        'bx-check-circle': 'fa-check-circle',
+        'bx-refresh': 'fa-sync-alt',
+        'bx-task-x': 'fa-clipboard-xmark',
+        'bx-calendar-x': 'fa-calendar-times',
+        'bx-error': 'fa-exclamation-circle',
+        'bx-edit': 'fa-edit',
+        'bx-eye': 'fa-eye',
+        'bx-play': 'fa-play',
+        'bx-time': 'fa-clock',
+        'bx-save': 'fa-save',
+        'bx-x': 'fa-times',
+        'bx-info-circle': 'fa-info-circle'
+    };
+
+    // Verificar se Boxicons está carregado
+    const testIcon = document.querySelector('.bx');
+    if (testIcon) {
+        const computedStyle = window.getComputedStyle(testIcon, '::before');
+        const fontFamily = computedStyle.fontFamily;
+
+        // Se o Boxicons não estiver carregado (fonte não aplicada)
+        if (!fontFamily.includes('boxicons') || computedStyle.content === 'none' || computedStyle.content === '') {
+            // Trocar todos os ícones bx- para fa-
+            document.querySelectorAll('[class*="bx-"]').forEach(el => {
+                const classes = el.className.split(' ');
+                classes.forEach(cls => {
+                    if (cls.startsWith('bx-') && iconMap[cls]) {
+                        el.classList.remove('bx', cls);
+                        el.classList.add('fa', iconMap[cls]);
+                    }
+                });
+            });
+        }
+    }
+})();
 </script>
