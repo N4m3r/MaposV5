@@ -846,7 +846,7 @@ $emitente_logo = $emitente->url_logo ?? '';
                 <!-- Logo (visível na impressão) -->
                 <div class="print-only" style="display: none;">
                     <?php if ($emitente_logo): ?>
-                        <img src="<?php echo base_url($emitente_logo); ?>" alt="Logo" class="print-logo" style="max-width: 120px;">
+                        <img src="<?php echo $emitente_logo; ?>" alt="Logo" class="print-logo" style="max-width: 120px;">
                     <?php endif; ?>
                     <div class="print-emitente">
                         <strong><?php echo $emitente_nome; ?></strong>

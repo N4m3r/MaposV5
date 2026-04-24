@@ -376,7 +376,7 @@
         <div class="print-header">
             <?php if ($emitente_logo): ?>
             <div class="print-header-logo">
-                <img src="<?php echo base_url($emitente_logo); ?>" alt="Logo" style="max-width: 150px; max-height: 80px;">
+                <img src="<?php echo $emitente_logo; ?>" alt="Logo" style="max-width: 150px; max-height: 80px;">
             </div>
             <?php endif; ?>
             <div class="print-header-info" style="<?php echo $emitente_logo ? '' : 'text-align: left; width: 100%;'; ?>">

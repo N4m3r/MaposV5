@@ -852,6 +852,9 @@
                 <a href="<?php echo site_url('obras/editarAtividade/' . ($atividade->id ?? 0)); ?>" class="action-btn action-btn-primary">
                     <i class="icon-edit"></i> Editar Atividade
                 </a>
+                <a href="<?php echo site_url('obras/imprimirAtividade/' . ($atividade->id ?? 0)); ?>" target="_blank" class="action-btn" style="background: linear-gradient(135deg, #e67e22, #d35400); color: white;">
+                    <i class="icon-print"></i> Imprimir Relatório
+                </a>
             </div>
         </div>
 
