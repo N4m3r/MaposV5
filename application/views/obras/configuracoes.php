@@ -112,38 +112,36 @@
     animation: fadeIn 0.3s ease;
 }
 
-/* Mostra a aba quando e alvo do link */
-.config-content:target {
+/* Conteúdo das abas - controlado por JS */
+.config-content {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.config-content.ativo {
     display: block;
 }
 
 /* Se nenhuma aba estiver selecionada, mostra a primeira (Geral) */
-.config-content-wrapper:not(:has(.config-content:target)) #tab-geral {
+.config-content-wrapper:not(:has(.config-content.ativo)) #tab-geral {
     display: block;
 }
 
-/* Quando uma aba especifica e alvo, esconde a geral */
-.config-content-wrapper:has(.config-content:target) #tab-geral {
+/* Quando uma aba especifica esta ativa, esconde a geral */
+.config-content-wrapper:has(.config-content.ativo) #tab-geral {
     display: none;
+}
+
+/* Fallback para navegadores sem :has() */
+@supports not selector(:has(.config-content.ativo)) {
+    #tab-geral {
+        display: block;
+    }
 }
 
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
-}
-
-/* Estilo para aba ativa no menu baseada no :target */
-#tab-geral:target ~ .config-tabs .config-tab-item[href="#geral"],
-#tab-tipos-obra:target ~ .config-tabs .config-tab-item[href="#tipos-obra"],
-#tab-tipos-atividade:target ~ .config-tabs .config-tab-item[href="#tipos-atividade"],
-#tab-status-obra:target ~ .config-tabs .config-tab-item[href="#status-obra"],
-#tab-status-atividade:target ~ .config-tabs .config-tab-item[href="#status-atividade"],
-#tab-especialidades:target ~ .config-tabs .config-tab-item[href="#especialidades"],
-#tab-funcoes:target ~ .config-tabs .config-tab-item[href="#funcoes"],
-#tab-notificacoes:target ~ .config-tabs .config-tab-item[href="#notificacoes"] {
-    background: #f0f4ff;
-    color: #667eea;
-    border-left-color: #667eea;
 }
 
 /* Cards */
@@ -737,41 +735,41 @@ select.config-form-control {
     <div class="config-layout">
         <!-- Sidebar de Abas -->
         <div class="config-tabs">
-            <a href="#geral" class="config-tab-item active" data-tab="geral">
+            <a href="#tab-geral" class="config-tab-item active" data-tab="tab-geral">
                 <i class='bx bx-slider'></i>
                 <span>Geral</span>
             </a>
-            <a href="#tipos-obra" class="config-tab-item" data-tab="tipos-obra">
+            <a href="#tab-tipos-obra" class="config-tab-item" data-tab="tab-tipos-obra">
                 <i class='bx bx-building-house'></i>
                 <span>Tipos de Obra</span>
                 <span class="badge-count" id="count-tipos-obra"><?php echo count($tipos_obra ?? []); ?></span>
             </a>
-            <a href="#tipos-atividade" class="config-tab-item" data-tab="tipos-atividade">
+            <a href="#tab-tipos-atividade" class="config-tab-item" data-tab="tab-tipos-atividade">
                 <i class='bx bx-task'></i>
                 <span>Tipos de Atividade</span>
                 <span class="badge-count" id="count-tipos-atividade"><?php echo count($tipos_atividades ?? []); ?></span>
             </a>
-            <a href="#status-obra" class="config-tab-item" data-tab="status-obra">
+            <a href="#tab-status-obra" class="config-tab-item" data-tab="tab-status-obra">
                 <i class='bx bx-flag'></i>
                 <span>Status de Obra</span>
                 <span class="badge-count" id="count-status-obra"><?php echo count($status_obra ?? []); ?></span>
             </a>
-            <a href="#status-atividade" class="config-tab-item" data-tab="status-atividade">
+            <a href="#tab-status-atividade" class="config-tab-item" data-tab="tab-status-atividade">
                 <i class='bx bx-check-circle'></i>
                 <span>Status de Atividade</span>
                 <span class="badge-count" id="count-status-atividade"><?php echo count($status_atividade ?? []); ?></span>
             </a>
-            <a href="#especialidades" class="config-tab-item" data-tab="especialidades">
+            <a href="#tab-especialidades" class="config-tab-item" data-tab="tab-especialidades">
                 <i class='bx bx-hard-hat'></i>
                 <span>Especialidades</span>
                 <span class="badge-count" id="count-especialidades"><?php echo count($especialidades ?? []); ?></span>
             </a>
-            <a href="#funcoes" class="config-tab-item" data-tab="funcoes">
+            <a href="#tab-funcoes" class="config-tab-item" data-tab="tab-funcoes">
                 <i class='bx bx-group'></i>
                 <span>Funções da Equipe</span>
                 <span class="badge-count" id="count-funcoes"><?php echo count($funcoes_equipe ?? []); ?></span>
             </a>
-            <a href="#notificacoes" class="config-tab-item" data-tab="notificacoes">
+            <a href="#tab-notificacoes" class="config-tab-item" data-tab="tab-notificacoes">
                 <i class='bx bx-bell'></i>
                 <span>Notificações</span>
             </a>

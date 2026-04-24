@@ -1054,18 +1054,42 @@ textarea.wizard-input {
                 $etapaId = property_exists($etapa, 'id') ? $etapa->id : (property_exists($etapa, 'idEtapa') ? $etapa->idEtapa : null);
                 if (!$etapaId) continue;
 
-                $statusEtapa = $etapa->status ?? 'aberto';
-                $statusClass = $statusEtapa === 'concluida' ? 'concluida' : ($statusEtapa === 'em-andamento' ? 'em-andamento' : 'aberto');
-                $statusLabel = $statusEtapa === 'concluida' ? 'Concluída' : ($statusEtapa === 'em-andamento' ? 'Em Andamento' : 'Aberta');
-
                 // Buscar atividades desta etapa
                 $atividadesEtapa = $atividades_por_etapa[$etapaId] ?? [];
+
+                // Calcular status e percentual da etapa com base nas atividades
+                $totalAtiv = count($atividadesEtapa);
+                $ativConcluidas = 0;
+                $ativEmAndamento = 0;
                 $atividadeAndamento = null;
                 foreach ($atividadesEtapa as $ativ) {
-                    if (($ativ->status ?? '') === 'em_andamento') {
-                        $atividadeAndamento = $ativ;
-                        break;
+                    $s = strtolower($ativ->status ?? '');
+                    if (in_array($s, ['concluida', 'concluido', 'finalizado', 'finalizada'])) {
+                        $ativConcluidas++;
+                    } elseif (in_array($s, ['em_andamento', 'iniciada', 'reaberta', 'reaberto'])) {
+                        $ativEmAndamento++;
+                        if (!$atividadeAndamento) {
+                            $atividadeAndamento = $ativ;
+                        }
                     }
+                }
+
+                // Calcular percentual real baseado nas atividades
+                $percentualReal = $totalAtiv > 0 ? round(($ativConcluidas / $totalAtiv) * 100) : ($etapa->percentual_concluido ?? 0);
+
+                // Determinar status real da etapa
+                if ($totalAtiva > 0 && $ativConcluidas === $totalAtiv) {
+                    $statusEtapa = 'concluida';
+                    $statusClass = 'concluida';
+                    $statusLabel = 'Concluída';
+                } elseif ($ativEmAndamento > 0 || $ativConcluidas > 0) {
+                    $statusEtapa = 'em-andamento';
+                    $statusClass = 'em-andamento';
+                    $statusLabel = 'Em Andamento';
+                } else {
+                    $statusEtapa = $etapa->status ?? 'aberto';
+                    $statusClass = $statusEtapa === 'concluida' ? 'concluida' : ($statusEtapa === 'em-andamento' ? 'em-andamento' : 'aberto');
+                    $statusLabel = $statusEtapa === 'concluida' ? 'Concluída' : ($statusEtapa === 'em-andamento' ? 'Em Andamento' : 'Aberta');
                 }
                 ?>
                 <div class="etapa-card">
@@ -1074,13 +1098,13 @@ textarea.wizard-input {
                         <div class="etapa-numero"><i class="icon-hard-hat"></i> Etapa #<?= $etapa->numero_etapa ?? $etapaId ?></div>
                         <h2 class="etapa-nome"><?= htmlspecialchars($etapa->nome ?? 'Etapa sem nome') ?></h2>
                         <div class="etapa-progresso">
-                            <i class="icon-chart"></i> <?= $etapa->percentual_concluido ?? 0 ?>% concluído
+                            <i class="icon-chart"></i> <?= $percentualReal ?>% concluído
                         </div>
                     </div>
 
                     <div class="etapa-body">
                         <div class="etapa-barra">
-                            <div class="etapa-barra-preenchida" style="width: <?= $etapa->percentual_concluido ?? 0 ?>%"></div>
+                            <div class="etapa-barra-preenchida" style="width: <?= $percentualReal ?>%"></div>
                         </div>
 
                         <?php if (!empty($etapa->descricao)): ?>
@@ -1224,7 +1248,7 @@ textarea.wizard-input {
                         <div class="etapa-selecao" data-etapa-id="<?= $etapaId ?>" onclick="WizardAtendimento.selecionarEtapa(this)">
                             <i class="icon-hard-hat"></i>
                             <h4><?= htmlspecialchars($etapa->nome ?? 'Etapa') ?></h4>
-                            <p><?= $etapa->percentual_concluido ?? 0 ?>% concluído</p>
+                            <p><?= $percentualReal ?>% concluído</p>
                         </div>
                         <?php endforeach; ?>
                     </div>
