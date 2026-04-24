@@ -449,6 +449,92 @@ class Usuarios_cliente_model extends CI_Model
     }
 
     /**
+     * Buscar obras vinculadas aos CNPJs do usuário cliente
+     */
+    public function getObrasByCnpjs($usuario_id, $filtros = [])
+    {
+        $cnpjs = $this->getCnpjs($usuario_id);
+        if (empty($cnpjs)) {
+            log_message('debug', 'getObrasByCnpjs: Usuario ' . $usuario_id . ' nao tem CNPJs vinculados');
+            return [];
+        }
+
+        $cnpjsLimpos = [];
+        $cnpjsFormatados = [];
+        foreach ($cnpjs as $c) {
+            if (strlen($c->cnpj) > 50) {
+                log_message('error', 'getObrasByCnpjs: CNPJ muito longo ignorado (' . strlen($c->cnpj) . ' chars) para usuario ' . $usuario_id);
+                continue;
+            }
+            $limpo = preg_replace('/[^0-9]/', '', $c->cnpj);
+            if (strlen($limpo) !== 14) {
+                log_message('debug', 'getObrasByCnpjs: CNPJ invalido ignorado: ' . substr($limpo, 0, 20));
+                continue;
+            }
+            $formatado = $this->formatarCnpj($limpo);
+            $cnpjsLimpos[] = $limpo;
+            $cnpjsFormatados[] = $formatado;
+        }
+
+        if (empty($cnpjsLimpos)) {
+            log_message('debug', 'getObrasByCnpjs: Nenhum CNPJ valido encontrado apos filtragem');
+            return [];
+        }
+
+        log_message('debug', 'getObrasByCnpjs: Buscando clientes para CNPJs: ' . implode(', ', $cnpjsLimpos));
+
+        $this->db->select('idClientes, documento');
+        $this->db->group_start();
+        $this->db->where_in('documento', $cnpjsLimpos);
+        if (!empty($cnpjsFormatados)) {
+            $this->db->or_where_in('documento', $cnpjsFormatados);
+        }
+        $this->db->group_end();
+        $query = $this->db->get('clientes');
+
+        if (!$query) {
+            log_message('error', 'getObrasByCnpjs: Erro ao buscar clientes: ' . print_r($this->db->error(), true));
+            return [];
+        }
+
+        $clientes = $query->result();
+        if (empty($clientes)) {
+            log_message('debug', 'getObrasByCnpjs: Nenhum cliente encontrado para os CNPJs fornecidos');
+            return [];
+        }
+
+        $clientesIds = array_map(function($c) { return $c->idClientes; }, $clientes);
+        log_message('debug', 'getObrasByCnpjs: Clientes encontrados: ' . implode(', ', $clientesIds));
+
+        $this->db->select('o.*, c.nomeCliente as cliente_nome, c.documento as cliente_documento');
+        $this->db->from('obras o');
+        $this->db->join('clientes c', 'c.idClientes = o.cliente_id', 'left');
+        $this->db->where('o.ativo', 1);
+        $this->db->where_in('o.cliente_id', $clientesIds);
+
+        if (!empty($filtros['status'])) {
+            $this->db->where('o.status', $filtros['status']);
+        }
+
+        if (!empty($filtros['limit'])) {
+            $this->db->limit($filtros['limit']);
+        }
+
+        $this->db->order_by('o.created_at', 'DESC');
+        $query = $this->db->get();
+
+        if (!$query) {
+            log_message('error', 'getObrasByCnpjs: Erro ao buscar obras: ' . print_r($this->db->error(), true));
+            return [];
+        }
+
+        $result = $query->result();
+        log_message('debug', 'getObrasByCnpjs: Total de obras encontradas: ' . count($result));
+
+        return $result;
+    }
+
+    /**
      * Contar OS por status
      */
     public function countOsByStatus($usuario_id)

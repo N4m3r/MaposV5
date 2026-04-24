@@ -325,6 +325,11 @@ class Obra_atividades_model extends CI_Model
                 ]);
             }
 
+            // Atualizar progresso da etapa
+            if (!empty($dados['etapa_id'])) {
+                $this->atualizarProgressoEtapa($dados['etapa_id']);
+            }
+
             return $id;
         } catch (Exception $e) {
             log_message('error', 'Erro ao adicionar atividade: ' . $e->getMessage());
@@ -429,8 +434,26 @@ class Obra_atividades_model extends CI_Model
         }
 
         try {
+            // Buscar etapa_id antes de excluir para recalcular progresso depois
+            $etapa_id = null;
+            if ($this->db->field_exists('etapa_id', 'obra_atividades')) {
+                $this->db->select('etapa_id');
+                $this->db->where('id', $id);
+                $query = $this->db->get('obra_atividades');
+                if ($query && $query->num_rows() > 0) {
+                    $etapa_id = $query->row()->etapa_id;
+                }
+            }
+
             $this->db->where('id', $id);
-            return $this->db->delete('obra_atividades');
+            $result = $this->db->delete('obra_atividades');
+
+            // Atualizar progresso da etapa
+            if ($result && $etapa_id) {
+                $this->atualizarProgressoEtapa($etapa_id);
+            }
+
+            return $result;
         } catch (Exception $e) {
             log_message('error', 'Erro ao excluir atividade: ' . $e->getMessage());
             return false;
@@ -654,21 +677,21 @@ class Obra_atividades_model extends CI_Model
     /**
      * Atualizar progresso da etapa
      */
-    private function atualizarProgressoEtapa($etapa_id)
+    public function atualizarProgressoEtapa($etapa_id)
     {
         if (!$this->tabelaExiste('obra_atividades') || !$this->tabelaExiste('obra_etapas')) {
             return false;
         }
 
         try {
-            // Calcular média de percentual das atividades concluídas
+            // Calcular média de percentual de TODAS as atividades da etapa
             $this->db->select_avg('percentual_concluido', 'media_percentual');
             $this->db->where('etapa_id', $etapa_id);
-            $this->db->where('status', 'concluida');
             $query = $this->db->get('obra_atividades');
             $result = $query ? $query->row() : null;
 
-            $percentual = $result ? round($result->media_percentual) : 0;
+            $percentual = $result && $result->media_percentual !== null ? round($result->media_percentual) : 0;
+            $percentual = min(max($percentual, 0), 100);
 
             // Atualizar etapa
             $this->db->where('id', $etapa_id);

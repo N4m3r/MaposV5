@@ -1126,6 +1126,12 @@ textarea.wizard-input {
                                             <i class="icon-stop"></i> Finalizar
                                         </button>
                                         <?php elseif ($statusAtiv === 'concluida' && $ativId): ?>
+                                        <!-- Atividade concluida: sem acao de reabrir para tecnico (somente pelo painel administrativo) -->
+                                        <span class="btn-acao" style="background:#95a5a6;cursor:default;">
+                                            <i class="icon-check"></i> Concluída
+                                        </span>
+                                        <?php elseif ($statusAtiv === 'finalizado' && $ativId): ?>
+                                        <!-- Reabrir permitido somente pelo painel administrativo -->
                                         <button class="btn-acao reabrir" onclick="reabrirAtividade(<?= $ativId ?>, '<?= htmlspecialchars($ativ->titulo ?? $ativ->descricao ?? 'Atividade #' . $ativId, ENT_QUOTES) ?>')">
                                             <i class="icon-refresh"></i> Reabrir
                                         </button>

@@ -580,19 +580,35 @@ class Mine extends CI_Controller
             }
 
             // Carrega obras se tiver permissão
-            if ($this->usuarios_cliente_model->hasPermissao($usuario_id, 'visualizar_obras') && $cliente_id) {
+            if ($this->usuarios_cliente_model->hasPermissao($usuario_id, 'visualizar_obras')) {
                 $this->load->model('obras_model');
                 $this->load->model('clientes_model');
 
-                // Buscar documento do cliente para buscar obras vinculadas ao CNPJ
-                $cliente_documento = '';
-                $cliente = $this->clientes_model->getById($cliente_id);
-                if ($cliente) {
-                    $cliente_documento = $cliente->documento ?? '';
+                $obrasPorCliente = [];
+                $obrasPorCnpjs = [];
+
+                if ($cliente_id) {
+                    $cliente_documento = '';
+                    $cliente = $this->clientes_model->getById($cliente_id);
+                    if ($cliente) {
+                        $cliente_documento = $cliente->documento ?? '';
+                    }
+                    $obrasPorCliente = $this->obras_model->getByClienteCompleto($cliente_id, $cliente_documento, 5, 0) ?? [];
                 }
 
-                // Usar getByClienteCompleto para buscar por ID e também por CNPJ/documento
-                $obras = $this->obras_model->getByClienteCompleto($cliente_id, $cliente_documento, 5, 0) ?? [];
+                // Sempre buscar pelos CNPJs vinculados ao usuario_cliente
+                $obrasPorCnpjs = $this->usuarios_cliente_model->getObrasByCnpjs($usuario_id, ['limit' => 5]) ?? [];
+
+                // Mesclar e remover duplicados
+                $obrasTodas = [];
+                foreach ($obrasPorCliente as $obra) {
+                    $obrasTodas[$obra->id] = $obra;
+                }
+                foreach ($obrasPorCnpjs as $obra) {
+                    $obrasTodas[$obra->id] = $obra;
+                }
+                $obras = array_values($obrasTodas);
+                $obras = array_slice($obras, 0, 5);
             }
 
             log_message('debug', 'Painel Usuário - OS: ' . count($os) . ', Cobranças: ' . count($cobrancas) . ', Boletos: ' . count($boletos) . ', Obras: ' . count($obras));
@@ -2197,10 +2213,12 @@ class Mine extends CI_Controller
         $this->load->library('pagination');
         $this->load->model('obras_model');
         $this->load->model('clientes_model');
+        $this->load->model('usuarios_cliente_model');
 
         $data['menuObras'] = 'obras';
 
         $cliente_id = $this->session->userdata('cliente_id');
+        $usuario_cliente_id = $this->session->userdata('usuario_cliente_id');
 
         // Buscar dados do cliente para obter o documento (CNPJ)
         $cliente_documento = '';
@@ -2211,9 +2229,27 @@ class Mine extends CI_Controller
             }
         }
 
+        // Buscar obras por cliente_id/documento
+        $obrasPorCliente = $this->obras_model->getByClienteCompleto($cliente_id, $cliente_documento);
+
+        // Buscar obras pelos CNPJs vinculados ao usuario_cliente
+        $obrasPorCnpjs = [];
+        if ($usuario_cliente_id) {
+            $obrasPorCnpjs = $this->usuarios_cliente_model->getObrasByCnpjs($usuario_cliente_id);
+        }
+
+        // Mesclar e remover duplicados (por ID da obra)
+        $obrasTodas = [];
+        foreach ($obrasPorCliente as $obra) {
+            $obrasTodas[$obra->id] = $obra;
+        }
+        foreach ($obrasPorCnpjs as $obra) {
+            $obrasTodas[$obra->id] = $obra;
+        }
+        $obrasTodas = array_values($obrasTodas);
+
         $config['base_url'] = base_url() . 'index.php/mine/obras/';
-        // Usar a busca combinada por ID e documento
-        $config['total_rows'] = $this->obras_model->countByClienteCompleto($cliente_id, $cliente_documento);
+        $config['total_rows'] = count($obrasTodas);
         $config['per_page'] = 10;
         $config['next_link'] = 'Próxima';
         $config['prev_link'] = 'Anterior';
@@ -2232,8 +2268,9 @@ class Mine extends CI_Controller
 
         $this->pagination->initialize($config);
 
-        // Buscar obras usando a função combinada por ID e documento
-        $data['results'] = $this->obras_model->getByClienteCompleto($cliente_id, $cliente_documento, $config['per_page'], $this->uri->segment(3));
+        // Paginação manual
+        $start = $this->uri->segment(3) ?: 0;
+        $data['results'] = array_slice($obrasTodas, $start, $config['per_page']);
         $data['output'] = 'conecte/obras';
 
         $this->load->view('conecte/template', $data);
@@ -2268,8 +2305,9 @@ class Mine extends CI_Controller
             redirect('mine/obras');
         }
 
-        // Verificar se a obra pertence ao cliente logado (por ID ou por CNPJ/Documento)
+        // Verificar se a obra pertence ao cliente logado (por ID, por CNPJ/Documento ou por CNPJs vinculados)
         $cliente_id = $this->session->userdata('cliente_id');
+        $usuario_cliente_id = $this->session->userdata('usuario_cliente_id');
         $tem_acesso = false;
 
         if ($obra->cliente_id == $cliente_id) {
@@ -2282,6 +2320,25 @@ class Mine extends CI_Controller
                 $cliente_obra = $this->obras_model->getCliente($obra->id);
                 if ($cliente_obra && $cliente_obra->documento == $cliente->documento) {
                     $tem_acesso = true;
+                }
+            }
+        }
+
+        // Se ainda nao tem acesso, verificar pelos CNPJs vinculados ao usuario_cliente
+        if (!$tem_acesso && $usuario_cliente_id) {
+            $this->load->model('usuarios_cliente_model');
+            $cnpjs = $this->usuarios_cliente_model->getCnpjs($usuario_cliente_id);
+            if (!empty($cnpjs)) {
+                $cliente_obra = $this->obras_model->getCliente($obra->id);
+                if ($cliente_obra && !empty($cliente_obra->documento)) {
+                    $docObraLimpo = preg_replace('/[^0-9]/', '', $cliente_obra->documento);
+                    foreach ($cnpjs as $c) {
+                        $docCnpjLimpo = preg_replace('/[^0-9]/', '', $c->cnpj);
+                        if ($docObraLimpo === $docCnpjLimpo) {
+                            $tem_acesso = true;
+                            break;
+                        }
+                    }
                 }
             }
         }

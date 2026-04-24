@@ -58,6 +58,8 @@
     box-shadow: 0 1px 3px rgba(0,0,0,0.08);
     overflow: hidden;
     height: fit-content;
+    position: sticky;
+    top: 20px;
 }
 
 .config-tab-item {
@@ -138,8 +140,7 @@
 #tab-status-atividade:target ~ .config-tabs .config-tab-item[href="#status-atividade"],
 #tab-especialidades:target ~ .config-tabs .config-tab-item[href="#especialidades"],
 #tab-funcoes:target ~ .config-tabs .config-tab-item[href="#funcoes"],
-#tab-notificacoes:target ~ .config-tabs .config-tab-item[href="#notificacoes"],
-#tab-permissoes:target ~ .config-tabs .config-tab-item[href="#permissoes"] {
+#tab-notificacoes:target ~ .config-tabs .config-tab-item[href="#notificacoes"] {
     background: #f0f4ff;
     color: #667eea;
     border-left-color: #667eea;
@@ -319,6 +320,15 @@ select.config-form-control {
     background: #fcc;
 }
 
+.config-btn-success {
+    background: #e8f5e9;
+    color: #27ae60;
+}
+
+.config-btn-success:hover {
+    background: #c8e6c9;
+}
+
 .config-btn-sm {
     padding: 6px 12px;
     font-size: 12px;
@@ -431,6 +441,12 @@ select.config-form-control {
     border-left: 4px solid #ff9800;
 }
 
+.config-alert-success {
+    background: #e8f5e9;
+    color: #2e7d32;
+    border-left: 4px solid #4caf50;
+}
+
 /* Modal */
 .config-modal-overlay {
     display: none;
@@ -493,6 +509,62 @@ select.config-form-control {
     gap: 12px;
 }
 
+/* Color Picker */
+.color-picker-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.color-picker-wrapper input[type="color"] {
+    width: 60px;
+    height: 40px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.color-picker-wrapper input[type="text"] {
+    flex: 1;
+}
+
+/* Icon Selector */
+.icon-selector {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.icon-option {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border: 2px solid #e8e8e8;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 20px;
+    color: #666;
+}
+
+.icon-option:hover {
+    border-color: #667eea;
+    color: #667eea;
+}
+
+.icon-option.selected {
+    background: #667eea;
+    border-color: #667eea;
+    color: white;
+}
+
 /* Responsivo */
 @media (max-width: 992px) {
     .config-layout {
@@ -500,6 +572,7 @@ select.config-form-control {
     }
 
     .config-tabs {
+        position: static;
         display: flex;
         overflow-x: auto;
         padding: 8px;
@@ -521,6 +594,10 @@ select.config-form-control {
     .config-grid {
         grid-template-columns: 1fr;
     }
+
+    .icon-selector {
+        grid-template-columns: repeat(6, 1fr);
+    }
 }
 
 @media (max-width: 768px) {
@@ -540,60 +617,91 @@ select.config-form-control {
     .config-card-body {
         padding: 16px;
     }
+
+    .config-item {
+        flex-wrap: wrap;
+    }
+
+    .config-item-actions {
+        width: 100%;
+        margin-top: 12px;
+        justify-content: flex-end;
+    }
+
+    .icon-selector {
+        grid-template-columns: repeat(4, 1fr);
+    }
 }
 
-/* DARK MODE */
-body[data-theme="dark"] .config-tabs,
-body[data-theme="dark"] .config-card,
-body[data-theme="dark"] .config-modal {
-    background: #1a1d29;
+/* Loading */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255,255,255,0.8);
+    z-index: 9999;
+    display: none;
+    align-items: center;
+    justify-content: center;
 }
 
-body[data-theme="dark"] .config-tab-item {
-    color: #a0aec0;
-    border-bottom-color: #2d3347;
+.loading-overlay.active {
+    display: flex;
 }
 
-body[data-theme="dark"] .config-tab-item:hover {
-    background: #252a3a;
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #888;
+}
+
+.empty-state i {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.3;
+}
+
+.empty-state h4 {
+    margin: 0 0 8px 0;
+    color: #666;
+}
+
+.empty-state p {
+    margin: 0;
+    font-size: 14px;
+}
+
+/* Sort Handle */
+.sort-handle {
+    cursor: grab;
+    padding: 8px;
+    color: #ccc;
+    margin-right: 8px;
+}
+
+.sort-handle:hover {
     color: #667eea;
 }
 
-body[data-theme="dark"] .config-tab-item.active {
-    background: #252a3a;
-    color: #667eea;
-}
-
-body[data-theme="dark"] .config-card-header,
-body[data-theme="dark"] .config-modal-footer {
-    border-color: #2d3347;
-}
-
-body[data-theme="dark"] .config-card-title,
-body[data-theme="dark"] .config-item-name {
-    color: #e2e8f0;
-}
-
-body[data-theme="dark"] .config-item {
-    background: #252a3a;
-}
-
-body[data-theme="dark"] .config-item:hover {
-    background: #1a1d29;
-}
-
-body[data-theme="dark"] .config-form-control {
-    background: #1a1d29;
-    border-color: #2d3347;
-    color: #e2e8f0;
-}
-
-body[data-theme="dark"] .config-grid-item {
-    background: #252a3a;
-}
-
-body[data-theme="dark"] .config-grid-item:hover {
-    background: #1a1d29;
+.sort-handle:active {
+    cursor: grabbing;
 }
 </style>
 
@@ -602,89 +710,99 @@ body[data-theme="dark"] .config-grid-item:hover {
     <div class="config-header">
         <div class="config-header-content">
             <div>
-                <h1><i class='bx bx-cog'></i> Configuracoes do Sistema de Obras</h1>
-                <p>Gerencie tipos, status, especialidades e preferencias do sistema</p>
+                <h1><i class='bx bx-cog'></i> Configurações do Sistema de Obras</h1>
+                <p>Gerencie tipos, status, especialidades e preferências do sistema</p>
             </div>
             <a href="<?php echo site_url('obras'); ?>" class="btn" style="background: rgba(255,255,255,0.2); color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none;">
-                <i class='bx bx-arrow-back'></i> Voltar as Obras
+                <i class='bx bx-arrow-back'></i> Voltar às Obras
             </a>
         </div>
     </div>
+
+    <?php if ($this->session->flashdata('success')): ?>
+    <div class="config-alert config-alert-success" style="margin-bottom: 20px;">
+        <i class='bx bx-check-circle'></i>
+        <div><?php echo $this->session->flashdata('success'); ?></div>
+    </div>
+    <?php endif; ?>
+
+    <?php if ($this->session->flashdata('error')): ?>
+    <div class="config-alert config-alert-warning" style="margin-bottom: 20px;">
+        <i class='bx bx-error-circle'></i>
+        <div><?php echo $this->session->flashdata('error'); ?></div>
+    </div>
+    <?php endif; ?>
 
     <!-- Layout com Abas -->
     <div class="config-layout">
         <!-- Sidebar de Abas -->
         <div class="config-tabs">
-            <a href="#geral" class="config-tab-item" data-tab="geral">
+            <a href="#geral" class="config-tab-item active" data-tab="geral">
                 <i class='bx bx-slider'></i>
                 <span>Geral</span>
             </a>
             <a href="#tipos-obra" class="config-tab-item" data-tab="tipos-obra">
                 <i class='bx bx-building-house'></i>
                 <span>Tipos de Obra</span>
-                <span class="badge-count"><?php echo count($tipos_obra ?? ['Reforma', 'Construcao', 'Instalacao', 'Manutencao', 'Outro']); ?></span>
+                <span class="badge-count" id="count-tipos-obra"><?php echo count($tipos_obra ?? []); ?></span>
             </a>
             <a href="#tipos-atividade" class="config-tab-item" data-tab="tipos-atividade">
                 <i class='bx bx-task'></i>
                 <span>Tipos de Atividade</span>
-                <span class="badge-count"><?php echo count($tipos_atividades ?? []); ?></span>
+                <span class="badge-count" id="count-tipos-atividade"><?php echo count($tipos_atividades ?? []); ?></span>
             </a>
             <a href="#status-obra" class="config-tab-item" data-tab="status-obra">
                 <i class='bx bx-flag'></i>
                 <span>Status de Obra</span>
-                <span class="badge-count"><?php echo count($status_obra ?? ['Prospeccao', 'Em Andamento', 'Paralisada', 'Concluida', 'Cancelada']); ?></span>
+                <span class="badge-count" id="count-status-obra"><?php echo count($status_obra ?? []); ?></span>
             </a>
             <a href="#status-atividade" class="config-tab-item" data-tab="status-atividade">
                 <i class='bx bx-check-circle'></i>
                 <span>Status de Atividade</span>
-                <span class="badge-count"><?php echo count($status_atividade ?? ['agendada', 'iniciada', 'pausada', 'concluida', 'cancelada', 'reaberta']); ?></span>
+                <span class="badge-count" id="count-status-atividade"><?php echo count($status_atividade ?? []); ?></span>
             </a>
             <a href="#especialidades" class="config-tab-item" data-tab="especialidades">
                 <i class='bx bx-hard-hat'></i>
                 <span>Especialidades</span>
-                <span class="badge-count"><?php echo count($especialidades ?? []); ?></span>
+                <span class="badge-count" id="count-especialidades"><?php echo count($especialidades ?? []); ?></span>
             </a>
             <a href="#funcoes" class="config-tab-item" data-tab="funcoes">
                 <i class='bx bx-group'></i>
-                <span>Funcoes da Equipe</span>
-                <span class="badge-count"><?php echo count($funcoes_equipe ?? []); ?></span>
+                <span>Funções da Equipe</span>
+                <span class="badge-count" id="count-funcoes"><?php echo count($funcoes_equipe ?? []); ?></span>
             </a>
             <a href="#notificacoes" class="config-tab-item" data-tab="notificacoes">
                 <i class='bx bx-bell'></i>
-                <span>Notificacoes</span>
-            </a>
-            <a href="#permissoes" class="config-tab-item" data-tab="permissoes">
-                <i class='bx bx-lock'></i>
-                <span>Permissoes</span>
+                <span>Notificações</span>
             </a>
         </div>
 
         <!-- Conteudo -->
         <div class="config-content-wrapper">
             <!-- ABA: GERAL -->
-            <div id="geral" class="config-content">
+            <div id="tab-geral" class="config-content">
                 <div class="config-card">
                     <div class="config-card-header">
                         <div class="config-card-title">
                             <i class='bx bx-slider'></i>
-                            Configuracoes Gerais
+                            Configurações Gerais
                         </div>
                     </div>
                     <div class="config-card-body">
                         <form id="form-config-geral" method="post" action="<?php echo site_url('obras/salvarConfiguracao'); ?>">
                             <div class="config-form-group">
                                 <label>Nome do Sistema de Obras</label>
-                                <input type="text" name="nome_sistema" class="config-form-control" value="<?php echo $config['nome_sistema'] ?? 'Gestao de Obras'; ?>" placeholder="Ex: Gestao de Obras">
+                                <input type="text" name="nome_sistema" class="config-form-control" value="<?php echo $config['nome_sistema'] ?? 'Gestão de Obras'; ?>" placeholder="Ex: Gestão de Obras">
                             </div>
 
                             <div class="config-grid" style="grid-template-columns: repeat(2, 1fr);">
                                 <div class="config-form-group">
-                                    <label>Prazo Padrao para Inicio (dias)</label>
+                                    <label>Prazo Padrão para Início (dias)</label>
                                     <input type="number" name="prazo_inicio_padrao" class="config-form-control" value="<?php echo $config['prazo_inicio_padrao'] ?? 7; ?>" min="0">
                                 </div>
 
                                 <div class="config-form-group">
-                                    <label>Prazo Padrao para Execucao (dias)</label>
+                                    <label>Prazo Padrão para Execução (dias)</label>
                                     <input type="number" name="prazo_execucao_padrao" class="config-form-control" value="<?php echo $config['prazo_execucao_padrao'] ?? 30; ?>" min="1">
                                 </div>
                             </div>
@@ -708,7 +826,7 @@ body[data-theme="dark"] .config-grid-item:hover {
                                 <div class="config-item">
                                     <div class="config-item-info">
                                         <div class="config-item-name">Sistema de Etapas</div>
-                                        <div class="config-item-meta">Divide a obra em etapas/fases executaveis</div>
+                                        <div class="config-item-meta">Divide a obra em etapas/fases executáveis</div>
                                     </div>
                                     <label class="config-toggle">
                                         <input type="checkbox" name="habilitar_etapas" <?php echo ($config['habilitar_etapas'] ?? true) ? 'checked' : ''; ?>>
@@ -719,7 +837,7 @@ body[data-theme="dark"] .config-grid-item:hover {
                                 <div class="config-item">
                                     <div class="config-item-info">
                                         <div class="config-item-name">Check-in/Check-out</div>
-                                        <div class="config-item-meta">Registro de presenca e tempo dos tecnicos</div>
+                                        <div class="config-item-meta">Registro de presença e tempo dos técnicos</div>
                                     </div>
                                     <label class="config-toggle">
                                         <input type="checkbox" name="habilitar_checkin" <?php echo ($config['habilitar_checkin'] ?? true) ? 'checked' : ''; ?>>
@@ -729,8 +847,8 @@ body[data-theme="dark"] .config-grid-item:hover {
 
                                 <div class="config-item">
                                     <div class="config-item-info">
-                                        <div class="config-item-name">Geolocalizacao</div>
-                                        <div class="config-item-meta">Captura localizacao GPS nas atividades</div>
+                                        <div class="config-item-name">Geolocalização</div>
+                                        <div class="config-item-meta">Captura localização GPS nas atividades</div>
                                     </div>
                                     <label class="config-toggle">
                                         <input type="checkbox" name="habilitar_gps" <?php echo ($config['habilitar_gps'] ?? true) ? 'checked' : ''; ?>>
@@ -741,7 +859,7 @@ body[data-theme="dark"] .config-grid-item:hover {
                                 <div class="config-item">
                                     <div class="config-item-info">
                                         <div class="config-item-name">Reatendimento</div>
-                                        <div class="config-item-meta">Permite reabrir atividades para nova execucao</div>
+                                        <div class="config-item-meta">Permite reabrir atividades para nova execução</div>
                                     </div>
                                     <label class="config-toggle">
                                         <input type="checkbox" name="habilitar_reatendimento" <?php echo ($config['habilitar_reatendimento'] ?? true) ? 'checked' : ''; ?>>
@@ -751,8 +869,8 @@ body[data-theme="dark"] .config-grid-item:hover {
 
                                 <div class="config-item">
                                     <div class="config-item-info">
-                                        <div class="config-item-name">Portal do Tecnico</div>
-                                        <div class="config-item-meta">Acesso mobile para tecnicos executarem atividades</div>
+                                        <div class="config-item-name">Portal do Técnico</div>
+                                        <div class="config-item-meta">Acesso mobile para técnicos executarem atividades</div>
                                     </div>
                                     <label class="config-toggle">
                                         <input type="checkbox" name="habilitar_portal_tecnico" <?php echo ($config['habilitar_portal_tecnico'] ?? true) ? 'checked' : ''; ?>>
@@ -763,7 +881,7 @@ body[data-theme="dark"] .config-grid-item:hover {
 
                             <div style="margin-top: 24px; text-align: right;">
                                 <button type="submit" class="config-btn config-btn-primary">
-                                    <i class='bx bx-save'></i> Salvar Configuracoes
+                                    <i class='bx bx-save'></i> Salvar Configurações
                                 </button>
                             </div>
                         </form>
@@ -772,14 +890,14 @@ body[data-theme="dark"] .config-grid-item:hover {
             </div>
 
             <!-- ABA: TIPOS DE OBRA -->
-            <div id="tipos-obra" class="config-content">
+            <div id="tab-tipos-obra" class="config-content">
                 <div class="config-card">
                     <div class="config-card-header">
                         <div class="config-card-title">
                             <i class='bx bx-building-house'></i>
                             Tipos de Obra
                         </div>
-                        <button class="config-btn config-btn-primary config-btn-sm" onclick="abrirModal('Novo Tipo de Obra', 'form-tipo-obra')">
+                        <button class="config-btn config-btn-primary config-btn-sm" onclick="abrirModalTipoObra()">
                             <i class='bx bx-plus'></i> Novo Tipo
                         </button>
                     </div>
@@ -787,39 +905,28 @@ body[data-theme="dark"] .config-grid-item:hover {
                         <div class="config-alert config-alert-info">
                             <i class='bx bx-info-circle'></i>
                             <div>
-                                <strong>Tipos de Obra</strong> sao usados para categorizar as obras no cadastro e relatorios.
+                                <strong>Tipos de Obra</strong> são usados para categorizar as obras no cadastro e relatórios.
                             </div>
                         </div>
 
-                        <div class="config-items-list">
-                            <?php
-                            $tipos_obra_padrao = [
-                                ['id' => 1, 'nome' => 'Reforma', 'descricao' => 'Reformas e renovacoes', 'cor' => '#3498db', 'icone' => 'bx-brush'],
-                                ['id' => 2, 'nome' => 'Construcao', 'descricao' => 'Obras novas', 'cor' => '#27ae60', 'icone' => 'bx-building'],
-                                ['id' => 3, 'nome' => 'Instalacao', 'descricao' => 'Instalacoes tecnicas', 'cor' => '#9b59b6', 'icone' => 'bx-plug'],
-                                ['id' => 4, 'nome' => 'Manutencao', 'descricao' => 'Manutencoes corretivas e preventivas', 'cor' => '#f39c12', 'icone' => 'bx-wrench'],
-                                ['id' => 5, 'nome' => 'Outro', 'descricao' => 'Outros tipos', 'cor' => '#95a5a6', 'icone' => 'bx-box'],
-                            ];
-                            $tipos = $tipos_obra ?? $tipos_obra_padrao;
-                            foreach ($tipos as $tipo):
-                                $tipo = (array) $tipo;
-                            ?>
-                            <div class="config-item">
-                                <div class="config-item-icon" style="background: <?php echo $tipo['cor']; ?>20; color: <?php echo $tipo['cor']; ?>;">
-                                    <i class='bx <?php echo $tipo['icone'] ?? 'bx-building'; ?>'></i>
+                        <div class="config-items-list" id="lista-tipos-obra">
+                            <?php foreach ($tipos_obra as $tipo): ?>
+                            <div class="config-item" data-id="<?php echo $tipo->id; ?>">
+                                <div class="config-item-icon" style="background: <?php echo $tipo->cor; ?>20; color: <?php echo $tipo->cor; ?>;">
+                                    <i class='bx <?php echo $tipo->icone; ?>'></i>
                                 </div>
                                 <div class="config-item-info">
                                     <div class="config-item-name">
-                                        <span class="tipo-color" style="background: <?php echo $tipo['cor']; ?>"></span>
-                                        <?php echo htmlspecialchars($tipo['nome']); ?>
+                                        <span class="tipo-color" style="background: <?php echo $tipo->cor; ?>"></span>
+                                        <?php echo htmlspecialchars($tipo->nome); ?>
                                     </div>
-                                    <div class="config-item-meta"><?php echo htmlspecialchars($tipo['descricao'] ?? ''); ?></div>
+                                    <div class="config-item-meta"><?php echo htmlspecialchars($tipo->descricao ?? ''); ?></div>
                                 </div>
                                 <div class="config-item-actions">
-                                    <button class="config-btn config-btn-secondary config-btn-sm" onclick="alert('Editar tipo ID: <?php echo $tipo['id']; ?>')">
+                                    <button class="config-btn config-btn-secondary config-btn-sm" onclick="editarTipoObra(<?php echo $tipo->id; ?>)">
                                         <i class='bx bx-edit'></i>
                                     </button>
-                                    <button class="config-btn config-btn-danger config-btn-sm" onclick="if(confirm('Tem certeza?')) alert('Excluir tipo ID: <?php echo $tipo['id']; ?>')">
+                                    <button class="config-btn config-btn-danger config-btn-sm" onclick="excluirTipoObra(<?php echo $tipo->id; ?>, '<?php echo htmlspecialchars($tipo->nome); ?>')">
                                         <i class='bx bx-trash'></i>
                                     </button>
                                 </div>
@@ -831,14 +938,14 @@ body[data-theme="dark"] .config-grid-item:hover {
             </div>
 
             <!-- ABA: TIPOS DE ATIVIDADE -->
-            <div id="tipos-atividade" class="config-content">
+            <div id="tab-tipos-atividade" class="config-content">
                 <div class="config-card">
                     <div class="config-card-header">
                         <div class="config-card-title">
                             <i class='bx bx-task'></i>
                             Tipos de Atividade
                         </div>
-                        <button class="config-btn config-btn-primary config-btn-sm" onclick="abrirModal('Novo Tipo de Atividade', 'form-tipo-atividade')">
+                        <button class="config-btn config-btn-primary config-btn-sm" onclick="abrirModalTipoAtividade()">
                             <i class='bx bx-plus'></i> Novo Tipo
                         </button>
                     </div>
@@ -850,41 +957,27 @@ body[data-theme="dark"] .config-grid-item:hover {
                             </div>
                         </div>
 
-                        <div class="config-items-list">
-                            <?php
-                            $tipos_atv_padrao = [
-                                ['id' => 1, 'nome' => 'Trabalho', 'descricao' => 'Execucao de servicos tecnicos', 'cor' => '#3498db', 'icone' => 'bx-wrench', 'categoria' => 'execucao'],
-                                ['id' => 2, 'nome' => 'Visita Tecnica', 'descricao' => 'Visitas de inspecao e levantamento', 'cor' => '#9b59b6', 'icone' => 'bx-search', 'categoria' => 'visita'],
-                                ['id' => 3, 'nome' => 'Manutencao', 'descricao' => 'Manutencao preventiva ou corretiva', 'cor' => '#27ae60', 'icone' => 'bx-cog', 'categoria' => 'manutencao'],
-                                ['id' => 4, 'nome' => 'Impedimento', 'descricao' => 'Registro de impedimentos encontrados', 'cor' => '#e74c3c', 'icone' => 'bx-block', 'categoria' => 'impedimento'],
-                                ['id' => 5, 'nome' => 'Outro', 'descricao' => 'Outras atividades', 'cor' => '#95a5a6', 'icone' => 'bx-help-circle', 'categoria' => 'outro'],
-                            ];
-                            $tipos_atv = $tipos_atividades ?? $tipos_atv_padrao;
-                            foreach ($tipos_atv as $tipo):
-                                $tipo = (array) $tipo;
-                                $tipo['id'] = $tipo['idTipo'] ?? $tipo['id'] ?? null;
-                            ?>
-                            <div class="config-item">
-                                <div class="config-item-icon" style="background: <?php echo $tipo['cor']; ?>20; color: <?php echo $tipo['cor']; ?>;">
-                                    <i class='bx <?php echo $tipo['icone'] ?? 'bx-task'; ?>'></i>
+                        <div class="config-items-list" id="lista-tipos-atividade">
+                            <?php foreach ($tipos_atividades as $tipo): ?>
+                            <div class="config-item" data-id="<?php echo $tipo->idTipo ?? $tipo->id; ?>">
+                                <div class="config-item-icon" style="background: <?php echo $tipo->cor; ?>20; color: <?php echo $tipo->cor; ?>;">
+                                    <i class='bx <?php echo $tipo->icone; ?>'></i>
                                 </div>
                                 <div class="config-item-info">
                                     <div class="config-item-name">
-                                        <span class="tipo-color" style="background: <?php echo $tipo['cor']; ?>"></span>
-                                        <?php echo htmlspecialchars($tipo['nome']); ?>
-                                    </div>
-                                    <div class="config-item-meta">
-                                        <?php echo htmlspecialchars($tipo['descricao'] ?? ''); ?>
+                                        <span class="tipo-color" style="background: <?php echo $tipo->cor; ?>"></span>
+                                        <?php echo htmlspecialchars($tipo->nome); ?>
                                         <span style="margin-left: 8px; padding: 2px 8px; background: #f0f0f0; border-radius: 4px; font-size: 11px; text-transform: uppercase;">
-                                            <?php echo $tipo['categoria'] ?? 'outro'; ?>
+                                            <?php echo $tipo->categoria ?? 'outro'; ?>
                                         </span>
                                     </div>
+                                    <div class="config-item-meta"><?php echo htmlspecialchars($tipo->descricao ?? ''); ?></div>
                                 </div>
                                 <div class="config-item-actions">
-                                    <button class="config-btn config-btn-secondary config-btn-sm" onclick="alert('Editar tipo ID: <?php echo $tipo['id']; ?>')">
+                                    <button class="config-btn config-btn-secondary config-btn-sm" onclick="editarTipoAtividade(<?php echo $tipo->idTipo ?? $tipo->id; ?>)">
                                         <i class='bx bx-edit'></i>
                                     </button>
-                                    <button class="config-btn config-btn-danger config-btn-sm" onclick="if(confirm('Tem certeza?')) alert('Excluir tipo ID: <?php echo $tipo['id']; ?>')">
+                                    <button class="config-btn config-btn-danger config-btn-sm" onclick="excluirTipoAtividade(<?php echo $tipo->idTipo ?? $tipo->id; ?>, '<?php echo htmlspecialchars($tipo->nome); ?>')">
                                         <i class='bx bx-trash'></i>
                                     </button>
                                 </div>
@@ -896,14 +989,14 @@ body[data-theme="dark"] .config-grid-item:hover {
             </div>
 
             <!-- ABA: STATUS DE OBRA -->
-            <div id="status-obra" class="config-content">
+            <div id="tab-status-obra" class="config-content">
                 <div class="config-card">
                     <div class="config-card-header">
                         <div class="config-card-title">
                             <i class='bx bx-flag'></i>
                             Status de Obra
                         </div>
-                        <button class="config-btn config-btn-primary config-btn-sm" onclick="abrirModal('Novo Status de Obra', 'form-status-obra')">
+                        <button class="config-btn config-btn-primary config-btn-sm" onclick="abrirModalStatusObra()">
                             <i class='bx bx-plus'></i> Novo Status
                         </button>
                     </div>
@@ -911,44 +1004,33 @@ body[data-theme="dark"] .config-grid-item:hover {
                         <div class="config-alert config-alert-warning">
                             <i class='bx bx-error-circle'></i>
                             <div>
-                                <strong>Atencao:</strong> Alterar status padrao pode afetar relatorios e fluxos de trabalho existentes.
+                                <strong>Atenção:</strong> Alterar status padrão pode afetar relatórios e fluxos de trabalho existentes.
                             </div>
                         </div>
 
-                        <div class="config-items-list">
-                            <?php
-                            $status_obra_padrao = [
-                                ['id' => 1, 'nome' => 'Prospeccao', 'descricao' => 'Obra em fase inicial/orcamento', 'cor' => '#95a5a6', 'icone' => 'bx-search', 'ordem' => 1, 'finalizado' => false],
-                                ['id' => 2, 'nome' => 'Em Andamento', 'descricao' => 'Obra sendo executada', 'cor' => '#3498db', 'icone' => 'bx-play-circle', 'ordem' => 2, 'finalizado' => false],
-                                ['id' => 3, 'nome' => 'Paralisada', 'descricao' => 'Obra temporariamente parada', 'cor' => '#f39c12', 'icone' => 'bx-pause-circle', 'ordem' => 3, 'finalizado' => false],
-                                ['id' => 4, 'nome' => 'Concluida', 'descricao' => 'Obra finalizada com sucesso', 'cor' => '#27ae60', 'icone' => 'bx-check-circle', 'ordem' => 4, 'finalizado' => true],
-                                ['id' => 5, 'nome' => 'Cancelada', 'descricao' => 'Obra cancelada', 'cor' => '#e74c3c', 'icone' => 'bx-x-circle', 'ordem' => 5, 'finalizado' => true],
-                            ];
-                            $status_list = $status_obra ?? $status_obra_padrao;
-                            foreach ($status_list as $status):
-                                $status = (array) $status;
-                            ?>
-                            <div class="config-item">
-                                <div class="config-item-icon" style="background: <?php echo $status['cor']; ?>20; color: <?php echo $status['cor']; ?>;">
-                                    <i class='bx <?php echo $status['icone'] ?? 'bx-flag'; ?>'></i>
+                        <div class="config-items-list" id="lista-status-obra">
+                            <?php foreach ($status_obra as $status): ?>
+                            <div class="config-item" data-id="<?php echo $status->id; ?>" data-ordem="<?php echo $status->ordem; ?>">
+                                <div class="config-item-icon" style="background: <?php echo $status->cor; ?>20; color: <?php echo $status->cor; ?>;">
+                                    <i class='bx <?php echo $status->icone; ?>'></i>
                                 </div>
                                 <div class="config-item-info">
                                     <div class="config-item-name">
-                                        <span class="status-badge-config" style="background: <?php echo $status['cor']; ?>20; color: <?php echo $status['cor']; ?>;">
-                                            <?php echo htmlspecialchars($status['nome']); ?>
+                                        <span class="status-badge-config" style="background: <?php echo $status->cor; ?>20; color: <?php echo $status->cor; ?>;">
+                                            <?php echo htmlspecialchars($status->nome); ?>
                                         </span>
-                                        <?php if ($status['finalizado']): ?>
+                                        <?php if ($status->finalizado): ?>
                                             <span style="margin-left: 8px; padding: 2px 8px; background: #e8f5e9; color: #27ae60; border-radius: 4px; font-size: 11px;">FINALIZADO</span>
                                         <?php endif; ?>
                                     </div>
-                                    <div class="config-item-meta"><?php echo htmlspecialchars($status['descricao'] ?? ''); ?> • Ordem: <?php echo $status['ordem']; ?></div>
+                                    <div class="config-item-meta"><?php echo htmlspecialchars($status->descricao ?? ''); ?> • Ordem: <?php echo $status->ordem; ?></div>
                                 </div>
                                 <div class="config-item-actions">
-                                    <button class="config-btn config-btn-secondary config-btn-sm" onclick="alert('Editar status ID: <?php echo $status['id']; ?>')">
+                                    <button class="config-btn config-btn-secondary config-btn-sm" onclick="editarStatusObra(<?php echo $status->id; ?>)">
                                         <i class='bx bx-edit'></i>
                                     </button>
-                                    <?php if (!in_array($status['nome'], ['Prospeccao', 'Em Andamento', 'Concluida'])): ?>
-                                    <button class="config-btn config-btn-danger config-btn-sm" onclick="if(confirm('Tem certeza?')) alert('Excluir status ID: <?php echo $status['id']; ?>')">
+                                    <?php if (!in_array($status->nome, ['Prospecção', 'Em Andamento', 'Concluída'])): ?>
+                                    <button class="config-btn config-btn-danger config-btn-sm" onclick="excluirStatusObra(<?php echo $status->id; ?>, '<?php echo htmlspecialchars($status->nome); ?>')">
                                         <i class='bx bx-trash'></i>
                                     </button>
                                     <?php endif; ?>
@@ -961,14 +1043,14 @@ body[data-theme="dark"] .config-grid-item:hover {
             </div>
 
             <!-- ABA: STATUS DE ATIVIDADE -->
-            <div id="status-atividade" class="config-content">
+            <div id="tab-status-atividade" class="config-content">
                 <div class="config-card">
                     <div class="config-card-header">
                         <div class="config-card-title">
                             <i class='bx bx-check-circle'></i>
                             Status de Atividade
                         </div>
-                        <button class="config-btn config-btn-primary config-btn-sm" onclick="abrirModal('Novo Status de Atividade', 'form-status-atividade')">
+                        <button class="config-btn config-btn-primary config-btn-sm" onclick="abrirModalStatusAtividade()">
                             <i class='bx bx-plus'></i> Novo Status
                         </button>
                     </div>
@@ -976,45 +1058,33 @@ body[data-theme="dark"] .config-grid-item:hover {
                         <div class="config-alert config-alert-info">
                             <i class='bx bx-info-circle'></i>
                             <div>
-                                <strong>Fluxo padrao:</strong> Agendada → Iniciada → Pausada (opcional) → Concluida/Cancelada
+                                <strong>Fluxo padrão:</strong> Agendada → Iniciada → Pausada (opcional) → Concluída/Cancelada
                             </div>
                         </div>
 
-                        <div class="config-items-list">
-                            <?php
-                            $status_atv_padrao = [
-                                ['id' => 1, 'nome' => 'Agendada', 'descricao' => 'Atividade agendada para execucao futura', 'cor' => '#95a5a6', 'icone' => 'bx-calendar', 'fluxo' => 'inicial'],
-                                ['id' => 2, 'nome' => 'Iniciada', 'descricao' => 'Atividade em execucao', 'cor' => '#3498db', 'icone' => 'bx-play-circle', 'fluxo' => 'execucao'],
-                                ['id' => 3, 'nome' => 'Pausada', 'descricao' => 'Atividade temporariamente pausada', 'cor' => '#f39c12', 'icone' => 'bx-pause-circle', 'fluxo' => 'execucao'],
-                                ['id' => 4, 'nome' => 'Concluida', 'descricao' => 'Atividade finalizada com sucesso', 'cor' => '#27ae60', 'icone' => 'bx-check-circle', 'fluxo' => 'final'],
-                                ['id' => 5, 'nome' => 'Cancelada', 'descricao' => 'Atividade cancelada', 'cor' => '#e74c3c', 'icone' => 'bx-x-circle', 'fluxo' => 'final'],
-                                ['id' => 6, 'nome' => 'Reaberta', 'descricao' => 'Atividade reaberta para reatendimento', 'cor' => '#9b59b6', 'icone' => 'bx-refresh', 'fluxo' => 'especial'],
-                            ];
-                            $status_atv_list = $status_atividade ?? $status_atv_padrao;
-                            foreach ($status_atv_list as $status):
-                                $status = (array) $status;
-                            ?>
-                            <div class="config-item">
-                                <div class="config-item-icon" style="background: <?php echo $status['cor']; ?>20; color: <?php echo $status['cor']; ?>;">
-                                    <i class='bx <?php echo $status['icone'] ?? 'bx-radio-circle'; ?>'></i>
+                        <div class="config-items-list" id="lista-status-atividade">
+                            <?php foreach ($status_atividade as $status): ?>
+                            <div class="config-item" data-id="<?php echo $status->id; ?>">
+                                <div class="config-item-icon" style="background: <?php echo $status->cor; ?>20; color: <?php echo $status->cor; ?>;">
+                                    <i class='bx <?php echo $status->icone; ?>'></i>
                                 </div>
                                 <div class="config-item-info">
                                     <div class="config-item-name">
-                                        <span class="status-badge-config" style="background: <?php echo $status['cor']; ?>20; color: <?php echo $status['cor']; ?>;">
-                                            <?php echo htmlspecialchars($status['nome']); ?>
+                                        <span class="status-badge-config" style="background: <?php echo $status->cor; ?>20; color: <?php echo $status->cor; ?>;">
+                                            <?php echo htmlspecialchars($status->nome); ?>
                                         </span>
                                         <span style="margin-left: 8px; padding: 2px 8px; background: #f0f0f0; border-radius: 4px; font-size: 11px; text-transform: uppercase;">
-                                            <?php echo $status['fluxo'] ?? 'normal'; ?>
+                                            <?php echo $status->fluxo ?? 'normal'; ?>
                                         </span>
                                     </div>
-                                    <div class="config-item-meta"><?php echo htmlspecialchars($status['descricao'] ?? ''); ?></div>
+                                    <div class="config-item-meta"><?php echo htmlspecialchars($status->descricao ?? ''); ?></div>
                                 </div>
                                 <div class="config-item-actions">
-                                    <button class="config-btn config-btn-secondary config-btn-sm" onclick="alert('Editar status ID: <?php echo $status['id']; ?>')">
+                                    <button class="config-btn config-btn-secondary config-btn-sm" onclick="editarStatusAtividade(<?php echo $status->id; ?>)">
                                         <i class='bx bx-edit'></i>
                                     </button>
-                                    <?php if (!in_array($status['nome'], ['Agendada', 'Iniciada', 'Concluida'])): ?>
-                                    <button class="config-btn config-btn-danger config-btn-sm" onclick="if(confirm('Tem certeza?')) alert('Excluir status ID: <?php echo $status['id']; ?>')">
+                                    <?php if (!in_array($status->nome, ['Agendada', 'Iniciada', 'Concluída'])): ?>
+                                    <button class="config-btn config-btn-danger config-btn-sm" onclick="excluirStatusAtividade(<?php echo $status->id; ?>, '<?php echo htmlspecialchars($status->nome); ?>')">
                                         <i class='bx bx-trash'></i>
                                     </button>
                                     <?php endif; ?>
@@ -1027,14 +1097,14 @@ body[data-theme="dark"] .config-grid-item:hover {
             </div>
 
             <!-- ABA: ESPECIALIDADES -->
-            <div id="especialidades" class="config-content">
+            <div id="tab-especialidades" class="config-content">
                 <div class="config-card">
                     <div class="config-card-header">
                         <div class="config-card-title">
                             <i class='bx bx-hard-hat'></i>
                             Especialidades (Etapas)
                         </div>
-                        <button class="config-btn config-btn-primary config-btn-sm" onclick="abrirModal('Nova Especialidade', 'form-especialidade')">
+                        <button class="config-btn config-btn-primary config-btn-sm" onclick="abrirModalEspecialidade()">
                             <i class='bx bx-plus'></i> Nova Especialidade
                         </button>
                     </div>
@@ -1042,42 +1112,30 @@ body[data-theme="dark"] .config-grid-item:hover {
                         <div class="config-alert config-alert-info">
                             <i class='bx bx-info-circle'></i>
                             <div>
-                                <strong>Especialidades</strong> sao usadas para classificar as etapas da obra (Ex: Eletrica, Hidraulica, Acabamento).
+                                <strong>Especialidades</strong> são usadas para classificar as etapas da obra (Ex: Elétrica, Hidráulica, Acabamento).
                             </div>
                         </div>
 
-                        <div class="config-grid">
-                            <?php
-                            $especialidades_padrao = [
-                                ['id' => 1, 'nome' => 'Eletrica', 'descricao' => 'Instalacoes eletricas', 'cor' => '#f1c40f', 'icone' => 'bx-bolt-circle'],
-                                ['id' => 2, 'nome' => 'Hidraulica', 'descricao' => 'Instalacoes hidraulicas', 'cor' => '#3498db', 'icone' => 'bx-water'],
-                                ['id' => 3, 'nome' => 'Estrutural', 'descricao' => 'Estrutura da obra', 'cor' => '#7f8c8d', 'icone' => 'bx-building'],
-                                ['id' => 4, 'nome' => 'Acabamento', 'descricao' => 'Acabamentos finais', 'cor' => '#e67e22', 'icone' => 'bx-paint'],
-                                ['id' => 5, 'nome' => 'Paisagismo', 'descricao' => 'Areas externas e jardinagem', 'cor' => '#27ae60', 'icone' => 'bx-leaf'],
-                                ['id' => 6, 'nome' => 'Seguranca', 'descricao' => 'Sistemas de seguranca', 'cor' => '#e74c3c', 'icone' => 'bx-shield'],
-                            ];
-                            $esp_list = $especialidades ?? $especialidades_padrao;
-                            foreach ($esp_list as $esp):
-                                $esp = (array) $esp;
-                            ?>
-                            <div class="config-grid-item">
+                        <div class="config-grid" id="lista-especialidades">
+                            <?php foreach ($especialidades as $esp): ?>
+                            <div class="config-grid-item" data-id="<?php echo $esp->id; ?>">
                                 <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-                                    <div style="width: 48px; height: 48px; background: <?php echo $esp['cor']; ?>20; color: <?php echo $esp['cor']; ?>; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 24px;">
-                                        <i class='bx <?php echo $esp['icone'] ?? 'bx-hard-hat'; ?>'></i>
+                                    <div style="width: 48px; height: 48px; background: <?php echo $esp->cor; ?>20; color: <?php echo $esp->cor; ?>; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+                                        <i class='bx <?php echo $esp->icone; ?>'></i>
                                     </div>
                                     <div>
-                                        <div style="font-weight: 600; color: #333;"><?php echo htmlspecialchars($esp['nome']); ?></div>
-                                        <span class="tipo-color" style="background: <?php echo $esp['cor']; ?>"></span>
+                                        <div style="font-weight: 600; color: #333;"><?php echo htmlspecialchars($esp->nome); ?></div>
+                                        <span class="tipo-color" style="background: <?php echo $esp->cor; ?>"></span>
                                     </div>
                                 </div>
                                 <div style="font-size: 13px; color: #666; margin-bottom: 16px;">
-                                    <?php echo htmlspecialchars($esp['descricao'] ?? ''); ?>
+                                    <?php echo htmlspecialchars($esp->descricao ?? ''); ?>
                                 </div>
                                 <div style="display: flex; gap: 8px;">
-                                    <button class="config-btn config-btn-secondary config-btn-sm" style="flex: 1;" onclick="alert('Editar especialidade ID: <?php echo $esp['id']; ?>')">
+                                    <button class="config-btn config-btn-secondary config-btn-sm" style="flex: 1;" onclick="editarEspecialidade(<?php echo $esp->id; ?>)">
                                         <i class='bx bx-edit'></i> Editar
                                     </button>
-                                    <button class="config-btn config-btn-danger config-btn-sm" onclick="if(confirm('Tem certeza?')) alert('Excluir especialidade ID: <?php echo $esp['id']; ?>')">
+                                    <button class="config-btn config-btn-danger config-btn-sm" onclick="excluirEspecialidade(<?php echo $esp->id; ?>, '<?php echo htmlspecialchars($esp->nome); ?>')">
                                         <i class='bx bx-trash'></i>
                                     </button>
                                 </div>
@@ -1089,60 +1147,47 @@ body[data-theme="dark"] .config-grid-item:hover {
             </div>
 
             <!-- ABA: FUNCOES DA EQUIPE -->
-            <div id="funcoes" class="config-content">
+            <div id="tab-funcoes" class="config-content">
                 <div class="config-card">
                     <div class="config-card-header">
                         <div class="config-card-title">
                             <i class='bx bx-group'></i>
-                            Funcoes da Equipe
+                            Funções da Equipe
                         </div>
-                        <button class="config-btn config-btn-primary config-btn-sm" onclick="abrirModal('Nova Funcao', 'form-funcao')">
-                            <i class='bx bx-plus'></i> Nova Funcao
+                        <button class="config-btn config-btn-primary config-btn-sm" onclick="abrirModalFuncao()">
+                            <i class='bx bx-plus'></i> Nova Função
                         </button>
                     </div>
                     <div class="config-card-body">
                         <div class="config-alert config-alert-info">
                             <i class='bx bx-info-circle'></i>
                             <div>
-                                <strong>Funcoes</strong> definem os papeis dos membros da equipe na obra (Ex: Engenheiro, Mestre de Obras, Auxiliar).
+                                <strong>Funções</strong> definem os papéis dos membros da equipe na obra (Ex: Engenheiro, Mestre de Obras, Auxiliar).
                             </div>
                         </div>
 
-                        <div class="config-items-list">
-                            <?php
-                            $funcoes_padrao = [
-                                ['id' => 1, 'nome' => 'Engenheiro Responsavel', 'descricao' => 'Responsavel tecnico pela obra', 'nivel' => 'alto'],
-                                ['id' => 2, 'nome' => 'Mestre de Obras', 'descricao' => 'Coordenacao de equipe de trabalho', 'nivel' => 'medio'],
-                                ['id' => 3, 'nome' => 'Tecnico de Seguranca', 'descricao' => 'Responsavel por normas de seguranca', 'nivel' => 'medio'],
-                                ['id' => 4, 'nome' => 'Pedreiro', 'descricao' => 'Execucao de servicos de alvenaria', 'nivel' => 'baixo'],
-                                ['id' => 5, 'nome' => 'Eletricista', 'descricao' => 'Instalacoes eletricas', 'nivel' => 'baixo'],
-                                ['id' => 6, 'nome' => 'Encanador', 'descricao' => 'Instalacoes hidraulicas', 'nivel' => 'baixo'],
-                                ['id' => 7, 'nome' => 'Pintor', 'descricao' => 'Servicos de pintura', 'nivel' => 'baixo'],
-                                ['id' => 8, 'nome' => 'Auxiliar', 'descricao' => 'Apoio geral na obra', 'nivel' => 'baixo'],
-                            ];
-                            $funcoes = $funcoes_equipe ?? $funcoes_padrao;
-                            foreach ($funcoes as $funcao):
-                                $funcao = (array) $funcao;
-                                $nivel_cor = ['alto' => '#e74c3c', 'medio' => '#f39c12', 'baixo' => '#27ae60'][$funcao['nivel'] ?? 'baixo'];
+                        <div class="config-items-list" id="lista-funcoes">
+                            <?php foreach ($funcoes_equipe as $funcao):
+                                $nivel_cor = ['alto' => '#e74c3c', 'medio' => '#f39c12', 'baixo' => '#27ae60'][$funcao->nivel ?? 'baixo'];
                             ?>
-                            <div class="config-item">
+                            <div class="config-item" data-id="<?php echo $funcao->id; ?>">
                                 <div class="config-item-icon" style="background: <?php echo $nivel_cor; ?>20; color: <?php echo $nivel_cor; ?>;">
                                     <i class='bx bx-user'></i>
                                 </div>
                                 <div class="config-item-info">
                                     <div class="config-item-name">
-                                        <?php echo htmlspecialchars($funcao['nome']); ?>
+                                        <?php echo htmlspecialchars($funcao->nome); ?>
                                         <span style="margin-left: 8px; padding: 2px 8px; background: <?php echo $nivel_cor; ?>20; color: <?php echo $nivel_cor; ?>; border-radius: 4px; font-size: 11px; text-transform: uppercase;">
-                                            <?php echo $funcao['nivel'] ?? 'baixo'; ?>
+                                            <?php echo $funcao->nivel ?? 'baixo'; ?>
                                         </span>
                                     </div>
-                                    <div class="config-item-meta"><?php echo htmlspecialchars($funcao['descricao'] ?? ''); ?></div>
+                                    <div class="config-item-meta"><?php echo htmlspecialchars($funcao->descricao ?? ''); ?></div>
                                 </div>
                                 <div class="config-item-actions">
-                                    <button class="config-btn config-btn-secondary config-btn-sm" onclick="alert('Editar funcao ID: <?php echo $funcao['id']; ?>')">
+                                    <button class="config-btn config-btn-secondary config-btn-sm" onclick="editarFuncao(<?php echo $funcao->id; ?>)">
                                         <i class='bx bx-edit'></i>
                                     </button>
-                                    <button class="config-btn config-btn-danger config-btn-sm" onclick="if(confirm('Tem certeza?')) alert('Excluir funcao ID: <?php echo $funcao['id']; ?>')">
+                                    <button class="config-btn config-btn-danger config-btn-sm" onclick="excluirFuncao(<?php echo $funcao->id; ?>, '<?php echo htmlspecialchars($funcao->nome); ?>')">
                                         <i class='bx bx-trash'></i>
                                     </button>
                                 </div>
@@ -1154,17 +1199,17 @@ body[data-theme="dark"] .config-grid-item:hover {
             </div>
 
             <!-- ABA: NOTIFICACOES -->
-            <div id="notificacoes" class="config-content">
+            <div id="tab-notificacoes" class="config-content">
                 <div class="config-card">
                     <div class="config-card-header">
                         <div class="config-card-title">
                             <i class='bx bx-bell'></i>
-                            Configuracoes de Notificacoes
+                            Configurações de Notificações
                         </div>
                     </div>
                     <div class="config-card-body">
                         <form id="form-config-notificacoes" method="post" action="<?php echo site_url('obras/salvarConfiguracaoNotificacoes'); ?>">
-                            <h4 style="margin: 0 0 16px 0; color: #333;">Eventos que geram notificacoes</h4>
+                            <h4 style="margin: 0 0 16px 0; color: #333;">Eventos que geram notificações</h4>
 
                             <div class="config-items-list">
                                 <div class="config-item">
@@ -1180,7 +1225,7 @@ body[data-theme="dark"] .config-grid-item:hover {
 
                                 <div class="config-item">
                                     <div class="config-item-info">
-                                        <div class="config-item-name">Obra concluida</div>
+                                        <div class="config-item-name">Obra concluída</div>
                                         <div class="config-item-meta">Notificar quando uma obra for finalizada</div>
                                     </div>
                                     <label class="config-toggle">
@@ -1213,8 +1258,8 @@ body[data-theme="dark"] .config-grid-item:hover {
 
                                 <div class="config-item">
                                     <div class="config-item-info">
-                                        <div class="config-item-name">Check-in do tecnico</div>
-                                        <div class="config-item-meta">Notificar entrada de tecnicos na obra</div>
+                                        <div class="config-item-name">Check-in do técnico</div>
+                                        <div class="config-item-meta">Notificar entrada de técnicos na obra</div>
                                     </div>
                                     <label class="config-toggle">
                                         <input type="checkbox" name="notif_checkin" <?php echo ($config_notif['checkin'] ?? false) ? 'checked' : ''; ?>>
@@ -1225,7 +1270,7 @@ body[data-theme="dark"] .config-grid-item:hover {
                                 <div class="config-item">
                                     <div class="config-item-info">
                                         <div class="config-item-name">Impedimento registrado</div>
-                                        <div class="config-item-meta">Alerta imediato quando um tecnico registrar impedimento</div>
+                                        <div class="config-item-meta">Alerta imediato quando um técnico registrar impedimento</div>
                                     </div>
                                     <label class="config-toggle">
                                         <input type="checkbox" name="notif_impedimento" <?php echo ($config_notif['impedimento'] ?? true) ? 'checked' : ''; ?>>
@@ -1236,7 +1281,7 @@ body[data-theme="dark"] .config-grid-item:hover {
 
                             <hr style="border: none; border-top: 1px solid #f0f0f0; margin: 24px 0;">
 
-                            <h4 style="margin: 0 0 16px 0; color: #333;">Canais de Notificacao</h4>
+                            <h4 style="margin: 0 0 16px 0; color: #333;">Canais de Notificação</h4>
 
                             <div class="config-grid" style="grid-template-columns: repeat(3, 1fr);">
                                 <div class="config-item">
@@ -1261,7 +1306,7 @@ body[data-theme="dark"] .config-grid-item:hover {
 
                                 <div class="config-item">
                                     <div class="config-item-info">
-                                        <div class="config-item-name">Notificacao no Sistema</div>
+                                        <div class="config-item-name">Notificação no Sistema</div>
                                     </div>
                                     <label class="config-toggle">
                                         <input type="checkbox" name="canal_sistema" <?php echo ($config_notif['canal_sistema'] ?? true) ? 'checked' : ''; ?>>
@@ -1272,57 +1317,10 @@ body[data-theme="dark"] .config-grid-item:hover {
 
                             <div style="margin-top: 24px; text-align: right;">
                                 <button type="submit" class="config-btn config-btn-primary">
-                                    <i class='bx bx-save'></i> Salvar Configuracoes
+                                    <i class='bx bx-save'></i> Salvar Configurações
                                 </button>
                             </div>
                         </form>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ABA: PERMISSOES -->
-            <div id="permissoes" class="config-content">
-                <div class="config-card">
-                    <div class="config-card-header">
-                        <div class="config-card-title">
-                            <i class='bx bx-lock'></i>
-                            Permissoes por Perfil
-                        </div>
-                    </div>
-                    <div class="config-card-body">
-                        <div class="config-alert config-alert-warning">
-                            <i class='bx bx-error-circle'></i>
-                            <div>
-                                <strong>Atencao:</strong> Alterar permissoes afeta o acesso de todos os usuarios do sistema.
-                            </div>
-                        </div>
-
-                        <div class="config-items-list">
-                            <?php
-                            $perfis = [
-                                ['id' => 1, 'nome' => 'Administrador', 'descricao' => 'Acesso total ao sistema', 'cor' => '#e74c3c'],
-                                ['id' => 2, 'nome' => 'Gestor de Obras', 'descricao' => 'Gerencia obras, etapas e equipes', 'cor' => '#3498db'],
-                                ['id' => 3, 'nome' => 'Tecnico', 'descricao' => 'Executa atividades e registra presenca', 'cor' => '#27ae60'],
-                                ['id' => 4, 'nome' => 'Cliente', 'descricao' => 'Visualiza progresso da obra', 'cor' => '#f39c12'],
-                            ];
-                            foreach ($perfis as $perfil):
-                            ?>
-                            <div class="config-item" style="border-left: 4px solid <?php echo $perfil['cor']; ?>;">
-                                <div class="config-item-icon" style="background: <?php echo $perfil['cor']; ?>20; color: <?php echo $perfil['cor']; ?>;">
-                                    <i class='bx bx-user-circle'></i>
-                                </div>
-                                <div class="config-item-info">
-                                    <div class="config-item-name"><?php echo htmlspecialchars($perfil['nome']); ?></div>
-                                    <div class="config-item-meta"><?php echo htmlspecialchars($perfil['descricao']); ?></div>
-                                </div>
-                                <div class="config-item-actions">
-                                    <button class="config-btn config-btn-secondary config-btn-sm" onclick="alert('Configurar permissoes do perfil ID: <?php echo $perfil['id']; ?>')">
-                                        <i class='bx bx-cog'></i> Configurar
-                                    </button>
-                                </div>
-                            </div>
-                            <?php endforeach; ?>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -1330,14 +1328,14 @@ body[data-theme="dark"] .config-grid-item:hover {
     </div>
 </div>
 
-<!-- Modal Generico -->
+<!-- Modal Genérico -->
 <div class="config-modal-overlay" id="modalConfig">
     <div class="config-modal">
         <div class="config-modal-header">
             <h3 id="modalTitle"><i class='bx bx-plus-circle'></i> <span>Novo Item</span></h3>
         </div>
         <div class="config-modal-body" id="modalBody">
-            <!-- Conteudo dinamico -->
+            <!-- Conteúdo dinâmico -->
         </div>
         <div class="config-modal-footer">
             <button class="config-btn config-btn-secondary" onclick="fecharModal()">Cancelar</button>
@@ -1348,8 +1346,15 @@ body[data-theme="dark"] .config-grid-item:hover {
     </div>
 </div>
 
-<!-- Script minimo para modal e destaque de aba ativa -->
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+</div>
+
 <script type="text/javascript">
+// Token CSRF
+const MAPOS_TOKEN = '<?php echo $this->security->get_csrf_hash(); ?>';
+
 // Destacar aba ativa baseada na URL
 function destacarAbaAtiva() {
     var hash = window.location.hash || '#geral';
@@ -1366,19 +1371,29 @@ function destacarAbaAtiva() {
 window.addEventListener('load', destacarAbaAtiva);
 window.addEventListener('hashchange', destacarAbaAtiva);
 
-// Funcoes do modal
-function abrirModal(titulo, tipo) {
-    document.getElementById('modalTitle').innerHTML = "<i class='bx bx-plus-circle'></i> " + titulo;
+// Variáveis do modal
+let modalAtual = null;
+let itemEditando = null;
+
+// Funções do modal
+function abrirModal(titulo, conteudoHtml) {
+    document.getElementById('modalTitle').innerHTML = titulo;
+    document.getElementById('modalBody').innerHTML = conteudoHtml;
     document.getElementById('modalConfig').classList.add('active');
 }
 
 function fecharModal() {
     document.getElementById('modalConfig').classList.remove('active');
+    modalAtual = null;
+    itemEditando = null;
 }
 
-function salvarModal() {
-    alert('Funcao de salvar sera implementada');
-    fecharModal();
+function mostrarLoading() {
+    document.getElementById('loadingOverlay').classList.add('active');
+}
+
+function ocultarLoading() {
+    document.getElementById('loadingOverlay').classList.remove('active');
 }
 
 // Fechar modal ao clicar fora
@@ -1392,6 +1407,847 @@ window.onclick = function(event) {
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         fecharModal();
+    }
+});
+
+// ===================== TIPOS DE OBRA =====================
+
+function abrirModalTipoObra() {
+    modalAtual = 'tipo-obra';
+    itemEditando = null;
+
+    var html = `
+        <input type="hidden" id="tipo_obra_id" value="">
+        <div class="config-form-group">
+            <label>Nome do Tipo</label>
+            <input type="text" id="tipo_obra_nome" class="config-form-control" placeholder="Ex: Reforma, Construção..." required>
+        </div>
+        <div class="config-form-group">
+            <label>Descrição</label>
+            <textarea id="tipo_obra_descricao" class="config-form-control" rows="2" placeholder="Descrição opcional..."></textarea>
+        </div>
+        <div class="config-grid" style="grid-template-columns: 1fr 1fr;">
+            <div class="config-form-group">
+                <label>Cor</label>
+                <div class="color-picker-wrapper">
+                    <input type="color" id="tipo_obra_cor" value="#3498db">
+                    <input type="text" id="tipo_obra_cor_texto" class="config-form-control" value="#3498db" onchange="document.getElementById('tipo_obra_cor').value = this.value">
+                </div>
+            </div>
+            <div class="config-form-group">
+                <label>Ícone</label>
+                <select id="tipo_obra_icone" class="config-form-control">
+                    <option value="bx-building">Prédio</option>
+                    <option value="bx-home">Casa</option>
+                    <option value="bx-brush">Pincel</option>
+                    <option value="bx-wrench">Ferramenta</option>
+                    <option value="bx-plug">Plug</option>
+                    <option value="bx-box">Caixa</option>
+                    <option value="bx-hard-hat">Capacete</option>
+                </select>
+            </div>
+        </div>
+    `;
+
+    abrirModal("<i class='bx bx-plus-circle'></i> Novo Tipo de Obra", html);
+}
+
+function editarTipoObra(id) {
+    modalAtual = 'tipo-obra';
+    itemEditando = id;
+
+    // Buscar dados do item
+    var item = document.querySelector('[data-id="' + id + '"]');
+    if (!item) return;
+
+    var nome = item.querySelector('.config-item-name').textContent.trim();
+    var descricao = item.querySelector('.config-item-meta')?.textContent || '';
+    var cor = item.querySelector('.tipo-color')?.style.backgroundColor || '#3498db';
+
+    var html = `
+        <input type="hidden" id="tipo_obra_id" value="${id}">
+        <div class="config-form-group">
+            <label>Nome do Tipo</label>
+            <input type="text" id="tipo_obra_nome" class="config-form-control" value="${nome}" required>
+        </div>
+        <div class="config-form-group">
+            <label>Descrição</label>
+            <textarea id="tipo_obra_descricao" class="config-form-control" rows="2">${descricao}</textarea>
+        </div>
+        <div class="config-grid" style="grid-template-columns: 1fr 1fr;">
+            <div class="config-form-group">
+                <label>Cor</label>
+                <div class="color-picker-wrapper">
+                    <input type="color" id="tipo_obra_cor" value="${cor}">
+                    <input type="text" id="tipo_obra_cor_texto" class="config-form-control" value="${cor}" onchange="document.getElementById('tipo_obra_cor').value = this.value">
+                </div>
+            </div>
+            <div class="config-form-group">
+                <label>Ícone</label>
+                <select id="tipo_obra_icone" class="config-form-control">
+                    <option value="bx-building">Prédio</option>
+                    <option value="bx-home">Casa</option>
+                    <option value="bx-brush">Pincel</option>
+                    <option value="bx-wrench">Ferramenta</option>
+                    <option value="bx-plug">Plug</option>
+                    <option value="bx-box">Caixa</option>
+                    <option value="bx-hard-hat">Capacete</option>
+                </select>
+            </div>
+        </div>
+    `;
+
+    abrirModal("<i class='bx bx-edit'></i> Editar Tipo de Obra", html);
+}
+
+function excluirTipoObra(id, nome) {
+    if (!confirm('Tem certeza que deseja excluir o tipo "' + nome + '"?\n\nEsta ação não pode ser desfeita.')) {
+        return;
+    }
+
+    mostrarLoading();
+
+    var formData = new FormData();
+    formData.append('MAPOS_TOKEN', MAPOS_TOKEN);
+    formData.append('id', id);
+
+    fetch('<?php echo site_url("obras/excluirTipoObra"); ?>', {
+        method: 'POST',
+        body: formData
+    })
+    .then(r => r.json())
+    .then(data => {
+        ocultarLoading();
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Erro: ' + (data.message || 'Não foi possível excluir'));
+        }
+    })
+    .catch(err => {
+        ocultarLoading();
+        alert('Erro ao excluir. Tente novamente.');
+    });
+}
+
+// ===================== TIPOS DE ATIVIDADE =====================
+
+function abrirModalTipoAtividade() {
+    modalAtual = 'tipo-atividade';
+    itemEditando = null;
+
+    var html = `
+        <input type="hidden" id="tipo_atividade_id" value="">
+        <div class="config-form-group">
+            <label>Nome do Tipo</label>
+            <input type="text" id="tipo_atividade_nome" class="config-form-control" placeholder="Ex: Trabalho, Visita Técnica..." required>
+        </div>
+        <div class="config-form-group">
+            <label>Descrição</label>
+            <textarea id="tipo_atividade_descricao" class="config-form-control" rows="2" placeholder="Descrição opcional..."></textarea>
+        </div>
+        <div class="config-grid" style="grid-template-columns: 1fr 1fr;">
+            <div class="config-form-group">
+                <label>Categoria</label>
+                <select id="tipo_atividade_categoria" class="config-form-control">
+                    <option value="execucao">Execução</option>
+                    <option value="visita">Visita</option>
+                    <option value="manutencao">Manutenção</option>
+                    <option value="impedimento">Impedimento</option>
+                    <option value="outro">Outro</option>
+                </select>
+            </div>
+            <div class="config-form-group">
+                <label>Duração Estimada (min)</label>
+                <input type="number" id="tipo_atividade_duracao" class="config-form-control" value="30" min="5">
+            </div>
+        </div>
+        <div class="config-grid" style="grid-template-columns: 1fr 1fr;">
+            <div class="config-form-group">
+                <label>Cor</label>
+                <div class="color-picker-wrapper">
+                    <input type="color" id="tipo_atividade_cor" value="#3498db">
+                    <input type="text" class="config-form-control" value="#3498db" onchange="document.getElementById('tipo_atividade_cor').value = this.value">
+                </div>
+            </div>
+            <div class="config-form-group">
+                <label>Ícone</label>
+                <select id="tipo_atividade_icone" class="config-form-control">
+                    <option value="bx-wrench">Ferramenta</option>
+                    <option value="bx-search">Lupa</option>
+                    <option value="bx-cog">Engrenagem</option>
+                    <option value="bx-block">Bloqueio</option>
+                    <option value="bx-task">Tarefa</option>
+                    <option value="bx-check-circle">Check</option>
+                </select>
+            </div>
+        </div>
+    `;
+
+    abrirModal("<i class='bx bx-plus-circle'></i> Novo Tipo de Atividade", html);
+}
+
+function editarTipoAtividade(id) {
+    modalAtual = 'tipo-atividade';
+    itemEditando = id;
+
+    var item = document.querySelector('#lista-tipos-atividade [data-id="' + id + '"]');
+    if (!item) return;
+
+    var nome = item.querySelector('.config-item-name').childNodes[0].textContent.trim();
+    var descricao = item.querySelector('.config-item-meta')?.textContent || '';
+
+    var html = `
+        <input type="hidden" id="tipo_atividade_id" value="${id}">
+        <div class="config-form-group">
+            <label>Nome do Tipo</label>
+            <input type="text" id="tipo_atividade_nome" class="config-form-control" value="${nome}" required>
+        </div>
+        <div class="config-form-group">
+            <label>Descrição</label>
+            <textarea id="tipo_atividade_descricao" class="config-form-control" rows="2">${descricao}</textarea>
+        </div>
+        <div class="config-grid" style="grid-template-columns: 1fr 1fr;">
+            <div class="config-form-group">
+                <label>Categoria</label>
+                <select id="tipo_atividade_categoria" class="config-form-control">
+                    <option value="execucao">Execução</option>
+                    <option value="visita">Visita</option>
+                    <option value="manutencao">Manutenção</option>
+                    <option value="impedimento">Impedimento</option>
+                    <option value="outro">Outro</option>
+                </select>
+            </div>
+            <div class="config-form-group">
+                <label>Duração Estimada (min)</label>
+                <input type="number" id="tipo_atividade_duracao" class="config-form-control" value="30" min="5">
+            </div>
+        </div>
+        <div class="config-grid" style="grid-template-columns: 1fr 1fr;">
+            <div class="config-form-group">
+                <label>Cor</label>
+                <div class="color-picker-wrapper">
+                    <input type="color" id="tipo_atividade_cor" value="#3498db">
+                    <input type="text" class="config-form-control" value="#3498db">
+                </div>
+            </div>
+            <div class="config-form-group">
+                <label>Ícone</label>
+                <select id="tipo_atividade_icone" class="config-form-control">
+                    <option value="bx-wrench">Ferramenta</option>
+                    <option value="bx-search">Lupa</option>
+                    <option value="bx-cog">Engrenagem</option>
+                    <option value="bx-block">Bloqueio</option>
+                    <option value="bx-task">Tarefa</option>
+                    <option value="bx-check-circle">Check</option>
+                </select>
+            </div>
+        </div>
+    `;
+
+    abrirModal("<i class='bx bx-edit'></i> Editar Tipo de Atividade", html);
+}
+
+function excluirTipoAtividade(id, nome) {
+    if (!confirm('Tem certeza que deseja excluir "' + nome + '"?')) {
+        return;
+    }
+
+    mostrarLoading();
+
+    var formData = new FormData();
+    formData.append('MAPOS_TOKEN', MAPOS_TOKEN);
+    formData.append('id', id);
+
+    fetch('<?php echo site_url("obras/excluirTipoAtividade"); ?>', {
+        method: 'POST',
+        body: formData
+    })
+    .then(r => r.json())
+    .then(data => {
+        ocultarLoading();
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Erro: ' + (data.message || 'Não foi possível excluir'));
+        }
+    })
+    .catch(err => {
+        ocultarLoading();
+        alert('Erro ao excluir. Tente novamente.');
+    });
+}
+
+// ===================== STATUS DE OBRA =====================
+
+function abrirModalStatusObra() {
+    modalAtual = 'status-obra';
+    itemEditando = null;
+
+    var html = `
+        <input type="hidden" id="status_obra_id" value="">
+        <div class="config-form-group">
+            <label>Nome do Status</label>
+            <input type="text" id="status_obra_nome" class="config-form-control" placeholder="Ex: Em Andamento, Concluída..." required>
+        </div>
+        <div class="config-form-group">
+            <label>Descrição</label>
+            <textarea id="status_obra_descricao" class="config-form-control" rows="2"></textarea>
+        </div>
+        <div class="config-grid" style="grid-template-columns: 1fr 1fr;">
+            <div class="config-form-group">
+                <label>Cor</label>
+                <div class="color-picker-wrapper">
+                    <input type="color" id="status_obra_cor" value="#3498db">
+                    <input type="text" class="config-form-control" value="#3498db">
+                </div>
+            </div>
+            <div class="config-form-group">
+                <label>Ícone</label>
+                <select id="status_obra_icone" class="config-form-control">
+                    <option value="bx-flag">Bandeira</option>
+                    <option value="bx-play-circle">Play</option>
+                    <option value="bx-pause-circle">Pause</option>
+                    <option value="bx-check-circle">Check</option>
+                    <option value="bx-x-circle">X</option>
+                    <option value="bx-search">Busca</option>
+                </select>
+            </div>
+        </div>
+        <div class="config-grid" style="grid-template-columns: 1fr 1fr;">
+            <div class="config-form-group">
+                <label>Ordem</label>
+                <input type="number" id="status_obra_ordem" class="config-form-control" value="1" min="1">
+            </div>
+            <div class="config-form-group" style="display: flex; align-items: center; padding-top: 24px;">
+                <label class="config-toggle" style="cursor: pointer;">
+                    <input type="checkbox" id="status_obra_finalizado">
+                    <span class="toggle-slider"></span>
+                    <span style="margin-left: 12px;">Status Finalizado</span>
+                </label>
+            </div>
+        </div>
+    `;
+
+    abrirModal("<i class='bx bx-plus-circle'></i> Novo Status de Obra", html);
+}
+
+function editarStatusObra(id) {
+    modalAtual = 'status-obra';
+    itemEditando = id;
+
+    var item = document.querySelector('#lista-status-obra [data-id="' + id + '"]');
+    if (!item) return;
+
+    var nome = item.querySelector('.config-item-name').textContent.replace('FINALIZADO', '').trim();
+    var descricao = item.querySelector('.config-item-meta')?.textContent.split('•')[0] || '';
+    var finalizado = item.querySelector('.config-item-name').textContent.includes('FINALIZADO');
+
+    var html = `
+        <input type="hidden" id="status_obra_id" value="${id}">
+        <div class="config-form-group">
+            <label>Nome do Status</label>
+            <input type="text" id="status_obra_nome" class="config-form-control" value="${nome}" required>
+        </div>
+        <div class="config-form-group">
+            <label>Descrição</label>
+            <textarea id="status_obra_descricao" class="config-form-control" rows="2">${descricao}</textarea>
+        </div>
+        <div class="config-grid" style="grid-template-columns: 1fr 1fr;">
+            <div class="config-form-group">
+                <label>Cor</label>
+                <div class="color-picker-wrapper">
+                    <input type="color" id="status_obra_cor" value="#3498db">
+                    <input type="text" class="config-form-control" value="#3498db">
+                </div>
+            </div>
+            <div class="config-form-group">
+                <label>Ícone</label>
+                <select id="status_obra_icone" class="config-form-control">
+                    <option value="bx-flag">Bandeira</option>
+                    <option value="bx-play-circle">Play</option>
+                    <option value="bx-pause-circle">Pause</option>
+                    <option value="bx-check-circle">Check</option>
+                    <option value="bx-x-circle">X</option>
+                    <option value="bx-search">Busca</option>
+                </select>
+            </div>
+        </div>
+        <div class="config-grid" style="grid-template-columns: 1fr 1fr;">
+            <div class="config-form-group">
+                <label>Ordem</label>
+                <input type="number" id="status_obra_ordem" class="config-form-control" value="1" min="1">
+            </div>
+            <div class="config-form-group" style="display: flex; align-items: center; padding-top: 24px;">
+                <label class="config-toggle" style="cursor: pointer;">
+                    <input type="checkbox" id="status_obra_finalizado" ${finalizado ? 'checked' : ''}>
+                    <span class="toggle-slider"></span>
+                    <span style="margin-left: 12px;">Status Finalizado</span>
+                </label>
+            </div>
+        </div>
+    `;
+
+    abrirModal("<i class='bx bx-edit'></i> Editar Status de Obra", html);
+}
+
+function excluirStatusObra(id, nome) {
+    if (!confirm('Excluir status "' + nome + '"?')) return;
+
+    mostrarLoading();
+    var formData = new FormData();
+    formData.append('MAPOS_TOKEN', MAPOS_TOKEN);
+    formData.append('id', id);
+
+    fetch('<?php echo site_url("obras/excluirStatusObra"); ?>', {
+        method: 'POST',
+        body: formData
+    })
+    .then(r => r.json())
+    .then(data => {
+        ocultarLoading();
+        if (data.success) location.reload();
+        else alert('Erro: ' + (data.message || 'Não foi possível excluir'));
+    })
+    .catch(() => {
+        ocultarLoading();
+        alert('Erro ao excluir');
+    });
+}
+
+// ===================== STATUS DE ATIVIDADE =====================
+
+function abrirModalStatusAtividade() {
+    modalAtual = 'status-atividade';
+    itemEditando = null;
+
+    var html = `
+        <input type="hidden" id="status_atividade_id" value="">
+        <div class="config-form-group">
+            <label>Nome do Status</label>
+            <input type="text" id="status_atividade_nome" class="config-form-control" placeholder="Ex: Agendada, Em Andamento..." required>
+        </div>
+        <div class="config-form-group">
+            <label>Descrição</label>
+            <textarea id="status_atividade_descricao" class="config-form-control" rows="2"></textarea>
+        </div>
+        <div class="config-grid" style="grid-template-columns: 1fr 1fr;">
+            <div class="config-form-group">
+                <label>Cor</label>
+                <div class="color-picker-wrapper">
+                    <input type="color" id="status_atividade_cor" value="#3498db">
+                    <input type="text" class="config-form-control" value="#3498db">
+                </div>
+            </div>
+            <div class="config-form-group">
+                <label>Ícone</label>
+                <select id="status_atividade_icone" class="config-form-control">
+                    <option value="bx-calendar">Calendário</option>
+                    <option value="bx-play-circle">Play</option>
+                    <option value="bx-pause-circle">Pause</option>
+                    <option value="bx-check-circle">Check</option>
+                    <option value="bx-x-circle">X</option>
+                    <option value="bx-refresh">Refresh</option>
+                </select>
+            </div>
+        </div>
+        <div class="config-form-group">
+            <label>Fluxo do Status</label>
+            <select id="status_atividade_fluxo" class="config-form-control">
+                <option value="inicial">Inicial (agendada)</option>
+                <option value="execucao">Em Execução</option>
+                <option value="final">Final (concluída/cancelada)</option>
+                <option value="especial">Especial</option>
+            </select>
+        </div>
+    `;
+
+    abrirModal("<i class='bx bx-plus-circle'></i> Novo Status de Atividade", html);
+}
+
+function editarStatusAtividade(id) {
+    modalAtual = 'status-atividade';
+    itemEditando = id;
+
+    var item = document.querySelector('#lista-status-atividade [data-id="' + id + '"]');
+    if (!item) return;
+
+    var nome = item.querySelector('.config-item-name').childNodes[0].textContent.trim();
+    var descricao = item.querySelector('.config-item-meta')?.textContent || '';
+
+    var html = `
+        <input type="hidden" id="status_atividade_id" value="${id}">
+        <div class="config-form-group">
+            <label>Nome do Status</label>
+            <input type="text" id="status_atividade_nome" class="config-form-control" value="${nome}" required>
+        </div>
+        <div class="config-form-group">
+            <label>Descrição</label>
+            <textarea id="status_atividade_descricao" class="config-form-control" rows="2">${descricao}</textarea>
+        </div>
+        <div class="config-grid" style="grid-template-columns: 1fr 1fr;">
+            <div class="config-form-group">
+                <label>Cor</label>
+                <div class="color-picker-wrapper">
+                    <input type="color" id="status_atividade_cor" value="#3498db">
+                    <input type="text" class="config-form-control" value="#3498db">
+                </div>
+            </div>
+            <div class="config-form-group">
+                <label>Ícone</label>
+                <select id="status_atividade_icone" class="config-form-control">
+                    <option value="bx-calendar">Calendário</option>
+                    <option value="bx-play-circle">Play</option>
+                    <option value="bx-pause-circle">Pause</option>
+                    <option value="bx-check-circle">Check</option>
+                    <option value="bx-x-circle">X</option>
+                    <option value="bx-refresh">Refresh</option>
+                </select>
+            </div>
+        </div>
+        <div class="config-form-group">
+            <label>Fluxo do Status</label>
+            <select id="status_atividade_fluxo" class="config-form-control">
+                <option value="inicial">Inicial (agendada)</option>
+                <option value="execucao">Em Execução</option>
+                <option value="final">Final (concluída/cancelada)</option>
+                <option value="especial">Especial</option>
+            </select>
+        </div>
+    `;
+
+    abrirModal("<i class='bx bx-edit'></i> Editar Status de Atividade", html);
+}
+
+function excluirStatusAtividade(id, nome) {
+    if (!confirm('Excluir "' + nome + '"?')) return;
+
+    mostrarLoading();
+    var formData = new FormData();
+    formData.append('MAPOS_TOKEN', MAPOS_TOKEN);
+    formData.append('id', id);
+
+    fetch('<?php echo site_url("obras/excluirStatusAtividade"); ?>', {
+        method: 'POST',
+        body: formData
+    })
+    .then(r => r.json())
+    .then(data => {
+        ocultarLoading();
+        if (data.success) location.reload();
+        else alert('Erro: ' + (data.message || 'Erro ao excluir'));
+    })
+    .catch(() => {
+        ocultarLoading();
+        alert('Erro ao excluir');
+    });
+}
+
+// ===================== ESPECIALIDADES =====================
+
+function abrirModalEspecialidade() {
+    modalAtual = 'especialidade';
+    itemEditando = null;
+
+    var html = `
+        <input type="hidden" id="especialidade_id" value="">
+        <div class="config-form-group">
+            <label>Nome da Especialidade</label>
+            <input type="text" id="especialidade_nome" class="config-form-control" placeholder="Ex: Elétrica, Hidráulica..." required>
+        </div>
+        <div class="config-form-group">
+            <label>Descrição</label>
+            <textarea id="especialidade_descricao" class="config-form-control" rows="2"></textarea>
+        </div>
+        <div class="config-grid" style="grid-template-columns: 1fr 1fr;">
+            <div class="config-form-group">
+                <label>Cor</label>
+                <div class="color-picker-wrapper">
+                    <input type="color" id="especialidade_cor" value="#3498db">
+                    <input type="text" class="config-form-control" value="#3498db">
+                </div>
+            </div>
+            <div class="config-form-group">
+                <label>Ícone</label>
+                <select id="especialidade_icone" class="config-form-control">
+                    <option value="bx-bolt-circle">Raio</option>
+                    <option value="bx-water">Água</option>
+                    <option value="bx-building">Prédio</option>
+                    <option value="bx-paint">Pincel</option>
+                    <option value="bx-leaf">Folha</option>
+                    <option value="bx-shield">Escudo</option>
+                    <option value="bx-hard-hat">Capacete</option>
+                </select>
+            </div>
+        </div>
+    `;
+
+    abrirModal("<i class='bx bx-plus-circle'></i> Nova Especialidade", html);
+}
+
+function editarEspecialidade(id) {
+    modalAtual = 'especialidade';
+    itemEditando = id;
+
+    var item = document.querySelector('#lista-especialidades [data-id="' + id + '"]');
+    if (!item) return;
+
+    var nome = item.querySelector('.config-item-name div').textContent.trim();
+    var descricao = item.querySelector('.config-grid-item > div:nth-child(2)')?.textContent.trim() || '';
+
+    var html = `
+        <input type="hidden" id="especialidade_id" value="${id}">
+        <div class="config-form-group">
+            <label>Nome da Especialidade</label>
+            <input type="text" id="especialidade_nome" class="config-form-control" value="${nome}" required>
+        </div>
+        <div class="config-form-group">
+            <label>Descrição</label>
+            <textarea id="especialidade_descricao" class="config-form-control" rows="2">${descricao}</textarea>
+        </div>
+        <div class="config-grid" style="grid-template-columns: 1fr 1fr;">
+            <div class="config-form-group">
+                <label>Cor</label>
+                <div class="color-picker-wrapper">
+                    <input type="color" id="especialidade_cor" value="#3498db">
+                    <input type="text" class="config-form-control" value="#3498db">
+                </div>
+            </div>
+            <div class="config-form-group">
+                <label>Ícone</label>
+                <select id="especialidade_icone" class="config-form-control">
+                    <option value="bx-bolt-circle">Raio</option>
+                    <option value="bx-water">Água</option>
+                    <option value="bx-building">Prédio</option>
+                    <option value="bx-paint">Pincel</option>
+                    <option value="bx-leaf">Folha</option>
+                    <option value="bx-shield">Escudo</option>
+                    <option value="bx-hard-hat">Capacete</option>
+                </select>
+            </div>
+        </div>
+    `;
+
+    abrirModal("<i class='bx bx-edit'></i> Editar Especialidade", html);
+}
+
+function excluirEspecialidade(id, nome) {
+    if (!confirm('Excluir "' + nome + '"?')) return;
+
+    mostrarLoading();
+    var formData = new FormData();
+    formData.append('MAPOS_TOKEN', MAPOS_TOKEN);
+    formData.append('id', id);
+
+    fetch('<?php echo site_url("obras/excluirEspecialidade"); ?>', {
+        method: 'POST',
+        body: formData
+    })
+    .then(r => r.json())
+    .then(data => {
+        ocultarLoading();
+        if (data.success) location.reload();
+        else alert('Erro: ' + (data.message || 'Erro ao excluir'));
+    })
+    .catch(() => {
+        ocultarLoading();
+        alert('Erro ao excluir');
+    });
+}
+
+// ===================== FUNCOES DA EQUIPE =====================
+
+function abrirModalFuncao() {
+    modalAtual = 'funcao';
+    itemEditando = null;
+
+    var html = `
+        <input type="hidden" id="funcao_id" value="">
+        <div class="config-form-group">
+            <label>Nome da Função</label>
+            <input type="text" id="funcao_nome" class="config-form-control" placeholder="Ex: Engenheiro, Pedreiro..." required>
+        </div>
+        <div class="config-form-group">
+            <label>Descrição</label>
+            <textarea id="funcao_descricao" class="config-form-control" rows="2"></textarea>
+        </div>
+        <div class="config-form-group">
+            <label>Nível Hierárquico</label>
+            <select id="funcao_nivel" class="config-form-control">
+                <option value="alto">Alto (Gestão)</option>
+                <option value="medio">Médio (Coordenação)</option>
+                <option value="baixo">Baixo (Operacional)</option>
+            </select>
+        </div>
+    `;
+
+    abrirModal("<i class='bx bx-plus-circle'></i> Nova Função", html);
+}
+
+function editarFuncao(id) {
+    modalAtual = 'funcao';
+    itemEditando = id;
+
+    var item = document.querySelector('#lista-funcoes [data-id="' + id + '"]');
+    if (!item) return;
+
+    var nome = item.querySelector('.config-item-name').childNodes[0].textContent.trim();
+    var descricao = item.querySelector('.config-item-meta')?.textContent || '';
+    var nivel = item.querySelector('.config-item-name span')?.textContent.trim().toLowerCase() || 'baixo';
+
+    var html = `
+        <input type="hidden" id="funcao_id" value="${id}">
+        <div class="config-form-group">
+            <label>Nome da Função</label>
+            <input type="text" id="funcao_nome" class="config-form-control" value="${nome}" required>
+        </div>
+        <div class="config-form-group">
+            <label>Descrição</label>
+            <textarea id="funcao_descricao" class="config-form-control" rows="2">${descricao}</textarea>
+        </div>
+        <div class="config-form-group">
+            <label>Nível Hierárquico</label>
+            <select id="funcao_nivel" class="config-form-control">
+                <option value="alto" ${nivel === 'alto' ? 'selected' : ''}>Alto (Gestão)</option>
+                <option value="medio" ${nivel === 'médio' ? 'selected' : ''}>Médio (Coordenação)</option>
+                <option value="baixo" ${nivel === 'baixo' ? 'selected' : ''}>Baixo (Operacional)</option>
+            </select>
+        </div>
+    `;
+
+    abrirModal("<i class='bx bx-edit'></i> Editar Função", html);
+}
+
+function excluirFuncao(id, nome) {
+    if (!confirm('Excluir "' + nome + '"?')) return;
+
+    mostrarLoading();
+    var formData = new FormData();
+    formData.append('MAPOS_TOKEN', MAPOS_TOKEN);
+    formData.append('id', id);
+
+    fetch('<?php echo site_url("obras/excluirFuncao"); ?>', {
+        method: 'POST',
+        body: formData
+    })
+    .then(r => r.json())
+    .then(data => {
+        ocultarLoading();
+        if (data.success) location.reload();
+        else alert('Erro: ' + (data.message || 'Erro ao excluir'));
+    })
+    .catch(() => {
+        ocultarLoading();
+        alert('Erro ao excluir');
+    });
+}
+
+// ===================== SALVAR MODAL =====================
+
+function salvarModal() {
+    if (!modalAtual) return;
+
+    mostrarLoading();
+
+    var formData = new FormData();
+    formData.append('MAPOS_TOKEN', MAPOS_TOKEN);
+
+    var url = '';
+
+    switch(modalAtual) {
+        case 'tipo-obra':
+            url = '<?php echo site_url("obras/salvarTipoObra"); ?>';
+            formData.append('id', document.getElementById('tipo_obra_id')?.value || '');
+            formData.append('nome', document.getElementById('tipo_obra_nome')?.value || '');
+            formData.append('descricao', document.getElementById('tipo_obra_descricao')?.value || '');
+            formData.append('cor', document.getElementById('tipo_obra_cor')?.value || '#3498db');
+            formData.append('icone', document.getElementById('tipo_obra_icone')?.value || 'bx-building');
+            break;
+
+        case 'tipo-atividade':
+            url = '<?php echo site_url("obras/salvarTipoAtividade"); ?>';
+            formData.append('id', document.getElementById('tipo_atividade_id')?.value || '');
+            formData.append('nome', document.getElementById('tipo_atividade_nome')?.value || '');
+            formData.append('descricao', document.getElementById('tipo_atividade_descricao')?.value || '');
+            formData.append('categoria', document.getElementById('tipo_atividade_categoria')?.value || 'outro');
+            formData.append('duracao', document.getElementById('tipo_atividade_duracao')?.value || 30);
+            formData.append('cor', document.getElementById('tipo_atividade_cor')?.value || '#3498db');
+            formData.append('icone', document.getElementById('tipo_atividade_icone')?.value || 'bx-wrench');
+            break;
+
+        case 'status-obra':
+            url = '<?php echo site_url("obras/salvarStatusObra"); ?>';
+            formData.append('id', document.getElementById('status_obra_id')?.value || '');
+            formData.append('nome', document.getElementById('status_obra_nome')?.value || '');
+            formData.append('descricao', document.getElementById('status_obra_descricao')?.value || '');
+            formData.append('cor', document.getElementById('status_obra_cor')?.value || '#3498db');
+            formData.append('icone', document.getElementById('status_obra_icone')?.value || 'bx-flag');
+            formData.append('ordem', document.getElementById('status_obra_ordem')?.value || 1);
+            formData.append('finalizado', document.getElementById('status_obra_finalizado')?.checked ? 1 : 0);
+            break;
+
+        case 'status-atividade':
+            url = '<?php echo site_url("obras/salvarStatusAtividade"); ?>';
+            formData.append('id', document.getElementById('status_atividade_id')?.value || '');
+            formData.append('nome', document.getElementById('status_atividade_nome')?.value || '');
+            formData.append('descricao', document.getElementById('status_atividade_descricao')?.value || '');
+            formData.append('cor', document.getElementById('status_atividade_cor')?.value || '#3498db');
+            formData.append('icone', document.getElementById('status_atividade_icone')?.value || 'bx-calendar');
+            formData.append('fluxo', document.getElementById('status_atividade_fluxo')?.value || 'normal');
+            break;
+
+        case 'especialidade':
+            url = '<?php echo site_url("obras/salvarEspecialidade"); ?>';
+            formData.append('id', document.getElementById('especialidade_id')?.value || '');
+            formData.append('nome', document.getElementById('especialidade_nome')?.value || '');
+            formData.append('descricao', document.getElementById('especialidade_descricao')?.value || '');
+            formData.append('cor', document.getElementById('especialidade_cor')?.value || '#3498db');
+            formData.append('icone', document.getElementById('especialidade_icone')?.value || 'bx-hard-hat');
+            break;
+
+        case 'funcao':
+            url = '<?php echo site_url("obras/salvarFuncao"); ?>';
+            formData.append('id', document.getElementById('funcao_id')?.value || '');
+            formData.append('nome', document.getElementById('funcao_nome')?.value || '');
+            formData.append('descricao', document.getElementById('funcao_descricao')?.value || '');
+            formData.append('nivel', document.getElementById('funcao_nivel')?.value || 'baixo');
+            break;
+    }
+
+    // Validação básica
+    var nome = formData.get('nome');
+    if (!nome || nome.trim() === '') {
+        ocultarLoading();
+        alert('Por favor, preencha o nome.');
+        return;
+    }
+
+    fetch(url, {
+        method: 'POST',
+        body: formData
+    })
+    .then(r => r.json())
+    .then(data => {
+        ocultarLoading();
+        if (data.success) {
+            fecharModal();
+            location.reload();
+        } else {
+            alert('Erro: ' + (data.message || 'Não foi possível salvar'));
+        }
+    })
+    .catch(err => {
+        ocultarLoading();
+        console.error(err);
+        alert('Erro ao salvar. Tente novamente.');
+    });
+}
+
+// Sincronizar color picker com input text
+document.addEventListener('input', function(e) {
+    if (e.target.type === 'color') {
+        var textInput = e.target.parentElement.querySelector('input[type="text"]');
+        if (textInput) textInput.value = e.target.value;
     }
 });
 </script>

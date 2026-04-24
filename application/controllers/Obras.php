@@ -1203,6 +1203,11 @@ class Obras extends MY_Controller
 
             $this->db->trans_complete();
 
+            // Atualizar progresso da etapa criada
+            if (!empty($etapa_id) && $this->load->model('obra_atividades_model')) {
+                $this->obra_atividades_model->atualizarProgressoEtapa($etapa_id);
+            }
+
             $this->session->set_flashdata('success',
                 'Etapa criada com sucesso! ' .
                 ($total_atividades > 0 ? "{$total_atividades} atividade(s) adicionada(s)." : '')
@@ -2213,4 +2218,407 @@ class Obras extends MY_Controller
         return $this->layout();
     }
 
+    // ============================================
+    // CONFIGURACOES - FUNCOES DA EQUIPE
+    // ============================================
+
+    public function salvarFuncao()
+    {
+        if (!$this->input->is_ajax_request()) {
+            show_404();
+        }
+
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cObras')) {
+            echo json_encode(['success' => false, 'message' => 'Sem permissão']);
+            return;
+        }
+
+        $dados = [
+            'id' => $this->input->post('id') ?: null,
+            'nome' => $this->input->post('nome'),
+            'descricao' => $this->input->post('descricao'),
+            'nivel' => $this->input->post('nivel') ?: 'baixo',
+        ];
+
+        if (empty($dados['nome'])) {
+            echo json_encode(['success' => false, 'message' => 'Nome da função é obrigatório']);
+            return;
+        }
+
+        $result = $this->obras_model->salvarFuncao($dados);
+
+        if ($result) {
+            echo json_encode(['success' => true, 'message' => 'Função salva com sucesso', 'id' => $result]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Erro ao salvar função']);
+        }
+    }
+
+    public function excluirFuncao()
+    {
+        if (!$this->input->is_ajax_request()) {
+            show_404();
+        }
+
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'dObras')) {
+            echo json_encode(['success' => false, 'message' => 'Sem permissão']);
+            return;
+        }
+
+        $id = $this->input->post('id');
+        if (!$id || !is_numeric($id)) {
+            echo json_encode(['success' => false, 'message' => 'ID inválido']);
+            return;
+        }
+
+        $result = $this->obras_model->excluirFuncao($id);
+
+        if ($result) {
+            echo json_encode(['success' => true, 'message' => 'Função excluída com sucesso']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Erro ao excluir função']);
+        }
+    }
+
+    // ============================================
+    // CONFIGURACOES - TIPOS DE OBRA
+    // ============================================
+
+    public function salvarTipoObra()
+    {
+        if (!$this->input->is_ajax_request()) {
+            show_404();
+        }
+
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cObras')) {
+            echo json_encode(['success' => false, 'message' => 'Sem permissão']);
+            return;
+        }
+
+        $dados = [
+            'id' => $this->input->post('id') ?: null,
+            'nome' => $this->input->post('nome'),
+            'descricao' => $this->input->post('descricao'),
+            'cor' => $this->input->post('cor') ?: '#3498db',
+            'icone' => $this->input->post('icone') ?: 'bx-building',
+        ];
+
+        if (empty($dados['nome'])) {
+            echo json_encode(['success' => false, 'message' => 'Nome do tipo é obrigatório']);
+            return;
+        }
+
+        $result = $this->obras_model->salvarTipoObra($dados);
+
+        if ($result) {
+            echo json_encode(['success' => true, 'message' => 'Tipo de obra salvo com sucesso', 'id' => $result]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Erro ao salvar tipo de obra']);
+        }
+    }
+
+    public function excluirTipoObra()
+    {
+        if (!$this->input->is_ajax_request()) {
+            show_404();
+        }
+
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'dObras')) {
+            echo json_encode(['success' => false, 'message' => 'Sem permissão']);
+            return;
+        }
+
+        $id = $this->input->post('id');
+        if (!$id || !is_numeric($id)) {
+            echo json_encode(['success' => false, 'message' => 'ID inválido']);
+            return;
+        }
+
+        $result = $this->obras_model->excluirTipoObra($id);
+
+        if ($result) {
+            echo json_encode(['success' => true, 'message' => 'Tipo de obra excluído com sucesso']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Erro ao excluir tipo de obra']);
+        }
+    }
+
+    // ============================================
+    // CONFIGURACOES - STATUS DE OBRA
+    // ============================================
+
+    public function salvarStatusObra()
+    {
+        if (!$this->input->is_ajax_request()) {
+            show_404();
+        }
+
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cObras')) {
+            echo json_encode(['success' => false, 'message' => 'Sem permissão']);
+            return;
+        }
+
+        $dados = [
+            'id' => $this->input->post('id') ?: null,
+            'nome' => $this->input->post('nome'),
+            'descricao' => $this->input->post('descricao'),
+            'cor' => $this->input->post('cor') ?: '#3498db',
+            'icone' => $this->input->post('icone') ?: 'bx-flag',
+            'ordem' => $this->input->post('ordem') ?: 1,
+            'finalizado' => $this->input->post('finalizado') ? 1 : 0,
+        ];
+
+        if (empty($dados['nome'])) {
+            echo json_encode(['success' => false, 'message' => 'Nome do status é obrigatório']);
+            return;
+        }
+
+        $result = $this->obras_model->salvarStatusObra($dados);
+
+        if ($result) {
+            echo json_encode(['success' => true, 'message' => 'Status de obra salvo com sucesso', 'id' => $result]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Erro ao salvar status de obra']);
+        }
+    }
+
+    public function excluirStatusObra()
+    {
+        if (!$this->input->is_ajax_request()) {
+            show_404();
+        }
+
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'dObras')) {
+            echo json_encode(['success' => false, 'message' => 'Sem permissão']);
+            return;
+        }
+
+        $id = $this->input->post('id');
+        if (!$id || !is_numeric($id)) {
+            echo json_encode(['success' => false, 'message' => 'ID inválido']);
+            return;
+        }
+
+        $result = $this->obras_model->excluirStatusObra($id);
+
+        if ($result) {
+            echo json_encode(['success' => true, 'message' => 'Status de obra excluído com sucesso']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Erro ao excluir status de obra']);
+        }
+    }
+
+    // ============================================
+    // CONFIGURACOES - ESPECIALIDADES
+    // ============================================
+
+    public function salvarEspecialidade()
+    {
+        if (!$this->input->is_ajax_request()) {
+            show_404();
+        }
+
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cObras')) {
+            echo json_encode(['success' => false, 'message' => 'Sem permissão']);
+            return;
+        }
+
+        $dados = [
+            'id' => $this->input->post('id') ?: null,
+            'nome' => $this->input->post('nome'),
+            'descricao' => $this->input->post('descricao'),
+            'cor' => $this->input->post('cor') ?: '#3498db',
+            'icone' => $this->input->post('icone') ?: 'bx-hard-hat',
+        ];
+
+        if (empty($dados['nome'])) {
+            echo json_encode(['success' => false, 'message' => 'Nome da especialidade é obrigatório']);
+            return;
+        }
+
+        $result = $this->obras_model->salvarEspecialidade($dados);
+
+        if ($result) {
+            echo json_encode(['success' => true, 'message' => 'Especialidade salva com sucesso', 'id' => $result]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Erro ao salvar especialidade']);
+        }
+    }
+
+    public function excluirEspecialidade()
+    {
+        if (!$this->input->is_ajax_request()) {
+            show_404();
+        }
+
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'dObras')) {
+            echo json_encode(['success' => false, 'message' => 'Sem permissão']);
+            return;
+        }
+
+        $id = $this->input->post('id');
+        if (!$id || !is_numeric($id)) {
+            echo json_encode(['success' => false, 'message' => 'ID inválido']);
+            return;
+        }
+
+        $result = $this->obras_model->excluirEspecialidade($id);
+
+        if ($result) {
+            echo json_encode(['success' => true, 'message' => 'Especialidade excluída com sucesso']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Erro ao excluir especialidade']);
+        }
+    }
+
+    // ============================================
+    // CONFIGURACOES - TIPOS DE ATIVIDADE
+    // ============================================
+
+    public function salvarTipoAtividade()
+    {
+        if (!$this->input->is_ajax_request()) {
+            show_404();
+        }
+
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cObras')) {
+            echo json_encode(['success' => false, 'message' => 'Sem permissão']);
+            return;
+        }
+
+        $this->load->model('atividades_tipos_model');
+
+        $dados = [
+            'idTipo' => $this->input->post('id') ?: null,
+            'nome' => $this->input->post('nome'),
+            'descricao' => $this->input->post('descricao'),
+            'categoria' => $this->input->post('categoria') ?: 'outro',
+            'duracao_estimada' => $this->input->post('duracao') ?: 30,
+            'cor' => $this->input->post('cor') ?: '#3498db',
+            'icone' => $this->input->post('icone') ?: 'bx-wrench',
+        ];
+
+        if (empty($dados['nome'])) {
+            echo json_encode(['success' => false, 'message' => 'Nome do tipo é obrigatório']);
+            return;
+        }
+
+        if (!empty($dados['idTipo'])) {
+            $this->db->where('idTipo', $dados['idTipo']);
+            $this->db->update('atividades_tipos', $dados);
+            $result = $dados['idTipo'];
+        } else {
+            unset($dados['idTipo']);
+            $this->db->insert('atividades_tipos', $dados);
+            $result = $this->db->insert_id();
+        }
+
+        if ($result) {
+            echo json_encode(['success' => true, 'message' => 'Tipo de atividade salvo com sucesso', 'id' => $result]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Erro ao salvar tipo de atividade']);
+        }
+    }
+
+    public function excluirTipoAtividade()
+    {
+        if (!$this->input->is_ajax_request()) {
+            show_404();
+        }
+
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'dObras')) {
+            echo json_encode(['success' => false, 'message' => 'Sem permissão']);
+            return;
+        }
+
+        $id = $this->input->post('id');
+        if (!$id || !is_numeric($id)) {
+            echo json_encode(['success' => false, 'message' => 'ID inválido']);
+            return;
+        }
+
+        $this->db->where('idTipo', $id);
+        $this->db->delete('atividades_tipos');
+
+        if ($this->db->affected_rows() >= 0) {
+            echo json_encode(['success' => true, 'message' => 'Tipo de atividade excluído com sucesso']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Erro ao excluir tipo de atividade']);
+        }
+    }
+
+    // ============================================
+    // CONFIGURACOES - STATUS DE ATIVIDADE
+    // ============================================
+
+    public function salvarStatusAtividade()
+    {
+        if (!$this->input->is_ajax_request()) {
+            show_404();
+        }
+
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cObras')) {
+            echo json_encode(['success' => false, 'message' => 'Sem permissão']);
+            return;
+        }
+
+        $this->load->model('atividades_model');
+
+        $dados = [
+            'id' => $this->input->post('id') ?: null,
+            'nome' => $this->input->post('nome'),
+            'descricao' => $this->input->post('descricao'),
+            'cor' => $this->input->post('cor') ?: '#3498db',
+            'icone' => $this->input->post('icone') ?: 'bx-calendar',
+            'fluxo' => $this->input->post('fluxo') ?: 'normal',
+        ];
+
+        if (empty($dados['nome'])) {
+            echo json_encode(['success' => false, 'message' => 'Nome do status é obrigatório']);
+            return;
+        }
+
+        if (!empty($dados['id'])) {
+            $this->db->where('id', $dados['id']);
+            $this->db->update('atividades_status', $dados);
+            $result = $dados['id'];
+        } else {
+            unset($dados['id']);
+            $this->db->insert('atividades_status', $dados);
+            $result = $this->db->insert_id();
+        }
+
+        if ($result) {
+            echo json_encode(['success' => true, 'message' => 'Status de atividade salvo com sucesso', 'id' => $result]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Erro ao salvar status de atividade']);
+        }
+    }
+
+    public function excluirStatusAtividade()
+    {
+        if (!$this->input->is_ajax_request()) {
+            show_404();
+        }
+
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'dObras')) {
+            echo json_encode(['success' => false, 'message' => 'Sem permissão']);
+            return;
+        }
+
+        $id = $this->input->post('id');
+        if (!$id || !is_numeric($id)) {
+            echo json_encode(['success' => false, 'message' => 'ID inválido']);
+            return;
+        }
+
+        $this->db->where('id', $id);
+        $this->db->delete('atividades_status');
+
+        if ($this->db->affected_rows() >= 0) {
+            echo json_encode(['success' => true, 'message' => 'Status de atividade excluído com sucesso']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Erro ao excluir status de atividade']);
+        }
+    }
 }

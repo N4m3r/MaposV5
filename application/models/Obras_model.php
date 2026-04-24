@@ -1184,7 +1184,8 @@ class Obras_model extends CI_Model
         try {
             $this->db->select('oe.*,
                 COUNT(DISTINCT oa.id) as total_atividades,
-                COUNT(DISTINCT CASE WHEN oa.status = "concluida" THEN oa.id END) as atividades_concluidas');
+                COUNT(DISTINCT CASE WHEN oa.status = "concluida" THEN oa.id END) as atividades_concluidas,
+                ROUND(AVG(COALESCE(oa.percentual_concluido, 0)), 0) as percentual_calculado');
             $this->db->from('obra_etapas oe');
 
             // Só fazer join com atividades se a tabela existir
@@ -1203,7 +1204,14 @@ class Obras_model extends CI_Model
             $this->db->order_by('oe.numero_etapa', 'ASC');
             $query = $this->db->get();
 
-            return $query ? $query->result() : [];
+            $etapas = $query ? $query->result() : [];
+
+            // Garantir que percentual_concluido seja preenchido
+            foreach ($etapas as $etapa) {
+                $etapa->percentual_concluido = (int) ($etapa->percentual_concluido ?? $etapa->percentual_calculado ?? 0);
+            }
+
+            return $etapas;
         } catch (Exception $e) {
             log_message('error', 'Erro ao buscar etapas: ' . $e->getMessage());
             return [];
@@ -1761,6 +1769,312 @@ class Obras_model extends CI_Model
         ]);
 
         return $progresso_final;
+    }
+
+    // =========================================================
+    // MÉTODOS DE CONFIGURAÇÃO - FUNÇÕES DA EQUIPE
+    // =========================================================
+
+    /**
+     * Criar tabela de funções se não existir
+     */
+    private function criarTabelaFuncoes()
+    {
+        $sql = "CREATE TABLE IF NOT EXISTS obra_funcoes (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            nome VARCHAR(100) NOT NULL,
+            descricao TEXT,
+            nivel VARCHAR(20) DEFAULT 'baixo',
+            ativo TINYINT(1) DEFAULT 1,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            UNIQUE KEY uk_nome (nome)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
+
+        $this->db->query($sql);
+    }
+
+    /**
+     * Salvar função da equipe (insert ou update)
+     */
+    public function salvarFuncao($dados)
+    {
+        if (!$this->tabelaExiste('obra_funcoes')) {
+            $this->criarTabelaFuncoes();
+        }
+
+        try {
+            $data = [
+                'nome' => $dados['nome'],
+                'descricao' => $dados['descricao'] ?? null,
+                'nivel' => $dados['nivel'] ?? 'baixo',
+            ];
+
+            if (!empty($dados['id'])) {
+                $data['updated_at'] = date('Y-m-d H:i:s');
+                $this->db->where('id', $dados['id']);
+                $this->db->update('obra_funcoes', $data);
+                return $dados['id'];
+            }
+
+            $data['created_at'] = date('Y-m-d H:i:s');
+            $this->db->insert('obra_funcoes', $data);
+            return $this->db->insert_id();
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao salvar função: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Excluir função (soft delete)
+     */
+    public function excluirFuncao($id)
+    {
+        if (!$this->tabelaExiste('obra_funcoes')) {
+            return false;
+        }
+
+        try {
+            $this->db->where('id', $id);
+            $this->db->update('obra_funcoes', ['ativo' => 0, 'updated_at' => date('Y-m-d H:i:s')]);
+            return $this->db->affected_rows() >= 0;
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao excluir função: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    // =========================================================
+    // MÉTODOS DE CONFIGURAÇÃO - TIPOS DE OBRA
+    // =========================================================
+
+    /**
+     * Criar tabela de tipos de obra se não existir
+     */
+    private function criarTabelaTiposObra()
+    {
+        $sql = "CREATE TABLE IF NOT EXISTS obra_tipos (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            nome VARCHAR(100) NOT NULL,
+            descricao TEXT,
+            cor VARCHAR(7) DEFAULT '#3498db',
+            icone VARCHAR(50) DEFAULT 'bx-building',
+            ativo TINYINT(1) DEFAULT 1,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            UNIQUE KEY uk_nome (nome)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
+
+        $this->db->query($sql);
+    }
+
+    /**
+     * Salvar tipo de obra (insert ou update)
+     */
+    public function salvarTipoObra($dados)
+    {
+        if (!$this->tabelaExiste('obra_tipos')) {
+            $this->criarTabelaTiposObra();
+        }
+
+        try {
+            $data = [
+                'nome' => $dados['nome'],
+                'descricao' => $dados['descricao'] ?? null,
+                'cor' => $dados['cor'] ?? '#3498db',
+                'icone' => $dados['icone'] ?? 'bx-building',
+            ];
+
+            if (!empty($dados['id'])) {
+                $data['updated_at'] = date('Y-m-d H:i:s');
+                $this->db->where('id', $dados['id']);
+                $this->db->update('obra_tipos', $data);
+                return $dados['id'];
+            }
+
+            $data['created_at'] = date('Y-m-d H:i:s');
+            $this->db->insert('obra_tipos', $data);
+            return $this->db->insert_id();
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao salvar tipo de obra: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Excluir tipo de obra (soft delete)
+     */
+    public function excluirTipoObra($id)
+    {
+        if (!$this->tabelaExiste('obra_tipos')) {
+            return false;
+        }
+
+        try {
+            $this->db->where('id', $id);
+            $this->db->update('obra_tipos', ['ativo' => 0, 'updated_at' => date('Y-m-d H:i:s')]);
+            return $this->db->affected_rows() >= 0;
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao excluir tipo de obra: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    // =========================================================
+    // MÉTODOS DE CONFIGURAÇÃO - STATUS DE OBRA
+    // =========================================================
+
+    /**
+     * Criar tabela de status de obra se não existir
+     */
+    private function criarTabelaStatusObra()
+    {
+        $sql = "CREATE TABLE IF NOT EXISTS obra_status (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            nome VARCHAR(100) NOT NULL,
+            descricao TEXT,
+            cor VARCHAR(7) DEFAULT '#3498db',
+            icone VARCHAR(50) DEFAULT 'bx-flag',
+            ordem INT DEFAULT 1,
+            finalizado TINYINT(1) DEFAULT 0,
+            ativo TINYINT(1) DEFAULT 1,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            UNIQUE KEY uk_nome (nome)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
+
+        $this->db->query($sql);
+    }
+
+    /**
+     * Salvar status de obra (insert ou update)
+     */
+    public function salvarStatusObra($dados)
+    {
+        if (!$this->tabelaExiste('obra_status')) {
+            $this->criarTabelaStatusObra();
+        }
+
+        try {
+            $data = [
+                'nome' => $dados['nome'],
+                'descricao' => $dados['descricao'] ?? null,
+                'cor' => $dados['cor'] ?? '#3498db',
+                'icone' => $dados['icone'] ?? 'bx-flag',
+                'ordem' => $dados['ordem'] ?? 1,
+                'finalizado' => $dados['finalizado'] ?? 0,
+            ];
+
+            if (!empty($dados['id'])) {
+                $data['updated_at'] = date('Y-m-d H:i:s');
+                $this->db->where('id', $dados['id']);
+                $this->db->update('obra_status', $data);
+                return $dados['id'];
+            }
+
+            $data['created_at'] = date('Y-m-d H:i:s');
+            $this->db->insert('obra_status', $data);
+            return $this->db->insert_id();
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao salvar status de obra: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Excluir status de obra (soft delete)
+     */
+    public function excluirStatusObra($id)
+    {
+        if (!$this->tabelaExiste('obra_status')) {
+            return false;
+        }
+
+        try {
+            $this->db->where('id', $id);
+            $this->db->update('obra_status', ['ativo' => 0, 'updated_at' => date('Y-m-d H:i:s')]);
+            return $this->db->affected_rows() >= 0;
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao excluir status de obra: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    // =========================================================
+    // MÉTODOS DE CONFIGURAÇÃO - ESPECIALIDADES
+    // =========================================================
+
+    /**
+     * Criar tabela de especialidades se não existir
+     */
+    private function criarTabelaEspecialidades()
+    {
+        $sql = "CREATE TABLE IF NOT EXISTS obra_especialidades (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            nome VARCHAR(100) NOT NULL,
+            descricao TEXT,
+            cor VARCHAR(7) DEFAULT '#3498db',
+            icone VARCHAR(50) DEFAULT 'bx-hard-hat',
+            ativo TINYINT(1) DEFAULT 1,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            UNIQUE KEY uk_nome (nome)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
+
+        $this->db->query($sql);
+    }
+
+    /**
+     * Salvar especialidade (insert ou update)
+     */
+    public function salvarEspecialidade($dados)
+    {
+        if (!$this->tabelaExiste('obra_especialidades')) {
+            $this->criarTabelaEspecialidades();
+        }
+
+        try {
+            $data = [
+                'nome' => $dados['nome'],
+                'descricao' => $dados['descricao'] ?? null,
+                'cor' => $dados['cor'] ?? '#3498db',
+                'icone' => $dados['icone'] ?? 'bx-hard-hat',
+            ];
+
+            if (!empty($dados['id'])) {
+                $data['updated_at'] = date('Y-m-d H:i:s');
+                $this->db->where('id', $dados['id']);
+                $this->db->update('obra_especialidades', $data);
+                return $dados['id'];
+            }
+
+            $data['created_at'] = date('Y-m-d H:i:s');
+            $this->db->insert('obra_especialidades', $data);
+            return $this->db->insert_id();
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao salvar especialidade: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Excluir especialidade (soft delete)
+     */
+    public function excluirEspecialidade($id)
+    {
+        if (!$this->tabelaExiste('obra_especialidades')) {
+            return false;
+        }
+
+        try {
+            $this->db->where('id', $id);
+            $this->db->update('obra_especialidades', ['ativo' => 0, 'updated_at' => date('Y-m-d H:i:s')]);
+            return $this->db->affected_rows() >= 0;
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao excluir especialidade: ' . $e->getMessage());
+            return false;
+        }
     }
 }
 

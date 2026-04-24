@@ -2940,6 +2940,13 @@ class Tecnicos extends MY_Controller
             return;
         }
 
+        // Reabrir atividade permitido somente pelo painel administrativo
+        $permissao = $this->session->userdata('permissao');
+        if (!$permissao || $permissao > 2) {
+            echo json_encode(['success' => false, 'message' => 'Reabrir atividade permitido somente pelo painel administrativo.']);
+            return;
+        }
+
         $tecnico_id = $this->session->userdata('tec_id');
         $atividade_id = $this->input->post('atividade_id');
         $motivo = $this->input->post('motivo');
@@ -2969,14 +2976,14 @@ class Tecnicos extends MY_Controller
             }
         }
 
-        // Verificar se a atividade está concluída
-        $status_permitidos = ['concluida', 'concluido', 'finalizada', 'finalizado'];
+        // Verificar se a atividade está finalizada (somente finalizado pode ser reaberto)
+        $status_permitidos = ['finalizado'];
         $status_atual = strtolower($atividade->status ?? '');
 
         if (!in_array($status_atual, $status_permitidos)) {
             echo json_encode([
                 'success' => false,
-                'message' => 'Apenas atividades concluídas podem ser reabertas. Status atual: ' . ($atividade->status ?? 'desconhecido')
+                'message' => 'Apenas atividades finalizadas podem ser reabertas. Status atual: ' . ($atividade->status ?? 'desconhecido')
             ]);
             return;
         }
