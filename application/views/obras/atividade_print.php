@@ -6,13 +6,24 @@
     <title>Relatório de Atendimento #<?php echo $atividade->id ?? ''; ?></title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* A4 Page */
+        @page {
+            size: A4;
+            margin: 15mm;
+        }
+
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
             font-size: 13px;
             line-height: 1.5;
             color: #333;
             background: #fff;
-            padding: 30px;
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            padding: 15mm;
+            box-sizing: border-box;
         }
 
         /* Cabeçalho Emitente */
@@ -20,13 +31,13 @@
             display: flex;
             align-items: center;
             gap: 20px;
-            padding-bottom: 20px;
-            margin-bottom: 20px;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
             border-bottom: 2px solid #667eea;
         }
         .header-emitente .logo {
-            width: 80px;
-            height: 80px;
+            max-width: 120px;
+            max-height: 80px;
             object-fit: contain;
         }
         .header-emitente .info {
@@ -354,8 +365,8 @@
 
 <!-- Cabeçalho Emitente -->
 <div class="header-emitente">
-    <?php if (!empty($emitente->logoUrl)): ?>
-    <img src="<?php echo base_url($emitente->logoUrl); ?>" alt="Logo" class="logo">
+    <?php if (!empty($emitente->url_logo)): ?>
+    <img src="<?php echo $emitente->url_logo; ?>" alt="Logo" class="logo">
     <?php endif; ?>
     <div class="info">
         <h2><?php echo htmlspecialchars($emitente->nome ?? $emitente->emitente ?? 'Empresa'); ?></h2>
