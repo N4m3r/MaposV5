@@ -809,6 +809,9 @@ class Obras extends MY_Controller
         $atividade_id = $this->obra_atividades_model->add($dados);
 
         if ($atividade_id) {
+            // Recalcular progresso da obra após adicionar atividade
+            $this->obras_model->atualizarProgressoPorAtividades($obra_id);
+
             $this->session->set_flashdata('success', 'Atividade adicionada com sucesso!');
         } else {
             $error = $this->db->error();
@@ -855,6 +858,10 @@ class Obras extends MY_Controller
         log_message('debug', 'excluirAtividade - Resultado do delete: ' . ($result ? 'SUCESSO' : 'FALHA'));
 
         if ($result) {
+            // Recalcular progresso da obra após exclusão
+            $this->obras_model->atualizarProgressoPorAtividades($obra_id);
+            log_message('info', 'Progresso da obra ' . $obra_id . ' recalculado após exclusão da atividade ' . $atividade_id);
+
             $this->session->set_flashdata('success', 'Atividade excluída com sucesso!');
         } else {
             $error = $this->db->error();
@@ -1586,6 +1593,49 @@ class Obras extends MY_Controller
             echo json_encode([
                 'success' => false,
                 'message' => 'Erro ao atualizar progresso'
+            ]);
+        }
+    }
+
+    /**
+     * API: Recalcular progresso de todas as obras
+     */
+    public function api_atualizarProgressoGeral()
+    {
+        if (!$this->input->is_ajax_request()) {
+            show_404();
+        }
+
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')) {
+            echo json_encode(['success' => false, 'message' => 'Sem permissão']);
+            return;
+        }
+
+        try {
+            $obras = $this->obras_model->getAll();
+            $atualizadas = 0;
+            $erros = 0;
+
+            foreach ($obras as $obra) {
+                $result = $this->obras_model->atualizarProgressoPorAtividades($obra->id);
+                if ($result !== false) {
+                    $atualizadas++;
+                } else {
+                    $erros++;
+                }
+            }
+
+            echo json_encode([
+                'success' => true,
+                'atualizadas' => $atualizadas,
+                'erros' => $erros,
+                'message' => $atualizadas . ' obras atualizadas com sucesso!'
+            ]);
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao recalcular progressos gerais: ' . $e->getMessage());
+            echo json_encode([
+                'success' => false,
+                'message' => 'Erro ao recalcular progressos: ' . $e->getMessage()
             ]);
         }
     }
