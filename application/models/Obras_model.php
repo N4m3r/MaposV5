@@ -1665,5 +1665,102 @@ class Obras_model extends CI_Model
             (object)['id' => 8, 'nome' => 'Auxiliar', 'descricao' => 'Apoio geral na obra', 'nivel' => 'baixo'],
         ];
     }
+
+    /**
+     * Atualizar progresso da obra baseado nas atividades
+     * Calcula a média ponderada dos percentuais de conclusão das atividades
+     */
+    public function atualizarProgressoPorAtividades($obra_id)
+    {
+        if (!$this->tabelaExiste('obra_atividades') || !$this->tabelaExiste('obras')) {
+            log_message('debug', 'atualizarProgressoPorAtividades: Tabela não existe');
+            return false;
+        }
+
+        try {
+            // Buscar total de atividades da obra
+            $total_atividades = $this->contarRegistros('obra_atividades', ['obra_id' => $obra_id]);
+
+            if ($total_atividades === 0) {
+                log_message('debug', 'atualizarProgressoPorAtividades: Sem atividades para obra ' . $obra_id);
+                return false;
+            }
+
+            // Calcular média dos percentuais de conclusão das atividades
+            $sql = "SELECT AVG(COALESCE(percentual_concluido, 0)) as media_percentual FROM obra_atividades WHERE obra_id = ?";
+            $query = $this->db->query($sql, [$obra_id]);
+            $result = $query ? $query->row() : null;
+            $progresso = $result ? round($result->media_percentual) : 0;
+
+            // Limitar a 100%
+            $progresso = min(max($progresso, 0), 100);
+
+            // Se todas as atividades estão concluídas, garantir 100%
+            $sqlConcluidas = "SELECT COUNT(*) as total FROM obra_atividades WHERE obra_id = ? AND status != 'concluida' AND (percentual_concluido IS NULL OR percentual_concluido < 100)";
+            $queryPendentes = $this->db->query($sqlConcluidas, [$obra_id]);
+            $pendentes = $queryPendentes ? (int) $queryPendentes->row()->total : 0;
+
+            if ($pendentes === 0) {
+                $progresso = 100;
+            }
+
+            // Atualizar obra
+            $this->db->where('id', $obra_id);
+            $this->db->update('obras', [
+                'percentual_concluido' => $progresso,
+                'updated_at' => date('Y-m-d H:i:s')
+            ]);
+
+            log_message('info', 'Progresso da obra ' . $obra_id . ' atualizado: ' . $progresso . '% (baseado na média de ' . $total_atividades . ' atividades)');
+
+            return $progresso;
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao atualizar progresso por atividades: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Calcular progresso considerando etapas e atividades
+     * Peso: 50% etapas, 50% atividades (média ponderada)
+     */
+    public function calcularProgressoGeral($obra_id)
+    {
+        $progresso_etapas = 0;
+        $progresso_atividades = 0;
+        $peso_etapas = 0.5;
+        $peso_atividades = 0.5;
+
+        // Calcular progresso por etapas
+        if ($this->tabelaExiste('obra_etapas')) {
+            $this->db->select_avg('percentual_concluido', 'media');
+            $this->db->where('obra_id', $obra_id);
+            $result = $this->db->get('obra_etapas')->row();
+            $progresso_etapas = $result->media ?? 0;
+        }
+
+        // Calcular progresso por atividades
+        if ($this->tabelaExiste('obra_atividades')) {
+            $total = $this->contarRegistros('obra_atividades', ['obra_id' => $obra_id]);
+            if ($total > 0) {
+                $this->db->select_avg('percentual_concluido', 'media');
+                $this->db->where('obra_id', $obra_id);
+                $result = $this->db->get('obra_atividades')->row();
+                $progresso_atividades = $result->media ?? 0;
+            }
+        }
+
+        // Calcular média ponderada
+        $progresso_final = round(($progresso_etapas * $peso_etapas) + ($progresso_atividades * $peso_atividades));
+
+        // Atualizar obra
+        $this->db->where('id', $obra_id);
+        $this->db->update('obras', [
+            'percentual_concluido' => $progresso_final,
+            'updated_at' => date('Y-m-d H:i:s')
+        ]);
+
+        return $progresso_final;
+    }
 }
 

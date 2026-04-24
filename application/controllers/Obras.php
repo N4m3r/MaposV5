@@ -1545,9 +1545,49 @@ class Obras extends MY_Controller
 
         if (!$result) {
             $this->session->set_flashdata('error', 'Erro ao atualizar status.');
+        } else {
+            // Atualizar progresso da obra quando status muda
+            if ($atividade->obra_id) {
+                // Se atividade foi concluída ou teve progresso alterado, recalcular
+                if ($novo_status === 'concluida' || isset($dados['percentual_concluido'])) {
+                    $this->obras_model->atualizarProgressoPorAtividades($atividade->obra_id);
+                    log_info('Progresso da obra ' . $atividade->obra_id . ' atualizado após alteração na atividade ' . $atividade_id);
+                }
+            }
         }
 
         redirect('obras/visualizarAtividade/' . $atividade_id);
+    }
+
+    /**
+     * API: Recalcular e atualizar progresso da obra
+     */
+    public function api_atualizarProgresso($obra_id)
+    {
+        if (!$this->input->is_ajax_request()) {
+            show_404();
+        }
+
+        if (!$obra_id || !is_numeric($obra_id)) {
+            echo json_encode(['success' => false, 'message' => 'ID da obra inválido']);
+            return;
+        }
+
+        // Calcular progresso baseado nas atividades
+        $progresso = $this->obras_model->atualizarProgressoPorAtividades($obra_id);
+
+        if ($progresso !== false) {
+            echo json_encode([
+                'success' => true,
+                'progresso' => $progresso,
+                'message' => 'Progresso atualizado com sucesso'
+            ]);
+        } else {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Erro ao atualizar progresso'
+            ]);
+        }
     }
 
     /**
@@ -1773,23 +1813,6 @@ class Obras extends MY_Controller
     // ============================================
     // API AJAX
     // ============================================
-
-    /**
-     * API: Atualizar progresso da obra
-     */
-    public function api_atualizarProgresso($obra_id)
-    {
-        if (!$this->input->is_ajax_request()) {
-            show_404();
-        }
-
-        $progresso = $this->obras_model->atualizarProgresso($obra_id);
-
-        echo json_encode([
-            'success' => $progresso !== false,
-            'progresso' => $progresso
-        ]);
-    }
 
     /**
      * AJAX: Atualizar status da obra (edição rápida)

@@ -870,6 +870,11 @@ if (empty($obras)) {
                     <i class="icon-cog"></i> Configurações
                 </a>
                 <?php endif; ?>
+                <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
+                <button type="button" class="obras-filter-btn" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white;" onclick="atualizarTodosProgressos()">
+                    <i class="icon-refresh"></i> Recalcular Progressos
+                </button>
+                <?php endif; ?>
             </div>
         </div>
     </div>
@@ -1256,6 +1261,34 @@ function atualizarStatusRapido(obraId, novoStatus) {
 }
 
 // Função para mostrar toast de notificação
+// Recalcular progressos de todas as obras visíveis
+function atualizarTodosProgressos() {
+    mostrarToast('Recalculando...', 'Atualizando progresso de todas as obras', 'info');
+
+    $.ajax({
+        url: '<?php echo site_url("obras/api_atualizarProgressoGeral"); ?>',
+        method: 'POST',
+        dataType: 'json',
+        data: {
+            '<?php echo $this->security->get_csrf_token_name(); ?>': '<?php echo $this->security->get_csrf_hash(); ?>'
+        },
+        success: function(response) {
+            if (response.success) {
+                mostrarToast('Sucesso!', 'Progressos atualizados. Recarregando...', 'success');
+                setTimeout(function() {
+                    location.reload();
+                }, 1500);
+            } else {
+                mostrarToast('Erro!', response.message || 'Erro ao recalcular progressos', 'error');
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('Erro ao recalcular progressos:', error);
+            mostrarToast('Erro!', 'Falha na comunicação com o servidor', 'error');
+        }
+    });
+}
+
 function mostrarToast(titulo, mensagem, tipo) {
     // Remover toasts anteriores
     const toastsAnteriores = document.querySelectorAll('.obra-toast');

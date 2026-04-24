@@ -404,6 +404,14 @@ class Obra_atividades_model extends CI_Model
                 }
             }
 
+            // Atualizar progresso geral da obra sempre que atividades são alteradas
+            if (!empty($atividade_atual->obra_id)) {
+                $CI =& get_instance();
+                $CI->load->model('obras_model');
+                $CI->obras_model->atualizarProgressoPorAtividades($atividade_atual->obra_id);
+                log_message('info', 'Progresso da obra ' . $atividade_atual->obra_id . ' atualizado após alteração na atividade ' . $id);
+            }
+
             return true;
         } catch (Exception $e) {
             log_message('error', 'Erro ao atualizar atividade: ' . $e->getMessage());
