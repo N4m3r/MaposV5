@@ -985,7 +985,16 @@
                         <div class="info-label">Tipo</div>
                         <div class="info-value">
                             <i class="icon-cog"></i>
-                            <?php echo htmlspecialchars($obra->tipo_obra ?? 'N/A'); ?>
+                            <?php
+                            $tiposObraLabels = [
+                                'Condominio' => 'Condomínio',
+                                'Comercio' => 'Comércio',
+                                'Residencia' => 'Residência',
+                                'Industrial' => 'Industrial',
+                                'Publica' => 'Pública',
+                            ];
+                            echo htmlspecialchars($tiposObraLabels[$obra->tipo_obra] ?? ($obra->tipo_obra ?: 'Não definido'));
+                            ?>
                         </div>
                     </div>
                     <div class="info-item full-width">

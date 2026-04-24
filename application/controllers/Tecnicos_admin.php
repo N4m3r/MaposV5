@@ -462,7 +462,13 @@ class Tecnicos_admin extends MY_Controller
         $tecnicos = $tecnicos_query ? $tecnicos_query->result() : [];
 
         $this->data['obra'] = $obra;
-        $this->data['etapas'] = $this->obras_model->getEtapas($id);
+
+        // Filtrar apenas etapas com datas definidas
+        $etapasTodas = $this->obras_model->getEtapas($id);
+        $this->data['etapas'] = array_filter($etapasTodas, function($etapa) {
+            return !empty($etapa->data_inicio_prevista) && !empty($etapa->data_fim_prevista);
+        });
+
         $this->data['equipe'] = $this->obras_model->getEquipe($id);
         $this->data['diario'] = $this->obras_model->getDiario($id);
         $this->data['os_vinculadas'] = $os_vinculadas;
@@ -1211,8 +1217,11 @@ class Tecnicos_admin extends MY_Controller
             redirect('tecnicos_admin/minhas_obras_tecnico');
         }
 
-        // Buscar etapas da obra
-        $etapas = $this->obras_model->getEtapas($obra_id);
+        // Buscar etapas da obra (filtrar apenas com datas definidas)
+        $etapasTodas = $this->obras_model->getEtapas($obra_id);
+        $etapas = array_filter($etapasTodas, function($etapa) {
+            return !empty($etapa->data_inicio_prevista) && !empty($etapa->data_fim_prevista);
+        });
 
         // Buscar minhas OS na obra
         $this->db->select('os.idOs, os.status, os.dataInicial, c.nomeCliente');

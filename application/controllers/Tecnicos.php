@@ -297,8 +297,11 @@ class Tecnicos extends MY_Controller
             redirect('tecnicos/minhas_obras');
         }
 
-        // Buscar etapas da obra
-        $etapas = $this->obras_model->getEtapas($obra_id);
+        // Buscar etapas da obra (filtrar apenas com datas definidas)
+        $etapasTodas = $this->obras_model->getEtapas($obra_id);
+        $etapas = array_filter($etapasTodas, function($etapa) {
+            return !empty($etapa->data_inicio_prevista) && !empty($etapa->data_fim_prevista);
+        });
 
         // Buscar minhas OS na obra
         $minhas_os = [];
@@ -464,8 +467,11 @@ class Tecnicos extends MY_Controller
             $etapa = $this->obras_model->getEtapaById($etapa_id);
         }
 
-        // Carrega etapas para seleção
-        $etapas = $this->obras_model->getEtapas($obra_id);
+        // Carrega etapas para seleção (filtrar apenas com datas definidas)
+        $etapasTodas = $this->obras_model->getEtapas($obra_id);
+        $etapas = array_filter($etapasTodas, function($etapa) {
+            return !empty($etapa->data_inicio_prevista) && !empty($etapa->data_fim_prevista);
+        });
 
         // Vincula atividade planejada se informada via GET
         $obra_atividade_id = $this->input->get('obra_atividade_id');

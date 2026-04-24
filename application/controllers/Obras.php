@@ -346,7 +346,13 @@ class Obras extends MY_Controller
             redirect('obras');
         }
 
-        $this->data['etapas'] = $this->obras_model->getEtapasComEstatisticas($id);
+        $etapasTodas = $this->obras_model->getEtapasComEstatisticas($id);
+
+        // Filtrar apenas etapas com datas definidas (data_inicio_prevista e data_fim_prevista)
+        $this->data['etapas'] = array_filter($etapasTodas, function($etapa) {
+            return !empty($etapa->data_inicio_prevista) && !empty($etapa->data_fim_prevista);
+        });
+
         $this->data['equipe'] = $this->obras_model->getEquipe($id);
 
         // Buscar atividades recentes organizadas por etapa
@@ -431,7 +437,13 @@ class Obras extends MY_Controller
             redirect('obras');
         }
 
-        $this->data['etapas'] = $this->obras_model->getEtapasComEstatisticas($obra_id);
+        $etapasTodas = $this->obras_model->getEtapasComEstatisticas($obra_id);
+
+        // Filtrar apenas etapas com datas definidas
+        $this->data['etapas'] = array_filter($etapasTodas, function($etapa) {
+            return !empty($etapa->data_inicio_prevista) && !empty($etapa->data_fim_prevista);
+        });
+
         $this->data['equipe'] = $this->obras_model->getEquipe($obra_id);
         $this->data['atividades_recentes'] = $this->obra_atividades_model->getByObra($obra_id, [], 20);
 
@@ -1462,6 +1474,104 @@ class Obras extends MY_Controller
     }
 
     /**
+     * Imprimir relatório da atividade para o cliente
+     */
+    public function imprimirAtividade($atividade_id = null)
+    {
+        if (!$atividade_id || !is_numeric($atividade_id)) {
+            $atividade_id = $this->uri->segment(3);
+        }
+
+        if (!$atividade_id || !is_numeric($atividade_id)) {
+            show_error('Atividade não encontrada.');
+            return;
+        }
+
+        $this->load->model('mapos_model');
+        $this->load->model('Atividades_model', 'atividades');
+
+        if (!isset($this->obra_checkins_model)) {
+            $this->load->model('obra_checkins_model');
+        }
+
+        $atividade = $this->obra_atividades_model->getById($atividade_id);
+        if (!$atividade) {
+            show_error('Atividade não encontrada.');
+            return;
+        }
+
+        $obra = $this->obras_model->getById($atividade->obra_id);
+        $historico = $this->obra_atividades_model->getHistorico($atividade_id);
+        $checkins = $this->obra_checkins_model->getByAtividade($atividade_id);
+        $emitente = $this->mapos_model->getEmitente();
+        $cliente = $this->obras_model->getCliente($atividade->obra_id);
+        $historico_execucoes = $this->atividades->getHistoricoExecucoes($atividade_id);
+
+        $this->db->where('obra_atividade_id', $atividade_id);
+        $this->db->order_by('idAtividade', 'DESC');
+        $query = $this->db->get('os_atividades');
+        $atividade_real = $query ? $query->row() : null;
+
+        $fotos_atividade = [];
+        if ($atividade_real) {
+            $atividade_real_completa = $this->atividades->getByIdCompleto($atividade_real->idAtividade);
+
+            // Mesclar observações da atividade real com a planejada
+            if (!empty($atividade_real_completa->observacoes)) {
+                $atividade->observacoes = $atividade_real_completa->observacoes;
+            }
+            if (!empty($atividade_real_completa->problemas_encontrados)) {
+                $atividade->problemas_encontrados = $atividade_real_completa->problemas_encontrados;
+            }
+            if (!empty($atividade_real_completa->solucao_aplicada)) {
+                $atividade->solucao_aplicada = $atividade_real_completa->solucao_aplicada;
+            }
+            if (!empty($atividade_real_completa->etapa_nome)) {
+                $atividade->etapa_nome = $atividade_real_completa->etapa_nome;
+            } elseif (!empty($atividade_real_completa->etapa_id)) {
+                $etapa = $this->db->get_where('obra_etapas', ['id' => $atividade_real_completa->etapa_id])->row();
+                if ($etapa) {
+                    $atividade->etapa_nome = $etapa->nome;
+                }
+            }
+            if (!empty($atividade_real_completa->hora_inicio)) {
+                $atividade->hora_inicio = $atividade_real_completa->hora_inicio;
+            }
+            if (!empty($atividade_real_completa->hora_fim)) {
+                $atividade->hora_fim = $atividade_real_completa->hora_fim;
+            }
+            if (!empty($atividade_real_completa->duracao_minutos)) {
+                $atividade->horas_trabalhadas = round($atividade_real_completa->duracao_minutos / 60, 2);
+            } elseif (!empty($atividade_real_completa->hora_inicio) && !empty($atividade_real_completa->hora_fim)) {
+                $inicio = strtotime($atividade_real_completa->hora_inicio);
+                $fim = strtotime($atividade_real_completa->hora_fim);
+                $atividade->horas_trabalhadas = round(($fim - $inicio) / 3600, 2);
+            }
+
+            $checkins_real = $this->obra_checkins_model->getByAtividade($atividade_real->idAtividade);
+            if (!empty($checkins_real)) {
+                $checkins = array_merge($checkins, $checkins_real);
+            }
+
+            $fotos_atividade = $this->atividades->getFotos($atividade_real->idAtividade);
+        }
+
+        $data = [
+            'atividade' => $atividade,
+            'obra' => $obra,
+            'historico' => $historico,
+            'checkins' => $checkins,
+            'emitente' => $emitente,
+            'cliente' => $cliente,
+            'historico_execucoes' => $historico_execucoes,
+            'fotos_atividade' => $fotos_atividade,
+            'atividade_real' => $atividade_real_completa ?? null,
+        ];
+
+        $this->load->view('obras/atividade_print', $data);
+    }
+
+    /**
      * Atualizar status de uma atividade
      */
     public function atualizarStatusAtividade($atividade_id = null)
@@ -1728,7 +1838,14 @@ class Obras extends MY_Controller
         $this->load->model('mapos_model');
 
         $this->data['obra'] = $this->obras_model->getByIdCompleto($obra_id);
-        $this->data['etapas'] = $this->obras_model->getEtapasComEstatisticas($obra_id);
+
+        $etapasTodas = $this->obras_model->getEtapasComEstatisticas($obra_id);
+
+        // Filtrar apenas etapas com datas definidas
+        $this->data['etapas'] = array_filter($etapasTodas, function($etapa) {
+            return !empty($etapa->data_inicio_prevista) && !empty($etapa->data_fim_prevista);
+        });
+
         $this->data['estatisticas'] = $this->obra_atividades_model->getEstatisticas($obra_id);
         $this->data['emitente'] = $this->mapos_model->getEmitente();
         $this->data['view'] = 'obras/relatorios/progresso';
@@ -1783,8 +1900,11 @@ class Obras extends MY_Controller
         // Estatísticas
         $this->data['estatisticas'] = $this->obra_atividades_model->getEstatisticas($obra_id);
 
-        // Etapas com estatísticas
-        $this->data['etapas'] = $this->obras_model->getEtapasComEstatisticas($obra_id);
+        // Etapas com estatísticas (filtrar apenas com datas definidas)
+        $etapasTodas = $this->obras_model->getEtapasComEstatisticas($obra_id);
+        $this->data['etapas'] = array_filter($etapasTodas, function($etapa) {
+            return !empty($etapa->data_inicio_prevista) && !empty($etapa->data_fim_prevista);
+        });
 
         // Equipe
         $this->data['equipe'] = $this->obras_model->getEquipe($obra_id);
@@ -1834,8 +1954,11 @@ class Obras extends MY_Controller
         // Estatísticas
         $this->data['estatisticas'] = $this->obra_atividades_model->getEstatisticas($obra_id);
 
-        // Etapas com estatísticas
-        $this->data['etapas'] = $this->obras_model->getEtapasComEstatisticas($obra_id);
+        // Etapas com estatísticas (filtrar apenas com datas definidas)
+        $etapasTodas = $this->obras_model->getEtapasComEstatisticas($obra_id);
+        $this->data['etapas'] = array_filter($etapasTodas, function($etapa) {
+            return !empty($etapa->data_inicio_prevista) && !empty($etapa->data_fim_prevista);
+        });
 
         // Equipe
         $this->data['equipe'] = $this->obras_model->getEquipe($obra_id);
