@@ -159,13 +159,25 @@
             <div style="display: flex; flex-direction: column; gap: 15px;">
                 <?php foreach ($etapas as $etapa): ?>
                 <?php
+                $etapaProgresso = $etapa->percentual_real ?? ($etapa->percentual_concluido ?? 0);
+
+                // Determinar status real da etapa com base nas atividades
+                $total_ativ_etapa = $etapa->total_atividades ?? 0;
+                $ativ_concluidas_etapa = $etapa->atividades_concluidas ?? 0;
+                if ($total_ativ_etapa > 0 && $ativ_concluidas_etapa === $total_ativ_etapa) {
+                    $etapaStatusReal = 'concluida';
+                } elseif ($total_ativ_etapa > 0 && $ativ_concluidas_etapa > 0) {
+                    $etapaStatusReal = 'em_andamento';
+                } else {
+                    $etapaStatusReal = $etapa->status ?? 'pendente';
+                }
+
                 $etapaColors = [
                     'pendente' => ['bg' => '#f5f5f5', 'border' => '#ddd', 'icon' => 'bx-time', 'color' => '#888'],
                     'em_andamento' => ['bg' => '#e3f2fd', 'border' => '#2196f3', 'icon' => 'bx-refresh', 'color' => '#2196f3'],
                     'concluida' => ['bg' => '#e8f5e9', 'border' => '#4caf50', 'icon' => 'bx-check', 'color' => '#4caf50']
                 ];
-                $etapaStyle = $etapaColors[$etapa->status] ?? $etapaColors['pendente'];
-                $etapaProgresso = $etapa->percentual_concluido ?? ($etapa->status == 'concluida' ? 100 : ($etapa->status == 'em_andamento' ? 50 : 0));
+                $etapaStyle = $etapaColors[$etapaStatusReal] ?? $etapaColors['pendente'];
                 ?>
 
                 <div style="background: <?= $etapaStyle['bg'] ?>; border-left: 4px solid <?= $etapaStyle['border'] ?>; border-radius: 10px; padding: 15px;">
@@ -182,17 +194,15 @@
 
                         <div style="text-align: right;">
                             <div style="font-size: 20px; font-weight: 700; color: <?= $etapaStyle['color'] ?>;"><?= $etapaProgresso ?>%</div>
-                            <div style="font-size: 12px; color: #888;"><?= ucfirst(str_replace('_', ' ', $etapa->status)) ?></div>
+                            <div style="font-size: 12px; color: #888;"><?= ucfirst(str_replace('_', ' ', $etapaStatusReal)) ?></div>
                         </div>
                     </div>
 
-                    <?php if ($etapaProgresso > 0): ?>
                     <div style="margin-top: 12px;">
                         <div style="background: rgba(255,255,255,0.5); border-radius: 5px; height: 6px; overflow: hidden;">
-                            <div style="width: <?= $etapaProgresso ?>%; height: 100%; background: <?= $etapaStyle['color'] ?>; border-radius: 5px;"></div>
+                            <div style="width: <?= $etapaProgresso ?>%; height: 100%; background: <?= $etapaStyle['color'] ?>; border-radius: 5px; transition: width 0.5s ease;"></div>
                         </div>
                     </div>
-                    <?php endif; ?>
                 </div>
                 <?php endforeach; ?>
             </div>

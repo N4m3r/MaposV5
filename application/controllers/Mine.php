@@ -2351,8 +2351,8 @@ class Mine extends CI_Controller
         // Carregar OS vinculadas
         $os_vinculadas = $this->obras_model->getOsVinculadas($id);
 
-        // Carregar etapas
-        $etapas = $this->obras_model->getEtapas($id);
+        // Carregar etapas com estatísticas reais
+        $etapas = $this->obras_model->getEtapasComEstatisticas($id);
 
         // Carregar diário
         $diario = $this->obras_model->getDiario($id);
@@ -2362,11 +2362,53 @@ class Mine extends CI_Controller
 
         // Carregar atividades do novo sistema (apenas visíveis ao cliente)
         $atividades = [];
+        $atividades_por_etapa = [];
         if (method_exists($this->obra_atividades_model, 'getByObra')) {
             $atividades = $this->obra_atividades_model->getByObra($id, [
                 'visivel_cliente' => true
-            ], 20);
+            ], 100);
+
+            // Agrupar atividades por etapa
+            foreach ($atividades as $atv) {
+                $etapa_id = $atv->etapa_id ?? 0;
+                if (!isset($atividades_por_etapa[$etapa_id])) {
+                    $atividades_por_etapa[$etapa_id] = [];
+                }
+                $atividades_por_etapa[$etapa_id][] = $atv;
+            }
         }
+
+        // Calcular progresso real da obra
+        $total_etapas = count($etapas);
+        $soma_percentual = 0;
+        $total_atividades_obra = 0;
+        $ativ_concluidas_obra = 0;
+        foreach ($etapas as $et) {
+            $etapa_id = $et->id ?? 0;
+            $ativs = $atividades_por_etapa[$etapa_id] ?? [];
+            $total_ativ_etapa = count($ativs);
+            $concluidas_etapa = 0;
+            foreach ($ativs as $a) {
+                $s = strtolower($a->status ?? '');
+                if (in_array($s, ['concluida', 'concluido', 'finalizado', 'finalizada'])) {
+                    $concluidas_etapa++;
+                    $ativ_concluidas_obra++;
+                }
+            }
+            $total_atividades_obra += $total_ativ_etapa;
+            $percentual_etapa = $total_ativ_etapa > 0
+                ? round(($concluidas_etapa / $total_ativ_etapa) * 100)
+                : (int) ($et->percentual_concluido ?? 0);
+            $soma_percentual += $percentual_etapa;
+            $et->percentual_real = $percentual_etapa;
+            $et->total_atividades = $total_ativ_etapa;
+            $et->atividades_concluidas = $concluidas_etapa;
+        }
+        $obra->percentual_concluido = $total_etapas > 0
+            ? round($soma_percentual / $total_etapas)
+            : ($obra->percentual_concluido ?? 0);
+        $obra->total_atividades = $total_atividades_obra;
+        $obra->atividades_concluidas = $ativ_concluidas_obra;
 
         // Coletar fotos de todas as atividades
         $fotos = [];
@@ -2386,6 +2428,7 @@ class Mine extends CI_Controller
         $data['obra'] = $obra;
         $data['os_vinculadas'] = $os_vinculadas;
         $data['etapas'] = $etapas;
+        $data['atividades_por_etapa'] = $atividades_por_etapa;
         $data['diario'] = $diario;
         $data['equipe'] = $equipe;
         $data['atividades'] = $atividades;
