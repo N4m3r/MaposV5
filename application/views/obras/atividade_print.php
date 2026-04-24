@@ -342,7 +342,15 @@
         .btn-print:hover { transform: translateY(-2px); }
 
         @media print {
-            body { padding: 15px; }
+            body {
+                width: 210mm;
+                min-height: 297mm;
+                margin: 0 auto;
+                padding: 15mm;
+                background: #fff;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
             .btn-print { display: none !important; }
             .section { break-inside: avoid; }
             .fotos-grid { grid-template-columns: repeat(4, 1fr); }

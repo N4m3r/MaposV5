@@ -488,7 +488,7 @@
                         </div>
 
                         <!-- Etapas com Progresso -->
-                        <?php if (!empty($obra->etapas)): ?
+                        <?php if (!empty($obra->etapas)): ?>
                         <div class="etapas-mini-list">
                             <?php foreach (array_slice($obra->etapas, 0, 4) as $etapa):
                                 $etapa_pct = $etapa->percentual_concluido ?? 0;
@@ -503,14 +503,14 @@
                                 </div>
                                 <div class="etapa-mini-pct"><?= $etapa_pct ?>%</div>
                             </div>
-                            <?php endforeach; ?
-                            <?php if (count($obra->etapas) > 4): ?
+                            <?php endforeach; ?>
+                            <?php if (count($obra->etapas) > 4): ?>
                             <div class="etapa-mini-item" style="justify-content: center; color: #888; font-size: 11px;">
                                 <i class="icon-ellipsis-horizontal"></i> <?= count($obra->etapas) - 4 ?> etapa(s) a mais
                             </div>
-                            <?php endif; ?
+                            <?php endif; ?>
                         </div>
-                        <?php endif; ?
+                        <?php endif; ?>
 
                         <!-- Atividades Stats -->
                         <div class="atividades-stats">
