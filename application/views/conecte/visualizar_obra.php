@@ -242,6 +242,11 @@
                             <div style="text-align: right;">
                                 <div style="font-size: 13px; color: #888; margin-bottom: 4px;"><i class="bx bx-calendar"></i> <?= date('d/m/Y', strtotime($atividade->data_atividade)) ?></div>
                                 <span style="background: <?= $status['bg'] ?>; color: <?= $status['color'] ?>; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600;"><?= ucfirst($atividade->status) ?></span>
+                                <div style="margin-top: 6px;">
+                                    <a href="<?= base_url('index.php/obras/imprimirAtividade/' . $atividade->id) ?>" target="_blank" style="font-size: 12px; color: #667eea; text-decoration: none; font-weight: 600;">
+                                        <i class="bx bx-file"></i> Ver Relatório
+                                    </a>
+                                </div>
                             </div>
                         </div>
 

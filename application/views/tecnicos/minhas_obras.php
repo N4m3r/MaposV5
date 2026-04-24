@@ -329,6 +329,95 @@
     color: #555;
     font-size: 13px;
 }
+
+/* Mini Etapas Progress */
+.etapas-mini-list {
+    margin: 12px 0;
+    max-height: 140px;
+    overflow-y: auto;
+}
+.etapa-mini-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0;
+    border-bottom: 1px solid #f5f5f5;
+    font-size: 12px;
+}
+.etapa-mini-item:last-child {
+    border-bottom: none;
+}
+.etapa-mini-numero {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 11px;
+    color: #666;
+    flex-shrink: 0;
+}
+.etapa-mini-numero.concluida {
+    background: #11998e;
+    color: white;
+}
+.etapa-mini-nome {
+    flex: 1;
+    color: #444;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.etapa-mini-barra {
+    width: 60px;
+    height: 6px;
+    background: #e9ecef;
+    border-radius: 3px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+.etapa-mini-preenchida {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.4s ease;
+}
+.etapa-mini-pct {
+    width: 32px;
+    text-align: right;
+    font-weight: 700;
+    font-size: 11px;
+    color: #667eea;
+    flex-shrink: 0;
+}
+
+/* Atividades Stats */
+.atividades-stats {
+    display: flex;
+    gap: 12px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #f0f0f0;
+}
+.atividade-stat {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #666;
+}
+.atividade-stat i {
+    font-size: 14px;
+}
+.atividade-stat .num {
+    font-weight: 700;
+    color: #333;
+}
+.atividade-stat.concluidas i { color: #11998e; }
+.atividade-stat.pendentes i { color: #f39c12; }
+.atividade-stat.total i { color: #3498db; }
 </style>
 
 <div class="obras-container">
@@ -348,8 +437,8 @@
                 <div class="stat-label">Obras Ativas</div>
             </div>
             <div class="stat-card warning">
-                <div class="stat-numero"><?= array_sum(array_column($obras, 'etapas_pendentes')) ?></div>
-                <div class="stat-label">Etapas Pendentes</div>
+                <div class="stat-numero"><?= array_sum(array_column($obras, 'atividades_pendentes')) ?></div>
+                <div class="stat-label">Ativ. Pendentes</div>
             </div>
             <div class="stat-card info">
                 <div class="stat-numero"><?= array_sum(array_column($obras, 'minhas_os')) ?></div>
@@ -398,14 +487,55 @@
                             </div>
                         </div>
 
-                        <!-- Stats -->
+                        <!-- Etapas com Progresso -->
+                        <?php if (!empty($obra->etapas)): ?
+                        <div class="etapas-mini-list">
+                            <?php foreach (array_slice($obra->etapas, 0, 4) as $etapa):
+                                $etapa_pct = $etapa->percentual_concluido ?? 0;
+                                $etapa_class = $etapa_pct >= 100 ? 'concluida' : '';
+                                $barra_cor = $etapa_pct >= 100 ? '#11998e' : ($etapa_pct >= 50 ? '#4facfe' : ($etapa_pct > 0 ? '#f39c12' : '#95a5a6'));
+                            ?>
+                            <div class="etapa-mini-item">
+                                <div class="etapa-mini-numero <?= $etapa_class ?>"><?= $etapa->numero_etapa ?></div>
+                                <div class="etapa-mini-nome"><?= htmlspecialchars($etapa->nome) ?></div>
+                                <div class="etapa-mini-barra">
+                                    <div class="etapa-mini-preenchida" style="width: <?= $etapa_pct ?>%; background: <?= $barra_cor ?>"></div>
+                                </div>
+                                <div class="etapa-mini-pct"><?= $etapa_pct ?>%</div>
+                            </div>
+                            <?php endforeach; ?
+                            <?php if (count($obra->etapas) > 4): ?
+                            <div class="etapa-mini-item" style="justify-content: center; color: #888; font-size: 11px;">
+                                <i class="icon-ellipsis-horizontal"></i> <?= count($obra->etapas) - 4 ?> etapa(s) a mais
+                            </div>
+                            <?php endif; ?
+                        </div>
+                        <?php endif; ?
+
+                        <!-- Atividades Stats -->
+                        <div class="atividades-stats">
+                            <div class="atividade-stat total">
+                                <i class="icon-tasks"></i>
+                                <span class="num"><?= $obra->atividades_total ?? 0 ?></span> ativ.
+                            </div>
+                            <div class="atividade-stat concluidas">
+                                <i class="icon-check"></i>
+                                <span class="num"><?= $obra->atividades_concluidas ?? 0 ?></span> concl.
+                            </div>
+                            <div class="atividade-stat pendentes">
+                                <i class="icon-clock"></i>
+                                <span class="num"><?= $obra->atividades_pendentes ?? 0 ?></span> pend.
+                            </div>
+                        </div>
+
+                        <!-- Stats Grid -->
                         <div class="obra-stats">
                             <div class="obra-stat-item">
                                 <div class="obra-stat-valor os"><?= $obra->minhas_os ?? 0 ?></div>
                                 <div class="obra-stat-label">Minhas OS</div>
                             </div>
                             <div class="obra-stat-item">
-                                <div class="obra-stat-valor etapas"><?= $obra->etapas_pendentes ?? 0 ?></div>
+                                <div class="obra-stat-valor etapas"><?= $obra->etapas_pendentes ?? 0 ?>/<?= $obra->total_etapas ?? 0 ?></div>
                                 <div class="obra-stat-label">Etapas</div>
                             </div>
                             <div class="obra-stat-item">

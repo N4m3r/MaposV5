@@ -244,6 +244,7 @@ class Tecnicos extends MY_Controller
         log_message('info', 'Tecnicos::minhas_obras - tecnico_id da sessao: ' . $tecnico_id);
 
         $this->load->model('obras_model');
+        $this->load->model('obra_atividades_model');
 
         // Buscar obras onde o técnico está na equipe usando o model
         $obras = $this->obras_model->getObrasPorTecnico($tecnico_id);
@@ -255,9 +256,29 @@ class Tecnicos extends MY_Controller
             $this->db->where(['obra_id' => $obra->id, 'tecnico_responsavel' => $tecnico_id]);
             $obra->minhas_os = $this->db->count_all_results('os');
 
-            // Contar etapas pendentes
-            $this->db->where(['obra_id' => $obra->id, 'status !=' => 'concluida']);
-            $obra->etapas_pendentes = $this->db->count_all_results('obra_etapas');
+            // Buscar etapas com estatísticas (inclui percentual_concluido calculado)
+            $etapas = $this->obras_model->getEtapasComEstatisticas($obra->id);
+            $obra->etapas = $etapas;
+            $obra->total_etapas = count($etapas);
+            $obra->etapas_concluidas = count(array_filter($etapas, function($e) {
+                return ($e->percentual_concluido ?? 0) >= 100;
+            }));
+            $obra->etapas_pendentes = $obra->total_etapas - $obra->etapas_concluidas;
+
+            // Buscar estatísticas de atividades
+            $stats = $this->obra_atividades_model->getEstatisticas($obra->id);
+            $obra->atividades_total = $stats['total_atividades'] ?? 0;
+            $obra->atividades_concluidas = $stats['concluidas'] ?? 0;
+            $obra->atividades_pendentes = $stats['pendentes'] ?? 0;
+
+            // Recalcular progresso da obra baseado nas atividades
+            $this->obras_model->atualizarProgressoPorAtividades($obra->id);
+
+            // Recarregar obra com progresso atualizado
+            $obra_atualizada = $this->obras_model->getById($obra->id);
+            if ($obra_atualizada) {
+                $obra->percentual_concluido = $obra_atualizada->percentual_concluido ?? 0;
+            }
 
             // Buscar equipe da obra
             $obra->equipe = $this->obras_model->getEquipe($obra->id);
