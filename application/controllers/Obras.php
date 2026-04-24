@@ -2081,7 +2081,6 @@ class Obras extends MY_Controller
 
             switch ($status_lower) {
                 case 'em-andamento':
-                case 'em-andamento':
                 case 'em_execucao':
                 case 'em execucao':
                 case 'emexecucao':
@@ -2184,6 +2183,46 @@ class Obras extends MY_Controller
                     <a href="' . site_url('obras/visualizar/' . $obra->id) . '" class="obra-btn-acao">
                         <i class="icon-eye-open"></i> Ver Detalhes
                     </a>
+                </div>
+                <div class="obra-card-actions">
+                    <a href="' . site_url('obras/visualizar/' . $obra->id) . '" class="obra-card-btn view">
+                        <i class="icon-eye-open"></i> Visualizar
+                    </a>
+                    <a href="' . site_url('obras/editar/' . $obra->id) . '" class="obra-card-btn edit">
+                        <i class="icon-edit"></i> Editar
+                    </a>
+                    <div class="obra-quick-actions">
+                        <button type="button" class="obra-card-btn quick-action-toggle" onclick="toggleQuickMenu(' . $obra->id . ')">
+                            <i class="icon-chevron-down"></i> Ações
+                        </button>
+                        <div class="obra-quick-menu" id="quickMenu_' . $obra->id . '">
+                            <div class="obra-quick-menu-header">
+                                <i class="icon-bolt"></i> Ações Rápidas
+                            </div>
+                            <div class="obra-quick-menu-item" onclick="atualizarStatusRapido(' . $obra->id . ', \'prospeccao\')">
+                                <span class="obra-status-dot" style="background: #a8edea;"></span> Prospecção
+                            </div>
+                            <div class="obra-quick-menu-item" onclick="atualizarStatusRapido(' . $obra->id . ', \'contratada\')">
+                                <span class="obra-status-dot" style="background: #f39c12;"></span> Contratada
+                            </div>
+                            <div class="obra-quick-menu-item" onclick="atualizarStatusRapido(' . $obra->id . ', \'em-andamento\')">
+                                <span class="obra-status-dot" style="background: #4facfe;"></span> Em Andamento
+                            </div>
+                            <div class="obra-quick-menu-item" onclick="atualizarStatusRapido(' . $obra->id . ', \'paralisada\')">
+                                <span class="obra-status-dot" style="background: #ff6b6b;"></span> Paralisada
+                            </div>
+                            <div class="obra-quick-menu-item" onclick="atualizarStatusRapido(' . $obra->id . ', \'concluida\')">
+                                <span class="obra-status-dot" style="background: #11998e;"></span> Concluída
+                            </div>
+                            <div class="obra-quick-menu-item" onclick="atualizarStatusRapido(' . $obra->id . ', \'cancelada\')">
+                                <span class="obra-status-dot" style="background: #636e72;"></span> Cancelada
+                            </div>
+                            <div class="obra-quick-menu-divider"></div>
+                            <a href="' . site_url('obras/relatorioGeral/' . $obra->id) . '" class="obra-quick-menu-item">
+                                <i class="icon-file-alt" style="color: #667eea;"></i> Relatório Geral
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>';
         }
