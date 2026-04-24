@@ -1897,6 +1897,32 @@ textarea.wizard-input {
     </div>
 </div>
 
+<!-- Modal de Confirmação - Anotação Salva -->
+<div id="modalAnotacaoSalva" class="wizard-overlay" style="z-index: 10003; display: none;">
+    <div class="wizard-container" style="justify-content: center;">
+        <div class="wizard-card" style="max-width: 400px; margin: 0 auto; text-align: center;">
+            <div style="font-size: 60px; color: #27ae60; margin-bottom: 20px;">
+                <i class="icon-check"></i>
+            </div>
+            <h3 style="margin: 0 0 10px 0; font-size: 20px;">Anotação Registrada!</h3>
+            <p style="color: #666; margin-bottom: 20px;">
+                Sua anotação foi salva com sucesso na atividade.
+            </p>
+
+            <div style="background: #e8f5e9; border-radius: 10px; padding: 15px; margin-bottom: 20px; text-align: left;">
+                <p style="margin: 0; color: #2e7d32; font-size: 13px;">
+                    <i class="icon-info-sign"></i> <strong>Resumo:</strong><br>
+                    <span id="resumoAnotacaoSalva">Anotação registrada com sucesso.</span>
+                </p>
+            </div>
+
+            <button class="wizard-btn-principal" style="background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);" onclick="WizardAtendimento.fecharModalAnotacaoSalva()">
+                <i class="icon-ok"></i> OK, Entendido
+            </button>
+        </div>
+    </div>
+</div>
+
 <!-- Input escondido para upload de foto durante execução -->
 <input type="file" id="fotoExecucaoInput" accept="image/*" capture="environment" style="display: none;">
 
@@ -2859,10 +2885,14 @@ const WizardAtendimento = {
         })
         .then(data => {
             if (data.success) {
-                alert('Progresso registrado com sucesso!');
+                // Fechar modal de digitação
                 var modal = document.getElementById('modalConfirmarProgresso');
                 if (modal) modal.style.display = 'none';
                 textoEl.value = '';
+
+                // Mostrar modal de sucesso
+                var modalSucesso = document.getElementById('modalAnotacaoSalva');
+                if (modalSucesso) modalSucesso.style.display = 'block';
             } else {
                 alert('Erro ao registrar progresso: ' + (data.message || 'Erro desconhecido'));
             }
@@ -3041,6 +3071,14 @@ const WizardAtendimento = {
     // Fechar modal de foto
     fecharModalFoto: function() {
         var modal = document.getElementById('modalFotoSalva');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    },
+
+    // Fechar modal de anotação salva
+    fecharModalAnotacaoSalva: function() {
+        var modal = document.getElementById('modalAnotacaoSalva');
         if (modal) {
             modal.style.display = 'none';
         }
@@ -3384,12 +3422,16 @@ document.addEventListener('click', function(e) {
     if (modalFoto && e.target === modalFoto) {
         modalFoto.style.display = 'none';
     }
+    var modalAnotacao = document.getElementById('modalAnotacaoSalva');
+    if (modalAnotacao && e.target === modalAnotacao) {
+        modalAnotacao.style.display = 'none';
+    }
 });
 
 // Fechar modais ao pressionar ESC
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
-        var modais = ['modalConfirmarIniciar', 'modalConfirmarFinalizar', 'modalConfirmarPausar', 'modalConfirmarProgresso', 'modalConfirmarCheckout', 'modalProgresso', 'modalFotoSalva', 'modalConfirmarAnotacao'];
+        var modais = ['modalConfirmarIniciar', 'modalConfirmarFinalizar', 'modalConfirmarPausar', 'modalConfirmarProgresso', 'modalConfirmarCheckout', 'modalProgresso', 'modalFotoSalva', 'modalConfirmarAnotacao', 'modalAnotacaoSalva'];
         modais.forEach(function(id) {
             var modal = document.getElementById(id);
             if (modal) modal.style.display = 'none';
