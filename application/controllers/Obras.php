@@ -346,13 +346,7 @@ class Obras extends MY_Controller
             redirect('obras');
         }
 
-        $etapasTodas = $this->obras_model->getEtapasComEstatisticas($id);
-
-        // Filtrar apenas etapas com datas definidas (data_inicio_prevista e data_fim_prevista)
-        $this->data['etapas'] = array_filter($etapasTodas, function($etapa) {
-            return !empty($etapa->data_inicio_prevista) && !empty($etapa->data_fim_prevista);
-        });
-
+        $this->data['etapas'] = $this->obras_model->getEtapasComEstatisticas($id);
         $this->data['equipe'] = $this->obras_model->getEquipe($id);
 
         // Buscar atividades recentes organizadas por etapa
@@ -437,13 +431,7 @@ class Obras extends MY_Controller
             redirect('obras');
         }
 
-        $etapasTodas = $this->obras_model->getEtapasComEstatisticas($obra_id);
-
-        // Filtrar apenas etapas com datas definidas
-        $this->data['etapas'] = array_filter($etapasTodas, function($etapa) {
-            return !empty($etapa->data_inicio_prevista) && !empty($etapa->data_fim_prevista);
-        });
-
+        $this->data['etapas'] = $this->obras_model->getEtapasComEstatisticas($obra_id);
         $this->data['equipe'] = $this->obras_model->getEquipe($obra_id);
         $this->data['atividades_recentes'] = $this->obra_atividades_model->getByObra($obra_id, [], 20);
 
@@ -1838,14 +1826,7 @@ class Obras extends MY_Controller
         $this->load->model('mapos_model');
 
         $this->data['obra'] = $this->obras_model->getByIdCompleto($obra_id);
-
-        $etapasTodas = $this->obras_model->getEtapasComEstatisticas($obra_id);
-
-        // Filtrar apenas etapas com datas definidas
-        $this->data['etapas'] = array_filter($etapasTodas, function($etapa) {
-            return !empty($etapa->data_inicio_prevista) && !empty($etapa->data_fim_prevista);
-        });
-
+        $this->data['etapas'] = $this->obras_model->getEtapasComEstatisticas($obra_id);
         $this->data['estatisticas'] = $this->obra_atividades_model->getEstatisticas($obra_id);
         $this->data['emitente'] = $this->mapos_model->getEmitente();
         $this->data['view'] = 'obras/relatorios/progresso';
@@ -1900,11 +1881,8 @@ class Obras extends MY_Controller
         // Estatísticas
         $this->data['estatisticas'] = $this->obra_atividades_model->getEstatisticas($obra_id);
 
-        // Etapas com estatísticas (filtrar apenas com datas definidas)
-        $etapasTodas = $this->obras_model->getEtapasComEstatisticas($obra_id);
-        $this->data['etapas'] = array_filter($etapasTodas, function($etapa) {
-            return !empty($etapa->data_inicio_prevista) && !empty($etapa->data_fim_prevista);
-        });
+        // Etapas com estatísticas
+        $this->data['etapas'] = $this->obras_model->getEtapasComEstatisticas($obra_id);
 
         // Equipe
         $this->data['equipe'] = $this->obras_model->getEquipe($obra_id);
@@ -1954,11 +1932,8 @@ class Obras extends MY_Controller
         // Estatísticas
         $this->data['estatisticas'] = $this->obra_atividades_model->getEstatisticas($obra_id);
 
-        // Etapas com estatísticas (filtrar apenas com datas definidas)
-        $etapasTodas = $this->obras_model->getEtapasComEstatisticas($obra_id);
-        $this->data['etapas'] = array_filter($etapasTodas, function($etapa) {
-            return !empty($etapa->data_inicio_prevista) && !empty($etapa->data_fim_prevista);
-        });
+        // Etapas com estatísticas
+        $this->data['etapas'] = $this->obras_model->getEtapasComEstatisticas($obra_id);
 
         // Equipe
         $this->data['equipe'] = $this->obras_model->getEquipe($obra_id);

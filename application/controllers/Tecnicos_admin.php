@@ -462,13 +462,7 @@ class Tecnicos_admin extends MY_Controller
         $tecnicos = $tecnicos_query ? $tecnicos_query->result() : [];
 
         $this->data['obra'] = $obra;
-
-        // Filtrar apenas etapas com datas definidas
-        $etapasTodas = $this->obras_model->getEtapas($id);
-        $this->data['etapas'] = array_filter($etapasTodas, function($etapa) {
-            return !empty($etapa->data_inicio_prevista) && !empty($etapa->data_fim_prevista);
-        });
-
+        $this->data['etapas'] = $this->obras_model->getEtapas($id);
         $this->data['equipe'] = $this->obras_model->getEquipe($id);
         $this->data['diario'] = $this->obras_model->getDiario($id);
         $this->data['os_vinculadas'] = $os_vinculadas;

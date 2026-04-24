@@ -67,12 +67,7 @@ class Obras_tecnico extends CI_Controller
         }
 
         $this->data['obra'] = $this->obras_model->getById($id);
-
-        // Filtrar apenas etapas com datas definidas
-        $etapasTodas = $this->obras_model->getEtapas($id);
-        $this->data['etapas'] = array_filter($etapasTodas, function($etapa) {
-            return !empty($etapa->data_inicio_prevista) && !empty($etapa->data_fim_prevista);
-        });
+        $this->data['etapas'] = $this->obras_model->getEtapas($id);
 
         // Atividades do técnico nesta obra (sistema antigo)
         $this->data['minhas_atividades'] = $this->obra_atividades_model->getByObra($id, [

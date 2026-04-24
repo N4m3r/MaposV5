@@ -232,11 +232,8 @@ class Atividades extends MY_Controller
             $this->data['etapa'] = $this->obras_model->getEtapaById($etapa_id);
         }
 
-        // Carrega etapas para seleção (filtrar apenas com datas definidas)
-        $etapasTodas = $this->obras_model->getEtapas($obra_id);
-        $this->data['etapas'] = array_filter($etapasTodas, function($etapa) {
-            return !empty($etapa->data_inicio_prevista) && !empty($etapa->data_fim_prevista);
-        });
+        // Carrega etapas para seleção
+        $this->data['etapas'] = $this->obras_model->getEtapas($obra_id);
 
         // Carrega dados da atividade de obra vinculada (se houver)
         $this->data['obra_atividade'] = null;
