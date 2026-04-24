@@ -75,7 +75,16 @@ class Obras_model extends CI_Model
                 return [];
             }
 
-            return $query->result();
+            $obras = $query->result();
+
+            // Buscar dados adicionais para cada obra (etapas, atividades, equipe)
+            foreach ($obras as $obra) {
+                $obra->total_etapas = $this->contarRegistros('obra_etapas', ['obra_id' => $obra->id]);
+                $obra->total_atividades = $this->contarRegistros('obra_atividades', ['obra_id' => $obra->id]);
+                $obra->total_equipe = $this->contarRegistros('obra_equipe', ['obra_id' => $obra->id]);
+            }
+
+            return $obras;
         } catch (Exception $e) {
             return [];
         }

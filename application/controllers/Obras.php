@@ -71,6 +71,10 @@ class Obras extends MY_Controller
         $this->pagination->initialize($config);
 
         $this->data['results'] = $this->obras_model->getAll($filtros, $config['per_page'], $this->uri->segment(3));
+
+        // Debug: log dos dados carregados
+        log_message('debug', 'Obras::gerenciar - Total de obras carregadas: ' . count($this->data['results']));
+
         $this->data['view'] = 'obras/obras_list';
 
         return $this->layout();

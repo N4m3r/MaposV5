@@ -1,6 +1,13 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 // Garantir que a variável $obras exista (controller pode passar como $results)
 $obras = isset($obras) ? $obras : (isset($results) ? $results : []);
+
+// Debug: log para verificar dados
+if (empty($obras)) {
+    log_message('debug', 'obras_list.php: Nenhuma obra encontrada para exibição');
+} else {
+    log_message('debug', 'obras_list.php: ' . count($obras) . ' obras carregadas');
+}
 ?>
 
 <!-- Tema Moderno Obras - CSS Unificado -->
@@ -884,7 +891,7 @@ $obras = isset($obras) ? $obras : (isset($results) ? $results : []);
                 <i class="icon-play-circle"></i>
             </div>
             <div class="obras-stat-info">
-                <div class="obras-stat-value"><?php echo isset($obras_em_andamento) ? $obras_em_andamento : count(array_filter($obras ?? [], function($o) { return $o->status == 'em-andamento'; })); ?></div>
+                <div class="obras-stat-value"><?php echo isset($obras_em_andamento) ? $obras_em_andamento : count(array_filter($obras ?? [], function($o) { return ($o->status ?? '') == 'em-andamento'; })); ?></div>
                 <div class="obras-stat-label">Em Andamento</div>
             </div>
         </div>
@@ -894,7 +901,7 @@ $obras = isset($obras) ? $obras : (isset($results) ? $results : []);
                 <i class="icon-calendar"></i>
             </div>
             <div class="obras-stat-info">
-                <div class="obras-stat-value"><?php echo isset($obras_contratadas) ? $obras_contratadas : count(array_filter($obras ?? [], function($o) { return $o->status == 'contratada'; })); ?></div>
+                <div class="obras-stat-value"><?php echo isset($obras_contratadas) ? $obras_contratadas : count(array_filter($obras ?? [], function($o) { return ($o->status ?? '') == 'contratada'; })); ?></div>
                 <div class="obras-stat-label">Contratadas</div>
             </div>
         </div>
@@ -904,7 +911,7 @@ $obras = isset($obras) ? $obras : (isset($results) ? $results : []);
                 <i class="icon-check-circle"></i>
             </div>
             <div class="obras-stat-info">
-                <div class="obras-stat-value"><?php echo isset($obras_concluidas) ? $obras_concluidas : count(array_filter($obras ?? [], function($o) { return $o->status == 'concluida'; })); ?></div>
+                <div class="obras-stat-value"><?php echo isset($obras_concluidas) ? $obras_concluidas : count(array_filter($obras ?? [], function($o) { return ($o->status ?? '') == 'concluida'; })); ?></div>
                 <div class="obras-stat-label">Concluídas</div>
             </div>
         </div>
@@ -941,6 +948,9 @@ $obras = isset($obras) ? $obras : (isset($results) ? $results : []);
     <div class="obras-cards-grid" id="obrasGrid">
         <?php foreach ($obras as $obra): ?>
         <?php
+        // Debug: garantir que objeto tenha todas as propriedades
+        if (!is_object($obra)) continue;
+
         $status_class = '';
         $status_label = '';
         $status_normalized = ''; // Valor normalizado para o filtro
@@ -949,7 +959,6 @@ $obras = isset($obras) ? $obras : (isset($results) ? $results : []);
         $status_lower = strtolower(trim($obra->status ?? ''));
 
         switch ($status_lower) {
-            case 'em-andamento':
             case 'em-andamento':
             case 'em_execucao':
             case 'em execucao':

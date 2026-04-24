@@ -1414,7 +1414,7 @@ textarea.wizard-input {
                     <textarea id="observacoesCheckout" class="wizard-input" rows="3" placeholder="Descreva o que foi realizado, pendências ou observações importantes..."></textarea>
                 </div>
 
-                <button class="wizard-btn-principal" onclick="WizardAtendimento.realizarCheckout()">
+                <button class="wizard-btn-principal" onclick="WizardAtendimento.mostrarConfirmacaoCheckout()">
                     <i class="icon-signout"></i> FINALIZAR ATENDIMENTO
                 </button>
             </div>
@@ -1918,6 +1918,71 @@ textarea.wizard-input {
 
             <button class="wizard-btn-principal" style="background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);" onclick="WizardAtendimento.fecharModalAnotacaoSalva()">
                 <i class="icon-ok"></i> OK, Entendido
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Confirmação - Confirmar Finalização -->
+<div id="modalConfirmarSalvarCheckout" class="wizard-overlay" style="z-index: 10003; display: none;">
+    <div class="wizard-container" style="justify-content: center;">
+        <div class="wizard-card" style="max-width: 400px; margin: 0 auto; text-align: center;">
+            <div style="font-size: 60px; color: #e74c3c; margin-bottom: 20px;">
+                <i class="icon-signout"></i>
+            </div>
+            <h3 style="margin: 0 0 10px 0; font-size: 20px;">Confirmar Finalização?</h3>
+            <p style="color: #666; margin-bottom: 20px;">
+                Deseja realmente finalizar esta atividade?
+            </p>
+
+            <div style="background: #ffebee; border-radius: 10px; padding: 15px; margin-bottom: 20px; text-align: left;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                    <i class="icon-tasks" style="color: #c62828;"></i>
+                    <span id="confirmarSalvarAtividade" style="font-weight: 600; color: #c62828;">--</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #666;">
+                    <i class="icon-time" style="color: #c62828;"></i>
+                    <span id="confirmarSalvarTempo">Tempo total: 00:00</span>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button class="wizard-btn-principal" style="background: #95a5a6; flex: 1;" onclick="document.getElementById('modalConfirmarSalvarCheckout').style.display='none'">
+                    <i class="icon-remove"></i> Voltar
+                </button>
+                <button class="wizard-btn-principal" style="flex: 1; background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);" onclick="WizardAtendimento.confirmarSalvarCheckout()">
+                    <i class="icon-check"></i> Sim, Finalizar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Confirmação - Atendimento Finalizado -->
+<div id="modalAtendimentoFinalizado" class="wizard-overlay" style="z-index: 10004; display: none;">
+    <div class="wizard-container" style="justify-content: center;">
+        <div class="wizard-card" style="max-width: 400px; margin: 0 auto; text-align: center;">
+            <div style="font-size: 60px; color: #27ae60; margin-bottom: 20px;">
+                <i class="icon-check"></i>
+            </div>
+            <h3 style="margin: 0 0 10px 0; font-size: 20px;">Atendimento Finalizado!</h3>
+            <p style="color: #666; margin-bottom: 20px;">
+                A atividade foi encerrada com sucesso.
+            </p>
+
+            <div style="background: #e8f5e9; border-radius: 10px; padding: 15px; margin-bottom: 20px; text-align: left;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                    <i class="icon-tasks" style="color: #2e7d32;"></i>
+                    <span id="resumoFinalizadoAtividade" style="font-weight: 600; color: #2e7d32;">--</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #666;">
+                    <i class="icon-time" style="color: #2e7d32;"></i>
+                    <span id="resumoFinalizadoTempo">Tempo total: 00:00</span>
+                </div>
+            </div>
+
+            <button class="wizard-btn-principal" style="background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);" onclick="WizardAtendimento.fecharModalFinalizado()">
+                <i class="icon-ok"></i> OK, Fechar
             </button>
         </div>
     </div>
@@ -3293,21 +3358,79 @@ const WizardAtendimento = {
         radio.checked = true;
     },
 
-    // Realizar checkout final
+    // Mostrar modal de confirmação antes de salvar checkout
+    mostrarConfirmacaoCheckout: function() {
+        // Calcular tempo total
+        var tempoTexto = '00:00';
+        if (this.horaInicio) {
+            const tempo = this.calcularTempoDecorrido(this.horaInicio);
+            tempoTexto = String(tempo.horas).padStart(2, '0') + ':' + String(tempo.minutos).padStart(2, '0');
+        }
+
+        // Atualizar modal
+        var atividadeEl = document.getElementById('confirmarSalvarAtividade');
+        var tempoEl = document.getElementById('confirmarSalvarTempo');
+        if (atividadeEl) {
+            atividadeEl.textContent = this.atividadeSelecionada ? this.atividadeSelecionada.nome : 'Atividade';
+        }
+        if (tempoEl) {
+            tempoEl.textContent = 'Tempo total: ' + tempoTexto;
+        }
+
+        // Abrir modal de confirmação
+        var modal = document.getElementById('modalConfirmarSalvarCheckout');
+        if (modal) modal.style.display = 'block';
+    },
+
+    // Confirmar e executar o salvamento do checkout
+    confirmarSalvarCheckout: function() {
+        // Fechar modal de confirmação
+        var modal = document.getElementById('modalConfirmarSalvarCheckout');
+        if (modal) modal.style.display = 'none';
+
+        // Executar o checkout
+        this.realizarCheckout();
+    },
+
+    // Realizar checkout final - otimizado para ser rápido
     realizarCheckout: function() {
-        // Obter localização
+        // Mostrar estado de loading no botão
+        var btn = document.querySelector('#step5 .wizard-btn-principal');
+        if (btn) {
+            btn.dataset.originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="icon-spinner icon-spin"></i> Salvando...';
+            btn.disabled = true;
+        }
+
+        // Tentar obter localização com timeout rápido (2 segundos)
+        var locationTimeout;
+        var locationResolved = false;
+
+        var enviarComLocalizacao = function(lat, lng) {
+            if (locationResolved) return;
+            locationResolved = true;
+            clearTimeout(locationTimeout);
+            this.enviarCheckout(lat, lng);
+        }.bind(this);
+
         if (navigator.geolocation) {
+            // Timeout de segurança - envia sem localização se demorar mais de 2s
+            locationTimeout = setTimeout(function() {
+                enviarComLocalizacao(null, null);
+            }, 2000);
+
             navigator.geolocation.getCurrentPosition(
                 (position) => {
-                    this.enviarCheckout(position.coords.latitude, position.coords.longitude);
+                    enviarComLocalizacao(position.coords.latitude, position.coords.longitude);
                 },
                 (error) => {
                     console.warn('Erro ao obter localização:', error);
-                    this.enviarCheckout(null, null);
-                }
+                    enviarComLocalizacao(null, null);
+                },
+                { timeout: 1500, maximumAge: 60000 } // Timeout de 1.5s, aceita cache de 1 min
             );
         } else {
-            this.enviarCheckout(null, null);
+            enviarComLocalizacao(null, null);
         }
     },
 
@@ -3373,17 +3496,57 @@ const WizardAtendimento = {
         })
         .then(data => {
             if (data.success) {
-                alert('Atendimento finalizado com sucesso!');
+                // Fechar o wizard primeiro
                 this.fechar();
-                location.reload();
+
+                // Calcular tempo total para exibir no modal
+                var tempoTexto = '00:00';
+                if (this.horaInicio) {
+                    const tempo = this.calcularTempoDecorrido(this.horaInicio);
+                    tempoTexto = String(tempo.horas).padStart(2, '0') + ':' + String(tempo.minutos).padStart(2, '0');
+                }
+
+                // Atualizar o modal de sucesso
+                var atividadeEl = document.getElementById('resumoFinalizadoAtividade');
+                var tempoEl = document.getElementById('resumoFinalizadoTempo');
+                if (atividadeEl) {
+                    atividadeEl.textContent = this.atividadeSelecionada ? this.atividadeSelecionada.nome : 'Atividade';
+                }
+                if (tempoEl) {
+                    tempoEl.textContent = 'Tempo total: ' + tempoTexto;
+                }
+
+                // Mostrar modal de sucesso
+                var modalSucesso = document.getElementById('modalAtendimentoFinalizado');
+                if (modalSucesso) modalSucesso.style.display = 'block';
             } else {
+                // Restaurar botão em caso de erro
+                var btn = document.querySelector('#step5 .wizard-btn-principal');
+                if (btn && btn.dataset.originalText) {
+                    btn.innerHTML = btn.dataset.originalText;
+                    btn.disabled = false;
+                }
                 alert('Erro: ' + (data.message || 'Erro ao finalizar'));
             }
         })
         .catch(err => {
+            // Restaurar botão em caso de erro
+            var btn = document.querySelector('#step5 .wizard-btn-principal');
+            if (btn && btn.dataset.originalText) {
+                btn.innerHTML = btn.dataset.originalText;
+                btn.disabled = false;
+            }
             console.error('Erro:', err);
             alert('Erro ao finalizar. Verifique o console para mais detalhes.');
         });
+    },
+
+    // Fechar modal de atendimento finalizado
+    fecharModalFinalizado: function() {
+        var modal = document.getElementById('modalAtendimentoFinalizado');
+        if (modal) modal.style.display = 'none';
+        // Recarregar a página após fechar o modal
+        location.reload();
     }
 };
 
@@ -3426,12 +3589,22 @@ document.addEventListener('click', function(e) {
     if (modalAnotacao && e.target === modalAnotacao) {
         modalAnotacao.style.display = 'none';
     }
+    var modalFinalizado = document.getElementById('modalAtendimentoFinalizado');
+    if (modalFinalizado && e.target === modalFinalizado) {
+        // Fechar modal e recarregar
+        modalFinalizado.style.display = 'none';
+        location.reload();
+    }
+    var modalConfirmarSalvar = document.getElementById('modalConfirmarSalvarCheckout');
+    if (modalConfirmarSalvar && e.target === modalConfirmarSalvar) {
+        modalConfirmarSalvar.style.display = 'none';
+    }
 });
 
 // Fechar modais ao pressionar ESC
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
-        var modais = ['modalConfirmarIniciar', 'modalConfirmarFinalizar', 'modalConfirmarPausar', 'modalConfirmarProgresso', 'modalConfirmarCheckout', 'modalProgresso', 'modalFotoSalva', 'modalConfirmarAnotacao', 'modalAnotacaoSalva'];
+        var modais = ['modalConfirmarIniciar', 'modalConfirmarFinalizar', 'modalConfirmarPausar', 'modalConfirmarProgresso', 'modalConfirmarCheckout', 'modalProgresso', 'modalFotoSalva', 'modalConfirmarAnotacao', 'modalAnotacaoSalva', 'modalAtendimentoFinalizado', 'modalConfirmarSalvarCheckout'];
         modais.forEach(function(id) {
             var modal = document.getElementById(id);
             if (modal) modal.style.display = 'none';
