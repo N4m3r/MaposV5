@@ -855,11 +855,6 @@ $obras = isset($obras) ? $obras : (isset($results) ? $results : []);
                 <p>Acompanhe e gerencie todas as obras do sistema</p>
             </div>
             <div style="display: flex; gap: 12px; align-items: center;">
-                <!-- Indicador de atualização automática -->
-                <div id="autoUpdateIndicator" class="auto-update-indicator" title="Atualização automática ativa">
-                    <span class="update-dot"></span>
-                    <span class="update-text">Atualizando...</span>
-                </div>
                 <a href="<?php echo site_url('obras/adicionar'); ?>" class="obras-filter-btn obras-add-btn">
                     <i class="icon-plus"></i> Nova Obra
                 </a>
@@ -915,57 +910,6 @@ $obras = isset($obras) ? $obras : (isset($results) ? $results : []);
         </div>
     </div>
 
-    <!-- CSS do Indicador de Atualização -->
-    <style>
-    .auto-update-indicator {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        background: rgba(255,255,255,0.2);
-        padding: 8px 16px;
-        border-radius: 50px;
-        font-size: 13px;
-        color: white;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-    .auto-update-indicator.active {
-        opacity: 1;
-    }
-    .auto-update-indicator .update-dot {
-        width: 8px;
-        height: 8px;
-        background: #38ef7d;
-        border-radius: 50%;
-        animation: pulse-dot 1.5s infinite;
-    }
-    @keyframes pulse-dot {
-        0%, 100% { opacity: 1; transform: scale(1); }
-        50% { opacity: 0.5; transform: scale(0.8); }
-    }
-    .auto-update-indicator .update-text {
-        font-weight: 500;
-    }
-    /* Indicador de última atualização */
-    .last-update-info {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background: rgba(0,0,0,0.8);
-        color: white;
-        padding: 10px 16px;
-        border-radius: 8px;
-        font-size: 12px;
-        opacity: 0;
-        transform: translateY(20px);
-        transition: all 0.3s ease;
-        z-index: 9999;
-    }
-    .last-update-info.show {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    </style>
 
     <!-- Filtros -->
     <div class="obras-filter-bar">
@@ -1225,128 +1169,6 @@ $(document).ready(function() {
         $(this).hide().delay(index * 100).fadeIn(400);
     });
 });
-
-// Atualização automática dos cards - polling a cada 30 segundos
-(function() {
-    let autoUpdateInterval = null;
-    let isUpdating = false;
-    let lastUpdateTime = null;
-    const $indicator = $('#autoUpdateIndicator');
-
-    // Função para mostrar indicador de atualização
-    function mostrarIndicador() {
-        if ($indicator.length) {
-            $indicator.addClass('active');
-            $indicator.find('.update-text').text('Atualizando...');
-        }
-    }
-
-    // Função para esconder indicador de atualização
-    function esconderIndicador() {
-        if ($indicator.length) {
-            $indicator.removeClass('active');
-            if (lastUpdateTime) {
-                const hora = new Date(lastUpdateTime).toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
-                $indicator.find('.update-text').text('Atualizado às ' + hora);
-            }
-        }
-    }
-
-    // Função para atualizar os cards
-    function atualizarCards() {
-        if (isUpdating) return;
-        isUpdating = true;
-        mostrarIndicador();
-
-        const url = '<?php echo site_url("obras/ajax_atualizar_cards"); ?>';
-        const params = new URLSearchParams(window.location.search);
-        const ajaxUrl = url + (params.toString() ? '?' + params.toString() : '');
-
-        $.ajax({
-            url: ajaxUrl,
-            method: 'GET',
-            dataType: 'json',
-            beforeSend: function() {
-                mostrarIndicador();
-            },
-            success: function(response) {
-                if (response.success) {
-                    // Atualizar cards de estatísticas
-                    if (response.stats_html) {
-                        $('.obras-stats-row').html(response.stats_html);
-                    }
-
-                    // Atualizar grid de cards de obras
-                    if (response.cards_html) {
-                        const grid = $('.obras-cards-grid');
-                        const searchValue = $('#searchObra').val().toLowerCase();
-                        const statusFilter = $('#filterStatus').val();
-
-                        // Preservar os filtros atuais
-                        grid.html(response.cards_html);
-
-                        // Reaplicar filtros se existirem
-                        if (searchValue || statusFilter) {
-                            filtrarObras();
-                        }
-
-                        // Animação suave nos cards atualizados
-                        $('.obra-item-card').each(function(index) {
-                            $(this).hide().delay(index * 50).fadeIn(300);
-                        });
-                    }
-
-                    lastUpdateTime = response.timestamp;
-                    console.log('Cards atualizados em:', lastUpdateTime);
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error('Erro ao atualizar cards:', error);
-            },
-            complete: function() {
-                isUpdating = false;
-                esconderIndicador();
-            }
-        });
-    }
-
-    // Iniciar atualização automática
-    function iniciarAutoUpdate() {
-        // Mostrar indicador inicialmente
-        mostrarIndicador();
-
-        // Primeira atualização após 3 segundos
-        setTimeout(function() {
-            atualizarCards();
-            // Atualização periódica a cada 30 segundos
-            autoUpdateInterval = setInterval(atualizarCards, 30000);
-        }, 3000);
-    }
-
-    // Parar atualização automática
-    function pararAutoUpdate() {
-        if (autoUpdateInterval) {
-            clearInterval(autoUpdateInterval);
-            autoUpdateInterval = null;
-        }
-    }
-
-    // Iniciar quando o documento estiver pronto
-    iniciarAutoUpdate();
-
-    // Pausar atualização quando a aba não estiver visível
-    document.addEventListener('visibilitychange', function() {
-        if (document.hidden) {
-            pararAutoUpdate();
-        } else {
-            iniciarAutoUpdate();
-            atualizarCards(); // Atualizar imediatamente ao voltar
-        }
-    });
-
-    // Atualização manual (para debug)
-    window.atualizarCardsManual = atualizarCards;
-})();
 
 // Menu de Ações Rápidas - Toggle
 function toggleQuickMenu(obraId) {
