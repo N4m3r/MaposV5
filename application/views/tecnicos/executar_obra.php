@@ -2567,40 +2567,122 @@ const WizardAtendimento = {
         }
     },
 
-    // Preview de foto
+    // Comprimir imagem antes do upload
+    comprimirImagem: function(file, maxWidth, maxHeight, qualidade) {
+        return new Promise(function(resolve, reject) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    let width = img.width;
+                    let height = img.height;
+
+                    // Calcular novo tamanho mantendo proporção
+                    if (width > height) {
+                        if (width > maxWidth) {
+                            height *= maxWidth / width;
+                            width = maxWidth;
+                        }
+                    } else {
+                        if (height > maxHeight) {
+                            width *= maxHeight / height;
+                            height = maxHeight;
+                        }
+                    }
+
+                    // Criar canvas
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+
+                    // Desenhar imagem no canvas (white background para PNGs com transparência)
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.fillRect(0, 0, width, height);
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Converter para JPEG comprimido
+                    const dataUrl = canvas.toDataURL('image/jpeg', qualidade);
+
+                    // Converter dataURL para Blob
+                    const byteString = atob(dataUrl.split(',')[1]);
+                    const mimeString = 'image/jpeg';
+                    const ab = new ArrayBuffer(byteString.length);
+                    const ia = new Uint8Array(ab);
+                    for (let i = 0; i < byteString.length; i++) {
+                        ia[i] = byteString.charCodeAt(i);
+                    }
+                    const blob = new Blob([ab], { type: mimeString });
+
+                    // Criar novo arquivo comprimido
+                    const nomeArquivo = file.name.replace(/\.[^/.]+$/, '') + '_compressed.jpg';
+                    const arquivoComprimido = new File([blob], nomeArquivo, { type: 'image/jpeg', lastModified: Date.now() });
+
+                    resolve({
+                        file: arquivoComprimido,
+                        preview: dataUrl,
+                        originalSize: file.size,
+                        compressedSize: arquivoComprimido.size
+                    });
+                };
+                img.onerror = function() {
+                    reject(new Error('Erro ao carregar imagem'));
+                };
+                img.src = e.target.result;
+            };
+            reader.onerror = function() {
+                reject(new Error('Erro ao ler arquivo'));
+            };
+            reader.readAsDataURL(file);
+        });
+    },
+
+    // Preview de foto com compressão automática
     previewFoto: function(input, previewId, uploadId) {
         if (input.files && input.files[0]) {
-            // Validar tamanho (max 5MB)
-            if (input.files[0].size > 5 * 1024 * 1024) {
-                alert('A foto deve ter no máximo 5MB.');
-                input.value = '';
-                return;
-            }
+            const self = this;
+            const file = input.files[0];
 
             // Validar tipo
-            if (!input.files[0].type.startsWith('image/')) {
+            if (!file.type.startsWith('image/')) {
                 alert('Por favor, selecione apenas arquivos de imagem.');
                 input.value = '';
                 return;
             }
 
-            const reader = new FileReader();
-            reader.onload = function(e) {
+            // Comprimir imagem (max 1280px, qualidade 0.8)
+            this.comprimirImagem(file, 1280, 1280, 0.8).then(function(resultado) {
                 const img = document.getElementById(previewId);
                 const container = document.getElementById('containerPreview' + previewId.replace('preview', ''));
                 const upload = document.getElementById(uploadId);
 
-                img.src = e.target.result;
+                // Armazenar arquivo comprimido no input para upload posterior
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(resultado.file);
+                input.files = dataTransfer.files;
 
-                // Mostrar container do preview e esconder upload
+                // Mostrar preview
+                img.src = resultado.preview;
                 if (container) container.style.display = 'block';
                 if (upload) upload.style.display = 'none';
-            };
-            reader.onerror = function() {
-                alert('Erro ao ler a foto. Tente novamente.');
-                input.value = '';
-            };
-            reader.readAsDataURL(input.files[0]);
+
+                console.log('Foto comprimida: ' + (resultado.originalSize / 1024 / 1024).toFixed(2) + 'MB → ' +
+                           (resultado.compressedSize / 1024 / 1024).toFixed(2) + 'MB (' +
+                           Math.round((1 - resultado.compressedSize / resultado.originalSize) * 100) + '% redução)');
+            }).catch(function(err) {
+                console.error('Erro na compressão:', err);
+                // Fallback: mostrar original sem compressão
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.getElementById(previewId);
+                    const container = document.getElementById('containerPreview' + previewId.replace('preview', ''));
+                    const upload = document.getElementById(uploadId);
+                    img.src = e.target.result;
+                    if (container) container.style.display = 'block';
+                    if (upload) upload.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            });
         }
     },
 
@@ -2754,7 +2836,11 @@ const WizardAtendimento = {
 
         const fotoInput = document.getElementById('fotoCheckin');
         if (fotoInput && fotoInput.files.length > 0) {
-            console.log('Enviando foto:', fotoInput.files[0].name, 'Tamanho:', fotoInput.files[0].size);
+            const tamanhoKB = (fotoInput.files[0].size / 1024).toFixed(0);
+            console.log('Enviando foto:', fotoInput.files[0].name, 'Tamanho:', tamanhoKB + 'KB');
+            if (fotoInput.files[0].name.includes('_compressed')) {
+                console.log('✓ Foto otimizada para upload rápido');
+            }
             formData.append('foto', fotoInput.files[0]);
         } else {
             console.log('Nenhuma foto selecionada');
@@ -2991,14 +3077,8 @@ const WizardAtendimento = {
         fotoInput.click();
     },
 
-    // Processar e enviar foto de execução
+    // Processar e enviar foto de execução com compressão
     processarFotoExecucao: function(file) {
-        // Validar tamanho (max 5MB)
-        if (file.size > 5 * 1024 * 1024) {
-            alert('A foto deve ter no máximo 5MB.');
-            return;
-        }
-
         // Validar tipo
         if (!file.type.startsWith('image/')) {
             alert('Por favor, selecione apenas arquivos de imagem.');
@@ -3007,15 +3087,36 @@ const WizardAtendimento = {
 
         const self = this;
 
-        // Criar preview
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            self.enviarFotoExecucao(file, e.target.result);
-        };
-        reader.readAsDataURL(file);
+        // Mostrar loading
+        const loading = document.createElement('div');
+        loading.id = 'fotoLoading';
+        loading.innerHTML = '<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:99999;display:flex;align-items:center;justify-content:center;"><div style="background:white;padding:20px;border-radius:10px;text-align:center;"><i class="icon-spinner icon-spin" style="font-size:30px;color:#9b59b6;"></i><p>Otimizando foto...</p></div></div>';
+        document.body.appendChild(loading);
+
+        // Comprimir imagem (max 1280px, qualidade 0.8)
+        this.comprimirImagem(file, 1280, 1280, 0.8).then(function(resultado) {
+            // Remover loading de compressão
+            var loadingEl = document.getElementById('fotoLoading');
+            if (loadingEl) loadingEl.remove();
+
+            console.log('Foto comprimida: ' + (resultado.originalSize / 1024).toFixed(0) + 'KB → ' +
+                       (resultado.compressedSize / 1024).toFixed(0) + 'KB (' +
+                       Math.round((1 - resultado.compressedSize / resultado.originalSize) * 100) + '% redução)');
+
+            // Enviar foto comprimida
+            self.enviarFotoExecucao(resultado.file, resultado.preview);
+        }).catch(function(err) {
+            // Remover loading
+            var loadingEl = document.getElementById('fotoLoading');
+            if (loadingEl) loadingEl.remove();
+
+            console.error('Erro na compressão:', err);
+            // Fallback: enviar original
+            self.enviarFotoExecucao(file, null);
+        });
     },
 
-    // Enviar foto para o servidor
+    // Enviar foto para o servidor - otimizado
     enviarFotoExecucao: function(file, previewBase64) {
         const csrfToken = this.getCsrfToken();
         const atividadeEmAndamento = dadosObra.atividadeAndamento;
@@ -3030,8 +3131,15 @@ const WizardAtendimento = {
             return;
         }
 
-        // Obter localização
         const self = this;
+
+        // Mostrar loading
+        const loading = document.createElement('div');
+        loading.id = 'fotoLoading';
+        loading.innerHTML = '<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:99999;display:flex;align-items:center;justify-content:center;"><div style="background:white;padding:20px;border-radius:10px;text-align:center;"><i class="icon-spinner icon-spin" style="font-size:30px;color:#9b59b6;"></i><p>Enviando foto...</p></div></div>';
+        document.body.appendChild(loading);
+
+        // Preparar envio
         const enviar = function(lat, lng) {
             const formData = new FormData();
             formData.append('MAPOS_TOKEN', csrfToken);
@@ -3043,12 +3151,6 @@ const WizardAtendimento = {
             formData.append('latitude', lat || '');
             formData.append('longitude', lng || '');
 
-            // Mostrar loading
-            const loading = document.createElement('div');
-            loading.id = 'fotoLoading';
-            loading.innerHTML = '<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:99999;display:flex;align-items:center;justify-content:center;"><div style="background:white;padding:20px;border-radius:10px;text-align:center;"><i class="icon-spinner icon-spin" style="font-size:30px;color:#9b59b6;"></i><p>Salvando foto...</p></div></div>';
-            document.body.appendChild(loading);
-
             fetch('<?= site_url("atividades/adicionar_foto_obra") ?>', {
                 method: 'POST',
                 headers: {
@@ -3057,10 +3159,9 @@ const WizardAtendimento = {
                 body: formData
             })
             .then(function(r) {
-                var loading = document.getElementById('fotoLoading');
-                if (loading) loading.remove();
+                var loadingEl = document.getElementById('fotoLoading');
+                if (loadingEl) loadingEl.remove();
 
-                // Tentar obter JSON de qualquer forma
                 return r.text().then(function(text) {
                     try {
                         return JSON.parse(text);
@@ -3072,33 +3173,49 @@ const WizardAtendimento = {
             })
             .then(function(data) {
                 if (data.success) {
-                    // Mostrar modal de confirmação
-                    self.mostrarModalFotoSalva(previewBase64, lat, lng);
+                    // Usar preview já comprimido ou criar um
+                    const preview = previewBase64 || (data.foto_url ? data.foto_url : '');
+                    self.mostrarModalFotoSalva(preview, lat, lng);
                 } else {
                     alert('Erro ao salvar foto: ' + (data.message || 'Erro desconhecido'));
                 }
             })
             .catch(function(err) {
-                var loading = document.getElementById('fotoLoading');
-                if (loading) loading.remove();
+                var loadingEl = document.getElementById('fotoLoading');
+                if (loadingEl) loadingEl.remove();
                 console.error('Erro:', err);
                 alert('Erro ao salvar foto. Verifique o console para mais detalhes.');
             });
         };
 
-        // Obter localização
+        // Obter localização com timeout rápido (1.5s)
+        let locationTimeout;
+        let locationResolved = false;
+
+        const enviarComLocalizacao = function(lat, lng) {
+            if (locationResolved) return;
+            locationResolved = true;
+            clearTimeout(locationTimeout);
+            enviar(lat, lng);
+        };
+
         if (navigator.geolocation) {
+            locationTimeout = setTimeout(function() {
+                enviarComLocalizacao(null, null);
+            }, 1500);
+
             navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    enviar(position.coords.latitude, position.coords.longitude);
+                function(position) {
+                    enviarComLocalizacao(position.coords.latitude, position.coords.longitude);
                 },
-                (error) => {
+                function(error) {
                     console.warn('Erro ao obter localização:', error);
-                    enviar(null, null);
-                }
+                    enviarComLocalizacao(null, null);
+                },
+                { timeout: 1000, maximumAge: 60000 }
             );
         } else {
-            enviar(null, null);
+            enviarComLocalizacao(null, null);
         }
     },
 
@@ -3468,7 +3585,11 @@ const WizardAtendimento = {
 
         const fotoInput = document.getElementById('fotoCheckout');
         if (fotoInput && fotoInput.files.length > 0) {
-            console.log('Enviando foto checkout:', fotoInput.files[0].name, 'Tamanho:', fotoInput.files[0].size);
+            const tamanhoKB = (fotoInput.files[0].size / 1024).toFixed(0);
+            console.log('Enviando foto checkout:', fotoInput.files[0].name, 'Tamanho:', tamanhoKB + 'KB');
+            if (fotoInput.files[0].name.includes('_compressed')) {
+                console.log('✓ Foto otimizada para upload rápido');
+            }
             formData.append('foto_saida', fotoInput.files[0]);
         } else {
             console.log('Nenhuma foto de saída selecionada');

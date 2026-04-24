@@ -1242,7 +1242,7 @@
                                                     } elseif ($etapa->data_inicio_prevista) {
                                                         echo 'Início: ' . date('d/m/Y', strtotime($etapa->data_inicio_prevista));
                                                     } else {
-                                                        echo 'Datas não definidas';
+                                                        echo '<span style="color: #999;"><i class="icon-warning-sign" style="color: #f39c12;"></i> Prazo não definido</span>';
                                                     }
                                                     ?>
                                                 </span>

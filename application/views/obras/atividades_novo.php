@@ -756,7 +756,7 @@ body[data-theme="dark"] .modal-close { background: #252a3a; color: #a0aec0; }
                                     </button>
                                     <?php endif; ?>
                                     <?php if ($statusClass === 'agendada'): ?>
-                                    <a href="<?php echo site_url('tecnicos/executar_obra/' . $obra->id . '?atividade=' . $atividade->id); ?>" class="btn btn-success btn-xs" title="Iniciar Execução">
+                                    <a href="<?php echo site_url('tecnicos/executar_obra/' . $obra->id . '?atividade=' . $atividade->id); ?>" class="btn btn-success btn-xs btn-icon" title="Iniciar Execução">
                                         <i class='bx bx-play'></i>
                                     </a>
                                     <?php endif; ?>
@@ -1147,51 +1147,73 @@ document.addEventListener('keydown', function(e) {
 
 // Verificar se Boxicons carregou, senão usar Font Awesome
 (function checkIcons() {
-    // Mapeamento de ícones Boxicons → Font Awesome
+    // Mapeamento de ícones Boxicons → Font Awesome 6 Free (Solid)
     const iconMap = {
-        'bx-task': 'fa-tasks',
-        'bx-building': 'fa-building',
-        'bx-user': 'fa-user',
-        'bx-calendar': 'fa-calendar',
-        'bx-arrow-back': 'fa-arrow-left',
-        'bx-list-ul': 'fa-list-ul',
-        'bx-plus': 'fa-plus',
-        'bx-layer': 'fa-layer-group',
-        'bx-grid-alt': 'fa-th',
-        'bx-play-circle': 'fa-play-circle',
-        'bx-check-circle': 'fa-check-circle',
-        'bx-refresh': 'fa-sync-alt',
-        'bx-task-x': 'fa-clipboard-xmark',
-        'bx-calendar-x': 'fa-calendar-times',
-        'bx-error': 'fa-exclamation-circle',
-        'bx-edit': 'fa-edit',
-        'bx-eye': 'fa-eye',
-        'bx-play': 'fa-play',
-        'bx-time': 'fa-clock',
-        'bx-save': 'fa-save',
-        'bx-x': 'fa-times',
-        'bx-info-circle': 'fa-info-circle'
+        'bx-task': 'fa-solid fa-tasks',
+        'bx-building': 'fa-solid fa-building',
+        'bx-user': 'fa-solid fa-user',
+        'bx-calendar': 'fa-solid fa-calendar',
+        'bx-arrow-back': 'fa-solid fa-arrow-left',
+        'bx-list-ul': 'fa-solid fa-list-ul',
+        'bx-plus': 'fa-solid fa-plus',
+        'bx-layer': 'fa-solid fa-layer-group',
+        'bx-grid-alt': 'fa-solid fa-th',
+        'bx-play-circle': 'fa-solid fa-play-circle',
+        'bx-check-circle': 'fa-solid fa-check-circle',
+        'bx-refresh': 'fa-solid fa-sync-alt',
+        'bx-task-x': 'fa-solid fa-clipboard-list',
+        'bx-calendar-x': 'fa-solid fa-calendar-times',
+        'bx-error': 'fa-solid fa-exclamation-circle',
+        'bx-edit': 'fa-solid fa-edit',
+        'bx-eye': 'fa-solid fa-eye',
+        'bx-play': 'fa-solid fa-play',
+        'bx-time': 'fa-solid fa-clock',
+        'bx-save': 'fa-solid fa-save',
+        'bx-x': 'fa-solid fa-times',
+        'bx-info-circle': 'fa-solid fa-info-circle',
+        'bx-time': 'fa-solid fa-clock'
     };
 
-    // Verificar se Boxicons está carregado
-    const testIcon = document.querySelector('.bx');
-    if (testIcon) {
-        const computedStyle = window.getComputedStyle(testIcon, '::before');
-        const fontFamily = computedStyle.fontFamily;
-
-        // Se o Boxicons não estiver carregado (fonte não aplicada)
-        if (!fontFamily.includes('boxicons') || computedStyle.content === 'none' || computedStyle.content === '') {
-            // Trocar todos os ícones bx- para fa-
-            document.querySelectorAll('[class*="bx-"]').forEach(el => {
-                const classes = el.className.split(' ');
-                classes.forEach(cls => {
-                    if (cls.startsWith('bx-') && iconMap[cls]) {
-                        el.classList.remove('bx', cls);
-                        el.classList.add('fa', iconMap[cls]);
-                    }
-                });
-            });
-        }
+    function aplicarFallback() {
+        document.querySelectorAll('i[class*="bx-"]').forEach(el => {
+            const classes = Array.from(el.classList);
+            const bxClass = classes.find(c => c.startsWith('bx-'));
+            if (bxClass && iconMap[bxClass]) {
+                el.className = iconMap[bxClass];
+            }
+        });
     }
+
+    // Tentar detectar se Boxicons carregou
+    const testIcon = document.querySelector('i.bx');
+    if (!testIcon) return;
+
+    // Método 1: Verificar se a fonte está aplicada via computed style
+    try {
+        const computedStyle = window.getComputedStyle(testIcon, '::before');
+        const fontFamily = computedStyle.fontFamily || '';
+        const content = computedStyle.content || '';
+
+        if (!fontFamily.toLowerCase().includes('boxicons') || content === 'none' || content === '' || content === '""') {
+            aplicarFallback();
+            return;
+        }
+    } catch (e) {
+        // Se falhar a verificação, aplicar fallback
+        aplicarFallback();
+        return;
+    }
+
+    // Método 2: Verificar após um timeout como backup
+    setTimeout(function() {
+        const test = document.querySelector('i.bx');
+        if (test) {
+            const rect = test.getBoundingClientRect();
+            // Se o ícone tem largura quase zero, provavelmente não carregou
+            if (rect.width < 5 && rect.height < 5) {
+                aplicarFallback();
+            }
+        }
+    }, 2000);
 })();
 </script>
