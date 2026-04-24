@@ -1,0 +1,400 @@
+.html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de API - MAPOS Mobile</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .card h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+            font-weight: 500;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #2980b9;
+        }
+        .btn-success {
+            background: #27ae60;
+        }
+        .btn-success:hover {
+            background: #229954;
+        }
+        .btn-danger {
+            background: #e74c3c;
+        }
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            border-left: 4px solid #3498db;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .result.success {
+            border-left-color: #27ae60;
+        }
+        .result.error {
+            border-left-color: #e74c3c;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status-ok {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .endpoint-list {
+            list-style: none;
+        }
+        .endpoint-list li {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .endpoint-list li:last-child {
+            border-bottom: none;
+        }
+        .method {
+            font-family: monospace;
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .method-GET {
+            background: #d4edda;
+            color: #155724;
+        }
+        .method-POST {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .method-PUT {
+            background: #cce5ff;
+            color: #004085;
+        }
+        .method-DELETE {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .endpoint-url {
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Teste de API - MAPOS Mobile</h1>
+
+        <!-- Configuração -->
+        <div class="card">
+            <h2>⚙️ Configuração da API</h2>
+            <div class="form-group">
+                <label>URL Base:</label>
+                <input type="text" id="baseUrl" value="http://localhost/MaposV5/index.php" placeholder="http://localhost/MaposV5/index.php">
+            </div>
+            <div class="form-group">
+                <label>Token JWT (se autenticado):</label>
+                <input type="text" id="jwtToken" placeholder="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...">
+            </div>
+        </div>
+
+        <!-- Autenticação -->
+        <div class="card">
+            <h2>🔐 Autenticação</h2>
+
+            <div class="form-group">
+                <label>Email:</label>
+                <input type="email" id="authEmail" placeholder="tecnico@exemplo.com">
+            </div>
+
+            <div class="form-group">
+                <label>Senha:</label>
+                <input type="password" id="authPassword" placeholder="••••••">
+            </div>
+
+            <button onclick="testarLogin()" class="btn-success">Testar Login</button>
+            <div id="resultLogin" class="result" style="display:none;"></div>
+        </div>
+
+        <!-- Listar Obras -->
+        <div class="card">
+            <h2>🏗️ Obras</h2>
+
+            <button onclick="testarListarObras()">Listar Minhas Obras</button>
+
+            <div id="resultObras" class="result" style="display:none;"></div>
+        </div>
+
+        <!-- Atividades -->
+        <div class="card">
+            <h2>📋 Atividades</h2>
+
+            <div class="form-group">
+                <label>ID da Obra:</label>
+                <input type="number" id="obraId" placeholder="1">
+            </div>
+
+            <button onclick="testarListarAtividades()">Listar Atividades</button>
+            <div id="resultAtividades" class="result" style="display:none;"></div>
+        </div>
+
+        <!-- Endpoints Disponíveis -->
+        <div class="card">
+            <h2>📚 Endpoints Disponíveis</h2>
+
+            <ul class="endpoint-list">
+                <li>
+                    <div>
+                        <span class="method method-POST">POST</span>
+                        <span class="endpoint-url">/api/auth/login</span>
+                    </div>
+                    <span class="status-badge status-error">N/A</span>
+                </li>
+                <li>
+                    <div>
+                        <span class="method method-GET">GET</span>
+                        <span class="endpoint-url">/api/obras</span>
+                    </div>
+                    <span class="status-badge status-error">N/A</span>
+                </li>
+                <li>
+                    <div>
+                        <span class="method method-POST">POST</span>
+                        <span class="endpoint-url">/api/atividades/iniciar</span>
+                    </div>
+                    <span class="status-badge status-error">N/A</span>
+                </li>
+                <li>
+                    <div>
+                        <span class="method method-POST">POST</span>
+                        <span class="endpoint-url">/api/atividades/pausar</span>
+                    </div>
+                    <span class="status-badge status-error">N/A</span>
+                </li>
+                <li>
+                    <div>
+                        <span class="method method-POST">POST</span>
+                        <span class="endpoint-url">/api/atividades/retomar</span>
+                    </div>
+                    <span class="status-badge status-error">N/A</span>
+                </li>
+                <li>
+                    <div>
+                        <span class="method method-POST">POST</span>
+                        <span class="endpoint-url">/api/atividades/finalizar</span>
+                    </div>
+                    <span class="status-badge status-error">N/A</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Configuração base
+        function getBaseUrl() {
+            return document.getElementById('baseUrl').value.replace(/\/$/, '');
+        }
+
+        function getHeaders() {
+            const token = document.getElementById('jwtToken').value;
+            const headers = {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            };
+            if (token) {
+                headers['Authorization'] = 'Bearer ' + token;
+            }
+            return headers;
+        }
+
+        function showResult(elementId, data, isError = false) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.className = 'result ' + (isError ? 'error' : 'success');
+            element.textContent = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
+        }
+
+        // Testar Login
+        async function testarLogin() {
+            const email = document.getElementById('authEmail').value;
+            const password = document.getElementById('authPassword').value;
+
+            if (!email || !password) {
+                showResult('resultLogin', { error: 'Preencha email e senha' }, true);
+                return;
+            }
+
+            try {
+                const response = await fetch(getBaseUrl() + '/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (data.token) {
+                    document.getElementById('jwtToken').value = data.token;
+                    showResult('resultLogin', {
+                        success: true,
+                        message: 'Login realizado!',
+                        token: data.token.substring(0, 50) + '...'
+                    });
+                } else {
+                    showResult('resultLogin', data, true);
+                }
+            } catch (error) {
+                showResult('resultLogin', {
+                    error: 'Erro na requisição',
+                    message: error.message,
+                    hint: 'Verifique se o servidor PHP está rodando'
+                }, true);
+            }
+        }
+
+        // Testar Listar Obras
+        async function testarListarObras() {
+            try {
+                const response = await fetch(getBaseUrl() + '/api/obras', {
+                    method: 'GET',
+                    headers: getHeaders()
+                });
+
+                const data = await response.json();
+                showResult('resultObras', data, !data.success);
+            } catch (error) {
+                showResult('resultObras', {
+                    error: 'Erro na requisição',
+                    message: error.message
+                }, true);
+            }
+        }
+
+        // Testar Listar Atividades
+        async function testarListarAtividades() {
+            const obraId = document.getElementById('obraId').value;
+            const url = obraId
+                ? getBaseUrl() + `/api/obras/${obraId}/atividades`
+                : getBaseUrl() + '/api/atividades';
+
+            try {
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: getHeaders()
+                });
+
+                const data = await response.json();
+                showResult('resultAtividades', data, !data.success);
+            } catch (error) {
+                showResult('resultAtividades', {
+                    error: 'Erro na requisição',
+                    message: error.message
+                }, true);
+            }
+        }
+
+        // Verificar status dos endpoints ao carregar
+        async function checkEndpoints() {
+            const endpoints = [
+                { url: '/api/auth/login', method: 'POST' },
+                { url: '/api/obras', method: 'GET' }
+            ];
+
+            const badges = document.querySelectorAll('.endpoint-list .status-badge');
+
+            for (let i = 0; i < endpoints.length; i++) {
+                try {
+                    const response = await fetch(getBaseUrl() + endpoints[i].url, {
+                        method: endpoints[i].method,
+                        headers: { 'Accept': 'application/json' }
+                    });
+
+                    if (response.status !== 404) {
+                        badges[i].textContent = 'OK';
+                        badges[i].className = 'status-badge status-ok';
+                    }
+                } catch (e) {
+                    // Mantém N/A
+                }
+            }
+        }
+
+        // Verificar endpoints ao carregar
+        window.onload = checkEndpoints;
+    </script>
+</body>
+</html>

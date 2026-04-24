@@ -1,0 +1,36 @@
+{
+  "name": "mapos-mobile",
+  "version": "1.0.0",
+  "description": "Versão mobile do sistema MAPOS para Android",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm:watch:php\" \"npm:watch:assets\"",
+    "watch:php": "browser-sync start --proxy 'http://localhost/MaposV5' --files '../application/**/*.php', '../application/**/*.html', '../assets/**/*' --port 3000 --no-open",
+    "watch:assets": "browser-sync start --proxy 'http://localhost/MaposV5' --files '../assets/css/*.css', '../assets/js/*.js' --port 3001 --no-open",
+    "watch:mobile": "echo 'Para React Native: npx react-native start'",
+    "android": "echo 'Para React Native: npx react-native run-android'",
+    "build": "echo 'Para React Native: cd src/android && ./gradlew assembleRelease'",
+    "test": "echo 'Testes não configurados ainda'",
+    "api:check": "cd ../ && php -S localhost:8080 -t application/",
+    "setup": "node scripts/setup.js"
+  },
+  "keywords": [
+    "mapos",
+    "mobile",
+    "android",
+    "apk",
+    "codeigniter",
+    "tecnico"
+  ],
+  "author": "Desenvolvimento MAPOS",
+  "license": "MIT",
+  "devDependencies": {
+    "browser-sync": "^2.29.3",
+    "concurrently": "^8.2.2",
+    "nodemon": "^3.0.2",
+    "chalk": "^4.1.2"
+  },
+  "dependencies": {
+    "axios": "^1.6.2"
+  }
+}

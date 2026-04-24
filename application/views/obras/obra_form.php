@@ -183,7 +183,7 @@
         </div>
     </div>
 
-        <form method="post" action="" id="formObra">
+        <form method="post" action="<?php echo isset($result) ? site_url('obras/editar/' . $result->id) : site_url('obras/adicionar'); ?>" id="formObra">
 
             <!-- Dados Básicos -->
             <div class="form-card">
@@ -350,7 +350,7 @@
                     $status_atual_lower = strtolower(trim($result->status ?? ''));
                     $status_selecionado = 'prospeccao'; // default
 
-                    if (in_array($status_atual_lower, ['em-andamento', 'em-andamento', 'em_execucao', 'em execucao', 'emexecucao', 'execucao', 'emexecucao'])) {
+                    if (in_array($status_atual_lower, ['em-andamento', 'em_execucao', 'em execucao', 'emexecucao', 'execucao'])) {
                         $status_selecionado = 'em-andamento';
                     } elseif (in_array($status_atual_lower, ['contratada', 'aprovada', 'iniciada'])) {
                         $status_selecionado = 'contratada';
@@ -421,7 +421,6 @@
         </form>
     </div>
 </div>
-</form>
 
 <script src="<?php echo base_url(); ?>assets/js/jquery.mask.min.js"></script>
 <script>
