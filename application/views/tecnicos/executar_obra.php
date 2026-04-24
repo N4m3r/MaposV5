@@ -1744,6 +1744,41 @@ textarea.wizard-input {
     </div>
 </div>
 
+<!-- Modal de Confirmação - Registrar Anotação -->
+<div id="modalConfirmarAnotacao" class="wizard-overlay" style="z-index: 10002; display: none;">
+    <div class="wizard-container" style="justify-content: center;">
+        <div class="wizard-card" style="max-width: 400px; margin: 0 auto; text-align: center;">
+            <div style="font-size: 60px; color: #3498db; margin-bottom: 20px;">
+                <i class="icon-edit-sign"></i>
+            </div>
+            <h3 style="margin: 0 0 10px 0; font-size: 20px;">Registrar Anotação?</h3>
+            <p style="color: #666; margin-bottom: 20px;">
+                Você deseja adicionar uma anotação à atividade atual?
+            </p>
+
+            <div style="background: #e3f2fd; border-radius: 10px; padding: 15px; margin-bottom: 20px; text-align: left;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                    <i class="icon-tasks" style="color: #3498db;"></i>
+                    <span id="confirmarAnotacaoAtividade" style="font-weight: 600;">--</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #666;">
+                    <i class="icon-time" style="color: #3498db;"></i>
+                    <span id="confirmarAnotacaoTempo">Tempo: 00:00</span>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button class="wizard-btn-principal" style="background: #95a5a6; flex: 1;" onclick="document.getElementById('modalConfirmarAnotacao').style.display='none'">
+                    <i class="icon-remove"></i> Cancelar
+                </button>
+                <button class="wizard-btn-principal" style="flex: 1; background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);" onclick="WizardAtendimento.abrirModalAnotacao()">
+                    <i class="icon-check"></i> Sim, Prosseguir
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Modal de Confirmação - Registrar Progresso -->
 <div id="modalConfirmarProgresso" class="wizard-overlay" style="z-index: 10001; display: none;">
     <div class="wizard-container" style="justify-content: center;">
@@ -2715,7 +2750,7 @@ const WizardAtendimento = {
         }
     },
 
-    // Registrar progresso - abre modal de confirmação
+    // Registrar progresso - mostra modal de confirmação primeiro
     registrarProgresso: function() {
         const atividadeEmAndamento = dadosObra.atividadeAndamento;
 
@@ -2729,7 +2764,42 @@ const WizardAtendimento = {
             tempoTexto = String(tempo.horas).padStart(2, '0') + ':' + String(tempo.minutos).padStart(2, '0');
         }
 
-        // Atualizar modal
+        // Atualizar modal de confirmação
+        const atividadeEl = document.getElementById('confirmarAnotacaoAtividade');
+        const tempoEl = document.getElementById('confirmarAnotacaoTempo');
+
+        if (atividadeEl) {
+            const nomeAtividade = atividadeEmAndamento
+                ? (atividadeEmAndamento.titulo || atividadeEmAndamento.descricao || 'Atividade em andamento')
+                : (this.atividadeSelecionada ? this.atividadeSelecionada.nome : 'Atividade');
+            atividadeEl.textContent = nomeAtividade;
+        }
+        if (tempoEl) tempoEl.textContent = 'Tempo: ' + tempoTexto;
+
+        // Abrir modal de confirmação primeiro
+        var modal = document.getElementById('modalConfirmarAnotacao');
+        if (modal) modal.style.display = 'block';
+    },
+
+    // Abrir modal de digitação da anotação após confirmação
+    abrirModalAnotacao: function() {
+        // Fechar modal de confirmação
+        var modalConfirm = document.getElementById('modalConfirmarAnotacao');
+        if (modalConfirm) modalConfirm.style.display = 'none';
+
+        const atividadeEmAndamento = dadosObra.atividadeAndamento;
+
+        // Calcular tempo decorrido
+        const inicio = atividadeEmAndamento && atividadeEmAndamento.hora_inicio
+            ? this.converterDataHoraLocal(atividadeEmAndamento.hora_inicio)
+            : this.horaInicio;
+        var tempoTexto = '00:00';
+        if (inicio) {
+            const tempo = this.calcularTempoDecorrido(inicio);
+            tempoTexto = String(tempo.horas).padStart(2, '0') + ':' + String(tempo.minutos).padStart(2, '0');
+        }
+
+        // Atualizar modal de progresso
         const atividadeEl = document.getElementById('confirmarProgressoAtividade');
         const tempoEl = document.getElementById('confirmarProgressoTempo');
 
@@ -2745,7 +2815,7 @@ const WizardAtendimento = {
         const textoEl = document.getElementById('textoProgressoModal');
         if (textoEl) textoEl.value = '';
 
-        // Abrir modal de confirmação
+        // Abrir modal de digitação
         var modal = document.getElementById('modalConfirmarProgresso');
         if (modal) modal.style.display = 'block';
     },
@@ -3288,9 +3358,13 @@ document.addEventListener('click', function(e) {
     var modalCheckout = document.getElementById('modalConfirmarCheckout');
     var modalProgressoAntigo = document.getElementById('modalProgresso');
     var modalFoto = document.getElementById('modalFotoSalva');
+    var modalAnotacao = document.getElementById('modalConfirmarAnotacao');
 
     if (modalIniciar && e.target === modalIniciar) {
         modalIniciar.style.display = 'none';
+    }
+    if (modalAnotacao && e.target === modalAnotacao) {
+        modalAnotacao.style.display = 'none';
     }
     if (modalFinalizar && e.target === modalFinalizar) {
         modalFinalizar.style.display = 'none';
@@ -3315,7 +3389,7 @@ document.addEventListener('click', function(e) {
 // Fechar modais ao pressionar ESC
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
-        var modais = ['modalConfirmarIniciar', 'modalConfirmarFinalizar', 'modalConfirmarPausar', 'modalConfirmarProgresso', 'modalConfirmarCheckout', 'modalProgresso', 'modalFotoSalva'];
+        var modais = ['modalConfirmarIniciar', 'modalConfirmarFinalizar', 'modalConfirmarPausar', 'modalConfirmarProgresso', 'modalConfirmarCheckout', 'modalProgresso', 'modalFotoSalva', 'modalConfirmarAnotacao'];
         modais.forEach(function(id) {
             var modal = document.getElementById(id);
             if (modal) modal.style.display = 'none';

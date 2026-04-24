@@ -762,9 +762,29 @@
             <!-- Anotações e Registros -->
             <?php
             // Buscar anotações de ambas as fontes
-            $observacoes = $atividade_real->observacoes ?? $atividade->observacoes ?? null;
-            $problemas = $atividade_real->problemas_encontrados ?? $atividade->problemas_encontrados ?? null;
-            $solucao = $atividade_real->solucao_aplicada ?? $atividade->solucao_aplicada ?? null;
+            $observacoes = null;
+            $problemas = null;
+            $solucao = null;
+
+            // Verificar se atividade_real existe e tem as propriedades
+            if (!empty($atividade_real)) {
+                if (is_object($atividade_real)) {
+                    $observacoes = property_exists($atividade_real, 'observacoes') ? $atividade_real->observacoes : null;
+                    $problemas = property_exists($atividade_real, 'problemas_encontrados') ? $atividade_real->problemas_encontrados : null;
+                    $solucao = property_exists($atividade_real, 'solucao_aplicada') ? $atividade_real->solucao_aplicada : null;
+                }
+            }
+
+            // Se não encontrou em atividade_real, buscar em atividade
+            if (empty($observacoes) && !empty($atividade) && is_object($atividade)) {
+                $observacoes = property_exists($atividade, 'observacoes') ? $atividade->observacoes : null;
+            }
+            if (empty($problemas) && !empty($atividade) && is_object($atividade)) {
+                $problemas = property_exists($atividade, 'problemas_encontrados') ? $atividade->problemas_encontrados : null;
+            }
+            if (empty($solucao) && !empty($atividade) && is_object($atividade)) {
+                $solucao = property_exists($atividade, 'solucao_aplicada') ? $atividade->solucao_aplicada : null;
+            }
 
             if (!empty($observacoes) || !empty($problemas) || !empty($solucao)): ?>
             <div class="atividade-card">

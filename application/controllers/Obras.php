@@ -1995,4 +1995,47 @@ class Obras extends MY_Controller
         }
     }
 
+    /**
+     * Diagnóstico da atividade - debug
+     */
+    public function diagnosticoAtividade($atividade_id = null)
+    {
+        if (!$atividade_id) {
+            $atividade_id = $this->uri->segment(3);
+        }
+
+        if (!$atividade_id || !is_numeric($atividade_id)) {
+            echo 'ID da atividade inválido';
+            return;
+        }
+
+        // Carregar model
+        $this->load->model('Atividades_model', 'atividades');
+
+        // Buscar atividade planejada
+        $this->data['atividade'] = $this->obra_atividades_model->getById($atividade_id);
+        $this->data['atividade_id'] = $atividade_id;
+
+        // Buscar atividade real
+        $this->db->where('obra_atividade_id', $atividade_id);
+        $this->db->order_by('idAtividade', 'DESC');
+        $query = $this->db->get('os_atividades');
+        $atividade_real_row = $query ? $query->row() : null;
+
+        if ($atividade_real_row) {
+            $this->data['atividade_real'] = $this->atividades->getByIdCompleto($atividade_real_row->idAtividade);
+        } else {
+            $this->data['atividade_real'] = null;
+        }
+
+        // Colunas da tabela
+        $this->data['colunas'] = $this->db->list_fields('os_atividades');
+
+        // Query executada
+        $this->data['last_query'] = $this->db->last_query();
+
+        $this->data['view'] = 'obras/diagnostico_atividade';
+        return $this->layout();
+    }
+
 }
