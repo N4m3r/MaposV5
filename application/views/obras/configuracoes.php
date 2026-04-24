@@ -1353,21 +1353,63 @@ select.config-form-control {
 // Token CSRF
 const MAPOS_TOKEN = '<?php echo $this->security->get_csrf_hash(); ?>';
 
-// Destacar aba ativa baseada na URL
-function destacarAbaAtiva() {
-    var hash = window.location.hash || '#geral';
+// Sistema de abas por JavaScript (sem depender de :target)
+function ativarAba(abaId) {
+    if (!abaId) abaId = 'tab-geral';
+    if (abaId.charAt(0) === '#') abaId = abaId.substring(1);
+
+    // Destacar aba no menu
     var abas = document.querySelectorAll('.config-tab-item');
     abas.forEach(function(aba) {
         aba.classList.remove('active');
-        if (aba.getAttribute('href') === hash) {
+        if (aba.getAttribute('href') === '#' + abaId) {
             aba.classList.add('active');
         }
     });
+
+    // Mostrar conteudo correspondente
+    var conteudos = document.querySelectorAll('.config-content');
+    conteudos.forEach(function(c) {
+        c.classList.remove('ativo');
+    });
+
+    var alvo = document.getElementById(abaId);
+    if (alvo) {
+        alvo.classList.add('ativo');
+    } else {
+        document.getElementById('tab-geral').classList.add('ativo');
+    }
 }
 
-// Executar ao carregar e quando hash mudar
-window.addEventListener('load', destacarAbaAtiva);
-window.addEventListener('hashchange', destacarAbaAtiva);
+// Interceptar cliques nas abas
+document.addEventListener('DOMContentLoaded', function() {
+    var abas = document.querySelectorAll('.config-tab-item');
+    abas.forEach(function(aba) {
+        aba.addEventListener('click', function(e) {
+            e.preventDefault();
+            var href = this.getAttribute('href');
+            var abaId = href.substring(1);
+            ativarAba(abaId);
+            window.location.hash = href;
+        });
+    });
+
+    // Ativar aba baseada no hash inicial
+    var hash = window.location.hash;
+    if (hash && hash.length > 1) {
+        ativarAba(hash.substring(1));
+    } else {
+        ativarAba('tab-geral');
+    }
+});
+
+// Ao mudar o hash manualmente (botao voltar/avancar)
+window.addEventListener('hashchange', function() {
+    var hash = window.location.hash;
+    if (hash && hash.length > 1) {
+        ativarAba(hash.substring(1));
+    }
+});
 
 // Variáveis do modal
 let modalAtual = null;

@@ -1078,7 +1078,7 @@ textarea.wizard-input {
                 $percentualReal = $totalAtiv > 0 ? round(($ativConcluidas / $totalAtiv) * 100) : ($etapa->percentual_concluido ?? 0);
 
                 // Determinar status real da etapa
-                if ($totalAtiva > 0 && $ativConcluidas === $totalAtiv) {
+                if ($totalAtiv > 0 && $ativConcluidas === $totalAtiv) {
                     $statusEtapa = 'concluida';
                     $statusClass = 'concluida';
                     $statusLabel = 'Concluída';
