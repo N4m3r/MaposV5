@@ -1392,6 +1392,8 @@ select.config-form-control {
         </div>
     </div>
 </div>
+</div>
+</div>
 
 <!-- Modal Genérico -->
 <div class="config-modal-overlay" id="modalConfig">
@@ -1420,69 +1422,77 @@ select.config-form-control {
 // Token CSRF
 const MAPOS_TOKEN = '<?php echo $this->security->get_csrf_hash(); ?>';
 
-// Sistema de abas por JavaScript (sem depender de :target)
-function ativarAba(abaId) {
-    console.log('[DEBUG] ativarAba chamada com:', abaId);
+// ========== MODAL DE CONFIGURACOES ==========
+function abrirModalConfiguracoes(abaInicial) {
+    console.log('[DEBUG] abrirModalConfiguracoes chamada, abaInicial:', abaInicial);
+    var modal = document.getElementById('modalConfiguracoes');
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+
+    // Ativar aba inicial
+    if (abaInicial) {
+        ativarAbaModal(abaInicial);
+    } else {
+        ativarAbaModal('tab-geral');
+    }
+}
+
+function fecharModalConfiguracoes() {
+    console.log('[DEBUG] fecharModalConfiguracoes chamada');
+    var modal = document.getElementById('modalConfiguracoes');
+    modal.style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+// Sistema de abas dentro do modal (sem hash, sem :target)
+function ativarAbaModal(abaId) {
+    console.log('[DEBUG] ativarAbaModal chamada com:', abaId);
     if (!abaId) abaId = 'tab-geral';
     if (abaId.charAt(0) === '#') abaId = abaId.substring(1);
 
     // Destacar aba no menu
-    var abas = document.querySelectorAll('.config-tab-item');
+    var modal = document.getElementById('modalConfiguracoes');
+    var abas = modal.querySelectorAll('.config-tab-item');
     abas.forEach(function(aba) {
         aba.classList.remove('active');
-        if (aba.getAttribute('href') === '#' + abaId) {
+        if (aba.getAttribute('data-tab') === abaId) {
             aba.classList.add('active');
         }
     });
 
     // Mostrar conteudo correspondente
-    var conteudos = document.querySelectorAll('.config-content');
+    var conteudos = modal.querySelectorAll('.config-content');
     conteudos.forEach(function(c) {
         c.classList.remove('ativo');
     });
 
-    var alvo = document.getElementById(abaId);
+    var alvo = modal.querySelector('#' + abaId);
     if (alvo) {
-        console.log('[DEBUG] Aba encontrada, ativando:', abaId);
+        console.log('[DEBUG] Aba encontrada no modal, ativando:', abaId);
         alvo.classList.add('ativo');
     } else {
-        console.warn('[DEBUG] Aba NAO encontrada, fallback para tab-geral. Buscado:', abaId);
-        document.getElementById('tab-geral').classList.add('ativo');
+        console.warn('[DEBUG] Aba NAO encontrada no modal, fallback para tab-geral. Buscado:', abaId);
+        var fallback = modal.querySelector('#tab-geral');
+        if (fallback) fallback.classList.add('ativo');
     }
 }
 
-// Interceptar cliques nas abas
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('[DEBUG] DOMContentLoaded - inicializando abas');
-    var abas = document.querySelectorAll('.config-tab-item');
-    console.log('[DEBUG] Total de abas encontradas:', abas.length);
-    abas.forEach(function(aba) {
-        aba.addEventListener('click', function(e) {
-            e.preventDefault();
-            var href = this.getAttribute('href');
-            var abaId = href.substring(1);
-            console.log('[DEBUG] Clique na aba:', href, '-> ID:', abaId);
-            ativarAba(abaId);
-            window.location.hash = href;
-        });
-    });
-
-    // Ativar aba baseada no hash inicial
-    var hash = window.location.hash;
-    console.log('[DEBUG] Hash inicial:', hash);
-    if (hash && hash.length > 1) {
-        ativarAba(hash.substring(1));
-    } else {
-        ativarAba('tab-geral');
+// Fechar modal ao clicar fora
+window.onclick = function(event) {
+    var modal = document.getElementById('modalConfiguracoes');
+    if (event.target === modal) {
+        fecharModalConfiguracoes();
     }
-});
+    // Fechar modal generico tambem
+    if (event.target.classList.contains('config-modal-overlay')) {
+        fecharModal();
+    }
+};
 
-// Ao mudar o hash manualmente (botao voltar/avancar)
-window.addEventListener('hashchange', function() {
-    var hash = window.location.hash;
-    console.log('[DEBUG] Hashchange disparado, novo hash:', hash);
-    if (hash && hash.length > 1) {
-        ativarAba(hash.substring(1));
+// Atalho ESC para fechar modal de configuracoes
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        fecharModalConfiguracoes();
     }
 });
 

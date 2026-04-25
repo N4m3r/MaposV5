@@ -524,6 +524,46 @@
                                 <div style="font-size: 12px; color: #333; line-height: 1.5;">
                                     <?php echo nl2br(htmlspecialchars($motivo_impedimento)); ?>
                                 </div>
+
+                                <?php
+                                // Fotos do impedimento (fotos da atividade real)
+                                $fotos_impedimento = [];
+                                if (!empty($fotos_atividade)) {
+                                    foreach ($fotos_atividade as $foto) {
+                                        $tipo = $foto->tipo_foto ?? 'execucao';
+                                        if ($tipo === 'execucao' || $tipo === 'impedimento') {
+                                            $fotos_impedimento[] = $foto;
+                                        }
+                                    }
+                                }
+                                if (!empty($fotos_impedimento)):
+                                ?>
+                                <div style="margin-top: 10px;">
+                                    <div style="font-size: 11px; color: #e67e22; font-weight: 600; margin-bottom: 6px;">
+                                        <i class="icon-camera"></i> Fotos do Impedimento (<?php echo count($fotos_impedimento); ?>)
+                                    </div>
+                                    <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                                        <?php foreach (array_slice($fotos_impedimento, 0, 6) as $foto):
+                                            $url_foto = '';
+                                            if (!empty($foto->caminho_arquivo)) {
+                                                $url_foto = base_url('assets/atividades/fotos/' . $foto->caminho_arquivo);
+                                            } elseif (!empty($foto->foto_base64)) {
+                                                $url_foto = $foto->foto_base64;
+                                            }
+                                            if ($url_foto):
+                                        ?>
+                                        <a href="<?php echo $url_foto; ?>" target="_blank" style="text-decoration: none;">
+                                            <img src="<?php echo $url_foto; ?>" alt="Foto do impedimento" style="width: 60px; height: 60px; object-fit: cover; border-radius: 6px; border: 2px solid #e67e22;">
+                                        </a>
+                                        <?php endif; endforeach; ?>
+                                        <?php if (count($fotos_impedimento) > 6): ?>
+                                        <div style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; background: #ffe0b2; border-radius: 6px; font-size: 11px; font-weight: 700; color: #e67e22;">
+                                            +<?php echo count($fotos_impedimento) - 6; ?>
+                                        </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                                <?php endif; ?>
                             </div>
                             <?php endif; ?>
                         </div>
