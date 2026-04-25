@@ -464,6 +464,17 @@ class Atividades extends MY_Controller
 
             // Verifica se a atividade pertence ao técnico
             $atividade = $this->atividades->getById($atividade_id);
+
+            // Se não encontrou em os_atividades, tentar em obra_atividades
+            if (!$atividade && $this->db->table_exists('obra_atividades')) {
+                $this->db->where('id', $atividade_id);
+                $this->db->where('tecnico_id', $tecnico_id);
+                $atividade = $this->db->get('obra_atividades')->row();
+                if ($atividade) {
+                    $atividade->idAtividade = $atividade->id;
+                }
+            }
+
             if (!$atividade || $atividade->tecnico_id != $tecnico_id) {
                 echo json_encode(['success' => false, 'message' => 'Atividade não encontrada ou não pertence a você.']);
                 return;
@@ -504,8 +515,32 @@ class Atividades extends MY_Controller
 
         // Verifica se a atividade pertence ao técnico
         $atividade = $this->atividades->getById($atividade_id);
+
+        // Se não encontrou em os_atividades, tentar em obra_atividades
+        if (!$atividade && $this->db->table_exists('obra_atividades')) {
+            $this->db->where('id', $atividade_id);
+            $this->db->where('tecnico_id', $tecnico_id);
+            $atividade = $this->db->get('obra_atividades')->row();
+            if ($atividade) {
+                // Verificar se há impedimento
+                if (!empty($atividade->impedimento) && $atividade->impedimento == 1) {
+                    echo json_encode(['success' => false, 'message' => 'Esta atividade está com impedimento registrado. Aguarde a reabertura pelo administrador.']);
+                    return;
+                }
+                // Converter para formato compatível
+                $atividade->idAtividade = $atividade->id;
+                $atividade->tecnico_id = $atividade->tecnico_id;
+            }
+        }
+
         if (!$atividade || $atividade->tecnico_id != $tecnico_id) {
             echo json_encode(['success' => false, 'message' => 'Atividade não encontrada ou não pertence a você.']);
+            return;
+        }
+
+        // Verificar impedimento em os_atividades também
+        if (!empty($atividade->impedimento) && $atividade->impedimento == 1) {
+            echo json_encode(['success' => false, 'message' => 'Esta atividade está com impedimento registrado. Aguarde a reabertura pelo administrador.']);
             return;
         }
 

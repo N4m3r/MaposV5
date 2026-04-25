@@ -68,6 +68,10 @@
 .atividade-andamento.atividade-pausada .btn-continuar {
     color: #e74c3c;
 }
+.atividade-andamento.atividade-impedimento {
+    background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
+    box-shadow: 0 5px 20px rgba(230, 126, 34, 0.3);
+}
 .atividade-andamento h3 {
     margin: 0 0 10px 0;
     font-size: 18px;
@@ -246,6 +250,10 @@
 .atividade-icon.pausada {
     background: #f8d7da;
     color: #721c24;
+}
+.atividade-icon.impedimento {
+    background: #fff3e0;
+    color: #e67e22;
 }
 .atividade-info {
     flex: 1;
@@ -575,6 +583,8 @@
 .atividade-icon.reaberta i { color: #856404; }
 .atividade-icon.pausada { background: #f8d7da; }
 .atividade-icon.pausada i { color: #721c24; }
+.atividade-icon.impedimento { background: #fff3e0; }
+.atividade-icon.impedimento i { color: #e67e22; }
 .atividade-selecao.selecionada .atividade-icon {
     background: rgba(255,255,255,0.2);
 }
@@ -1154,7 +1164,8 @@ textarea.wizard-input {
                                             ($statusAtiv === 'concluida' || $statusAtiv === 'concluido') ? 'check' :
                                             (($statusAtiv === 'em_andamento' || $statusAtiv === 'iniciada') ? 'play' :
                                             (($statusAtiv === 'reaberta' || $statusAtiv === 'reaberto') ? 'refresh' :
-                                            (($statusAtiv === 'pausada' || $statusAtiv === 'pausado') ? 'pause' : 'time')))
+                                            (($statusAtiv === 'pausada' || $statusAtiv === 'pausado') ? 'pause' :
+                                            (($statusAtiv === 'impedimento') ? 'warning-sign' : 'time'))))
                                         ?>"></i>
                                     </div>
                                     <div class="atividade-info">
@@ -1181,6 +1192,10 @@ textarea.wizard-input {
                                         <button class="btn-acao continuar" onclick="WizardAtendimento.continuar(<?= $ativId ?>)">
                                             <i class="icon-play"></i> Continuar
                                         </button>
+                                        <?php elseif ($statusAtiv === 'impedimento' && $ativId): ?>
+                                        <span class="btn-acao" style="background: linear-gradient(135deg, #e67e22, #d35400); cursor: default;">
+                                            <i class="icon-lock"></i> Aguardando Reabertura
+                                        </span>
                                         <?php elseif (in_array($statusAtiv, ['agendada', 'pendente', 'aberta', 'reaberta', 'reaberto', 'nao_iniciada', 'nao_iniciado']) && $ativId): ?>
                                         <button class="btn-acao iniciar" onclick="WizardAtendimento.iniciarAtividade(<?= $ativId ?>)">
                                             <i class="icon-play"></i> Iniciar
@@ -2521,15 +2536,20 @@ const WizardAtendimento = {
         } else {
             grid.innerHTML = atividadesDisponiveis.map((atv, index) => {
                 const status = atv.status || 'agendada';
-                const statusLabel = (status === 'concluida' || status === 'concluido') ? 'Concluída' :
+                const isImpedimento = atv.impedimento == 1;
+                const effectiveStatus = isImpedimento ? 'impedimento' : status;
+                const statusLabel = isImpedimento ? 'Impedimento' :
+                                     ((status === 'concluida' || status === 'concluido') ? 'Concluída' :
                                      ((status === 'em_andamento' || status === 'iniciada') ? 'Em Andamento' :
-                                     ((status === 'reaberta' || status === 'reaberto') ? 'Reaberta' : 'Aberta'));
-                const statusClass = (status === 'concluida' || status === 'concluido') ? 'concluida' :
+                                     ((status === 'reaberta' || status === 'reaberto') ? 'Reaberta' : 'Aberta')));
+                const statusClass = isImpedimento ? 'impedimento' :
+                                     ((status === 'concluida' || status === 'concluido') ? 'concluida' :
                                      ((status === 'em_andamento' || status === 'iniciada') ? 'andamento' :
-                                     ((status === 'reaberta' || status === 'reaberto') ? 'reaberta' : 'aberta'));
-                const iconName = (status === 'concluida' || status === 'concluido') ? 'check' :
+                                     ((status === 'reaberta' || status === 'reaberto') ? 'reaberta' : 'aberta')));
+                const iconName = isImpedimento ? 'warning-sign' :
+                                  ((status === 'concluida' || status === 'concluido') ? 'check' :
                                   ((status === 'em_andamento' || status === 'iniciada') ? 'play' :
-                                  ((status === 'reaberta' || status === 'reaberto') ? 'refresh' : 'time'));
+                                  ((status === 'reaberta' || status === 'reaberto') ? 'refresh' : 'time')));
                 const isRecomendada = index === 0 ? '<span style="background:#11998e;color:white;font-size:10px;padding:2px 6px;border-radius:10px;margin-left:8px;">RECOMENDADA</span>' : '';
                 return `
                 <div class="atividade-selecao" data-atividade-id="${atv.id}" data-atividade-index="${index}" onclick="WizardAtendimento.selecionarAtividade(this)">
