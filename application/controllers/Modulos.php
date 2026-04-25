@@ -20,12 +20,18 @@ class Modulos extends MY_Controller
      */
     public function index()
     {
+        $modulos = $this->getModulos();
+        $totalLinhas = $this->getTotalLinhasCodigo();
+
         // Dados das estatísticas de código
         $dados = [
             'total_commits' => $this->contarCommits(),
             'linhas_adicionadas' => 92414,  // Valor calculado via git
             'linhas_removidas' => 14134,    // Valor calculado via git
-            'modulos' => $this->getModulos(),
+            'total_linhas_codigo' => $totalLinhas['total'] ?? 0,
+            'linhas_por_linguagem' => $totalLinhas['por_linguagem'] ?? [],
+            'modulos' => $modulos,
+            'modulos_futuros' => array_filter($modulos, fn($m) => $m['status'] === 'planned'),
             'timeline' => $this->getTimeline(),
             'stats' => $this->getStatsModulos(),
         ];
@@ -114,6 +120,106 @@ class Modulos extends MY_Controller
 
         $this->session->set_userdata('cache_stats_codigo', $stats);
         return $stats;
+    }
+
+    /**
+     * Calcular total de linhas de código no sistema
+     */
+    private function getTotalLinhasCodigo()
+    {
+        $cache = $this->session->userdata('cache_total_linhas_codigo');
+        if ($cache) {
+            return $cache;
+        }
+
+        $diretorios = [
+            'application/controllers',
+            'application/models',
+            'application/views',
+            'application/helpers',
+            'application/libraries',
+            'application/config',
+            'application/hooks',
+            'application/core',
+            'application/migrations',
+            'assets/js',
+            'assets/css',
+        ];
+
+        $extensoes = ['php', 'js', 'css', 'html', 'sql', 'json', 'xml'];
+        $excluir = ['vendor', 'node_modules', '.git', 'uploads', 'cache', 'logs', 'third_party', 'font'];
+
+        $stats = [
+            'total' => 0,
+            'por_linguagem' => [],
+            'arquivos' => 0,
+        ];
+
+        foreach ($diretorios as $dir) {
+            $path = FCPATH . $dir;
+            if (!is_dir($path)) {
+                continue;
+            }
+            $this->contarLinhasDiretorio($path, $extensoes, $excluir, $stats);
+        }
+
+        arsort($stats['por_linguagem']);
+        $this->session->set_userdata('cache_total_linhas_codigo', $stats);
+        return $stats;
+    }
+
+    /**
+     * Contar linhas recursivamente em um diretório
+     */
+    private function contarLinhasDiretorio($path, array $extensoes, array $excluir, array &$stats)
+    {
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($path, RecursiveDirectoryIterator::SKIP_DOTS),
+            RecursiveIteratorIterator::LEAVES_ONLY
+        );
+
+        foreach ($iterator as $file) {
+            if ($file->isDir()) {
+                continue;
+            }
+
+            $relative = str_replace(FCPATH, '', $file->getPath());
+            $skip = false;
+            foreach ($excluir as $exc) {
+                if (strpos($relative, $exc) !== false) {
+                    $skip = true;
+                    break;
+                }
+            }
+            if ($skip) {
+                continue;
+            }
+
+            $ext = strtolower($file->getExtension());
+            if (!in_array($ext, $extensoes, true)) {
+                continue;
+            }
+
+            $linhas = 0;
+            $handle = @fopen($file->getRealPath(), 'r');
+            if ($handle) {
+                while (($line = fgets($handle)) !== false) {
+                    $trimmed = trim($line);
+                    if ($trimmed !== '' && $trimmed !== '<?php' && $trimmed !== '?>') {
+                        $linhas++;
+                    }
+                }
+                fclose($handle);
+            }
+
+            $label = strtoupper($ext);
+            if (!isset($stats['por_linguagem'][$label])) {
+                $stats['por_linguagem'][$label] = 0;
+            }
+            $stats['por_linguagem'][$label] += $linhas;
+            $stats['total'] += $linhas;
+            $stats['arquivos']++;
+        }
     }
 
     /**

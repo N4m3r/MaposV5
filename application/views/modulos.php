@@ -391,6 +391,15 @@
             <div class="stat-label">Módulos Adicionados</div>
             <div class="stat-change">Funcionalidades extras</div>
         </div>
+
+        <div class="stat-card" style="border-left-color: #e74c3c;">
+            <div class="stat-card-icon" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);">
+                <i class="bx bx-code-curly"></i>
+            </div>
+            <div class="stat-value"><?= number_format($total_linhas_codigo ?? 0) ?></div>
+            <div class="stat-label">Total de Linhas de Código</div>
+            <div class="stat-change"><?= $linhas_por_linguagem ? implode(', ', array_slice(array_map(fn($k, $v) => "$k: " . number_format($v), array_keys($linhas_por_linguagem), array_values($linhas_por_linguagem)), 0, 3)) : '' ?></div>
+        </div>
     </div>
 
     <!-- Módulos Implementados -->
@@ -434,6 +443,46 @@
             <?php endforeach; ?>
         </div>
     </div>
+
+    <!-- Atualizações Futuras -->
+    <?php if (!empty($modulos_futuros)): ?>
+    <div class="section-card">
+        <div class="section-header">
+            <div class="section-title">
+                <i class="bx bx-rocket"></i>
+                Atualizações Futuras
+            </div>
+            <span class="modulo-status planned">Em Planejamento</span>
+        </div>
+
+        <div class="modulos-grid">
+            <?php foreach ($modulos_futuros as $modulo): ?>
+            <div class="modulo-card" style="border: 2px dashed #3498db; background: #f0f8ff;">
+                <div class="modulo-header">
+                    <div class="modulo-icon" style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);">
+                        <i class="<?= $modulo['icone'] ?>"></i>
+                    </div>
+                    <div>
+                        <div class="modulo-title"><?= htmlspecialchars($modulo['nome']) ?></div>
+                        <span class="modulo-status <?= $modulo['status'] ?>">
+                            <?= ucfirst($modulo['status']) ?>
+                        </span>
+                    </div>
+                </div>
+                <div class="modulo-desc">
+                    <?= htmlspecialchars($modulo['descricao']) ?>
+                </div>
+                <div class="modulo-stats">
+                    <div class="modulo-stat">
+                        <i class="bx bx-calendar"></i>
+                        Previsto: <?= date('d/m/Y', strtotime($modulo['data'])) ?>
+                    </div>
+                </div>
+            </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+    <?php endif; ?>
 
     <!-- Timeline de Desenvolvimento -->
     <div class="section-card">
