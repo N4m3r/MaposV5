@@ -8,17 +8,17 @@ function getCookie(name) {
 function setCsrfTokenInAllForms(csrfTokenName, csrfCookieName) {
     $('input[name="' + csrfTokenName + '"]').remove();
     var forms = document.querySelectorAll("form");
-    forms.forEach(function (form) {
+    for (var i = 0; i < forms.length; i++) {
+        var form = forms[i];
         var csrfInput = document.createElement('input');
         csrfInput.type = 'hidden';
         csrfInput.name = csrfTokenName;
         csrfInput.value = getCookie(csrfCookieName);
         form.appendChild(csrfInput);
-    });
+    }
 }
 
 $(document).ready(function () {
-    // Add CSRF token input to each form and ajax requests
     var csrfTokenName = $('meta[name="csrf-token-name"]').attr('content');
     var csrfCookieName = $('meta[name="csrf-cookie-name"]').attr('content');
 
@@ -30,11 +30,10 @@ $(document).ready(function () {
             if (typeof settings.data === 'object') {
                 settings.data[csrfTokenName] = getCookie(csrfCookieName);
             } else {
-                settings.data += '&' + $.param({
-                    [csrfTokenName]: getCookie(csrfCookieName)
-                });
+                var obj = {};
+                obj[csrfTokenName] = getCookie(csrfCookieName);
+                settings.data += '&' + $.param(obj);
             }
-
             return true;
         },
         complete: function () {
