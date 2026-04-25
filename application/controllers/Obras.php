@@ -1457,36 +1457,37 @@ class Obras extends MY_Controller
 
             // Buscar fotos da atividade real
             $fotos = $this->atividades->getFotos($atividade_real->idAtividade);
+        } else {
+            $fotos = [];
+        }
 
-            // Buscar fotos JSON da obra_atividades (checkin, atividade, checkout)
-            $atividade_plano = $this->obra_atividades_model->getById($atividade_id);
-            if ($atividade_plano) {
-                $tem_impedimento = !empty($atividade_plano->impedimento) && $atividade_plano->impedimento == 1;
-                $json_fields = ['fotos_checkin', 'fotos_atividade', 'fotos_checkout'];
-                foreach ($json_fields as $field) {
-                    if (!empty($atividade_plano->$field)) {
-                        $decoded = json_decode($atividade_plano->$field, true);
-                        if (is_array($decoded)) {
-                            foreach ($decoded as $path) {
-                                $f = new stdClass();
-                                $f->caminho_arquivo = $path;
-                                if ($tem_impedimento) {
-                                    $f->tipo_foto = 'impedimento';
-                                } else {
-                                    $f->tipo_foto = ($field === 'fotos_checkin') ? 'checkin' : (($field === 'fotos_checkout') ? 'checkout' : 'execucao');
-                                }
-                                $f->foto_base64 = null;
-                                $fotos[] = $f;
+        // Buscar fotos JSON da obra_atividades (checkin, atividade, checkout)
+        // Sempre buscar, mesmo sem os_atividades vinculada (ex: upload pelo portal do tecnico)
+        $atividade_plano = $this->obra_atividades_model->getById($atividade_id);
+        if ($atividade_plano) {
+            $tem_impedimento = !empty($atividade_plano->impedimento) && $atividade_plano->impedimento == 1;
+            $json_fields = ['fotos_checkin', 'fotos_atividade', 'fotos_checkout'];
+            foreach ($json_fields as $field) {
+                if (!empty($atividade_plano->$field)) {
+                    $decoded = json_decode($atividade_plano->$field, true);
+                    if (is_array($decoded)) {
+                        foreach ($decoded as $path) {
+                            $f = new stdClass();
+                            $f->caminho_arquivo = $path;
+                            if ($tem_impedimento) {
+                                $f->tipo_foto = 'impedimento';
+                            } else {
+                                $f->tipo_foto = ($field === 'fotos_checkin') ? 'checkin' : (($field === 'fotos_checkout') ? 'checkout' : 'execucao');
                             }
+                            $f->foto_base64 = null;
+                            $fotos[] = $f;
                         }
                     }
                 }
             }
-
-            $this->data['fotos_atividade'] = $fotos;
-        } else {
-            $this->data['fotos_atividade'] = [];
         }
+
+        $this->data['fotos_atividade'] = $fotos;
 
         $this->data['view'] = 'obras/atividade_view';
 
@@ -1574,27 +1575,30 @@ class Obras extends MY_Controller
             }
 
             $fotos_atividade = $this->atividades->getFotos($atividade_real->idAtividade);
+        } else {
+            $fotos_atividade = [];
+        }
 
-            // Buscar fotos JSON da obra_atividades (checkin, atividade, checkout)
-            $atividade_plano = $this->obra_atividades_model->getById($atividade_id);
-            if ($atividade_plano) {
-                $tem_impedimento = !empty($atividade_plano->impedimento) && $atividade_plano->impedimento == 1;
-                $json_fields = ['fotos_checkin', 'fotos_atividade', 'fotos_checkout'];
-                foreach ($json_fields as $field) {
-                    if (!empty($atividade_plano->$field)) {
-                        $decoded = json_decode($atividade_plano->$field, true);
-                        if (is_array($decoded)) {
-                            foreach ($decoded as $path) {
-                                $f = new stdClass();
-                                $f->caminho_arquivo = $path;
-                                if ($tem_impedimento) {
-                                    $f->tipo_foto = 'impedimento';
-                                } else {
-                                    $f->tipo_foto = ($field === 'fotos_checkin') ? 'checkin' : (($field === 'fotos_checkout') ? 'checkout' : 'execucao');
-                                }
-                                $f->foto_base64 = null;
-                                $fotos_atividade[] = $f;
+        // Buscar fotos JSON da obra_atividades (checkin, atividade, checkout)
+        // Sempre buscar, mesmo sem os_atividades vinculada (ex: upload pelo portal do tecnico)
+        $atividade_plano = $this->obra_atividades_model->getById($atividade_id);
+        if ($atividade_plano) {
+            $tem_impedimento = !empty($atividade_plano->impedimento) && $atividade_plano->impedimento == 1;
+            $json_fields = ['fotos_checkin', 'fotos_atividade', 'fotos_checkout'];
+            foreach ($json_fields as $field) {
+                if (!empty($atividade_plano->$field)) {
+                    $decoded = json_decode($atividade_plano->$field, true);
+                    if (is_array($decoded)) {
+                        foreach ($decoded as $path) {
+                            $f = new stdClass();
+                            $f->caminho_arquivo = $path;
+                            if ($tem_impedimento) {
+                                $f->tipo_foto = 'impedimento';
+                            } else {
+                                $f->tipo_foto = ($field === 'fotos_checkin') ? 'checkin' : (($field === 'fotos_checkout') ? 'checkout' : 'execucao');
                             }
+                            $f->foto_base64 = null;
+                            $fotos_atividade[] = $f;
                         }
                     }
                 }
