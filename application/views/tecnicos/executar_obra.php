@@ -1021,17 +1021,19 @@ textarea.wizard-input {
     <?php if (!empty($wizard_em_andamento)): ?>
     <?php
         $isImpedimento = !empty($wizard_em_andamento->impedimento) && $wizard_em_andamento->impedimento == 1;
-        $alertaClass = $isImpedimento ? 'atividade-impedimento' : (($wizard_em_andamento->status === 'pausada') ? 'atividade-pausada' : '');
-        $alertaTitulo = $isImpedimento ? 'Atividade com Impedimento' : (($wizard_em_andamento->status === 'pausada') ? 'Atividade Pausada' : 'Atividade em Andamento');
-        $alertaIcon = $isImpedimento ? 'icon-warning-sign' : 'icon-time';
+        $isStatusImpedimento = $wizard_em_andamento->status === 'impedimento';
+        $isEffectiveImpedimento = $isImpedimento || $isStatusImpedimento;
+        $alertaClass = $isEffectiveImpedimento ? 'atividade-impedimento' : (($wizard_em_andamento->status === 'pausada') ? 'atividade-pausada' : '');
+        $alertaTitulo = $isEffectiveImpedimento ? 'Atividade com Impedimento' : (($wizard_em_andamento->status === 'pausada') ? 'Atividade Pausada' : 'Atividade em Andamento');
+        $alertaIcon = $isEffectiveImpedimento ? 'icon-warning-sign' : 'icon-time';
     ?>
-    <div class="atividade-andamento <?= $alertaClass ?>" style="<?= $isImpedimento ? 'background: linear-gradient(135deg, #e67e22, #d35400);' : '' ?>">
+    <div class="atividade-andamento <?= $alertaClass ?>" style="<?= $isEffectiveImpedimento ? 'background: linear-gradient(135deg, #e67e22, #d35400);' : '' ?>">
         <h3><i class="<?= $alertaIcon ?>"></i> <?= $alertaTitulo ?></h3>
         <p>
             <strong><?= htmlspecialchars($wizard_em_andamento->etapa_nome ?? 'Atividade Geral') ?></strong><br>
             <?= htmlspecialchars($wizard_em_andamento->titulo ?? $wizard_em_andamento->descricao ?? '') ?><br>
             <small>Iniciado às <?= date('H:i', strtotime($wizard_em_andamento->hora_inicio)) ?> - <?= date('d/m/Y', strtotime($wizard_em_andamento->data_atividade ?? 'now')) ?></small>
-            <?php if ($isImpedimento): ?>
+            <?php if ($isEffectiveImpedimento): ?>
                 <br><span style="color: #fff; font-weight: bold; background: rgba(0,0,0,0.2); padding: 4px 10px; border-radius: 12px; display: inline-block; margin-top: 6px;">
                     <i class="icon-lock"></i> Aguardando Reabertura pelo Administrador
                 </span>
@@ -1040,7 +1042,7 @@ textarea.wizard-input {
             <?php endif; ?>
         </p>
         <?php $ativAndamentoId = $wizard_em_andamento->id ?? $wizard_em_andamento->idAtividade ?? null; ?>
-        <?php if ($ativAndamentoId && !$isImpedimento): ?>
+        <?php if ($ativAndamentoId && !$isEffectiveImpedimento): ?>
         <button class="btn-continuar" onclick="WizardAtendimento.continuar(<?= $ativAndamentoId ?>)">
             <i class="icon-play"></i> CONTINUAR ATENDIMENTO
         </button>
@@ -1196,7 +1198,7 @@ textarea.wizard-input {
                                         <button class="btn-acao reabrir" onclick="reabrirAtividade(<?= $ativId ?>, '<?= htmlspecialchars($ativ->titulo ?? $ativ->descricao ?? 'Atividade #' . $ativId, ENT_QUOTES) ?>')">
                                             <i class="icon-refresh"></i> Reabrir
                                         </button>
-                                        <?php elseif ($temImpedimento): ?>
+                                        <?php elseif ($temImpedimento || $statusAtiv === 'impedimento'): ?>
                                         <button class="btn-acao impedido" disabled>
                                             <i class="icon-warning-sign"></i> Impedido
                                         </button>

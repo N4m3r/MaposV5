@@ -806,7 +806,7 @@ class Atividades_model extends CI_Model
         $this->db->join('obra_etapas', 'obra_etapas.id = os_atividades.etapa_id', 'left');
         $this->db->where('os_atividades.tecnico_id', $tecnico_id);
         $this->db->where('os_atividades.obra_id', $obra_id);
-        $this->db->where_in('os_atividades.status', ['em_andamento', 'pausada']);
+        $this->db->where_in('os_atividades.status', ['em_andamento', 'pausada', 'impedimento']);
         $this->db->order_by('os_atividades.idAtividade', 'DESC');
         $this->db->limit(1);
 

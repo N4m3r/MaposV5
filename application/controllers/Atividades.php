@@ -497,6 +497,12 @@ class Atividades extends MY_Controller
             } else {
                 $result = $this->atividades->pausar($atividade_id, $motivo, $observacao);
 
+                // Se for impedimento, atualizar status em os_atividades para identificar corretamente no portal
+                if ($result && $is_impedimento) {
+                    $this->db->where('idAtividade', $atividade_id);
+                    $this->db->update('os_atividades', ['status' => 'impedimento']);
+                }
+
                 // Sincronizar obra_atividades vinculada
                 if ($result && !empty($atividade->obra_atividade_id)) {
                     $this->load->model('obra_atividades_model');

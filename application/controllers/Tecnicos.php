@@ -356,7 +356,7 @@ class Tecnicos extends MY_Controller
                         $this->db->from('os_atividades');
                         $this->db->where('tecnico_id', $tecnico_id);
                         $this->db->where_in('obra_atividade_id', $ids_atividades);
-                        $this->db->where_in('status', ['em_andamento', 'pausada']);
+                        $this->db->where_in('status', ['em_andamento', 'pausada', 'impedimento']);
                         $query_exec = $this->db->get();
                         if ($query_exec) {
                             foreach ($query_exec->result() as $exec) {
@@ -376,8 +376,10 @@ class Tecnicos extends MY_Controller
                         $atv->status_execucao = $status_execucao[$atv->id]['status'];
                         $atv->hora_inicio_execucao = $status_execucao[$atv->id]['hora_inicio'];
                     }
-                    // Detectar impedimento
-                    if (!empty($atv->impedimento) && $atv->impedimento == 1) {
+                    // Detectar impedimento (via campo obra_atividades ou via status em os_atividades)
+                    $temExecucaoImpedimento = isset($status_execucao[$atv->id]) && $status_execucao[$atv->id]['status'] === 'impedimento';
+                    if ((!empty($atv->impedimento) && $atv->impedimento == 1) || $temExecucaoImpedimento) {
+                        $atv->impedimento = 1;
                         $atv->status_execucao = 'impedimento';
                     }
                     $etapa_id = $atv->etapa_id ?? 'sem_etapa';
