@@ -10,7 +10,11 @@ class Notificacoes extends MY_Controller
     {
         parent::__construct();
         $this->load->model('notificacoes_model');
-        $this->notificacoes_model->ensureTableExists();
+        try {
+            $this->notificacoes_model->ensureTableExists();
+        } catch (Exception $e) {
+            log_message('error', 'Falha ao garantir tabela notificacoes: ' . $e->getMessage());
+        }
     }
 
     public function listar()
@@ -19,33 +23,45 @@ class Notificacoes extends MY_Controller
             show_404();
         }
 
-        // Detectar se é técnico logado no portal ou admin
-        $usuario_id = $this->session->userdata('id_admin');
-        $tipo_usuario = 'admin';
+        header('Content-Type: application/json');
 
-        if (!$usuario_id && $this->session->userdata('logado_tecnico')) {
-            $usuario_id = $this->session->userdata('tec_id');
-            $tipo_usuario = 'tecnico';
-        }
+        try {
+            // Detectar se é técnico logado no portal ou admin
+            $usuario_id = $this->session->userdata('id_admin');
+            $tipo_usuario = 'admin';
 
-        if (!$usuario_id) {
+            if (!$usuario_id && $this->session->userdata('logado_tecnico')) {
+                $usuario_id = $this->session->userdata('tec_id');
+                $tipo_usuario = 'tecnico';
+            }
+
+            if (!$usuario_id) {
+                echo json_encode([
+                    'success' => false,
+                    'error' => 'Usuário não autenticado',
+                    'nao_lidas' => 0,
+                    'notificacoes' => []
+                ]);
+                return;
+            }
+
+            $notificacoes = $this->notificacoes_model->getNotificacoes($usuario_id, 15, false, $tipo_usuario);
+            $nao_lidas = $this->notificacoes_model->countNaoLidas($usuario_id, $tipo_usuario);
+
+            echo json_encode([
+                'success' => true,
+                'notificacoes' => $notificacoes,
+                'nao_lidas' => $nao_lidas,
+            ]);
+        } catch (Exception $e) {
+            log_message('error', 'Erro em Notificacoes::listar: ' . $e->getMessage());
             echo json_encode([
                 'success' => false,
-                'error' => 'Usuário não autenticado',
+                'error' => 'Erro interno',
                 'nao_lidas' => 0,
                 'notificacoes' => []
             ]);
-            return;
         }
-
-        $notificacoes = $this->notificacoes_model->getNotificacoes($usuario_id, 15, false, $tipo_usuario);
-        $nao_lidas = $this->notificacoes_model->countNaoLidas($usuario_id, $tipo_usuario);
-
-        echo json_encode([
-            'success' => true,
-            'notificacoes' => $notificacoes,
-            'nao_lidas' => $nao_lidas,
-        ]);
     }
 
     public function marcar_lida()

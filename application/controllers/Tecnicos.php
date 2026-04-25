@@ -376,6 +376,10 @@ class Tecnicos extends MY_Controller
                         $atv->status_execucao = $status_execucao[$atv->id]['status'];
                         $atv->hora_inicio_execucao = $status_execucao[$atv->id]['hora_inicio'];
                     }
+                    // Detectar impedimento
+                    if (!empty($atv->impedimento) && $atv->impedimento == 1) {
+                        $atv->status_execucao = 'impedimento';
+                    }
                     $etapa_id = $atv->etapa_id ?? 'sem_etapa';
                     if (!isset($atividades_por_etapa[$etapa_id])) {
                         $atividades_por_etapa[$etapa_id] = [];

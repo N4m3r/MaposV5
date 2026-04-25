@@ -1419,11 +1419,15 @@ select.config-form-control {
 </div>
 
 <script type="text/javascript">
-// Token CSRF
-const MAPOS_TOKEN = '<?php echo $this->security->get_csrf_hash(); ?>';
+// Garantir que erros anteriores nao quebrem este script
+(function() {
+    'use strict';
 
-// ========== MODAL DE CONFIGURACOES ==========
-function abrirModalConfiguracoes(abaInicial) {
+    // Token CSRF
+    var MAPOS_TOKEN = '<?php echo addslashes($this->security->get_csrf_hash()); ?>';
+
+    // ========== MODAL DE CONFIGURACOES ==========
+    window.abrirModalConfiguracoes = function(abaInicial) {
     console.log('[DEBUG] abrirModalConfiguracoes chamada, abaInicial:', abaInicial);
     var modal = document.getElementById('modalConfiguracoes');
     modal.style.display = 'flex';
@@ -2453,4 +2457,12 @@ document.addEventListener('input', function(e) {
         if (textInput) textInput.value = e.target.value;
     }
 });
+
+// Expor funcoes globais para onclick no HTML
+window.fecharModalConfiguracoes = fecharModalConfiguracoes;
+window.ativarAbaModal = ativarAbaModal;
+window.fecharModal = fecharModal;
+window.salvarModal = salvarModal;
+window.abrirModal = abrirModal;
+})();
 </script>

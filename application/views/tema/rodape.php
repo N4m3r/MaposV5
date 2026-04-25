@@ -26,7 +26,7 @@ function carregarNotificacoes() {
         type: 'GET',
         dataType: 'json',
         success: function(resp) {
-            if (!resp.success) return;
+            if (!resp || !resp.success) return;
             var count = resp.nao_lidas || 0;
             if (count > 0) {
                 $('#notif-count').text(count > 99 ? '99+' : count).show();
@@ -34,6 +34,13 @@ function carregarNotificacoes() {
                 $('#notif-count').hide();
             }
             renderNotificacoes(resp.notificacoes);
+        },
+        error: function(xhr, status, error) {
+            // Silenciar erro 500 para nao quebrar o JS da pagina
+            if (xhr.status === 500) {
+                console.warn('[Notificacoes] Erro 500 em /notificacoes/listar — tabela pode nao existir');
+            }
+            $('#notif-count').hide();
         }
     });
 }
