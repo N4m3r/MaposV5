@@ -69,6 +69,7 @@
 .atividade-status-badge.concluida { background: linear-gradient(135deg, #27ae60, #2ecc71); }
 .atividade-status-badge.cancelada { background: linear-gradient(135deg, #34495e, #2c3e50); }
 .atividade-status-badge.reaberta { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
+.atividade-status-badge.impedimento { background: linear-gradient(135deg, #e67e22, #d35400); }
 
 /* Content Grid */
 .atividade-grid {
@@ -388,7 +389,10 @@
                 </div>
             </div>
             <div class="atividade-status-section">
-                <?php $status_atual = $atividade->status ?? 'agendada'; ?>
+                <?php
+                $impedimento = ($atividade_real->impedimento ?? $atividade->impedimento ?? 0);
+                $status_atual = $impedimento ? 'impedimento' : ($atividade->status ?? 'agendada');
+                ?>
                 <span class="atividade-status-badge <?php echo $status_atual; ?>" id="statusBadge">
                     <i class="icon-time"></i>
                     <span id="statusText">
@@ -399,7 +403,8 @@
                             'pausada' => 'Pausada',
                             'concluida' => 'Concluída',
                             'cancelada' => 'Cancelada',
-                            'reaberta' => 'Reaberta (Reatendimento)'
+                            'reaberta' => 'Reaberta (Reatendimento)',
+                            'impedimento' => 'Impedido'
                         ];
                         echo $statusLabels[$status_atual] ?? ucfirst($status_atual);
                         ?>
@@ -546,7 +551,13 @@
                                         <?php foreach (array_slice($fotos_impedimento, 0, 6) as $foto):
                                             $url_foto = '';
                                             if (!empty($foto->caminho_arquivo)) {
-                                                $url_foto = base_url('assets/atividades/fotos/' . $foto->caminho_arquivo);
+                                                if (strpos($foto->caminho_arquivo, 'http') === 0) {
+                                                    $url_foto = $foto->caminho_arquivo;
+                                                } elseif (strpos($foto->caminho_arquivo, 'assets/') === 0) {
+                                                    $url_foto = base_url($foto->caminho_arquivo);
+                                                } else {
+                                                    $url_foto = base_url('assets/atividades/fotos/' . $foto->caminho_arquivo);
+                                                }
                                             } elseif (!empty($foto->foto_base64)) {
                                                 $url_foto = $foto->foto_base64;
                                             }
@@ -671,7 +682,13 @@
                             <?php
                             $url_foto = '';
                             if (!empty($foto->caminho_arquivo)) {
-                                $url_foto = base_url('assets/atividades/fotos/' . $foto->caminho_arquivo);
+                                if (strpos($foto->caminho_arquivo, 'http') === 0) {
+                                    $url_foto = $foto->caminho_arquivo;
+                                } elseif (strpos($foto->caminho_arquivo, 'assets/') === 0) {
+                                    $url_foto = base_url($foto->caminho_arquivo);
+                                } else {
+                                    $url_foto = base_url('assets/atividades/fotos/' . $foto->caminho_arquivo);
+                                }
                             } elseif (!empty($foto->foto_base64)) {
                                 $url_foto = $foto->foto_base64;
                             }

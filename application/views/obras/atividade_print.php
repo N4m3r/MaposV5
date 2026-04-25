@@ -144,6 +144,7 @@
         .status-badge.concluida { background: #e8f5e9; color: #27ae60; border: 1px solid #27ae60; }
         .status-badge.cancelada { background: #eceff1; color: #546e7f; border: 1px solid #546e7f; }
         .status-badge.reaberta { background: #f3e5f5; color: #9b59b6; border: 1px solid #9b59b6; }
+        .status-badge.impedimento { background: #fff3e0; color: #e67e22; border: 1px solid #e67e22; }
 
         /* Progresso */
         .progress-bar {
@@ -445,8 +446,23 @@
             <div class="info-item">
                 <span class="info-label">Status</span>
                 <span class="info-value">
-                    <span class="status-badge <?php echo $atividade->status ?? 'agendada'; ?>">
-                        <?php echo ucfirst($atividade->status ?? 'agendada'); ?>
+                    <?php
+                    $impedimento_print = ($atividade_real->impedimento ?? $atividade->impedimento ?? 0);
+                    $status_print = $impedimento_print ? 'impedimento' : ($atividade->status ?? 'agendada');
+                    ?>
+                    <span class="status-badge <?php echo $status_print; ?>">
+                        <?php
+                        $statusLabelsPrint = [
+                            'agendada' => 'Agendada',
+                            'iniciada' => 'Em Execução',
+                            'pausada' => 'Pausada',
+                            'concluida' => 'Concluída',
+                            'cancelada' => 'Cancelada',
+                            'reaberta' => 'Reaberta',
+                            'impedimento' => 'Impedido'
+                        ];
+                        echo $statusLabelsPrint[$status_print] ?? ucfirst($status_print);
+                        ?>
                     </span>
                 </span>
             </div>
@@ -595,7 +611,13 @@ if (!empty($obs) || !empty($prob) || !empty($sol)):
             <?php foreach ($fotos_atividade as $foto):
                 $url_foto = '';
                 if (!empty($foto->caminho_arquivo)) {
-                    $url_foto = base_url('assets/atividades/fotos/' . $foto->caminho_arquivo);
+                    if (strpos($foto->caminho_arquivo, 'http') === 0) {
+                        $url_foto = $foto->caminho_arquivo;
+                    } elseif (strpos($foto->caminho_arquivo, 'assets/') === 0) {
+                        $url_foto = base_url($foto->caminho_arquivo);
+                    } else {
+                        $url_foto = base_url('assets/atividades/fotos/' . $foto->caminho_arquivo);
+                    }
                 } elseif (!empty($foto->foto_base64)) {
                     $url_foto = $foto->foto_base64;
                 }

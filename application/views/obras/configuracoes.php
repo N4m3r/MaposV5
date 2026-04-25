@@ -1425,15 +1425,19 @@ select.config-form-control {
 </div>
 
 <script type="text/javascript">
+// DEBUG: Confirma execucao imediata
+alert('DEBUG: Script de configuracoes iniciado. Se voce ver este alert, o script esta executando.');
+
 // Painel de debug visual
 var debugPanel = document.getElementById('debug-log');
 function debugLog(msg, type) {
     var color = type === 'error' ? '#f44' : type === 'warn' ? '#fa0' : '#0f0';
     var time = new Date().toLocaleTimeString();
     var line = '[' + time + '] ' + msg;
-    debugPanel.innerHTML += '<div style="color:' + color + ';border-bottom:1px solid #333;padding:2px 0;">' + line + '</div>';
-    debugPanel.scrollTop = debugPanel.scrollHeight;
-    // Também no console
+    if (debugPanel) {
+        debugPanel.innerHTML += '<div style="color:' + color + ';border-bottom:1px solid #333;padding:2px 0;">' + line + '</div>';
+        debugPanel.scrollTop = debugPanel.scrollHeight;
+    }
     if (type === 'error') console.error(line);
     else if (type === 'warn') console.warn(line);
     else console.log(line);
@@ -1441,13 +1445,9 @@ function debugLog(msg, type) {
 
 debugLog('Script de configuracoes carregado', 'info');
 
-// Garantir que erros anteriores nao quebrem este script
-(function() {
-    'use strict';
-
-    // Token CSRF
-    var MAPOS_TOKEN = <?php echo json_encode($this->security->get_csrf_hash()); ?>;
-    debugLog('CSRF Token carregado: ' + (MAPOS_TOKEN ? 'OK' : 'VAZIO'), 'info');
+// Token CSRF
+var MAPOS_TOKEN = <?php echo json_encode($this->security->get_csrf_hash()); ?>;
+debugLog('CSRF Token carregado: ' + (MAPOS_TOKEN ? 'OK' : 'VAZIO'), 'info');
 
     // ========== MODAL DE CONFIGURACOES ==========
     window.abrirModalConfiguracoes = function(abaInicial) {
@@ -1539,28 +1539,9 @@ function ativarAbaModal(abaId) {
     }
 }
 
-// Fechar modal ao clicar fora
-window.onclick = function(event) {
-    var modal = document.getElementById('modalConfiguracoes');
-    if (event.target === modal) {
-        fecharModalConfiguracoes();
-    }
-    // Fechar modal generico tambem
-    if (event.target.classList.contains('config-modal-overlay')) {
-        fecharModal();
-    }
-};
-
-// Atalho ESC para fechar modal de configuracoes
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-        fecharModalConfiguracoes();
-    }
-});
-
 // Variáveis do modal
-let modalAtual = null;
-let itemEditando = null;
+var modalAtual = null;
+var itemEditando = null;
 
 // Funções do modal
 function abrirModal(titulo, conteudoHtml) {
@@ -1583,16 +1564,21 @@ function ocultarLoading() {
     document.getElementById('loadingOverlay').classList.remove('active');
 }
 
-// Fechar modal ao clicar fora
+// Fechar modal ao clicar fora (configuracoes e generico)
 window.onclick = function(event) {
+    var modal = document.getElementById('modalConfiguracoes');
+    if (event.target === modal) {
+        fecharModalConfiguracoes();
+    }
     if (event.target.classList.contains('config-modal-overlay')) {
         fecharModal();
     }
 };
 
-// Atalho ESC para fechar modal
+// Atalho ESC para fechar modais
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
+        fecharModalConfiguracoes();
         fecharModal();
     }
 });
@@ -1648,8 +1634,10 @@ function editarTipoObra(id) {
     if (!item) return;
 
     var nome = item.querySelector('.config-item-name').textContent.trim();
-    var descricao = item.querySelector('.config-item-meta')?.textContent || '';
-    var cor = item.querySelector('.tipo-color')?.style.backgroundColor || '#3498db';
+    var meta = item.querySelector('.config-item-meta');
+    var descricao = meta ? meta.textContent : '';
+    var tipoCor = item.querySelector('.tipo-color');
+    var cor = tipoCor && tipoCor.style ? tipoCor.style.backgroundColor : '#3498db';
 
     var html = `
         <input type="hidden" id="tipo_obra_id" value="${id}">
@@ -1794,7 +1782,8 @@ function editarTipoAtividade(id) {
     if (!item) return;
 
     var nome = item.querySelector('.config-item-name').childNodes[0].textContent.trim();
-    var descricao = item.querySelector('.config-item-meta')?.textContent || '';
+    var metaEl = item.querySelector('.config-item-meta');
+    var descricao = metaEl ? metaEl.textContent : '';
 
     var html = `
         <input type="hidden" id="tipo_atividade_id" value="${id}">
@@ -1950,8 +1939,9 @@ function editarStatusObra(id) {
     if (!item) return;
 
     var nome = item.querySelector('.config-item-name').textContent.replace('FINALIZADO', '').trim();
-    var descricao = item.querySelector('.config-item-meta')?.textContent.split('•')[0] || '';
-    var finalizado = item.querySelector('.config-item-name').textContent.includes('FINALIZADO');
+    var metaEl = item.querySelector('.config-item-meta');
+    var descricao = metaEl ? metaEl.textContent.split('•')[0] : '';
+    var finalizado = item.querySelector('.config-item-name').textContent.indexOf('FINALIZADO') !== -1;
 
     var html = `
         <input type="hidden" id="status_obra_id" value="${id}">
@@ -2094,7 +2084,8 @@ function editarStatusAtividade(id) {
     if (!item) return;
 
     var nome = item.querySelector('.config-item-name').childNodes[0].textContent.trim();
-    var descricao = item.querySelector('.config-item-meta')?.textContent || '';
+    var metaEl = item.querySelector('.config-item-meta');
+    var descricao = metaEl ? metaEl.textContent : '';
 
     var html = `
         <input type="hidden" id="status_atividade_id" value="${id}">
@@ -2225,7 +2216,8 @@ function editarEspecialidade(id) {
     if (!item) return;
 
     var nome = item.querySelector('.config-item-name div').textContent.trim();
-    var descricao = item.querySelector('.config-grid-item > div:nth-child(2)')?.textContent.trim() || '';
+    var descEl = item.querySelector('.config-grid-item > div:nth-child(2)');
+    var descricao = descEl ? descEl.textContent.trim() : '';
 
     var html = `
         <input type="hidden" id="especialidade_id" value="${id}">
@@ -2335,8 +2327,10 @@ function editarFuncao(id) {
     if (!item) return;
 
     var nome = item.querySelector('.config-item-name').childNodes[0].textContent.trim();
-    var descricao = item.querySelector('.config-item-meta')?.textContent || '';
-    var nivel = item.querySelector('.config-item-name span')?.textContent.trim().toLowerCase() || 'baixo';
+    var metaEl = item.querySelector('.config-item-meta');
+    var descricao = metaEl ? metaEl.textContent : '';
+    var nivelEl = item.querySelector('.config-item-name span');
+    var nivel = nivelEl ? nivelEl.textContent.trim().toLowerCase() : 'baixo';
 
     var html = `
         <input type="hidden" id="funcao_id" value="${id}">
@@ -2411,60 +2405,60 @@ function salvarModal() {
     switch(modalAtual) {
         case 'tipo-obra':
             url = '<?php echo site_url("obras/salvarTipoObra"); ?>';
-            formData.append('id', document.getElementById('tipo_obra_id')?.value || '');
-            formData.append('nome', document.getElementById('tipo_obra_nome')?.value || '');
-            formData.append('descricao', document.getElementById('tipo_obra_descricao')?.value || '');
-            formData.append('cor', document.getElementById('tipo_obra_cor')?.value || '#3498db');
-            formData.append('icone', document.getElementById('tipo_obra_icone')?.value || 'bx-building');
+            formData.append('id', (document.getElementById('tipo_obra_id') || {}).value || '');
+            formData.append('nome', (document.getElementById('tipo_obra_nome') || {}).value || '');
+            formData.append('descricao', (document.getElementById('tipo_obra_descricao') || {}).value || '');
+            formData.append('cor', (document.getElementById('tipo_obra_cor') || {}).value || '#3498db');
+            formData.append('icone', (document.getElementById('tipo_obra_icone') || {}).value || 'bx-building');
             break;
 
         case 'tipo-atividade':
             url = '<?php echo site_url("obras/salvarTipoAtividade"); ?>';
-            formData.append('id', document.getElementById('tipo_atividade_id')?.value || '');
-            formData.append('nome', document.getElementById('tipo_atividade_nome')?.value || '');
-            formData.append('descricao', document.getElementById('tipo_atividade_descricao')?.value || '');
-            formData.append('categoria', document.getElementById('tipo_atividade_categoria')?.value || 'outro');
-            formData.append('duracao', document.getElementById('tipo_atividade_duracao')?.value || 30);
-            formData.append('cor', document.getElementById('tipo_atividade_cor')?.value || '#3498db');
-            formData.append('icone', document.getElementById('tipo_atividade_icone')?.value || 'bx-wrench');
+            formData.append('id', (document.getElementById('tipo_atividade_id') || {}).value || '');
+            formData.append('nome', (document.getElementById('tipo_atividade_nome') || {}).value || '');
+            formData.append('descricao', (document.getElementById('tipo_atividade_descricao') || {}).value || '');
+            formData.append('categoria', (document.getElementById('tipo_atividade_categoria') || {}).value || 'outro');
+            formData.append('duracao', (document.getElementById('tipo_atividade_duracao') || {}).value || 30);
+            formData.append('cor', (document.getElementById('tipo_atividade_cor') || {}).value || '#3498db');
+            formData.append('icone', (document.getElementById('tipo_atividade_icone') || {}).value || 'bx-wrench');
             break;
 
         case 'status-obra':
             url = '<?php echo site_url("obras/salvarStatusObra"); ?>';
-            formData.append('id', document.getElementById('status_obra_id')?.value || '');
-            formData.append('nome', document.getElementById('status_obra_nome')?.value || '');
-            formData.append('descricao', document.getElementById('status_obra_descricao')?.value || '');
-            formData.append('cor', document.getElementById('status_obra_cor')?.value || '#3498db');
-            formData.append('icone', document.getElementById('status_obra_icone')?.value || 'bx-flag');
-            formData.append('ordem', document.getElementById('status_obra_ordem')?.value || 1);
-            formData.append('finalizado', document.getElementById('status_obra_finalizado')?.checked ? 1 : 0);
+            formData.append('id', (document.getElementById('status_obra_id') || {}).value || '');
+            formData.append('nome', (document.getElementById('status_obra_nome') || {}).value || '');
+            formData.append('descricao', (document.getElementById('status_obra_descricao') || {}).value || '');
+            formData.append('cor', (document.getElementById('status_obra_cor') || {}).value || '#3498db');
+            formData.append('icone', (document.getElementById('status_obra_icone') || {}).value || 'bx-flag');
+            formData.append('ordem', (document.getElementById('status_obra_ordem') || {}).value || 1);
+            formData.append('finalizado', (document.getElementById('status_obra_finalizado') || {}).checked ? 1 : 0);
             break;
 
         case 'status-atividade':
             url = '<?php echo site_url("obras/salvarStatusAtividade"); ?>';
-            formData.append('id', document.getElementById('status_atividade_id')?.value || '');
-            formData.append('nome', document.getElementById('status_atividade_nome')?.value || '');
-            formData.append('descricao', document.getElementById('status_atividade_descricao')?.value || '');
-            formData.append('cor', document.getElementById('status_atividade_cor')?.value || '#3498db');
-            formData.append('icone', document.getElementById('status_atividade_icone')?.value || 'bx-calendar');
-            formData.append('fluxo', document.getElementById('status_atividade_fluxo')?.value || 'normal');
+            formData.append('id', (document.getElementById('status_atividade_id') || {}).value || '');
+            formData.append('nome', (document.getElementById('status_atividade_nome') || {}).value || '');
+            formData.append('descricao', (document.getElementById('status_atividade_descricao') || {}).value || '');
+            formData.append('cor', (document.getElementById('status_atividade_cor') || {}).value || '#3498db');
+            formData.append('icone', (document.getElementById('status_atividade_icone') || {}).value || 'bx-calendar');
+            formData.append('fluxo', (document.getElementById('status_atividade_fluxo') || {}).value || 'normal');
             break;
 
         case 'especialidade':
             url = '<?php echo site_url("obras/salvarEspecialidade"); ?>';
-            formData.append('id', document.getElementById('especialidade_id')?.value || '');
-            formData.append('nome', document.getElementById('especialidade_nome')?.value || '');
-            formData.append('descricao', document.getElementById('especialidade_descricao')?.value || '');
-            formData.append('cor', document.getElementById('especialidade_cor')?.value || '#3498db');
-            formData.append('icone', document.getElementById('especialidade_icone')?.value || 'bx-hard-hat');
+            formData.append('id', (document.getElementById('especialidade_id') || {}).value || '');
+            formData.append('nome', (document.getElementById('especialidade_nome') || {}).value || '');
+            formData.append('descricao', (document.getElementById('especialidade_descricao') || {}).value || '');
+            formData.append('cor', (document.getElementById('especialidade_cor') || {}).value || '#3498db');
+            formData.append('icone', (document.getElementById('especialidade_icone') || {}).value || 'bx-hard-hat');
             break;
 
         case 'funcao':
             url = '<?php echo site_url("obras/salvarFuncao"); ?>';
-            formData.append('id', document.getElementById('funcao_id')?.value || '');
-            formData.append('nome', document.getElementById('funcao_nome')?.value || '');
-            formData.append('descricao', document.getElementById('funcao_descricao')?.value || '');
-            formData.append('nivel', document.getElementById('funcao_nivel')?.value || 'baixo');
+            formData.append('id', (document.getElementById('funcao_id') || {}).value || '');
+            formData.append('nome', (document.getElementById('funcao_nome') || {}).value || '');
+            formData.append('descricao', (document.getElementById('funcao_descricao') || {}).value || '');
+            formData.append('nivel', (document.getElementById('funcao_nivel') || {}).value || 'baixo');
             break;
     }
 
@@ -2531,7 +2525,6 @@ try {
     debugLog('ERRO GLOBAL no script: ' + e.message, 'error');
     alert('[DEBUG] ERRO GLOBAL no script de configuracoes: ' + e.message);
 }
-})();
 
 // Handler global de erros de JavaScript
 window.onerror = function(msg, url, line, col, error) {
