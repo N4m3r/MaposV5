@@ -1059,6 +1059,16 @@ class Mine extends CI_Controller
             $data['results'] = $query->result();
         }
 
+        // Dados de paginação para a view
+        $pagina_atual = ((int) $offset / $config['per_page']) + 1;
+        $total_paginas = ($config['total_rows'] > 0) ? (int) ceil($config['total_rows'] / $config['per_page']) : 1;
+        $data['paginacao_info'] = [
+            'atual' => (int) $pagina_atual,
+            'total' => (int) $total_paginas,
+            'offset' => (int) $offset,
+            'per_page' => $config['per_page'],
+        ];
+
         // Dados para a view
         $data['filtros'] = $filtros ?? ['busca' => '', 'status' => '', 'data_inicio' => '', 'data_fim' => ''];
         $data['total_os'] = $config['total_rows'] ?? 0;

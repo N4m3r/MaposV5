@@ -466,12 +466,14 @@ class Atividades extends MY_Controller
             $atividade = $this->atividades->getById($atividade_id);
 
             // Se não encontrou em os_atividades, tentar em obra_atividades
+            $is_obra_atividade = false;
             if (!$atividade && $this->db->table_exists('obra_atividades')) {
                 $this->db->where('id', $atividade_id);
                 $this->db->where('tecnico_id', $tecnico_id);
                 $atividade = $this->db->get('obra_atividades')->row();
                 if ($atividade) {
                     $atividade->idAtividade = $atividade->id;
+                    $is_obra_atividade = true;
                 }
             }
 
@@ -480,7 +482,32 @@ class Atividades extends MY_Controller
                 return;
             }
 
-            $result = $this->atividades->pausar($atividade_id, $motivo, $observacao);
+            $tipo_execucao = $this->input->post('tipo_execucao');
+            $is_impedimento = ($tipo_execucao === 'impedimento');
+
+            // Se a atividade veio de obra_atividades diretamente, atualizar lá
+            if ($is_obra_atividade) {
+                $this->load->model('obra_atividades_model');
+                $update_data = ['status' => 'pausada'];
+                if ($is_impedimento) {
+                    $update_data['impedimento'] = 1;
+                    $update_data['motivo_impedimento'] = $observacao ?: $motivo;
+                }
+                $result = $this->obra_atividades_model->update($atividade_id, $update_data);
+            } else {
+                $result = $this->atividades->pausar($atividade_id, $motivo, $observacao);
+
+                // Sincronizar obra_atividades vinculada
+                if ($result && !empty($atividade->obra_atividade_id)) {
+                    $this->load->model('obra_atividades_model');
+                    $update_data = ['status' => 'pausada'];
+                    if ($is_impedimento) {
+                        $update_data['impedimento'] = 1;
+                        $update_data['motivo_impedimento'] = $observacao ?: $motivo;
+                    }
+                    $this->obra_atividades_model->update($atividade->obra_atividade_id, $update_data);
+                }
+            }
 
             echo json_encode([
                 'success' => (bool) $result,
@@ -542,6 +569,16 @@ class Atividades extends MY_Controller
         if (!empty($atividade->impedimento) && $atividade->impedimento == 1) {
             echo json_encode(['success' => false, 'message' => 'Esta atividade está com impedimento registrado. Aguarde a reabertura pelo administrador.']);
             return;
+        }
+
+        // Se veio de os_atividades, verificar impedimento na obra_atividades vinculada
+        if (!empty($atividade->obra_atividade_id) && $this->db->table_exists('obra_atividades')) {
+            $this->db->where('id', $atividade->obra_atividade_id);
+            $obra_ativ = $this->db->get('obra_atividades')->row();
+            if ($obra_ativ && !empty($obra_ativ->impedimento) && $obra_ativ->impedimento == 1) {
+                echo json_encode(['success' => false, 'message' => 'Esta atividade está com impedimento registrado. Aguarde a reabertura pelo administrador.']);
+                return;
+            }
         }
 
         $result = $this->atividades->retomar($atividade_id);

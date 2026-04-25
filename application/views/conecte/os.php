@@ -351,10 +351,18 @@ function getStatusColor($status) {
 }
 
 .pagination.modern li.active a,
-.pagination.modern li.active span {
-    background: #667eea;
-    color: white;
-    border-color: #667eea;
+.pagination.modern li.active span,
+.pagination.modern li.active {
+    background: #667eea !important;
+    color: white !important;
+    border-color: #667eea !important;
+}
+
+.pagination.modern li.active > a,
+.pagination.modern li.active > span {
+    background: #667eea !important;
+    color: white !important;
+    border-color: #667eea !important;
 }
 
 .pagination.modern li a:hover {
@@ -363,6 +371,24 @@ function getStatusColor($status) {
 
 .pagination.modern li.nav a {
     font-weight: 500;
+}
+
+.pagination-info {
+    text-align: center;
+    padding-bottom: 12px;
+    color: #555;
+    font-size: 0.95rem;
+}
+
+.pagination-info strong {
+    color: #667eea;
+    font-size: 1.1rem;
+}
+
+.pagination-range {
+    color: #888;
+    font-size: 0.85rem;
+    margin-left: 6px;
 }
 
 /* Estado vazio */
@@ -599,6 +625,10 @@ function getStatusColor($status) {
 
             <!-- Paginação -->
             <?php if ($this->pagination->create_links()): ?>
+                <div class="pagination-info">
+                    Página <strong><?= $paginacao_info['atual'] ?? 1 ?></strong> de <strong><?= $paginacao_info['total'] ?? 1 ?></strong>
+                    <span class="pagination-range">(Mostrando <?= (($paginacao_info['atual'] ?? 1) - 1) * ($paginacao_info['per_page'] ?? 15) + 1 ?>-<?= min((($paginacao_info['atual'] ?? 1) - 1) * ($paginacao_info['per_page'] ?? 15) + ($paginacao_info['per_page'] ?? 15), $total_os ?? 0) ?> de <?= $total_os ?? 0 ?>)</span>
+                </div>
                 <?= $this->pagination->create_links() ?>
             <?php endif; ?>
         </div>

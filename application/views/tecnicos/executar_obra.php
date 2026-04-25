@@ -3402,6 +3402,7 @@ const WizardAtendimento = {
         formData.append('obra_id', dadosObra.obraId);
         formData.append('atividade_id', atividadeId);
         formData.append('observacao', motivo);
+        formData.append('tipo_execucao', this.tipoExecucao || 'normal');
 
         fetch('<?= site_url("atividades/pausar") ?>', {
             method: 'POST',
