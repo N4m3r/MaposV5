@@ -876,6 +876,11 @@ class Mine extends CI_Controller
 
     public function os($offset = 0)
     {
+        // DEBUG: Logar valores da paginação
+        log_message('debug', 'Mine::os - offset recebido: ' . var_export($offset, true));
+        log_message('debug', 'Mine::os - URI segments: ' . var_export($this->uri->segment_array(), true));
+        log_message('debug', 'Mine::os - REQUEST_URI: ' . ($_SERVER['REQUEST_URI'] ?? 'N/A'));
+
         if (! session_id() || ! $this->session->userdata('conectado')) {
             redirect('mine');
         }
@@ -1041,6 +1046,8 @@ class Mine extends CI_Controller
 
         $this->db->order_by('os.idOs', 'desc');
         $this->db->limit($config['per_page'], (int) $offset);
+
+        log_message('debug', 'Mine::os - SQL: ' . $this->db->last_query());
 
         $query = $this->db->get();
 
