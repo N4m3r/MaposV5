@@ -8,8 +8,11 @@
         <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px; padding: 25px; color: white; margin-bottom: 25px;">
             <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                 <div>
-                    <div style="font-size: 14px; opacity: 0.9; margin-bottom: 8px;">
+                    <div style="font-size: 14px; opacity: 0.9; margin-bottom: 8px; display: flex; gap: 12px;">
                         <a href="<?= base_url('index.php/mine/obras') ?>" style="color: white; text-decoration: none;"><i class="bx bx-arrow-back"></i> Voltar para Minhas Obras</a>
+                        <a href="<?= base_url('index.php/mine/imprimirRelatorioObra/' . ($obra->id ?? '')) ?>" target="_blank" style="color: white; text-decoration: none; background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 6px;">
+                            <i class="bx bx-printer"></i> Imprimir Relatório
+                        </a>
                     </div>
                     <h2 style="margin: 0; font-size: 28px; font-weight: 700;"><i class="bx bx-building-house"></i> <?= htmlspecialchars($obra->nome) ?></h2>
                     <p style="margin: 10px 0 0; opacity: 0.9;">

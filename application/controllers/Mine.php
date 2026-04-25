@@ -2440,6 +2440,109 @@ class Mine extends CI_Controller
     }
 
     /**
+     * Imprimir relatório geral da obra para o cliente
+     */
+    public function imprimirRelatorioObra($obra_id = null)
+    {
+        if (!session_id() || !$this->session->userdata('conectado')) {
+            redirect('mine');
+        }
+
+        if (!$obra_id || !is_numeric($obra_id)) {
+            show_error('Obra não encontrada.');
+            return;
+        }
+
+        $this->load->helper('cliente_permissions');
+        clienteCheckPermission('visualizar_obras');
+
+        $this->load->model('obras_model');
+        $this->load->model('obra_atividades_model');
+        $this->load->model('mapos_model');
+        $this->load->model('clientes_model');
+
+        $obra = $this->obras_model->getById($obra_id);
+        if (!$obra) {
+            show_error('Obra não encontrada.');
+            return;
+        }
+
+        // Verificar acesso
+        $cliente_id = $this->session->userdata('cliente_id');
+        $usuario_cliente_id = $this->session->userdata('usuario_cliente_id');
+        $tem_acesso = false;
+
+        if ($obra->cliente_id == $cliente_id) {
+            $tem_acesso = true;
+        } else {
+            $cliente = $this->clientes_model->getById($cliente_id);
+            if ($cliente && !empty($cliente->documento)) {
+                $cliente_obra = $this->obras_model->getCliente($obra->id);
+                if ($cliente_obra && $cliente_obra->documento == $cliente->documento) {
+                    $tem_acesso = true;
+                }
+            }
+        }
+
+        if (!$tem_acesso && $usuario_cliente_id) {
+            $this->load->model('usuarios_cliente_model');
+            $cnpjs = $this->usuarios_cliente_model->getCnpjs($usuario_cliente_id);
+            if (!empty($cnpjs)) {
+                $cliente_obra = $this->obras_model->getCliente($obra->id);
+                if ($cliente_obra && !empty($cliente_obra->documento)) {
+                    $docObraLimpo = preg_replace('/[^0-9]/', '', $cliente_obra->documento);
+                    foreach ($cnpjs as $c) {
+                        $docCnpjLimpo = preg_replace('/[^0-9]/', '', $c->cnpj);
+                        if ($docObraLimpo === $docCnpjLimpo) {
+                            $tem_acesso = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!$tem_acesso) {
+            show_error('Esta obra não pertence ao cliente logado.');
+            return;
+        }
+
+        // Dados da obra
+        $etapas = $this->obras_model->getEtapasComEstatisticas($obra_id);
+        $equipe = $this->obras_model->getEquipe($obra_id);
+        $os_vinculadas = $this->obras_model->getOsVinculadas($obra_id);
+        $emitente = $this->mapos_model->getEmitente();
+        $cliente = $this->obras_model->getCliente($obra_id);
+
+        // Atividades
+        $atividades = [];
+        if (method_exists($this->obra_atividades_model, 'getByObra')) {
+            $atividades = $this->obra_atividades_model->getByObra($obra_id, ['visivel_cliente' => true], 100);
+        }
+
+        // Coletar fotos
+        $fotos = [];
+        foreach ($atividades as $atv) {
+            if (!empty($atv->fotos_checkin)) $fotos = array_merge($fotos, json_decode($atv->fotos_checkin, true) ?? []);
+            if (!empty($atv->fotos_atividade)) $fotos = array_merge($fotos, json_decode($atv->fotos_atividade, true) ?? []);
+            if (!empty($atv->fotos_checkout)) $fotos = array_merge($fotos, json_decode($atv->fotos_checkout, true) ?? []);
+        }
+
+        $data = [
+            'obra' => $obra,
+            'etapas' => $etapas,
+            'equipe' => $equipe,
+            'atividades' => $atividades,
+            'os_vinculadas' => $os_vinculadas,
+            'emitente' => $emitente,
+            'cliente' => $cliente,
+            'fotos' => array_slice($fotos, 0, 20),
+        ];
+
+        $this->load->view('conecte/obra_relatorio_print', $data);
+    }
+
+    /**
      * Upload de foto pelo cliente no relatório de atendimento
      */
     public function uploadFotoCliente()

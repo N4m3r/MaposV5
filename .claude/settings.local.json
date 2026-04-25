@@ -76,7 +76,8 @@
       "Bash(node --check -)",
       "Bash(node -c application/views/obras/configuracoes.php)",
       "Bash(head -n 1563 application/views/obras/configuracoes.php)",
-      "Bash(mv /tmp/configuracoes_clean.php application/views/obras/configuracoes.php)"
+      "Bash(mv /tmp/configuracoes_clean.php application/views/obras/configuracoes.php)",
+      "Bash(mysql -u root -e \"SELECT VERSION\\(\\);\")"
     ]
   }
 }
