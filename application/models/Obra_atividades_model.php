@@ -648,6 +648,15 @@ class Obra_atividades_model extends CI_Model
     }
 
     /**
+     * Adicionar histórico (wrapper público para registrarHistorico)
+     */
+    public function adicionarHistorico($atividade_id, $tipo, $descricao, $dados = [])
+    {
+        $tecnico_id = $dados['tecnico_id'] ?? $this->session->userdata('idUsuarios');
+        return $this->registrarHistorico($atividade_id, $tipo, $tecnico_id, array_merge(['descricao' => $descricao], $dados));
+    }
+
+    /**
      * Buscar histórico de atividade
      */
     public function getHistorico($atividade_id)

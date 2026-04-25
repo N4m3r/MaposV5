@@ -407,6 +407,17 @@ class Tecnicos extends MY_Controller
             if (isset($wizard_em_andamento->pausado_em)) {
                 $wizard_em_andamento->pausado_em = date('Y-m-d H:i:s', strtotime($wizard_em_andamento->pausado_em));
             }
+
+            // Verificar impedimento na obra_atividades vinculada
+            if (!empty($wizard_em_andamento->obra_atividade_id) && $this->db->table_exists('obra_atividades')) {
+                $this->db->select('impedimento, motivo_impedimento');
+                $this->db->where('id', $wizard_em_andamento->obra_atividade_id);
+                $obra_ativ = $this->db->get('obra_atividades')->row();
+                if ($obra_ativ) {
+                    $wizard_em_andamento->impedimento = $obra_ativ->impedimento;
+                    $wizard_em_andamento->motivo_impedimento = $obra_ativ->motivo_impedimento;
+                }
+            }
         }
 
         $this->data['wizard_em_andamento'] = $wizard_em_andamento;
