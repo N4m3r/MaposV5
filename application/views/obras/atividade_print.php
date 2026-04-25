@@ -623,7 +623,7 @@ if (!empty($obs) || !empty($prob) || !empty($sol)):
                     $url_foto = $foto->foto_base64;
                 }
                 $tipo_foto = $foto->tipo_foto ?? 'execucao';
-                $tipo_text = ['checkin'=>'Check-in', 'checkout'=>'Check-out', 'execucao'=>'Execução', 'impedimento'=>'Impedimento'][$tipo_foto] ?? 'Execução';
+                $tipo_text = ['checkin'=>'Check-in', 'checkout'=>'Finalização', 'execucao'=>'Execução', 'impedimento'=>'Impedimento'][$tipo_foto] ?? 'Execução';
             ?>
             <?php if ($url_foto): ?>
             <div class="foto-item no-break">

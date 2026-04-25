@@ -711,7 +711,7 @@
                                     break;
                                 case 'checkout':
                                     $tipo_class = 'checkout';
-                                    $tipo_text = 'Check-out';
+                                    $tipo_text = 'Finalização';
                                     break;
                                 case 'impedimento':
                                     $tipo_class = 'impedimento';
