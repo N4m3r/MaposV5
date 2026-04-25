@@ -441,6 +441,16 @@ class Tecnicos extends MY_Controller
                 $wizard_em_andamento->pausado_em = date('Y-m-d H:i:s', strtotime($wizard_em_andamento->pausado_em));
             }
 
+            // Calcular tempo decorrido em ms para sincronizar timer no frontend
+            // independente do relogio local do tecnico
+            if (!empty($wizard_em_andamento->hora_inicio)) {
+                $inicio_ts = strtotime($wizard_em_andamento->hora_inicio);
+                $agora_ts = time();
+                $wizard_em_andamento->tempo_decorrido_ms = max(0, ($agora_ts - $inicio_ts) * 1000);
+            } else {
+                $wizard_em_andamento->tempo_decorrido_ms = 0;
+            }
+
             // Verificar impedimento na obra_atividades vinculada
             if (!empty($wizard_em_andamento->obra_atividade_id) && $this->db->table_exists('obra_atividades')) {
                 $this->db->select('impedimento, motivo_impedimento');

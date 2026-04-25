@@ -2134,6 +2134,18 @@ const WizardAtendimento = {
         return dataLocal;
     },
 
+    // Obter hora de início preferindo tempo_decorrido_ms do servidor para evitar
+    // diferenças de relógio entre o computador do técnico e o servidor
+    obterHoraInicio: function(atividade) {
+        if (atividade && atividade.tempo_decorrido_ms) {
+            return new Date(Date.now() - atividade.tempo_decorrido_ms);
+        }
+        if (atividade && atividade.hora_inicio) {
+            return this.converterDataHoraLocal(atividade.hora_inicio);
+        }
+        return null;
+    },
+
     // Calcular tempo decorrido garantindo que não seja negativo
     calcularTempoDecorrido: function(dataInicio) {
         if (!dataInicio) return { horas: 0, minutos: 0, segundos: 0, texto: '00:00:00' };
@@ -2144,7 +2156,6 @@ const WizardAtendimento = {
 
         // Se a diferença for negativa, ajusta para 0
         if (diff < 0) {
-            console.warn('Tempo negativo detectado, ajustando para 0. Diff:', diff, 'Inicio:', dataInicio, 'Agora:', agora);
             diff = 0;
         }
 
@@ -2322,8 +2333,8 @@ const WizardAtendimento = {
 
         // Calcular tempo decorrido
         var tempoTexto = '00:00';
-        if (atividade && atividade.hora_inicio) {
-            const inicio = this.converterDataHoraLocal(atividade.hora_inicio);
+        if (atividade) {
+            const inicio = this.obterHoraInicio(atividade);
             const tempo = this.calcularTempoDecorrido(inicio);
             tempoTexto = String(tempo.horas).padStart(2, '0') + ':' + String(tempo.minutos).padStart(2, '0');
         }
@@ -2396,7 +2407,7 @@ const WizardAtendimento = {
         // Preencher info da atividade em andamento
         const atividade = dadosObra.atividadeAndamento;
         if (atividade) {
-            this.horaInicio = this.converterDataHoraLocal(atividade.hora_inicio);
+            this.horaInicio = this.obterHoraInicio(atividade);
             this.etapaSelecionada = {
                 id: atividade.etapa_id || 0,
                 nome: atividade.etapa_nome || 'Etapa'
@@ -3016,9 +3027,7 @@ const WizardAtendimento = {
         const atividadeEmAndamento = dadosObra.atividadeAndamento;
 
         // Calcular tempo decorrido
-        const inicio = atividadeEmAndamento && atividadeEmAndamento.hora_inicio
-            ? this.converterDataHoraLocal(atividadeEmAndamento.hora_inicio)
-            : this.horaInicio;
+        const inicio = this.obterHoraInicio(atividadeEmAndamento) || this.horaInicio;
         var tempoTexto = '00:00';
         if (inicio) {
             const tempo = this.calcularTempoDecorrido(inicio);
@@ -3051,9 +3060,7 @@ const WizardAtendimento = {
         const atividadeEmAndamento = dadosObra.atividadeAndamento;
 
         // Calcular tempo decorrido
-        const inicio = atividadeEmAndamento && atividadeEmAndamento.hora_inicio
-            ? this.converterDataHoraLocal(atividadeEmAndamento.hora_inicio)
-            : this.horaInicio;
+        const inicio = this.obterHoraInicio(atividadeEmAndamento) || this.horaInicio;
         var tempoTexto = '00:00';
         if (inicio) {
             const tempo = this.calcularTempoDecorrido(inicio);
@@ -3360,7 +3367,7 @@ const WizardAtendimento = {
         }
 
         // Calcular tempo decorrido
-        const inicio = atividadeEmAndamento.hora_inicio ? this.converterDataHoraLocal(atividadeEmAndamento.hora_inicio) : this.horaInicio;
+        const inicio = this.obterHoraInicio(atividadeEmAndamento) || this.horaInicio;
         var tempoTexto = '00:00';
         if (inicio) {
             const tempo = this.calcularTempoDecorrido(inicio);
@@ -3456,11 +3463,13 @@ const WizardAtendimento = {
             horaInicioTexto = this.horaInicio.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
             const tempo = this.calcularTempoDecorrido(this.horaInicio);
             tempoTotalTexto = String(tempo.horas).padStart(2, '0') + ':' + String(tempo.minutos).padStart(2, '0');
-        } else if (atividadeEmAndamento && atividadeEmAndamento.hora_inicio) {
-            const inicio = this.converterDataHoraLocal(atividadeEmAndamento.hora_inicio);
-            horaInicioTexto = inicio.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
-            const tempo = this.calcularTempoDecorrido(inicio);
-            tempoTotalTexto = String(tempo.horas).padStart(2, '0') + ':' + String(tempo.minutos).padStart(2, '0');
+        } else if (atividadeEmAndamento) {
+            const inicio = this.obterHoraInicio(atividadeEmAndamento);
+            if (inicio) {
+                horaInicioTexto = inicio.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
+                const tempo = this.calcularTempoDecorrido(inicio);
+                tempoTotalTexto = String(tempo.horas).padStart(2, '0') + ':' + String(tempo.minutos).padStart(2, '0');
+            }
         }
 
         // Atualizar modal

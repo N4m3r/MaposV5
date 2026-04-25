@@ -481,6 +481,9 @@ function abrirModal(tipo, id) {
                 } else if (tipo === 'funcao') {
                     nivelItem = (tds[1].innerText || tds[1].textContent || '').replace(/^\s+|\s+$/g, '').toLowerCase();
                     descricaoItem = (tds[2].innerText || tds[2].textContent || '').replace(/^\s+|\s+$/g, '');
+                } else if (tipo === 'tipo-atividade') {
+                    categoriaItem = (tds[2].innerText || tds[2].textContent || '').replace(/^\s+|\s+$/g, '').toLowerCase();
+                    descricaoItem = (tds[3].innerText || tds[3].textContent || '').replace(/^\s+|\s+$/g, '');
                 } else {
                     descricaoItem = (tds[2].innerText || tds[2].textContent || '').replace(/^\s+|\s+$/g, '');
                 }
