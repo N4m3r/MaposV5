@@ -158,6 +158,7 @@ $route['mine/aprovarOs/(:num)'] = 'mine/aprovarOs/$1';
 $route['mine/visualizarCompra/(:num)'] = 'mine/visualizarCompra/$1';
 $route['mine/imprimirCompra/(:num)'] = 'mine/imprimirCompra/$1';
 $route['mine/visualizarObra/(:num)'] = 'mine/visualizarObra/$1';
+$route['mine/imprimirRelatorioObra/(:num)'] = 'mine/imprimirRelatorioObra/$1';
 $route['mine/atualizarcobranca/(:num)'] = 'mine/atualizarcobranca/$1';
 $route['mine/enviarcobranca/(:num)'] = 'mine/enviarcobranca/$1';
 $route['mine/uploadFotoCliente'] = 'mine/uploadFotoCliente';
