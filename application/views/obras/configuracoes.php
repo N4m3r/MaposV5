@@ -1559,11 +1559,22 @@ function excluirTipoObra(id, nome) {
     formData.append('MAPOS_TOKEN', MAPOS_TOKEN);
     formData.append('id', id);
 
+    console.log('[DEBUG] excluirTipoObra - enviando fetch para:', '<?php echo site_url("obras/excluirTipoObra"); ?>');
     fetch('<?php echo site_url("obras/excluirTipoObra"); ?>', {
         method: 'POST',
         body: formData
     })
-    .then(r => r.json())
+    .then(function(r) {
+        console.log('[DEBUG] excluirTipoObra - status:', r.status, 'content-type:', r.headers.get('content-type'));
+        return r.text().then(function(text) {
+            try {
+                return JSON.parse(text);
+            } catch (e) {
+                console.error('[DEBUG] excluirTipoObra - resposta NAO e JSON:', text.substring(0, 500));
+                throw new Error('Resposta do servidor nao e JSON valido');
+            }
+        });
+    })
     .then(data => {
         ocultarLoading();
         if (data.success) {
@@ -1574,6 +1585,7 @@ function excluirTipoObra(id, nome) {
     })
     .catch(err => {
         ocultarLoading();
+        console.error('[DEBUG] excluirTipoObra - erro no fetch:', err);
         alert('Erro ao excluir. Tente novamente.');
     });
 }
@@ -1707,11 +1719,21 @@ function excluirTipoAtividade(id, nome) {
     formData.append('MAPOS_TOKEN', MAPOS_TOKEN);
     formData.append('id', id);
 
+    console.log('[DEBUG] excluirTipoAtividade - enviando fetch');
     fetch('<?php echo site_url("obras/excluirTipoAtividade"); ?>', {
         method: 'POST',
         body: formData
     })
-    .then(r => r.json())
+    .then(function(r) {
+        console.log('[DEBUG] excluirTipoAtividade - status:', r.status);
+        return r.text().then(function(text) {
+            try { return JSON.parse(text); }
+            catch (e) {
+                console.error('[DEBUG] excluirTipoAtividade - resposta NAO e JSON:', text.substring(0, 500));
+                throw new Error('Resposta do servidor nao e JSON valido');
+            }
+        });
+    })
     .then(data => {
         ocultarLoading();
         if (data.success) {
@@ -1722,6 +1744,7 @@ function excluirTipoAtividade(id, nome) {
     })
     .catch(err => {
         ocultarLoading();
+        console.error('[DEBUG] excluirTipoAtividade - erro no fetch:', err);
         alert('Erro ao excluir. Tente novamente.');
     });
 }
@@ -1847,18 +1870,29 @@ function excluirStatusObra(id, nome) {
     formData.append('MAPOS_TOKEN', MAPOS_TOKEN);
     formData.append('id', id);
 
+    console.log('[DEBUG] excluirStatusObra - enviando fetch');
     fetch('<?php echo site_url("obras/excluirStatusObra"); ?>', {
         method: 'POST',
         body: formData
     })
-    .then(r => r.json())
+    .then(function(r) {
+        console.log('[DEBUG] excluirStatusObra - status:', r.status);
+        return r.text().then(function(text) {
+            try { return JSON.parse(text); }
+            catch (e) {
+                console.error('[DEBUG] excluirStatusObra - resposta NAO e JSON:', text.substring(0, 500));
+                throw new Error('Resposta do servidor nao e JSON valido');
+            }
+        });
+    })
     .then(data => {
         ocultarLoading();
         if (data.success) location.reload();
         else alert('Erro: ' + (data.message || 'Não foi possível excluir'));
     })
-    .catch(() => {
+    .catch(err => {
         ocultarLoading();
+        console.error('[DEBUG] excluirStatusObra - erro no fetch:', err);
         alert('Erro ao excluir');
     });
 }
@@ -1975,18 +2009,29 @@ function excluirStatusAtividade(id, nome) {
     formData.append('MAPOS_TOKEN', MAPOS_TOKEN);
     formData.append('id', id);
 
+    console.log('[DEBUG] excluirStatusAtividade - enviando fetch');
     fetch('<?php echo site_url("obras/excluirStatusAtividade"); ?>', {
         method: 'POST',
         body: formData
     })
-    .then(r => r.json())
+    .then(function(r) {
+        console.log('[DEBUG] excluirStatusAtividade - status:', r.status);
+        return r.text().then(function(text) {
+            try { return JSON.parse(text); }
+            catch (e) {
+                console.error('[DEBUG] excluirStatusAtividade - resposta NAO e JSON:', text.substring(0, 500));
+                throw new Error('Resposta do servidor nao e JSON valido');
+            }
+        });
+    })
     .then(data => {
         ocultarLoading();
         if (data.success) location.reload();
         else alert('Erro: ' + (data.message || 'Erro ao excluir'));
     })
-    .catch(() => {
+    .catch(err => {
         ocultarLoading();
+        console.error('[DEBUG] excluirStatusAtividade - erro no fetch:', err);
         alert('Erro ao excluir');
     });
 }
@@ -2087,18 +2132,29 @@ function excluirEspecialidade(id, nome) {
     formData.append('MAPOS_TOKEN', MAPOS_TOKEN);
     formData.append('id', id);
 
+    console.log('[DEBUG] excluirEspecialidade - enviando fetch');
     fetch('<?php echo site_url("obras/excluirEspecialidade"); ?>', {
         method: 'POST',
         body: formData
     })
-    .then(r => r.json())
+    .then(function(r) {
+        console.log('[DEBUG] excluirEspecialidade - status:', r.status);
+        return r.text().then(function(text) {
+            try { return JSON.parse(text); }
+            catch (e) {
+                console.error('[DEBUG] excluirEspecialidade - resposta NAO e JSON:', text.substring(0, 500));
+                throw new Error('Resposta do servidor nao e JSON valido');
+            }
+        });
+    })
     .then(data => {
         ocultarLoading();
         if (data.success) location.reload();
         else alert('Erro: ' + (data.message || 'Erro ao excluir'));
     })
-    .catch(() => {
+    .catch(err => {
         ocultarLoading();
+        console.error('[DEBUG] excluirEspecialidade - erro no fetch:', err);
         alert('Erro ao excluir');
     });
 }
@@ -2174,18 +2230,29 @@ function excluirFuncao(id, nome) {
     formData.append('MAPOS_TOKEN', MAPOS_TOKEN);
     formData.append('id', id);
 
+    console.log('[DEBUG] excluirFuncao - enviando fetch');
     fetch('<?php echo site_url("obras/excluirFuncao"); ?>', {
         method: 'POST',
         body: formData
     })
-    .then(r => r.json())
+    .then(function(r) {
+        console.log('[DEBUG] excluirFuncao - status:', r.status);
+        return r.text().then(function(text) {
+            try { return JSON.parse(text); }
+            catch (e) {
+                console.error('[DEBUG] excluirFuncao - resposta NAO e JSON:', text.substring(0, 500));
+                throw new Error('Resposta do servidor nao e JSON valido');
+            }
+        });
+    })
     .then(data => {
         ocultarLoading();
         if (data.success) location.reload();
         else alert('Erro: ' + (data.message || 'Erro ao excluir'));
     })
-    .catch(() => {
+    .catch(err => {
         ocultarLoading();
+        console.error('[DEBUG] excluirFuncao - erro no fetch:', err);
         alert('Erro ao excluir');
     });
 }
@@ -2270,11 +2337,22 @@ function salvarModal() {
         return;
     }
 
+    console.log('[DEBUG] salvarModal - enviando para:', url, 'modalAtual:', modalAtual);
     fetch(url, {
         method: 'POST',
         body: formData
     })
-    .then(r => r.json())
+    .then(function(r) {
+        console.log('[DEBUG] salvarModal - status:', r.status, 'content-type:', r.headers.get('content-type'));
+        return r.text().then(function(text) {
+            try {
+                return JSON.parse(text);
+            } catch (e) {
+                console.error('[DEBUG] salvarModal - resposta NAO e JSON. Primeiros 500 chars:', text.substring(0, 500));
+                throw new Error('Resposta do servidor nao e JSON valido');
+            }
+        });
+    })
     .then(data => {
         ocultarLoading();
         if (data.success) {

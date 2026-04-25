@@ -979,7 +979,7 @@ class Mine extends CI_Controller
         $config['total_rows'] = ($total_result !== FALSE) ? $total_result : 0;
 
         // Configuração da paginação
-        $config['base_url'] = base_url() . 'index.php/mine/os/';
+        $config['base_url'] = site_url('mine/os');
         $config['per_page'] = 15;
         $config['reuse_query_string'] = true;
         $config['next_link'] = 'Próxima <i class="bx bx-chevron-right"></i>';
