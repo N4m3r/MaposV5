@@ -1457,6 +1457,22 @@ class Obras extends MY_Controller
 
             // Buscar fotos da atividade real
             $fotos = $this->atividades->getFotos($atividade_real->idAtividade);
+
+            // Adicionar foto do checkin/checkout da os_atividades
+            if (!empty($atividade_real->foto_checkin)) {
+                $f = new stdClass();
+                $f->caminho_arquivo = $atividade_real->foto_checkin;
+                $f->tipo_foto = 'checkin';
+                $f->foto_base64 = null;
+                $fotos[] = $f;
+            }
+            if (!empty($atividade_real->foto_checkout)) {
+                $f = new stdClass();
+                $f->caminho_arquivo = $atividade_real->foto_checkout;
+                $f->tipo_foto = 'checkout';
+                $f->foto_base64 = null;
+                $fotos[] = $f;
+            }
         } else {
             $fotos = [];
         }
@@ -1575,6 +1591,22 @@ class Obras extends MY_Controller
             }
 
             $fotos_atividade = $this->atividades->getFotos($atividade_real->idAtividade);
+
+            // Adicionar foto do checkin/checkout da os_atividades
+            if (!empty($atividade_real->foto_checkin)) {
+                $f = new stdClass();
+                $f->caminho_arquivo = $atividade_real->foto_checkin;
+                $f->tipo_foto = 'checkin';
+                $f->foto_base64 = null;
+                $fotos_atividade[] = $f;
+            }
+            if (!empty($atividade_real->foto_checkout)) {
+                $f = new stdClass();
+                $f->caminho_arquivo = $atividade_real->foto_checkout;
+                $f->tipo_foto = 'checkout';
+                $f->foto_base64 = null;
+                $fotos_atividade[] = $f;
+            }
         } else {
             $fotos_atividade = [];
         }
