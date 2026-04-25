@@ -1355,6 +1355,7 @@ const MAPOS_TOKEN = '<?php echo $this->security->get_csrf_hash(); ?>';
 
 // Sistema de abas por JavaScript (sem depender de :target)
 function ativarAba(abaId) {
+    console.log('[DEBUG] ativarAba chamada com:', abaId);
     if (!abaId) abaId = 'tab-geral';
     if (abaId.charAt(0) === '#') abaId = abaId.substring(1);
 
@@ -1375,20 +1376,25 @@ function ativarAba(abaId) {
 
     var alvo = document.getElementById(abaId);
     if (alvo) {
+        console.log('[DEBUG] Aba encontrada, ativando:', abaId);
         alvo.classList.add('ativo');
     } else {
+        console.warn('[DEBUG] Aba NAO encontrada, fallback para tab-geral. Buscado:', abaId);
         document.getElementById('tab-geral').classList.add('ativo');
     }
 }
 
 // Interceptar cliques nas abas
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('[DEBUG] DOMContentLoaded - inicializando abas');
     var abas = document.querySelectorAll('.config-tab-item');
+    console.log('[DEBUG] Total de abas encontradas:', abas.length);
     abas.forEach(function(aba) {
         aba.addEventListener('click', function(e) {
             e.preventDefault();
             var href = this.getAttribute('href');
             var abaId = href.substring(1);
+            console.log('[DEBUG] Clique na aba:', href, '-> ID:', abaId);
             ativarAba(abaId);
             window.location.hash = href;
         });
@@ -1396,6 +1402,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Ativar aba baseada no hash inicial
     var hash = window.location.hash;
+    console.log('[DEBUG] Hash inicial:', hash);
     if (hash && hash.length > 1) {
         ativarAba(hash.substring(1));
     } else {
@@ -1406,6 +1413,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // Ao mudar o hash manualmente (botao voltar/avancar)
 window.addEventListener('hashchange', function() {
     var hash = window.location.hash;
+    console.log('[DEBUG] Hashchange disparado, novo hash:', hash);
     if (hash && hash.length > 1) {
         ativarAba(hash.substring(1));
     }
