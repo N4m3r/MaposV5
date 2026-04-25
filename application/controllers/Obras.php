@@ -1458,11 +1458,22 @@ class Obras extends MY_Controller
             // Buscar fotos da atividade real
             $fotos = $this->atividades->getFotos($atividade_real->idAtividade);
 
+            // Determinar se a atividade e um impedimento
+            $atividade_plano = $this->obra_atividades_model->getById($atividade_id);
+            $tem_impedimento = $atividade_plano && !empty($atividade_plano->impedimento) && $atividade_plano->impedimento == 1;
+
+            // Se for impedimento, sobrescrever tipo de todas as fotos da execucao
+            if ($tem_impedimento && !empty($fotos)) {
+                foreach ($fotos as $f) {
+                    $f->tipo_foto = 'impedimento';
+                }
+            }
+
             // Adicionar foto do checkin/checkout da os_atividades
             if (!empty($atividade_real->foto_checkin)) {
                 $f = new stdClass();
                 $f->caminho_arquivo = $atividade_real->foto_checkin;
-                $f->tipo_foto = 'checkin';
+                $f->tipo_foto = $tem_impedimento ? 'impedimento' : 'checkin';
                 $f->foto_base64 = null;
                 $fotos[] = $f;
             }
@@ -1475,13 +1486,13 @@ class Obras extends MY_Controller
             }
         } else {
             $fotos = [];
+            $atividade_plano = $this->obra_atividades_model->getById($atividade_id);
+            $tem_impedimento = $atividade_plano && !empty($atividade_plano->impedimento) && $atividade_plano->impedimento == 1;
         }
 
         // Buscar fotos JSON da obra_atividades (checkin, atividade, checkout)
         // Sempre buscar, mesmo sem os_atividades vinculada (ex: upload pelo portal do tecnico)
-        $atividade_plano = $this->obra_atividades_model->getById($atividade_id);
         if ($atividade_plano) {
-            $tem_impedimento = !empty($atividade_plano->impedimento) && $atividade_plano->impedimento == 1;
             $json_fields = ['fotos_checkin', 'fotos_atividade', 'fotos_checkout'];
             foreach ($json_fields as $field) {
                 if (!empty($atividade_plano->$field)) {

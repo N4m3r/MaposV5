@@ -1197,9 +1197,9 @@ textarea.wizard-input {
                                             <i class="icon-refresh"></i> Reabrir
                                         </button>
                                         <?php elseif ($temImpedimento): ?>
-                                        <span class="btn-acao impedido" style="cursor: default;">
+                                        <button class="btn-acao impedido" disabled>
                                             <i class="icon-warning-sign"></i> Impedido
-                                        </span>
+                                        </button>
                                         <?php elseif (($statusAtiv === 'pausada' || $statusAtiv === 'pausado') && $ativId): ?>
                                         <button class="btn-acao continuar" onclick="WizardAtendimento.continuar(<?= $ativId ?>)">
                                             <i class="icon-play"></i> Continuar
