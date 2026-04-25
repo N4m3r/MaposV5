@@ -136,10 +136,10 @@ $podeEditarPerfil = clienteHasPermission('editar_perfil');
 
                 <div class="span12">
                     <?php if ($var = $this->session->flashdata('success')) : ?><script>
-                            swal("Sucesso!", "<?php echo str_replace('"', '', $var); ?>", "success");
+                            swal("Sucesso!", <?php echo json_encode(strip_tags($var)); ?>, "success");
                         </script><?php endif; ?>
                     <?php if ($var = $this->session->flashdata('error')) : ?><script>
-                            swal("Falha!", "<?php echo str_replace('"', '', $var); ?>", "error");
+                            swal("Falha!", <?php echo json_encode(strip_tags($var)); ?>, "error");
                         </script><?php endif; ?>
                     <?php if (isset($output)) {
                         $this->load->view($output);
