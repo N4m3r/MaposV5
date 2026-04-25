@@ -1133,14 +1133,20 @@ textarea.wizard-input {
                                 // Usar status da execução vinculada (os_atividades) se existir
                                 $statusAtiv = $ativ->status_execucao ?? $ativ->status ?? 'agendada';
                                 $horaInicioAtiv = $ativ->hora_inicio_execucao ?? $ativ->hora_inicio ?? null;
+                                $temImpedimento = !empty($ativ->impedimento) && $ativ->impedimento == 1;
+                                if ($temImpedimento) {
+                                    $statusAtiv = 'impedimento';
+                                }
                                 $statusAtivClass = ($statusAtiv === 'concluida' || $statusAtiv === 'concluido') ? 'concluida' :
                                                     (($statusAtiv === 'em_andamento' || $statusAtiv === 'iniciada') ? 'andamento' :
                                                     (($statusAtiv === 'reaberta' || $statusAtiv === 'reaberto') ? 'reaberta' :
-                                                    (($statusAtiv === 'pausada' || $statusAtiv === 'pausado') ? 'pausada' : 'aberto')));
+                                                    (($statusAtiv === 'pausada' || $statusAtiv === 'pausado') ? 'pausada' :
+                                                    (($statusAtiv === 'impedimento') ? 'impedimento' : 'aberto'))));
                                 $statusAtivLabel = ($statusAtiv === 'concluida' || $statusAtiv === 'concluido') ? 'Concluída' :
                                                     (($statusAtiv === 'em_andamento' || $statusAtiv === 'iniciada') ? 'Em Andamento' :
                                                     (($statusAtiv === 'reaberta' || $statusAtiv === 'reaberto') ? 'Reaberta' :
-                                                    (($statusAtiv === 'pausada' || $statusAtiv === 'pausado') ? 'Pausada' : 'Aberta')));
+                                                    (($statusAtiv === 'pausada' || $statusAtiv === 'pausado') ? 'Pausada' :
+                                                    (($statusAtiv === 'impedimento') ? 'Impedimento' : 'Aberta'))));
                                 ?>
                                 <div class="atividade-item">
                                     <div class="atividade-icon <?= $statusAtivClass ?>">

@@ -981,6 +981,7 @@ class Mine extends CI_Controller
         // Configuração da paginação
         $config['base_url'] = site_url('mine/os');
         $config['per_page'] = 15;
+        $config['uri_segment'] = 3;
         $config['reuse_query_string'] = true;
         $config['next_link'] = 'Próxima <i class="bx bx-chevron-right"></i>';
         $config['prev_link'] = '<i class="bx bx-chevron-left"></i> Anterior';
@@ -1039,7 +1040,7 @@ class Mine extends CI_Controller
         }
 
         $this->db->order_by('os.idOs', 'desc');
-        $this->db->limit($config['per_page'], $this->uri->segment(3) ? $this->uri->segment(3) : 0);
+        $this->db->limit($config['per_page'], (int) $offset);
 
         $query = $this->db->get();
 
