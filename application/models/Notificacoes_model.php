@@ -106,42 +106,26 @@ class Notificacoes_model extends CI_Model
             return;
         }
 
-        $this->db->query("
-            CREATE TABLE IF NOT EXISTS `notificacoes` (
-              `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-              `usuario_id` INT(11) NOT NULL,
-              `tipo_usuario` VARCHAR(20) DEFAULT 'admin',
-              `titulo` VARCHAR(200) NOT NULL,
-              `mensagem` TEXT NOT NULL,
-              `url` VARCHAR(500) NULL,
-              `icone` VARCHAR(50) DEFAULT 'bx-bell',
-              `tipo` VARCHAR(30) DEFAULT 'info',
-              `lida` TINYINT(1) DEFAULT 0,
-              `data_notificacao` DATETIME NOT NULL,
-              PRIMARY KEY (`id`),
-              INDEX `idx_usuario_tipo_lida` (`usuario_id`, `tipo_usuario`, `lida`),
-              INDEX `idx_data` (`data_notificacao`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
-        ");
-
-        // Verificar se a coluna tipo_usuario existe na tabela existente
-        $campos = $this->db->field_data('notificacoes');
-        $tem_tipo_usuario = false;
-        foreach ($campos as $campo) {
-            if ($campo->name === 'tipo_usuario') {
-                $tem_tipo_usuario = true;
-                break;
-            }
-        }
-
-        // Adicionar coluna tipo_usuario se não existir
-        if (!$tem_tipo_usuario && $this->db->table_exists('notificacoes')) {
+        try {
             $this->db->query("
-                ALTER TABLE `notificacoes`
-                ADD COLUMN `tipo_usuario` VARCHAR(20) DEFAULT 'admin' AFTER `usuario_id`,
-                DROP INDEX IF EXISTS `idx_usuario_lida`,
-                ADD INDEX `idx_usuario_tipo_lida` (`usuario_id`, `tipo_usuario`, `lida`)
+                CREATE TABLE IF NOT EXISTS `notificacoes` (
+                  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+                  `usuario_id` INT(11) NOT NULL,
+                  `tipo_usuario` VARCHAR(20) DEFAULT 'admin',
+                  `titulo` VARCHAR(200) NOT NULL,
+                  `mensagem` TEXT NOT NULL,
+                  `url` VARCHAR(500) NULL,
+                  `icone` VARCHAR(50) DEFAULT 'bx-bell',
+                  `tipo` VARCHAR(30) DEFAULT 'info',
+                  `lida` TINYINT(1) DEFAULT 0,
+                  `data_notificacao` DATETIME NOT NULL,
+                  PRIMARY KEY (`id`),
+                  INDEX `idx_usuario_tipo_lida` (`usuario_id`, `tipo_usuario`, `lida`),
+                  INDEX `idx_data` (`data_notificacao`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
             ");
+        } catch (Exception $e) {
+            log_message('error', 'Erro ao criar tabela notificacoes: ' . $e->getMessage());
         }
     }
 }
