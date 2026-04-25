@@ -1418,20 +1418,53 @@ select.config-form-control {
     <div class="loading-spinner"></div>
 </div>
 
+<!-- DEBUG VISUAL -->
+<div id="debug-panel" style="position:fixed;bottom:10px;right:10px;background:#222;color:#0f0;padding:10px;border-radius:8px;z-index:99999;font-family:monospace;font-size:12px;max-width:350px;max-height:300px;overflow:auto;box-shadow:0 0 10px rgba(0,0,0,0.5);">
+    <div style="color:#ff0;font-weight:bold;margin-bottom:5px;">🐛 DEBUG VISUAL</div>
+    <div id="debug-log">Aguardando interação...</div>
+</div>
+
 <script type="text/javascript">
+// Painel de debug visual
+var debugPanel = document.getElementById('debug-log');
+function debugLog(msg, type) {
+    var color = type === 'error' ? '#f44' : type === 'warn' ? '#fa0' : '#0f0';
+    var time = new Date().toLocaleTimeString();
+    var line = '[' + time + '] ' + msg;
+    debugPanel.innerHTML += '<div style="color:' + color + ';border-bottom:1px solid #333;padding:2px 0;">' + line + '</div>';
+    debugPanel.scrollTop = debugPanel.scrollHeight;
+    // Também no console
+    if (type === 'error') console.error(line);
+    else if (type === 'warn') console.warn(line);
+    else console.log(line);
+}
+
+debugLog('Script de configuracoes carregado', 'info');
+
 // Garantir que erros anteriores nao quebrem este script
 (function() {
     'use strict';
 
     // Token CSRF
     var MAPOS_TOKEN = <?php echo json_encode($this->security->get_csrf_hash()); ?>;
+    debugLog('CSRF Token carregado: ' + (MAPOS_TOKEN ? 'OK' : 'VAZIO'), 'info');
 
     // ========== MODAL DE CONFIGURACOES ==========
     window.abrirModalConfiguracoes = function(abaInicial) {
+    debugLog('abrirModalConfiguracoes() chamada com: ' + abaInicial, 'info');
     console.log('[DEBUG] abrirModalConfiguracoes chamada, abaInicial:', abaInicial);
+
     var modal = document.getElementById('modalConfiguracoes');
+    if (!modal) {
+        debugLog('ERRO: Elemento #modalConfiguracoes NAO ENCONTRADO!', 'error');
+        alert('[DEBUG] ERRO CRITICO: Modal #modalConfiguracoes nao existe no DOM!');
+        return;
+    }
+    debugLog('Modal encontrado no DOM', 'info');
+
     modal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
+    debugLog('Modal visivel, overflow hidden aplicado', 'info');
 
     // Ativar aba inicial
     if (abaInicial) {
@@ -1442,21 +1475,38 @@ select.config-form-control {
 }
 
 function fecharModalConfiguracoes() {
+    debugLog('fecharModalConfiguracoes() chamada', 'info');
     console.log('[DEBUG] fecharModalConfiguracoes chamada');
     var modal = document.getElementById('modalConfiguracoes');
-    modal.style.display = 'none';
-    document.body.style.overflow = '';
+    if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+        debugLog('Modal fechado', 'info');
+    } else {
+        debugLog('ERRO ao fechar: modal nao encontrado', 'error');
+    }
 }
 
 // Sistema de abas dentro do modal (sem hash, sem :target)
 function ativarAbaModal(abaId) {
+    debugLog('ativarAbaModal("' + abaId + '")', 'info');
     console.log('[DEBUG] ativarAbaModal chamada com:', abaId);
-    if (!abaId) abaId = 'tab-geral';
+
+    if (!abaId) {
+        abaId = 'tab-geral';
+        debugLog('abaId vazio, usando fallback tab-geral', 'warn');
+    }
     if (abaId.charAt(0) === '#') abaId = abaId.substring(1);
 
-    // Destacar aba no menu
     var modal = document.getElementById('modalConfiguracoes');
+    if (!modal) {
+        debugLog('ERRO: Modal nao encontrado em ativarAbaModal', 'error');
+        return;
+    }
+
+    // Destacar aba no menu
     var abas = modal.querySelectorAll('.config-tab-item');
+    debugLog('Total de abas no modal: ' + abas.length, 'info');
     abas.forEach(function(aba) {
         aba.classList.remove('active');
         if (aba.getAttribute('data-tab') === abaId) {
@@ -1466,18 +1516,26 @@ function ativarAbaModal(abaId) {
 
     // Mostrar conteudo correspondente
     var conteudos = modal.querySelectorAll('.config-content');
+    debugLog('Total de conteudos no modal: ' + conteudos.length, 'info');
     conteudos.forEach(function(c) {
         c.classList.remove('ativo');
     });
 
     var alvo = modal.querySelector('#' + abaId);
     if (alvo) {
+        debugLog('Aba "' + abaId + '" encontrada e ativada', 'info');
         console.log('[DEBUG] Aba encontrada no modal, ativando:', abaId);
         alvo.classList.add('ativo');
     } else {
+        debugLog('Aba "' + abaId + '" NAO encontrada!', 'error');
         console.warn('[DEBUG] Aba NAO encontrada no modal, fallback para tab-geral. Buscado:', abaId);
         var fallback = modal.querySelector('#tab-geral');
-        if (fallback) fallback.classList.add('ativo');
+        if (fallback) {
+            fallback.classList.add('ativo');
+            debugLog('Fallback para tab-geral ativado', 'warn');
+        } else {
+            debugLog('ERRO CRITICO: tab-geral tambem nao encontrada!', 'error');
+        }
     }
 }
 
@@ -2450,19 +2508,38 @@ function salvarModal() {
     });
 }
 
-// Sincronizar color picker com input text
-document.addEventListener('input', function(e) {
-    if (e.target.type === 'color') {
-        var textInput = e.target.parentElement.querySelector('input[type="text"]');
-        if (textInput) textInput.value = e.target.value;
-    }
-});
+// Capturar erros globais dentro deste script
+try {
+    // Sincronizar color picker com input text
+    document.addEventListener('input', function(e) {
+        if (e.target.type === 'color') {
+            var textInput = e.target.parentElement.querySelector('input[type="text"]');
+            if (textInput) textInput.value = e.target.value;
+        }
+    });
 
-// Expor funcoes globais para onclick no HTML
-window.fecharModalConfiguracoes = fecharModalConfiguracoes;
-window.ativarAbaModal = ativarAbaModal;
-window.fecharModal = fecharModal;
-window.salvarModal = salvarModal;
-window.abrirModal = abrirModal;
+    // Expor funcoes globais para onclick no HTML
+    window.fecharModalConfiguracoes = fecharModalConfiguracoes;
+    window.ativarAbaModal = ativarAbaModal;
+    window.fecharModal = fecharModal;
+    window.salvarModal = salvarModal;
+    window.abrirModal = abrirModal;
+
+    debugLog('Todas as funcoes expostas no window. Pronto!', 'info');
+    debugLog('Funcoes disponiveis: abrirModalConfiguracoes=' + (typeof window.abrirModalConfiguracoes) + ', ativarAbaModal=' + (typeof window.ativarAbaModal), 'info');
+} catch (e) {
+    debugLog('ERRO GLOBAL no script: ' + e.message, 'error');
+    alert('[DEBUG] ERRO GLOBAL no script de configuracoes: ' + e.message);
+}
 })();
+
+// Handler global de erros de JavaScript
+window.onerror = function(msg, url, line, col, error) {
+    var debugPanel = document.getElementById('debug-log');
+    if (debugPanel) {
+        debugPanel.innerHTML += '<div style="color:#f44;border-bottom:1px solid #333;padding:2px 0;">[ERRO GLOBAL] ' + msg + ' (linha ' + line + ')</div>';
+    }
+    console.error('[ERRO GLOBAL]', msg, 'em', url, 'linha', line);
+    return false;
+};
 </script>
