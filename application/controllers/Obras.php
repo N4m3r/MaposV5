@@ -2355,6 +2355,24 @@ class Obras extends MY_Controller
             return;
         }
 
+        // Verificar duplicata
+        if (empty($dados['id'])) {
+            $existe = $this->db->where('nome', $dados['nome'])->where('ativo', 1)->count_all_results('obra_funcoes');
+            if ($existe > 0) {
+                echo json_encode(['success' => false, 'message' => 'Já existe uma função com o nome "' . $dados['nome'] . '"']);
+                return;
+            }
+        } else {
+            $this->db->where('nome', $dados['nome']);
+            $this->db->where('id !=', $dados['id']);
+            $this->db->where('ativo', 1);
+            $existe = $this->db->count_all_results('obra_funcoes');
+            if ($existe > 0) {
+                echo json_encode(['success' => false, 'message' => 'Já existe outra função com o nome "' . $dados['nome'] . '"']);
+                return;
+            }
+        }
+
         $result = $this->obras_model->salvarFuncao($dados);
 
         if ($result) {
@@ -2418,6 +2436,25 @@ class Obras extends MY_Controller
         if (empty($dados['nome'])) {
             echo json_encode(['success' => false, 'message' => 'Nome do tipo é obrigatório']);
             return;
+        }
+
+        // Verificar duplicata em insert
+        if (empty($dados['id'])) {
+            $existe = $this->db->where('nome', $dados['nome'])->where('ativo', 1)->count_all_results('obra_tipos');
+            if ($existe > 0) {
+                echo json_encode(['success' => false, 'message' => 'Já existe um tipo de obra com o nome "' . $dados['nome'] . '"']);
+                return;
+            }
+        } else {
+            // Verificar duplicata em update (exceto o proprio registro)
+            $this->db->where('nome', $dados['nome']);
+            $this->db->where('id !=', $dados['id']);
+            $this->db->where('ativo', 1);
+            $existe = $this->db->count_all_results('obra_tipos');
+            if ($existe > 0) {
+                echo json_encode(['success' => false, 'message' => 'Já existe outro tipo de obra com o nome "' . $dados['nome'] . '"']);
+                return;
+            }
         }
 
         $result = $this->obras_model->salvarTipoObra($dados);
@@ -2488,6 +2525,24 @@ class Obras extends MY_Controller
             return;
         }
 
+        // Verificar duplicata
+        if (empty($dados['id'])) {
+            $existe = $this->db->where('nome', $dados['nome'])->where('ativo', 1)->count_all_results('obra_status');
+            if ($existe > 0) {
+                echo json_encode(['success' => false, 'message' => 'Já existe um status de obra com o nome "' . $dados['nome'] . '"']);
+                return;
+            }
+        } else {
+            $this->db->where('nome', $dados['nome']);
+            $this->db->where('id !=', $dados['id']);
+            $this->db->where('ativo', 1);
+            $existe = $this->db->count_all_results('obra_status');
+            if ($existe > 0) {
+                echo json_encode(['success' => false, 'message' => 'Já existe outro status de obra com o nome "' . $dados['nome'] . '"']);
+                return;
+            }
+        }
+
         $result = $this->obras_model->salvarStatusObra($dados);
         $dbError = $this->db->error();
 
@@ -2551,6 +2606,24 @@ class Obras extends MY_Controller
         if (empty($dados['nome'])) {
             echo json_encode(['success' => false, 'message' => 'Nome da especialidade é obrigatório']);
             return;
+        }
+
+        // Verificar duplicata
+        if (empty($dados['id'])) {
+            $existe = $this->db->where('nome', $dados['nome'])->where('ativo', 1)->count_all_results('obra_especialidades');
+            if ($existe > 0) {
+                echo json_encode(['success' => false, 'message' => 'Já existe uma especialidade com o nome "' . $dados['nome'] . '"']);
+                return;
+            }
+        } else {
+            $this->db->where('nome', $dados['nome']);
+            $this->db->where('id !=', $dados['id']);
+            $this->db->where('ativo', 1);
+            $existe = $this->db->count_all_results('obra_especialidades');
+            if ($existe > 0) {
+                echo json_encode(['success' => false, 'message' => 'Já existe outra especialidade com o nome "' . $dados['nome'] . '"']);
+                return;
+            }
         }
 
         $result = $this->obras_model->salvarEspecialidade($dados);
@@ -2618,6 +2691,24 @@ class Obras extends MY_Controller
         if (empty($dados['nome'])) {
             echo json_encode(['success' => false, 'message' => 'Nome do tipo é obrigatório']);
             return;
+        }
+
+        // Verificar duplicata
+        if (empty($dados['idTipo'])) {
+            $existe = $this->db->where('nome', $dados['nome'])->where('ativo', 1)->count_all_results('atividades_tipos');
+            if ($existe > 0) {
+                echo json_encode(['success' => false, 'message' => 'Já existe um tipo de atividade com o nome "' . $dados['nome'] . '"']);
+                return;
+            }
+        } else {
+            $this->db->where('nome', $dados['nome']);
+            $this->db->where('idTipo !=', $dados['idTipo']);
+            $this->db->where('ativo', 1);
+            $existe = $this->db->count_all_results('atividades_tipos');
+            if ($existe > 0) {
+                echo json_encode(['success' => false, 'message' => 'Já existe outro tipo de atividade com o nome "' . $dados['nome'] . '"']);
+                return;
+            }
         }
 
         if (!empty($dados['idTipo'])) {
