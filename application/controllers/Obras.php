@@ -2413,17 +2413,22 @@ class Obras extends MY_Controller
             'icone' => $this->input->post('icone') ?: 'bx-building',
         ];
 
+        log_message('debug', 'salvarTipoObra - dados recebidos: ' . print_r($dados, true));
+
         if (empty($dados['nome'])) {
             echo json_encode(['success' => false, 'message' => 'Nome do tipo é obrigatório']);
             return;
         }
 
         $result = $this->obras_model->salvarTipoObra($dados);
+        $dbError = $this->db->error();
+        log_message('debug', 'salvarTipoObra - resultado: ' . var_export($result, true) . ' db_error: ' . print_r($dbError, true));
 
         if ($result) {
             echo json_encode(['success' => true, 'message' => 'Tipo de obra salvo com sucesso', 'id' => $result]);
         } else {
-            echo json_encode(['success' => false, 'message' => 'Erro ao salvar tipo de obra']);
+            $msg = ($dbError && !empty($dbError['message'])) ? 'Erro DB: ' . $dbError['message'] : 'Erro ao salvar tipo de obra';
+            echo json_encode(['success' => false, 'message' => $msg]);
         }
     }
 
@@ -2484,11 +2489,13 @@ class Obras extends MY_Controller
         }
 
         $result = $this->obras_model->salvarStatusObra($dados);
+        $dbError = $this->db->error();
 
         if ($result) {
             echo json_encode(['success' => true, 'message' => 'Status de obra salvo com sucesso', 'id' => $result]);
         } else {
-            echo json_encode(['success' => false, 'message' => 'Erro ao salvar status de obra']);
+            $msg = ($dbError && !empty($dbError['message'])) ? 'Erro DB: ' . $dbError['message'] : 'Erro ao salvar status de obra';
+            echo json_encode(['success' => false, 'message' => $msg]);
         }
     }
 

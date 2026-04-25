@@ -1080,7 +1080,6 @@ textarea.wizard-input {
                 // Skip invalid etapas
                 if (!is_object($etapa)) continue;
 
-                // Debug: log available properties on first iteration
                 // var_dump(get_object_vars($etapa)); die();
 
                 $etapaId = property_exists($etapa, 'id') ? $etapa->id : (property_exists($etapa, 'idEtapa') ? $etapa->idEtapa : null);
@@ -1184,12 +1183,6 @@ textarea.wizard-input {
                                         <p><?= $statusAtivLabel ?> • <?= !empty($horaInicioAtiv) ? date('H:i', strtotime($horaInicioAtiv)) : '--:--' ?></p>
                                     </div>
                                     <div class="atividade-acoes">
-                                        <!-- DEBUG: Remover após diagnóstico -->
-                                        <?php if ($ativId == 9): ?>
-                                        <div style="font-size:10px;color:#666;background:#f0f0f0;padding:4px;border-radius:4px;margin-bottom:4px;">
-                                            DEBUG: status=<?= $ativ->status ?? 'null' ?> | exec=<?= $ativ->status_execucao ?? 'null' ?> | imp=<?= $ativ->impedimento ?? 'null' ?> | motivo=<?= !empty($ativ->motivo_impedimento) ? 'sim' : 'nao' ?>
-                                        </div>
-                                        <?php endif; ?>
                                         <?php if (($statusAtiv === 'em_andamento' || $statusAtiv === 'iniciada') && $ativId): ?>
                                         <button class="btn-acao finalizar" onclick="WizardAtendimento.continuar(<?= $ativId ?>)">
                                             <i class="icon-stop"></i> Finalizar
@@ -2183,10 +2176,6 @@ const WizardAtendimento = {
 
     // Iniciar wizard - mostra modal de confirmação
     iniciar: function(etapaId, etapaNome, atividadeId, atividadeNome) {
-        console.log('=== iniciar chamado ===');
-        console.log('etapaId:', etapaId, 'etapaNome:', etapaNome);
-        console.log('atividadeId:', atividadeId, 'atividadeNome:', atividadeNome);
-
         // Guardar dados para confirmação
         this._dadosConfirmacao = {
             etapaId: etapaId,
@@ -2209,22 +2198,16 @@ const WizardAtendimento = {
 
     // Confirmar início após modal
     confirmarIniciar: function() {
-        console.log('=== confirmarIniciar chamado ===');
-
         // Fechar modal de confirmação
         var modalConfirm = document.getElementById('modalConfirmarIniciar');
         if (modalConfirm) modalConfirm.style.display = 'none';
 
         var dados = this._dadosConfirmacao;
-        console.log('_dadosConfirmacao:', dados);
         if (!dados) return;
 
         this.stepAtual = 1;
         this.etapaSelecionada = dados.etapaId ? { id: dados.etapaId, nome: dados.etapaNome } : null;
         this.atividadeSelecionada = dados.atividadeId ? { id: dados.atividadeId, nome: dados.atividadeNome } : null;
-
-        console.log('etapaSelecionada:', this.etapaSelecionada);
-        console.log('atividadeSelecionada:', this.atividadeSelecionada);
 
         // Abrir wizard principal
         var modal = document.getElementById('wizardModal');
@@ -2288,8 +2271,6 @@ const WizardAtendimento = {
             }
             if (atividade) break;
         }
-
-        console.log('iniciarAtividade - encontrada:', atividade ? 'sim' : 'nao', 'etapaId:', etapaId, 'etapaNome:', etapaNome);
 
         if (!atividade) {
             alert('Atividade não encontrada. Recarregue a página e tente novamente.');
@@ -2761,9 +2742,6 @@ const WizardAtendimento = {
                 if (container) container.style.display = 'block';
                 if (upload) upload.style.display = 'none';
 
-                console.log('Foto comprimida: ' + (resultado.originalSize / 1024 / 1024).toFixed(2) + 'MB → ' +
-                           (resultado.compressedSize / 1024 / 1024).toFixed(2) + 'MB (' +
-                           Math.round((1 - resultado.compressedSize / resultado.originalSize) * 100) + '% redução)');
             }).catch(function(err) {
                 console.error('Erro na compressão:', err);
                 // Fallback: mostrar original sem compressão
@@ -2811,13 +2789,9 @@ const WizardAtendimento = {
 
     // Realizar check-in
     realizarCheckin: function() {
-        console.log('=== realizarCheckin chamado ===');
-        console.log('tipoExecucao:', this.tipoExecucao);
-
         if (this.tipoExecucao === 'impedimento') {
             const justificativa = document.getElementById('justificativaTexto');
             const justificativaValor = justificativa ? justificativa.value : '';
-            console.log('justificativa:', justificativaValor);
             if (!justificativaValor || !justificativaValor.trim()) {
                 alert('Por favor, informe a justificativa do impedimento.');
                 return;
@@ -2826,10 +2800,8 @@ const WizardAtendimento = {
 
         // Obter localização
         if (navigator.geolocation) {
-            console.log('Solicitando geolocalização...');
             navigator.geolocation.getCurrentPosition(
                 (position) => {
-                    console.log('Geolocalização obtida:', position.coords.latitude, position.coords.longitude);
                     this.enviarCheckin(position.coords.latitude, position.coords.longitude);
                 },
                 (error) => {
@@ -2838,7 +2810,6 @@ const WizardAtendimento = {
                 }
             );
         } else {
-            console.log('Geolocalização não suportada');
             this.enviarCheckin(null, null);
         }
     },
@@ -2867,7 +2838,6 @@ const WizardAtendimento = {
         .then(text => {
             try {
                 const testData = JSON.parse(text);
-                console.log('Teste AJAX:', testData);
                 if (testData.success) {
                     self._enviarCheckinReal(lat, lng);
                 } else {
@@ -2886,15 +2856,7 @@ const WizardAtendimento = {
 
     // Enviar check-in real para o servidor
     _enviarCheckinReal: function(lat, lng) {
-        console.log('=== _enviarCheckinReal chamado ===');
-        console.log('lat:', lat, 'lng:', lng);
-        console.log('etapaSelecionada:', this.etapaSelecionada);
-        console.log('atividadeSelecionada:', this.atividadeSelecionada);
-        console.log('tipoExecucao:', this.tipoExecucao);
-        console.log('obraId:', dadosObra.obraId);
-
         const csrfToken = this.getCsrfToken();
-        console.log('CSRF Token:', csrfToken ? 'OK (presente)' : 'FALTANDO');
 
         // Normalizar etapa_id - converter 'sem_etapa' ou string para número
         var etapaId = this.etapaSelecionada ? this.etapaSelecionada.id : 0;
@@ -2912,9 +2874,6 @@ const WizardAtendimento = {
             atividadeId = parseInt(atividadeId) || 0;
         }
 
-        console.log('etapaId normalizado:', etapaId);
-        console.log('atividadeId normalizado:', atividadeId);
-
         const formData = new FormData();
         formData.append('MAPOS_TOKEN', csrfToken);
         formData.append('obra_id', dadosObra.obraId);
@@ -2927,18 +2886,9 @@ const WizardAtendimento = {
         formData.append('latitude', lat || '');
         formData.append('longitude', lng || '');
 
-        console.log('FormData preparado. Enviando para checkin_obra...');
-
         const fotoInput = document.getElementById('fotoCheckin');
         if (fotoInput && fotoInput.files.length > 0) {
-            const tamanhoKB = (fotoInput.files[0].size / 1024).toFixed(0);
-            console.log('Enviando foto:', fotoInput.files[0].name, 'Tamanho:', tamanhoKB + 'KB');
-            if (fotoInput.files[0].name.includes('_compressed')) {
-                console.log('✓ Foto otimizada para upload rápido');
-            }
             formData.append('foto', fotoInput.files[0]);
-        } else {
-            console.log('Nenhuma foto selecionada');
         }
 
         fetch('<?= site_url("atividades/checkin_obra") ?>', {
@@ -2949,10 +2899,8 @@ const WizardAtendimento = {
             body: formData
         })
         .then(r => {
-            console.log('Resposta HTTP:', r.status, r.statusText);
             // Verificar se a resposta é JSON
             const contentType = r.headers.get('content-type');
-            console.log('Content-Type:', contentType);
             if (contentType && contentType.includes('application/json')) {
                 return r.json();
             } else {
@@ -2964,7 +2912,6 @@ const WizardAtendimento = {
             }
         })
         .then(data => {
-            console.log('Resposta do servidor:', data);
             if (data.success) {
                 this.horaInicio = new Date();
 
@@ -3189,10 +3136,6 @@ const WizardAtendimento = {
             // Remover loading de compressão
             var loadingEl = document.getElementById('fotoLoading');
             if (loadingEl) loadingEl.remove();
-
-            console.log('Foto comprimida: ' + (resultado.originalSize / 1024).toFixed(0) + 'KB → ' +
-                       (resultado.compressedSize / 1024).toFixed(0) + 'KB (' +
-                       Math.round((1 - resultado.compressedSize / resultado.originalSize) * 100) + '% redução)');
 
             // Enviar foto comprimida
             self.enviarFotoExecucao(resultado.file, resultado.preview);
@@ -3679,14 +3622,7 @@ const WizardAtendimento = {
 
         const fotoInput = document.getElementById('fotoCheckout');
         if (fotoInput && fotoInput.files.length > 0) {
-            const tamanhoKB = (fotoInput.files[0].size / 1024).toFixed(0);
-            console.log('Enviando foto checkout:', fotoInput.files[0].name, 'Tamanho:', tamanhoKB + 'KB');
-            if (fotoInput.files[0].name.includes('_compressed')) {
-                console.log('✓ Foto otimizada para upload rápido');
-            }
             formData.append('foto_saida', fotoInput.files[0]);
-        } else {
-            console.log('Nenhuma foto de saída selecionada');
         }
 
         fetch('<?= site_url("atividades/checkout_obra") ?>', {

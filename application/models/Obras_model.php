@@ -1803,27 +1803,24 @@ class Obras_model extends CI_Model
             $this->criarTabelaFuncoes();
         }
 
-        try {
-            $data = [
-                'nome' => $dados['nome'],
-                'descricao' => $dados['descricao'] ?? null,
-                'nivel' => $dados['nivel'] ?? 'baixo',
-            ];
+        $data = [
+            'nome' => $dados['nome'],
+            'descricao' => $dados['descricao'] ?? null,
+            'nivel' => $dados['nivel'] ?? 'baixo',
+        ];
 
-            if (!empty($dados['id'])) {
-                $data['updated_at'] = date('Y-m-d H:i:s');
-                $this->db->where('id', $dados['id']);
-                $this->db->update('obra_funcoes', $data);
-                return $dados['id'];
-            }
-
-            $data['created_at'] = date('Y-m-d H:i:s');
-            $this->db->insert('obra_funcoes', $data);
-            return $this->db->insert_id();
-        } catch (Exception $e) {
-            log_message('error', 'Erro ao salvar função: ' . $e->getMessage());
-            return false;
+        if (!empty($dados['id'])) {
+            $data['updated_at'] = date('Y-m-d H:i:s');
+            $this->db->where('id', $dados['id']);
+            $this->db->update('obra_funcoes', $data);
+            $err = $this->db->error();
+            return ($err['code'] != 0) ? false : $dados['id'];
         }
+
+        $data['created_at'] = date('Y-m-d H:i:s');
+        $this->db->insert('obra_funcoes', $data);
+        $err = $this->db->error();
+        return ($err['code'] != 0) ? false : ($this->db->insert_id() ?: true);
     }
 
     /**
@@ -1875,31 +1872,41 @@ class Obras_model extends CI_Model
     public function salvarTipoObra($dados)
     {
         if (!$this->tabelaExiste('obra_tipos')) {
+            log_message('debug', 'salvarTipoObra - tabela nao existe, criando...');
             $this->criarTabelaTiposObra();
         }
 
-        try {
-            $data = [
-                'nome' => $dados['nome'],
-                'descricao' => $dados['descricao'] ?? null,
-                'cor' => $dados['cor'] ?? '#3498db',
-                'icone' => $dados['icone'] ?? 'bx-building',
-            ];
+        $data = [
+            'nome' => $dados['nome'],
+            'descricao' => $dados['descricao'] ?? null,
+            'cor' => $dados['cor'] ?? '#3498db',
+            'icone' => $dados['icone'] ?? 'bx-building',
+        ];
 
-            if (!empty($dados['id'])) {
-                $data['updated_at'] = date('Y-m-d H:i:s');
-                $this->db->where('id', $dados['id']);
-                $this->db->update('obra_tipos', $data);
-                return $dados['id'];
+        if (!empty($dados['id'])) {
+            $data['updated_at'] = date('Y-m-d H:i:s');
+            $this->db->where('id', $dados['id']);
+            $this->db->update('obra_tipos', $data);
+            $err = $this->db->error();
+            if ($err['code'] != 0) {
+                log_message('error', 'salvarTipoObra update erro: ' . print_r($err, true));
+                return false;
             }
+            return $dados['id'];
+        }
 
-            $data['created_at'] = date('Y-m-d H:i:s');
-            $this->db->insert('obra_tipos', $data);
-            return $this->db->insert_id();
-        } catch (Exception $e) {
-            log_message('error', 'Erro ao salvar tipo de obra: ' . $e->getMessage());
+        $data['created_at'] = date('Y-m-d H:i:s');
+        $this->db->insert('obra_tipos', $data);
+        $err = $this->db->error();
+        $insertId = $this->db->insert_id();
+        log_message('debug', 'salvarTipoObra - insert_id=' . $insertId . ' db_error=' . print_r($err, true));
+
+        if ($err['code'] != 0) {
+            log_message('error', 'salvarTipoObra insert erro: ' . print_r($err, true));
             return false;
         }
+
+        return $insertId ?: true;
     }
 
     /**
@@ -1956,30 +1963,27 @@ class Obras_model extends CI_Model
             $this->criarTabelaStatusObra();
         }
 
-        try {
-            $data = [
-                'nome' => $dados['nome'],
-                'descricao' => $dados['descricao'] ?? null,
-                'cor' => $dados['cor'] ?? '#3498db',
-                'icone' => $dados['icone'] ?? 'bx-flag',
-                'ordem' => $dados['ordem'] ?? 1,
-                'finalizado' => $dados['finalizado'] ?? 0,
-            ];
+        $data = [
+            'nome' => $dados['nome'],
+            'descricao' => $dados['descricao'] ?? null,
+            'cor' => $dados['cor'] ?? '#3498db',
+            'icone' => $dados['icone'] ?? 'bx-flag',
+            'ordem' => $dados['ordem'] ?? 1,
+            'finalizado' => $dados['finalizado'] ?? 0,
+        ];
 
-            if (!empty($dados['id'])) {
-                $data['updated_at'] = date('Y-m-d H:i:s');
-                $this->db->where('id', $dados['id']);
-                $this->db->update('obra_status', $data);
-                return $dados['id'];
-            }
-
-            $data['created_at'] = date('Y-m-d H:i:s');
-            $this->db->insert('obra_status', $data);
-            return $this->db->insert_id();
-        } catch (Exception $e) {
-            log_message('error', 'Erro ao salvar status de obra: ' . $e->getMessage());
-            return false;
+        if (!empty($dados['id'])) {
+            $data['updated_at'] = date('Y-m-d H:i:s');
+            $this->db->where('id', $dados['id']);
+            $this->db->update('obra_status', $data);
+            $err = $this->db->error();
+            return ($err['code'] != 0) ? false : $dados['id'];
         }
+
+        $data['created_at'] = date('Y-m-d H:i:s');
+        $this->db->insert('obra_status', $data);
+        $err = $this->db->error();
+        return ($err['code'] != 0) ? false : ($this->db->insert_id() ?: true);
     }
 
     /**
@@ -2034,28 +2038,25 @@ class Obras_model extends CI_Model
             $this->criarTabelaEspecialidades();
         }
 
-        try {
-            $data = [
-                'nome' => $dados['nome'],
-                'descricao' => $dados['descricao'] ?? null,
-                'cor' => $dados['cor'] ?? '#3498db',
-                'icone' => $dados['icone'] ?? 'bx-hard-hat',
-            ];
+        $data = [
+            'nome' => $dados['nome'],
+            'descricao' => $dados['descricao'] ?? null,
+            'cor' => $dados['cor'] ?? '#3498db',
+            'icone' => $dados['icone'] ?? 'bx-hard-hat',
+        ];
 
-            if (!empty($dados['id'])) {
-                $data['updated_at'] = date('Y-m-d H:i:s');
-                $this->db->where('id', $dados['id']);
-                $this->db->update('obra_especialidades', $data);
-                return $dados['id'];
-            }
-
-            $data['created_at'] = date('Y-m-d H:i:s');
-            $this->db->insert('obra_especialidades', $data);
-            return $this->db->insert_id();
-        } catch (Exception $e) {
-            log_message('error', 'Erro ao salvar especialidade: ' . $e->getMessage());
-            return false;
+        if (!empty($dados['id'])) {
+            $data['updated_at'] = date('Y-m-d H:i:s');
+            $this->db->where('id', $dados['id']);
+            $this->db->update('obra_especialidades', $data);
+            $err = $this->db->error();
+            return ($err['code'] != 0) ? false : $dados['id'];
         }
+
+        $data['created_at'] = date('Y-m-d H:i:s');
+        $this->db->insert('obra_especialidades', $data);
+        $err = $this->db->error();
+        return ($err['code'] != 0) ? false : ($this->db->insert_id() ?: true);
     }
 
     /**

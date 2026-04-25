@@ -561,12 +561,14 @@ function salvarModal() {
     if (document.getElementById('f_fluxo')) dados.fluxo = document.getElementById('f_fluxo').value;
     if (document.getElementById('f_nivel')) dados.nivel = document.getElementById('f_nivel').value;
 
+    console.log('DEBUG salvarModal - tipo:', TIPO_ATUAL, 'dados:', dados);
     $.ajax({
         url: URLS[TIPO_ATUAL],
         type: 'POST',
         data: dados,
         dataType: 'json',
         success: function(resp) {
+            console.log('DEBUG salvarModal - resposta:', resp);
             if (resp && resp.success) {
                 $('#modalEditar').modal('hide');
                 location.reload();
@@ -574,8 +576,9 @@ function salvarModal() {
                 alert('Erro: ' + (resp && resp.message ? resp.message : 'Erro ao salvar'));
             }
         },
-        error: function() {
-            alert('Erro ao salvar. Verifique o console.');
+        error: function(xhr, status, error) {
+            console.log('DEBUG salvarModal - erro ajax:', status, error, 'response:', xhr.responseText);
+            alert('Erro ao salvar. Verifique o console (F12).');
         }
     });
 }
