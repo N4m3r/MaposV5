@@ -1424,7 +1424,7 @@ select.config-form-control {
     'use strict';
 
     // Token CSRF
-    var MAPOS_TOKEN = '<?php echo addslashes($this->security->get_csrf_hash()); ?>';
+    var MAPOS_TOKEN = <?php echo json_encode($this->security->get_csrf_hash()); ?>;
 
     // ========== MODAL DE CONFIGURACOES ==========
     window.abrirModalConfiguracoes = function(abaInicial) {
