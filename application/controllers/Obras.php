@@ -2690,11 +2690,11 @@ class Obras extends MY_Controller
 
         if (!empty($dados['id'])) {
             $this->db->where('id', $dados['id']);
-            $this->db->update('atividades_status', $dados);
+            $this->db->update('atividade_status', $dados);
             $result = $dados['id'];
         } else {
             unset($dados['id']);
-            $this->db->insert('atividades_status', $dados);
+            $this->db->insert('atividade_status', $dados);
             $result = $this->db->insert_id();
         }
 
@@ -2723,7 +2723,7 @@ class Obras extends MY_Controller
         }
 
         $this->db->where('id', $id);
-        $this->db->delete('atividades_status');
+        $this->db->delete('atividade_status');
 
         if ($this->db->affected_rows() >= 0) {
             echo json_encode(['success' => true, 'message' => 'Status de atividade excluído com sucesso']);

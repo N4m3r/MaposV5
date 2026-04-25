@@ -445,10 +445,13 @@ class Tecnicos extends MY_Controller
             if (!empty($wizard_em_andamento->obra_atividade_id) && $this->db->table_exists('obra_atividades')) {
                 $this->db->select('impedimento, motivo_impedimento');
                 $this->db->where('id', $wizard_em_andamento->obra_atividade_id);
-                $obra_ativ = $this->db->get('obra_atividades')->row();
-                if ($obra_ativ) {
-                    $wizard_em_andamento->impedimento = $obra_ativ->impedimento;
-                    $wizard_em_andamento->motivo_impedimento = $obra_ativ->motivo_impedimento;
+                $query = $this->db->get('obra_atividades');
+                if ($query) {
+                    $obra_ativ = $query->row();
+                    if ($obra_ativ) {
+                        $wizard_em_andamento->impedimento = $obra_ativ->impedimento;
+                        $wizard_em_andamento->motivo_impedimento = $obra_ativ->motivo_impedimento;
+                    }
                 }
             }
         }
