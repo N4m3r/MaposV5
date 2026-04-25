@@ -250,6 +250,7 @@
 .foto-item .tipo-badge.checkin { background: #11998e; }
 .foto-item .tipo-badge.checkout { background: #e74c3c; }
 .foto-item .tipo-badge.execucao { background: #667eea; }
+.foto-item .tipo-badge.impedimento { background: #e67e22; }
 
 /* Localização */
 .localizacao-box {
@@ -711,6 +712,10 @@
                                 case 'checkout':
                                     $tipo_class = 'checkout';
                                     $tipo_text = 'Check-out';
+                                    break;
+                                case 'impedimento':
+                                    $tipo_class = 'impedimento';
+                                    $tipo_text = 'Impedimento';
                                     break;
                                 default:
                                     $tipo_class = 'execucao';

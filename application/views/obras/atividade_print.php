@@ -194,6 +194,7 @@
         .foto-badge.checkin { background: #11998e; }
         .foto-badge.checkout { background: #e74c3c; }
         .foto-badge.execucao { background: #667eea; }
+        .foto-badge.impedimento { background: #e67e22; }
 
         /* Anotações */
         .anotacao-box {
@@ -622,7 +623,7 @@ if (!empty($obs) || !empty($prob) || !empty($sol)):
                     $url_foto = $foto->foto_base64;
                 }
                 $tipo_foto = $foto->tipo_foto ?? 'execucao';
-                $tipo_text = ['checkin'=>'Check-in', 'checkout'=>'Check-out', 'execucao'=>'Execução'][$tipo_foto] ?? 'Execução';
+                $tipo_text = ['checkin'=>'Check-in', 'checkout'=>'Check-out', 'execucao'=>'Execução', 'impedimento'=>'Impedimento'][$tipo_foto] ?? 'Execução';
             ?>
             <?php if ($url_foto): ?>
             <div class="foto-item no-break">
