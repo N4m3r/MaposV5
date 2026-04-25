@@ -1184,6 +1184,12 @@ textarea.wizard-input {
                                         <p><?= $statusAtivLabel ?> • <?= !empty($horaInicioAtiv) ? date('H:i', strtotime($horaInicioAtiv)) : '--:--' ?></p>
                                     </div>
                                     <div class="atividade-acoes">
+                                        <!-- DEBUG: Remover após diagnóstico -->
+                                        <?php if ($ativId == 9): ?>
+                                        <div style="font-size:10px;color:#666;background:#f0f0f0;padding:4px;border-radius:4px;margin-bottom:4px;">
+                                            DEBUG: status=<?= $ativ->status ?? 'null' ?> | exec=<?= $ativ->status_execucao ?? 'null' ?> | imp=<?= $ativ->impedimento ?? 'null' ?> | motivo=<?= !empty($ativ->motivo_impedimento) ? 'sim' : 'nao' ?>
+                                        </div>
+                                        <?php endif; ?>
                                         <?php if (($statusAtiv === 'em_andamento' || $statusAtiv === 'iniciada') && $ativId): ?>
                                         <button class="btn-acao finalizar" onclick="WizardAtendimento.continuar(<?= $ativId ?>)">
                                             <i class="icon-stop"></i> Finalizar

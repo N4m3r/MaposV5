@@ -352,7 +352,7 @@ class Tecnicos extends MY_Controller
                 if ($this->db->table_exists('os_atividades')) {
                     $ids_atividades = array_column($minhas_atividades, 'id');
                     if (!empty($ids_atividades)) {
-                        $this->db->select('obra_atividade_id, status, hora_inicio');
+                        $this->db->select('obra_atividade_id, status, hora_inicio, idAtividade');
                         $this->db->from('os_atividades');
                         $this->db->where('tecnico_id', $tecnico_id);
                         $this->db->where_in('obra_atividade_id', $ids_atividades);
@@ -362,8 +362,36 @@ class Tecnicos extends MY_Controller
                             foreach ($query_exec->result() as $exec) {
                                 $status_execucao[$exec->obra_atividade_id] = [
                                     'status' => $exec->status,
-                                    'hora_inicio' => $exec->hora_inicio
+                                    'hora_inicio' => $exec->hora_inicio,
+                                    'os_atividade_id' => $exec->idAtividade
                                 ];
+                            }
+                        }
+
+                        // Fallback: verificar atividades_pausas para detectar impedimentos históricos
+                        if ($this->db->table_exists('atividades_pausas')) {
+                            $os_ids = array_column($status_execucao, 'os_atividade_id');
+                            if (!empty($os_ids)) {
+                                $this->db->select('atividade_id, motivo, observacao');
+                                $this->db->from('atividades_pausas');
+                                $this->db->where_in('atividade_id', $os_ids);
+                                $this->db->where('pausa_fim IS NULL');
+                                $this->db->order_by('idPausa', 'DESC');
+                                $query_pausas = $this->db->get();
+                                if ($query_pausas) {
+                                    foreach ($query_pausas->result() as $pausa) {
+                                        $motivo = strtolower($pausa->motivo . ' ' . $pausa->observacao);
+                                        if (strpos($motivo, 'impedimento') !== false || strpos($motivo, 'impedido') !== false) {
+                                            // Marcar a obra_atividade correspondente como impedimento
+                                            foreach ($status_execucao as $obra_atv_id => $exec) {
+                                                if ($exec['os_atividade_id'] == $pausa->atividade_id) {
+                                                    $status_execucao[$obra_atv_id]['status'] = 'impedimento';
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -376,12 +404,15 @@ class Tecnicos extends MY_Controller
                         $atv->status_execucao = $status_execucao[$atv->id]['status'];
                         $atv->hora_inicio_execucao = $status_execucao[$atv->id]['hora_inicio'];
                     }
-                    // Detectar impedimento (via campo obra_atividades ou via status em os_atividades)
+                    // Detectar impedimento (via campo obra_atividades, motivo_impedimento, ou via status em os_atividades)
                     $temExecucaoImpedimento = isset($status_execucao[$atv->id]) && $status_execucao[$atv->id]['status'] === 'impedimento';
-                    if ((!empty($atv->impedimento) && $atv->impedimento == 1) || $temExecucaoImpedimento) {
+                    $temMotivoImpedimento = !empty($atv->motivo_impedimento);
+                    $isImpedido = (!empty($atv->impedimento) && $atv->impedimento == 1) || $temExecucaoImpedimento || $temMotivoImpedimento;
+                    if ($isImpedido) {
                         $atv->impedimento = 1;
                         $atv->status_execucao = 'impedimento';
                     }
+                    log_message('debug', 'Tecnicos::executar_obra - Atividade ID ' . ($atv->id ?? 'N/A') . ' status_execucao=' . ($atv->status_execucao ?? 'null') . ' impedimento=' . ($atv->impedimento ?? 'null') . ' motivo=' . ($atv->motivo_impedimento ?? 'null') . ' isImpedido=' . ($isImpedido ? 'sim' : 'nao'));
                     $etapa_id = $atv->etapa_id ?? 'sem_etapa';
                     if (!isset($atividades_por_etapa[$etapa_id])) {
                         $atividades_por_etapa[$etapa_id] = [];
