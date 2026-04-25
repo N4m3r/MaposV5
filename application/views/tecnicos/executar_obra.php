@@ -331,6 +331,14 @@
     transform: translateY(-2px);
     box-shadow: 0 4px 15px rgba(155, 89, 182, 0.3);
 }
+.btn-acao.impedido {
+    background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
+    color: white;
+}
+.btn-acao.impedido:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(230, 126, 34, 0.3);
+}
 .btn-acao:disabled {
     opacity: 0.6;
     cursor: not-allowed;
@@ -1188,14 +1196,14 @@ textarea.wizard-input {
                                         <button class="btn-acao reabrir" onclick="reabrirAtividade(<?= $ativId ?>, '<?= htmlspecialchars($ativ->titulo ?? $ativ->descricao ?? 'Atividade #' . $ativId, ENT_QUOTES) ?>')">
                                             <i class="icon-refresh"></i> Reabrir
                                         </button>
+                                        <?php elseif ($temImpedimento): ?>
+                                        <span class="btn-acao impedido" style="cursor: default;">
+                                            <i class="icon-warning-sign"></i> Impedido
+                                        </span>
                                         <?php elseif (($statusAtiv === 'pausada' || $statusAtiv === 'pausado') && $ativId): ?>
                                         <button class="btn-acao continuar" onclick="WizardAtendimento.continuar(<?= $ativId ?>)">
                                             <i class="icon-play"></i> Continuar
                                         </button>
-                                        <?php elseif ($statusAtiv === 'impedimento' && $ativId): ?>
-                                        <span class="btn-acao" style="background: linear-gradient(135deg, #e67e22, #d35400); cursor: default;">
-                                            <i class="icon-lock"></i> Aguardando Reabertura
-                                        </span>
                                         <?php elseif (in_array($statusAtiv, ['agendada', 'pendente', 'aberta', 'reaberta', 'reaberto', 'nao_iniciada', 'nao_iniciado']) && $ativId): ?>
                                         <button class="btn-acao iniciar" onclick="WizardAtendimento.iniciarAtividade(<?= $ativId ?>)">
                                             <i class="icon-play"></i> Iniciar
