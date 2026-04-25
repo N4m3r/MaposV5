@@ -874,7 +874,7 @@ class Mine extends CI_Controller
         redirect('mine/cobrancas');
     }
 
-    public function os()
+    public function os($offset = 0)
     {
         if (! session_id() || ! $this->session->userdata('conectado')) {
             redirect('mine');

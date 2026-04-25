@@ -1001,16 +1001,28 @@ textarea.wizard-input {
 
     <!-- Alerta de Atividade em Andamento -->
     <?php if (!empty($wizard_em_andamento)): ?>
-    <div class="atividade-andamento <?= ($wizard_em_andamento->status === 'pausada') ? 'atividade-pausada' : '' ?>">
-        <h3><i class="icon-time"></i> <?= ($wizard_em_andamento->status === 'pausada') ? 'Atividade Pausada' : 'Atividade em Andamento' ?></h3>
+    <?php
+        $isImpedimento = !empty($wizard_em_andamento->impedimento) && $wizard_em_andamento->impedimento == 1;
+        $alertaClass = $isImpedimento ? 'atividade-impedimento' : (($wizard_em_andamento->status === 'pausada') ? 'atividade-pausada' : '');
+        $alertaTitulo = $isImpedimento ? 'Atividade com Impedimento' : (($wizard_em_andamento->status === 'pausada') ? 'Atividade Pausada' : 'Atividade em Andamento');
+        $alertaIcon = $isImpedimento ? 'icon-warning-sign' : 'icon-time';
+    ?>
+    <div class="atividade-andamento <?= $alertaClass ?>" style="<?= $isImpedimento ? 'background: linear-gradient(135deg, #e67e22, #d35400);' : '' ?>">
+        <h3><i class="<?= $alertaIcon ?>"></i> <?= $alertaTitulo ?></h3>
         <p>
             <strong><?= htmlspecialchars($wizard_em_andamento->etapa_nome ?? 'Atividade Geral') ?></strong><br>
             <?= htmlspecialchars($wizard_em_andamento->titulo ?? $wizard_em_andamento->descricao ?? '') ?><br>
             <small>Iniciado às <?= date('H:i', strtotime($wizard_em_andamento->hora_inicio)) ?> - <?= date('d/m/Y', strtotime($wizard_em_andamento->data_atividade ?? 'now')) ?></small>
-            <?php if ($wizard_em_andamento->status === 'pausada'): ?><br><span style="color: #e74c3c; font-weight: bold;">⏸️ Atividade pausada</span><?php endif; ?>
+            <?php if ($isImpedimento): ?>
+                <br><span style="color: #fff; font-weight: bold; background: rgba(0,0,0,0.2); padding: 4px 10px; border-radius: 12px; display: inline-block; margin-top: 6px;">
+                    <i class="icon-lock"></i> Aguardando Reabertura pelo Administrador
+                </span>
+            <?php elseif ($wizard_em_andamento->status === 'pausada'): ?>
+                <br><span style="color: #e74c3c; font-weight: bold;">⏸️ Atividade pausada</span>
+            <?php endif; ?>
         </p>
         <?php $ativAndamentoId = $wizard_em_andamento->id ?? $wizard_em_andamento->idAtividade ?? null; ?>
-        <?php if ($ativAndamentoId): ?>
+        <?php if ($ativAndamentoId && !$isImpedimento): ?>
         <button class="btn-continuar" onclick="WizardAtendimento.continuar(<?= $ativAndamentoId ?>)">
             <i class="icon-play"></i> CONTINUAR ATENDIMENTO
         </button>
