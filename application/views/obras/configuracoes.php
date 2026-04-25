@@ -731,52 +731,119 @@ select.config-form-control {
     </div>
     <?php endif; ?>
 
-    <!-- Layout com Abas -->
-    <div class="config-layout">
-        <!-- Sidebar de Abas -->
-        <div class="config-tabs">
-            <a href="#tab-geral" class="config-tab-item active" data-tab="tab-geral">
-                <i class='bx bx-slider'></i>
-                <span>Geral</span>
-            </a>
-            <a href="#tab-tipos-obra" class="config-tab-item" data-tab="tab-tipos-obra">
-                <i class='bx bx-building-house'></i>
-                <span>Tipos de Obra</span>
-                <span class="badge-count" id="count-tipos-obra"><?php echo count($tipos_obra ?? []); ?></span>
-            </a>
-            <a href="#tab-tipos-atividade" class="config-tab-item" data-tab="tab-tipos-atividade">
-                <i class='bx bx-task'></i>
-                <span>Tipos de Atividade</span>
-                <span class="badge-count" id="count-tipos-atividade"><?php echo count($tipos_atividades ?? []); ?></span>
-            </a>
-            <a href="#tab-status-obra" class="config-tab-item" data-tab="tab-status-obra">
-                <i class='bx bx-flag'></i>
-                <span>Status de Obra</span>
-                <span class="badge-count" id="count-status-obra"><?php echo count($status_obra ?? []); ?></span>
-            </a>
-            <a href="#tab-status-atividade" class="config-tab-item" data-tab="tab-status-atividade">
-                <i class='bx bx-check-circle'></i>
-                <span>Status de Atividade</span>
-                <span class="badge-count" id="count-status-atividade"><?php echo count($status_atividade ?? []); ?></span>
-            </a>
-            <a href="#tab-especialidades" class="config-tab-item" data-tab="tab-especialidades">
-                <i class='bx bx-hard-hat'></i>
-                <span>Especialidades</span>
-                <span class="badge-count" id="count-especialidades"><?php echo count($especialidades ?? []); ?></span>
-            </a>
-            <a href="#tab-funcoes" class="config-tab-item" data-tab="tab-funcoes">
-                <i class='bx bx-group'></i>
-                <span>Funções da Equipe</span>
-                <span class="badge-count" id="count-funcoes"><?php echo count($funcoes_equipe ?? []); ?></span>
-            </a>
-            <a href="#tab-notificacoes" class="config-tab-item" data-tab="tab-notificacoes">
-                <i class='bx bx-bell'></i>
-                <span>Notificações</span>
-            </a>
-        </div>
+    <!-- Botões de acesso rápido -->
+    <div style="text-align: center; margin-bottom: 24px;">
+        <button type="button" onclick="abrirModalConfiguracoes()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 16px 32px; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);">
+            <i class='bx bx-cog' style="font-size: 20px; vertical-align: middle; margin-right: 8px;"></i>
+            Abrir Painel de Configurações
+        </button>
+    </div>
 
-        <!-- Conteudo -->
-        <div class="config-content-wrapper">
+    <!-- Cards resumo na página principal -->
+    <div class="config-grid">
+        <div class="config-grid-item" style="cursor: pointer;" onclick="abrirModalConfiguracoes('tab-tipos-obra')">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                <div style="width: 48px; height: 48px; background: #667eea20; color: #667eea; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+                    <i class='bx bx-building-house'></i>
+                </div>
+                <div>
+                    <div style="font-weight: 600; color: #333;">Tipos de Obra</div>
+                    <div style="font-size: 24px; font-weight: 700; color: #667eea;"><?php echo count($tipos_obra ?? []); ?></div>
+                </div>
+            </div>
+        </div>
+        <div class="config-grid-item" style="cursor: pointer;" onclick="abrirModalConfiguracoes('tab-tipos-atividade')">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                <div style="width: 48px; height: 48px; background: #764ba220; color: #764ba2; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+                    <i class='bx bx-task'></i>
+                </div>
+                <div>
+                    <div style="font-weight: 600; color: #333;">Tipos de Atividade</div>
+                    <div style="font-size: 24px; font-weight: 700; color: #764ba2;"><?php echo count($tipos_atividades ?? []); ?></div>
+                </div>
+            </div>
+        </div>
+        <div class="config-grid-item" style="cursor: pointer;" onclick="abrirModalConfiguracoes('tab-status-obra')">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                <div style="width: 48px; height: 48px; background: #3498db20; color: #3498db; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+                    <i class='bx bx-flag'></i>
+                </div>
+                <div>
+                    <div style="font-weight: 600; color: #333;">Status de Obra</div>
+                    <div style="font-size: 24px; font-weight: 700; color: #3498db;"><?php echo count($status_obra ?? []); ?></div>
+                </div>
+            </div>
+        </div>
+        <div class="config-grid-item" style="cursor: pointer;" onclick="abrirModalConfiguracoes('tab-especialidades')">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                <div style="width: 48px; height: 48px; background: #e74c3c20; color: #e74c3c; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+                    <i class='bx bx-hard-hat'></i>
+                </div>
+                <div>
+                    <div style="font-weight: 600; color: #333;">Especialidades</div>
+                    <div style="font-size: 24px; font-weight: 700; color: #e74c3c;"><?php echo count($especialidades ?? []); ?></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========== MODAL DE CONFIGURAÇÕES (FULL SCREEN) ========== -->
+<div class="config-modal-overlay" id="modalConfiguracoes" style="display: none; z-index: 9999; align-items: flex-start; padding-top: 20px; overflow-y: auto;">
+    <div class="config-modal" style="max-width: 1200px; width: 95%; margin: 20px auto; max-height: none;">
+        <div class="config-modal-header" style="position: sticky; top: 0; z-index: 10; display: flex; justify-content: space-between; align-items: center;">
+            <h3><i class='bx bx-cog'></i> <span>Configurações do Sistema de Obras</span></h3>
+            <button type="button" onclick="fecharModalConfiguracoes()" style="background: rgba(255,255,255,0.2); border: none; color: white; width: 36px; height: 36px; border-radius: 8px; cursor: pointer; font-size: 20px;">
+                <i class='bx bx-x'></i>
+            </button>
+        </div>
+        <div class="config-modal-body" style="padding: 0; overflow: visible;">
+            <!-- Layout com Abas dentro do Modal -->
+            <div class="config-layout" style="padding: 24px;">
+                <!-- Sidebar de Abas -->
+                <div class="config-tabs" style="position: sticky; top: 20px;">
+                    <div class="config-tab-item active" data-tab="tab-geral" onclick="ativarAbaModal('tab-geral')">
+                        <i class='bx bx-slider'></i>
+                        <span>Geral</span>
+                    </div>
+                    <div class="config-tab-item" data-tab="tab-tipos-obra" onclick="ativarAbaModal('tab-tipos-obra')">
+                        <i class='bx bx-building-house'></i>
+                        <span>Tipos de Obra</span>
+                        <span class="badge-count" id="count-tipos-obra"><?php echo count($tipos_obra ?? []); ?></span>
+                    </div>
+                    <div class="config-tab-item" data-tab="tab-tipos-atividade" onclick="ativarAbaModal('tab-tipos-atividade')">
+                        <i class='bx bx-task'></i>
+                        <span>Tipos de Atividade</span>
+                        <span class="badge-count" id="count-tipos-atividade"><?php echo count($tipos_atividades ?? []); ?></span>
+                    </div>
+                    <div class="config-tab-item" data-tab="tab-status-obra" onclick="ativarAbaModal('tab-status-obra')">
+                        <i class='bx bx-flag'></i>
+                        <span>Status de Obra</span>
+                        <span class="badge-count" id="count-status-obra"><?php echo count($status_obra ?? []); ?></span>
+                    </div>
+                    <div class="config-tab-item" data-tab="tab-status-atividade" onclick="ativarAbaModal('tab-status-atividade')">
+                        <i class='bx bx-check-circle'></i>
+                        <span>Status de Atividade</span>
+                        <span class="badge-count" id="count-status-atividade"><?php echo count($status_atividade ?? []); ?></span>
+                    </div>
+                    <div class="config-tab-item" data-tab="tab-especialidades" onclick="ativarAbaModal('tab-especialidades')">
+                        <i class='bx bx-hard-hat'></i>
+                        <span>Especialidades</span>
+                        <span class="badge-count" id="count-especialidades"><?php echo count($especialidades ?? []); ?></span>
+                    </div>
+                    <div class="config-tab-item" data-tab="tab-funcoes" onclick="ativarAbaModal('tab-funcoes')">
+                        <i class='bx bx-group'></i>
+                        <span>Funções da Equipe</span>
+                        <span class="badge-count" id="count-funcoes"><?php echo count($funcoes_equipe ?? []); ?></span>
+                    </div>
+                    <div class="config-tab-item" data-tab="tab-notificacoes" onclick="ativarAbaModal('tab-notificacoes')">
+                        <i class='bx bx-bell'></i>
+                        <span>Notificações</span>
+                    </div>
+                </div>
+
+                <!-- Conteudo -->
+                <div class="config-content-wrapper">
             <!-- ABA: GERAL -->
             <div id="tab-geral" class="config-content">
                 <div class="config-card">

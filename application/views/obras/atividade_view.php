@@ -500,7 +500,7 @@
                             $impedimento = ($atividade_real->impedimento ?? $atividade->impedimento ?? 0);
                             $tipo_execucao = $impedimento ? 'impedimento' : 'trabalho';
                             $tipo_icon = $tipo_execucao === 'impedimento' ? 'warning-sign' : 'wrench';
-                            $tipo_cor = $tipo_execucao === 'impedimento' ? '#e74c3c' : '#27ae60';
+                            $tipo_cor = $tipo_execucao === 'impedimento' ? '#e67e22' : '#27ae60';
                             $tipo_label = $tipo_execucao === 'impedimento' ? 'Impedimento' : 'Trabalho';
                             ?>
                             <span style="color: <?php echo $tipo_cor; ?>; font-weight: 600;">
@@ -508,6 +508,23 @@
                             </span>
                             <?php if (!empty($atividade_real->tipo_nome)): ?>
                             <br><small style="color: #666;"><?php echo htmlspecialchars($atividade_real->tipo_nome); ?></small>
+                            <?php endif; ?>
+
+                            <?php
+                            $motivo_impedimento = $atividade_real->motivo_impedimento ?? $atividade->motivo_impedimento ?? null;
+                            $tipo_impedimento = $atividade_real->tipo_impedimento ?? $atividade->tipo_impedimento ?? null;
+                            if ($impedimento && $motivo_impedimento): ?>
+                            <div style="margin-top: 8px; padding: 10px 12px; background: #fff3e0; border-left: 4px solid #e67e22; border-radius: 6px;">
+                                <div style="font-size: 11px; color: #d35400; font-weight: 600; margin-bottom: 4px;">
+                                    <i class="icon-warning-sign"></i> Motivo do Impedimento
+                                    <?php if ($tipo_impedimento): ?>
+                                    (<?php echo ucfirst(htmlspecialchars($tipo_impedimento)); ?>)
+                                    <?php endif; ?>
+                                </div>
+                                <div style="font-size: 12px; color: #333; line-height: 1.5;">
+                                    <?php echo nl2br(htmlspecialchars($motivo_impedimento)); ?>
+                                </div>
+                            </div>
                             <?php endif; ?>
                         </div>
                     </div>
