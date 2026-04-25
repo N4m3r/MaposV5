@@ -987,6 +987,7 @@ class Mine extends CI_Controller
         $config['base_url'] = site_url('mine/os');
         $config['per_page'] = 15;
         $config['uri_segment'] = 3;
+        $config['use_page_numbers'] = true;
         $config['reuse_query_string'] = true;
         $config['next_link'] = 'Próxima <i class="bx bx-chevron-right"></i>';
         $config['prev_link'] = '<i class="bx bx-chevron-left"></i> Anterior';
@@ -1044,8 +1045,12 @@ class Mine extends CI_Controller
             $this->db->where('os.dataInicial <=', $filtros['data_fim']);
         }
 
+        // Calcular offset a partir do número da página
+        $page = ((int) $offset) > 0 ? (int) $offset : 1;
+        $offset_real = ($page - 1) * $config['per_page'];
+
         $this->db->order_by('os.idOs', 'desc');
-        $this->db->limit($config['per_page'], (int) $offset);
+        $this->db->limit($config['per_page'], $offset_real);
 
         log_message('debug', 'Mine::os - SQL: ' . $this->db->last_query());
 
@@ -1060,12 +1065,12 @@ class Mine extends CI_Controller
         }
 
         // Dados de paginação para a view
-        $pagina_atual = ((int) $offset / $config['per_page']) + 1;
+        $pagina_atual = ((int) $offset) > 0 ? (int) $offset : 1;
         $total_paginas = ($config['total_rows'] > 0) ? (int) ceil($config['total_rows'] / $config['per_page']) : 1;
         $data['paginacao_info'] = [
             'atual' => (int) $pagina_atual,
             'total' => (int) $total_paginas,
-            'offset' => (int) $offset,
+            'offset' => ($pagina_atual - 1) * $config['per_page'],
             'per_page' => $config['per_page'],
         ];
 

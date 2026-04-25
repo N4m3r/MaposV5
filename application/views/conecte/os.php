@@ -348,29 +348,44 @@ function getStatusColor($status) {
     background: #f8f9fa;
     border: 1px solid #e0e0e0;
     transition: all 0.3s ease;
+    cursor: pointer;
 }
 
+/* Botão ativo / página atual */
+.pagination.modern li.active,
 .pagination.modern li.active a,
 .pagination.modern li.active span,
-.pagination.modern li.active {
-    background: #667eea !important;
-    color: white !important;
-    border-color: #667eea !important;
-}
-
 .pagination.modern li.active > a,
 .pagination.modern li.active > span {
-    background: #667eea !important;
-    color: white !important;
+    background-color: #667eea !important;
+    color: #ffffff !important;
     border-color: #667eea !important;
+    font-weight: 600;
 }
 
+/* Hover padrão */
 .pagination.modern li a:hover {
     background: #e9ecef;
 }
 
+/* Navegação (Próxima, Anterior, etc) */
 .pagination.modern li.nav a {
     font-weight: 500;
+}
+
+/* Botão Próxima desabilitado (última página) */
+.pagination.modern li.nav.disabled a,
+.pagination.modern li.nav.disabled span {
+    color: #bbb;
+    background: #f0f0f0;
+    border-color: #e0e0e0;
+    cursor: not-allowed;
+}
+
+/* Botão numérico hover não afeta o ativo */
+.pagination.modern li.active a:hover {
+    background-color: #667eea !important;
+    color: #ffffff !important;
 }
 
 .pagination-info {
