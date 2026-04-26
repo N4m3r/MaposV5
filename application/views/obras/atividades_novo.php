@@ -121,6 +121,8 @@ i.bx, i.fa {
     border: 2px solid #e8e8e8;
     border-radius: 8px;
     font-size: 14px;
+    color: #333;
+    background: #fff;
     outline: none;
     transition: all 0.2s;
 }

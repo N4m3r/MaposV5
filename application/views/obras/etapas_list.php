@@ -863,6 +863,8 @@
     padding: 10px 14px;
     border: 2px solid #e0e0e0;
     border-radius: 8px;
+    color: #333;
+    background: #fff;
     font-size: 14px;
     color: #333;
     background: white;
@@ -1549,19 +1551,9 @@
                 <label class="form-label" for="especialidade">Especialidade</label>
                 <select name="especialidade" id="especialidade" class="form-select">
                     <option value="">Selecione...</option>
-                    <option value="Alvenaria">Alvenaria</option>
-                    <option value="Arquitetura">Arquitetura</option>
-                    <option value="Elétrica">Elétrica</option>
-                    <option value="Estrutura">Estrutura</option>
-                    <option value="Fundação">Fundação</option>
-                    <option value="Hidráulica">Hidráulica</option>
-                    <option value="Impermeabilização">Impermeabilização</option>
-                    <option value="Marcenaria">Marcenaria</option>
-                    <option value="Pintura">Pintura</option>
-                    <option value="Piso/Revestimento">Piso/Revestimento</option>
-                    <option value="Serralheria">Serralheria</option>
-                    <option value="Telhado">Telhado</option>
-                    <option value="Outro">Outro</option>
+                    <?php foreach ($especialidades as $esp): ?>
+                        <option value="<?php echo htmlspecialchars($esp->nome); ?>"><?php echo htmlspecialchars($esp->nome); ?></option>
+                    <?php endforeach; ?>
                 </select>
             </div>
 
