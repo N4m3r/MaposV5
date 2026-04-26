@@ -231,11 +231,12 @@
                         <label class="form-label">Tipo de Obra</label>
                         <select name="tipo_obra" class="form-select">
                             <option value="" disabled <?php echo (!isset($result) || empty($result->tipo_obra)) ? 'selected' : ''; ?>>Selecione o tipo...</option>
-                            <option value="Condominio" <?php echo (isset($result) && $result->tipo_obra == 'Condominio') ? 'selected' : ''; ?>>Condomínio</option>
-                            <option value="Comercio" <?php echo (isset($result) && $result->tipo_obra == 'Comercio') ? 'selected' : ''; ?>>Comércio</option>
-                            <option value="Residencia" <?php echo (isset($result) && $result->tipo_obra == 'Residencia') ? 'selected' : ''; ?>>Residência</option>
-                            <option value="Industrial" <?php echo (isset($result) && $result->tipo_obra == 'Industrial') ? 'selected' : ''; ?>>Industrial</option>
-                            <option value="Publica" <?php echo (isset($result) && $result->tipo_obra == 'Publica') ? 'selected' : ''; ?>>Pública</option>
+                            <?php foreach ($tipos_obra as $tipo): ?>
+                                <option value="<?php echo htmlspecialchars($tipo->nome); ?>"
+                                    <?php echo (isset($result) && $result->tipo_obra == $tipo->nome) ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($tipo->nome); ?>
+                                </option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
 
@@ -348,31 +349,41 @@
                     <?php
                     // Normalizar status atual para seleção correta
                     $status_atual_lower = strtolower(trim($result->status ?? ''));
-                    $status_selecionado = 'prospeccao'; // default
-
-                    if (in_array($status_atual_lower, ['em-andamento', 'em_execucao', 'em execucao', 'emexecucao', 'execucao'])) {
-                        $status_selecionado = 'em-andamento';
-                    } elseif (in_array($status_atual_lower, ['contratada', 'aprovada', 'iniciada'])) {
-                        $status_selecionado = 'contratada';
-                    } elseif (in_array($status_atual_lower, ['concluida', 'concluída', 'finalizada', 'entregue', 'concluido'])) {
-                        $status_selecionado = 'concluida';
-                    } elseif (in_array($status_atual_lower, ['paralisada', 'pausada', 'suspensa'])) {
-                        $status_selecionado = 'paralisada';
-                    } elseif (in_array($status_atual_lower, ['cancelada', 'cancelado', 'encerrada'])) {
-                        $status_selecionado = 'cancelada';
-                    } elseif (in_array($status_atual_lower, ['prospeccao', 'prospecção', 'prospectacao', 'novo', 'nova'])) {
-                        $status_selecionado = 'prospeccao';
+                    $status_atual_norm = preg_replace('/[^a-z]/', '', $status_atual_lower);
+                    $status_selecionado = null;
+                    foreach ($status_obra as $s) {
+                        $s_norm = strtolower(preg_replace('/[^a-z]/', '', $s->nome));
+                        if ($status_atual_norm === $s_norm) {
+                            $status_selecionado = $s->nome;
+                            break;
+                        }
+                    }
+                    // Fallback para compatibilidade com dados antigos
+                    if (!$status_selecionado) {
+                        if (in_array($status_atual_lower, ['em-andamento', 'em_execucao', 'em execucao', 'emexecucao', 'execucao'])) {
+                            $status_selecionado = 'Em Andamento';
+                        } elseif (in_array($status_atual_lower, ['contratada', 'aprovada', 'iniciada'])) {
+                            $status_selecionado = 'Contratada';
+                        } elseif (in_array($status_atual_lower, ['concluida', 'concluída', 'finalizada', 'entregue', 'concluido'])) {
+                            $status_selecionado = 'Concluída';
+                        } elseif (in_array($status_atual_lower, ['paralisada', 'pausada', 'suspensa'])) {
+                            $status_selecionado = 'Paralisada';
+                        } elseif (in_array($status_atual_lower, ['cancelada', 'cancelado', 'encerrada'])) {
+                            $status_selecionado = 'Cancelada';
+                        } else {
+                            $status_selecionado = 'Prospecção';
+                        }
                     }
                     ?>
                     <div class="form-group">
                         <label class="form-label">Status</label>
                         <select name="status" class="form-select" id="statusSelect">
-                            <option value="prospeccao" <?php echo ($status_selecionado == 'prospeccao') ? 'selected' : ''; ?>>Prospecção</option>
-                            <option value="contratada" <?php echo ($status_selecionado == 'contratada') ? 'selected' : ''; ?>>Contratada</option>
-                            <option value="em-andamento" <?php echo ($status_selecionado == 'em-andamento') ? 'selected' : ''; ?>>Em Andamento</option>
-                            <option value="paralisada" <?php echo ($status_selecionado == 'paralisada') ? 'selected' : ''; ?>>Paralisada</option>
-                            <option value="concluida" <?php echo ($status_selecionado == 'concluida') ? 'selected' : ''; ?>>Concluída</option>
-                            <option value="cancelada" <?php echo ($status_selecionado == 'cancelada') ? 'selected' : ''; ?>>Cancelada</option>
+                            <?php foreach ($status_obra as $s): ?>
+                                <option value="<?php echo htmlspecialchars($s->nome); ?>"
+                                    <?php echo ($status_selecionado == $s->nome) ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($s->nome); ?>
+                                </option>
+                            <?php endforeach; ?>
                         </select>
                         <small style="display: block; margin-top: 5px; color: #888; font-size: 12px;">
                             <i class="icon-info-sign"></i> Status atual no banco: <strong><?php echo htmlspecialchars($result->status); ?></strong>

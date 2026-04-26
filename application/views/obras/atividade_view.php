@@ -423,12 +423,12 @@
                         <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>">
 
                         <select name="novo_status" required>
-                            <option value="agendada" <?php echo $status_atual === 'agendada' ? 'selected' : ''; ?>>📅 Agendada</option>
-                            <option value="iniciada" <?php echo $status_atual === 'iniciada' ? 'selected' : ''; ?>>🟡 Em Execução</option>
-                            <option value="pausada" <?php echo $status_atual === 'pausada' ? 'selected' : ''; ?>>⏸️ Pausada</option>
-                            <option value="concluida" <?php echo $status_atual === 'concluida' ? 'selected' : ''; ?>>✅ Concluída</option>
-                            <option value="cancelada" <?php echo $status_atual === 'cancelada' ? 'selected' : ''; ?>>❌ Cancelada</option>
-                            <option value="reaberta" <?php echo $status_atual === 'reaberta' ? 'selected' : ''; ?> style="color: #9b59b6; font-weight: bold;">🔄 Reaberta (Reatendimento)</option>
+                            <?php foreach ($status_atividade as $s): ?>
+                                <option value="<?php echo htmlspecialchars($s->nome); ?>"
+                                    <?php echo $status_atual === $s->nome ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($s->nome); ?>
+                                </option>
+                            <?php endforeach; ?>
                         </select>
 
                         <textarea name="observacao_status" rows="2" placeholder="Motivo da alteração (opcional)"></textarea>

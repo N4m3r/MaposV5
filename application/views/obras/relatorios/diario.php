@@ -331,14 +331,14 @@
                         <td>
                             <span class="status-badge <?php echo $atividade->status ?? 'agendada'; ?>">
                                 <?php
-                                $statusLabels = [
-                                    'agendada' => 'Agendada',
-                                    'iniciada' => 'Em Andamento',
-                                    'pausada' => 'Pausada',
-                                    'concluida' => 'Concluída',
-                                    'cancelada' => 'Cancelada'
-                                ];
-                                echo $statusLabels[$atividade->status] ?? ($atividade->status ?? 'N/A');
+                                $status_label_diario = $atividade->status ?? 'N/A';
+                                foreach ($status_atividade as $s) {
+                                    if (strcasecmp($atividade->status ?? '', $s->nome) === 0) {
+                                        $status_label_diario = $s->nome;
+                                        break;
+                                    }
+                                }
+                                echo htmlspecialchars($status_label_diario);
                                 ?>
                             </span>
                         </td>
@@ -366,7 +366,7 @@
     </div>
 
     <!-- Resumo -->
-    <?php if (!empty($atividades)): ?
+    <?php if (!empty($atividades)): ?>
     <div class="relatorio-card">
         <div class="relatorio-card-header">
             <div class="relatorio-card-title">

@@ -923,6 +923,15 @@ if (empty($obras)) {
     </div>
 
 
+    <!-- CSS dinâmico para cores de status configuradas -->
+    <style>
+    <?php foreach ($status_obra as $s): ?>
+    .obra-card-header.<?php echo strtolower(preg_replace('/[^a-z]/', '', $s->nome)); ?> {
+        background: linear-gradient(135deg, <?php echo $s->cor ?? '#667eea'; ?> 0%, <?php echo $s->cor ?? '#667eea'; ?> 100%) !important;
+    }
+    <?php endforeach; ?>
+    </style>
+
     <!-- Filtros -->
     <div class="obras-filter-bar">
         <div class="obras-filter-group">
@@ -934,12 +943,9 @@ if (empty($obras)) {
             <label><i class="icon-filter"></i> Status:</label>
             <select id="filterStatus" class="obras-filter-select" onchange="filtrarObras()">
                 <option value="">Todos</option>
-                <option value="prospeccao">Prospecção</option>
-                <option value="contratada">Contratada</option>
-                <option value="em-andamento">Em Andamento</option>
-                <option value="concluida">Concluída</option>
-                <option value="paralisada">Paralisada</option>
-                <option value="cancelada">Cancelada</option>
+                <?php foreach ($status_obra as $s): ?>
+                    <option value="<?php echo htmlspecialchars(strtolower(preg_replace('/[^a-z]/', '', $s->nome))); ?>"><?php echo htmlspecialchars($s->nome); ?></option>
+                <?php endforeach; ?>
             </select>
         </div>
 
@@ -956,66 +962,86 @@ if (empty($obras)) {
         // Debug: garantir que objeto tenha todas as propriedades
         if (!is_object($obra)) continue;
 
+        // Construir mapa de status para lookup rápido (idealmente feito fora do loop)
+        static $statusMapList = null;
+        if ($statusMapList === null) {
+            $statusMapList = [];
+            foreach ($status_obra as $s) {
+                $key = strtolower(preg_replace('/[^a-z]/', '', $s->nome));
+                $statusMapList[$key] = $s;
+            }
+        }
+
         $status_class = '';
         $status_label = '';
         $status_normalized = ''; // Valor normalizado para o filtro
+        $status_cor = '';
 
-        // Converter status para lowercase para comparação case-insensitive
         $status_lower = strtolower(trim($obra->status ?? ''));
+        $status_norm_key = strtolower(preg_replace('/[^a-z]/', '', $obra->status ?? ''));
 
-        switch ($status_lower) {
-            case 'em-andamento':
-            case 'em_execucao':
-            case 'em execucao':
-            case 'emexecucao':
-            case 'execucao':
-                $status_class = 'andamento';
-                $status_label = 'Em Andamento';
-                $status_normalized = 'em-andamento';
-                break;
-            case 'concluida':
-            case 'concluída':
-            case 'finalizada':
-            case 'entregue':
-            case 'concluido':
-                $status_class = 'concluida';
-                $status_label = 'Concluída';
-                $status_normalized = 'concluida';
-                break;
-            case 'paralisada':
-            case 'pausada':
-            case 'suspensa':
-                $status_class = 'paralisada';
-                $status_label = 'Paralisada';
-                $status_normalized = 'paralisada';
-                break;
-            case 'prospeccao':
-            case 'prospecção':
-            case 'prospectacao':
-            case 'novo':
-            case 'nova':
-                $status_class = 'prospeccao';
-                $status_label = 'Prospecção';
-                $status_normalized = 'prospeccao';
-                break;
-            case 'contratada':
-            case 'aprovada':
-            case 'iniciada':
-                $status_class = 'contratada';
-                $status_label = 'Contratada';
-                $status_normalized = 'contratada';
-                break;
-            case 'cancelada':
-            case 'cancelado':
-            case 'encerrada':
-                $status_class = 'cancelada';
-                $status_label = 'Cancelada';
-                $status_normalized = 'cancelada';
-                break;
-            default:
-                $status_class = '';
-                $status_label = ucfirst($obra->status);
-                $status_normalized = $obra->status;
+        if (isset($statusMapList[$status_norm_key])) {
+            $s = $statusMapList[$status_norm_key];
+            $status_label = $s->nome;
+            $status_class = $status_norm_key;
+            $status_normalized = $status_norm_key;
+            $status_cor = $s->cor ?? '';
+        } else {
+            // Fallback hardcoded para compatibilidade
+            switch ($status_lower) {
+                case 'em-andamento':
+                case 'em_execucao':
+                case 'em execucao':
+                case 'emexecucao':
+                case 'execucao':
+                    $status_class = 'andamento';
+                    $status_label = 'Em Andamento';
+                    $status_normalized = 'em-andamento';
+                    break;
+                case 'concluida':
+                case 'concluída':
+                case 'finalizada':
+                case 'entregue':
+                case 'concluido':
+                    $status_class = 'concluida';
+                    $status_label = 'Concluída';
+                    $status_normalized = 'concluida';
+                    break;
+                case 'paralisada':
+                case 'pausada':
+                case 'suspensa':
+                    $status_class = 'paralisada';
+                    $status_label = 'Paralisada';
+                    $status_normalized = 'paralisada';
+                    break;
+                case 'prospeccao':
+                case 'prospecção':
+                case 'prospectacao':
+                case 'novo':
+                case 'nova':
+                    $status_class = 'prospeccao';
+                    $status_label = 'Prospecção';
+                    $status_normalized = 'prospeccao';
+                    break;
+                case 'contratada':
+                case 'aprovada':
+                case 'iniciada':
+                    $status_class = 'contratada';
+                    $status_label = 'Contratada';
+                    $status_normalized = 'contratada';
+                    break;
+                case 'cancelada':
+                case 'cancelado':
+                case 'encerrada':
+                    $status_class = 'cancelada';
+                    $status_label = 'Cancelada';
+                    $status_normalized = 'cancelada';
+                    break;
+                default:
+                    $status_class = '';
+                    $status_label = ucfirst($obra->status);
+                    $status_normalized = $obra->status;
+            }
         }
         $progresso = $obra->percentual_concluido ?? 0;
         ?>

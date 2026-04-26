@@ -656,9 +656,9 @@ body[data-theme="dark"] .modal-close { background: #252a3a; color: #a0aec0; }
                     <label>Tipo</label>
                     <select id="filtroTipo" onchange="filtrarAtividades()">
                         <option value="">Todos</option>
-                        <option value="trabalho">Trabalho</option>
-                        <option value="impedimento">Impedimento</option>
-                        <option value="outro">Outro</option>
+                        <?php foreach ($tipos_atividades as $t): ?>
+                            <option value="<?php echo htmlspecialchars($t->nome); ?>"><?php echo htmlspecialchars($t->nome); ?></option>
+                        <?php endforeach; ?>
                     </select>
                 </div>
             </div>
@@ -858,12 +858,9 @@ body[data-theme="dark"] .modal-close { background: #252a3a; color: #a0aec0; }
                     <div class="form-group">
                         <label>Status</label>
                         <select name="status" id="edit_status">
-                            <option value="agendada">Agendada</option>
-                            <option value="iniciada">Em Execução</option>
-                            <option value="pausada">Pausada</option>
-                            <option value="concluida">Concluída</option>
-                            <option value="cancelada">Cancelada</option>
-                            <option value="reaberta">Reaberta (Reatendimento)</option>
+                            <?php foreach ($status_atividade as $s): ?>
+                                <option value="<?php echo htmlspecialchars($s->nome); ?>"><?php echo htmlspecialchars($s->nome); ?></option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
                     <div class="form-group">
@@ -891,9 +888,9 @@ body[data-theme="dark"] .modal-close { background: #252a3a; color: #a0aec0; }
                     <div class="form-group">
                         <label>Tipo</label>
                         <select name="tipo" id="edit_tipo">
-                            <option value="trabalho">Trabalho</option>
-                            <option value="impedimento">Impedimento</option>
-                            <option value="outro">Outro</option>
+                            <?php foreach ($tipos_atividades as $t): ?>
+                                <option value="<?php echo htmlspecialchars($t->nome); ?>"><?php echo htmlspecialchars($t->nome); ?></option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
                     <div class="form-group">
@@ -944,9 +941,9 @@ body[data-theme="dark"] .modal-close { background: #252a3a; color: #a0aec0; }
                     <div class="form-group">
                         <label>Tipo</label>
                         <select name="tipo">
-                            <option value="trabalho">Trabalho</option>
-                            <option value="impedimento">Impedimento</option>
-                            <option value="outro">Outro</option>
+                            <?php foreach ($tipos_atividades as $t): ?>
+                                <option value="<?php echo htmlspecialchars($t->nome); ?>"><?php echo htmlspecialchars($t->nome); ?></option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
                     <div class="form-group">

@@ -314,15 +314,8 @@
                 </label>
                 <select name="especialidade" id="especialidade" class="etapa-edit-form-select">
                     <option value="">Selecione uma especialidade...</option>
-                    <?php
-                    $especialidades = [
-                        'Alvenaria', 'Arquitetura', 'Elétrica', 'Estrutura', 'Fundação',
-                        'Hidráulica', 'Impermeabilização', 'Marcenaria', 'Pintura',
-                        'Piso/Revestimento', 'Serralheria', 'Telhado', 'Outro'
-                    ];
-                    foreach ($especialidades as $esp):
-                    ?>
-                    <option value="<?php echo $esp; ?>" <?php echo $etapa->especialidade == $esp ? 'selected' : ''; ?>><?php echo $esp; ?></option>
+                    <?php foreach ($especialidades as $esp): ?>
+                    <option value="<?php echo htmlspecialchars($esp->nome); ?>" <?php echo ($etapa->especialidade == $esp->nome) ? 'selected' : ''; ?>><?php echo htmlspecialchars($esp->nome); ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
@@ -354,24 +347,14 @@
                 <label class="etapa-edit-form-label">
                     <i class="icon-info-sign"></i> Status da Etapa
                 </label>
-                <div class="etapa-edit-status-options">
-                    <label>
-                        <input type="radio" name="status" value="NaoIniciada" class="etapa-edit-status-option" <?php echo ($etapa->status ?? 'NaoIniciada') == 'NaoIniciada' ? 'checked' : ''; ?>>
-                        <span class="etapa-edit-status-label pendente">Não Iniciada</span>
-                    </label>
-                    <label>
-                        <input type="radio" name="status" value="EmAndamento" class="etapa-edit-status-option" <?php echo ($etapa->status ?? '') == 'EmAndamento' ? 'checked' : ''; ?>>
-                        <span class="etapa-edit-status-label em_andamento">Em Andamento</span>
-                    </label>
-                    <label>
-                        <input type="radio" name="status" value="Concluida" class="etapa-edit-status-option" <?php echo ($etapa->status ?? '') == 'Concluida' ? 'checked' : ''; ?>>
-                        <span class="etapa-edit-status-label concluida">Concluída</span>
-                    </label>
-                    <label>
-                        <input type="radio" name="status" value="Atrasada" class="etapa-edit-status-option" <?php echo ($etapa->status ?? '') == 'Atrasada' ? 'checked' : ''; ?>>
-                        <span class="etapa-edit-status-label atrasada">Atrasada</span>
-                    </label>
-                </div>
+                <select name="status" class="etapa-edit-form-select">
+                    <?php foreach ($status_obra as $s): ?>
+                        <option value="<?php echo htmlspecialchars($s->nome); ?>"
+                            <?php echo ($etapa->status ?? '') == $s->nome ? 'selected' : ''; ?>>
+                            <?php echo htmlspecialchars($s->nome); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
             </div>
 
             <div class="etapa-edit-form-actions">

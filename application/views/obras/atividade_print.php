@@ -453,16 +453,14 @@
                     ?>
                     <span class="status-badge <?php echo $status_print; ?>">
                         <?php
-                        $statusLabelsPrint = [
-                            'agendada' => 'Agendada',
-                            'iniciada' => 'Em Execução',
-                            'pausada' => 'Pausada',
-                            'concluida' => 'Concluída',
-                            'cancelada' => 'Cancelada',
-                            'reaberta' => 'Reaberta',
-                            'impedimento' => 'Impedido'
-                        ];
-                        echo $statusLabelsPrint[$status_print] ?? ucfirst($status_print);
+                        $status_label_print = ucfirst($status_print);
+                        foreach ($status_atividade as $s) {
+                            if (strtolower($status_print) === strtolower($s->nome)) {
+                                $status_label_print = $s->nome;
+                                break;
+                            }
+                        }
+                        echo htmlspecialchars($status_label_print);
                         ?>
                     </span>
                 </span>

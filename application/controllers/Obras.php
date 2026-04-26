@@ -72,6 +72,9 @@ class Obras extends MY_Controller
 
         $this->data['results'] = $this->obras_model->getAll($filtros, $config['per_page'], $this->uri->segment(3));
 
+        // Carregar configs para uso nas views (cores/status dinâmicos)
+        $this->data['status_obra'] = $this->obras_model->getStatusObra() ?? [];
+
         // Debug: log dos dados carregados
         log_message('debug', 'Obras::gerenciar - Total de obras carregadas: ' . count($this->data['results']));
 
@@ -239,6 +242,10 @@ class Obras extends MY_Controller
             }
         }
 
+        // Carregar configs dinâmicas
+        $this->data['tipos_obra'] = $this->obras_model->getTiposObra() ?? [];
+        $this->data['status_obra'] = $this->obras_model->getStatusObra() ?? [];
+
         $this->data['view'] = 'obras/obra_form';
         return $this->layout();
     }
@@ -322,6 +329,10 @@ class Obras extends MY_Controller
             }
         }
 
+        // Carregar configs dinâmicas
+        $this->data['tipos_obra'] = $this->obras_model->getTiposObra() ?? [];
+        $this->data['status_obra'] = $this->obras_model->getStatusObra() ?? [];
+
         $this->data['view'] = 'obras/obra_form';
         return $this->layout();
     }
@@ -348,6 +359,10 @@ class Obras extends MY_Controller
 
         $this->data['etapas'] = $this->obras_model->getEtapasComEstatisticas($id);
         $this->data['equipe'] = $this->obras_model->getEquipe($id);
+
+        // Carregar configs dinâmicas
+        $this->data['tipos_obra'] = $this->obras_model->getTiposObra() ?? [];
+        $this->data['status_obra'] = $this->obras_model->getStatusObra() ?? [];
 
         // Buscar atividades recentes organizadas por etapa
         $atividades = $this->obra_atividades_model->getByObra($id, [], 50);
@@ -434,6 +449,10 @@ class Obras extends MY_Controller
         $this->data['etapas'] = $this->obras_model->getEtapasComEstatisticas($obra_id);
         $this->data['equipe'] = $this->obras_model->getEquipe($obra_id);
         $this->data['atividades_recentes'] = $this->obra_atividades_model->getByObra($obra_id, [], 20);
+
+        // Carregar configs dinâmicas
+        $this->data['especialidades'] = $this->obras_model->getEspecialidades() ?? [];
+        $this->data['status_obra'] = $this->obras_model->getStatusObra() ?? [];
 
         // Atividades do novo sistema (Hora Início/Fim)
         if (file_exists(APPPATH . 'models/Atividades_model.php')) {
@@ -562,6 +581,11 @@ class Obras extends MY_Controller
         $this->data['obra'] = $this->obras_model->getById($obra_id);
         $this->data['etapa'] = $etapa;
         $this->data['etapas'] = $this->obras_model->getEtapas($obra_id);
+
+        // Carregar configs dinâmicas
+        $this->data['especialidades'] = $this->obras_model->getEspecialidades() ?? [];
+        $this->data['status_obra'] = $this->obras_model->getStatusObra() ?? [];
+
         $this->data['view'] = 'obras/etapa_edit';
 
         return $this->layout();
@@ -624,6 +648,10 @@ class Obras extends MY_Controller
         $this->data['obra'] = $this->obras_model->getById($obra_id);
         $this->data['equipe'] = $this->obras_model->getEquipe($obra_id);
         $this->data['tecnicos'] = $this->usuarios_model->getAll();
+
+        // Carregar configs dinâmicas
+        $this->data['funcoes_equipe'] = $this->obras_model->getFuncoesEquipe() ?? [];
+
         $this->data['view'] = 'obras/equipe';
 
         return $this->layout();
@@ -757,6 +785,11 @@ class Obras extends MY_Controller
 
         $this->data['tecnicos'] = $this->usuarios_model->getAll();
         $this->data['etapas'] = $this->obras_model->getEtapas($obra_id);
+
+        // Carregar configs dinâmicas
+        $this->load->model('atividades_model');
+        $this->data['status_atividade'] = $this->atividades_model->getStatusAtividade() ?? [];
+
         $this->data['view'] = 'obras/atividades_novo';
 
         return $this->layout();
@@ -1253,6 +1286,12 @@ class Obras extends MY_Controller
         $this->data['tecnicos'] = $this->usuarios_model->getAll();
         $this->data['etapas'] = $this->obras_model->getEtapas($obra_id);
 
+        // Carregar configs dinâmicas
+        $this->load->model('Atividades_tipos_model');
+        $this->load->model('atividades_model');
+        $this->data['tipos_atividades'] = $this->Atividades_tipos_model->listar([], true) ?? [];
+        $this->data['status_atividade'] = $this->atividades_model->getStatusAtividade() ?? [];
+
         // Processar formulário
         if ($this->input->post()) {
             log_message('debug', 'editarAtividade - POST recebido: ' . print_r($this->input->post(), true));
@@ -1388,6 +1427,12 @@ class Obras extends MY_Controller
         $this->data['obra'] = $this->obras_model->getById($this->data['atividade']->obra_id);
         $this->data['historico'] = $this->obra_atividades_model->getHistorico($atividade_id);
         $this->data['checkins'] = $this->obra_checkins_model->getByAtividade($atividade_id);
+
+        // Carregar configs dinâmicas
+        $this->load->model('Atividades_tipos_model');
+        $this->load->model('atividades_model');
+        $this->data['tipos_atividades'] = $this->Atividades_tipos_model->listar([], true) ?? [];
+        $this->data['status_atividade'] = $this->atividades_model->getStatusAtividade() ?? [];
 
         // Buscar histórico completo de execuções (incluindo reatendimentos)
         $this->data['historico_execucoes'] = $this->atividades->getHistoricoExecucoes($atividade_id);
@@ -1659,6 +1704,12 @@ class Obras extends MY_Controller
             }
         }
 
+        // Carregar configs dinâmicas
+        $this->load->model('Atividades_tipos_model');
+        $this->load->model('atividades_model');
+        $tipos_atividades = $this->Atividades_tipos_model->listar([], true) ?? [];
+        $status_atividade = $this->atividades_model->getStatusAtividade() ?? [];
+
         $data = [
             'atividade' => $atividade,
             'obra' => $obra,
@@ -1669,6 +1720,8 @@ class Obras extends MY_Controller
             'historico_execucoes' => $historico_execucoes,
             'fotos_atividade' => $fotos_atividade,
             'atividade_real' => $atividade_real_completa ?? null,
+            'tipos_atividades' => $tipos_atividades,
+            'status_atividade' => $status_atividade,
         ];
 
         $this->load->view('obras/atividade_print', $data);
@@ -1943,6 +1996,12 @@ class Obras extends MY_Controller
         $this->data['obra'] = $this->obras_model->getByIdCompleto($obra_id);
         $this->data['etapas'] = $this->obras_model->getEtapasComEstatisticas($obra_id);
         $this->data['estatisticas'] = $this->obra_atividades_model->getEstatisticas($obra_id);
+        $this->data['status_obra'] = $this->obras_model->getStatusObra() ?? [];
+        $this->data['status_atividade'] = [];
+        if (file_exists(APPPATH . 'models/atividades_model.php')) {
+            $this->load->model('atividades_model');
+            $this->data['status_atividade'] = $this->atividades_model->getStatusAtividade() ?? [];
+        }
         $this->data['emitente'] = $this->mapos_model->getEmitente();
         $this->data['view'] = 'obras/relatorios/progresso';
 
@@ -1967,6 +2026,12 @@ class Obras extends MY_Controller
             'data_inicio' => $data,
             'data_fim' => $data
         ]);
+        $this->data['status_obra'] = $this->obras_model->getStatusObra() ?? [];
+        $this->data['status_atividade'] = [];
+        if (file_exists(APPPATH . 'models/atividades_model.php')) {
+            $this->load->model('atividades_model');
+            $this->data['status_atividade'] = $this->atividades_model->getStatusAtividade() ?? [];
+        }
         $this->data['view'] = 'obras/relatorios/diario';
 
         return $this->layout();
@@ -2016,6 +2081,12 @@ class Obras extends MY_Controller
         }
 
         // Emitente para cabeçalho
+        $this->data['status_obra'] = $this->obras_model->getStatusObra() ?? [];
+        $this->data['status_atividade'] = [];
+        if (file_exists(APPPATH . 'models/atividades_model.php')) {
+            $this->load->model('atividades_model');
+            $this->data['status_atividade'] = $this->atividades_model->getStatusAtividade() ?? [];
+        }
         $this->data['emitente'] = $this->mapos_model->getEmitente();
 
         $this->data['view'] = 'obras/relatorios/geral';

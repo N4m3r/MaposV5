@@ -988,29 +988,45 @@
 
 <div class="etapas-container">
     <?php
-    // Definir classe do header baseado no status
+    // Definir classe e label do header baseado na configuração
+    $status_atual_norm = strtolower(preg_replace('/[^a-z]/', '', $obra->status ?? ''));
     $status_class = '';
     $status_label = '';
-    switch ($obra->status) {
-        case 'EmExecucao':
-        case 'Em Andamento':
-        case 'em-andamento':
-            $status_class = 'em-andamento';
-            $status_label = 'Em Andamento';
+    $status_cor = '#667eea';
+    foreach ($status_obra as $s) {
+        $s_norm = strtolower(preg_replace('/[^a-z]/', '', $s->nome));
+        if ($status_atual_norm === $s_norm) {
+            $status_class = 'status-dinamico';
+            $status_label = $s->nome;
+            $status_cor = $s->cor ?? '#667eea';
             break;
-        case 'Concluida':
-        case 'concluida':
-            $status_class = 'concluida';
-            $status_label = 'Concluída';
-            break;
-        case 'Paralisada':
-        case 'paralisada':
-            $status_class = 'paralisada';
-            $status_label = 'Paralisada';
-            break;
-        default:
-            $status_class = '';
-            $status_label = ucfirst($obra->status);
+        }
+    }
+    if (!$status_label) {
+        switch ($obra->status) {
+            case 'EmExecucao':
+            case 'Em Andamento':
+            case 'em-andamento':
+                $status_class = 'em-andamento';
+                $status_label = 'Em Andamento';
+                $status_cor = '#4facfe';
+                break;
+            case 'Concluida':
+            case 'concluida':
+                $status_class = 'concluida';
+                $status_label = 'Concluída';
+                $status_cor = '#11998e';
+                break;
+            case 'Paralisada':
+            case 'paralisada':
+                $status_class = 'paralisada';
+                $status_label = 'Paralisada';
+                $status_cor = '#f093fb';
+                break;
+            default:
+                $status_class = '';
+                $status_label = ucfirst($obra->status);
+        }
     }
 
     // Calcular dias restantes
@@ -1038,7 +1054,7 @@
     ?>
 
     <!-- Header da Obra -->
-    <div class="obra-header <?php echo $status_class; ?>">
+    <div class="obra-header <?php echo $status_class; ?>" style="background: linear-gradient(135deg, <?php echo $status_cor; ?> 0%, <?php echo $status_cor; ?> 100%);">
         <div class="obra-header-row">
             <div class="obra-header-info">
                 <div class="obra-breadcrumb">
@@ -1193,30 +1209,44 @@
                     <?php if (!empty($etapas)): ?>
                     <div class="etapas-timeline">
                         <?php foreach ($etapas as $etapa):
-                            $etapa_status = $etapa->status ?? 'NaoIniciada';
+                            $etapa_status = $etapa->status ?? 'Não Iniciada';
+                            $etapa_status_norm = strtolower(preg_replace('/[^a-z]/', '', $etapa_status));
                             $etapa_class = '';
                             $status_text = '';
 
-                            switch ($etapa_status) {
-                                case 'Concluida':
-                                case 'concluida':
-                                    $etapa_class = 'concluida';
-                                    $status_text = 'Concluída';
+                            // Buscar configuração dinâmica
+                            $status_encontrado = false;
+                            foreach ($status_obra as $s) {
+                                $s_norm = strtolower(preg_replace('/[^a-z]/', '', $s->nome));
+                                if ($etapa_status_norm === $s_norm) {
+                                    $etapa_class = $s_norm;
+                                    $status_text = $s->nome;
+                                    $status_encontrado = true;
                                     break;
-                                case 'EmAndamento':
-                                case 'Em Andamento':
-                                case 'em-andamento':
-                                    $etapa_class = 'andamento';
-                                    $status_text = 'Em Andamento';
-                                    break;
-                                case 'Atrasada':
-                                case 'atrasada':
-                                    $etapa_class = 'atrasada';
-                                    $status_text = 'Atrasada';
-                                    break;
-                                default:
-                                    $etapa_class = 'pendente';
-                                    $status_text = 'Não Iniciada';
+                                }
+                            }
+                            if (!$status_encontrado) {
+                                switch ($etapa_status) {
+                                    case 'Concluida':
+                                    case 'concluida':
+                                        $etapa_class = 'concluida';
+                                        $status_text = 'Concluída';
+                                        break;
+                                    case 'EmAndamento':
+                                    case 'Em Andamento':
+                                    case 'em-andamento':
+                                        $etapa_class = 'andamento';
+                                        $status_text = 'Em Andamento';
+                                        break;
+                                    case 'Atrasada':
+                                    case 'atrasada':
+                                        $etapa_class = 'atrasada';
+                                        $status_text = 'Atrasada';
+                                        break;
+                                    default:
+                                        $etapa_class = 'pendente';
+                                        $status_text = 'Não Iniciada';
+                                }
                             }
 
                             $etapa_atividades = $atividades_por_etapa[$etapa->id] ?? [];
@@ -1503,11 +1533,9 @@
                 <div class="form-group">
                     <label class="form-label" for="etapa_status">Status</label>
                     <select name="status" id="etapa_status" class="form-select">
-                        <option value="NaoIniciada">Não Iniciada</option>
-                        <option value="EmAndamento">Em Andamento</option>
-                        <option value="Concluida">Concluída</option>
-                        <option value="Atrasada">Atrasada</option>
-                        <option value="Paralisada">Paralisada</option>
+                        <?php foreach ($status_obra as $s): ?>
+                            <option value="<?php echo htmlspecialchars($s->nome); ?>"><?php echo htmlspecialchars($s->nome); ?></option>
+                        <?php endforeach; ?>
                     </select>
                 </div>
             </div>

@@ -341,19 +341,10 @@
 
         // Status da obra
         $statusObra = $obra->status ?? 'Em Andamento';
-        $statusLabels = [
-            'Prospeccao' => 'Prospecção',
-            'Orcamentacao' => 'Orçamentação',
-            'Contratada' => 'Contratada',
-            'EmExecucao' => 'Em Execução',
-            'Em Andamento' => 'Em Andamento',
-            'Paralisada' => 'Paralisada',
-            'Finalizada' => 'Finalizada',
-            'Entregue' => 'Entregue',
-            'Garantia' => 'Garantia',
-            'Concluida' => 'Concluída',
-            'Concluída' => 'Concluída',
-        ];
+        $statusLabels = [];
+        foreach ($status_obra as $s) {
+            $statusLabels[$s->nome] = $s->nome;
+        }
 
         // Formatar valor do contrato
         $valor_contrato = $obra->valor_contrato ?? 0;

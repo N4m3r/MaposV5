@@ -277,22 +277,24 @@
                 <div class="form-group">
                     <label class="form-label">Tipo</label>
                     <select name="tipo" class="form-select">
-                        <option value="trabalho" <?php echo ($atividade->tipo ?? '') == 'trabalho' ? 'selected' : ''; ?>>Trabalho</option>
-                        <option value="visita" <?php echo ($atividade->tipo ?? '') == 'visita' ? 'selected' : ''; ?>>Visita Técnica</option>
-                        <option value="manutencao" <?php echo ($atividade->tipo ?? '') == 'manutencao' ? 'selected' : ''; ?>>Manutenção</option>
-                        <option value="impedimento" <?php echo ($atividade->tipo ?? '') == 'impedimento' ? 'selected' : ''; ?>>Impedimento</option>
-                        <option value="outro" <?php echo ($atividade->tipo ?? '') == 'outro' ? 'selected' : ''; ?>>Outro</option>
+                        <?php foreach ($tipos_atividades as $t): ?>
+                            <option value="<?php echo htmlspecialchars($t->nome); ?>"
+                                <?php echo ($atividade->tipo ?? '') == $t->nome ? 'selected' : ''; ?>>
+                                <?php echo htmlspecialchars($t->nome); ?>
+                            </option>
+                        <?php endforeach; ?>
                     </select>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">Status</label>
                     <select name="status" class="form-select">
-                        <option value="agendada" <?php echo ($atividade->status ?? '') == 'agendada' ? 'selected' : ''; ?>>Agendada</option>
-                        <option value="iniciada" <?php echo ($atividade->status ?? '') == 'iniciada' ? 'selected' : ''; ?>>Iniciada</option>
-                        <option value="pausada" <?php echo ($atividade->status ?? '') == 'pausada' ? 'selected' : ''; ?>>Pausada</option>
-                        <option value="concluida" <?php echo ($atividade->status ?? '') == 'concluida' ? 'selected' : ''; ?>>Concluída</option>
-                        <option value="cancelada" <?php echo ($atividade->status ?? '') == 'cancelada' ? 'selected' : ''; ?>>Cancelada</option>
+                        <?php foreach ($status_atividade as $s): ?>
+                            <option value="<?php echo htmlspecialchars($s->nome); ?>"
+                                <?php echo ($atividade->status ?? '') == $s->nome ? 'selected' : ''; ?>>
+                                <?php echo htmlspecialchars($s->nome); ?>
+                            </option>
+                        <?php endforeach; ?>
                     </select>
                 </div>
 

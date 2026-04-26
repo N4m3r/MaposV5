@@ -17,16 +17,13 @@ $dias_restantes = $data_prevista ? ceil((strtotime($data_prevista) - time()) / 8
 
 // Status da obra com cor
 $statusObra = $obra->status ?? 'Em Andamento';
-$statusColors = [
-    'Contratada' => ['bg' => '#f39c12', 'text' => '#fff', 'label' => 'CONTRATADA', 'icon' => 'icon-file-alt'],
-    'Em Andamento' => ['bg' => '#3498db', 'text' => '#fff', 'label' => 'EM ANDAMENTO', 'icon' => 'icon-refresh'],
-    'EmExecucao' => ['bg' => '#3498db', 'text' => '#fff', 'label' => 'EM EXECUÇÃO', 'icon' => 'icon-refresh'],
-    'Concluída' => ['bg' => '#27ae60', 'text' => '#fff', 'label' => 'CONCLUÍDA', 'icon' => 'icon-check'],
-    'Concluida' => ['bg' => '#27ae60', 'text' => '#fff', 'label' => 'CONCLUÍDA', 'icon' => 'icon-check'],
-    'Paralisada' => ['bg' => '#e74c3c', 'text' => '#fff', 'label' => 'PARALISADA', 'icon' => 'icon-pause'],
-    'Cancelada' => ['bg' => '#95a5a6', 'text' => '#fff', 'label' => 'CANCELADA', 'icon' => 'icon-ban-circle'],
-];
-$statusConfig = $statusColors[$statusObra] ?? ['bg' => '#7f8c8d', 'text' => '#fff', 'label' => 'INDEFINIDO', 'icon' => 'icon-question-sign'];
+$statusConfig = ['bg' => '#7f8c8d', 'text' => '#fff', 'label' => 'INDEFINIDO', 'icon' => 'icon-question-sign'];
+foreach ($status_obra as $s) {
+    if (strcasecmp($statusObra, $s->nome) === 0) {
+        $statusConfig = ['bg' => $s->cor ?? '#7f8c8d', 'text' => '#fff', 'label' => strtoupper($s->nome), 'icon' => $s->icone ?? 'icon-question-sign'];
+        break;
+    }
+}
 
 // Formatar valor do contrato
 $valor_contrato = $obra->valor_contrato ?? 0;
@@ -1255,15 +1252,9 @@ $emitente_logo = $emitente->url_logo ?? '';
 </div>
 
 <?php
-// Labels de status para etapas
-$statusLabels = [
-    'NaoIniciada' => 'NÃO INICIADA',
-    'pendente' => 'PENDENTE',
-    'em_andamento' => 'EM ANDAMENTO',
-    'EmExecucao' => 'EM EXECUÇÃO',
-    'concluida' => 'CONCLUÍDA',
-    'Concluida' => 'CONCLUÍDA',
-    'atrasada' => 'ATRASADA',
-    'cancelada' => 'CANCELADA',
-];
+// Labels de status para etapas (dinâmico a partir das configs)
+$statusLabels = [];
+foreach ($status_obra as $s) {
+    $statusLabels[strtolower(preg_replace('/[^a-z]/', '', $s->nome))] = strtoupper($s->nome);
+}
 ?>

@@ -817,30 +817,48 @@
 
 <div class="obra-container">
     <?php
-    // Definir classe do header baseado no status
-    $status_class = '';
-    $status_label = '';
-    switch ($obra->status) {
-        case 'EmExecucao':
-        case 'Em Andamento':
-        case 'em-andamento':
-            $status_class = 'em-andamento';
-            $status_label = 'Em Andamento';
-            break;
-        case 'Concluida':
-        case 'concluida':
-            $status_class = 'concluida';
-            $status_label = 'Concluída';
-            break;
-        case 'Paralisada':
-        case 'paralisada':
-            $status_class = 'paralisada';
-            $status_label = 'Paralisada';
-            break;
-        default:
-            $status_class = '';
-            $status_label = ucfirst($obra->status);
+    // Construir mapas de configuração para lookup
+    $statusObraMap = [];
+    foreach ($status_obra as $s) {
+        $key = strtolower(preg_replace('/[^a-z]/', '', $s->nome));
+        $statusObraMap[$key] = $s;
     }
+    $tiposObraMap = [];
+    foreach ($tipos_obra as $t) {
+        $tiposObraMap[$t->nome] = $t;
+    }
+
+    // Definir classe e label do status baseado na configuração
+    $status_atual_norm = strtolower(preg_replace('/[^a-z]/', '', $obra->status ?? ''));
+    if (isset($statusObraMap[$status_atual_norm])) {
+        $status_config = $statusObraMap[$status_atual_norm];
+        $status_label = $status_config->nome;
+        $status_cor = $status_config->cor ?? '#667eea';
+    } else {
+        // Fallback hardcoded para compatibilidade
+        switch ($obra->status) {
+            case 'EmExecucao':
+            case 'Em Andamento':
+            case 'em-andamento':
+                $status_label = 'Em Andamento';
+                $status_cor = '#4facfe';
+                break;
+            case 'Concluida':
+            case 'concluida':
+                $status_label = 'Concluída';
+                $status_cor = '#11998e';
+                break;
+            case 'Paralisada':
+            case 'paralisada':
+                $status_label = 'Paralisada';
+                $status_cor = '#f093fb';
+                break;
+            default:
+                $status_label = ucfirst($obra->status);
+                $status_cor = '#667eea';
+        }
+    }
+    $status_class = 'status-dinamico';
 
     // Calcular dias restantes
     $dias_restantes = null;
@@ -861,7 +879,7 @@
     ?>
 
     <!-- Header da Obra -->
-    <div class="obra-header <?php echo $status_class; ?>">
+    <div class="obra-header <?php echo $status_class; ?>" style="background: linear-gradient(135deg, <?php echo $status_cor; ?> 0%, <?php echo $status_cor; ?> 100%);">
         <div class="obra-header-row">
             <div class="obra-header-info">
                 <div class="obra-breadcrumb">
@@ -986,14 +1004,7 @@
                         <div class="info-value">
                             <i class="icon-cog"></i>
                             <?php
-                            $tiposObraLabels = [
-                                'Condominio' => 'Condomínio',
-                                'Comercio' => 'Comércio',
-                                'Residencia' => 'Residência',
-                                'Industrial' => 'Industrial',
-                                'Publica' => 'Pública',
-                            ];
-                            echo htmlspecialchars($tiposObraLabels[$obra->tipo_obra] ?? ($obra->tipo_obra ?: 'Não definido'));
+                            echo htmlspecialchars($tiposObraMap[$obra->tipo_obra]->nome ?? ($obra->tipo_obra ?: 'Não definido'));
                             ?>
                         </div>
                     </div>

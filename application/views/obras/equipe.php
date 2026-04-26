@@ -697,23 +697,9 @@
                 </label>
                 <select name="funcao" id="funcao" class="form-select-equipe" required>
                     <option value="" disabled selected>-- Selecione a função --</option>
-                    <optgroup label="Funções Técnicas">
-                        <option value="Técnico">Técnico</option>
-                        <option value="Encarregado">Encarregado</option>
-                        <option value="Mestre de Obras">Mestre de Obras</option>
-                    </optgroup>
-                    <optgroup label="Funções Especializadas">
-                        <option value="Engenheiro">Engenheiro</option>
-                        <option value="Pedreiro">Pedreiro</option>
-                        <option value="Eletricista">Eletricista</option>
-                        <option value="Hidráulico">Hidráulico</option>
-                        <option value="Carpinteiro">Carpinteiro</option>
-                        <option value="Pintor">Pintor</option>
-                    </optgroup>
-                    <optgroup label="Outros">
-                        <option value="Auxiliar">Auxiliar</option>
-                        <option value="Outro">Outro</option>
-                    </optgroup>
+                    <?php foreach ($funcoes_equipe as $f): ?>
+                        <option value="<?php echo htmlspecialchars($f->nome); ?>"><?php echo htmlspecialchars($f->nome); ?></option>
+                    <?php endforeach; ?>
                 </select>
             </div>
 

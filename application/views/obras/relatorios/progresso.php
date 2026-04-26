@@ -17,16 +17,13 @@ $dias_restantes = $data_prevista ? ceil((strtotime($data_prevista) - time()) / 8
 
 // Status da obra com cor
 $statusObra = $obra->status ?? 'Em Andamento';
-$statusColors = [
-    'Contratada' => ['bg' => '#f39c12', 'text' => '#fff', 'icon' => 'icon-file-alt'],
-    'Em Andamento' => ['bg' => '#3498db', 'text' => '#fff', 'icon' => 'icon-refresh'],
-    'EmExecucao' => ['bg' => '#3498db', 'text' => '#fff', 'icon' => 'icon-refresh'],
-    'Concluída' => ['bg' => '#27ae60', 'text' => '#fff', 'icon' => 'icon-check'],
-    'Concluida' => ['bg' => '#27ae60', 'text' => '#fff', 'icon' => 'icon-check'],
-    'Paralisada' => ['bg' => '#e74c3c', 'text' => '#fff', 'icon' => 'icon-pause'],
-    'Cancelada' => ['bg' => '#95a5a6', 'text' => '#fff', 'icon' => 'icon-ban-circle'],
-];
-$statusConfig = $statusColors[$statusObra] ?? ['bg' => '#7f8c8d', 'text' => '#fff', 'icon' => 'icon-question-sign'];
+$statusConfig = ['bg' => '#7f8c8d', 'text' => '#fff', 'icon' => 'icon-question-sign'];
+foreach ($status_obra as $s) {
+    if (strcasecmp($statusObra, $s->nome) === 0) {
+        $statusConfig = ['bg' => $s->cor ?? '#7f8c8d', 'text' => '#fff', 'icon' => $s->icone ?? 'icon-question-sign'];
+        break;
+    }
+}
 ?>
 
 <!-- Header Moderno -->
