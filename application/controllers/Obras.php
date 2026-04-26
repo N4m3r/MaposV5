@@ -2374,11 +2374,18 @@ class Obras extends MY_Controller
         }
 
         $result = $this->obras_model->salvarFuncao($dados);
+        $dbError = $this->db->error();
 
         if ($result) {
             echo json_encode(['success' => true, 'message' => 'Função salva com sucesso', 'id' => $result]);
         } else {
-            echo json_encode(['success' => false, 'message' => 'Erro ao salvar função']);
+            $msg = 'Erro ao salvar função';
+            if ($dbError && !empty($dbError['message'])) {
+                if (strpos($dbError['message'], 'Duplicate') !== false && strpos($dbError['message'], 'uk_nome') !== false) {
+                    $msg = 'Já existe uma função com este nome';
+                }
+            }
+            echo json_encode(['success' => false, 'message' => $msg]);
         }
     }
 
@@ -2464,7 +2471,14 @@ class Obras extends MY_Controller
         if ($result) {
             echo json_encode(['success' => true, 'message' => 'Tipo de obra salvo com sucesso', 'id' => $result]);
         } else {
-            $msg = ($dbError && !empty($dbError['message'])) ? 'Erro DB: ' . $dbError['message'] : 'Erro ao salvar tipo de obra';
+            $msg = 'Erro ao salvar tipo de obra';
+            if ($dbError && !empty($dbError['message'])) {
+                if (strpos($dbError['message'], 'Duplicate') !== false && strpos($dbError['message'], 'uk_nome') !== false) {
+                    $msg = 'Já existe um tipo de obra com este nome';
+                } else {
+                    $msg = 'Erro ao salvar tipo de obra';
+                }
+            }
             echo json_encode(['success' => false, 'message' => $msg]);
         }
     }
@@ -2549,7 +2563,12 @@ class Obras extends MY_Controller
         if ($result) {
             echo json_encode(['success' => true, 'message' => 'Status de obra salvo com sucesso', 'id' => $result]);
         } else {
-            $msg = ($dbError && !empty($dbError['message'])) ? 'Erro DB: ' . $dbError['message'] : 'Erro ao salvar status de obra';
+            $msg = 'Erro ao salvar status de obra';
+            if ($dbError && !empty($dbError['message'])) {
+                if (strpos($dbError['message'], 'Duplicate') !== false && strpos($dbError['message'], 'uk_nome') !== false) {
+                    $msg = 'Já existe um status de obra com este nome';
+                }
+            }
             echo json_encode(['success' => false, 'message' => $msg]);
         }
     }
@@ -2627,11 +2646,18 @@ class Obras extends MY_Controller
         }
 
         $result = $this->obras_model->salvarEspecialidade($dados);
+        $dbError = $this->db->error();
 
         if ($result) {
             echo json_encode(['success' => true, 'message' => 'Especialidade salva com sucesso', 'id' => $result]);
         } else {
-            echo json_encode(['success' => false, 'message' => 'Erro ao salvar especialidade']);
+            $msg = 'Erro ao salvar especialidade';
+            if ($dbError && !empty($dbError['message'])) {
+                if (strpos($dbError['message'], 'Duplicate') !== false && strpos($dbError['message'], 'uk_nome') !== false) {
+                    $msg = 'Já existe uma especialidade com este nome';
+                }
+            }
+            echo json_encode(['success' => false, 'message' => $msg]);
         }
     }
 
@@ -2724,7 +2750,14 @@ class Obras extends MY_Controller
         if ($result) {
             echo json_encode(['success' => true, 'message' => 'Tipo de atividade salvo com sucesso', 'id' => $result]);
         } else {
-            echo json_encode(['success' => false, 'message' => 'Erro ao salvar tipo de atividade']);
+            $dbError = $this->db->error();
+            $msg = 'Erro ao salvar tipo de atividade';
+            if ($dbError && !empty($dbError['message'])) {
+                if (strpos($dbError['message'], 'Duplicate') !== false) {
+                    $msg = 'Já existe um tipo de atividade com este nome';
+                }
+            }
+            echo json_encode(['success' => false, 'message' => $msg]);
         }
     }
 
@@ -2791,6 +2824,12 @@ class Obras extends MY_Controller
             $this->db->update('atividade_status', $dados);
             $result = $dados['id'];
         } else {
+            // Verificar duplicata
+            $existe = $this->db->where('nome', $dados['nome'])->where('ativo', 1)->count_all_results('atividade_status');
+            if ($existe > 0) {
+                echo json_encode(['success' => false, 'message' => 'Já existe um status de atividade com o nome "' . $dados['nome'] . '"']);
+                return;
+            }
             unset($dados['id']);
             $this->db->insert('atividade_status', $dados);
             $result = $this->db->insert_id();
@@ -2799,7 +2838,14 @@ class Obras extends MY_Controller
         if ($result) {
             echo json_encode(['success' => true, 'message' => 'Status de atividade salvo com sucesso', 'id' => $result]);
         } else {
-            echo json_encode(['success' => false, 'message' => 'Erro ao salvar status de atividade']);
+            $dbError = $this->db->error();
+            $msg = 'Erro ao salvar status de atividade';
+            if ($dbError && !empty($dbError['message'])) {
+                if (strpos($dbError['message'], 'Duplicate') !== false) {
+                    $msg = 'Já existe um status de atividade com este nome';
+                }
+            }
+            echo json_encode(['success' => false, 'message' => $msg]);
         }
     }
 
