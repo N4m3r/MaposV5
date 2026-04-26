@@ -2153,6 +2153,131 @@ INSERT IGNORE INTO `dre_contas` (`codigo`, `nome`, `tipo`, `categoria`, `ordem`,
 ('6.3.3', 'Despesas com Armazenagem', 'despesa', 'Despesas', 633, 1, NOW(), NOW()),
 ('6.3.4', 'Perdas e Quebras de Estoque', 'despesa', 'Despesas', 634, 1, NOW(), NOW());
 
+-- -----------------------------------------------------
+-- Tabelas de Configuracao do Sistema de Obras
+-- -----------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `obra_tipos` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(100) NOT NULL,
+  `descricao` TEXT,
+  `cor` VARCHAR(7) DEFAULT '#3498db',
+  `icone` VARCHAR(50) DEFAULT 'bx-building',
+  `ativo` TINYINT(1) DEFAULT 1,
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_obra_tipos_nome` (`nome`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE IF NOT EXISTS `obra_status` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(100) NOT NULL,
+  `descricao` TEXT,
+  `cor` VARCHAR(7) DEFAULT '#3498db',
+  `icone` VARCHAR(50) DEFAULT 'bx-flag',
+  `ordem` INT DEFAULT 1,
+  `finalizado` TINYINT(1) DEFAULT 0,
+  `ativo` TINYINT(1) DEFAULT 1,
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_obra_status_nome` (`nome`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE IF NOT EXISTS `obra_especialidades` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(100) NOT NULL,
+  `descricao` TEXT,
+  `cor` VARCHAR(7) DEFAULT '#3498db',
+  `icone` VARCHAR(50) DEFAULT 'bx-hard-hat',
+  `ativo` TINYINT(1) DEFAULT 1,
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_obra_especialidades_nome` (`nome`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE IF NOT EXISTS `obra_funcoes` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(100) NOT NULL,
+  `descricao` TEXT,
+  `nivel` VARCHAR(20) DEFAULT 'baixo',
+  `ativo` TINYINT(1) DEFAULT 1,
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_obra_funcoes_nome` (`nome`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE IF NOT EXISTS `atividade_status` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(100) NOT NULL,
+  `descricao` TEXT,
+  `cor` VARCHAR(7) DEFAULT '#3498db',
+  `icone` VARCHAR(50) DEFAULT 'bx-calendar',
+  `fluxo` VARCHAR(30) DEFAULT 'normal',
+  `ordem` INT DEFAULT 1,
+  `ativo` TINYINT(1) DEFAULT 1,
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_atividade_status_nome` (`nome`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE IF NOT EXISTS `atividades_tipos` (
+  `idTipo` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(50) NOT NULL,
+  `descricao` TEXT,
+  `categoria` VARCHAR(30) NOT NULL COMMENT 'rede, cftv, seguranca, eletrica, infra',
+  `cor` VARCHAR(7) DEFAULT '#007bff',
+  `icone` VARCHAR(30) DEFAULT 'bx-wrench',
+  `duracao_estimada` INT COMMENT 'duracao estimada em minutos',
+  `requer_material` TINYINT(1) DEFAULT 1,
+  `requer_foto` TINYINT(1) DEFAULT 0,
+  `ordem` INT DEFAULT 0,
+  `padrao` TINYINT(1) DEFAULT 0 COMMENT '1=sistema, 0=customizado',
+  `ativo` TINYINT(1) DEFAULT 1,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`idTipo`),
+  INDEX `idx_categoria` (`categoria`),
+  INDEX `idx_ativo` (`ativo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Dados iniciais - Configuracao de Obras
+-- -----------------------------------------------------
+
+INSERT IGNORE INTO `obra_tipos` (`nome`, `descricao`, `cor`, `icone`) VALUES
+('Reforma', 'Reformas e renovacoes', '#3498db', 'bx-brush'),
+('Construcao', 'Obras novas', '#27ae60', 'bx-building'),
+('Manutencao', 'Manutencoes corretivas', '#f39c12', 'bx-wrench'),
+('Instalacao', 'Instalacoes diversas', '#9b59b6', 'bx-plug');
+
+INSERT IGNORE INTO `obra_status` (`nome`, `descricao`, `cor`, `icone`, `ordem`, `finalizado`) VALUES
+('Prospeccao', 'Obra em fase inicial/orcamento', '#95a5a6', 'bx-search', 1, 0),
+('Em Andamento', 'Obra em execucao', '#3498db', 'bx-play-circle', 2, 0),
+('Concluida', 'Obra finalizada', '#27ae60', 'bx-check-circle', 3, 1);
+
+INSERT IGNORE INTO `obra_especialidades` (`nome`, `descricao`, `cor`, `icone`) VALUES
+('Eletrica', 'Instalacoes eletricas', '#f1c40f', 'bx-bolt-circle'),
+('Hidraulica', 'Instalacoes hidraulicas', '#3498db', 'bx-water'),
+('Acabamento', 'Pintura, revestimentos, pisos', '#e74c3c', 'bx-brush'),
+('Estrutura', 'Alvenaria, concreto, fundacao', '#95a5a6', 'bx-building');
+
+INSERT IGNORE INTO `obra_funcoes` (`nome`, `descricao`, `nivel`) VALUES
+('Engenheiro Responsavel', 'Responsavel tecnico pela obra', 'alto'),
+('Mestre de Obras', 'Coordenacao da equipe', 'medio'),
+('Auxiliar', 'Apoio nas atividades', 'baixo');
+
+INSERT IGNORE INTO `atividade_status` (`nome`, `descricao`, `cor`, `icone`, `fluxo`, `ordem`) VALUES
+('Agendada', 'Atividade agendada', '#95a5a6', 'bx-calendar', 'inicial', 1),
+('Iniciada', 'Atividade em execucao', '#3498db', 'bx-play-circle', 'normal', 2),
+('Pausada', 'Atividade pausada', '#f39c12', 'bx-pause-circle', 'pausa', 3),
+('Concluida', 'Atividade finalizada', '#27ae60', 'bx-check-circle', 'final', 4),
+('Cancelada', 'Atividade cancelada', '#e74c3c', 'bx-x-circle', 'final', 5);
+
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
