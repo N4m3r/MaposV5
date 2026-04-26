@@ -2138,6 +2138,7 @@ class Obras extends MY_Controller
         }
 
         // Emitente para cabeçalho
+        $this->data['status_obra'] = $this->obras_model->getStatusObra() ?? [];
         $this->data['emitente'] = $this->mapos_model->getEmitente();
 
         // Carregar view de impressão (sem layout)
