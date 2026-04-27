@@ -110,7 +110,7 @@ class WhatsAppService
     {
         $url = rtrim($this->config->evolution_url, '/') . '/instance/all';
         $headers = [
-            'Content-Type: application/json',
+            'Content-Type: application/json; charset=utf-8',
             'apikey: ' . $this->config->evolution_apikey
         ];
 
@@ -165,7 +165,7 @@ class WhatsAppService
         }
 
         $headers = [
-            'Content-Type: application/json',
+            'Content-Type: application/json; charset=utf-8',
             'apikey: ' . $apikey
         ];
 
@@ -208,7 +208,7 @@ class WhatsAppService
         ];
 
         $headers = [
-            'Content-Type: application/json',
+            'Content-Type: application/json; charset=utf-8',
             'Authorization: Bearer ' . $this->config->meta_access_token
         ];
 
@@ -245,7 +245,7 @@ class WhatsAppService
         ];
 
         $headers = [
-            'Content-Type: application/json',
+            'Content-Type: application/json; charset=utf-8',
             'Authorization: Bearer ' . $this->config->z_api_token
         ];
 
@@ -341,7 +341,7 @@ class WhatsAppService
         }
 
         $headers = [
-            'Content-Type: application/json',
+            'Content-Type: application/json; charset=utf-8',
             'apikey: ' . $apikey
         ];
 
@@ -398,7 +398,7 @@ class WhatsAppService
         }
 
         $headers = [
-            'Content-Type: application/json',
+            'Content-Type: application/json; charset=utf-8',
             'apikey: ' . $this->config->evolution_apikey
         ];
 
@@ -477,7 +477,7 @@ class WhatsAppService
 
         if ($method == 'POST') {
             curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data, JSON_UNESCAPED_UNICODE));
         } elseif ($method == 'DELETE') {
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
         }
