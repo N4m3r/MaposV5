@@ -255,11 +255,20 @@
                         </div>
 
                         <div class="form-group">
+                            <label for="evolution_version">Versão da API</label>
+                            <select name="evolution_version" id="evolution_version" class="form-control">
+                                <option value="v2" <?php echo ($config->evolution_version ?? 'v2') == 'v2' ? 'selected' : ''; ?>>Self-Hosted (v2)</option>
+                                <option value="go" <?php echo ($config->evolution_version ?? 'v2') == 'go' ? 'selected' : ''; ?>>Evolution Go (SaaS)</option>
+                            </select>
+                            <div class="help-text">Self-Hosted usa instância no URL. Evolution Go usa a API Key para identificar a instância.</div>
+                        </div>
+
+                        <div class="form-group">
                             <label for="evolution_instance">Nome da Instância</label>
                             <input type="text" name="evolution_instance" id="evolution_instance" class="form-control"
                                    value="<?php echo htmlspecialchars($config->evolution_instance); ?>"
                                    placeholder="mapos">
-                            <div class="help-text">Nome único para esta instância (ex: mapos)</div>
+                            <div class="help-text">Nome único para esta instância (ex: mapos). No Evolution Go, pode deixar como 'mapos'.</div>
                         </div>
                     </div>
 

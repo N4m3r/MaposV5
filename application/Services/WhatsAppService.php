@@ -108,7 +108,8 @@ class WhatsAppService
      */
     private function enviarEvolution($numero, $mensagem, $options = [])
     {
-        $url = rtrim($this->config->evolution_url, '/') . '/message/sendText/' . $this->config->evolution_instance;
+        $isGo = ($this->config->evolution_version ?? 'v2') === 'go';
+        $url = rtrim($this->config->evolution_url, '/') . '/message/sendText' . ($isGo ? '' : '/' . $this->config->evolution_instance);
 
         $payload = [
             'number' => $numero,
@@ -233,7 +234,8 @@ class WhatsAppService
      */
     private function verificarConexaoEvolution()
     {
-        $url = rtrim($this->config->evolution_url, '/') . '/instance/connectionState/' . $this->config->evolution_instance;
+        $isGo = ($this->config->evolution_version ?? 'v2') === 'go';
+        $url = rtrim($this->config->evolution_url, '/') . '/instance/connectionState' . ($isGo ? '' : '/' . $this->config->evolution_instance);
 
         $headers = [
             'apikey: ' . $this->config->evolution_apikey
@@ -277,7 +279,8 @@ class WhatsAppService
         $this->criarInstanciaEvolution();
 
         // Inicia a sessão para obter QR Code
-        $url = rtrim($this->config->evolution_url, '/') . '/instance/connect/' . $this->config->evolution_instance;
+        $isGo = ($this->config->evolution_version ?? 'v2') === 'go';
+        $url = rtrim($this->config->evolution_url, '/') . '/instance/connect' . ($isGo ? '' : '/' . $this->config->evolution_instance);
 
         $headers = [
             'Content-Type: application/json',
@@ -332,7 +335,8 @@ class WhatsAppService
      */
     private function desconectarEvolution()
     {
-        $url = rtrim($this->config->evolution_url, '/') . '/instance/logout/' . $this->config->evolution_instance;
+        $isGo = ($this->config->evolution_version ?? 'v2') === 'go';
+        $url = rtrim($this->config->evolution_url, '/') . '/instance/logout' . ($isGo ? '' : '/' . $this->config->evolution_instance);
 
         $headers = [
             'apikey: ' . $this->config->evolution_apikey

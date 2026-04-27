@@ -42,6 +42,7 @@ class NotificacoesConfig extends MY_Controller
                 'whatsapp_ativo' => $this->input->post('whatsapp_ativo') ? 1 : 0,
                 'evolution_url' => $this->input->post('evolution_url'),
                 'evolution_apikey' => $this->input->post('evolution_apikey'),
+                'evolution_version' => $this->input->post('evolution_version') ?: 'v2',
                 'evolution_instance' => $this->input->post('evolution_instance') ?: 'mapos',
                 'meta_phone_number_id' => $this->input->post('meta_phone_number_id'),
                 'meta_access_token' => $this->input->post('meta_access_token'),

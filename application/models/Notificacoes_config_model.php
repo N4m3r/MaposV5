@@ -125,6 +125,7 @@ class Notificacoes_config_model extends CI_Model
             'id' => 1,
             'whatsapp_provedor' => 'desativado',
             'whatsapp_ativo' => 0,
+            'evolution_version' => 'v2',
             'evolution_instance' => 'mapos',
             'evolution_estado' => 'desconectado',
             'notificacao_os_criada' => 1,

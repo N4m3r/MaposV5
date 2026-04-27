@@ -86,6 +86,7 @@ if (!function_exists('_criar_tabelas_notificacoes_fallback')) {
             `evolution_url` VARCHAR(255) DEFAULT NULL,
             `evolution_apikey` VARCHAR(255) DEFAULT NULL,
             `evolution_instance` VARCHAR(100) DEFAULT 'mapos',
+            `evolution_version` ENUM('v1','v2','go') DEFAULT 'v2',
             `evolution_estado` VARCHAR(50) DEFAULT 'desconectado',
             `meta_phone_number_id` VARCHAR(50) DEFAULT NULL,
             `meta_access_token` TEXT DEFAULT NULL,
