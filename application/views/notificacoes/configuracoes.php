@@ -151,6 +151,60 @@
         padding-top: 20px;
         margin-top: 20px;
     }
+    .evo-type-selector {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 15px;
+    }
+    .evo-type-card {
+        flex: 1;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        padding: 15px;
+        cursor: pointer;
+        text-align: center;
+        transition: all 0.2s;
+        background: #fff;
+    }
+    .evo-type-card:hover {
+        border-color: #007bff;
+    }
+    .evo-type-card.active {
+        border-color: #007bff;
+        background: #f0f7ff;
+    }
+    .evo-type-card i {
+        font-size: 28px;
+        display: block;
+        margin-bottom: 8px;
+        color: #007bff;
+    }
+    .evo-type-card .title {
+        font-weight: 600;
+        font-size: 14px;
+        color: #333;
+    }
+    .evo-type-card .desc {
+        font-size: 12px;
+        color: #666;
+        margin-top: 4px;
+    }
+    .evo-badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+        margin-left: 6px;
+    }
+    .evo-badge.saas {
+        background: #d4edda;
+        color: #155724;
+    }
+    .evo-badge.self {
+        background: #e2e3e5;
+        color: #383d41;
+    }
 </style>
 
 <div class="row-fluid" style="margin-top:0">
@@ -182,7 +236,7 @@
                             <label for="whatsapp_provedor">Provedor de WhatsApp</label>
                             <select name="whatsapp_provedor" id="whatsapp_provedor" class="form-control" onchange="toggleProvider()">
                                 <option value="desativado" <?php echo $config->whatsapp_provedor == 'desativado' ? 'selected' : ''; ?>>Desativado</option>
-                                <option value="evolution" <?php echo $config->whatsapp_provedor == 'evolution' ? 'selected' : ''; ?>>Evolution API (Recomendado)</option>
+                                <option value="evolution" <?php echo $config->whatsapp_provedor == 'evolution' ? 'selected' : ''; ?>>Evolution API / Evolution Go</option>
                                 <option value="meta_api" <?php echo $config->whatsapp_provedor == 'meta_api' ? 'selected' : ''; ?>>Meta API (Oficial)</option>
                                 <option value="z_api" <?php echo $config->whatsapp_provedor == 'z_api' ? 'selected' : ''; ?>>Z-API</option>
                             </select>
@@ -238,12 +292,39 @@
                     <div id="evolution-section" class="config-card provider-section <?php echo $config->whatsapp_provedor == 'evolution' ? 'active' : ''; ?>">
                         <h4><i class="bx bx-server"></i> Configurações Evolution API</h4>
 
+                        <!-- Seletor de Tipo Evolution -->
+                        <div class="form-group">
+                            <label>Tipo de Conexão</label>
+                            <input type="hidden" name="evolution_version" id="evolution_version" value="<?php echo $config->evolution_version ?? 'v2'; ?>">
+                            <div class="evo-type-selector">
+                                <div class="evo-type-card <?php echo ($config->evolution_version ?? 'v2') == 'v2' ? 'active' : ''; ?>" onclick="selecionarEvoType('v2')">
+                                    <i class="bx bx-server"></i>
+                                    <span class="title">Self-Hosted <span class="evo-badge self">v2</span></span>
+                                    <span class="desc">Servidor próprio ou VPS</span>
+                                </div>
+                                <div class="evo-type-card <?php echo ($config->evolution_version ?? 'v2') == 'go' ? 'active' : ''; ?>" onclick="selecionarEvoType('go')">
+                                    <i class="bx bx-cloud"></i>
+                                    <span class="title">Evolution Go <span class="evo-badge saas">SaaS</span></span>
+                                    <span class="desc">evo.go / hospedado</span>
+                                </div>
+                            </div>
+                            <div class="help-text" id="evo-type-help">
+                                <?php echo ($config->evolution_version ?? 'v2') == 'go'
+                                    ? 'Evolution Go: a instância é identificada automaticamente pela API Key. Não é necessário informar nome da instância no URL.'
+                                    : 'Self-Hosted: você precisa informar o nome da instância que será usado na URL da API.'; ?>
+                            </div>
+                        </div>
+
                         <div class="form-group">
                             <label for="evolution_url">URL do Servidor</label>
                             <input type="url" name="evolution_url" id="evolution_url" class="form-control"
                                    value="<?php echo htmlspecialchars($config->evolution_url); ?>"
-                                   placeholder="http://localhost:8080">
-                            <div class="help-text">Endereço do servidor Evolution API (ex: http://seu-servidor:8080)</div>
+                                   placeholder="https://evo.seudominio.com">
+                            <div class="help-text" id="evo-url-help">
+                                <?php echo ($config->evolution_version ?? 'v2') == 'go'
+                                    ? 'Endereço do seu painel Evolution Go (ex: https://evo.jj-ferreiras.com.br)'
+                                    : 'Endereço do servidor Evolution API (ex: http://localhost:8080)'; ?>
+                            </div>
                         </div>
 
                         <div class="form-group">
@@ -251,24 +332,15 @@
                             <input type="text" name="evolution_apikey" id="evolution_apikey" class="form-control"
                                    value="<?php echo htmlspecialchars($config->evolution_apikey); ?>"
                                    placeholder="Sua API Key">
-                            <div class="help-text">Chave de API configurada no servidor Evolution</div>
+                            <div class="help-text">Chave de API gerada no painel do Evolution</div>
                         </div>
 
-                        <div class="form-group">
-                            <label for="evolution_version">Versão da API</label>
-                            <select name="evolution_version" id="evolution_version" class="form-control">
-                                <option value="v2" <?php echo ($config->evolution_version ?? 'v2') == 'v2' ? 'selected' : ''; ?>>Self-Hosted (v2)</option>
-                                <option value="go" <?php echo ($config->evolution_version ?? 'v2') == 'go' ? 'selected' : ''; ?>>Evolution Go (SaaS)</option>
-                            </select>
-                            <div class="help-text">Self-Hosted usa instância no URL. Evolution Go usa a API Key para identificar a instância.</div>
-                        </div>
-
-                        <div class="form-group">
+                        <div class="form-group" id="evo-instance-group" style="<?php echo ($config->evolution_version ?? 'v2') == 'go' ? 'display:none;' : ''; ?>">
                             <label for="evolution_instance">Nome da Instância</label>
                             <input type="text" name="evolution_instance" id="evolution_instance" class="form-control"
                                    value="<?php echo htmlspecialchars($config->evolution_instance); ?>"
                                    placeholder="mapos">
-                            <div class="help-text">Nome único para esta instância (ex: mapos). No Evolution Go, pode deixar como 'mapos'.</div>
+                            <div class="help-text">Nome único para esta instância (ex: mapos)</div>
                         </div>
                     </div>
 
@@ -438,6 +510,32 @@ function toggleProvider() {
 
     // Mostra/esconde status
     document.getElementById('status-section').style.display = provedor !== 'desativado' ? 'block' : 'none';
+}
+
+function selecionarEvoType(tipo) {
+    document.getElementById('evolution_version').value = tipo;
+
+    // Atualiza cards
+    document.querySelectorAll('.evo-type-card').forEach(card => {
+        card.classList.remove('active');
+    });
+    event.currentTarget.classList.add('active');
+
+    // Mostra/esconde campo instância
+    const instanceGroup = document.getElementById('evo-instance-group');
+    if (tipo === 'go') {
+        instanceGroup.style.display = 'none';
+        document.getElementById('evo-type-help').textContent =
+            'Evolution Go: a instância é identificada automaticamente pela API Key. Não é necessário informar nome da instância no URL.';
+        document.getElementById('evo-url-help').textContent =
+            'Endereço do seu painel Evolution Go (ex: https://evo.jj-ferreiras.com.br)';
+    } else {
+        instanceGroup.style.display = 'block';
+        document.getElementById('evo-type-help').textContent =
+            'Self-Hosted: você precisa informar o nome da instância que será usado na URL da API.';
+        document.getElementById('evo-url-help').textContent =
+            'Endereço do servidor Evolution API (ex: http://localhost:8080)';
+    }
 }
 
 function verificarStatus() {
