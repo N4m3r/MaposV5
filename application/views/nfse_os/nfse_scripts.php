@@ -12,7 +12,7 @@ var wizardData = {
     gerarBoleto: true,
     incluirProdutos: false,
     valorApenasServicos: <?= floatval($totalServico) ?>,
-    valorTotalComProdutos: <?= floatval($totalServico + $totalProdutos) ?>,
+    valorTotalComProdutos: <?= floatval($result->valorTotal ?? ($totalServico + $totalProdutos)) ?>,
     regimeTributario: '<?= $regimeTributario ?? "simples_nacional" ?>',
     retemIss: false,
     retemIrrf: false,

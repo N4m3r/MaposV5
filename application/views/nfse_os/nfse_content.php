@@ -20,8 +20,8 @@ $produtos = $produtos ?? [];
 
 $valorTotalOS = floatval($totalServico) + floatval($totalProdutos);
 $descontoTomador = floatval($result->valor_desconto ?? 0);
-// Padrão: NFSe com valor de serviços apenas
-$valorServicosNFSe = $descontoTomador > 0 ? $descontoTomador : floatval($totalServico);
+// Valor a cobrar: total da OS (serviços + produtos), ou desconto do tomador se houver
+$valorServicosNFSe = $descontoTomador > 0 ? $descontoTomador : floatval($result->valorTotal ?? $valorTotalOS);
 $ambiente = $ambiente ?? 'homologacao';
 $regimeTributario = $regimeTributario ?? ($tributacao['regime'] ?? 'simples_nacional');
 $isSimplesNacional = ($regimeTributario === 'simples_nacional');

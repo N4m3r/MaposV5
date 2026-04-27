@@ -929,6 +929,31 @@
 
 <?php $this->load->view('nfse_os/nfse_scripts'); ?>
 
+<!-- Correção para sub-abas de Notas Fiscais -->
+<script>
+$(document).ready(function() {
+    // Inicializar sub-abas de Notas Fiscais corretamente
+    $('#nf-sub-tabs a[data-toggle="tab"]').on('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var target = $(this).attr('href');
+        // Remover active de todas as sub-abas e conteúdos
+        $('#nf-sub-tabs li').removeClass('active');
+        $('#tab-notas-fiscais .tab-content > .tab-pane').removeClass('active');
+        // Ativar a aba clicada
+        $(this).parent().addClass('active');
+        $(target).addClass('active');
+    });
+
+    // Ao clicar na aba principal "Notas Fiscais", garantir que a primeira sub-aba esteja ativa
+    $('a[href="#tab-notas-fiscais"]').on('shown', function(e) {
+        if (!$('#nf-sub-tabs li.active').length) {
+            $('#nf-sub-tabs a:first').tab('show');
+        }
+    });
+});
+</script>
+
 <?= $modalGerarPagamento ?>
 
 <!-- Modal visualizar anexo -->
