@@ -150,15 +150,17 @@ class Nfse_os extends MY_Controller
         $config = [
             'data_vencimento' => $this->input->post('data_vencimento') ?? date('Y-m-d', strtotime('+5 days')),
             'instrucoes' => $this->input->post('instrucoes') ?? 'Pagável em qualquer banco até o vencimento.',
-            'gateway' => $this->input->post('gateway') ?? null
+            'gateway' => $this->input->post('gateway') ?? null,
+            'valor_integral' => $this->input->post('valor_integral') ? 1 : 0
         ];
 
         // Gerar boleto
         $resultado = $this->boleto_os_model->gerar($os_id, $nfse_id, $config);
 
         if (isset($resultado['success'])) {
-            // Se tem gateway configurado, processar
-            if ($config['gateway']) {
+            // Se tem gateway configurado, processar (whitelist para evitar path traversal)
+            $gatewaysPermitidos = ['asaas', 'mercado_pago', 'pagseguro', 'gerencianet'];
+            if ($config['gateway'] && in_array($config['gateway'], $gatewaysPermitidos)) {
                 $this->load->library("Gateways/{$config['gateway']}", null, 'PaymentGateway');
                 try {
                     $gateway_result = $this->PaymentGateway->gerarBoletoOS(
@@ -201,6 +203,12 @@ class Nfse_os extends MY_Controller
     {
         header('Content-Type: application/json; charset=utf-8');
 
+        // Verificar permissão
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vNFSe')) {
+            echo json_encode(['success' => false, 'message' => 'Sem permissão.']);
+            return;
+        }
+
         try {
             $valor = floatval($this->input->post('valor') ?: $this->input->get('valor'));
             if ($valor <= 0) {
@@ -227,7 +235,7 @@ class Nfse_os extends MY_Controller
             }
 
             // Detectar regime tributário
-            $regime = $this->impostos_model->getConfiguracaoTributaria();
+            $regime = $this->impostos_model->getConfiguracaoTributacao();
             $regime_tributario = $regime['regime'] ?? 'simples_nacional';
 
             // Calcular DAS se Simples Nacional
@@ -249,10 +257,17 @@ class Nfse_os extends MY_Controller
                 $retencoes = $this->impostos_model->calcularRetencoes($valor, $retem);
             }
 
+            // Valor líquido da NFS-e: valor bruto (impostos do prestador não reduzem)
+            // Para Simples Nacional, o DAS é pago mensalmente pelo prestador
+            $valor_liquido_nfse = $valor;
+            if (!empty($retencoes['valor_total_retencao'])) {
+                $valor_liquido_nfse -= floatval($retencoes['valor_total_retencao']);
+            }
+
             echo json_encode([
                 'success' => true,
                 'valor_bruto' => $valor,
-                'valor_liquido' => $valor - ($calculo['valor_total_impostos'] ?? 0),
+                'valor_liquido' => $valor_liquido_nfse,
                 'impostos' => $calculo,
                 'regime_tributario' => $regime_tributario,
                 'valor_das' => $valor_das,
@@ -290,9 +305,9 @@ class Nfse_os extends MY_Controller
         $valor_deducoes = floatval($this->input->get('valor_deducoes')) ?: 0;
         $descricao_servico = $this->input->get('descricao_servico') ?: '';
 
-        // Calcular impostos
+        // Calcular impostos (para exibição apenas — não reduzem valor da NFS-e)
         $calculo = $this->impostos_model->calcularImpostos($valor_servicos);
-        $valor_liquido = $valor_servicos - $calculo['valor_total_impostos'] - $valor_deducoes;
+        $valor_liquido = $valor_servicos - $valor_deducoes;
 
         // Emitente
         $this->load->model('mapos_model');
@@ -414,6 +429,56 @@ class Nfse_os extends MY_Controller
         $this->load->helper('mpdf');
         $html = $this->load->view('nfse_os/preview_nfse', $data, true);
         pdf_create($html, 'NFSe_' . ($nfse->numero_nfse ?? $nfse_id) . '_OS_' . $nfse->os_id, true);
+    }
+
+    /**
+     * Pré-visualização do Boleto em PDF (folha A4)
+     * Gera um documento com layout de boleto impresso
+     */
+    public function preview_boleto($boleto_id = null)
+    {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vNFSe')) {
+            $this->session->set_flashdata('error', 'Sem permissão.');
+            redirect(base_url());
+        }
+
+        if (!$boleto_id) {
+            redirect('nfse_os');
+        }
+
+        $boleto = $this->boleto_os_model->getById($boleto_id);
+        if (!$boleto) {
+            $this->session->set_flashdata('error', 'Boleto não encontrado.');
+            redirect('nfse_os');
+        }
+
+        $os = $this->os_model->getById($boleto->os_id);
+        if (!$os) {
+            $this->session->set_flashdata('error', 'OS não encontrada.');
+            redirect('nfse_os');
+        }
+
+        // Emitente (cedente)
+        $this->load->model('mapos_model');
+        $emitente = $this->mapos_model->getEmitente();
+
+        // Dados da NFSe vinculada
+        $nfse = null;
+        if ($boleto->nfse_id) {
+            $nfse = $this->nfse_emitida_model->getById($boleto->nfse_id);
+        }
+
+        $data = [
+            'boleto' => $boleto,
+            'os' => $os,
+            'emitente' => $emitente,
+            'nfse' => $nfse,
+            'is_preview' => true,
+        ];
+
+        $this->load->helper('mpdf');
+        $html = $this->load->view('nfse_os/preview_boleto', $data, true);
+        pdf_create($html, 'Boleto_OS_' . $boleto->os_id . '_' . ($boleto->nosso_numero ?? $boleto_id), true);
     }
 
     /**
@@ -575,6 +640,11 @@ class Nfse_os extends MY_Controller
             show_404();
         }
 
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vNFSe')) {
+            echo json_encode(['success' => false, 'message' => 'Sem permissão.']);
+            return;
+        }
+
         $nfse = $this->nfse_emitida_model->getByOsId($os_id);
         $boleto = $this->boleto_os_model->getAtivoByOsId($os_id);
         $historico_nfse = $this->nfse_emitida_model->getAllByOsId($os_id);
@@ -608,13 +678,19 @@ class Nfse_os extends MY_Controller
 
         $os = $this->os_model->getById($boleto->os_id);
 
+        if (empty($os->email) || !filter_var($os->email, FILTER_VALIDATE_EMAIL)) {
+            $this->session->set_flashdata('error', 'Cliente não possui e-mail válido cadastrado.');
+            redirect('os/visualizar/' . $boleto->os_id);
+        }
+
         // Enviar email
         $this->load->library('email');
         $this->email->from($this->config->item('email_smtp_user'), 'Sistema MAP-OS');
         $this->email->to($os->email);
         $this->email->subject('Boleto OS #' . $boleto->os_id);
 
-        $mensagem = "Olá {$os->nomeCliente},\n\n";
+        $nomeCliente = htmlspecialchars($os->nomeCliente ?? 'Cliente', ENT_QUOTES, 'UTF-8');
+        $mensagem = "Olá {$nomeCliente},\n\n";
         $mensagem .= "Segue o boleto referente à OS #{$boleto->os_id}.\n\n";
         $mensagem .= "Valor: R$ " . number_format($boleto->valor_liquido, 2, ',', '.') . "\n";
         $mensagem .= "Vencimento: " . date('d/m/Y', strtotime($boleto->data_vencimento)) . "\n";
@@ -754,7 +830,7 @@ class Nfse_os extends MY_Controller
                 'valor_irrf' => $calculo['irpj'] ?? 0,
                 'valor_csll' => $calculo['csll'] ?? 0,
                 'valor_inss' => $calculo['inss'] ?? 0,
-                'valor_liquido' => $valorServicos - ($calculo['valor_total_impostos'] ?? 0) - $valorDeducoes,
+                'valor_liquido' => $valorServicos - $valorDeducoes,
                 'iss_retido' => $this->input->post('retem_iss') ? true : false,
                 'pis_retido' => $this->input->post('retem_pis') ? true : false,
                 'cofins_retido' => $this->input->post('retem_cofins') ? true : false,
@@ -829,6 +905,16 @@ class Nfse_os extends MY_Controller
 
             if ($resultado['success']) {
                 // Salvar NFS-e no banco
+                // Calcular valores de retenção para salvar no banco
+                $retencoesPost = [
+                    'iss' => $this->input->post('retem_iss') ? true : false,
+                    'irrf' => $this->input->post('retem_irrf') ? true : false,
+                    'pis' => $this->input->post('retem_pis') ? true : false,
+                    'cofins' => $this->input->post('retem_cofins') ? true : false,
+                    'csll' => $this->input->post('retem_csll') ? true : false,
+                ];
+                $retencoesCalculadas = $this->impostos_model->calcularRetencoes($valorServicos, $retencoesPost);
+
                 $dadosNfse = [
                     'valor_servicos' => $valorServicos,
                     'valor_deducoes' => $valorDeducoes,
@@ -841,6 +927,12 @@ class Nfse_os extends MY_Controller
                     'retem_pis' => $servico['pis_retido'] ? 1 : 0,
                     'retem_cofins' => $servico['cofins_retido'] ? 1 : 0,
                     'retem_csll' => $servico['csll_retido'] ? 1 : 0,
+                    'valor_retencao_iss' => $retencoesCalculadas['valor_retencao_iss'] ?? 0,
+                    'valor_retencao_irrf' => $retencoesCalculadas['valor_retencao_irrf'] ?? 0,
+                    'valor_retencao_pis' => $retencoesCalculadas['valor_retencao_pis'] ?? 0,
+                    'valor_retencao_cofins' => $retencoesCalculadas['valor_retencao_cofins'] ?? 0,
+                    'valor_retencao_csll' => $retencoesCalculadas['valor_retencao_csll'] ?? 0,
+                    'valor_total_retencao' => $retencoesCalculadas['valor_total_retencao'] ?? 0,
                     'ambiente' => $pemPaths['ambiente'] ?? 'homologacao',
                 ];
 
@@ -1003,6 +1095,12 @@ class Nfse_os extends MY_Controller
     {
         header('Content-Type: application/json; charset=utf-8');
 
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vNFSe')) {
+            echo json_encode(['success' => false, 'message' => 'Sem permissão.']);
+            return;
+        }
+
+        $nfse_id = intval($nfse_id);
         if (!$nfse_id) {
             echo json_encode(['success' => false, 'message' => 'ID da NFS-e não informado.']);
             return;

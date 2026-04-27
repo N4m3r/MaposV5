@@ -30,20 +30,39 @@ class Boleto_os_model extends CI_Model
             return ['error' => 'OS não encontrada'];
         }
 
-        // Se tem NFSe vinculada, usar valor líquido
+        // Se tem NFSe vinculada, usar valor da NFSe
         $valor_original = $os->valorTotal ?? 0;
-        $valor_desconto_impostos = 0;
+        $valor_retencoes = 0;
+        $tem_retencao_tomador = false;
 
         if ($nfse_id) {
             $this->load->model('nfse_emitida_model');
             $nfse = $this->nfse_emitida_model->getById($nfse_id);
             if ($nfse) {
-                $valor_desconto_impostos = $nfse->valor_total_impostos;
-                $valor_original = $nfse->valor_servicos;
+                $valor_original = floatval($nfse->valor_servicos);
+                $valor_retencoes = floatval($nfse->valor_total_retencao ?? 0);
+                $tem_retencao_tomador = $valor_retencoes > 0;
             }
         }
 
-        $valor_liquido = $valor_original - $valor_desconto_impostos;
+        // Definir se o boleto vai com valor integral
+        // Padrão: boleto sempre com valor integral (valor dos serviços)
+        // Com retenção: usuário pode escolher valor líquido (integral - retenções)
+        $valor_integral = true;
+        if ($tem_retencao_tomador && !empty($config['valor_integral'])) {
+            $valor_integral = true;
+        } elseif ($tem_retencao_tomador) {
+            // Quando há retenção e não explicitou valor_integral, usar integral por padrão
+            $valor_integral = true;
+        } elseif (!$tem_retencao_tomador && isset($config['valor_integral']) && !$config['valor_integral']) {
+            $valor_integral = false;
+        }
+
+        if ($valor_integral) {
+            $valor_liquido = $valor_original;
+        } else {
+            $valor_liquido = $valor_original - $valor_retencoes;
+        }
 
         // Configurar data de vencimento
         $data_vencimento = $config['data_vencimento'] ?? date('Y-m-d', strtotime('+5 days'));
@@ -55,8 +74,9 @@ class Boleto_os_model extends CI_Model
             'data_emissao' => date('Y-m-d'),
             'data_vencimento' => $data_vencimento,
             'valor_original' => $valor_original,
-            'valor_desconto_impostos' => $valor_desconto_impostos,
+            'valor_desconto_impostos' => 0,
             'valor_liquido' => $valor_liquido,
+            'valor_integral' => $valor_integral ? 1 : 0,
             'status' => 'Pendente',
             'sacado_nome' => $os->nomeCliente,
             'sacado_documento' => $os->documento ?? '',
@@ -70,10 +90,27 @@ class Boleto_os_model extends CI_Model
         if ($this->db->insert('os_boleto_emitido', $boleto_data)) {
             $boleto_id = $this->db->insert_id();
 
-            // Se tem NFSe, vincular boleto
-            if ($nfse_id) {
+            // Se tem NFSe, vincular boleto e registrar retenção de impostos no DRE
+            if ($nfse_id && $nfse) {
                 $this->load->model('nfse_emitida_model');
                 $this->nfse_emitida_model->vincularBoleto($nfse_id, $boleto_id);
+
+                // Registrar retenção de impostos para DRE (se houver retenções pelo tomador)
+                if ($valor_retencoes > 0) {
+                    $this->load->model('impostos_model');
+                    $retencao_id = $this->impostos_model->reterImpostos([
+                        'os_id'         => $os_id,
+                        'cliente_id'    => $os->clientes_id ?? 0,
+                        'valor_bruto'   => $valor_original,
+                        'data_competencia' => $nfse->competencia ?? date('Y-m-01'),
+                        'nota_fiscal'   => $nfse->numero_nfse,
+                        'observacao'    => 'Retenção via NFS-e #' . ($nfse->numero_nfse ?? 'N/A') . ' - Boleto OS #' . $os_id,
+                    ]);
+
+                    if ($retencao_id) {
+                        log_info('Retenção de impostos registrada no DRE para boleto OS #' . $os_id . ' (NFSe #' . ($nfse->numero_nfse ?? 'N/A') . ')');
+                    }
+                }
             }
 
             // Atualizar status da OS
@@ -89,7 +126,7 @@ class Boleto_os_model extends CI_Model
                 'success' => true,
                 'boleto_id' => $boleto_id,
                 'valor_original' => $valor_original,
-                'valor_desconto_impostos' => $valor_desconto_impostos,
+                'valor_desconto_impostos' => 0,
                 'valor_liquido' => $valor_liquido,
                 'message' => 'Boleto gerado com sucesso. Valor líquido: R$ ' . number_format($valor_liquido, 2, ',', '.')
             ];
@@ -185,18 +222,28 @@ class Boleto_os_model extends CI_Model
      */
     public function cancelar($boleto_id, $motivo = '')
     {
+        $boleto = $this->getById($boleto_id);
+        if (!$boleto) {
+            return ['error' => 'Boleto não encontrado'];
+        }
+
         $this->db->where('id', $boleto_id);
         if ($this->db->update('os_boleto_emitido', [
             'status' => 'Cancelado',
             'updated_at' => date('Y-m-d H:i:s')
         ])) {
             // Atualizar status da OS
-            $boleto = $this->getById($boleto_id);
             $this->db->where('idOs', $boleto->os_id);
             $this->db->update('os', [
                 'boleto_status' => 'Cancelado',
                 'data_vencimento_boleto' => null
             ]);
+
+            // Estornar retenção de impostos no DRE (se existir)
+            if ($boleto->os_id) {
+                $this->load->model('impostos_model');
+                $this->impostos_model->estornarRetencao(['os_id' => $boleto->os_id]);
+            }
 
             return ['success' => true];
         }

@@ -73,6 +73,16 @@ class Certificado extends MY_Controller
             // Upload do arquivo se for A1
             $arquivo = null;
             if ($this->input->post('tipo') == 'A1' && isset($_FILES['certificado']) && $_FILES['certificado']['tmp_name']) {
+                $ext = strtolower(pathinfo($_FILES['certificado']['name'], PATHINFO_EXTENSION));
+                $extPermitidas = ['pfx', 'p12'];
+                if (!in_array($ext, $extPermitidas)) {
+                    $this->session->set_flashdata('error', 'O certificado deve estar no formato .pfx ou .p12.');
+                    redirect('certificado/configurar');
+                }
+                if ($_FILES['certificado']['size'] > 2 * 1024 * 1024) {
+                    $this->session->set_flashdata('error', 'O certificado não pode ultrapassar 2MB.');
+                    redirect('certificado/configurar');
+                }
                 $arquivo = $_FILES['certificado'];
             }
 
@@ -273,7 +283,16 @@ class Certificado extends MY_Controller
         if ($this->input->post()) {
             // Processar upload de XML
             if (isset($_FILES['xml_nfse']) && $_FILES['xml_nfse']['tmp_name']) {
-                $xml = simplexml_load_file($_FILES['xml_nfse']['tmp_name']);
+                // Validar extensão e MIME type
+                $ext = strtolower(pathinfo($_FILES['xml_nfse']['name'], PATHINFO_EXTENSION));
+                if ($ext !== 'xml') {
+                    $this->session->set_flashdata('error', 'Arquivo deve ser XML.');
+                    redirect('certificado/importar_nfse');
+                }
+
+                // Proteger contra XXE
+                libxml_disable_entity_loader(true);
+                $xml = simplexml_load_file($_FILES['xml_nfse']['tmp_name'], 'SimpleXMLElement', LIBXML_NONET);
 
                 if ($xml) {
                     $dados = [
@@ -326,6 +345,12 @@ class Certificado extends MY_Controller
             show_404();
         }
 
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vCertificado')) {
+            header('Content-Type: application/json');
+            echo json_encode(['error' => 'Sem permissão.']);
+            return;
+        }
+
         $acao = $this->input->get('acao');
         $cnpj = $this->input->get('cnpj');
 
@@ -356,6 +381,12 @@ class Certificado extends MY_Controller
             show_404();
         }
 
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'eCertificado')) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'error' => 'Sem permissão.']);
+            return;
+        }
+
         $nfse_id = $this->input->post('nfse_id');
         $os_id = $this->input->post('os_id');
 
@@ -381,6 +412,12 @@ class Certificado extends MY_Controller
     {
         if (!$this->input->is_ajax_request()) {
             show_404();
+        }
+
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vCertificado')) {
+            header('Content-Type: application/json');
+            echo json_encode(['nfse' => [], 'error' => 'Sem permissão.']);
+            return;
         }
 
         $this->db->where('os_id IS NULL');

@@ -4,8 +4,14 @@ if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
 
+require_once APPPATH . 'libraries/Webhooks/WebhookManager.php';
+
+use Libraries\Webhooks\WebhookManager;
+
 class Vendas extends MY_Controller
 {
+    private WebhookManager $webhookManager;
+
     public function __construct()
     {
         parent::__construct();
@@ -13,6 +19,7 @@ class Vendas extends MY_Controller
         $this->load->helper('form');
         $this->load->model('vendas_model');
         $this->data['menuVendas'] = 'Vendas';
+        $this->webhookManager = new WebhookManager();
     }
 
     public function index()
@@ -108,6 +115,16 @@ class Vendas extends MY_Controller
             if (is_numeric($id)) {
                 $this->session->set_flashdata('success', 'Venda iniciada com sucesso, adicione os produtos.');
                 log_info('Adicionou uma venda. ID: ' . $id);
+
+                // Gatilho webhook: venda criada
+                $this->webhookManager->trigger('venda.created', [
+                    'id' => $id,
+                    'cliente_id' => $data['clientes_id'],
+                    'usuario_id' => $data['usuarios_id'],
+                    'status' => $data['status'],
+                    'dataVenda' => $data['dataVenda'],
+                ]);
+
                 redirect(site_url('vendas/editar/') . $id);
             } else {
                 $this->data['custom_error'] = '<div class="form_error"><p>Ocorreu um erro.</p></div>';
@@ -166,6 +183,30 @@ class Vendas extends MY_Controller
             if ($this->vendas_model->edit('vendas', $data, 'idVendas', $this->input->post('idVendas')) == true) {
                 $this->session->set_flashdata('success', 'Venda editada com sucesso!');
                 log_info('Alterou uma venda. ID: ' . $this->input->post('idVendas'));
+
+                $idVenda = $this->input->post('idVendas');
+                $statusVenda = strtolower($data['status']);
+
+                // Gatilho webhook: venda atualizada
+                $this->webhookManager->trigger('venda.updated', [
+                    'id' => $idVenda,
+                    'cliente_id' => $data['clientes_id'],
+                    'usuario_id' => $data['usuarios_id'],
+                    'status' => $data['status'],
+                    'dataVenda' => $data['dataVenda'],
+                ]);
+
+                // Gatilho webhook: venda paga
+                if (in_array($statusVenda, ['pago', 'faturado', 'paga'])) {
+                    $this->webhookManager->trigger('venda.paid', [
+                        'id' => $idVenda,
+                        'cliente_id' => $data['clientes_id'],
+                        'usuario_id' => $data['usuarios_id'],
+                        'status' => $data['status'],
+                        'dataVenda' => $data['dataVenda'],
+                    ]);
+                }
+
                 redirect(site_url('vendas/editar/') . $this->input->post('idVendas'));
             } else {
                 $this->data['custom_error'] = '<div class="form_error"><p>Ocorreu um erro</p></div>';
@@ -617,6 +658,10 @@ class Vendas extends MY_Controller
                 } else {
                     $this->session->set_flashdata('success', 'Venda faturada com sucesso!');
                     $json = ['result' => true];
+
+                    // Gatilho WhatsApp: venda realizada
+                    $this->load->helper('notificacoes');
+                    notificar_venda_realizada($venda_id, $vendas->clientes_id);
                 }
             } else {
                 $this->db->trans_rollback();

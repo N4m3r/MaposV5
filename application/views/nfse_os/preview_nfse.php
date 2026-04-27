@@ -331,7 +331,7 @@ if ($emitente && !empty($emitente->url_logo)) {
             <?php if (!empty($logoPath)): ?>
                 <img src="<?= $logoPath ?>" alt="<?= htmlspecialchars($emitente->nome ?? '') ?>">
             <?php elseif ($emitente && !empty($emitente->url_logo)): ?>
-                <img src="<?= $emitente->url_logo ?>" alt="<?= htmlspecialchars($emitente->nome ?? '') ?>">
+                <img src="<?= htmlspecialchars($emitente->url_logo, ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($emitente->nome ?? '') ?>">
             <?php endif; ?>
         </div>
 
@@ -468,7 +468,7 @@ if ($emitente && !empty($emitente->url_logo)) {
         <div class="section-title pix-section">PAGAMENTO VIA PIX</div>
         <div class="pix-area">
             <div class="pix-qr">
-                <img src="<?= $qrCodePix ?>" alt="QR Code PIX">
+                <img src="<?= htmlspecialchars($qrCodePix, ENT_QUOTES, 'UTF-8') ?>" alt="QR Code PIX">
             </div>
             <div class="pix-info">
                 <p style="font-size: 12px; font-weight: bold; color: #333;">

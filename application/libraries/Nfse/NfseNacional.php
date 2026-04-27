@@ -274,16 +274,10 @@ class NfseNacional
         curl_setopt($ch, CURLOPT_SSLKEY, $this->keyPemPath);
 
         // CA chain para verificação do servidor
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
         if (file_exists($this->caPath)) {
             curl_setopt($ch, CURLOPT_CAINFO, $this->caPath);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
-        } else {
-            // Em homologação, pode ser necessário desabilitar verificação
-            if ($this->ambiente === 'homologacao') {
-                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-                curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-                log_message('info', 'NFS-e Nacional: Verificação SSL desabilitada (homologação)');
-            }
         }
 
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);

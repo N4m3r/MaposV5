@@ -4,6 +4,10 @@ if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
 
+require_once APPPATH . 'libraries/Webhooks/WebhookManager.php';
+
+use Libraries\Webhooks\WebhookManager;
+
 /**
  * Webhook Controller para receber notificações do Banco Cora
  *
@@ -13,6 +17,8 @@ if (! defined('BASEPATH')) {
  */
 class Webhook extends CI_Controller
 {
+    private WebhookManager $webhookManager;
+
     public function __construct()
     {
         parent::__construct();
@@ -21,6 +27,7 @@ class Webhook extends CI_Controller
         $this->load->model('clientes_model');
         $this->load->model('financeiro_model');
         $this->load->config('payment_gateways');
+        $this->webhookManager = new WebhookManager();
     }
 
     /**
@@ -141,6 +148,14 @@ class Webhook extends CI_Controller
         );
 
         log_info('Webhook Cora: Pagamento confirmado para cobrança #' . $cobranca->idCobranca);
+
+        // Gatilho webhook: cobrança paga
+        $this->webhookManager->trigger('cobranca.paid', [
+            'id' => $cobranca->idCobranca,
+            'charge_id' => $chargeId,
+            'status' => 'RECEIVED',
+            'gateway' => 'Cora',
+        ]);
 
         // Dar baixa no lançamento financeiro
         $this->darBaixaLancamento($cobranca);
@@ -288,6 +303,14 @@ class Webhook extends CI_Controller
         );
 
         log_info('Webhook Cora: Cobrança vencida #' . $cobranca->idCobranca);
+
+        // Gatilho webhook: cobrança vencida
+        $this->webhookManager->trigger('cobranca.overdue', [
+            'id' => $cobranca->idCobranca,
+            'charge_id' => $chargeId,
+            'status' => 'OVERDUE',
+            'gateway' => 'Cora',
+        ]);
     }
 
     /**

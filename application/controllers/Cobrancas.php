@@ -4,8 +4,14 @@ if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
 
+require_once APPPATH . 'libraries/Webhooks/WebhookManager.php';
+
+use Libraries\Webhooks\WebhookManager;
+
 class Cobrancas extends MY_Controller
 {
+    private WebhookManager $webhookManager;
+
     public function __construct()
     {
         parent::__construct();
@@ -13,6 +19,7 @@ class Cobrancas extends MY_Controller
         $this->load->helper('form');
         $this->load->model('cobrancas_model');
         $this->data['menuCobrancas'] = 'financeiro';
+        $this->webhookManager = new WebhookManager();
     }
 
     public function index()
@@ -61,6 +68,25 @@ class Cobrancas extends MY_Controller
                     $tipo,
                     $formaPagamento
                 );
+
+                // Gatilho webhook: cobrança criada
+                $this->webhookManager->trigger('cobranca.created', [
+                    'id' => $cobranca['idCobranca'] ?? $id,
+                    'tipo' => $tipo,
+                    'referencia_id' => $id,
+                    'forma_pagamento' => $formaPagamento,
+                    'gateway' => $gatewayDePagamento,
+                    'status' => $cobranca['status'] ?? 'PENDING',
+                ]);
+
+                // Gatilho WhatsApp: cobrança gerada
+                $this->load->helper('notificacoes');
+                $ref = $tipo === 'os'
+                    ? $this->Os_model->getById($id)
+                    : $this->vendas_model->getById($id);
+                if ($ref && !empty($ref->clientes_id)) {
+                    notificar_cobranca_gerada($cobranca['idCobranca'] ?? $id, $ref->clientes_id);
+                }
 
                 return $this->output
                     ->set_content_type('application/json')
@@ -151,7 +177,14 @@ class Cobrancas extends MY_Controller
         }
         try {
             $this->load->model('cobrancas_model');
-            $this->cobrancas_model->confirmarPagamento($this->input->post('confirma_id'));
+            $idCobranca = $this->input->post('confirma_id');
+            $this->cobrancas_model->confirmarPagamento($idCobranca);
+
+            // Gatilho webhook: cobrança paga
+            $this->webhookManager->trigger('cobranca.paid', [
+                'id' => $idCobranca,
+                'status' => 'RECEIVED',
+            ]);
         } catch (Exception $e) {
             $this->session->set_flashdata('error', $e->getMessage());
         }

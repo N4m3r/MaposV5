@@ -4,8 +4,14 @@ if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
 
+require_once APPPATH . 'libraries/Webhooks/WebhookManager.php';
+
+use Libraries\Webhooks\WebhookManager;
+
 class Produtos extends MY_Controller
 {
+    private WebhookManager $webhookManager;
+
     public function __construct()
     {
         parent::__construct();
@@ -13,6 +19,7 @@ class Produtos extends MY_Controller
         $this->load->helper('form');
         $this->load->model('produtos_model');
         $this->data['menuProdutos'] = 'Produtos';
+        $this->webhookManager = new WebhookManager();
     }
 
     public function index()
@@ -79,6 +86,17 @@ class Produtos extends MY_Controller
             if ($this->produtos_model->add('produtos', $data) == true) {
                 $this->session->set_flashdata('success', 'Produto adicionado com sucesso!');
                 log_info('Adicionou um produto');
+
+                // Gatilho webhook: estoque baixo
+                if ($data['estoque'] <= $data['estoqueMinimo']) {
+                    $this->webhookManager->trigger('produto.low_stock', [
+                        'descricao' => $data['descricao'],
+                        'codDeBarra' => $data['codDeBarra'],
+                        'estoque' => $data['estoque'],
+                        'estoqueMinimo' => $data['estoqueMinimo'],
+                    ]);
+                }
+
                 redirect(site_url('produtos/adicionar/'));
             } else {
                 $this->data['custom_error'] = '<div class="form_error"><p>An Error Occured.</p></div>';
@@ -125,6 +143,29 @@ class Produtos extends MY_Controller
             if ($this->produtos_model->edit('produtos', $data, 'idProdutos', $this->input->post('idProdutos')) == true) {
                 $this->session->set_flashdata('success', 'Produto editado com sucesso!');
                 log_info('Alterou um produto. ID: ' . $this->input->post('idProdutos'));
+
+                $idProduto = $this->input->post('idProdutos');
+
+                // Gatilho webhook: produto atualizado
+                $this->webhookManager->trigger('produto.updated', [
+                    'id' => $idProduto,
+                    'descricao' => $data['descricao'],
+                    'codDeBarra' => $data['codDeBarra'],
+                    'estoque' => $data['estoque'],
+                    'estoqueMinimo' => $data['estoqueMinimo'],
+                ]);
+
+                // Gatilho webhook: estoque baixo
+                if ($data['estoque'] <= $data['estoqueMinimo']) {
+                    $this->webhookManager->trigger('produto.low_stock', [
+                        'id' => $idProduto,
+                        'descricao' => $data['descricao'],
+                        'codDeBarra' => $data['codDeBarra'],
+                        'estoque' => $data['estoque'],
+                        'estoqueMinimo' => $data['estoqueMinimo'],
+                    ]);
+                }
+
                 redirect(site_url('produtos/editar/') . $this->input->post('idProdutos'));
             } else {
                 $this->data['custom_error'] = '<div class="form_error"><p>An Error Occured</p></div>';

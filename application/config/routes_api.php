@@ -87,6 +87,9 @@ $route['api/v2/produtos/(:num)/estoque'] = 'api/v2/ProdutosController/estoque/$1
 $route['api/v2/webhooks'] = 'api/v2/WebhooksController/index';
 $route['api/v2/webhooks/(:num)'] = 'api/v2/WebhooksController/show/$1';
 
+// Evolution API - Monitoramento de IP dinâmico
+$route['api/v2/evolution/atualizar-ip'] = 'api/v2/EvolutionController/atualizar_ip';
+
 // Documentação
 $route['api/v2'] = 'api/docs';
 $route['api/docs'] = 'api/docs';

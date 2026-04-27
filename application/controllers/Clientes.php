@@ -4,14 +4,21 @@ if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
 
+require_once APPPATH . 'libraries/Webhooks/WebhookManager.php';
+
+use Libraries\Webhooks\WebhookManager;
+
 class Clientes extends MY_Controller
 {
+    private WebhookManager $webhookManager;
+
     public function __construct()
     {
         parent::__construct();
 
         $this->load->model('clientes_model');
         $this->data['menuClientes'] = 'clientes';
+        $this->webhookManager = new WebhookManager();
     }
 
     public function index()
@@ -92,6 +99,16 @@ class Clientes extends MY_Controller
             if ($this->clientes_model->add('clientes', $data) == true) {
                 $this->session->set_flashdata('success', 'Cliente adicionado com sucesso!');
                 log_info('Adicionou um cliente.');
+
+                // Gatilho webhook: cliente criado
+                $this->webhookManager->trigger('cliente.created', [
+                    'nome' => $data['nomeCliente'],
+                    'documento' => $data['documento'],
+                    'email' => $data['email'],
+                    'telefone' => $data['telefone'],
+                    'celular' => $data['celular'],
+                ]);
+
                 redirect(site_url('clientes/'));
             } else {
                 $this->data['custom_error'] = '<div class="form_error"><p>Ocorreu um erro.</p></div>';
@@ -164,6 +181,17 @@ class Clientes extends MY_Controller
             if ($this->clientes_model->edit('clientes', $data, 'idClientes', $this->input->post('idClientes')) == true) {
                 $this->session->set_flashdata('success', 'Cliente editado com sucesso!');
                 log_info('Alterou um cliente. ID' . $this->input->post('idClientes'));
+
+                // Gatilho webhook: cliente atualizado
+                $this->webhookManager->trigger('cliente.updated', [
+                    'id' => $this->input->post('idClientes'),
+                    'nome' => $data['nomeCliente'],
+                    'documento' => $data['documento'],
+                    'email' => $data['email'],
+                    'telefone' => $data['telefone'],
+                    'celular' => $data['celular'],
+                ]);
+
                 redirect(site_url('clientes/editar/') . $this->input->post('idClientes'));
             } else {
                 $this->data['custom_error'] = '<div class="form_error"><p>Ocorreu um erro</p></div>';

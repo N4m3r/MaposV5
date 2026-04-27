@@ -31,7 +31,7 @@ $config['nfse_timeout'] = 60;
 $config['nfse_ca_path'] = FCPATH . 'assets/certs/ac-icp-brasil.pem';
 
 // Caminho para certificados temporários PEM
-$config['nfse_temp_path'] = FCPATH . 'assets/temp/';
+$config['nfse_temp_path'] = APPPATH . 'private/temp/';
 
 // Natureza Operação (padrão: 1 = Tributação no município)
 // 1 = Tributação no município

@@ -142,19 +142,19 @@
                                                     #<?= sprintf('%04d', $boleto->os_id) ?>
                                                 </a>
                                             </td>
-                                            <td><?= $boleto->nomeCliente ?></td>
+                                            <td><?= htmlspecialchars($boleto->nomeCliente, ENT_QUOTES, 'UTF-8') ?></td>
                                             <td><?= date('d/m/Y', strtotime($boleto->data_vencimento)) ?></td>
                                             <td class="text-right">R$ <?= number_format($boleto->valor_liquido, 2, ',', '.') ?></td>
                                             <td>
-                                                <span class="label label-important"><?= $dias_atraso ?> dias</span>
+                                                <span class="label label-important"><?= intval($dias_atraso) ?> dias</span>
                                             </td>
-                                            <td><?= $boleto->celular_cliente ?></td>
+                                            <td><?= htmlspecialchars($boleto->celular_cliente ?? '', ENT_QUOTES, 'UTF-8') ?></td>
                                             <td class="text-center">
                                                 <a href="<?= site_url('os/visualizar/' . $boleto->os_id) ?>" class="btn btn-mini btn-info" title="Ver OS">
                                                     <i class="bx bx-show"></i>
                                                 </a>
                                                 <?php if ($boleto->linha_digitavel) { ?>
-                                                <button class="btn btn-mini btn-primary" onclick="copiar('<?= $boleto->linha_digitavel ?>')" title="Copiar Linha Digitável">
+                                                <button class="btn btn-mini btn-primary" onclick="copiar('<?= htmlspecialchars($boleto->linha_digitavel, ENT_QUOTES, 'UTF-8') ?>')" title="Copiar Linha Digitável">
                                                     <i class="bx bx-copy"></i>
                                                 </button>
                                                 <?php } ?>

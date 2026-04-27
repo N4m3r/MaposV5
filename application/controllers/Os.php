@@ -4,8 +4,14 @@ if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
 
+require_once APPPATH . 'libraries/Webhooks/WebhookManager.php';
+
+use Libraries\Webhooks\WebhookManager;
+
 class Os extends MY_Controller
 {
+    private WebhookManager $webhookManager;
+
     public function __construct()
     {
         parent::__construct();
@@ -14,6 +20,7 @@ class Os extends MY_Controller
         $this->load->model('notificacoes_model');
         $this->notificacoes_model->ensureTableExists();
         $this->data['menuOs'] = 'OS';
+        $this->webhookManager = new WebhookManager();
     }
 
     public function index()
@@ -180,12 +187,26 @@ class Os extends MY_Controller
                 $this->session->set_flashdata('success', 'OS adicionada com sucesso, você pode adicionar produtos ou serviços a essa OS nas abas de Produtos e Serviços!');
                 log_info('Adicionou uma OS. ID: ' . $id);
 
+                // Gatilho WhatsApp: OS criada
+                $this->load->helper('notificacoes');
+                notificar_os_criada($id, $data['clientes_id']);
+
                 $this->notificacoes_model->notificarTodos([
                     'titulo' => 'Nova OS Criada',
                     'mensagem' => 'OS #' . $id . ' criada por ' . $this->session->userdata('nome_admin'),
                     'url' => site_url('os/editar/' . $id),
                     'icone' => 'bx-file',
                     'tipo' => 'info',
+                ]);
+
+                // Gatilho webhook: OS criada
+                $this->webhookManager->trigger('os.created', [
+                    'id' => $id,
+                    'cliente_id' => $data['clientes_id'],
+                    'tecnico_id' => $data['usuarios_id'],
+                    'status' => $data['status'],
+                    'dataInicial' => $data['dataInicial'],
+                    'dataFinal' => $data['dataFinal'],
                 ]);
 
                 redirect(site_url('os/editar/') . $id);
@@ -310,7 +331,24 @@ class Os extends MY_Controller
                 log_info('Alterou uma OS. ID: ' . $this->input->post('idOs'));
 
                 $statusAnterior = isset($os->status) ? $os->status : '';
+
+                // Gatilho WhatsApp: OS atualizada
+                $this->load->helper('notificacoes');
+                notificar_os_atualizada($idOs, $os->clientes_id, $statusAnterior);
+
                 $novoStatus = $this->input->post('status');
+
+                // Gatilho webhook: OS atualizada
+                $this->webhookManager->trigger('os.updated', [
+                    'id' => $idOs,
+                    'cliente_id' => $data['clientes_id'],
+                    'tecnico_id' => $data['usuarios_id'],
+                    'status' => $novoStatus,
+                    'status_anterior' => $statusAnterior,
+                    'dataInicial' => $data['dataInicial'],
+                    'dataFinal' => $data['dataFinal'],
+                ]);
+
                 if ($novoStatus && $novoStatus !== $statusAnterior) {
                     $this->notificacoes_model->notificarTodos([
                         'titulo' => 'OS - Status Alterado',
@@ -318,6 +356,25 @@ class Os extends MY_Controller
                         'url' => site_url('os/editar/' . $this->input->post('idOs')),
                         'icone' => 'bx-refresh',
                         'tipo' => 'warning',
+                    ]);
+
+                    // Gatilho webhook: status alterado
+                    $this->webhookManager->trigger('os.status_changed', [
+                        'id' => $idOs,
+                        'cliente_id' => $data['clientes_id'],
+                        'tecnico_id' => $data['usuarios_id'],
+                        'status' => $novoStatus,
+                        'status_anterior' => $statusAnterior,
+                    ]);
+                }
+
+                // Gatilho webhook: OS finalizada
+                if (in_array(strtolower($novoStatus), ['finalizado', 'faturado'])) {
+                    $this->webhookManager->trigger('os.finished', [
+                        'id' => $idOs,
+                        'cliente_id' => $data['clientes_id'],
+                        'tecnico_id' => $data['usuarios_id'],
+                        'status' => $novoStatus,
                     ]);
                 }
 

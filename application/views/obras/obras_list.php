@@ -1118,6 +1118,17 @@ if (empty($obras)) {
                 <a href="<?php echo site_url('obras/editar/' . $obra->id); ?>" class="obra-card-btn edit">
                     <i class="icon-edit"></i> Editar
                 </a>
+                <?php endif; ?>
+                <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dObras')): ?>
+                <form action="<?php echo site_url('obras/excluir'); ?>" method="post" style="display:inline;" onsubmit="return confirm('Tem certeza que deseja excluir esta obra?');">
+                    <input type="hidden" name="id" value="<?php echo $obra->id; ?>">
+                    <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>">
+                    <button type="submit" class="obra-card-btn" style="background: #e74c3c;">
+                        <i class="icon-trash"></i> Excluir
+                    </button>
+                </form>
+                <?php endif; ?>
+                <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
                 <!-- Botão de Ações Rápidas -->
                 <div class="obra-quick-actions">
                     <button type="button" class="obra-card-btn quick-action-toggle" onclick="toggleQuickMenu(<?php echo $obra->id; ?>)">

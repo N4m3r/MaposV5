@@ -522,6 +522,35 @@ class Impostos_model extends CI_Model
             return false;
         }
 
+        // Verificar duplicidade antes de inserir
+        $this->db->where('status !=', 'Cancelado');
+        $hasCriterio = false;
+        if (!empty($dados['os_id'])) {
+            $this->db->where('os_id', $dados['os_id']);
+            $hasCriterio = true;
+        } elseif (!empty($dados['venda_id'])) {
+            $this->db->where('venda_id', $dados['venda_id']);
+            $hasCriterio = true;
+        } elseif (!empty($dados['cobranca_id'])) {
+            $this->db->where('cobranca_id', $dados['cobranca_id']);
+            $hasCriterio = true;
+        } elseif (!empty($dados['nota_fiscal'])) {
+            $this->db->where('nota_fiscal', $dados['nota_fiscal']);
+            $hasCriterio = true;
+        }
+        if (!empty($dados['data_competencia'])) {
+            $this->db->where('data_competencia', $dados['data_competencia']);
+            $hasCriterio = true;
+        }
+        if (!$hasCriterio) {
+            return false;
+        }
+        $existe = $this->db->count_all_results('impostos_retidos');
+        if ($existe > 0) {
+            log_message('info', 'Impostos_model: Retenção já existe para os_id=' . ($dados['os_id'] ?? 'null') . ', venda_id=' . ($dados['venda_id'] ?? 'null') . ', nota_fiscal=' . ($dados['nota_fiscal'] ?? 'null'));
+            return false;
+        }
+
         // Preparar dados para inserção
         $retencao = [
             'cobranca_id' => $dados['cobranca_id'] ?? null,
@@ -542,7 +571,7 @@ class Impostos_model extends CI_Model
             'nota_fiscal' => $dados['nota_fiscal'] ?? null,
             'status' => 'Retido',
             'observacao' => $dados['observacao'] ?? 'Retenção automática na geração do boleto',
-            'usuarios_id' => $this->session->userdata('id_admin'),
+            'usuarios_id' => $this->session->userdata('idUsuarios'),
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s')
         ];
@@ -596,6 +625,80 @@ class Impostos_model extends CI_Model
                 ]);
             }
         }
+    }
+
+    /**
+     * Registrar DAS estimado da NFS-e no DRE
+     * Chamado automaticamente ao emitir NFS-e, independente de retenção do tomador
+     */
+    public function registrarDASNfse($dados)
+    {
+        if (!$this->db->table_exists('impostos_retidos')) {
+            return false;
+        }
+
+        $calculos = $this->calcularImpostos($dados['valor_bruto']);
+        if (!$calculos) {
+            return false;
+        }
+
+        // Verificar duplicidade
+        $this->db->where('status !=', 'Cancelado');
+        $hasCriterio = false;
+        if (!empty($dados['os_id'])) {
+            $this->db->where('os_id', $dados['os_id']);
+            $hasCriterio = true;
+        }
+        if (!empty($dados['nfse_id'])) {
+            $this->db->where('cobranca_id', $dados['nfse_id']);
+            $hasCriterio = true;
+        }
+        if (!empty($dados['data_competencia'])) {
+            $this->db->where('data_competencia', $dados['data_competencia']);
+            $hasCriterio = true;
+        }
+        if (!$hasCriterio) {
+            return false;
+        }
+        $existe = $this->db->count_all_results('impostos_retidos');
+        if ($existe > 0) {
+            return false;
+        }
+
+        $retencao = [
+            'cobranca_id' => $dados['nfse_id'] ?? null,
+            'os_id' => $dados['os_id'] ?? null,
+            'cliente_id' => $dados['cliente_id'] ?? null,
+            'valor_bruto' => $dados['valor_bruto'],
+            'valor_liquido' => $calculos['valor_liquido'],
+            'aliquota_aplicada' => $calculos['aliquota_nominal'],
+            'irpj_valor' => $calculos['irpj_valor'],
+            'csll_valor' => $calculos['csll_valor'],
+            'cofins_valor' => $calculos['cofins_valor'],
+            'pis_valor' => $calculos['pis_valor'],
+            'iss_valor' => $calculos['iss_valor'],
+            'total_impostos' => $calculos['total_impostos'],
+            'data_competencia' => $dados['data_competencia'] ?? date('Y-m-01'),
+            'data_retencao' => date('Y-m-d H:i:s'),
+            'nota_fiscal' => $dados['nota_fiscal'] ?? null,
+            'status' => 'Retido',
+            'observacao' => $dados['observacao'] ?? 'DAS estimado - NFS-e emitida',
+            'usuarios_id' => $this->session->userdata('idUsuarios'),
+            'created_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s')
+        ];
+
+        if ($this->db->insert('impostos_retidos', $retencao)) {
+            $retencao_id = $this->db->insert_id();
+
+            if ($this->getConfig('IMPOSTO_DRE_INTEGRACAO') == '1') {
+                $this->integrarComDRE($retencao, $retencao_id);
+            }
+
+            return $retencao_id;
+        }
+
+        return false;
     }
 
     /**
@@ -816,15 +919,35 @@ class Impostos_model extends CI_Model
 
     /**
      * Estorna uma retenção (quando boleto é cancelado)
+     * Aceita cobranca_id, os_id ou nota_fiscal como critério de busca
      */
-    public function estornarRetencao($cobranca_id)
+    public function estornarRetencao($criterio)
     {
         // Verificar se a tabela existe
         if (!$this->db->table_exists('impostos_retidos')) {
             return false;
         }
 
-        $this->db->where('cobranca_id', $cobranca_id);
+        // Suporta chamada antiga com cobranca_id (int) ou array de critérios
+        if (is_numeric($criterio)) {
+            $this->db->where('cobranca_id', $criterio);
+        } elseif (is_array($criterio)) {
+            if (!empty($criterio['cobranca_id'])) {
+                $this->db->where('cobranca_id', $criterio['cobranca_id']);
+            }
+            if (!empty($criterio['os_id'])) {
+                $this->db->where('os_id', $criterio['os_id']);
+            }
+            if (!empty($criterio['nota_fiscal'])) {
+                $this->db->where('nota_fiscal', $criterio['nota_fiscal']);
+            }
+            if (!empty($criterio['venda_id'])) {
+                $this->db->where('venda_id', $criterio['venda_id']);
+            }
+        } else {
+            return false;
+        }
+
         $this->db->where('status', 'Retido');
         $query = $this->db->get('impostos_retidos');
 

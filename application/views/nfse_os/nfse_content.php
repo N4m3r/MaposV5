@@ -98,46 +98,76 @@ if (!function_exists('formatarDocumentoNFSe')) {
                     </div>
                 </div>
 
-                <h6><i class="fas fa-calculator"></i> Detalhamento dos Impostos</h6>
+                <h6><i class="fas fa-calculator"></i> Detalhamento dos Impostos / DAS</h6>
                 <div class="well well-small">
                     <?php
                     $nfseRegime = $nfse_atual->regime_tributario ?? 'simples_nacional';
                     $isNfseSimples = ($nfseRegime === 'simples_nacional');
+                    $aliquotaEfetiva = $nfse_atual->valor_servicos > 0 ? round(($nfse_atual->valor_total_impostos / $nfse_atual->valor_servicos) * 100, 2) : 0;
                     ?>
-                    <?php if ($isNfseSimples && isset($nfse_atual->valor_das) && $nfse_atual->valor_das > 0): ?>
+
+                    <?php if ($isNfseSimples): ?>
+                    <!-- Simples Nacional -->
                     <div class="row-fluid">
-                        <div class="span12">
+                        <div class="span6">
                             <span class="label label-success">Simples Nacional</span>
-                            <strong style="margin-left: 5px;">DAS (Documento de Arrecadação):</strong> R$ <?= number_format($nfse_atual->valor_das, 2, ',', '.') ?><br>
-                            <strong>Total Impostos:</strong> R$ <?= number_format($nfse_atual->valor_total_impostos, 2, ',', '.') ?>
+                            <div style="margin-top: 6px;">
+                                <strong>DAS Estimado:</strong> R$ <?= number_format($nfse_atual->valor_total_impostos, 2, ',', '.') ?><br>
+                                <strong>Alíquota Efetiva:</strong> <?= number_format($aliquotaEfetiva, 2, ',', '.') ?>%<br>
+                                <strong>Competência:</strong> <?= date('m/Y', strtotime($nfse_atual->competencia ?? date('Y-m-01'))) ?>
+                            </div>
+                        </div>
+                        <div class="span6">
+                            <div style="margin-top: 6px;">
+                                <strong>Base de Cálculo:</strong> R$ <?= number_format($nfse_atual->valor_servicos, 2, ',', '.') ?><br>
+                                <?php if (isset($nfse_atual->valor_das) && $nfse_atual->valor_das > 0): ?>
+                                <strong>DAS Informado:</strong> R$ <?= number_format($nfse_atual->valor_das, 2, ',', '.') ?><br>
+                                <?php endif; ?>
+                                <strong>Registrado no DRE:</strong> <i class="fas fa-check-circle" style="color: #27ae60;"></i> Sim
+                            </div>
                         </div>
                     </div>
+                    <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #ddd; font-size: 11px; color: #666;">
+                        <i class="fas fa-info-circle" style="color: #27ae60;"></i>
+                        O DAS é recolhido mensalmente pelo prestador. O valor estimado acima foi registrado no DRE para controle.
+                        Compare com o boleto DAS enviado pelo contador.
+                    </div>
                     <?php else: ?>
+                    <!-- Lucro Presumido -->
                     <div class="row-fluid">
                         <div class="span6">
                             <span class="label label-info">Lucro Presumido</span><br>
-                            <strong>ISS (<?= $nfse_atual->aliquota_iss ?>%):</strong> R$ <?= number_format($nfse_atual->valor_iss, 2, ',', '.') ?><br>
-                            <strong>PIS:</strong> R$ <?= number_format($nfse_atual->valor_pis, 2, ',', '.') ?><br>
-                            <strong>COFINS:</strong> R$ <?= number_format($nfse_atual->valor_cofins, 2, ',', '.') ?>
+                            <div style="margin-top: 6px;">
+                                <strong>ISS (<?= $nfse_atual->aliquota_iss ?>%):</strong> R$ <?= number_format($nfse_atual->valor_iss, 2, ',', '.') ?><br>
+                                <strong>PIS:</strong> R$ <?= number_format($nfse_atual->valor_pis, 2, ',', '.') ?><br>
+                                <strong>COFINS:</strong> R$ <?= number_format($nfse_atual->valor_cofins, 2, ',', '.') ?>
+                            </div>
                         </div>
                         <div class="span6">
-                            <strong>IRRF:</strong> R$ <?= number_format($nfse_atual->valor_irrf, 2, ',', '.') ?><br>
-                            <strong>CSLL:</strong> R$ <?= number_format($nfse_atual->valor_csll, 2, ',', '.') ?><br>
-                            <strong>INSS:</strong> R$ <?= number_format($nfse_atual->valor_inss, 2, ',', '.') ?>
+                            <div style="margin-top: 6px;">
+                                <strong>IRRF:</strong> R$ <?= number_format($nfse_atual->valor_irrf, 2, ',', '.') ?><br>
+                                <strong>CSLL:</strong> R$ <?= number_format($nfse_atual->valor_csll, 2, ',', '.') ?><br>
+                                <strong>INSS:</strong> R$ <?= number_format($nfse_atual->valor_inss, 2, ',', '.') ?>
+                            </div>
                         </div>
+                    </div>
+                    <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #ddd; font-size: 11px; color: #666;">
+                        <i class="fas fa-info-circle" style="color: #3498db;"></i>
+                        Total de impostos estimados: <strong>R$ <?= number_format($nfse_atual->valor_total_impostos, 2, ',', '.') ?></strong>
+                        — registrado no DRE para controle.
                     </div>
                     <?php endif; ?>
 
                     <?php if (isset($nfse_atual->valor_total_retencao) && $nfse_atual->valor_total_retencao > 0): ?>
                     <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #ddd;">
                         <strong style="color: #e67e22;"><i class="fas fa-hand-holding-usd"></i> Retenções do Tomador:</strong> R$ <?= number_format($nfse_atual->valor_total_retencao, 2, ',', '.') ?>
-                        <small style="color: #888;">(não reduz o valor da NFS-e, registrada para compensação futura)</small>
+                        <small style="color: #888;">(reduz o valor da NFS-e, registrada para compensação no DAS)</small>
                         <div style="font-size: 12px; margin-top: 4px;">
-                            <?php if ($nfse_atual->valor_retencao_iss > 0): ?>ISS: R$ <?= number_format($nfse_atual->valor_retencao_iss, 2, ',', '.'); ?> &nbsp;<?php endif; ?>
-                            <?php if ($nfse_atual->valor_retencao_irrf > 0): ?>IRRF: R$ <?= number_format($nfse_atual->valor_retencao_irrf, 2, ',', '.'); ?> &nbsp;<?php endif; ?>
-                            <?php if ($nfse_atual->valor_retencao_pis > 0): ?>PIS: R$ <?= number_format($nfse_atual->valor_retencao_pis, 2, ',', '.'); ?> &nbsp;<?php endif; ?>
-                            <?php if ($nfse_atual->valor_retencao_cofins > 0): ?>COFINS: R$ <?= number_format($nfse_atual->valor_retencao_cofins, 2, ',', '.'); ?> &nbsp;<?php endif; ?>
-                            <?php if ($nfse_atual->valor_retencao_csll > 0): ?>CSLL: R$ <?= number_format($nfse_atual->valor_retencao_csll, 2, ',', '.'); ?><?php endif; ?>
+                            <?php if (floatval($nfse_atual->valor_retencao_iss ?? 0) > 0): ?>ISS: R$ <?= number_format(floatval($nfse_atual->valor_retencao_iss), 2, ',', '.') ?> &nbsp;<?php endif; ?>
+                            <?php if (floatval($nfse_atual->valor_retencao_irrf ?? 0) > 0): ?>IRRF: R$ <?= number_format(floatval($nfse_atual->valor_retencao_irrf), 2, ',', '.') ?> &nbsp;<?php endif; ?>
+                            <?php if (floatval($nfse_atual->valor_retencao_pis ?? 0) > 0): ?>PIS: R$ <?= number_format(floatval($nfse_atual->valor_retencao_pis), 2, ',', '.') ?> &nbsp;<?php endif; ?>
+                            <?php if (floatval($nfse_atual->valor_retencao_cofins ?? 0) > 0): ?>COFINS: R$ <?= number_format(floatval($nfse_atual->valor_retencao_cofins), 2, ',', '.') ?> &nbsp;<?php endif; ?>
+                            <?php if (floatval($nfse_atual->valor_retencao_csll ?? 0) > 0): ?>CSLL: R$ <?= number_format(floatval($nfse_atual->valor_retencao_csll), 2, ',', '.') ?><?php endif; ?>
                         </div>
                     </div>
                     <?php endif; ?>
@@ -149,19 +179,19 @@ if (!function_exists('formatarDocumentoNFSe')) {
                     </a>
 
                     <?php if (!empty($nfse_atual->url_danfe)): ?>
-                        <a href="<?= $nfse_atual->url_danfe ?>" target="_blank" class="btn btn-success">
+                        <a href="<?= htmlspecialchars($nfse_atual->url_danfe, ENT_QUOTES, 'UTF-8') ?>" target="_blank" class="btn btn-success">
                             <i class="fas fa-external-link-alt"></i> DANFSe (Nacional)
                         </a>
                     <?php endif; ?>
 
                     <?php if ($nfse_atual->link_impressao): ?>
-                        <a href="<?= $nfse_atual->link_impressao ?>" target="_blank" class="btn btn-success">
+                        <a href="<?= htmlspecialchars($nfse_atual->link_impressao, ENT_QUOTES, 'UTF-8') ?>" target="_blank" class="btn btn-success">
                             <i class="fas fa-print"></i> Imprimir (Original)
                         </a>
                     <?php endif; ?>
 
                     <?php if ($nfse_atual->xml_path): ?>
-                        <a href="<?= base_url($nfse_atual->xml_path) ?>" target="_blank" class="btn btn-info">
+                        <a href="<?= base_url(htmlspecialchars($nfse_atual->xml_path, ENT_QUOTES, 'UTF-8')) ?>" target="_blank" class="btn btn-info">
                             <i class="fas fa-file-code"></i> Download XML
                         </a>
                     <?php endif; ?>
@@ -280,7 +310,7 @@ if (!function_exists('formatarDocumentoNFSe')) {
                             <tr>
                                 <td><?= htmlspecialchars($p->descricao ?? $p->nomeProduto ?? 'Produto') ?></td>
                                 <td><?= $p->quantidade ?? 1 ?></td>
-                                <td class="text-right"><?= formatarMoedaNFSe($p->preco ?? $p->subTotal / max(1, $p->quantidade)) ?></td>
+                                <td class="text-right"><?= formatarMoedaNFSe($p->preco ?? (($p->subTotal ?? 0) / max(1, $p->quantidade ?? 1))) ?></td>
                                 <td class="text-right"><?= formatarMoedaNFSe($p->subTotal) ?></td>
                             </tr>
                             <?php endforeach; ?>
@@ -457,6 +487,24 @@ if (!function_exists('formatarDocumentoNFSe')) {
                                 <i class="fas fa-exclamation-circle" style="color: #e67e22;"></i>
                                 As retenções NÃO reduzem o valor da NFS-e. Elas são registradas para controle e serão deduzidas no DRE como crédito a compensar.
                             </p>
+
+                            <!-- Aviso de retenção de ISS -->
+                            <div id="aviso-retencao-iss" style="display: none; margin-top: 8px; padding: 8px 12px; background: #fff3cd; border: 1px solid #ffc107; border-radius: 4px;">
+                                <strong style="color: #856404; font-size: 12px;">
+                                    <i class="fas fa-exclamation-triangle"></i> Atenção — Retenção de ISS pelo Tomador
+                                </strong>
+                                <p style="margin: 4px 0 0 0; font-size: 11px; color: #856404;">
+                                    Ao emitir esta NFS-e com retenção de ISS, o sistema do <strong>Portal do Contribuidor</strong> exige que você:
+                                </p>
+                                <ul style="margin: 4px 0 0 0; font-size: 11px; color: #856404; padding-left: 16px;">
+                                    <li>Marque <strong>"Sim"</strong> para <em>Retenção do ISSQN</em></li>
+                                    <li>Selecione o <strong>Tomador</strong> (<?= htmlspecialchars($result->nomeCliente ?? 'Cliente') ?>) como responsável pela retenção</li>
+                                </ul>
+                                <p style="margin: 4px 0 0 0; font-size: 11px; color: #856404;">
+                                    <i class="fas fa-check-circle" style="color: #27ae60;"></i>
+                                    O sistema já configurará <strong>IssRetido = Sim</strong> no XML da NFS-e.
+                                </p>
+                            </div>
                         </div>
                     </div>
 
@@ -630,7 +678,11 @@ if (!function_exists('formatarDocumentoNFSe')) {
 
                             <div id="boleto-campos">
                                 <div class="alert alert-info" style="margin-bottom: 15px;">
-                                    <i class="fas fa-info-circle"></i> O boleto será gerado com o <strong>valor líquido</strong> da NFS-e (impostos já descontados).
+                                    <i class="fas fa-info-circle"></i>
+                                    O boleto será gerado com o <strong>valor integral</strong> dos serviços.
+                                    <?php if ($isSimplesNacional): ?>
+                                        O DAS (Simples Nacional) é recolhido mensalmente pelo prestador e <strong>não desconta</strong> do valor do boleto.
+                                    <?php endif; ?>
                                 </div>
 
                                 <div class="row-fluid">
@@ -642,6 +694,9 @@ if (!function_exists('formatarDocumentoNFSe')) {
                                                     <span class="add-on">R$</span>
                                                     <input type="text" id="valor-boleto-wizard" class="span8" readonly style="background: #f5f5f5; font-weight: bold; color: #2e7d32;">
                                                 </div>
+                                                <small id="valor-boleto-ajuda" style="color: #888; font-size: 11px;">
+                                                    Valor integral = Serviços - Deduções (impostos/DAS não descontam)
+                                                </small>
                                             </div>
                                         </div>
                                     </div>
@@ -656,15 +711,30 @@ if (!function_exists('formatarDocumentoNFSe')) {
                                     </div>
                                     <div class="span4">
                                         <div class="control-group">
-                                            <label class="control-label"><strong>Instruções:</strong></label>
+                                            <label class="control-label"><strong>Descrição / Instruções:</strong></label>
                                             <div class="controls">
                                                 <textarea name="instrucoes" id="instrucoes-boleto-wizard"
-                                                          class="span12" rows="2">Pagável em qualquer banco até o vencimento.</textarea>
+                                                          class="span12" rows="2" placeholder="Instruções que aparecerão no boleto...">Pagável em qualquer banco até o vencimento. Após o vencimento, consultar multas e juros.</textarea>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+
+                        <!-- Valor Integral (quando há retenção pelo tomador) -->
+                        <div id="valor-integral-section" style="display: none; margin-top: 12px; padding: 12px 15px; background: #fff3cd; border: 1px solid #ffc107; border-radius: 4px;">
+                            <label class="checkbox" style="font-size: 13px; margin-bottom: 5px;">
+                                <input type="checkbox" id="valor-integral-wizard" name="valor_integral" value="1" checked>
+                                <strong>Emitir boleto com valor integral</strong> (não descontar retenções do tomador)
+                            </label>
+                            <small style="color: #856404; display: block; margin-top: 4px;">
+                                <i class="fas fa-info-circle"></i>
+                                Quando há retenção pelo tomador, o boleto pode ser emitido com o valor integral dos serviços.
+                                As retenções serão registradas para compensação no DAS mensal.
+                                Se desmarcar, o boleto sairá com o valor líquido (menos as retenções).
+                            </small>
+                        </div>
+                    </div>
 
                             <div id="sem-boleto-msg" style="display: none;">
                                 <div class="alert alert-warning">
@@ -695,7 +765,7 @@ if (!function_exists('formatarDocumentoNFSe')) {
                                 <p id="res-das-linha" style="display: <?= $isSimplesNacional ? 'block' : 'none' ?>;"><strong style="color: #27ae60;"><i class="fas fa-receipt"></i> DAS (Simples Nacional):</strong> <span id="res-valor-das" style="color: #27ae60; font-weight: bold;">—</span></p>
                                 <p id="res-retencao-linha" style="display: none;"><strong style="color: #e67e22;"><i class="fas fa-hand-holding-usd"></i> Retenções Tomador:</strong> <span id="res-retencao-total" style="color: #e67e22; font-weight: bold;">—</span></p>
                                 <p><strong style="color: #2e7d32; font-size: 14px;">Valor Líquido:</strong> <span id="res-valor-liquido" style="color: #2e7d32; font-size: 14px; font-weight: bold;">—</span></p>
-                                <p style="font-size: 11px; color: #888;" id="res-liquido-note">Valor líquido = Serviços - Impostos. Retenções NÃO reduzem este valor.</p>
+                                <p style="font-size: 11px; color: #888;" id="res-liquido-note">Valor líquido = Serviços - Deduções - Retenções. Impostos/DAS do prestador não reduzem este valor.</p>
                             </div>
                         </div>
                         <div class="span6">
@@ -735,7 +805,7 @@ if (!function_exists('formatarDocumentoNFSe')) {
     <?php endif; ?>
 
     <!-- Histórico de NFS-e -->
-    <?php if ($nfse_atual && !empty($historico_nfse) && count($historico_nfse) > 1): ?>
+    <?php if ($nfse_atual && !empty($historico_nfse) && is_array($historico_nfse) && count($historico_nfse) > 1): ?>
     <div class="span12" style="margin-top: 10px;">
         <div class="widget-box">
             <div class="widget-title">

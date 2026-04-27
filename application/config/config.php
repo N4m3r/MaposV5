@@ -468,6 +468,12 @@ $config['csrf_exclude_uris'] = [
     'atividades/retomar',
     'atividades/registrar_observacao',
     'atividades/adicionar_foto_obra',
+    'nfse_os/calcular_impostos',
+    'nfse_os/emitir_nfse_api.*+',
+    'nfse_os/cancelar_nfse_api.*+',
+    'nfse_os/gerar_boleto.*+',
+    'certificado/api_consulta',
+    'certificado/vincular_nfse_os',
 ];
 
 /*

@@ -46,8 +46,10 @@ class Nfse_emitida_model extends CI_Model
             return ['error' => 'Erro ao calcular impostos. Verifique as configurações de impostos.'];
         }
 
-        // Valor líquido após deduções
-        $valor_liquido = $valor_servicos - $calculo_impostos['valor_total_impostos'] - $valor_deducoes;
+        // Valor líquido da NFS-e: serviços - deduções - retenções do tomador
+        // Os impostos do prestador (DAS) NÃO reduzem o valor da NFS-e
+        $valor_retencoes = floatval($dados['valor_total_retencao'] ?? 0);
+        $valor_liquido = $valor_servicos - $valor_deducoes - $valor_retencoes;
 
         // Dados da NFS-e
         $nfse_data = [
@@ -105,12 +107,24 @@ class Nfse_emitida_model extends CI_Model
             $this->load->model('dre_model');
             $this->dre_model->integrarNFSe($nfse_id, $nfse_data);
 
+            // Registrar DAS estimado no DRE (independente de retenção do tomador)
+            $this->load->model('impostos_model');
+            $this->impostos_model->registrarDASNfse([
+                'os_id' => $os_id,
+                'nfse_id' => $nfse_id,
+                'cliente_id' => $os->clientes_id ?? 0,
+                'valor_bruto' => $valor_servicos,
+                'data_competencia' => $dados['competencia'] ?? date('Y-m-01'),
+                'nota_fiscal' => $dados['numero_nfse'] ?? null,
+                'observacao' => 'DAS estimado - NFS-e #' . $nfse_id . ' - OS #' . $os_id,
+            ]);
+
             return [
                 'success' => true,
                 'nfse_id' => $nfse_id,
                 'valor_liquido' => $valor_liquido,
                 'impostos' => $calculo_impostos,
-                'message' => 'NFS-e criada com sucesso. Valor líquido após impostos: R$ ' . number_format($valor_liquido, 2, ',', '.')
+                'message' => 'NFS-e criada com sucesso. Valor líquido: R$ ' . number_format($valor_liquido, 2, ',', '.')
             ];
         }
 

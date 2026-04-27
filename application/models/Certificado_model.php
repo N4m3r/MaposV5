@@ -12,8 +12,8 @@ class Certificado_model extends CI_Model
     public function __construct()
     {
         parent::__construct();
-        $this->certPath = FCPATH . 'assets/certificados/';
-        $this->tempDir = FCPATH . 'assets/temp/';
+        $this->certPath = APPPATH . 'private/certificados/';
+        $this->tempDir = APPPATH . 'private/temp/';
 
         // Criar diretórios se não existirem
         if (!is_dir($this->certPath)) {
@@ -167,7 +167,12 @@ class Certificado_model extends CI_Model
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
             curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+            $caPath = FCPATH . 'assets/certs/ac-icp-brasil.pem';
+            if (file_exists($caPath)) {
+                curl_setopt($ch, CURLOPT_CAINFO, $caPath);
+            }
 
             $response = curl_exec($ch);
             $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -228,7 +233,12 @@ class Certificado_model extends CI_Model
             curl_setopt($ch, CURLOPT_URL, $url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+            $caPath = FCPATH . 'assets/certs/ac-icp-brasil.pem';
+            if (file_exists($caPath)) {
+                curl_setopt($ch, CURLOPT_CAINFO, $caPath);
+            }
 
             $response = curl_exec($ch);
             $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -525,15 +535,27 @@ class Certificado_model extends CI_Model
      */
     private function criptografarSenha($senha)
     {
-        return openssl_encrypt($senha, 'AES-256-CBC', $this->getChaveCriptografia(), 0, $this->getIvCriptografia());
+        $iv = openssl_random_pseudo_bytes(16);
+        $ciphertext = openssl_encrypt($senha, 'AES-256-CBC', $this->getChaveCriptografia(), OPENSSL_RAW_DATA, $iv);
+        if ($ciphertext === false) {
+            return false;
+        }
+        // Armazenar IV + ciphertext em base64
+        return base64_encode($iv . $ciphertext);
     }
 
     /**
      * Descriptografa senha
      */
-    private function descriptografarSenha($senha)
+    private function descriptografarSenha($senhaCriptografada)
     {
-        return openssl_decrypt($senha, 'AES-256-CBC', $this->getChaveCriptografia(), 0, $this->getIvCriptografia());
+        $data = base64_decode($senhaCriptografada);
+        if ($data === false || strlen($data) < 16) {
+            return false;
+        }
+        $iv = substr($data, 0, 16);
+        $ciphertext = substr($data, 16);
+        return openssl_decrypt($ciphertext, 'AES-256-CBC', $this->getChaveCriptografia(), OPENSSL_RAW_DATA, $iv);
     }
 
     /**
@@ -541,14 +563,12 @@ class Certificado_model extends CI_Model
      */
     private function getChaveCriptografia()
     {
-        return $this->config->item('encryption_key') ?: 'mapos_cert_key_2024';
-    }
-
-    private function getIvCriptografia()
-    {
-        $iv = substr($this->getChaveCriptografia(), 0, 16);
-        // Garantir exatamente 16 bytes (AES-256-CBC exige IV de 16 bytes)
-        return str_pad($iv, 16, "\0");
+        $key = $this->config->item('encryption_key');
+        if (empty($key)) {
+            log_message('error', 'Certificado_model: encryption_key não configurada. Configure em application/config/config.php');
+            return 'mapos_cert_key_2024'; // fallback apenas para não quebrar
+        }
+        return $key;
     }
 
     /**

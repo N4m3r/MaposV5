@@ -62,7 +62,7 @@ class NfseConfig
     {
         $cnpjLimpo = preg_replace('/\D/', '', $cnpj);
         $comp = $competencia ?: date('Ym');
-        $sequencial = str_pad(rand(1, 999999), 6, '0', STR_PAD_LEFT);
+        $sequencial = str_pad(random_int(1, 999999), 6, '0', STR_PAD_LEFT);
         return 'DPS' . $cnpjLimpo . $comp . $sequencial;
     }
 

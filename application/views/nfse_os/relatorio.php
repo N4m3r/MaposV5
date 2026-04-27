@@ -148,9 +148,9 @@
                                                 </a>
                                             </td>
 
-                                            <td><?= $nfse->numero_nfse ?: 'Pendente' ?></td>
+                                            <td><?= htmlspecialchars($nfse->numero_nfse ?: 'Pendente', ENT_QUOTES, 'UTF-8') ?></td>
 
-                                            <td><?= $nfse->nomeCliente ?></td>
+                                            <td><?= htmlspecialchars($nfse->nomeCliente, ENT_QUOTES, 'UTF-8') ?></td>
 
                                             <td><?= date('d/m/Y', strtotime($nfse->data_emissao)) ?></td>
 
@@ -159,7 +159,7 @@
                                             <td class="text-right">
                                                 <small>R$ <?= number_format($nfse->valor_total_impostos, 2, ',', '.') ?></small>
                                                 <br>
-                                                <small class="muted">(ISS: <?= $nfse->aliquota_iss ?>%)</small>
+                                                <small class="muted">(ISS: <?= htmlspecialchars($nfse->aliquota_iss, ENT_QUOTES, 'UTF-8') ?>%)</small>
                                             </td>
 
                                             <td class="text-right">
@@ -181,7 +181,7 @@
                                                         break;
                                                 }
                                                 ?>
-                                                <span class="<?= $label_class ?>"><?= $nfse->situacao ?></span>
+                                                <span class="<?= htmlspecialchars($label_class, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($nfse->situacao, ENT_QUOTES, 'UTF-8') ?></span>
                                             </td>
 
                                             <td class="text-center">
@@ -190,13 +190,13 @@
                                                 </a>
 
                                                 <?php if ($nfse->xml_path) { ?>
-                                                <a href="<?= base_url($nfse->xml_path) ?>" target="_blank" class="btn btn-mini btn-success" title="XML">
+                                                <a href="<?= base_url(htmlspecialchars($nfse->xml_path, ENT_QUOTES, 'UTF-8')) ?>" target="_blank" class="btn btn-mini btn-success" title="XML">
                                                     <i class="bx bx-code"></i>
                                                 </a>
                                                 <?php } ?>
 
                                                 <?php if ($nfse->link_impressao) { ?>
-                                                <a href="<?= $nfse->link_impressao ?>" target="_blank" class="btn btn-mini btn-inverse" title="Imprimir">
+                                                <a href="<?= htmlspecialchars($nfse->link_impressao, ENT_QUOTES, 'UTF-8') ?>" target="_blank" class="btn btn-mini btn-inverse" title="Imprimir">
                                                     <i class="bx bx-printer"></i>
                                                 </a>
                                                 <?php } ?>
