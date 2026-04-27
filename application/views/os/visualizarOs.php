@@ -134,33 +134,40 @@
             </div>
             <div class="widget-content" id="printOs">
                 <style>
-                    /* ===== Sub-abas Notas Fiscais (isoladas do Bootstrap tabs pai) ===== */
-                    #nf-sub-tabs { margin-bottom: 0; border-bottom: 1px solid #cdcdcd; }
+                    /* ===== Sub-abas Notas Fiscais — Tema Dark MapOS ===== */
+                    #nf-sub-tabs { margin-bottom: 0; border-bottom: 1px solid var(--dark-2, #272835); }
                     #nf-sub-tabs > li { margin-bottom: -1px; }
                     #nf-sub-tabs > li > a {
                         padding: 10px 15px;
                         font-size: 13px;
                         border: 1px solid transparent;
-                        border-bottom-color: #cdcdcd;
+                        border-bottom-color: var(--dark-2, #272835);
                         margin-right: 3px;
-                        color: #555;
+                        color: var(--dark-cinz, #8788a4);
                         border-radius: 4px 4px 0 0;
                         background: transparent;
+                        transition: var(--tran-03);
                     }
-                    #nf-sub-tabs > li > a:hover { background: #eaeaea; color: #333; }
+                    #nf-sub-tabs > li > a:hover {
+                        background: var(--dark-2, #272835);
+                        color: var(--branco, #caced8);
+                        border-color: var(--dark-2, #272835);
+                    }
                     #nf-sub-tabs > li.nf-active > a,
                     #nf-sub-tabs > li.nf-active > a:hover {
-                        border: 1px solid #cdcdcd;
+                        border: 1px solid var(--dark-2, #272835);
                         border-bottom-color: transparent;
-                        background: var(--widget-box, #e6e9f3);
-                        color: #2c3e50;
+                        background: var(--wid-dark, #1c1d26);
+                        color: var(--branco, #caced8);
                         font-weight: bold;
                     }
                     #nf-sub-content {
-                        border: 1px solid #cdcdcd;
+                        border: 1px solid var(--dark-2, #272835);
                         border-top: none;
                         padding: 15px;
-                        background: var(--widget-box, #e6e9f3);
+                        background: var(--wid-dark, #1c1d26);
+                        color: var(--branco, #caced8);
+                        border-radius: 0 0 6px 6px;
                     }
                     .nf-pane { display: none; }
                     .nf-pane.nf-active { display: block; }
@@ -173,9 +180,9 @@
                     }
                     @media (max-width: 767px) {
                         #os-main-tabs > li { display: block; width: 100%; float: none; }
-                        #os-main-tabs > li > a { border: 1px solid #ddd; border-radius: 0; margin-bottom: 2px; }
+                        #os-main-tabs > li > a { border: 1px solid var(--dark-2); border-radius: 0; margin-bottom: 2px; }
                         #nf-sub-tabs > li { display: block; width: 100%; float: none; }
-                        #nf-sub-tabs > li > a { border: 1px solid #ddd; border-radius: 0; margin-bottom: 2px; }
+                        #nf-sub-tabs > li > a { border: 1px solid var(--dark-2); border-radius: 0; margin-bottom: 2px; }
                     }
                 </style>
 

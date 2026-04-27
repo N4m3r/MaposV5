@@ -4,6 +4,8 @@ if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
 
+require_once APPPATH . 'Services/WhatsAppService.php';
+
 /**
  * Helper de Notificações
  * Facilita o envio de notificações em qualquer parte do sistema
