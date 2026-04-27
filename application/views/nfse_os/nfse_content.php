@@ -219,6 +219,40 @@ if (!function_exists('fmtDoc')) {
 
                 <!-- PASSO 1 -->
                 <div class="wizard-step-panel active" id="wizard-step-1">
+
+                    <!-- RESUMO DA OS -->
+                    <div class="row-fluid" style="margin-bottom:15px">
+                        <div class="span12">
+                            <div class="well well-small" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8)">
+                                <div class="row-fluid">
+                                    <div class="span6">
+                                        <h6 style="margin-top:0; color:var(--title,#d4d8e0)">
+                                            <i class="fas fa-clipboard-list" style="color:var(--dark-azul,#1086dd)"></i>
+                                            Resumo da OS #<?= $result->idOs ?>
+                                        </h6>
+                                        <strong style="color:var(--title,#d4d8e0)"><?= htmlspecialchars($result->nomeCliente ?? '') ?></strong><br>
+                                        <span style="color:var(--dark-cinz,#8788a4)"><?= !empty($result->cnpj) ? 'CNPJ: ' . fmtDoc($result->cnpj) : (!empty($result->cpf_cgc) ? 'CPF/CNPJ: ' . fmtDoc($result->cpf_cgc) : '') ?></span>
+                                    </div>
+                                    <div class="span6 text-right">
+                                        <div style="display:inline-block; text-align:left; min-width:180px">
+                                            <div style="margin-bottom:4px"><strong style="color:var(--title,#d4d8e0)">Servicos:</strong> <span style="color:var(--branco,#caced8)"><?= fmtMoney($totalServico) ?></span></div>
+                                            <?php if ($totalProdutos > 0): ?>
+                                            <div style="margin-bottom:4px"><strong style="color:var(--title,#d4d8e0)">Produtos:</strong> <span style="color:var(--branco,#caced8)"><?= fmtMoney($totalProdutos) ?></span></div>
+                                            <?php endif; ?>
+                                            <?php if ($descontoTomador > 0): ?>
+                                            <div style="margin-bottom:4px"><strong style="color:#fc9d0f">Desconto:</strong> <span style="color:#fc9d0f"><?= fmtMoney($descontoTomador) ?></span></div>
+                                            <?php endif; ?>
+                                            <div style="border-top:1px solid var(--dark-2,#272835); padding-top:4px; margin-top:4px">
+                                                <strong style="color:#62eba6; font-size:14px">Total OS:</strong>
+                                                <span style="color:#62eba6; font-size:14px; font-weight:bold"><?= fmtMoney($totalServico + $totalProdutos) ?></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="row-fluid">
                         <div class="span6">
                             <div class="well well-small" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8)">

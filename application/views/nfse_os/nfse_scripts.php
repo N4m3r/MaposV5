@@ -487,6 +487,14 @@ function copiarLinhaDigitavel() {
 }
 
 $(document).ready(function() {
+    // Inicializa valores da OS no wizard
+    var valorInicial = parseFloat('<?= floatval($valorBaseNFSe ?? 0) ?>') || 0;
+    if (valorInicial > 0) {
+        $('#valor-servicos-wizard').val(fmtMoneyInput(valorInicial));
+        wizardData.valorServicos = valorInicial;
+        atualizarRetencoesStep1(valorInicial);
+    }
+
     // Mascara monetaria
     $('#valor-servicos-wizard, #valor-deducoes-wizard').on('input', function() {
         var val = this.value.replace(/[^\d]/g, '');
@@ -503,6 +511,7 @@ $(document).ready(function() {
         wizardData.valorServicos = parseMoney($('#valor-servicos-wizard').val());
         wizardData.valorDeducoes = parseMoney($('#valor-deducoes-wizard').val());
         wizardData.impostosResult = null;
+        atualizarRetencoesStep1(wizardData.valorServicos);
     });
 
     // Navegacao
