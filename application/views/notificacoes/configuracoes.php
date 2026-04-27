@@ -164,6 +164,7 @@
             </div>
             <div class="widget-content nopadding">
                 <form action="<?php echo current_url(); ?>" id="formConfiguracoes" method="post" class="form-horizontal">
+                    <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>">
 
                     <!-- Configurações Gerais -->
                     <div class="config-card">
@@ -498,6 +499,7 @@ function testarEnvio() {
 
     const formData = new FormData();
     formData.append('numero', numero);
+    formData.append('<?php echo $this->security->get_csrf_token_name(); ?>', '<?php echo $this->security->get_csrf_hash(); ?>');
 
     fetch('<?php echo site_url("notificacoesConfig/testar_envio"); ?>', {
         method: 'POST',
