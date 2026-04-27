@@ -96,7 +96,7 @@ class Certificado extends MY_Controller
                     // Configurar impostos automaticamente
                     $this->load->model('impostos_model');
 
-                    if ($sincronizacao['regime'] ?? '' === 'lucro_presumido') {
+                    if (($sincronizacao['regime'] ?? '') === 'lucro_presumido') {
                         // Lucro Presumido — não usa anexo/faixa do Simples
                         $this->impostos_model->setConfig('IMPOSTO_REGIME_TRIBUTARIO', 'lucro_presumido');
                         $this->impostos_model->setConfig('IMPOSTO_ANEXO_PADRAO', null);
@@ -179,7 +179,7 @@ class Certificado extends MY_Controller
             // Aplicar configurações automaticamente
             $this->load->model('impostos_model');
 
-            if ($resultado['regime'] ?? '' === 'lucro_presumido') {
+            if (($resultado['regime'] ?? '') === 'lucro_presumido') {
                 $this->impostos_model->setConfig('IMPOSTO_REGIME_TRIBUTARIO', 'lucro_presumido');
                 $this->impostos_model->setConfig('IMPOSTO_ANEXO_PADRAO', null);
                 $this->impostos_model->setConfig('IMPOSTO_FAIXA_ATUAL', null);

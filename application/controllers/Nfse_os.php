@@ -844,10 +844,11 @@ class Nfse_os extends MY_Controller
                 $servico['valor_iss_retido'] = floatval($this->input->post('valor_retencao_iss') ?: 0);
             }
 
-            // Tributação
+            // Tributacao
+            $regimeTributario = $this->input->post('regime_tributario') ?: ($this->impostos_model->getConfig('IMPOSTO_REGIME_TRIBUTARIO') ?: 'simples_nacional');
             $tributacao = [
                 'natureza_operacao' => $nfseConfig['nfse_natureza_operacao'] ?? '1',
-                'optante_simples' => $nfseConfig['nfse_optante_simples'] ?? true,
+                'optante_simples' => ($regimeTributario === 'simples_nacional'),
                 'regime_especial' => $nfseConfig['nfse_regime_especial'] ?? '0',
                 'incentivador_cultural' => $nfseConfig['nfse_incentivador_cultural'] ?? '0',
                 'aliquota_iss' => floatval($this->impostos_model->getConfig('IMPOSTO_ISS_MUNICIPAL') ?: 5.00),
