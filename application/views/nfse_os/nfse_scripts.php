@@ -63,7 +63,10 @@ function wizardGoToStep(step) {
         $('#btn-wizard-emitir').hide();
     }
 
-    if (step === 2) calcularImpostosWizard();
+    if (step === 2) {
+        if (wizardData.impostosResult) renderizarImpostos();
+        else calcularImpostosWizard();
+    }
     if (step === 3) atualizarValorBoleto();
 }
 
@@ -111,6 +114,45 @@ function setWizardLoading(loading) {
     }
 }
 
+function renderizarImpostos() {
+    var data = wizardData.impostosResult;
+    if (!data) return;
+    var deducoes = wizardData.valorDeducoes || parseMoney($('#valor-deducoes-wizard').val());
+    var baseCalc = data.valor_bruto - deducoes;
+
+    $('#imp-valor-bruto').text(fmtMoney(data.valor_bruto));
+    $('#imp-deducoes').text(fmtMoney(deducoes));
+    $('#imp-base-calculo').text(fmtMoney(baseCalc));
+
+    if (wizardData.regimeTributario === 'simples_nacional') {
+        if ($('#imp-das').length) $('#imp-das').html('<strong>' + fmtMoney(wizardData.valorDas || data.valor_bruto * 0.06) + '</strong>');
+        if ($('#imp-das-aliquota').length) {
+            var aliq = wizardData.valorDas ? ((wizardData.valorDas / data.valor_bruto) * 100).toFixed(2) : '6.00';
+            $('#imp-das-aliquota').text(aliq + '%');
+        }
+    } else {
+        var imp = data.impostos || {};
+        if ($('#imp-iss').length) $('#imp-iss').text(fmtMoney(imp.iss || imp.iss_valor || 0));
+        if ($('#imp-pis').length) $('#imp-pis').text(fmtMoney(imp.pis || imp.pis_valor || 0));
+        if ($('#imp-cofins').length) $('#imp-cofins').text(fmtMoney(imp.cofins || imp.cofins_valor || 0));
+        if ($('#imp-irrf').length) $('#imp-irrf').text(fmtMoney(imp.irrf || imp.irpj_valor || 0));
+        if ($('#imp-csll').length) $('#imp-csll').text(fmtMoney(imp.csll || imp.csll_valor || 0));
+        if ($('#imp-inss').length) $('#imp-inss').text(fmtMoney(imp.inss || imp.cpp_valor || 0));
+    }
+
+    var totalImpostos = (data.impostos || {}).valor_total_impostos || 0;
+    $('#imp-total-impostos').text(fmtMoney(totalImpostos));
+
+    var totalRetencao = wizardData.retencoes ? parseFloat(wizardData.retencoes.valor_total_retencao || 0) : 0;
+    if (totalRetencao > 0) { $('#retencao-row').show(); $('#imp-retencao-total').text(fmtMoney(totalRetencao)); }
+    else { $('#retencao-row').hide(); }
+
+    $('#imp-valor-liquido').text(fmtMoney(data.valor_liquido));
+    if (wizardData.regimeTributario === 'simples_nacional' && wizardData.valorDas) {
+        $('#das-valor-display').text(fmtMoney(wizardData.valorDas));
+    }
+}
+
 function calcularImpostosWizard() {
     var valor = wizardData.valorServicos || parseMoney($('#valor-servicos-wizard').val());
     if (valor <= 0) return;
@@ -138,41 +180,7 @@ function calcularImpostosWizard() {
                     wizardData.regimeTributario = data.regime_tributario || wizardData.regimeTributario;
                     wizardData.valorDas = data.valor_das || null;
                     wizardData.retencoes = data.retencoes || null;
-
-                    var deducoes = wizardData.valorDeducoes || parseMoney($('#valor-deducoes-wizard').val());
-                    var baseCalc = data.valor_bruto - deducoes;
-
-                    $('#imp-valor-bruto').text(fmtMoney(data.valor_bruto));
-                    $('#imp-deducoes').text(fmtMoney(deducoes));
-                    $('#imp-base-calculo').text(fmtMoney(baseCalc));
-
-                    if (wizardData.regimeTributario === 'simples_nacional') {
-                        if ($('#imp-das').length) $('#imp-das').html('<strong>' + fmtMoney(wizardData.valorDas || data.valor_bruto * 0.06) + '</strong>');
-                        if ($('#imp-das-aliquota').length) {
-                            var aliq = wizardData.valorDas ? ((wizardData.valorDas / data.valor_bruto) * 100).toFixed(2) : '6.00';
-                            $('#imp-das-aliquota').text(aliq + '%');
-                        }
-                    } else {
-                        var imp = data.impostos || {};
-                        if ($('#imp-iss').length) $('#imp-iss').text(fmtMoney(imp.iss || imp.iss_valor || 0));
-                        if ($('#imp-pis').length) $('#imp-pis').text(fmtMoney(imp.pis || imp.pis_valor || 0));
-                        if ($('#imp-cofins').length) $('#imp-cofins').text(fmtMoney(imp.cofins || imp.cofins_valor || 0));
-                        if ($('#imp-irrf').length) $('#imp-irrf').text(fmtMoney(imp.irrf || imp.irpj_valor || 0));
-                        if ($('#imp-csll').length) $('#imp-csll').text(fmtMoney(imp.csll || imp.csll_valor || 0));
-                        if ($('#imp-inss').length) $('#imp-inss').text(fmtMoney(imp.inss || imp.cpp_valor || 0));
-                    }
-
-                    var totalImpostos = (data.impostos || {}).valor_total_impostos || 0;
-                    $('#imp-total-impostos').text(fmtMoney(totalImpostos));
-
-                    var totalRetencao = wizardData.retencoes ? parseFloat(wizardData.retencoes.valor_total_retencao || 0) : 0;
-                    if (totalRetencao > 0) { $('#retencao-row').show(); $('#imp-retencao-total').text(fmtMoney(totalRetencao)); }
-                    else { $('#retencao-row').hide(); }
-
-                    $('#imp-valor-liquido').text(fmtMoney(data.valor_liquido));
-                    if (wizardData.regimeTributario === 'simples_nacional' && wizardData.valorDas) {
-                        $('#das-valor-display').text(fmtMoney(wizardData.valorDas));
-                    }
+                    renderizarImpostos();
                     atualizarRetencoesStep1(valor);
                 } else {
                     var msg = data.message || 'Erro ao calcular impostos';
