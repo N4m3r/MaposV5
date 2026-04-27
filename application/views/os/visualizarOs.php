@@ -135,31 +135,32 @@
             <div class="widget-content" id="printOs">
                 <style>
                     /* ===== Sub-abas Notas Fiscais (isoladas do Bootstrap tabs pai) ===== */
-                    #nf-sub-tabs { margin-bottom: 0; border-bottom: 1px solid #ddd; background: #f5f5f5; }
+                    #nf-sub-tabs { margin-bottom: 0; border-bottom: 1px solid #cdcdcd; }
                     #nf-sub-tabs > li { margin-bottom: -1px; }
                     #nf-sub-tabs > li > a {
                         padding: 10px 15px;
                         font-size: 13px;
                         border: 1px solid transparent;
-                        border-bottom-color: #ddd;
+                        border-bottom-color: #cdcdcd;
                         margin-right: 3px;
                         color: #555;
                         border-radius: 4px 4px 0 0;
+                        background: transparent;
                     }
                     #nf-sub-tabs > li > a:hover { background: #eaeaea; color: #333; }
                     #nf-sub-tabs > li.nf-active > a,
                     #nf-sub-tabs > li.nf-active > a:hover {
-                        border: 1px solid #ddd;
-                        border-bottom-color: #fff;
-                        background: #fff;
+                        border: 1px solid #cdcdcd;
+                        border-bottom-color: transparent;
+                        background: var(--widget-box, #e6e9f3);
                         color: #2c3e50;
                         font-weight: bold;
                     }
                     #nf-sub-content {
-                        border: 1px solid #ddd;
+                        border: 1px solid #cdcdcd;
                         border-top: none;
-                        padding: 20px;
-                        background: #fff;
+                        padding: 15px;
+                        background: var(--widget-box, #e6e9f3);
                     }
                     .nf-pane { display: none; }
                     .nf-pane.nf-active { display: block; }

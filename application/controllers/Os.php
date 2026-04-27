@@ -485,6 +485,8 @@ class Os extends MY_Controller
         if ($return = $this->os_model->valorTotalOS($this->uri->segment(3))) {
             $this->data['totalServico'] = $return['totalServico'];
             $this->data['totalProdutos'] = $return['totalProdutos'];
+            // Garantir valor_desconto disponivel para wizard NFS-e
+            $this->data['result']->valor_desconto = $return['valor_desconto'] ?? ($this->data['result']->valor_desconto ?? 0);
         }
 
         // Carregar dados de NFSe e Boleto
