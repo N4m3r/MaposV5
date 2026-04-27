@@ -488,10 +488,9 @@ function copiarLinhaDigitavel() {
 
 $(document).ready(function() {
     // Inicializa valores da OS no wizard
-    var valorInicial = parseFloat('<?= floatval($valorBaseNFSe ?? 0) ?>') || 0;
+    var valorInicial = wizardData.valorServicos || 0;
     if (valorInicial > 0) {
         $('#valor-servicos-wizard').val(fmtMoneyInput(valorInicial));
-        wizardData.valorServicos = valorInicial;
         atualizarRetencoesStep1(valorInicial);
     }
 
