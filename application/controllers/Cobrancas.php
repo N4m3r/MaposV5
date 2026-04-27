@@ -80,7 +80,6 @@ class Cobrancas extends MY_Controller
                 ]);
 
                 // Gatilho WhatsApp: cobrança gerada
-                $this->load->helper('notificacoes');
                 $ref = $tipo === 'os'
                     ? $this->Os_model->getById($id)
                     : $this->vendas_model->getById($id);

@@ -134,44 +134,47 @@
             </div>
             <div class="widget-content" id="printOs">
                 <style>
-                    /* Sub-abas de Notas Fiscais */
-                    .nf-sub-tabs { margin-bottom: 0; border-bottom: 1px solid #ddd; }
-                    .nf-sub-tabs > li { margin-bottom: -1px; }
-                    .nf-sub-tabs > li > a {
-                        padding: 8px 12px;
+                    /* ===== Sub-abas Notas Fiscais (isoladas do Bootstrap tabs pai) ===== */
+                    #nf-sub-tabs { margin-bottom: 0; border-bottom: 1px solid #ddd; background: #f5f5f5; }
+                    #nf-sub-tabs > li { margin-bottom: -1px; }
+                    #nf-sub-tabs > li > a {
+                        padding: 10px 15px;
                         font-size: 13px;
                         border: 1px solid transparent;
                         border-bottom-color: #ddd;
-                        margin-right: 2px;
+                        margin-right: 3px;
+                        color: #555;
+                        border-radius: 4px 4px 0 0;
                     }
-                    .nf-sub-tabs > li.active > a,
-                    .nf-sub-tabs > li.active > a:hover {
+                    #nf-sub-tabs > li > a:hover { background: #eaeaea; color: #333; }
+                    #nf-sub-tabs > li.nf-active > a,
+                    #nf-sub-tabs > li.nf-active > a:hover {
                         border: 1px solid #ddd;
                         border-bottom-color: #fff;
                         background: #fff;
-                        color: #333;
+                        color: #2c3e50;
                         font-weight: bold;
                     }
-                    .nf-sub-content {
+                    #nf-sub-content {
                         border: 1px solid #ddd;
                         border-top: none;
-                        padding: 15px;
+                        padding: 20px;
                         background: #fff;
                     }
-                    .nf-sub-pane { display: none; }
-                    .nf-sub-pane.active { display: block; }
+                    .nf-pane { display: none; }
+                    .nf-pane.nf-active { display: block; }
 
                     @media print {
                         #os-main-tabs { display: none !important; }
-                        .nf-sub-tabs { display: none !important; }
+                        #nf-sub-tabs { display: none !important; }
                         .tab-content > .tab-pane { display: block !important; opacity: 1 !important; }
                         #tab-notas-fiscais { display: none !important; }
                     }
                     @media (max-width: 767px) {
                         #os-main-tabs > li { display: block; width: 100%; float: none; }
                         #os-main-tabs > li > a { border: 1px solid #ddd; border-radius: 0; margin-bottom: 2px; }
-                        .nf-sub-tabs > li { display: block; width: 100%; float: none; }
-                        .nf-sub-tabs > li > a { border: 1px solid #ddd; border-radius: 0; margin-bottom: 2px; }
+                        #nf-sub-tabs > li { display: block; width: 100%; float: none; }
+                        #nf-sub-tabs > li > a { border: 1px solid #ddd; border-radius: 0; margin-bottom: 2px; }
                     }
                 </style>
 
@@ -903,16 +906,16 @@
                 </div>
                     </div><!-- /tab-pane#tab-detalhes -->
 
-                    <!-- ABA NOTAS FISCAIS -->
+                    <!-- ===== ABA NOTAS FISCAIS ===== -->
                     <div class="tab-pane" id="tab-notas-fiscais">
-                        <ul class="nav nav-tabs nf-sub-tabs" id="nf-sub-tabs">
-                            <li class="active"><a href="#subtab-nfse"><i class="fas fa-file-invoice"></i> Serviços (NFS-e)</a></li>
-                            <li><a href="#subtab-produtos"><i class="bx bx-box"></i> Produtos NF-e</a></li>
-                            <li><a href="#subtab-boletos"><i class="fas fa-barcode"></i> Boletos</a></li>
+                        <ul class="nav nav-tabs" id="nf-sub-tabs">
+                            <li class="nf-active"><a href="#subtab-nfse" data-nf="nfse"><i class="fas fa-file-invoice"></i> Serviços (NFS-e)</a></li>
+                            <li><a href="#subtab-produtos" data-nf="produtos"><i class="bx bx-box"></i> Produtos NF-e</a></li>
+                            <li><a href="#subtab-boletos" data-nf="boletos"><i class="fas fa-barcode"></i> Boletos</a></li>
                         </ul>
 
-                        <div class="nf-sub-content">
-                            <div class="nf-sub-pane active" id="subtab-nfse">
+                        <div id="nf-sub-content">
+                            <div class="nf-pane nf-active" id="subtab-nfse">
                                 <?php $this->load->view('nfse_os/nfse_content', [
                                     'result' => $result,
                                     'emitente' => $emitente ?? null,
@@ -927,7 +930,7 @@
                                 ]); ?>
                             </div>
 
-                            <div class="nf-sub-pane" id="subtab-produtos">
+                            <div class="nf-pane" id="subtab-produtos">
                                 <?php $this->load->view('nfse_os/produtos_fiscal_content', [
                                     'result' => $result,
                                     'produtos' => $produtos ?? [],
@@ -936,7 +939,7 @@
                                 ]); ?>
                             </div>
 
-                            <div class="nf-sub-pane" id="subtab-boletos">
+                            <div class="nf-pane" id="subtab-boletos">
                                 <?php $this->load->view('nfse_os/boleto_content', [
                                     'result' => $result,
                                     'nfse_atual' => $nfse_atual ?? null,
@@ -956,33 +959,33 @@
 
 <?php $this->load->view('nfse_os/nfse_scripts'); ?>
 
-<!-- Controle das sub-abas de Notas Fiscais (independente do Bootstrap tabs) -->
+<!-- Controle isolado das sub-abas de Notas Fiscais -->
 <script>
-$(document).ready(function() {
-    // Handler para sub-abas de Notas Fiscais
-    $('#nf-sub-tabs').on('click', 'a', function(e) {
-        e.preventDefault();
-        var target = $(this).attr('href');
+(function($) {
+    $(function() {
+        var $tabs = $('#nf-sub-tabs');
+        var $panes = $('#nf-sub-content').find('.nf-pane');
 
-        // Remover active de todas as abas
-        $('#nf-sub-tabs li').removeClass('active');
-        // Remover active de todos os painéis
-        $('.nf-sub-pane').removeClass('active');
+        $tabs.on('click', 'a', function(e) {
+            e.preventDefault();
+            var target = $(this).attr('href');
 
-        // Ativar aba clicada
-        $(this).parent().addClass('active');
-        // Ativar painel correspondente
-        $(target).addClass('active');
+            $tabs.find('li').removeClass('nf-active');
+            $panes.removeClass('nf-active');
+
+            $(this).closest('li').addClass('nf-active');
+            $(target).addClass('nf-active');
+        });
+
+        // Ao abrir a aba pai "Notas Fiscais", garantir primeira sub-aba ativa
+        $('a[href="#tab-notas-fiscais"]').on('shown', function() {
+            if (!$tabs.find('li.nf-active').length) {
+                $tabs.find('li:first').addClass('nf-active');
+                $panes.first().addClass('nf-active');
+            }
+        });
     });
-
-    // Quando a aba principal "Notas Fiscais" é ativada, garantir primeira sub-aba
-    $('a[href="#tab-notas-fiscais"]').on('shown', function(e) {
-        if (!$('#nf-sub-tabs li.active').length) {
-            $('#nf-sub-tabs li:first').addClass('active');
-            $('.nf-sub-pane:first').addClass('active');
-        }
-    });
-});
+})(jQuery);
 </script>
 
 <?= $modalGerarPagamento ?>

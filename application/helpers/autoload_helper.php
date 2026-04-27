@@ -21,15 +21,28 @@ if (!function_exists('register_libraries_autoloader')) {
             $base_dir = APPPATH . 'libraries/';
 
             $len = strlen($prefix);
-            if (strncmp($prefix, $class, $len) !== 0) {
+            if (strncmp($prefix, $class, $len) === 0) {
+                $relative_class = substr($class, $len);
+                $file = $base_dir . str_replace('\\', '/', $relative_class) . '.php';
+
+                if (file_exists($file)) {
+                    require $file;
+                }
                 return;
             }
 
-            $relative_class = substr($class, $len);
-            $file = $base_dir . str_replace('\\', '/', $relative_class) . '.php';
+            $prefix = 'Services\\';
+            $base_dir = APPPATH . 'Services/';
 
-            if (file_exists($file)) {
-                require $file;
+            $len = strlen($prefix);
+            if (strncmp($prefix, $class, $len) === 0) {
+                $relative_class = substr($class, $len);
+                $file = $base_dir . str_replace('\\', '/', $relative_class) . '.php';
+
+                if (file_exists($file)) {
+                    require $file;
+                }
+                return;
             }
         });
 

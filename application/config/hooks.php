@@ -38,5 +38,13 @@ $hook['post_controller_constructor'][] = [
     'filepath' => 'hooks',
 ];
 
+// Bootstrap de tabelas de notificações (Evolution API nativa)
+$hook['post_controller_constructor'][] = [
+    'class'    => '',
+    'function' => 'check_notificacoes_tables',
+    'filename' => 'check_notificacoes_tables.php',
+    'filepath' => 'hooks',
+];
+
 /* End of file hooks.php */
 /* Location: ./application/config/hooks.php */

@@ -66,7 +66,7 @@ $autoload['libraries'] = ['database', 'session', 'permission'];
 |	$autoload['helper'] = array('url', 'file');
 */
 
-$autoload['helper'] = ['url', 'audit', 'date', 'dd', 'validation', 'general', 'captcha', 'currency'];
+$autoload['helper'] = ['url', 'audit', 'date', 'dd', 'validation', 'general', 'captcha', 'currency', 'notificacoes', 'autoload'];
 
 /*
 | -------------------------------------------------------------------
@@ -108,7 +108,7 @@ $autoload['language'] = [];
 |
 */
 
-$autoload['model'] = [];
+$autoload['model'] = ['notificacoes_config_model'];
 
 /* End of file autoload.php */
 /* Location: ./application/config/autoload.php */

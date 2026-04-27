@@ -188,7 +188,6 @@ class Os extends MY_Controller
                 log_info('Adicionou uma OS. ID: ' . $id);
 
                 // Gatilho WhatsApp: OS criada
-                $this->load->helper('notificacoes');
                 notificar_os_criada($id, $data['clientes_id']);
 
                 $this->notificacoes_model->notificarTodos([
@@ -333,7 +332,6 @@ class Os extends MY_Controller
                 $statusAnterior = isset($os->status) ? $os->status : '';
 
                 // Gatilho WhatsApp: OS atualizada
-                $this->load->helper('notificacoes');
                 notificar_os_atualizada($idOs, $os->clientes_id, $statusAnterior);
 
                 $novoStatus = $this->input->post('status');

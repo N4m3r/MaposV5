@@ -660,7 +660,6 @@ class Vendas extends MY_Controller
                     $json = ['result' => true];
 
                     // Gatilho WhatsApp: venda realizada
-                    $this->load->helper('notificacoes');
                     notificar_venda_realizada($venda_id, $vendas->clientes_id);
                 }
             } else {

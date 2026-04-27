@@ -13,8 +13,6 @@ class NotificacoesConfig extends MY_Controller
         $this->load->model('notificacoes_templates_model');
         $this->load->model('notificacoes_log_model');
         $this->load->model('clientes_model');
-        $this->load->helper('notificacoes');
-
         // Verificar permissão
         if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cConfiguracao')) {
             $this->session->set_flashdata('error', 'Você não tem permissão para acessar configurações de notificações.');
@@ -471,7 +469,6 @@ class NotificacoesConfig extends MY_Controller
                 redirect(current_url());
             }
 
-            $this->load->helper('notificacoes');
             $resultado = notificar_whatsapp('manual', [
                 'mensagem' => $mensagem
             ], [
