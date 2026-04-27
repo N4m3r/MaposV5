@@ -556,6 +556,91 @@ select.form-select {
 }
 
 /* ============================================
+   WIZARD + NFS-e DARK THEME
+   ============================================ */
+
+/* Wizard steps — Dark */
+.wizard-steps li:before {
+    background: var(--dark-2, #272835);
+}
+.wizard-steps li .wizard-step-number {
+    background: var(--dark-1, #14141a);
+    color: var(--dark-cinz, #8788a4);
+    border-color: var(--dark-2, #272835);
+}
+.wizard-steps li .wizard-step-label {
+    color: var(--dark-cinz, #8788a4);
+}
+.wizard-steps li.active .wizard-step-number {
+    background: var(--dark-azul, #1086dd);
+    color: #fff;
+    border-color: var(--dark-azul, #1086dd);
+}
+.wizard-steps li.active .wizard-step-label {
+    color: var(--dark-azul, #1086dd);
+}
+.wizard-steps li.active:before {
+    background: var(--dark-azul, #1086dd);
+}
+.wizard-steps li.completed .wizard-step-number {
+    background: #26a38e;
+    color: #fff;
+    border-color: #26a38e;
+}
+.wizard-steps li.completed .wizard-step-label {
+    color: #62eba6;
+}
+.wizard-steps li.completed:before {
+    background: #26a38e;
+}
+
+/* Wizard panels + nav dark */
+.wizard-nav {
+    border-top: 1px solid var(--dark-2, #272835);
+}
+
+/* Info cards dark */
+.wizard-info-card {
+    background: var(--dark-0, #191a22);
+    border: 1px solid var(--dark-2, #272835);
+    color: var(--branco, #caced8);
+}
+.wizard-info-card h6 {
+    border-bottom: 1px solid var(--dark-2, #272835);
+    color: var(--title, #d4d8e0);
+}
+.wizard-info-card p {
+    color: var(--dark-cinz, #8788a4);
+}
+
+/* Impostos table dark */
+.impostos-table {
+    background: var(--dark-0, #191a22);
+    border-color: var(--dark-2, #272835);
+    color: var(--branco, #caced8);
+}
+.impostos-table th,
+.impostos-table td {
+    border-color: var(--dark-2, #272835);
+}
+
+/* Summary sections dark */
+.wizard-summary-section {
+    background: var(--dark-0, #191a22);
+    border-left-color: var(--dark-azul, #1086dd);
+    color: var(--branco, #caced8);
+}
+.wizard-summary-section.boleto-section {
+    border-left-color: #fc9d0f;
+}
+.wizard-summary-section h6 {
+    color: var(--title, #d4d8e0);
+}
+.wizard-summary-section p {
+    color: var(--dark-cinz, #8788a4);
+}
+
+/* ============================================
    FIM ESTILOS GLOBAIS PARA SELECTS
    ============================================ */
 
