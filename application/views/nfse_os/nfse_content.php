@@ -1,44 +1,40 @@
 <?php
 /**
- * Conteúdo NFS-e - Card de status ou Wizard de emissão
- * Usado como sub-aba dentro de Notas Fiscais
+ * NFS-e - Sub-aba Servicos dentro de Notas Fiscais
+ * Tema MapOS: widget-box, widget-title, widget-content
  */
 
-// Dados tributários com fallback
 $tributacao = $tributacao ?? [
     'codigo_tributacao_nacional' => '010701',
     'codigo_tributacao_municipal' => '100',
-    'descricao_servico' => 'Suporte técnico em informática, inclusive instalação, configuração e manutenção de programas de computação e bancos de dados.',
+    'descricao_servico' => 'Suporte técnico em informatica, inclusive instalacao, configuracao e manutencao de programas de computacao e bancos de dados.',
     'aliquota_iss' => '5.00',
 ];
 
 $emitente = $emitente ?? null;
-$totalServico = $totalServico ?? 0;
-$totalProdutos = $totalProdutos ?? 0;
+$totalServico = floatval($totalServico ?? 0);
+$totalProdutos = floatval($totalProdutos ?? 0);
 $servicos = $servicos ?? [];
 $produtos = $produtos ?? [];
 
-$valorTotalOS = floatval($totalServico) + floatval($totalProdutos);
 $descontoTomador = floatval($result->valor_desconto ?? 0);
-// Valor a cobrar: quando há desconto negociado usa ele; senão usa total da OS
-// Fallback para garantir que nunca fique zerado
-$valorServicosNFSe = $descontoTomador > 0 ? $descontoTomador : ($valorTotalOS > 0 ? $valorTotalOS : floatval($result->valor_desconto ?? 0));
+// Valor base: desconto negociado > 0 ? desconto : totalServico
+$valorBaseNFSe = $descontoTomador > 0 ? $descontoTomador : $totalServico;
 $ambiente = $ambiente ?? 'homologacao';
 $regimeTributario = $regimeTributario ?? ($tributacao['regime'] ?? 'simples_nacional');
 $isSimplesNacional = ($regimeTributario === 'simples_nacional');
 $regimeLabel = $isSimplesNacional ? 'Simples Nacional' : 'Lucro Presumido';
 
-// Se NFS-e está cancelada, permitir nova emissão mostrando o wizard
+// Mostrar wizard se nao houver NFSe ativa ou se estiver cancelada
 $mostrarWizard = !$nfse_atual || (isset($nfse_atual->situacao) && $nfse_atual->situacao == 'Cancelada');
 
-if (!function_exists('formatarMoedaNFSe')) {
-    function formatarMoedaNFSe($valor) {
-        return 'R$ ' . number_format(floatval($valor), 2, ',', '.');
+if (!function_exists('fmtMoney')) {
+    function fmtMoney($v) {
+        return 'R$ ' . number_format(floatval($v), 2, ',', '.');
     }
 }
-
-if (!function_exists('formatarDocumentoNFSe')) {
-    function formatarDocumentoNFSe($doc) {
+if (!function_exists('fmtDoc')) {
+    function fmtDoc($doc) {
         $doc = preg_replace('/\D/', '', $doc);
         if (strlen($doc) == 14) {
             return substr($doc, 0, 2) . '.' . substr($doc, 2, 3) . '.' . substr($doc, 5, 3) . '/' . substr($doc, 8, 4) . '-' . substr($doc, 12, 2);
@@ -51,162 +47,140 @@ if (!function_exists('formatarDocumentoNFSe')) {
 }
 ?>
 
-<div class="row-fluid" style="margin-top: 20px;">
+<div class="row-fluid" style="margin-top:0">
 
     <?php if ($ambiente == 'homologacao'): ?>
-    <div class="alert alert-warning" style="margin-bottom: 15px;">
-        <i class="fas fa-flask"></i> <strong>Ambiente de Homologação</strong> — As NFS-e emitidas serão de teste, sem valor fiscal.
-        <a href="<?= site_url('certificado/configurar') ?>" style="text-decoration: underline;">Alterar para Produção</a>
-    </div>
-    <?php else: ?>
-    <div class="alert alert-success" style="margin-bottom: 15px;">
-        <i class="fas fa-shield-alt"></i> <strong>Ambiente de Produção</strong> — NFS-e emitidas com valor fiscal real.
+    <div class="span12">
+        <div class="alert alert-warning">
+            <i class="fas fa-flask"></i> <strong>Ambiente de Homologacao</strong> — NFS-e de teste, sem valor fiscal.
+            <a href="<?= site_url('certificado/configurar') ?>">Alterar para Producao</a>
+        </div>
     </div>
     <?php endif; ?>
 
     <?php if ($nfse_atual && !$mostrarWizard): ?>
-    <!-- NFS-e JÁ EMITIDA - Card de status -->
+    <!-- ===== NFSe EMITIDA ===== -->
     <div class="span12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-file-invoice"></i></span>
-                <h5>NFS-e - Nota Fiscal de Serviço</h5>
+                <h5>NFS-e - Nota Fiscal de Servico</h5>
+                <span class="label label-<?= $nfse_atual->situacao == 'Emitida' ? 'success' : 'warning' ?>" style="margin:8px 10px 0 0; float:right">
+                    <?= $nfse_atual->situacao ?>
+                </span>
             </div>
-
             <div class="widget-content">
-                <div class="alert alert-<?= $nfse_atual->situacao == 'Emitida' ? 'success' : ($nfse_atual->situacao == 'Pendente' ? 'warning' : 'danger') ?>">
-                    <div class="row-fluid">
-                        <div class="span6">
-                            <strong>Status:</strong> <span class="label label-<?= $nfse_atual->situacao == 'Emitida' ? 'success' : ($nfse_atual->situacao == 'Pendente' ? 'warning' : 'danger') ?>"><?= $nfse_atual->situacao ?></span>
-                            <?php if (isset($nfse_atual->ambiente) && $nfse_atual->ambiente): ?>
-                                <span class="label label-<?= $nfse_atual->ambiente == 'producao' ? 'success' : 'warning' ?>"><?= $nfse_atual->ambiente == 'producao' ? 'Produção' : 'Homologação' ?></span>
-                            <?php endif; ?>
-                            <br>
-                            <strong>Número:</strong> <?= $nfse_atual->numero_nfse ?: 'Pendente' ?><br>
-                            <strong>Data Emissão:</strong> <?= $nfse_atual->data_emissao ? date('d/m/Y H:i', strtotime($nfse_atual->data_emissao)) : '---' ?>
+                <div class="row-fluid">
+                    <div class="span6">
+                        <table class="table table-condensed" style="margin-bottom:0">
+                            <tr><td style="border:none; padding:2px 0"><strong>Numero:</strong></td><td style="border:none; padding:2px 0"><?= $nfse_atual->numero_nfse ?: 'Pendente' ?></td></tr>
+                            <tr><td style="border:none; padding:2px 0"><strong>Data Emissao:</strong></td><td style="border:none; padding:2px 0"><?= $nfse_atual->data_emissao ? date('d/m/Y H:i', strtotime($nfse_atual->data_emissao)) : '---' ?></td></tr>
                             <?php if (!empty($nfse_atual->chave_acesso)): ?>
-                                <br><strong>Chave de Acesso:</strong> <small style="font-family: monospace; word-break: break-all;"><?= $nfse_atual->chave_acesso ?></small>
+                            <tr><td style="border:none; padding:2px 0"><strong>Chave:</strong></td><td style="border:none; padding:2px 0"><small style="font-family:monospace"><?= $nfse_atual->chave_acesso ?></small></td></tr>
                             <?php endif; ?>
                             <?php if (!empty($nfse_atual->protocolo)): ?>
-                                <br><strong>Protocolo:</strong> <?= $nfse_atual->protocolo ?>
+                            <tr><td style="border:none; padding:2px 0"><strong>Protocolo:</strong></td><td style="border:none; padding:2px 0"><?= $nfse_atual->protocolo ?></td></tr>
                             <?php endif; ?>
-                        </div>
-                        <div class="span6 text-right">
-                            <strong>Valor Serviços:</strong> R$ <?= number_format($nfse_atual->valor_servicos, 2, ',', '.') ?><br>
-                            <strong>Impostos:</strong> R$ <?= number_format($nfse_atual->valor_total_impostos, 2, ',', '.') ?><br>
-                            <strong>Valor Líquido:</strong> R$ <?= number_format($nfse_atual->valor_liquido, 2, ',', '.') ?>
-                        </div>
+                        </table>
+                    </div>
+                    <div class="span6 text-right">
+                        <table class="table table-condensed" style="margin-bottom:0">
+                            <tr><td style="border:none; padding:2px 0"><strong>Valor Servicos:</strong></td><td style="border:none; padding:2px 0"><?= fmtMoney($nfse_atual->valor_servicos) ?></td></tr>
+                            <tr><td style="border:none; padding:2px 0"><strong>Impostos:</strong></td><td style="border:none; padding:2px 0"><?= fmtMoney($nfse_atual->valor_total_impostos) ?></td></tr>
+                            <tr><td style="border:none; padding:2px 0"><strong style="color:#2e7d32">Valor Liquido:</strong></td><td style="border:none; padding:2px 0"><strong style="color:#2e7d32"><?= fmtMoney($nfse_atual->valor_liquido) ?></strong></td></tr>
+                        </table>
                     </div>
                 </div>
 
-                <h6><i class="fas fa-calculator"></i> Detalhamento dos Impostos / DAS</h6>
-                <div class="well well-small">
-                    <?php
-                    $nfseRegime = $nfse_atual->regime_tributario ?? 'simples_nacional';
-                    $isNfseSimples = ($nfseRegime === 'simples_nacional');
-                    $aliquotaEfetiva = $nfse_atual->valor_servicos > 0 ? round(($nfse_atual->valor_total_impostos / $nfse_atual->valor_servicos) * 100, 2) : 0;
-                    ?>
+                <hr style="margin:10px 0">
 
+                <h6><i class="fas fa-calculator"></i> Detalhamento dos Impostos / DAS</h6>
+                <?php
+                $nfseRegime = $nfse_atual->regime_tributario ?? 'simples_nacional';
+                $isNfseSimples = ($nfseRegime === 'simples_nacional');
+                $aliquotaEfetiva = $nfse_atual->valor_servicos > 0 ? round(($nfse_atual->valor_total_impostos / $nfse_atual->valor_servicos) * 100, 2) : 0;
+                ?>
+                <div class="well well-small">
                     <?php if ($isNfseSimples): ?>
-                    <!-- Simples Nacional -->
                     <div class="row-fluid">
                         <div class="span6">
                             <span class="label label-success">Simples Nacional</span>
-                            <div style="margin-top: 6px;">
-                                <strong>DAS Estimado:</strong> R$ <?= number_format($nfse_atual->valor_total_impostos, 2, ',', '.') ?><br>
-                                <strong>Alíquota Efetiva:</strong> <?= number_format($aliquotaEfetiva, 2, ',', '.') ?>%<br>
-                                <strong>Competência:</strong> <?= date('m/Y', strtotime($nfse_atual->competencia ?? date('Y-m-01'))) ?>
+                            <div style="margin-top:6px">
+                                <strong>DAS Estimado:</strong> <?= fmtMoney($nfse_atual->valor_total_impostos) ?><br>
+                                <strong>Aliquota Efetiva:</strong> <?= number_format($aliquotaEfetiva, 2, ',', '.') ?>%<br>
+                                <strong>Competencia:</strong> <?= date('m/Y', strtotime($nfse_atual->competencia ?? date('Y-m-01'))) ?>
                             </div>
                         </div>
                         <div class="span6">
-                            <div style="margin-top: 6px;">
-                                <strong>Base de Cálculo:</strong> R$ <?= number_format($nfse_atual->valor_servicos, 2, ',', '.') ?><br>
-                                <?php if (isset($nfse_atual->valor_das) && $nfse_atual->valor_das > 0): ?>
-                                <strong>DAS Informado:</strong> R$ <?= number_format($nfse_atual->valor_das, 2, ',', '.') ?><br>
-                                <?php endif; ?>
-                                <strong>Registrado no DRE:</strong> <i class="fas fa-check-circle" style="color: #27ae60;"></i> Sim
-                            </div>
+                            <strong>Base Calculo:</strong> <?= fmtMoney($nfse_atual->valor_servicos) ?><br>
+                            <strong>Registrado no DRE:</strong> <i class="fas fa-check-circle" style="color:#27ae60"></i> Sim
                         </div>
                     </div>
-                    <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #ddd; font-size: 11px; color: #666;">
-                        <i class="fas fa-info-circle" style="color: #27ae60;"></i>
-                        O DAS é recolhido mensalmente pelo prestador. O valor estimado acima foi registrado no DRE para controle.
-                        Compare com o boleto DAS enviado pelo contador.
+                    <div style="margin-top:8px; font-size:11px; color:#666">
+                        <i class="fas fa-info-circle" style="color:#27ae60"></i> O DAS e recolhido mensalmente pelo prestador. O valor estimado foi registrado no DRE para controle.
                     </div>
                     <?php else: ?>
-                    <!-- Lucro Presumido -->
                     <div class="row-fluid">
                         <div class="span6">
-                            <span class="label label-info">Lucro Presumido</span><br>
-                            <div style="margin-top: 6px;">
-                                <strong>ISS (<?= $nfse_atual->aliquota_iss ?>%):</strong> R$ <?= number_format($nfse_atual->valor_iss, 2, ',', '.') ?><br>
-                                <strong>PIS:</strong> R$ <?= number_format($nfse_atual->valor_pis, 2, ',', '.') ?><br>
-                                <strong>COFINS:</strong> R$ <?= number_format($nfse_atual->valor_cofins, 2, ',', '.') ?>
+                            <span class="label label-info">Lucro Presumido</span>
+                            <div style="margin-top:6px">
+                                <strong>ISS (<?= $nfse_atual->aliquota_iss ?>%):</strong> <?= fmtMoney($nfse_atual->valor_iss) ?><br>
+                                <strong>PIS:</strong> <?= fmtMoney($nfse_atual->valor_pis) ?><br>
+                                <strong>COFINS:</strong> <?= fmtMoney($nfse_atual->valor_cofins) ?>
                             </div>
                         </div>
                         <div class="span6">
-                            <div style="margin-top: 6px;">
-                                <strong>IRRF:</strong> R$ <?= number_format($nfse_atual->valor_irrf, 2, ',', '.') ?><br>
-                                <strong>CSLL:</strong> R$ <?= number_format($nfse_atual->valor_csll, 2, ',', '.') ?><br>
-                                <strong>INSS:</strong> R$ <?= number_format($nfse_atual->valor_inss, 2, ',', '.') ?>
-                            </div>
+                            <strong>IRRF:</strong> <?= fmtMoney($nfse_atual->valor_irrf) ?><br>
+                            <strong>CSLL:</strong> <?= fmtMoney($nfse_atual->valor_csll) ?><br>
+                            <strong>INSS:</strong> <?= fmtMoney($nfse_atual->valor_inss) ?>
                         </div>
-                    </div>
-                    <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #ddd; font-size: 11px; color: #666;">
-                        <i class="fas fa-info-circle" style="color: #3498db;"></i>
-                        Total de impostos estimados: <strong>R$ <?= number_format($nfse_atual->valor_total_impostos, 2, ',', '.') ?></strong>
-                        — registrado no DRE para controle.
                     </div>
                     <?php endif; ?>
 
-                    <?php if (isset($nfse_atual->valor_total_retencao) && $nfse_atual->valor_total_retencao > 0): ?>
-                    <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #ddd;">
-                        <strong style="color: #e67e22;"><i class="fas fa-hand-holding-usd"></i> Retenções do Tomador:</strong> R$ <?= number_format($nfse_atual->valor_total_retencao, 2, ',', '.') ?>
-                        <small style="color: #888;">(reduz o valor da NFS-e, registrada para compensação no DAS)</small>
-                        <div style="font-size: 12px; margin-top: 4px;">
-                            <?php if (floatval($nfse_atual->valor_retencao_iss ?? 0) > 0): ?>ISS: R$ <?= number_format(floatval($nfse_atual->valor_retencao_iss), 2, ',', '.') ?> &nbsp;<?php endif; ?>
-                            <?php if (floatval($nfse_atual->valor_retencao_irrf ?? 0) > 0): ?>IRRF: R$ <?= number_format(floatval($nfse_atual->valor_retencao_irrf), 2, ',', '.') ?> &nbsp;<?php endif; ?>
-                            <?php if (floatval($nfse_atual->valor_retencao_pis ?? 0) > 0): ?>PIS: R$ <?= number_format(floatval($nfse_atual->valor_retencao_pis), 2, ',', '.') ?> &nbsp;<?php endif; ?>
-                            <?php if (floatval($nfse_atual->valor_retencao_cofins ?? 0) > 0): ?>COFINS: R$ <?= number_format(floatval($nfse_atual->valor_retencao_cofins), 2, ',', '.') ?> &nbsp;<?php endif; ?>
-                            <?php if (floatval($nfse_atual->valor_retencao_csll ?? 0) > 0): ?>CSLL: R$ <?= number_format(floatval($nfse_atual->valor_retencao_csll), 2, ',', '.') ?><?php endif; ?>
+                    <?php if (floatval($nfse_atual->valor_total_retencao ?? 0) > 0): ?>
+                    <hr style="margin:8px 0">
+                    <div style="font-size:12px">
+                        <strong style="color:#e67e22"><i class="fas fa-hand-holding-usd"></i> Retencoes do Tomador:</strong> <?= fmtMoney($nfse_atual->valor_total_retencao) ?>
+                        <small style="color:#888">(reduz o valor da NFS-e, registrada para compensacao no DAS)</small>
+                        <div style="margin-top:4px">
+                            <?php if (floatval($nfse_atual->valor_retencao_iss ?? 0) > 0): ?>ISS <?= fmtMoney($nfse_atual->valor_retencao_iss) ?> &nbsp;<?php endif; ?>
+                            <?php if (floatval($nfse_atual->valor_retencao_irrf ?? 0) > 0): ?>IRRF <?= fmtMoney($nfse_atual->valor_retencao_irrf) ?> &nbsp;<?php endif; ?>
+                            <?php if (floatval($nfse_atual->valor_retencao_pis ?? 0) > 0): ?>PIS <?= fmtMoney($nfse_atual->valor_retencao_pis) ?> &nbsp;<?php endif; ?>
+                            <?php if (floatval($nfse_atual->valor_retencao_cofins ?? 0) > 0): ?>COFINS <?= fmtMoney($nfse_atual->valor_retencao_cofins) ?> &nbsp;<?php endif; ?>
+                            <?php if (floatval($nfse_atual->valor_retencao_csll ?? 0) > 0): ?>CSLL <?= fmtMoney($nfse_atual->valor_retencao_csll) ?><?php endif; ?>
                         </div>
                     </div>
                     <?php endif; ?>
                 </div>
 
-                <div class="btn-group">
+                <div class="btn-group" style="margin-bottom:10px">
                     <a href="<?= site_url('nfse_os/imprimir_nfse/' . $nfse_atual->id) ?>" target="_blank" class="btn btn-primary">
                         <i class="fas fa-file-pdf"></i> Imprimir NFS-e
                     </a>
-
                     <?php if (!empty($nfse_atual->url_danfe)): ?>
                         <a href="<?= htmlspecialchars($nfse_atual->url_danfe, ENT_QUOTES, 'UTF-8') ?>" target="_blank" class="btn btn-success">
-                            <i class="fas fa-external-link-alt"></i> DANFSe (Nacional)
+                            <i class="fas fa-external-link-alt"></i> DANFSe Nacional
                         </a>
                     <?php endif; ?>
-
                     <?php if ($nfse_atual->link_impressao): ?>
                         <a href="<?= htmlspecialchars($nfse_atual->link_impressao, ENT_QUOTES, 'UTF-8') ?>" target="_blank" class="btn btn-success">
-                            <i class="fas fa-print"></i> Imprimir (Original)
+                            <i class="fas fa-print"></i> Imprimir Original
                         </a>
                     <?php endif; ?>
-
                     <?php if ($nfse_atual->xml_path): ?>
                         <a href="<?= base_url(htmlspecialchars($nfse_atual->xml_path, ENT_QUOTES, 'UTF-8')) ?>" target="_blank" class="btn btn-info">
                             <i class="fas fa-file-code"></i> Download XML
                         </a>
                     <?php endif; ?>
-
                     <?php if (!empty($nfse_atual->chave_acesso)): ?>
-                        <button type="button" class="btn btn-info" onclick="consultarNFSeNacional(<?= $nfse_atual->id ?>)" title="Consultar status na API Nacional">
+                        <button type="button" class="btn btn-info" onclick="consultarNFSeNacional(<?= $nfse_atual->id ?>)">
                             <i class="fas fa-sync-alt"></i> Consultar
                         </button>
                     <?php endif; ?>
-
                     <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eNFSe') && $nfse_atual->situacao != 'Cancelada'): ?>
                         <?php if (!empty($nfse_atual->chave_acesso)): ?>
                             <button type="button" class="btn btn-danger" onclick="cancelarNFSeNacional(<?= $nfse_atual->id ?>)">
-                                <i class="fas fa-times"></i> Cancelar (Nacional)
+                                <i class="fas fa-times"></i> Cancelar Nacional
                             </button>
                         <?php else: ?>
                             <button type="button" class="btn btn-danger" onclick="cancelarNFSe(<?= $nfse_atual->id ?>)">
@@ -216,8 +190,7 @@ if (!function_exists('formatarDocumentoNFSe')) {
                     <?php endif; ?>
                 </div>
 
-                <!-- Resultado da consulta nacional -->
-                <div id="nfse-consulta-resultado" style="display:none; margin-top: 10px;">
+                <div id="nfse-consulta-resultado" style="display:none; margin-top:10px">
                     <div class="alert alert-info" id="nfse-consulta-conteudo"></div>
                 </div>
             </div>
@@ -225,324 +198,170 @@ if (!function_exists('formatarDocumentoNFSe')) {
     </div>
 
     <?php else: ?>
-    <!-- WIZARD DE EMISSÃO NFS-e -->
+    <!-- ===== WIZARD EMISSAO NFS-e ===== -->
     <div class="span12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-file-invoice"></i></span>
-                <h5>Emitir NFS-e - Ordem de Serviço #<?= $result->idOs ?></h5>
+                <h5>Emitir NFS-e — OS #<?= $result->idOs ?></h5>
             </div>
-
             <div class="widget-content">
-                <!-- Barra de Passos -->
-                <ul class="wizard-steps" id="wizard-steps">
-                    <li class="active" data-step="1">
-                        <span class="wizard-step-number">1</span>
-                        <span class="wizard-step-label">Dados do Serviço</span>
-                    </li>
-                    <li data-step="2">
-                        <span class="wizard-step-number">2</span>
-                        <span class="wizard-step-label">Impostos & Preview</span>
-                    </li>
-                    <li data-step="3">
-                        <span class="wizard-step-number">3</span>
-                        <span class="wizard-step-label">Boleto</span>
-                    </li>
-                    <li data-step="4">
-                        <span class="wizard-step-number">4</span>
-                        <span class="wizard-step-label">Confirmação</span>
-                    </li>
-                </ul>
 
-                <!-- PASSO 1: Dados do Serviço -->
+                <!-- Passos -->
+                <div class="row-fluid" style="margin-bottom:20px">
+                    <div class="span12">
+                        <ul class="wizard-steps" id="wizard-steps">
+                            <li class="active" data-step="1"><span class="wizard-step-number">1</span><span class="wizard-step-label">Dados</span></li>
+                            <li data-step="2"><span class="wizard-step-number">2</span><span class="wizard-step-label">Impostos</span></li>
+                            <li data-step="3"><span class="wizard-step-number">3</span><span class="wizard-step-label">Boleto</span></li>
+                            <li data-step="4"><span class="wizard-step-number">4</span><span class="wizard-step-label">Confirmar</span></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- PASSO 1 -->
                 <div class="wizard-step-panel active" id="wizard-step-1">
                     <div class="row-fluid">
-                        <!-- Prestador -->
                         <div class="span6">
-                            <div class="wizard-info-card">
-                                <h6><i class="fas fa-building"></i> Prestador</h6>
+                            <div class="well well-small">
+                                <h6 style="margin-top:0"><i class="fas fa-building"></i> Prestador</h6>
                                 <?php if ($emitente): ?>
-                                    <p><strong><?= htmlspecialchars($emitente->nome ?? $emitente->razaosocial ?? '') ?></strong></p>
-                                    <p>CNPJ: <?= formatarDocumentoNFSe($emitente->cnpj ?? '') ?></p>
-                                    <p><?= htmlspecialchars(trim(($emitente->rua ?? '') . ', ' . ($emitente->numero ?? '') . ' - ' . ($emitente->bairro ?? '') . ', ' . ($emitente->cidade ?? '') . '/' . ($emitente->uf ?? ''))) ?></p>
-                                    <p>CEP: <?= $emitente->cep ?? '' ?></p>
+                                    <strong><?= htmlspecialchars($emitente->nome ?? $emitente->razaosocial ?? '') ?></strong><br>
+                                    CNPJ: <?= fmtDoc($emitente->cnpj ?? '') ?><br>
+                                    <?= htmlspecialchars(trim(($emitente->rua ?? '') . ', ' . ($emitente->numero ?? '') . ' - ' . ($emitente->bairro ?? '') . ', ' . ($emitente->cidade ?? '') . '/' . ($emitente->uf ?? ''))) ?><br>
+                                    CEP: <?= $emitente->cep ?? '' ?>
                                 <?php else: ?>
-                                    <p class="text-warning">Dados do emitente não configurados</p>
+                                    <span class="text-warning">Dados do emitente nao configurados</span>
                                 <?php endif; ?>
                             </div>
                         </div>
-
-                        <!-- Tomador -->
                         <div class="span6">
-                            <div class="wizard-info-card">
-                                <h6><i class="fas fa-user"></i> Tomador</h6>
-                                <p><strong><?= htmlspecialchars($result->nomeCliente ?? '') ?></strong></p>
-                                <p><?= !empty($result->cnpj) ? 'CNPJ: ' . formatarDocumentoNFSe($result->cnpj) : (!empty($result->cpf_cgc) ? 'CPF/CNPJ: ' . formatarDocumentoNFSe($result->cpf_cgc) : 'Documento não informado') ?></p>
-                                <p><?= htmlspecialchars(trim(($result->rua ?? '') . ', ' . ($result->numero ?? '') . ' - ' . ($result->bairro ?? ''))) ?></p>
-                                <p><?= htmlspecialchars(trim(($result->cidade ?? '') . '/' . ($result->estado ?? '') . ' - CEP: ' . ($result->cep ?? ''))) ?></p>
+                            <div class="well well-small">
+                                <h6 style="margin-top:0"><i class="fas fa-user"></i> Tomador</h6>
+                                <strong><?= htmlspecialchars($result->nomeCliente ?? '') ?></strong><br>
+                                <?= !empty($result->cnpj) ? 'CNPJ: ' . fmtDoc($result->cnpj) : (!empty($result->cpf_cgc) ? 'CPF/CNPJ: ' . fmtDoc($result->cpf_cgc) : 'Documento nao informado') ?><br>
+                                <?= htmlspecialchars(trim(($result->rua ?? '') . ', ' . ($result->numero ?? '') . ' - ' . ($result->bairro ?? ''))) ?><br>
+                                <?= htmlspecialchars(trim(($result->cidade ?? '') . '/' . ($result->estado ?? '') . ' - CEP: ' . ($result->cep ?? ''))) ?>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Detalhes da OS -->
                     <?php if (!empty($servicos) || !empty($produtos)): ?>
-                    <h6 style="margin-top: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px;">
-                        <i class="fas fa-list"></i> Itens da Ordem de Serviço
-                    </h6>
-                    <table class="table table-condensed table-bordered wizard-services-table">
+                    <h6><i class="fas fa-list"></i> Itens da OS</h6>
+                    <table class="table table-condensed table-bordered">
                         <thead>
-                            <tr>
-                                <th>Item</th>
-                                <th>Qtd</th>
-                                <th class="text-right">Valor Unit.</th>
-                                <th class="text-right">Subtotal</th>
-                            </tr>
+                            <tr><th>Item</th><th>Qtd</th><th class="text-right">Unit.</th><th class="text-right">Subtotal</th></tr>
                         </thead>
                         <tbody>
                             <?php foreach ($servicos as $s): ?>
                             <tr>
-                                <td><?= htmlspecialchars($s->nome ?? 'Serviço') ?></td>
+                                <td><?= htmlspecialchars($s->nome ?? 'Servico') ?></td>
                                 <td><?= $s->quantidade ?? 1 ?></td>
-                                <td class="text-right"><?= formatarMoedaNFSe($s->preco ?: $s->precoVenda) ?></td>
-                                <td class="text-right"><?= formatarMoedaNFSe(($s->preco ?: $s->precoVenda) * ($s->quantidade ?: 1)) ?></td>
+                                <td class="text-right"><?= fmtMoney($s->preco ?: $s->precoVenda) ?></td>
+                                <td class="text-right"><?= fmtMoney(($s->preco ?: $s->precoVenda) * ($s->quantidade ?: 1)) ?></td>
                             </tr>
                             <?php endforeach; ?>
                             <?php foreach ($produtos as $p): ?>
                             <tr>
                                 <td><?= htmlspecialchars($p->descricao ?? $p->nomeProduto ?? 'Produto') ?></td>
                                 <td><?= $p->quantidade ?? 1 ?></td>
-                                <td class="text-right"><?= formatarMoedaNFSe($p->preco ?? (($p->subTotal ?? 0) / max(1, $p->quantidade ?? 1))) ?></td>
-                                <td class="text-right"><?= formatarMoedaNFSe($p->subTotal) ?></td>
+                                <td class="text-right"><?= fmtMoney($p->preco ?? (($p->subTotal ?? 0) / max(1, $p->quantidade ?? 1))) ?></td>
+                                <td class="text-right"><?= fmtMoney($p->subTotal) ?></td>
                             </tr>
                             <?php endforeach; ?>
                         </tbody>
                         <tfoot>
-                            <tr>
-                                <td colspan="3" class="text-right"><strong>Total Serviços:</strong></td>
-                                <td class="text-right"><strong><?= formatarMoedaNFSe($totalServico) ?></strong></td>
-                            </tr>
+                            <tr><td colspan="3" class="text-right"><strong>Total Servicos:</strong></td><td class="text-right"><strong><?= fmtMoney($totalServico) ?></strong></td></tr>
                             <?php if ($totalProdutos > 0): ?>
-                            <tr>
-                                <td colspan="3" class="text-right"><strong>Total Produtos:</strong></td>
-                                <td class="text-right"><strong><?= formatarMoedaNFSe($totalProdutos) ?></strong></td>
-                            </tr>
+                            <tr><td colspan="3" class="text-right"><strong>Total Produtos:</strong></td><td class="text-right"><strong><?= fmtMoney($totalProdutos) ?></strong></td></tr>
                             <?php endif; ?>
-                            <tr>
-                                <td colspan="3" class="text-right"><strong>Total OS:</strong></td>
-                                <td class="text-right"><strong style="color: #2e7d32; font-size: 14px;"><?= formatarMoedaNFSe($valorTotalOS) ?></strong></td>
-                            </tr>
+                            <?php if ($descontoTomador > 0): ?>
+                            <tr><td colspan="3" class="text-right"><strong style="color:#e67e22">Desconto Tomador:</strong></td><td class="text-right"><strong style="color:#e67e22"><?= fmtMoney($descontoTomador) ?></strong></td></tr>
+                            <?php endif; ?>
+                            <tr><td colspan="3" class="text-right"><strong>Total OS:</strong></td><td class="text-right"><strong style="color:#2e7d32; font-size:14px"><?= fmtMoney($totalServico + $totalProdutos) ?></strong></td></tr>
                         </tfoot>
                     </table>
                     <?php endif; ?>
 
                     <?php if ($totalProdutos > 0): ?>
-                    <!-- Painel persistente: inclusão de produtos na NFS-e -->
-                    <div id="painel-incluir-produtos" style="margin-top: 12px; margin-bottom: 10px; border: 2px solid #f0ad4e; border-radius: 6px; background: #fdf8ed; padding: 12px 15px;">
-                        <div style="display: flex; align-items: flex-start; gap: 10px;">
-                            <div style="flex: 1;">
-                                <label style="margin: 0; font-size: 14px; cursor: pointer;" for="incluir-produtos-nfse">
-                                    <input type="checkbox" id="incluir-produtos-nfse" value="1" style="margin-right: 5px; transform: scale(1.2); vertical-align: middle;">
-                                    <strong>Incluir Produtos no Valor da NFS-e</strong>
-                                </label>
-                                <div id="nfse-valor-info" style="margin-top: 8px; padding: 8px 12px; background: #fff; border: 1px solid #e0e0e0; border-radius: 4px;">
-                                    <table style="width: 100%; font-size: 13px;">
-                                        <tr>
-                                            <td style="padding: 2px 0;"><i class="fas fa-wrench" style="color: #3498db; width: 16px;"></i> Total Serviços:</td>
-                                            <td style="text-align: right; font-weight: bold; color: #27ae60; padding: 2px 0;"><?= formatarMoedaNFSe($totalServico) ?></td>
-                                        </tr>
-                                        <tr>
-                                            <td style="padding: 2px 0;"><i class="fas fa-box" style="color: #e67e22; width: 16px;"></i> Total Produtos:</td>
-                                            <td style="text-align: right; font-weight: bold; color: #e67e22; padding: 2px 0;"><?= formatarMoedaNFSe($totalProdutos) ?></td>
-                                        </tr>
-                                        <tr style="border-top: 1px solid #ddd;">
-                                            <td style="padding: 4px 0;"><strong><i class="fas fa-calculator" style="width: 16px;"></i> Valor da NFS-e:</strong></td>
-                                            <td style="text-align: right; font-weight: bold; font-size: 14px; padding: 4px 0;" id="nfse-valor-display">
-                                                <span id="nfse-valor-servicos" style="color: #27ae60;"><?= formatarMoedaNFSe($totalServico) ?></span>
-                                                <span id="nfse-valor-total" style="color: #e67e22; display: none;"><?= formatarMoedaNFSe($valorTotalOS) ?></span>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </div>
-                                <p style="margin: 6px 0 0 0; font-size: 11px; color: #888;">
-                                    <i class="fas fa-exclamation-triangle" style="color: #e67e22;"></i>
-                                    Atente-se à legislação municipal — nem todos os municípios permitem incluir produtos na NFS-e de serviços.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Modal de Confirmação -->
-                    <div id="modal-confirmar-produtos" class="modal hide fade" tabindex="-1" role="dialog" style="display: none;">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                            <h5><i class="fas fa-exclamation-triangle" style="color: #e67e22;"></i> Confirmar Inclusão de Produtos na NFS-e</h5>
-                        </div>
-                        <div class="modal-body">
-                            <p>Você está prestes a incluir <strong>produtos</strong> no valor da NFS-e de serviços.</p>
-                            <table class="table table-bordered" style="margin-top: 10px;">
-                                <tr><td>Valor atual (apenas serviços):</td><td style="text-align: right; font-weight: bold; color: #27ae60;"><?= formatarMoedaNFSe($totalServico) ?></td></tr>
-                                <tr><td>Produtos a incluir:</td><td style="text-align: right; font-weight: bold; color: #e67e22;"><?= formatarMoedaNFSe($totalProdutos) ?></td></tr>
-                                <tr><td><strong>Novo valor total:</strong></td><td style="text-align: right; font-weight: bold; font-size: 16px; color: #e67e22;"><?= formatarMoedaNFSe($valorTotalOS) ?></td></tr>
-                            </table>
-                            <br>
-                            <p><strong>Digite "confirmar" para prosseguir:</strong></p>
-                            <input type="text" id="input-confirmar-produtos" class="span4" placeholder="confirmar" autocomplete="off" style="font-size: 16px; height: 30px;" />
-                            <span id="msg-erro-confirmar" style="color: #e74c3c; display: none; margin-left: 10px;"></span>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn" data-dismiss="modal" aria-hidden="true">Cancelar</button>
-                            <button class="btn btn-warning" id="btn-confirmar-produtos"><i class="fas fa-check"></i> Confirmar</button>
-                        </div>
+                    <div class="well well-small" style="background:#fdf8ed; border-color:#f0ad4e">
+                        <label class="checkbox" style="margin:0; font-size:14px">
+                            <input type="checkbox" id="incluir-produtos-nfse" value="1" style="margin-right:5px">
+                            <strong>Incluir Produtos no Valor da NFS-e</strong>
+                        </label>
+                        <p style="margin:5px 0 0 0; font-size:11px; color:#888">
+                            <i class="fas fa-exclamation-triangle" style="color:#e67e22"></i> Verifique a legislacao municipal antes de incluir produtos na NFS-e de servicos.
+                        </p>
                     </div>
                     <?php endif; ?>
 
-                    <!-- Desconto do Tomador -->
-                    <?php if ($descontoTomador > 0): ?>
-                    <div class="discount-badge">
-                        <i class="fas fa-tags"></i>
-                        <strong>Desconto do Tomador:</strong> <?= formatarMoedaNFSe($descontoTomador) ?>
-                        <small>(valor já negociado com o cliente)</small>
-                    </div>
-                    <?php endif; ?>
-
-                    <!-- Regime Tributário & Retenções -->
-                    <div id="regime-retencoes-section" style="margin-top: 12px; margin-bottom: 10px; border: 2px solid <?= $isSimplesNacional ? '#27ae60' : '#3498db' ?>; border-radius: 6px; padding: 12px 15px; background: <?= $isSimplesNacional ? '#eafaf1' : '#ebf5fb' ?>;">
-                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
-                            <i class="fas fa-landmark" style="font-size: 16px; color: <?= $isSimplesNacional ? '#27ae60' : '#3498db' ?>;"></i>
-                            <strong style="font-size: 14px;">Regime Tributário: <?= $regimeLabel ?></strong>
+                    <div style="margin-top:12px; margin-bottom:10px; border:2px solid <?= $isSimplesNacional ? '#27ae60' : '#3498db' ?>; border-radius:6px; padding:12px 15px; background:<?= $isSimplesNacional ? '#eafaf1' : '#ebf5fb' ?>">
+                        <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px">
+                            <i class="fas fa-landmark" style="font-size:16px; color:<?= $isSimplesNacional ? '#27ae60' : '#3498db' ?>"></i>
+                            <strong style="font-size:14px">Regime Tributario: <?= $regimeLabel ?></strong>
                             <span class="label label-<?= $isSimplesNacional ? 'success' : 'info' ?>"><?= $isSimplesNacional ? 'DAS' : 'Impostos Individuais' ?></span>
                         </div>
-
                         <?php if ($isSimplesNacional): ?>
-                        <div id="das-info" style="padding: 8px 12px; background: #fff; border: 1px solid #c8e6c9; border-radius: 4px; margin-bottom: 10px;">
-                            <table style="width: 100%; font-size: 13px;">
-                                <tr>
-                                    <td style="padding: 2px 0;"><i class="fas fa-receipt" style="color: #27ae60; width: 16px;"></i> <strong>DAS (Documento de Arrecadação):</strong></td>
-                                    <td style="text-align: right; font-weight: bold; color: #27ae60; padding: 2px 0;" id="das-valor-display">—</td>
-                                </tr>
-                                <tr>
-                                    <td colspan="2" style="padding: 4px 0 0 0; font-size: 11px; color: #666;">
-                                        <i class="fas fa-info-circle" style="color: #27ae60;"></i>
-                                        No Simples Nacional, o imposto é recolhido via DAS mensal. O valor estimado será calculado no Passo 2.
-                                    </td>
-                                </tr>
-                            </table>
+                        <div style="padding:8px 12px; background:#fff; border:1px solid #c8e6c9; border-radius:4px; margin-bottom:10px">
+                            <strong><i class="fas fa-receipt" style="color:#27ae60"></i> DAS (Documento de Arrecadacao):</strong>
+                            <span id="das-valor-display" style="color:#27ae60; font-weight:bold">—</span><br>
+                            <small style="color:#666">No Simples Nacional, o imposto e recolhido via DAS mensal. Valor estimado calculado no Passo 2.</small>
                         </div>
                         <?php else: ?>
-                        <div id="lucro-presumido-info" style="padding: 8px 12px; background: #fff; border: 1px solid #b3d9f2; border-radius: 4px; margin-bottom: 10px; font-size: 12px; color: #555;">
-                            <i class="fas fa-info-circle" style="color: #3498db;"></i>
-                            No Lucro Presumido, os impostos são calculados individualmente (ISS, IRRF, PIS, COFINS, CSLL).
+                        <div style="padding:8px 12px; background:#fff; border:1px solid #b3d9f2; border-radius:4px; margin-bottom:10px; font-size:12px; color:#555">
+                            <i class="fas fa-info-circle" style="color:#3498db"></i> Lucro Presumido: impostos calculados individualmente (ISS, IRRF, PIS, COFINS, CSLL).
                         </div>
                         <?php endif; ?>
 
-                        <!-- Retenções do Tomador -->
-                        <div style="padding: 8px 12px; background: #fff; border: 1px solid #e0e0e0; border-radius: 4px;">
-                            <div style="margin-bottom: 6px;">
-                                <strong style="font-size: 13px;"><i class="fas fa-hand-holding-usd" style="color: #e67e22;"></i> Retenções do Tomador</strong>
-                                <span style="font-size: 11px; color: #888; margin-left: 5px;">(impostos retidos na fonte pelo cliente)</span>
+                        <div style="padding:8px 12px; background:#fff; border:1px solid #e0e0e0; border-radius:4px">
+                            <div style="margin-bottom:6px"><strong style="font-size:13px"><i class="fas fa-hand-holding-usd" style="color:#e67e22"></i> Retencoes do Tomador</strong> <small style="color:#888">(impostos retidos na fonte)</small></div>
+                            <div class="row-fluid">
+                                <div class="span4"><label class="checkbox" style="font-size:12px; margin-bottom:5px"><input type="checkbox" id="retem-iss" name="retem_iss" value="1"> ISS (<span id="aliquota-iss-display"><?= $tributacao['aliquota_iss'] ?? '5.00' ?>%</span>) <span id="retem-iss-valor" style="color:#e67e22; font-weight:bold"></span></label></div>
+                                <div class="span4"><label class="checkbox" style="font-size:12px; margin-bottom:5px"><input type="checkbox" id="retem-irrf" name="retem_irrf" value="1"> IRRF (1,5%) <span id="retem-irrf-valor" style="color:#e67e22; font-weight:bold"></span></label></div>
+                                <div class="span4"><label class="checkbox" style="font-size:12px; margin-bottom:5px"><input type="checkbox" id="retem-pis" name="retem_pis" value="1"> PIS (0,65%) <span id="retem-pis-valor" style="color:#e67e22; font-weight:bold"></span></label></div>
                             </div>
                             <div class="row-fluid">
-                                <div class="span4">
-                                    <label class="checkbox" style="font-size: 12px; margin-bottom: 5px;">
-                                        <input type="checkbox" id="retem-iss" name="retem_iss" value="1" style="margin-right: 3px;">
-                                        ISS (<span id="aliquota-iss-display"><?= $tributacao['aliquota_iss'] ?? '5.00' ?>%</span>)
-                                        <span id="retem-iss-valor" style="color: #e67e22; font-weight: bold; margin-left: 5px;"></span>
-                                    </label>
-                                </div>
-                                <div class="span4">
-                                    <label class="checkbox" style="font-size: 12px; margin-bottom: 5px;">
-                                        <input type="checkbox" id="retem-irrf" name="retem_irrf" value="1" style="margin-right: 3px;">
-                                        IRRF (1,5%)
-                                        <span id="retem-irrf-valor" style="color: #e67e22; font-weight: bold; margin-left: 5px;"></span>
-                                    </label>
-                                </div>
-                                <div class="span4">
-                                    <label class="checkbox" style="font-size: 12px; margin-bottom: 5px;">
-                                        <input type="checkbox" id="retem-pis" name="retem_pis" value="1" style="margin-right: 3px;">
-                                        PIS (0,65%)
-                                        <span id="retem-pis-valor" style="color: #e67e22; font-weight: bold; margin-left: 5px;"></span>
-                                    </label>
-                                </div>
+                                <div class="span4"><label class="checkbox" style="font-size:12px; margin-bottom:5px"><input type="checkbox" id="retem-cofins" name="retem_cofins" value="1"> COFINS (3,0%) <span id="retem-cofins-valor" style="color:#e67e22; font-weight:bold"></span></label></div>
+                                <div class="span4"><label class="checkbox" style="font-size:12px; margin-bottom:5px"><input type="checkbox" id="retem-csll" name="retem_csll" value="1"> CSLL (1,0%) <span id="retem-csll-valor" style="color:#e67e22; font-weight:bold"></span></label></div>
+                                <div class="span4"><strong style="font-size:13px">Total Retido:</strong> <span id="retem-total-valor" style="color:#e67e22; font-weight:bold; font-size:14px">R$ 0,00</span></div>
                             </div>
-                            <div class="row-fluid">
-                                <div class="span4">
-                                    <label class="checkbox" style="font-size: 12px; margin-bottom: 5px;">
-                                        <input type="checkbox" id="retem-cofins" name="retem_cofins" value="1" style="margin-right: 3px;">
-                                        COFINS (3,0%)
-                                        <span id="retem-cofins-valor" style="color: #e67e22; font-weight: bold; margin-left: 5px;"></span>
-                                    </label>
-                                </div>
-                                <div class="span4">
-                                    <label class="checkbox" style="font-size: 12px; margin-bottom: 5px;">
-                                        <input type="checkbox" id="retem-csll" name="retem_csll" value="1" style="margin-right: 3px;">
-                                        CSLL (1,0%)
-                                        <span id="retem-csll-valor" style="color: #e67e22; font-weight: bold; margin-left: 5px;"></span>
-                                    </label>
-                                </div>
-                                <div class="span4">
-                                    <strong style="font-size: 13px;">Total Retido:</strong>
-                                    <span id="retem-total-valor" style="color: #e67e22; font-weight: bold; font-size: 14px;">R$ 0,00</span>
-                                </div>
-                            </div>
-                            <p style="margin: 4px 0 0 0; font-size: 11px; color: #888;">
-                                <i class="fas fa-exclamation-circle" style="color: #e67e22;"></i>
-                                As retenções NÃO reduzem o valor da NFS-e. Elas são registradas para controle e serão deduzidas no DRE como crédito a compensar.
-                            </p>
-
-                            <!-- Aviso de retenção de ISS -->
-                            <div id="aviso-retencao-iss" style="display: none; margin-top: 8px; padding: 8px 12px; background: #fff3cd; border: 1px solid #ffc107; border-radius: 4px;">
-                                <strong style="color: #856404; font-size: 12px;">
-                                    <i class="fas fa-exclamation-triangle"></i> Atenção — Retenção de ISS pelo Tomador
-                                </strong>
-                                <p style="margin: 4px 0 0 0; font-size: 11px; color: #856404;">
-                                    Ao emitir esta NFS-e com retenção de ISS, o sistema do <strong>Portal do Contribuidor</strong> exige que você:
-                                </p>
-                                <ul style="margin: 4px 0 0 0; font-size: 11px; color: #856404; padding-left: 16px;">
-                                    <li>Marque <strong>"Sim"</strong> para <em>Retenção do ISSQN</em></li>
-                                    <li>Selecione o <strong>Tomador</strong> (<?= htmlspecialchars($result->nomeCliente ?? 'Cliente') ?>) como responsável pela retenção</li>
-                                </ul>
-                                <p style="margin: 4px 0 0 0; font-size: 11px; color: #856404;">
-                                    <i class="fas fa-check-circle" style="color: #27ae60;"></i>
-                                    O sistema já configurará <strong>IssRetido = Sim</strong> no XML da NFS-e.
-                                </p>
+                            <p style="margin:4px 0 0 0; font-size:11px; color:#888"><i class="fas fa-exclamation-circle" style="color:#e67e22"></i> As retencoes NAO reduzem o valor da NFS-e. Sao registradas para controle e compensacao no DAS.</p>
+                            <div id="aviso-retencao-iss" style="display:none; margin-top:8px; padding:8px 12px; background:#fff3cd; border:1px solid #ffc107; border-radius:4px">
+                                <strong style="color:#856404; font-size:12px"><i class="fas fa-exclamation-triangle"></i> Atencao — Retencao de ISS pelo Tomador</strong>
+                                <p style="margin:4px 0 0 0; font-size:11px; color:#856404">Ao emitir esta NFS-e com retencao de ISS, marque <strong>"Sim"</strong> para <em>Retencao do ISSQN</em> no Portal do Contribuidor. O sistema ja configurara <strong>IssRetido = Sim</strong> no XML.</p>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Campos de Emissão -->
-                    <div class="row-fluid" style="margin-top: 15px;">
+                    <div class="row-fluid" style="margin-top:15px">
                         <div class="span6">
                             <div class="control-group">
-                                <label class="control-label"><strong>Valor dos Serviços:</strong></label>
+                                <label class="control-label"><strong>Valor dos Servicos:</strong></label>
                                 <div class="controls">
                                     <div class="input-prepend input-append">
                                         <span class="add-on">R$</span>
-                                        <input type="text" name="valor_servicos" id="valor-servicos-wizard"
-                                               class="span8" value="<?= number_format($valorServicosNFSe, 2, ',', '.') ?>"
-                                               placeholder="0,00">
+                                        <input type="text" name="valor_servicos" id="valor-servicos-wizard" class="span8" value="<?= number_format($valorBaseNFSe, 2, ',', '.') ?>" placeholder="0,00">
                                     </div>
-                                    <span class="help-block" id="valor-servicos-help">Valor dos serviços prestados (produtos não inclusos)</span>
+                                    <span class="help-block" id="valor-servicos-help">Valor dos servicos prestados</span>
                                 </div>
                             </div>
                         </div>
                         <div class="span6">
                             <div class="control-group">
-                                <label class="control-label"><strong>Deduções:</strong></label>
+                                <label class="control-label"><strong>Deducoes:</strong></label>
                                 <div class="controls">
                                     <div class="input-prepend input-append">
                                         <span class="add-on">R$</span>
-                                        <input type="text" name="valor_deducoes" id="valor-deducoes-wizard"
-                                               class="span8" value="0,00"
-                                               placeholder="0,00">
+                                        <input type="text" name="valor_deducoes" id="valor-deducoes-wizard" class="span8" value="0,00" placeholder="0,00">
                                     </div>
-                                    <span class="help-block">Deduções legais (materiais, insumos, etc.)</span>
+                                    <span class="help-block">Deducoes legais (materiais, insumos)</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <div class="control-group">
-                        <label class="control-label"><strong>Descrição do Serviço:</strong></label>
+                        <label class="control-label"><strong>Descricao do Servico:</strong></label>
                         <div class="controls">
                             <textarea name="descricao_servico" id="descricao-servico-wizard" class="span12" rows="3"><?= htmlspecialchars($tributacao['descricao_servico']) ?></textarea>
                         </div>
@@ -551,141 +370,84 @@ if (!function_exists('formatarDocumentoNFSe')) {
                     <div class="row-fluid">
                         <div class="span6">
                             <div class="control-group">
-                                <label class="control-label">Código Tributação LC 116:</label>
+                                <label class="control-label">Codigo Tributacao LC 116:</label>
                                 <div class="controls">
-                                    <input type="text" class="span12" value="<?= $tributacao['codigo_tributacao_nacional'] ?>" readonly style="background: #f5f5f5;">
+                                    <input type="text" class="span12" value="<?= $tributacao['codigo_tributacao_nacional'] ?>" readonly style="background:#f5f5f5">
                                 </div>
                             </div>
                         </div>
                         <div class="span6">
                             <div class="control-group">
-                                <label class="control-label">Código Municipal:</label>
+                                <label class="control-label">Codigo Municipal:</label>
                                 <div class="controls">
-                                    <input type="text" class="span12" value="<?= $tributacao['codigo_tributacao_municipal'] ?>" readonly style="background: #f5f5f5;">
+                                    <input type="text" class="span12" value="<?= $tributacao['codigo_tributacao_municipal'] ?>" readonly style="background:#f5f5f5">
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- PASSO 2: Impostos & Pré-visualização -->
+                <!-- PASSO 2 -->
                 <div class="wizard-step-panel" id="wizard-step-2">
                     <div class="row-fluid">
-                        <!-- Tabela de Impostos -->
                         <div class="span5">
-                            <h6><i class="fas fa-calculator"></i> Cálculo de Impostos
-                                <span class="label label-<?= $isSimplesNacional ? 'success' : 'info' ?>" style="font-size: 11px; margin-left: 5px;"><?= $regimeLabel ?></span>
-                            </h6>
+                            <h6><i class="fas fa-calculator"></i> Calculo de Impostos <span class="label label-<?= $isSimplesNacional ? 'success' : 'info' ?>" style="font-size:11px"><?= $regimeLabel ?></span></h6>
                             <table class="impostos-table" id="impostos-table">
                                 <tbody>
-                                    <tr>
-                                        <td class="imposto-nome">Valor Bruto</td>
-                                        <td class="imposto-valor" id="imp-valor-bruto">-</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="imposto-nome">(-) Deduções</td>
-                                        <td class="imposto-valor" id="imp-deducoes">-</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="imposto-nome">Base de Cálculo</td>
-                                        <td class="imposto-valor" id="imp-base-calculo">-</td>
-                                    </tr>
+                                    <tr><td class="imposto-nome">Valor Bruto</td><td class="imposto-valor" id="imp-valor-bruto">—</td></tr>
+                                    <tr><td class="imposto-nome">(-) Deducoes</td><td class="imposto-valor" id="imp-deducoes">—</td></tr>
+                                    <tr><td class="imposto-nome">Base de Calculo</td><td class="imposto-valor" id="imp-base-calculo">—</td></tr>
                                     <?php if ($isSimplesNacional): ?>
-                                    <!-- Simples Nacional: DAS -->
-                                    <tr style="background: #e8f5e9;">
-                                        <td class="imposto-nome"><strong><i class="fas fa-receipt" style="color: #27ae60;"></i> DAS (Simples Nacional)</strong></td>
-                                        <td class="imposto-valor" id="imp-das"><strong>-</strong></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="imposto-nome" style="font-size: 11px; color: #888; padding-left: 20px;">Alíquota efetiva: <span id="imp-das-aliquota">-</span></td>
-                                        <td></td>
-                                    </tr>
+                                    <tr style="background:#e8f5e9"><td class="imposto-nome"><strong><i class="fas fa-receipt" style="color:#27ae60"></i> DAS (Simples Nacional)</strong></td><td class="imposto-valor" id="imp-das"><strong>—</strong></td></tr>
+                                    <tr><td class="imposto-nome" style="font-size:11px; color:#888; padding-left:20px">Aliquota efetiva: <span id="imp-das-aliquota">—</span></td><td></td></tr>
                                     <?php else: ?>
-                                    <!-- Lucro Presumido: impostos individuais -->
-                                    <tr>
-                                        <td class="imposto-nome">ISS (<?= $tributacao['aliquota_iss'] ?>%)</td>
-                                        <td class="imposto-valor" id="imp-iss">-</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="imposto-nome">PIS</td>
-                                        <td class="imposto-valor" id="imp-pis">-</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="imposto-nome">COFINS</td>
-                                        <td class="imposto-valor" id="imp-cofins">-</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="imposto-nome">IRRF</td>
-                                        <td class="imposto-valor" id="imp-irrf">-</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="imposto-nome">CSLL</td>
-                                        <td class="imposto-valor" id="imp-csll">-</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="imposto-nome">INSS/CPP</td>
-                                        <td class="imposto-valor" id="imp-inss">-</td>
-                                    </tr>
+                                    <tr><td class="imposto-nome">ISS (<?= $tributacao['aliquota_iss'] ?>%)</td><td class="imposto-valor" id="imp-iss">—</td></tr>
+                                    <tr><td class="imposto-nome">PIS</td><td class="imposto-valor" id="imp-pis">—</td></tr>
+                                    <tr><td class="imposto-nome">COFINS</td><td class="imposto-valor" id="imp-cofins">—</td></tr>
+                                    <tr><td class="imposto-nome">IRRF</td><td class="imposto-valor" id="imp-irrf">—</td></tr>
+                                    <tr><td class="imposto-nome">CSLL</td><td class="imposto-valor" id="imp-csll">—</td></tr>
+                                    <tr><td class="imposto-nome">INSS/CPP</td><td class="imposto-valor" id="imp-inss">—</td></tr>
                                     <?php endif; ?>
-                                    <tr class="total-row">
-                                        <td class="imposto-nome">Total Impostos</td>
-                                        <td class="imposto-valor" id="imp-total-impostos">-</td>
-                                    </tr>
-                                    <!-- Retenções do Tomador -->
-                                    <tr id="retencao-row" style="display: none;">
-                                        <td class="imposto-nome" style="color: #e67e22;"><i class="fas fa-hand-holding-usd"></i> (-) Retenções Tomador</td>
-                                        <td class="imposto-valor" id="imp-retencao-total" style="color: #e67e22;">-</td>
-                                    </tr>
-                                    <tr class="liquido-row">
-                                        <td class="imposto-nome">Valor Líquido</td>
-                                        <td class="imposto-valor" id="imp-valor-liquido">-</td>
-                                    </tr>
+                                    <tr class="total-row"><td class="imposto-nome">Total Impostos</td><td class="imposto-valor" id="imp-total-impostos">—</td></tr>
+                                    <tr id="retencao-row" style="display:none"><td class="imposto-nome" style="color:#e67e22"><i class="fas fa-hand-holding-usd"></i> (-) Retencoes Tomador</td><td class="imposto-valor" id="imp-retencao-total" style="color:#e67e22">—</td></tr>
+                                    <tr class="liquido-row"><td class="imposto-nome">Valor Liquido</td><td class="imposto-valor" id="imp-valor-liquido">—</td></tr>
                                 </tbody>
                             </table>
-                            <p style="font-size: 11px; color: #888; margin-top: 5px;" id="imposto-regime-note">
+                            <p style="font-size:11px; color:#888; margin-top:5px">
                                 <?php if ($isSimplesNacional): ?>
-                                <i class="fas fa-info-circle" style="color: #27ae60;"></i> Simples Nacional: imposto recolhido via DAS mensal. O valor líquido NÃO é reduzido pelas retenções do tomador.
+                                <i class="fas fa-info-circle" style="color:#27ae60"></i> Simples Nacional: imposto recolhido via DAS mensal. O valor liquido NAO e reduzido pelas retencoes.
                                 <?php else: ?>
-                                <i class="fas fa-info-circle" style="color: #3498db;"></i> Lucro Presumido: impostos calculados individualmente. O valor líquido NÃO é reduzido pelas retenções do tomador.
+                                <i class="fas fa-info-circle" style="color:#3498db"></i> Lucro Presumido: impostos calculados individualmente. O valor liquido NAO e reduzido pelas retencoes.
                                 <?php endif; ?>
                             </p>
                         </div>
-
-                        <!-- Pré-visualização do Documento NFS-e (PDF) -->
                         <div class="span7">
-                            <div style="text-align: center; padding: 35px 20px; background: #f9f9f9; border: 1px dashed #ccc; border-radius: 5px;">
-                                <i class="fas fa-file-pdf" style="font-size: 48px; color: #d9534f; display: block; margin-bottom: 15px;"></i>
-                                <h5>Pré-visualização do Documento NFS-e</h5>
-                                <p style="color: #666; margin: 10px 0;">Clique abaixo para gerar um PDF com a pré-visualização completa do documento,<br>incluindo logo da empresa e QR Code PIX para pagamento.</p>
-                                <button type="button" class="btn btn-primary btn-large" id="btn-preview-nfse">
-                                    <i class="fas fa-eye"></i> Pré-visualizar NFS-e (PDF)
-                                </button>
-                                <p style="color: #999; font-size: 11px; margin-top: 10px;">O PDF será aberto em uma nova aba do navegador.</p>
+                            <div style="text-align:center; padding:35px 20px; background:#f9f9f9; border:1px dashed #ccc; border-radius:5px">
+                                <i class="fas fa-file-pdf" style="font-size:48px; color:#d9534f; display:block; margin-bottom:15px"></i>
+                                <h5>Pre-visualizacao do Documento NFS-e</h5>
+                                <p style="color:#666; margin:10px 0">Clique abaixo para gerar um PDF com a pre-visualizacao completa.</p>
+                                <button type="button" class="btn btn-primary btn-large" id="btn-preview-nfse"><i class="fas fa-eye"></i> Pre-visualizar NFS-e (PDF)</button>
+                                <p style="color:#999; font-size:11px; margin-top:10px">O PDF sera aberto em uma nova aba.</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- PASSO 3: Boleto -->
+                <!-- PASSO 3 -->
                 <div class="wizard-step-panel" id="wizard-step-3">
                     <div class="row-fluid">
                         <div class="span12">
                             <div class="control-group">
-                                <label class="checkbox" style="font-size: 14px; margin-bottom: 15px;">
+                                <label class="checkbox" style="font-size:14px; margin-bottom:15px">
                                     <input type="checkbox" id="gerar-boleto-wizard" value="1" checked>
-                                    <strong>Gerar boleto de cobrança junto com a NFS-e</strong>
+                                    <strong>Gerar boleto de cobranca junto com a NFS-e</strong>
                                 </label>
                             </div>
-
                             <div id="boleto-campos">
-                                <div class="alert alert-info" style="margin-bottom: 15px;">
-                                    <i class="fas fa-info-circle"></i>
-                                    O boleto será gerado com o <strong>valor integral</strong> dos serviços.
-                                    <?php if ($isSimplesNacional): ?>
-                                        O DAS (Simples Nacional) é recolhido mensalmente pelo prestador e <strong>não desconta</strong> do valor do boleto.
-                                    <?php endif; ?>
+                                <div class="alert alert-info" style="margin-bottom:15px">
+                                    <i class="fas fa-info-circle"></i> O boleto sera gerado com o <strong>valor integral</strong> dos servicos.
+                                    <?php if ($isSimplesNacional): ?>O DAS (Simples Nacional) e recolhido mensalmente pelo prestador e <strong>nao desconta</strong> do boleto.<?php endif; ?>
                                 </div>
-
                                 <div class="row-fluid">
                                     <div class="span4">
                                         <div class="control-group">
@@ -693,11 +455,9 @@ if (!function_exists('formatarDocumentoNFSe')) {
                                             <div class="controls">
                                                 <div class="input-prepend input-append">
                                                     <span class="add-on">R$</span>
-                                                    <input type="text" id="valor-boleto-wizard" class="span8" readonly style="background: #f5f5f5; font-weight: bold; color: #2e7d32;">
+                                                    <input type="text" id="valor-boleto-wizard" class="span8" readonly style="background:#f5f5f5; font-weight:bold; color:#2e7d32">
                                                 </div>
-                                                <small id="valor-boleto-ajuda" style="color: #888; font-size: 11px;">
-                                                    Valor integral = Serviços - Deduções (impostos/DAS não descontam)
-                                                </small>
+                                                <small id="valor-boleto-ajuda" style="color:#888; font-size:11px">Valor integral = Servicos - Deducoes</small>
                                             </div>
                                         </div>
                                     </div>
@@ -705,125 +465,88 @@ if (!function_exists('formatarDocumentoNFSe')) {
                                         <div class="control-group">
                                             <label class="control-label"><strong>Data de Vencimento:</strong></label>
                                             <div class="controls">
-                                                <input type="date" name="data_vencimento" id="data-vencimento-wizard"
-                                                       class="span12" value="<?= date('Y-m-d', strtotime('+5 days')) ?>">
+                                                <input type="date" name="data_vencimento" id="data-vencimento-wizard" class="span12" value="<?= date('Y-m-d', strtotime('+5 days')) ?>">
                                             </div>
                                         </div>
                                     </div>
                                     <div class="span4">
                                         <div class="control-group">
-                                            <label class="control-label"><strong>Descrição / Instruções:</strong></label>
+                                            <label class="control-label"><strong>Descricao / Instrucoes:</strong></label>
                                             <div class="controls">
-                                                <textarea name="instrucoes" id="instrucoes-boleto-wizard"
-                                                          class="span12" rows="2" placeholder="Instruções que aparecerão no boleto...">Pagável em qualquer banco até o vencimento. Após o vencimento, consultar multas e juros.</textarea>
+                                                <textarea name="instrucoes" id="instrucoes-boleto-wizard" class="span12" rows="2">Pagavel em qualquer banco ate o vencimento. Apos o vencimento, consultar multas e juros.</textarea>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-
-                        <!-- Valor Integral (quando há retenção pelo tomador) -->
-                        <div id="valor-integral-section" style="display: none; margin-top: 12px; padding: 12px 15px; background: #fff3cd; border: 1px solid #ffc107; border-radius: 4px;">
-                            <label class="checkbox" style="font-size: 13px; margin-bottom: 5px;">
-                                <input type="checkbox" id="valor-integral-wizard" name="valor_integral" value="1" checked>
-                                <strong>Emitir boleto com valor integral</strong> (não descontar retenções do tomador)
-                            </label>
-                            <small style="color: #856404; display: block; margin-top: 4px;">
-                                <i class="fas fa-info-circle"></i>
-                                Quando há retenção pelo tomador, o boleto pode ser emitido com o valor integral dos serviços.
-                                As retenções serão registradas para compensação no DAS mensal.
-                                Se desmarcar, o boleto sairá com o valor líquido (menos as retenções).
-                            </small>
-                        </div>
-                    </div>
-
-                            <div id="sem-boleto-msg" style="display: none;">
-                                <div class="alert alert-warning">
-                                    <i class="fas fa-exclamation-triangle"></i> Nenhum boleto será gerado. Você poderá gerar um boleto separadamente após a emissão da NFS-e.
+                                <div id="valor-integral-section" style="display:none; margin-top:12px; padding:12px 15px; background:#fff3cd; border:1px solid #ffc107; border-radius:4px">
+                                    <label class="checkbox" style="font-size:13px; margin-bottom:5px">
+                                        <input type="checkbox" id="valor-integral-wizard" name="valor_integral" value="1" checked>
+                                        <strong>Emitir boleto com valor integral</strong> (nao descontar retencoes)
+                                    </label>
+                                    <small style="color:#856404; display:block; margin-top:4px"><i class="fas fa-info-circle"></i> Quando ha retencao pelo tomador, o boleto pode ser emitido com valor integral. As retencoes serao registradas para compensacao no DAS mensal.</small>
                                 </div>
+                            </div>
+                            <div id="sem-boleto-msg" style="display:none">
+                                <div class="alert alert-warning"><i class="fas fa-exclamation-triangle"></i> Nenhum boleto sera gerado. Voce podera gerar separadamente apos a emissao.</div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- PASSO 4: Confirmação -->
+                <!-- PASSO 4 -->
                 <div class="wizard-step-panel" id="wizard-step-4">
-                    <div class="alert alert-info" style="margin-bottom: 20px;">
-                        <i class="fas fa-clipboard-check"></i> <strong>Resumo da Emissão</strong> — Verifique os dados abaixo antes de confirmar.
+                    <div class="alert alert-info" style="margin-bottom:20px">
+                        <i class="fas fa-clipboard-check"></i> <strong>Resumo da Emissao</strong> — Verifique os dados antes de confirmar.
                     </div>
-
                     <div class="row-fluid">
                         <div class="span6">
-                            <div class="wizard-summary-section">
-                                <h6><i class="fas fa-file-invoice"></i> NFS-e
-                                    <span class="label label-<?= $isSimplesNacional ? 'success' : 'info' ?>" style="font-size: 11px; margin-left: 5px;"><?= $regimeLabel ?></span>
-                                </h6>
+                            <div class="well well-small">
+                                <h6 style="margin-top:0"><i class="fas fa-file-invoice"></i> NFS-e <span class="label label-<?= $isSimplesNacional ? 'success' : 'info' ?>" style="font-size:11px"><?= $regimeLabel ?></span></h6>
                                 <p><strong>Prestador:</strong> <span id="res-prestador"><?= htmlspecialchars($emitente->nome ?? $emitente->razaosocial ?? '—') ?></span></p>
                                 <p><strong>Tomador:</strong> <span id="res-tomador"><?= htmlspecialchars($result->nomeCliente ?? '—') ?></span></p>
-                                <p><strong>Valor dos Serviços:</strong> <span id="res-valor-servicos">—</span></p>
-                                <p><strong>Deduções:</strong> <span id="res-deducoes">—</span></p>
+                                <p><strong>Valor Servicos:</strong> <span id="res-valor-servicos">—</span></p>
+                                <p><strong>Deducoes:</strong> <span id="res-deducoes">—</span></p>
                                 <p id="res-imposto-linha"><strong>Total Impostos:</strong> <span id="res-total-impostos">—</span></p>
-                                <p id="res-das-linha" style="display: <?= $isSimplesNacional ? 'block' : 'none' ?>;"><strong style="color: #27ae60;"><i class="fas fa-receipt"></i> DAS (Simples Nacional):</strong> <span id="res-valor-das" style="color: #27ae60; font-weight: bold;">—</span></p>
-                                <p id="res-retencao-linha" style="display: none;"><strong style="color: #e67e22;"><i class="fas fa-hand-holding-usd"></i> Retenções Tomador:</strong> <span id="res-retencao-total" style="color: #e67e22; font-weight: bold;">—</span></p>
-                                <p><strong style="color: #2e7d32; font-size: 14px;">Valor Líquido:</strong> <span id="res-valor-liquido" style="color: #2e7d32; font-size: 14px; font-weight: bold;">—</span></p>
-                                <p style="font-size: 11px; color: #888;" id="res-liquido-note">Valor líquido = Serviços - Deduções - Retenções. Impostos/DAS do prestador não reduzem este valor.</p>
+                                <p id="res-das-linha" style="display:<?= $isSimplesNacional ? 'block' : 'none' ?>"><strong style="color:#27ae60"><i class="fas fa-receipt"></i> DAS:</strong> <span id="res-valor-das" style="color:#27ae60; font-weight:bold">—</span></p>
+                                <p id="res-retencao-linha" style="display:none"><strong style="color:#e67e22"><i class="fas fa-hand-holding-usd"></i> Retencoes:</strong> <span id="res-retencao-total" style="color:#e67e22; font-weight:bold">—</span></p>
+                                <p><strong style="color:#2e7d32; font-size:14px">Valor Liquido:</strong> <span id="res-valor-liquido" style="color:#2e7d32; font-size:14px; font-weight:bold">—</span></p>
                             </div>
                         </div>
                         <div class="span6">
-                            <div class="wizard-summary-section boleto-section" id="res-boleto-section">
-                                <h6><i class="fas fa-barcode"></i> Boleto</h6>
+                            <div class="well well-small" id="res-boleto-section">
+                                <h6 style="margin-top:0"><i class="fas fa-barcode"></i> Boleto</h6>
                                 <p id="res-boleto-info">—</p>
                             </div>
-
-                            <div class="wizard-summary-section" style="border-left-color: #d9534f;">
-                                <h6><i class="fas fa-exclamation-triangle"></i> Atenção</h6>
-                                <p>Após confirmar, a NFS-e será emitida junto com o boleto (se selecionado).</p>
-                                <p>Esta ação não pode ser desfeita facilmente.</p>
+                            <div class="well well-small" style="border-left:3px solid #d9534f">
+                                <h6 style="margin-top:0"><i class="fas fa-exclamation-triangle"></i> Atencao</h6>
+                                <p style="margin-bottom:0">Apos confirmar, a NFS-e sera emitida junto com o boleto (se selecionado). Esta acao nao pode ser desfeita facilmente.</p>
                                 <?php if ($ambiente == 'homologacao'): ?>
-                                <p style="color: #856404; font-weight: bold;"><i class="fas fa-flask"></i> Modo Homologação: a NFS-e será de teste, sem valor fiscal.</p>
+                                <p style="color:#856404; font-weight:bold; margin-bottom:0"><i class="fas fa-flask"></i> Modo Homologacao: NFS-e de teste, sem valor fiscal.</p>
                                 <?php endif; ?>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Navegação do Wizard -->
+                <!-- Navegacao -->
                 <div class="wizard-nav">
-                    <button type="button" class="btn" id="btn-wizard-anterior" disabled>
-                        <i class="fas fa-arrow-left"></i> Anterior
-                    </button>
-                    <button type="button" class="btn btn-primary" id="btn-wizard-proximo">
-                        Próximo <i class="fas fa-arrow-right"></i>
-                    </button>
-                    <button type="button" class="btn btn-success" id="btn-wizard-emitir" style="display: none;">
-                        <i class="fas fa-check-circle"></i> Emitir NFS-e (API Nacional)
-                    </button>
+                    <button type="button" class="btn" id="btn-wizard-anterior" disabled><i class="fas fa-arrow-left"></i> Anterior</button>
+                    <button type="button" class="btn btn-primary" id="btn-wizard-proximo">Proximo <i class="fas fa-arrow-right"></i></button>
+                    <button type="button" class="btn btn-success" id="btn-wizard-emitir" style="display:none"><i class="fas fa-check-circle"></i> Emitir NFS-e (API Nacional)</button>
                 </div>
             </div>
         </div>
     </div>
-
     <?php endif; ?>
 
-    <!-- Histórico de NFS-e -->
+    <!-- Historico -->
     <?php if ($nfse_atual && !empty($historico_nfse) && is_array($historico_nfse) && count($historico_nfse) > 1): ?>
-    <div class="span12" style="margin-top: 10px;">
+    <div class="span12" style="margin-top:10px">
         <div class="widget-box">
-            <div class="widget-title">
-                <span class="icon"><i class="fas fa-history"></i></span>
-                <h5>Histórico de NFS-e</h5>
-            </div>
-            <div class="widget-content">
+            <div class="widget-title"><span class="icon"><i class="fas fa-history"></i></span><h5>Historico de NFS-e</h5></div>
+            <div class="widget-content nopadding">
                 <table class="table table-bordered table-striped">
-                    <thead>
-                        <tr>
-                            <th>#ID</th>
-                            <th>Número</th>
-                            <th>Data</th>
-                            <th>Valor</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
+                    <thead><tr><th>#ID</th><th>Numero</th><th>Data</th><th>Valor</th><th>Status</th></tr></thead>
                     <tbody>
                         <?php foreach ($historico_nfse as $hist): ?>
                             <?php if ($hist->id != ($nfse_atual->id ?? 0)): ?>
@@ -831,12 +554,8 @@ if (!function_exists('formatarDocumentoNFSe')) {
                                     <td><?= $hist->id ?></td>
                                     <td><?= $hist->numero_nfse ?: '---' ?></td>
                                     <td><?= $hist->data_emissao ? date('d/m/Y', strtotime($hist->data_emissao)) : '---' ?></td>
-                                    <td>R$ <?= number_format($hist->valor_liquido, 2, ',', '.') ?></td>
-                                    <td>
-                                        <span class="label label-<?= $hist->situacao == 'Emitida' ? 'success' : ($hist->situacao == 'Cancelada' ? 'danger' : 'default') ?>">
-                                            <?= $hist->situacao ?>
-                                        </span>
-                                    </td>
+                                    <td><?= fmtMoney($hist->valor_liquido) ?></td>
+                                    <td><span class="label label-<?= $hist->situacao == 'Emitida' ? 'success' : ($hist->situacao == 'Cancelada' ? 'danger' : 'default') ?>"><?= $hist->situacao ?></span></td>
                                 </tr>
                             <?php endif; ?>
                         <?php endforeach; ?>
