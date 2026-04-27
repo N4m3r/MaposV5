@@ -20,8 +20,9 @@ $produtos = $produtos ?? [];
 
 $valorTotalOS = floatval($totalServico) + floatval($totalProdutos);
 $descontoTomador = floatval($result->valor_desconto ?? 0);
-// Valor a cobrar: total da OS (serviços + produtos), ou desconto do tomador se houver
-$valorServicosNFSe = $descontoTomador > 0 ? $descontoTomador : floatval($result->valorTotal ?? $valorTotalOS);
+// Valor a cobrar: quando há desconto negociado usa ele; senão usa total da OS
+// Fallback para garantir que nunca fique zerado
+$valorServicosNFSe = $descontoTomador > 0 ? $descontoTomador : ($valorTotalOS > 0 ? $valorTotalOS : floatval($result->valor_desconto ?? 0));
 $ambiente = $ambiente ?? 'homologacao';
 $regimeTributario = $regimeTributario ?? ($tributacao['regime'] ?? 'simples_nacional');
 $isSimplesNacional = ($regimeTributario === 'simples_nacional');

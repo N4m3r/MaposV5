@@ -7,7 +7,7 @@ var wizardData = {
     currentStep: 1,
     totalSteps: 4,
     impostosResult: null,
-    valorServicos: 0,
+    valorServicos: parseFloat('<?= floatval($valorServicosNFSe ?? ($totalServico + $totalProdutos)) ?>') || 0,
     valorDeducoes: 0,
     gerarBoleto: true,
     incluirProdutos: false,
