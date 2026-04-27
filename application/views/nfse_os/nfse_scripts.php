@@ -20,7 +20,8 @@ var wizardData = {
     retemCofins: false,
     retemCsll: false,
     retencoes: null,
-    valorDas: null
+    valorDas: null,
+    isCalculating: false
 };
 
 function fmtMoneyInput(v) {
@@ -77,7 +78,14 @@ function validarStep(step) {
         return true;
     }
     if (step === 2) {
-        if (!wizardData.impostosResult) { alert('Aguarde o calculo dos impostos.'); return false; }
+        if (wizardData.isCalculating) {
+            alert('Calculo dos impostos em andamento. Aguarde um instante.');
+            return false;
+        }
+        if (!wizardData.impostosResult) {
+            calcularImpostosWizard();
+            return false;
+        }
         return true;
     }
     if (step === 3) {
@@ -91,13 +99,24 @@ function validarStep(step) {
 }
 
 var calcularTimeout = null;
+function setWizardLoading(loading) {
+    wizardData.isCalculating = loading;
+    var btn = $('#btn-wizard-proximo');
+    if (loading) {
+        btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Calculando...');
+        $('#wizard-loading-indicator').show();
+    } else {
+        btn.prop('disabled', false).html('<i class="fas fa-arrow-right"></i> Proximo');
+        $('#wizard-loading-indicator').hide();
+    }
+}
+
 function calcularImpostosWizard() {
     var valor = wizardData.valorServicos || parseMoney($('#valor-servicos-wizard').val());
     if (valor <= 0) return;
-    $('#impostos-table td.imposto-valor').text('...');
-    $('#imp-valor-liquido').text('...');
     clearTimeout(calcularTimeout);
     calcularTimeout = setTimeout(function() {
+        setWizardLoading(true);
         var postData = { valor: valor };
         if ($('#retem-iss').is(':checked')) postData.retem_iss = 1;
         if ($('#retem-irrf').is(':checked')) postData.retem_irrf = 1;
@@ -112,6 +131,7 @@ function calcularImpostosWizard() {
             data: postData,
             dataType: 'json',
             success: function(data) {
+                setWizardLoading(false);
                 updateCsrfToken(data);
                 if (data.success) {
                     wizardData.impostosResult = data;
@@ -161,6 +181,7 @@ function calcularImpostosWizard() {
                 }
             },
             error: function(xhr) {
+                setWizardLoading(false);
                 var msg = 'Erro na comunicacao.';
                 if (xhr.status === 0) msg = 'Sem conexao.';
                 else if (xhr.status === 403) msg = 'Acesso negado (CSRF).';

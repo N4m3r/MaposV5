@@ -438,6 +438,9 @@ if (!function_exists('fmtDoc')) {
 
                 <!-- PASSO 2 -->
                 <div class="wizard-step-panel" id="wizard-step-2">
+                    <div id="wizard-loading-indicator" style="display:none; margin-bottom:15px; padding:12px 15px; background:rgba(16,134,221,0.15); border:1px solid rgba(16,134,221,0.3); border-radius:4px; color:#1086dd; text-align:center">
+                        <i class="fas fa-spinner fa-spin"></i> <strong>Calculando impostos...</strong> Aguarde um instante.
+                    </div>
                     <div class="row-fluid">
                         <div class="span6">
                             <h6 style="color:var(--title,#d4d8e0)"><i class="fas fa-calculator" style="color:var(--dark-azul,#1086dd)"></i> Calculo de Impostos <span class="label" style="background:<?= $isSimplesNacional ? '#1086dd' : '#52459f' ?>; color:#fff; font-size:11px"><?= $regimeLabel ?></span></h6>
