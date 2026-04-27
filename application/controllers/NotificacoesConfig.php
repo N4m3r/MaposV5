@@ -95,6 +95,7 @@ class NotificacoesConfig extends MY_Controller
             show_404();
         }
 
+        header('Content-Type: application/json');
         $service = new WhatsAppService();
         $resultado = $service->obterQRCode();
 
@@ -110,6 +111,7 @@ class NotificacoesConfig extends MY_Controller
             show_404();
         }
 
+        header('Content-Type: application/json');
         $service = new WhatsAppService();
         $resultado = $service->verificarConexao();
 
@@ -125,6 +127,7 @@ class NotificacoesConfig extends MY_Controller
             show_404();
         }
 
+        header('Content-Type: application/json');
         $service = new WhatsAppService();
         $resultado = $service->desconectar();
 
@@ -140,6 +143,7 @@ class NotificacoesConfig extends MY_Controller
             show_404();
         }
 
+        header('Content-Type: application/json');
         $numero = $this->input->post('numero');
         $mensagem = $this->input->post('mensagem') ?: 'Teste de envio do sistema MAPOS!';
 

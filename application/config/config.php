@@ -474,6 +474,11 @@ $config['csrf_exclude_uris'] = [
     'nfse_os/gerar_boleto.*+',
     'certificado/api_consulta',
     'certificado/vincular_nfse_os',
+    'notificacoesConfig/obter_qr',
+    'notificacoesConfig/verificar_status',
+    'notificacoesConfig/desconectar',
+    'notificacoesConfig/testar_envio',
+    'notificacoesConfig/preview_template',
 ];
 
 /*
