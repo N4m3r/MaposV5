@@ -432,7 +432,9 @@ function toggleProvider() {
 }
 
 function verificarStatus() {
-    fetch('<?php echo site_url("notificacoesConfig/verificar_status"); ?>')
+    fetch('<?php echo site_url("notificacoesConfig/verificar_status"); ?>', {
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
         .then(r => r.json())
         .then(data => {
             alert('Status: ' + (data.connected ? 'Conectado (' + data.status + ')' : 'Desconectado'));
@@ -448,7 +450,9 @@ function obterQRCode() {
     btn.disabled = true;
     btn.innerHTML = '<i class="bx bx-loader bx-spin"></i> Obtendo QR Code...';
 
-    fetch('<?php echo site_url("notificacoesConfig/obter_qr"); ?>')
+    fetch('<?php echo site_url("notificacoesConfig/obter_qr"); ?>', {
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
         .then(r => r.json())
         .then(data => {
             btn.disabled = false;
@@ -473,7 +477,10 @@ function obterQRCode() {
 function desconectar() {
     if (!confirm('Tem certeza que deseja desconectar?')) return;
 
-    fetch('<?php echo site_url("notificacoesConfig/desconectar"); ?>')
+    fetch('<?php echo site_url("notificacoesConfig/desconectar"); ?>', {
+        method: 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
         .then(r => r.json())
         .then(data => {
             if (data.success) {
@@ -503,6 +510,7 @@ function testarEnvio() {
 
     fetch('<?php echo site_url("notificacoesConfig/testar_envio"); ?>', {
         method: 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
         body: formData
     })
     .then(r => r.json())
