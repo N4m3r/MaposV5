@@ -13,7 +13,7 @@ class WebhookManager
 
     public function __construct()
     {
-        $ci = \&get_instance();
+        $ci = &get_instance();
         $ci->load->database();
         $this->db = $ci->db;
         $this->secret = config_item('webhook_secret') ?? bin2hex(random_bytes(32));
