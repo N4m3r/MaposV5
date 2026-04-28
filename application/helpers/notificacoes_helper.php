@@ -303,3 +303,217 @@ function agendar_notificacao($templateChave, $variaveis, $dataHora, $opcoes = []
         'origem' => $opcoes['origem'] ?? 'sistema',
     ]);
 }
+
+/**
+ * Verifica se notificações de obra estão ativas para um evento
+ */
+function _obra_notificacao_ativa($evento)
+{
+    $CI = &get_instance();
+    $CI->load->model('obras_model');
+
+    try {
+        $config = $CI->obras_model->getConfiguracoesNotificacoes();
+
+        // Verificar canal WhatsApp
+        if (empty($config['canal_whatsapp'])) {
+            return false;
+        }
+
+        // Verificar flag específica do evento
+        return !empty($config[$evento]);
+    } catch (Exception $e) {
+        log_message('error', 'Erro ao verificar configuração de notificação de obra: ' . $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * Notifica cliente quando atividade de obra é finalizada
+ */
+function notificar_obra_atividade_finalizada($atividade_id, $obra_id, $cliente_id = null)
+{
+    if (!_obra_notificacao_ativa('obra_concluida')) {
+        return ['success' => false, 'error' => 'Notificação desativada'];
+    }
+
+    $CI = &get_instance();
+    $CI->load->model('obra_atividades_model');
+    $CI->load->model('obras_model');
+    $CI->load->model('clientes_model');
+
+    $atividade = $CI->obra_atividades_model->getById($atividade_id);
+    $obra = $CI->obras_model->getById($obra_id);
+
+    if (!$obra) {
+        return ['success' => false, 'error' => 'Obra não encontrada'];
+    }
+
+    if (!$cliente_id) {
+        $cliente_id = $obra->cliente_id ?? null;
+    }
+
+    $cliente = $cliente_id ? $CI->clientes_model->getById($cliente_id) : null;
+    if (!$cliente) {
+        return ['success' => false, 'error' => 'Cliente não encontrado'];
+    }
+
+    $etapa_nome = $atividade->etapa_nome ?? 'Etapa';
+    $tecnico_nome = $atividade->tecnico_nome ?? 'Técnico';
+    $percentual = $atividade->percentual_concluido ?? 100;
+
+    $variaveis = [
+        'cliente_nome' => $cliente->nomeCliente,
+        'obra_nome' => $obra->nome ?? 'Obra',
+        'etapa_nome' => $etapa_nome,
+        'atividade_titulo' => $atividade->titulo ?? 'Atividade',
+        'tecnico_nome' => $tecnico_nome,
+        'data_hora' => date('d/m/Y H:i'),
+        'percentual' => $percentual,
+        'link_obra' => site_url('obras/visualizar/' . $obra_id),
+    ];
+
+    return notificar_whatsapp('obra_atividade_finalizada', $variaveis, [
+        'cliente_id' => $cliente_id,
+        'telefone' => $cliente->celular ?? $cliente->telefone,
+    ]);
+}
+
+/**
+ * Notifica cliente quando etapa de obra é concluída
+ */
+function notificar_obra_etapa_concluida($etapa_id, $obra_id, $cliente_id = null)
+{
+    if (!_obra_notificacao_ativa('obra_concluida')) {
+        return ['success' => false, 'error' => 'Notificação desativada'];
+    }
+
+    $CI = &get_instance();
+    $CI->load->model('obras_model');
+    $CI->load->model('clientes_model');
+
+    $obra = $CI->obras_model->getById($obra_id);
+    $etapa = $CI->obras_model->getEtapaById($etapa_id);
+
+    if (!$obra) {
+        return ['success' => false, 'error' => 'Obra não encontrada'];
+    }
+
+    if (!$cliente_id) {
+        $cliente_id = $obra->cliente_id ?? null;
+    }
+
+    $cliente = $cliente_id ? $CI->clientes_model->getById($cliente_id) : null;
+    if (!$cliente) {
+        return ['success' => false, 'error' => 'Cliente não encontrado'];
+    }
+
+    $variaveis = [
+        'cliente_nome' => $cliente->nomeCliente,
+        'obra_nome' => $obra->nome ?? 'Obra',
+        'etapa_nome' => $etapa->nome ?? 'Etapa',
+        'etapa_numero' => $etapa->numero_etapa ?? '',
+        'data_hora' => date('d/m/Y H:i'),
+        'link_obra' => site_url('obras/visualizar/' . $obra_id),
+    ];
+
+    return notificar_whatsapp('obra_etapa_concluida', $variaveis, [
+        'cliente_id' => $cliente_id,
+        'telefone' => $cliente->celular ?? $cliente->telefone,
+    ]);
+}
+
+/**
+ * Notifica cliente quando obra é concluída
+ */
+function notificar_obra_concluida($obra_id, $cliente_id = null)
+{
+    if (!_obra_notificacao_ativa('obra_concluida')) {
+        return ['success' => false, 'error' => 'Notificação desativada'];
+    }
+
+    $CI = &get_instance();
+    $CI->load->model('obras_model');
+    $CI->load->model('clientes_model');
+
+    $obra = $CI->obras_model->getById($obra_id);
+
+    if (!$obra) {
+        return ['success' => false, 'error' => 'Obra não encontrada'];
+    }
+
+    if (!$cliente_id) {
+        $cliente_id = $obra->cliente_id ?? null;
+    }
+
+    $cliente = $cliente_id ? $CI->clientes_model->getById($cliente_id) : null;
+    if (!$cliente) {
+        return ['success' => false, 'error' => 'Cliente não encontrado'];
+    }
+
+    $total_horas = $obra->total_horas ?? 0;
+
+    $variaveis = [
+        'cliente_nome' => $cliente->nomeCliente,
+        'obra_nome' => $obra->nome ?? 'Obra',
+        'data_conclusao' => date('d/m/Y'),
+        'total_horas' => $total_horas,
+        'link_obra' => site_url('obras/visualizar/' . $obra_id),
+    ];
+
+    return notificar_whatsapp('obra_concluida', $variaveis, [
+        'cliente_id' => $cliente_id,
+        'telefone' => $cliente->celular ?? $cliente->telefone,
+    ]);
+}
+
+/**
+ * Notifica cliente quando impedimento é registrado em atividade
+ */
+function notificar_obra_impedimento($atividade_id, $obra_id, $cliente_id = null, $tipo = 'outro', $descricao = '')
+{
+    if (!_obra_notificacao_ativa('impedimento')) {
+        return ['success' => false, 'error' => 'Notificação desativada'];
+    }
+
+    $CI = &get_instance();
+    $CI->load->model('obra_atividades_model');
+    $CI->load->model('obras_model');
+    $CI->load->model('clientes_model');
+
+    $atividade = $CI->obra_atividades_model->getById($atividade_id);
+    $obra = $CI->obras_model->getById($obra_id);
+
+    if (!$obra) {
+        return ['success' => false, 'error' => 'Obra não encontrada'];
+    }
+
+    if (!$cliente_id) {
+        $cliente_id = $obra->cliente_id ?? null;
+    }
+
+    $cliente = $cliente_id ? $CI->clientes_model->getById($cliente_id) : null;
+    if (!$cliente) {
+        return ['success' => false, 'error' => 'Cliente não encontrado'];
+    }
+
+    $etapa_nome = $atividade->etapa_nome ?? 'Etapa';
+    $tecnico_nome = $atividade->tecnico_nome ?? 'Técnico';
+
+    $variaveis = [
+        'cliente_nome' => $cliente->nomeCliente,
+        'obra_nome' => $obra->nome ?? 'Obra',
+        'etapa_nome' => $etapa_nome,
+        'atividade_titulo' => $atividade->titulo ?? 'Atividade',
+        'tecnico_nome' => $tecnico_nome,
+        'tipo_impedimento' => $tipo,
+        'descricao_impedimento' => $descricao,
+        'data_hora' => date('d/m/Y H:i'),
+        'link_obra' => site_url('obras/visualizar/' . $obra_id),
+    ];
+
+    return notificar_whatsapp('obra_impedimento', $variaveis, [
+        'cliente_id' => $cliente_id,
+        'telefone' => $cliente->celular ?? $cliente->telefone,
+    ]);
+}

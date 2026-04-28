@@ -2205,6 +2205,19 @@ class Obras extends MY_Controller
 
         if ($this->obras_model->update($obra_id, $dados)) {
             log_info('Status da obra atualizado. ID: ' . $obra_id . ' - Novo status: ' . $novo_status);
+
+            // Notificar cliente se obra foi concluída
+            if ($novo_status === 'concluida') {
+                try {
+                    if (function_exists('notificar_obra_concluida')) {
+                        $obra = $this->obras_model->getById($obra_id);
+                        notificar_obra_concluida($obra_id, $obra->cliente_id ?? null);
+                    }
+                } catch (Exception $e) {
+                    log_message('error', 'Erro ao notificar obra concluída: ' . $e->getMessage());
+                }
+            }
+
             echo json_encode([
                 'success' => true,
                 'message' => 'Status atualizado com sucesso',

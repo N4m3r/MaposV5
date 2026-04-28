@@ -582,6 +582,29 @@ class Obra_atividades_model extends CI_Model
             // Atualizar progresso da etapa
             if ($atividade->etapa_id) {
                 $this->atualizarProgressoEtapa($atividade->etapa_id);
+
+                // Verificar se etapa foi concluída
+                $this->db->select('percentual_concluido, numero_etapa, nome');
+                $this->db->where('id', $atividade->etapa_id);
+                $etapa = $this->db->get('obra_etapas')->row();
+                if ($etapa && $etapa->percentual_concluido >= 100) {
+                    try {
+                        if (function_exists('notificar_obra_etapa_concluida')) {
+                            notificar_obra_etapa_concluida($atividade->etapa_id, $atividade->obra_id, null);
+                        }
+                    } catch (Exception $e) {
+                        log_message('error', 'Erro ao notificar etapa concluída: ' . $e->getMessage());
+                    }
+                }
+            }
+
+            // Notificar atividade finalizada
+            try {
+                if (function_exists('notificar_obra_atividade_finalizada')) {
+                    notificar_obra_atividade_finalizada($id, $atividade->obra_id, null);
+                }
+            } catch (Exception $e) {
+                log_message('error', 'Erro ao notificar atividade finalizada: ' . $e->getMessage());
             }
         }
 
@@ -593,6 +616,8 @@ class Obra_atividades_model extends CI_Model
      */
     public function registrarImpedimento($id, $tecnico_id, $dados)
     {
+        $atividade = $this->getById($id);
+
         $update_data = [
             'status' => 'pausada',
             'impedimento' => 1,
@@ -607,6 +632,15 @@ class Obra_atividades_model extends CI_Model
                 'descricao' => 'Impedimento registrado: ' . ($dados['descricao'] ?? ''),
                 'tipo_impedimento' => $dados['tipo'] ?? 'outro'
             ]);
+
+            // Notificar impedimento
+            try {
+                if (function_exists('notificar_obra_impedimento')) {
+                    notificar_obra_impedimento($id, $atividade->obra_id ?? null, null, $dados['tipo'] ?? 'outro', $dados['descricao'] ?? '');
+                }
+            } catch (Exception $e) {
+                log_message('error', 'Erro ao notificar impedimento: ' . $e->getMessage());
+            }
         }
 
         return $result;
