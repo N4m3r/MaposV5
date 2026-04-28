@@ -37,10 +37,17 @@ class NotificacoesConfig extends MY_Controller
         $config = $this->notificacoes_config_model->getConfig();
 
         if ($this->input->post()) {
+            $evolution_url = $this->input->post('evolution_url');
+            if ($evolution_url) {
+                $evolution_url = rtrim($evolution_url, '/');
+                $evolution_url = preg_replace('#/swagger(/index\.html)?$#', '', $evolution_url);
+                $evolution_url = rtrim($evolution_url, '/');
+            }
+
             $dados = [
                 'whatsapp_provedor' => $this->input->post('whatsapp_provedor'),
                 'whatsapp_ativo' => $this->input->post('whatsapp_ativo') ? 1 : 0,
-                'evolution_url' => $this->input->post('evolution_url'),
+                'evolution_url' => $evolution_url,
                 'evolution_apikey' => $this->input->post('evolution_apikey'),
                 'evolution_version' => $this->input->post('evolution_version') ?: 'v2',
                 'evolution_instance' => $this->input->post('evolution_instance') ?: 'mapos',

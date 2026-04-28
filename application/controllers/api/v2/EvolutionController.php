@@ -82,6 +82,8 @@ class EvolutionController extends CI_Controller
         }
 
         $novaUrl = rtrim($data['evolution_url'], '/');
+        $novaUrl = preg_replace('#/swagger(/index\.html)?$#', '', $novaUrl);
+        $novaUrl = rtrim($novaUrl, '/');
         $novoIp = $data['ip'] ?? '';
 
         // Valida URL básica

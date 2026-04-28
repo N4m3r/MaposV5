@@ -20,6 +20,12 @@ class WhatsAppService
         $this->CI->load->model('notificacoes_config_model');
         $this->config = $this->CI->notificacoes_config_model->getConfig();
         $this->provedor = $this->config ? $this->config->whatsapp_provedor : 'desativado';
+
+        if ($this->config && !empty($this->config->evolution_url)) {
+            $url = rtrim($this->config->evolution_url, '/');
+            $url = preg_replace('#/swagger(/index\.html)?$#', '', $url);
+            $this->config->evolution_url = rtrim($url, '/');
+        }
     }
 
     /**
