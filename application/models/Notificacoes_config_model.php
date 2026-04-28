@@ -139,14 +139,20 @@ class Notificacoes_config_model extends CI_Model
 
     /**
      * Atualiza o token da instância Evolution Go
+     * Não depende da coluna existir no banco (usa cache de arquivo no serviço)
      */
     public function atualizarInstanceToken($token)
     {
-        $this->db->where('id', 1);
-        return $this->db->update($this->table, [
-            'evolution_instance_token' => $token,
-            'updated_at' => date('Y-m-d H:i:s')
-        ]);
+        try {
+            $this->db->where('id', 1);
+            return $this->db->update($this->table, [
+                'evolution_instance_token' => $token,
+                'updated_at' => date('Y-m-d H:i:s')
+            ]);
+        } catch (Exception $e) {
+            log_message('error', '[NotificacoesConfig] Coluna evolution_instance_token pode não existir. Erro: ' . $e->getMessage());
+            return false;
+        }
     }
 
     /**

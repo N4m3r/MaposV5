@@ -41,7 +41,6 @@ class WhatsAppService
             ];
         }
 
-        // Limpa o número
         $numero = $this->limparNumero($numero);
 
         if (!$this->validarNumero($numero)) {
@@ -116,7 +115,7 @@ class WhatsAppService
     private function addDebug($tipo, $msg)
     {
         $this->debugLog[] = ['tipo' => $tipo, 'msg' => $msg];
-        log_message('debug', $msg);
+        log_message('debug', '[Evolution] ' . $msg);
     }
 
     /**
@@ -124,7 +123,8 @@ class WhatsAppService
      */
     private function getTokenCacheFile()
     {
-        return APPPATH . 'cache/evolution_token_' . md5($this->config->evolution_url . '_' . $this->config->evolution_instance) . '.json';
+        $key = md5(($this->config->evolution_url ?? '') . '_' . ($this->config->evolution_instance ?? ''));
+        return APPPATH . 'cache/evolution_token_' . $key . '.json';
     }
 
     /**
@@ -134,8 +134,9 @@ class WhatsAppService
     {
         $file = $this->getTokenCacheFile();
         if (file_exists($file)) {
-            $data = json_decode(file_get_contents($file), true);
+            $data = json_decode(@file_get_contents($file), true);
             if ($data && ($data['expires'] ?? 0) > time()) {
+                $this->addDebug('info', 'Token lido do cache de arquivo');
                 return $data['token'] ?? null;
             }
         }
@@ -154,52 +155,53 @@ class WhatsAppService
         }
         @file_put_contents($file, json_encode([
             'token' => $token,
-            'expires' => time() + 86400 // válido por 24h
+            'expires' => time() + 86400
         ]));
     }
 
     /**
      * Resolve o token específico da instância no Evolution Go
-     * 1. Tenta usar token do cache de arquivo
-     * 2. Tenta resolver via /instance/all
-     * 3. Salva no cache quando resolve
      */
     private function resolveInstanceToken()
     {
         $this->debugLog = [];
 
-        // Verifica se config básica existe
+        // Validações básicas
         if (empty($this->config->evolution_url)) {
-            $this->addDebug('erro', 'URL do Evolution não configurada no banco');
+            $this->addDebug('erro', 'URL do Evolution NÃO configurada. Vá em Configurações > Notificações e salve.');
             return null;
         }
         if (empty($this->config->evolution_apikey)) {
-            $this->addDebug('erro', 'API Key do Evolution não configurada no banco');
+            $this->addDebug('erro', 'API Key do Evolution NÃO configurada');
             return null;
         }
         if (empty($this->config->evolution_instance)) {
-            $this->addDebug('erro', 'Nome da instância não configurado no banco');
+            $this->addDebug('erro', 'Nome da instância NÃO configurado');
             return null;
         }
 
-        // 1. Verifica se já tem token no cache
-        $cachedToken = $this->lerTokenCache();
-        if ($cachedToken) {
-            $this->addDebug('sucesso', 'Usando token do cache de arquivo');
-            return $cachedToken;
+        // 1. Cache
+        $cached = $this->lerTokenCache();
+        if ($cached) {
+            return $cached;
         }
-
-        $this->addDebug('info', 'Nenhum token em cache. Resolvendo via API...');
 
         // 2. Resolve via API
         $url = rtrim($this->config->evolution_url, '/') . '/instance/all';
         $headers = [
+            'Content-Type: application/json',
             'apikey: ' . $this->config->evolution_apikey
         ];
 
         $this->addDebug('url', 'GET ' . $url);
-        $this->addDebug('info', 'Headers: apikey=***' . substr($this->config->evolution_apikey, -4));
         $this->addDebug('info', 'Instância procurada: "' . $this->config->evolution_instance . '"');
+
+        // Resolve IP para debug
+        $host = parse_url($url, PHP_URL_HOST);
+        if ($host) {
+            $ip = @gethostbyname($host);
+            $this->addDebug('info', 'DNS: ' . $host . ' -> ' . ($ip !== $host ? $ip : 'FALHA ao resolver'));
+        }
 
         $response = $this->makeRequest($url, 'GET', [], $headers);
         $this->addDebug('info', 'HTTP Resposta: ' . $response['http_code']);
@@ -211,22 +213,19 @@ class WhatsAppService
 
             foreach ($instances as $inst) {
                 $instName = $inst['name'] ?? '';
-                $this->addDebug('info', 'Comparando: "' . $instName . '" com "' . $this->config->evolution_instance . '"');
-                // Comparação case-insensitive
                 if (strcasecmp($instName, $this->config->evolution_instance) === 0) {
                     $token = $inst['token'] ?? null;
                     if ($token) {
                         $this->addDebug('sucesso', 'Token resolvido para instância "' . $instName . '"');
-                        // Salva no cache de arquivo
                         $this->salvarTokenCache($token);
                         return $token;
                     }
                 }
             }
-            $this->addDebug('erro', 'Instância "' . $this->config->evolution_instance . '" NÃO encontrada em ' . count($instances) . ' instâncias');
+            $this->addDebug('erro', 'Instância "' . $this->config->evolution_instance . '" NÃO encontrada');
         } else {
-            $this->addDebug('erro', 'Falha ao listar instâncias. HTTP: ' . $response['http_code']);
-            $this->addDebug('erro', 'Body: ' . substr($response['body'] ?? '', 0, 500));
+            $this->addDebug('erro', 'Falha HTTP ' . $response['http_code']);
+            $this->addDebug('erro', 'Body: ' . substr($response['body'] ?? '', 0, 300));
         }
 
         return null;
@@ -241,7 +240,8 @@ class WhatsAppService
         if (!$instanceToken) {
             return [
                 'success' => false,
-                'error' => 'Instância não encontrada no servidor. Verifique se a instância "' . $this->config->evolution_instance . '" existe.'
+                'error' => 'Instância não encontrada. Verifique a configuração.',
+                'debug' => $this->debugLog
             ];
         }
 
@@ -257,13 +257,10 @@ class WhatsAppService
             'apikey: ' . $instanceToken
         ];
 
-        log_message('debug', '[Evolution] Enviando mensagem para: ' . $numero . ' | URL: ' . $url);
         $response = $this->makeRequest($url, 'POST', $payload, $headers);
-        log_message('debug', '[Evolution] Resposta envio HTTP: ' . $response['http_code'] . ' | Body: ' . substr($response['body'] ?? '', 0, 500));
 
         if ($response['http_code'] == 200) {
             $data = json_decode($response['body'], true);
-
             return [
                 'success' => true,
                 'message_id' => $data['data']['key']['id'] ?? $data['key']['id'] ?? null,
@@ -275,8 +272,7 @@ class WhatsAppService
         return [
             'success' => false,
             'error' => $this->extrairErro($response),
-            'http_code' => $response['http_code'],
-            'response' => $response['body']
+            'http_code' => $response['http_code']
         ];
     }
 
@@ -292,9 +288,7 @@ class WhatsAppService
             'recipient_type' => 'individual',
             'to' => $numero,
             'type' => 'text',
-            'text' => [
-                'body' => $mensagem
-            ]
+            'text' => ['body' => $mensagem]
         ];
 
         $headers = [
@@ -306,7 +300,6 @@ class WhatsAppService
 
         if ($response['http_code'] == 200) {
             $data = json_decode($response['body'], true);
-
             return [
                 'success' => true,
                 'message_id' => $data['messages'][0]['id'] ?? null,
@@ -317,8 +310,7 @@ class WhatsAppService
         return [
             'success' => false,
             'error' => $this->extrairErro($response),
-            'http_code' => $response['http_code'],
-            'response' => $response['body']
+            'http_code' => $response['http_code']
         ];
     }
 
@@ -343,7 +335,6 @@ class WhatsAppService
 
         if ($response['http_code'] == 200) {
             $data = json_decode($response['body'], true);
-
             return [
                 'success' => true,
                 'message_id' => $data['messageId'] ?? $data['id'] ?? null,
@@ -364,16 +355,22 @@ class WhatsAppService
     private function verificarConexaoEvolution()
     {
         $this->debugLog = [];
+
+        if (empty($this->config->evolution_url)) {
+            return [
+                'connected' => false,
+                'status' => 'nao_configurado',
+                'error' => 'URL do Evolution não configurada'
+            ];
+        }
+
         $url = rtrim($this->config->evolution_url, '/') . '/instance/all';
         $headers = [
+            'Content-Type: application/json',
             'apikey: ' . $this->config->evolution_apikey
         ];
 
-        $this->addDebug('url', 'GET ' . $url);
-        $this->addDebug('info', 'Procurando instância: "' . $this->config->evolution_instance . '"');
-
         $response = $this->makeRequest($url, 'GET', [], $headers);
-        $this->addDebug('info', 'HTTP Resposta: ' . $response['http_code']);
 
         if ($response['http_code'] == 200) {
             $data = json_decode($response['body'], true);
@@ -385,10 +382,7 @@ class WhatsAppService
                     $connected = $inst['connected'] ?? false;
                     $estado = $connected ? 'open' : 'desconectado';
 
-                    $this->addDebug('sucesso', 'Instância "' . $instName . '" encontrada. Connected=' . ($connected ? 'true' : 'false'));
-
                     if (!empty($inst['token'])) {
-                        $this->addDebug('info', 'Token salvo no cache');
                         $this->salvarTokenCache($inst['token']);
                     }
 
@@ -403,21 +397,18 @@ class WhatsAppService
                 }
             }
 
-            $this->addDebug('erro', 'Instância "' . $this->config->evolution_instance . '" NÃO encontrada entre ' . count($instances) . ' instâncias');
             return [
                 'connected' => false,
                 'status' => 'instancia_nao_encontrada',
-                'error' => 'Instância não encontrada no servidor',
+                'error' => 'Instância não encontrada',
                 'debug' => $this->debugLog
             ];
         }
 
-        $this->addDebug('erro', 'Falha HTTP ' . $response['http_code'] . ': ' . $this->extrairErro($response));
-
         return [
             'connected' => false,
             'status' => 'erro',
-            'error' => $this->extrairErro($response),
+            'error' => 'HTTP ' . $response['http_code'],
             'debug' => $this->debugLog
         ];
     }
@@ -430,7 +421,6 @@ class WhatsAppService
         $this->debugLog = [];
         $this->addDebug('info', '=== Iniciando obtenção de QR Code ===');
 
-        // Primeiro verifica se já está conectado
         $conexao = $this->verificarConexaoEvolution();
         if ($conexao['connected']) {
             $this->addDebug('warn', 'Já está conectado. Abortando QR Code.');
@@ -442,13 +432,10 @@ class WhatsAppService
             ];
         }
 
-        // Cria a instância se não existir
         $this->addDebug('info', 'Instância desconectada. Tentando criar...');
         $criar = $this->criarInstanciaEvolution();
         $this->addDebug('info', 'Criar instância: HTTP ' . $criar['http_code']);
 
-        // Resolve token da instância
-        $this->addDebug('info', 'Resolvendo token da instância...');
         $instanceToken = $this->resolveInstanceToken();
         if (!$instanceToken) {
             $this->addDebug('erro', 'FALHA: Não foi possível resolver o token da instância');
@@ -462,7 +449,7 @@ class WhatsAppService
         $url = rtrim($this->config->evolution_url, '/') . '/instance/qr?instanceId=' . urlencode($this->config->evolution_instance);
 
         $this->addDebug('url', 'GET ' . $url);
-        $this->addDebug('info', 'Usando token de instância: ***' . substr($instanceToken, -4));
+        $this->addDebug('info', 'Token usado: ***' . substr($instanceToken, -4));
 
         $headers = [
             'apikey: ' . $instanceToken
@@ -470,15 +457,14 @@ class WhatsAppService
 
         $response = $this->makeRequest($url, 'GET', [], $headers);
         $this->addDebug('info', 'QR Code HTTP: ' . $response['http_code']);
-        $this->addDebug('info', 'QR Code Body: ' . substr($response['body'] ?? '', 0, 300));
 
         if ($response['http_code'] == 200) {
             $data = json_decode($response['body'], true);
             $qrData = $data['data'] ?? $data;
-
             $qrCode = $qrData['Qrcode'] ?? $qrData['qrcode'] ?? $qrData['base64'] ?? null;
+
             if ($qrCode) {
-                $this->addDebug('sucesso', 'QR Code obtido com sucesso!');
+                $this->addDebug('sucesso', 'QR Code obtido!');
             } else {
                 $this->addDebug('warn', 'QR Code não presente na resposta');
             }
@@ -492,14 +478,12 @@ class WhatsAppService
             ];
         }
 
-        $this->addDebug('erro', 'Falha ao obter QR Code: HTTP ' . $response['http_code']);
-        $this->addDebug('erro', 'Erro: ' . $this->extrairErro($response));
+        $this->addDebug('erro', 'Falha HTTP ' . $response['http_code'] . ': ' . $this->extrairErro($response));
 
         return [
             'success' => false,
             'error' => $this->extrairErro($response),
             'http_code' => $response['http_code'],
-            'response' => $response['body'],
             'debug' => $this->debugLog
         ];
     }
@@ -523,16 +507,12 @@ class WhatsAppService
             'apikey: ' . $this->config->evolution_apikey
         ];
 
-        log_message('debug', '[Evolution] Criando instância em: ' . $url . ' | Nome: ' . $this->config->evolution_instance);
         $response = $this->makeRequest($url, 'POST', $payload, $headers);
-        log_message('debug', '[Evolution] Criar instância resposta HTTP: ' . $response['http_code'] . ' | Body: ' . substr($response['body'] ?? '', 0, 500));
 
-        // Se a instância foi criada com sucesso, extrai o token da resposta
         if ($response['http_code'] == 200) {
             $data = json_decode($response['body'], true);
             $token = $data['data']['token'] ?? $data['token'] ?? null;
             if ($token) {
-                $this->addDebug('info', 'Token extraído da criação. Salvando no cache.');
                 $this->salvarTokenCache($token);
             }
         }
@@ -549,7 +529,8 @@ class WhatsAppService
         if (!$instanceToken) {
             return [
                 'success' => false,
-                'error' => 'Instância não encontrada no servidor.'
+                'error' => 'Instância não encontrada',
+                'debug' => $this->debugLog
             ];
         }
 
@@ -560,18 +541,17 @@ class WhatsAppService
             'apikey: ' . $instanceToken
         ];
 
-        log_message('debug', '[Evolution] Desconectando instância em: ' . $url);
         $response = $this->makeRequest($url, 'POST', ['instanceId' => $this->config->evolution_instance], $headers);
-        log_message('debug', '[Evolution] Desconectar resposta HTTP: ' . $response['http_code'] . ' | Body: ' . substr($response['body'] ?? '', 0, 500));
 
         if (in_array($response['http_code'], [200, 201])) {
             $this->CI->notificacoes_config_model->atualizarEstadoEvolution('desconectado');
-            return ['success' => true];
+            return ['success' => true, 'debug' => $this->debugLog];
         }
 
         return [
             'success' => false,
-            'error' => $this->extrairErro($response)
+            'error' => $this->extrairErro($response),
+            'debug' => $this->debugLog
         ];
     }
 
@@ -596,40 +576,103 @@ class WhatsAppService
     }
 
     /**
-     * Faz requisição HTTP
+     * Faz requisição HTTP com retry e fallback
      */
     private function makeRequest($url, $method = 'GET', $data = [], $headers = [])
     {
-        $ch = curl_init();
+        $tentativas = 0;
+        $maxTentativas = 2;
 
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        while ($tentativas < $maxTentativas) {
+            $tentativas++;
 
-        if (!empty($headers)) {
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            $ch = curl_init();
+
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+
+            // User-Agent para passar pelo CloudFlare
+            curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36');
+
+            // Headers customizados
+            $defaultHeaders = [
+                'Accept: application/json',
+                'Accept-Language: pt-BR,pt;q=0.9',
+            ];
+            $allHeaders = array_merge($defaultHeaders, $headers);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $allHeaders);
+
+            if ($method == 'POST') {
+                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data, JSON_UNESCAPED_UNICODE));
+            } elseif ($method == 'DELETE') {
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
+            }
+
+            // Log para debug
+            if (!empty($this->debugLog)) {
+                $this->addDebug('info', 'curl: ' . $method . ' ' . $url);
+            }
+
+            $body = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $error = curl_error($ch);
+            $info = curl_getinfo($ch);
+            curl_close($ch);
+
+            if ($error) {
+                log_message('error', '[Evolution] curl error: ' . $error);
+                if (!empty($this->debugLog)) {
+                    $this->addDebug('erro', 'curl error: ' . $error);
+                }
+            }
+
+            // Se sucesso, retorna
+            if ($httpCode == 200 || $httpCode == 201) {
+                return [
+                    'body' => $body,
+                    'http_code' => $httpCode,
+                    'error' => $error,
+                    'info' => $info
+                ];
+            }
+
+            // Se 404 na primeira tentativa, tenta com HTTP (sem S) no lugar de HTTPS
+            if ($httpCode == 404 && $tentativas < $maxTentativas && strpos($url, 'https://') === 0) {
+                $url = str_replace('https://', 'http://', $url);
+                if (!empty($this->debugLog)) {
+                    $this->addDebug('warn', 'HTTPS falhou com 404. Tentando HTTP...');
+                }
+                continue;
+            }
+
+            // Se erro DNS/connect, tenta novamente
+            if (($httpCode == 0 || $httpCode >= 500) && $tentativas < $maxTentativas) {
+                if (!empty($this->debugLog)) {
+                    $this->addDebug('warn', 'Erro de conexão. Tentando novamente...');
+                }
+                sleep(1);
+                continue;
+            }
+
+            return [
+                'body' => $body,
+                'http_code' => $httpCode,
+                'error' => $error,
+                'info' => $info
+            ];
         }
-
-        if ($method == 'POST') {
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data, JSON_UNESCAPED_UNICODE));
-        } elseif ($method == 'DELETE') {
-            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
-        }
-
-        $body = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $error = curl_error($ch);
-
-        curl_close($ch);
 
         return [
-            'body' => $body,
-            'http_code' => $httpCode,
-            'error' => $error
+            'body' => '',
+            'http_code' => 0,
+            'error' => 'Max retries exceeded',
+            'info' => []
         ];
     }
 
@@ -660,10 +703,8 @@ class WhatsAppService
      */
     private function limparNumero($numero)
     {
-        // Remove tudo exceto números
         $numero = preg_replace('/[^0-9]/', '', $numero);
 
-        // Adiciona código do país se não tiver
         if (strlen($numero) == 11 || strlen($numero) == 10) {
             $numero = '55' . $numero;
         }
@@ -676,7 +717,6 @@ class WhatsAppService
      */
     private function validarNumero($numero)
     {
-        // Deve ter entre 11 e 15 dígitos (com código do país)
         $len = strlen($numero);
         return $len >= 11 && $len <= 15;
     }
@@ -689,12 +729,10 @@ class WhatsAppService
         $numero = preg_replace('/[^0-9]/', '', $numero);
 
         if (strlen($numero) == 13 && substr($numero, 0, 2) == '55') {
-            // Brasil com código
             return '+55 (' . substr($numero, 2, 2) . ') ' . substr($numero, 4, 5) . '-' . substr($numero, 9, 4);
         }
 
         if (strlen($numero) == 11) {
-            // Brasil sem código
             return '(' . substr($numero, 0, 2) . ') ' . substr($numero, 2, 5) . '-' . substr($numero, 7, 4);
         }
 
