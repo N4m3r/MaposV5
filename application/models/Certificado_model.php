@@ -289,16 +289,16 @@ class Certificado_model extends CI_Model
                 'natureza_juridica' => $naturezaJuridica,
             ];
 
-            // Determinar regime tributário (apenas Simples Nacional é suportado)
+            // Sempre opera como Simples Nacional (mesmo se API não detectar)
+            $anexoDetectado = $this->identificarAnexo($cnaeDescricao);
             if ($isOptanteSimples) {
-                $simplesData['anexo_sugerido'] = $this->identificarAnexo($cnaeDescricao);
+                $simplesData['anexo_sugerido'] = $anexoDetectado;
                 $simplesData['regime'] = 'simples_nacional';
             } elseif ($isMei) {
                 $simplesData['anexo_sugerido'] = 'MEI';
                 $simplesData['regime'] = 'simples_nacional';
             } else {
-                // NÃO é optante do Simples Nacional — ainda assim registra como simples_nacional
-                $simplesData['anexo_sugerido'] = null;
+                $simplesData['anexo_sugerido'] = $anexoDetectado;
                 $simplesData['regime'] = 'simples_nacional';
             }
 
@@ -404,25 +404,24 @@ class Certificado_model extends CI_Model
 
         $dados = $resultado['data'];
 
-        if (!$dados['optante_simples']) {
-            return [
-                'error' => 'Empresa NÃO optante do Simples Nacional. Este sistema opera exclusivamente com Simples Nacional (DAS). Verifique a situação cadastral na Receita Federal ou configure um CNPJ optante.'
-            ];
+        // Sempre força Simples Nacional — independente do retorno da API externa
+        $anexoSugerido = $dados['anexo_sugerido'] ?: $this->identificarAnexo($dados['cnae_descricao'] ?? '');
+        if (!$anexoSugerido) {
+            $anexoSugerido = 'III';
         }
 
-        // Sugerir configuração para optantes do Simples
         $config = [
             'optante_simples' => true,
             'regime' => 'simples_nacional',
-            'anexo_sugerido' => $dados['anexo_sugerido'],
+            'anexo_sugerido' => $anexoSugerido,
             'data_opcao' => $dados['data_opcao'],
-            'simei' => $dados['simei']
+            'simei' => $dados['simei'] ?? false
         ];
 
         return [
             'success' => true,
             'configuracao' => $config,
-            'mensagem' => 'Anexo identificado: ' . $config['anexo_sugerido'] . '. Configure na página de Configurações de Impostos.'
+            'mensagem' => 'Configurado para Simples Nacional — Anexo ' . $config['anexo_sugerido'] . '.'
         ];
     }
 

@@ -135,11 +135,16 @@ class WhatsAppService
             $data = json_decode($response['body'], true);
             $instances = $data['data'] ?? [];
             foreach ($instances as $inst) {
-                if (($inst['name'] ?? '') === $this->config->evolution_instance) {
-                    log_message('debug', '[Evolution] Token resolvido para instância ' . $this->config->evolution_instance);
+                $instName = $inst['name'] ?? '';
+                // Comparação case-insensitive para evitar problemas com maiúsculas/minúsculas
+                if (strcasecmp($instName, $this->config->evolution_instance) === 0) {
+                    log_message('debug', '[Evolution] Token resolvido para instância ' . $instName);
                     return $inst['token'] ?? null;
                 }
             }
+            log_message('error', '[Evolution] Instância "' . $this->config->evolution_instance . '" não encontrada em ' . count($instances) . ' instâncias retornadas.');
+        } else {
+            log_message('error', '[Evolution] Falha ao listar instâncias. HTTP: ' . $response['http_code'] . ' | Body: ' . substr($response['body'] ?? '', 0, 500));
         }
 
         return null;
@@ -291,7 +296,9 @@ class WhatsAppService
             $instances = $data['data'] ?? [];
 
             foreach ($instances as $inst) {
-                if (($inst['name'] ?? '') === $this->config->evolution_instance) {
+                $instName = $inst['name'] ?? '';
+                // Comparação case-insensitive
+                if (strcasecmp($instName, $this->config->evolution_instance) === 0) {
                     $connected = $inst['connected'] ?? false;
                     $estado = $connected ? 'open' : 'desconectado';
 
