@@ -18,17 +18,26 @@ class Notificacoes_config_model extends CI_Model
      */
     public function getConfig()
     {
+        // Verifica se a tabela existe
+        if (!$this->db->table_exists($this->table)) {
+            log_message('error', '[NotificacoesConfig] Tabela ' . $this->table . ' NÃO existe!');
+            return (object)[];
+        }
+
         $this->db->where('id', 1);
         $query = $this->db->get($this->table);
 
         if ($query->num_rows() == 0) {
-            // Cria configuração padrão se não existir
+            log_message('info', '[NotificacoesConfig] Registro id=1 não encontrado. Criando padrão...');
             $this->criarConfigPadrao();
             $this->db->where('id', 1);
             $query = $this->db->get($this->table);
         }
 
-        return $query->row();
+        $row = $query->row();
+        log_message('debug', '[NotificacoesConfig] getConfig: id=' . ($row->id ?? 'N/D') . ', provider=' . ($row->whatsapp_provedor ?? 'N/D') . ', url=' . ($row->evolution_url ?? 'N/D') . ', instance=' . ($row->evolution_instance ?? 'N/D'));
+
+        return $row;
     }
 
     /**
@@ -37,28 +46,42 @@ class Notificacoes_config_model extends CI_Model
      */
     public function salvar($dados)
     {
+        log_message('debug', '[NotificacoesConfig] salvar() chamado. Dados: ' . json_encode($dados));
+
+        // Verifica se a tabela existe
+        if (!$this->db->table_exists($this->table)) {
+            log_message('error', '[NotificacoesConfig] Tabela ' . $this->table . ' não existe ao tentar salvar!');
+            return ['success' => false, 'error' => 'Tabela de configurações não existe'];
+        }
+
         $this->db->where('id', 1);
         $query = $this->db->get($this->table);
 
         if ($query->num_rows() == 0) {
+            log_message('debug', '[NotificacoesConfig] Registro não existe. Fazendo INSERT...');
             $dados['id'] = 1;
             $result = $this->db->insert($this->table, $dados);
             $error = $this->db->error();
             if (!$result || $error['code'] != 0) {
-                log_message('error', '[NotificacoesConfig] Erro ao inserir config: ' . ($error['message'] ?? 'Unknown'));
+                log_message('error', '[NotificacoesConfig] Erro ao inserir config: ' . ($error['message'] ?? 'Unknown') . ' | SQL: ' . $this->db->last_query());
                 return ['success' => false, 'error' => $error['message'] ?? 'Erro ao inserir configuração'];
             }
+            log_message('debug', '[NotificacoesConfig] INSERT realizado com sucesso');
             return ['success' => true, 'error' => null];
         }
 
+        log_message('debug', '[NotificacoesConfig] Registro existe. Fazendo UPDATE...');
         $this->db->where('id', 1);
         $this->db->update($this->table, $dados);
 
         $error = $this->db->error();
         if ($error['code'] != 0) {
-            log_message('error', '[NotificacoesConfig] Erro ao atualizar config: ' . $error['message']);
+            log_message('error', '[NotificacoesConfig] Erro ao atualizar config: ' . $error['message'] . ' | SQL: ' . $this->db->last_query());
             return ['success' => false, 'error' => $error['message']];
         }
+
+        $affected = $this->db->affected_rows();
+        log_message('debug', '[NotificacoesConfig] UPDATE realizado. Linhas afetadas: ' . $affected);
 
         return ['success' => true, 'error' => null];
     }

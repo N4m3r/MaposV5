@@ -160,13 +160,13 @@ if (!function_exists('fmtMoney')) {
                 </div>
 
                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cBoletoOS')): ?>
-                    <form method="post" action="<?= site_url('nfse_os/gerar_boleto/' . $result->idOs . '/' . $nfse_atual->id) ?>">
+                    <form method="post" id="form-gerar-boleto" action="<?= site_url('nfse_os/gerar_boleto/' . $result->idOs . '/' . $nfse_atual->id) ?>">
                         <div class="row-fluid">
                             <div class="span6">
                                 <div class="control-group">
                                     <label class="control-label" style="color:var(--title,#d4d8e0)"><strong>Data de Vencimento:</strong></label>
                                     <div class="controls">
-                                        <input type="date" name="data_vencimento" class="span12" value="<?= date('Y-m-d', strtotime('+5 days')) ?>" required style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8)">
+                                        <input type="date" name="data_vencimento" id="boleto-data-vencimento" class="span12" value="<?= date('Y-m-d', strtotime('+5 days')) ?>" required style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8)">
                                     </div>
                                 </div>
                             </div>
@@ -174,7 +174,7 @@ if (!function_exists('fmtMoney')) {
                                 <div class="control-group">
                                     <label class="control-label" style="color:var(--title,#d4d8e0)"><strong>Descricao / Instrucoes:</strong></label>
                                     <div class="controls">
-                                        <textarea name="instrucoes" class="span12" rows="2" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8)">Pagavel em qualquer banco ate o vencimento. Apos o vencimento, consultar multas e juros.</textarea>
+                                        <textarea name="instrucoes" id="boleto-instrucoes" class="span12" rows="2" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8)">Pagavel em qualquer banco ate o vencimento. Apos o vencimento, consultar multas e juros.</textarea>
                                     </div>
                                 </div>
                             </div>
@@ -197,11 +197,25 @@ if (!function_exists('fmtMoney')) {
                         </div>
                         <?php endif; ?>
                         <div class="form-actions" style="margin-top:10px; background:transparent; border-top:1px solid var(--dark-2,#272835)">
+                            <button type="button" class="btn btn-large" id="btn-preview-boleto-emitir" style="background:var(--dark-1,#14141a); border-color:var(--dark-2,#272835); color:var(--branco,#caced8); margin-right:8px">
+                                <i class="fas fa-eye"></i> Preview do Boleto
+                            </button>
                             <button type="submit" class="btn btn-success btn-large" style="background:#26a38e; border-color:#1fb5a8">
-                                <i class="fas fa-barcode"></i> Gerar Boleto de <?= fmtMoney($valorLiquido) ?>
+                                <i class="fas fa-barcode"></i> Emitir Boleto de <?= fmtMoney($valorLiquido) ?>
                             </button>
                         </div>
                     </form>
+                    <script>
+                    document.getElementById('btn-preview-boleto-emitir').addEventListener('click', function() {
+                        var dataVenc = document.getElementById('boleto-data-vencimento').value;
+                        var instrucoes = document.getElementById('boleto-instrucoes').value;
+                        if (!dataVenc) { alert('Informe a data de vencimento para o preview.'); return; }
+                        var url = '<?= site_url("nfse_os/preview_boleto_emissao/" . $result->idOs . "/" . $nfse_atual->id) ?>';
+                        url += '?data_vencimento=' + encodeURIComponent(dataVenc);
+                        url += '&instrucoes=' + encodeURIComponent(instrucoes);
+                        window.open(url, '_blank');
+                    });
+                    </script>
                 <?php else: ?>
                     <div class="alert" style="background:rgba(252,157,15,0.15); border-color:rgba(252,157,15,0.3); color:#fc9d0f"><i class="fas fa-lock"></i> Voce nao possui permissao para gerar boletos.</div>
                 <?php endif; ?>

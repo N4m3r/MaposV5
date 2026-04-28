@@ -475,6 +475,68 @@ class Nfse_os extends MY_Controller
     }
 
     /**
+     * Pre-visualizacao do Boleto antes da emissao (preview sem salvar)
+     */
+    public function preview_boleto_emissao($os_id = null, $nfse_id = null)
+    {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vNFSe')) {
+            $this->session->set_flashdata('error', 'Sem permissao.');
+            redirect(base_url());
+        }
+
+        if (!$os_id || !$nfse_id) {
+            redirect('os');
+        }
+
+        $os = $this->os_model->getById($os_id);
+        if (!$os) {
+            $this->session->set_flashdata('error', 'OS nao encontrada.');
+            redirect('os');
+        }
+
+        $nfse = $this->nfse_emitida_model->getById($nfse_id);
+        if (!$nfse) {
+            $this->session->set_flashdata('error', 'NFS-e nao encontrada.');
+            redirect('os');
+        }
+
+        // Dados do preview via GET (vem do formulario da aba boleto)
+        $data_vencimento = $this->input->get('data_vencimento') ?: date('Y-m-d', strtotime('+5 days'));
+        $instrucoes = $this->input->get('instrucoes') ?: 'Pagavel em qualquer banco ate o vencimento.';
+
+        // Emitente
+        $this->load->model('mapos_model');
+        $emitente = $this->mapos_model->getEmitente();
+
+        // Montar objeto boleto temporario em memoria
+        $boleto = new stdClass();
+        $boleto->sacado_nome = $os->nomeCliente ?? 'Sacado';
+        $boleto->sacado_documento = $os->cnpj ?? $os->cpf_cgc ?? '';
+        $boleto->sacado_endereco = trim(($os->rua ?? '') . ', ' . ($os->numero ?? '') . ' - ' . ($os->bairro ?? ''));
+        $boleto->data_vencimento = $data_vencimento;
+        $boleto->data_emissao = date('Y-m-d');
+        $boleto->valor_liquido = $nfse->valor_liquido ?? $nfse->valor_servicos ?? 0;
+        $boleto->valor_original = $nfse->valor_servicos ?? 0;
+        $boleto->nosso_numero = 'PREVIEW';
+        $boleto->id = 0;
+        $boleto->linha_digitavel = '';
+        $boleto->codigo_barras = '';
+        $boleto->instrucoes = $instrucoes;
+
+        $data = [
+            'boleto' => $boleto,
+            'os' => $os,
+            'emitente' => $emitente,
+            'nfse' => $nfse,
+            'is_preview' => true,
+        ];
+
+        $this->load->helper('mpdf');
+        $html = $this->load->view('nfse_os/preview_boleto', $data, true);
+        pdf_create($html, 'Boleto_Preview_OS_' . $os_id, true);
+    }
+
+    /**
      * Formatar chave PIX para exibição
      */
     private function formatarChavePix($chave)

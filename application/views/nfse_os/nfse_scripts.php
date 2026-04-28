@@ -24,6 +24,24 @@ var wizardData = {
     isCalculating: false
 };
 
+// Dados do prestador e tomador para validacao no wizard
+var emitenteWizard = {
+    nome: '<?= addslashes($emitente->nome ?? $emitente->razaosocial ?? '') ?>',
+    cnpj: '<?= addslashes($emitente->cnpj ?? '') ?>',
+    rua: '<?= addslashes($emitente->rua ?? '') ?>',
+    numero: '<?= addslashes($emitente->numero ?? '') ?>',
+    cidade: '<?= addslashes($emitente->cidade ?? '') ?>',
+    uf: '<?= addslashes($emitente->uf ?? '') ?>'
+};
+var tomadorWizard = {
+    nome: '<?= addslashes($result->nomeCliente ?? '') ?>',
+    documento: '<?= addslashes($result->cnpj ?? $result->cpf_cgc ?? '') ?>',
+    rua: '<?= addslashes($result->rua ?? '') ?>',
+    numero: '<?= addslashes($result->numero ?? '') ?>',
+    cidade: '<?= addslashes($result->cidade ?? '') ?>',
+    uf: '<?= addslashes($result->estado ?? '') ?>'
+};
+
 function fmtMoneyInput(v) {
     v = parseFloat(v) || 0;
     return v.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
@@ -72,12 +90,34 @@ function wizardGoToStep(step) {
 
 function validarStep(step) {
     if (step === 1) {
+        // Validar emitente (prestador)
+        if (!emitenteWizard.cnpj || emitenteWizard.cnpj.length < 14) {
+            alert('Dados do emitente (prestador) nao estao configurados corretamente. Cadastre o emitente em Configuracoes.');
+            return false;
+        }
+        // Validar tomador (documento)
+        var docTomador = (tomadorWizard.documento || '').replace(/\D/g, '');
+        if (docTomador.length !== 11 && docTomador.length !== 14) {
+            alert('O tomador da OS nao possui CPF/CNPJ cadastrado. Atualize os dados do cliente.');
+            return false;
+        }
         var valor = parseMoney($('#valor-servicos-wizard').val());
         if (valor <= 0) { alert('Informe o valor dos servicos.'); $('#valor-servicos-wizard').focus(); return false; }
+        var deducoes = parseMoney($('#valor-deducoes-wizard').val());
+        if (deducoes < 0) { alert('Deducoes nao podem ser negativas.'); $('#valor-deducoes-wizard').focus(); return false; }
+        if (deducoes > valor) { alert('Deducoes nao podem ser maiores que o valor dos servicos.'); $('#valor-deducoes-wizard').focus(); return false; }
         var desc = $('#descricao-servico-wizard').val().trim();
         if (!desc) { alert('Informe a descricao do servico.'); $('#descricao-servico-wizard').focus(); return false; }
+        if (desc.length < 10) { alert('A descricao do servico deve ter no minimo 10 caracteres.'); $('#descricao-servico-wizard').focus(); return false; }
+        // Validar inclusao de produtos
+        if ($('#incluir-produtos-nfse').is(':checked')) {
+            if (wizardData.valorTotalComProdutos <= wizardData.valorApenasServicos) {
+                alert('Nao ha produtos para incluir na NFS-e.');
+                return false;
+            }
+        }
         wizardData.valorServicos = valor;
-        wizardData.valorDeducoes = parseMoney($('#valor-deducoes-wizard').val());
+        wizardData.valorDeducoes = deducoes;
         return true;
     }
     if (step === 2) {
@@ -89,12 +129,30 @@ function validarStep(step) {
             calcularImpostosWizard();
             return false;
         }
+        if (!wizardData.impostosResult.success) {
+            alert('Erro no calculo dos impostos. Verifique as configuracoes tributarias.');
+            return false;
+        }
         return true;
     }
     if (step === 3) {
         wizardData.gerarBoleto = $('#gerar-boleto-wizard').is(':checked');
-        if (wizardData.gerarBoleto && !$('#data-vencimento-wizard').val()) {
-            alert('Informe a data de vencimento.'); return false;
+        if (wizardData.gerarBoleto) {
+            var dataVenc = $('#data-vencimento-wizard').val();
+            if (!dataVenc) {
+                alert('Informe a data de vencimento.'); return false;
+            }
+            var hoje = new Date();
+            hoje.setHours(0,0,0,0);
+            var parts = dataVenc.split('-');
+            var dataObj = new Date(parts[0], parts[1]-1, parts[2]);
+            if (dataObj < hoje) {
+                alert('A data de vencimento nao pode ser anterior a hoje.'); return false;
+            }
+            var instrucoes = $('#instrucoes-boleto-wizard').val().trim();
+            if (!instrucoes) {
+                alert('Informe as instrucoes do boleto.'); $('#instrucoes-boleto-wizard').focus(); return false;
+            }
         }
         return true;
     }
@@ -282,6 +340,11 @@ function atualizarResumo() {
 }
 
 function emitirNFSeWizard() {
+    // Re-validar todos os passos antes de emitir
+    if (!validarStep(1)) return;
+    if (!validarStep(2)) return;
+    if (!validarStep(3)) return;
+
     var valor = wizardData.valorServicos || parseMoney($('#valor-servicos-wizard').val());
     var deducoes = wizardData.valorDeducoes || parseMoney($('#valor-deducoes-wizard').val());
     var descricao = $('#descricao-servico-wizard').val();

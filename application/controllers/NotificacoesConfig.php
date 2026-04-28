@@ -109,6 +109,46 @@ class NotificacoesConfig extends MY_Controller
     }
 
     /**
+     * Diagnóstico do banco - retorna estado atual da configuração
+     */
+    public function diagnostico()
+    {
+        if (!$this->input->is_ajax_request()) {
+            show_404();
+        }
+
+        header('Content-Type: application/json');
+
+        $config = $this->notificacoes_config_model->getConfig();
+
+        // Lista colunas da tabela
+        $colunas = [];
+        try {
+            $fields = $this->db->list_fields('notificacoes_config');
+            $colunas = $fields;
+        } catch (Exception $e) {
+            $colunas = ['erro' => $e->getMessage()];
+        }
+
+        // Verifica se tabela existe
+        $tabelaExiste = $this->db->table_exists('notificacoes_config');
+
+        echo json_encode([
+            'tabela_existe' => $tabelaExiste,
+            'colunas' => $colunas,
+            'config_raw' => (array)$config,
+            'has_evolution_url' => !empty($config->evolution_url),
+            'has_evolution_apikey' => !empty($config->evolution_apikey),
+            'has_evolution_instance' => !empty($config->evolution_instance),
+            'evolution_url' => $config->evolution_url ?? null,
+            'evolution_instance' => $config->evolution_instance ?? null,
+            'evolution_version' => $config->evolution_version ?? null,
+            'whatsapp_ativo' => $config->whatsapp_ativo ?? null,
+            'whatsapp_provedor' => $config->whatsapp_provedor ?? null,
+        ]);
+    }
+
+    /**
      * Obter QR Code (Evolution API)
      */
     public function obter_qr()
