@@ -99,6 +99,18 @@
                             </div>
                         </div>
                         <div class="control-group">
+                            <label for="inscricao_municipal" class="control-label">Inscrição Municipal</label>
+                            <div class="controls">
+                                <input id="inscricao_municipal" type="text" name="inscricao_municipal" value="<?php echo $result->inscricao_municipal; ?>" placeholder="IM" />
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label for="inscricao_estadual" class="control-label">Inscrição Estadual</label>
+                            <div class="controls">
+                                <input id="inscricao_estadual" type="text" name="inscricao_estadual" value="<?php echo $result->inscricao_estadual; ?>" placeholder="IE" />
+                            </div>
+                        </div>
+                        <div class="control-group">
                             <?php echo form_hidden('idClientes', $result->idClientes) ?>
                             <label for="nomeCliente" class="control-label">Nome/Razão Social<span class="required">*</span></label>
                             <div class="controls">

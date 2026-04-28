@@ -44,13 +44,21 @@ class NotificacoesConfig extends MY_Controller
                 $evolution_url = rtrim($evolution_url, '/');
             }
 
+            $novaInstance = $this->input->post('evolution_instance') ?: 'Mapos';
+
+            // Se a instância ou URL mudou, limpa o token salvo para forçar nova resolução
+            if ($config && (strcasecmp($config->evolution_instance ?? '', $novaInstance) !== 0 || ($config->evolution_url ?? '') !== $evolution_url)) {
+                log_info('Instância ou URL Evolution alterada. Limpando token salvo.');
+                $this->notificacoes_config_model->atualizarInstanceToken(null);
+            }
+
             $dados = [
                 'whatsapp_provedor' => $this->input->post('whatsapp_provedor'),
                 'whatsapp_ativo' => $this->input->post('whatsapp_ativo') ? 1 : 0,
                 'evolution_url' => $evolution_url,
                 'evolution_apikey' => $this->input->post('evolution_apikey'),
                 'evolution_version' => $this->input->post('evolution_version') ?: 'v2',
-                'evolution_instance' => $this->input->post('evolution_instance') ?: 'mapos',
+                'evolution_instance' => $novaInstance,
                 'meta_phone_number_id' => $this->input->post('meta_phone_number_id'),
                 'meta_access_token' => $this->input->post('meta_access_token'),
                 'z_api_url' => $this->input->post('z_api_url'),

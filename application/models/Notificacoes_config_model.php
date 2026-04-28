@@ -138,6 +138,18 @@ class Notificacoes_config_model extends CI_Model
     }
 
     /**
+     * Atualiza o token da instância Evolution Go
+     */
+    public function atualizarInstanceToken($token)
+    {
+        $this->db->where('id', 1);
+        return $this->db->update($this->table, [
+            'evolution_instance_token' => $token,
+            'updated_at' => date('Y-m-d H:i:s')
+        ]);
+    }
+
+    /**
      * Cria configuração padrão
      */
     private function criarConfigPadrao()

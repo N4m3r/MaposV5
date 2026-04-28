@@ -35,6 +35,18 @@
                                     </td>
                                 </tr>
                                 <tr>
+                                    <td style="text-align: right"><strong>Inscrição Municipal</strong></td>
+                                    <td>
+                                        <?php echo $result->inscricao_municipal ?: '—'; ?>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align: right"><strong>Inscrição Estadual</strong></td>
+                                    <td>
+                                        <?php echo $result->inscricao_estadual ?: '—'; ?>
+                                    </td>
+                                </tr>
+                                <tr>
                                     <td style="text-align: right"><strong>Data de Cadastro</strong></td>
                                     <td>
                                         <?php echo date('d/m/Y', strtotime($result->dataCadastro)) ?>

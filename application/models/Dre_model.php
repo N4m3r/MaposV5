@@ -347,29 +347,23 @@ class Dre_model extends CI_Model
             }
         }
 
-        // 4. Impostos (usar Simples Nacional se configurado)
-        if ($this->db->table_exists('impostos_config')) {
-            $config = $this->db->get('impostos_config')->row();
-            if ($config && $config->tipo_regime == 'simples_nacional') {
-                // Buscar faixa do Simples Nacional baseada no faturamento
-                $conta_imposto = $this->db->where('grupo', 'IMPOSTO_RENDA')->where('ativo', 1)
-                    ->order_by('ordem', 'ASC')->limit(1)->get('dre_contas')->row();
+        // 4. Impostos (DAS - Simples Nacional)
+        $conta_imposto = $this->db->where('grupo', 'IMPOSTO_RENDA')->where('ativo', 1)
+            ->order_by('ordem', 'ASC')->limit(1)->get('dre_contas')->row();
 
-                if ($conta_imposto) {
-                    $imposto = $this->calcularImpostoSimples($valor, $config);
-                    if ($imposto > 0) {
-                        $this->adicionarLancamento([
-                            'conta_id' => $conta_imposto->id,
-                            'data' => $data_lanc,
-                            'valor' => $imposto,
-                            'tipo_movimento' => 'DEBITO',
-                            'descricao' => 'Impostos Simples Nacional - OS #' . str_pad($os_id, 4, '0', STR_PAD_LEFT),
-                            'documento' => 'OS #' . str_pad($os_id, 4, '0', STR_PAD_LEFT),
-                            'os_id' => $os_id,
-                        ]);
-                        $inseridos++;
-                    }
-                }
+        if ($conta_imposto) {
+            $imposto = $this->calcularImpostoSimples($valor);
+            if ($imposto > 0) {
+                $this->adicionarLancamento([
+                    'conta_id' => $conta_imposto->id,
+                    'data' => $data_lanc,
+                    'valor' => $imposto,
+                    'tipo_movimento' => 'DEBITO',
+                    'descricao' => 'DAS - Simples Nacional - OS #' . str_pad($os_id, 4, '0', STR_PAD_LEFT),
+                    'documento' => 'OS #' . str_pad($os_id, 4, '0', STR_PAD_LEFT),
+                    'os_id' => $os_id,
+                ]);
+                $inseridos++;
             }
         }
 
@@ -379,9 +373,9 @@ class Dre_model extends CI_Model
     /**
      * Calcula imposto estimado pelo Simples Nacional
      */
-    private function calcularImpostoSimples($valor, $config)
+    private function calcularImpostoSimples($valor)
     {
-        $anexo = $config->anexo_simples ?? 'III';
+        $anexo = 'III';
         $faixas = [
             'I'   => [0.06, 0.075, 0.09, 0.0995, 0.1065, 0.1333],
             'II'  => [0.065, 0.0836, 0.10, 0.1055, 0.1128, 0.1434],

@@ -86,6 +86,19 @@ if (!function_exists('check_notificacoes_tables')) {
                     log_message('error', '[Bootstrap] Erro ao adicionar coluna evolution_version: ' . $e->getMessage());
                 }
             }
+
+            // Verifica se a coluna evolution_instance_token existe
+            if (!$CI->db->field_exists('evolution_instance_token', 'notificacoes_config')) {
+                log_message('info', '[Bootstrap] Adicionando coluna evolution_instance_token a notificacoes_config');
+                try {
+                    $CI->db->query("ALTER TABLE `notificacoes_config`
+                        ADD COLUMN `evolution_instance_token` VARCHAR(255) DEFAULT NULL
+                        AFTER `evolution_instance`");
+                    log_message('info', '[Bootstrap] Coluna evolution_instance_token adicionada com sucesso.');
+                } catch (Exception $e) {
+                    log_message('error', '[Bootstrap] Erro ao adicionar coluna evolution_instance_token: ' . $e->getMessage());
+                }
+            }
         }
     }
 }
@@ -101,7 +114,8 @@ if (!function_exists('_criar_tabelas_notificacoes_fallback')) {
             `whatsapp_ativo` TINYINT(1) DEFAULT 0,
             `evolution_url` VARCHAR(255) DEFAULT NULL,
             `evolution_apikey` VARCHAR(255) DEFAULT NULL,
-            `evolution_instance` VARCHAR(100) DEFAULT 'mapos',
+            `evolution_instance` VARCHAR(100) DEFAULT 'Mapos',
+            `evolution_instance_token` VARCHAR(255) DEFAULT NULL,
             `evolution_version` ENUM('v1','v2','go') DEFAULT 'v2',
             `evolution_estado` VARCHAR(50) DEFAULT 'desconectado',
             `meta_phone_number_id` VARCHAR(50) DEFAULT NULL,

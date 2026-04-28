@@ -110,39 +110,51 @@ class WhatsAppService
     }
 
     /**
-     * Resolve o token da instância no Evolution Go via API key global
-     */
-    private function resolveApiKeyGo()
-    {
-        return $this->config->evolution_apikey;
-    }
-
-    /**
      * Resolve o token específico da instância no Evolution Go
-     * Obtém via /instance/all usando o apikey global
+     * 1. Tenta usar token salvo no banco
+     * 2. Tenta resolver via /instance/all
+     * 3. Salva no banco quando resolve
      */
     private function resolveInstanceToken()
     {
+        // 1. Verifica se já tem token salvo no banco
+        if (!empty($this->config->evolution_instance_token)) {
+            log_message('debug', '[Evolution] Usando token salvo no banco para instância ' . $this->config->evolution_instance);
+            return $this->config->evolution_instance_token;
+        }
+
+        // 2. Resolve via API
         $url = rtrim($this->config->evolution_url, '/') . '/instance/all';
         $headers = [
             'apikey: ' . $this->config->evolution_apikey
         ];
 
+        log_message('debug', '[Evolution] Resolve token URL: ' . $url);
         $response = $this->makeRequest($url, 'GET', [], $headers);
         log_message('debug', '[Evolution] Resolve token resposta HTTP: ' . $response['http_code']);
 
         if ($response['http_code'] == 200) {
             $data = json_decode($response['body'], true);
             $instances = $data['data'] ?? [];
+            log_message('debug', '[Evolution] Resolve token: ' . count($instances) . ' instâncias retornadas');
+
             foreach ($instances as $inst) {
                 $instName = $inst['name'] ?? '';
-                // Comparação case-insensitive para evitar problemas com maiúsculas/minúsculas
+                log_message('debug', '[Evolution] Comparando instância: "' . $instName . '" com "' . $this->config->evolution_instance . '"');
+                // Comparação case-insensitive
                 if (strcasecmp($instName, $this->config->evolution_instance) === 0) {
-                    log_message('debug', '[Evolution] Token resolvido para instância ' . $instName);
-                    return $inst['token'] ?? null;
+                    $token = $inst['token'] ?? null;
+                    if ($token) {
+                        log_message('debug', '[Evolution] Token resolvido para instância ' . $instName . '. Salvando no banco.');
+                        // Salva no banco para uso futuro
+                        $this->CI->notificacoes_config_model->atualizarInstanceToken($token);
+                        // Atualiza o config em memória também
+                        $this->config->evolution_instance_token = $token;
+                        return $token;
+                    }
                 }
             }
-            log_message('error', '[Evolution] Instância "' . $this->config->evolution_instance . '" não encontrada em ' . count($instances) . ' instâncias retornadas.');
+            log_message('error', '[Evolution] Instância "' . $this->config->evolution_instance . '" não encontrada em ' . count($instances) . ' instâncias retornadas. Body: ' . substr($response['body'] ?? '', 0, 500));
         } else {
             log_message('error', '[Evolution] Falha ao listar instâncias. HTTP: ' . $response['http_code'] . ' | Body: ' . substr($response['body'] ?? '', 0, 500));
         }
@@ -304,6 +316,11 @@ class WhatsAppService
 
                     log_message('debug', '[Evolution] Instância encontrada. Connected: ' . ($connected ? 'true' : 'false'));
 
+                    // Se tem token na resposta, salva no banco
+                    if (!empty($inst['token'])) {
+                        $this->CI->notificacoes_config_model->atualizarInstanceToken($inst['token']);
+                    }
+
                     // Atualiza estado no banco
                     $this->CI->notificacoes_config_model->atualizarEstadoEvolution($estado);
 
@@ -408,6 +425,17 @@ class WhatsAppService
         log_message('debug', '[Evolution] Criando instância em: ' . $url . ' | Nome: ' . $this->config->evolution_instance);
         $response = $this->makeRequest($url, 'POST', $payload, $headers);
         log_message('debug', '[Evolution] Criar instância resposta HTTP: ' . $response['http_code'] . ' | Body: ' . substr($response['body'] ?? '', 0, 500));
+
+        // Se a instância foi criada com sucesso, extrai o token da resposta
+        if ($response['http_code'] == 200) {
+            $data = json_decode($response['body'], true);
+            $token = $data['data']['token'] ?? $data['token'] ?? null;
+            if ($token) {
+                log_message('debug', '[Evolution] Token extraído da criação. Salvando no banco.');
+                $this->CI->notificacoes_config_model->atualizarInstanceToken($token);
+                $this->config->evolution_instance_token = $token;
+            }
+        }
 
         return $response;
     }
