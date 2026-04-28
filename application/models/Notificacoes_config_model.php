@@ -37,9 +37,18 @@ class Notificacoes_config_model extends CI_Model
     public function salvar($dados)
     {
         $this->db->where('id', 1);
+        $query = $this->db->get($this->table);
+
+        if ($query->num_rows() == 0) {
+            $dados['id'] = 1;
+            return $this->db->insert($this->table, $dados);
+        }
+
+        $this->db->where('id', 1);
         $this->db->update($this->table, $dados);
 
-        return $this->db->affected_rows() >= 0;
+        $error = $this->db->error();
+        return $error['code'] == 0;
     }
 
     /**
