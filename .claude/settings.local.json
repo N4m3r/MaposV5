@@ -83,7 +83,10 @@
       "Bash(pacman -S sshpass --noconfirm)",
       "Bash(apt-get install *)",
       "Bash(pip install *)",
-      "PowerShell(ConvertTo-SecureString *)"
+      "PowerShell(ConvertTo-SecureString *)",
+      "WebFetch(domain:evo.jj-ferreiras.com.br)",
+      "WebFetch(domain:doc.evolution-api.com)",
+      "WebFetch(domain:docs.evolutionfoundation.com.br)"
     ]
   }
 }

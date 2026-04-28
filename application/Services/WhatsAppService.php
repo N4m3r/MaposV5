@@ -114,27 +114,8 @@ class WhatsAppService
      */
     private function resolveApiKeyGo()
     {
-        $url = rtrim($this->config->evolution_url, '/') . '/instance/all';
-        $headers = [
-            'Content-Type: application/json; charset=utf-8',
-            'apikey: ' . $this->config->evolution_apikey
-        ];
-
-        $response = $this->makeRequest($url, 'GET', [], $headers);
-        if ($response['http_code'] == 200) {
-            $data = json_decode($response['body'], true);
-            if (!empty($data['data']) && is_array($data['data'])) {
-                $instanceName = $this->config->evolution_instance ?? 'mapos';
-                foreach ($data['data'] as $inst) {
-                    if (($inst['name'] ?? '') === $instanceName) {
-                        return $inst['token'] ?? $this->config->evolution_apikey;
-                    }
-                }
-                // Se não encontrou pelo nome, pega a primeira
-                return $data['data'][0]['token'] ?? $this->config->evolution_apikey;
-            }
-        }
-
+        // No Evolution Go, a API key global é usada diretamente
+        // Não é necessário resolver token por instância
         return $this->config->evolution_apikey;
     }
 
@@ -147,11 +128,12 @@ class WhatsAppService
         $apikey = $isGo ? $this->resolveApiKeyGo() : $this->config->evolution_apikey;
 
         if ($isGo) {
-            $url = rtrim($this->config->evolution_url, '/') . '/send/text';
+            $url = rtrim($this->config->evolution_url, '/') . '/message/sendText/' . $this->config->evolution_instance;
             $payload = [
                 'number' => $numero,
                 'text' => $mensagem,
                 'delay' => 1200,
+                'linkPreview' => true,
             ];
         } else {
             $url = rtrim($this->config->evolution_url, '/') . '/message/sendText/' . $this->config->evolution_instance;
@@ -283,7 +265,7 @@ class WhatsAppService
         $apikey = $isGo ? $this->resolveApiKeyGo() : $this->config->evolution_apikey;
 
         if ($isGo) {
-            $url = rtrim($this->config->evolution_url, '/') . '/instance/status';
+            $url = rtrim($this->config->evolution_url, '/') . '/instance/' . $this->config->evolution_instance . '/status';
         } else {
             $url = rtrim($this->config->evolution_url, '/') . '/instance/connectionState/' . $this->config->evolution_instance;
         }
@@ -298,8 +280,9 @@ class WhatsAppService
             $data = json_decode($response['body'], true);
 
             if ($isGo) {
-                $estado = ($data['data']['Connected'] ?? false) ? 'open' : 'desconectado';
-                $instanceData = $data['data'] ?? [];
+                // Evolution Go retorna estado diretamente ou dentro de data
+                $instanceData = $data['data'] ?? $data ?? [];
+                $estado = $instanceData['state'] ?? $instanceData['State'] ?? ($instanceData['Connected'] ?? false ? 'open' : 'desconectado');
             } else {
                 $estado = $data['instance']['state'] ?? 'desconhecido';
                 $instanceData = $data['instance'] ?? [];
@@ -341,7 +324,7 @@ class WhatsAppService
         $apikey = $isGo ? $this->resolveApiKeyGo() : $this->config->evolution_apikey;
 
         if ($isGo) {
-            $url = rtrim($this->config->evolution_url, '/') . '/instance/qr';
+            $url = rtrim($this->config->evolution_url, '/') . '/instance/' . $this->config->evolution_instance . '/qrcode';
         } else {
             $url = rtrim($this->config->evolution_url, '/') . '/instance/connect/' . $this->config->evolution_instance;
         }
@@ -360,8 +343,8 @@ class WhatsAppService
                 $qrData = $data['data'] ?? $data;
                 return [
                     'success' => true,
-                    'qr_code' => $qrData['base64'] ?? $qrData['qrcode'] ?? null,
-                    'pairing_code' => $qrData['code'] ?? $qrData['pairingCode'] ?? null,
+                    'qr_code' => $qrData['Qrcode'] ?? $qrData['qrcode'] ?? $qrData['base64'] ?? null,
+                    'pairing_code' => $qrData['Code'] ?? $qrData['code'] ?? $qrData['pairingCode'] ?? null,
                     'count' => $qrData['count'] ?? 0
                 ];
             }
@@ -391,8 +374,10 @@ class WhatsAppService
 
         if ($isGo) {
             $payload = [
-                'name' => $this->config->evolution_instance,
+                'instanceName' => $this->config->evolution_instance,
                 'token' => $this->config->evolution_apikey,
+                'integration' => 'WHATSAPP-BAILEYS',
+                'qrcode' => true,
             ];
         } else {
             $payload = [
@@ -421,7 +406,7 @@ class WhatsAppService
         $apikey = $isGo ? $this->resolveApiKeyGo() : $this->config->evolution_apikey;
 
         if ($isGo) {
-            $url = rtrim($this->config->evolution_url, '/') . '/instance/logout';
+            $url = rtrim($this->config->evolution_url, '/') . '/instance/' . $this->config->evolution_instance;
         } else {
             $url = rtrim($this->config->evolution_url, '/') . '/instance/logout/' . $this->config->evolution_instance;
         }

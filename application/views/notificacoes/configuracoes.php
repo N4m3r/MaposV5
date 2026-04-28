@@ -310,7 +310,7 @@
                             </div>
                             <div class="help-text" id="evo-type-help">
                                 <?php echo ($config->evolution_version ?? 'v2') == 'go'
-                                    ? 'Evolution Go: a instância é identificada automaticamente pela API Key. Não é necessário informar nome da instância no URL.'
+                                    ? 'Evolution Go: a instância é definida pelo nome informado abaixo. A API Key é usada para autenticação.'
                                     : 'Self-Hosted: você precisa informar o nome da instância que será usado na URL da API.'; ?>
                             </div>
                         </div>
@@ -335,7 +335,7 @@
                             <div class="help-text">Chave de API gerada no painel do Evolution</div>
                         </div>
 
-                        <div class="form-group" id="evo-instance-group" style="<?php echo ($config->evolution_version ?? 'v2') == 'go' ? 'display:none;' : ''; ?>">
+                        <div class="form-group" id="evo-instance-group">
                             <label for="evolution_instance">Nome da Instância</label>
                             <input type="text" name="evolution_instance" id="evolution_instance" class="form-control"
                                    value="<?php echo htmlspecialchars($config->evolution_instance); ?>"
@@ -521,16 +521,13 @@ function selecionarEvoType(tipo) {
     });
     event.currentTarget.classList.add('active');
 
-    // Mostra/esconde campo instância
-    const instanceGroup = document.getElementById('evo-instance-group');
+    // Atualiza textos de ajuda
     if (tipo === 'go') {
-        instanceGroup.style.display = 'none';
         document.getElementById('evo-type-help').textContent =
-            'Evolution Go: a instância é identificada automaticamente pela API Key. Não é necessário informar nome da instância no URL.';
+            'Evolution Go: a instância é definida pelo nome informado abaixo. A API Key é usada para autenticação.';
         document.getElementById('evo-url-help').textContent =
             'Endereço do seu painel Evolution Go (ex: https://evo.jj-ferreiras.com.br)';
     } else {
-        instanceGroup.style.display = 'block';
         document.getElementById('evo-type-help').textContent =
             'Self-Hosted: você precisa informar o nome da instância que será usado na URL da API.';
         document.getElementById('evo-url-help').textContent =
