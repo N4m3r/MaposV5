@@ -118,6 +118,18 @@ class NotificacoesConfig extends MY_Controller
         $service = new WhatsAppService();
         $resultado = $service->obterQRCode();
 
+        // Adiciona informações de debug adicionais
+        if (isset($service->debugLog) && !isset($resultado['debug'])) {
+            $resultado['debug'] = $service->debugLog;
+        }
+
+        // Adiciona configuração atual usada
+        $resultado['_config'] = [
+            'url' => $service->config->evolution_url ?? 'N/D',
+            'instance' => $service->config->evolution_instance ?? 'N/D',
+            'has_token' => !empty($service->config->evolution_instance_token)
+        ];
+
         echo json_encode($resultado);
     }
 

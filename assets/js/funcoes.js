@@ -162,7 +162,10 @@ $(document).ready(function () {
             $("#estado").val("...");
             $("#complemento").val("...");
             $("#telefone").val("...");
-            //Consulta o webservice receitaws.com.br/
+            if ($("#inscricao_estadual").length) $("#inscricao_estadual").val("...");
+            if ($("#inscricao_municipal").length) $("#inscricao_municipal").val("");
+
+            //Consulta o webservice receitaws.com.br/ (dados basicos)
             $.ajax({
                 url: "https://www.receitaws.com.br/v1/cnpj/" + ndocumento,
                 dataType: 'jsonp',
@@ -192,16 +195,34 @@ $(document).ready(function () {
                         }
 
                         // Força uma atualizacao do endereco via cep
-                        //document.getElementById("cep").focus();
                         if ($("#nomeCliente").val() != null) {
                             document.getElementById("nomeCliente").focus();
                         }
                         if ($("#nomeEmitente").val() != null) {
                             document.getElementById("nomeEmitente").focus();
                         }
+
+                        // Consulta BrasilAPI para Inscrição Estadual
+                        if ($("#inscricao_estadual").length) {
+                            $.ajax({
+                                url: "https://brasilapi.com.br/api/cnpj/v1/" + ndocumento,
+                                dataType: 'json',
+                                success: function (brasilApi) {
+                                    var ies = brasilApi.inscricoes_estaduais || [];
+                                    if (ies.length > 0 && ies[0].inscricao_estadual) {
+                                        $("#inscricao_estadual").val(ies[0].inscricao_estadual);
+                                    } else {
+                                        $("#inscricao_estadual").val("");
+                                    }
+                                },
+                                error: function () {
+                                    $("#inscricao_estadual").val("");
+                                }
+                            });
+                        }
                     } //end if.
                     else {
-                        //CEP pesquisado não foi encontrado.
+                        //CNPJ pesquisado não foi encontrado.
                         if ($("#nomeCliente").val() != null) {
                             $("#nomeCliente").val("");
                         }
@@ -213,6 +234,8 @@ $(document).ready(function () {
                         $("#numero").val("");
                         $("#complemento").val("");
                         $("#telefone").val("");
+                        if ($("#inscricao_estadual").length) $("#inscricao_estadual").val("");
+                        if ($("#inscricao_municipal").length) $("#inscricao_municipal").val("");
 
                         Swal.fire({
                             type: "warning",
@@ -222,7 +245,7 @@ $(document).ready(function () {
                     }
                 },
                 error: function () {
-                    ///CEP pesquisado não foi encontrado.
+                    //CNPJ pesquisado não foi encontrado.
                     if ($("#nomeCliente").val() != null) {
                         $("#nomeCliente").val("");
                     }
@@ -234,6 +257,8 @@ $(document).ready(function () {
                     $("#numero").val("");
                     $("#complemento").val("");
                     $("#telefone").val("");
+                    if ($("#inscricao_estadual").length) $("#inscricao_estadual").val("");
+                    if ($("#inscricao_municipal").length) $("#inscricao_municipal").val("");
 
                     Swal.fire({
                         type: "warning",

@@ -285,6 +285,16 @@
                                     <p class="help-text">Abra o WhatsApp no celular: Configurações > Dispositivos Conectados > Conectar dispositivo</p>
                                 </div>
                             </div>
+
+                            <!-- Painel de Debug -->
+                            <div id="debug-panel" class="config-card" style="display:none; margin-top:15px; background:#1e1e1e; color:#d4d4d4; font-family:'Courier New',monospace; font-size:12px;">
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                                    <h5 style="margin:0; color:#4ec9b0;"><i class='bx bx-bug'></i> Debug da Conexão</h5>
+                                    <button type="button" onclick="limparDebug()" style="background:#333; color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer; font-size:11px;">Limpar</button>
+                                </div>
+                                <div id="debug-log" style="max-height:300px; overflow-y:auto; padding:10px; background:#0d0d0d; border-radius:4px;">
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -567,32 +577,91 @@ function verificarStatus() {
         .catch(err => alert('Erro ao verificar status: ' + err));
 }
 
+function adicionarDebug(tipo, mensagem) {
+    const panel = document.getElementById('debug-panel');
+    const log = document.getElementById('debug-log');
+    panel.style.display = 'block';
+
+    const hora = new Date().toLocaleTimeString('pt-BR', { hour12: false });
+    let cor = '#d4d4d4';
+    let prefixo = '[INFO]';
+    if (tipo === 'erro') { cor = '#f44747'; prefixo = '[ERRO]'; }
+    if (tipo === 'sucesso') { cor = '#4ec9b0'; prefixo = '[OK]'; }
+    if (tipo === 'warn') { cor = '#ffcc00'; prefixo = '[AVISO]'; }
+    if (tipo === 'url') { cor = '#569cd6'; prefixo = '[URL]'; }
+
+    const linha = document.createElement('div');
+    linha.style.marginBottom = '4px';
+    linha.style.wordBreak = 'break-all';
+    linha.innerHTML = `<span style="color:#858585;">${hora}</span> <span style="color:${cor}; font-weight:bold;">${prefixo}</span> <span style="color:${cor};">${mensagem}</span>`;
+    log.appendChild(linha);
+    log.scrollTop = log.scrollHeight;
+}
+
+function limparDebug() {
+    document.getElementById('debug-log').innerHTML = '';
+    document.getElementById('debug-panel').style.display = 'none';
+}
+
 function obterQRCode() {
     const btn = event.target.closest('button');
     btn.disabled = true;
     btn.innerHTML = '<i class="bx bx-loader bx-spin"></i> Obtendo QR Code...';
 
+    limparDebug();
+    adicionarDebug('info', 'Iniciando processo de obtenção do QR Code...');
+    adicionarDebug('url', 'Chamando: ' + '<?php echo site_url("notificacoesConfig/obter_qr"); ?>');
+
     fetch('<?php echo site_url("notificacoesConfig/obter_qr"); ?>', {
         headers: { 'X-Requested-With': 'XMLHttpRequest' }
     })
-        .then(r => r.json())
-        .then(data => {
+        .then(r => {
+            adicionarDebug('info', 'HTTP Status: ' + r.status);
+            return r.text();
+        })
+        .then(text => {
+            adicionarDebug('info', 'Resposta bruta (' + text.length + ' chars):');
+            adicionarDebug('info', text.substring(0, 500));
+            let data;
+            try {
+                data = JSON.parse(text);
+            } catch(e) {
+                adicionarDebug('erro', 'Falha ao parsear JSON: ' + e.message);
+                throw new Error('Resposta inválida do servidor');
+            }
+
             btn.disabled = false;
             btn.innerHTML = '<i class="bx bx-qr"></i> Conectar (QR Code)';
 
+            if (data._config) {
+                adicionarDebug('info', '--- Config usada ---');
+                adicionarDebug('info', 'URL: ' + data._config.url);
+                adicionarDebug('info', 'Instância: ' + data._config.instance);
+                adicionarDebug('info', 'Token salvo: ' + (data._config.has_token ? 'SIM' : 'NÃO'));
+            }
+
+            if (data.debug) {
+                adicionarDebug('info', '--- Logs do servidor ---');
+                data.debug.forEach(d => adicionarDebug(d.tipo || 'info', d.msg));
+            }
+
             if (data.success && data.qr_code) {
+                adicionarDebug('sucesso', 'QR Code obtido com sucesso!');
                 document.getElementById('qr-code-img').src = data.qr_code;
                 document.getElementById('qr-code-display').style.display = 'block';
             } else if (data.already_connected) {
+                adicionarDebug('warn', 'Já está conectado!');
                 alert('Já está conectado!');
             } else {
-                alert('Erro ao obter QR Code: ' + (data.error || 'Erro desconhecido'));
+                adicionarDebug('erro', 'Erro: ' + (data.error || 'Erro desconhecido'));
+                if (data.http_code) adicionarDebug('erro', 'HTTP Code: ' + data.http_code);
+                if (data.response) adicionarDebug('erro', 'Resposta: ' + JSON.stringify(data.response).substring(0, 300));
             }
         })
         .catch(err => {
             btn.disabled = false;
             btn.innerHTML = '<i class="bx bx-qr"></i> Conectar (QR Code)';
-            alert('Erro ao obter QR Code: ' + err);
+            adicionarDebug('erro', 'Exceção JavaScript: ' + err.message);
         });
 }
 
