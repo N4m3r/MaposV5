@@ -40,7 +40,7 @@ class Certificado extends MY_Controller
             'faixa' => $this->impostos_model->getConfig('IMPOSTO_FAIXA_ATUAL') ?: null,
             'retencao_automatica' => $this->impostos_model->getConfig('IMPOSTO_RETENCAO_AUTOMATICA') == '1',
             'dre_integracao' => $this->impostos_model->getConfig('IMPOSTO_DRE_INTEGRACAO') == '1',
-            'regime' => $this->impostos_model->getConfig('IMPOSTO_REGIME_TRIBUTARIO') ?: 'simples_nacional',
+            'regime' => 'simples_nacional',
         ];
 
         $this->data['certificado'] = $certificado;
@@ -96,29 +96,16 @@ class Certificado extends MY_Controller
                     // Configurar impostos automaticamente
                     $this->load->model('impostos_model');
 
-                    if (($sincronizacao['regime'] ?? '') === 'lucro_presumido') {
-                        // Lucro Presumido — não usa anexo/faixa do Simples
-                        $this->impostos_model->setConfig('IMPOSTO_REGIME_TRIBUTARIO', 'lucro_presumido');
-                        $this->impostos_model->setConfig('IMPOSTO_ANEXO_PADRAO', null);
-                        $this->impostos_model->setConfig('IMPOSTO_FAIXA_ATUAL', null);
-                        $this->impostos_model->setConfig('IMPOSTO_RETENCAO_AUTOMATICA', '1');
-                        $this->impostos_model->setConfig('IMPOSTO_DRE_INTEGRACAO', '1');
+                    // Simples Nacional (único regime suportado)
+                    $this->impostos_model->setConfig('IMPOSTO_REGIME_TRIBUTARIO', 'simples_nacional');
+                    $this->impostos_model->setConfig('IMPOSTO_ANEXO_PADRAO', $sincronizacao['configuracao']['anexo_sugerido']);
+                    $this->impostos_model->setConfig('IMPOSTO_FAIXA_ATUAL', '1');
+                    $this->impostos_model->setConfig('IMPOSTO_RETENCAO_AUTOMATICA', '1');
+                    $this->impostos_model->setConfig('IMPOSTO_DRE_INTEGRACAO', '1');
 
-                        log_info('Regime Lucro Presumido detectado para CNPJ: ' . $dados['cnpj']);
+                    log_info('Configuração de impostos automática aplicada para CNPJ: ' . $dados['cnpj']);
 
-                        $this->session->set_flashdata('success', 'Certificado configurado com sucesso! Regime tributário: Lucro Presumido. As alíquotas de retenção foram configuradas automaticamente.');
-                    } else {
-                        // Simples Nacional
-                        $this->impostos_model->setConfig('IMPOSTO_REGIME_TRIBUTARIO', 'simples_nacional');
-                        $this->impostos_model->setConfig('IMPOSTO_ANEXO_PADRAO', $sincronizacao['configuracao']['anexo_sugerido']);
-                        $this->impostos_model->setConfig('IMPOSTO_FAIXA_ATUAL', '1');
-                        $this->impostos_model->setConfig('IMPOSTO_RETENCAO_AUTOMATICA', '1');
-                        $this->impostos_model->setConfig('IMPOSTO_DRE_INTEGRACAO', '1');
-
-                        log_info('Configuração de impostos automática aplicada para CNPJ: ' . $dados['cnpj']);
-
-                        $this->session->set_flashdata('success', 'Certificado configurado com sucesso! Regime: Simples Nacional — Anexo ' . $sincronizacao['configuracao']['anexo_sugerido'] . '. Verifique em Impostos > Configurações.');
-                    }
+                    $this->session->set_flashdata('success', 'Certificado configurado com sucesso! Regime: Simples Nacional — Anexo ' . $sincronizacao['configuracao']['anexo_sugerido'] . '. Verifique em Impostos > Configurações.');
                 } else {
                     $this->session->set_flashdata('success', 'Certificado configurado com sucesso! Configure manualmente os impostos em Impostos > Configurações.');
                     $this->session->set_flashdata('info', 'Não foi possível detectar automaticamente as alíquotas: ' . ($sincronizacao['error'] ?? 'Tente novamente mais tarde.'));
@@ -176,26 +163,16 @@ class Certificado extends MY_Controller
         $resultado = $this->certificado_model->sincronizarAliquotas();
 
         if (isset($resultado['success'])) {
-            // Aplicar configurações automaticamente
+            // Aplicar configurações automaticamente (Simples Nacional)
             $this->load->model('impostos_model');
 
-            if (($resultado['regime'] ?? '') === 'lucro_presumido') {
-                $this->impostos_model->setConfig('IMPOSTO_REGIME_TRIBUTARIO', 'lucro_presumido');
-                $this->impostos_model->setConfig('IMPOSTO_ANEXO_PADRAO', null);
-                $this->impostos_model->setConfig('IMPOSTO_FAIXA_ATUAL', null);
-                $this->impostos_model->setConfig('IMPOSTO_RETENCAO_AUTOMATICA', '1');
-                $this->impostos_model->setConfig('IMPOSTO_DRE_INTEGRACAO', '1');
+            $this->impostos_model->setConfig('IMPOSTO_REGIME_TRIBUTARIO', 'simples_nacional');
+            $this->impostos_model->setConfig('IMPOSTO_ANEXO_PADRAO', $resultado['configuracao']['anexo_sugerido']);
+            $this->impostos_model->setConfig('IMPOSTO_FAIXA_ATUAL', '1');
+            $this->impostos_model->setConfig('IMPOSTO_RETENCAO_AUTOMATICA', '1');
+            $this->impostos_model->setConfig('IMPOSTO_DRE_INTEGRACAO', '1');
 
-                $this->session->set_flashdata('success', 'Alíquotas sincronizadas! Regime detectado: Lucro Presumido. Alíquotas de retenção configuradas automaticamente.');
-            } else {
-                $this->impostos_model->setConfig('IMPOSTO_REGIME_TRIBUTARIO', 'simples_nacional');
-                $this->impostos_model->setConfig('IMPOSTO_ANEXO_PADRAO', $resultado['configuracao']['anexo_sugerido']);
-                $this->impostos_model->setConfig('IMPOSTO_FAIXA_ATUAL', '1');
-                $this->impostos_model->setConfig('IMPOSTO_RETENCAO_AUTOMATICA', '1');
-                $this->impostos_model->setConfig('IMPOSTO_DRE_INTEGRACAO', '1');
-
-                $this->session->set_flashdata('success', 'Alíquotas sincronizadas e configuradas automaticamente! Anexo identificado: ' . $resultado['configuracao']['anexo_sugerido']);
-            }
+            $this->session->set_flashdata('success', 'Alíquotas sincronizadas e configuradas automaticamente! Anexo identificado: ' . $resultado['configuracao']['anexo_sugerido']);
 
             log_info('Alíquotas sincronizadas manualmente pelo usuário: ' . $this->session->userdata('nome'));
         } else {

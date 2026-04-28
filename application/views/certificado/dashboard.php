@@ -179,16 +179,7 @@
                 <h5>Status dos Impostos</h5>
             </div>
             <div class="widget-content">
-                <?php
-                $regime = $config_impostos['regime'] ?? $this->impostos_model->getConfig('IMPOSTO_REGIME_TRIBUTARIO') ?: 'simples_nacional';
-                ?>
-                <?php if ($regime === 'lucro_presumido'): ?>
-                    <div class="alert alert-info" style="margin-bottom: 10px;">
-                        <i class="fas fa-building"></i> <strong>Lucro Presumido</strong><br>
-                        Alíquotas de retenção configuradas automaticamente.<br>
-                        <strong>Retenção Automática:</strong> <?= $config_impostos['retencao_automatica'] ? 'Sim' : 'Não' ?>
-                    </div>
-                <?php elseif ($config_impostos['anexo']): ?>
+                <?php if ($config_impostos['anexo']): ?>
                     <div class="alert alert-success" style="margin-bottom: 10px;">
                         <i class="fas fa-check-circle"></i> <strong>Configurado!</strong><br>
                         <strong>Regime:</strong> Simples Nacional<br>
@@ -237,17 +228,12 @@
                         if ($c->tipo_consulta === 'SIMPLES_NACIONAL' && is_array($dadosConsulta)):
                         ?>
                         <div style="margin-top: 5px; padding: 5px 8px; background: #f8f9fa; border-radius: 3px; font-size: 11px;">
-                            <?php if (!empty($dadosConsulta['optante_simples'])): ?>
-                                <span class="label label-success">Optante Simples Nacional</span>
-                                <?php if (!empty($dadosConsulta['anexo_sugerido'])): ?>
-                                    <span class="label label-info">Anexo <?= htmlspecialchars($dadosConsulta['anexo_sugerido']) ?></span>
-                                <?php endif; ?>
-                                <?php if (!empty($dadosConsulta['simei'])): ?>
-                                    <span class="label label-warning">MEI</span>
-                                <?php endif; ?>
-                            <?php else: ?>
-                                <span class="label label-important" style="background: #d9534f; color: white;">Não Optante Simples</span>
-                                <span class="label label-info">Lucro Presumido</span>
+                            <span class="label label-success">Optante Simples Nacional</span>
+                            <?php if (!empty($dadosConsulta['anexo_sugerido'])): ?>
+                                <span class="label label-info">Anexo <?= htmlspecialchars($dadosConsulta['anexo_sugerido']) ?></span>
+                            <?php endif; ?>
+                            <?php if (!empty($dadosConsulta['simei'])): ?>
+                                <span class="label label-warning">MEI</span>
                             <?php endif; ?>
                             <?php if (!empty($dadosConsulta['cnae_descricao'])): ?>
                                 <br><strong>CNAE:</strong> <small><?= htmlspecialchars(substr($dadosConsulta['cnae_descricao'], 0, 80)) ?></small>
@@ -296,23 +282,17 @@
                 </ul>
 
                 <?php
-                $regime = $config_impostos['regime'] ?? 'simples_nacional';
                 $issMunicipal = $this->impostos_model->getConfig('IMPOSTO_ISS_MUNICIPAL') ?: '5.00';
                 ?>
-                <div class="alert alert-<?= $regime === 'lucro_presumido' ? 'info' : 'success' ?>" style="margin-top: 10px;">
-                    <i class="fas fa-<?= $regime === 'lucro_presumido' ? 'building' : 'check-circle' ?>"></i>
+                <div class="alert alert-success" style="margin-top: 10px;">
+                    <i class="fas fa-check-circle"></i>
                     <strong>Regime Tributário Detectado:</strong><br>
-                    <?php if ($regime === 'lucro_presumido'): ?>
-                        <strong>Lucro Presumido</strong><br>
-                        <small>IRPJ 1,5% • CSLL 1,0% • COFINS 3,0% • PIS 0,65% • ISS <?= htmlspecialchars($issMunicipal) ?>%</small>
-                    <?php else: ?>
-                        <strong>Simples Nacional</strong>
-                        <?php if ($config_impostos['anexo']): ?>
-                            — Anexo <?= htmlspecialchars($config_impostos['anexo']) ?>, Faixa <?= $config_impostos['faixa'] ?>
-                        <?php endif; ?>
-                        <br>
-                        <small>ISS Municipal: <?= htmlspecialchars($issMunicipal) ?>%</small>
+                    <strong>Simples Nacional</strong>
+                    <?php if ($config_impostos['anexo']): ?>
+                        — Anexo <?= htmlspecialchars($config_impostos['anexo']) ?>, Faixa <?= $config_impostos['faixa'] ?>
                     <?php endif; ?>
+                    <br>
+                    <small>ISS Municipal: <?= htmlspecialchars($issMunicipal) ?>%</small>
                 </div>
 
                 <div class="alert alert-info">

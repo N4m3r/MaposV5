@@ -20,9 +20,6 @@ $produtos = $produtos ?? [];
 $descontoTomador = floatval($result->valor_desconto ?? 0);
 $valorBaseNFSe = $descontoTomador > 0 ? $descontoTomador : ($totalServico > 0 ? $totalServico : $totalProdutos);
 $ambiente = $ambiente ?? 'homologacao';
-$regimeTributario = $regimeTributario ?? ($tributacao['regime'] ?? 'simples_nacional');
-$isSimplesNacional = ($regimeTributario === 'simples_nacional');
-$regimeLabel = $isSimplesNacional ? 'Simples Nacional' : 'Lucro Presumido';
 
 $mostrarWizard = !$nfse_atual || (isset($nfse_atual->situacao) && $nfse_atual->situacao == 'Cancelada');
 
@@ -94,13 +91,10 @@ if (!function_exists('fmtDoc')) {
 
                 <h6 style="color:var(--title,#d4d8e0)"><i class="fas fa-calculator" style="color:var(--dark-azul,#1086dd)"></i> Detalhamento dos Impostos / DAS</h6>
                 <?php
-                $nfseRegime = $nfse_atual->regime_tributario ?? 'simples_nacional';
-                $isNfseSimples = ($nfseRegime === 'simples_nacional');
                 $aliquotaEfetiva = $nfse_atual->valor_servicos > 0 ? round(($nfse_atual->valor_total_impostos / $nfse_atual->valor_servicos) * 100, 2) : 0;
                 ?>
                 <div class="well well-small" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8)">
-                    <?php if ($isNfseSimples): ?>
-                    <div class="row-fluid">
+                        <div class="row-fluid">
                         <div class="span6">
                             <span class="label" style="background:#1086dd; color:#fff">Simples Nacional</span>
                             <div style="margin-top:8px; color:var(--branco,#caced8)">
@@ -117,23 +111,6 @@ if (!function_exists('fmtDoc')) {
                     <div style="margin-top:10px; font-size:11px; color:var(--dark-cinz,#8788a4)">
                         <i class="fas fa-info-circle" style="color:#1086dd"></i> O DAS e recolhido mensalmente pelo prestador. O valor estimado foi registrado no DRE para controle.
                     </div>
-                    <?php else: ?>
-                    <div class="row-fluid">
-                        <div class="span6" style="color:var(--branco,#caced8)">
-                            <span class="label" style="background:#52459f; color:#fff">Lucro Presumido</span>
-                            <div style="margin-top:8px">
-                                <strong style="color:var(--title,#d4d8e0)">ISS (<?= $nfse_atual->aliquota_iss ?>%):</strong> <?= fmtMoney($nfse_atual->valor_iss) ?><br>
-                                <strong style="color:var(--title,#d4d8e0)">PIS:</strong> <?= fmtMoney($nfse_atual->valor_pis) ?><br>
-                                <strong style="color:var(--title,#d4d8e0)">COFINS:</strong> <?= fmtMoney($nfse_atual->valor_cofins) ?>
-                            </div>
-                        </div>
-                        <div class="span6" style="color:var(--branco,#caced8)">
-                            <strong style="color:var(--title,#d4d8e0)">IRRF:</strong> <?= fmtMoney($nfse_atual->valor_irrf) ?><br>
-                            <strong style="color:var(--title,#d4d8e0)">CSLL:</strong> <?= fmtMoney($nfse_atual->valor_csll) ?><br>
-                            <strong style="color:var(--title,#d4d8e0)">INSS:</strong> <?= fmtMoney($nfse_atual->valor_inss) ?>
-                        </div>
-                    </div>
-                    <?php endif; ?>
 
                     <?php if (floatval($nfse_atual->valor_total_retencao ?? 0) > 0): ?>
                     <hr style="margin:10px 0; border-top:1px solid var(--dark-2,#272835)">
@@ -347,21 +324,15 @@ if (!function_exists('fmtDoc')) {
 
                     <div class="well well-small" style="margin-top:12px; margin-bottom:10px; background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835)">
                         <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px">
-                            <i class="fas fa-landmark" style="font-size:16px; color:<?= $isSimplesNacional ? '#62eba6' : '#1086dd' ?>"></i>
-                            <strong style="font-size:14px; color:var(--title,#d4d8e0)">Regime Tributario: <?= $regimeLabel ?></strong>
-                            <span class="label" style="background:<?= $isSimplesNacional ? '#1086dd' : '#52459f' ?>; color:#fff; font-size:11px"><?= $isSimplesNacional ? 'DAS' : 'Impostos Individuais' ?></span>
+                            <i class="fas fa-landmark" style="font-size:16px; color:#62eba6"></i>
+                            <strong style="font-size:14px; color:var(--title,#d4d8e0)">Regime Tributario: Simples Nacional</strong>
+                            <span class="label" style="background:#1086dd; color:#fff; font-size:11px">DAS</span>
                         </div>
-                        <?php if ($isSimplesNacional): ?>
                         <div style="margin-bottom:10px; color:var(--branco,#caced8)">
                             <strong style="color:var(--title,#d4d8e0)"><i class="fas fa-receipt" style="color:#62eba6"></i> DAS Estimado:</strong>
                             <span id="das-valor-display" style="color:#62eba6; font-weight:bold">—</span>
                             <small style="color:var(--dark-cinz,#8788a4); display:block; margin-top:4px">No Simples Nacional, o imposto e recolhido via DAS mensal. Valor calculado no Passo 2.</small>
                         </div>
-                        <?php else: ?>
-                        <div style="margin-bottom:10px; font-size:12px; color:var(--dark-cinz,#8788a4)">
-                            <i class="fas fa-info-circle" style="color:#1086dd"></i> Lucro Presumido: impostos calculados individualmente (ISS, IRRF, PIS, COFINS, CSLL).
-                        </div>
-                        <?php endif; ?>
 
                         <hr style="margin:10px 0; border-top:1px solid var(--dark-2,#272835)">
                         <div style="margin-bottom:6px"><strong style="font-size:13px; color:var(--title,#d4d8e0)"><i class="fas fa-hand-holding-usd" style="color:#fd7670"></i> Retencoes do Tomador</strong> <small style="color:var(--dark-cinz,#8788a4)">(impostos retidos na fonte)</small></div>
@@ -443,34 +414,21 @@ if (!function_exists('fmtDoc')) {
                     </div>
                     <div class="row-fluid">
                         <div class="span6">
-                            <h6 style="color:var(--title,#d4d8e0)"><i class="fas fa-calculator" style="color:var(--dark-azul,#1086dd)"></i> Calculo de Impostos <span class="label" style="background:<?= $isSimplesNacional ? '#1086dd' : '#52459f' ?>; color:#fff; font-size:11px"><?= $regimeLabel ?></span></h6>
+                            <h6 style="color:var(--title,#d4d8e0)"><i class="fas fa-calculator" style="color:var(--dark-azul,#1086dd)"></i> Calculo de Impostos <span class="label" style="background:#1086dd; color:#fff; font-size:11px">Simples Nacional</span></h6>
                             <table class="table table-condensed" id="impostos-table" style="font-size:13px; background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8)">
                                 <tbody>
                                     <tr><td style="border-color:var(--dark-2,#272835)"><strong>Valor Bruto</strong></td><td class="text-right" id="imp-valor-bruto" style="border-color:var(--dark-2,#272835)">—</td></tr>
                                     <tr><td style="border-color:var(--dark-2,#272835)"><strong>(-) Deducoes</strong></td><td class="text-right" id="imp-deducoes" style="border-color:var(--dark-2,#272835)">—</td></tr>
                                     <tr><td style="border-color:var(--dark-2,#272835)"><strong>Base de Calculo</strong></td><td class="text-right" id="imp-base-calculo" style="border-color:var(--dark-2,#272835)">—</td></tr>
-                                    <?php if ($isSimplesNacional): ?>
                                     <tr style="background:rgba(16,134,221,0.1)"><td style="border-color:var(--dark-2,#272835)"><strong><i class="fas fa-receipt"></i> DAS (Simples Nacional)</strong></td><td class="text-right" id="imp-das" style="border-color:var(--dark-2,#272835)"><strong>—</strong></td></tr>
                                     <tr><td style="font-size:11px; color:var(--dark-cinz,#8788a4); padding-left:20px; border-color:var(--dark-2,#272835)">Aliquota efetiva: <span id="imp-das-aliquota">—</span></td><td style="border-color:var(--dark-2,#272835)"></td></tr>
-                                    <?php else: ?>
-                                    <tr><td style="border-color:var(--dark-2,#272835)">ISS (<?= $tributacao['aliquota_iss'] ?>%)</td><td class="text-right" id="imp-iss" style="border-color:var(--dark-2,#272835)">—</td></tr>
-                                    <tr><td style="border-color:var(--dark-2,#272835)">PIS</td><td class="text-right" id="imp-pis" style="border-color:var(--dark-2,#272835)">—</td></tr>
-                                    <tr><td style="border-color:var(--dark-2,#272835)">COFINS</td><td class="text-right" id="imp-cofins" style="border-color:var(--dark-2,#272835)">—</td></tr>
-                                    <tr><td style="border-color:var(--dark-2,#272835)">IRRF</td><td class="text-right" id="imp-irrf" style="border-color:var(--dark-2,#272835)">—</td></tr>
-                                    <tr><td style="border-color:var(--dark-2,#272835)">CSLL</td><td class="text-right" id="imp-csll" style="border-color:var(--dark-2,#272835)">—</td></tr>
-                                    <tr><td style="border-color:var(--dark-2,#272835)">INSS/CPP</td><td class="text-right" id="imp-inss" style="border-color:var(--dark-2,#272835)">—</td></tr>
-                                    <?php endif; ?>
                                     <tr style="border-top:2px solid var(--dark-2,#272835)"><td style="border-color:var(--dark-2,#272835)"><strong>Total Impostos</strong></td><td class="text-right" id="imp-total-impostos" style="border-color:var(--dark-2,#272835)"><strong>—</strong></td></tr>
                                     <tr id="retencao-row" style="display:none"><td style="color:#fd7670; border-color:var(--dark-2,#272835)"><i class="fas fa-hand-holding-usd"></i> (-) Retencoes Tomador</td><td class="text-right" id="imp-retencao-total" style="color:#fd7670; border-color:var(--dark-2,#272835)">—</td></tr>
                                     <tr style="background:rgba(98,235,166,0.1)"><td style="border-color:var(--dark-2,#272835)"><strong style="font-size:14px">Valor Liquido</strong></td><td class="text-right" id="imp-valor-liquido" style="border-color:var(--dark-2,#272835)"><strong style="font-size:14px; color:#62eba6">—</strong></td></tr>
                                 </tbody>
                             </table>
                             <p style="font-size:11px; color:var(--dark-cinz,#8788a4); margin-top:5px">
-                                <?php if ($isSimplesNacional): ?>
                                 <i class="fas fa-info-circle" style="color:#1086dd"></i> Simples Nacional: imposto recolhido via DAS mensal. O valor liquido NAO e reduzido pelas retencoes.
-                                <?php else: ?>
-                                <i class="fas fa-info-circle" style="color:#52459f"></i> Lucro Presumido: impostos calculados individualmente. O valor liquido NAO e reduzido pelas retencoes.
-                                <?php endif; ?>
                             </p>
                         </div>
                         <div class="span6">
@@ -497,8 +455,7 @@ if (!function_exists('fmtDoc')) {
                             </div>
                             <div id="boleto-campos">
                                 <div class="alert" style="margin-bottom:15px; background:rgba(16,134,221,0.15); border-color:rgba(16,134,221,0.3); color:#1086dd">
-                                    <i class="fas fa-info-circle"></i> O boleto sera gerado com o <strong>valor integral</strong> dos servicos.
-                                    <?php if ($isSimplesNacional): ?>O DAS (Simples Nacional) e recolhido mensalmente pelo prestador e <strong>nao desconta</strong> do boleto.<?php endif; ?>
+                                    <i class="fas fa-info-circle"></i> O boleto sera gerado com o <strong>valor integral</strong> dos servicos. O DAS (Simples Nacional) e recolhido mensalmente pelo prestador e <strong>nao desconta</strong> do boleto.
                                 </div>
                                 <div class="row-fluid">
                                     <div class="span4">
@@ -553,14 +510,14 @@ if (!function_exists('fmtDoc')) {
                     <div class="row-fluid">
                         <div class="span6">
                             <div class="well well-small" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835)">
-                                <h6 style="margin-top:0; color:var(--title,#d4d8e0)"><i class="fas fa-file-invoice" style="color:var(--dark-azul,#1086dd)"></i> NFS-e <span class="label" style="background:<?= $isSimplesNacional ? '#1086dd' : '#52459f' ?>; color:#fff; font-size:11px"><?= $regimeLabel ?></span></h6>
+                                <h6 style="margin-top:0; color:var(--title,#d4d8e0)"><i class="fas fa-file-invoice" style="color:var(--dark-azul,#1086dd)"></i> NFS-e <span class="label" style="background:#1086dd; color:#fff; font-size:11px">Simples Nacional</span></h6>
                                 <table class="table table-condensed" style="margin-bottom:0; font-size:12px; background:transparent; border-color:var(--dark-2,#272835); color:var(--branco,#caced8)">
                                     <tr><td style="border:none; padding:2px 0; color:var(--dark-cinz,#8788a4)"><strong style="color:var(--branco,#caced8)">Prestador:</strong></td><td style="border:none; padding:2px 0"><span id="res-prestador"><?= htmlspecialchars($emitente->nome ?? $emitente->razaosocial ?? '—') ?></span></td></tr>
                                     <tr><td style="border:none; padding:2px 0; color:var(--dark-cinz,#8788a4)"><strong style="color:var(--branco,#caced8)">Tomador:</strong></td><td style="border:none; padding:2px 0"><span id="res-tomador"><?= htmlspecialchars($result->nomeCliente ?? '—') ?></span></td></tr>
                                     <tr><td style="border:none; padding:2px 0; color:var(--dark-cinz,#8788a4)"><strong style="color:var(--branco,#caced8)">Valor Servicos:</strong></td><td style="border:none; padding:2px 0"><span id="res-valor-servicos">—</span></td></tr>
                                     <tr><td style="border:none; padding:2px 0; color:var(--dark-cinz,#8788a4)"><strong style="color:var(--branco,#caced8)">Deducoes:</strong></td><td style="border:none; padding:2px 0"><span id="res-deducoes">—</span></td></tr>
                                     <tr id="res-imposto-linha"><td style="border:none; padding:2px 0; color:var(--dark-cinz,#8788a4)"><strong style="color:var(--branco,#caced8)">Total Impostos:</strong></td><td style="border:none; padding:2px 0"><span id="res-total-impostos">—</span></td></tr>
-                                    <tr id="res-das-linha" style="display:<?= $isSimplesNacional ? 'table-row' : 'none' ?>"><td style="border:none; padding:2px 0; color:var(--dark-cinz,#8788a4)"><strong style="color:#62eba6">DAS:</strong></td><td style="border:none; padding:2px 0"><span id="res-valor-das" style="color:#62eba6; font-weight:bold">—</span></td></tr>
+                                    <tr id="res-das-linha"><td style="border:none; padding:2px 0; color:var(--dark-cinz,#8788a4)"><strong style="color:#62eba6">DAS:</strong></td><td style="border:none; padding:2px 0"><span id="res-valor-das" style="color:#62eba6; font-weight:bold">—</span></td></tr>
                                     <tr id="res-retencao-linha" style="display:none"><td style="border:none; padding:2px 0; color:var(--dark-cinz,#8788a4)"><strong style="color:#fd7670">Retencoes:</strong></td><td style="border:none; padding:2px 0"><span id="res-retencao-total" style="color:#fd7670; font-weight:bold">—</span></td></tr>
                                     <tr><td style="border:none; padding:4px 0 0 0; border-top:1px solid var(--dark-2,#272835); color:var(--dark-cinz,#8788a4)"><strong style="color:#62eba6; font-size:14px">Valor Liquido:</strong></td><td style="border:none; padding:4px 0 0 0; border-top:1px solid var(--dark-2,#272835)"><span id="res-valor-liquido" style="color:#62eba6; font-size:14px; font-weight:bold">—</span></td></tr>
                                 </table>

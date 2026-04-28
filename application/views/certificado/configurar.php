@@ -26,8 +26,9 @@
                 <form method="post" action="<?= site_url('certificado/configurar') ?>" class="form-horizontal" enctype="multipart/form-data">
 
                     <div class="alert alert-info">
-                        <i class="fas fa-info-circle"></i> <strong>Certificado Digital</strong><br>
+                        <i class="fas fa-info-circle"></i> <strong>Certificado Digital — Simples Nacional (DAS)</strong><br>
                         Configure seu certificado A1 (arquivo .pfx) ou A3 (token/smartcard) para integração automática com a Receita Federal.
+                        Após salvar, o sistema detectará automaticamente o Anexo do Simples Nacional e as alíquotas do DAS.
                     </div>
 
                     <div class="control-group">

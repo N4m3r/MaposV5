@@ -114,9 +114,35 @@ class WhatsAppService
      */
     private function resolveApiKeyGo()
     {
-        // No Evolution Go, a API key global é usada diretamente
-        // Não é necessário resolver token por instância
         return $this->config->evolution_apikey;
+    }
+
+    /**
+     * Resolve o token específico da instância no Evolution Go
+     * Obtém via /instance/all usando o apikey global
+     */
+    private function resolveInstanceToken()
+    {
+        $url = rtrim($this->config->evolution_url, '/') . '/instance/all';
+        $headers = [
+            'apikey: ' . $this->config->evolution_apikey
+        ];
+
+        $response = $this->makeRequest($url, 'GET', [], $headers);
+        log_message('debug', '[Evolution] Resolve token resposta HTTP: ' . $response['http_code']);
+
+        if ($response['http_code'] == 200) {
+            $data = json_decode($response['body'], true);
+            $instances = $data['data'] ?? [];
+            foreach ($instances as $inst) {
+                if (($inst['name'] ?? '') === $this->config->evolution_instance) {
+                    log_message('debug', '[Evolution] Token resolvido para instância ' . $this->config->evolution_instance);
+                    return $inst['token'] ?? null;
+                }
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -124,50 +150,37 @@ class WhatsAppService
      */
     private function enviarEvolution($numero, $mensagem, $options = [])
     {
-        $isGo = ($this->config->evolution_version ?? 'v2') === 'go';
-        $apikey = $isGo ? $this->resolveApiKeyGo() : $this->config->evolution_apikey;
-
-        if ($isGo) {
-            $url = rtrim($this->config->evolution_url, '/') . '/message/sendText';
-            $payload = [
-                'number' => $numero,
-                'text' => $mensagem,
-                'delay' => 1200,
-                'linkPreview' => true,
+        $instanceToken = $this->resolveInstanceToken();
+        if (!$instanceToken) {
+            return [
+                'success' => false,
+                'error' => 'Instância não encontrada no servidor. Verifique se a instância "' . $this->config->evolution_instance . '" existe.'
             ];
-        } else {
-            $url = rtrim($this->config->evolution_url, '/') . '/message/sendText/' . $this->config->evolution_instance;
-            $payload = [
-                'number' => $numero,
-                'text' => $mensagem,
-                'options' => [
-                    'delay' => 1200,
-                    'presence' => 'composing',
-                ]
-            ];
-
-            // Adiciona menções se especificado
-            if (isset($options['mentions'])) {
-                $payload['options']['mentions'] = $options['mentions'];
-            }
         }
+
+        $url = rtrim($this->config->evolution_url, '/') . '/send/text';
+        $payload = [
+            'number' => $numero,
+            'text' => $mensagem,
+            'delay' => 1200,
+        ];
 
         $headers = [
             'Content-Type: application/json; charset=utf-8',
-            'apikey: ' . $apikey
+            'apikey: ' . $instanceToken
         ];
 
         log_message('debug', '[Evolution] Enviando mensagem para: ' . $numero . ' | URL: ' . $url);
         $response = $this->makeRequest($url, 'POST', $payload, $headers);
         log_message('debug', '[Evolution] Resposta envio HTTP: ' . $response['http_code'] . ' | Body: ' . substr($response['body'] ?? '', 0, 500));
 
-        if ($response['http_code'] == 201 || $response['http_code'] == 200) {
+        if ($response['http_code'] == 200) {
             $data = json_decode($response['body'], true);
 
             return [
                 'success' => true,
-                'message_id' => $data['key']['id'] ?? $data['data']['key']['id'] ?? null,
-                'timestamp' => $data['messageTimestamp'] ?? $data['data']['messageTimestamp'] ?? time(),
+                'message_id' => $data['data']['key']['id'] ?? $data['key']['id'] ?? null,
+                'timestamp' => $data['data']['messageTimestamp'] ?? $data['messageTimestamp'] ?? time(),
                 'response' => $data
             ];
         }
@@ -263,54 +276,43 @@ class WhatsAppService
      */
     private function verificarConexaoEvolution()
     {
-        $isGo = ($this->config->evolution_version ?? 'v2') === 'go';
-        $apikey = $isGo ? $this->resolveApiKeyGo() : $this->config->evolution_apikey;
-
-        if ($isGo) {
-            $url = rtrim($this->config->evolution_url, '/') . '/instance/' . $this->config->evolution_instance . '/status';
-            $urlFallback = rtrim($this->config->evolution_url, '/') . '/instance/qr';
-        } else {
-            $url = rtrim($this->config->evolution_url, '/') . '/instance/connectionState/' . $this->config->evolution_instance;
-            $urlFallback = null;
-        }
-
-        log_message('debug', '[Evolution] Status URL: ' . $url . ' | isGo: ' . ($isGo ? 'true' : 'false'));
-
+        $url = rtrim($this->config->evolution_url, '/') . '/instance/all';
         $headers = [
-            'apikey: ' . $apikey
+            'apikey: ' . $this->config->evolution_apikey
         ];
 
-        $response = $this->makeRequest($url, 'GET', [], $headers);
-        log_message('debug', '[Evolution] Status resposta HTTP: ' . $response['http_code'] . ' | Body: ' . substr($response['body'] ?? '', 0, 500));
+        log_message('debug', '[Evolution] Status URL: ' . $url);
 
-        // Tenta endpoint alternativo se retornar 404
-        if ($isGo && $response['http_code'] == 404 && $urlFallback) {
-            log_message('debug', '[Evolution] Status tentando fallback: ' . $urlFallback);
-            $response = $this->makeRequest($urlFallback, 'GET', [], $headers);
-            log_message('debug', '[Evolution] Status fallback resposta HTTP: ' . $response['http_code'] . ' | Body: ' . substr($response['body'] ?? '', 0, 500));
-        }
+        $response = $this->makeRequest($url, 'GET', [], $headers);
+        log_message('debug', '[Evolution] Status resposta HTTP: ' . $response['http_code']);
 
         if ($response['http_code'] == 200) {
             $data = json_decode($response['body'], true);
+            $instances = $data['data'] ?? [];
 
-            if ($isGo) {
-                // Evolution Go retorna estado diretamente ou dentro de data
-                $instanceData = $data['data'] ?? $data ?? [];
-                $estado = $instanceData['state'] ?? $instanceData['State'] ?? ($instanceData['Connected'] ?? false ? 'open' : 'desconectado');
-            } else {
-                $estado = $data['instance']['state'] ?? 'desconhecido';
-                $instanceData = $data['instance'] ?? [];
+            foreach ($instances as $inst) {
+                if (($inst['name'] ?? '') === $this->config->evolution_instance) {
+                    $connected = $inst['connected'] ?? false;
+                    $estado = $connected ? 'open' : 'desconectado';
+
+                    log_message('debug', '[Evolution] Instância encontrada. Connected: ' . ($connected ? 'true' : 'false'));
+
+                    // Atualiza estado no banco
+                    $this->CI->notificacoes_config_model->atualizarEstadoEvolution($estado);
+
+                    return [
+                        'connected' => $connected,
+                        'status' => $estado,
+                        'data' => $inst
+                    ];
+                }
             }
 
-            log_message('debug', '[Evolution] Estado detectado: ' . $estado);
-
-            // Atualiza estado no banco
-            $this->CI->notificacoes_config_model->atualizarEstadoEvolution($estado);
-
+            log_message('error', '[Evolution] Instância "' . $this->config->evolution_instance . '" não encontrada no servidor.');
             return [
-                'connected' => in_array($estado, ['open', 'connected']),
-                'status' => $estado,
-                'data' => $instanceData
+                'connected' => false,
+                'status' => 'instancia_nao_encontrada',
+                'error' => 'Instância não encontrada no servidor'
             ];
         }
 
@@ -338,53 +340,35 @@ class WhatsAppService
         $criar = $this->criarInstanciaEvolution();
         log_message('debug', '[Evolution Go] Criar instância resposta: ' . json_encode($criar));
 
-        // Inicia a sessão para obter QR Code
-        $isGo = ($this->config->evolution_version ?? 'v2') === 'go';
-        $apikey = $isGo ? $this->resolveApiKeyGo() : $this->config->evolution_apikey;
-
-        if ($isGo) {
-            $url = rtrim($this->config->evolution_url, '/') . '/instance/' . $this->config->evolution_instance . '/qrcode';
-            $urlFallback = rtrim($this->config->evolution_url, '/') . '/instance/qr';
-        } else {
-            $url = rtrim($this->config->evolution_url, '/') . '/instance/connect/' . $this->config->evolution_instance;
-            $urlFallback = null;
+        // Resolve token da instância
+        $instanceToken = $this->resolveInstanceToken();
+        if (!$instanceToken) {
+            return [
+                'success' => false,
+                'error' => 'Instância não encontrada no servidor após criação.'
+            ];
         }
+
+        $url = rtrim($this->config->evolution_url, '/') . '/instance/qr?instanceId=' . urlencode($this->config->evolution_instance);
 
         log_message('debug', '[Evolution Go] QR Code URL: ' . $url);
 
         $headers = [
-            'Content-Type: application/json; charset=utf-8',
-            'apikey: ' . $apikey
+            'apikey: ' . $instanceToken
         ];
 
         $response = $this->makeRequest($url, 'GET', [], $headers);
-        log_message('debug', '[Evolution Go] QR Code resposta HTTP: ' . $response['http_code'] . ' | Body: ' . $response['body']);
-
-        // Tenta endpoint alternativo se retornar 404
-        if ($isGo && $response['http_code'] == 404 && $urlFallback) {
-            log_message('debug', '[Evolution Go] Tentando URL fallback: ' . $urlFallback);
-            $response = $this->makeRequest($urlFallback, 'GET', [], $headers);
-            log_message('debug', '[Evolution Go] QR Code fallback resposta HTTP: ' . $response['http_code'] . ' | Body: ' . $response['body']);
-        }
+        log_message('debug', '[Evolution Go] QR Code resposta HTTP: ' . $response['http_code'] . ' | Body: ' . substr($response['body'] ?? '', 0, 500));
 
         if ($response['http_code'] == 200) {
             $data = json_decode($response['body'], true);
-
-            if ($isGo) {
-                $qrData = $data['data'] ?? $data;
-                return [
-                    'success' => true,
-                    'qr_code' => $qrData['Qrcode'] ?? $qrData['qrcode'] ?? $qrData['base64'] ?? null,
-                    'pairing_code' => $qrData['Code'] ?? $qrData['code'] ?? $qrData['pairingCode'] ?? null,
-                    'count' => $qrData['count'] ?? 0
-                ];
-            }
+            $qrData = $data['data'] ?? $data;
 
             return [
                 'success' => true,
-                'qr_code' => $data['base64'] ?? null,
-                'pairing_code' => $data['code'] ?? null,
-                'count' => $data['count'] ?? 0
+                'qr_code' => $qrData['Qrcode'] ?? $qrData['qrcode'] ?? $qrData['base64'] ?? null,
+                'pairing_code' => $qrData['Code'] ?? $qrData['code'] ?? $qrData['pairingCode'] ?? null,
+                'count' => $qrData['count'] ?? 0
             ];
         }
 
@@ -400,24 +384,14 @@ class WhatsAppService
      */
     private function criarInstanciaEvolution()
     {
-        $isGo = ($this->config->evolution_version ?? 'v2') === 'go';
         $url = rtrim($this->config->evolution_url, '/') . '/instance/create';
 
-        if ($isGo) {
-            $payload = [
-                'instanceName' => $this->config->evolution_instance,
-                'token' => $this->config->evolution_apikey,
-                'integration' => 'WHATSAPP-BAILEYS',
-                'qrcode' => true,
-            ];
-        } else {
-            $payload = [
-                'instanceName' => $this->config->evolution_instance,
-                'token' => $this->config->evolution_apikey,
-                'qrcode' => true,
-                'integration' => 'WHATSAPP-BAILEYS'
-            ];
-        }
+        $payload = [
+            'name' => $this->config->evolution_instance,
+            'token' => $this->config->evolution_apikey,
+            'integration' => 'WHATSAPP-BAILEYS',
+            'qrcode' => true,
+        ];
 
         $headers = [
             'Content-Type: application/json; charset=utf-8',
@@ -436,24 +410,26 @@ class WhatsAppService
      */
     private function desconectarEvolution()
     {
-        $isGo = ($this->config->evolution_version ?? 'v2') === 'go';
-        $apikey = $isGo ? $this->resolveApiKeyGo() : $this->config->evolution_apikey;
-
-        if ($isGo) {
-            $url = rtrim($this->config->evolution_url, '/') . '/instance/' . $this->config->evolution_instance;
-        } else {
-            $url = rtrim($this->config->evolution_url, '/') . '/instance/logout/' . $this->config->evolution_instance;
+        $instanceToken = $this->resolveInstanceToken();
+        if (!$instanceToken) {
+            return [
+                'success' => false,
+                'error' => 'Instância não encontrada no servidor.'
+            ];
         }
 
+        $url = rtrim($this->config->evolution_url, '/') . '/instance/disconnect';
+
         $headers = [
-            'apikey: ' . $apikey
+            'Content-Type: application/json; charset=utf-8',
+            'apikey: ' . $instanceToken
         ];
 
         log_message('debug', '[Evolution] Desconectando instância em: ' . $url);
-        $response = $this->makeRequest($url, 'DELETE', [], $headers);
+        $response = $this->makeRequest($url, 'POST', ['instanceId' => $this->config->evolution_instance], $headers);
         log_message('debug', '[Evolution] Desconectar resposta HTTP: ' . $response['http_code'] . ' | Body: ' . substr($response['body'] ?? '', 0, 500));
 
-        if (in_array($response['http_code'], [200, 201, 404])) {
+        if (in_array($response['http_code'], [200, 201])) {
             $this->CI->notificacoes_config_model->atualizarEstadoEvolution('desconectado');
             return ['success' => true];
         }

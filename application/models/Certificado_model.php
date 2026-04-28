@@ -289,7 +289,7 @@ class Certificado_model extends CI_Model
                 'natureza_juridica' => $naturezaJuridica,
             ];
 
-            // Determinar regime tributário
+            // Determinar regime tributário (apenas Simples Nacional é suportado)
             if ($isOptanteSimples) {
                 $simplesData['anexo_sugerido'] = $this->identificarAnexo($cnaeDescricao);
                 $simplesData['regime'] = 'simples_nacional';
@@ -297,9 +297,9 @@ class Certificado_model extends CI_Model
                 $simplesData['anexo_sugerido'] = 'MEI';
                 $simplesData['regime'] = 'simples_nacional';
             } else {
-                // NÃO é optante do Simples Nacional
+                // NÃO é optante do Simples Nacional — ainda assim registra como simples_nacional
                 $simplesData['anexo_sugerido'] = null;
-                $simplesData['regime'] = 'lucro_presumido';
+                $simplesData['regime'] = 'simples_nacional';
             }
 
             // Atualizar dados do certificado com informações do CNPJ
@@ -405,21 +405,8 @@ class Certificado_model extends CI_Model
         $dados = $resultado['data'];
 
         if (!$dados['optante_simples']) {
-            // Empresa NÃO é optante do Simples Nacional
-            // Sugerir configuração para Lucro Presumido
-            $config = [
-                'optante_simples' => false,
-                'regime' => 'lucro_presumido',
-                'anexo_sugerido' => null,
-                'data_opcao' => null,
-                'simei' => false,
-            ];
-
             return [
-                'success' => true,
-                'configuracao' => $config,
-                'mensagem' => 'Empresa NÃO optante do Simples Nacional. Regime tributário detectado: Lucro Presumido. As alíquotas de retenção (IRPJ, CSLL, PIS, COFINS, ISS) foram configuradas automaticamente.',
-                'regime' => 'lucro_presumido'
+                'error' => 'Empresa NÃO optante do Simples Nacional. Este sistema opera exclusivamente com Simples Nacional (DAS). Verifique a situação cadastral na Receita Federal ou configure um CNPJ optante.'
             ];
         }
 

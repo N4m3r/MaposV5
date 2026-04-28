@@ -400,7 +400,7 @@ class Dre_model extends CI_Model
 
     /**
      * Integra uma NFS-e ao DRE após emissão
-     * Lança DAS (Simples Nacional) ou impostos individuais (Lucro Presumido)
+     * Lança DAS (Simples Nacional)
      * Lança retenções do tomador como deduções
      */
     public function integrarNFSe($nfse_id, $nfse_data)
@@ -409,47 +409,29 @@ class Dre_model extends CI_Model
             return false;
         }
 
-        $regime = $nfse_data['regime_tributario'] ?? 'simples_nacional';
         $valor_servicos = floatval($nfse_data['valor_servicos'] ?? 0);
         $os_id = $nfse_data['os_id'] ?? null;
         $data_lanc = $nfse_data['data_emissao'] ?? date('Y-m-d');
         $inseridos = 0;
 
-        // 1. Impostos - DAS (Simples Nacional) ou individuais (Lucro Presumido)
+        // 1. Impostos - DAS (Simples Nacional)
         $conta_imposto = $this->db->where('grupo', 'IMPOSTO_RENDA')->where('ativo', 1)
             ->order_by('ordem', 'ASC')->limit(1)->get('dre_contas')->row();
 
         if ($conta_imposto) {
-            if ($regime === 'simples_nacional') {
-                // DAS - valor único que engloba todos os impostos
-                $valor_das = floatval($nfse_data['valor_das'] ?? $nfse_data['valor_total_impostos'] ?? 0);
-                if ($valor_das > 0) {
-                    $this->adicionarLancamento([
-                        'conta_id' => $conta_imposto->id,
-                        'data' => $data_lanc,
-                        'valor' => $valor_das,
-                        'tipo_movimento' => 'DEBITO',
-                        'descricao' => 'DAS - Simples Nacional (NFSe #' . $nfse_id . ')',
-                        'documento' => 'NFSe #' . $nfse_id,
-                        'os_id' => $os_id,
-                    ]);
-                    $inseridos++;
-                }
-            } else {
-                // Lucro Presumido - impostos individuais já calculados
-                $total_impostos = floatval($nfse_data['valor_total_impostos'] ?? 0);
-                if ($total_impostos > 0) {
-                    $this->adicionarLancamento([
-                        'conta_id' => $conta_imposto->id,
-                        'data' => $data_lanc,
-                        'valor' => $total_impostos,
-                        'tipo_movimento' => 'DEBITO',
-                        'descricao' => 'Impostos Lucro Presumido (NFSe #' . $nfse_id . ')',
-                        'documento' => 'NFSe #' . $nfse_id,
-                        'os_id' => $os_id,
-                    ]);
-                    $inseridos++;
-                }
+            // DAS - valor único que engloba todos os impostos
+            $valor_das = floatval($nfse_data['valor_das'] ?? $nfse_data['valor_total_impostos'] ?? 0);
+            if ($valor_das > 0) {
+                $this->adicionarLancamento([
+                    'conta_id' => $conta_imposto->id,
+                    'data' => $data_lanc,
+                    'valor' => $valor_das,
+                    'tipo_movimento' => 'DEBITO',
+                    'descricao' => 'DAS - Simples Nacional (NFSe #' . $nfse_id . ')',
+                    'documento' => 'NFSe #' . $nfse_id,
+                    'os_id' => $os_id,
+                ]);
+                $inseridos++;
             }
         }
 

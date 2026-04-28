@@ -366,19 +366,13 @@ class Impostos_model extends CI_Model
     // ==================== CÁLCULO DE IMPOSTOS ====================
 
     /**
-     * Calcula os impostos sobre um valor
+     * Calcula os impostos sobre um valor (Simples Nacional apenas)
      * Retorna array com todos os valores de impostos
      */
     public function calcularImpostos($valor_bruto, $anexo = null, $faixa = null)
     {
-        // Verificar regime tributário
-        $regime = $this->getConfig('IMPOSTO_REGIME_TRIBUTARIO') ?: 'simples_nacional';
-
-        if ($regime === 'lucro_presumido') {
-            return $this->calcularImpostosLucroPresumido($valor_bruto);
-        }
-
-        // Simples Nacional (padrão)
+        // Sistema otimizado apenas para Simples Nacional
+        $regime = 'simples_nacional';
         $aliquota = $this->getAliquotaEfetiva($anexo, $faixa);
 
         if (!$aliquota) {
@@ -430,56 +424,6 @@ class Impostos_model extends CI_Model
         $calculos['inss'] = $calculos['cpp_valor'];
 
         return $calculos;
-    }
-
-    /**
-     * Calcula impostos para Lucro Presumido
-     * Alíquotas fixas de retenção na fonte para prestadores de serviço
-     */
-    public function calcularImpostosLucroPresumido($valor_bruto)
-    {
-        // Alíquotas de retenção na fonte para serviços (Lucro Presumido)
-        // IRPJ: 4,8% (sobre 32% da base = 1,536% efetivo, mas retenção direta é 1,5%)
-        // CSLL: 2,88% (sobre 32% da base), retenção 1%
-        // PIS: 0,65%
-        // COFINS: 3%
-        // ISS: variável por município (padrão 5%)
-        $aliquota_iss = floatval($this->getConfig('IMPOSTO_ISS_MUNICIPAL')) ?: 5.00;
-
-        $irpj_valor = round($valor_bruto * 1.5 / 100, 2);    // 1,5% sobre serviços
-        $csll_valor = round($valor_bruto * 1.0 / 100, 2);    // 1,0% sobre serviços
-        $cofins_valor = round($valor_bruto * 3.0 / 100, 2);   // 3,0%
-        $pis_valor = round($valor_bruto * 0.65 / 100, 2);     // 0,65%
-        $iss_valor = round($valor_bruto * $aliquota_iss / 100, 2);
-
-        $total_impostos = $irpj_valor + $csll_valor + $cofins_valor + $pis_valor + $iss_valor;
-
-        return [
-            'regime' => 'lucro_presumido',
-            'aliquota_nominal' => round(($total_impostos / max($valor_bruto, 0.01)) * 100, 2),
-            'aliquota_irpj' => 1.5,
-            'aliquota_csll' => 1.0,
-            'aliquota_cofins' => 3.0,
-            'aliquota_pis' => 0.65,
-            'aliquota_cpp' => 0,
-            'aliquota_iss' => $aliquota_iss,
-            'irpj_valor' => $irpj_valor,
-            'irpj' => $irpj_valor,
-            'irrf' => $irpj_valor,
-            'csll_valor' => $csll_valor,
-            'csll' => $csll_valor,
-            'cofins_valor' => $cofins_valor,
-            'cofins' => $cofins_valor,
-            'pis_valor' => $pis_valor,
-            'pis' => $pis_valor,
-            'iss_valor' => $iss_valor,
-            'iss' => $iss_valor,
-            'cpp_valor' => 0,
-            'inss' => 0,
-            'total_impostos' => $total_impostos,
-            'valor_total_impostos' => $total_impostos,
-            'valor_liquido' => $valor_bruto - $total_impostos,
-        ];
     }
 
     /**
@@ -1004,7 +948,7 @@ class Impostos_model extends CI_Model
     public function getConfiguracaoTributacao()
     {
         return [
-            'regime' => $this->getConfig('IMPOSTO_REGIME_TRIBUTARIO') ?: 'simples_nacional',
+            'regime' => 'simples_nacional',
             'anexo' => $this->getConfig('IMPOSTO_ANEXO_PADRAO') ?: 'III',
             'faixa' => $this->getConfig('IMPOSTO_FAIXA_ATUAL') ?: '1',
             'codigo_tributacao_nacional' => $this->getConfig('IMPOSTO_CODIGO_TRIBUTACAO_NACIONAL') ?: '010701',
@@ -1019,12 +963,11 @@ class Impostos_model extends CI_Model
      */
     public function getRegimeTributario()
     {
-        return $this->getConfig('IMPOSTO_REGIME_TRIBUTARIO') ?: 'simples_nacional';
+        return 'simples_nacional';
     }
 
     /**
-     * Calcula alíquotas de retenção para Lucro Presumido
-     * Usado quando o tomador retém impostos na fonte
+     * Calcula retenções na fonte quando o tomador retém impostos
      */
     public function calcularRetencoes($valor_bruto, $retencoes = [])
     {
@@ -1037,7 +980,7 @@ class Impostos_model extends CI_Model
             'valor_total_retencao' => 0,
         ];
 
-        // Alíquotas padrão de retenção na fonte (Lucro Presumido)
+        // Alíquotas padrão de retenção na fonte
         $aliquotas = [
             'iss' => floatval($this->getConfig('IMPOSTO_ISS_MUNICIPAL') ?: 5.00),
             'irrf' => 1.5,

@@ -13,7 +13,7 @@ var wizardData = {
     incluirProdutos: false,
     valorApenasServicos: <?= floatval($totalServico ?? 0) ?>,
     valorTotalComProdutos: <?= floatval(($totalServico ?? 0) + ($totalProdutos ?? 0)) ?>,
-    regimeTributario: '<?= ($tributacao['regime'] ?? 'simples_nacional') ?>',
+    regimeTributario: 'simples_nacional',
     retemIss: false,
     retemIrrf: false,
     retemPis: false,
@@ -124,20 +124,10 @@ function renderizarImpostos() {
     $('#imp-deducoes').text(fmtMoney(deducoes));
     $('#imp-base-calculo').text(fmtMoney(baseCalc));
 
-    if (wizardData.regimeTributario === 'simples_nacional') {
-        if ($('#imp-das').length) $('#imp-das').html('<strong>' + fmtMoney(wizardData.valorDas || data.valor_bruto * 0.06) + '</strong>');
-        if ($('#imp-das-aliquota').length) {
-            var aliq = wizardData.valorDas ? ((wizardData.valorDas / data.valor_bruto) * 100).toFixed(2) : '6.00';
-            $('#imp-das-aliquota').text(aliq + '%');
-        }
-    } else {
-        var imp = data.impostos || {};
-        if ($('#imp-iss').length) $('#imp-iss').text(fmtMoney(imp.iss || imp.iss_valor || 0));
-        if ($('#imp-pis').length) $('#imp-pis').text(fmtMoney(imp.pis || imp.pis_valor || 0));
-        if ($('#imp-cofins').length) $('#imp-cofins').text(fmtMoney(imp.cofins || imp.cofins_valor || 0));
-        if ($('#imp-irrf').length) $('#imp-irrf').text(fmtMoney(imp.irrf || imp.irpj_valor || 0));
-        if ($('#imp-csll').length) $('#imp-csll').text(fmtMoney(imp.csll || imp.csll_valor || 0));
-        if ($('#imp-inss').length) $('#imp-inss').text(fmtMoney(imp.inss || imp.cpp_valor || 0));
+    if ($('#imp-das').length) $('#imp-das').html('<strong>' + fmtMoney(wizardData.valorDas || data.valor_bruto * 0.06) + '</strong>');
+    if ($('#imp-das-aliquota').length) {
+        var aliq = wizardData.valorDas ? ((wizardData.valorDas / data.valor_bruto) * 100).toFixed(2) : '6.00';
+        $('#imp-das-aliquota').text(aliq + '%');
     }
 
     var totalImpostos = (data.impostos || {}).valor_total_impostos || 0;
@@ -148,7 +138,7 @@ function renderizarImpostos() {
     else { $('#retencao-row').hide(); }
 
     $('#imp-valor-liquido').text(fmtMoney(data.valor_liquido));
-    if (wizardData.regimeTributario === 'simples_nacional' && wizardData.valorDas) {
+    if (wizardData.valorDas) {
         $('#das-valor-display').text(fmtMoney(wizardData.valorDas));
     }
 }
@@ -177,7 +167,7 @@ function calcularImpostosWizard() {
                 updateCsrfToken(data);
                 if (data.success) {
                     wizardData.impostosResult = data;
-                    wizardData.regimeTributario = data.regime_tributario || wizardData.regimeTributario;
+                    // regime sempre simples_nacional
                     wizardData.valorDas = data.valor_das || null;
                     wizardData.retencoes = data.retencoes || null;
                     renderizarImpostos();
@@ -258,16 +248,10 @@ function atualizarResumo() {
         var totalImpostos = imp.valor_total_impostos || 0;
         var liquido = wizardData.impostosResult.valor_bruto - deducoes - totalRetencao;
 
-        if (wizardData.regimeTributario === 'simples_nacional') {
-            $('#res-das-linha').show();
-            $('#res-imposto-linha').html('<strong>DAS Estimado:</strong> ');
-            $('#res-total-impostos').text(fmtMoney(totalImpostos));
-            if (wizardData.valorDas) $('#res-valor-das').text(fmtMoney(wizardData.valorDas));
-        } else {
-            $('#res-das-linha').hide();
-            $('#res-imposto-linha').html('<strong>Total Impostos:</strong> ');
-            $('#res-total-impostos').text(fmtMoney(totalImpostos));
-        }
+        $('#res-das-linha').show();
+        $('#res-imposto-linha').html('<strong>DAS Estimado:</strong> ');
+        $('#res-total-impostos').text(fmtMoney(totalImpostos));
+        if (wizardData.valorDas) $('#res-valor-das').text(fmtMoney(wizardData.valorDas));
         if (totalRetencao > 0) { $('#res-retencao-linha').show(); $('#res-retencao-total').text(fmtMoney(totalRetencao)); }
         else { $('#res-retencao-linha').hide(); }
         $('#res-valor-liquido').text(fmtMoney(liquido));
@@ -303,13 +287,11 @@ function emitirNFSeWizard() {
     var descricao = $('#descricao-servico-wizard').val();
     var gerarBoleto = wizardData.gerarBoleto ? 1 : 0;
 
-    var regimeLabel = wizardData.regimeTributario === 'simples_nacional' ? 'Simples Nacional' : 'Lucro Presumido';
-    var msg = 'Confirmar emissao da NFS-e?\n\nRegime: ' + regimeLabel + '\nValor: ' + fmtMoney(valor);
+    var msg = 'Confirmar emissao da NFS-e?\n\nRegime: Simples Nacional\nValor: ' + fmtMoney(valor);
     if (deducoes > 0) msg += '\nDeducoes: ' + fmtMoney(deducoes);
     if (wizardData.impostosResult) {
         var totalRet = wizardData.retencoes ? parseFloat(wizardData.retencoes.valor_total_retencao || 0) : 0;
-        if (wizardData.regimeTributario === 'simples_nacional' && wizardData.valorDas) msg += '\nDAS: ' + fmtMoney(wizardData.valorDas);
-        else msg += '\nImpostos: ' + fmtMoney((wizardData.impostosResult.impostos || {}).valor_total_impostos || 0);
+        if (wizardData.valorDas) msg += '\nDAS: ' + fmtMoney(wizardData.valorDas);
         if (totalRet > 0) msg += '\nRetencoes: ' + fmtMoney(totalRet);
     }
     if (gerarBoleto) msg += '\n\nBoleto sera gerado automaticamente.';
@@ -326,7 +308,7 @@ function emitirNFSeWizard() {
         regime_tributario: wizardData.regimeTributario,
         competencia: new Date().toISOString().slice(0, 7) + '-01'
     };
-    if (wizardData.regimeTributario === 'simples_nacional' && wizardData.valorDas) emitData.valor_das = wizardData.valorDas;
+    if (wizardData.valorDas) emitData.valor_das = wizardData.valorDas;
     if ($('#retem-iss').is(':checked')) { emitData.retem_iss = 1; emitData.valor_retencao_iss = (wizardData.retencoes || {}).valor_retencao_iss || 0; }
     if ($('#retem-irrf').is(':checked')) { emitData.retem_irrf = 1; emitData.valor_retencao_irrf = (wizardData.retencoes || {}).valor_retencao_irrf || 0; }
     if ($('#retem-pis').is(':checked')) { emitData.retem_pis = 1; emitData.valor_retencao_pis = (wizardData.retencoes || {}).valor_retencao_pis || 0; }

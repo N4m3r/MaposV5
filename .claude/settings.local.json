@@ -86,7 +86,11 @@
       "PowerShell(ConvertTo-SecureString *)",
       "WebFetch(domain:evo.jj-ferreiras.com.br)",
       "WebFetch(domain:doc.evolution-api.com)",
-      "WebFetch(domain:docs.evolutionfoundation.com.br)"
+      "WebFetch(domain:docs.evolutionfoundation.com.br)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(awk '/github_com_EvolutionAPI_evolution-go_pkg_instance_service.CreateStruct/,/^\\\\s*\\\\}/')",
+      "Bash(awk '/github_com_EvolutionAPI_evolution-go_pkg_instance_service.ConnectStruct/,/^\\\\s*\\\\}/')",
+      "Bash(awk '/\\\\/instance\\\\/status/,/^\\\\s*\\\\}/')"
     ]
   }
 }

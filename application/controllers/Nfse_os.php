@@ -80,7 +80,7 @@ class Nfse_os extends MY_Controller
             'valor_servicos' => $this->input->post('valor_servicos') ?? $os->valorTotal,
             'valor_deducoes' => $this->input->post('valor_deducoes') ?? 0,
             'descricao_servico' => $this->input->post('descricao_servico') ?? '',
-            'regime_tributario' => $this->input->post('regime_tributario') ?? 'simples_nacional',
+            'regime_tributario' => 'simples_nacional',
             'valor_das' => $this->input->post('valor_das') ?? null,
             'retem_iss' => $this->input->post('retem_iss') ? 1 : 0,
             'retem_irrf' => $this->input->post('retem_irrf') ? 1 : 0,
@@ -234,15 +234,8 @@ class Nfse_os extends MY_Controller
                 return;
             }
 
-            // Detectar regime tributário
-            $regime = $this->impostos_model->getConfiguracaoTributacao();
-            $regime_tributario = $regime['regime'] ?? 'simples_nacional';
-
-            // Calcular DAS se Simples Nacional
-            $valor_das = null;
-            if ($regime_tributario === 'simples_nacional') {
-                $valor_das = $calculo['valor_total_impostos'] ?? ($valor * 0.06);
-            }
+            // Calcular DAS (Simples Nacional)
+            $valor_das = $calculo['valor_total_impostos'] ?? ($valor * 0.06);
 
             // Calcular retenções se solicitado
             $retencoes = [];
@@ -269,7 +262,7 @@ class Nfse_os extends MY_Controller
                 'valor_bruto' => $valor,
                 'valor_liquido' => $valor_liquido_nfse,
                 'impostos' => $calculo,
-                'regime_tributario' => $regime_tributario,
+                'regime_tributario' => 'simples_nacional',
                 'valor_das' => $valor_das,
                 'retencoes' => $retencoes,
             ]);
@@ -845,10 +838,9 @@ class Nfse_os extends MY_Controller
             }
 
             // Tributacao
-            $regimeTributario = $this->input->post('regime_tributario') ?: ($this->impostos_model->getConfig('IMPOSTO_REGIME_TRIBUTARIO') ?: 'simples_nacional');
             $tributacao = [
                 'natureza_operacao' => $nfseConfig['nfse_natureza_operacao'] ?? '1',
-                'optante_simples' => ($regimeTributario === 'simples_nacional'),
+                'optante_simples' => true,
                 'regime_especial' => $nfseConfig['nfse_regime_especial'] ?? '0',
                 'incentivador_cultural' => $nfseConfig['nfse_incentivador_cultural'] ?? '0',
                 'aliquota_iss' => floatval($this->impostos_model->getConfig('IMPOSTO_ISS_MUNICIPAL') ?: 5.00),
@@ -921,7 +913,7 @@ class Nfse_os extends MY_Controller
                     'valor_deducoes' => $valorDeducoes,
                     'valor_liquido' => $servico['valor_liquido'],
                     'descricao_servico' => $descricaoServico,
-                    'regime_tributario' => $this->input->post('regime_tributario') ?: 'simples_nacional',
+                    'regime_tributario' => 'simples_nacional',
                     'competencia' => $competencia,
                     'retem_iss' => $servico['iss_retido'] ? 1 : 0,
                     'retem_irrf' => $servico['irrf_retido'] ? 1 : 0,

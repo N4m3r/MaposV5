@@ -135,8 +135,6 @@ if (!function_exists('fmtMoney')) {
                 </div>
 
                 <?php
-                $regime = $nfse_atual->regime_tributario ?? 'simples_nacional';
-                $isSimples = ($regime === 'simples_nacional');
                 $valorOriginal = floatval($nfse_atual->valor_servicos ?? 0);
                 $valorLiquido = floatval($nfse_atual->valor_liquido ?? $valorOriginal);
                 ?>
@@ -144,7 +142,7 @@ if (!function_exists('fmtMoney')) {
                 <div class="well well-small" style="margin-bottom:20px; background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835)">
                     <h6 style="margin-top:0; border-bottom:1px solid var(--dark-2,#272835); padding-bottom:8px; color:var(--title,#d4d8e0)">
                         <i class="fas fa-calculator" style="color:var(--dark-azul,#1086dd)"></i> Resumo Financeiro da NFS-e
-                        <span class="label" style="font-size:11px; margin-left:5px; background:<?= $isSimples ? '#1086dd' : '#52459f' ?>; color:#fff"><?= $isSimples ? 'Simples Nacional' : 'Lucro Presumido' ?></span>
+                        <span class="label" style="font-size:11px; margin-left:5px; background:#1086dd; color:#fff">Simples Nacional</span>
                     </h6>
                     <div class="row-fluid">
                         <div class="span6 text-center" style="border-right:1px solid var(--dark-2,#272835)">
@@ -156,11 +154,9 @@ if (!function_exists('fmtMoney')) {
                             <small style="color:var(--dark-cinz,#8788a4)"><strong style="color:var(--branco,#caced8)">Valor Liquido da NFS-e</strong></small>
                         </div>
                     </div>
-                    <?php if ($isSimples): ?>
                     <div style="margin-top:8px; font-size:11px; color:var(--dark-cinz,#8788a4); text-align:center">
                         <i class="fas fa-info-circle" style="color:#62eba6"></i> No Simples Nacional, o DAS e recolhido mensalmente pelo prestador e <strong style="color:var(--branco,#caced8)">nao desconta</strong> do valor do boleto.
                     </div>
-                    <?php endif; ?>
                 </div>
 
                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cBoletoOS')): ?>
