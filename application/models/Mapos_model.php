@@ -419,11 +419,12 @@ class Mapos_model extends CI_Model
         return $this->db->get('emitente')->row();
     }
 
-    public function addEmitente($nome, $cnpj, $ie, $cep, $logradouro, $numero, $bairro, $cidade, $uf, $telefone, $email, $logo)
+    public function addEmitente($nome, $cnpj, $ie, $inscricao_municipal, $cep, $logradouro, $numero, $bairro, $cidade, $uf, $telefone, $email, $logo)
     {
         $this->db->set('nome', $nome);
         $this->db->set('cnpj', $cnpj);
         $this->db->set('ie', $ie);
+        $this->db->set('inscricao_municipal', $inscricao_municipal);
         $this->db->set('cep', $cep);
         $this->db->set('rua', $logradouro);
         $this->db->set('numero', $numero);
@@ -437,11 +438,12 @@ class Mapos_model extends CI_Model
         return $this->db->insert('emitente');
     }
 
-    public function editEmitente($id, $nome, $cnpj, $ie, $cep, $logradouro, $numero, $bairro, $cidade, $uf, $telefone, $email)
+    public function editEmitente($id, $nome, $cnpj, $ie, $inscricao_municipal, $cep, $logradouro, $numero, $bairro, $cidade, $uf, $telefone, $email)
     {
         $this->db->set('nome', $nome);
         $this->db->set('cnpj', $cnpj);
         $this->db->set('ie', $ie);
+        $this->db->set('inscricao_municipal', $inscricao_municipal);
         $this->db->set('cep', $cep);
         $this->db->set('rua', $logradouro);
         $this->db->set('numero', $numero);

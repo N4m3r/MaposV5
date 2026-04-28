@@ -120,22 +120,76 @@ class WhatsAppService
     }
 
     /**
+     * Arquivo de cache para token da instância
+     */
+    private function getTokenCacheFile()
+    {
+        return APPPATH . 'cache/evolution_token_' . md5($this->config->evolution_url . '_' . $this->config->evolution_instance) . '.json';
+    }
+
+    /**
+     * Lê token do cache de arquivo
+     */
+    private function lerTokenCache()
+    {
+        $file = $this->getTokenCacheFile();
+        if (file_exists($file)) {
+            $data = json_decode(file_get_contents($file), true);
+            if ($data && ($data['expires'] ?? 0) > time()) {
+                return $data['token'] ?? null;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Salva token no cache de arquivo
+     */
+    private function salvarTokenCache($token)
+    {
+        $file = $this->getTokenCacheFile();
+        $dir = dirname($file);
+        if (!is_dir($dir)) {
+            @mkdir($dir, 0755, true);
+        }
+        @file_put_contents($file, json_encode([
+            'token' => $token,
+            'expires' => time() + 86400 // válido por 24h
+        ]));
+    }
+
+    /**
      * Resolve o token específico da instância no Evolution Go
-     * 1. Tenta usar token salvo no banco
+     * 1. Tenta usar token do cache de arquivo
      * 2. Tenta resolver via /instance/all
-     * 3. Salva no banco quando resolve
+     * 3. Salva no cache quando resolve
      */
     private function resolveInstanceToken()
     {
         $this->debugLog = [];
 
-        // 1. Verifica se já tem token salvo no banco
-        if (!empty($this->config->evolution_instance_token)) {
-            $this->addDebug('sucesso', 'Usando token salvo no banco para instância ' . $this->config->evolution_instance);
-            return $this->config->evolution_instance_token;
+        // Verifica se config básica existe
+        if (empty($this->config->evolution_url)) {
+            $this->addDebug('erro', 'URL do Evolution não configurada no banco');
+            return null;
+        }
+        if (empty($this->config->evolution_apikey)) {
+            $this->addDebug('erro', 'API Key do Evolution não configurada no banco');
+            return null;
+        }
+        if (empty($this->config->evolution_instance)) {
+            $this->addDebug('erro', 'Nome da instância não configurado no banco');
+            return null;
         }
 
-        $this->addDebug('info', 'Nenhum token salvo. Resolvendo via API...');
+        // 1. Verifica se já tem token no cache
+        $cachedToken = $this->lerTokenCache();
+        if ($cachedToken) {
+            $this->addDebug('sucesso', 'Usando token do cache de arquivo');
+            return $cachedToken;
+        }
+
+        $this->addDebug('info', 'Nenhum token em cache. Resolvendo via API...');
 
         // 2. Resolve via API
         $url = rtrim($this->config->evolution_url, '/') . '/instance/all';
@@ -163,9 +217,8 @@ class WhatsAppService
                     $token = $inst['token'] ?? null;
                     if ($token) {
                         $this->addDebug('sucesso', 'Token resolvido para instância "' . $instName . '"');
-                        // Salva no banco para uso futuro
-                        $this->CI->notificacoes_config_model->atualizarInstanceToken($token);
-                        $this->config->evolution_instance_token = $token;
+                        // Salva no cache de arquivo
+                        $this->salvarTokenCache($token);
                         return $token;
                     }
                 }
@@ -335,8 +388,8 @@ class WhatsAppService
                     $this->addDebug('sucesso', 'Instância "' . $instName . '" encontrada. Connected=' . ($connected ? 'true' : 'false'));
 
                     if (!empty($inst['token'])) {
-                        $this->addDebug('info', 'Token salvo no banco');
-                        $this->CI->notificacoes_config_model->atualizarInstanceToken($inst['token']);
+                        $this->addDebug('info', 'Token salvo no cache');
+                        $this->salvarTokenCache($inst['token']);
                     }
 
                     $this->CI->notificacoes_config_model->atualizarEstadoEvolution($estado);
@@ -479,9 +532,8 @@ class WhatsAppService
             $data = json_decode($response['body'], true);
             $token = $data['data']['token'] ?? $data['token'] ?? null;
             if ($token) {
-                log_message('debug', '[Evolution] Token extraído da criação. Salvando no banco.');
-                $this->CI->notificacoes_config_model->atualizarInstanceToken($token);
-                $this->config->evolution_instance_token = $token;
+                $this->addDebug('info', 'Token extraído da criação. Salvando no cache.');
+                $this->salvarTokenCache($token);
             }
         }
 

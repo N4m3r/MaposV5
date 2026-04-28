@@ -46,10 +46,13 @@ class NotificacoesConfig extends MY_Controller
 
             $novaInstance = $this->input->post('evolution_instance') ?: 'Mapos';
 
-            // Se a instância ou URL mudou, limpa o token salvo para forçar nova resolução
+            // Se a instância ou URL mudou, limpa o cache de token
             if ($config && (strcasecmp($config->evolution_instance ?? '', $novaInstance) !== 0 || ($config->evolution_url ?? '') !== $evolution_url)) {
-                log_info('Instância ou URL Evolution alterada. Limpando token salvo.');
-                $this->notificacoes_config_model->atualizarInstanceToken(null);
+                log_info('Instância ou URL Evolution alterada. Limpando cache de token.');
+                $cacheFile = APPPATH . 'cache/evolution_token_' . md5(($config->evolution_url ?? '') . '_' . ($config->evolution_instance ?? '')) . '.json';
+                if (file_exists($cacheFile)) {
+                    @unlink($cacheFile);
+                }
             }
 
             $dados = [
