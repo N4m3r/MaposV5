@@ -71,6 +71,22 @@ if (!function_exists('check_notificacoes_tables')) {
                 _criar_tabelas_notificacoes_fallback($CI);
             }
         }
+
+        // Verifica se a coluna evolution_version existe na tabela notificacoes_config
+        // (pode ter sido criada sem ela em versões anteriores)
+        if ($CI->db->table_exists('notificacoes_config')) {
+            if (!$CI->db->field_exists('evolution_version', 'notificacoes_config')) {
+                log_message('info', '[Bootstrap] Adicionando coluna evolution_version a notificacoes_config');
+                try {
+                    $CI->db->query("ALTER TABLE `notificacoes_config`
+                        ADD COLUMN `evolution_version` ENUM('v1','v2','go') DEFAULT 'v2'
+                        AFTER `evolution_instance`");
+                    log_message('info', '[Bootstrap] Coluna evolution_version adicionada com sucesso.');
+                } catch (Exception $e) {
+                    log_message('error', '[Bootstrap] Erro ao adicionar coluna evolution_version: ' . $e->getMessage());
+                }
+            }
+        }
     }
 }
 
@@ -109,6 +125,14 @@ if (!function_exists('_criar_tabelas_notificacoes_fallback')) {
             `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             PRIMARY KEY (`id`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci");
+
+        // Verifica se a coluna evolution_version existe (pode ter sido criada sem ela)
+        if (!$CI->db->field_exists('evolution_version', 'notificacoes_config')) {
+            $CI->db->query("ALTER TABLE `notificacoes_config`
+                ADD COLUMN `evolution_version` ENUM('v1','v2','go') DEFAULT 'v2'
+                AFTER `evolution_instance`");
+            log_message('info', '[Bootstrap] Coluna evolution_version adicionada a notificacoes_config');
+        }
 
         $CI->db->query("INSERT INTO `notificacoes_config` (`id`, `whatsapp_provedor`, `whatsapp_ativo`)
             VALUES (1, 'desativado', 0)
