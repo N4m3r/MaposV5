@@ -317,7 +317,8 @@ class WhatsAppService
         }
 
         // Cria a instância se não existir
-        $this->criarInstanciaEvolution();
+        $criar = $this->criarInstanciaEvolution();
+        log_message('debug', '[Evolution Go] Criar instância resposta: ' . json_encode($criar));
 
         // Inicia a sessão para obter QR Code
         $isGo = ($this->config->evolution_version ?? 'v2') === 'go';
@@ -325,9 +326,13 @@ class WhatsAppService
 
         if ($isGo) {
             $url = rtrim($this->config->evolution_url, '/') . '/instance/' . $this->config->evolution_instance . '/qrcode';
+            $urlFallback = rtrim($this->config->evolution_url, '/') . '/instance/qr';
         } else {
             $url = rtrim($this->config->evolution_url, '/') . '/instance/connect/' . $this->config->evolution_instance;
+            $urlFallback = null;
         }
+
+        log_message('debug', '[Evolution Go] QR Code URL: ' . $url);
 
         $headers = [
             'Content-Type: application/json; charset=utf-8',
@@ -335,6 +340,14 @@ class WhatsAppService
         ];
 
         $response = $this->makeRequest($url, 'GET', [], $headers);
+        log_message('debug', '[Evolution Go] QR Code resposta HTTP: ' . $response['http_code'] . ' | Body: ' . $response['body']);
+
+        // Tenta endpoint alternativo se retornar 404
+        if ($isGo && $response['http_code'] == 404 && $urlFallback) {
+            log_message('debug', '[Evolution Go] Tentando URL fallback: ' . $urlFallback);
+            $response = $this->makeRequest($urlFallback, 'GET', [], $headers);
+            log_message('debug', '[Evolution Go] QR Code fallback resposta HTTP: ' . $response['http_code'] . ' | Body: ' . $response['body']);
+        }
 
         if ($response['http_code'] == 200) {
             $data = json_decode($response['body'], true);
