@@ -1,343 +1,115 @@
 <style>
-    .config-card {
-        background: var(--card-bg, #fff);
-        border: 1px solid var(--border-color, #ddd);
-        border-radius: 8px;
-        padding: 20px;
-        margin-bottom: 20px;
-    }
-    .config-card h4 {
-        margin: 0 0 15px 0;
-        color: var(--heading-color, #333);
-        font-size: 16px;
-        font-weight: 600;
-    }
-    .form-group {
-        margin-bottom: 15px;
-    }
-    .form-group label {
-        display: block;
-        margin-bottom: 5px;
-        font-weight: 500;
-        color: var(--text-color, #333);
-    }
-    .form-control {
-        width: 100%;
-        padding: 8px 12px;
-        border: 1px solid var(--input-border, #ddd);
-        border-radius: 4px;
-        font-size: 14px;
-        background: var(--input-bg, #fff);
-        color: var(--input-color, #333);
-    }
-    .form-control:focus {
-        border-color: var(--input-focus-border, #66afe9);
-        outline: none;
-        box-shadow: 0 0 0 2px rgba(102, 175, 233, 0.3);
-    }
-    .help-text {
-        font-size: 12px;
-        color: var(--help-text-color, #666);
-        margin-top: 5px;
-    }
-    .status-indicator {
-        display: inline-flex;
-        align-items: center;
-        padding: 6px 12px;
-        border-radius: 20px;
-        font-size: 13px;
-        font-weight: 500;
-    }
-    .status-connected {
-        background: #d4edda;
-        color: #155724;
-    }
-    .status-disconnected {
-        background: #f8d7da;
-        color: #721c24;
-    }
-    .status-connecting {
-        background: #fff3cd;
-        color: #856404;
-    }
-    .btn-action {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 8px 16px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 14px;
-        font-weight: 500;
-        transition: all 0.2s;
-    }
-    .btn-primary {
-        background: #007bff;
-        color: white;
-    }
-    .btn-primary:hover {
-        background: #0056b3;
-    }
-    .btn-success {
-        background: #28a745;
-        color: white;
-    }
-    .btn-success:hover {
-        background: #1e7e34;
-    }
-    .btn-danger {
-        background: #dc3545;
-        color: white;
-    }
-    .btn-danger:hover {
-        background: #c82333;
-    }
-    .btn-secondary {
-        background: #6c757d;
-        color: white;
-    }
-    .btn-secondary:hover {
-        background: #545b62;
-    }
-    .qr-code-container {
-        text-align: center;
-        padding: 20px;
-        background: #f8f9fa;
-        border-radius: 8px;
-        margin: 15px 0;
-    }
-    .qr-code-container img {
-        max-width: 300px;
-        border-radius: 8px;
-    }
-    .checkbox-group {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 15px;
-    }
-    .checkbox-item {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-    .checkbox-item input[type="checkbox"] {
-        width: 18px;
-        height: 18px;
-        cursor: pointer;
-    }
-    .checkbox-item label {
-        margin: 0;
-        cursor: pointer;
-        font-weight: normal;
-    }
-    .time-input {
-        width: 120px !important;
-    }
-    .provider-section {
-        display: none;
-    }
-    .provider-section.active {
-        display: block;
-    }
-    .connection-actions {
-        display: flex;
-        gap: 10px;
-        margin-top: 15px;
-        flex-wrap: wrap;
-    }
-    .test-section {
-        border-top: 1px solid var(--border-color, #ddd);
-        padding-top: 20px;
-        margin-top: 20px;
-    }
-    .evo-type-selector {
-        display: flex;
-        gap: 12px;
-        margin-bottom: 15px;
-    }
-    .evo-type-card {
-        flex: 1;
-        border: 2px solid #ddd;
-        border-radius: 8px;
-        padding: 15px;
-        cursor: pointer;
-        text-align: center;
-        transition: all 0.2s;
-        background: #fff;
-    }
-    .evo-type-card:hover {
-        border-color: #007bff;
-    }
-    .evo-type-card.active {
-        border-color: #007bff;
-        background: #f0f7ff;
-    }
-    .evo-type-card i {
-        font-size: 28px;
-        display: block;
-        margin-bottom: 8px;
-        color: #007bff;
-    }
-    .evo-type-card .title {
-        font-weight: 600;
-        font-size: 14px;
-        color: #333;
-    }
-    .evo-type-card .desc {
-        font-size: 12px;
-        color: #666;
-        margin-top: 4px;
-    }
-    .evo-badge {
-        display: inline-block;
-        padding: 2px 8px;
-        border-radius: 12px;
-        font-size: 11px;
-        font-weight: 600;
-        margin-left: 6px;
-    }
-    .evo-badge.saas {
-        background: #d4edda;
-        color: #155724;
-    }
-    .evo-badge.self {
-        background: #e2e3e5;
-        color: #383d41;
-    }
+.config-card{background:#fff;border:1px solid #ddd;border-radius:8px;padding:20px;margin-bottom:20px}
+.config-card h4{margin:0 0 15px 0;font-size:16px;font-weight:600;color:#333}
+.form-group{margin-bottom:15px}
+.form-group label{display:block;margin-bottom:5px;font-weight:500}
+.form-control{width:100%;padding:8px 12px;border:1px solid #ddd;border-radius:4px;font-size:14px}
+.help-text{font-size:12px;color:#666;margin-top:5px}
+.status-badge{display:inline-flex;align-items:center;padding:6px 12px;border-radius:20px;font-size:13px;font-weight:500}
+.status-on{background:#d4edda;color:#155724}
+.status-off{background:#f8d7da;color:#721c24}
+.btn-action{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border:none;border-radius:4px;cursor:pointer;font-size:14px;font-weight:500}
+.btn-primary{background:#007bff;color:#fff}
+.btn-success{background:#28a745;color:#fff}
+.btn-danger{background:#dc3545;color:#fff}
+.btn-secondary{background:#6c757d;color:#fff}
+.checkbox-group{display:flex;flex-wrap:wrap;gap:15px}
+.checkbox-item{display:flex;align-items:center;gap:8px}
+.provider-section{display:none}
+.provider-section.active{display:block}
+.debug-panel{background:#1e1e1e;color:#d4d4d4;font-family:'Courier New',monospace;font-size:12px;padding:15px;border-radius:8px;margin-top:15px;max-height:400px;overflow-y:auto;display:none}
+.debug-line{margin-bottom:4px;word-break:break-all}
+.qr-container{text-align:center;padding:20px;background:#f8f9fa;border-radius:8px;margin-top:15px;display:none}
+.qr-container img{max-width:280px;border-radius:8px}
+.connection-actions{display:flex;gap:10px;margin-top:15px;flex-wrap:wrap}
 </style>
 
-<div class="row-fluid" style="margin-top:0">
+<div class="row-fluid">
     <div class="span12">
         <div class="widget-box">
-            <div class="widget-title" style="margin: -20px 0 0">
-                <span class="icon">
-                    <i class="bx bxl-whatsapp"></i>
-                </span>
-                <h5>Configurações de Notificações WhatsApp</h5>
+            <div class="widget-title">
+                <span class="icon"><i class="bx bxl-whatsapp"></i></span>
+                <h5>Configuracoes de Notificacoes WhatsApp</h5>
             </div>
             <div class="widget-content nopadding">
-                <form action="<?php echo current_url(); ?>" id="formConfiguracoes" method="post" class="form-horizontal">
+                <form action="<?php echo current_url(); ?>" method="post" class="form-horizontal">
                     <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>">
 
-                    <!-- Configurações Gerais -->
+                    <!-- Configuracoes Gerais -->
                     <div class="config-card">
-                        <h4><i class="bx bx-cog"></i> Configurações Gerais</h4>
+                        <h4><i class="bx bx-cog"></i> Configuracoes Gerais</h4>
 
                         <div class="form-group">
                             <label>
                                 <input type="checkbox" name="whatsapp_ativo" value="1" <?php echo $config->whatsapp_ativo ? 'checked' : ''; ?>>
-                                Ativar notificações WhatsApp
+                                Ativar notificacoes WhatsApp
                             </label>
-                            <div class="help-text">Habilita o envio de mensagens via WhatsApp</div>
                         </div>
 
                         <div class="form-group">
-                            <label for="whatsapp_provedor">Provedor de WhatsApp</label>
+                            <label for="whatsapp_provedor">Provedor</label>
                             <select name="whatsapp_provedor" id="whatsapp_provedor" class="form-control" onchange="toggleProvider()">
                                 <option value="desativado" <?php echo $config->whatsapp_provedor == 'desativado' ? 'selected' : ''; ?>>Desativado</option>
-                                <option value="evolution" <?php echo $config->whatsapp_provedor == 'evolution' ? 'selected' : ''; ?>>Evolution API / Evolution Go</option>
-                                <option value="meta_api" <?php echo $config->whatsapp_provedor == 'meta_api' ? 'selected' : ''; ?>>Meta API (Oficial)</option>
-                                <option value="z_api" <?php echo $config->whatsapp_provedor == 'z_api' ? 'selected' : ''; ?>>Z-API</option>
+                                <option value="evolution" <?php echo $config->whatsapp_provedor == 'evolution' ? 'selected' : ''; ?>>Evolution API</option>
                             </select>
-                            <div class="help-text">
-                                <strong>Evolution API:</strong> Gratuito, requer servidor próprio<br>
-                                <strong>Meta API:</strong> Oficial, paga por mensagem<br>
-                                <strong>Z-API:</strong> Serviço pago brasileiro
-                            </div>
                         </div>
 
-                        <!-- Status da Conexão -->
-                        <div class="form-group" id="status-section" style="<?php echo $config->whatsapp_provedor != 'desativado' ? '' : 'display:none'; ?>">
-                            <label>Status da Conexão</label>
-                            <div>
-                                <?php if ($statusConexao): ?>
-                                    <span class="status-indicator <?php echo $statusConexao['connected'] ? 'status-connected' : 'status-disconnected'; ?>" id="status-badge">
-                                        <i class="bx <?php echo $statusConexao['connected'] ? 'bx-check-circle' : 'bx-x-circle'; ?>"></i>
-                                        <span id="status-text"><?php echo $statusConexao['connected'] ? 'Conectado' : 'Desconectado'; ?></span>
-                                        <?php echo $statusConexao['status'] ? ' (' . $statusConexao['status'] . ')' : ''; ?>
-                                    </span>
-                                <?php else: ?>
-                                    <span class="status-indicator status-disconnected" id="status-badge">
-                                        <i class="bx bx-x-circle"></i> <span id="status-text">Não configurado</span>
-                                    </span>
-                                <?php endif; ?>
+                        <!-- Status -->
+                        <div id="status-section" style="<?php echo $config->whatsapp_provedor != 'desativado' ? '' : 'display:none'; ?>">
+                            <div class="form-group">
+                                <label>Status da Conexao</label>
+                                <div>
+                                    <?php if ($statusConexao && $statusConexao['connected']): ?>
+                                        <span class="status-badge status-on"><i class="bx bx-check-circle"></i> Conectado (<?php echo $statusConexao['status']; ?>)</span>
+                                    <?php else: ?>
+                                        <span class="status-badge status-off"><i class="bx bx-x-circle"></i> <?php echo $statusConexao['status'] ?? 'Desconectado'; ?></span>
+                                    <?php endif; ?>
+                                </div>
                             </div>
 
-                            <div class="connection-actions" id="connection-actions">
+                            <div class="connection-actions">
                                 <button type="button" class="btn-action btn-primary" onclick="verificarStatus()">
                                     <i class="bx bx-refresh"></i> Verificar Status
                                 </button>
-                                <button type="button" class="btn-action btn-secondary" onclick="executarDiagnostico()">
-                                    <i class="bx bx-data"></i> Diagnóstico do Banco
+                                <button type="button" class="btn-action btn-secondary" onclick="diagnostico()">
+                                    <i class="bx bx-data"></i> Diagnostico
                                 </button>
                                 <?php if ($config->whatsapp_provedor == 'evolution'): ?>
-                                    <button type="button" class="btn-action btn-success" id="btn-qr" onclick="obterQRCode()" <?php echo ($statusConexao && $statusConexao['connected']) ? 'style="display:none;"' : ''; ?>>
+                                    <button type="button" class="btn-action btn-success" id="btn-qr" onclick="obterQRCode()">
                                         <i class="bx bx-qr"></i> Conectar (QR Code)
                                     </button>
-                                    <button type="button" class="btn-action btn-danger" id="btn-desconectar" onclick="desconectar()" <?php echo ($statusConexao && $statusConexao['connected']) ? '' : 'style="display:none;"'; ?>>
+                                    <button type="button" class="btn-action btn-danger" id="btn-desc" onclick="desconectar()">
                                         <i class="bx bx-log-out"></i> Desconectar
                                     </button>
                                 <?php endif; ?>
                             </div>
 
-                            <div id="qr-code-display" style="display:none;">
-                                <div class="qr-code-container">
-                                    <p>Escaneie o QR Code com seu WhatsApp:</p>
-                                    <img id="qr-code-img" src="" alt="QR Code">
-                                    <p class="help-text">Abra o WhatsApp no celular: Configurações > Dispositivos Conectados > Conectar dispositivo</p>
-                                </div>
+                            <div id="qr-box" class="qr-container">
+                                <p>Escaneie o QR Code com seu WhatsApp:</p>
+                                <img id="qr-img" src="" alt="QR Code">
+                                <p class="help-text">Abra o WhatsApp no celular: Configuracoes > Dispositivos Conectados > Conectar dispositivo</p>
                             </div>
 
-                            <!-- Painel de Debug -->
-                            <div id="debug-panel" class="config-card" style="display:none; margin-top:15px; background:#1e1e1e; color:#d4d4d4; font-family:'Courier New',monospace; font-size:12px;">
-                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                                    <h5 style="margin:0; color:#4ec9b0;"><i class='bx bx-bug'></i> Debug da Conexão</h5>
-                                    <button type="button" onclick="limparDebug()" style="background:#333; color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer; font-size:11px;">Limpar</button>
+                            <div id="debug-panel" class="debug-panel">
+                                <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
+                                    <strong style="color:#4ec9b0;"><i class="bx bx-bug"></i> Debug</strong>
+                                    <button type="button" onclick="limparDebug()" style="background:#333;color:#fff;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;font-size:11px;">Limpar</button>
                                 </div>
-                                <div id="debug-log" style="max-height:300px; overflow-y:auto; padding:10px; background:#0d0d0d; border-radius:4px;">
-                                </div>
+                                <div id="debug-log"></div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Evolution API -->
                     <div id="evolution-section" class="config-card provider-section <?php echo $config->whatsapp_provedor == 'evolution' ? 'active' : ''; ?>">
-                        <h4><i class="bx bx-server"></i> Configurações Evolution API</h4>
-
-                        <!-- Seletor de Tipo Evolution -->
-                        <div class="form-group">
-                            <label>Tipo de Conexão</label>
-                            <input type="hidden" name="evolution_version" id="evolution_version" value="<?php echo $config->evolution_version ?? 'v2'; ?>">
-                            <div class="evo-type-selector">
-                                <div class="evo-type-card <?php echo ($config->evolution_version ?? 'v2') == 'v2' ? 'active' : ''; ?>" onclick="selecionarEvoType('v2')">
-                                    <i class="bx bx-server"></i>
-                                    <span class="title">Self-Hosted <span class="evo-badge self">v2</span></span>
-                                    <span class="desc">Servidor próprio ou VPS</span>
-                                </div>
-                                <div class="evo-type-card <?php echo ($config->evolution_version ?? 'v2') == 'go' ? 'active' : ''; ?>" onclick="selecionarEvoType('go')">
-                                    <i class="bx bx-cloud"></i>
-                                    <span class="title">Evolution Go <span class="evo-badge saas">SaaS</span></span>
-                                    <span class="desc">evo.go / hospedado</span>
-                                </div>
-                            </div>
-                            <div class="help-text" id="evo-type-help">
-                                <?php echo ($config->evolution_version ?? 'v2') == 'go'
-                                    ? 'Evolution Go: a instância é definida pelo nome informado abaixo. A API Key é usada para autenticação.'
-                                    : 'Self-Hosted: você precisa informar o nome da instância que será usado na URL da API.'; ?>
-                            </div>
-                        </div>
+                        <h4><i class="bx bx-server"></i> Configuracoes Evolution API</h4>
 
                         <div class="form-group">
                             <label for="evolution_url">URL do Servidor</label>
                             <input type="url" name="evolution_url" id="evolution_url" class="form-control"
                                    value="<?php echo htmlspecialchars($config->evolution_url); ?>"
                                    placeholder="https://evo.seudominio.com">
-                            <div class="help-text" id="evo-url-help">
-                                <?php echo ($config->evolution_version ?? 'v2') == 'go'
-                                    ? 'Endereço do seu painel Evolution Go (ex: https://evo.jj-ferreiras.com.br)'
-                                    : 'Endereço do servidor Evolution API (ex: http://localhost:8080)'; ?>
-                            </div>
+                            <div class="help-text">Endereco do servidor Evolution (ex: https://evo.jj-ferreiras.com.br)</div>
                         </div>
 
                         <div class="form-group">
@@ -345,158 +117,71 @@
                             <input type="text" name="evolution_apikey" id="evolution_apikey" class="form-control"
                                    value="<?php echo htmlspecialchars($config->evolution_apikey); ?>"
                                    placeholder="Sua API Key">
-                            <div class="help-text">Chave de API gerada no painel do Evolution</div>
+                            <div class="help-text">Chave de API do painel Evolution</div>
                         </div>
 
-                        <div class="form-group" id="evo-instance-group">
-                            <label for="evolution_instance">Nome da Instância</label>
+                        <div class="form-group">
+                            <label for="evolution_instance">Nome da Instancia</label>
                             <input type="text" name="evolution_instance" id="evolution_instance" class="form-control"
                                    value="<?php echo htmlspecialchars($config->evolution_instance); ?>"
-                                   placeholder="mapos">
-                            <div class="help-text">Nome único para esta instância (ex: mapos)</div>
+                                   placeholder="Mapos">
+                            <div class="help-text">Nome da instancia no servidor Evolution (case-insensitive)</div>
                         </div>
                     </div>
 
-                    <!-- Meta API -->
-                    <div id="meta-section" class="config-card provider-section <?php echo $config->whatsapp_provedor == 'meta_api' ? 'active' : ''; ?>">
-                        <h4><i class="bx bxl-facebook-circle"></i> Configurações Meta API (Oficial)</h4>
-
-                        <div class="form-group">
-                            <label for="meta_phone_number_id">Phone Number ID</label>
-                            <input type="text" name="meta_phone_number_id" id="meta_phone_number_id" class="form-control"
-                                   value="<?php echo htmlspecialchars($config->meta_phone_number_id); ?>"
-                                   placeholder="123456789012345">
-                            <div class="help-text">ID do número de telefone no WhatsApp Business</div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="meta_access_token">Access Token</label>
-                            <textarea name="meta_access_token" id="meta_access_token" class="form-control" rows="3"
-                                      placeholder="Token de acesso permanente"><?php echo htmlspecialchars($config->meta_access_token); ?></textarea>
-                            <div class="help-text">Token de acesso permanente do Facebook Developers</div>
-                        </div>
-                    </div>
-
-                    <!-- Z-API -->
-                    <div id="zapi-section" class="config-card provider-section <?php echo $config->whatsapp_provedor == 'z_api' ? 'active' : ''; ?>">
-                        <h4><i class="bx bx-chat"></i> Configurações Z-API</h4>
-
-                        <div class="form-group">
-                            <label for="z_api_url">URL da API</label>
-                            <input type="url" name="z_api_url" id="z_api_url" class="form-control"
-                                   value="<?php echo htmlspecialchars($config->z_api_url); ?>"
-                                   placeholder="https://api.z-api.io">
-                            <div class="help-text">URL base da API Z-API</div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="z_api_token">Token</label>
-                            <input type="text" name="z_api_token" id="z_api_token" class="form-control"
-                                   value="<?php echo htmlspecialchars($config->z_api_token); ?>"
-                                   placeholder="Seu token Z-API">
-                            <div class="help-text">Token de autenticação da Z-API</div>
-                        </div>
-                    </div>
-
-                    <!-- Notificações Automáticas -->
+                    <!-- Notificacoes -->
                     <div class="config-card">
-                        <h4><i class="bx bx-bell"></i> Notificações Automáticas</h4>
-                        <div class="help-text" style="margin-bottom:15px;">Selecione quais eventos devem enviar notificações automaticamente:</div>
-
+                        <h4><i class="bx bx-bell"></i> Notificacoes Automaticas</h4>
                         <div class="checkbox-group">
-                            <div class="checkbox-item">
-                                <input type="checkbox" name="notificacao_os_criada" id="notificacao_os_criada" value="1" <?php echo $config->notificacao_os_criada ? 'checked' : ''; ?>>
-                                <label for="notificacao_os_criada">OS Criada</label>
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" name="notificacao_os_atualizada" id="notificacao_os_atualizada" value="1" <?php echo $config->notificacao_os_atualizada ? 'checked' : ''; ?>>
-                                <label for="notificacao_os_atualizada">OS Atualizada</label>
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" name="notificacao_os_pronta" id="notificacao_os_pronta" value="1" <?php echo $config->notificacao_os_pronta ? 'checked' : ''; ?>>
-                                <label for="notificacao_os_pronta">OS Pronta</label>
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" name="notificacao_os_orcamento" id="notificacao_os_orcamento" value="1" <?php echo $config->notificacao_os_orcamento ? 'checked' : ''; ?>>
-                                <label for="notificacao_os_orcamento">Orçamento Disponível</label>
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" name="notificacao_venda_realizada" id="notificacao_venda_realizada" value="1" <?php echo $config->notificacao_venda_realizada ? 'checked' : ''; ?>>
-                                <label for="notificacao_venda_realizada">Venda Realizada</label>
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" name="notificacao_cobranca_gerada" id="notificacao_cobranca_gerada" value="1" <?php echo $config->notificacao_cobranca_gerada ? 'checked' : ''; ?>>
-                                <label for="notificacao_cobranca_gerada">Cobrança Gerada</label>
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" name="notificacao_cobranca_vencimento" id="notificacao_cobranca_vencimento" value="1" <?php echo $config->notificacao_cobranca_vencimento ? 'checked' : ''; ?>>
-                                <label for="notificacao_cobranca_vencimento">Lembrete Vencimento</label>
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" name="notificacao_lembrete_aniversario" id="notificacao_lembrete_aniversario" value="1" <?php echo $config->notificacao_lembrete_aniversario ? 'checked' : ''; ?>>
-                                <label for="notificacao_lembrete_aniversario">Aniversário (Marketing)</label>
-                            </div>
+                            <div class="checkbox-item"><input type="checkbox" name="notificacao_os_criada" value="1" <?php echo $config->notificacao_os_criada ? 'checked' : ''; ?>> <label>OS Criada</label></div>
+                            <div class="checkbox-item"><input type="checkbox" name="notificacao_os_atualizada" value="1" <?php echo $config->notificacao_os_atualizada ? 'checked' : ''; ?>> <label>OS Atualizada</label></div>
+                            <div class="checkbox-item"><input type="checkbox" name="notificacao_os_pronta" value="1" <?php echo $config->notificacao_os_pronta ? 'checked' : ''; ?>> <label>OS Pronta</label></div>
+                            <div class="checkbox-item"><input type="checkbox" name="notificacao_os_orcamento" value="1" <?php echo $config->notificacao_os_orcamento ? 'checked' : ''; ?>> <label>Orcamento Disponivel</label></div>
+                            <div class="checkbox-item"><input type="checkbox" name="notificacao_venda_realizada" value="1" <?php echo $config->notificacao_venda_realizada ? 'checked' : ''; ?>> <label>Venda Realizada</label></div>
+                            <div class="checkbox-item"><input type="checkbox" name="notificacao_cobranca_gerada" value="1" <?php echo $config->notificacao_cobranca_gerada ? 'checked' : ''; ?>> <label>Cobranca Gerada</label></div>
+                            <div class="checkbox-item"><input type="checkbox" name="notificacao_cobranca_vencimento" value="1" <?php echo $config->notificacao_cobranca_vencimento ? 'checked' : ''; ?>> <label>Lembrete Vencimento</label></div>
+                            <div class="checkbox-item"><input type="checkbox" name="notificacao_lembrete_aniversario" value="1" <?php echo $config->notificacao_lembrete_aniversario ? 'checked' : ''; ?>> <label>Aniversario (Marketing)</label></div>
                         </div>
                     </div>
 
-                    <!-- Horário de Funcionamento -->
+                    <!-- Horario -->
                     <div class="config-card">
-                        <h4><i class="bx bx-time"></i> Horário de Funcionamento</h4>
-
+                        <h4><i class="bx bx-time"></i> Horario de Envio</h4>
                         <div class="form-group">
-                            <label>
-                                <input type="checkbox" name="respeitar_horario" value="1" <?php echo $config->respeitar_horario ? 'checked' : ''; ?>>
-                                Respeitar horário de funcionamento
-                            </label>
-                            <div class="help-text">Só enviar mensagens durante o horário configurado</div>
+                            <label><input type="checkbox" name="respeitar_horario" value="1" <?php echo $config->respeitar_horario ? 'checked' : ''; ?>> Respeitar horario de funcionamento</label>
                         </div>
-
-                        <div class="form-group" style="display:flex; gap:20px;">
+                        <div class="form-group" style="display:flex;gap:20px;">
                             <div>
-                                <label for="horario_envio_inicio">Horário Início</label>
-                                <input type="time" name="horario_envio_inicio" id="horario_envio_inicio"
-                                       class="form-control time-input" value="<?php echo $config->horario_envio_inicio; ?>">
+                                <label>Inicio</label>
+                                <input type="time" name="horario_envio_inicio" class="form-control" value="<?php echo $config->horario_envio_inicio; ?>" style="width:120px">
                             </div>
                             <div>
-                                <label for="horario_envio_fim">Horário Fim</label>
-                                <input type="time" name="horario_envio_fim" id="horario_envio_fim"
-                                       class="form-control time-input" value="<?php echo $config->horario_envio_fim; ?>">
+                                <label>Fim</label>
+                                <input type="time" name="horario_envio_fim" class="form-control" value="<?php echo $config->horario_envio_fim; ?>" style="width:120px">
                             </div>
                         </div>
-
                         <div class="form-group">
-                            <label>
-                                <input type="checkbox" name="enviar_fim_semana" value="1" <?php echo $config->enviar_fim_semana ? 'checked' : ''; ?>>
-                                Permitir envios no fim de semana
-                            </label>
-                            <div class="help-text">Desmarque para não enviar mensagens aos sábados e domingos</div>
+                            <label><input type="checkbox" name="enviar_fim_semana" value="1" <?php echo $config->enviar_fim_semana ? 'checked' : ''; ?>> Permitir envios no fim de semana</label>
                         </div>
                     </div>
 
-                    <!-- Teste de Envio -->
-                    <div class="config-card test-section">
+                    <!-- Teste -->
+                    <div class="config-card">
                         <h4><i class="bx bx-send"></i> Testar Envio</h4>
-
-                        <div class="form-group">
-                            <label for="teste_numero">Número de Teste</label>
-                            <div style="display:flex; gap:10px;">
-                                <input type="text" id="teste_numero" class="form-control" placeholder="(11) 99999-9999" style="flex:1;">
-                                <button type="button" class="btn-action btn-primary" onclick="testarEnvio()">
-                                    <i class="bx bx-send"></i> Enviar Teste
-                                </button>
-                            </div>
-                            <div class="help-text">Envie uma mensagem de teste para verificar a conexão</div>
+                        <div class="form-group" style="display:flex;gap:10px;">
+                            <input type="text" id="teste_numero" class="form-control" placeholder="(11) 99999-9999" style="flex:1">
+                            <button type="button" class="btn-action btn-primary" onclick="testarEnvio()">
+                                <i class="bx bx-send"></i> Enviar Teste
+                            </button>
                         </div>
-                        <div id="teste-resultado" style="margin-top:10px;"></div>
+                        <div id="teste-resultado"></div>
                     </div>
 
-                    <!-- Botões -->
-                    <div class="form-actions" style="padding:20px; text-align:right;">
+                    <div class="form-actions" style="padding:20px;text-align:right;">
                         <button type="submit" class="btn-action btn-success">
-                            <i class="bx bx-save"></i> Salvar Configurações
+                            <i class="bx bx-save"></i> Salvar Configuracoes
                         </button>
                     </div>
-
                 </form>
             </div>
         </div>
@@ -505,263 +190,147 @@
 
 <script>
 function toggleProvider() {
-    const provedor = document.getElementById('whatsapp_provedor').value;
-
-    // Esconde todas as seções
-    document.querySelectorAll('.provider-section').forEach(section => {
-        section.classList.remove('active');
-    });
-
-    // Mostra seção do provedor selecionado
-    if (provedor === 'evolution') {
+    const p = document.getElementById('whatsapp_provedor').value;
+    document.querySelectorAll('.provider-section').forEach(s => s.classList.remove('active'));
+    if (p === 'evolution') {
         document.getElementById('evolution-section').classList.add('active');
-    } else if (provedor === 'meta_api') {
-        document.getElementById('meta-section').classList.add('active');
-    } else if (provedor === 'z_api') {
-        document.getElementById('zapi-section').classList.add('active');
     }
-
-    // Mostra/esconde status
-    document.getElementById('status-section').style.display = provedor !== 'desativado' ? 'block' : 'none';
+    document.getElementById('status-section').style.display = p !== 'desativado' ? 'block' : 'none';
 }
 
-function selecionarEvoType(tipo) {
-    document.getElementById('evolution_version').value = tipo;
-
-    // Atualiza cards
-    document.querySelectorAll('.evo-type-card').forEach(card => {
-        card.classList.remove('active');
-    });
-    event.currentTarget.classList.add('active');
-
-    // Atualiza textos de ajuda
-    if (tipo === 'go') {
-        document.getElementById('evo-type-help').textContent =
-            'Evolution Go: a instância é definida pelo nome informado abaixo. A API Key é usada para autenticação.';
-        document.getElementById('evo-url-help').textContent =
-            'Endereço do seu painel Evolution Go (ex: https://evo.jj-ferreiras.com.br)';
-    } else {
-        document.getElementById('evo-type-help').textContent =
-            'Self-Hosted: você precisa informar o nome da instância que será usado na URL da API.';
-        document.getElementById('evo-url-help').textContent =
-            'Endereço do servidor Evolution API (ex: http://localhost:8080)';
-    }
-}
-
-function verificarStatus() {
-    fetch('<?php echo site_url("notificacoesConfig/verificar_status"); ?>', {
-        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-    })
-        .then(r => r.json())
-        .then(data => {
-            // Atualiza badge de status
-            const badge = document.getElementById('status-badge');
-            const statusText = document.getElementById('status-text');
-            const btnQr = document.getElementById('btn-qr');
-            const btnDesconectar = document.getElementById('btn-desconectar');
-
-            if (data.connected) {
-                badge.className = 'status-indicator status-connected';
-                badge.innerHTML = '<i class="bx bx-check-circle"></i> <span id="status-text">Conectado</span>' + (data.status ? ' (' + data.status + ')' : '');
-                if (btnQr) btnQr.style.display = 'none';
-                if (btnDesconectar) btnDesconectar.style.display = 'inline-flex';
-            } else {
-                badge.className = 'status-indicator status-disconnected';
-                badge.innerHTML = '<i class="bx bx-x-circle"></i> <span id="status-text">Desconectado</span>' + (data.status ? ' (' + data.status + ')' : '');
-                if (btnQr) btnQr.style.display = 'inline-flex';
-                if (btnDesconectar) btnDesconectar.style.display = 'none';
-            }
-
-            alert('Status: ' + (data.connected ? 'Conectado (' + data.status + ')' : 'Desconectado'));
-            if (data.error) {
-                alert('Erro: ' + data.error);
-            }
-        })
-        .catch(err => alert('Erro ao verificar status: ' + err));
-}
-
-function adicionarDebug(tipo, mensagem) {
+function addDebug(tipo, msg) {
     const panel = document.getElementById('debug-panel');
     const log = document.getElementById('debug-log');
     panel.style.display = 'block';
-
-    const hora = new Date().toLocaleTimeString('pt-BR', { hour12: false });
-    let cor = '#d4d4d4';
-    let prefixo = '[INFO]';
+    const hora = new Date().toLocaleTimeString('pt-BR', {hour12: false});
+    let cor = '#d4d4d4', prefixo = '[INFO]';
     if (tipo === 'erro') { cor = '#f44747'; prefixo = '[ERRO]'; }
-    if (tipo === 'sucesso') { cor = '#4ec9b0'; prefixo = '[OK]'; }
-    if (tipo === 'warn') { cor = '#ffcc00'; prefixo = '[AVISO]'; }
-    if (tipo === 'url') { cor = '#569cd6'; prefixo = '[URL]'; }
-
-    const linha = document.createElement('div');
-    linha.style.marginBottom = '4px';
-    linha.style.wordBreak = 'break-all';
-    linha.innerHTML = `<span style="color:#858585;">${hora}</span> <span style="color:${cor}; font-weight:bold;">${prefixo}</span> <span style="color:${cor};">${mensagem}</span>`;
-    log.appendChild(linha);
+    if (tipo === 'ok') { cor = '#4ec9b0'; prefixo = '[OK]'; }
+    const div = document.createElement('div');
+    div.className = 'debug-line';
+    div.innerHTML = `<span style="color:#858585;">${hora}</span> <span style="color:${cor};font-weight:bold;">${prefixo}</span> <span style="color:${cor};">${msg}</span>`;
+    log.appendChild(div);
     log.scrollTop = log.scrollHeight;
 }
 
 function limparDebug() {
     document.getElementById('debug-log').innerHTML = '';
     document.getElementById('debug-panel').style.display = 'none';
+    document.getElementById('qr-box').style.display = 'none';
 }
 
-function executarDiagnostico() {
+function verificarStatus() {
     limparDebug();
-    adicionarDebug('info', 'Executando diagnóstico do banco de dados...');
-
-    fetch('<?php echo site_url("notificacoesConfig/diagnostico"); ?>', {
-        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    addDebug('info', 'Verificando status...');
+    fetch('<?php echo site_url("notificacoesConfig/verificar_status"); ?>', {
+        headers: {'X-Requested-With': 'XMLHttpRequest'}
     })
-        .then(r => {
-            adicionarDebug('info', 'HTTP Status: ' + r.status);
-            return r.json();
-        })
-        .then(data => {
-            adicionarDebug('sucesso', 'Diagnóstico recebido do servidor');
-            adicionarDebug('info', 'Tabela existe: ' + (data.tabela_existe ? 'SIM' : 'NÃO'));
+    .then(r => r.json())
+    .then(data => {
+        addDebug('info', 'Status: ' + (data.connected ? 'Conectado' : 'Desconectado'));
+        if (data.error) addDebug('erro', 'Erro: ' + data.error);
+        if (data.status) addDebug('info', 'Detalhe: ' + data.status);
+        alert('Status: ' + (data.connected ? 'Conectado (' + data.status + ')' : 'Desconectado' + (data.error ? '\n' + data.error : '')));
+    })
+    .catch(err => addDebug('erro', err.message));
+}
 
-            if (data.colunas && data.colunas.length) {
-                adicionarDebug('info', 'Colunas: ' + data.colunas.join(', '));
-            }
-
-            if (data.config_raw && Object.keys(data.config_raw).length > 0) {
-                adicionarDebug('info', 'Registro encontrado. Campos:');
-                Object.entries(data.config_raw).forEach(([k, v]) => {
-                    let val = v === null ? 'NULL' : (typeof v === 'object' ? JSON.stringify(v) : String(v));
-                    adicionarDebug('info', '  ' + k + ' = ' + val);
-                });
-            } else {
-                adicionarDebug('erro', 'Registro config vazio ou não encontrado (id=1)');
-            }
-
-            adicionarDebug('info', '--- Resumo ---');
-            adicionarDebug('info', 'evolution_url: ' + (data.evolution_url || 'N/D'));
-            adicionarDebug('info', 'evolution_instance: ' + (data.evolution_instance || 'N/D'));
-            adicionarDebug('info', 'evolution_version: ' + (data.evolution_version || 'N/D'));
-            adicionarDebug('info', 'whatsapp_ativo: ' + (data.whatsapp_ativo !== null ? data.whatsapp_ativo : 'N/D'));
-            adicionarDebug('info', 'whatsapp_provedor: ' + (data.whatsapp_provedor || 'N/D'));
-        })
-        .catch(err => {
-            adicionarDebug('erro', 'Erro no diagnóstico: ' + err.message);
-        });
+function diagnostico() {
+    limparDebug();
+    addDebug('info', 'Executando diagnostico...');
+    fetch('<?php echo site_url("notificacoesConfig/diagnostico"); ?>', {
+        headers: {'X-Requested-With': 'XMLHttpRequest'}
+    })
+    .then(r => r.json())
+    .then(data => {
+        addDebug('info', 'Tabela existe: ' + (data.tabela_existe ? 'SIM' : 'NAO'));
+        if (data.config) {
+            Object.entries(data.config).forEach(([k, v]) => {
+                addDebug('info', k + ': ' + (v === null ? 'NULL' : v));
+            });
+        }
+    })
+    .catch(err => addDebug('erro', err.message));
 }
 
 function obterQRCode() {
     const btn = event.target.closest('button');
     btn.disabled = true;
-    btn.innerHTML = '<i class="bx bx-loader bx-spin"></i> Obtendo QR Code...';
-
+    btn.innerHTML = '<i class="bx bx-loader bx-spin"></i> Obtendo...';
     limparDebug();
-    adicionarDebug('info', 'Iniciando processo de obtenção do QR Code...');
-    adicionarDebug('url', 'Chamando: ' + '<?php echo site_url("notificacoesConfig/obter_qr"); ?>');
+    addDebug('info', 'Solicitando QR Code...');
 
     fetch('<?php echo site_url("notificacoesConfig/obter_qr"); ?>', {
-        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        headers: {'X-Requested-With': 'XMLHttpRequest'}
     })
-        .then(r => {
-            adicionarDebug('info', 'HTTP Status: ' + r.status);
-            return r.text();
-        })
-        .then(text => {
-            adicionarDebug('info', 'Resposta bruta (' + text.length + ' chars):');
-            adicionarDebug('info', text.substring(0, 500));
-            let data;
-            try {
-                data = JSON.parse(text);
-            } catch(e) {
-                adicionarDebug('erro', 'Falha ao parsear JSON: ' + e.message);
-                throw new Error('Resposta inválida do servidor');
-            }
+    .then(r => r.json())
+    .then(data => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bx bx-qr"></i> Conectar (QR Code)';
 
-            btn.disabled = false;
-            btn.innerHTML = '<i class="bx bx-qr"></i> Conectar (QR Code)';
+        if (data.debug) {
+            data.debug.forEach(d => addDebug(d.tipo || 'info', d.msg));
+        }
 
-            if (data._config) {
-                adicionarDebug('info', '--- Config usada ---');
-                adicionarDebug('info', 'URL: ' + data._config.url);
-                adicionarDebug('info', 'Instância: ' + data._config.instance);
-                adicionarDebug('info', 'Token salvo: ' + (data._config.has_token ? 'SIM' : 'NÃO'));
-            }
-
-            if (data.debug) {
-                adicionarDebug('info', '--- Logs do servidor ---');
-                data.debug.forEach(d => adicionarDebug(d.tipo || 'info', d.msg));
-            }
-
-            if (data.success && data.qr_code) {
-                adicionarDebug('sucesso', 'QR Code obtido com sucesso!');
-                document.getElementById('qr-code-img').src = data.qr_code;
-                document.getElementById('qr-code-display').style.display = 'block';
-            } else if (data.already_connected) {
-                adicionarDebug('warn', 'Já está conectado!');
-                alert('Já está conectado!');
-            } else {
-                adicionarDebug('erro', 'Erro: ' + (data.error || 'Erro desconhecido'));
-                if (data.http_code) adicionarDebug('erro', 'HTTP Code: ' + data.http_code);
-                if (data.response) adicionarDebug('erro', 'Resposta: ' + JSON.stringify(data.response).substring(0, 300));
-            }
-        })
-        .catch(err => {
-            btn.disabled = false;
-            btn.innerHTML = '<i class="bx bx-qr"></i> Conectar (QR Code)';
-            adicionarDebug('erro', 'Exceção JavaScript: ' + err.message);
-        });
+        if (data.success && data.qr_code) {
+            addDebug('ok', 'QR Code recebido!');
+            document.getElementById('qr-img').src = data.qr_code;
+            document.getElementById('qr-box').style.display = 'block';
+        } else if (data.already_connected) {
+            addDebug('info', 'Ja esta conectado!');
+            alert('Ja esta conectado!');
+        } else {
+            addDebug('erro', 'Erro: ' + (data.error || 'Desconhecido'));
+        }
+    })
+    .catch(err => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bx bx-qr"></i> Conectar (QR Code)';
+        addDebug('erro', 'Excecao: ' + err.message);
+    });
 }
 
 function desconectar() {
-    if (!confirm('Tem certeza que deseja desconectar?')) return;
-
+    if (!confirm('Desconectar?')) return;
     fetch('<?php echo site_url("notificacoesConfig/desconectar"); ?>', {
         method: 'POST',
-        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        headers: {'X-Requested-With': 'XMLHttpRequest'}
     })
-        .then(r => r.json())
-        .then(data => {
-            if (data.success) {
-                alert('Desconectado com sucesso!');
-                document.getElementById('qr-code-display').style.display = 'none';
-            } else {
-                alert('Erro ao desconectar: ' + (data.error || 'Erro desconhecido'));
-            }
-        })
-        .catch(err => alert('Erro: ' + err));
+    .then(r => r.json())
+    .then(data => {
+        alert(data.success ? 'Desconectado!' : 'Erro: ' + (data.error || 'Desconhecido'));
+    });
 }
 
 function testarEnvio() {
     const numero = document.getElementById('teste_numero').value;
     const resultado = document.getElementById('teste-resultado');
-
     if (!numero) {
-        resultado.innerHTML = '<span style="color:red;">Informe um número</span>';
+        resultado.innerHTML = '<span style="color:red">Informe um numero</span>';
         return;
     }
-
     resultado.innerHTML = '<i class="bx bx-loader bx-spin"></i> Enviando...';
-
-    const formData = new FormData();
-    formData.append('numero', numero);
-    formData.append('<?php echo $this->security->get_csrf_token_name(); ?>', '<?php echo $this->security->get_csrf_hash(); ?>');
-
+    const fd = new FormData();
+    fd.append('numero', numero);
+    fd.append('<?php echo $this->security->get_csrf_token_name(); ?>', '<?php echo $this->security->get_csrf_hash(); ?>');
     fetch('<?php echo site_url("notificacoesConfig/testar_envio"); ?>', {
         method: 'POST',
-        headers: { 'X-Requested-With': 'XMLHttpRequest' },
-        body: formData
+        headers: {'X-Requested-With': 'XMLHttpRequest'},
+        body: fd
     })
     .then(r => r.json())
     .then(data => {
         if (data.success) {
-            resultado.innerHTML = '<span style="color:green;"><i class="bx bx-check"></i> Mensagem enviada! ID: ' + data.message_id + '</span>';
+            resultado.innerHTML = '<span style="color:green"><i class="bx bx-check"></i> Enviado! ID: ' + data.message_id + '</span>';
         } else {
-            resultado.innerHTML = '<span style="color:red;"><i class="bx bx-x"></i> Erro: ' + (data.error || 'Erro desconhecido') + '</span>';
+            resultado.innerHTML = '<span style="color:red"><i class="bx bx-x"></i> Erro: ' + (data.error || 'Desconhecido') + '</span>';
         }
     })
     .catch(err => {
-        resultado.innerHTML = '<span style="color:red;"><i class="bx bx-x"></i> Erro: ' + err + '</span>';
+        resultado.innerHTML = '<span style="color:red">Erro: ' + err.message + '</span>';
     });
 }
 
-// Inicializa
 $(document).ready(function() {
     toggleProvider();
 });
