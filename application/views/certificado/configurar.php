@@ -128,6 +128,30 @@
                     </div>
 
                 </form>
+
+                <hr style="margin:25px 0; border-top:1px solid #ddd">
+
+                <div class="alert" style="background:rgba(16,134,221,0.1); border-color:rgba(16,134,221,0.3); color:#0d6efd">
+                    <i class="fas fa-magic"></i> <strong>Não foi detectado automaticamente?</strong><br>
+                    Se a consulta da Receita não identificou o Simples Nacional, você pode forçar a configuração manualmente.
+                </div>
+                <form method="post" action="<?= site_url('certificado/forcar_simples_nacional') ?>" class="form-horizontal">
+                    <div class="control-group">
+                        <label class="control-label">Anexo Simples:*</label>
+                        <div class="controls">
+                            <select name="anexo_forcado" class="span6" required>
+                                <option value="III">Anexo III — Serviços em geral</option>
+                                <option value="IV">Anexo IV — Construção / ISS próprio</option>
+                                <option value="V">Anexo V — Comércio / Indústria</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-actions" style="padding-left:180px">
+                        <button type="submit" class="btn btn-info">
+                            <i class="fas fa-check-circle"></i> Forçar Simples Nacional
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

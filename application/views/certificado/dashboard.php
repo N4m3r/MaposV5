@@ -191,6 +191,10 @@
                     <div class="alert alert-warning" style="margin-bottom: 10px;">
                         <i class="fas fa-exclamation-triangle"></i> <strong>Não Configurado</strong><br>
                         Clique em "Sincronizar Alíquotas" ou configure manualmente em Impostos > Configurações.
+                        <br>
+                        <a href="<?= site_url('certificado/configurar') ?>" class="btn btn-small btn-info" style="margin-top:8px">
+                            <i class="fas fa-magic"></i> Forçar Simples Nacional
+                        </a>
                     </div>
                 <?php endif; ?>
             </div>

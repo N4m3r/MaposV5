@@ -405,6 +405,29 @@ class Certificado extends MY_Controller
     }
 
     /**
+     * Força configuração como Simples Nacional (quando API não detecta)
+     */
+    public function forcar_simples_nacional()
+    {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'eCertificado')) {
+            $this->session->set_flashdata('error', 'Sem permissão.');
+            redirect('certificado');
+        }
+
+        $anexo = $this->input->post('anexo_forcado') ?: 'III';
+
+        $this->load->model('impostos_model');
+        $this->impostos_model->setConfig('IMPOSTO_REGIME_TRIBUTARIO', 'simples_nacional');
+        $this->impostos_model->setConfig('IMPOSTO_ANEXO_PADRAO', $anexo);
+        $this->impostos_model->setConfig('IMPOSTO_FAIXA_ATUAL', '1');
+        $this->impostos_model->setConfig('IMPOSTO_RETENCAO_AUTOMATICA', '1');
+        $this->impostos_model->setConfig('IMPOSTO_DRE_INTEGRACAO', '1');
+
+        $this->session->set_flashdata('success', 'Configurado manualmente como Simples Nacional — Anexo ' . $anexo . '.');
+        redirect('certificado');
+    }
+
+    /**
      * Remove certificado
      */
     public function remover($id)
