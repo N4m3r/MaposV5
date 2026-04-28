@@ -590,7 +590,7 @@ class NotificacoesConfig extends MY_Controller
             'whatsapp_ativo' => 1,
             'evolution_url' => 'https://evo.jj-ferreiras.com.br',
             'evolution_apikey' => '7bd8a76492e92f7e0e4bad14d42eeb0e889e2cfdcd7c8f0ce9b4e1e6607935e2',
-            'evolution_version' => 'go',
+            'evolution_version' => 'v2',
             'evolution_instance' => 'Mapos',
             'evolution_estado' => 'desconectado',
             'meta_phone_number_id' => '',

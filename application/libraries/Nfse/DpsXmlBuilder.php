@@ -99,7 +99,7 @@ class DpsXmlBuilder
         if (strlen($cnpj) === 14) {
             $identificacao->appendChild($dom->createElement('CpfCnpj'))
                 ->appendChild($dom->createElement('Cnpj', $cnpj));
-        } else {
+        } elseif (strlen($cnpj) > 0) {
             $identificacao->appendChild($dom->createElement('CpfCnpj'))
                 ->appendChild($dom->createElement('Cpf', str_pad($cnpj, 11, '0', STR_PAD_LEFT)));
         }
@@ -109,12 +109,16 @@ class DpsXmlBuilder
             $identificacao->appendChild($dom->createElement('InscricaoMunicipal', $prestador['im']));
         }
 
+        // Inscrição Estadual
+        if (!empty($prestador['ie'])) {
+            $identificacao->appendChild($dom->createElement('InscricaoEstadual', $prestador['ie']));
+        }
+
         $prestNode->appendChild($identificacao);
 
-        // Razão Social
-        if (!empty($prestador['razao_social'])) {
-            $prestNode->appendChild($dom->createElement('RazaoSocial', $this->escapeXml($prestador['razao_social'])));
-        }
+        // Razão Social (obrigatória — usa fallback se vazia)
+        $razaoSocial = !empty($prestador['razao_social']) ? $prestador['razao_social'] : ($prestador['nome_fantasia'] ?? 'PRESTADOR');
+        $prestNode->appendChild($dom->createElement('RazaoSocial', $this->escapeXml($razaoSocial)));
 
         // Endereço do Prestador
         if (!empty($prestador['endereco'])) {
@@ -162,12 +166,15 @@ class DpsXmlBuilder
             $identificacao->appendChild($dom->createElement('InscricaoMunicipal', $tomador['im']));
         }
 
+        if (!empty($tomador['ie'])) {
+            $identificacao->appendChild($dom->createElement('InscricaoEstadual', $tomador['ie']));
+        }
+
         $tomNode->appendChild($identificacao);
 
-        // Razão Social / Nome
-        if (!empty($tomador['razao_social'])) {
-            $tomNode->appendChild($dom->createElement('RazaoSocial', $this->escapeXml($tomador['razao_social'])));
-        }
+        // Razão Social / Nome (obrigatória — usa fallback se vazia)
+        $razaoSocial = !empty($tomador['razao_social']) ? $tomador['razao_social'] : 'TOMADOR';
+        $tomNode->appendChild($dom->createElement('RazaoSocial', $this->escapeXml($razaoSocial)));
 
         // Endereço do Tomador
         if (!empty($tomador['endereco'])) {
@@ -196,8 +203,8 @@ class DpsXmlBuilder
     {
         $servNode = $dom->createElement('DetalhamentoServico');
 
-        // Descrição dos Serviços
-        $descricao = $servico['descricao'] ?? '';
+        // Descrição dos Serviços (obrigatória — usa fallback se vazia)
+        $descricao = !empty($servico['descricao']) ? $servico['descricao'] : 'Serviços prestados conforme contrato.';
         $servNode->appendChild($dom->createElement('Descricao', $this->escapeXml($descricao)));
 
         // CNAE
@@ -287,7 +294,10 @@ class DpsXmlBuilder
             $tribFed->appendChild($dom->createElement('InssRetido', !empty($servico['inss_retido']) ? '1' : '2'));
         }
 
-        $servNode->appendChild($tribFed);
+        // Só anexar TributacoesFederais se houver conteúdo
+        if ($tribFed->hasChildNodes()) {
+            $servNode->appendChild($tribFed);
+        }
 
         // Município de Prestação (obrigatório)
         $municipioPrestacao = $dom->createElement('MunicipioPrestacaoServico');

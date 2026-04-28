@@ -168,9 +168,7 @@ class WhatsAppService
     }
 
     /**
-     * Resolve o token específico da instância.
-     * No Evolution Go, a autenticação é unificada (usa a mesma apikey global).
-     * No Evolution API v2, cada instância tem token próprio obtido via /instance/all.
+     * Resolve o token específico da instância via /instance/all
      */
     private function resolveInstanceToken()
     {
@@ -190,19 +188,13 @@ class WhatsAppService
             return null;
         }
 
-        // Evolution Go: usa a mesma API Key global (não tem token separado por instância)
-        if ($this->isEvolutionGo()) {
-            $this->addDebug('info', 'Evolution Go detectado. Usando API Key global como token.');
-            return $this->config->evolution_apikey;
-        }
-
         // 1. Cache
         $cached = $this->lerTokenCache();
         if ($cached) {
             return $cached;
         }
 
-        // 2. Resolve via API (Evolution API v2)
+        // 2. Resolve via /instance/all
         $url = rtrim($this->config->evolution_url, '/') . '/instance/all';
         $headers = [
             'Content-Type: application/json',
@@ -261,23 +253,12 @@ class WhatsAppService
             ];
         }
 
-        // Evolution Go usa /message/sendText
-        if ($this->isEvolutionGo()) {
-            $url = rtrim($this->config->evolution_url, '/') . '/message/sendText';
-            $payload = [
-                'instanceName' => $this->config->evolution_instance,
-                'number' => $numero,
-                'text' => $mensagem,
-                'delay' => 1200,
-            ];
-        } else {
-            $url = rtrim($this->config->evolution_url, '/') . '/send/text';
-            $payload = [
-                'number' => $numero,
-                'text' => $mensagem,
-                'delay' => 1200,
-            ];
-        }
+        $url = rtrim($this->config->evolution_url, '/') . '/send/text';
+        $payload = [
+            'number' => $numero,
+            'text' => $mensagem,
+            'delay' => 1200,
+        ];
 
         $headers = [
             'Content-Type: application/json; charset=utf-8',
@@ -391,41 +372,18 @@ class WhatsAppService
             ];
         }
 
-        // Evolution Go usa endpoint /instance/{name}/status
-        if ($this->isEvolutionGo()) {
-            $url = rtrim($this->config->evolution_url, '/') . '/instance/' . urlencode($this->config->evolution_instance) . '/status';
-        } else {
-            $url = rtrim($this->config->evolution_url, '/') . '/instance/all';
-        }
-
+        $url = rtrim($this->config->evolution_url, '/') . '/instance/all';
         $headers = [
             'Content-Type: application/json',
             'apikey: ' . $this->config->evolution_apikey
         ];
 
-        $this->addDebug('url', 'GET ' . $url);
         $response = $this->makeRequest($url, 'GET', [], $headers);
-        $this->addDebug('info', 'HTTP Resposta: ' . $response['http_code']);
 
         if ($response['http_code'] == 200) {
             $data = json_decode($response['body'], true);
-
-            if ($this->isEvolutionGo()) {
-                // Evolution Go retorna diretamente os dados da instância
-                $connected = $data['connected'] ?? false;
-                $estado = $connected ? 'open' : 'desconectado';
-                $this->CI->notificacoes_config_model->atualizarEstadoEvolution($estado);
-
-                return [
-                    'connected' => $connected,
-                    'status' => $estado,
-                    'data' => $data,
-                    'debug' => $this->debugLog
-                ];
-            }
-
-            // Evolution API v2: resposta tem array em data
             $instances = $data['data'] ?? [];
+
             foreach ($instances as $inst) {
                 $instName = $inst['name'] ?? '';
                 if (strcasecmp($instName, $this->config->evolution_instance) === 0) {
@@ -501,12 +459,7 @@ class WhatsAppService
             ];
         }
 
-        // Evolution Go usa /instance/{name}/qrcode
-        if ($this->isEvolutionGo()) {
-            $url = rtrim($this->config->evolution_url, '/') . '/instance/' . urlencode($this->config->evolution_instance) . '/qrcode';
-        } else {
-            $url = rtrim($this->config->evolution_url, '/') . '/instance/qr?instanceId=' . urlencode($this->config->evolution_instance);
-        }
+        $url = rtrim($this->config->evolution_url, '/') . '/instance/qr?instanceId=' . urlencode($this->config->evolution_instance);
 
         $this->addDebug('url', 'GET ' . $url);
         $this->addDebug('info', 'Token usado: ***' . substr($instanceToken, -4));
@@ -594,14 +547,8 @@ class WhatsAppService
             ];
         }
 
-        // Evolution Go: DELETE /instance/{name}
-        if ($this->isEvolutionGo()) {
-            $url = rtrim($this->config->evolution_url, '/') . '/instance/' . urlencode($this->config->evolution_instance);
-            $method = 'DELETE';
-        } else {
-            $url = rtrim($this->config->evolution_url, '/') . '/instance/disconnect';
-            $method = 'POST';
-        }
+        $url = rtrim($this->config->evolution_url, '/') . '/instance/disconnect';
+        $method = 'POST';
 
         $headers = [
             'Content-Type: application/json; charset=utf-8',

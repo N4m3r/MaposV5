@@ -75,24 +75,24 @@ class Nfse_os extends MY_Controller
             redirect('os');
         }
 
-        // Dados do POST
+        // Dados do POST (?: trata string vazia, ?? so trata null)
         $dados = [
-            'valor_servicos' => $this->input->post('valor_servicos') ?? $os->valorTotal,
-            'valor_deducoes' => $this->input->post('valor_deducoes') ?? 0,
-            'descricao_servico' => $this->input->post('descricao_servico') ?? '',
+            'valor_servicos' => $this->normalizarValorMonetario($this->input->post('valor_servicos') ?: $os->valorTotal),
+            'valor_deducoes' => $this->normalizarValorMonetario($this->input->post('valor_deducoes') ?: 0),
+            'descricao_servico' => $this->input->post('descricao_servico') ?: '',
             'regime_tributario' => 'simples_nacional',
-            'valor_das' => $this->input->post('valor_das') ?? null,
+            'valor_das' => $this->normalizarValorMonetario($this->input->post('valor_das') ?: null),
             'retem_iss' => $this->input->post('retem_iss') ? 1 : 0,
             'retem_irrf' => $this->input->post('retem_irrf') ? 1 : 0,
             'retem_pis' => $this->input->post('retem_pis') ? 1 : 0,
             'retem_cofins' => $this->input->post('retem_cofins') ? 1 : 0,
             'retem_csll' => $this->input->post('retem_csll') ? 1 : 0,
-            'valor_retencao_iss' => $this->input->post('valor_retencao_iss') ?? 0,
-            'valor_retencao_irrf' => $this->input->post('valor_retencao_irrf') ?? 0,
-            'valor_retencao_pis' => $this->input->post('valor_retencao_pis') ?? 0,
-            'valor_retencao_cofins' => $this->input->post('valor_retencao_cofins') ?? 0,
-            'valor_retencao_csll' => $this->input->post('valor_retencao_csll') ?? 0,
-            'valor_total_retencao' => $this->input->post('valor_total_retencao') ?? 0,
+            'valor_retencao_iss' => $this->normalizarValorMonetario($this->input->post('valor_retencao_iss') ?: 0),
+            'valor_retencao_irrf' => $this->normalizarValorMonetario($this->input->post('valor_retencao_irrf') ?: 0),
+            'valor_retencao_pis' => $this->normalizarValorMonetario($this->input->post('valor_retencao_pis') ?: 0),
+            'valor_retencao_cofins' => $this->normalizarValorMonetario($this->input->post('valor_retencao_cofins') ?: 0),
+            'valor_retencao_csll' => $this->normalizarValorMonetario($this->input->post('valor_retencao_csll') ?: 0),
+            'valor_total_retencao' => $this->normalizarValorMonetario($this->input->post('valor_total_retencao') ?: 0),
             'competencia' => $this->input->post('competencia') ?: date('Y-m-01'),
         ];
 
@@ -175,7 +175,7 @@ class Nfse_os extends MY_Controller
                         $resultado['link_pdf'] = $gateway_result['link_pdf'] ?? null;
                     }
                 } catch (Exception $e) {
-                    log_error('Erro ao gerar boleto no gateway: ' . $e->getMessage());
+                    log_message('error', 'Erro ao gerar boleto no gateway: ' . $e->getMessage());
                 }
             }
 
@@ -210,7 +210,7 @@ class Nfse_os extends MY_Controller
         }
 
         try {
-            $valor = floatval($this->input->post('valor') ?: $this->input->get('valor'));
+            $valor = $this->normalizarValorMonetario($this->input->post('valor') ?: $this->input->get('valor'));
             if ($valor <= 0) {
                 echo json_encode(['success' => false, 'message' => 'Valor inválido: ' . $valor]);
                 return;
@@ -294,8 +294,8 @@ class Nfse_os extends MY_Controller
         }
 
         // Parâmetros via GET (preview antes da emissão)
-        $valor_servicos = floatval($this->input->get('valor_servicos')) ?: floatval($os->valorTotal ?? 0);
-        $valor_deducoes = floatval($this->input->get('valor_deducoes')) ?: 0;
+        $valor_servicos = $this->normalizarValorMonetario($this->input->get('valor_servicos')) ?: $this->normalizarValorMonetario($os->valorTotal ?? 0);
+        $valor_deducoes = $this->normalizarValorMonetario($this->input->get('valor_deducoes')) ?: 0;
         $descricao_servico = $this->input->get('descricao_servico') ?: '';
 
         // Calcular impostos (para exibição apenas — não reduzem valor da NFS-e)
@@ -541,14 +541,61 @@ class Nfse_os extends MY_Controller
      */
     private function formatarChavePix($chave)
     {
-        $chave = preg_replace('/\D/', '', $chave);
-        if (strlen($chave) == 14) {
-            return substr($chave, 0, 2) . '.' . substr($chave, 2, 3) . '.' . substr($chave, 5, 3) . '/' . substr($chave, 8, 4) . '-' . substr($chave, 12, 2);
+        $chave = trim($chave);
+        if (empty($chave)) {
+            return $this->data['configuration']['pix_key'] ?? '';
         }
-        if (strlen($chave) == 11) {
-            return substr($chave, 0, 3) . '.' . substr($chave, 3, 3) . '.' . substr($chave, 6, 3) . '-' . substr($chave, 9, 2);
+
+        // Email
+        if (filter_var($chave, FILTER_VALIDATE_EMAIL)) {
+            return $chave;
         }
-        return $chave ?: $this->data['configuration']['pix_key'] ?? '';
+
+        // Telefone (comeca com + ou tem apenas digitos e length >= 11)
+        $digits = preg_replace('/\D/', '', $chave);
+        if (strlen($digits) >= 11 && strlen($digits) <= 14) {
+            if (strlen($digits) == 13 && strpos($chave, '+') === 0) {
+                // +55XXYYYYYYYYY
+                return '+' . substr($digits, 0, 2) . ' (' . substr($digits, 2, 2) . ') ' . substr($digits, 4, 5) . '-' . substr($digits, 9);
+            }
+            if (strlen($digits) == 11) {
+                return '(' . substr($digits, 0, 2) . ') ' . substr($digits, 2, 5) . '-' . substr($digits, 7);
+            }
+            if (strlen($digits) == 12) {
+                return '+' . substr($digits, 0, 2) . ' (' . substr($digits, 2, 2) . ') ' . substr($digits, 4, 4) . '-' . substr($digits, 8);
+            }
+            return $chave;
+        }
+
+        // CPF
+        if (strlen($digits) == 11) {
+            return substr($digits, 0, 3) . '.' . substr($digits, 3, 3) . '.' . substr($digits, 6, 3) . '-' . substr($digits, 9, 2);
+        }
+
+        // CNPJ
+        if (strlen($digits) == 14) {
+            return substr($digits, 0, 2) . '.' . substr($digits, 2, 3) . '.' . substr($digits, 5, 3) . '/' . substr($digits, 8, 4) . '-' . substr($digits, 12, 2);
+        }
+
+        // Chave aleatoria (UUID) ou outro formato — retorna como está
+        return $chave;
+    }
+
+    /**
+     * Normaliza valor monetário em formato brasileiro (1.234,56 → 1234.56)
+     */
+    private function normalizarValorMonetario($valor)
+    {
+        if (empty($valor) || is_numeric($valor)) {
+            return floatval($valor);
+        }
+        $valor = trim($valor);
+        if (strpos($valor, ',') !== false) {
+            // Assume formato brasileiro: remove pontos de milhar, troca vírgula por ponto
+            $valor = str_replace('.', '', $valor);
+            $valor = str_replace(',', '.', $valor);
+        }
+        return floatval($valor);
     }
 
     /**
@@ -822,20 +869,21 @@ class Nfse_os extends MY_Controller
 
             // Montar dados do prestador
             $prestador = [
-                'cnpj' => $pemPaths['cnpj'],
+                'cnpj' => $pemPaths['cnpj'] ?? '',
                 'razao_social' => $pemPaths['razao_social'] ?? ($emitente->nome ?? ''),
-                'im' => $emitente->inscricao_municipal ?? '',
+                'im' => ($emitente ? ($emitente->inscricao_municipal ?? '') : ''),
+                'ie' => ($emitente ? ($emitente->inscricao_estadual ?? '') : ''),
                 'cnae' => $this->impostos_model->getConfig('IMPOSTO_CODIGO_TRIBUTACAO_NACIONAL') ?: '010701',
-                'email' => $emitente->email ?? '',
-                'telefone' => $emitente->telefone ?? '',
+                'email' => ($emitente ? ($emitente->email ?? '') : ''),
+                'telefone' => ($emitente ? ($emitente->telefone ?? '') : ''),
                 'endereco' => [
-                    'logradouro' => $emitente->rua ?? '',
-                    'numero' => $emitente->numero ?? '',
-                    'complemento' => $emitente->complemento ?? '',
-                    'bairro' => $emitente->bairro ?? '',
+                    'logradouro' => ($emitente ? ($emitente->rua ?? '') : ''),
+                    'numero' => ($emitente ? ($emitente->numero ?? '') : ''),
+                    'complemento' => ($emitente ? ($emitente->complemento ?? '') : ''),
+                    'bairro' => ($emitente ? ($emitente->bairro ?? '') : ''),
                     'codigo_municipio' => $nfseConfig['nfse_codigo_municipio'] ?? '1302603',
                     'uf' => 'AM',
-                    'cep' => preg_replace('/\D/', '', $emitente->cep ?? ''),
+                    'cep' => ($emitente ? preg_replace('/\D/', '', $emitente->cep ?? '') : ''),
                 ],
             ];
 
@@ -866,12 +914,21 @@ class Nfse_os extends MY_Controller
             }
 
             // Montar dados do serviço
-            $valorServicos = floatval($this->input->post('valor_servicos') ?: $os->valorTotal);
-            $valorDeducoes = floatval($this->input->post('valor_deducoes') ?: 0);
+            $valorServicos = $this->normalizarValorMonetario($this->input->post('valor_servicos') ?: $os->valorTotal);
+            $valorDeducoes = $this->normalizarValorMonetario($this->input->post('valor_deducoes') ?: 0);
             $descricaoServico = $this->input->post('descricao_servico') ?: ($this->impostos_model->getConfig('IMPOSTO_DESCRICAO_SERVICO') ?: 'Serviços de informática');
 
             // Calcular impostos
             $calculo = $this->impostos_model->calcularImpostos($valorServicos);
+
+            if ($calculo === false) {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Configuração tributária não encontrada. Configure os impostos em Configurações do Sistema antes de emitir a NFS-e.'
+                ]);
+                $this->certificado_model->limparPemTemporarios($pemPaths);
+                return;
+            }
 
             $servico = [
                 'descricao' => $descricaoServico,
