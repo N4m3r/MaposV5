@@ -69,11 +69,14 @@ class NotificacoesConfig extends MY_Controller
                 'respeitar_horario' => $this->input->post('respeitar_horario') ? 1 : 0,
             ];
 
-            if ($this->notificacoes_config_model->salvar($dados)) {
+            $resultado = $this->notificacoes_config_model->salvar($dados);
+            if ($resultado['success']) {
                 $this->session->set_flashdata('success', 'Configurações salvas com sucesso!');
                 log_info('Atualizou configurações de notificações');
             } else {
-                $this->session->set_flashdata('error', 'Erro ao salvar configurações.');
+                $msgErro = $resultado['error'] ?? 'Erro ao salvar configurações.';
+                $this->session->set_flashdata('error', 'Erro ao salvar: ' . $msgErro);
+                log_message('error', '[NotificacoesConfig] Falha ao salvar: ' . $msgErro);
             }
 
             redirect(current_url());

@@ -33,6 +33,7 @@ class Notificacoes_config_model extends CI_Model
 
     /**
      * Salva as configurações
+     * @return array ['success' => bool, 'error' => string|null]
      */
     public function salvar($dados)
     {
@@ -41,14 +42,25 @@ class Notificacoes_config_model extends CI_Model
 
         if ($query->num_rows() == 0) {
             $dados['id'] = 1;
-            return $this->db->insert($this->table, $dados);
+            $result = $this->db->insert($this->table, $dados);
+            $error = $this->db->error();
+            if (!$result || $error['code'] != 0) {
+                log_message('error', '[NotificacoesConfig] Erro ao inserir config: ' . ($error['message'] ?? 'Unknown'));
+                return ['success' => false, 'error' => $error['message'] ?? 'Erro ao inserir configuração'];
+            }
+            return ['success' => true, 'error' => null];
         }
 
         $this->db->where('id', 1);
         $this->db->update($this->table, $dados);
 
         $error = $this->db->error();
-        return $error['code'] == 0;
+        if ($error['code'] != 0) {
+            log_message('error', '[NotificacoesConfig] Erro ao atualizar config: ' . $error['message']);
+            return ['success' => false, 'error' => $error['message']];
+        }
+
+        return ['success' => true, 'error' => null];
     }
 
     /**

@@ -128,7 +128,7 @@ class WhatsAppService
         $apikey = $isGo ? $this->resolveApiKeyGo() : $this->config->evolution_apikey;
 
         if ($isGo) {
-            $url = rtrim($this->config->evolution_url, '/') . '/message/sendText/' . $this->config->evolution_instance;
+            $url = rtrim($this->config->evolution_url, '/') . '/message/sendText';
             $payload = [
                 'number' => $numero,
                 'text' => $mensagem,
@@ -424,8 +424,11 @@ class WhatsAppService
             'apikey: ' . $this->config->evolution_apikey
         ];
 
-        // Ignora erro se já existir
-        $this->makeRequest($url, 'POST', $payload, $headers);
+        log_message('debug', '[Evolution] Criando instância em: ' . $url . ' | Nome: ' . $this->config->evolution_instance);
+        $response = $this->makeRequest($url, 'POST', $payload, $headers);
+        log_message('debug', '[Evolution] Criar instância resposta HTTP: ' . $response['http_code'] . ' | Body: ' . substr($response['body'] ?? '', 0, 500));
+
+        return $response;
     }
 
     /**
@@ -446,7 +449,9 @@ class WhatsAppService
             'apikey: ' . $apikey
         ];
 
+        log_message('debug', '[Evolution] Desconectando instância em: ' . $url);
         $response = $this->makeRequest($url, 'DELETE', [], $headers);
+        log_message('debug', '[Evolution] Desconectar resposta HTTP: ' . $response['http_code'] . ' | Body: ' . substr($response['body'] ?? '', 0, 500));
 
         if (in_array($response['http_code'], [200, 201, 404])) {
             $this->CI->notificacoes_config_model->atualizarEstadoEvolution('desconectado');

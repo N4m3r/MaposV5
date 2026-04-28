@@ -96,12 +96,12 @@ class EvolutionController extends CI_Controller
         }
 
         // Atualiza a URL da Evolution no banco
-        $atualizado = $this->notificacoes_config_model->salvar([
+        $resultado = $this->notificacoes_config_model->salvar([
             'evolution_url' => $novaUrl,
             'updated_at' => date('Y-m-d H:i:s')
         ]);
 
-        if ($atualizado) {
+        if ($resultado['success']) {
             log_info('Evolution API URL atualizada automaticamente via monitor de IP. Nova URL: ' . $novaUrl . ' | IP: ' . $novoIp);
             $this->json_response([
                 'success' => true,
