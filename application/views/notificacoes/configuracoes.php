@@ -268,6 +268,9 @@
                                 <button type="button" class="btn-action btn-primary" onclick="verificarStatus()">
                                     <i class="bx bx-refresh"></i> Verificar Status
                                 </button>
+                                <button type="button" class="btn-action btn-secondary" onclick="executarDiagnostico()">
+                                    <i class="bx bx-data"></i> Diagnóstico do Banco
+                                </button>
                                 <?php if ($config->whatsapp_provedor == 'evolution'): ?>
                                     <button type="button" class="btn-action btn-success" id="btn-qr" onclick="obterQRCode()" <?php echo ($statusConexao && $statusConexao['connected']) ? 'style="display:none;"' : ''; ?>>
                                         <i class="bx bx-qr"></i> Conectar (QR Code)
@@ -601,6 +604,47 @@ function adicionarDebug(tipo, mensagem) {
 function limparDebug() {
     document.getElementById('debug-log').innerHTML = '';
     document.getElementById('debug-panel').style.display = 'none';
+}
+
+function executarDiagnostico() {
+    limparDebug();
+    adicionarDebug('info', 'Executando diagnóstico do banco de dados...');
+
+    fetch('<?php echo site_url("notificacoesConfig/diagnostico"); ?>', {
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+        .then(r => {
+            adicionarDebug('info', 'HTTP Status: ' + r.status);
+            return r.json();
+        })
+        .then(data => {
+            adicionarDebug('sucesso', 'Diagnóstico recebido do servidor');
+            adicionarDebug('info', 'Tabela existe: ' + (data.tabela_existe ? 'SIM' : 'NÃO'));
+
+            if (data.colunas && data.colunas.length) {
+                adicionarDebug('info', 'Colunas: ' + data.colunas.join(', '));
+            }
+
+            if (data.config_raw && Object.keys(data.config_raw).length > 0) {
+                adicionarDebug('info', 'Registro encontrado. Campos:');
+                Object.entries(data.config_raw).forEach(([k, v]) => {
+                    let val = v === null ? 'NULL' : (typeof v === 'object' ? JSON.stringify(v) : String(v));
+                    adicionarDebug('info', '  ' + k + ' = ' + val);
+                });
+            } else {
+                adicionarDebug('erro', 'Registro config vazio ou não encontrado (id=1)');
+            }
+
+            adicionarDebug('info', '--- Resumo ---');
+            adicionarDebug('info', 'evolution_url: ' + (data.evolution_url || 'N/D'));
+            adicionarDebug('info', 'evolution_instance: ' + (data.evolution_instance || 'N/D'));
+            adicionarDebug('info', 'evolution_version: ' + (data.evolution_version || 'N/D'));
+            adicionarDebug('info', 'whatsapp_ativo: ' + (data.whatsapp_ativo !== null ? data.whatsapp_ativo : 'N/D'));
+            adicionarDebug('info', 'whatsapp_provedor: ' + (data.whatsapp_provedor || 'N/D'));
+        })
+        .catch(err => {
+            adicionarDebug('erro', 'Erro no diagnóstico: ' + err.message);
+        });
 }
 
 function obterQRCode() {

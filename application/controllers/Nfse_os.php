@@ -511,7 +511,7 @@ class Nfse_os extends MY_Controller
         // Montar objeto boleto temporario em memoria
         $boleto = new stdClass();
         $boleto->sacado_nome = $os->nomeCliente ?? 'Sacado';
-        $boleto->sacado_documento = $os->cnpj ?? $os->cpf_cgc ?? '';
+        $boleto->sacado_documento = $os->documento ?? '';
         $boleto->sacado_endereco = trim(($os->rua ?? '') . ', ' . ($os->numero ?? '') . ' - ' . ($os->bairro ?? ''));
         $boleto->data_vencimento = $data_vencimento;
         $boleto->data_emissao = date('Y-m-d');
@@ -824,7 +824,7 @@ class Nfse_os extends MY_Controller
             $prestador = [
                 'cnpj' => $pemPaths['cnpj'],
                 'razao_social' => $pemPaths['razao_social'] ?? ($emitente->nome ?? ''),
-                'im' => $emitente->im ?? '',
+                'im' => $emitente->inscricao_municipal ?? '',
                 'cnae' => $this->impostos_model->getConfig('IMPOSTO_CODIGO_TRIBUTACAO_NACIONAL') ?: '010701',
                 'email' => $emitente->email ?? '',
                 'telefone' => $emitente->telefone ?? '',
@@ -845,9 +845,11 @@ class Nfse_os extends MY_Controller
 
             $tomador = [];
             if ($cliente) {
-                $cpfCnpj = preg_replace('/\D/', '', $cliente->cpfCnpj ?? ($cliente->cnpj ?? ''));
+                $cpfCnpj = preg_replace('/\D/', '', $cliente->documento ?? '');
                 $tomador = [
                     'cpf_cnpj' => $cpfCnpj,
+                    'im' => $cliente->inscricao_municipal ?? '',
+                    'ie' => $cliente->inscricao_estadual ?? '',
                     'razao_social' => $cliente->nomeCliente ?? '',
                     'email' => $cliente->email ?? '',
                     'telefone' => $cliente->telefone ?? '',

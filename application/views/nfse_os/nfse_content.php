@@ -208,7 +208,7 @@ if (!function_exists('fmtDoc')) {
                                             Resumo da OS #<?= $result->idOs ?>
                                         </h6>
                                         <strong style="color:var(--title,#d4d8e0)"><?= htmlspecialchars($result->nomeCliente ?? '') ?></strong><br>
-                                        <span style="color:var(--dark-cinz,#8788a4)"><?= !empty($result->cnpj) ? 'CNPJ: ' . fmtDoc($result->cnpj) : (!empty($result->cpf_cgc) ? 'CPF/CNPJ: ' . fmtDoc($result->cpf_cgc) : '') ?></span>
+                                        <span style="color:var(--dark-cinz,#8788a4)"><?= !empty($result->documento) ? 'CPF/CNPJ: ' . fmtDoc($result->documento) : 'Documento nao informado' ?></span>
                                     </div>
                                     <div class="span6 text-right">
                                         <div style="display:inline-block; text-align:left; min-width:180px">
@@ -248,9 +248,15 @@ if (!function_exists('fmtDoc')) {
                             <div class="well well-small" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8)">
                                 <h6 style="margin-top:0; color:var(--title,#d4d8e0); border-bottom:1px solid var(--dark-2,#272835); padding-bottom:6px"><i class="fas fa-user" style="color:var(--dark-azul,#1086dd)"></i> Tomador</h6>
                                 <strong style="color:var(--title,#d4d8e0)"><?= htmlspecialchars($result->nomeCliente ?? '') ?></strong><br>
-                                <span style="color:var(--dark-cinz,#8788a4)"><?= !empty($result->cnpj) ? 'CNPJ: ' . fmtDoc($result->cnpj) : (!empty($result->cpf_cgc) ? 'CPF/CNPJ: ' . fmtDoc($result->cpf_cgc) : 'Documento nao informado') ?></span><br>
+                                <span style="color:var(--dark-cinz,#8788a4)"><?= !empty($result->documento) ? 'CPF/CNPJ: ' . fmtDoc($result->documento) : 'Documento nao informado' ?></span><br>
                                 <span style="color:var(--dark-cinz,#8788a4)"><?= htmlspecialchars(trim(($result->rua ?? '') . ', ' . ($result->numero ?? '') . ' - ' . ($result->bairro ?? ''))) ?></span><br>
-                                <span style="color:var(--dark-cinz,#8788a4)"><?= htmlspecialchars(trim(($result->cidade ?? '') . '/' . ($result->estado ?? '') . ' - CEP: ' . ($result->cep ?? ''))) ?></span>
+                                <span style="color:var(--dark-cinz,#8788a4)"><?= htmlspecialchars(trim(($result->cidade ?? '') . '/' . ($result->estado ?? '') . ' - CEP: ' . ($result->cep ?? ''))) ?></span><br>
+                                <?php if (!empty($result->inscricao_municipal) || !empty($result->inscricao_estadual)): ?>
+                                <span style="color:var(--dark-cinz,#8788a4); font-size:11px">
+                                    <?php if (!empty($result->inscricao_municipal)) echo 'IM: ' . htmlspecialchars($result->inscricao_municipal) . ' '; ?>
+                                    <?php if (!empty($result->inscricao_estadual)) echo 'IE: ' . htmlspecialchars($result->inscricao_estadual); ?>
+                                </span>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>

@@ -36,6 +36,9 @@ class NotificacoesConfig extends MY_Controller
     {
         $config = $this->notificacoes_config_model->getConfig();
 
+        // Preenche valores padrão se config estiver vazio (primeiro acesso ou tabela inexistente)
+        $config = (object) $this->_applyConfigDefaults((array) $config);
+
         if ($this->input->post()) {
             $evolution_url = $this->input->post('evolution_url');
             if ($evolution_url) {
@@ -166,11 +169,15 @@ class NotificacoesConfig extends MY_Controller
             $resultado['debug'] = $service->debugLog;
         }
 
+        // Configuração do controller (com defaults preenchidos)
+        $controllerConfig = $this->notificacoes_config_model->getConfig();
+        $controllerConfig = $this->_applyConfigDefaults((array) $controllerConfig);
+
         // Adiciona configuração atual usada
         $resultado['_config'] = [
-            'url' => $service->config->evolution_url ?? 'N/D',
-            'instance' => $service->config->evolution_instance ?? 'N/D',
-            'has_token' => !empty($service->config->evolution_instance_token)
+            'url' => $controllerConfig['evolution_url'] ?? 'N/D',
+            'instance' => $controllerConfig['evolution_instance'] ?? 'N/D',
+            'has_token' => !empty($controllerConfig['evolution_instance_token'])
         ];
 
         echo json_encode($resultado);
@@ -570,5 +577,44 @@ class NotificacoesConfig extends MY_Controller
         $this->data['menuConfiguracoes'] = 'Notificações';
 
         return $this->layout();
+    }
+
+    /**
+     * Aplica valores padrão ao config para exibição no formulário
+     */
+    private function _applyConfigDefaults($configArr)
+    {
+        $defaults = [
+            'id' => 1,
+            'whatsapp_provedor' => 'evolution',
+            'whatsapp_ativo' => 1,
+            'evolution_url' => 'https://evo.jj-ferreiras.com.br',
+            'evolution_apikey' => '7bd8a76492e92f7e0e4bad14d42eeb0e889e2cfdcd7c8f0ce9b4e1e6607935e2',
+            'evolution_version' => 'go',
+            'evolution_instance' => 'Mapos',
+            'evolution_estado' => 'desconectado',
+            'meta_phone_number_id' => '',
+            'meta_access_token' => '',
+            'z_api_url' => '',
+            'z_api_token' => '',
+            'notificacao_os_criada' => 1,
+            'notificacao_os_atualizada' => 1,
+            'notificacao_os_pronta' => 1,
+            'notificacao_os_orcamento' => 1,
+            'notificacao_venda_realizada' => 1,
+            'notificacao_cobranca_gerada' => 1,
+            'notificacao_cobranca_vencimento' => 1,
+            'notificacao_lembrete_aniversario' => 0,
+            'horario_envio_inicio' => '08:00:00',
+            'horario_envio_fim' => '18:00:00',
+            'enviar_fim_semana' => 0,
+            'respeitar_horario' => 1,
+        ];
+        foreach ($defaults as $chave => $valor) {
+            if (!isset($configArr[$chave]) || $configArr[$chave] === null || $configArr[$chave] === '') {
+                $configArr[$chave] = $valor;
+            }
+        }
+        return $configArr;
     }
 }

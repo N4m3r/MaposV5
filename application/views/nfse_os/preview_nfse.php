@@ -343,7 +343,7 @@ if ($emitente && !empty($emitente->url_logo)) {
             <?php endif; ?>
             <?php if ($emitente): ?>
                 <p class="empresa-nome"><?= htmlspecialchars($emitente->nome ?? '') ?></p>
-                <p class="empresa-detail">CNPJ: <?= htmlspecialchars($emitente->cnpj ?? '') ?><?php if (!empty($emitente->ie)): ?> | IE: <?= htmlspecialchars($emitente->ie) ?><?php endif; ?></p>
+                <p class="empresa-detail">CNPJ: <?= htmlspecialchars($emitente->cnpj ?? '') ?><?php if (!empty($emitente->ie)): ?> | IE: <?= htmlspecialchars($emitente->ie) ?><?php endif; ?><?php if (!empty($emitente->inscricao_municipal)): ?> | IM: <?= htmlspecialchars($emitente->inscricao_municipal) ?><?php endif; ?></p>
                 <p class="empresa-detail"><?= htmlspecialchars(trim(($emitente->rua ?? '') . ', ' . ($emitente->numero ?? '') . ' - ' . ($emitente->bairro ?? '') . ', ' . ($emitente->cidade ?? '') . '/' . ($emitente->uf ?? '') . ' - CEP: ' . ($emitente->cep ?? ''))) ?></p>
                 <p class="empresa-detail">Tel: <?= htmlspecialchars($emitente->telefone ?? '') ?> | <?= htmlspecialchars($emitente->email ?? '') ?></p>
             <?php endif; ?>
@@ -385,7 +385,7 @@ if ($emitente && !empty($emitente->url_logo)) {
             <div class="row">
                 <div class="col-half">
                     <div class="row"><span class="col-left">Nome/Razão Social:</span><span class="col-right"><?= htmlspecialchars($os->nomeCliente ?? '') ?></span></div>
-                    <div class="row"><span class="col-left">CPF/CNPJ:</span><span class="col-right"><?= !empty($os->cnpj) ? fmtDoc($os->cnpj) : (!empty($os->cpf_cgc) ? fmtDoc($os->cpf_cgc) : '—') ?></span></div>
+                    <div class="row"><span class="col-left">CPF/CNPJ:</span><span class="col-right"><?= !empty($os->documento) ? fmtDoc($os->documento) : '—' ?></span></div>
                 </div>
                 <div class="col-half">
                     <div class="row"><span class="col-left">Endereço:</span><span class="col-right"><?= htmlspecialchars(trim(($os->rua ?? '') . ', ' . ($os->numero ?? '') . ' - ' . ($os->bairro ?? ''))) ?></span></div>

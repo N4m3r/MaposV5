@@ -35,7 +35,7 @@ var emitenteWizard = {
 };
 var tomadorWizard = {
     nome: '<?= addslashes($result->nomeCliente ?? '') ?>',
-    documento: '<?= addslashes($result->cnpj ?? $result->cpf_cgc ?? '') ?>',
+    documento: '<?= addslashes($result->documento ?? '') ?>',
     rua: '<?= addslashes($result->rua ?? '') ?>',
     numero: '<?= addslashes($result->numero ?? '') ?>',
     cidade: '<?= addslashes($result->cidade ?? '') ?>',

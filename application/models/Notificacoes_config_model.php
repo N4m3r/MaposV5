@@ -54,13 +54,29 @@ class Notificacoes_config_model extends CI_Model
             return ['success' => false, 'error' => 'Tabela de configurações não existe'];
         }
 
+        // Filtra apenas colunas que existem na tabela (evita erro "Unknown column")
+        try {
+            $colunasExistentes = $this->db->list_fields($this->table);
+            $dadosFiltrados = [];
+            foreach ($dados as $chave => $valor) {
+                if (in_array($chave, $colunasExistentes)) {
+                    $dadosFiltrados[$chave] = $valor;
+                } else {
+                    log_message('debug', '[NotificacoesConfig] Campo ignorado (não existe na tabela): ' . $chave);
+                }
+            }
+        } catch (Exception $e) {
+            log_message('warning', '[NotificacoesConfig] Não foi possível listar colunas: ' . $e->getMessage());
+            $dadosFiltrados = $dados;
+        }
+
         $this->db->where('id', 1);
         $query = $this->db->get($this->table);
 
         if ($query->num_rows() == 0) {
             log_message('debug', '[NotificacoesConfig] Registro não existe. Fazendo INSERT...');
-            $dados['id'] = 1;
-            $result = $this->db->insert($this->table, $dados);
+            $dadosFiltrados['id'] = 1;
+            $result = $this->db->insert($this->table, $dadosFiltrados);
             $error = $this->db->error();
             if (!$result || $error['code'] != 0) {
                 log_message('error', '[NotificacoesConfig] Erro ao inserir config: ' . ($error['message'] ?? 'Unknown') . ' | SQL: ' . $this->db->last_query());
@@ -72,7 +88,7 @@ class Notificacoes_config_model extends CI_Model
 
         log_message('debug', '[NotificacoesConfig] Registro existe. Fazendo UPDATE...');
         $this->db->where('id', 1);
-        $this->db->update($this->table, $dados);
+        $this->db->update($this->table, $dadosFiltrados);
 
         $error = $this->db->error();
         if ($error['code'] != 0) {
