@@ -6,7 +6,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
  * Migration: Adiciona coluna evolution_version à tabela notificacoes_config
  * Corrige erro: Unknown column 'evolution_version' in 'SET'
  */
-class Migration_Add_evolution_version_to_notificacoes_config extends CI_Migration
+class Migration_Add_evolution_version extends CI_Migration
 {
     public function up()
     {
