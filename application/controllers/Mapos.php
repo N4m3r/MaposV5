@@ -265,6 +265,7 @@ class Mapos extends MY_Controller {
         $this->form_validation->set_rules('nome', 'Razão Social', 'required|trim');
         $this->form_validation->set_rules('cnpj', 'CNPJ', 'required|trim');
         $this->form_validation->set_rules('ie', 'IE', 'trim');
+        $this->form_validation->set_rules('inscricao_municipal', 'Inscrição Municipal', 'trim');
         $this->form_validation->set_rules('cep', 'CEP', 'required|trim');
         $this->form_validation->set_rules('logradouro', 'Logradouro', 'required|trim');
         $this->form_validation->set_rules('numero', 'Número', 'required|trim');

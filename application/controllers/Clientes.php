@@ -17,6 +17,7 @@ class Clientes extends MY_Controller
         parent::__construct();
 
         $this->load->model('clientes_model');
+        $this->load->model('mapos_model');
         $this->data['menuClientes'] = 'clientes';
         $this->webhookManager = new WebhookManager();
     }
@@ -62,6 +63,7 @@ class Clientes extends MY_Controller
 
         $this->load->library('form_validation');
         $this->data['custom_error'] = '';
+        $this->data['emitente'] = $this->mapos_model->getEmitente();
 
         $senhaCliente = $this->input->post('senha') ? $this->input->post('senha') : preg_replace('/[^\p{L}\p{N}\s]/', '', set_value('documento'));
 
@@ -140,6 +142,7 @@ class Clientes extends MY_Controller
         if ($this->form_validation->run('clientes') == false) {
             $this->data['custom_error'] = (validation_errors() ? '<div class="form_error">' . validation_errors() . '</div>' : false);
         } else {
+            $this->data['emitente'] = $this->mapos_model->getEmitente();
             $senha = $this->input->post('senha');
             if ($senha != null) {
                 $senha = password_hash($senha, PASSWORD_DEFAULT);

@@ -194,6 +194,14 @@ $(document).ready(function () {
                             $("#complemento").val("");
                         }
 
+                        // Auto-fill Inscrição Municipal se CNPJ for do emitente
+                        if (window.emitente && window.emitente.cnpj && window.emitente.inscricao_municipal) {
+                            var emitenteCnpjClean = window.emitente.cnpj.replace(/\D/g, '');
+                            if (ndocumento === emitenteCnpjClean) {
+                                $("#inscricao_municipal").val(window.emitente.inscricao_municipal);
+                            }
+                        }
+
                         // Força uma atualizacao do endereco via cep
                         if ($("#nomeCliente").val() != null) {
                             document.getElementById("nomeCliente").focus();
