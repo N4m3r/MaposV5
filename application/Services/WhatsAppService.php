@@ -30,6 +30,14 @@ class WhatsAppService
     }
 
     /**
+     * Retorna true se está usando Evolution Go (SaaS)
+     */
+    private function isEvolutionGo()
+    {
+        return ($this->config->evolution_version ?? 'v2') === 'go';
+    }
+
+    /**
      * Envia mensagem de texto
      */
     public function enviarMensagem($numero, $mensagem, $options = [])
@@ -160,7 +168,9 @@ class WhatsAppService
     }
 
     /**
-     * Resolve o token específico da instância no Evolution Go
+     * Resolve o token específico da instância.
+     * No Evolution Go, a autenticação é unificada (usa a mesma apikey global).
+     * No Evolution API v2, cada instância tem token próprio obtido via /instance/all.
      */
     private function resolveInstanceToken()
     {
@@ -180,13 +190,19 @@ class WhatsAppService
             return null;
         }
 
+        // Evolution Go: usa a mesma API Key global (não tem token separado por instância)
+        if ($this->isEvolutionGo()) {
+            $this->addDebug('info', 'Evolution Go detectado. Usando API Key global como token.');
+            return $this->config->evolution_apikey;
+        }
+
         // 1. Cache
         $cached = $this->lerTokenCache();
         if ($cached) {
             return $cached;
         }
 
-        // 2. Resolve via API
+        // 2. Resolve via API (Evolution API v2)
         $url = rtrim($this->config->evolution_url, '/') . '/instance/all';
         $headers = [
             'Content-Type: application/json',
@@ -245,12 +261,23 @@ class WhatsAppService
             ];
         }
 
-        $url = rtrim($this->config->evolution_url, '/') . '/send/text';
-        $payload = [
-            'number' => $numero,
-            'text' => $mensagem,
-            'delay' => 1200,
-        ];
+        // Evolution Go usa /message/sendText
+        if ($this->isEvolutionGo()) {
+            $url = rtrim($this->config->evolution_url, '/') . '/message/sendText';
+            $payload = [
+                'instanceName' => $this->config->evolution_instance,
+                'number' => $numero,
+                'text' => $mensagem,
+                'delay' => 1200,
+            ];
+        } else {
+            $url = rtrim($this->config->evolution_url, '/') . '/send/text';
+            $payload = [
+                'number' => $numero,
+                'text' => $mensagem,
+                'delay' => 1200,
+            ];
+        }
 
         $headers = [
             'Content-Type: application/json; charset=utf-8',
@@ -364,18 +391,41 @@ class WhatsAppService
             ];
         }
 
-        $url = rtrim($this->config->evolution_url, '/') . '/instance/all';
+        // Evolution Go usa endpoint /instance/{name}/status
+        if ($this->isEvolutionGo()) {
+            $url = rtrim($this->config->evolution_url, '/') . '/instance/' . urlencode($this->config->evolution_instance) . '/status';
+        } else {
+            $url = rtrim($this->config->evolution_url, '/') . '/instance/all';
+        }
+
         $headers = [
             'Content-Type: application/json',
             'apikey: ' . $this->config->evolution_apikey
         ];
 
+        $this->addDebug('url', 'GET ' . $url);
         $response = $this->makeRequest($url, 'GET', [], $headers);
+        $this->addDebug('info', 'HTTP Resposta: ' . $response['http_code']);
 
         if ($response['http_code'] == 200) {
             $data = json_decode($response['body'], true);
-            $instances = $data['data'] ?? [];
 
+            if ($this->isEvolutionGo()) {
+                // Evolution Go retorna diretamente os dados da instância
+                $connected = $data['connected'] ?? false;
+                $estado = $connected ? 'open' : 'desconectado';
+                $this->CI->notificacoes_config_model->atualizarEstadoEvolution($estado);
+
+                return [
+                    'connected' => $connected,
+                    'status' => $estado,
+                    'data' => $data,
+                    'debug' => $this->debugLog
+                ];
+            }
+
+            // Evolution API v2: resposta tem array em data
+            $instances = $data['data'] ?? [];
             foreach ($instances as $inst) {
                 $instName = $inst['name'] ?? '';
                 if (strcasecmp($instName, $this->config->evolution_instance) === 0) {
@@ -436,6 +486,11 @@ class WhatsAppService
         $criar = $this->criarInstanciaEvolution();
         $this->addDebug('info', 'Criar instância: HTTP ' . $criar['http_code']);
 
+        // Aguarda um momento para a instância ser criada no backend
+        if ($criar['http_code'] == 200 || $criar['http_code'] == 201) {
+            sleep(2);
+        }
+
         $instanceToken = $this->resolveInstanceToken();
         if (!$instanceToken) {
             $this->addDebug('erro', 'FALHA: Não foi possível resolver o token da instância');
@@ -446,7 +501,12 @@ class WhatsAppService
             ];
         }
 
-        $url = rtrim($this->config->evolution_url, '/') . '/instance/qr?instanceId=' . urlencode($this->config->evolution_instance);
+        // Evolution Go usa /instance/{name}/qrcode
+        if ($this->isEvolutionGo()) {
+            $url = rtrim($this->config->evolution_url, '/') . '/instance/' . urlencode($this->config->evolution_instance) . '/qrcode';
+        } else {
+            $url = rtrim($this->config->evolution_url, '/') . '/instance/qr?instanceId=' . urlencode($this->config->evolution_instance);
+        }
 
         $this->addDebug('url', 'GET ' . $url);
         $this->addDebug('info', 'Token usado: ***' . substr($instanceToken, -4));
@@ -534,14 +594,22 @@ class WhatsAppService
             ];
         }
 
-        $url = rtrim($this->config->evolution_url, '/') . '/instance/disconnect';
+        // Evolution Go: DELETE /instance/{name}
+        if ($this->isEvolutionGo()) {
+            $url = rtrim($this->config->evolution_url, '/') . '/instance/' . urlencode($this->config->evolution_instance);
+            $method = 'DELETE';
+        } else {
+            $url = rtrim($this->config->evolution_url, '/') . '/instance/disconnect';
+            $method = 'POST';
+        }
 
         $headers = [
             'Content-Type: application/json; charset=utf-8',
             'apikey: ' . $instanceToken
         ];
 
-        $response = $this->makeRequest($url, 'POST', ['instanceId' => $this->config->evolution_instance], $headers);
+        $payload = $method === 'POST' ? ['instanceId' => $this->config->evolution_instance] : [];
+        $response = $this->makeRequest($url, $method, $payload, $headers);
 
         if (in_array($response['http_code'], [200, 201])) {
             $this->CI->notificacoes_config_model->atualizarEstadoEvolution('desconectado');

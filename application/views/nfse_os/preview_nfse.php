@@ -386,6 +386,9 @@ if ($emitente && !empty($emitente->url_logo)) {
                 <div class="col-half">
                     <div class="row"><span class="col-left">Nome/Razão Social:</span><span class="col-right"><?= htmlspecialchars($os->nomeCliente ?? '') ?></span></div>
                     <div class="row"><span class="col-left">CPF/CNPJ:</span><span class="col-right"><?= !empty($os->documento) ? fmtDoc($os->documento) : '—' ?></span></div>
+                    <?php if (!empty($os->inscricao_municipal) || !empty($os->inscricao_estadual)): ?>
+                    <div class="row"><span class="col-left">Inscrições:</span><span class="col-right"><?= !empty($os->inscricao_municipal) ? 'IM: ' . htmlspecialchars($os->inscricao_municipal) . ' ' : '' ?><?= !empty($os->inscricao_estadual) ? 'IE: ' . htmlspecialchars($os->inscricao_estadual) : '' ?></span></div>
+                    <?php endif; ?>
                 </div>
                 <div class="col-half">
                     <div class="row"><span class="col-left">Endereço:</span><span class="col-right"><?= htmlspecialchars(trim(($os->rua ?? '') . ', ' . ($os->numero ?? '') . ' - ' . ($os->bairro ?? ''))) ?></span></div>
