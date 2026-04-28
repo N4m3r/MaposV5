@@ -252,14 +252,14 @@
                             <label>Status da Conexão</label>
                             <div>
                                 <?php if ($statusConexao): ?>
-                                    <span class="status-indicator <?php echo $statusConexao['connected'] ? 'status-connected' : 'status-disconnected'; ?>">
+                                    <span class="status-indicator <?php echo $statusConexao['connected'] ? 'status-connected' : 'status-disconnected'; ?>" id="status-badge">
                                         <i class="bx <?php echo $statusConexao['connected'] ? 'bx-check-circle' : 'bx-x-circle'; ?>"></i>
-                                        <?php echo $statusConexao['connected'] ? 'Conectado' : 'Desconectado'; ?>
+                                        <span id="status-text"><?php echo $statusConexao['connected'] ? 'Conectado' : 'Desconectado'; ?></span>
                                         <?php echo $statusConexao['status'] ? ' (' . $statusConexao['status'] . ')' : ''; ?>
                                     </span>
                                 <?php else: ?>
-                                    <span class="status-indicator status-disconnected">
-                                        <i class="bx bx-x-circle"></i> Não configurado
+                                    <span class="status-indicator status-disconnected" id="status-badge">
+                                        <i class="bx bx-x-circle"></i> <span id="status-text">Não configurado</span>
                                     </span>
                                 <?php endif; ?>
                             </div>
@@ -269,10 +269,10 @@
                                     <i class="bx bx-refresh"></i> Verificar Status
                                 </button>
                                 <?php if ($config->whatsapp_provedor == 'evolution'): ?>
-                                    <button type="button" class="btn-action btn-success" onclick="obterQRCode()">
+                                    <button type="button" class="btn-action btn-success" id="btn-qr" onclick="obterQRCode()" <?php echo ($statusConexao && $statusConexao['connected']) ? 'style="display:none;"' : ''; ?>>
                                         <i class="bx bx-qr"></i> Conectar (QR Code)
                                     </button>
-                                    <button type="button" class="btn-action btn-danger" onclick="desconectar()">
+                                    <button type="button" class="btn-action btn-danger" id="btn-desconectar" onclick="desconectar()" <?php echo ($statusConexao && $statusConexao['connected']) ? '' : 'style="display:none;"'; ?>>
                                         <i class="bx bx-log-out"></i> Desconectar
                                     </button>
                                 <?php endif; ?>
@@ -541,6 +541,24 @@ function verificarStatus() {
     })
         .then(r => r.json())
         .then(data => {
+            // Atualiza badge de status
+            const badge = document.getElementById('status-badge');
+            const statusText = document.getElementById('status-text');
+            const btnQr = document.getElementById('btn-qr');
+            const btnDesconectar = document.getElementById('btn-desconectar');
+
+            if (data.connected) {
+                badge.className = 'status-indicator status-connected';
+                badge.innerHTML = '<i class="bx bx-check-circle"></i> <span id="status-text">Conectado</span>' + (data.status ? ' (' + data.status + ')' : '');
+                if (btnQr) btnQr.style.display = 'none';
+                if (btnDesconectar) btnDesconectar.style.display = 'inline-flex';
+            } else {
+                badge.className = 'status-indicator status-disconnected';
+                badge.innerHTML = '<i class="bx bx-x-circle"></i> <span id="status-text">Desconectado</span>' + (data.status ? ' (' + data.status + ')' : '');
+                if (btnQr) btnQr.style.display = 'inline-flex';
+                if (btnDesconectar) btnDesconectar.style.display = 'none';
+            }
+
             alert('Status: ' + (data.connected ? 'Conectado (' + data.status + ')' : 'Desconectado'));
             if (data.error) {
                 alert('Erro: ' + data.error);

@@ -157,7 +157,9 @@ class WhatsAppService
             'apikey: ' . $apikey
         ];
 
+        log_message('debug', '[Evolution] Enviando mensagem para: ' . $numero . ' | URL: ' . $url);
         $response = $this->makeRequest($url, 'POST', $payload, $headers);
+        log_message('debug', '[Evolution] Resposta envio HTTP: ' . $response['http_code'] . ' | Body: ' . substr($response['body'] ?? '', 0, 500));
 
         if ($response['http_code'] == 201 || $response['http_code'] == 200) {
             $data = json_decode($response['body'], true);
@@ -266,15 +268,27 @@ class WhatsAppService
 
         if ($isGo) {
             $url = rtrim($this->config->evolution_url, '/') . '/instance/' . $this->config->evolution_instance . '/status';
+            $urlFallback = rtrim($this->config->evolution_url, '/') . '/instance/qr';
         } else {
             $url = rtrim($this->config->evolution_url, '/') . '/instance/connectionState/' . $this->config->evolution_instance;
+            $urlFallback = null;
         }
+
+        log_message('debug', '[Evolution] Status URL: ' . $url . ' | isGo: ' . ($isGo ? 'true' : 'false'));
 
         $headers = [
             'apikey: ' . $apikey
         ];
 
         $response = $this->makeRequest($url, 'GET', [], $headers);
+        log_message('debug', '[Evolution] Status resposta HTTP: ' . $response['http_code'] . ' | Body: ' . substr($response['body'] ?? '', 0, 500));
+
+        // Tenta endpoint alternativo se retornar 404
+        if ($isGo && $response['http_code'] == 404 && $urlFallback) {
+            log_message('debug', '[Evolution] Status tentando fallback: ' . $urlFallback);
+            $response = $this->makeRequest($urlFallback, 'GET', [], $headers);
+            log_message('debug', '[Evolution] Status fallback resposta HTTP: ' . $response['http_code'] . ' | Body: ' . substr($response['body'] ?? '', 0, 500));
+        }
 
         if ($response['http_code'] == 200) {
             $data = json_decode($response['body'], true);
@@ -288,6 +302,8 @@ class WhatsAppService
                 $instanceData = $data['instance'] ?? [];
             }
 
+            log_message('debug', '[Evolution] Estado detectado: ' . $estado);
+
             // Atualiza estado no banco
             $this->CI->notificacoes_config_model->atualizarEstadoEvolution($estado);
 
@@ -297,6 +313,8 @@ class WhatsAppService
                 'data' => $instanceData
             ];
         }
+
+        log_message('error', '[Evolution] Falha ao verificar status. HTTP: ' . $response['http_code'] . ' | Erro: ' . $this->extrairErro($response));
 
         return [
             'connected' => false,
