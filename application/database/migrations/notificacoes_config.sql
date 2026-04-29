@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS `notificacoes_config` (
     `whatsapp_provedor` ENUM('evolution','meta_api','z_api','desativado') DEFAULT 'desativado',
     `whatsapp_ativo` TINYINT(1) DEFAULT 0,
     `evolution_url` VARCHAR(255) DEFAULT NULL,
+    `evolution_url_interna` VARCHAR(255) DEFAULT NULL,
     `evolution_apikey` VARCHAR(255) DEFAULT NULL,
     `evolution_instance` VARCHAR(100) DEFAULT 'Mapos',
     `evolution_instance_token` VARCHAR(255) DEFAULT NULL,
@@ -51,6 +52,15 @@ SET @tablename = 'notificacoes_config';
 -- evolution_instance_token
 SET @col = 'evolution_instance_token';
 SET @sql = CONCAT('ALTER TABLE `', @tablename, '` ADD COLUMN `', @col, '` VARCHAR(255) DEFAULT NULL AFTER `evolution_instance`');
+SET @exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = @dbname AND TABLE_NAME = @tablename AND COLUMN_NAME = @col);
+SET @sql = IF(@exists = 0, @sql, 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- evolution_url_interna
+SET @col = 'evolution_url_interna';
+SET @sql = CONCAT('ALTER TABLE `', @tablename, '` ADD COLUMN `', @col, '` VARCHAR(255) DEFAULT NULL AFTER `evolution_url`');
 SET @exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = @dbname AND TABLE_NAME = @tablename AND COLUMN_NAME = @col);
 SET @sql = IF(@exists = 0, @sql, 'SELECT 1');
 PREPARE stmt FROM @sql;

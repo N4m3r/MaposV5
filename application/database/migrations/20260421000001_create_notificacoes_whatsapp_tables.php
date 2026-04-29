@@ -12,6 +12,7 @@ class Migration_Create_notificacoes_whatsapp_tables extends CI_Migration
             `whatsapp_provedor` ENUM('evolution', 'meta_api', 'z_api', 'desativado') DEFAULT 'desativado',
             `whatsapp_ativo` TINYINT(1) DEFAULT 0,
             `evolution_url` VARCHAR(255) DEFAULT NULL,
+            `evolution_url_interna` VARCHAR(255) DEFAULT NULL,
             `evolution_apikey` VARCHAR(255) DEFAULT NULL,
             `evolution_instance` VARCHAR(100) DEFAULT 'mapos',
             `evolution_version` ENUM('v1','v2','go') DEFAULT 'v2',

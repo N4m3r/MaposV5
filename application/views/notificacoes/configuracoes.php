@@ -116,6 +116,14 @@
                         </div>
 
                         <div class="form-group">
+                            <label for="evolution_url_interna">URL Interna (opcional)</label>
+                            <input type="url" name="evolution_url_interna" id="evolution_url_interna" class="form-control"
+                                   value="<?php echo htmlspecialchars($config->evolution_url_interna ?? ''); ?>"
+                                   placeholder="http://127.0.0.1:8091">
+                            <div class="help-text">Endereco interno quando MapOS e Evolution estao no mesmo servidor. Deixe em branco para detectar automaticamente.</div>
+                        </div>
+
+                        <div class="form-group">
                             <label for="evolution_apikey">API Key</label>
                             <input type="text" name="evolution_apikey" id="evolution_apikey" class="form-control"
                                    value="<?php echo htmlspecialchars($config->evolution_apikey); ?>"

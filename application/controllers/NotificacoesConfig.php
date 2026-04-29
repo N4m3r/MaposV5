@@ -27,6 +27,7 @@ class NotificacoesConfig extends MY_Controller
             'whatsapp_provedor' => 'evolution',
             'whatsapp_ativo' => 1,
             'evolution_url' => 'https://evo.jj-ferreiras.com.br',
+            'evolution_url_interna' => 'http://127.0.0.1:8091',
             'evolution_apikey' => '7bd8a76492e92f7e0e4bad14d42eeb0e889e2cfdcd7c8f0ce9b4e1e6607935e2',
             'evolution_instance' => 'Mapos',
             'evolution_estado' => 'desconectado',
@@ -65,6 +66,7 @@ class NotificacoesConfig extends MY_Controller
                 'whatsapp_provedor' => $this->input->post('whatsapp_provedor'),
                 'whatsapp_ativo' => $this->input->post('whatsapp_ativo') ? 1 : 0,
                 'evolution_url' => $url,
+                'evolution_url_interna' => $this->input->post('evolution_url_interna'),
                 'evolution_apikey' => $this->input->post('evolution_apikey'),
                 'evolution_instance' => $this->input->post('evolution_instance') ?: 'Mapos',
                 'evolution_instance_token' => $this->input->post('evolution_instance_token'),
@@ -211,7 +213,8 @@ class NotificacoesConfig extends MY_Controller
         header('Content-Type: application/json');
 
         $config = $this->notificacoes_config_model->getConfig();
-        $base = rtrim($config->evolution_url ?? '', '/');
+        $service = new WhatsAppService();
+        $base = rtrim($service->getApiUrl() ?? $config->evolution_url ?? '', '/');
         $apikey = $config->evolution_apikey ?? '';
         $instance = $config->evolution_instance ?? 'Mapos';
         $instanceToken = $config->evolution_instance_token ?? '';

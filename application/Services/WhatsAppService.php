@@ -19,6 +19,7 @@ class WhatsAppService
 {
     protected $CI;
     protected $config;
+    protected $apiUrl;
     public $debugLog = [];
 
     public function __construct()
@@ -32,6 +33,8 @@ class WhatsAppService
             $url = preg_replace('#/swagger(/index\.html)?$#', '', $url);
             $this->config->evolution_url = rtrim($url, '/');
         }
+
+        $this->apiUrl = $this->resolveApiUrl($this->config->evolution_url ?? '');
     }
 
     private function addDebug($tipo, $msg)
@@ -40,8 +43,34 @@ class WhatsAppService
     }
 
     /**
-     * Faz requisicao HTTP simples
+     * Resolve URL interna da API quando servidor e Evolution estao no mesmo host.
+     * Evita loopback pelo Cloudflare/Nginx.
      */
+    private function resolveApiUrl($url)
+    {
+        if (empty($url)) {
+            return $url;
+        }
+
+        $host = parse_url($url, PHP_URL_HOST);
+
+        // Se tiver URL interna configurada explicitamente, usa ela
+        if (!empty($this->config->evolution_url_interna)) {
+            $internal = rtrim($this->config->evolution_url_interna, '/');
+            $this->addDebug('info', 'Usando URL interna configurada: ' . $internal);
+            return $internal;
+        }
+
+        // Fallback automatico para dominios conhecidos que rodam localmente
+        $localHosts = ['evo.jj-ferreiras.com.br'];
+        if (in_array($host, $localHosts, true)) {
+            $localUrl = 'http://127.0.0.1:8091';
+            $this->addDebug('info', 'Detectado host local (' . $host . '). Usando URL interna: ' . $localUrl);
+            return $localUrl;
+        }
+
+        return rtrim($url, '/');
+    }
     private function request($url, $method = 'GET', $data = [], $headers = [])
     {
         $ch = curl_init();
@@ -85,7 +114,7 @@ class WhatsAppService
             return ['connected' => false, 'status' => 'nao_configurado', 'error' => 'URL ou API Key nao configuradas'];
         }
 
-        $url = $this->config->evolution_url . '/instance/all';
+        $url = $this->apiUrl . '/instance/all';
         $this->addDebug('info', 'GET ' . $url);
         $resp = $this->request($url, 'GET', [], ['apikey: ' . $this->config->evolution_apikey]);
         $this->addDebug('info', 'HTTP /instance/all: ' . $resp['http_code']);
@@ -150,7 +179,7 @@ class WhatsAppService
 
         // 2. Busca via /instance/all
         $this->addDebug('info', 'Token nao salvo no banco. Buscando via /instance/all...');
-        $urlAll = $this->config->evolution_url . '/instance/all';
+        $urlAll = $this->apiUrl . '/instance/all';
         $resp = $this->request($urlAll, 'GET', [], ['apikey: ' . $this->config->evolution_apikey]);
 
         if ($resp['http_code'] === 200) {
@@ -196,7 +225,7 @@ class WhatsAppService
         }
 
         // 3. Obtem QR Code usando o token da instancia
-        $urlQr = $this->config->evolution_url . '/instance/qr?instanceId=' . urlencode($this->config->evolution_instance);
+        $urlQr = $this->apiUrl . '/instance/qr?instanceId=' . urlencode($this->config->evolution_instance);
         $this->addDebug('url', 'GET ' . $urlQr);
         $respQr = $this->request($urlQr, 'GET', [], ['apikey: ' . $instanceToken]);
         $this->addDebug('info', 'HTTP /instance/qr: ' . $respQr['http_code']);
@@ -241,7 +270,7 @@ class WhatsAppService
             return ['success' => false, 'error' => 'Nao foi possivel obter token da instancia'];
         }
 
-        $url = $this->config->evolution_url . '/send/text';
+        $url = $this->apiUrl . '/send/text';
         $payload = [
             'number' => $numero,
             'text' => $mensagem,
@@ -283,7 +312,7 @@ class WhatsAppService
             return ['success' => false, 'error' => 'Nao foi possivel obter token da instancia'];
         }
 
-        $url = $this->config->evolution_url . '/instance/disconnect';
+        $url = $this->apiUrl . '/instance/disconnect';
         $this->addDebug('info', 'POST ' . $url);
         $resp = $this->request($url, 'POST', ['instanceId' => $this->config->evolution_instance], [
             'Content-Type: application/json; charset=utf-8',
@@ -320,7 +349,7 @@ class WhatsAppService
         ];
 
         // 2. Teste /instance/all
-        $urlAll = $this->config->evolution_url . '/instance/all';
+        $urlAll = $this->apiUrl . '/instance/all';
         $respAll = $this->request($urlAll, 'GET', [], ['apikey: ' . ($this->config->evolution_apikey ?? '')]);
         $resultado['teste_instance_all'] = [
             'http_code' => $respAll['http_code'],
@@ -346,7 +375,7 @@ class WhatsAppService
         // 3. Teste /instance/status (se tiver token)
         $token = $this->getInstanceToken();
         if ($token) {
-            $urlStatus = $this->config->evolution_url . '/instance/status';
+            $urlStatus = $this->apiUrl . '/instance/status';
             $respStatus = $this->request($urlStatus, 'GET', [], ['apikey: ' . $token]);
             $resultado['teste_instance_status'] = [
                 'http_code' => $respStatus['http_code'],
@@ -367,6 +396,14 @@ class WhatsAppService
             $numero = '55' . $numero;
         }
         return $numero;
+    }
+
+    /**
+     * Retorna a URL de API resolvida (pode ser interna)
+     */
+    public function getApiUrl()
+    {
+        return $this->apiUrl;
     }
 
     /**
