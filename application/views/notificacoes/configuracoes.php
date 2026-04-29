@@ -74,6 +74,9 @@
                                 <button type="button" class="btn-action btn-secondary" onclick="diagnostico()">
                                     <i class="bx bx-data"></i> Diagnostico
                                 </button>
+                                <button type="button" class="btn-action btn-secondary" onclick="testarCurl()">
+                                    <i class="bx bx-test-tube"></i> Testar Curl
+                                </button>
                                 <?php if ($config->whatsapp_provedor == 'evolution'): ?>
                                     <button type="button" class="btn-action btn-success" id="btn-qr" onclick="obterQRCode()">
                                         <i class="bx bx-qr"></i> Conectar (QR Code)
@@ -345,6 +348,25 @@ function testarEnvio() {
     .catch(err => {
         resultado.innerHTML = '<span style="color:red">Erro: ' + err.message + '</span>';
     });
+}
+
+function testarCurl() {
+    limparDebug();
+    addDebug('info', 'Testando 6 variacoes de curl...');
+    fetch('<?php echo site_url("notificacoesConfig/testar_curl"); ?>', {
+        headers: {'X-Requested-With': 'XMLHttpRequest'}
+    })
+    .then(r => r.json())
+    .then(data => {
+        addDebug('info', 'URL testada: ' + data.url_testada);
+        if (data.resultados) {
+            data.resultados.forEach(function(r) {
+                const tipo = (r.http_code === 200) ? 'ok' : 'erro';
+                addDebug(tipo, r.nome + ': HTTP ' + r.http_code + (r.body ? ' | Body: ' + r.body.substring(0, 100) : ''));
+            });
+        }
+    })
+    .catch(err => addDebug('erro', err.message));
 }
 
 $(document).ready(function() {

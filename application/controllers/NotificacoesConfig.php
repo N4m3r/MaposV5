@@ -219,4 +219,76 @@ class NotificacoesConfig extends MY_Controller
     public function estatisticas() { redirect('notificacoesConfig/configuracoes'); }
     public function enviar_manual() { redirect('notificacoesConfig/configuracoes'); }
     public function preview_template() { echo json_encode(['error' => 'Não implementado']); }
+
+    /**
+     * Testa diferentes formas de curl para descobrir qual funciona
+     */
+    public function testar_curl()
+    {
+        if (!$this->input->is_ajax_request()) {
+            show_404();
+        }
+        header('Content-Type: application/json');
+
+        $config = $this->notificacoes_config_model->getConfig();
+        $url = rtrim($config->evolution_url ?? '', '/') . '/instance/all';
+        $apikey = $config->evolution_apikey ?? '';
+
+        $resultados = [];
+
+        // Teste 1: Header apikey (minúsculo)
+        $resultados[] = $this->_curlTest('header_lowercase', $url, ['apikey: ' . $apikey]);
+
+        // Teste 2: Header Apikey (capitalizado)
+        $resultados[] = $this->_curlTest('header_capitalize', $url, ['Apikey: ' . $apikey]);
+
+        // Teste 3: Header APIKEY (maiúsculo)
+        $resultados[] = $this->_curlTest('header_uppercase', $url, ['APIKEY: ' . $apikey]);
+
+        // Teste 4: Query string
+        $resultados[] = $this->_curlTest('query_string', $url . '?apikey=' . urlencode($apikey), []);
+
+        // Teste 5: Authorization Bearer
+        $resultados[] = $this->_curlTest('auth_bearer', $url, ['Authorization: Bearer ' . $apikey]);
+
+        // Teste 6: Sem header customizado (só padrão)
+        $resultados[] = $this->_curlTest('no_custom_headers', $url, null);
+
+        echo json_encode(['url_testada' => $url, 'resultados' => $resultados]);
+    }
+
+    private function _curlTest($nome, $url, $headers)
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0');
+        curl_setopt($ch, CURLOPT_HEADER, true);
+
+        if ($headers !== null) {
+            $allHeaders = array_merge(['Accept: application/json'], $headers);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $allHeaders);
+        }
+
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $error = curl_error($ch);
+        $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        curl_close($ch);
+
+        $respHeaders = substr($response, 0, $headerSize);
+        $body = substr($response, $headerSize);
+
+        return [
+            'nome' => $nome,
+            'http_code' => $httpCode,
+            'error' => $error,
+            'headers' => substr($respHeaders, 0, 300),
+            'body' => substr($body, 0, 200),
+        ];
+    }
 }
