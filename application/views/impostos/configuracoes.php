@@ -167,6 +167,16 @@ function fmtCnpj($cnpj) {
     margin-left: 8px;
     vertical-align: middle;
 }
+/* Garantir que input-append nao esconda o valor */
+.impostos-container .input-append input[type="text"] {
+    width: 60px !important;
+    text-align: right;
+    padding-right: 6px;
+}
+.impostos-container .input-append .add-on {
+    padding-left: 8px;
+    padding-right: 8px;
+}
 </style>
 
 <div class="impostos-container">
@@ -278,10 +288,11 @@ function fmtCnpj($cnpj) {
                         <label class="control-label">ISS Municipal:*</label>
                         <div class="controls">
                             <div class="input-append">
-                                <input type="number" name="iss_municipal" id="input-iss" class="span3" step="0.01" min="0" max="5" value="<?= htmlspecialchars($configs['iss_municipal']) ?>" required />
+                                <?php $iss_valor = str_replace(',', '.', $configs['iss_municipal'] ?? '5.00'); ?>
+                                <input type="text" name="iss_municipal" id="input-iss" class="span3" pattern="^[0-9]+(\.[0-9]+)?$" value="<?= htmlspecialchars($iss_valor) ?>" required />
                                 <span class="add-on">%</span>
                             </div>
-                            <span class="help-inline">Aliquota de ISS do municipio</span>
+                            <span class="help-inline">Aliquota de ISS do municipio (ex: 5.00)</span>
                         </div>
                     </div>
 
