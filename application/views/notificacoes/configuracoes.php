@@ -127,6 +127,14 @@
                                    placeholder="Mapos">
                             <div class="help-text">Nome da instancia no servidor Evolution (case-insensitive)</div>
                         </div>
+
+                        <div class="form-group">
+                            <label for="evolution_instance_token">Token da Instancia</label>
+                            <input type="text" name="evolution_instance_token" id="evolution_instance_token" class="form-control"
+                                   value="<?php echo htmlspecialchars($config->evolution_instance_token ?? ''); ?>"
+                                   placeholder="9e907a2a-1b06-4812-badb-02e5205df9f7">
+                            <div class="help-text">Token da instancia (obtido via /instance/all). Preencha para conectar sem busca.</div>
+                        </div>
                     </div>
 
                     <!-- Notificacoes -->
@@ -230,6 +238,8 @@ function verificarStatus() {
         addDebug('info', 'Status: ' + (data.connected ? 'Conectado' : 'Desconectado'));
         if (data.error) addDebug('erro', 'Erro: ' + data.error);
         if (data.status) addDebug('info', 'Detalhe: ' + data.status);
+        if (data.headers) addDebug('info', 'Headers: ' + data.headers.substring(0, 500));
+        if (data.debug) addDebug('info', 'Body: ' + data.debug.substring(0, 500));
         alert('Status: ' + (data.connected ? 'Conectado (' + data.status + ')' : 'Desconectado' + (data.error ? '\n' + data.error : '')));
     })
     .catch(err => addDebug('erro', err.message));
@@ -248,6 +258,12 @@ function diagnostico() {
             Object.entries(data.config).forEach(([k, v]) => {
                 addDebug('info', k + ': ' + (v === null ? 'NULL' : v));
             });
+        }
+        if (data.evolution_test) {
+            addDebug('info', '--- Teste Evolution ---');
+            addDebug('info', 'HTTP Code: ' + data.evolution_test.http_code);
+            if (data.evolution_test.curl_error) addDebug('erro', 'CURL Error: ' + data.evolution_test.curl_error);
+            if (data.evolution_test.body_preview) addDebug('info', 'Body: ' + data.evolution_test.body_preview);
         }
     })
     .catch(err => addDebug('erro', err.message));

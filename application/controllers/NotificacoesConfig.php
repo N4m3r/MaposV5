@@ -67,6 +67,7 @@ class NotificacoesConfig extends MY_Controller
                 'evolution_url' => $url,
                 'evolution_apikey' => $this->input->post('evolution_apikey'),
                 'evolution_instance' => $this->input->post('evolution_instance') ?: 'Mapos',
+                'evolution_instance_token' => $this->input->post('evolution_instance_token'),
                 'meta_phone_number_id' => $this->input->post('meta_phone_number_id'),
                 'meta_access_token' => $this->input->post('meta_access_token'),
                 'z_api_url' => $this->input->post('z_api_url'),
@@ -162,12 +163,41 @@ class NotificacoesConfig extends MY_Controller
         }
         header('Content-Type: application/json');
         $config = $this->notificacoes_config_model->getConfig();
+
+        // Testa conectividade com servidor Evolution
+        $evolutionTest = null;
+        if (!empty($config->evolution_url)) {
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, rtrim($config->evolution_url, '/') . '/instance/all');
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+            curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0');
+            curl_setopt($ch, CURLOPT_HEADER, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Accept: application/json',
+                'apikey: ' . ($config->evolution_apikey ?? '')
+            ]);
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $curlError = curl_error($ch);
+            $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+            curl_close($ch);
+
+            $body = substr($response, $headerSize);
+            $evolutionTest = [
+                'http_code' => $httpCode,
+                'curl_error' => $curlError,
+                'body_preview' => substr($body, 0, 300),
+            ];
+        }
+
         echo json_encode([
             'tabela_existe' => $this->db->table_exists('notificacoes_config'),
             'config' => (array) $config,
-            'evolution_url' => $config->evolution_url ?? null,
-            'evolution_instance' => $config->evolution_instance ?? null,
-            'whatsapp_ativo' => $config->whatsapp_ativo ?? null,
+            'evolution_test' => $evolutionTest,
         ]);
     }
 

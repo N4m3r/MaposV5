@@ -148,9 +148,9 @@ class Nfse_os extends MY_Controller
 
         // Configurações
         $config = [
-            'data_vencimento' => $this->input->post('data_vencimento') ?? date('Y-m-d', strtotime('+5 days')),
-            'instrucoes' => $this->input->post('instrucoes') ?? 'Pagável em qualquer banco até o vencimento.',
-            'gateway' => $this->input->post('gateway') ?? null,
+            'data_vencimento' => $this->input->post('data_vencimento') ?: date('Y-m-d', strtotime('+5 days')),
+            'instrucoes' => $this->input->post('instrucoes') ?: 'Pagável em qualquer banco até o vencimento.',
+            'gateway' => $this->input->post('gateway') ?: null,
             'valor_integral' => $this->input->post('valor_integral') ? 1 : 0
         ];
 
@@ -210,7 +210,11 @@ class Nfse_os extends MY_Controller
         }
 
         try {
-            $valor = $this->normalizarValorMonetario($this->input->post('valor') ?: $this->input->get('valor'));
+            $rawValor = $this->input->post('valor') ?: $this->input->get('valor');
+            $valor = $this->normalizarValorMonetario($rawValor);
+
+            log_message('debug', 'NFSe calcular_impostos: raw=' . var_export($rawValor, true) . ' normalizado=' . $valor);
+
             if ($valor <= 0) {
                 echo json_encode(['success' => false, 'message' => 'Valor inválido: ' . $valor]);
                 return;
@@ -225,8 +229,10 @@ class Nfse_os extends MY_Controller
 
             $calculo = $this->impostos_model->calcularImpostos($valor);
 
-            if (!$calculo) {
-                log_message('error', 'NFSe: calcularImpostos retornou false para valor=' . $valor);
+            log_message('debug', 'NFSe calcular_impostos: calcularImpostos retornou=' . var_export($calculo, true));
+
+            if ($calculo === false || !is_array($calculo)) {
+                log_message('error', 'NFSe: calcularImpostos retornou false/invalido para valor=' . $valor);
                 echo json_encode([
                     'success' => false,
                     'message' => 'Configuração tributária não encontrada. Execute a migration SQL ou configure os impostos em Configurações do Sistema.'
@@ -267,7 +273,7 @@ class Nfse_os extends MY_Controller
                 'retencoes' => $retencoes,
             ]);
         } catch (Exception $e) {
-            log_message('error', 'NFSe calcular_impostos exception: ' . $e->getMessage());
+            log_message('error', 'NFSe calcular_impostos exception: ' . $e->getMessage() . ' | Trace: ' . $e->getTraceAsString());
             echo json_encode(['success' => false, 'message' => 'Erro interno: ' . $e->getMessage()]);
         }
     }
@@ -632,7 +638,7 @@ class Nfse_os extends MY_Controller
             redirect('nfse_os');
         }
 
-        $motivo = $this->input->post('motivo') ?? 'Cancelamento solicitado pelo usuário';
+        $motivo = $this->input->post('motivo') ?: 'Cancelamento solicitado pelo usuário';
         $resultado = $this->nfse_emitida_model->cancelar($nfse_id, $motivo);
 
         if (isset($resultado['success'])) {
@@ -676,10 +682,10 @@ class Nfse_os extends MY_Controller
         }
 
         $dados = [
-            'data_pagamento' => $this->input->post('data_pagamento') ?? date('Y-m-d'),
+            'data_pagamento' => $this->input->post('data_pagamento') ?: date('Y-m-d'),
             'valor_pago' => $this->input->post('valor_pago'),
-            'multa' => $this->input->post('multa') ?? 0,
-            'juros' => $this->input->post('juros') ?? 0
+            'multa' => $this->input->post('multa') ?: 0,
+            'juros' => $this->input->post('juros') ?: 0
         ];
 
         $resultado = $this->boleto_os_model->registrarPagamento($boleto_id, $dados);

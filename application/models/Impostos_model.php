@@ -276,7 +276,7 @@ class Impostos_model extends CI_Model
             $certificado = $this->certificado_model->getCertificadoAtivo();
         }
 
-        if ($certificado) {
+        if ($certificado && is_object($certificado)) {
             // Buscar dados do Simples Nacional vinculados ao certificado
             if ($this->db->table_exists('certificado_consultas')) {
                 $this->db->where('certificado_id', $certificado->id);
@@ -300,7 +300,8 @@ class Impostos_model extends CI_Model
 
             // Tentar identificar faixa pelo faturamento (simplificado)
             if (!$faixa) {
-                $faixa = $this->identificarFaixaFaturamento($certificado->cnpj);
+                $cnpjCert = property_exists($certificado, 'cnpj') ? $certificado->cnpj : null;
+                $faixa = $this->identificarFaixaFaturamento($cnpjCert);
             }
         } else {
             // Usar configurações manuais

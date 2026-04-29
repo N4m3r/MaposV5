@@ -44,6 +44,7 @@ class WhatsAppService
         curl_setopt($ch, CURLOPT_TIMEOUT, 30);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
         curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36');
+        curl_setopt($ch, CURLOPT_HEADER, true);
 
         $allHeaders = array_merge(['Accept: application/json'], $headers);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $allHeaders);
@@ -53,12 +54,16 @@ class WhatsAppService
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data, JSON_UNESCAPED_UNICODE));
         }
 
-        $body = curl_exec($ch);
+        $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $error = curl_error($ch);
+        $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         curl_close($ch);
 
-        return ['body' => $body, 'http_code' => $httpCode, 'error' => $error];
+        $respHeaders = substr($response, 0, $headerSize);
+        $body = substr($response, $headerSize);
+
+        return ['body' => $body, 'headers' => $respHeaders, 'http_code' => $httpCode, 'error' => $error];
     }
 
     /**
@@ -90,7 +95,44 @@ class WhatsAppService
             return ['connected' => false, 'status' => 'instancia_nao_encontrada', 'error' => 'Instância "' . $this->config->evolution_instance . '" não existe no servidor'];
         }
 
-        return ['connected' => false, 'status' => 'erro', 'error' => 'HTTP ' . $resp['http_code'], 'debug' => $resp['body']];
+        return ['connected' => false, 'status' => 'erro', 'error' => 'HTTP ' . $resp['http_code'], 'debug' => $resp['body'], 'headers' => $resp['headers']];
+    }
+
+    /**
+     * Obtém o token da instância. Prioridade:
+     * 1. Token salvo no banco (evolution_instance_token)
+     * 2. Busca via /instance/all
+     */
+    private function getInstanceToken()
+    {
+        // 1. Usa token salvo no banco
+        if (!empty($this->config->evolution_instance_token)) {
+            $this->addDebug('info', 'Usando token da instância do banco');
+            return $this->config->evolution_instance_token;
+        }
+
+        // 2. Busca via /instance/all
+        $this->addDebug('info', 'Token não salvo no banco. Buscando via /instance/all...');
+        $urlAll = $this->config->evolution_url . '/instance/all';
+        $resp = $this->request($urlAll, 'GET', [], ['apikey: ' . $this->config->evolution_apikey]);
+
+        if ($resp['http_code'] === 200) {
+            $data = json_decode($resp['body'], true);
+            foreach ($data['data'] ?? [] as $inst) {
+                if (strcasecmp($inst['name'] ?? '', $this->config->evolution_instance) === 0) {
+                    $token = $inst['token'] ?? null;
+                    if ($token) {
+                        $this->addDebug('sucesso', 'Token resolvido via API');
+                        // Salva no banco para próxima vez
+                        $this->CI->notificacoes_config_model->atualizarInstanceToken($token);
+                        return $token;
+                    }
+                }
+            }
+        }
+
+        $this->addDebug('erro', 'Não foi possível obter token da instância');
+        return null;
     }
 
     /**
@@ -110,35 +152,10 @@ class WhatsAppService
             return ['success' => false, 'error' => 'Instância já está conectada', 'already_connected' => true];
         }
 
-        // 2. Obtém token da instância via /instance/all
-        $urlAll = $this->config->evolution_url . '/instance/all';
-        $this->addDebug('url', 'GET ' . $urlAll);
-        $respAll = $this->request($urlAll, 'GET', [], ['apikey: ' . $this->config->evolution_apikey]);
-        $this->addDebug('info', 'HTTP /instance/all: ' . $respAll['http_code']);
-
-        if ($respAll['http_code'] !== 200) {
-            $this->addDebug('erro', 'Falha ao listar instâncias: HTTP ' . $respAll['http_code']);
-            return ['success' => false, 'error' => 'Não foi possível listar instâncias (HTTP ' . $respAll['http_code'] . ')', 'debug' => $this->debugLog];
-        }
-
-        $data = json_decode($respAll['body'], true);
-        $instances = $data['data'] ?? [];
-        $this->addDebug('info', 'Instâncias encontradas: ' . count($instances));
-
-        $instanceToken = null;
-        foreach ($instances as $inst) {
-            $name = $inst['name'] ?? '';
-            $this->addDebug('info', '  - Instância: "' . $name . '"');
-            if (strcasecmp($name, $this->config->evolution_instance) === 0) {
-                $instanceToken = $inst['token'] ?? null;
-                $this->addDebug('sucesso', 'Instância encontrada! Token: ' . ($instanceToken ? 'SIM' : 'NÃO'));
-                break;
-            }
-        }
-
+        // 2. Obtém token da instância (do banco ou via API)
+        $instanceToken = $this->getInstanceToken();
         if (!$instanceToken) {
-            $this->addDebug('erro', 'Token da instância não encontrado');
-            return ['success' => false, 'error' => 'Instância "' . $this->config->evolution_instance . '" não encontrada ou sem token', 'debug' => $this->debugLog];
+            return ['success' => false, 'error' => 'Token da instância não encontrado. Clique em Diagnóstico para verificar.', 'debug' => $this->debugLog];
         }
 
         // 3. Obtém QR Code usando o token da instância

@@ -19,7 +19,7 @@ $produtos = $produtos ?? [];
 
 $descontoTomador = floatval($result->valor_desconto ?? 0);
 $valorBaseNFSe = $descontoTomador > 0 ? $descontoTomador : ($totalServico > 0 ? $totalServico : $totalProdutos);
-$ambiente = $ambiente ?? 'homologacao';
+$ambiente = $ambiente_nfse ?? 'homologacao';
 
 $mostrarWizard = !$nfse_atual || (isset($nfse_atual->situacao) && $nfse_atual->situacao == 'Cancelada');
 
