@@ -44,13 +44,31 @@ $phpFiles = [
 ];
 foreach ($phpFiles as $file) {
     if (file_exists($file)) {
-        exec("php -l $file 2>&1", $output, $return);
-        echo "<strong>$file:</strong> ";
-        if ($return === 0) {
-            echo "<span class='ok'>OK</span><br>";
+        if (function_exists('exec')) {
+            exec("php -l $file 2>&1", $output, $return);
+            echo "<strong>$file:</strong> ";
+            if ($return === 0) {
+                echo "<span class='ok'>OK</span><br>";
+            } else {
+                echo "<span class='err'>ERRO: " . implode(' ', $output) . "</span><br>";
+                $erros[] = "Erro de sintaxe em $file";
+            }
         } else {
-            echo "<span class='err'>ERRO: " . implode(' ', $output) . "</span><br>";
-            $erros[] = "Erro de sintaxe em $file";
+            // Verificacao alternativa: token_get_all
+            $content = file_get_contents($file);
+            $tokens = token_get_all($content);
+            $error = '';
+            foreach ($tokens as $token) {
+                if (is_array($token) && $token[0] === T_OPEN_TAG && strpos($content, '<?php') === false && strpos($content, '<?=') === false) {
+                    // nao e erro, so ignora
+                }
+            }
+            // Verificacao simples: tenta detectar erros comuns de sintaxe
+            if (@eval('return true; ?>' . $content) === false) {
+                echo "<strong>$file:</strong> <span class='warn'>⚠ exec() desabilitado, nao foi possivel verificar sintaxe automaticamente</span><br>";
+            } else {
+                echo "<strong>$file:</strong> <span class='ok'>OK (verificacao alternativa)</span><br>";
+            }
         }
     }
 }

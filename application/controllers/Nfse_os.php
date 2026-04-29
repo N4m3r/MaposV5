@@ -831,53 +831,53 @@ class Nfse_os extends MY_Controller
     {
         header('Content-Type: application/json; charset=utf-8');
 
-        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cNFSe')) {
-            echo json_encode(['success' => false, 'message' => 'Sem permissão para emitir NFS-e.']);
-            return;
-        }
-
-        if (!$os_id) {
-            echo json_encode(['success' => false, 'message' => 'OS não informada.']);
-            return;
-        }
-
-        // Buscar OS
-        $os = $this->os_model->getById($os_id);
-        if (!$os) {
-            echo json_encode(['success' => false, 'message' => 'OS não encontrada.']);
-            return;
-        }
-
-        // Carregar certificado digital
-        $this->load->model('certificado_model');
-
-        // Verificar se existe certificado ativo no banco
-        $certAtivo = $this->certificado_model->getCertificadoAtivo();
-        if (!$certAtivo) {
-            echo json_encode(['success' => false, 'message' => 'Nenhum certificado digital ativo encontrado. Cadastre um certificado em Certificado Digital > Configurar.']);
-            return;
-        }
-
-        // Verificar se o arquivo existe
-        $arquivoCaminho = $certAtivo->arquivo_caminho ?? '';
-        if (empty($arquivoCaminho)) {
-            echo json_encode(['success' => false, 'message' => 'Certificado cadastrado mas caminho do arquivo nao esta preenchido. Reenvie o arquivo .pfx em Certificado Digital > Configurar.']);
-            return;
-        }
-        if (!file_exists($arquivoCaminho)) {
-            echo json_encode(['success' => false, 'message' => 'Arquivo do certificado nao encontrado no servidor: ' . $arquivoCaminho . '. Reenvie o arquivo .pfx em Certificado Digital > Configurar.']);
-            return;
-        }
-
-        $pemPaths = $this->certificado_model->extrairCertificadoPem();
-
-        if (!$pemPaths || isset($pemPaths['error'])) {
-            $msg = isset($pemPaths['error']) ? $pemPaths['error'] : 'Erro ao extrair certificado PEM. Verifique se a senha do arquivo .pfx esta correta.';
-            echo json_encode(['success' => false, 'message' => $msg]);
-            return;
-        }
-
         try {
+            if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cNFSe')) {
+                echo json_encode(['success' => false, 'message' => 'Sem permissão para emitir NFS-e.']);
+                return;
+            }
+
+            if (!$os_id) {
+                echo json_encode(['success' => false, 'message' => 'OS não informada.']);
+                return;
+            }
+
+            // Buscar OS
+            $os = $this->os_model->getById($os_id);
+            if (!$os) {
+                echo json_encode(['success' => false, 'message' => 'OS não encontrada.']);
+                return;
+            }
+
+            // Carregar certificado digital
+            $this->load->model('certificado_model');
+
+            // Verificar se existe certificado ativo no banco
+            $certAtivo = $this->certificado_model->getCertificadoAtivo();
+            if (!$certAtivo) {
+                echo json_encode(['success' => false, 'message' => 'Nenhum certificado digital ativo encontrado. Cadastre um certificado em Certificado Digital > Configurar.']);
+                return;
+            }
+
+            // Verificar se o arquivo existe
+            $arquivoCaminho = $certAtivo->arquivo_caminho ?? '';
+            if (empty($arquivoCaminho)) {
+                echo json_encode(['success' => false, 'message' => 'Certificado cadastrado mas caminho do arquivo nao esta preenchido. Reenvie o arquivo .pfx em Certificado Digital > Configurar.']);
+                return;
+            }
+            if (!file_exists($arquivoCaminho)) {
+                echo json_encode(['success' => false, 'message' => 'Arquivo do certificado nao encontrado no servidor: ' . $arquivoCaminho . '. Reenvie o arquivo .pfx em Certificado Digital > Configurar.']);
+                return;
+            }
+
+            $pemPaths = $this->certificado_model->extrairCertificadoPem();
+
+            if (!$pemPaths || isset($pemPaths['error'])) {
+                $msg = isset($pemPaths['error']) ? $pemPaths['error'] : 'Erro ao extrair certificado PEM. Verifique se a senha do arquivo .pfx esta correta.';
+                echo json_encode(['success' => false, 'message' => $msg]);
+                return;
+            }
+
             // Carregar config
             $this->config->load('nfse_nacional', true);
             $nfseConfig = $this->config->item('nfse_nacional');
