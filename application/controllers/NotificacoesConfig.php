@@ -273,6 +273,21 @@ class NotificacoesConfig extends MY_Controller
             'verbose' => substr($verboseResult['verbose'], 0, 500)
         ];
 
+        // Teste 13: GET na raiz do servidor Evolution
+        $resultados[] = $this->_curlTest('root_path', rtrim($config->evolution_url ?? '', '/'), null);
+
+        // Teste 14: outro endpoint Evolution conhecido (manager)
+        $resultados[] = $this->_curlTest('manager_endpoint', rtrim($config->evolution_url ?? '', '/') . '/manager', null);
+
+        // Teste 15: User-Agent alternativo
+        $resultados[] = $this->_curlTestCustomUA('ua_curl', $url, ['apikey: ' . $apikey], 'curl/7.68.0');
+
+        // Teste 16: sem User-Agent
+        $resultados[] = $this->_curlTestCustomUA('no_ua', $url, ['apikey: ' . $apikey], '');
+
+        // Teste 17: POST em vez de GET
+        $resultados[] = $this->_curlTestPost('post_method', $url, ['apikey: ' . $apikey]);
+
         echo json_encode([
             'url_testada' => $url,
             'apikey_prefixo' => substr($apikey, 0, 8) . '...',
@@ -369,6 +384,74 @@ class NotificacoesConfig extends MY_Controller
             'headers' => $respHeaders,
             'body' => $body,
             'verbose' => $verbose,
+        ];
+    }
+
+    private function _curlTestCustomUA($nome, $url, $headers, $ua)
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 8);
+        curl_setopt($ch, CURLOPT_HEADER, true);
+        if ($ua !== '') {
+            curl_setopt($ch, CURLOPT_USERAGENT, $ua);
+        }
+
+        if ($headers !== null) {
+            $allHeaders = array_merge(['Accept: application/json'], $headers);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $allHeaders);
+        }
+
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $error = curl_error($ch);
+        $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        curl_close($ch);
+
+        return [
+            'nome' => $nome,
+            'http_code' => $httpCode,
+            'error' => $error,
+            'headers' => substr($response, 0, $headerSize),
+            'body' => substr($response, $headerSize),
+        ];
+    }
+
+    private function _curlTestPost($nome, $url, $headers)
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 8);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36');
+        curl_setopt($ch, CURLOPT_HEADER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, '{}');
+
+        if ($headers !== null) {
+            $allHeaders = array_merge(['Accept: application/json', 'Content-Type: application/json'], $headers);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $allHeaders);
+        }
+
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $error = curl_error($ch);
+        $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        curl_close($ch);
+
+        return [
+            'nome' => $nome,
+            'http_code' => $httpCode,
+            'error' => $error,
+            'headers' => substr($response, 0, $headerSize),
+            'body' => substr($response, $headerSize),
         ];
     }
 }

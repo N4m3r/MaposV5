@@ -373,6 +373,8 @@ function testarCurl() {
                 if (r.headers) {
                     const serverHeader = r.headers.split('\n').find(h => h.toLowerCase().startsWith('server:'));
                     if (serverHeader) addDebug('info', '  -> ' + serverHeader.trim());
+                    const cfRay = r.headers.split('\n').find(h => h.toLowerCase().startsWith('cf-ray'));
+                    if (cfRay) addDebug('info', '  -> ' + cfRay.trim());
                 }
             });
         }
