@@ -276,8 +276,10 @@ class NfseNacional
         // CA chain para verificação do servidor
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-        if (file_exists($this->caPath)) {
+        if (!empty($this->caPath) && file_exists($this->caPath) && filesize($this->caPath) > 0) {
             curl_setopt($ch, CURLOPT_CAINFO, $this->caPath);
+        } else {
+            log_message('warning', 'NFS-e Nacional: CA ICP-Brasil não encontrado ou vazio (' . ($this->caPath ?? 'nulo') . '). Usando CA do sistema.');
         }
 
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);

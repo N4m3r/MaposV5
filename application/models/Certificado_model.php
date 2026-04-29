@@ -170,7 +170,7 @@ class Certificado_model extends CI_Model
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
             $caPath = FCPATH . 'assets/certs/ac-icp-brasil.pem';
-            if (file_exists($caPath)) {
+            if (!empty($caPath) && file_exists($caPath) && filesize($caPath) > 0) {
                 curl_setopt($ch, CURLOPT_CAINFO, $caPath);
             }
 
@@ -236,7 +236,7 @@ class Certificado_model extends CI_Model
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
             $caPath = FCPATH . 'assets/certs/ac-icp-brasil.pem';
-            if (file_exists($caPath)) {
+            if (!empty($caPath) && file_exists($caPath) && filesize($caPath) > 0) {
                 curl_setopt($ch, CURLOPT_CAINFO, $caPath);
             }
 
