@@ -27,8 +27,8 @@ $config['nfse_versao_dps'] = '1.00';
 // Timeout cURL em segundos
 $config['nfse_timeout'] = 60;
 
-// Caminho para CA chain ICP-Brasil
-$config['nfse_ca_path'] = FCPATH . 'assets/certs/ac-icp-brasil.pem';
+// Caminho para CA chain ICP-Brasil (deixe vazio para usar o CA do sistema)
+$config['nfse_ca_path'] = '';
 
 // Caminho para certificados temporários PEM
 $config['nfse_temp_path'] = APPPATH . 'private/temp/';

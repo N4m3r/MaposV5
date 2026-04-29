@@ -31,7 +31,7 @@ class NfseNacional
         $this->baseUrl = NfseConfig::getBaseUrl($this->ambiente);
         $this->certPemPath = $config['cert_pem'] ?? '';
         $this->keyPemPath = $config['key_pem'] ?? '';
-        $this->caPath = $config['ca_path'] ?? FCPATH . 'assets/certs/ac-icp-brasil.pem';
+        $this->caPath = $config['ca_path'] ?? '';
         $this->cnpj = preg_replace('/\D/', '', $config['cnpj'] ?? '');
         $this->timeout = $config['timeout'] ?? 60;
     }

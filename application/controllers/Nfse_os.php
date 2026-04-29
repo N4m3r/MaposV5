@@ -821,6 +821,18 @@ class Nfse_os extends MY_Controller
         redirect('os/visualizar/' . $boleto->os_id);
     }
 
+    /**
+     * Retorna caminho válido do CA ou null se inválido/inexistente
+     */
+    private function getValidCaPath($nfseConfig)
+    {
+        $caPath = $nfseConfig['nfse_ca_path'] ?? '';
+        if (!empty($caPath) && file_exists($caPath) && filesize($caPath) > 0) {
+            return $caPath;
+        }
+        return null;
+    }
+
     // ==================== API NFS-e NACIONAL ====================
 
     /**
@@ -1028,14 +1040,18 @@ class Nfse_os extends MY_Controller
             }
 
             // Enviar para API Nacional
-            $nfseApi = new NfseNacional([
+            $caPath = $this->getValidCaPath($nfseConfig);
+            $configApi = [
                 'ambiente' => $pemPaths['ambiente'] ?? 'homologacao',
                 'cert_pem' => $pemPaths['cert'],
                 'key_pem' => $pemPaths['key'],
-                'ca_path' => $nfseConfig['nfse_ca_path'] ?? FCPATH . 'assets/certs/ac-icp-brasil.pem',
                 'cnpj' => $pemPaths['cnpj'],
                 'timeout' => $nfseConfig['nfse_timeout'] ?? 60,
-            ]);
+            ];
+            if ($caPath) {
+                $configApi['ca_path'] = $caPath;
+            }
+            $nfseApi = new NfseNacional($configApi);
 
             $resultado = $nfseApi->emitir($xmlAssinado);
 
@@ -1173,14 +1189,18 @@ class Nfse_os extends MY_Controller
             $this->load->library('Nfse/NfseNacional');
             $this->load->library('Nfse/XmlSigner');
 
-            $nfseApi = new NfseNacional([
+            $caPath = $this->getValidCaPath($nfseConfig);
+            $configApi = [
                 'ambiente' => $nfse->ambiente ?? 'homologacao',
                 'cert_pem' => $pemPaths['cert'],
                 'key_pem' => $pemPaths['key'],
-                'ca_path' => $nfseConfig['nfse_ca_path'] ?? FCPATH . 'assets/certs/ac-icp-brasil.pem',
                 'cnpj' => $pemPaths['cnpj'],
                 'timeout' => $nfseConfig['nfse_timeout'] ?? 60,
-            ]);
+            ];
+            if ($caPath) {
+                $configApi['ca_path'] = $caPath;
+            }
+            $nfseApi = new NfseNacional($configApi);
 
             // Gerar XML de cancelamento
             $xmlEvento = $nfseApi->gerarXmlCancelamento($nfse->chave_acesso, $motivo);
@@ -1272,14 +1292,18 @@ class Nfse_os extends MY_Controller
 
             $this->load->library('Nfse/NfseNacional');
 
-            $nfseApi = new NfseNacional([
+            $caPath = $this->getValidCaPath($nfseConfig);
+            $configApi = [
                 'ambiente' => $nfse->ambiente ?? 'homologacao',
                 'cert_pem' => $pemPaths['cert'],
                 'key_pem' => $pemPaths['key'],
-                'ca_path' => $nfseConfig['nfse_ca_path'] ?? FCPATH . 'assets/certs/ac-icp-brasil.pem',
                 'cnpj' => $pemPaths['cnpj'],
                 'timeout' => $nfseConfig['nfse_timeout'] ?? 60,
-            ]);
+            ];
+            if ($caPath) {
+                $configApi['ca_path'] = $caPath;
+            }
+            $nfseApi = new NfseNacional($configApi);
 
             $resultado = $nfseApi->consultar($nfse->chave_acesso);
 
