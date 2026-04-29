@@ -25,7 +25,7 @@ class NfseNacional
      *   - cnpj: CNPJ do prestador (somente números)
      *   - timeout: timeout em segundos (padrão 60)
      */
-    public function __construct(array $config)
+    public function __construct(array $config = [])
     {
         $this->ambiente = $config['ambiente'] ?? 'homologacao';
         $this->baseUrl = NfseConfig::getBaseUrl($this->ambiente);

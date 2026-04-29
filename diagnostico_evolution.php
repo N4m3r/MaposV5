@@ -102,6 +102,19 @@ if (file_exists('application/config/routes.php')) {
 echo "<h2>4. Conexao com Banco de Dados</h2>";
 $dbOk = false;
 $configBanco = null;
+
+// Carrega o .env usando Dotenv (mesmo metodo do index.php)
+$composerAutoloadFile = 'application/vendor/autoload.php';
+$envFile = 'application/.env';
+if (file_exists($composerAutoloadFile) && file_exists($envFile)) {
+    require_once $composerAutoloadFile;
+    $dotenv = Dotenv\Dotenv::createImmutable('application');
+    $dotenv->load();
+    echo "<span class='ok'>✓</span> Arquivo .env carregado<br>";
+} else {
+    echo "<span class='warn'>⚠</span> Arquivo .env ou composer autoload nao encontrado. Tentando com valores padrao...<br>";
+}
+
 if (file_exists('application/config/database.php')) {
     if (!defined('BASEPATH')) define('BASEPATH', true);
     if (!defined('ENVIRONMENT')) define('ENVIRONMENT', 'production');
