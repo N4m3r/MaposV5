@@ -1109,10 +1109,10 @@ class Nfse_os extends MY_Controller
                 ]);
             }
 
-        } catch (Exception $e) {
-            log_message('error', 'NFS-e Nacional emitir_nfse_api exception: ' . $e->getMessage());
+        } catch (Throwable $e) {
+            log_message('error', 'NFS-e Nacional emitir_nfse_api exception: ' . $e->getMessage() . ' | File: ' . $e->getFile() . ':' . $e->getLine());
             // Limpar PEM temporários em caso de erro
-            if (isset($pemPaths)) {
+            if (isset($pemPaths) && is_array($pemPaths)) {
                 $this->certificado_model->limparPemTemporarios($pemPaths);
             }
             echo json_encode(['success' => false, 'message' => 'Erro interno: ' . $e->getMessage()]);
