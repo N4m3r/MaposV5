@@ -122,6 +122,7 @@ class Impostos extends MY_Controller
 
         $this->data['aliquotas_iii'] = $this->impostos_model->getAliquotasAnexo('III');
         $this->data['aliquotas_iv'] = $this->impostos_model->getAliquotasAnexo('IV');
+        $this->data['aliquotas_v'] = $this->impostos_model->getAliquotasAnexo('V');
         $this->data['certificado_info'] = $certificado_info;
 
         $this->data['view'] = 'impostos/configuracoes';
