@@ -66,7 +66,7 @@ class Notificacoes_config_model extends CI_Model
                 }
             }
         } catch (Exception $e) {
-            log_message('warning', '[NotificacoesConfig] Não foi possível listar colunas: ' . $e->getMessage());
+            log_message('error', '[NotificacoesConfig] Não foi possível listar colunas: ' . $e->getMessage());
             $dadosFiltrados = $dados;
         }
 

@@ -279,7 +279,7 @@ class NfseNacional
         if (!empty($this->caPath) && file_exists($this->caPath) && filesize($this->caPath) > 0) {
             curl_setopt($ch, CURLOPT_CAINFO, $this->caPath);
         } else {
-            log_message('warning', 'NFS-e Nacional: CA ICP-Brasil não encontrado ou vazio (' . ($this->caPath ?? 'nulo') . '). Usando CA do sistema.');
+            log_message('info', 'NFS-e Nacional: CA ICP-Brasil não encontrado ou vazio (' . ($this->caPath ?? 'nulo') . '). Usando CA do sistema.');
         }
 
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
