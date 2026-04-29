@@ -1,16 +1,11 @@
 <?php
 /**
  * View: Diagnóstico Completo do Módulo NFSe
- * Verifica tabelas, colunas, configurações, certificado, bibliotecas e faz testes
  */
 
-// ============================================
-// HELPERS
-// ============================================
 function iconOk() { return '<i class="fas fa-check-circle" style="color:#28a745"></i>'; }
 function iconWarn() { return '<i class="fas fa-exclamation-triangle" style="color:#ffc107"></i>'; }
 function iconErr() { return '<i class="fas fa-times-circle" style="color:#dc3545"></i>'; }
-function iconInfo() { return '<i class="fas fa-info-circle" style="color:#1086dd"></i>'; }
 
 function row($label, $status, $message = '') {
     $color = $status === 'ok' ? '#28a745' : ($status === 'warn' ? '#ffc107' : '#dc3545');
@@ -19,11 +14,6 @@ function row($label, $status, $message = '') {
     echo '<td style="border-color:var(--dark-2,#272835); padding:6px 8px; color:' . $color . '; font-weight:bold">' . $icon . ' ' . strtoupper($status) . '</td>';
     echo '<td style="border-color:var(--dark-2,#272835); padding:6px 8px">' . $message . '</td></tr>';
 }
-
-// ============================================
-// COLETAR DADOS
-// ============================================
-$tests = [];
 
 // --- PHP Extensions ---
 $exts = [
@@ -94,7 +84,7 @@ if (method_exists($this->impostos_model, 'getConfig')) {
 }
 
 // --- Emitente ---
-$emitente = $this->maposs_model->getEmitente();
+$emitente = $this->mapos_model->getEmitente();
 $emitOk = $emitente && !empty($emitente->cnpj);
 
 // --- Certificado ---
@@ -107,7 +97,7 @@ if ($this->load->model('certificado_model')) {
         $certOk = true;
         $certMsg = 'Ambiente: ' . ($certificado->ambiente ?? 'nao definido') . ' | Validade: ' . ($certificado->data_validade ?? '---');
     } else {
-        $certMsg = 'Nenhum certificado ativo encontrado. Cadastre um certificado em Configuracoes > Certificado Digital.';
+        $certMsg = 'Nenhum certificado ativo encontrado.';
     }
 }
 
@@ -117,9 +107,9 @@ $calcMsg = '';
 try {
     $calcTest = $this->impostos_model->calcularImpostos(1000.00);
     if ($calcTest === false) {
-        $calcMsg = 'calcularImpostos() retornou false — configuracao tributaria nao encontrada.';
+        $calcMsg = 'calcularImpostos() retornou false — configuracao nao encontrada.';
     } elseif (!is_array($calcTest)) {
-        $calcMsg = 'calcularImpostos() retornou tipo inesperado: ' . gettype($calcTest);
+        $calcMsg = 'Retornou tipo inesperado: ' . gettype($calcTest);
     } else {
         $calcMsg = 'Aliquota nominal: ' . ($calcTest['aliquota_nominal'] ?? '---') . '% | ISS: R$ ' . ($calcTest['iss'] ?? 0) . ' | Total: R$ ' . ($calcTest['valor_total_impostos'] ?? 0);
     }
@@ -208,7 +198,7 @@ if (method_exists($this, 'normalizarValorMonetario')) {
     $normTest = ($norm1 == 1234.56 && $norm2 == 1234.56 && $norm3 == 0);
     $normMsg = "'1.234,56' => {$norm1} | '1234.56' => {$norm2} | '' => {$norm3}";
 } else {
-    $normMsg = 'Metodo normalizarValorMonetario() nao encontrado no controller. Execute a atualizacao do Nfse_os.php.';
+    $normMsg = 'Metodo normalizarValorMonetario() nao encontrado.';
 }
 
 // --- Permissoes de diretorio ---
@@ -228,197 +218,195 @@ foreach ($dirs as $path => $desc) {
     ];
 }
 
-// --- Ambiente ---
 $ambienteSistema = $certificado->ambiente ?? 'homologacao';
 
-?&gt;
+// --- Contadores ---
+$okCount = 0; $warnCount = 0; $errCount = 0;
+foreach ($extResults as $v) { $v ? $okCount++ : $errCount++; }
+foreach ($tableResults as $v) { $v ? $okCount++ : $errCount++; }
+foreach ($colResults as $c) { $c['exists'] ? $okCount++ : $errCount++; }
+$emitOk ? $okCount++ : $errCount++;
+$certOk ? $okCount++ : $warnCount++;
+($calcTest !== false && is_array($calcTest)) ? $okCount++ : $errCount++;
+$dpsTest ? $okCount++ : $errCount++;
+$normTest ? $okCount++ : $errCount++;
+?>
 
-&lt;div class="row-fluid"&gt;
-    &lt;div class="span12"&gt;
-        &lt;div class="widget-box" style="background:var(--wid-dark,#1c1d26); border-color:var(--dark-2,#272835)"&gt;
-            &lt;div class="widget-title" style="background:var(--dark-0,#191a22); border-bottom:1px solid var(--dark-2,#272835); color:var(--title,#d4d8e0)"&gt;
-                &lt;span class="icon"&gt;&lt;i class="fas fa-stethoscope" style="color:#1086dd"&gt;&lt;/i&gt;&lt;/span&gt;
-                &lt;h5 style="color:var(--title,#d4d8e0)"&gt;Diagnostico NFSe — Ambiente: &lt;span style="color:&#35;1086dd"&gt;&lt;?php echo ucfirst($ambienteSistema); ?&gt;&lt;/span&gt;&lt;/h5&gt;
-                &lt;div style="float:right; margin:8px 10px 0 0"&gt;
-                    &lt;a href="&lt;?php echo site_url('nfse_os'); ?&gt;" class="btn btn-mini" style="background:var(--dark-1,#14141a); border-color:var(--dark-2,#272835); color:var(--branco,#caced8)"&gt;
-                        &lt;i class="fas fa-arrow-left"&gt;&lt;/i&gt; Voltar
-                    &lt;/a&gt;
-                    &lt;button onclick="location.reload()" class="btn btn-mini" style="background:var(--dark-1,#14141a); border-color:var(--dark-2,#272835); color:var(--branco,#caced8)"&gt;
-                        &lt;i class="fas fa-sync-alt"&gt;&lt;/i&gt; Recarregar
-                    &lt;/button&gt;
-                &lt;/div&gt;
-            &lt;/div&gt;
-            &lt;div class="widget-content" style="background:var(--wid-dark,#1c1d26); color:var(--branco,#caced8)"&gt;
+<div class="row-fluid">
+    <div class="span12">
+        <div class="widget-box" style="background:var(--wid-dark,#1c1d26); border-color:var(--dark-2,#272835)">
+            <div class="widget-title" style="background:var(--dark-0,#191a22); border-bottom:1px solid var(--dark-2,#272835); color:var(--title,#d4d8e0)">
+                <span class="icon"><i class="fas fa-stethoscope" style="color:#1086dd"></i></span>
+                <h5 style="color:var(--title,#d4d8e0)">Diagnostico NFSe &mdash; Ambiente: <span style="color:#1086dd"><?php echo ucfirst($ambienteSistema); ?></span></h5>
+                <div style="float:right; margin:8px 10px 0 0">
+                    <a href="<?php echo site_url('nfse_os'); ?>" class="btn btn-mini" style="background:var(--dark-1,#14141a); border-color:var(--dark-2,#272835); color:var(--branco,#caced8)">
+                        <i class="fas fa-arrow-left"></i> Voltar
+                    </a>
+                    <button onclick="location.reload()" class="btn btn-mini" style="background:var(--dark-1,#14141a); border-color:var(--dark-2,#272835); color:var(--branco,#caced8)">
+                        <i class="fas fa-sync-alt"></i> Recarregar
+                    </button>
+                </div>
+            </div>
+            <div class="widget-content" style="background:var(--wid-dark,#1c1d26); color:var(--branco,#caced8)">
 
-                &lt;!-- Resumo --&gt;
-                &lt;?php
-                $okCount = 0; $warnCount = 0; $errCount = 0;
-                foreach ($extResults as $v) { $v ? $okCount++ : $errCount++; }
-                foreach ($tableResults as $v) { $v ? $okCount++ : $errCount++; }
-                foreach ($colResults as $c) { $c['exists'] ? $okCount++ : $errCount++; }
-                $emitOk ? $okCount++ : $errCount++;
-                $certOk ? $okCount++ : $warnCount++;
-                ($calcTest !== false && is_array($calcTest)) ? $okCount++ : $errCount++;
-                $dpsTest ? $okCount++ : $errCount++;
-                $normTest ? $okCount++ : $errCount++;
-                ?&gt;
-                &lt;div class="alert" style="background:rgba(16,134,221,0.15); border-color:rgba(16,134,221,0.3); color:#1086dd; margin-bottom:20px"&gt;
-                    &lt;i class="fas fa-clipboard-list"&gt;&lt;/i&gt; &lt;strong&gt;Resumo:&lt;/strong&gt;
-                    &lt;span style="color:#28a745; font-weight:bold"&gt;&lt;?php echo $okCount; ?&gt; OK&lt;/span&gt; |
-                    &lt;span style="color:#ffc107; font-weight:bold"&gt;&lt;?php echo $warnCount; ?&gt; Alertas&lt;/span&gt; |
-                    &lt;span style="color:#dc3545; font-weight:bold"&gt;&lt;?php echo $errCount; ?&gt; Erros&lt;/span&gt;
-                    &lt;?php if ($errCount > 0): ?&gt;
-                        &lt;br&gt;&lt;strong style="color:#dc3545"&gt;&lt;i class="fas fa-exclamation-triangle"&gt;&lt;/i&gt; Corrija os erros antes de emitir NFSe.&lt;/strong&gt;
-                    &lt;?php elseif ($warnCount > 0): ?&gt;
-                        &lt;br&gt;&lt;strong style="color:#ffc107"&gt;&lt;i class="fas fa-info-circle"&gt;&lt;/i&gt; Ambiente funcional, mas com alertas.&lt;/strong&gt;
-                    &lt;?php else: ?&gt;
-                        &lt;br&gt;&lt;strong style="color:#28a745"&gt;&lt;i class="fas fa-check-circle"&gt;&lt;/i&gt; Ambiente validado com sucesso!&lt;/strong&gt;
-                    &lt;?php endif; ?&gt;
-                &lt;/div&gt;
+                <!-- Resumo -->
+                <div class="alert" style="background:rgba(16,134,221,0.15); border-color:rgba(16,134,221,0.3); color:#1086dd; margin-bottom:20px">
+                    <i class="fas fa-clipboard-list"></i> <strong>Resumo:</strong>
+                    <span style="color:#28a745; font-weight:bold"><?php echo $okCount; ?> OK</span> |
+                    <span style="color:#ffc107; font-weight:bold"><?php echo $warnCount; ?> Alertas</span> |
+                    <span style="color:#dc3545; font-weight:bold"><?php echo $errCount; ?> Erros</span>
+                    <?php if ($errCount > 0): ?>
+                        <br><strong style="color:#dc3545"><i class="fas fa-exclamation-triangle"></i> Corrija os erros antes de emitir NFSe.</strong>
+                    <?php elseif ($warnCount > 0): ?>
+                        <br><strong style="color:#ffc107"><i class="fas fa-info-circle"></i> Ambiente funcional, mas com alertas.</strong>
+                    <?php else: ?>
+                        <br><strong style="color:#28a745"><i class="fas fa-check-circle"></i> Ambiente validado com sucesso!</strong>
+                    <?php endif; ?>
+                </div>
 
-                &lt;!-- PHP Extensions --&gt;
-                &lt;h5 style="color:var(--title,#d4d8e0); margin-top:20px"&gt;&lt;i class="fas fa-microchip" style="color:#1086dd"&gt;&lt;/i&gt; Extensoes PHP&lt;/h5&gt;
-                &lt;table class="table table-condensed" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8); margin-bottom:15px"&gt;
-                    &lt;thead&gt;&lt;tr style="background:var(--dark-1,#14141a)"&gt;
-                        &lt;th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0); width:25%"&gt;Extensao&lt;/th&gt;
-                        &lt;th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0); width:15%"&gt;Status&lt;/th&gt;
-                        &lt;th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0)"&gt;Descricao&lt;/th&gt;
-                    &lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;
-                    &lt;?php foreach ($extResults as $ext => $loaded): ?&gt;
-                        &lt;?php row($ext, $loaded ? 'ok' : 'erro', $exts[$ext]); ?&gt;
-                    &lt;?php endforeach; ?&gt;
-                    &lt;/tbody&gt;
-                &lt;/table&gt;
+                <!-- PHP Extensions -->
+                <h5 style="color:var(--title,#d4d8e0); margin-top:20px"><i class="fas fa-microchip" style="color:#1086dd"></i> Extensoes PHP</h5>
+                <table class="table table-condensed" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8); margin-bottom:15px">
+                    <thead><tr style="background:var(--dark-1,#14141a)">
+                        <th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0); width:25%">Extensao</th>
+                        <th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0); width:15%">Status</th>
+                        <th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0)">Descricao</th>
+                    </tr></thead><tbody>
+                    <?php foreach ($extResults as $ext => $loaded): ?>
+                        <?php row($ext, $loaded ? 'ok' : 'erro', $exts[$ext]); ?>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table>
 
-                &lt;!-- Tabelas --&gt;
-                &lt;h5 style="color:var(--title,#d4d8e0); margin-top:20px"&gt;&lt;i class="fas fa-database" style="color:#1086dd"&gt;&lt;/i&gt; Tabelas do Banco&lt;/h5&gt;
-                &lt;table class="table table-condensed" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8); margin-bottom:15px"&gt;
-                    &lt;thead&gt;&lt;tr style="background:var(--dark-1,#14141a)"&gt;
-                        &lt;th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0); width:25%"&gt;Tabela&lt;/th&gt;
-                        &lt;th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0); width:15%"&gt;Status&lt;/th&gt;
-                        &lt;th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0)"&gt;Descricao&lt;/th&gt;
-                    &lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;
-                    &lt;?php foreach ($tableResults as $table => $exists): ?&gt;
-                        &lt;?php row($table, $exists ? 'ok' : 'erro', $tables[$table] . ($exists ? '' : ' — &lt;strong style="color:#dc3545"&gt;Execute as migrations!&lt;/strong&gt;')); ?&gt;
-                    &lt;?php endforeach; ?&gt;
-                    &lt;/tbody&gt;
-                &lt;/table&gt;
+                <!-- Tabelas -->
+                <h5 style="color:var(--title,#d4d8e0); margin-top:20px"><i class="fas fa-database" style="color:#1086dd"></i> Tabelas do Banco</h5>
+                <table class="table table-condensed" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8); margin-bottom:15px">
+                    <thead><tr style="background:var(--dark-1,#14141a)">
+                        <th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0); width:25%">Tabela</th>
+                        <th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0); width:15%">Status</th>
+                        <th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0)">Descricao</th>
+                    </tr></thead><tbody>
+                    <?php foreach ($tableResults as $table => $exists): ?>
+                        <?php row($table, $exists ? 'ok' : 'erro', $tables[$table] . ($exists ? '' : ' &mdash; <strong style="color:#dc3545">Execute as migrations!</strong>')); ?>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table>
 
-                &lt;!-- Colunas --&gt;
-                &lt;h5 style="color:var(--title,#d4d8e0); margin-top:20px"&gt;&lt;i class="fas fa-columns" style="color:#1086dd"&gt;&lt;/i&gt; Colunas do Banco&lt;/h5&gt;
-                &lt;table class="table table-condensed" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8); margin-bottom:15px"&gt;
-                    &lt;thead&gt;&lt;tr style="background:var(--dark-1,#14141a)"&gt;
-                        &lt;th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0); width:25%"&gt;Coluna&lt;/th&gt;
-                        &lt;th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0); width:15%"&gt;Status&lt;/th&gt;
-                        &lt;th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0)"&gt;Descricao&lt;/th&gt;
-                    &lt;/tr&gt;&lt;/thead&gt;&lt;/tbody&gt;
-                    &lt;?php foreach ($colResults as $col): ?&gt;
-                        &lt;?php row($col['table'] . '.' . $col['column'], $col['exists'] ? 'ok' : 'erro', $col['desc'] . ($col['exists'] ? '' : ' — &lt;strong style="color:#dc3545"&gt;Execute a migration!&lt;/strong&gt;')); ?&gt;
-                    &lt;?php endforeach; ?&gt;
-                    &lt;/tbody&gt;
-                &lt;/table&gt;
+                <!-- Colunas -->
+                <h5 style="color:var(--title,#d4d8e0); margin-top:20px"><i class="fas fa-columns" style="color:#1086dd"></i> Colunas do Banco</h5>
+                <table class="table table-condensed" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8); margin-bottom:15px">
+                    <thead><tr style="background:var(--dark-1,#14141a)">
+                        <th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0); width:25%">Coluna</th>
+                        <th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0); width:15%">Status</th>
+                        <th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0)">Descricao</th>
+                    </tr></thead><tbody>
+                    <?php foreach ($colResults as $col): ?>
+                        <?php row($col['table'] . '.' . $col['column'], $col['exists'] ? 'ok' : 'erro', $col['desc'] . ($col['exists'] ? '' : ' &mdash; <strong style="color:#dc3545">Execute a migration!</strong>')); ?>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table>
 
-                &lt;!-- Configuracoes Impostos --&gt;
-                &lt;h5 style="color:var(--title,#d4d8e0); margin-top:20px"&gt;&lt;i class="fas fa-sliders-h" style="color:#1086dd"&gt;&lt;/i&gt; Configuracoes de Impostos&lt;/h5&gt;
-                &lt;table class="table table-condensed" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8); margin-bottom:15px"&gt;
-                    &lt;thead&gt;&lt;tr style="background:var(--dark-1,#14141a)"&gt;
-                        &lt;th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0); width:25%"&gt;Configuracao&lt;/th&gt;
-                        &lt;th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0); width:15%"&gt;Status&lt;/th&gt;
-                        &lt;th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0)"&gt;Valor&lt;/th&gt;
-                    &lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;
-                    &lt;?php foreach ($impConfig as $key => $val): ?&gt;
-                        &lt;?php
+                <!-- Configuracoes Impostos -->
+                <h5 style="color:var(--title,#d4d8e0); margin-top:20px"><i class="fas fa-sliders-h" style="color:#1086dd"></i> Configuracoes de Impostos</h5>
+                <table class="table table-condensed" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8); margin-bottom:15px">
+                    <thead><tr style="background:var(--dark-1,#14141a)">
+                        <th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0); width:25%">Configuracao</th>
+                        <th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0); width:15%">Status</th>
+                        <th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0)">Valor</th>
+                    </tr></thead><tbody>
+                    <?php foreach ($impConfig as $key => $val): ?>
+                        <?php
                         $isSet = $val !== 'nao configurado';
                         row($key, $isSet ? 'ok' : 'warn', $val);
-                        ?&gt;
-                    &lt;?php endforeach; ?&gt;
-                    &lt;/tbody&gt;
-                &lt;/table&gt;
+                        ?>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table>
 
-                &lt;!-- Emitente --&gt;
-                &lt;h5 style="color:var(--title,#d4d8e0); margin-top:20px"&gt;&lt;i class="fas fa-building" style="color:#1086dd"&gt;&lt;/i&gt; Dados do Emitente (Prestador)&lt;/h5&gt;
-                &lt;table class="table table-condensed" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8); margin-bottom:15px"&gt;
-                    &lt;thead&gt;&lt;tr style="background:var(--dark-1,#14141a)"&gt;
-                        &lt;th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0); width:25%"&gt;Campo&lt;/th&gt;
-                        &lt;th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0); width:15%"&gt;Status&lt;/th&gt;
-                        &lt;th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0)"&gt;Valor&lt;/th&gt;
-                    &lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;
-                        &lt;?php
-                        row('Nome/Razao Social', !empty($emitente->nome) ? 'ok' : 'erro', htmlspecialchars($emitente->nome ?? 'Nao configurado'));
-                        row('CNPJ', !empty($emitente->cnpj) ? 'ok' : 'erro', htmlspecialchars($emitente->cnpj ?? 'Nao configurado'));
-                        row('Inscricao Municipal', !empty($emitente->inscricao_municipal) ? 'ok' : 'warn', htmlspecialchars($emitente->inscricao_municipal ?? 'Nao configurado (opcional para Manaus)'));
-                        row('Inscricao Estadual', !empty($emitente->inscricao_estadual) ? 'ok' : 'warn', htmlspecialchars($emitente->inscricao_estadual ?? 'Nao configurado'));
-                        row('Endereco', (!empty($emitente->rua) && !empty($emitente->cidade)) ? 'ok' : 'warn',
-                            htmlspecialchars(($emitente->rua ?? '') . ', ' . ($emitente->numero ?? '') . ' — ' . ($emitente->cidade ?? '') . '/' . ($emitente->uf ?? '')));
-                        row('Email', !empty($emitente->email) ? 'ok' : 'warn', htmlspecialchars($emitente->email ?? 'Nao configurado'));
-                        row('Telefone', !empty($emitente->telefone) ? 'ok' : 'warn', htmlspecialchars($emitente->telefone ?? 'Nao configurado'));
-                        ?&gt;
-                    &lt;/tbody&gt;
-                &lt;/table&gt;
+                <!-- Emitente -->
+                <h5 style="color:var(--title,#d4d8e0); margin-top:20px"><i class="fas fa-building" style="color:#1086dd"></i> Dados do Emitente (Prestador)</h5>
+                <table class="table table-condensed" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8); margin-bottom:15px">
+                    <thead><tr style="background:var(--dark-1,#14141a)">
+                        <th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0); width:25%">Campo</th>
+                        <th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0); width:15%">Status</th>
+                        <th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0)">Valor</th>
+                    </tr></thead><tbody>
+                    <?php
+                    row('Nome/Razao Social', !empty($emitente->nome) ? 'ok' : 'erro', htmlspecialchars($emitente->nome ?? 'Nao configurado'));
+                    row('CNPJ', !empty($emitente->cnpj) ? 'ok' : 'erro', htmlspecialchars($emitente->cnpj ?? 'Nao configurado'));
+                    row('Inscricao Municipal', !empty($emitente->inscricao_municipal) ? 'ok' : 'warn', htmlspecialchars($emitente->inscricao_municipal ?? 'Nao configurado (opcional para Manaus)'));
+                    row('Inscricao Estadual', !empty($emitente->inscricao_estadual) ? 'ok' : 'warn', htmlspecialchars($emitente->inscricao_estadual ?? 'Nao configurado'));
+                    row('Endereco', (!empty($emitente->rua) && !empty($emitente->cidade)) ? 'ok' : 'warn',
+                        htmlspecialchars(($emitente->rua ?? '') . ', ' . ($emitente->numero ?? '') . ' — ' . ($emitente->cidade ?? '') . '/' . ($emitente->uf ?? '')));
+                    row('Email', !empty($emitente->email) ? 'ok' : 'warn', htmlspecialchars($emitente->email ?? 'Nao configurado'));
+                    row('Telefone', !empty($emitente->telefone) ? 'ok' : 'warn', htmlspecialchars($emitente->telefone ?? 'Nao configurado'));
+                    ?>
+                    </tbody>
+                </table>
 
-                &lt;!-- Certificado --&gt;
-                &lt;h5 style="color:var(--title,#d4d8e0); margin-top:20px"&gt;&lt;i class="fas fa-certificate" style="color:#1086dd"&gt;&lt;/i&gt; Certificado Digital&lt;/h5&gt;
-                &lt;table class="table table-condensed" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8); margin-bottom:15px"&gt;
-                    &lt;thead&gt;&lt;tr style="background:var(--dark-1,#14141a)"&gt;
-                        &lt;th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0); width:25%"&gt;Item&lt;/th&gt;
-                        &lt;th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0); width:15%"&gt;Status&lt;/th&gt;
-                        &lt;th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0)"&gt;Detalhes&lt;/th&gt;
-                    &lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;
-                        &lt;?php row('Certificado Ativo', $certOk ? 'ok' : 'warn', $certMsg); ?&gt;
-                    &lt;/tbody&gt;
-                &lt;/table&gt;
+                <!-- Certificado -->
+                <h5 style="color:var(--title,#d4d8e0); margin-top:20px"><i class="fas fa-certificate" style="color:#1086dd"></i> Certificado Digital</h5>
+                <table class="table table-condensed" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8); margin-bottom:15px">
+                    <thead><tr style="background:var(--dark-1,#14141a)">
+                        <th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0); width:25%">Item</th>
+                        <th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0); width:15%">Status</th>
+                        <th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0)">Detalhes</th>
+                    </tr></thead><tbody>
+                    <?php row('Certificado Ativo', $certOk ? 'ok' : 'warn', $certMsg); ?>
+                    </tbody>
+                </table>
 
-                &lt;!-- Testes Funcionais --&gt;
-                &lt;h5 style="color:var(--title,#d4d8e0); margin-top:20px"&gt;&lt;i class="fas fa-vial" style="color:#1086dd"&gt;&lt;/i&gt; Testes Funcionais&lt;/h5&gt;
-                &lt;table class="table table-condensed" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8); margin-bottom:15px"&gt;
-                    &lt;thead&gt;&lt;tr style="background:var(--dark-1,#14141a)"&gt;
-                        &lt;th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0); width:25%"&gt;Teste&lt;/th&gt;
-                        &lt;th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0); width:15%"&gt;Status&lt;/th&gt;
-                        &lt;th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0)"&gt;Resultado&lt;/th&gt;
-                    &lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;
-                        &lt;?php
-                        row('Calculo de Impostos (R$ 1.000,00)',
-                            ($calcTest !== false && is_array($calcTest)) ? 'ok' : 'erro',
-                            $calcMsg);
-                        row('Geracao XML DPS',
-                            $dpsTest ? 'ok' : ($dpsTest === null ? 'warn' : 'erro'),
-                            $dpsMsg);
-                        row('Normalizacao de Valor',
-                            $normTest ? 'ok' : ($normTest === null ? 'warn' : 'erro'),
-                            $normMsg);
-                        ?&gt;
-                    &lt;/tbody&gt;
-                &lt;/table&gt;
+                <!-- Testes Funcionais -->
+                <h5 style="color:var(--title,#d4d8e0); margin-top:20px"><i class="fas fa-vial" style="color:#1086dd"></i> Testes Funcionais</h5>
+                <table class="table table-condensed" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8); margin-bottom:15px">
+                    <thead><tr style="background:var(--dark-1,#14141a)">
+                        <th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0); width:25%">Teste</th>
+                        <th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0); width:15%">Status</th>
+                        <th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0)">Resultado</th>
+                    </tr></thead><tbody>
+                    <?php
+                    row('Calculo de Impostos (R$ 1.000,00)',
+                        ($calcTest !== false && is_array($calcTest)) ? 'ok' : 'erro',
+                        $calcMsg);
+                    row('Geracao XML DPS',
+                        $dpsTest ? 'ok' : ($dpsTest === null ? 'warn' : 'erro'),
+                        $dpsMsg);
+                    row('Normalizacao de Valor',
+                        $normTest ? 'ok' : ($normTest === null ? 'warn' : 'erro'),
+                        $normMsg);
+                    ?>
+                    </tbody>
+                </table>
 
-                &lt;!-- Diretorios --&gt;
-                &lt;h5 style="color:var(--title,#d4d8e0); margin-top:20px"&gt;&lt;i class="fas fa-folder-open" style="color:#1086dd"&gt;&lt;/i&gt; Permissoes de Diretorio&lt;/h5&gt;
-                &lt;table class="table table-condensed" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8); margin-bottom:15px"&gt;
-                    &lt;thead&gt;&lt;tr style="background:var(--dark-1,#14141a)"&gt;
-                        &lt;th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0); width:25%"&gt;Diretorio/Arquivo&lt;/th&gt;
-                        &lt;th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0); width:15%"&gt;Status&lt;/th&gt;
-                        &lt;th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0)"&gt;Detalhes&lt;/th&gt;
-                    &lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;
-                        &lt;?php foreach ($dirResults as $dr): ?&gt;
-                            &lt;?php
-                            $dStatus = $dr['exists'] ? ($dr['writable'] ? 'ok' : 'warn') : 'warn';
-                            $dMsg = ($dr['exists'] ? 'Existe' : 'Nao existe') . ' | ' . ($dr['writable'] ? 'Gravavel' : 'Nao gravavel');
-                            row(basename($dr['path']), $dStatus, $dMsg . ' — ' . $dr['desc']);
-                            ?&gt;
-                        &lt;?php endforeach; ?&gt;
-                    &lt;/tbody&gt;
-                &lt;/table&gt;
+                <!-- Diretorios -->
+                <h5 style="color:var(--title,#d4d8e0); margin-top:20px"><i class="fas fa-folder-open" style="color:#1086dd"></i> Permissoes de Diretorio</h5>
+                <table class="table table-condensed" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8); margin-bottom:15px">
+                    <thead><tr style="background:var(--dark-1,#14141a)">
+                        <th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0); width:25%">Diretorio/Arquivo</th>
+                        <th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0); width:15%">Status</th>
+                        <th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0)">Detalhes</th>
+                    </tr></thead><tbody>
+                    <?php foreach ($dirResults as $dr): ?>
+                        <?php
+                        $dStatus = $dr['exists'] ? ($dr['writable'] ? 'ok' : 'warn') : 'warn';
+                        $dMsg = ($dr['exists'] ? 'Existe' : 'Nao existe') . ' | ' . ($dr['writable'] ? 'Gravavel' : 'Nao gravavel');
+                        row(basename($dr['path']), $dStatus, $dMsg . ' — ' . $dr['desc']);
+                        ?>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table>
 
-                &lt;!-- Ambiente --&gt;
-                &lt;h5 style="color:var(--title,#d4d8e0); margin-top:20px"&gt;&lt;i class="fas fa-info-circle" style="color:#1086dd"&gt;&lt;/i&gt; Informacoes do Ambiente&lt;/h5&gt;
-                &lt;div class="well well-small" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8); font-family:monospace; font-size:12px"&gt;
-                    PHP Version: &lt;?php echo phpversion(); ?&gt;&lt;br&gt;
-                    CI Version: &lt;?php echo CI_VERSION; ?&gt;&lt;br&gt;
-                    Ambiente NFSe: &lt;?php echo ucfirst($ambienteSistema); ?&gt;&lt;br&gt;
-                    Data/Hora Servidor: &lt;?php echo date('d/m/Y H:i:s'); ?&gt;&lt;br&gt;
-                    Base URL: &lt;?php echo base_url(); ?&gt;
-                &lt;/div&gt;
+                <!-- Ambiente -->
+                <h5 style="color:var(--title,#d4d8e0); margin-top:20px"><i class="fas fa-info-circle" style="color:#1086dd"></i> Informacoes do Ambiente</h5>
+                <div class="well well-small" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8); font-family:monospace; font-size:12px">
+                    PHP Version: <?php echo phpversion(); ?><br>
+                    CI Version: <?php echo CI_VERSION; ?><br>
+                    Ambiente NFSe: <?php echo ucfirst($ambienteSistema); ?><br>
+                    Data/Hora Servidor: <?php echo date('d/m/Y H:i:s'); ?><br>
+                    Base URL: <?php echo base_url(); ?>
+                </div>
 
-            &lt;/div&gt;
-        &lt;/div&gt;
-    &lt;/div&gt;
-&lt;/div&gt;
+            </div>
+        </div>
+    </div>
+</div>

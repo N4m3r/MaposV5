@@ -352,17 +352,28 @@ function testarEnvio() {
 
 function testarCurl() {
     limparDebug();
-    addDebug('info', 'Testando 6 variacoes de curl...');
+    addDebug('info', 'Testando variacoes de curl...');
     fetch('<?php echo site_url("notificacoesConfig/testar_curl"); ?>', {
         headers: {'X-Requested-With': 'XMLHttpRequest'}
     })
     .then(r => r.json())
     .then(data => {
         addDebug('info', 'URL testada: ' + data.url_testada);
+        addDebug('info', 'DNS: ' + (data.dns || 'N/D'));
+        addDebug('info', 'API Key: ' + (data.apikey_prefixo || 'N/D'));
         if (data.resultados) {
             data.resultados.forEach(function(r) {
-                const tipo = (r.http_code === 200) ? 'ok' : 'erro';
-                addDebug(tipo, r.nome + ': HTTP ' + r.http_code + (r.body ? ' | Body: ' + r.body.substring(0, 100) : ''));
+                const tipo = (r.http_code === 200 || r.http_code === 301 || r.http_code === 302) ? 'ok' : 'erro';
+                let msg = r.nome + ': HTTP ' + r.http_code;
+                if (r.error) msg += ' | CURL_ERR: ' + r.error;
+                if (r.redirect_url) msg += ' | Redirect: ' + r.redirect_url;
+                if (r.body) msg += ' | Body: ' + r.body.substring(0, 150).replace(/\n/g, ' ');
+                if (r.verbose) msg += ' | Verbose: ' + r.verbose.substring(0, 200).replace(/\n/g, ' ');
+                addDebug(tipo, msg);
+                if (r.headers) {
+                    const serverHeader = r.headers.split('\n').find(h => h.toLowerCase().startsWith('server:'));
+                    if (serverHeader) addDebug('info', '  -> ' + serverHeader.trim());
+                }
             });
         }
     })

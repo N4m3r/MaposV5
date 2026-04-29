@@ -236,38 +236,114 @@ class NotificacoesConfig extends MY_Controller
 
         $resultados = [];
 
-        // Teste 1: Header apikey (minúsculo)
+        // Teste 1-6: headers variados
         $resultados[] = $this->_curlTest('header_lowercase', $url, ['apikey: ' . $apikey]);
-
-        // Teste 2: Header Apikey (capitalizado)
         $resultados[] = $this->_curlTest('header_capitalize', $url, ['Apikey: ' . $apikey]);
-
-        // Teste 3: Header APIKEY (maiúsculo)
         $resultados[] = $this->_curlTest('header_uppercase', $url, ['APIKEY: ' . $apikey]);
-
-        // Teste 4: Query string
         $resultados[] = $this->_curlTest('query_string', $url . '?apikey=' . urlencode($apikey), []);
-
-        // Teste 5: Authorization Bearer
         $resultados[] = $this->_curlTest('auth_bearer', $url, ['Authorization: Bearer ' . $apikey]);
-
-        // Teste 6: Sem header customizado (só padrão)
         $resultados[] = $this->_curlTest('no_custom_headers', $url, null);
 
-        echo json_encode(['url_testada' => $url, 'resultados' => $resultados]);
+        // Teste 7: seguir redirect
+        $resultados[] = $this->_curlTest('follow_redirect', $url, ['apikey: ' . $apikey], true);
+
+        // Teste 8: gzip
+        $resultados[] = $this->_curlTest('gzip', $url, ['apikey: ' . $apikey], false, true);
+
+        // Teste 9: HTTP/1.1 forçado
+        $resultados[] = $this->_curlTest('http11', $url, ['apikey: ' . $apikey], false, false, CURL_HTTP_VERSION_1_1);
+
+        // Teste 10: URL externa (verifica se curl funciona no host de modo geral)
+        $resultados[] = $this->_curlTest('url_externa', 'https://httpbin.org/get', null);
+
+        // Teste 11: DNS resolve
+        $dns = gethostbyname(parse_url($url, PHP_URL_HOST));
+        $ipTest = $this->_curlTest('ip_direto', str_replace(parse_url($url, PHP_URL_HOST), $dns, $url), ['apikey: ' . $apikey]);
+        $ipTest['nome'] = 'ip_direto (' . $dns . ')';
+        $resultados[] = $ipTest;
+
+        // Teste 12: verbose com CURLOPT_VERBOSE
+        $verboseResult = $this->_curlTestVerbose($url, ['apikey: ' . $apikey]);
+        $resultados[] = [
+            'nome' => 'verbose',
+            'http_code' => $verboseResult['http_code'],
+            'error' => $verboseResult['error'],
+            'headers' => substr($verboseResult['headers'], 0, 300),
+            'body' => $verboseResult['body'],
+            'verbose' => substr($verboseResult['verbose'], 0, 500)
+        ];
+
+        echo json_encode([
+            'url_testada' => $url,
+            'apikey_prefixo' => substr($apikey, 0, 8) . '...',
+            'dns' => $dns,
+            'resultados' => $resultados
+        ]);
     }
 
-    private function _curlTest($nome, $url, $headers)
+    private function _curlTest($nome, $url, $headers, $follow = false, $gzip = false, $httpVersion = null)
     {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0');
+        curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 8);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36');
         curl_setopt($ch, CURLOPT_HEADER, true);
+
+        if ($follow) {
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($ch, CURLOPT_MAXREDIRS, 5);
+        }
+        if ($gzip) {
+            curl_setopt($ch, CURLOPT_ENCODING, '');
+        }
+        if ($httpVersion) {
+            curl_setopt($ch, CURLOPT_HTTP_VERSION, $httpVersion);
+        }
+
+        if ($headers !== null) {
+            $allHeaders = array_merge(['Accept: application/json'], $headers);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $allHeaders);
+        }
+
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $error = curl_error($ch);
+        $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        $redirectUrl = curl_getinfo($ch, CURLINFO_REDIRECT_URL);
+        curl_close($ch);
+
+        $respHeaders = substr($response, 0, $headerSize);
+        $body = substr($response, $headerSize);
+
+        return [
+            'nome' => $nome,
+            'http_code' => $httpCode,
+            'error' => $error,
+            'redirect_url' => $redirectUrl,
+            'headers' => $respHeaders,
+            'body' => $body,
+        ];
+    }
+
+    private function _curlTestVerbose($url, $headers)
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 8);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36');
+        curl_setopt($ch, CURLOPT_HEADER, true);
+        curl_setopt($ch, CURLOPT_VERBOSE, true);
+
+        $verboseLog = fopen('php://temp', 'w+');
+        curl_setopt($ch, CURLOPT_STDERR, $verboseLog);
 
         if ($headers !== null) {
             $allHeaders = array_merge(['Accept: application/json'], $headers);
@@ -280,15 +356,19 @@ class NotificacoesConfig extends MY_Controller
         $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         curl_close($ch);
 
+        rewind($verboseLog);
+        $verbose = stream_get_contents($verboseLog);
+        fclose($verboseLog);
+
         $respHeaders = substr($response, 0, $headerSize);
         $body = substr($response, $headerSize);
 
         return [
-            'nome' => $nome,
             'http_code' => $httpCode,
             'error' => $error,
-            'headers' => substr($respHeaders, 0, 300),
-            'body' => substr($body, 0, 200),
+            'headers' => $respHeaders,
+            'body' => $body,
+            'verbose' => $verbose,
         ];
     }
 }
