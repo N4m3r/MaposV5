@@ -314,6 +314,32 @@ class NotificacoesConfig extends MY_Controller
         // Teste 23: listInstances (outro possivel)
         $resultados[] = $this->_curlTest('v2_listInstances', $base . '/instance/listInstances', ['apikey: ' . $apikey]);
 
+        // Teste 24: Headers de browser completo (Referer, Origin)
+        $browserHeaders = [
+            'apikey: ' . $apikey,
+            'Referer: ' . $base . '/swagger/index.html',
+            'Origin: ' . $base
+        ];
+        $resultados[] = $this->_curlTest('browser_headers', $url, $browserHeaders);
+
+        // Teste 25: Cookie de sessão do swagger
+        $resultados[] = $this->_curlTest('with_cookie', $url, [
+            'apikey: ' . $apikey,
+            'Cookie: swagger_session=test'
+        ]);
+
+        // Teste 26: Accept HTML (como navegador)
+        $resultados[] = $this->_curlTest('accept_html', $url, [
+            'apikey: ' . $apikey,
+            'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+        ]);
+
+        // Teste 27: Sem Accept header (apenas apikey)
+        $resultados[] = $this->_curlTestRaw('raw_apikey_only', $url, ['apikey: ' . $apikey]);
+
+        // Teste 28: TLS 1.2 forçado
+        $resultados[] = $this->_curlTestTls('force_tls12', $url, ['apikey: ' . $apikey]);
+
         echo json_encode([
             'url_testada' => $url,
             'apikey_prefixo' => substr($apikey, 0, 8) . '...',
@@ -510,6 +536,64 @@ class NotificacoesConfig extends MY_Controller
         $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         curl_close($ch);
 
+        return [
+            'nome' => $nome,
+            'http_code' => $httpCode,
+            'error' => $error,
+            'headers' => substr($response, 0, $headerSize),
+            'body' => substr($response, $headerSize),
+        ];
+    }
+
+    private function _curlTestRaw($nome, $url, $headers)
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 8);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36');
+        curl_setopt($ch, CURLOPT_HEADER, true);
+        if ($headers !== null) {
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        }
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $error = curl_error($ch);
+        $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        curl_close($ch);
+        return [
+            'nome' => $nome,
+            'http_code' => $httpCode,
+            'error' => $error,
+            'headers' => substr($response, 0, $headerSize),
+            'body' => substr($response, $headerSize),
+        ];
+    }
+
+    private function _curlTestTls($nome, $url, $headers)
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 8);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36');
+        curl_setopt($ch, CURLOPT_HEADER, true);
+        curl_setopt($ch, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2);
+        if ($headers !== null) {
+            $allHeaders = array_merge(['Accept: application/json'], $headers);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $allHeaders);
+        }
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $error = curl_error($ch);
+        $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        curl_close($ch);
         return [
             'nome' => $nome,
             'http_code' => $httpCode,

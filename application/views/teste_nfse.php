@@ -33,11 +33,11 @@ foreach ($exts as $ext => $desc) {
 // --- Tabelas ---
 $tables = [
     'os_nfse_emitida' => 'Tabela principal de NFS-e',
-    'boletos_os' => 'Tabela de boletos vinculados a OS',
+    'os_boleto_emitido' => 'Tabela de boletos vinculados a OS',
     'impostos_retidos' => 'Retencoes de impostos / DRE',
     'config_sistema_impostos' => 'Configuracoes de impostos',
     'configuracoes_impostos' => 'Aliquotas do Simples Nacional',
-    'certificados' => 'Certificado digital',
+    'certificado_digital' => 'Certificado digital',
     'clientes' => 'Clientes (tomador)',
     'emitente' => 'Dados do emitente (prestador)',
     'os' => 'Ordens de servico',
@@ -58,7 +58,7 @@ $columns = [
     ['os_nfse_emitida', 'xml_dps', 'XML DPS armazenado'],
     ['os_nfse_emitida', 'xml_nfse', 'XML NFSe armazenado'],
     ['os_nfse_emitida', 'chave_acesso', 'Chave de acesso API Nacional'],
-    ['boletos_os', 'nfse_id', 'Vinculo boleto->NFSe'],
+    ['os_boleto_emitido', 'nfse_id', 'Vinculo boleto->NFSe'],
 ];
 $colResults = [];
 foreach ($columns as $col) {
@@ -191,15 +191,20 @@ if (file_exists(APPPATH . 'libraries/Nfse/DpsXmlBuilder.php')) {
 // --- Teste de normalizacao de valor ---
 $normTest = null;
 $normMsg = '';
-if (method_exists($this, 'normalizarValorMonetario')) {
-    $norm1 = $this->normalizarValorMonetario('1.234,56');
-    $norm2 = $this->normalizarValorMonetario('1234.56');
-    $norm3 = $this->normalizarValorMonetario('');
-    $normTest = ($norm1 == 1234.56 && $norm2 == 1234.56 && $norm3 == 0);
-    $normMsg = "'1.234,56' => {$norm1} | '1234.56' => {$norm2} | '' => {$norm3}";
-} else {
-    $normMsg = 'Metodo normalizarValorMonetario() nao encontrado.';
-}
+$normFn = function($valor) {
+    if (empty($valor) || is_numeric($valor)) { return floatval($valor); }
+    $valor = trim($valor);
+    if (strpos($valor, ',') !== false) {
+        $valor = str_replace('.', '', $valor);
+        $valor = str_replace(',', '.', $valor);
+    }
+    return floatval($valor);
+};
+$norm1 = $normFn('1.234,56');
+$norm2 = $normFn('1234.56');
+$norm3 = $normFn('');
+$normTest = ($norm1 == 1234.56 && $norm2 == 1234.56 && $norm3 == 0);
+$normMsg = "'1.234,56' => {$norm1} | '1234.56' => {$norm2} | '' => {$norm3}";
 
 // --- Permissoes de diretorio ---
 $dirResults = [];
