@@ -272,7 +272,7 @@ class NotificacoesConfig extends MY_Controller
         ]);
     }
 
-    private function _curlTest($nome, $url, $headers, $follow = false, $gzip = false, $httpVersion = null)
+    private function _curlTest($nome, $url, $headers, $follow = true, $gzip = true, $httpVersion = null)
     {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -281,30 +281,37 @@ class NotificacoesConfig extends MY_Controller
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
         curl_setopt($ch, CURLOPT_TIMEOUT, 15);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 8);
-        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36');
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, $follow);
+        curl_setopt($ch, CURLOPT_MAXREDIRS, 5);
+        curl_setopt($ch, CURLOPT_ENCODING, $gzip ? '' : null);
         curl_setopt($ch, CURLOPT_HEADER, true);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
 
-        if ($follow) {
-            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-            curl_setopt($ch, CURLOPT_MAXREDIRS, 5);
-        }
-        if ($gzip) {
-            curl_setopt($ch, CURLOPT_ENCODING, '');
-        }
         if ($httpVersion) {
             curl_setopt($ch, CURLOPT_HTTP_VERSION, $httpVersion);
         }
 
+        $defaultHeaders = [
+            'Accept: application/json, text/plain, */*',
+            'Accept-Language: pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
+            'Cache-Control: no-cache',
+            'Pragma: no-cache',
+            'Sec-Fetch-Dest: empty',
+            'Sec-Fetch-Mode: cors',
+            'Sec-Fetch-Site: same-origin',
+        ];
         if ($headers !== null) {
-            $allHeaders = array_merge(['Accept: application/json'], $headers);
+            $allHeaders = array_merge($defaultHeaders, $headers);
             curl_setopt($ch, CURLOPT_HTTPHEADER, $allHeaders);
+        } else {
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $defaultHeaders);
         }
 
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $error = curl_error($ch);
         $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-        $redirectUrl = curl_getinfo($ch, CURLINFO_REDIRECT_URL);
+        $finalUrl = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
         curl_close($ch);
 
         $respHeaders = substr($response, 0, $headerSize);
@@ -314,7 +321,7 @@ class NotificacoesConfig extends MY_Controller
             'nome' => $nome,
             'http_code' => $httpCode,
             'error' => $error,
-            'redirect_url' => $redirectUrl,
+            'final_url' => $finalUrl,
             'headers' => $respHeaders,
             'body' => $body,
         ];
@@ -406,26 +413,42 @@ class NotificacoesConfig extends MY_Controller
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
         curl_setopt($ch, CURLOPT_TIMEOUT, 15);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 8);
-        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36');
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_MAXREDIRS, 5);
+        curl_setopt($ch, CURLOPT_ENCODING, '');
         curl_setopt($ch, CURLOPT_HEADER, true);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
 
+        $defaultHeaders = [
+            'Accept: application/json, text/plain, */*',
+            'Accept-Language: pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
+            'Cache-Control: no-cache',
+            'Pragma: no-cache',
+            'Sec-Fetch-Dest: empty',
+            'Sec-Fetch-Mode: cors',
+            'Sec-Fetch-Site: same-origin',
+        ];
         if ($headers !== null) {
-            $allHeaders = array_merge(['Accept: application/json'], $headers);
+            $allHeaders = array_merge($defaultHeaders, $headers);
             curl_setopt($ch, CURLOPT_HTTPHEADER, $allHeaders);
+        } else {
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $defaultHeaders);
         }
 
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $error = curl_error($ch);
         $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        $finalUrl = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
         curl_close($ch);
 
         return [
             'nome' => $nome,
             'http_code' => $httpCode,
             'error' => $error,
+            'final_url' => $finalUrl,
             'headers' => substr($response, 0, $headerSize),
             'body' => substr($response, $headerSize),
         ];

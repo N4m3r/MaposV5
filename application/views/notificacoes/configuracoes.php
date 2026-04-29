@@ -393,6 +393,7 @@ function testarCurl() {
                     tipo = (r.http_code === 200 || r.http_code === 201) ? 'ok' : ((r.http_code === 500 && r.body && r.body.includes('not registered')) ? 'ok' : 'erro');
                     msg += 'HTTP ' + r.http_code;
                     if (r.error) msg += ' | CURL_ERR: ' + r.error;
+                    if (r.final_url) msg += ' | FinalURL: ' + r.final_url;
                     if (r.body) msg += ' | Body: ' + r.body.substring(0, 120).replace(/\n/g, ' ');
                 }
                 addDebug(tipo, msg);

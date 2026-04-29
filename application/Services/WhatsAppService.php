@@ -43,16 +43,14 @@ class WhatsAppService
     }
 
     /**
-     * Resolve URL interna da API quando servidor e Evolution estao no mesmo host.
-     * Evita loopback pelo Cloudflare/Nginx.
+     * Resolve URL da API. Usa URL interna configurada manualmente se existir,
+     * caso contrario mantem a URL externa.
      */
     private function resolveApiUrl($url)
     {
         if (empty($url)) {
             return $url;
         }
-
-        $host = parse_url($url, PHP_URL_HOST);
 
         // Se tiver URL interna configurada explicitamente, usa ela
         if (!empty($this->config->evolution_url_interna)) {
@@ -61,16 +59,12 @@ class WhatsAppService
             return $internal;
         }
 
-        // Fallback automatico para dominios conhecidos que rodam localmente
-        $localHosts = ['evo.jj-ferreiras.com.br'];
-        if (in_array($host, $localHosts, true)) {
-            $localUrl = 'http://127.0.0.1:8091';
-            $this->addDebug('info', 'Detectado host local (' . $host . '). Usando URL interna: ' . $localUrl);
-            return $localUrl;
-        }
-
         return rtrim($url, '/');
     }
+
+    /**
+     * Faz requisicao HTTP com headers de navegador real para evitar bloqueios.
+     */
     private function request($url, $method = 'GET', $data = [], $headers = [])
     {
         $ch = curl_init();
@@ -80,11 +74,33 @@ class WhatsAppService
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
         curl_setopt($ch, CURLOPT_TIMEOUT, 30);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
-        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36');
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_MAXREDIRS, 5);
+        curl_setopt($ch, CURLOPT_ENCODING, '');
         curl_setopt($ch, CURLOPT_HEADER, true);
 
-        $allHeaders = array_merge(['Accept: application/json'], $headers);
+        // Headers padrao que imitam um navegador real (evita bloqueio Cloudflare/Nginx)
+        $defaultHeaders = [
+            'Accept: application/json, text/plain, */*',
+            'Accept-Language: pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
+            'Cache-Control: no-cache',
+            'Pragma: no-cache',
+            'Sec-Fetch-Dest: empty',
+            'Sec-Fetch-Mode: cors',
+            'Sec-Fetch-Site: same-origin',
+        ];
+
+        $allHeaders = array_merge($defaultHeaders, $headers);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $allHeaders);
+
+        // Se URL interna configurada, forca resolucao local via CURLOPT_RESOLVE
+        if (!empty($this->config->evolution_url_interna)) {
+            $host = parse_url($url, PHP_URL_HOST);
+            $port = parse_url($url, PHP_URL_PORT) ?: (parse_url($url, PHP_URL_SCHEME) === 'https' ? 443 : 80);
+            $ip = parse_url($this->config->evolution_url_interna, PHP_URL_HOST) ?: '127.0.0.1';
+            curl_setopt($ch, CURLOPT_RESOLVE, [$host . ':' . $port . ':' . $ip]);
+            $this->addDebug('info', 'CURLOPT_RESOLVE: ' . $host . ' -> ' . $ip . ':' . $port);
+        }
 
         if ($method === 'POST') {
             curl_setopt($ch, CURLOPT_POST, true);
@@ -95,12 +111,19 @@ class WhatsAppService
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $error = curl_error($ch);
         $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        $finalUrl = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
         curl_close($ch);
 
         $respHeaders = substr($response, 0, $headerSize);
         $body = substr($response, $headerSize);
 
-        return ['body' => $body, 'headers' => $respHeaders, 'http_code' => $httpCode, 'error' => $error];
+        return [
+            'body' => $body,
+            'headers' => $respHeaders,
+            'http_code' => $httpCode,
+            'error' => $error,
+            'final_url' => $finalUrl,
+        ];
     }
 
     /**
