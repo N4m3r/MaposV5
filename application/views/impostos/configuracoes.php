@@ -12,7 +12,8 @@ function fmtCnpj($cnpj) {
     }
     return $cnpj;
 }
-?&gt;
+?>
+
 
 <style>
 .impostos-container .aliquota-card {
@@ -251,7 +252,7 @@ function fmtCnpj($cnpj) {
                         <label class="control-label">Anexo Simples:*</label>
                         <div class="controls">
                             <select name="anexo_padrao" id="select-anexo" class="span8" required>
-                                <?php foreach ($anexos as $key => $nome): ?
+                                <?php foreach ($anexos as $key => $nome): ?>
                                 <option value="<?= $key ?>" <?= $configs['anexo_padrao'] == $key ? 'selected' : '' ?>><?= $nome ?></option>
                                 <?php endforeach; ?>
                             </select>
@@ -401,7 +402,7 @@ function fmtCnpj($cnpj) {
                 <h5 style="color:var(--title,#d4d8e0)">Aliquotas Simples Nacional - Anexo III (Servicos)</h5>
             </div>
             <div class="widget-content">
-                <?php foreach ($aliquotas_iii as $a): ?
+                <?php foreach ($aliquotas_iii as $a): ?>
                 <div class="aliquota-card <?= ($configs['anexo_padrao'] == 'III' && $configs['faixa_atual'] == $a->faixa) ? 'ativo' : '' ?>">
                     <h5>
                         <?= $a->faixa ?>a Faixa - Aliquota Nominal: <?= number_format($a->aliquota_nominal, 2, ',', '.') ?>%
@@ -446,7 +447,7 @@ function fmtCnpj($cnpj) {
                 <h5 style="color:var(--title,#d4d8e0)">Aliquotas Simples Nacional - Anexo IV (Construcao e ISS Proprio)</h5>
             </div>
             <div class="widget-content">
-                <?php foreach ($aliquotas_iv as $a): ?
+                <?php foreach ($aliquotas_iv as $a): ?>
                 <div class="aliquota-card <?= ($configs['anexo_padrao'] == 'IV' && $configs['faixa_atual'] == $a->faixa) ? 'ativo' : '' ?>" style="border-left-color: #e67e22;">
                     <h5>
                         <?= $a->faixa ?>a Faixa - Aliquota Nominal: <?= number_format($a->aliquota_nominal, 2, ',', '.') ?>%
@@ -491,7 +492,7 @@ function fmtCnpj($cnpj) {
                 <h5 style="color:var(--title,#d4d8e0)">Aliquotas Simples Nacional - Anexo V (Comercio e Industria)</h5>
             </div>
             <div class="widget-content">
-                <?php foreach ($aliquotas_v as $a): ?
+                <?php foreach ($aliquotas_v as $a): ?>
                 <div class="aliquota-card <?= ($configs['anexo_padrao'] == 'V' && $configs['faixa_atual'] == $a->faixa) ? 'ativo' : '' ?>" style="border-left-color: #9b59b6;">
                     <h5>
                         <?= $a->faixa ?>a Faixa - Aliquota Nominal: <?= number_format($a->aliquota_nominal, 2, ',', '.') ?>%
