@@ -271,7 +271,6 @@ function atualizarRetencoesStep1(valorBruto) {
     $('#retem-cofins-valor').text(rCofins > 0 ? fmtMoney(rCofins) : '');
     $('#retem-csll-valor').text(rCsll > 0 ? fmtMoney(rCsll) : '');
     $('#retem-total-valor').text(fmtMoney(totalRet));
-    wizardData.impostosResult = null;
 }
 
 function atualizarValorBoleto() {
