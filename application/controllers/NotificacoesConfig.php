@@ -288,6 +288,32 @@ class NotificacoesConfig extends MY_Controller
         // Teste 17: POST em vez de GET
         $resultados[] = $this->_curlTestPost('post_method', $url, ['apikey: ' . $apikey]);
 
+        // Testes Evolution Go (SaaS) - endpoints diferentes da v2
+        $base = rtrim($config->evolution_url ?? '', '/');
+        $instance = $config->evolution_instance ?? 'Mapos';
+
+        // Teste 18: connectionState (Go)
+        $resultados[] = $this->_curlTest('go_connectionState', $base . '/instance/connectionState/' . urlencode($instance), ['apikey: ' . $apikey]);
+
+        // Teste 19: connect (Go) - QR Code
+        $resultados[] = $this->_curlTest('go_connect', $base . '/instance/connect/' . urlencode($instance), ['apikey: ' . $apikey]);
+
+        // Teste 20: connect com token de instancia
+        $instanceToken = $config->evolution_instance_token ?? '';
+        if ($instanceToken) {
+            $resultados[] = $this->_curlTest('go_connect_instancetoken', $base . '/instance/connect/' . urlencode($instance), ['apikey: ' . $instanceToken]);
+            $resultados[] = $this->_curlTest('go_connectionState_instancetoken', $base . '/instance/connectionState/' . urlencode($instance), ['apikey: ' . $instanceToken]);
+        }
+
+        // Teste 21: sendText (Go) - POST
+        $resultados[] = $this->_curlTestPostGo('go_sendText', $base . '/message/sendText/' . urlencode($instance), ['apikey: ' . $apikey]);
+
+        // Teste 22: fetchInstances (possivel endpoint v2 alternativo)
+        $resultados[] = $this->_curlTest('v2_fetchInstances', $base . '/instance/fetchInstances', ['apikey: ' . $apikey]);
+
+        // Teste 23: listInstances (outro possivel)
+        $resultados[] = $this->_curlTest('v2_listInstances', $base . '/instance/listInstances', ['apikey: ' . $apikey]);
+
         echo json_encode([
             'url_testada' => $url,
             'apikey_prefixo' => substr($apikey, 0, 8) . '...',
@@ -434,6 +460,44 @@ class NotificacoesConfig extends MY_Controller
         curl_setopt($ch, CURLOPT_HEADER, true);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, '{}');
+
+        if ($headers !== null) {
+            $allHeaders = array_merge(['Accept: application/json', 'Content-Type: application/json'], $headers);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $allHeaders);
+        }
+
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $error = curl_error($ch);
+        $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        curl_close($ch);
+
+        return [
+            'nome' => $nome,
+            'http_code' => $httpCode,
+            'error' => $error,
+            'headers' => substr($response, 0, $headerSize),
+            'body' => substr($response, $headerSize),
+        ];
+    }
+
+    private function _curlTestPostGo($nome, $url, $headers)
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 8);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36');
+        curl_setopt($ch, CURLOPT_HEADER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
+            'number' => '5511999999999',
+            'text' => 'Teste',
+            'options' => ['delay' => 1200]
+        ]));
 
         if ($headers !== null) {
             $allHeaders = array_merge(['Accept: application/json', 'Content-Type: application/json'], $headers);
