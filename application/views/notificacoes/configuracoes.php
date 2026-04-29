@@ -257,16 +257,26 @@ function diagnostico() {
     .then(r => r.json())
     .then(data => {
         addDebug('info', 'Tabela existe: ' + (data.tabela_existe ? 'SIM' : 'NAO'));
-        if (data.config) {
-            Object.entries(data.config).forEach(([k, v]) => {
+        if (data.config_resumo) {
+            Object.entries(data.config_resumo).forEach(([k, v]) => {
                 addDebug('info', k + ': ' + (v === null ? 'NULL' : v));
             });
         }
-        if (data.evolution_test) {
-            addDebug('info', '--- Teste Evolution ---');
-            addDebug('info', 'HTTP Code: ' + data.evolution_test.http_code);
-            if (data.evolution_test.curl_error) addDebug('erro', 'CURL Error: ' + data.evolution_test.curl_error);
-            if (data.evolution_test.body_preview) addDebug('info', 'Body: ' + data.evolution_test.body_preview);
+        if (data.evolution_diagnostico) {
+            addDebug('info', '--- Diagnostico Evolution ---');
+            const diag = data.evolution_diagnostico;
+            if (diag.teste_instance_all) {
+                addDebug(diag.teste_instance_all.ok ? 'ok' : 'erro', '/instance/all: HTTP ' + diag.teste_instance_all.http_code);
+            }
+            if (diag.instancias_encontradas !== undefined) {
+                addDebug('info', 'Instancias: ' + diag.instancias_encontradas);
+            }
+            if (diag.instancia) {
+                addDebug(diag.instancia.connected ? 'ok' : 'erro', 'Instancia ' + diag.instancia.nome + ' connected=' + diag.instancia.connected);
+            }
+            if (diag.teste_instance_status) {
+                addDebug(diag.teste_instance_status.ok ? 'ok' : 'erro', '/instance/status: HTTP ' + diag.teste_instance_status.http_code);
+            }
         }
     })
     .catch(err => addDebug('erro', err.message));
@@ -311,9 +321,12 @@ function obterQRCode() {
 
 function desconectar() {
     if (!confirm('Desconectar?')) return;
+    const fd = new FormData();
+    fd.append('<?php echo $this->security->get_csrf_token_name(); ?>', '<?php echo $this->security->get_csrf_hash(); ?>');
     fetch('<?php echo site_url("notificacoesConfig/desconectar"); ?>', {
         method: 'POST',
-        headers: {'X-Requested-With': 'XMLHttpRequest'}
+        headers: {'X-Requested-With': 'XMLHttpRequest'},
+        body: fd
     })
     .then(r => r.json())
     .then(data => {
@@ -352,32 +365,35 @@ function testarEnvio() {
 
 function testarCurl() {
     limparDebug();
-    addDebug('info', 'Testando variacoes de curl...');
+    addDebug('info', 'Testando endpoints Evolution Go...');
     fetch('<?php echo site_url("notificacoesConfig/testar_curl"); ?>', {
         headers: {'X-Requested-With': 'XMLHttpRequest'}
     })
     .then(r => r.json())
     .then(data => {
-        addDebug('info', 'URL testada: ' + data.url_testada);
+        addDebug('info', 'URL Base: ' + data.url_base);
         addDebug('info', 'DNS: ' + (data.dns || 'N/D'));
         addDebug('info', 'API Key: ' + (data.apikey_prefixo || 'N/D'));
+        addDebug('info', 'Instance Token: ' + (data.instance_token_prefixo || 'N/D'));
         if (data.resultados) {
             data.resultados.forEach(function(r) {
-                const tipo = (r.http_code === 200 || r.http_code === 301 || r.http_code === 302) ? 'ok' : 'erro';
-                let msg = r.nome + ': HTTP ' + r.http_code;
-                if (r.error) msg += ' | CURL_ERR: ' + r.error;
-                if (r.redirect_url) msg += ' | Redirect: ' + r.redirect_url;
-                if (r.body) msg += ' | Body: ' + r.body.substring(0, 150).replace(/\n/g, ' ');
-                if (r.verbose) msg += ' | Verbose: ' + r.verbose.substring(0, 200).replace(/\n/g, ' ');
-                addDebug(tipo, msg);
-                if (r.headers) {
-                    const serverHeader = r.headers.split('\n').find(h => h.toLowerCase().startsWith('server:'));
-                    if (serverHeader) addDebug('info', '  -> ' + serverHeader.trim());
-                    const cfRay = r.headers.split('\n').find(h => h.toLowerCase().startsWith('cf-ray'));
-                    if (cfRay) addDebug('info', '  -> ' + cfRay.trim());
+                let tipo = 'info';
+                let msg = r.nome + ': ';
+                if (r.nota) {
+                    msg += r.nota;
+                } else {
+                    tipo = (r.http_code === 200 || r.http_code === 201) ? 'ok' : ((r.http_code === 500 && r.body && r.body.includes('not registered')) ? 'ok' : 'erro');
+                    msg += 'HTTP ' + r.http_code;
+                    if (r.error) msg += ' | CURL_ERR: ' + r.error;
+                    if (r.body) msg += ' | Body: ' + r.body.substring(0, 120).replace(/\n/g, ' ');
                 }
+                addDebug(tipo, msg);
             });
         }
+        addDebug('info', '--- Legenda ---');
+        addDebug('ok', 'HTTP 200 = Endpoint OK e autenticado corretamente');
+        addDebug('ok', 'HTTP 500 com \"not registered\" = Endpoint OK (numero de teste nao existe no WhatsApp)');
+        addDebug('erro', 'HTTP 401 = Token incorreto ou endpoint nao autorizado com esse token');
     })
     .catch(err => addDebug('erro', err.message));
 }

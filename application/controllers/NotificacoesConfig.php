@@ -162,42 +162,22 @@ class NotificacoesConfig extends MY_Controller
             show_404();
         }
         header('Content-Type: application/json');
+
+        $service = new WhatsAppService();
+        $diagnostico = $service->diagnostico();
         $config = $this->notificacoes_config_model->getConfig();
-
-        // Testa conectividade com servidor Evolution
-        $evolutionTest = null;
-        if (!empty($config->evolution_url)) {
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, rtrim($config->evolution_url, '/') . '/instance/all');
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-            curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-            curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0');
-            curl_setopt($ch, CURLOPT_HEADER, true);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                'Accept: application/json',
-                'apikey: ' . ($config->evolution_apikey ?? '')
-            ]);
-            $response = curl_exec($ch);
-            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            $curlError = curl_error($ch);
-            $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-            curl_close($ch);
-
-            $body = substr($response, $headerSize);
-            $evolutionTest = [
-                'http_code' => $httpCode,
-                'curl_error' => $curlError,
-                'body_preview' => substr($body, 0, 300),
-            ];
-        }
 
         echo json_encode([
             'tabela_existe' => $this->db->table_exists('notificacoes_config'),
-            'config' => (array) $config,
-            'evolution_test' => $evolutionTest,
+            'config_resumo' => [
+                'url' => $config->evolution_url ?? 'N/A',
+                'apikey' => !empty($config->evolution_apikey) ? substr($config->evolution_apikey, 0, 8) . '...' : 'N/A',
+                'instance' => $config->evolution_instance ?? 'N/A',
+                'instance_token' => !empty($config->evolution_instance_token) ? substr($config->evolution_instance_token, 0, 8) . '...' : 'N/A',
+                'ativo' => $config->whatsapp_ativo ?? 'N/A',
+                'provedor' => $config->whatsapp_provedor ?? 'N/A',
+            ],
+            'evolution_diagnostico' => $diagnostico,
         ]);
     }
 
@@ -221,7 +201,7 @@ class NotificacoesConfig extends MY_Controller
     public function preview_template() { echo json_encode(['error' => 'Não implementado']); }
 
     /**
-     * Testa diferentes formas de curl para descobrir qual funciona
+     * Testa endpoints da Evolution API Go com os tokens corretos
      */
     public function testar_curl()
     {
@@ -231,118 +211,59 @@ class NotificacoesConfig extends MY_Controller
         header('Content-Type: application/json');
 
         $config = $this->notificacoes_config_model->getConfig();
-        $url = rtrim($config->evolution_url ?? '', '/') . '/instance/all';
+        $base = rtrim($config->evolution_url ?? '', '/');
         $apikey = $config->evolution_apikey ?? '';
+        $instance = $config->evolution_instance ?? 'Mapos';
+        $instanceToken = $config->evolution_instance_token ?? '';
 
         $resultados = [];
 
-        // Teste 1-6: headers variados
-        $resultados[] = $this->_curlTest('header_lowercase', $url, ['apikey: ' . $apikey]);
-        $resultados[] = $this->_curlTest('header_capitalize', $url, ['Apikey: ' . $apikey]);
-        $resultados[] = $this->_curlTest('header_uppercase', $url, ['APIKEY: ' . $apikey]);
-        $resultados[] = $this->_curlTest('query_string', $url . '?apikey=' . urlencode($apikey), []);
-        $resultados[] = $this->_curlTest('auth_bearer', $url, ['Authorization: Bearer ' . $apikey]);
-        $resultados[] = $this->_curlTest('no_custom_headers', $url, null);
+        // 1. /instance/all com API key global (deve funcionar)
+        $resultados[] = $this->_curlTest('1_instance_all_apikey', $base . '/instance/all', ['apikey: ' . $apikey]);
 
-        // Teste 7: seguir redirect
-        $resultados[] = $this->_curlTest('follow_redirect', $url, ['apikey: ' . $apikey], true);
-
-        // Teste 8: gzip
-        $resultados[] = $this->_curlTest('gzip', $url, ['apikey: ' . $apikey], false, true);
-
-        // Teste 9: HTTP/1.1 forçado
-        $resultados[] = $this->_curlTest('http11', $url, ['apikey: ' . $apikey], false, false, CURL_HTTP_VERSION_1_1);
-
-        // Teste 10: URL externa (verifica se curl funciona no host de modo geral)
-        $resultados[] = $this->_curlTest('url_externa', 'https://httpbin.org/get', null);
-
-        // Teste 11: DNS resolve
-        $dns = gethostbyname(parse_url($url, PHP_URL_HOST));
-        $ipTest = $this->_curlTest('ip_direto', str_replace(parse_url($url, PHP_URL_HOST), $dns, $url), ['apikey: ' . $apikey]);
-        $ipTest['nome'] = 'ip_direto (' . $dns . ')';
-        $resultados[] = $ipTest;
-
-        // Teste 12: verbose com CURLOPT_VERBOSE
-        $verboseResult = $this->_curlTestVerbose($url, ['apikey: ' . $apikey]);
-        $resultados[] = [
-            'nome' => 'verbose',
-            'http_code' => $verboseResult['http_code'],
-            'error' => $verboseResult['error'],
-            'headers' => substr($verboseResult['headers'], 0, 300),
-            'body' => $verboseResult['body'],
-            'verbose' => substr($verboseResult['verbose'], 0, 500)
-        ];
-
-        // Teste 13: GET na raiz do servidor Evolution
-        $resultados[] = $this->_curlTest('root_path', rtrim($config->evolution_url ?? '', '/'), null);
-
-        // Teste 14: outro endpoint Evolution conhecido (manager)
-        $resultados[] = $this->_curlTest('manager_endpoint', rtrim($config->evolution_url ?? '', '/') . '/manager', null);
-
-        // Teste 15: User-Agent alternativo
-        $resultados[] = $this->_curlTestCustomUA('ua_curl', $url, ['apikey: ' . $apikey], 'curl/7.68.0');
-
-        // Teste 16: sem User-Agent
-        $resultados[] = $this->_curlTestCustomUA('no_ua', $url, ['apikey: ' . $apikey], '');
-
-        // Teste 17: POST em vez de GET
-        $resultados[] = $this->_curlTestPost('post_method', $url, ['apikey: ' . $apikey]);
-
-        // Testes Evolution Go (SaaS) - endpoints diferentes da v2
-        $base = rtrim($config->evolution_url ?? '', '/');
-        $instance = $config->evolution_instance ?? 'Mapos';
-
-        // Teste 18: connectionState (Go)
-        $resultados[] = $this->_curlTest('go_connectionState', $base . '/instance/connectionState/' . urlencode($instance), ['apikey: ' . $apikey]);
-
-        // Teste 19: connect (Go) - QR Code
-        $resultados[] = $this->_curlTest('go_connect', $base . '/instance/connect/' . urlencode($instance), ['apikey: ' . $apikey]);
-
-        // Teste 20: connect com token de instancia
-        $instanceToken = $config->evolution_instance_token ?? '';
+        // 2. /instance/all com token de instancia (deve falhar - 401)
         if ($instanceToken) {
-            $resultados[] = $this->_curlTest('go_connect_instancetoken', $base . '/instance/connect/' . urlencode($instance), ['apikey: ' . $instanceToken]);
-            $resultados[] = $this->_curlTest('go_connectionState_instancetoken', $base . '/instance/connectionState/' . urlencode($instance), ['apikey: ' . $instanceToken]);
+            $resultados[] = $this->_curlTest('2_instance_all_token', $base . '/instance/all', ['apikey: ' . $instanceToken]);
         }
 
-        // Teste 21: sendText (Go) - POST
-        $resultados[] = $this->_curlTestPostGo('go_sendText', $base . '/message/sendText/' . urlencode($instance), ['apikey: ' . $apikey]);
+        // 3. /instance/status com API key global (deve falhar - 401)
+        $resultados[] = $this->_curlTest('3_instance_status_apikey', $base . '/instance/status', ['apikey: ' . $apikey]);
 
-        // Teste 22: fetchInstances (possivel endpoint v2 alternativo)
-        $resultados[] = $this->_curlTest('v2_fetchInstances', $base . '/instance/fetchInstances', ['apikey: ' . $apikey]);
+        // 4. /instance/status com token de instancia (deve funcionar)
+        if ($instanceToken) {
+            $resultados[] = $this->_curlTest('4_instance_status_token', $base . '/instance/status', ['apikey: ' . $instanceToken]);
+        }
 
-        // Teste 23: listInstances (outro possivel)
-        $resultados[] = $this->_curlTest('v2_listInstances', $base . '/instance/listInstances', ['apikey: ' . $apikey]);
+        // 5. /send/text com API key global (deve falhar - 401)
+        $resultados[] = $this->_curlTestPost('5_send_text_apikey', $base . '/send/text', ['apikey: ' . $apikey, 'Content-Type: application/json'], ['number' => '5511999999999', 'text' => 'Teste']);
 
-        // Teste 24: Headers de browser completo (Referer, Origin)
-        $browserHeaders = [
-            'apikey: ' . $apikey,
-            'Referer: ' . $base . '/swagger/index.html',
-            'Origin: ' . $base
+        // 6. /send/text com token de instancia (deve funcionar - pode retornar 500 se numero nao existe)
+        if ($instanceToken) {
+            $resultados[] = $this->_curlTestPost('6_send_text_token', $base . '/send/text', ['apikey: ' . $instanceToken, 'Content-Type: application/json'], ['number' => '5511999999999', 'text' => 'Teste']);
+        }
+
+        // 7. /instance/qr com API key global (deve falhar - 401)
+        $resultados[] = $this->_curlTest('7_qr_apikey', $base . '/instance/qr?instanceId=' . urlencode($instance), ['apikey: ' . $apikey]);
+
+        // 8. /instance/qr com token de instancia (pode retornar 400 se ja logado)
+        if ($instanceToken) {
+            $resultados[] = $this->_curlTest('8_qr_token', $base . '/instance/qr?instanceId=' . urlencode($instance), ['apikey: ' . $instanceToken]);
+        }
+
+        // 9. /instance/disconnect com token de instancia (nao executa para nao desconectar)
+        $resultados[] = [
+            'nome' => '9_disconnect_token',
+            'http_code' => 'N/A',
+            'nota' => 'Teste omitido para nao desconectar a instancia. Endpoint: POST /instance/disconnect com token da instancia'
         ];
-        $resultados[] = $this->_curlTest('browser_headers', $url, $browserHeaders);
 
-        // Teste 25: Cookie de sessão do swagger
-        $resultados[] = $this->_curlTest('with_cookie', $url, [
-            'apikey: ' . $apikey,
-            'Cookie: swagger_session=test'
-        ]);
-
-        // Teste 26: Accept HTML (como navegador)
-        $resultados[] = $this->_curlTest('accept_html', $url, [
-            'apikey: ' . $apikey,
-            'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
-        ]);
-
-        // Teste 27: Sem Accept header (apenas apikey)
-        $resultados[] = $this->_curlTestRaw('raw_apikey_only', $url, ['apikey: ' . $apikey]);
-
-        // Teste 28: TLS 1.2 forçado
-        $resultados[] = $this->_curlTestTls('force_tls12', $url, ['apikey: ' . $apikey]);
+        // 10. Verificar DNS
+        $dns = gethostbyname(parse_url($base, PHP_URL_HOST));
 
         echo json_encode([
-            'url_testada' => $url,
+            'url_base' => $base,
             'apikey_prefixo' => substr($apikey, 0, 8) . '...',
+            'instance_token_prefixo' => $instanceToken ? substr($instanceToken, 0, 8) . '...' : 'N/A',
             'dns' => $dns,
             'resultados' => $resultados
         ]);
@@ -473,7 +394,7 @@ class NotificacoesConfig extends MY_Controller
         ];
     }
 
-    private function _curlTestPost($nome, $url, $headers)
+    private function _curlTestPost($nome, $url, $headers, $payload = ['number' => '5511999999999', 'text' => 'Teste'])
     {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -485,10 +406,10 @@ class NotificacoesConfig extends MY_Controller
         curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36');
         curl_setopt($ch, CURLOPT_HEADER, true);
         curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, '{}');
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
 
         if ($headers !== null) {
-            $allHeaders = array_merge(['Accept: application/json', 'Content-Type: application/json'], $headers);
+            $allHeaders = array_merge(['Accept: application/json'], $headers);
             curl_setopt($ch, CURLOPT_HTTPHEADER, $allHeaders);
         }
 

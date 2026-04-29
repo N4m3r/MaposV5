@@ -109,6 +109,27 @@ if ($this->load->model('certificado_model')) {
             $certArquivoOk = true;
             $certArquivoMsg = 'Arquivo .pfx encontrado (' . round(filesize($arquivoPath) / 1024, 1) . ' KB)';
         }
+
+        // Teste de extracao PEM
+        $certExtracaoOk = null;
+        $certExtracaoMsg = '';
+        if ($certArquivoOk) {
+            $pemResult = $this->certificado_model->extrairCertificadoPem();
+            if (is_array($pemResult) && isset($pemResult['cert']) && isset($pemResult['key'])) {
+                $certExtracaoOk = true;
+                $certExtracaoMsg = 'PEM extraido com sucesso. CNPJ: ' . ($pemResult['cnpj'] ?? '---') . ' | Validade: ' . ($pemResult['validade'] ?? '---');
+                // Limpar arquivos temporarios
+                if (isset($this->certificado_model) && method_exists($this->certificado_model, 'limparPemTemporarios')) {
+                    $this->certificado_model->limparPemTemporarios($pemResult);
+                }
+            } elseif (is_array($pemResult) && isset($pemResult['error'])) {
+                $certExtracaoOk = false;
+                $certExtracaoMsg = $pemResult['error'];
+            } else {
+                $certExtracaoOk = false;
+                $certExtracaoMsg = 'Falha na extracao PEM (retorno inesperado).';
+            }
+        }
     } else {
         $certMsg = 'Nenhum certificado ativo encontrado.';
     }
@@ -246,6 +267,7 @@ foreach ($colResults as $c) { $c['exists'] ? $okCount++ : $errCount++; }
 $emitOk ? $okCount++ : $errCount++;
 $certOk ? $okCount++ : $warnCount++;
 $certArquivoOk ? $okCount++ : ($certOk ? $errCount++ : 0);
+if (isset($certExtracaoOk)) { $certExtracaoOk ? $okCount++ : $errCount++; }
 ($calcTest !== false && is_array($calcTest)) ? $okCount++ : $errCount++;
 $dpsTest ? $okCount++ : $errCount++;
 $normTest ? $okCount++ : $errCount++;
@@ -373,6 +395,7 @@ $normTest ? $okCount++ : $errCount++;
                     </tr></thead><tbody>
                     <?php row('Certificado Ativo', $certOk ? 'ok' : 'warn', $certMsg); ?>
                     <?php if ($certOk): row('Arquivo .pfx', $certArquivoOk ? 'ok' : 'erro', $certArquivoMsg); endif; ?>
+                    <?php if (isset($certExtracaoOk)): row('Extracao PEM', $certExtracaoOk ? 'ok' : 'erro', $certExtracaoMsg); endif; ?>
                     </tbody>
                 </table>
 

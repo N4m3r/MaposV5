@@ -628,6 +628,10 @@ class Certificado_model extends CI_Model
 
         // Descriptografar senha
         $senha = $this->descriptografarSenha($certificado->senha);
+        if ($senha === false) {
+            log_message('error', 'NFS-e Nacional: Falha ao descriptografar senha do certificado. encryption_key pode ter sido alterada.');
+            return ['error' => 'Nao foi possivel descriptografar a senha do certificado. A chave de criptografia do sistema pode ter sido alterada apos o cadastro do certificado. Reenvie o certificado.'];
+        }
 
         // Ler conteúdo do .pfx
         $pfxContent = file_get_contents($certificado->arquivo_caminho);
@@ -640,8 +644,8 @@ class Certificado_model extends CI_Model
         $certs = [];
         if (!openssl_pkcs12_read($pfxContent, $certs, $senha)) {
             $sslError = openssl_error_string();
-            log_message('error', 'NFS-e Nacional: Erro ao ler PKCS12: ' . $sslError);
-            return false;
+            log_message('error', 'NFS-e Nacional: Erro ao ler PKCS12: ' . $sslError . ' | Senha fornecida (tamanho): ' . strlen($senha) . ' | Arquivo: ' . $certificado->arquivo_caminho);
+            return ['error' => 'Senha do arquivo .pfx incorreta ou arquivo corrompido. Detalhe: ' . $sslError];
         }
 
         // Verificar se tem certificado e chave
