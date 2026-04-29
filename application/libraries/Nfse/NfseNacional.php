@@ -91,25 +91,35 @@ class NfseNacional
 
         // Erro na emissão
         $errorMsg = 'Erro ao emitir NFS-e';
-        if (isset($response['body'])) {
-            $body = $response['body'];
-            if (is_string($body)) {
-                $errorMsg .= ': ' . $body;
-            } elseif (isset($body['mensagem'])) {
+        $httpCode = $response['httpCode'] ?? 0;
+        $body = $response['body'] ?? null;
+
+        log_message('info', 'NFS-e Nacional: Erro na emissão. HTTP=' . $httpCode . ' Body=' . (is_string($body) ? $body : json_encode($body)));
+
+        if (is_string($body)) {
+            $errorMsg .= ': ' . substr($body, 0, 500);
+        } elseif (is_array($body)) {
+            if (isset($body['mensagem'])) {
                 $errorMsg .= ': ' . $body['mensagem'];
             } elseif (isset($body['message'])) {
                 $errorMsg .= ': ' . $body['message'];
             } elseif (isset($body['erros'])) {
                 $erros = is_array($body['erros']) ? implode('; ', $body['erros']) : $body['erros'];
                 $errorMsg .= ': ' . $erros;
+            } elseif (isset($body['title'])) {
+                $errorMsg .= ': ' . $body['title'] . (isset($body['detail']) ? ' - ' . $body['detail'] : '');
+            } else {
+                $errorMsg .= ' (HTTP ' . $httpCode . '): ' . json_encode($body);
             }
+        } else {
+            $errorMsg .= ' (HTTP ' . $httpCode . '): resposta vazia ou não reconhecida';
         }
 
         return [
             'success' => false,
             'message' => $errorMsg,
-            'httpCode' => $response['httpCode'] ?? 0,
-            'body' => $response['body'] ?? null,
+            'httpCode' => $httpCode,
+            'body' => $body,
         ];
     }
 
