@@ -91,11 +91,24 @@ $emitOk = $emitente && !empty($emitente->cnpj);
 $certificado = null;
 $certOk = false;
 $certMsg = 'Modelo de certificado nao encontrado';
+$certArquivoOk = false;
+$certArquivoMsg = '';
 if ($this->load->model('certificado_model')) {
     $certificado = $this->certificado_model->getCertificadoAtivo();
     if ($certificado) {
         $certOk = true;
         $certMsg = 'Ambiente: ' . ($certificado->ambiente ?? 'nao definido') . ' | Validade: ' . ($certificado->data_validade ?? '---');
+
+        // Verificar arquivo fisico
+        $arquivoPath = $certificado->arquivo_caminho ?? '';
+        if (empty($arquivoPath)) {
+            $certArquivoMsg = 'Caminho do arquivo .pfx nao preenchido no cadastro.';
+        } elseif (!file_exists($arquivoPath)) {
+            $certArquivoMsg = 'Arquivo .pfx nao encontrado no servidor: ' . $arquivoPath;
+        } else {
+            $certArquivoOk = true;
+            $certArquivoMsg = 'Arquivo .pfx encontrado (' . round(filesize($arquivoPath) / 1024, 1) . ' KB)';
+        }
     } else {
         $certMsg = 'Nenhum certificado ativo encontrado.';
     }
@@ -232,6 +245,7 @@ foreach ($tableResults as $v) { $v ? $okCount++ : $errCount++; }
 foreach ($colResults as $c) { $c['exists'] ? $okCount++ : $errCount++; }
 $emitOk ? $okCount++ : $errCount++;
 $certOk ? $okCount++ : $warnCount++;
+$certArquivoOk ? $okCount++ : ($certOk ? $errCount++ : 0);
 ($calcTest !== false && is_array($calcTest)) ? $okCount++ : $errCount++;
 $dpsTest ? $okCount++ : $errCount++;
 $normTest ? $okCount++ : $errCount++;
@@ -358,6 +372,7 @@ $normTest ? $okCount++ : $errCount++;
                         <th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0)">Detalhes</th>
                     </tr></thead><tbody>
                     <?php row('Certificado Ativo', $certOk ? 'ok' : 'warn', $certMsg); ?>
+                    <?php if ($certOk): row('Arquivo .pfx', $certArquivoOk ? 'ok' : 'erro', $certArquivoMsg); endif; ?>
                     </tbody>
                 </table>
 
