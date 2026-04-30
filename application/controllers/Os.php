@@ -185,7 +185,9 @@ class Os extends MY_Controller
                 }
 
                 // Enfileirar email via sistema V5
-                $this->queueEmailV5($os, 'os_nova', 'Ordem de Serviço - Criada', 2);
+                if ($this->data['configuration']['email_automatico_v5'] ?? true) {
+                    $this->queueEmailV5($os, 'os_nova', 'Ordem de Serviço - Criada', 2);
+                }
 
                 $this->session->set_flashdata('success', 'OS adicionada com sucesso, você pode adicionar produtos ou serviços a essa OS nas abas de Produtos e Serviços!');
                 log_info('Adicionou uma OS. ID: ' . $id);
@@ -327,7 +329,9 @@ class Os extends MY_Controller
                 }
 
                 // Enfileirar email via sistema V5
-                $this->queueEmailV5($os, 'os_atualizada', 'Ordem de Serviço - Atualizada', 2);
+                if ($this->data['configuration']['email_automatico_v5'] ?? true) {
+                    $this->queueEmailV5($os, 'os_atualizada', 'Ordem de Serviço - Atualizada', 2);
+                }
 
                 $this->session->set_flashdata('success', 'Os editada com sucesso!');
                 log_info('Alterou uma OS. ID: ' . $this->input->post('idOs'));
