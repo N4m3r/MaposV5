@@ -73,8 +73,9 @@ class NfseConfig
         $codMun = str_pad(preg_replace('/\D/', '', $codMun), 7, '0', STR_PAD_LEFT);
         $serie = str_pad((string)$serie, 5, '0', STR_PAD_LEFT);
         if ($nDPS === null) {
-            // Usar microtime como base para nDPS único (15 dígitos)
-            $nDPS = str_pad(substr((string)(microtime(true) * 10000), 0, 15), 15, '0', STR_PAD_LEFT);
+            // Gerar nDPS único de 15 dígitos sem notação científica
+            // time() = 10 dígitos + random de 5 dígitos = 15 dígitos
+            $nDPS = time() . str_pad(random_int(0, 99999), 5, '0', STR_PAD_LEFT);
         }
         $nDPS = str_pad((string)$nDPS, 15, '0', STR_PAD_LEFT);
         return 'DPS' . $codMun . '1' . $cnpjLimpo . $serie . $nDPS;
