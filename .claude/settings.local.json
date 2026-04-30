@@ -97,7 +97,8 @@
       "WebFetch(domain:www.nfse.gov.br)",
       "Bash([ -f \"C:/Users/thail/Desktop/IVMS-CRUD/MaposV5/$f\" ])",
       "WebFetch(domain:www.iti.gov.br)",
-      "mcp__ide__executeCode"
+      "mcp__ide__executeCode",
+      "Bash(py *)"
     ]
   }
 }

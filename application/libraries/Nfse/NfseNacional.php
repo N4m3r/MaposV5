@@ -142,9 +142,27 @@ class NfseNacional
                 $errorMsg .= ': ' . $body['mensagem'];
             } elseif (isset($body['message'])) {
                 $errorMsg .= ': ' . $body['message'];
-            } elseif (isset($body['erros'])) {
-                $erros = is_array($body['erros']) ? implode('; ', $body['erros']) : $body['erros'];
-                $errorMsg .= ': ' . $erros;
+            } elseif (isset($body['erros']) && is_array($body['erros'])) {
+                $errosArr = [];
+                foreach ($body['erros'] as $e) {
+                    if (is_array($e)) {
+                        $cod = $e['Codigo'] ?? $e['codigo'] ?? '';
+                        $desc = $e['Descricao'] ?? $e['descricao'] ?? $e['desc'] ?? '';
+                        if (is_array($cod)) { $cod = json_encode($cod); }
+                        if (is_array($desc)) { $desc = json_encode($desc); }
+                        $errosArr[] = ($cod ? $cod . ': ' : '') . $desc;
+                    } elseif (is_object($e)) {
+                        $eArr = (array)$e;
+                        $cod = $eArr['Codigo'] ?? $eArr['codigo'] ?? '';
+                        $desc = $eArr['Descricao'] ?? $eArr['descricao'] ?? $eArr['desc'] ?? '';
+                        if (is_array($cod)) { $cod = json_encode($cod); }
+                        if (is_array($desc)) { $desc = json_encode($desc); }
+                        $errosArr[] = ($cod ? $cod . ': ' : '') . $desc;
+                    } else {
+                        $errosArr[] = (string)$e;
+                    }
+                }
+                $errorMsg .= ': ' . implode('; ', $errosArr);
             } elseif (isset($body['title'])) {
                 $errorMsg .= ': ' . $body['title'] . (isset($body['detail']) ? ' - ' . $body['detail'] : '');
             } else {
@@ -339,34 +357,84 @@ class NfseNacional
             return false;
         }
 
-        $ch = curl_init();
+        $certContent = file_get_contents($this->certPemPath);
+        $keyContent = file_get_contents($this->keyPemPath);
+        log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Certificado PEM tamanho=' . strlen($certContent) . ' | Chave PEM tamanho=' . strlen($keyContent));
 
-        // Configuração mTLS
+        $validacao = $this->validarCertificadoMtls();
+        log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Validação certificado=' . ($validacao['valido'] ? 'OK' : 'FALHA') . ' | Detalhes=' . json_encode($validacao['detalhes']));
+        if (!empty($validacao['erros'])) {
+            foreach ($validacao['erros'] as $err) {
+                log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: ERRO CERT: ' . $err);
+            }
+        }
+
+        $curlVersion = curl_version();
+        log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: cURL version=' . ($curlVersion['version'] ?? 'N/A') . ' | SSL=' . ($curlVersion['ssl_version'] ?? 'N/A'));
+
+        $resultado = $this->sendRequestCurl($method, $url, $data, $this->certPemPath, $this->keyPemPath);
+
+        if ($this->isErroCertificadoNaoObtido($resultado)) {
+            log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: E4007 detectado. Tentando abordagem alternativa com PEM combinado...');
+            $combinedPem = $this->criarPemCombinado();
+            if ($combinedPem) {
+                $resultado2 = $this->sendRequestCurl($method, $url, $data, $combinedPem, $combinedPem);
+                @unlink($combinedPem);
+                if (!$this->isErroCertificadoNaoObtido($resultado2)) {
+                    log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Abordagem PEM combinado funcionou!');
+                    return $resultado2;
+                }
+                log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: PEM combinado também falhou. HTTP=' . ($resultado2['httpCode'] ?? 0));
+            }
+        }
+
+        return $resultado;
+    }
+
+    private function isErroCertificadoNaoObtido($response)
+    {
+        if (!is_array($response)) return false;
+        $httpCode = $response['httpCode'] ?? 0;
+        if ($httpCode !== 403) return false;
+        $body = $response['body'] ?? null;
+        if (!is_array($body)) return false;
+        if (!empty($body['erros']) && is_array($body['erros'])) {
+            foreach ($body['erros'] as $erro) {
+                if (is_array($erro) && (($erro['Codigo'] ?? '') === 'E4007' || ($erro['codigo'] ?? '') === 'E4007')) {
+                    return true;
+                }
+            }
+        }
+        $msg = $body['mensagem'] ?? ($body['message'] ?? '');
+        if (stripos($msg, 'certificado de cliente') !== false) return true;
+        return false;
+    }
+
+    private function sendRequestCurl($method, $url, $data, $certPath, $keyPath)
+    {
+        $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_TIMEOUT, $this->timeout);
-        curl_setopt($ch, CURLOPT_SSLCERT, $this->certPemPath);
-        curl_setopt($ch, CURLOPT_SSLKEY, $this->keyPemPath);
-
-        // CA chain para verificação do servidor
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
+        curl_setopt($ch, CURLOPT_SSLCERT, $certPath);
+        curl_setopt($ch, CURLOPT_SSLCERTTYPE, 'PEM');
+        curl_setopt($ch, CURLOPT_SSLKEY, $keyPath);
+        curl_setopt($ch, CURLOPT_SSLKEYTYPE, 'PEM');
+        if (defined('CURL_SSLVERSION_TLSv1_2')) {
+            curl_setopt($ch, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2);
+        }
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
         if (!empty($this->caPath) && $this->isValidPemFile($this->caPath)) {
             curl_setopt($ch, CURLOPT_CAINFO, $this->caPath);
+            log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Usando CA custom: ' . $this->caPath);
         } else {
-            log_message('info', 'NFS-e Nacional: CA ICP-Brasil não encontrado, vazio ou inválido (' . ($this->caPath ?? 'nulo') . '). Usando CA do sistema.');
+            log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: CA ICP-Brasil não encontrado, vazio ou inválido (' . ($this->caPath ?? 'nulo') . '). Usando CA do sistema.');
         }
-
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
-
-        // Headers
-        $headers = [
-            'Content-Type: application/json',
-            'Accept: application/json',
-        ];
+        $headers = ['Content-Type: application/json', 'Accept: application/json'];
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-
-        // Payload
         if ($data !== null && in_array($method, ['POST', 'PUT', 'PATCH'])) {
             $jsonPayload = json_encode($data);
             if ($jsonPayload === false) {
@@ -377,46 +445,141 @@ class NfseNacional
             curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonPayload);
             log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Payload JSON tamanho=' . strlen($jsonPayload));
         }
-
-        // Log da requisição
-        log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Enviando ' . $method . ' ' . $url);
-
+        log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Enviando ' . $method . ' ' . $url . ' | Cert=' . $certPath . ' | Key=' . $keyPath);
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $curlError = curl_error($ch);
         $curlErrno = curl_errno($ch);
-
+        $sslVerifyResult = curl_getinfo($ch, CURLINFO_SSL_VERIFYRESULT);
         curl_close($ch);
-
-        // Log de erro cURL
         if ($curlErrno) {
-            log_message('error', 'NFS-e Nacional: cURL Error ' . $curlErrno . ': ' . $curlError);
-            return [
-                'httpCode' => 0,
-                'body' => ['mensagem' => 'Erro de conexão: ' . $curlError . ' (cURL ' . $curlErrno . ')'],
-                'curlError' => $curlError,
-                'curlErrno' => $curlErrno,
-            ];
+            log_message('error', 'NFS-e Nacional: cURL Error ' . $curlErrno . ': ' . $curlError . ' | SSLVerifyResult=' . $sslVerifyResult);
+            return ['httpCode' => 0, 'body' => ['mensagem' => 'Erro de conexão: ' . $curlError . ' (cURL ' . $curlErrno . ')'], 'curlError' => $curlError, 'curlErrno' => $curlErrno];
         }
-
-        // Decodificar resposta
         $decoded = null;
         if (!empty($response)) {
             $decoded = json_decode($response, true);
             if (json_last_error() !== JSON_ERROR_NONE) {
-                // Resposta não é JSON — pode ser XML da NFS-e ou página de erro HTML
                 $decoded = $response;
                 if ($httpCode >= 400) {
                     log_message('error', 'NFS-e Nacional: Resposta HTTP ' . $httpCode . ' não é JSON. Body bruto: ' . substr($response, 0, 2000));
                 }
             }
         }
-
         log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Resposta HTTP ' . $httpCode . ' | Body tipo=' . gettype($decoded) . ' | Body tamanho=' . (is_string($decoded) ? strlen($decoded) : (is_array($decoded) ? count($decoded) : 'n/a')));
+        return ['httpCode' => $httpCode, 'body' => $decoded];
+    }
 
-        return [
-            'httpCode' => $httpCode,
-            'body' => $decoded,
-        ];
+    private function validarCertificadoMtls()
+    {
+        $erros = []; $detalhes = [];
+        if (!file_exists($this->certPemPath)) {
+            return ['valido' => false, 'detalhes' => [], 'erros' => ['Arquivo do certificado não existe: ' . $this->certPemPath]];
+        }
+        $certPem = file_get_contents($this->certPemPath);
+        if (empty($certPem)) {
+            return ['valido' => false, 'detalhes' => [], 'erros' => ['Arquivo do certificado está vazio']];
+        }
+        $certEndEntity = $certPem;
+        if (preg_match('/(-----BEGIN CERTIFICATE-----.*?-----END CERTIFICATE-----)/s', $certPem, $matches)) {
+            $certEndEntity = $matches[1];
+        }
+        $certInfo = openssl_x509_parse($certEndEntity);
+        if (!$certInfo) {
+            return ['valido' => false, 'detalhes' => [], 'erros' => ['Não foi possível fazer parse do certificado.']];
+        }
+        $detalhes['subject'] = $certInfo['subject'] ?? [];
+        $detalhes['issuer'] = $certInfo['issuer'] ?? [];
+        $detalhes['validFrom'] = date('Y-m-d H:i:s', $certInfo['validFrom_time_t'] ?? 0);
+        $detalhes['validTo'] = date('Y-m-d H:i:s', $certInfo['validTo_time_t'] ?? 0);
+        $detalhes['serialNumber'] = $certInfo['serialNumber'] ?? '';
+        $cnpjCert = '';
+        if (!empty($certInfo['subject']['CN'])) {
+            if (preg_match('/(\d{14})/', $certInfo['subject']['CN'], $m)) $cnpjCert = $m[1];
+        }
+        if (empty($cnpjCert) && !empty($certInfo['subject']['x500UniqueIdentifier'])) {
+            $cnpjCert = preg_replace('/\D/', '', $certInfo['subject']['x500UniqueIdentifier']);
+        }
+        $detalhes['cnpjCertificado'] = $cnpjCert;
+        $now = time();
+        if (($certInfo['validFrom_time_t'] ?? 0) > $now) $erros[] = 'Certificado ainda não é válido';
+        if (($certInfo['validTo_time_t'] ?? 0) < $now) $erros[] = 'Certificado expirado em ' . $detalhes['validTo'];
+        if (!empty($certInfo['extensions']['keyUsage'])) {
+            $ku = $certInfo['extensions']['keyUsage'];
+            $detalhes['keyUsage'] = $ku;
+            if (strpos($ku, 'Digital Signature') === false && strpos($ku, 'digitalSignature') === false) $erros[] = 'Key Usage não contém Digital Signature';
+        } else { $detalhes['keyUsage'] = 'NÃO ENCONTRADO'; }
+        if (!empty($certInfo['extensions']['extendedKeyUsage'])) {
+            $eku = $certInfo['extensions']['extendedKeyUsage'];
+            $detalhes['extendedKeyUsage'] = $eku;
+            if (strpos($eku, 'TLS Web Client Authentication') === false && strpos($eku, 'Client Authentication') === false && strpos($eku, '1.3.6.1.5.5.7.3.2') === false) {
+                $erros[] = 'Extended Key Usage não contém Client Authentication (1.3.6.1.5.5.7.3.2).';
+            }
+        } else {
+            $detalhes['extendedKeyUsage'] = 'NÃO ENCONTRADO';
+            $erros[] = 'Extended Key Usage não encontrado';
+        }
+        $issuerO = $certInfo['issuer']['O'] ?? '';
+        $issuerCN = $certInfo['issuer']['CN'] ?? '';
+        $detalhes['issuerO'] = $issuerO; $detalhes['issuerCN'] = $issuerCN;
+        $icpBrasilCAs = ['ICP-Brasil', 'Certisign', 'Serasa', 'Valid', 'CVM', 'Caixa', 'Receita Federal', 'Syngular'];
+        $isIcpBrasil = false;
+        foreach ($icpBrasilCAs as $ca) {
+            if (stripos($issuerO, $ca) !== false || stripos($issuerCN, $ca) !== false) { $isIcpBrasil = true; break; }
+        }
+        $detalhes['isIcpBrasil'] = $isIcpBrasil;
+        if (!$isIcpBrasil) $erros[] = 'Emissor não parece ser AC ICP-Brasil reconhecida (' . $issuerO . ' / ' . $issuerCN . ')';
+        if (!empty($this->cnpj) && !empty($cnpjCert) && $this->cnpj !== $cnpjCert) $erros[] = 'CNPJ do certificado (' . $cnpjCert . ') não corresponde ao CNPJ da requisição (' . $this->cnpj . ')';
+        $keyValid = $this->verificarParCertificadoChave($certEndEntity, $this->keyPemPath);
+        $detalhes['chaveCorresponde'] = $keyValid;
+        if (!$keyValid) $erros[] = 'A chave privada não corresponde ao certificado';
+        return ['valido' => empty($erros), 'detalhes' => $detalhes, 'erros' => $erros];
+    }
+
+    private function verificarParCertificadoChave($certPem, $keyPath)
+    {
+        if (!file_exists($keyPath)) return false;
+        $keyPem = file_get_contents($keyPath);
+        if (empty($keyPem)) return false;
+        $certPubKey = openssl_pkey_get_public($certPem);
+        if (!$certPubKey) return false;
+        $certPubKeyDetails = openssl_pkey_get_details($certPubKey);
+        if (!$certPubKeyDetails || empty($certPubKeyDetails['key'])) return false;
+        $privKey = openssl_pkey_get_private($keyPem);
+        if (!$privKey) return false;
+        $privKeyDetails = openssl_pkey_get_details($privKey);
+        if (!$privKeyDetails || empty($privKeyDetails['key'])) return false;
+        return trim($certPubKeyDetails['key']) === trim($privKeyDetails['key']);
+    }
+
+    private function criarPemCombinado()
+    {
+        if (!file_exists($this->certPemPath) || !file_exists($this->keyPemPath)) return false;
+        $certContent = file_get_contents($this->certPemPath);
+        $keyContent = file_get_contents($this->keyPemPath);
+        if (empty($certContent) || empty($keyContent)) return false;
+        $keyContent = $this->converterChavePkcs8ParaPkcs1($keyContent);
+        $combined = $certContent . "
+" . $keyContent;
+        $tempFile = sys_get_temp_dir() . '/nfse_combined_' . uniqid() . '.pem';
+        if (file_put_contents($tempFile, $combined) === false) return false;
+        return $tempFile;
+    }
+
+    private function converterChavePkcs8ParaPkcs1($keyPem)
+    {
+        if (strpos($keyPem, '-----BEGIN PRIVATE KEY-----') === false) return $keyPem;
+        $privKey = openssl_pkey_get_private($keyPem);
+        if (!$privKey) {
+            log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Não foi possível ler chave PKCS#8 para conversão');
+            return $keyPem;
+        }
+        $success = openssl_pkey_export($privKey, $pkcs1Key);
+        if (!$success || empty($pkcs1Key)) {
+            log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Falha ao exportar chave para PKCS#1');
+            return $keyPem;
+        }
+        log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Chave privada convertida de PKCS#8 para PKCS#1');
+        return $pkcs1Key;
     }
 }
