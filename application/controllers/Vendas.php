@@ -137,6 +137,25 @@ class Vendas extends MY_Controller
                         $queue = new \Libraries\Email\EmailQueue();
                         $templates = new \Libraries\Email\TemplateEngine();
 
+                        // Template configurado
+                        $this->db->where('config', 'email_template_venda');
+                        $templateRow = $this->db->get('configuracoes')->row();
+                        $template = $templateRow && !empty($templateRow->valor) ? $templateRow->valor : 'venda_realizada';
+
+                        // CC/BCC padrao
+                        $cc = [];
+                        $bcc = [];
+                        $this->db->where('config', 'email_cc_default');
+                        $rowCc = $this->db->get('configuracoes')->row();
+                        if ($rowCc && !empty($rowCc->valor)) {
+                            $cc = array_map('trim', explode(',', $rowCc->valor));
+                        }
+                        $this->db->where('config', 'email_bcc_default');
+                        $rowBcc = $this->db->get('configuracoes')->row();
+                        if ($rowBcc && !empty($rowBcc->valor)) {
+                            $bcc = array_map('trim', explode(',', $rowBcc->valor));
+                        }
+
                         $templateData = [
                             'cliente_nome' => $cliente->nomeCliente ?? '',
                             'cliente_email' => $cliente->email ?? '',
@@ -146,18 +165,36 @@ class Vendas extends MY_Controller
                             'venda_link_visualizar' => base_url('vendas/visualizar/' . $id),
                         ];
 
-                        $rendered = $templates->render('venda_realizada', $templateData);
+                        $rendered = $templates->render($template, $templateData);
 
-                        $queue->enqueue([
+                        $enqueueData = [
                             'to' => $cliente->email,
                             'to_name' => $cliente->nomeCliente ?? '',
                             'subject' => 'Sua Venda foi Iniciada - #' . $id,
                             'body_html' => $rendered['html'],
                             'body_text' => $rendered['text'] ?? strip_tags($rendered['html']),
-                            'template' => 'venda_realizada',
+                            'template' => $template,
                             'template_data' => $templateData,
                             'priority' => 3,
-                        ]);
+                        ];
+                        if (!empty($cc)) {
+                            $enqueueData['cc'] = $cc;
+                        }
+                        if (!empty($bcc)) {
+                            $enqueueData['bcc'] = $bcc;
+                        }
+
+                        $queue->enqueue($enqueueData);
+
+                        // Agenda follow-up em 7 dias
+                        try {
+                            require_once APPPATH . 'libraries/Scheduler/AutoEvents.php';
+                            $autoEvents = new \Libraries\Scheduler\AutoEvents();
+                            $followUpDate = date('Y-m-d H:i:s', strtotime('+7 days'));
+                            $autoEvents->scheduleFollowUpVenda($id, $followUpDate, $cliente->email);
+                        } catch (\Exception $e) {
+                            log_message('error', '[AutoEvents] Erro ao agendar follow-up venda: ' . $e->getMessage());
+                        }
                     }
                 } catch (\Exception $e) {
                     log_message('error', '[Vendas] Erro ao enfileirar email V5: ' . $e->getMessage());

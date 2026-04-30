@@ -22,14 +22,25 @@ class EmailQueue
      */
     public function enqueue(array $data): int
     {
+        $email = strtolower(trim($data['to'] ?? ''));
+
+        // Verifica blacklist
+        if ($this->isBlacklisted($email)) {
+            log_message('warning', "Email bloqueado pela blacklist: {$email}");
+            return 0;
+        }
+
         $insert = [
             'to_email' => $data['to'],
             'to_name' => $data['to_name'] ?? null,
+            'cc' => !empty($data['cc']) ? json_encode((array)$data['cc']) : null,
+            'bcc' => !empty($data['bcc']) ? json_encode((array)$data['bcc']) : null,
             'subject' => $data['subject'],
             'body_html' => $data['body_html'] ?? null,
             'body_text' => $data['body_text'] ?? null,
             'template' => $data['template'] ?? null,
             'template_data' => !empty($data['template_data']) ? json_encode($data['template_data']) : null,
+            'attachments' => !empty($data['attachments']) ? json_encode((array)$data['attachments']) : null,
             'priority' => $data['priority'] ?? 3,
             'status' => 'pending',
             'created_at' => date('Y-m-d H:i:s'),
@@ -159,7 +170,114 @@ class EmailQueue
             }
         }
 
+        // Metricas adicionais
+        $stats['taxa_sucesso'] = $this->getTaxaSucesso();
+        $stats['enviados_hoje'] = $this->getEnviadosHoje();
+        $stats['aberturas'] = $this->getAberturas();
+        $stats['cliques'] = $this->getCliques();
+        $stats['bounce'] = $this->getBounceRate();
+
         return $stats;
+    }
+
+    public function getTaxaSucesso(): float
+    {
+        $total = $this->ci->db->query("SELECT COUNT(*) as total FROM {$this->table} WHERE status IN ('sent','failed')")->row();
+        $sent = $this->ci->db->query("SELECT COUNT(*) as total FROM {$this->table} WHERE status = 'sent'")->row();
+        if (!$total || $total->total == 0) {
+            return 0.0;
+        }
+        return round(($sent->total / $total->total) * 100, 1);
+    }
+
+    public function getEnviadosHoje(): int
+    {
+        $row = $this->ci->db->query("
+            SELECT COUNT(*) as total FROM {$this->table}
+            WHERE status = 'sent' AND DATE(sent_at) = CURDATE()
+        ")->row();
+        return (int) ($row->total ?? 0);
+    }
+
+    public function getAberturas(): int
+    {
+        $row = $this->ci->db->query("
+            SELECT COUNT(*) as total FROM email_tracking WHERE opened = 1
+        ")->row();
+        return (int) ($row->total ?? 0);
+    }
+
+    public function getCliques(): int
+    {
+        $row = $this->ci->db->query("
+            SELECT COUNT(*) as total FROM email_tracking WHERE clicked = 1
+        ")->row();
+        return (int) ($row->total ?? 0);
+    }
+
+    public function getBounceRate(): float
+    {
+        $total = $this->ci->db->query("SELECT COUNT(*) as total FROM {$this->table} WHERE attempts > 0")->row();
+        $failed = $this->ci->db->query("SELECT COUNT(*) as total FROM {$this->table} WHERE status = 'failed'")->row();
+        if (!$total || $total->total == 0) {
+            return 0.0;
+        }
+        return round(($failed->total / $total->total) * 100, 1);
+    }
+
+    public function getLogs(int $limit = 50, int $offset = 0, string $status = ''): array
+    {
+        if (!empty($status)) {
+            $this->ci->db->where('status', $status);
+        }
+        $this->ci->db->order_by('id', 'DESC');
+        $this->ci->db->limit($limit, $offset);
+        $query = $this->ci->db->get($this->table);
+        return $query ? $query->result() : [];
+    }
+
+    public function countLogs(string $status = ''): int
+    {
+        if (!empty($status)) {
+            $this->ci->db->where('status', $status);
+        }
+        return $this->ci->db->count_all_results($this->table);
+    }
+
+    public function isBlacklisted(string $email): bool
+    {
+        $email = strtolower(trim($email));
+        if (empty($email)) {
+            return false;
+        }
+
+        // Verifica blacklist no banco (tabela email_blacklist)
+        if ($this->ci->db->table_exists('email_blacklist')) {
+            $this->ci->db->where('email', $email);
+            if ($this->ci->db->count_all_results('email_blacklist') > 0) {
+                return true;
+            }
+        }
+
+        // Verifica blacklist na configuracao (campo email_blacklist)
+        $this->ci->db->where('config', 'email_blacklist');
+        $row = $this->ci->db->get('configuracoes')->row();
+        if ($row && !empty($row->valor)) {
+            $blacklist = array_map('strtolower', array_map('trim', explode("\n", $row->valor)));
+            if (in_array($email, $blacklist, true)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function getBlacklist(): array
+    {
+        if (!$this->ci->db->table_exists('email_blacklist')) {
+            return [];
+        }
+        return $this->ci->db->get('email_blacklist')->result() ?? [];
     }
 
     /**

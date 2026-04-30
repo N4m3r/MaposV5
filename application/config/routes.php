@@ -50,6 +50,9 @@ $route['emails/dashboard'] = 'email/dashboard';
 $route['emails/configuracoes'] = 'email/configuracoes';
 $route['email/configuracoes'] = 'email/configuracoes';
 $route['email/salvar_configuracoes'] = 'email/salvar_configuracoes';
+$route['email/logs'] = 'email/logs';
+$route['email/reenviar/(:num)'] = 'email/reenviar/$1';
+$route['email/testar_envio'] = 'email/testar_envio';
 $route['emails/(:any)'] = 'email/$1';
 
 // Rotas de Certificado Digital e NFS-e

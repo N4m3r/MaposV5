@@ -186,7 +186,21 @@ class Os extends MY_Controller
 
                 // Enfileirar email via sistema V5
                 if ($this->data['configuration']['email_automatico_v5'] ?? true) {
-                    $this->queueEmailV5($os, 'os_nova', 'Ordem de Serviço - Criada', 2);
+                    $this->db->where('config', 'email_template_os_criada');
+                    $templateRow = $this->db->get('configuracoes')->row();
+                    $template = $templateRow && !empty($templateRow->valor) ? $templateRow->valor : 'os_nova';
+                    $this->queueEmailV5($os, $template, 'Ordem de Serviço - Criada', 2);
+
+                    // Agenda lembrete de vencimento (2 dias antes)
+                    if (!empty($os->dataFinal) && !empty($os->email)) {
+                        try {
+                            require_once APPPATH . 'libraries/Scheduler/AutoEvents.php';
+                            $autoEvents = new \Libraries\Scheduler\AutoEvents();
+                            $autoEvents->scheduleOsVencendo($id, $os->dataFinal, $os->email);
+                        } catch (\Exception $e) {
+                            log_message('error', '[AutoEvents] Erro ao agendar lembrete OS: ' . $e->getMessage());
+                        }
+                    }
                 }
 
                 $this->session->set_flashdata('success', 'OS adicionada com sucesso, você pode adicionar produtos ou serviços a essa OS nas abas de Produtos e Serviços!');
@@ -330,7 +344,10 @@ class Os extends MY_Controller
 
                 // Enfileirar email via sistema V5
                 if ($this->data['configuration']['email_automatico_v5'] ?? true) {
-                    $this->queueEmailV5($os, 'os_atualizada', 'Ordem de Serviço - Atualizada', 2);
+                    $this->db->where('config', 'email_template_os_editada');
+                    $templateRow = $this->db->get('configuracoes')->row();
+                    $template = $templateRow && !empty($templateRow->valor) ? $templateRow->valor : 'os_atualizada';
+                    $this->queueEmailV5($os, $template, 'Ordem de Serviço - Atualizada', 2);
                 }
 
                 $this->session->set_flashdata('success', 'Os editada com sucesso!');
@@ -1762,7 +1779,7 @@ class Os extends MY_Controller
     /**
      * Enfileira email via sistema V5 (EmailQueue + TemplateEngine)
      */
-    private function queueEmailV5($os, $template, $subject, $priority = 3)
+    private function queueEmailV5($os, $template, $subject, $priority = 3, $attachments = [])
     {
         try {
             require_once APPPATH . 'libraries/Email/EmailQueue.php';
@@ -1770,6 +1787,20 @@ class Os extends MY_Controller
 
             $queue = new \Libraries\Email\EmailQueue();
             $templates = new \Libraries\Email\TemplateEngine();
+
+            // Carrega configs de CC/BCC padrao
+            $cc = [];
+            $bcc = [];
+            $this->db->where('config', 'email_cc_default');
+            $rowCc = $this->db->get('configuracoes')->row();
+            if ($rowCc && !empty($rowCc->valor)) {
+                $cc = array_map('trim', explode(',', $rowCc->valor));
+            }
+            $this->db->where('config', 'email_bcc_default');
+            $rowBcc = $this->db->get('configuracoes')->row();
+            if ($rowBcc && !empty($rowBcc->valor)) {
+                $bcc = array_map('trim', explode(',', $rowBcc->valor));
+            }
 
             $templateData = [
                 'cliente_nome' => $os->nomeCliente ?? $os->cliente_nome ?? '',
@@ -1786,7 +1817,7 @@ class Os extends MY_Controller
 
             $rendered = $templates->render($template, $templateData);
 
-            $queue->enqueue([
+            $enqueueData = [
                 'to' => $os->email ?? '',
                 'to_name' => $templateData['cliente_nome'],
                 'subject' => $subject,
@@ -1795,7 +1826,19 @@ class Os extends MY_Controller
                 'template' => $template,
                 'template_data' => $templateData,
                 'priority' => $priority,
-            ]);
+            ];
+
+            if (!empty($cc)) {
+                $enqueueData['cc'] = $cc;
+            }
+            if (!empty($bcc)) {
+                $enqueueData['bcc'] = $bcc;
+            }
+            if (!empty($attachments)) {
+                $enqueueData['attachments'] = (array) $attachments;
+            }
+
+            $queue->enqueue($enqueueData);
         } catch (\Exception $e) {
             log_message('error', '[queueEmailV5] Erro ao enfileirar email: ' . $e->getMessage());
         }

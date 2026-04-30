@@ -286,6 +286,69 @@ class Email extends MY_Controller
     }
 
     /**
+     * CLI: Testar envio de email
+     * Uso: php index.php email cli_testar [email]
+     */
+    public function cli_testar($email = '')
+    {
+        if (!$this->input->is_cli_request()) {
+            show_error('Acesso negado');
+            return;
+        }
+
+        if (empty($email)) {
+            $email = $this->input->get('email') ?? 'thailer.alfaia@gmail.com';
+        }
+
+        echo "Testando envio de email para: {$email}\n";
+
+        try {
+            $rendered = $this->templates->render('boas_vindas', [
+                'cliente_nome' => 'Usuario de Teste',
+                'cliente_email' => $email,
+                'data_atual' => date('d/m/Y'),
+                'sistema_url' => base_url(),
+            ]);
+
+            $id = $this->queue->enqueue([
+                'to' => $email,
+                'to_name' => 'Usuario de Teste',
+                'subject' => 'Email de Teste - Sistema MAPOS',
+                'body_html' => $rendered['html'],
+                'body_text' => $rendered['text'] ?? strip_tags($rendered['html']),
+                'template' => 'boas_vindas',
+                'priority' => 1,
+            ]);
+
+            if ($id > 0) {
+                echo "✓ Email enfileirado com sucesso! ID: {$id}\n";
+
+                // Tenta enviar imediatamente via SMTP
+                $smtp = new \Libraries\Email\SmtpPool();
+                $emails = $this->queue->process(1);
+                if (!empty($emails)) {
+                    $results = $smtp->sendBatch($emails);
+                    foreach ($results as $eid => $result) {
+                        if ($result['success']) {
+                            $this->queue->markAsSent($eid, $result['message_id'] ?? '');
+                            echo "✓ Email {$eid} enviado com sucesso!\n";
+                        } else {
+                            $this->queue->markAsFailed($eid, $result['error'] ?? 'Unknown');
+                            echo "✗ Falha ao enviar email {$eid}: " . ($result['error'] ?? 'Unknown') . "\n";
+                        }
+                    }
+                } else {
+                    echo "! Nenhum email pendente para processar (pode estar na fila).\n";
+                }
+            } else {
+                echo "✗ Email bloqueado pela blacklist ou falha ao enfileirar.\n";
+            }
+        } catch (\Exception $e) {
+            echo "✗ Erro: " . $e->getMessage() . "\n";
+        }
+    }
+
+    /**
      * CLI: Retry de emails falhados
      */
     public function cli_retry()
@@ -474,14 +537,67 @@ class Email extends MY_Controller
             'email_notif_atividade_atrasada' => true,
             'email_notif_impedimento' => true,
             'email_automatico_v5' => true,
+            'email_queue_interval' => '60',
+            'email_batch_size' => '3',
+            'email_smtp_host' => '',
+            'email_smtp_port' => '587',
+            'email_smtp_user' => '',
+            'email_smtp_pass' => '',
+            'email_smtp_crypto' => 'tls',
+            'email_from' => '',
+            'email_from_name' => 'Sistema',
+            'email_cc_default' => '',
+            'email_bcc_default' => '',
+            'email_template_os_criada' => 'os_nova',
+            'email_template_os_editada' => 'os_atualizada',
+            'email_template_venda' => 'venda_realizada',
+            'email_template_cobranca' => 'cobranca',
+            'email_template_obra_nova' => 'obra_nova',
+            'email_template_obra_concluida' => 'obra_concluida',
+            'email_blacklist' => '',
         ];
 
         $this->db->where_in('config', array_keys($configs));
         $query = $this->db->get('configuracoes');
         if ($query) {
             foreach ($query->result() as $row) {
-                $configs[$row->config] = $this->_parseBool($row->valor);
+                if (in_array($row->config, ['email_queue_interval', 'email_batch_size', 'email_smtp_port'])) {
+                    $configs[$row->config] = $row->valor;
+                } elseif (in_array($row->config, [
+                    'email_cc_default', 'email_bcc_default',
+                    'email_template_os_criada', 'email_template_os_editada',
+                    'email_template_venda', 'email_template_cobranca',
+                    'email_template_obra_nova', 'email_template_obra_concluida',
+                    'email_blacklist'
+                ])) {
+                    $configs[$row->config] = $row->valor;
+                } else {
+                    $configs[$row->config] = $this->_parseBool($row->valor);
+                }
             }
+        }
+
+        // Se SMTP nao configurado no banco, carrega do .env
+        if (empty($configs['email_smtp_host'])) {
+            $configs['email_smtp_host'] = $_ENV['EMAIL_SMTP_HOST'] ?? '';
+        }
+        if (empty($configs['email_smtp_port'])) {
+            $configs['email_smtp_port'] = $_ENV['EMAIL_SMTP_PORT'] ?? '587';
+        }
+        if (empty($configs['email_smtp_user'])) {
+            $configs['email_smtp_user'] = $_ENV['EMAIL_SMTP_USER'] ?? '';
+        }
+        if (empty($configs['email_smtp_pass'])) {
+            $configs['email_smtp_pass'] = $_ENV['EMAIL_SMTP_PASS'] ?? '';
+        }
+        if (empty($configs['email_smtp_crypto'])) {
+            $configs['email_smtp_crypto'] = $_ENV['EMAIL_SMTP_CRYPTO'] ?? 'tls';
+        }
+        if (empty($configs['email_from'])) {
+            $configs['email_from'] = $_ENV['EMAIL_FROM'] ?? ($this->data['config']['email'] ?? '');
+        }
+        if (empty($configs['email_from_name'])) {
+            $configs['email_from_name'] = $_ENV['EMAIL_FROM_NAME'] ?? ($this->data['config']['nome'] ?? 'Sistema');
         }
 
         $this->data['configs'] = $configs;
@@ -504,7 +620,7 @@ class Email extends MY_Controller
             return;
         }
 
-        $configs = [
+        $configsBool = [
             'email_notif_os_criada',
             'email_notif_os_editada',
             'email_notif_venda',
@@ -516,13 +632,164 @@ class Email extends MY_Controller
             'email_automatico_v5',
         ];
 
-        foreach ($configs as $key) {
+        foreach ($configsBool as $key) {
             $valor = $this->input->post($key) ? '1' : '0';
+            $this->db->replace('configuracoes', ['config' => $key, 'valor' => $valor]);
+        }
+
+        // Configs numericas/texto
+        $configsText = [
+            'email_queue_interval' => $this->input->post('email_queue_interval') ?? '60',
+            'email_batch_size' => $this->input->post('email_batch_size') ?? '3',
+            'email_smtp_host' => $this->input->post('email_smtp_host') ?? '',
+            'email_smtp_port' => $this->input->post('email_smtp_port') ?? '587',
+            'email_smtp_user' => $this->input->post('email_smtp_user') ?? '',
+            'email_smtp_pass' => $this->input->post('email_smtp_pass') ?? '',
+            'email_smtp_crypto' => $this->input->post('email_smtp_crypto') ?? 'tls',
+            'email_from' => $this->input->post('email_from') ?? '',
+            'email_from_name' => $this->input->post('email_from_name') ?? 'Sistema',
+            'email_cc_default' => $this->input->post('email_cc_default') ?? '',
+            'email_bcc_default' => $this->input->post('email_bcc_default') ?? '',
+            'email_template_os_criada' => $this->input->post('email_template_os_criada') ?? 'os_nova',
+            'email_template_os_editada' => $this->input->post('email_template_os_editada') ?? 'os_atualizada',
+            'email_template_venda' => $this->input->post('email_template_venda') ?? 'venda_realizada',
+            'email_template_cobranca' => $this->input->post('email_template_cobranca') ?? 'cobranca',
+            'email_template_obra_nova' => $this->input->post('email_template_obra_nova') ?? 'obra_nova',
+            'email_template_obra_concluida' => $this->input->post('email_template_obra_concluida') ?? 'obra_concluida',
+            'email_blacklist' => $this->input->post('email_blacklist') ?? '',
+        ];
+
+        foreach ($configsText as $key => $valor) {
             $this->db->replace('configuracoes', ['config' => $key, 'valor' => $valor]);
         }
 
         $this->session->set_flashdata('success', 'Configuracoes salvas com sucesso!');
         redirect('email/configuracoes');
+    }
+
+    /**
+     * Enviar email de teste
+     */
+    public function testar_envio()
+    {
+        $emailTeste = $this->input->post('email_teste');
+        if (empty($emailTeste) || !filter_var($emailTeste, FILTER_VALIDATE_EMAIL)) {
+            $this->session->set_flashdata('error', 'Email de teste invalido.');
+            redirect('email/configuracoes');
+            return;
+        }
+
+        try {
+            $rendered = $this->templates->render('boas_vindas', [
+                'cliente_nome' => 'Usuario de Teste',
+                'cliente_email' => $emailTeste,
+                'data_atual' => date('d/m/Y'),
+                'sistema_url' => base_url(),
+            ]);
+
+            $queue = new EmailQueue();
+            $id = $queue->enqueue([
+                'to' => $emailTeste,
+                'to_name' => 'Usuario de Teste',
+                'subject' => 'Email de Teste - Sistema MAPOS',
+                'body_html' => $rendered['html'],
+                'body_text' => $rendered['text'] ?? strip_tags($rendered['html']),
+                'template' => 'boas_vindas',
+                'priority' => 1,
+            ]);
+
+            if ($id > 0) {
+                $this->session->set_flashdata('success', 'Email de teste enfileirado com sucesso! ID: ' . $id);
+            } else {
+                $this->session->set_flashdata('error', 'Email bloqueado pela blacklist ou falha ao enfileirar.');
+            }
+        } catch (\Exception $e) {
+            $this->session->set_flashdata('error', 'Erro ao enviar email de teste: ' . $e->getMessage());
+        }
+
+        redirect('email/configuracoes');
+    }
+
+    /**
+     * Log de envios de email
+     */
+    public function logs()
+    {
+        $status = $this->input->get('status') ?? '';
+        $page = (int) ($this->input->get('page') ?? 1);
+        if ($page < 1) {
+            $page = 1;
+        }
+        $limit = 25;
+        $offset = ($page - 1) * $limit;
+
+        $this->data['logs'] = $this->queue->getLogs($limit, $offset, $status);
+        $total = $this->queue->countLogs($status);
+        $this->data['total'] = $total;
+        $this->data['page'] = $page;
+        $this->data['total_pages'] = (int) ceil($total / $limit);
+        $this->data['status_filter'] = $status;
+        $this->data['menuFerramentasV5'] = true;
+        $this->data['menuEmailQueue'] = true;
+        $this->data['view'] = 'emails/logs';
+
+        return $this->layout();
+    }
+
+    /**
+     * Reenviar email falho
+     */
+    public function reenviar($id = 0)
+    {
+        if (!$id) {
+            $id = (int) ($this->uri->segment(3) ?? 0);
+        }
+
+        // Se for requisicao AJAX, retorna JSON
+        if ($this->input->is_ajax_request()) {
+            $email = $this->queue->find($id);
+            if (!$email) {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode(['success' => false, 'message' => 'Email nao encontrado']));
+                return;
+            }
+
+            if ($email->status !== 'failed') {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode(['success' => false, 'message' => 'Somente emails com falha podem ser reenviados']));
+                return;
+            }
+
+            $this->db->where('id', $id);
+            $this->db->update('email_queue', [
+                'status' => 'pending',
+                'error_message' => null,
+                'updated_at' => date('Y-m-d H:i:s'),
+            ]);
+
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'success' => true,
+                    'message' => 'Email reenviado para a fila',
+                    'email_id' => $id,
+                ]));
+            return;
+        }
+
+        // Requisicao normal
+        $this->db->where('id', $id);
+        $this->db->where('status', 'failed');
+        $this->db->update('email_queue', [
+            'status' => 'pending',
+            'error_message' => null,
+            'updated_at' => date('Y-m-d H:i:s'),
+        ]);
+
+        $this->session->set_flashdata('success', 'Email reenviado para a fila de processamento.');
+        redirect('email/logs');
     }
 
     private function _parseBool($val)

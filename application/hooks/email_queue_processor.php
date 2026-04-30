@@ -46,7 +46,14 @@ function email_queue_shutdown_handler()
 
         // Controle de frequencia: arquivo de lock com timestamp
         $lockFile = APPPATH . 'cache/email_queue.lock';
-        $intervalSeconds = 60; // Processa no maximo a cada 60 segundos
+
+        // Le intervalo configurado no banco (default 60 segundos)
+        $ci->db->where('config', 'email_queue_interval');
+        $row = $ci->db->get('configuracoes')->row();
+        $intervalSeconds = (int) ($row->valor ?? 60);
+        if ($intervalSeconds < 10) {
+            $intervalSeconds = 10; // Minimo 10 segundos
+        }
 
         if (file_exists($lockFile)) {
             $lastRun = (int) file_get_contents($lockFile);
@@ -76,8 +83,16 @@ function email_queue_shutdown_handler()
             require_once APPPATH . 'libraries/Email/EmailQueue.php';
             $queue = new \Libraries\Email\EmailQueue();
 
-            // Busca ate 3 emails pendentes
-            $emails = $queue->process(3);
+            // Le batch size configurado no banco (default 3)
+            $ci->db->where('config', 'email_batch_size');
+            $row = $ci->db->get('configuracoes')->row();
+            $batchSize = (int) ($row->valor ?? 3);
+            if ($batchSize < 1 || $batchSize > 50) {
+                $batchSize = 3;
+            }
+
+            // Busca emails pendentes
+            $emails = $queue->process($batchSize);
 
             if (!empty($emails)) {
                 require_once APPPATH . 'libraries/Email/SmtpPool.php';
@@ -89,6 +104,25 @@ function email_queue_shutdown_handler()
                         $queue->markAsSent($id, $result['message_id'] ?? '');
                     } else {
                         $queue->markAsFailed($id, $result['error'] ?? 'Unknown error');
+
+                        // Notificacao interna para admins sobre falha
+                        try {
+                            $ci->load->model('notificacoes_model');
+                            if (method_exists($ci->notificacoes_model, 'notificarTodos')) {
+                                $emailInfo = $queue->find($id);
+                                $toEmail = $emailInfo->to_email ?? 'desconhecido';
+                                $subject = $emailInfo->subject ?? 'sem assunto';
+                                $ci->notificacoes_model->notificarTodos([
+                                    'titulo' => 'Falha no envio de email',
+                                    'mensagem' => "Falha ao enviar email para {$toEmail} (Assunto: {$subject}). Erro: " . ($result['error'] ?? 'Unknown error'),
+                                    'url' => base_url('email/logs?status=failed'),
+                                    'icone' => 'bx-envelope',
+                                    'tipo' => 'warning',
+                                ]);
+                            }
+                        } catch (\Exception $e) {
+                            log_message('error', '[EmailQueueHook] Erro ao notificar falha: ' . $e->getMessage());
+                        }
                     }
                 }
             }

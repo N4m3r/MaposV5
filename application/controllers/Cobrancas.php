@@ -129,6 +129,25 @@ class Cobrancas extends MY_Controller
                         $queue = new \Libraries\Email\EmailQueue();
                         $templates = new \Libraries\Email\TemplateEngine();
 
+                        // Template configurado
+                        $this->db->where('config', 'email_template_cobranca');
+                        $templateRow = $this->db->get('configuracoes')->row();
+                        $template = $templateRow && !empty($templateRow->valor) ? $templateRow->valor : 'cobranca';
+
+                        // CC/BCC padrao
+                        $cc = [];
+                        $bcc = [];
+                        $this->db->where('config', 'email_cc_default');
+                        $rowCc = $this->db->get('configuracoes')->row();
+                        if ($rowCc && !empty($rowCc->valor)) {
+                            $cc = array_map('trim', explode(',', $rowCc->valor));
+                        }
+                        $this->db->where('config', 'email_bcc_default');
+                        $rowBcc = $this->db->get('configuracoes')->row();
+                        if ($rowBcc && !empty($rowBcc->valor)) {
+                            $bcc = array_map('trim', explode(',', $rowBcc->valor));
+                        }
+
                         $templateData = [
                             'cliente_nome' => $clienteNome ?? '',
                             'cliente_email' => $clienteEmail ?? '',
@@ -140,18 +159,38 @@ class Cobrancas extends MY_Controller
                             'empresa_nome' => $emitente->nome ?? '',
                         ];
 
-                        $rendered = $templates->render('cobranca', $templateData);
+                        $rendered = $templates->render($template, $templateData);
 
-                        $queue->enqueue([
+                        $enqueueData = [
                             'to' => $clienteEmail,
                             'to_name' => $clienteNome ?? '',
                             'subject' => 'Cobrança Gerada - ' . $descricao,
                             'body_html' => $rendered['html'],
                             'body_text' => $rendered['text'] ?? strip_tags($rendered['html']),
-                            'template' => 'cobranca',
+                            'template' => $template,
                             'template_data' => $templateData,
                             'priority' => 2,
-                        ]);
+                        ];
+                        if (!empty($cc)) {
+                            $enqueueData['cc'] = $cc;
+                        }
+                        if (!empty($bcc)) {
+                            $enqueueData['bcc'] = $bcc;
+                        }
+
+                        $queue->enqueue($enqueueData);
+
+                        // Agenda lembretes de vencimento
+                        try {
+                            require_once APPPATH . 'libraries/Scheduler/AutoEvents.php';
+                            $autoEvents = new \Libraries\Scheduler\AutoEvents();
+                            if (!empty($vencimento)) {
+                                $autoEvents->scheduleCobrancaVencendo($cobranca['idCobranca'] ?? $id, $vencimento, $clienteEmail);
+                                $autoEvents->scheduleCobrancaVencida($cobranca['idCobranca'] ?? $id, $vencimento, $clienteEmail);
+                            }
+                        } catch (\Exception $e) {
+                            log_message('error', '[AutoEvents] Erro ao agendar lembretes cobranca: ' . $e->getMessage());
+                        }
                     }
                 } catch (\Exception $e) {
                     log_message('error', '[Cobrancas] Erro ao enfileirar email V5: ' . $e->getMessage());

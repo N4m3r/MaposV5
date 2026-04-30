@@ -86,6 +86,73 @@ $ci->load->helper('date');
     </div>
 </div>
 
+<div class="row-fluid" style="margin-top: 15px;">
+    <div class="span2 offset1">
+        <div class="widget-box">
+            <div class="widget-title">
+                <span class="icon"><i class="fas fa-chart-line"></i></span>
+                <h5>Taxa de Sucesso</h5>
+            </div>
+            <div class="widget-content center">
+                <h2 class="text-success"><?= $stats['taxa_sucesso'] ?? 0 ?>%</h2>
+                <p>Emails enviados/total</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="span2">
+        <div class="widget-box">
+            <div class="widget-title">
+                <span class="icon"><i class="fas fa-calendar-day"></i></span>
+                <h5>Enviados Hoje</h5>
+            </div>
+            <div class="widget-content center">
+                <h2 class="text-info"><?= $stats['enviados_hoje'] ?? 0 ?></h2>
+                <p>Emails hoje</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="span2">
+        <div class="widget-box">
+            <div class="widget-title">
+                <span class="icon"><i class="fas fa-eye"></i></span>
+                <h5>Aberturas</h5>
+            </div>
+            <div class="widget-content center">
+                <h2 class="text-warning"><?= $stats['aberturas'] ?? 0 ?></h2>
+                <p>Emails abertos</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="span2">
+        <div class="widget-box">
+            <div class="widget-title">
+                <span class="icon"><i class="fas fa-mouse-pointer"></i></span>
+                <h5>Cliques</h5>
+            </div>
+            <div class="widget-content center">
+                <h2 class="text-info"><?= $stats['cliques'] ?? 0 ?></h2>
+                <p>Links clicados</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="span2">
+        <div class="widget-box">
+            <div class="widget-title">
+                <span class="icon"><i class="fas fa-exclamation-circle"></i></span>
+                <h5>Bounce</h5>
+            </div>
+            <div class="widget-content center">
+                <h2 class="text-error"><?= $stats['bounce'] ?? 0 ?>%</h2>
+                <p>Taxa de rejeicao</p>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="row-fluid">
     <!-- Templates -->
     <div class="span6">
@@ -141,20 +208,20 @@ $ci->load->helper('date');
                 <h5>Ações</h5>
             </div>
             <div class="widget-content">
-                <p><strong>Processar Fila:</strong></p>
-                <pre>php index.php email cli_process</pre>
-                <p><strong>Processar Eventos:</strong></p>
-                <pre>php index.php email cli_events</pre>
-                <p><strong>Retry Falhos:</strong></p>
-                <pre>php index.php email cli_retry</pre>
+                <p><strong>Acoes Rapidas:</strong></p>
+                <a href="<?= base_url('email/logs') ?>" class="btn btn-block btn-info">
+                    <i class="fas fa-list-alt"></i> Ver Log de Envios
+                </a>
+                <a href="<?= base_url('email/configuracoes') ?>" class="btn btn-block btn-primary">
+                    <i class="fas fa-cog"></i> Configuracoes de Email
+                </a>
 
                 <hr>
 
-                <p><strong>Iniciar Worker (Background):</strong></p>
-                <pre>php application/bin/email-worker.php start</pre>
-
-                <p><strong>Parar Worker:</strong></p>
-                <pre>php application/bin/email-worker.php stop</pre>
+                <p><strong>Processar Fila (CLI):</strong></p>
+                <pre>php index.php email cli_process</pre>
+                <p><strong>Retry Falhos:</strong></p>
+                <pre>php index.php email cli_retry</pre>
             </div>
         </div>
     </div>
@@ -338,6 +405,11 @@ setInterval(function() {
                         if (title === 'Processando') el.textContent = stats.processing;
                         if (title === 'Enviados') el.textContent = stats.sent;
                         if (title === 'Falhas') el.textContent = stats.failed;
+                        if (title === 'Taxa de Sucesso') el.textContent = stats.taxa_sucesso + '%';
+                        if (title === 'Enviados Hoje') el.textContent = stats.enviados_hoje;
+                        if (title === 'Aberturas') el.textContent = stats.aberturas;
+                        if (title === 'Cliques') el.textContent = stats.cliques;
+                        if (title === 'Bounce') el.textContent = stats.bounce + '%';
                     }
                 });
             }

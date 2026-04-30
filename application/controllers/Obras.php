@@ -244,6 +244,25 @@ class Obras extends MY_Controller
                             $queue = new \Libraries\Email\EmailQueue();
                             $templates = new \Libraries\Email\TemplateEngine();
 
+                            // Template configurado
+                            $this->db->where('config', 'email_template_obra_nova');
+                            $templateRow = $this->db->get('configuracoes')->row();
+                            $template = $templateRow && !empty($templateRow->valor) ? $templateRow->valor : 'obra_nova';
+
+                            // CC/BCC padrao
+                            $cc = [];
+                            $bcc = [];
+                            $this->db->where('config', 'email_cc_default');
+                            $rowCc = $this->db->get('configuracoes')->row();
+                            if ($rowCc && !empty($rowCc->valor)) {
+                                $cc = array_map('trim', explode(',', $rowCc->valor));
+                            }
+                            $this->db->where('config', 'email_bcc_default');
+                            $rowBcc = $this->db->get('configuracoes')->row();
+                            if ($rowBcc && !empty($rowBcc->valor)) {
+                                $bcc = array_map('trim', explode(',', $rowBcc->valor));
+                            }
+
                             $templateData = [
                                 'cliente_nome' => $cliente->nomeCliente ?? '',
                                 'cliente_email' => $cliente->email ?? '',
@@ -254,18 +273,26 @@ class Obras extends MY_Controller
                                 'os_link_visualizar' => base_url('obras/visualizar/' . $obra_id),
                             ];
 
-                            $rendered = $templates->render('obra_nova', $templateData);
+                            $rendered = $templates->render($template, $templateData);
 
-                            $queue->enqueue([
+                            $enqueueData = [
                                 'to' => $cliente->email,
                                 'to_name' => $cliente->nomeCliente ?? '',
                                 'subject' => 'Nova Obra Cadastrada - ' . $dados['nome'],
                                 'body_html' => $rendered['html'],
                                 'body_text' => $rendered['text'] ?? strip_tags($rendered['html']),
-                                'template' => 'obra_nova',
+                                'template' => $template,
                                 'template_data' => $templateData,
                                 'priority' => 3,
-                            ]);
+                            ];
+                            if (!empty($cc)) {
+                                $enqueueData['cc'] = $cc;
+                            }
+                            if (!empty($bcc)) {
+                                $enqueueData['bcc'] = $bcc;
+                            }
+
+                            $queue->enqueue($enqueueData);
                         }
                     } catch (\Exception $e) {
                         log_message('error', '[Obras] Erro ao enfileirar email V5: ' . $e->getMessage());
@@ -2254,6 +2281,25 @@ class Obras extends MY_Controller
                         $queue = new \Libraries\Email\EmailQueue();
                         $templates = new \Libraries\Email\TemplateEngine();
 
+                        // Template configurado
+                        $this->db->where('config', 'email_template_obra_concluida');
+                        $templateRow = $this->db->get('configuracoes')->row();
+                        $template = $templateRow && !empty($templateRow->valor) ? $templateRow->valor : 'obra_concluida';
+
+                        // CC/BCC padrao
+                        $cc = [];
+                        $bcc = [];
+                        $this->db->where('config', 'email_cc_default');
+                        $rowCc = $this->db->get('configuracoes')->row();
+                        if ($rowCc && !empty($rowCc->valor)) {
+                            $cc = array_map('trim', explode(',', $rowCc->valor));
+                        }
+                        $this->db->where('config', 'email_bcc_default');
+                        $rowBcc = $this->db->get('configuracoes')->row();
+                        if ($rowBcc && !empty($rowBcc->valor)) {
+                            $bcc = array_map('trim', explode(',', $rowBcc->valor));
+                        }
+
                         $templateData = [
                             'cliente_nome' => $obra->cliente_nome ?? '',
                             'cliente_email' => $obra->cliente_email ?? '',
@@ -2264,18 +2310,26 @@ class Obras extends MY_Controller
                             'os_link_visualizar' => base_url('obras/visualizar/' . $obra_id),
                         ];
 
-                        $rendered = $templates->render('obra_concluida', $templateData);
+                        $rendered = $templates->render($template, $templateData);
 
-                        $queue->enqueue([
+                        $enqueueData = [
                             'to' => $obra->cliente_email,
                             'to_name' => $obra->cliente_nome ?? '',
                             'subject' => 'Obra Concluída - ' . $obra->nome,
                             'body_html' => $rendered['html'],
                             'body_text' => $rendered['text'] ?? strip_tags($rendered['html']),
-                            'template' => 'obra_concluida',
+                            'template' => $template,
                             'template_data' => $templateData,
                             'priority' => 2,
-                        ]);
+                        ];
+                        if (!empty($cc)) {
+                            $enqueueData['cc'] = $cc;
+                        }
+                        if (!empty($bcc)) {
+                            $enqueueData['bcc'] = $bcc;
+                        }
+
+                        $queue->enqueue($enqueueData);
                     }
                 } catch (\Exception $e) {
                     log_message('error', '[Obras] Erro ao enfileirar email V5 (concluida): ' . $e->getMessage());
