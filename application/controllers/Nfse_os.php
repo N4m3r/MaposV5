@@ -898,7 +898,7 @@ class Nfse_os extends MY_Controller
             $this->load->library('Nfse/NfseConfig');
             $this->load->library('Nfse/DpsXmlBuilder');
             $this->load->library('Nfse/XmlSigner');
-            $this->load->library('Nfse/NfseNacional');
+            // NfseNacional é instanciada manualmente com new mais abaixo (linha ~1050)
 
             // Carregar dados do emitente
             $this->load->model('mapos_model');

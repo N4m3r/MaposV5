@@ -260,6 +260,32 @@ class NfseNacional
     }
 
     /**
+     * Verifica se um arquivo PEM é válido (contém ao menos um certificado)
+     *
+     * @param string $path Caminho do arquivo
+     * @return bool
+     */
+    private function isValidPemFile($path)
+    {
+        if (empty($path) || !file_exists($path) || filesize($path) === 0) {
+            return false;
+        }
+        $handle = fopen($path, 'r');
+        if (!$handle) {
+            return false;
+        }
+        $valid = false;
+        while (($line = fgets($handle, 128)) !== false) {
+            if (strpos($line, '-----BEGIN CERTIFICATE-----') !== false) {
+                $valid = true;
+                break;
+            }
+        }
+        fclose($handle);
+        return $valid;
+    }
+
+    /**
      * Envia requisição HTTP com mTLS (certificado digital)
      *
      * @param string $method GET, POST, etc
@@ -286,10 +312,10 @@ class NfseNacional
         // CA chain para verificação do servidor
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-        if (!empty($this->caPath) && file_exists($this->caPath) && filesize($this->caPath) > 0) {
+        if (!empty($this->caPath) && $this->isValidPemFile($this->caPath)) {
             curl_setopt($ch, CURLOPT_CAINFO, $this->caPath);
         } else {
-            log_message('info', 'NFS-e Nacional: CA ICP-Brasil não encontrado ou vazio (' . ($this->caPath ?? 'nulo') . '). Usando CA do sistema.');
+            log_message('info', 'NFS-e Nacional: CA ICP-Brasil não encontrado, vazio ou inválido (' . ($this->caPath ?? 'nulo') . '). Usando CA do sistema.');
         }
 
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
@@ -332,8 +358,11 @@ class NfseNacional
         if (!empty($response)) {
             $decoded = json_decode($response, true);
             if (json_last_error() !== JSON_ERROR_NONE) {
-                // Resposta não é JSON — pode ser XML da NFS-e
+                // Resposta não é JSON — pode ser XML da NFS-e ou página de erro HTML
                 $decoded = $response;
+                if ($httpCode >= 400) {
+                    log_message('error', 'NFS-e Nacional: Resposta HTTP ' . $httpCode . ' não é JSON. Body bruto: ' . substr($response, 0, 2000));
+                }
             }
         }
 

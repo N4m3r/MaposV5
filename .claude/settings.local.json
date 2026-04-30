@@ -95,7 +95,8 @@
       "Bash(python -c ' *)",
       "Bash(git push *)",
       "WebFetch(domain:www.nfse.gov.br)",
-      "Bash([ -f \"C:/Users/thail/Desktop/IVMS-CRUD/MaposV5/$f\" ])"
+      "Bash([ -f \"C:/Users/thail/Desktop/IVMS-CRUD/MaposV5/$f\" ])",
+      "WebFetch(domain:www.iti.gov.br)"
     ]
   }
 }

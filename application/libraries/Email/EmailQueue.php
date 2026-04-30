@@ -26,7 +26,7 @@ class EmailQueue
 
         // Verifica blacklist
         if ($this->isBlacklisted($email)) {
-            log_message('warning', "Email bloqueado pela blacklist: {$email}");
+            log_message('error', "Email bloqueado pela blacklist: {$email}");
             return 0;
         }
 

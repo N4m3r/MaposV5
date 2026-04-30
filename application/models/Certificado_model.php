@@ -148,6 +148,29 @@ class Certificado_model extends CI_Model
     // ==================== CONSULTAS À RECEITA FEDERAL ====================
 
     /**
+     * Verifica se um arquivo PEM é válido (contém ao menos um certificado)
+     */
+    private function isValidPemFile($path)
+    {
+        if (empty($path) || !file_exists($path) || filesize($path) === 0) {
+            return false;
+        }
+        $handle = fopen($path, 'r');
+        if (!$handle) {
+            return false;
+        }
+        $valid = false;
+        while (($line = fgets($handle, 128)) !== false) {
+            if (strpos($line, '-----BEGIN CERTIFICATE-----') !== false) {
+                $valid = true;
+                break;
+            }
+        }
+        fclose($handle);
+        return $valid;
+    }
+
+    /**
      * Consulta CNPJ na Receita Federal
      * Extrai dados cadastrais e regime tributário
      */
@@ -170,7 +193,7 @@ class Certificado_model extends CI_Model
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
             $caPath = FCPATH . 'assets/certs/ac-icp-brasil.pem';
-            if (!empty($caPath) && file_exists($caPath) && filesize($caPath) > 0) {
+            if ($this->isValidPemFile($caPath)) {
                 curl_setopt($ch, CURLOPT_CAINFO, $caPath);
             }
 
@@ -236,7 +259,7 @@ class Certificado_model extends CI_Model
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
             $caPath = FCPATH . 'assets/certs/ac-icp-brasil.pem';
-            if (!empty($caPath) && file_exists($caPath) && filesize($caPath) > 0) {
+            if ($this->isValidPemFile($caPath)) {
                 curl_setopt($ch, CURLOPT_CAINFO, $caPath);
             }
 
