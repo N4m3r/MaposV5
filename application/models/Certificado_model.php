@@ -279,51 +279,56 @@ class Certificado_model extends CI_Model
         $url = "https://www.receitaws.com.br/v1/cnpj/" . $cnpj;
 
         try {
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $url);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-            curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-            $caPath = FCPATH . 'assets/certs/ac-icp-brasil.pem';
-            if ($this->isValidPemFile($caPath)) {
-                curl_setopt($ch, CURLOPT_CAINFO, $caPath);
-            }
+            $result = $this->executarGetCurl($url);
+            $response = $result['response'];
+            $httpCode = $result['httpCode'];
 
-            $response = curl_exec($ch);
-            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            curl_close($ch);
+            // Fallback para BrasilAPI se houver falha de conexão
+            if (($response === false || $result['curlErrno'] !== 0 || $httpCode == 0) && $httpCode != 200) {
+                $urlFallback = "https://brasilapi.com.br/api/cnpj/v1/" . $cnpj;
+                $result = $this->executarGetCurl($urlFallback);
+                $response = $result['response'];
+                $httpCode = $result['httpCode'];
 
-            if ($httpCode == 200 && !empty($response)) {
-                $dados = json_decode($response, true);
-
-                if (!$dados || (isset($dados['status']) && $dados['status'] == 'error')) {
-                    return ['error' => $dados['message'] ?? 'CNPJ não encontrado'];
+                if (($response === false || $result['curlErrno'] !== 0 || $httpCode == 0) && $httpCode != 200) {
+                    $errorDetail = !empty($result['curlError']) ? $result['curlError'] : ('HTTP ' . $httpCode);
+                    $this->registrarConsulta($certificado->id, 'CNPJ', false, null, $errorDetail);
+                    return ['error' => 'Não foi possível consultar o CNPJ. Erro de conexão: ' . $errorDetail . '. Verifique se o servidor tem acesso à internet e se o certificado SSL está atualizado.'];
                 }
-
-                // Atualizar dados do certificado com os dados do CNPJ
-                $updateData = ['updated_at' => date('Y-m-d H:i:s')];
-                if (!empty($dados['nome'])) $updateData['razao_social'] = $dados['nome'];
-                if (!empty($dados['fantasia'])) $updateData['nome_fantasia'] = $dados['fantasia'];
-
-                $this->db->where('id', $certificado->id);
-                $this->db->update('certificado_digital', $updateData);
-
-                // Registrar consulta
-                $this->registrarConsulta($certificado->id, 'CNPJ', true, $dados);
-
-                return [
-                    'success' => true,
-                    'data' => $dados
-                ];
             }
 
-            if ($httpCode == 429) {
-                return ['error' => 'Limite de requisições atingido. Aguarde 1 minuto e tente novamente.'];
+            if ($httpCode != 200 || empty($response)) {
+                if ($httpCode == 429) {
+                    return ['error' => 'Limite de requisições atingido. Aguarde 1 minuto e tente novamente.'];
+                }
+                $this->registrarConsulta($certificado->id, 'CNPJ', false, null, 'HTTP ' . $httpCode);
+                return ['error' => 'CNPJ não encontrado ou serviço indisponível (HTTP ' . $httpCode . ')'];
             }
 
-            return ['error' => 'CNPJ não encontrado ou serviço indisponível (HTTP ' . $httpCode . ')'];
+            $dados = json_decode($response, true);
+
+            if (!$dados || (isset($dados['status']) && $dados['status'] == 'error')) {
+                return ['error' => $dados['message'] ?? 'CNPJ não encontrado'];
+            }
+
+            // Normaliza dados se vieram do BrasilAPI
+            $dados = $this->normalizarDadosCNPJ($dados);
+
+            // Atualizar dados do certificado com os dados do CNPJ
+            $updateData = ['updated_at' => date('Y-m-d H:i:s')];
+            if (!empty($dados['nome'])) $updateData['razao_social'] = $dados['nome'];
+            if (!empty($dados['fantasia'])) $updateData['nome_fantasia'] = $dados['fantasia'];
+
+            $this->db->where('id', $certificado->id);
+            $this->db->update('certificado_digital', $updateData);
+
+            // Registrar consulta
+            $this->registrarConsulta($certificado->id, 'CNPJ', true, $dados);
+
+            return [
+                'success' => true,
+                'data' => $dados
+            ];
 
         } catch (Exception $e) {
             $this->registrarConsulta($certificado->id, 'CNPJ', false, null, $e->getMessage());
@@ -346,21 +351,23 @@ class Certificado_model extends CI_Model
         $url = "https://www.receitaws.com.br/v1/cnpj/" . preg_replace('/[^0-9]/', '', $cnpj);
 
         try {
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $url);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-            $caPath = FCPATH . 'assets/certs/ac-icp-brasil.pem';
-            if ($this->isValidPemFile($caPath)) {
-                curl_setopt($ch, CURLOPT_CAINFO, $caPath);
-            }
+            $result = $this->executarGetCurl($url);
+            $response = $result['response'];
+            $httpCode = $result['httpCode'];
 
-            $response = curl_exec($ch);
-            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            $curlError = curl_error($ch);
-            curl_close($ch);
+            // Fallback para BrasilAPI se houver falha de conexão
+            if (($response === false || $result['curlErrno'] !== 0 || $httpCode == 0) && $httpCode != 200) {
+                $urlFallback = "https://brasilapi.com.br/api/cnpj/v1/" . preg_replace('/[^0-9]/', '', $cnpj);
+                $result = $this->executarGetCurl($urlFallback);
+                $response = $result['response'];
+                $httpCode = $result['httpCode'];
+
+                if (($response === false || $result['curlErrno'] !== 0 || $httpCode == 0) && $httpCode != 200) {
+                    $errorDetail = !empty($result['curlError']) ? $result['curlError'] : ('HTTP ' . $httpCode);
+                    $this->registrarConsulta($certificado->id, 'SIMPLES_NACIONAL', false, null, $errorDetail);
+                    return ['error' => 'Não foi possível consultar o CNPJ. Erro de conexão: ' . $errorDetail . '. Verifique se o servidor tem acesso à internet e se o certificado SSL está atualizado.'];
+                }
+            }
 
             if ($httpCode != 200 || empty($response)) {
                 $errorMsg = $httpCode == 429 ? 'Limite de requisições atingido. Aguarde 1 minuto e tente novamente.' : 'Não foi possível consultar o CNPJ (HTTP ' . $httpCode . ')';
@@ -375,6 +382,9 @@ class Certificado_model extends CI_Model
                 $this->registrarConsulta($certificado->id, 'SIMPLES_NACIONAL', false, null, $errorMsg);
                 return ['error' => $errorMsg];
             }
+
+            // Normaliza dados se vieram do BrasilAPI
+            $dados = $this->normalizarDadosCNPJ($dados);
 
             // ReceitaWS retorna "Sim"/"Nao"/"SIM"/"NAO"/true/false — normalizar
             $opcaoSimples = $dados['opcao_pelo_simples'] ?? null;
@@ -498,6 +508,74 @@ class Certificado_model extends CI_Model
         }
 
         return 'III'; // Padrão para serviços
+    }
+
+    /**
+     * Executa requisição GET via cURL com logging detalhado de erros
+     */
+    private function executarGetCurl($url, $useSslVerify = true)
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, $useSslVerify);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, $useSslVerify ? 2 : 0);
+        $caPath = FCPATH . 'assets/certs/ac-icp-brasil.pem';
+        if ($this->isValidPemFile($caPath)) {
+            curl_setopt($ch, CURLOPT_CAINFO, $caPath);
+        }
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlErrno = curl_errno($ch);
+        $curlError = curl_error($ch);
+        curl_close($ch);
+
+        if ($response === false || $curlErrno !== 0) {
+            log_message('error', "Certificado_model: cURL falhou para {$url}. Errno={$curlErrno} Error={$curlError} HTTP={$httpCode}");
+        }
+
+        return [
+            'response' => $response,
+            'httpCode' => $httpCode,
+            'curlErrno' => $curlErrno,
+            'curlError' => $curlError,
+        ];
+    }
+
+    /**
+     * Normaliza dados de CNPJ entre diferentes APIs (ReceitaWS / BrasilAPI)
+     */
+    private function normalizarDadosCNPJ($dados)
+    {
+        if (!is_array($dados)) {
+            return $dados;
+        }
+
+        // BrasilAPI usa nomes de campos diferentes
+        if (isset($dados['razao_social']) && !isset($dados['nome'])) {
+            $dados['nome'] = $dados['razao_social'];
+        }
+        if (isset($dados['nome_fantasia']) && !isset($dados['fantasia'])) {
+            $dados['fantasia'] = $dados['nome_fantasia'];
+        }
+        if (isset($dados['descricao_situacao_cadastral']) && !isset($dados['situacao'])) {
+            $dados['situacao'] = $dados['descricao_situacao_cadastral'];
+        }
+        // Garante que campos esperados existam
+        $camposPadrao = [
+            'nome', 'fantasia', 'cnae_fiscal', 'cnae_fiscal_descricao',
+            'porte', 'situacao', 'natureza_juridica',
+            'opcao_pelo_simples', 'data_opcao_pelo_simples',
+            'data_exclusao_do_simples', 'opcao_pelo_mei'
+        ];
+        foreach ($camposPadrao as $campo) {
+            if (!isset($dados[$campo])) {
+                $dados[$campo] = null;
+            }
+        }
+        return $dados;
     }
 
     /**
