@@ -80,6 +80,11 @@ class Migration_Nfse_certificado_simples_nacional extends CI_Migration
             $this->dbforge->add_key('chave_acesso');
             $this->dbforge->create_table('certificado_nfe_importada', true);
             log_message('info', 'Tabela certificado_nfe_importada criada');
+        } else {
+            // Garantir coluna os_id em tabelas ja existentes
+            $this->_addColumnIfNotExists('certificado_nfe_importada', 'os_id', [
+                'type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'null' => true, 'after' => 'dados_xml'
+            ]);
         }
 
         // ========================================================
