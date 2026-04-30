@@ -14,7 +14,7 @@ $config['nfse_ambiente'] = getenv('NFSE_AMBIENTE') ?: 'homologacao';
 // SEFIN = Sistema de Emissao Fiscal Nacional (emissao propriamente dita)
 // ADN   = Ambiente de Dados Nacional (distribuicao/consulta)
 $config['nfse_urls'] = [
-    'homologacao' => 'https://sefin.producaorestrita.nfse.gov.br/API/SefinNacional/',
+    'homologacao' => 'https://sefin.producaorestrita.nfse.gov.br/SefinNacional/',
     'producao'    => 'https://sefin.nfse.gov.br/SefinNacional/',
 ];
 

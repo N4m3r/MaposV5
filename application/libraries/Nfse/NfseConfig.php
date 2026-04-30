@@ -50,7 +50,7 @@ class NfseConfig
         // SEFIN Nacional = endpoint de emissao
         // ADN = endpoint de distribuicao/consulta
         $urls = [
-            'homologacao' => 'https://sefin.producaorestrita.nfse.gov.br/API/SefinNacional/',
+            'homologacao' => 'https://sefin.producaorestrita.nfse.gov.br/SefinNacional/',
             'producao'    => 'https://sefin.nfse.gov.br/SefinNacional/',
         ];
         return $urls[$ambiente] ?? $urls['homologacao'];

@@ -1,0 +1,49 @@
+{
+    "data": "2026-05-01 01:09:05",
+    "certificado": {
+        "subject": {
+            "C": "BR",
+            "O": "ICP-Brasil",
+            "OU": [
+                "Certificado Digital PJ A1",
+                "Videoconferencia",
+                "25199364000173",
+                "AC SyngularID Multipla"
+            ],
+            "CN": "JJ TECNOLOGIAS LTDA:54518217000117"
+        },
+        "issuer": {
+            "C": "BR",
+            "OU": "AC SyngularID",
+            "O": "ICP-Brasil",
+            "CN": "AC SyngularID Multipla"
+        },
+        "serial": "683153758491667465373951",
+        "validade": {
+            "de": "2025-06-06 23:01:20",
+            "ate": "2026-06-06 23:01:20"
+        },
+        "keyUsage": "Digital Signature, Non Repudiation, Key Encipherment",
+        "extendedKeyUsage": "E-mail Protection, TLS Web Client Authentication",
+        "hasClientAuth": true,
+        "pairValid": true
+    },
+    "teste1_pem_get": {
+        "httpCode": 405,
+        "curlErrno": 0,
+        "curlError": "",
+        "responsePreview": "{\r\n  \"message\": \"The requested resource does not support http method 'GET'.\"\r\n}"
+    },
+    "teste2_pem_post": {
+        "httpCode": null,
+        "curlErrno": null,
+        "curlError": null,
+        "responsePreview": ""
+    },
+    "teste3_pfx_post": {
+        "httpCode": 403,
+        "curlErrno": 0,
+        "curlError": "",
+        "responsePreview": "{\"tipoAmbiente\":2,\"versaoAplicativo\":\"SefinNacional_1.6.0\",\"dataHoraProcessamento\":\"2026-04-30T20:04:13.0588176-03:00\",\"erros\":[{\"Codigo\":\"E4007\",\"Descricao\":\"Não foi possível obter o certificado de cliente.\"}]}"
+    }
+}
