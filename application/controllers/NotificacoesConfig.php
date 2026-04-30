@@ -219,45 +219,55 @@ class NotificacoesConfig extends MY_Controller
         $instance = $config->evolution_instance ?? 'Mapos';
         $instanceToken = $config->evolution_instance_token ?? '';
 
+        $versao = $config->evolution_version ?? 'v2';
+        $isV2 = ($versao === 'v2' || $versao === 'go');
+
         $resultados = [];
 
-        // 1. /instance/all com API key global (deve funcionar)
-        $resultados[] = $this->_curlTest('1_instance_all_apikey', $base . '/instance/all', ['apikey: ' . $apikey]);
+        // Endpoints conforme versao
+        $epAll = $isV2 ? '/instance/fetchInstances' : '/instance/all';
+        $epStatus = $isV2 ? '/instance/connectionState/' . urlencode($instance) : '/instance/status';
+        $epSend = $isV2 ? '/message/sendText/' . urlencode($instance) : '/send/text';
+        $epQr = $isV2 ? '/instance/connect/' . urlencode($instance) : '/instance/qr?instanceId=' . urlencode($instance);
+        $epDisconnect = $isV2 ? '/instance/logout/' . urlencode($instance) : '/instance/disconnect';
 
-        // 2. /instance/all com token de instancia (deve falhar - 401)
+        // 1. Listar instancias com API key global
+        $resultados[] = $this->_curlTest('1_instance_all_apikey', $base . $epAll, ['apikey: ' . $apikey]);
+
+        // 2. Listar instancias com token de instancia
         if ($instanceToken) {
-            $resultados[] = $this->_curlTest('2_instance_all_token', $base . '/instance/all', ['apikey: ' . $instanceToken]);
+            $resultados[] = $this->_curlTest('2_instance_all_token', $base . $epAll, ['apikey: ' . $instanceToken]);
         }
 
-        // 3. /instance/status com API key global (deve falhar - 401)
-        $resultados[] = $this->_curlTest('3_instance_status_apikey', $base . '/instance/status', ['apikey: ' . $apikey]);
+        // 3. Status com API key global
+        $resultados[] = $this->_curlTest('3_instance_status_apikey', $base . $epStatus, ['apikey: ' . $apikey]);
 
-        // 4. /instance/status com token de instancia (deve funcionar)
+        // 4. Status com token de instancia
         if ($instanceToken) {
-            $resultados[] = $this->_curlTest('4_instance_status_token', $base . '/instance/status', ['apikey: ' . $instanceToken]);
+            $resultados[] = $this->_curlTest('4_instance_status_token', $base . $epStatus, ['apikey: ' . $instanceToken]);
         }
 
-        // 5. /send/text com API key global (deve falhar - 401)
-        $resultados[] = $this->_curlTestPost('5_send_text_apikey', $base . '/send/text', ['apikey: ' . $apikey, 'Content-Type: application/json'], ['number' => '5511999999999', 'text' => 'Teste']);
+        // 5. Enviar texto com API key global
+        $resultados[] = $this->_curlTestPost('5_send_text_apikey', $base . $epSend, ['apikey: ' . $apikey, 'Content-Type: application/json'], ['number' => '5511999999999', 'text' => 'Teste']);
 
-        // 6. /send/text com token de instancia (deve funcionar - pode retornar 500 se numero nao existe)
+        // 6. Enviar texto com token de instancia
         if ($instanceToken) {
-            $resultados[] = $this->_curlTestPost('6_send_text_token', $base . '/send/text', ['apikey: ' . $instanceToken, 'Content-Type: application/json'], ['number' => '5511999999999', 'text' => 'Teste']);
+            $resultados[] = $this->_curlTestPost('6_send_text_token', $base . $epSend, ['apikey: ' . $instanceToken, 'Content-Type: application/json'], ['number' => '5511999999999', 'text' => 'Teste']);
         }
 
-        // 7. /instance/qr com API key global (deve falhar - 401)
-        $resultados[] = $this->_curlTest('7_qr_apikey', $base . '/instance/qr?instanceId=' . urlencode($instance), ['apikey: ' . $apikey]);
+        // 7. QR Code com API key global
+        $resultados[] = $this->_curlTest('7_qr_apikey', $base . $epQr, ['apikey: ' . $apikey]);
 
-        // 8. /instance/qr com token de instancia (pode retornar 400 se ja logado)
+        // 8. QR Code com token de instancia
         if ($instanceToken) {
-            $resultados[] = $this->_curlTest('8_qr_token', $base . '/instance/qr?instanceId=' . urlencode($instance), ['apikey: ' . $instanceToken]);
+            $resultados[] = $this->_curlTest('8_qr_token', $base . $epQr, ['apikey: ' . $instanceToken]);
         }
 
-        // 9. /instance/disconnect com token de instancia (nao executa para nao desconectar)
+        // 9. Disconnect omitido
         $resultados[] = [
             'nome' => '9_disconnect_token',
             'http_code' => 'N/A',
-            'nota' => 'Teste omitido para nao desconectar a instancia. Endpoint: POST /instance/disconnect com token da instancia'
+            'nota' => 'Teste omitido para nao desconectar. Endpoint: ' . $epDisconnect . ' com token da instancia'
         ];
 
         // 10. Verificar DNS

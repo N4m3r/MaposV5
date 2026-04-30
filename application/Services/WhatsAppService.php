@@ -20,6 +20,7 @@ class WhatsAppService
     protected $CI;
     protected $config;
     protected $apiUrl;
+    protected $apiVersion = 'v1'; // v1 = Node, v2 = Go
     public $debugLog = [];
 
     public function __construct()
@@ -35,6 +36,7 @@ class WhatsAppService
         }
 
         $this->apiUrl = $this->resolveApiUrl($this->config->evolution_url ?? '');
+        $this->detectarVersao();
     }
 
     private function addDebug($tipo, $msg)
@@ -60,6 +62,68 @@ class WhatsAppService
         }
 
         return rtrim($url, '/');
+    }
+
+    /**
+     * Detecta automaticamente a versao da Evolution API (v1 Node vs v2 Go)
+     */
+    private function detectarVersao()
+    {
+        // Se ja tiver versao configurada no banco, usa ela
+        $versaoConfig = $this->config->evolution_version ?? 'v2';
+        if ($versaoConfig === 'go' || $versaoConfig === 'v2') {
+            $this->apiVersion = 'v2';
+        } else {
+            $this->apiVersion = 'v1';
+        }
+
+        $this->addDebug('info', 'Versao Evolution API detectada/configurada: ' . $this->apiVersion);
+    }
+
+    /**
+     * Retorna o endpoint correto conforme a versao da API
+     */
+    private function endpoint($tipo, $instance = null)
+    {
+        $base = $this->apiUrl;
+        $inst = $instance ?: ($this->config->evolution_instance ?? '');
+
+        if ($this->apiVersion === 'v2') {
+            switch ($tipo) {
+                case 'instance_all':
+                    return $base . '/instance/fetchInstances';
+                case 'instance_status':
+                    return $base . '/instance/connectionState/' . urlencode($inst);
+                case 'instance_connect':
+                    return $base . '/instance/connect/' . urlencode($inst);
+                case 'instance_qr':
+                    return $base . '/instance/connect/' . urlencode($inst);
+                case 'instance_disconnect':
+                    return $base . '/instance/logout/' . urlencode($inst);
+                case 'send_text':
+                    return $base . '/message/sendText/' . urlencode($inst);
+                default:
+                    return $base . '/' . $tipo;
+            }
+        }
+
+        // v1 (Node)
+        switch ($tipo) {
+            case 'instance_all':
+                return $base . '/instance/all';
+            case 'instance_status':
+                return $base . '/instance/status';
+            case 'instance_connect':
+                return $base . '/instance/connect';
+            case 'instance_qr':
+                return $base . '/instance/qr?instanceId=' . urlencode($inst);
+            case 'instance_disconnect':
+                return $base . '/instance/disconnect';
+            case 'send_text':
+                return $base . '/send/text';
+            default:
+                return $base . '/' . $tipo;
+        }
     }
 
     /**
@@ -128,28 +192,36 @@ class WhatsAppService
             return ['connected' => false, 'status' => 'nao_configurado', 'error' => 'URL ou API Key nao configuradas'];
         }
 
-        $url = $this->apiUrl . '/instance/all';
+        $url = $this->endpoint('instance_all');
         $this->addDebug('info', 'GET ' . $url);
         $resp = $this->request($url, 'GET', [], ['apikey: ' . $this->config->evolution_apikey]);
         $this->addDebug('info', 'HTTP /instance/all: ' . $resp['http_code']);
 
         if ($resp['http_code'] === 200) {
             $data = json_decode($resp['body'], true);
-            $instances = $data['data'] ?? [];
+            // v1: data[], v2 Go: instances[] ou data[]
+            $instances = $data['data'] ?? $data['instances'] ?? [];
 
             if (empty($instances)) {
                 return ['connected' => false, 'status' => 'sem_instancias', 'error' => 'Nenhuma instancia encontrada no servidor', 'debug' => $this->debugLog];
             }
 
             foreach ($instances as $inst) {
-                $name = $inst['name'] ?? '';
+                // v1: name/connected, v2: instanceId/name/status
+                $name = $inst['name'] ?? $inst['instanceId'] ?? $inst['instanceName'] ?? '';
+                $isConnected = false;
+                if ($this->apiVersion === 'v2') {
+                    $status = $inst['status'] ?? $inst['connectionStatus'] ?? $inst['state'] ?? '';
+                    $isConnected = in_array(strtolower($status), ['connected', 'open', 'conectado'], true);
+                } else {
+                    $isConnected = !empty($inst['connected']);
+                }
                 if (strcasecmp($name, $this->config->evolution_instance) === 0) {
-                    $connected = !empty($inst['connected']);
-                    $this->CI->notificacoes_config_model->atualizarEstadoEvolution($connected ? 'open' : 'desconectado');
-                    $this->addDebug('ok', 'Instancia encontrada. Connected=' . ($connected ? 'true' : 'false'));
+                    $this->CI->notificacoes_config_model->atualizarEstadoEvolution($isConnected ? 'open' : 'desconectado');
+                    $this->addDebug('ok', 'Instancia encontrada. Connected=' . ($isConnected ? 'true' : 'false'));
                     return [
-                        'connected' => $connected,
-                        'status' => $connected ? 'open' : 'desconectado',
+                        'connected' => $isConnected,
+                        'status' => $isConnected ? 'open' : 'desconectado',
                         'data' => $inst,
                         'debug' => $this->debugLog,
                     ];
@@ -193,14 +265,17 @@ class WhatsAppService
 
         // 2. Busca via /instance/all
         $this->addDebug('info', 'Token nao salvo no banco. Buscando via /instance/all...');
-        $urlAll = $this->apiUrl . '/instance/all';
+        $urlAll = $this->endpoint('instance_all');
         $resp = $this->request($urlAll, 'GET', [], ['apikey: ' . $this->config->evolution_apikey]);
 
         if ($resp['http_code'] === 200) {
             $data = json_decode($resp['body'], true);
-            foreach ($data['data'] ?? [] as $inst) {
-                if (strcasecmp($inst['name'] ?? '', $this->config->evolution_instance) === 0) {
-                    $token = $inst['token'] ?? null;
+            $instances = $data['data'] ?? $data['instances'] ?? [];
+            foreach ($instances as $inst) {
+                $name = $inst['name'] ?? $inst['instanceId'] ?? $inst['instanceName'] ?? '';
+                if (strcasecmp($name, $this->config->evolution_instance) === 0) {
+                    // v1: token, v2: apikey ou token
+                    $token = $inst['token'] ?? $inst['apikey'] ?? $inst['instanceApikey'] ?? null;
                     if ($token) {
                         $this->addDebug('sucesso', 'Token resolvido via API');
                         // Salva no banco para proxima vez
@@ -239,9 +314,10 @@ class WhatsAppService
         }
 
         // 3. Obtem QR Code usando o token da instancia
-        $urlQr = $this->apiUrl . '/instance/qr?instanceId=' . urlencode($this->config->evolution_instance);
-        $this->addDebug('url', 'GET ' . $urlQr);
-        $respQr = $this->request($urlQr, 'GET', [], ['apikey: ' . $instanceToken]);
+        $urlQr = $this->endpoint('instance_qr');
+        $methodQr = $this->apiVersion === 'v2' ? 'POST' : 'GET';
+        $this->addDebug('url', $methodQr . ' ' . $urlQr);
+        $respQr = $this->request($urlQr, $methodQr, [], ['apikey: ' . $instanceToken]);
         $this->addDebug('info', 'HTTP /instance/qr: ' . $respQr['http_code']);
 
         if ($respQr['http_code'] === 200) {
@@ -284,7 +360,7 @@ class WhatsAppService
             return ['success' => false, 'error' => 'Nao foi possivel obter token da instancia'];
         }
 
-        $url = $this->apiUrl . '/send/text';
+        $url = $this->endpoint('send_text');
         $payload = [
             'number' => $numero,
             'text' => $mensagem,
@@ -326,9 +402,10 @@ class WhatsAppService
             return ['success' => false, 'error' => 'Nao foi possivel obter token da instancia'];
         }
 
-        $url = $this->apiUrl . '/instance/disconnect';
+        $url = $this->endpoint('instance_disconnect');
         $this->addDebug('info', 'POST ' . $url);
-        $resp = $this->request($url, 'POST', ['instanceId' => $this->config->evolution_instance], [
+        $payloadDisconnect = $this->apiVersion === 'v2' ? [] : ['instanceId' => $this->config->evolution_instance];
+        $resp = $this->request($url, 'POST', $payloadDisconnect, [
             'Content-Type: application/json; charset=utf-8',
             'apikey: ' . $instanceToken,
         ]);
@@ -362,8 +439,8 @@ class WhatsAppService
             'provedor' => $this->config->whatsapp_provedor ?? 'N/A',
         ];
 
-        // 2. Teste /instance/all
-        $urlAll = $this->apiUrl . '/instance/all';
+        // 2. Teste /instance/all ou /instance/fetchInstances
+        $urlAll = $this->endpoint('instance_all');
         $respAll = $this->request($urlAll, 'GET', [], ['apikey: ' . ($this->config->evolution_apikey ?? '')]);
         $resultado['teste_instance_all'] = [
             'http_code' => $respAll['http_code'],
@@ -372,15 +449,23 @@ class WhatsAppService
 
         if ($respAll['http_code'] === 200) {
             $data = json_decode($respAll['body'], true);
-            $instancias = $data['data'] ?? [];
+            $instancias = $data['data'] ?? $data['instances'] ?? [];
             $resultado['instancias_encontradas'] = count($instancias);
 
             foreach ($instancias as $inst) {
-                if (strcasecmp($inst['name'] ?? '', $this->config->evolution_instance ?? '') === 0) {
+                $name = $inst['name'] ?? $inst['instanceId'] ?? $inst['instanceName'] ?? '';
+                $connected = false;
+                if ($this->apiVersion === 'v2') {
+                    $status = $inst['status'] ?? $inst['connectionStatus'] ?? $inst['state'] ?? '';
+                    $connected = in_array(strtolower($status), ['connected', 'open', 'conectado'], true);
+                } else {
+                    $connected = !empty($inst['connected']);
+                }
+                if (strcasecmp($name, $this->config->evolution_instance ?? '') === 0) {
                     $resultado['instancia'] = [
-                        'nome' => $inst['name'],
-                        'connected' => $inst['connected'] ?? false,
-                        'token' => !empty($inst['token']) ? substr($inst['token'], 0, 8) . '...' : 'N/A',
+                        'nome' => $name,
+                        'connected' => $connected,
+                        'token' => !empty($inst['token'] ?? $inst['apikey'] ?? null) ? substr($inst['token'] ?? $inst['apikey'], 0, 8) . '...' : 'N/A',
                     ];
                 }
             }
@@ -389,7 +474,7 @@ class WhatsAppService
         // 3. Teste /instance/status (se tiver token)
         $token = $this->getInstanceToken();
         if ($token) {
-            $urlStatus = $this->apiUrl . '/instance/status';
+            $urlStatus = $this->endpoint('instance_status');
             $respStatus = $this->request($urlStatus, 'GET', [], ['apikey: ' . $token]);
             $resultado['teste_instance_status'] = [
                 'http_code' => $respStatus['http_code'],
