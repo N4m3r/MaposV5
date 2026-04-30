@@ -1051,6 +1051,7 @@ class Nfse_os extends MY_Controller
             if ($caPath) {
                 $configApi['ca_path'] = $caPath;
             }
+            require_once APPPATH . 'libraries/Nfse/NfseNacional.php';
             $nfseApi = new NfseNacional($configApi);
 
             $resultado = $nfseApi->emitir($xmlAssinado);
