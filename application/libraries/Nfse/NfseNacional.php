@@ -382,6 +382,9 @@ class NfseNacional
         $curlVersion = curl_version();
         log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: cURL version=' . ($curlVersion['version'] ?? 'N/A') . ' | SSL=' . ($curlVersion['ssl_version'] ?? 'N/A'));
 
+        // Diagnóstico: testar handshake TLS com openssl s_client
+        $this->diagnosticarHandshakeTls($url, $this->certPemPath, $this->keyPemPath);
+
         $resultado = $this->sendRequestCurl($method, $url, $data, $this->certPemPath, $this->keyPemPath);
 
         if ($this->isErroCertificadoNaoObtido($resultado)) {
@@ -397,7 +400,21 @@ class NfseNacional
                 log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: PEM combinado também falhou. HTTP=' . ($resultado2['httpCode'] ?? 0));
             }
 
-            // Tentativa 2: usar o arquivo .pfx original diretamente (formato P12)
+            // Tentativa 2: extrair apenas o certificado end-entity (sem cadeia)
+            // Às vezes o cURL envia o certificado errado quando há múltiplos no arquivo PEM
+            log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Tentando com apenas o certificado end-entity (sem cadeia)...');
+            $endEntityPem = $this->extrairEndEntityPem($this->certPemPath);
+            if ($endEntityPem) {
+                $resultadoEE = $this->sendRequestCurl($method, $url, $data, $endEntityPem, $this->keyPemPath);
+                @unlink($endEntityPem);
+                if (!$this->isErroCertificadoNaoObtido($resultadoEE)) {
+                    log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Abordagem end-entity (sem cadeia) funcionou!');
+                    return $resultadoEE;
+                }
+                log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: end-entity (sem cadeia) também falhou. HTTP=' . ($resultadoEE['httpCode'] ?? 0));
+            }
+
+            // Tentativa 3: usar o arquivo .pfx original diretamente (formato P12)
             // Algumas versões do cURL/OpenSSL preferem o certificado no formato PKCS#12 original
             if (!empty($this->pfxPath) && file_exists($this->pfxPath) && !empty($this->pfxSenha)) {
                 log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Tentando com certificado .pfx original (P12)...');
@@ -657,6 +674,58 @@ class NfseNacional
         $privKeyDetails = openssl_pkey_get_details($privKey);
         if (!$privKeyDetails || empty($privKeyDetails['key'])) return false;
         return trim($certPubKeyDetails['key']) === trim($privKeyDetails['key']);
+    }
+
+    /**
+     * Extrai apenas o certificado end-entity (primeiro certificado) do arquivo PEM
+     * Útil quando o cURL envia o certificado errado ao ter múltiplos no arquivo
+     */
+    /**
+     * Diagnostica handshake TLS usando openssl s_client
+     */
+    private function diagnosticarHandshakeTls($url, $certPath, $keyPath)
+    {
+        $parsed = parse_url($url);
+        $host = $parsed['host'] ?? '';
+        $port = $parsed['port'] ?? 443;
+        if (empty($host)) return;
+
+        $cmd = 'echo "Q" | openssl s_client -connect ' . escapeshellarg($host . ':' . $port) .
+               ' -cert ' . escapeshellarg($certPath) .
+               ' -key ' . escapeshellarg($keyPath) .
+               ' -tls1_2 -showcerts 2>&1 | head -n 80';
+
+        $output = shell_exec($cmd);
+        if (!empty($output)) {
+            log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: openssl s_client output:\n' . $output);
+        }
+
+        // Testar apenas com o certificado end-entity
+        $endEntity = $this->extrairEndEntityPem($certPath);
+        if ($endEntity) {
+            $cmd2 = 'echo "Q" | openssl s_client -connect ' . escapeshellarg($host . ':' . $port) .
+                    ' -cert ' . escapeshellarg($endEntity) .
+                    ' -key ' . escapeshellarg($keyPath) .
+                    ' -tls1_2 2>&1 | head -n 80';
+            $output2 = shell_exec($cmd2);
+            if (!empty($output2)) {
+                log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: openssl s_client (end-entity only) output:\n' . $output2);
+            }
+            @unlink($endEntity);
+        }
+    }
+
+    private function extrairEndEntityPem($certPemPath)
+    {
+        $content = file_get_contents($certPemPath);
+        if (empty($content)) return false;
+        if (!preg_match('/(-----BEGIN CERTIFICATE-----.*?-----END CERTIFICATE-----)/s', $content, $matches)) {
+            return false;
+        }
+        $endEntity = $matches[1];
+        $tempFile = sys_get_temp_dir() . '/nfse_endentity_' . uniqid() . '.pem';
+        if (file_put_contents($tempFile, $endEntity) === false) return false;
+        return $tempFile;
     }
 
     private function criarPemCombinado()
