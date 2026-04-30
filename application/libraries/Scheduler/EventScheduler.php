@@ -55,15 +55,23 @@ class EventScheduler
      */
     public function process(): void
     {
+        if (!$this->ci->db->table_exists($this->table)) {
+            return;
+        }
+
         $now = date('Y-m-d H:i:s');
-        
+
         $query = $this->ci->db->get_where($this->table, [
             'status' => 'pending',
             'execute_at <=' => $now
         ]);
-        
+
+        if (!$query) {
+            return;
+        }
+
         $events = $query->result();
-        
+
         foreach ($events as $event) {
             $this->execute($event);
         }

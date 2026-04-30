@@ -78,6 +78,10 @@ class EmailQueue
      */
     public function process(int $limit = 50): array
     {
+        if (!$this->ci->db->table_exists($this->table)) {
+            return [];
+        }
+
         // Busca emails pendentes ou agendados que chegaram a hora
         $this->ci->db->where_in('status', ['pending', 'scheduled']);
         $this->ci->db->where('(scheduled_at IS NULL OR scheduled_at <= "' . date('Y-m-d H:i:s') . '")', null, false);
@@ -86,6 +90,9 @@ class EmailQueue
         $this->ci->db->limit($limit);
 
         $query = $this->ci->db->get($this->table);
+        if (!$query) {
+            return [];
+        }
         $emails = $query->result();
 
         // Marca como processando
@@ -307,7 +314,13 @@ class EmailQueue
      */
     public function find(int $id): ?object
     {
+        if (!$this->ci->db->table_exists($this->table)) {
+            return null;
+        }
         $query = $this->ci->db->get_where($this->table, ['id' => $id]);
+        if (!$query) {
+            return null;
+        }
         return $query->row() ?: null;
     }
 }
