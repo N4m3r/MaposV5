@@ -10,9 +10,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $config['nfse_ambiente'] = getenv('NFSE_AMBIENTE') ?: 'homologacao';
 
 // URLs do Sistema Nacional NFS-e
+// ATENCAO: A API de emissao e do SEFIN Nacional, nao do ADN
+// SEFIN = Sistema de Emissao Fiscal Nacional (emissao propriamente dita)
+// ADN   = Ambiente de Dados Nacional (distribuicao/consulta)
 $config['nfse_urls'] = [
-    'homologacao' => 'https://adn.producaorestrita.nfse.gov.br/contribuintes/',
-    'producao'    => 'https://adn.nfse.gov.br/contribuintes/',
+    'homologacao' => 'https://sefin.producaorestrita.nfse.gov.br/API/SefinNacional/',
+    'producao'    => 'https://sefin.nfse.gov.br/SefinNacional/',
 ];
 
 // Código IBGE do Município (Manaus = 1302603)

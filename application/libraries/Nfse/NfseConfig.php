@@ -47,9 +47,11 @@ class NfseConfig
      */
     public static function getBaseUrl($ambiente = 'homologacao')
     {
+        // SEFIN Nacional = endpoint de emissao
+        // ADN = endpoint de distribuicao/consulta
         $urls = [
-            'homologacao' => 'https://adn.producaorestrita.nfse.gov.br/contribuintes/',
-            'producao'    => 'https://adn.nfse.gov.br/contribuintes/',
+            'homologacao' => 'https://sefin.producaorestrita.nfse.gov.br/API/SefinNacional/',
+            'producao'    => 'https://sefin.nfse.gov.br/SefinNacional/',
         ];
         return $urls[$ambiente] ?? $urls['homologacao'];
     }

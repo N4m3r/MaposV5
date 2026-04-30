@@ -71,6 +71,7 @@ class NfseNacional
         log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Cert PEM=' . $this->certPemPath . ' | Key PEM=' . $this->keyPemPath);
 
         $response = $this->sendRequest('POST', $url, $payload);
+        $httpCode = $response['httpCode'] ?? 0;
 
         if ($response === false) {
             return [
