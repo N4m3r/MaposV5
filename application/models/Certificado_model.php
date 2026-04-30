@@ -784,9 +784,9 @@ class Certificado_model extends CI_Model
     }
 
     /**
-     * Descriptografa senha
+     * Descriptografa senha (público para uso externo)
      */
-    private function descriptografarSenha($senhaCriptografada)
+    public function descriptografarSenha($senhaCriptografada)
     {
         $data = base64_decode($senhaCriptografada);
         if ($data === false || strlen($data) < 16) {

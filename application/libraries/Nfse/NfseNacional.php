@@ -17,6 +17,8 @@ class NfseNacional
     private $timeout;
     private $cnpj;
     private $ambiente;
+    private $pfxPath;
+    private $pfxSenha;
 
     /**
      * @param array $config Configuração:
@@ -26,6 +28,8 @@ class NfseNacional
      *   - ca_path: caminho do CA chain ICP-Brasil
      *   - cnpj: CNPJ do prestador (somente números)
      *   - timeout: timeout em segundos (padrão 60)
+     *   - pfx_path: caminho do arquivo .pfx original (opcional, para fallback mTLS)
+     *   - pfx_senha: senha do arquivo .pfx (opcional)
      */
     public function __construct(array $config = [])
     {
@@ -36,6 +40,8 @@ class NfseNacional
         $this->caPath = $config['ca_path'] ?? '';
         $this->cnpj = preg_replace('/\D/', '', $config['cnpj'] ?? '');
         $this->timeout = $config['timeout'] ?? 60;
+        $this->pfxPath = $config['pfx_path'] ?? '';
+        $this->pfxSenha = $config['pfx_senha'] ?? '';
     }
 
     /**
@@ -391,8 +397,19 @@ class NfseNacional
                 log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: PEM combinado também falhou. HTTP=' . ($resultado2['httpCode'] ?? 0));
             }
 
+            // Tentativa 2: usar o arquivo .pfx original diretamente (formato P12)
+            // Algumas versões do cURL/OpenSSL preferem o certificado no formato PKCS#12 original
+            if (!empty($this->pfxPath) && file_exists($this->pfxPath) && !empty($this->pfxSenha)) {
+                log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Tentando com certificado .pfx original (P12)...');
+                $resultadoPfx = $this->sendRequestCurlPfx($method, $url, $data, $this->pfxPath, $this->pfxSenha);
+                if (!$this->isErroCertificadoNaoObtido($resultadoPfx)) {
+                    log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Abordagem .pfx (P12) funcionou!');
+                    return $resultadoPfx;
+                }
+                log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: .pfx (P12) também falhou. HTTP=' . ($resultadoPfx['httpCode'] ?? 0));
+            }
+
             // Tentativa diagnóstica: desativar verificação SSL do servidor
-            // Isso identifica se o problema é a cadeia CA do servidor não estar no sistema
             log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Tentando com SSL_VERIFYPEER=false (apenas diagnóstico)...');
             $resultado3 = $this->sendRequestCurl($method, $url, $data, $this->certPemPath, $this->keyPemPath, false);
             if (!$this->isErroCertificadoNaoObtido($resultado3)) {
@@ -495,6 +512,68 @@ class NfseNacional
             }
         }
         log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Resposta HTTP ' . $httpCode . ' | Body tipo=' . gettype($decoded) . ' | Body tamanho=' . (is_string($decoded) ? strlen($decoded) : (is_array($decoded) ? count($decoded) : 'n/a')));
+        return ['httpCode' => $httpCode, 'body' => $decoded];
+    }
+
+    /**
+     * Envia requisição usando certificado no formato PFX/P12 diretamente
+     */
+    private function sendRequestCurlPfx($method, $url, $data, $pfxPath, $pfxSenha, $verifySsl = true)
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, $this->timeout);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
+        curl_setopt($ch, CURLOPT_SSLCERT, $pfxPath);
+        curl_setopt($ch, CURLOPT_SSLCERTTYPE, 'P12');
+        curl_setopt($ch, CURLOPT_SSLCERTPASSWD, $pfxSenha);
+        curl_setopt($ch, CURLOPT_SSLKEY, $pfxPath);
+        curl_setopt($ch, CURLOPT_SSLKEYTYPE, 'P12');
+        curl_setopt($ch, CURLOPT_SSLKEYPASSWD, $pfxSenha);
+        if (defined('CURL_SSLVERSION_TLSv1_2')) {
+            curl_setopt($ch, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2);
+        }
+        if ($verifySsl) {
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+        } else {
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        }
+        $caPath = $this->obterCaChainIcpBrasil();
+        if ($caPath && $this->isValidPemFile($caPath)) {
+            curl_setopt($ch, CURLOPT_CAINFO, $caPath);
+        }
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
+        $headers = ['Content-Type: application/json', 'Accept: application/json'];
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        if ($data !== null && in_array($method, ['POST', 'PUT', 'PATCH'])) {
+            $jsonPayload = json_encode($data);
+            if ($jsonPayload === false) {
+                curl_close($ch);
+                return false;
+            }
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonPayload);
+        }
+        log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Enviando ' . $method . ' ' . $url . ' | PFX=' . $pfxPath);
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlError = curl_error($ch);
+        $curlErrno = curl_errno($ch);
+        curl_close($ch);
+        if ($curlErrno) {
+            log_message('error', 'NFS-e Nacional: cURL PFX Error ' . $curlErrno . ': ' . $curlError);
+            return ['httpCode' => 0, 'body' => ['mensagem' => 'Erro de conexão PFX: ' . $curlError], 'curlError' => $curlError, 'curlErrno' => $curlErrno];
+        }
+        $decoded = null;
+        if (!empty($response)) {
+            $decoded = json_decode($response, true);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                $decoded = $response;
+            }
+        }
+        log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Resposta PFX HTTP ' . $httpCode);
         return ['httpCode' => $httpCode, 'body' => $decoded];
     }
 

@@ -837,6 +837,32 @@ class Nfse_os extends MY_Controller
         return null;
     }
 
+    /**
+     * Monta configuração da API NFS-e Nacional incluindo fallback .pfx
+     */
+    private function montarConfigApiNfse($pemPaths, $nfseConfig, $certAtivo = null)
+    {
+        $caPath = $this->getValidCaPath($nfseConfig);
+        $configApi = [
+            'ambiente' => $pemPaths['ambiente'] ?? 'homologacao',
+            'cert_pem' => $pemPaths['cert'],
+            'key_pem' => $pemPaths['key'],
+            'cnpj' => $pemPaths['cnpj'],
+            'timeout' => $nfseConfig['nfse_timeout'] ?? 60,
+        ];
+        if ($caPath) {
+            $configApi['ca_path'] = $caPath;
+        }
+        if ($certAtivo && !empty($certAtivo->arquivo_caminho) && file_exists($certAtivo->arquivo_caminho)) {
+            $configApi['pfx_path'] = $certAtivo->arquivo_caminho;
+            $senhaPfx = $this->certificado_model->descriptografarSenha($certAtivo->senha);
+            if ($senhaPfx !== false) {
+                $configApi['pfx_senha'] = $senhaPfx;
+            }
+        }
+        return $configApi;
+    }
+
     // ==================== API NFS-e NACIONAL ====================
 
     /**
@@ -1044,17 +1070,7 @@ class Nfse_os extends MY_Controller
             }
 
             // Enviar para API Nacional
-            $caPath = $this->getValidCaPath($nfseConfig);
-            $configApi = [
-                'ambiente' => $pemPaths['ambiente'] ?? 'homologacao',
-                'cert_pem' => $pemPaths['cert'],
-                'key_pem' => $pemPaths['key'],
-                'cnpj' => $pemPaths['cnpj'],
-                'timeout' => $nfseConfig['nfse_timeout'] ?? 60,
-            ];
-            if ($caPath) {
-                $configApi['ca_path'] = $caPath;
-            }
+            $configApi = $this->montarConfigApiNfse($pemPaths, $nfseConfig, $certAtivo);
             require_once APPPATH . 'libraries/Nfse/NfseNacional.php';
             $nfseApi = new NfseNacional($configApi);
 
@@ -1194,17 +1210,9 @@ class Nfse_os extends MY_Controller
             $this->load->library('Nfse/XmlSigner');
 
             require_once APPPATH . 'libraries/Nfse/NfseNacional.php';
-            $caPath = $this->getValidCaPath($nfseConfig);
-            $configApi = [
-                'ambiente' => $nfse->ambiente ?? 'homologacao',
-                'cert_pem' => $pemPaths['cert'],
-                'key_pem' => $pemPaths['key'],
-                'cnpj' => $pemPaths['cnpj'],
-                'timeout' => $nfseConfig['nfse_timeout'] ?? 60,
-            ];
-            if ($caPath) {
-                $configApi['ca_path'] = $caPath;
-            }
+            $certAtivo = $this->certificado_model->getCertificadoAtivo();
+            $configApi = $this->montarConfigApiNfse($pemPaths, $nfseConfig, $certAtivo);
+            $configApi['ambiente'] = $nfse->ambiente ?? 'homologacao';
             $nfseApi = new NfseNacional($configApi);
 
             // Gerar XML de cancelamento
@@ -1295,19 +1303,10 @@ class Nfse_os extends MY_Controller
             $this->config->load('nfse_nacional', true);
             $nfseConfig = $this->config->item('nfse_nacional');
 
-            $this->load->library('Nfse/NfseNacional');
-
-            $caPath = $this->getValidCaPath($nfseConfig);
-            $configApi = [
-                'ambiente' => $nfse->ambiente ?? 'homologacao',
-                'cert_pem' => $pemPaths['cert'],
-                'key_pem' => $pemPaths['key'],
-                'cnpj' => $pemPaths['cnpj'],
-                'timeout' => $nfseConfig['nfse_timeout'] ?? 60,
-            ];
-            if ($caPath) {
-                $configApi['ca_path'] = $caPath;
-            }
+            require_once APPPATH . 'libraries/Nfse/NfseNacional.php';
+            $certAtivo = $this->certificado_model->getCertificadoAtivo();
+            $configApi = $this->montarConfigApiNfse($pemPaths, $nfseConfig, $certAtivo);
+            $configApi['ambiente'] = $nfse->ambiente ?? 'homologacao';
             $nfseApi = new NfseNacional($configApi);
 
             $resultado = $nfseApi->consultar($nfse->chave_acesso);
