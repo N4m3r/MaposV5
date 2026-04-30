@@ -327,19 +327,23 @@ class NfseNacional
         if (empty($path) || !file_exists($path) || filesize($path) === 0) {
             return false;
         }
-        $handle = fopen($path, 'r');
-        if (!$handle) {
+        $content = file_get_contents($path);
+        if ($content === false) {
             return false;
         }
-        $valid = false;
-        while (($line = fgets($handle, 128)) !== false) {
-            if (strpos($line, '-----BEGIN CERTIFICATE-----') !== false) {
-                $valid = true;
-                break;
-            }
+        if (strpos($content, '-----BEGIN CERTIFICATE-----') === false) {
+            return false;
         }
-        fclose($handle);
-        return $valid;
+        // Valida que o primeiro certificado é parseável pelo OpenSSL
+        if (!preg_match('/-----BEGIN CERTIFICATE-----(.+?)-----END CERTIFICATE-----/s', $content, $matches)) {
+            return false;
+        }
+        $certPem = "-----BEGIN CERTIFICATE-----\n" . trim($matches[1]) . "\n-----END CERTIFICATE-----";
+        $cert = @openssl_x509_read($certPem);
+        if (!$cert) {
+            return false;
+        }
+        return true;
     }
 
     /**

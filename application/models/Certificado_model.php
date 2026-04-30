@@ -242,26 +242,86 @@ class Certificado_model extends CI_Model
     // ==================== CONSULTAS À RECEITA FEDERAL ====================
 
     /**
-     * Verifica se um arquivo PEM é válido (contém ao menos um certificado)
+     * Verifica se um arquivo PEM é válido (contém ao menos um certificado decodificável)
      */
     private function isValidPemFile($path)
     {
         if (empty($path) || !file_exists($path) || filesize($path) === 0) {
             return false;
         }
-        $handle = fopen($path, 'r');
-        if (!$handle) {
+        $content = file_get_contents($path);
+        if ($content === false) {
             return false;
         }
-        $valid = false;
-        while (($line = fgets($handle, 128)) !== false) {
-            if (strpos($line, '-----BEGIN CERTIFICATE-----') !== false) {
-                $valid = true;
-                break;
+        // Procura blocos PEM
+        if (strpos($content, '-----BEGIN CERTIFICATE-----') === false) {
+            return false;
+        }
+        // Valida que o primeiro certificado é parseável pelo OpenSSL
+        if (!preg_match('/-----BEGIN CERTIFICATE-----(.+?)-----END CERTIFICATE-----/s', $content, $matches)) {
+            return false;
+        }
+        $certPem = "-----BEGIN CERTIFICATE-----\n" . trim($matches[1]) . "\n-----END CERTIFICATE-----";
+        $cert = @openssl_x509_read($certPem);
+        if (!$cert) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Baixa a cadeia ICP-Brasil atualizada do repositório oficial
+     */
+    private function baixarCadeiaIcpBrasil()
+    {
+        $destino = FCPATH . 'assets/certs/ac-icp-brasil.pem';
+        $urls = [
+            'https://acraiz.icpbrasil.gov.br/credenciadas/CertificadosAC-ICP-Brasil/ACcompactado.zip',
+        ];
+        $tempZip = sys_get_temp_dir() . '/icpbrasil_cadeia_' . time() . '.zip';
+
+        foreach ($urls as $url) {
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+            $zipData = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+
+            if ($httpCode == 200 && !empty($zipData)) {
+                file_put_contents($tempZip, $zipData);
+                $zip = new ZipArchive();
+                if ($zip->open($tempZip) === true) {
+                    $dir = dirname($destino);
+                    if (!is_dir($dir)) {
+                        mkdir($dir, 0755, true);
+                    }
+                    // Extrair todos os .crt/.pem para o diretório
+                    $certContent = '';
+                    for ($i = 0; $i < $zip->numFiles; $i++) {
+                        $fileName = $zip->getNameIndex($i);
+                        $ext = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+                        if (in_array($ext, ['crt', 'pem', 'cer'])) {
+                            $certData = $zip->getFromIndex($i);
+                            if ($certData) {
+                                $certContent .= trim($certData) . "\n\n";
+                            }
+                        }
+                    }
+                    $zip->close();
+                    @unlink($tempZip);
+                    if (!empty($certContent)) {
+                        file_put_contents($destino, $certContent);
+                        log_message('error', 'Certificado_model: Cadeia ICP-Brasil baixada e salva em ' . $destino);
+                        return true;
+                    }
+                }
+                @unlink($tempZip);
             }
         }
-        fclose($handle);
-        return $valid;
+        return false;
     }
 
     /**
@@ -522,10 +582,8 @@ class Certificado_model extends CI_Model
         curl_setopt($ch, CURLOPT_TIMEOUT, 30);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, $useSslVerify);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, $useSslVerify ? 2 : 0);
-        $caPath = FCPATH . 'assets/certs/ac-icp-brasil.pem';
-        if ($this->isValidPemFile($caPath)) {
-            curl_setopt($ch, CURLOPT_CAINFO, $caPath);
-        }
+        // Não usa CA customizado para APIs públicas — o CA do sistema é suficiente
+        // e evita erros se o arquivo ac-icp-brasil.pem estiver corrompido
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $curlErrno = curl_errno($ch);
