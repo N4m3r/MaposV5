@@ -41,21 +41,51 @@ class Certificado_model extends CI_Model
      */
     public function salvarCertificado($dados, $arquivo = null)
     {
+        // Validar senha
+        if (empty($dados['senha'])) {
+            return ['error' => 'Senha do certificado é obrigatória'];
+        }
+
+        // Validar CNPJ
+        $cnpjLimpo = preg_replace('/[^0-9]/', '', $dados['cnpj'] ?? '');
+        if (strlen($cnpjLimpo) !== 14) {
+            return ['error' => 'CNPJ inválido. Informe um CNPJ com 14 dígitos.'];
+        }
+        $dados['cnpj'] = $cnpjLimpo;
+
         // Criptografar senha
-        $dados['senha'] = $this->criptografarSenha($dados['senha']);
+        $senhaCriptografada = $this->criptografarSenha($dados['senha']);
+        if ($senhaCriptografada === false) {
+            return ['error' => 'Erro ao criptografar senha do certificado. Verifique a configuração encryption_key.'];
+        }
+        $dados['senha'] = $senhaCriptografada;
 
         // Se tem arquivo (A1), processar
-        if ($arquivo && $arquivo['tmp_name']) {
+        if ($arquivo && !empty($arquivo['tmp_name'])) {
+            $ext = strtolower(pathinfo($arquivo['name'], PATHINFO_EXTENSION));
+            $extPermitidas = ['pfx', 'p12'];
+            if (!in_array($ext, $extPermitidas)) {
+                return ['error' => 'Formato de arquivo não permitido. Use .pfx ou .p12'];
+            }
+
             $hash = hash_file('sha256', $arquivo['tmp_name']);
-            $nomeArquivo = $dados['cnpj'] . '_' . date('YmdHis') . '.pfx';
+            $nomeArquivo = $dados['cnpj'] . '_' . date('YmdHis') . '.' . $ext;
             $caminhoCompleto = $this->certPath . $nomeArquivo;
+
+            // Garantir que o diretório existe
+            if (!is_dir($this->certPath)) {
+                if (!mkdir($this->certPath, 0755, true)) {
+                    return ['error' => 'Erro ao criar diretório de certificados: ' . $this->certPath];
+                }
+            }
 
             // Mover arquivo
             if (move_uploaded_file($arquivo['tmp_name'], $caminhoCompleto)) {
                 // Verificar integridade
-                if (!$this->verificarCertificado($caminhoCompleto, $this->descriptografarSenha($dados['senha']))) {
-                    unlink($caminhoCompleto);
-                    return ['error' => 'Certificado inválido ou senha incorreta'];
+                $senhaDescriptografada = $this->descriptografarSenha($dados['senha']);
+                if (!$this->verificarCertificado($caminhoCompleto, $senhaDescriptografada)) {
+                    @unlink($caminhoCompleto);
+                    return ['error' => 'Certificado inválido ou senha incorreta. Não foi possível ler o arquivo .pfx/.p12.'];
                 }
 
                 $dados['arquivo_caminho'] = $caminhoCompleto;
@@ -63,22 +93,33 @@ class Certificado_model extends CI_Model
                 $dados['tipo'] = 'A1';
 
                 // Extrair dados do certificado
-                $infoCert = $this->extrairInfoCertificado($caminhoCompleto, $this->descriptografarSenha($dados['senha']));
+                $infoCert = $this->extrairInfoCertificado($caminhoCompleto, $senhaDescriptografada);
                 if ($infoCert) {
                     $dados['data_validade'] = $infoCert['validade'];
                     $dados['data_emissao'] = $infoCert['emissao'];
                     $dados['emissor'] = $infoCert['emissor'];
                     $dados['serial_number'] = $infoCert['serial'];
+                    $dados['razao_social'] = $dados['razao_social'] ?: $infoCert['dono'];
+
+                    log_message('error', 'Certificado upload: Emissor=' . $infoCert['emissor'] . ' | Dono=' . $infoCert['dono'] . ' | CNPJCert=' . ($infoCert['cnpj_certificado'] ?? 'N/A') . ' | Validade=' . $infoCert['validade']);
+
+                    // Alertar se CNPJ do certificado difere do informado
+                    if (!empty($infoCert['cnpj_certificado']) && $infoCert['cnpj_certificado'] !== $dados['cnpj']) {
+                        log_message('error', 'Certificado upload ALERTA: CNPJ do certificado (' . $infoCert['cnpj_certificado'] . ') difere do CNPJ informado (' . $dados['cnpj'] . ')');
+                    }
+                } else {
+                    @unlink($caminhoCompleto);
+                    return ['error' => 'Não foi possível extrair informações do certificado. O arquivo pode estar corrompido.'];
                 }
             } else {
-                return ['error' => 'Erro ao salvar arquivo do certificado'];
+                return ['error' => 'Erro ao salvar arquivo do certificado no servidor'];
             }
         } else {
             // A3 - Configuração manual
             $dados['tipo'] = 'A3';
         }
 
-        // Desativar certificados anteriores
+        // Desativar certificados anteriores do mesmo CNPJ
         $this->db->where('cnpj', $dados['cnpj']);
         $this->db->update('certificado_digital', ['ativo' => 0]);
 
@@ -120,6 +161,7 @@ class Certificado_model extends CI_Model
 
     /**
      * Extrai informações do certificado
+     * Inclui emissor (de múltiplas fontes), CNPJ do certificado e validade
      */
     private function extrairInfoCertificado($caminho, $senha)
     {
@@ -128,19 +170,71 @@ class Certificado_model extends CI_Model
             $certs = [];
 
             if (!openssl_pkcs12_read($pfx, $certs, $senha)) {
+                $sslError = openssl_error_string();
+                log_message('error', 'Certificado_model: Erro ao ler PKCS12 em extrairInfoCertificado: ' . $sslError);
                 return false;
             }
 
             $cert = openssl_x509_parse($certs['cert']);
+            if (!$cert) {
+                log_message('error', 'Certificado_model: openssl_x509_parse falhou');
+                return false;
+            }
+
+            // Extrair emissor de múltiplas fontes possíveis
+            $issuer = $cert['issuer'] ?? [];
+            $emissor = 'Desconhecido';
+            if (!empty($issuer['O'])) {
+                $emissor = $issuer['O'];
+            } elseif (!empty($issuer['CN'])) {
+                $emissor = $issuer['CN'];
+            } elseif (!empty($issuer['OU'])) {
+                $emissor = $issuer['OU'];
+            } elseif (!empty($issuer['L'])) {
+                $emissor = $issuer['L'];
+            }
+
+            // Extrair CNPJ do certificado (do subject)
+            $subject = $cert['subject'] ?? [];
+            $dono = $subject['CN'] ?? '';
+            $cnpjCertificado = '';
+
+            // Tentar extrair CNPJ do CN (ex: "CNPJ: 12345678000195" ou "NOME: 12345678000195")
+            if (preg_match('/(\d{14})/', $dono, $m)) {
+                $cnpjCertificado = $m[1];
+            }
+            // Também pode estar em x500UniqueIdentifier ou unstructuredName
+            if (empty($cnpjCertificado) && !empty($subject['x500UniqueIdentifier'])) {
+                $cnpjCertificado = preg_replace('/\D/', '', $subject['x500UniqueIdentifier']);
+            }
+            if (empty($cnpjCertificado) && !empty($subject['unstructuredName'])) {
+                $cnpjCertificado = preg_replace('/\D/', '', $subject['unstructuredName']);
+            }
+
+            // Extrair extended key usage para diagnóstico
+            $eku = $cert['extensions']['extendedKeyUsage'] ?? 'N/A';
+            $hasClientAuth = false;
+            if (!empty($eku)) {
+                if (strpos($eku, 'Client Authentication') !== false || strpos($eku, '1.3.6.1.5.5.7.3.2') !== false) {
+                    $hasClientAuth = true;
+                }
+            }
+
+            log_message('error', 'Certificado_model [DIAGNOSTICO]: Emissor=' . $emissor . ' | Dono=' . $dono . ' | CNPJCert=' . ($cnpjCertificado ?: 'N/A') . ' | EKU_ClientAuth=' . ($hasClientAuth ? 'SIM' : 'NAO'));
 
             return [
                 'validade' => date('Y-m-d H:i:s', $cert['validTo_time_t']),
                 'emissao' => date('Y-m-d H:i:s', $cert['validFrom_time_t']),
-                'emissor' => $cert['issuer']['O'] ?? 'Desconhecido',
-                'serial' => $cert['serialNumber'],
-                'dono' => $cert['subject']['CN'] ?? '',
+                'emissor' => $emissor,
+                'serial' => $cert['serialNumber'] ?? '',
+                'dono' => $dono,
+                'cnpj_certificado' => $cnpjCertificado,
+                'has_client_auth' => $hasClientAuth,
+                'subject' => $subject,
+                'issuer' => $issuer,
             ];
         } catch (Exception $e) {
+            log_message('error', 'Certificado_model: Exception em extrairInfoCertificado: ' . $e->getMessage());
             return false;
         }
     }
