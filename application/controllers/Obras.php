@@ -165,7 +165,6 @@ class Obras extends MY_Controller
             'checkin' => $this->input->post('notif_checkin') ? true : false,
             'impedimento' => $this->input->post('notif_impedimento') ? true : false,
             'canal_email' => $this->input->post('canal_email') ? true : false,
-            'canal_whatsapp' => $this->input->post('canal_whatsapp') ? true : false,
             'canal_sistema' => $this->input->post('canal_sistema') ? true : false,
         ];
 
@@ -234,6 +233,44 @@ class Obras extends MY_Controller
 
                 if ($obra_id) {
                     log_info('Obra adicionada. ID: ' . $obra_id);
+
+                    // Enfileirar email via sistema V5
+                    try {
+                        require_once APPPATH . 'libraries/Email/EmailQueue.php';
+                        require_once APPPATH . 'libraries/Email/TemplateEngine.php';
+
+                        $cliente = $this->clientes_model->getById($dados['cliente_id']);
+                        if ($cliente && !empty($cliente->email)) {
+                            $queue = new \Libraries\Email\EmailQueue();
+                            $templates = new \Libraries\Email\TemplateEngine();
+
+                            $templateData = [
+                                'cliente_nome' => $cliente->nomeCliente ?? '',
+                                'cliente_email' => $cliente->email ?? '',
+                                'os_titulo' => $dados['nome'] ?? 'Nova Obra',
+                                'os_descricao' => $dados['observacoes'] ?? '',
+                                'os_status' => $dados['status'] ?? 'Prospeccao',
+                                'os_data_criacao' => date('d/m/Y'),
+                                'os_link_visualizar' => base_url('obras/visualizar/' . $obra_id),
+                            ];
+
+                            $rendered = $templates->render('obra_nova', $templateData);
+
+                            $queue->enqueue([
+                                'to' => $cliente->email,
+                                'to_name' => $cliente->nomeCliente ?? '',
+                                'subject' => 'Nova Obra Cadastrada - ' . $dados['nome'],
+                                'body_html' => $rendered['html'],
+                                'body_text' => $rendered['text'] ?? strip_tags($rendered['html']),
+                                'template' => 'obra_nova',
+                                'template_data' => $templateData,
+                                'priority' => 3,
+                            ]);
+                        }
+                    } catch (\Exception $e) {
+                        log_message('error', '[Obras] Erro ao enfileirar email V5: ' . $e->getMessage());
+                    }
+
                     $this->session->set_flashdata('success', 'Obra adicionada com sucesso!');
                     redirect('obras/visualizar/' . $obra_id);
                 } else {
@@ -2209,12 +2246,39 @@ class Obras extends MY_Controller
             // Notificar cliente se obra foi concluída
             if ($novo_status === 'concluida') {
                 try {
-                    if (function_exists('notificar_obra_concluida')) {
-                        $obra = $this->obras_model->getById($obra_id);
-                        notificar_obra_concluida($obra_id, $obra->cliente_id ?? null);
+                    require_once APPPATH . 'libraries/Email/EmailQueue.php';
+                    require_once APPPATH . 'libraries/Email/TemplateEngine.php';
+
+                    $obra = $this->obras_model->getById($obra_id);
+                    if ($obra && !empty($obra->cliente_email)) {
+                        $queue = new \Libraries\Email\EmailQueue();
+                        $templates = new \Libraries\Email\TemplateEngine();
+
+                        $templateData = [
+                            'cliente_nome' => $obra->cliente_nome ?? '',
+                            'cliente_email' => $obra->cliente_email ?? '',
+                            'os_titulo' => $obra->nome ?? 'Obra',
+                            'os_descricao' => $obra->observacoes ?? '',
+                            'os_status' => 'Concluída',
+                            'os_data_criacao' => isset($obra->data_inicio_contrato) ? date('d/m/Y', strtotime($obra->data_inicio_contrato)) : date('d/m/Y'),
+                            'os_link_visualizar' => base_url('obras/visualizar/' . $obra_id),
+                        ];
+
+                        $rendered = $templates->render('obra_concluida', $templateData);
+
+                        $queue->enqueue([
+                            'to' => $obra->cliente_email,
+                            'to_name' => $obra->cliente_nome ?? '',
+                            'subject' => 'Obra Concluída - ' . $obra->nome,
+                            'body_html' => $rendered['html'],
+                            'body_text' => $rendered['text'] ?? strip_tags($rendered['html']),
+                            'template' => 'obra_concluida',
+                            'template_data' => $templateData,
+                            'priority' => 2,
+                        ]);
                     }
-                } catch (Exception $e) {
-                    log_message('error', 'Erro ao notificar obra concluída: ' . $e->getMessage());
+                } catch (\Exception $e) {
+                    log_message('error', '[Obras] Erro ao enfileirar email V5 (concluida): ' . $e->getMessage());
                 }
             }
 

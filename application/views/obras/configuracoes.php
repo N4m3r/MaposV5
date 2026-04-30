@@ -352,7 +352,6 @@
                     <table class="table table-condensed table-bordered">
                         <tbody>
                             <tr><td>E-mail</td><td style="width: 60px; text-align: center;"><input type="checkbox" name="canal_email" <?php echo ($config_notif['canal_email'] ?? true) ? 'checked' : ''; ?>></td></tr>
-                            <tr><td>WhatsApp</td><td style="width: 60px; text-align: center;"><input type="checkbox" name="canal_whatsapp" <?php echo ($config_notif['canal_whatsapp'] ?? false) ? 'checked' : ''; ?>></td></tr>
                             <tr><td>Notificacao no Sistema</td><td style="width: 60px; text-align: center;"><input type="checkbox" name="canal_sistema" <?php echo ($config_notif['canal_sistema'] ?? true) ? 'checked' : ''; ?>></td></tr>
                         </tbody>
                     </table>

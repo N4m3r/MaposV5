@@ -602,15 +602,6 @@ class Obras_tecnico extends CI_Controller
                     $this->obra_checkins_model->registrarCheckout($atividade_id, $tecnico_id, $dados);
                     $mensagem = 'Atividade finalizada';
 
-                    // Notificações são disparadas pelo model, mas garantimos aqui também para API mobile
-                    try {
-                        if (function_exists('notificar_obra_atividade_finalizada')) {
-                            $atividade = $this->obra_atividades_model->getById($atividade_id);
-                            notificar_obra_atividade_finalizada($atividade_id, $atividade->obra_id ?? null, null);
-                        }
-                    } catch (Exception $e) {
-                        log_message('error', 'Erro ao notificar atividade finalizada (API): ' . $e->getMessage());
-                    }
                 }
                 break;
 
@@ -622,15 +613,6 @@ class Obras_tecnico extends CI_Controller
                 if ($resultado) {
                     $mensagem = 'Impedimento registrado';
 
-                    // Notificações são disparadas pelo model, mas garantimos aqui também para API mobile
-                    try {
-                        if (function_exists('notificar_obra_impedimento')) {
-                            $atividade = $this->obra_atividades_model->getById($atividade_id);
-                            notificar_obra_impedimento($atividade_id, $atividade->obra_id ?? null, null, $this->input->post('tipo') ?? 'outro', $this->input->post('descricao') ?? '');
-                        }
-                    } catch (Exception $e) {
-                        log_message('error', 'Erro ao notificar impedimento (API): ' . $e->getMessage());
-                    }
                 }
                 break;
         }

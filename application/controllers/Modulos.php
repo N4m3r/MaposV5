@@ -320,15 +320,6 @@ class Modulos extends MY_Controller
                 'categoria' => 'os'
             ],
             [
-                'nome' => 'Integração WhatsApp',
-                'descricao' => 'Envio automático de notificações via WhatsApp Business API',
-                'icone' => 'bx bxl-whatsapp',
-                'status' => 'planned',
-                'data' => '2025-05-01',
-                'linhas' => 0,
-                'categoria' => 'integracao'
-            ],
-            [
                 'nome' => 'Dashboard de Métricas',
                 'descricao' => 'Painel de indicadores de produtividade dos técnicos',
                 'icone' => 'bx bx-bar-chart-alt-2',

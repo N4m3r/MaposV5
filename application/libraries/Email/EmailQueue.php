@@ -109,7 +109,7 @@ class EmailQueue
     public function markAsFailed(int $id, string $error): bool
     {
         $this->ci->db->where('id', $id);
-        $this->ci->db->set('retry_count', 'retry_count + 1', false);
+        $this->ci->db->set('attempts', 'attempts + 1', false);
         $this->ci->db->update($this->table, [
             'status' => 'failed',
             'error_message' => $error,

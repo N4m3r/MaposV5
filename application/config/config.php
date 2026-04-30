@@ -456,8 +456,6 @@ $config['csrf_exclude_uris'] = [
     'checkin/adicionarFoto',
     'checkin/uploadArquivo',
     'checkin/uploadMultiplo',
-    'notificacoes/listar',
-    'notificacoes/marcar_lida',
     'tecnicos/finalizar_execucao',
     'tecnicos/adicionar_foto',
     'tecnicos/api_registrar_atividade_obra',
@@ -474,11 +472,6 @@ $config['csrf_exclude_uris'] = [
     'nfse_os/gerar_boleto.*+',
     'certificado/api_consulta',
     'certificado/vincular_nfse_os',
-    'notificacoesConfig/obter_qr',
-    'notificacoesConfig/verificar_status',
-    'notificacoesConfig/desconectar',
-    'notificacoesConfig/testar_envio',
-    'notificacoesConfig/preview_template',
 ];
 
 /*

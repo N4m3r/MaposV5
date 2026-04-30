@@ -18,7 +18,7 @@ class EventScheduler
     }
 
     /**
-     * Agenda um evento
+     * Agenda um evento (formato legado: type string)
      */
     public function schedule(string $type, array $data, string $executeAt): int
     {
@@ -29,7 +29,24 @@ class EventScheduler
             'status' => 'pending',
             'created_at' => date('Y-m-d H:i:s')
         ]);
-        
+
+        return $this->ci->db->insert_id();
+    }
+
+    /**
+     * Agenda um evento (formato AutoEvents: array com type, scheduled_at, payload)
+     */
+    public function scheduleEvent(array $event): int
+    {
+        $insert = [
+            'event_type' => $event['type'] ?? 'email',
+            'event_data' => json_encode($event['payload'] ?? $event),
+            'execute_at' => $event['scheduled_at'] ?? date('Y-m-d H:i:s'),
+            'status' => 'pending',
+            'created_at' => date('Y-m-d H:i:s')
+        ];
+
+        $this->ci->db->insert($this->table, $insert);
         return $this->ci->db->insert_id();
     }
 

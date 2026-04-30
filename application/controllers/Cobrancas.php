@@ -79,12 +79,82 @@ class Cobrancas extends MY_Controller
                     'status' => $cobranca['status'] ?? 'PENDING',
                 ]);
 
-                // Gatilho WhatsApp: cobrança gerada
-                $ref = $tipo === 'os'
-                    ? $this->Os_model->getById($id)
-                    : $this->vendas_model->getById($id);
-                if ($ref && !empty($ref->clientes_id)) {
-                    notificar_cobranca_gerada($cobranca['idCobranca'] ?? $id, $ref->clientes_id);
+                // Enfileirar email de cobrança via sistema V5
+                try {
+                    require_once APPPATH . 'libraries/Email/EmailQueue.php';
+                    require_once APPPATH . 'libraries/Email/TemplateEngine.php';
+
+                    $this->load->model('clientes_model');
+                    $this->load->model('mapos_model');
+                    $emitente = $this->mapo_model->getEmitente();
+
+                    $clienteId = null;
+                    $clienteEmail = null;
+                    $clienteNome = null;
+                    $descricao = '';
+                    $valor = '0,00';
+                    $vencimento = '';
+
+                    if ($tipo === 'os') {
+                        $this->load->model('os_model');
+                        $os = $this->os_model->getById($id);
+                        if ($os) {
+                            $clienteId = $os->clientes_id;
+                            $clienteEmail = $os->email ?? null;
+                            $clienteNome = $os->nomeCliente ?? null;
+                            $descricao = 'OS #' . $id;
+                            $valor = number_format(($os->totalProdutos ?? 0) + ($os->totalServicos ?? 0), 2, ',', '.');
+                        }
+                    } else {
+                        $this->load->model('vendas_model');
+                        $venda = $this->vendas_model->getById($id);
+                        if ($venda) {
+                            $clienteId = $venda->clientes_id;
+                            $clienteEmail = $venda->email ?? null;
+                            $clienteNome = $venda->nomeCliente ?? null;
+                            $descricao = 'Venda #' . $id;
+                            $valor = number_format($venda->valorTotal ?? 0, 2, ',', '.');
+                        }
+                    }
+
+                    if ($clienteId && empty($clienteEmail)) {
+                        $cliente = $this->clientes_model->getById($clienteId);
+                        if ($cliente) {
+                            $clienteEmail = $cliente->email;
+                            $clienteNome = $cliente->nomeCliente;
+                        }
+                    }
+
+                    if (!empty($clienteEmail)) {
+                        $queue = new \Libraries\Email\EmailQueue();
+                        $templates = new \Libraries\Email\TemplateEngine();
+
+                        $templateData = [
+                            'cliente_nome' => $clienteNome ?? '',
+                            'cliente_email' => $clienteEmail ?? '',
+                            'cobranca_descricao' => $descricao,
+                            'cobranca_valor' => $valor,
+                            'cobranca_data_vencimento' => $vencimento,
+                            'cobranca_dias_atraso' => '0',
+                            'cobranca_link_pagamento' => base_url('cobrancas/visualizar/' . ($cobranca['idCobranca'] ?? $id)),
+                            'empresa_nome' => $emitente->nome ?? '',
+                        ];
+
+                        $rendered = $templates->render('cobranca', $templateData);
+
+                        $queue->enqueue([
+                            'to' => $clienteEmail,
+                            'to_name' => $clienteNome ?? '',
+                            'subject' => 'Cobrança Gerada - ' . $descricao,
+                            'body_html' => $rendered['html'],
+                            'body_text' => $rendered['text'] ?? strip_tags($rendered['html']),
+                            'template' => 'cobranca',
+                            'template_data' => $templateData,
+                            'priority' => 2,
+                        ]);
+                    }
+                } catch (\Exception $e) {
+                    log_message('error', '[Cobrancas] Erro ao enfileirar email V5: ' . $e->getMessage());
                 }
 
                 return $this->output

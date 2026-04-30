@@ -117,16 +117,16 @@ function run_worker() {
             ], 10);
             
             $emails = $query->result();
-            
+
             if (count($emails) > 0) {
                 log_message("Processando " . count($emails) . " emails...");
-                
+
                 // Carrega SMTP Pool
-                require_once APPPATH . 'libraries/email/SmtpPool.php';
+                require_once APPPATH . 'libraries/Email/SmtpPool.php';
                 $smtp = new \Libraries\Email\SmtpPool();
-                
+
                 $results = $smtp->sendBatch($emails);
-                
+
                 // Atualiza status
                 foreach ($results as $id => $result) {
                     if ($result['success']) {
@@ -138,7 +138,7 @@ function run_worker() {
                         log_message("Email {$id} enviado.");
                     } else {
                         $ci->db->where('id', $id);
-                        $ci->db->set('retry_count', 'retry_count + 1', false);
+                        $ci->db->set('attempts', 'attempts + 1', false);
                         $ci->db->update('email_queue', [
                             'status' => 'failed',
                             'error_message' => $result['error']

@@ -184,11 +184,11 @@ class Os extends MY_Controller
                     $this->enviarOsPorEmail($idOs, $remetentes, 'Ordem de Serviço - Criada');
                 }
 
+                // Enfileirar email via sistema V5
+                $this->queueEmailV5($os, 'os_nova', 'Ordem de Serviço - Criada', 2);
+
                 $this->session->set_flashdata('success', 'OS adicionada com sucesso, você pode adicionar produtos ou serviços a essa OS nas abas de Produtos e Serviços!');
                 log_info('Adicionou uma OS. ID: ' . $id);
-
-                // Gatilho WhatsApp: OS criada
-                notificar_os_criada($id, $data['clientes_id']);
 
                 $this->notificacoes_model->notificarTodos([
                     'titulo' => 'Nova OS Criada',
@@ -326,13 +326,13 @@ class Os extends MY_Controller
                     $this->enviarOsPorEmail($idOs, $remetentes, 'Ordem de Serviço - Editada');
                 }
 
+                // Enfileirar email via sistema V5
+                $this->queueEmailV5($os, 'os_atualizada', 'Ordem de Serviço - Atualizada', 2);
+
                 $this->session->set_flashdata('success', 'Os editada com sucesso!');
                 log_info('Alterou uma OS. ID: ' . $this->input->post('idOs'));
 
                 $statusAnterior = isset($os->status) ? $os->status : '';
-
-                // Gatilho WhatsApp: OS atualizada
-                notificar_os_atualizada($idOs, $os->clientes_id, $statusAnterior);
 
                 $novoStatus = $this->input->post('status');
 
@@ -1753,5 +1753,47 @@ class Os extends MY_Controller
         $historico = $this->tecnico_model->getHistoricoAtribuicoes($os_id);
 
         echo json_encode($historico);
+    }
+
+    /**
+     * Enfileira email via sistema V5 (EmailQueue + TemplateEngine)
+     */
+    private function queueEmailV5($os, $template, $subject, $priority = 3)
+    {
+        try {
+            require_once APPPATH . 'libraries/Email/EmailQueue.php';
+            require_once APPPATH . 'libraries/Email/TemplateEngine.php';
+
+            $queue = new \Libraries\Email\EmailQueue();
+            $templates = new \Libraries\Email\TemplateEngine();
+
+            $templateData = [
+                'cliente_nome' => $os->nomeCliente ?? $os->cliente_nome ?? '',
+                'cliente_email' => $os->email ?? '',
+                'os_id' => $os->idOs ?? '',
+                'os_titulo' => $os->produto ?? 'OS #' . ($os->idOs ?? ''),
+                'os_descricao' => $os->descricaoProduto ?? '',
+                'os_status' => $os->status ?? '',
+                'os_data_criacao' => isset($os->dataInicial) ? date('d/m/Y', strtotime($os->dataInicial)) : date('d/m/Y'),
+                'os_data_vencimento' => isset($os->dataFinal) ? date('d/m/Y', strtotime($os->dataFinal)) : '',
+                'os_valor_total' => number_format(($os->totalProdutos ?? 0) + ($os->totalServicos ?? 0), 2, ',', '.'),
+                'os_link_visualizar' => base_url('os/visualizar/' . ($os->idOs ?? '')),
+            ];
+
+            $rendered = $templates->render($template, $templateData);
+
+            $queue->enqueue([
+                'to' => $os->email ?? '',
+                'to_name' => $templateData['cliente_nome'],
+                'subject' => $subject,
+                'body_html' => $rendered['html'],
+                'body_text' => $rendered['text'] ?? strip_tags($rendered['html']),
+                'template' => $template,
+                'template_data' => $templateData,
+                'priority' => $priority,
+            ]);
+        } catch (\Exception $e) {
+            log_message('error', '[queueEmailV5] Erro ao enfileirar email: ' . $e->getMessage());
+        }
     }
 }

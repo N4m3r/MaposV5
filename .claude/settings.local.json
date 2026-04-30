@@ -94,7 +94,8 @@
       "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); [print\\(p\\) for p in d.get\\('paths',{}\\).keys\\(\\) if 'instance' in p.lower\\(\\) or 'message' in p.lower\\(\\) or 'send' in p.lower\\(\\) or 'qr' in p.lower\\(\\) or 'connect' in p.lower\\(\\)]\")",
       "Bash(python -c ' *)",
       "Bash(git push *)",
-      "WebFetch(domain:www.nfse.gov.br)"
+      "WebFetch(domain:www.nfse.gov.br)",
+      "Bash([ -f \"C:/Users/thail/Desktop/IVMS-CRUD/MaposV5/$f\" ])"
     ]
   }
 }

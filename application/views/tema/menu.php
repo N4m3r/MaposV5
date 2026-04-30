@@ -276,37 +276,13 @@
                         <li class="<?php if (isset($menuArquivos)) { echo 'active'; }; ?>"><a class="tip-bottom" href="<?= site_url('arquivos') ?>"><i class='bx bx-box iconX'></i><span class="title">Arquivos</span><span class="title-tooltip">Arquivos</span></a></li>
                     <?php } ?>
 
-                    <!-- Notificações -->
-                    <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cConfiguracao')) { ?>
-                        <li class="menu-divider-sub"><span class="divider-text-sub">Comunicação</span></li>
-                        <li class="<?php if (isset($menuConfiguracoesNotificacoes)) { echo 'active'; }; ?>">
-                            <a href="<?= site_url('notificacoes/configuracoes') ?>">
-                                <i class='bx bxl-whatsapp iconX'></i>
-                                <span class="title">Notificações</span>
-                                <span class="title-tooltip">Notificações</span>
-                            </a>
-                        </li>
-                        <li class="<?php if (isset($menuConfiguracoesTemplates)) { echo 'active'; }; ?>">
-                            <a href="<?= site_url('notificacoes/templates') ?>">
-                                <i class='bx bx-message-square-dots iconX'></i>
-                                <span class="title">Templates</span>
-                                <span class="title-tooltip">Templates</span>
-                            </a>
-                        </li>
-                        <li class="<?php if (isset($menuConfiguracoesLogs)) { echo 'active'; }; ?>">
-                            <a href="<?= site_url('notificacoes/logs') ?>">
-                                <i class='bx bx-history iconX'></i>
-                                <span class="title">Histórico</span>
-                                <span class="title-tooltip">Histórico</span>
-                            </a>
-                        </li>
-                    <?php } ?>
 
                     <!-- Ferramentas Admin - apenas para administradores -->
                     <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cPermissao')) { ?>
                         <li class="menu-divider-sub"><span class="divider-text-sub">Administração</span></li>
                         <li class="<?php if (isset($menuMigrate)) { echo 'active'; }; ?>"><a href="<?= site_url('migrate') ?>"><i class='bx bx-data iconX'></i><span class="title">Migrações DB</span><span class="title-tooltip">Migrações</span></a></li>
                         <li class="<?php if (isset($menuEmailQueue)) { echo 'active'; }; ?>"><a href="<?= site_url('emails/dashboard') ?>"><i class='bx bx-envelope iconX'></i><span class="title">Fila de Emails</span><span class="title-tooltip">Fila Emails</span></a></li>
+                        <li class="<?php if (isset($menuEmailConfig)) { echo 'active'; }; ?>"><a href="<?= site_url('email/configuracoes') ?>"><i class='bx bx-cog iconX'></i><span class="title">Config. Emails</span><span class="title-tooltip">Config Emails</span></a></li>
                         <li class="<?php if (isset($menuWebhooks)) { echo 'active'; }; ?>"><a href="<?= site_url('webhooks') ?>"><i class='bx bx-webhook iconX'></i><span class="title">Webhooks</span><span class="title-tooltip">Webhooks</span></a></li>
                         <li class="<?php if (isset($menuApiDocs)) { echo 'active'; }; ?>"><a href="<?= site_url('api/docs') ?>"><i class='bx bx-code-alt iconX'></i><span class="title">API v2</span><span class="title-tooltip">API v2</span></a></li>
                     <?php } ?>

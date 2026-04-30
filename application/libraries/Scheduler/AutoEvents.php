@@ -27,7 +27,7 @@ class AutoEvents
         $vencimento = new \DateTime($dataFinal);
         $vencimento->modify('-2 days');
 
-        $this->scheduler->schedule([
+        $this->scheduler->scheduleEvent([
             'type' => 'email',
             'name' => 'os_vencendo',
             'entity_type' => 'os',
@@ -50,7 +50,7 @@ class AutoEvents
         $vencimento = new \DateTime($dataVencimento);
         $vencimento->modify('-1 day');
 
-        $this->scheduler->schedule([
+        $this->scheduler->scheduleEvent([
             'type' => 'email',
             'name' => 'cobranca_vencendo',
             'entity_type' => 'cobranca',
@@ -73,7 +73,7 @@ class AutoEvents
         $vencimento = new \DateTime($dataVencimento);
         $vencimento->modify('+1 day');
 
-        $this->scheduler->schedule([
+        $this->scheduler->scheduleEvent([
             'type' => 'email',
             'name' => 'cobranca_vencida',
             'entity_type' => 'cobranca',
@@ -102,7 +102,7 @@ class AutoEvents
             $aniversario->modify('+1 year');
         }
 
-        $this->scheduler->schedule([
+        $this->scheduler->scheduleEvent([
             'type' => 'email',
             'name' => 'aniversario_cliente',
             'entity_type' => 'cliente',
@@ -125,7 +125,7 @@ class AutoEvents
         $followUp = new \DateTime($dataVenda);
         $followUp->modify('+7 days');
 
-        $this->scheduler->schedule([
+        $this->scheduler->scheduleEvent([
             'type' => 'email',
             'name' => 'followup_venda',
             'entity_type' => 'venda',
@@ -145,7 +145,7 @@ class AutoEvents
      */
     public function scheduleRelatorioSemanal(int $userId, string $email): void
     {
-        $this->scheduler->schedule([
+        $this->scheduler->scheduleEvent([
             'type' => 'email',
             'name' => 'relatorio_semanal',
             'entity_type' => 'relatorio',
@@ -170,7 +170,7 @@ class AutoEvents
         $proxima = new \DateTime();
         $proxima->modify("+{$diasIntervalo} days");
 
-        $this->scheduler->schedule([
+        $this->scheduler->scheduleEvent([
             'type' => 'email',
             'name' => 'manutencao_periodica',
             'entity_type' => 'os',

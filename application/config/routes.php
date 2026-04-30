@@ -47,6 +47,9 @@ $route['404_override'] = '';
 
 // Rotas de Email
 $route['emails/dashboard'] = 'email/dashboard';
+$route['emails/configuracoes'] = 'email/configuracoes';
+$route['email/configuracoes'] = 'email/configuracoes';
+$route['email/salvar_configuracoes'] = 'email/salvar_configuracoes';
 $route['emails/(:any)'] = 'email/$1';
 
 // Rotas de Certificado Digital e NFS-e
@@ -94,26 +97,6 @@ $route['dre/lancamentos'] = 'dre/lancamentos';
 
 // Rotas de Relatórios de Técnicos
 $route['relatoriotecnicos'] = 'relatoriotecnicos';
-
-// Rotas de Notificações
-$route['notificacoes/listar'] = 'notificacoes/listar';
-$route['notificacoes/marcar_lida'] = 'notificacoes/marcar_lida';
-
-// Rotas de Configurações de Notificações WhatsApp
-$route['notificacoes'] = 'notificacoesConfig/configuracoes';
-$route['notificacoes/configuracoes'] = 'notificacoesConfig/configuracoes';
-$route['notificacoes/templates'] = 'notificacoesConfig/templates';
-$route['notificacoes/templates/editar/(:num)'] = 'notificacoesConfig/editar_template/$1';
-$route['notificacoes/templates/toggle/(:num)'] = 'notificacoesConfig/toggle_template/$1';
-$route['notificacoes/logs'] = 'notificacoesConfig/logs';
-$route['notificacoes/logs/(:num)'] = 'notificacoesConfig/logs/$1';
-$route['notificacoes/estatisticas'] = 'notificacoesConfig/estatisticas';
-$route['notificacoes/enviar-manual'] = 'notificacoesConfig/enviar_manual';
-$route['notificacoes/obter-qr'] = 'notificacoesConfig/obter_qr';
-$route['notificacoes/verificar-status'] = 'notificacoesConfig/verificar_status';
-$route['notificacoes/desconectar'] = 'notificacoesConfig/desconectar';
-$route['notificacoes/testar-envio'] = 'notificacoesConfig/testar_envio';
-$route['notificacoes/preview-template'] = 'notificacoesConfig/preview_template';
 
 // Rotas de Webhooks
 $route['webhooks'] = 'webhooks';

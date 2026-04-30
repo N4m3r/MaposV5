@@ -98,8 +98,8 @@ class EventWorker
         $ci->load->database();
 
         $events = $ci->db
-            ->where('status', 'scheduled')
-            ->where('scheduled_at <=', date('Y-m-d H:i:s'))
+            ->where('status', 'pending')
+            ->where('execute_at <=', date('Y-m-d H:i:s'))
             ->get('scheduled_events')
             ->result();
 

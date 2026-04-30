@@ -456,4 +456,77 @@ class Email extends MY_Controller
                 'tags' => $tags
             ]));
     }
+
+    /**
+     * Configuracoes de notificacoes por email
+     */
+    public function configuracoes()
+    {
+        $this->load->model('mapos_model');
+
+        $configs = [
+            'email_notif_os_criada' => true,
+            'email_notif_os_editada' => true,
+            'email_notif_venda' => true,
+            'email_notif_cobranca' => true,
+            'email_notif_obra_nova' => true,
+            'email_notif_obra_concluida' => true,
+            'email_notif_atividade_atrasada' => true,
+            'email_notif_impedimento' => true,
+            'email_automatico_v5' => true,
+        ];
+
+        $this->db->where_in('config', array_keys($configs));
+        $query = $this->db->get('configuracoes');
+        if ($query) {
+            foreach ($query->result() as $row) {
+                $configs[$row->config] = $this->_parseBool($row->valor);
+            }
+        }
+
+        $this->data['configs'] = $configs;
+        $this->data['templates'] = $this->templates->listTemplates();
+        $this->data['menuFerramentasV5'] = true;
+        $this->data['menuEmailQueue'] = true;
+        $this->data['view'] = 'emails/configuracoes';
+
+        return $this->layout();
+    }
+
+    /**
+     * Salvar configuracoes de notificacoes
+     */
+    public function salvar_configuracoes()
+    {
+        if (!$this->input->post()) {
+            $this->session->set_flashdata('error', 'Dados incompletos.');
+            redirect('email/configuracoes');
+            return;
+        }
+
+        $configs = [
+            'email_notif_os_criada',
+            'email_notif_os_editada',
+            'email_notif_venda',
+            'email_notif_cobranca',
+            'email_notif_obra_nova',
+            'email_notif_obra_concluida',
+            'email_notif_atividade_atrasada',
+            'email_notif_impedimento',
+            'email_automatico_v5',
+        ];
+
+        foreach ($configs as $key) {
+            $valor = $this->input->post($key) ? '1' : '0';
+            $this->db->replace('configuracoes', ['config' => $key, 'valor' => $valor]);
+        }
+
+        $this->session->set_flashdata('success', 'Configuracoes salvas com sucesso!');
+        redirect('email/configuracoes');
+    }
+
+    private function _parseBool($val)
+    {
+        return in_array($val, ['1', 'true', 'on', 'yes'], true);
+    }
 }

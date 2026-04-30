@@ -1480,7 +1480,6 @@ class Obras_model extends CI_Model
             'checkin' => false,
             'impedimento' => true,
             'canal_email' => true,
-            'canal_whatsapp' => false,
             'canal_sistema' => true,
         ];
 
@@ -1493,7 +1492,6 @@ class Obras_model extends CI_Model
                 'obra_notif_checkin',
                 'obra_notif_impedimento',
                 'obra_notif_canal_email',
-                'obra_notif_canal_whatsapp',
                 'obra_notif_canal_sistema',
             ]);
             $query = $this->db->get('configuracoes');

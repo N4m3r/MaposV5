@@ -38,11 +38,11 @@ $hook['post_controller_constructor'][] = [
     'filepath' => 'hooks',
 ];
 
-// Bootstrap de tabelas de notificações (Evolution API nativa)
-$hook['post_controller_constructor'][] = [
-    'class'    => '',
-    'function' => 'check_notificacoes_tables',
-    'filename' => 'check_notificacoes_tables.php',
+// Email Queue Processor - Poor Man's Cron
+$hook['post_controller'][] = [
+    'class' => '',
+    'function' => 'process_email_queue',
+    'filename' => 'email_queue_processor.php',
     'filepath' => 'hooks',
 ];
 

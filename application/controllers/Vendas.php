@@ -125,6 +125,44 @@ class Vendas extends MY_Controller
                     'dataVenda' => $data['dataVenda'],
                 ]);
 
+                // Enfileirar email de confirmacao via sistema V5
+                try {
+                    require_once APPPATH . 'libraries/Email/EmailQueue.php';
+                    require_once APPPATH . 'libraries/Email/TemplateEngine.php';
+
+                    $this->load->model('clientes_model');
+                    $cliente = $this->clientes_model->getById($data['clientes_id']);
+
+                    if ($cliente && !empty($cliente->email)) {
+                        $queue = new \Libraries\Email\EmailQueue();
+                        $templates = new \Libraries\Email\TemplateEngine();
+
+                        $templateData = [
+                            'cliente_nome' => $cliente->nomeCliente ?? '',
+                            'cliente_email' => $cliente->email ?? '',
+                            'venda_id' => $id,
+                            'venda_data' => date('d/m/Y', strtotime($data['dataVenda'])),
+                            'venda_status' => $data['status'] ?? 'Iniciada',
+                            'venda_link_visualizar' => base_url('vendas/visualizar/' . $id),
+                        ];
+
+                        $rendered = $templates->render('venda_realizada', $templateData);
+
+                        $queue->enqueue([
+                            'to' => $cliente->email,
+                            'to_name' => $cliente->nomeCliente ?? '',
+                            'subject' => 'Sua Venda foi Iniciada - #' . $id,
+                            'body_html' => $rendered['html'],
+                            'body_text' => $rendered['text'] ?? strip_tags($rendered['html']),
+                            'template' => 'venda_realizada',
+                            'template_data' => $templateData,
+                            'priority' => 3,
+                        ]);
+                    }
+                } catch (\Exception $e) {
+                    log_message('error', '[Vendas] Erro ao enfileirar email V5: ' . $e->getMessage());
+                }
+
                 redirect(site_url('vendas/editar/') . $id);
             } else {
                 $this->data['custom_error'] = '<div class="form_error"><p>Ocorreu um erro.</p></div>';
@@ -658,9 +696,6 @@ class Vendas extends MY_Controller
                 } else {
                     $this->session->set_flashdata('success', 'Venda faturada com sucesso!');
                     $json = ['result' => true];
-
-                    // Gatilho WhatsApp: venda realizada
-                    notificar_venda_realizada($venda_id, $vendas->clientes_id);
                 }
             } else {
                 $this->db->trans_rollback();
