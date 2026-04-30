@@ -123,6 +123,9 @@ class DpsXmlBuilder
             $prest->appendChild($dom->createElementNS($ns, 'CNPJ', $cnpj));
         }
 
+        // cNaoNIF obrigatório: 1=Contribuinte com NIF, 2=Não contribuinte
+        $prest->appendChild($dom->createElementNS($ns, 'cNaoNIF', '1'));
+
         $im = preg_replace('/\D/', '', $prestador['im'] ?? '');
         if (!empty($im)) {
             $prest->appendChild($dom->createElementNS($ns, 'IM', $im));
@@ -172,6 +175,9 @@ class DpsXmlBuilder
             $toma->appendChild($dom->createElementNS($ns, 'CPF', $cpfCnpj));
         }
 
+        // cNaoNIF obrigatório
+        $toma->appendChild($dom->createElementNS($ns, 'cNaoNIF', '1'));
+
         $xNome = !empty($tomador['razao_social']) ? $tomador['razao_social'] : 'TOMADOR';
         $toma->appendChild($dom->createElementNS($ns, 'xNome', $this->escapeXml($xNome)));
 
@@ -197,6 +203,14 @@ class DpsXmlBuilder
     {
         $end = $dom->createElementNS($ns, 'end');
 
+        $endNac = $dom->createElementNS($ns, 'endNac');
+        $codMun = !empty($endereco['codigo_municipio']) ? $endereco['codigo_municipio'] : $this->codigoMunicipio;
+        $endNac->appendChild($dom->createElementNS($ns, 'cMun', preg_replace('/\D/', '', $codMun)));
+        if (!empty($endereco['cep'])) {
+            $endNac->appendChild($dom->createElementNS($ns, 'CEP', preg_replace('/\D/', '', $endereco['cep'])));
+        }
+        $end->appendChild($endNac);
+
         if (!empty($endereco['logradouro'])) {
             $end->appendChild($dom->createElementNS($ns, 'xLgr', $this->escapeXml($endereco['logradouro'])));
         }
@@ -210,14 +224,6 @@ class DpsXmlBuilder
             $end->appendChild($dom->createElementNS($ns, 'xBairro', $this->escapeXml($endereco['bairro'])));
         }
 
-        $endNac = $dom->createElementNS($ns, 'endNac');
-        $codMun = !empty($endereco['codigo_municipio']) ? $endereco['codigo_municipio'] : $this->codigoMunicipio;
-        $endNac->appendChild($dom->createElementNS($ns, 'cMun', preg_replace('/\D/', '', $codMun)));
-        if (!empty($endereco['cep'])) {
-            $endNac->appendChild($dom->createElementNS($ns, 'CEP', preg_replace('/\D/', '', $endereco['cep'])));
-        }
-        $end->appendChild($endNac);
-
         return $end;
     }
 
@@ -228,6 +234,7 @@ class DpsXmlBuilder
         // Local de prestação
         $locPrest = $dom->createElementNS($ns, 'locPrest');
         $locPrest->appendChild($dom->createElementNS($ns, 'cLocPrestacao', $this->codigoMunicipio));
+        $locPrest->appendChild($dom->createElementNS($ns, 'cPaisPrestacao', 'BR'));
         $serv->appendChild($locPrest);
 
         // Código do serviço
@@ -269,12 +276,21 @@ class DpsXmlBuilder
         $vServPrest->appendChild($dom->createElementNS($ns, 'vServ', number_format($valorServicos, 2, '.', '')));
         $valores->appendChild($vServPrest);
 
-        // Tributação municipal
-        $trib = $dom->createElementNS($ns, 'trib');
+        // Descontos (obrigatório no schema, mesmo com valor zero)
+        $vDescCondIncond = $dom->createElementNS($ns, 'vDescCondIncond');
+        $vDescCondIncond->appendChild($dom->createElementNS($ns, 'vDescIncond', '0.00'));
+        $vDescCondIncond->appendChild($dom->createElementNS($ns, 'vDescCond', '0.00'));
+        $valores->appendChild($vDescCondIncond);
+
+        // Tributação municipal - tag Trib (maiúsculo conforme schema)
+        $Trib = $dom->createElementNS($ns, 'Trib');
         $tribMun = $dom->createElementNS($ns, 'tribMun');
 
         // tribISSQN: 1=Operação tributável, 2=Imunidade, 3=Isenção, etc.
         $tribMun->appendChild($dom->createElementNS($ns, 'tribISSQN', '1'));
+
+        // tpImunidade obrigatório (0=Não se aplica)
+        $tribMun->appendChild($dom->createElementNS($ns, 'tpImunidade', '0'));
 
         // tpRetISSQN: 1=Não retido, 2=Retido tomador, 3=Retido intermediário
         $tpRetISSQN = !empty($servico['iss_retido']) ? '2' : '1';
@@ -283,15 +299,14 @@ class DpsXmlBuilder
         $aliquotaIss = floatval($servico['aliquota_iss'] ?? $tributacao['aliquota_iss'] ?? 5.00);
         $tribMun->appendChild($dom->createElementNS($ns, 'pAliq', number_format($aliquotaIss, 2, '.', '')));
 
-        $trib->appendChild($tribMun);
+        $Trib->appendChild($tribMun);
 
-        // totTrib
+        // Totais aproximados (obrigatório)
         $totTrib = $dom->createElementNS($ns, 'totTrib');
-        // indTotTrib: 0=Não informado, 1=Informado
         $totTrib->appendChild($dom->createElementNS($ns, 'indTotTrib', '0'));
-        $trib->appendChild($totTrib);
+        $Trib->appendChild($totTrib);
 
-        $valores->appendChild($trib);
+        $valores->appendChild($Trib);
 
         return $valores;
     }
@@ -308,24 +323,19 @@ class DpsXmlBuilder
         $IBSCBS->appendChild($dom->createElementNS($ns, 'finNFSe', '0'));
         $IBSCBS->appendChild($dom->createElementNS($ns, 'indFinal', '0'));
         $IBSCBS->appendChild($dom->createElementNS($ns, 'cIndOp', '000000'));
+        $IBSCBS->appendChild($dom->createElementNS($ns, 'indDest', '0'));
+
+        // indZFMALC - novo na NT 007/2026 (0=Não, 1=Sim)
+        $IBSCBS->appendChild($dom->createElementNS($ns, 'indZFMALC', '0'));
 
         $valores = $dom->createElementNS($ns, 'valores');
-        $valores->appendChild($dom->createElementNS($ns, 'vBC', number_format($baseCalculo, 2, '.', '')));
 
-        $uf = $dom->createElementNS($ns, 'uf');
-        $uf->appendChild($dom->createElementNS($ns, 'pIBSUF', '0.00'));
-        $uf->appendChild($dom->createElementNS($ns, 'pAliqEfetUF', '0.00'));
-        $valores->appendChild($uf);
-
-        $mun = $dom->createElementNS($ns, 'mun');
-        $mun->appendChild($dom->createElementNS($ns, 'pIBSMun', '0.00'));
-        $mun->appendChild($dom->createElementNS($ns, 'pAliqEfetMun', '0.00'));
-        $valores->appendChild($mun);
-
-        $fed = $dom->createElementNS($ns, 'fed');
-        $fed->appendChild($dom->createElementNS($ns, 'pCBS', '0.00'));
-        $fed->appendChild($dom->createElementNS($ns, 'pAliqEfetCBS', '0.00'));
-        $valores->appendChild($fed);
+        $trib = $dom->createElementNS($ns, 'trib');
+        $gIBSCBS = $dom->createElementNS($ns, 'gIBSCBS');
+        $gIBSCBS->appendChild($dom->createElementNS($ns, 'CST', '000'));
+        $gIBSCBS->appendChild($dom->createElementNS($ns, 'cClassTrib', '010101'));
+        $trib->appendChild($gIBSCBS);
+        $valores->appendChild($trib);
 
         $IBSCBS->appendChild($valores);
 
