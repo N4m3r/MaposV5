@@ -1049,6 +1049,9 @@ class Nfse_os extends MY_Controller
                 'servico' => $servico,
                 'tributacao' => $tributacao,
                 'competencia' => $competencia,
+                'ambiente' => $pemPaths['ambiente'] ?? 'homologacao',
+                'serie' => 1,
+                'n_dps' => null, // Será gerado automaticamente com base no timestamp
             ];
 
             $xmlDps = $xmlBuilder->gerarDps($dadosDps);
@@ -1059,6 +1062,8 @@ class Nfse_os extends MY_Controller
                 return;
             }
 
+            log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: XML DPS gerado (primeiros 3000 chars): ' . substr($xmlDps, 0, 3000));
+
             // Assinar XML DPS
             $xmlSigner = new XmlSigner();
             $xmlAssinado = $xmlSigner->assinarXml($xmlDps, $pemPaths['cert'], $pemPaths['key']);
@@ -1067,6 +1072,16 @@ class Nfse_os extends MY_Controller
                 echo json_encode(['success' => false, 'message' => 'Erro ao assinar XML DPS. Verifique o certificado digital.']);
                 $this->certificado_model->limparPemTemporarios($pemPaths);
                 return;
+            }
+
+            log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: XML DPS assinado (primeiros 4000 chars): ' . substr($xmlAssinado, 0, 4000));
+
+            // Validar XML assinado (well-formed)
+            $domCheck = new DOMDocument('1.0', 'UTF-8');
+            if (!@$domCheck->loadXML($xmlAssinado)) {
+                log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: XML assinado é MAL FORMADO!');
+            } else {
+                log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: XML assinado está bem formado.');
             }
 
             // Enviar para API Nacional

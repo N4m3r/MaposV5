@@ -58,86 +58,90 @@ class XmlSigner
             return false;
         }
 
-        // Encontrar o elemento raiz (dps) para obter o ID
-        $rootElement = $dom->documentElement;
-        if (!$rootElement) {
-            log_message('error', 'XmlSigner: Elemento raiz não encontrado no XML');
-            return false;
-        }
-
-        $idDps = $rootElement->getAttribute('Id');
-        if (empty($idDps)) {
-            // Fallback: tentar id minúsculo (compatibilidade)
-            $idDps = $rootElement->getAttribute('id');
-        }
-        if (empty($idDps)) {
-            // Tentar encontrar Id no infDps
-            $infDpsList = $dom->getElementsByTagNameNS('http://www.sped.fazenda.gov.br/nfse', 'infDps');
+        // Encontrar o elemento infDPS (alvo da assinatura conforme schema NFS-e Nacional)
+        $infDps = null;
+        $infDpsList = $dom->getElementsByTagNameNS('http://www.sped.fazenda.gov.br/nfse', 'infDPS');
+        if ($infDpsList->length > 0) {
+            $infDps = $infDpsList->item(0);
+        } else {
+            // Fallback: buscar sem namespace
+            $infDpsList = $dom->getElementsByTagName('infDPS');
             if ($infDpsList->length > 0) {
-                $idDps = $infDpsList->item(0)->getAttribute('Id');
+                $infDps = $infDpsList->item(0);
             }
         }
 
-        if (empty($idDps)) {
-            log_message('error', 'XmlSigner: ID do DPS não encontrado no XML');
+        if (!$infDps) {
+            log_message('error', 'XmlSigner: Elemento infDPS não encontrado no XML');
             return false;
         }
 
-        // Canonicalizar o XML (C14N)
-        $canonicalXml = $rootElement->C14N(true, false);
+        $idDps = $infDps->getAttribute('Id');
+        if (empty($idDps)) {
+            $idDps = $infDps->getAttribute('id');
+        }
+        if (empty($idDps)) {
+            log_message('error', 'XmlSigner: ID do infDPS não encontrado no XML');
+            return false;
+        }
+
+        // Canonicalizar o infDPS (C14N) — elemento assinado é o infDPS, não o DPS raiz
+        $canonicalXml = $infDps->C14N(true, false);
 
         // Calcular digest (SHA-256)
         $digest = base64_encode(hash('sha256', $canonicalXml, true));
 
+        $dsigNs = 'http://www.w3.org/2000/09/xmldsig#';
+
         // Criar elemento Signature
-        $signature = $dom->createElementNS('http://www.w3.org/2000/09/xmldsig#', 'Signature');
+        $signature = $dom->createElementNS($dsigNs, 'Signature');
 
         // SignedInfo
-        $signedInfo = $dom->createElement('SignedInfo');
-        $signedInfo->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns', 'http://www.w3.org/2000/09/xmldsig#');
+        $signedInfo = $dom->createElementNS($dsigNs, 'SignedInfo');
 
         // CanonicalizationMethod
-        $canonMethod = $dom->createElement('CanonicalizationMethod');
+        $canonMethod = $dom->createElementNS($dsigNs, 'CanonicalizationMethod');
         $canonMethod->setAttribute('Algorithm', 'http://www.w3.org/TR/2001/REC-xml-c14n-20010315');
         $signedInfo->appendChild($canonMethod);
 
         // SignatureMethod (RSA-SHA256)
-        $sigMethod = $dom->createElement('SignatureMethod');
+        $sigMethod = $dom->createElementNS($dsigNs, 'SignatureMethod');
         $sigMethod->setAttribute('Algorithm', 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256');
         $signedInfo->appendChild($sigMethod);
 
         // Reference
-        $reference = $dom->createElement('Reference');
+        $reference = $dom->createElementNS($dsigNs, 'Reference');
         $reference->setAttribute('URI', '#' . $idDps);
 
         // Transforms
-        $transforms = $dom->createElement('Transforms');
+        $transforms = $dom->createElementNS($dsigNs, 'Transforms');
 
         // Transform: Enveloped Signature
-        $transform1 = $dom->createElement('Transform');
+        $transform1 = $dom->createElementNS($dsigNs, 'Transform');
         $transform1->setAttribute('Algorithm', 'http://www.w3.org/2000/09/xmldsig#enveloped-signature');
         $transforms->appendChild($transform1);
 
         // Transform: C14N
-        $transform2 = $dom->createElement('Transform');
+        $transform2 = $dom->createElementNS($dsigNs, 'Transform');
         $transform2->setAttribute('Algorithm', 'http://www.w3.org/TR/2001/REC-xml-c14n-20010315');
         $transforms->appendChild($transform2);
 
         $reference->appendChild($transforms);
 
         // DigestMethod (SHA-256)
-        $digestMethod = $dom->createElement('DigestMethod');
+        $digestMethod = $dom->createElementNS($dsigNs, 'DigestMethod');
         $digestMethod->setAttribute('Algorithm', 'http://www.w3.org/2001/04/xmlenc#sha256');
         $reference->appendChild($digestMethod);
 
         // DigestValue
-        $digestValue = $dom->createElement('DigestValue', $digest);
+        $digestValue = $dom->createElementNS($dsigNs, 'DigestValue', $digest);
         $reference->appendChild($digestValue);
 
         $signedInfo->appendChild($reference);
         $signature->appendChild($signedInfo);
 
-        // Canonicalizar SignedInfo para assinar
+        // Canonicalizar SignedInfo para assinar (precisa incluir xmlns no SignedInfo)
+        $signedInfo->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns', $dsigNs);
         $signedInfoCanonical = $signedInfo->C14N(true, false);
 
         // Assinar com RSA-SHA256
@@ -149,14 +153,14 @@ class XmlSigner
         }
 
         // SignatureValue
-        $sigValue = $dom->createElement('SignatureValue', base64_encode($signatureValue));
+        $sigValue = $dom->createElementNS($dsigNs, 'SignatureValue', base64_encode($signatureValue));
         $signature->appendChild($sigValue);
 
         // KeyInfo
-        $keyInfo = $dom->createElement('KeyInfo');
+        $keyInfo = $dom->createElementNS($dsigNs, 'KeyInfo');
 
         // X509Data
-        $x509Data = $dom->createElement('X509Data');
+        $x509Data = $dom->createElementNS($dsigNs, 'X509Data');
 
         // Extrair certificado X509 em base64 (apenas o primeiro = signatário)
         $x509Cert = '';
@@ -166,12 +170,17 @@ class XmlSigner
         $x509Cert = str_replace('-----END CERTIFICATE-----', '', $x509Cert);
         $x509Cert = preg_replace('/\s+/', '', $x509Cert);
 
-        $x509CertElement = $dom->createElement('X509Certificate', $x509Cert);
+        $x509CertElement = $dom->createElementNS($dsigNs, 'X509Certificate', $x509Cert);
         $x509Data->appendChild($x509CertElement);
         $keyInfo->appendChild($x509Data);
         $signature->appendChild($keyInfo);
 
-        // Inserir Signature como último filho do elemento raiz
+        // Inserir Signature como último filho do elemento raiz (Dps)
+        $rootElement = $dom->documentElement;
+        if (!$rootElement) {
+            log_message('error', 'XmlSigner: Elemento raiz não encontrado no XML');
+            return false;
+        }
         $rootElement->appendChild($signature);
 
         // Liberar recursos

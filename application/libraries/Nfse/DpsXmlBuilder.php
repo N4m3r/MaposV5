@@ -5,8 +5,7 @@ require_once __DIR__ . '/NfseConfig.php';
 
 /**
  * NFS-e Nacional: DPS XML Builder
- * Gera o XML DPS (Declaração Prévia de Serviços) conforme schema nacional
- * para envio à API NFS-e Nacional (Sistema Nacional NFS-e)
+ * Gera o XML DPS conforme schema nacional SEFIN NFS-e v1.00/1.01
  */
 class DpsXmlBuilder
 {
@@ -16,8 +15,8 @@ class DpsXmlBuilder
 
     public function __construct($config = [])
     {
-        $this->codigoMunicipio = $config['codigo_municipio'] ?? '1302603'; // Manaus
-        $this->codigoUf = $config['codigo_uf'] ?? '13'; // AM
+        $this->codigoMunicipio = $config['codigo_municipio'] ?? '1302603';
+        $this->codigoUf = $config['codigo_uf'] ?? '13';
         $this->versaoDps = $config['versao_dps'] ?? '1.00';
     }
 
@@ -25,328 +24,312 @@ class DpsXmlBuilder
      * Gera o XML DPS completo para envio à API NFS-e Nacional
      *
      * @param array $dados Dados da NFS-e:
-     *   - prestador: ['cnpj' => '', 'razao_social' => '', 'im' => '', 'cnae' => '']
-     *   - tomador: ['cpf_cnpj' => '', 'razao_social' => '', 'im' => '', 'email' => '', 'endereco' => [...]]
+     *   - prestador: ['cnpj' => '', 'razao_social' => '', 'im' => '', 'endereco' => [...], 'email' => '', 'telefone' => '']
+     *   - tomador: ['cpf_cnpj' => '', 'razao_social' => '', 'endereco' => [...], 'email' => '', 'telefone' => '']
      *   - servico: ['descricao' => '', 'codigo_tributacao_nacional' => '', 'codigo_tributacao_municipal' => '', 'valor_servicos' => 0, ...]
      *   - tributacao: ['natureza_operacao' => '1', 'optante_simples' => true, 'regime_especial' => '0', 'incentivador_cultural' => '0']
      *   - competencia: 'YYYY-MM-DD'
+     *   - ambiente: 'homologacao'|'producao'
+     *   - serie: int
+     *   - n_dps: int|string (número da DPS)
      * @return string XML DPS sem assinatura
      */
     public function gerarDps(array $dados)
     {
-        $idDps = $dados['id_dps'] ?? NfseConfig::gerarIdDps($dados['prestador']['cnpj'] ?? '');
+        $prestador = $dados['prestador'] ?? [];
+        $tomador = $dados['tomador'] ?? [];
+        $servico = $dados['servico'] ?? [];
+        $tributacao = $dados['tributacao'] ?? [];
+        $ambiente = ($dados['ambiente'] ?? 'homologacao') === 'producao' ? '1' : '2';
+        $competencia = $dados['competencia'] ?? date('Y-m-d');
+        $serie = $dados['serie'] ?? 1;
+        $nDps = $dados['n_dps'] ?? null;
+
+        $cnpjPrestador = preg_replace('/\D/', '', $prestador['cnpj'] ?? '');
+        $idDps = NfseConfig::gerarIdDps($cnpjPrestador, $this->codigoMunicipio, $serie, $nDps);
 
         $dom = new DOMDocument('1.0', 'UTF-8');
         $dom->formatOutput = false;
         $dom->preserveWhiteSpace = false;
 
-        // Elemento raiz: dps
-        $dps = $dom->createElementNS('http://www.sped.fazenda.gov.br/nfse', 'dps');
-        $dps->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
+        // Elemento raiz: DPS (namespace oficial)
+        $ns = 'http://www.sped.fazenda.gov.br/nfse';
+        $dps = $dom->createElementNS($ns, 'DPS');
         $dps->setAttribute('versao', $this->versaoDps);
-        $dps->setAttribute('Id', $idDps);
         $dom->appendChild($dps);
 
-        // infDps
-        $infDps = $dom->createElement('infDps');
+        // infDPS
+        $infDps = $dom->createElementNS($ns, 'infDPS');
         $infDps->setAttribute('Id', $idDps);
         $dps->appendChild($infDps);
 
-        // Competência
-        $competencia = $dados['competencia'] ?? date('Y-m-d');
-        $competNode = $dom->createElement('Competência', $this->formatarCompetencia($competencia));
-        $infDps->appendChild($competNode);
+        // tpAmb
+        $infDps->appendChild($dom->createElementNS($ns, 'tpAmb', $ambiente));
 
-        // Natureza Operação
-        $natOp = $dados['tributacao']['natureza_operacao'] ?? '1';
-        $infDps->appendChild($dom->createElement('NaturezaOperação', $natOp));
+        // dhEmi (data/hora emissão no formato ISO 8601)
+        $dhEmi = date('Y-m-d\TH:i:sP');
+        $infDps->appendChild($dom->createElementNS($ns, 'dhEmi', $dhEmi));
 
-        // Optante Simples Nacional
-        $optanteSimples = ($dados['tributacao']['optante_simples'] ?? true) ? '1' : '2';
-        $infDps->appendChild($dom->createElement('OptanteSimplesNacional', $optanteSimples));
+        // verAplic
+        $infDps->appendChild($dom->createElementNS($ns, 'verAplic', 'MAPOS-NFSE-1.0'));
 
-        // Regime Especial Tributação
-        $regimeEspecial = $dados['tributacao']['regime_especial'] ?? '0';
-        $infDps->appendChild($dom->createElement('RegimeEspecialTributação', $regimeEspecial));
+        // serie
+        $infDps->appendChild($dom->createElementNS($ns, 'serie', str_pad((string)$serie, 1, '0', STR_PAD_LEFT)));
 
-        // Incentivador Cultural
-        $incentivador = $dados['tributacao']['incentivador_cultural'] ?? '0';
-        $infDps->appendChild($dom->createElement('IncentivadorCultural', $incentivador));
+        // nDPS
+        $nDpsValor = $nDps ?? substr($idDps, -15);
+        $infDps->appendChild($dom->createElementNS($ns, 'nDPS', ltrim($nDpsValor, '0') ?: '1'));
+
+        // dCompet (AAAA-MM-DD)
+        $infDps->appendChild($dom->createElementNS($ns, 'dCompet', $competencia));
+
+        // tpEmit (1=Prestador)
+        $infDps->appendChild($dom->createElementNS($ns, 'tpEmit', '1'));
+
+        // cLocEmi (código IBGE do município emissor)
+        $infDps->appendChild($dom->createElementNS($ns, 'cLocEmi', $this->codigoMunicipio));
 
         // Prestador
-        $prestador = $this->criarPrestador($dom, $dados['prestador'] ?? []);
-        $infDps->appendChild($prestador);
+        $prestNode = $this->criarPrestador($dom, $ns, $prestador, $tributacao);
+        $infDps->appendChild($prestNode);
 
-        // Tomador
-        $tomador = $this->criarTomador($dom, $dados['tomador'] ?? []);
-        $infDps->appendChild($tomador);
+        // Tomador (se houver)
+        $tomadorNode = $this->criarTomador($dom, $ns, $tomador);
+        if ($tomadorNode) {
+            $infDps->appendChild($tomadorNode);
+        }
 
         // Serviço
-        $servico = $this->criarServico($dom, $dados['servico'] ?? [], $dados['tributacao'] ?? []);
-        $infDps->appendChild($servico);
+        $servNode = $this->criarServico($dom, $ns, $servico);
+        $infDps->appendChild($servNode);
+
+        // Valores
+        $valoresNode = $this->criarValores($dom, $ns, $servico, $tributacao);
+        $infDps->appendChild($valoresNode);
+
+        // IBSCBS (Reforma Tributária - obrigatório desde NT 007/2026)
+        $ibscbsNode = $this->criarIbscbs($dom, $ns, $servico);
+        $infDps->appendChild($ibscbsNode);
 
         return $dom->saveXML();
     }
 
-    /**
-     * Cria elemento Prestador
-     */
-    private function criarPrestador(DOMDocument $dom, array $prestador)
+    private function criarPrestador(DOMDocument $dom, string $ns, array $prestador, array $tributacao)
     {
-        $prestNode = $dom->createElement('Prestador');
+        $prest = $dom->createElementNS($ns, 'prest');
 
-        // CPF/CNPJ
-        $identificacao = $dom->createElement('IdentificacaoPrestador');
         $cnpj = preg_replace('/\D/', '', $prestador['cnpj'] ?? '');
         if (strlen($cnpj) === 14) {
-            $identificacao->appendChild($dom->createElement('CpfCnpj'))
-                ->appendChild($dom->createElement('Cnpj', $cnpj));
-        } elseif (strlen($cnpj) > 0) {
-            $identificacao->appendChild($dom->createElement('CpfCnpj'))
-                ->appendChild($dom->createElement('Cpf', str_pad($cnpj, 11, '0', STR_PAD_LEFT)));
+            $prest->appendChild($dom->createElementNS($ns, 'CNPJ', $cnpj));
         }
 
-        // Inscrição Municipal
-        if (!empty($prestador['im'])) {
-            $identificacao->appendChild($dom->createElement('InscricaoMunicipal', $prestador['im']));
+        $im = preg_replace('/\D/', '', $prestador['im'] ?? '');
+        if (!empty($im)) {
+            $prest->appendChild($dom->createElementNS($ns, 'IM', $im));
         }
 
-        // Inscrição Estadual
-        if (!empty($prestador['ie'])) {
-            $identificacao->appendChild($dom->createElement('InscricaoEstadual', $prestador['ie']));
-        }
+        $xNome = !empty($prestador['razao_social']) ? $prestador['razao_social'] : ($prestador['nome_fantasia'] ?? 'PRESTADOR');
+        $prest->appendChild($dom->createElementNS($ns, 'xNome', $this->escapeXml($xNome)));
 
-        $prestNode->appendChild($identificacao);
-
-        // Razão Social (obrigatória — usa fallback se vazia)
-        $razaoSocial = !empty($prestador['razao_social']) ? $prestador['razao_social'] : ($prestador['nome_fantasia'] ?? 'PRESTADOR');
-        $prestNode->appendChild($dom->createElement('RazaoSocial', $this->escapeXml($razaoSocial)));
-
-        // Endereço do Prestador
+        // Endereço
         if (!empty($prestador['endereco'])) {
-            $prestNode->appendChild($this->criarEndereco($dom, $prestador['endereco'], 'Endereco'));
+            $prest->appendChild($this->criarEndereco($dom, $ns, $prestador['endereco']));
         }
 
-        // Contato
-        if (!empty($prestador['email']) || !empty($prestador['telefone'])) {
-            $contato = $dom->createElement('Contato');
-            if (!empty($prestador['email'])) {
-                $contato->appendChild($dom->createElement('Email', $this->escapeXml($prestador['email'])));
+        if (!empty($prestador['telefone'])) {
+            $fone = preg_replace('/\D/', '', $prestador['telefone']);
+            if (!empty($fone)) {
+                $prest->appendChild($dom->createElementNS($ns, 'fone', $fone));
             }
-            if (!empty($prestador['telefone'])) {
-                $contato->appendChild($dom->createElement('Telefone', $prestador['telefone']));
-            }
-            $prestNode->appendChild($contato);
         }
 
-        return $prestNode;
+        if (!empty($prestador['email'])) {
+            $prest->appendChild($dom->createElementNS($ns, 'email', $this->escapeXml($prestador['email'])));
+        }
+
+        // Regime tributário
+        $regTrib = $dom->createElementNS($ns, 'regTrib');
+        $opSimpNac = ($tributacao['optante_simples'] ?? true) ? '1' : '2';
+        $regTrib->appendChild($dom->createElementNS($ns, 'opSimpNac', $opSimpNac));
+        $regTrib->appendChild($dom->createElementNS($ns, 'regEspTrib', $tributacao['regime_especial'] ?? '0'));
+        $prest->appendChild($regTrib);
+
+        return $prest;
     }
 
-    /**
-     * Cria elemento Tomador
-     */
-    private function criarTomador(DOMDocument $dom, array $tomador)
+    private function criarTomador(DOMDocument $dom, string $ns, array $tomador)
     {
-        $tomNode = $dom->createElement('Tomador');
-
-        // CPF/CNPJ
         $cpfCnpj = preg_replace('/\D/', '', $tomador['cpf_cnpj'] ?? '');
         if (empty($cpfCnpj)) {
-            return $tomNode;
+            return null;
         }
 
-        $identificacao = $dom->createElement('IdentificacaoTomador');
-        $cpfcnpjNode = $dom->createElement('CpfCnpj');
+        $toma = $dom->createElementNS($ns, 'toma');
+
         if (strlen($cpfCnpj) === 14) {
-            $cpfcnpjNode->appendChild($dom->createElement('Cnpj', $cpfCnpj));
-        } else {
-            $cpfcnpjNode->appendChild($dom->createElement('Cpf', str_pad($cpfCnpj, 11, '0', STR_PAD_LEFT)));
-        }
-        $identificacao->appendChild($cpfcnpjNode);
-
-        if (!empty($tomador['im'])) {
-            $identificacao->appendChild($dom->createElement('InscricaoMunicipal', $tomador['im']));
+            $toma->appendChild($dom->createElementNS($ns, 'CNPJ', $cpfCnpj));
+        } elseif (strlen($cpfCnpj) === 11) {
+            $toma->appendChild($dom->createElementNS($ns, 'CPF', $cpfCnpj));
         }
 
-        if (!empty($tomador['ie'])) {
-            $identificacao->appendChild($dom->createElement('InscricaoEstadual', $tomador['ie']));
-        }
+        $xNome = !empty($tomador['razao_social']) ? $tomador['razao_social'] : 'TOMADOR';
+        $toma->appendChild($dom->createElementNS($ns, 'xNome', $this->escapeXml($xNome)));
 
-        $tomNode->appendChild($identificacao);
-
-        // Razão Social / Nome (obrigatória — usa fallback se vazia)
-        $razaoSocial = !empty($tomador['razao_social']) ? $tomador['razao_social'] : 'TOMADOR';
-        $tomNode->appendChild($dom->createElement('RazaoSocial', $this->escapeXml($razaoSocial)));
-
-        // Endereço do Tomador
         if (!empty($tomador['endereco'])) {
-            $tomNode->appendChild($this->criarEndereco($dom, $tomador['endereco'], 'Endereco'));
+            $toma->appendChild($this->criarEndereco($dom, $ns, $tomador['endereco']));
         }
 
-        // Contato
-        if (!empty($tomador['email']) || !empty($tomador['telefone'])) {
-            $contato = $dom->createElement('Contato');
-            if (!empty($tomador['email'])) {
-                $contato->appendChild($dom->createElement('Email', $this->escapeXml($tomador['email'])));
+        if (!empty($tomador['telefone'])) {
+            $fone = preg_replace('/\D/', '', $tomador['telefone']);
+            if (!empty($fone)) {
+                $toma->appendChild($dom->createElementNS($ns, 'fone', $fone));
             }
-            if (!empty($tomador['telefone'])) {
-                $contato->appendChild($dom->createElement('Telefone', $tomador['telefone']));
-            }
-            $tomNode->appendChild($contato);
         }
 
-        return $tomNode;
+        if (!empty($tomador['email'])) {
+            $toma->appendChild($dom->createElementNS($ns, 'email', $this->escapeXml($tomador['email'])));
+        }
+
+        return $toma;
     }
 
-    /**
-     * Cria elemento de Serviço (Detalhe)
-     */
-    private function criarServico(DOMDocument $dom, array $servico, array $tributacao)
+    private function criarEndereco(DOMDocument $dom, string $ns, array $endereco)
     {
-        $servNode = $dom->createElement('DetalhamentoServico');
-
-        // Descrição dos Serviços (obrigatória — usa fallback se vazia)
-        $descricao = !empty($servico['descricao']) ? $servico['descricao'] : 'Serviços prestados conforme contrato.';
-        $servNode->appendChild($dom->createElement('Descricao', $this->escapeXml($descricao)));
-
-        // CNAE
-        if (!empty($servico['cnae'])) {
-            $servNode->appendChild($dom->createElement('Cnae', preg_replace('/\D/', '', $servico['cnae'])));
-        }
-
-        // Código Tributação Municipal
-        if (!empty($servico['codigo_tributacao_municipal'])) {
-            $servNode->appendChild($dom->createElement('CodigoTributacaoMunicipal', $servico['codigo_tributacao_municipal']));
-        }
-
-        // Código Tributação Nacional (LC 116/2003)
-        if (!empty($servico['codigo_tributacao_nacional'])) {
-            $servNode->appendChild($dom->createElement('CodigoTributacaoNacional', $servico['codigo_tributacao_nacional']));
-        }
-
-        // Valores
-        $valores = $dom->createElement('Valores');
-
-        $valorServicos = number_format(floatval($servico['valor_servicos'] ?? 0), 2, '.', '');
-        $valores->appendChild($dom->createElement('ValorServicos', $valorServicos));
-
-        // Deduções
-        $valorDeducoes = number_format(floatval($servico['valor_deducoes'] ?? 0), 2, '.', '');
-        if ($valorDeducoes > 0) {
-            $valores->appendChild($dom->createElement('ValorDeducoes', $valorDeducoes));
-        }
-
-        // ISS
-        $issNode = $dom->createElement('Iss');
-        $issNode->appendChild($dom->createElement('ValorIss', number_format(floatval($servico['valor_iss'] ?? 0), 2, '.', '')));
-
-        $aliquotaIss = number_format(floatval($servico['aliquota_iss'] ?? $tributacao['aliquota_iss'] ?? 5.00), 4, '.', '');
-        $issNode->appendChild($dom->createElement('Aliquota', $aliquotaIss));
-
-        // ISS Retido
-        if (!empty($servico['iss_retido'])) {
-            $issNode->appendChild($dom->createElement('IssRetido', '1'));
-            $issNode->appendChild($dom->createElement('ValorIssRetido', number_format(floatval($servico['valor_iss_retido'] ?? 0), 2, '.', '')));
-        } else {
-            $issNode->appendChild($dom->createElement('IssRetido', '2'));
-        }
-
-        $valores->appendChild($issNode);
-
-        // Base de Cálculo
-        $baseCalculo = number_format(floatval($servico['valor_servicos'] ?? 0) - floatval($servico['valor_deducoes'] ?? 0), 2, '.', '');
-        $valores->appendChild($dom->createElement('BaseCalculo', $baseCalculo));
-
-        // Valor Líquido
-        $valorLiquido = number_format(floatval($servico['valor_liquido'] ?? 0), 2, '.', '');
-        $valores->appendChild($dom->createElement('ValorLiquido', $valorLiquido));
-
-        $servNode->appendChild($valores);
-
-        // Tributações federais (se houver retenções)
-        $tribFed = $dom->createElement('TributacoesFederais');
-
-        // PIS
-        if (!empty($servico['pis_retido']) || !empty($servico['valor_pis'])) {
-            $tribFed->appendChild($dom->createElement('ValorPis', number_format(floatval($servico['valor_pis'] ?? 0), 2, '.', '')));
-            $tribFed->appendChild($dom->createElement('PisRetido', !empty($servico['pis_retido']) ? '1' : '2'));
-        }
-
-        // COFINS
-        if (!empty($servico['cofins_retido']) || !empty($servico['valor_cofins'])) {
-            $tribFed->appendChild($dom->createElement('ValorCofins', number_format(floatval($servico['valor_cofins'] ?? 0), 2, '.', '')));
-            $tribFed->appendChild($dom->createElement('CofinsRetido', !empty($servico['cofins_retido']) ? '1' : '2'));
-        }
-
-        // IRPJ
-        if (!empty($servico['irrf_retido']) || !empty($servico['valor_irrf'])) {
-            $tribFed->appendChild($dom->createElement('ValorIrrf', number_format(floatval($servico['valor_irrf'] ?? 0), 2, '.', '')));
-            $tribFed->appendChild($dom->createElement('IrrfRetido', !empty($servico['irrf_retido']) ? '1' : '2'));
-        }
-
-        // CSLL
-        if (!empty($servico['csll_retido']) || !empty($servico['valor_csll'])) {
-            $tribFed->appendChild($dom->createElement('ValorCsll', number_format(floatval($servico['valor_csll'] ?? 0), 2, '.', '')));
-            $tribFed->appendChild($dom->createElement('CsllRetido', !empty($servico['csll_retido']) ? '1' : '2'));
-        }
-
-        // INSS
-        if (!empty($servico['inss_retido']) || !empty($servico['valor_inss'])) {
-            $tribFed->appendChild($dom->createElement('ValorInss', number_format(floatval($servico['valor_inss'] ?? 0), 2, '.', '')));
-            $tribFed->appendChild($dom->createElement('InssRetido', !empty($servico['inss_retido']) ? '1' : '2'));
-        }
-
-        // Só anexar TributacoesFederais se houver conteúdo
-        if ($tribFed->hasChildNodes()) {
-            $servNode->appendChild($tribFed);
-        }
-
-        // Município de Prestação (obrigatório)
-        $municipioPrestacao = $dom->createElement('MunicipioPrestacaoServico');
-        $municipioPrestacao->appendChild($dom->createElement('CodigoMunicipioIbge', $this->codigoMunicipio));
-        $servNode->appendChild($municipioPrestacao);
-
-        return $servNode;
-    }
-
-    /**
-     * Cria elemento de Endereço
-     */
-    private function criarEndereco(DOMDocument $dom, array $endereco, $tagName = 'Endereco')
-    {
-        $endNode = $dom->createElement($tagName);
+        $end = $dom->createElementNS($ns, 'end');
 
         if (!empty($endereco['logradouro'])) {
-            $endNode->appendChild($dom->createElement('Logradouro', $this->escapeXml($endereco['logradouro'])));
+            $end->appendChild($dom->createElementNS($ns, 'xLgr', $this->escapeXml($endereco['logradouro'])));
         }
         if (!empty($endereco['numero'])) {
-            $endNode->appendChild($dom->createElement('Numero', $endereco['numero']));
+            $end->appendChild($dom->createElementNS($ns, 'nro', $endereco['numero']));
         }
         if (!empty($endereco['complemento'])) {
-            $endNode->appendChild($dom->createElement('Complemento', $this->escapeXml($endereco['complemento'])));
+            $end->appendChild($dom->createElementNS($ns, 'xCpl', $this->escapeXml($endereco['complemento'])));
         }
         if (!empty($endereco['bairro'])) {
-            $endNode->appendChild($dom->createElement('Bairro', $this->escapeXml($endereco['bairro'])));
-        }
-        if (!empty($endereco['codigo_municipio'])) {
-            $endNode->appendChild($dom->createElement('CodigoMunicipioIbge', $endereco['codigo_municipio']));
-        }
-        if (!empty($endereco['uf'])) {
-            $endNode->appendChild($dom->createElement('Uf', $endereco['uf']));
-        }
-        if (!empty($endereco['cep'])) {
-            $endNode->appendChild($dom->createElement('Cep', preg_replace('/\D/', '', $endereco['cep'])));
+            $end->appendChild($dom->createElementNS($ns, 'xBairro', $this->escapeXml($endereco['bairro'])));
         }
 
-        return $endNode;
+        $endNac = $dom->createElementNS($ns, 'endNac');
+        $codMun = !empty($endereco['codigo_municipio']) ? $endereco['codigo_municipio'] : $this->codigoMunicipio;
+        $endNac->appendChild($dom->createElementNS($ns, 'cMun', preg_replace('/\D/', '', $codMun)));
+        if (!empty($endereco['cep'])) {
+            $endNac->appendChild($dom->createElementNS($ns, 'CEP', preg_replace('/\D/', '', $endereco['cep'])));
+        }
+        $end->appendChild($endNac);
+
+        return $end;
     }
 
-    /**
-     * Formata competência: YYYY-MM-DD -> YYYY-MM
-     */
-    private function formatarCompetencia($data)
+    private function criarServico(DOMDocument $dom, string $ns, array $servico)
     {
-        return substr($data, 0, 7); // YYYY-MM
+        $serv = $dom->createElementNS($ns, 'serv');
+
+        // Local de prestação
+        $locPrest = $dom->createElementNS($ns, 'locPrest');
+        $locPrest->appendChild($dom->createElementNS($ns, 'cLocPrestacao', $this->codigoMunicipio));
+        $serv->appendChild($locPrest);
+
+        // Código do serviço
+        $cServ = $dom->createElementNS($ns, 'cServ');
+
+        $cTribNac = preg_replace('/\D/', '', $servico['codigo_tributacao_nacional'] ?? '010701');
+        $cServ->appendChild($dom->createElementNS($ns, 'cTribNac', $cTribNac));
+
+        $cTribMun = $servico['codigo_tributacao_municipal'] ?? '';
+        if (!empty($cTribMun)) {
+            $cServ->appendChild($dom->createElementNS($ns, 'cTribMun', $cTribMun));
+        }
+
+        $descricao = !empty($servico['descricao']) ? $servico['descricao'] : 'Serviços prestados conforme contrato.';
+        $cServ->appendChild($dom->createElementNS($ns, 'xDescServ', $this->escapeXml($descricao)));
+
+        // cNBS (opcional, mas recomendado para reforma tributária)
+        $cnae = preg_replace('/\D/', '', $servico['cnae'] ?? '');
+        if (!empty($cnae)) {
+            $cServ->appendChild($dom->createElementNS($ns, 'cNBS', $cnae));
+        }
+
+        $serv->appendChild($cServ);
+
+        return $serv;
+    }
+
+    private function criarValores(DOMDocument $dom, string $ns, array $servico, array $tributacao)
+    {
+        $valores = $dom->createElementNS($ns, 'valores');
+
+        $valorServicos = floatval($servico['valor_servicos'] ?? 0);
+        $valorDeducoes = floatval($servico['valor_deducoes'] ?? 0);
+        $baseCalculo = $valorServicos - $valorDeducoes;
+        if ($baseCalculo < 0) $baseCalculo = 0;
+
+        // vServPrest
+        $vServPrest = $dom->createElementNS($ns, 'vServPrest');
+        $vServPrest->appendChild($dom->createElementNS($ns, 'vServ', number_format($valorServicos, 2, '.', '')));
+        $valores->appendChild($vServPrest);
+
+        // Tributação municipal
+        $trib = $dom->createElementNS($ns, 'trib');
+        $tribMun = $dom->createElementNS($ns, 'tribMun');
+
+        // tribISSQN: 1=Operação tributável, 2=Imunidade, 3=Isenção, etc.
+        $tribMun->appendChild($dom->createElementNS($ns, 'tribISSQN', '1'));
+
+        // tpRetISSQN: 1=Não retido, 2=Retido tomador, 3=Retido intermediário
+        $tpRetISSQN = !empty($servico['iss_retido']) ? '2' : '1';
+        $tribMun->appendChild($dom->createElementNS($ns, 'tpRetISSQN', $tpRetISSQN));
+
+        $aliquotaIss = floatval($servico['aliquota_iss'] ?? $tributacao['aliquota_iss'] ?? 5.00);
+        $tribMun->appendChild($dom->createElementNS($ns, 'pAliq', number_format($aliquotaIss, 2, '.', '')));
+
+        $trib->appendChild($tribMun);
+
+        // totTrib
+        $totTrib = $dom->createElementNS($ns, 'totTrib');
+        // indTotTrib: 0=Não informado, 1=Informado
+        $totTrib->appendChild($dom->createElementNS($ns, 'indTotTrib', '0'));
+        $trib->appendChild($totTrib);
+
+        $valores->appendChild($trib);
+
+        return $valores;
+    }
+
+    private function criarIbscbs(DOMDocument $dom, string $ns, array $servico)
+    {
+        $valorServicos = floatval($servico['valor_servicos'] ?? 0);
+        $valorDeducoes = floatval($servico['valor_deducoes'] ?? 0);
+        $baseCalculo = $valorServicos - $valorDeducoes;
+        if ($baseCalculo < 0) $baseCalculo = 0;
+
+        $IBSCBS = $dom->createElementNS($ns, 'IBSCBS');
+
+        $IBSCBS->appendChild($dom->createElementNS($ns, 'finNFSe', '0'));
+        $IBSCBS->appendChild($dom->createElementNS($ns, 'indFinal', '0'));
+        $IBSCBS->appendChild($dom->createElementNS($ns, 'cIndOp', '000000'));
+
+        $valores = $dom->createElementNS($ns, 'valores');
+        $valores->appendChild($dom->createElementNS($ns, 'vBC', number_format($baseCalculo, 2, '.', '')));
+
+        $uf = $dom->createElementNS($ns, 'uf');
+        $uf->appendChild($dom->createElementNS($ns, 'pIBSUF', '0.00'));
+        $uf->appendChild($dom->createElementNS($ns, 'pAliqEfetUF', '0.00'));
+        $valores->appendChild($uf);
+
+        $mun = $dom->createElementNS($ns, 'mun');
+        $mun->appendChild($dom->createElementNS($ns, 'pIBSMun', '0.00'));
+        $mun->appendChild($dom->createElementNS($ns, 'pAliqEfetMun', '0.00'));
+        $valores->appendChild($mun);
+
+        $fed = $dom->createElementNS($ns, 'fed');
+        $fed->appendChild($dom->createElementNS($ns, 'pCBS', '0.00'));
+        $fed->appendChild($dom->createElementNS($ns, 'pAliqEfetCBS', '0.00'));
+        $valores->appendChild($fed);
+
+        $IBSCBS->appendChild($valores);
+
+        return $IBSCBS;
     }
 
     /**

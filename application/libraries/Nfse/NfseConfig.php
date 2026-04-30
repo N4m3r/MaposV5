@@ -57,15 +57,27 @@ class NfseConfig
     }
 
     /**
-     * Gera ID único para DPS
-     * Formato: DPS{CNPJ}{competência}{sequencial}
+     * Gera ID único para DPS (infDPS)
+     * Formato oficial NFS-e Nacional: DPS + CodMun(7) + TpInsc(1) + InscFed(14) + Serie(5) + nDPS(15) = 45 posições
+     *
+     * @param string $cnpj CNPJ do prestador (somente números ou formatado)
+     * @param string $codMun Código IBGE do município (7 dígitos)
+     * @param int|string $serie Série da DPS (padrão 1)
+     * @param int|string $nDPS Número da DPS (deve ser único por prestador+serie)
+     * @return string Id no formato oficial
      */
-    public static function gerarIdDps($cnpj, $competencia = null)
+    public static function gerarIdDps($cnpj, $codMun = '1302603', $serie = 1, $nDPS = null)
     {
         $cnpjLimpo = preg_replace('/\D/', '', $cnpj);
-        $comp = $competencia ?: date('Ym');
-        $sequencial = str_pad(random_int(1, 999999), 6, '0', STR_PAD_LEFT);
-        return 'DPS' . $cnpjLimpo . $comp . $sequencial;
+        $cnpjLimpo = str_pad($cnpjLimpo, 14, '0', STR_PAD_LEFT);
+        $codMun = str_pad(preg_replace('/\D/', '', $codMun), 7, '0', STR_PAD_LEFT);
+        $serie = str_pad((string)$serie, 5, '0', STR_PAD_LEFT);
+        if ($nDPS === null) {
+            // Usar microtime como base para nDPS único (15 dígitos)
+            $nDPS = str_pad(substr((string)(microtime(true) * 10000), 0, 15), 15, '0', STR_PAD_LEFT);
+        }
+        $nDPS = str_pad((string)$nDPS, 15, '0', STR_PAD_LEFT);
+        return 'DPS' . $codMun . '1' . $cnpjLimpo . $serie . $nDPS;
     }
 
     /**
