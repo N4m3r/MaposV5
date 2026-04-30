@@ -182,8 +182,10 @@ class EmailQueue
 
     public function getTaxaSucesso(): float
     {
-        $total = $this->ci->db->query("SELECT COUNT(*) as total FROM {$this->table} WHERE status IN ('sent','failed')")->row();
-        $sent = $this->ci->db->query("SELECT COUNT(*) as total FROM {$this->table} WHERE status = 'sent'")->row();
+        $totalQuery = $this->ci->db->query("SELECT COUNT(*) as total FROM {$this->table} WHERE status IN ('sent','failed')");
+        $sentQuery  = $this->ci->db->query("SELECT COUNT(*) as total FROM {$this->table} WHERE status = 'sent'");
+        $total = $totalQuery ? $totalQuery->row() : null;
+        $sent  = $sentQuery ? $sentQuery->row() : null;
         if (!$total || $total->total == 0) {
             return 0.0;
         }
@@ -192,33 +194,53 @@ class EmailQueue
 
     public function getEnviadosHoje(): int
     {
-        $row = $this->ci->db->query("
+        $query = $this->ci->db->query("
             SELECT COUNT(*) as total FROM {$this->table}
             WHERE status = 'sent' AND DATE(sent_at) = CURDATE()
-        ")->row();
+        ");
+        if (!$query) {
+            return 0;
+        }
+        $row = $query->row();
         return (int) ($row->total ?? 0);
     }
 
     public function getAberturas(): int
     {
-        $row = $this->ci->db->query("
+        if (!$this->ci->db->table_exists('email_tracking')) {
+            return 0;
+        }
+        $query = $this->ci->db->query("
             SELECT COUNT(*) as total FROM email_tracking WHERE opened = 1
-        ")->row();
+        ");
+        if (!$query) {
+            return 0;
+        }
+        $row = $query->row();
         return (int) ($row->total ?? 0);
     }
 
     public function getCliques(): int
     {
-        $row = $this->ci->db->query("
+        if (!$this->ci->db->table_exists('email_tracking')) {
+            return 0;
+        }
+        $query = $this->ci->db->query("
             SELECT COUNT(*) as total FROM email_tracking WHERE clicked = 1
-        ")->row();
+        ");
+        if (!$query) {
+            return 0;
+        }
+        $row = $query->row();
         return (int) ($row->total ?? 0);
     }
 
     public function getBounceRate(): float
     {
-        $total = $this->ci->db->query("SELECT COUNT(*) as total FROM {$this->table} WHERE attempts > 0")->row();
-        $failed = $this->ci->db->query("SELECT COUNT(*) as total FROM {$this->table} WHERE status = 'failed'")->row();
+        $totalQuery = $this->ci->db->query("SELECT COUNT(*) as total FROM {$this->table} WHERE attempts > 0");
+        $failedQuery = $this->ci->db->query("SELECT COUNT(*) as total FROM {$this->table} WHERE status = 'failed'");
+        $total = $totalQuery ? $totalQuery->row() : null;
+        $failed = $failedQuery ? $failedQuery->row() : null;
         if (!$total || $total->total == 0) {
             return 0.0;
         }

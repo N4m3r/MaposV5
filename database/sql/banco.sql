@@ -622,6 +622,8 @@ CREATE TABLE IF NOT EXISTS `email_queue` (
   `template` VARCHAR(100) NULL,
   `template_data` TEXT NULL,
   `attachments` TEXT NULL,
+  `cc` TEXT NULL,
+  `bcc` TEXT NULL,
   `priority` TINYINT(1) DEFAULT 3,
   `status` ENUM('pending', 'processing', 'sent', 'failed', 'cancelled', 'scheduled') DEFAULT 'pending',
   `attempts` TINYINT(1) DEFAULT 0,
@@ -673,6 +675,17 @@ CREATE TABLE IF NOT EXISTS `email_clicks` (
   `ip_address` VARCHAR(45) NULL,
   INDEX `idx_tracking_id` (`tracking_id`),
   INDEX `idx_clicked_at` (`clicked_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- -----------------------------------------------------
+-- Table `email_blacklist`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `email_blacklist` (
+  `id` INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `email` VARCHAR(255) NOT NULL UNIQUE,
+  `motivo` VARCHAR(255) NULL,
+  `created_at` DATETIME NOT NULL,
+  INDEX `idx_email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- -----------------------------------------------------

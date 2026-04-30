@@ -372,6 +372,8 @@ class Migration_Consolidated_schema_update extends CI_Migration
             'template' => ['type' => 'VARCHAR', 'constraint' => 100, 'null' => true],
             'template_data' => ['type' => 'TEXT', 'null' => true],
             'attachments' => ['type' => 'TEXT', 'null' => true],
+            'cc' => ['type' => 'TEXT', 'null' => true],
+            'bcc' => ['type' => 'TEXT', 'null' => true],
             'priority' => ['type' => 'TINYINT', 'constraint' => 1, 'default' => 3],
             'status' => ['type' => "ENUM('pending','processing','sent','failed','cancelled','scheduled')", 'default' => 'pending'],
             'attempts' => ['type' => 'TINYINT', 'constraint' => 1, 'default' => 0],
@@ -411,6 +413,14 @@ class Migration_Consolidated_schema_update extends CI_Migration
             'url' => ['type' => 'TEXT'],
             'clicked_at' => ['type' => 'DATETIME'],
             'ip_address' => ['type' => 'VARCHAR', 'constraint' => 45, 'null' => true],
+        ], ['id']);
+
+        // --- email_blacklist ---
+        $this->_createTableIfNotExists('email_blacklist', [
+            'id' => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
+            'email' => ['type' => 'VARCHAR', 'constraint' => 255],
+            'motivo' => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true],
+            'created_at' => ['type' => 'DATETIME'],
         ], ['id']);
 
         // --- scheduled_events ---
