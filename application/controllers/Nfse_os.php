@@ -791,11 +791,9 @@ class Nfse_os extends MY_Controller
             redirect('os/visualizar/' . $boleto->os_id);
         }
 
-        // Enviar email
-        $this->load->library('email');
-        $this->email->from($this->config->item('email_smtp_user'), 'Sistema MAP-OS');
-        $this->email->to($os->email);
-        $this->email->subject('Boleto OS #' . $boleto->os_id);
+        // Enfileirar email via sistema V5
+        require_once APPPATH . 'libraries/Email/EmailQueue.php';
+        $queue = new \Libraries\Email\EmailQueue();
 
         $nomeCliente = htmlspecialchars($os->nomeCliente ?? 'Cliente', ENT_QUOTES, 'UTF-8');
         $mensagem = "Olá {$nomeCliente},\n\n";
@@ -806,16 +804,22 @@ class Nfse_os extends MY_Controller
         $mensagem .= "Caso já tenha efetuado o pagamento, desconsidere este email.\n\n";
         $mensagem .= "Atenciosamente,\nEquipe MAP-OS";
 
-        $this->email->message($mensagem);
+        $enqueueData = [
+            'to' => $os->email,
+            'subject' => 'Boleto OS #' . $boleto->os_id,
+            'body_text' => $mensagem,
+            'priority' => 2,
+        ];
 
         if ($boleto->pdf_path && file_exists($boleto->pdf_path)) {
-            $this->email->attach($boleto->pdf_path);
+            $enqueueData['attachments'] = [$boleto->pdf_path];
         }
 
-        if ($this->email->send()) {
-            $this->session->set_flashdata('success', 'Boleto enviado por email com sucesso.');
+        $id = $queue->enqueue($enqueueData);
+        if ($id > 0) {
+            $this->session->set_flashdata('success', 'Boleto enfileirado para envio por email.');
         } else {
-            $this->session->set_flashdata('error', 'Erro ao enviar email.');
+            $this->session->set_flashdata('error', 'Erro ao enfileirar email do boleto.');
         }
 
         redirect('os/visualizar/' . $boleto->os_id);

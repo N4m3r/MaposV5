@@ -1813,28 +1813,21 @@ class Mine extends CI_Controller
 
         $html = $this->load->view('conecte/emails/clientenovasenha', $dados, true);
 
-        $this->load->model('email_model');
-
         if ($emitente == null) {
             $this->session->set_flashdata(['error' => 'Cadastrar Emitente.\n\n Por favor contate o administrador do sistema.']);
 
             return redirect(base_url() . 'index.php/mine/resetarSenha');
         }
 
-        $headers = [
-            'From' => "\"$emitente->nome\" <$emitente->email>",
-            'Subject' => $assunto,
-            'Return-Path' => '',
-        ];
-        $email = [
-            'to' => $remetente,
-            'message' => $html,
-            'status' => 'pending',
-            'date' => date('Y-m-d H:i:s'),
-            'headers' => serialize($headers),
-        ];
+        require_once APPPATH . 'libraries/Email/EmailQueue.php';
+        $queue = new \Libraries\Email\EmailQueue();
 
-        return $this->email_model->add('email_queue', $email);
+        return (bool) $queue->enqueue([
+            'to' => $remetente,
+            'subject' => $assunto,
+            'body_html' => $html,
+            'priority' => 3,
+        ]);
     }
 
     private function enviarOsPorEmail($idOs, $remetentes, $assunto)
@@ -1859,23 +1852,17 @@ class Mine extends CI_Controller
 
         $html = $this->load->view('os/emails/os', $dados, true);
 
-        $this->load->model('email_model');
+        require_once APPPATH . 'libraries/Email/EmailQueue.php';
+        $queue = new \Libraries\Email\EmailQueue();
 
         $remetentes = array_unique($remetentes);
         foreach ($remetentes as $remetente) {
-            $headers = [
-                'From' => $emitente->email,
-                'Subject' => $assunto,
-                'Return-Path' => '',
-            ];
-            $email = [
+            $queue->enqueue([
                 'to' => $remetente,
-                'message' => $html,
-                'status' => 'pending',
-                'date' => date('Y-m-d H:i:s'),
-                'headers' => serialize($headers),
-            ];
-            $this->email_model->add('email_queue', $email);
+                'subject' => $assunto,
+                'body_html' => $html,
+                'priority' => 3,
+            ]);
         }
 
         return true;
@@ -1896,22 +1883,15 @@ class Mine extends CI_Controller
 
         $html = $this->load->view('os/emails/clientenovo', $dados, true);
 
-        $this->load->model('email_model');
+        require_once APPPATH . 'libraries/Email/EmailQueue.php';
+        $queue = new \Libraries\Email\EmailQueue();
 
-        $headers = [
-            'From' => "\"$emitente->nome\" <$emitente->email>",
-            'Subject' => $assunto,
-            'Return-Path' => '',
-        ];
-        $email = [
+        return (bool) $queue->enqueue([
             'to' => $remetente->email,
-            'message' => $html,
-            'status' => 'pending',
-            'date' => date('Y-m-d H:i:s'),
-            'headers' => serialize($headers),
-        ];
-
-        return $this->email_model->add('email_queue', $email);
+            'subject' => $assunto,
+            'body_html' => $html,
+            'priority' => 3,
+        ]);
     }
 
     private function enviarEmailTecnicoNotificaClienteNovo($id)
@@ -1930,22 +1910,18 @@ class Mine extends CI_Controller
         $usuarios = [];
         $usuarios = $this->usuarios_model->getAll();
 
+        require_once APPPATH . 'libraries/Email/EmailQueue.php';
+        $queue = new \Libraries\Email\EmailQueue();
+
         foreach ($usuarios as $usuario) {
             $dados['usuario'] = $usuario;
             $html = $this->load->view('os/emails/clientenovonotifica', $dados, true);
-            $headers = [
-                'From' => "\"$emitente->nome\" <$emitente->email>",
-                'Subject' => $assunto,
-                'Return-Path' => '',
-            ];
-            $email = [
+            $queue->enqueue([
                 'to' => $usuario->email,
-                'message' => $html,
-                'status' => 'pending',
-                'date' => date('Y-m-d H:i:s'),
-                'headers' => serialize($headers),
-            ];
-            $this->email_model->add('email_queue', $email);
+                'subject' => $assunto,
+                'body_html' => $html,
+                'priority' => 3,
+            ]);
         }
     }
 
@@ -2000,24 +1976,15 @@ class Mine extends CI_Controller
         </html>
         ";
 
-        $this->load->model('email_model');
+        require_once APPPATH . 'libraries/Email/EmailQueue.php';
+        $queue = new \Libraries\Email\EmailQueue();
 
-        $headers = [
-            'From' => "\"{$emitente->nome}\" <{$emitente->email}>",
-            'Subject' => $assunto,
-            'MIME-Version' => '1.0',
-            'Content-Type' => 'text/html; charset=UTF-8',
-        ];
-
-        $email = [
+        return (bool) $queue->enqueue([
             'to' => $usuario->email,
-            'message' => $mensagem,
-            'status' => 'pending',
-            'date' => date('Y-m-d H:i:s'),
-            'headers' => serialize($headers),
-        ];
-
-        return $this->email_model->add('email_queue', $email);
+            'subject' => $assunto,
+            'body_html' => $mensagem,
+            'priority' => 3,
+        ]);
     }
 
     /**

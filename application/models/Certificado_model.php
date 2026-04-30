@@ -703,7 +703,7 @@ class Certificado_model extends CI_Model
             return false;
         }
 
-        // Verificar validade do certificado
+        // Verificar validade e propriedades do certificado
         $certInfo = openssl_x509_parse($certs['cert']);
         if ($certInfo) {
             $validade = $certInfo['validTo_time_t'];
@@ -712,6 +712,51 @@ class Certificado_model extends CI_Model
                 @unlink($keyPemPath);
                 log_message('error', 'NFS-e Nacional: Certificado expirado em ' . date('Y-m-d H:i:s', $validade));
                 return ['error' => 'Certificado digital expirado em ' . date('d/m/Y', $validade)];
+            }
+
+            // Log detalhado do certificado para diagnóstico
+            $subject = $certInfo['subject'] ?? [];
+            $issuer = $certInfo['issuer'] ?? [];
+            $subjectCN = $subject['CN'] ?? 'N/A';
+            $issuerO = $issuer['O'] ?? 'N/A';
+            $issuerCN = $issuer['CN'] ?? 'N/A';
+            $keyUsage = $certInfo['extensions']['keyUsage'] ?? 'N/A';
+            $extKeyUsage = $certInfo['extensions']['extendedKeyUsage'] ?? 'N/A';
+
+            log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Certificado Subject CN=' . $subjectCN);
+            log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Certificado Issuer O=' . $issuerO . ' CN=' . $issuerCN);
+            log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Certificado KeyUsage=' . $keyUsage);
+            log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Certificado ExtendedKeyUsage=' . $extKeyUsage);
+            log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Certificado Validade=' . date('Y-m-d', $certInfo['validFrom_time_t'] ?? 0) . ' a ' . date('Y-m-d', $validade));
+            log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Certificado Serial=' . ($certInfo['serialNumber'] ?? 'N/A'));
+
+            // Validar Extended Key Usage para Client Authentication
+            $hasClientAuth = false;
+            if (!empty($extKeyUsage)) {
+                if (strpos($extKeyUsage, 'TLS Web Client Authentication') !== false ||
+                    strpos($extKeyUsage, 'Client Authentication') !== false ||
+                    strpos($extKeyUsage, '1.3.6.1.5.5.7.3.2') !== false) {
+                    $hasClientAuth = true;
+                }
+            }
+            if (!$hasClientAuth) {
+                log_message('error', 'NFS-e Nacional [ALERTA]: Certificado NÃO possui Extended Key Usage "Client Authentication". O SEFIN Nacional pode rejeitar com E4007.');
+            } else {
+                log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Certificado possui Client Authentication OK');
+            }
+        } else {
+            log_message('error', 'NFS-e Nacional [ALERTA]: Não foi possível fazer parse do certificado extraído do .pfx');
+        }
+
+        // Converter chave privada PKCS#8 para PKCS#1 se necessário
+        // Algumas versões do cURL/OpenSSL têm problemas com PKCS#8
+        $keyPem = $certs['pkey'];
+        if (strpos($keyPem, '-----BEGIN PRIVATE KEY-----') !== false) {
+            $convertedKey = $this->converterPkcs8ParaPkcs1($keyPem);
+            if ($convertedKey !== false) {
+                $keyPem = $convertedKey;
+                file_put_contents($keyPemPath, $keyPem);
+                log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Chave privada convertida de PKCS#8 para PKCS#1');
             }
         }
 
@@ -723,9 +768,10 @@ class Certificado_model extends CI_Model
             }
             // Anexar cadeia ao certificado PEM
             file_put_contents($certPemPath, "\n" . $chainPem, FILE_APPEND);
+            log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Cadeia de certificados adicionada. ' . count($certs['extracerts']) . ' certificado(s) intermediário(s)');
         }
 
-        log_message('info', 'NFS-e Nacional: Certificado PEM extraído com sucesso. CNPJ: ' . $certificado->cnpj);
+        log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Certificado PEM extraído com sucesso. CNPJ: ' . $certificado->cnpj . ' | Cert=' . $certPemPath . ' | Key=' . $keyPemPath);
 
         return [
             'cert' => $certPemPath,
@@ -753,5 +799,29 @@ class Certificado_model extends CI_Model
         if (!empty($pemPaths['key']) && file_exists($pemPaths['key'])) {
             @unlink($pemPaths['key']);
         }
+    }
+
+    /**
+     * Converte chave privada PKCS#8 para PKCS#1
+     * Algumas versões do cURL/OpenSSL têm problemas com PKCS#8
+     *
+     * @param string $pkcs8Pem Chave privada em formato PKCS#8 PEM
+     * @return string|false Chave em PKCS#1 ou false em caso de erro
+     */
+    private function converterPkcs8ParaPkcs1($pkcs8Pem)
+    {
+        $privKey = openssl_pkey_get_private($pkcs8Pem);
+        if (!$privKey) {
+            log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Falha ao ler chave PKCS#8 para conversão');
+            return false;
+        }
+
+        $success = openssl_pkey_export($privKey, $pkcs1Key);
+        if (!$success || empty($pkcs1Key)) {
+            log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Falha ao exportar chave para PKCS#1');
+            return false;
+        }
+
+        return $pkcs1Key;
     }
 }

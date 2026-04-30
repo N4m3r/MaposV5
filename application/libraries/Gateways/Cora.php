@@ -31,7 +31,6 @@ class Cora extends BasePaymentGateway
         $this->ci->load->model('vendas_model');
         $this->ci->load->model('cobrancas_model');
         $this->ci->load->model('mapos_model');
-        $this->ci->load->model('email_model');
         $this->ci->load->model('clientes_model');
         $this->ci->load->model('emitente_model');
 
@@ -659,21 +658,15 @@ class Cora extends BasePaymentGateway
             $assunto .= ' - Venda #' . $cobranca->vendas_id;
         }
 
-        $headers = [
-            'From' => $emitente->email,
-            'Subject' => $assunto,
-            'Return-Path' => '',
-        ];
+        require_once APPPATH . 'libraries/Email/EmailQueue.php';
+        $queue = new \Libraries\Email\EmailQueue();
 
-        $email = [
+        $queue->enqueue([
             'to' => $cliente->email,
-            'message' => $html,
-            'status' => 'pending',
-            'date' => date('Y-m-d H:i:s'),
-            'headers' => serialize($headers),
-        ];
-
-        $this->ci->email_model->add('email_queue', $email);
+            'subject' => $assunto,
+            'body_html' => $html,
+            'priority' => 3,
+        ]);
         log_info('Email de cobrança #' . $id . ' adicionado à fila para: ' . $cliente->email);
         $this->ci->session->set_flashdata('success', 'Email adicionado à fila de envio!');
     }

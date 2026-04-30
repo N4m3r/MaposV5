@@ -1499,20 +1499,18 @@ class Os extends MY_Controller
 
         $html = $this->load->view('os/emails/os', $dados, true);
 
-        $this->load->model('email_model');
+        require_once APPPATH . 'libraries/Email/EmailQueue.php';
+        $queue = new \Libraries\Email\EmailQueue();
 
         $remetentes = array_unique($remetentes);
         foreach ($remetentes as $remetente) {
             if ($remetente) {
-                $headers = ['From' => $emitente->email, 'Subject' => $assunto, 'Return-Path' => ''];
-                $email = [
+                $queue->enqueue([
                     'to' => $remetente,
-                    'message' => $html,
-                    'status' => 'pending',
-                    'date' => date('Y-m-d H:i:s'),
-                    'headers' => serialize($headers),
-                ];
-                $this->email_model->add('email_queue', $email);
+                    'subject' => $assunto,
+                    'body_html' => $html,
+                    'priority' => 3,
+                ]);
             } else {
                 log_info('Email não adicionado a Lista de envio de e-mails. Verifique se o remetente esta cadastrado. OS ID: ' . $idOs);
             }

@@ -19,7 +19,6 @@ class Asaas extends BasePaymentGateway
         $this->ci->load->model('vendas_model');
         $this->ci->load->model('cobrancas_model');
         $this->ci->load->model('mapos_model');
-        $this->ci->load->model('email_model');
         $this->ci->load->model('clientes_model');
 
         $asaasConfig = $this->ci->config->item('payment_gateways')['Asaas'];
@@ -75,21 +74,17 @@ class Asaas extends BasePaymentGateway
             $assunto .= ' - Venda #' . $cobranca->vendas_id;
         }
 
+        require_once APPPATH . 'libraries/Email/EmailQueue.php';
+        $queue = new \Libraries\Email\EmailQueue();
+
         $remetentes = [$cobranca->email];
         foreach ($remetentes as $remetente) {
-            $headers = [
-                'From' => $emitente->email,
-                'Subject' => $assunto,
-                'Return-Path' => '',
-            ];
-            $email = [
+            $queue->enqueue([
                 'to' => $remetente,
-                'message' => $html,
-                'status' => 'pending',
-                'date' => date('Y-m-d H:i:s'),
-                'headers' => serialize($headers),
-            ];
-            $this->ci->email_model->add('email_queue', $email);
+                'subject' => $assunto,
+                'body_html' => $html,
+                'priority' => 3,
+            ]);
         }
     }
 

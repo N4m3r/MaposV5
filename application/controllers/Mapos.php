@@ -367,48 +367,22 @@ class Mapos extends MY_Controller {
 
     public function emails()
     {
-        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cEmail')) {
-            $this->session->set_flashdata('error', 'Você não tem permissão para visualizar fila de e-mails');
-            redirect(base_url());
-        }
-
-        $this->data['menuConfiguracoes'] = 'Email';
-
-        $this->load->library('pagination');
-        $this->load->model('email_model');
-
-        $this->data['configuration']['base_url'] = site_url('mapos/emails/');
-        $this->data['configuration']['total_rows'] = $this->email_model->count('email_queue');
-
-        $this->pagination->initialize($this->data['configuration']);
-
-        $this->data['results'] = $this->email_model->get('email_queue', '*', '', $this->data['configuration']['per_page'], $this->uri->segment(3));
-
-        $this->data['view'] = 'emails/emails';
-
-        return $this->layout();
+        redirect(site_url('email/logs'));
     }
 
     public function excluirEmail()
     {
-        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cEmail')) {
-            $this->session->set_flashdata('error', 'Você não tem permissão para excluir e-mail da fila.');
-            redirect(base_url());
-        }
-
         $id = $this->input->post('id');
-        if ($id == null) {
-            $this->session->set_flashdata('error', 'Erro ao tentar excluir e-mail da fila.');
-            redirect(site_url('mapos/emails/'));
+        if ($id) {
+            require_once APPPATH . 'libraries/Email/EmailQueue.php';
+            $queue = new \Libraries\Email\EmailQueue();
+            $queue->cancel((int) $id);
+            log_info('Cancelou um e-mail da fila de envio. ID: ' . $id);
+            $this->session->set_flashdata('success', 'E-mail cancelado na fila de envio!');
+        } else {
+            $this->session->set_flashdata('error', 'Erro ao tentar cancelar e-mail da fila.');
         }
-
-        $this->load->model('email_model');
-        $this->email_model->delete('email_queue', 'id', $id);
-
-        log_info('Removeu um e-mail da fila de envio. ID: ' . $id);
-
-        $this->session->set_flashdata('success', 'E-mail removido da fila de envio!');
-        redirect(site_url('mapos/emails/'));
+        redirect(site_url('email/logs'));
     }
 
     public function configurar()

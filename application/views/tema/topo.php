@@ -236,7 +236,7 @@
             <li><a href="<?= site_url('mapos/emitente') ?>">Emitente</a></li>
             <li><a href="<?= site_url('permissoes') ?>">Permissões</a></li>
             <li><a href="<?= site_url('auditoria') ?>">Auditoria</a></li>
-            <li><a href="<?= site_url('mapos/emails') ?>">Emails</a></li>
+            <li><a href="<?= site_url('email/logs') ?>">Emails</a></li>
             <li><a href="<?= site_url('menu_backup') ?>">Backup</a></li>
           </ul>
         </li>

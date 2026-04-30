@@ -17,7 +17,6 @@ class AuthController extends CI_Controller
     {
         parent::__construct();
         $this->load->model('usuarios_model');
-        $this->load->library('email');
     }
 
     /**
