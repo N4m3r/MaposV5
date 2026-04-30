@@ -48,9 +48,14 @@ function email_queue_shutdown_handler()
         $lockFile = APPPATH . 'cache/email_queue.lock';
 
         // Le intervalo configurado no banco (default 60 segundos)
-        $ci->db->where('config', 'email_queue_interval');
-        $row = $ci->db->get('configuracoes')->row();
-        $intervalSeconds = (int) ($row->valor ?? 60);
+        $intervalSeconds = 60;
+        if ($ci->db->table_exists('configuracoes')) {
+            $query = $ci->db->where('config', 'email_queue_interval')->get('configuracoes');
+            if ($query) {
+                $row = $query->row();
+                $intervalSeconds = (int) ($row->valor ?? 60);
+            }
+        }
         if ($intervalSeconds < 10) {
             $intervalSeconds = 10; // Minimo 10 segundos
         }
@@ -84,9 +89,14 @@ function email_queue_shutdown_handler()
             $queue = new \Libraries\Email\EmailQueue();
 
             // Le batch size configurado no banco (default 3)
-            $ci->db->where('config', 'email_batch_size');
-            $row = $ci->db->get('configuracoes')->row();
-            $batchSize = (int) ($row->valor ?? 3);
+            $batchSize = 3;
+            if ($ci->db->table_exists('configuracoes')) {
+                $query = $ci->db->where('config', 'email_batch_size')->get('configuracoes');
+                if ($query) {
+                    $row = $query->row();
+                    $batchSize = (int) ($row->valor ?? 3);
+                }
+            }
             if ($batchSize < 1 || $batchSize > 50) {
                 $batchSize = 3;
             }
