@@ -339,15 +339,35 @@ function atualizarResumo() {
 }
 
 function emitirNFSeWizard() {
+    console.group('[NFS-e Wizard] Iniciando emissao');
+    console.log('Passo atual:', wizardData.currentStep);
+
     // Re-validar todos os passos antes de emitir
-    if (!validarStep(1)) return;
-    if (!validarStep(2)) return;
-    if (!validarStep(3)) return;
+    console.log('[DEBUG] Validando passo 1...');
+    if (!validarStep(1)) { console.error('[DEBUG] Validacao passo 1 FALHOU'); console.groupEnd(); return; }
+    console.log('[DEBUG] Passo 1 OK');
+
+    console.log('[DEBUG] Validando passo 2...');
+    if (!validarStep(2)) { console.error('[DEBUG] Validacao passo 2 FALHOU'); console.groupEnd(); return; }
+    console.log('[DEBUG] Passo 2 OK');
+
+    console.log('[DEBUG] Validando passo 3...');
+    if (!validarStep(3)) { console.error('[DEBUG] Validacao passo 3 FALHOU'); console.groupEnd(); return; }
+    console.log('[DEBUG] Passo 3 OK');
 
     var valor = wizardData.valorServicos || parseMoney($('#valor-servicos-wizard').val());
     var deducoes = wizardData.valorDeducoes || parseMoney($('#valor-deducoes-wizard').val());
     var descricao = $('#descricao-servico-wizard').val();
     var gerarBoleto = wizardData.gerarBoleto ? 1 : 0;
+
+    console.log('[DEBUG] Dados do wizard:', {
+        valor: valor,
+        deducoes: deducoes,
+        descricao: descricao,
+        gerarBoleto: gerarBoleto,
+        impostosResult: wizardData.impostosResult,
+        retencoes: wizardData.retencoes
+    });
 
     var msg = 'Confirmar emissao da NFS-e?\n\nRegime: Simples Nacional\nValor: ' + fmtMoney(valor);
     if (deducoes > 0) msg += '\nDeducoes: ' + fmtMoney(deducoes);
@@ -357,7 +377,7 @@ function emitirNFSeWizard() {
         if (totalRet > 0) msg += '\nRetencoes: ' + fmtMoney(totalRet);
     }
     if (gerarBoleto) msg += '\n\nBoleto sera gerado automaticamente.';
-    if (!confirm(msg)) return;
+    if (!confirm(msg)) { console.log('[DEBUG] Usuario cancelou o confirm'); console.groupEnd(); return; }
 
     var btn = $('#btn-wizard-emitir');
     btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Emitindo...');
@@ -377,14 +397,24 @@ function emitirNFSeWizard() {
     if ($('#retem-cofins').is(':checked')) { emitData.retem_cofins = 1; emitData.valor_retencao_cofins = (wizardData.retencoes || {}).valor_retencao_cofins || 0; }
     if ($('#retem-csll').is(':checked')) { emitData.retem_csll = 1; emitData.valor_retencao_csll = (wizardData.retencoes || {}).valor_retencao_csll || 0; }
     if (wizardData.retencoes && wizardData.retencoes.valor_total_retencao) emitData.valor_total_retencao = wizardData.retencoes.valor_total_retencao;
-    Object.assign(emitData, getCsrfToken());
+
+    var csrf = getCsrfToken();
+    console.log('[DEBUG] CSRF token obtido:', csrf);
+    Object.assign(emitData, csrf);
+
+    var url = '<?= site_url("nfse_os/emitir_nfse_api/" . $result->idOs) ?>';
+    console.log('[DEBUG] URL da requisicao:', url);
+    console.log('[DEBUG] Payload completo:', emitData);
+    console.log('[DEBUG] Enviando requisicao AJAX...');
 
     $.ajax({
-        url: '<?= site_url("nfse_os/emitir_nfse_api/" . $result->idOs) ?>',
+        url: url,
         type: 'POST',
         data: emitData,
         dataType: 'json',
         success: function(response) {
+            console.log('[DEBUG] Resposta AJAX recebida (sucesso):', response);
+            console.log('[DEBUG] HTTP status: 200');
             updateCsrfToken(response);
             if (response.success) {
                 var nfseId = response.nfse_id || response.id;
@@ -414,15 +444,30 @@ function emitirNFSeWizard() {
                     alert(msg); location.reload();
                 }
             } else {
+                console.error('[DEBUG] Resposta da API indicou erro:', response);
                 alert('Erro: ' + (response.message || response.error || 'Erro desconhecido'));
                 btn.prop('disabled', false).html('<i class="fas fa-check-circle"></i> Emitir NFS-e (API Nacional)');
             }
+            console.groupEnd();
         },
-        error: function(xhr) {
+        error: function(xhr, status, error) {
+            console.error('[DEBUG] Erro na comunicacao AJAX');
+            console.error('[DEBUG] Status HTTP:', xhr.status);
+            console.error('[DEBUG] Status texto:', status);
+            console.error('[DEBUG] Erro:', error);
+            console.error('[DEBUG] Response Text (raw):', xhr.responseText);
+            console.error('[DEBUG] Response Headers:', xhr.getAllResponseHeaders());
             var msg = 'Erro na comunicacao.';
-            try { var r = JSON.parse(xhr.responseText); msg = r.message || r.error || msg; } catch(e){}
+            try {
+                var r = JSON.parse(xhr.responseText);
+                console.log('[DEBUG] Response JSON parseado:', r);
+                msg = r.message || r.error || msg;
+            } catch(e) {
+                console.error('[DEBUG] Response nao e JSON valido. Texto bruto exibido acima.');
+            }
             alert(msg);
             btn.prop('disabled', false).html('<i class="fas fa-check-circle"></i> Emitir NFS-e (API Nacional)');
+            console.groupEnd();
         }
     });
 }

@@ -306,7 +306,11 @@ class EmailQueue
         if (!$this->ci->db->table_exists('email_blacklist')) {
             return [];
         }
-        return $this->ci->db->get('email_blacklist')->result() ?? [];
+        $query = $this->ci->db->get('email_blacklist');
+        if (!$query) {
+            return [];
+        }
+        return $query->result() ?? [];
     }
 
     /**

@@ -596,6 +596,7 @@ CREATE  TABLE IF NOT EXISTS `emitente` (
   `nome` VARCHAR(255) NULL ,
   `cnpj` VARCHAR(45) NULL ,
   `ie` VARCHAR(50) NULL ,
+  `inscricao_municipal` VARCHAR(50) NULL ,
   `rua` VARCHAR(70) NULL ,
   `numero` VARCHAR(15) NULL ,
   `bairro` VARCHAR(45) NULL ,

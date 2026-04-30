@@ -288,6 +288,9 @@ class Migration_Consolidated_schema_update extends CI_Migration
             $this->_addColumnIfNotExists('emitente', 'cep', [
                 'type' => 'VARCHAR', 'constraint' => 20, 'null' => true
             ]);
+            $this->_addColumnIfNotExists('emitente', 'inscricao_municipal', [
+                'type' => 'VARCHAR', 'constraint' => 50, 'null' => true
+            ]);
         }
 
         // --- fotos_atendimento ---
