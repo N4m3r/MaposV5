@@ -27,7 +27,7 @@ class NotificacoesConfig extends MY_Controller
             'whatsapp_provedor' => 'evolution',
             'whatsapp_ativo' => 1,
             'evolution_url' => 'https://evo.jj-ferreiras.com.br',
-            'evolution_url_interna' => 'http://127.0.0.1:8091',
+            'evolution_url_interna' => '',
             'evolution_apikey' => '7bd8a76492e92f7e0e4bad14d42eeb0e889e2cfdcd7c8f0ce9b4e1e6607935e2',
             'evolution_instance' => 'Mapos',
             'evolution_estado' => 'desconectado',

@@ -93,15 +93,6 @@ class WhatsAppService
         $allHeaders = array_merge($defaultHeaders, $headers);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $allHeaders);
 
-        // Se URL interna configurada, forca resolucao local via CURLOPT_RESOLVE
-        if (!empty($this->config->evolution_url_interna)) {
-            $host = parse_url($url, PHP_URL_HOST);
-            $port = parse_url($url, PHP_URL_PORT) ?: (parse_url($url, PHP_URL_SCHEME) === 'https' ? 443 : 80);
-            $ip = parse_url($this->config->evolution_url_interna, PHP_URL_HOST) ?: '127.0.0.1';
-            curl_setopt($ch, CURLOPT_RESOLVE, [$host . ':' . $port . ':' . $ip]);
-            $this->addDebug('info', 'CURLOPT_RESOLVE: ' . $host . ' -> ' . $ip . ':' . $port);
-        }
-
         if ($method === 'POST') {
             curl_setopt($ch, CURLOPT_POST, true);
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data, JSON_UNESCAPED_UNICODE));
