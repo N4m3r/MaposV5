@@ -65,9 +65,13 @@ class XmlSigner
             return false;
         }
 
-        $idDps = $rootElement->getAttribute('id');
+        $idDps = $rootElement->getAttribute('Id');
         if (empty($idDps)) {
-            // Tentar encontrar id no infDps
+            // Fallback: tentar id minúsculo (compatibilidade)
+            $idDps = $rootElement->getAttribute('id');
+        }
+        if (empty($idDps)) {
+            // Tentar encontrar Id no infDps
             $infDpsList = $dom->getElementsByTagNameNS('http://www.sped.fazenda.gov.br/nfse', 'infDps');
             if ($infDpsList->length > 0) {
                 $idDps = $infDpsList->item(0)->getAttribute('Id');
@@ -154,26 +158,13 @@ class XmlSigner
         // X509Data
         $x509Data = $dom->createElement('X509Data');
 
-        // Extrair certificado X509 em base64
+        // Extrair certificado X509 em base64 (apenas o primeiro = signatário)
         $x509Cert = '';
         openssl_x509_export($certContent, $x509Cert);
         // Remover headers/footers e quebras de linha
-        $x509Cert = preg_replace('/-----BEGIN CERTIFICATE-----/', '', $x509Cert);
-        $x509Cert = preg_replace('/-----END CERTIFICATE-----/', '', $x509Cert);
+        $x509Cert = str_replace('-----BEGIN CERTIFICATE-----', '', $x509Cert);
+        $x509Cert = str_replace('-----END CERTIFICATE-----', '', $x509Cert);
         $x509Cert = preg_replace('/\s+/', '', $x509Cert);
-
-        // Pegar apenas o primeiro certificado (o do signatário)
-        // Se houver cadeia, o primeiro é o certificado do signatário
-        $certArray = preg_split('/-----END CERTIFICATE-----/', $certContent);
-        if (count($certArray) > 1) {
-            // Re-extrair apenas o primeiro certificado
-            $firstCert = $certArray[0] . '-----END CERTIFICATE-----';
-            $x509CertClean = '';
-            openssl_x509_export($firstCert, $x509CertClean);
-            $x509Cert = preg_replace('/-----BEGIN CERTIFICATE-----/', '', $x509CertClean);
-            $x509Cert = preg_replace('/-----END CERTIFICATE-----/', '', $x509Cert);
-            $x509Cert = preg_replace('/\s+/', '', $x509Cert);
-        }
 
         $x509CertElement = $dom->createElement('X509Certificate', $x509Cert);
         $x509Data->appendChild($x509CertElement);

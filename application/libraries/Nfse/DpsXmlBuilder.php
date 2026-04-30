@@ -44,7 +44,7 @@ class DpsXmlBuilder
         $dps = $dom->createElementNS('http://www.sped.fazenda.gov.br/nfse', 'dps');
         $dps->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
         $dps->setAttribute('versao', $this->versaoDps);
-        $dps->setAttribute('id', $idDps);
+        $dps->setAttribute('Id', $idDps);
         $dom->appendChild($dps);
 
         // infDps

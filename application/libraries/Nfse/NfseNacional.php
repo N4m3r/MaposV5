@@ -1,6 +1,8 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+require_once __DIR__ . '/NfseConfig.php';
+
 /**
  * NFS-e Nacional: Cliente API
  * Comunicação com o Sistema Nacional NFS-e via REST/JSON com mTLS
@@ -329,7 +331,14 @@ class NfseNacional
 
         // Payload
         if ($data !== null && in_array($method, ['POST', 'PUT', 'PATCH'])) {
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+            $jsonPayload = json_encode($data);
+            if ($jsonPayload === false) {
+                log_message('error', 'NFS-e Nacional: Erro ao codificar payload JSON: ' . json_last_error_msg());
+                curl_close($ch);
+                return false;
+            }
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonPayload);
+            log_message('info', 'NFS-e Nacional: Payload JSON (tamanho=' . strlen($jsonPayload) . ')');
         }
 
         // Log da requisição

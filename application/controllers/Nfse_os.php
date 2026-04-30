@@ -1187,9 +1187,9 @@ class Nfse_os extends MY_Controller
             $this->config->load('nfse_nacional', true);
             $nfseConfig = $this->config->item('nfse_nacional');
 
-            $this->load->library('Nfse/NfseNacional');
             $this->load->library('Nfse/XmlSigner');
 
+            require_once APPPATH . 'libraries/Nfse/NfseNacional.php';
             $caPath = $this->getValidCaPath($nfseConfig);
             $configApi = [
                 'ambiente' => $nfse->ambiente ?? 'homologacao',
