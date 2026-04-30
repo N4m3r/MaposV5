@@ -66,6 +66,10 @@ class NfseNacional
 
         $url = $this->baseUrl . 'nfse';
 
+        log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: XML DPS tamanho=' . strlen($xmlDps) . ' | GZip=' . strlen($xmlGzipped) . ' | Base64=' . strlen($xmlBase64));
+        log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: URL=' . $url . ' | CNPJ=' . $this->cnpj . ' | Ambiente=' . $this->ambiente);
+        log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Cert PEM=' . $this->certPemPath . ' | Key PEM=' . $this->keyPemPath);
+
         $response = $this->sendRequest('POST', $url, $payload);
 
         if ($response === false) {
@@ -91,12 +95,44 @@ class NfseNacional
             ];
         }
 
+        // Se retornou 404, tentar payload alternativo (sem GZip, apenas Base64)
+        if ($httpCode === 404) {
+            log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Tentativa 1 falhou com 404. Tentando payload sem GZip...');
+            $xmlBase64Raw = base64_encode($xmlDps);
+            $payloadRaw = [
+                'cpfCnpj' => $this->cnpj,
+                'dps' => [
+                    'xml' => $xmlBase64Raw,
+                ],
+            ];
+            $response2 = $this->sendRequest('POST', $url, $payloadRaw);
+            if ($response2 !== false && isset($response2['httpCode']) && $response2['httpCode'] === 201) {
+                $data = $response2['body'] ?? [];
+                return [
+                    'success' => true,
+                    'chave_acesso' => $data['chaveAcesso'] ?? $data['chave_acesso'] ?? '',
+                    'numero' => $data['numero'] ?? $data['nNFSe'] ?? '',
+                    'protocolo' => $data['protocolo'] ?? '',
+                    'data_emissao' => $data['dataHoraEmissao'] ?? $data['data_emissao'] ?? '',
+                    'url_danfe' => $data['urlDanfe'] ?? $data['url_danfe'] ?? '',
+                    'xml_nfse' => $data['xmlNfse'] ?? $data['xml_nfse'] ?? '',
+                    'codigo_verificacao' => $data['codigoVerificacao'] ?? $data['codigo_verificacao'] ?? '',
+                    'data' => $data,
+                ];
+            }
+            if ($response2 !== false) {
+                $httpCode = $response2['httpCode'] ?? 0;
+                $body = $response2['body'] ?? null;
+                log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Tentativa 2 (sem GZip) HTTP=' . $httpCode . ' Body=' . (is_string($body) ? substr($body, 0, 2000) : json_encode($body)));
+            }
+        }
+
         // Erro na emissão
         $errorMsg = 'Erro ao emitir NFS-e';
         $httpCode = $response['httpCode'] ?? 0;
         $body = $response['body'] ?? null;
 
-        log_message('info', 'NFS-e Nacional: Erro na emissão. HTTP=' . $httpCode . ' Body=' . (is_string($body) ? $body : json_encode($body)));
+        log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Erro na emissão final. HTTP=' . $httpCode . ' Body=' . (is_string($body) ? substr($body, 0, 2000) : json_encode($body)));
 
         if (is_string($body)) {
             $errorMsg .= ': ' . substr($body, 0, 500);
@@ -338,11 +374,11 @@ class NfseNacional
                 return false;
             }
             curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonPayload);
-            log_message('info', 'NFS-e Nacional: Payload JSON (tamanho=' . strlen($jsonPayload) . ')');
+            log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Payload JSON tamanho=' . strlen($jsonPayload));
         }
 
         // Log da requisição
-        log_message('info', 'NFS-e Nacional: ' . $method . ' ' . $url);
+        log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Enviando ' . $method . ' ' . $url);
 
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -375,7 +411,7 @@ class NfseNacional
             }
         }
 
-        log_message('info', 'NFS-e Nacional: Resposta HTTP ' . $httpCode);
+        log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Resposta HTTP ' . $httpCode . ' | Body tipo=' . gettype($decoded) . ' | Body tamanho=' . (is_string($decoded) ? strlen($decoded) : (is_array($decoded) ? count($decoded) : 'n/a')));
 
         return [
             'httpCode' => $httpCode,
