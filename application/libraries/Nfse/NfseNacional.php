@@ -382,9 +382,6 @@ class NfseNacional
         $curlVersion = curl_version();
         log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: cURL version=' . ($curlVersion['version'] ?? 'N/A') . ' | SSL=' . ($curlVersion['ssl_version'] ?? 'N/A'));
 
-        // Diagnóstico: testar handshake TLS com openssl s_client
-        $this->diagnosticarHandshakeTls($url, $this->certPemPath, $this->keyPemPath);
-
         $resultado = $this->sendRequestCurl($method, $url, $data, $this->certPemPath, $this->keyPemPath);
 
         if ($this->isErroCertificadoNaoObtido($resultado)) {
@@ -680,41 +677,6 @@ class NfseNacional
      * Extrai apenas o certificado end-entity (primeiro certificado) do arquivo PEM
      * Útil quando o cURL envia o certificado errado ao ter múltiplos no arquivo
      */
-    /**
-     * Diagnostica handshake TLS usando openssl s_client
-     */
-    private function diagnosticarHandshakeTls($url, $certPath, $keyPath)
-    {
-        $parsed = parse_url($url);
-        $host = $parsed['host'] ?? '';
-        $port = $parsed['port'] ?? 443;
-        if (empty($host)) return;
-
-        $cmd = 'echo "Q" | openssl s_client -connect ' . escapeshellarg($host . ':' . $port) .
-               ' -cert ' . escapeshellarg($certPath) .
-               ' -key ' . escapeshellarg($keyPath) .
-               ' -tls1_2 -showcerts 2>&1 | head -n 80';
-
-        $output = shell_exec($cmd);
-        if (!empty($output)) {
-            log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: openssl s_client output:\n' . $output);
-        }
-
-        // Testar apenas com o certificado end-entity
-        $endEntity = $this->extrairEndEntityPem($certPath);
-        if ($endEntity) {
-            $cmd2 = 'echo "Q" | openssl s_client -connect ' . escapeshellarg($host . ':' . $port) .
-                    ' -cert ' . escapeshellarg($endEntity) .
-                    ' -key ' . escapeshellarg($keyPath) .
-                    ' -tls1_2 2>&1 | head -n 80';
-            $output2 = shell_exec($cmd2);
-            if (!empty($output2)) {
-                log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: openssl s_client (end-entity only) output:\n' . $output2);
-            }
-            @unlink($endEntity);
-        }
-    }
-
     private function extrairEndEntityPem($certPemPath)
     {
         $content = file_get_contents($certPemPath);
