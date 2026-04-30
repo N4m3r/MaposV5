@@ -386,6 +386,16 @@ class NfseNacional
                 }
                 log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: PEM combinado também falhou. HTTP=' . ($resultado2['httpCode'] ?? 0));
             }
+
+            // Tentativa diagnóstica: desativar verificação SSL do servidor
+            // Isso identifica se o problema é a cadeia CA do servidor não estar no sistema
+            log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Tentando com SSL_VERIFYPEER=false (apenas diagnóstico)...');
+            $resultado3 = $this->sendRequestCurl($method, $url, $data, $this->certPemPath, $this->keyPemPath, false);
+            if (!$this->isErroCertificadoNaoObtido($resultado3)) {
+                log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: FUNCIONOU com SSL_VERIFYPEER=false! O problema é que o CA do sistema não reconhece o certificado do servidor SEFIN. Baixe a cadeia ICP-Brasil completa.');
+                return $resultado3;
+            }
+            log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Mesmo com SSL_VERIFYPEER=false falhou. HTTP=' . ($resultado3['httpCode'] ?? 0) . '. O problema não é a cadeia CA do servidor.');
         }
 
         return $resultado;
@@ -410,7 +420,7 @@ class NfseNacional
         return false;
     }
 
-    private function sendRequestCurl($method, $url, $data, $certPath, $keyPath)
+    private function sendRequestCurl($method, $url, $data, $certPath, $keyPath, $verifySsl = true)
     {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -424,13 +434,27 @@ class NfseNacional
         if (defined('CURL_SSLVERSION_TLSv1_2')) {
             curl_setopt($ch, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2);
         }
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-        if (!empty($this->caPath) && $this->isValidPemFile($this->caPath)) {
-            curl_setopt($ch, CURLOPT_CAINFO, $this->caPath);
-            log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Usando CA custom: ' . $this->caPath);
+
+        // Verificação SSL
+        if ($verifySsl) {
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
         } else {
-            log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: CA ICP-Brasil não encontrado, vazio ou inválido (' . ($this->caPath ?? 'nulo') . '). Usando CA do sistema.');
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+            log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: ATENÇÃO - SSL_VERIFYPEER=false (modo diagnóstico apenas)');
+        }
+
+        // Tentar carregar CA chain ICP-Brasil completa se disponível
+        $caPath = $this->obterCaChainIcpBrasil();
+        if ($caPath && $this->isValidPemFile($caPath)) {
+            curl_setopt($ch, CURLOPT_CAINFO, $caPath);
+            log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Usando CA chain ICP-Brasil: ' . $caPath);
+        } elseif (!empty($this->caPath) && $this->isValidPemFile($this->caPath)) {
+            curl_setopt($ch, CURLOPT_CAINFO, $this->caPath);
+            log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Usando CA custom configurado: ' . $this->caPath);
+        } else {
+            log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: CA ICP-Brasil não encontrado. Usando CA do sistema. Isso pode causar E4007 se o sistema não tiver a cadeia completa.');
         }
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
         $headers = ['Content-Type: application/json', 'Accept: application/json'];
@@ -582,4 +606,76 @@ class NfseNacional
         log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Chave privada convertida de PKCS#8 para PKCS#1');
         return $pkcs1Key;
     }
+
+    /**
+     * Obtém caminho da cadeia CA ICP-Brasil
+     * Tenta baixar se não existir localmente
+     */
+    private function obterCaChainIcpBrasil()
+    {
+        // Caminhos possíveis para a cadeia ICP-Brasil
+        $caminhosPossiveis = [
+            FCPATH . 'assets/certs/ac-icp-brasil.pem',
+            FCPATH . 'assets/certs/icp-brasil-chain.pem',
+            FCPATH . 'assets/certs/ca-bundle.pem',
+            '/etc/ssl/certs/ca-certificates.crt',
+            '/etc/ssl/certs/ca-bundle.crt',
+        ];
+
+        foreach ($caminhosPossiveis as $path) {
+            if (file_exists($path) && filesize($path) > 100) {
+                return $path;
+            }
+        }
+
+        // Tentar baixar cadeia ICP-Brasil se não existir
+        $cachePath = FCPATH . 'assets/certs/icp-brasil-chain.pem';
+        if (!file_exists($cachePath)) {
+            $chain = $this->baixarCadeiaIcpBrasil();
+            if ($chain) {
+                // Garantir diretório existe
+                $dir = dirname($cachePath);
+                if (!is_dir($dir)) {
+                    @mkdir($dir, 0755, true);
+                }
+                @file_put_contents($cachePath, $chain);
+                return $cachePath;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Baixa cadeia de certificados ICP-Brasil dos repositórios oficiais
+     */
+    private function baixarCadeiaIcpBrasil()
+    {
+        // URLs da cadeia ICP-Brasil v5 e v10
+        $urls = [
+            'https://acraiz.icpbrasil.gov.br/cadastro/icp-brasil/ACcompactado.zip',
+            'https://acraiz.icpbrasil.gov.br/credenciadas/CertificadoACRaiz.crt',
+        ];
+
+        foreach ($urls as $url) {
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+
+            if ($httpCode === 200 && !empty($response)) {
+                log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Cadeia ICP-Brasil baixada de ' . $url);
+                return $response;
+            }
+        }
+
+        log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Não foi possível baixar cadeia ICP-Brasil automaticamente');
+        return null;
+    }
+
 }

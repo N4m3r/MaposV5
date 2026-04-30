@@ -865,6 +865,26 @@ class Certificado_model extends CI_Model
             log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Cadeia de certificados adicionada. ' . count($certs['extracerts']) . ' certificado(s) intermediário(s)');
         }
 
+        // Verificar se o arquivo cert.pem contém pelo menos 2 certificados (end-entity + cadeia)
+        // Se não tiver, tentar baixar/build cadeia ICP-Brasil
+        $certFileContent = file_get_contents($certPemPath);
+        $certCount = substr_count($certFileContent, '-----BEGIN CERTIFICATE-----');
+        log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Total de certificados no arquivo PEM=' . $certCount);
+
+        if ($certCount < 2) {
+            log_message('error', 'NFS-e Nacional [ALERTA]: Arquivo cert.pem contém apenas 1 certificado. A cadeia pode estar incompleta. O SEFIN Nacional pode rejeitar com E4007.');
+        } else {
+            log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Arquivo cert.pem contém ' . $certCount . ' certificados (end-entity + cadeia)');
+        }
+
+        // Validar que certificado e chave formam um par válido
+        $pairValid = openssl_x509_check_private_key($certs['cert'], $keyPem);
+        if ($pairValid === false) {
+            log_message('error', 'NFS-e Nacional [ALERTA]: Certificado e chave privada NÃO formam um par válido segundo openssl_x509_check_private_key');
+        } else {
+            log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Par certificado/chave validado com sucesso');
+        }
+
         log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Certificado PEM extraído com sucesso. CNPJ: ' . $certificado->cnpj . ' | Cert=' . $certPemPath . ' | Key=' . $keyPemPath);
 
         return [
