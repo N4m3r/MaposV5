@@ -142,15 +142,15 @@ if (!function_exists('fmtDoc')) {
                             <i class="fas fa-print"></i> Imprimir Original
                         </a>
                     <?php endif; ?>
-                    <?php if ($nfse_atual->xml_path): ?>
-                        <a href="<?= base_url(htmlspecialchars($nfse_atual->xml_path, ENT_QUOTES, 'UTF-8')) ?>" target="_blank" class="btn btn-info" style="background:#52459f; border-color:#52459f">
-                            <i class="fas fa-file-code"></i> Download XML
-                        </a>
-                    <?php endif; ?>
                     <?php if (!empty($nfse_atual->chave_acesso)): ?>
                         <button type="button" class="btn btn-info" style="background:#52459f; border-color:#52459f" onclick="consultarNFSeNacional(<?= $nfse_atual->id ?>)">
                             <i class="fas fa-sync-alt"></i> Consultar
                         </button>
+                    <?php endif; ?>
+                    <?php if (!empty($nfse_atual->xml_dps) || !empty($nfse_atual->xml_nfse)): ?>
+                        <a href="<?= site_url('nfse_os/download_xml/' . $nfse_atual->id) ?>" class="btn btn-info" style="background:#52459f; border-color:#52459f">
+                            <i class="fas fa-file-code"></i> Download XML
+                        </a>
                     <?php endif; ?>
                     <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eNFSe') && $nfse_atual->situacao != 'Cancelada'): ?>
                         <?php if (!empty($nfse_atual->chave_acesso)): ?>

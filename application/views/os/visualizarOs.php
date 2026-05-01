@@ -71,9 +71,11 @@
                     <?php endif; ?>
 
                     <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cDocOs')): ?>
+                        <?php if (!isset($nfse_atual) || !in_array($nfse_atual->situacao ?? '', ['Emitida', 'Pendente'])): ?>
                         <a href="#modal-vincular-nfse" id="btn-vincular-nfse" role="button" data-toggle="modal" class="button btn btn-mini btn-success">
                             <span class="button__icon"><i class='bx bx-link'></i></span><span class="button__text">Vincular NFS-e</span>
                         </a>
+                        <?php endif; ?>
                     <?php endif; ?>
 
                     <?php

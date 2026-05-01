@@ -1215,7 +1215,6 @@ class Nfse_os extends MY_Controller
                         'codigo_verificacao' => $resultado['codigo_verificacao'] ?? '',
                         'protocolo' => $resultado['protocolo'] ?? '',
                         'link_impressao' => $resultado['url_danfe'] ?? '',
-                        'xml_path' => null,
                     ];
 
                     $this->nfse_emitida_model->confirmarEmissaoApi($emitirResult['nfse_id'], $dadosConfirmar, $xmlAssinado, $resultado['xml_nfse'] ?? '');
@@ -1247,6 +1246,110 @@ class Nfse_os extends MY_Controller
             }
             echo json_encode(['success' => false, 'message' => 'Erro interno: ' . $e->getMessage()]);
         }
+    }
+
+    /**
+     * Download XML DPS de NFS-e (direto do banco de dados)
+     */
+    public function download_xml($nfse_id = null)
+    {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vNFSe')) {
+            $this->session->set_flashdata('error', 'Sem permissão.');
+            redirect(base_url());
+        }
+
+        if (!$nfse_id) {
+            $this->session->set_flashdata('error', 'ID da NFS-e não informado.');
+            redirect(base_url());
+        }
+
+        $nfse = $this->nfse_emitida_model->getById($nfse_id);
+        if (!$nfse) {
+            $this->session->set_flashdata('error', 'NFS-e não encontrada.');
+            redirect(base_url());
+        }
+
+        $xmlContent = '';
+
+        // 1) Tentar xml_nfse (XML de retorno da API — mais completo)
+        if (!empty($nfse->xml_nfse)) {
+            $xmlContent = $nfse->xml_nfse;
+        }
+        // 2) Fallback para xml_dps (XML DPS assinado enviado)
+        elseif (!empty($nfse->xml_dps)) {
+            $xmlContent = $nfse->xml_dps;
+        }
+
+        if (empty($xmlContent)) {
+            $this->session->set_flashdata('error', 'XML da NFS-e não disponível no banco de dados.');
+            redirect(base_url());
+        }
+
+        $fileName = 'NFSe_' . ($nfse->numero_nfse ?: $nfse_id) . '_OS_' . ($nfse->os_id ?: '') . '.xml';
+
+        header('Content-Type: application/xml; charset=utf-8');
+        header('Content-Disposition: attachment; filename="' . $fileName . '"');
+        header('Content-Length: ' . strlen($xmlContent));
+        echo $xmlContent;
+        exit;
+    }
+
+    /**
+     * Reprocessar XMLs de NFS-e já emitidas
+     * Percorre notas com xml_dps no banco e xml_path vazio,
+     * salva o XML em disco e atualiza o registro para download.
+     */
+    public function reprocessar_xmls_nfse()
+    {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'eNFSe')) {
+            $this->session->set_flashdata('error', 'Sem permissão.');
+            redirect(base_url());
+        }
+
+        $this->load->model('nfse_emitida_model');
+
+        $uploadDir = FCPATH . 'assets/uploads/nfse/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+
+        // Buscar todas as NFSe com xml_dps preenchido e xml_path vazio/null
+        $this->db->where('xml_dps IS NOT NULL');
+        $this->db->where("xml_dps !=", '');
+        $this->db->group_start();
+        $this->db->where('xml_path IS NULL');
+        $this->db->or_where("xml_path", '');
+        $this->db->group_end();
+        $query = $this->db->get('os_nfse_emitida');
+        $notas = $query ? $query->result() : [];
+
+        $atualizadas = 0;
+        $erros = 0;
+
+        foreach ($notas as $nfse) {
+            $identificador = $nfse->chave_acesso ?: $nfse->id;
+            $xmlFileName = 'nfse_' . $identificador . '.xml';
+            $xmlFullPath = $uploadDir . $xmlFileName;
+
+            $xmlContent = $nfse->xml_dps;
+
+            if (file_put_contents($xmlFullPath, $xmlContent) !== false) {
+                $this->db->where('id', $nfse->id);
+                $this->db->update('os_nfse_emitida', [
+                    'xml_path' => 'assets/uploads/nfse/' . $xmlFileName,
+                    'updated_at' => date('Y-m-d H:i:s')
+                ]);
+                $atualizadas++;
+            } else {
+                $erros++;
+                log_message('error', 'NFS-e reprocessar_xmls: falha ao salvar XML em disco para NFSe ID=' . $nfse->id);
+            }
+        }
+
+        $this->session->set_flashdata('success',
+            'Reprocessamento concluído. ' . $atualizadas . ' XML(s) salvo(s) em disco. ' . ($erros > 0 ? $erros . ' erro(s).' : '')
+        );
+        redirect('nfse_os');
     }
 
     /**
