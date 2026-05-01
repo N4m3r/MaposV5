@@ -866,29 +866,47 @@ class Nfse_os extends MY_Controller
     // ==================== API NFS-e NACIONAL ====================
 
     /**
-     * Retorna o próximo número sequencial da DPS
-     * Busca o maior n_dps na tabela os_nfse_emitida e incrementa
+     * Retorna o próximo número sequencial da DPS formatado com 15 dígitos
+     * O schema SEFIN exige nDPS de 15 dígitos sem zeros à esquerda no XML,
+     * e o Id do infDPS deve ter exatamente 45 caracteres (nDPS com 15 dígitos).
+     * Formato: 1 + número sequencial preenchido com zeros até 14 dígitos = 15 total.
+     * Ex: 1 → 100000000000001, 2 → 100000000000002
      */
     private function getProximoNumeroDps()
     {
         try {
             if (!$this->db->table_exists('os_nfse_emitida')) {
-                return 1;
+                return $this->formatarNDps(1);
             }
 
             if (!$this->db->field_exists('n_dps', 'os_nfse_emitida')) {
-                return 1;
+                return $this->formatarNDps(1);
             }
 
             $sql = "SELECT MAX(CAST(n_dps AS UNSIGNED)) as max_n_dps FROM os_nfse_emitida WHERE n_dps IS NOT NULL AND n_dps != ''";
             $query = $this->db->query($sql);
             $maxNDps = intval($query->row()->max_n_dps ?? 0);
 
-            return $maxNDps + 1;
+            return $this->formatarNDps($maxNDps + 1);
         } catch (Exception $e) {
             log_message('error', 'NFS-e Nacional: Erro ao obter próximo n_dps: ' . $e->getMessage());
-            return 1;
+            return $this->formatarNDps(1);
         }
+    }
+
+    /**
+     * Formata número da DPS para 15 dígitos sem zeros à esquerda
+     * O schema TSNumDPS exige ^[1-9]\d{0,14}$ e o Id TSIdDPS exige 45 chars.
+     */
+    private function formatarNDps($numero)
+    {
+        $str = (string)$numero;
+        // Se já tem 15 dígitos e não começa com zero, usar como está
+        if (strlen($str) === 15 && $str[0] !== '0') {
+            return $str;
+        }
+        // Prefixo 1 + número preenchido com zeros até 14 dígitos = 15 total
+        return '1' . str_pad($str, 14, '0', STR_PAD_LEFT);
     }
 
     /**
