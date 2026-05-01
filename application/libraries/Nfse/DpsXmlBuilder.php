@@ -167,6 +167,12 @@ class DpsXmlBuilder
         $regTrib = $dom->createElementNS($ns, 'regTrib');
         $opSimpNac = ($tributacao['optante_simples'] ?? true) ? '1' : '2';
         $regTrib->appendChild($dom->createElementNS($ns, 'opSimpNac', $opSimpNac));
+        // regApTribSN: obrigatório quando opSimpNac=1 (Simples Nacional)
+        // 1=Excesso sublimite, 2=Enquadramento Anexos, 3=Fixo, 4=Anexo VI
+        if ($opSimpNac === '1') {
+            $regApTribSN = $tributacao['reg_ap_trib_sn'] ?? '2';
+            $regTrib->appendChild($dom->createElementNS($ns, 'regApTribSN', $regApTribSN));
+        }
         $regTrib->appendChild($dom->createElementNS($ns, 'regEspTrib', $tributacao['regime_especial'] ?? '0'));
         $prest->appendChild($regTrib);
 
@@ -374,7 +380,14 @@ class DpsXmlBuilder
 
         // Totais aproximados (obrigatório)
         $totTrib = $dom->createElementNS($ns, 'totTrib');
-        $totTrib->appendChild($dom->createElementNS($ns, 'indTotTrib', '0'));
+        // Para optantes pelo Simples Nacional, usar pTotTribSN (percentual total tributos SN)
+        // em vez de indTotTrib, conforme layout oficial SEFIN
+        $optanteSimples = ($tributacao['optante_simples'] ?? true);
+        if ($optanteSimples && !empty($tributacao['aliquota_nominal'])) {
+            $totTrib->appendChild($dom->createElementNS($ns, 'pTotTribSN', number_format(floatval($tributacao['aliquota_nominal']), 2, '.', '')));
+        } else {
+            $totTrib->appendChild($dom->createElementNS($ns, 'indTotTrib', '0'));
+        }
         $trib->appendChild($totTrib);
 
         $valores->appendChild($trib);

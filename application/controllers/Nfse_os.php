@@ -1102,6 +1102,8 @@ class Nfse_os extends MY_Controller
                 'regime_especial' => $nfseConfig['nfse_regime_especial'] ?? '0',
                 'incentivador_cultural' => $nfseConfig['nfse_incentivador_cultural'] ?? '0',
                 'aliquota_iss' => floatval($this->impostos_model->getConfig('IMPOSTO_ISS_MUNICIPAL') ?: 5.00),
+                'aliquota_nominal' => $calculo['aliquota_nominal'] ?? 6.00,
+                'reg_ap_trib_sn' => '2', // 2=Enquadramento nas alíquotas dos Anexos I, II, III, IV ou V
             ];
 
             // Competência
