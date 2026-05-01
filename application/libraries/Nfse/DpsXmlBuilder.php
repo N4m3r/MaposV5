@@ -138,8 +138,13 @@ class DpsXmlBuilder
 
         $im = preg_replace('/\D/', '', $prestador['im'] ?? '');
         if (!empty($im)) {
+            // Remove zeros à esquerda para bater com o cadastro do CNC (ex: 0618590001 → 618590001)
+            $imLimpo = ltrim($im, '0');
+            if ($imLimpo === '') {
+                $imLimpo = '0';
+            }
             // Formatar IM com espaços à esquerda para 15 posições (conforme portal do contribuinte)
-            $imFormatado = str_pad($im, 15, ' ', STR_PAD_LEFT);
+            $imFormatado = str_pad($imLimpo, 15, ' ', STR_PAD_LEFT);
             $prest->appendChild($dom->createElementNS($ns, 'IM', $imFormatado));
         }
 
