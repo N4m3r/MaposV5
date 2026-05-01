@@ -1353,6 +1353,218 @@ class Nfse_os extends MY_Controller
     }
 
     /**
+     * Importar XML de NFS-e externa e vincular a uma OS
+     * Permite salvar notas emitidas fora do sistema (ex: portal do contribuinte)
+     */
+    public function importar_xml_os($os_id = null)
+    {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cNFSe')) {
+            $this->session->set_flashdata('error', 'Sem permissão para importar NFS-e.');
+            redirect('os/visualizar/' . $os_id);
+        }
+
+        if (!$os_id || !is_numeric($os_id)) {
+            $this->session->set_flashdata('error', 'OS não informada.');
+            redirect('os');
+        }
+
+        // Verificar se OS existe
+        $os = $this->os_model->getById($os_id);
+        if (!$os) {
+            $this->session->set_flashdata('error', 'OS não encontrada.');
+            redirect('os');
+        }
+
+        // Verificar upload
+        if (empty($_FILES['xml_nfse']['tmp_name']) || $_FILES['xml_nfse']['error'] !== UPLOAD_ERR_OK) {
+            $this->session->set_flashdata('error', 'Nenhum arquivo XML enviado ou erro no upload.');
+            redirect('os/visualizar/' . $os_id);
+        }
+
+        $xmlContent = file_get_contents($_FILES['xml_nfse']['tmp_name']);
+        if (empty($xmlContent)) {
+            $this->session->set_flashdata('error', 'Arquivo XML vazio ou inválido.');
+            redirect('os/visualizar/' . $os_id);
+        }
+
+        // Validar se é XML bem formado
+        libxml_use_internal_errors(true);
+        $dom = new DOMDocument();
+        if (!@$dom->loadXML($xmlContent)) {
+            $this->session->set_flashdata('error', 'O arquivo enviado não é um XML válido.');
+            redirect('os/visualizar/' . $os_id);
+        }
+
+        // Tentar extrair dados básicos do XML (NFS-e Nacional ou padrão municipal)
+        $dadosExtraidos = $this->extrairDadosXmlNfse($dom);
+
+        // Calcular impostos com base no valor extraído
+        $valorServicos = $dadosExtraidos['valor_servicos'] > 0 ? $dadosExtraidos['valor_servicos'] : ($os->valorTotal ?? 0);
+        $this->load->model('impostos_model');
+        $calculo = $this->impostos_model->calcularImpostos($valorServicos);
+
+        // Dados para inserção
+        $nfse_data = [
+            'os_id' => $os_id,
+            'data_emissao' => $dadosExtraidos['data_emissao'] ?: date('Y-m-d H:i:s'),
+            'numero_nfse' => $dadosExtraidos['numero_nfse'] ?: null,
+            'chave_acesso' => $dadosExtraidos['chave_acesso'] ?: null,
+            'protocolo' => $dadosExtraidos['protocolo'] ?: null,
+            'codigo_verificacao' => $dadosExtraidos['codigo_verificacao'] ?: null,
+            'valor_servicos' => $valorServicos,
+            'valor_deducoes' => $dadosExtraidos['valor_deducoes'] ?: 0,
+            'valor_liquido' => $dadosExtraidos['valor_liquido'] > 0 ? $dadosExtraidos['valor_liquido'] : $valorServicos,
+            'regime_tributario' => 'simples_nacional',
+            'valor_das' => $calculo['valor_total_impostos'] ?? 0,
+            'aliquota_iss' => $calculo['aliquota_iss'] ?? 0,
+            'valor_iss' => $calculo['iss'] ?? 0,
+            'valor_inss' => $calculo['inss'] ?? 0,
+            'valor_irrf' => $calculo['irrf'] ?? 0,
+            'valor_csll' => $calculo['csll'] ?? 0,
+            'valor_pis' => $calculo['pis'] ?? 0,
+            'valor_cofins' => $calculo['cofins'] ?? 0,
+            'valor_total_impostos' => $calculo['valor_total_impostos'] ?? 0,
+            'situacao' => 'Emitida',
+            'ambiente' => 'producao',
+            'emitido_por' => $this->session->userdata('idUsuarios'),
+            'created_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s'),
+        ];
+
+        // Salvar XML no banco
+        if ($this->db->field_exists('xml_nfse', 'os_nfse_emitida')) {
+            $nfse_data['xml_nfse'] = $xmlContent;
+        }
+        if ($this->db->field_exists('xml_dps', 'os_nfse_emitida')) {
+            $nfse_data['xml_dps'] = $xmlContent;
+        }
+
+        if ($this->db->insert('os_nfse_emitida', $nfse_data)) {
+            $nfse_id = $this->db->insert_id();
+
+            // Atualizar status da OS
+            $this->db->where('idOs', $os_id);
+            $this->db->update('os', [
+                'nfse_status' => 'Emitida',
+                'valor_com_impostos' => $nfse_data['valor_liquido']
+            ]);
+
+            // Integrar com DRE
+            $this->load->model('dre_model');
+            $this->dre_model->integrarNFSe($nfse_id, $nfse_data);
+
+            log_info('NFS-e importada via XML para OS #' . $os_id . ' - NFSe ID: ' . $nfse_id);
+            $this->session->set_flashdata('success', 'NFS-e importada com sucesso e vinculada à OS #' . $os_id . '.');
+        } else {
+            $this->session->set_flashdata('error', 'Erro ao salvar NFS-e importada no banco de dados.');
+        }
+
+        redirect('os/visualizar/' . $os_id);
+    }
+
+    /**
+     * Extrair dados básicos de um XML de NFS-e
+     * Suporta NFS-e Nacional (DPS) e padrões municipais (INFSE, etc)
+     */
+    private function extrairDadosXmlNfse(DOMDocument $dom)
+    {
+        $dados = [
+            'numero_nfse' => null,
+            'chave_acesso' => null,
+            'protocolo' => null,
+            'codigo_verificacao' => null,
+            'data_emissao' => null,
+            'valor_servicos' => 0,
+            'valor_deducoes' => 0,
+            'valor_liquido' => 0,
+        ];
+
+        $xpath = new DOMXPath($dom);
+
+        // Tentar namespaces comuns
+        $namespaces = [
+            'http://www.sped.fazenda.gov.br/nfse',
+            'http://www.abrasf.org.br/ABRASF/arquivos/nfse.xsd',
+            'http://www.ginfes.com.br/servico_consultar_nfse_resposta',
+            '',
+        ];
+
+        // NFS-e Nacional: tag <nNFSe> ou <DPS> com atributos
+        $nNFSe = $dom->getElementsByTagName('nNFSe')->item(0);
+        if ($nNFSe) {
+            $dados['numero_nfse'] = trim($nNFSe->nodeValue);
+        }
+
+        // Chave de acesso (Nacional)
+        $chave = $dom->getElementsByTagName('chaveAcesso')->item(0);
+        if (!$chave) {
+            $chave = $dom->getElementsByTagName('ChaveAcesso')->item(0);
+        }
+        if ($chave) {
+            $dados['chave_acesso'] = trim($chave->nodeValue);
+        }
+
+        // Código de verificação
+        $codVerif = $dom->getElementsByTagName('codigoVerificacao')->item(0);
+        if (!$codVerif) {
+            $codVerif = $dom->getElementsByTagName('CodigoVerificacao')->item(0);
+        }
+        if (!$codVerif) {
+            $codVerif = $dom->getElementsByTagName('CodigoVerificacao')->item(0);
+        }
+        if ($codVerif) {
+            $dados['codigo_verificacao'] = trim($codVerif->nodeValue);
+        }
+
+        // Data de emissão
+        $dhEmi = $dom->getElementsByTagName('dhEmi')->item(0);
+        if (!$dhEmi) {
+            $dhEmi = $dom->getElementsByTagName('DataEmissao')->item(0);
+        }
+        if (!$dhEmi) {
+            $dhEmi = $dom->getElementsByTagName('DataEmissao')->item(0);
+        }
+        if ($dhEmi) {
+            $dt = trim($dhEmi->nodeValue);
+            if (strlen($dt) >= 10) {
+                $dados['data_emissao'] = substr($dt, 0, 10) . ' ' . (substr($dt, 11, 8) ?: '00:00:00');
+            }
+        }
+
+        // Valor dos serviços
+        $vServ = $dom->getElementsByTagName('vServ')->item(0);
+        if (!$vServ) {
+            $vServ = $dom->getElementsByTagName('ValorServicos')->item(0);
+        }
+        if (!$vServ) {
+            $vServ = $dom->getElementsByTagName('ValorServicos')->item(0);
+        }
+        if ($vServ) {
+            $dados['valor_servicos'] = floatval(str_replace(',', '.', trim($vServ->nodeValue)));
+        }
+
+        // Valor líquido
+        $vLiq = $dom->getElementsByTagName('ValorLiquidoNfse')->item(0);
+        if (!$vLiq) {
+            $vLiq = $dom->getElementsByTagName('vLiq')->item(0);
+        }
+        if ($vLiq) {
+            $dados['valor_liquido'] = floatval(str_replace(',', '.', trim($vLiq->nodeValue)));
+        }
+
+        // Deduções
+        $vDed = $dom->getElementsByTagName('vDed')->item(0);
+        if (!$vDed) {
+            $vDed = $dom->getElementsByTagName('ValorDeducoes')->item(0);
+        }
+        if ($vDed) {
+            $dados['valor_deducoes'] = floatval(str_replace(',', '.', trim($vDed->nodeValue)));
+        }
+
+        return $dados;
+    }
+
+    /**
      * Cancelar NFS-e via API Nacional
      */
     public function cancelar_nfse_api($nfse_id = null)

@@ -184,6 +184,29 @@ if (!function_exists('fmtDoc')) {
             </div>
             <div class="widget-content" style="background:var(--wid-dark,#1c1d26); color:var(--branco,#caced8)">
 
+                <!-- Importar XML externo -->
+                <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cNFSe')): ?>
+                <div class="row-fluid" style="margin-bottom:15px">
+                    <div class="span12">
+                        <div class="well well-small" style="background:rgba(82,69,159,0.15); border-color:rgba(82,69,159,0.3); color:#caced8">
+                            <div style="display:flex; align-items:center; justify-content:space-between">
+                                <div>
+                                    <strong style="color:var(--title,#d4d8e0)"><i class="fas fa-file-import" style="color:#52459f"></i> Já emitiu esta NFS-e em outro sistema?</strong>
+                                    <br>
+                                    <small style="color:var(--dark-cinz,#8788a4)">Importe o XML da nota fiscal para vincular a esta OS.</small>
+                                </div>
+                                <form method="post" action="<?= site_url('nfse_os/importar_xml_os/' . $result->idOs) ?>" enctype="multipart/form-data" style="margin:0; display:flex; align-items:center; gap:8px">
+                                    <input type="file" name="xml_nfse" accept=".xml" required style="font-size:12px; color:var(--branco,#caced8); background:var(--dark-0,#191a22); border:1px solid var(--dark-2,#272835); padding:4px; border-radius:3px">
+                                    <button type="submit" class="btn btn-small" style="background:#52459f; border-color:#52459f; color:#fff">
+                                        <i class="fas fa-upload"></i> Importar XML
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <?php endif; ?>
+
                 <!-- Passos -->
                 <div class="row-fluid" style="margin-bottom:20px">
                     <div class="span12">
