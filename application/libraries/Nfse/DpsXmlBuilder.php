@@ -321,11 +321,17 @@ class DpsXmlBuilder
         // PIS/COFINS (apuração própria)
         $piscofins = $dom->createElementNS($ns, 'piscofins');
         $piscofins->appendChild($dom->createElementNS($ns, 'CST', '01'));
-        $piscofins->appendChild($dom->createElementNS($ns, 'vBCPisCofins', number_format($baseCalculo, 2, '.', '')));
-        $piscofins->appendChild($dom->createElementNS($ns, 'pAliqPis', '0.65'));
-        $piscofins->appendChild($dom->createElementNS($ns, 'pAliqCofins', '3.00'));
-        $piscofins->appendChild($dom->createElementNS($ns, 'vPis', '0.00'));
-        $piscofins->appendChild($dom->createElementNS($ns, 'vCofins', '0.00'));
+        $vBCPisCofins = $baseCalculo;
+        $pAliqPis = floatval($servico['aliquota_pis'] ?? $tributacao['aliquota_pis'] ?? 0.65);
+        $pAliqCofins = floatval($servico['aliquota_cofins'] ?? $tributacao['aliquota_cofins'] ?? 3.00);
+        $vPis = $vBCPisCofins * $pAliqPis / 100;
+        $vCofins = $vBCPisCofins * $pAliqCofins / 100;
+
+        $piscofins->appendChild($dom->createElementNS($ns, 'vBCPisCofins', number_format($vBCPisCofins, 2, '.', '')));
+        $piscofins->appendChild($dom->createElementNS($ns, 'pAliqPis', number_format($pAliqPis, 2, '.', '')));
+        $piscofins->appendChild($dom->createElementNS($ns, 'pAliqCofins', number_format($pAliqCofins, 2, '.', '')));
+        $piscofins->appendChild($dom->createElementNS($ns, 'vPis', number_format($vPis, 2, '.', '')));
+        $piscofins->appendChild($dom->createElementNS($ns, 'vCofins', number_format($vCofins, 2, '.', '')));
         // tpRetPisCofins: 1=Retido, 2=Não retido (schema v1.01)
         $tpRetPisCofins = (!empty($servico['pis_retido']) || !empty($servico['cofins_retido'])) ? '1' : '2';
         $piscofins->appendChild($dom->createElementNS($ns, 'tpRetPisCofins', $tpRetPisCofins));
