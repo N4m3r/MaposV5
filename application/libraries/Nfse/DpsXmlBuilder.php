@@ -260,12 +260,12 @@ class DpsXmlBuilder
         $descricao = !empty($servico['descricao']) ? $servico['descricao'] : 'Serviços prestados conforme contrato.';
         $cServ->appendChild($dom->createElementNS($ns, 'xDescServ', $this->escapeXml($descricao)));
 
-        // cNBS (obrigatório no schema v1.01 - Código Nomenclatura Brasileira de Serviços, 9 dígitos)
+        // cNBS (Código Nomenclatura Brasileira de Serviços, 9 dígitos)
+        // Envia apenas se informado pelo usuário; deixar vazio para usar o padrão do CNAE
         $cNbs = preg_replace('/\D/', '', $servico['cNBS'] ?? '');
-        if (strlen($cNbs) !== 9) {
-            $cNbs = '620230100';
+        if (strlen($cNbs) === 9) {
+            $cServ->appendChild($dom->createElementNS($ns, 'cNBS', $cNbs));
         }
-        $cServ->appendChild($dom->createElementNS($ns, 'cNBS', $cNbs));
 
         $serv->appendChild($cServ);
 
