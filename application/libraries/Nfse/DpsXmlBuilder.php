@@ -260,12 +260,12 @@ class DpsXmlBuilder
         $descricao = !empty($servico['descricao']) ? $servico['descricao'] : 'Serviços prestados conforme contrato.';
         $cServ->appendChild($dom->createElementNS($ns, 'xDescServ', $this->escapeXml($descricao)));
 
-        // cNBS (opcional - Código Nomenclatura Brasileira de Serviços, formato X.XX.XX.XX)
-        // Não confundir com CNAE. Deixar vazio se não souber o código correto.
-        $cNbs = $servico['cNBS'] ?? '';
-        if (!empty($cNbs)) {
-            $cServ->appendChild($dom->createElementNS($ns, 'cNBS', $cNbs));
+        // cNBS (obrigatório no schema v1.01 - Código Nomenclatura Brasileira de Serviços, 9 dígitos)
+        $cNbs = preg_replace('/\D/', '', $servico['cNBS'] ?? '');
+        if (strlen($cNbs) !== 9) {
+            $cNbs = '620230100';
         }
+        $cServ->appendChild($dom->createElementNS($ns, 'cNBS', $cNbs));
 
         $serv->appendChild($cServ);
 
@@ -323,8 +323,8 @@ class DpsXmlBuilder
         $piscofins->appendChild($dom->createElementNS($ns, 'pAliqCofins', '3.00'));
         $piscofins->appendChild($dom->createElementNS($ns, 'vPis', '0.00'));
         $piscofins->appendChild($dom->createElementNS($ns, 'vCofins', '0.00'));
-        // tpRetPisCofins: 0=Não retidos, 3=PIS/COFINS/CSLL retidos
-        $tpRetPisCofins = (!empty($servico['pis_retido']) || !empty($servico['cofins_retido'])) ? '3' : '0';
+        // tpRetPisCofins: 1=Retido, 2=Não retido (schema v1.01)
+        $tpRetPisCofins = (!empty($servico['pis_retido']) || !empty($servico['cofins_retido'])) ? '1' : '2';
         $piscofins->appendChild($dom->createElementNS($ns, 'tpRetPisCofins', $tpRetPisCofins));
         $tribFed->appendChild($piscofins);
 
