@@ -374,7 +374,7 @@ class DpsXmlBuilder
         $trib = $dom->createElementNS($ns, 'trib');
         $gIBSCBS = $dom->createElementNS($ns, 'gIBSCBS');
         $gIBSCBS->appendChild($dom->createElementNS($ns, 'CST', '000'));
-        $gIBSCBS->appendChild($dom->createElementNS($ns, 'cClassTrib', '010101'));
+        $gIBSCBS->appendChild($dom->createElementNS($ns, 'cClassTrib', '000001'));
         $trib->appendChild($gIBSCBS);
         $valores->appendChild($trib);
 
