@@ -285,6 +285,7 @@
                         <li class="<?php if (isset($menuEmailConfig)) { echo 'active'; }; ?>"><a href="<?= site_url('email/configuracoes') ?>"><i class='bx bx-cog iconX'></i><span class="title">Config. Emails</span><span class="title-tooltip">Config Emails</span></a></li>
                         <li class="<?php if (isset($menuWebhooks)) { echo 'active'; }; ?>"><a href="<?= site_url('webhooks') ?>"><i class='bx bx-webhook iconX'></i><span class="title">Webhooks</span><span class="title-tooltip">Webhooks</span></a></li>
                         <li class="<?php if (isset($menuApiDocs)) { echo 'active'; }; ?>"><a href="<?= site_url('api/docs') ?>"><i class='bx bx-code-alt iconX'></i><span class="title">API v2</span><span class="title-tooltip">API v2</span></a></li>
+                        <li class="<?php if (isset($menuAgenteIA)) { echo 'active'; }; ?>"><a href="<?= site_url('agente_ia') ?>"><i class='bx bx-bot iconX'></i><span class="title">Agente IA</span><span class="title-tooltip">Agente IA</span></a></li>
                     <?php } ?>
                 <?php } ?>
             </ul>
