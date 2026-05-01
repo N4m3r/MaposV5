@@ -141,10 +141,40 @@ class XmlSigner
         $signedInfo->appendChild($reference);
         $signature->appendChild($signedInfo);
 
-        // Canonicalizar SignedInfo para assinar (C14N não exclusivo, conforme CanonicalizationMethod)
-        $signedInfo->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns', $dsigNs);
+        // KeyInfo
+        $keyInfo = $dom->createElementNS($dsigNs, 'KeyInfo');
+        $x509Data = $dom->createElementNS($dsigNs, 'X509Data');
+        $x509Cert = '';
+        openssl_x509_export($certContent, $x509Cert);
+        $x509Cert = str_replace('-----BEGIN CERTIFICATE-----', '', $x509Cert);
+        $x509Cert = str_replace('-----END CERTIFICATE-----', '', $x509Cert);
+        $x509Cert = preg_replace('/\s+/', '', $x509Cert);
+        $x509CertElement = $dom->createElementNS($dsigNs, 'X509Certificate', $x509Cert);
+        $x509Data->appendChild($x509CertElement);
+        $keyInfo->appendChild($x509Data);
+        $signature->appendChild($keyInfo);
+
+        // Inserir Signature como último filho do elemento raiz (Dps) ANTES de canonicalizar SignedInfo
+        $rootElement = $dom->documentElement;
+        if (!$rootElement) {
+            log_message('error', 'XmlSigner: Elemento raiz não encontrado no XML');
+            return false;
+        }
+        $rootElement->appendChild($signature);
+
+        // Agora que SignedInfo está no DOM, canonicalizar para assinar
         $signedInfoCanonical = $signedInfo->C14N(false, false);
         log_message('error', 'XmlSigner [DEBUG]: SignedInfo canonical tamanho=' . strlen($signedInfoCanonical));
+
+        if (empty($signedInfoCanonical)) {
+            log_message('error', 'XmlSigner: SignedInfo canonicalizado está vazio. Tentando fallback com saveXML.');
+            // Fallback: extrair via saveXML e carregar em novo DOM para C14N
+            $signedInfoXml = $dom->saveXML($signedInfo);
+            $tempDom = new DOMDocument('1.0', 'UTF-8');
+            $tempDom->loadXML($signedInfoXml);
+            $signedInfoCanonical = $tempDom->documentElement->C14N(false, false);
+            log_message('error', 'XmlSigner [DEBUG]: Fallback SignedInfo canonical tamanho=' . strlen($signedInfoCanonical));
+        }
 
         // Assinar com RSA-SHA256
         $signatureValue = '';
@@ -158,33 +188,6 @@ class XmlSigner
         // SignatureValue
         $sigValue = $dom->createElementNS($dsigNs, 'SignatureValue', base64_encode($signatureValue));
         $signature->appendChild($sigValue);
-
-        // KeyInfo
-        $keyInfo = $dom->createElementNS($dsigNs, 'KeyInfo');
-
-        // X509Data
-        $x509Data = $dom->createElementNS($dsigNs, 'X509Data');
-
-        // Extrair certificado X509 em base64 (apenas o primeiro = signatário)
-        $x509Cert = '';
-        openssl_x509_export($certContent, $x509Cert);
-        // Remover headers/footers e quebras de linha
-        $x509Cert = str_replace('-----BEGIN CERTIFICATE-----', '', $x509Cert);
-        $x509Cert = str_replace('-----END CERTIFICATE-----', '', $x509Cert);
-        $x509Cert = preg_replace('/\s+/', '', $x509Cert);
-
-        $x509CertElement = $dom->createElementNS($dsigNs, 'X509Certificate', $x509Cert);
-        $x509Data->appendChild($x509CertElement);
-        $keyInfo->appendChild($x509Data);
-        $signature->appendChild($keyInfo);
-
-        // Inserir Signature como último filho do elemento raiz (Dps)
-        $rootElement = $dom->documentElement;
-        if (!$rootElement) {
-            log_message('error', 'XmlSigner: Elemento raiz não encontrado no XML');
-            return false;
-        }
-        $rootElement->appendChild($signature);
 
         // Liberar recursos
         openssl_pkey_free($privateKey);
