@@ -193,14 +193,11 @@ if (!function_exists('fmtDoc')) {
                                 <div>
                                     <strong style="color:var(--title,#d4d8e0)"><i class="fas fa-file-import" style="color:#52459f"></i> Já emitiu esta NFS-e em outro sistema?</strong>
                                     <br>
-                                    <small style="color:var(--dark-cinz,#8788a4)">Importe o XML da nota fiscal para vincular a esta OS.</small>
+                                    <small style="color:var(--dark-cinz,#8788a4)">Importe o XML da nota fiscal com preview dos dados antes de salvar.</small>
                                 </div>
-                                <form method="post" action="<?= site_url('nfse_os/importar_xml_os/' . $result->idOs) ?>" enctype="multipart/form-data" style="margin:0; display:flex; align-items:center; gap:8px">
-                                    <input type="file" name="xml_nfse" accept=".xml" required style="font-size:12px; color:var(--branco,#caced8); background:var(--dark-0,#191a22); border:1px solid var(--dark-2,#272835); padding:4px; border-radius:3px">
-                                    <button type="submit" class="btn btn-small" style="background:#52459f; border-color:#52459f; color:#fff">
-                                        <i class="fas fa-upload"></i> Importar XML
-                                    </button>
-                                </form>
+                                <a href="<?= site_url('nfse_os/importar/' . $result->idOs) ?>" class="btn btn-small" style="background:#52459f; border-color:#52459f; color:#fff; white-space:nowrap">
+                                    <i class="fas fa-upload"></i> Importar XML
+                                </a>
                             </div>
                         </div>
                     </div>

@@ -279,6 +279,148 @@ class Nfse_os extends MY_Controller
     }
 
     /**
+     * Página de importação de NFS-e via XML
+     * Interface moderna com preview antes de salvar
+     */
+    public function importar($os_id = null)
+    {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cNFSe')) {
+            $this->session->set_flashdata('error', 'Sem permissão.');
+            redirect(base_url());
+        }
+
+        $this->data['os_id'] = $os_id;
+        $this->data['os'] = $os_id ? $this->os_model->getById($os_id) : null;
+        $this->data['view'] = 'nfse_os/importar';
+        return $this->layout();
+    }
+
+    /**
+     * Recebe XML via AJAX e retorna preview dos dados extraídos
+     */
+    public function preview_importar_ajax()
+    {
+        header('Content-Type: application/json; charset=utf-8');
+
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cNFSe')) {
+            echo json_encode(['success' => false, 'message' => 'Sem permissão.']);
+            return;
+        }
+
+        if (empty($_FILES['xml_nfse']['tmp_name']) || $_FILES['xml_nfse']['error'] !== UPLOAD_ERR_OK) {
+            echo json_encode(['success' => false, 'message' => 'Nenhum arquivo enviado.']);
+            return;
+        }
+
+        $xmlContent = file_get_contents($_FILES['xml_nfse']['tmp_name']);
+        if (empty($xmlContent)) {
+            echo json_encode(['success' => false, 'message' => 'Arquivo vazio.']);
+            return;
+        }
+
+        libxml_use_internal_errors(true);
+        $dom = new DOMDocument();
+        if (!@$dom->loadXML($xmlContent)) {
+            echo json_encode(['success' => false, 'message' => 'XML inválido.']);
+            return;
+        }
+
+        $dados = $this->extrairDadosXmlNfse($dom);
+        $dados['success'] = true;
+        $dados['xml_base64'] = base64_encode($xmlContent);
+
+        echo json_encode($dados);
+    }
+
+    /**
+     * Salvar XML importado no banco após confirmação do preview
+     */
+    public function salvar_importacao()
+    {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cNFSe')) {
+            $this->session->set_flashdata('error', 'Sem permissão.');
+            redirect(base_url());
+        }
+
+        $os_id = $this->input->post('os_id');
+        $xmlBase64 = $this->input->post('xml_base64');
+
+        if (!$os_id || !$xmlBase64) {
+            $this->session->set_flashdata('error', 'Dados incompletos.');
+            redirect('os/visualizar/' . $os_id);
+        }
+
+        $xmlContent = base64_decode($xmlBase64);
+        if (empty($xmlContent)) {
+            $this->session->set_flashdata('error', 'XML inválido.');
+            redirect('os/visualizar/' . $os_id);
+        }
+
+        libxml_use_internal_errors(true);
+        $dom = new DOMDocument();
+        if (!@$dom->loadXML($xmlContent)) {
+            $this->session->set_flashdata('error', 'XML inválido.');
+            redirect('os/visualizar/' . $os_id);
+        }
+
+        $os = $this->os_model->getById($os_id);
+        if (!$os) {
+            $this->session->set_flashdata('error', 'OS não encontrada.');
+            redirect('os');
+        }
+
+        $dadosExtraidos = $this->extrairDadosXmlNfse($dom);
+        $valorServicos = $dadosExtraidos['valor_servicos'] > 0 ? $dadosExtraidos['valor_servicos'] : ($os->valorTotal ?? 0);
+        $this->load->model('impostos_model');
+        $calculo = $this->impostos_model->calcularImpostos($valorServicos);
+
+        $nfse_data = [
+            'os_id' => $os_id,
+            'data_emissao' => $dadosExtraidos['data_emissao'] ?: date('Y-m-d H:i:s'),
+            'numero_nfse' => $dadosExtraidos['numero_nfse'] ?: null,
+            'chave_acesso' => $dadosExtraidos['chave_acesso'] ?: null,
+            'protocolo' => $dadosExtraidos['protocolo'] ?: null,
+            'codigo_verificacao' => $dadosExtraidos['codigo_verificacao'] ?: null,
+            'valor_servicos' => $valorServicos,
+            'valor_deducoes' => $dadosExtraidos['valor_deducoes'] ?: 0,
+            'valor_liquido' => $dadosExtraidos['valor_liquido'] > 0 ? $dadosExtraidos['valor_liquido'] : $valorServicos,
+            'regime_tributario' => 'simples_nacional',
+            'valor_das' => $calculo['valor_total_impostos'] ?? 0,
+            'aliquota_iss' => $calculo['aliquota_iss'] ?? 0,
+            'valor_iss' => $calculo['iss'] ?? 0,
+            'valor_inss' => $calculo['inss'] ?? 0,
+            'valor_irrf' => $calculo['irrf'] ?? 0,
+            'valor_csll' => $calculo['csll'] ?? 0,
+            'valor_pis' => $calculo['pis'] ?? 0,
+            'valor_cofins' => $calculo['cofins'] ?? 0,
+            'valor_total_impostos' => $calculo['valor_total_impostos'] ?? 0,
+            'situacao' => 'Emitida',
+            'ambiente' => 'producao',
+            'emitido_por' => $this->session->userdata('idUsuarios'),
+            'created_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s'),
+        ];
+
+        if ($this->db->field_exists('xml_nfse', 'os_nfse_emitida')) {
+            $nfse_data['xml_nfse'] = $xmlContent;
+        }
+        if ($this->db->field_exists('xml_dps', 'os_nfse_emitida')) {
+            $nfse_data['xml_dps'] = $xmlContent;
+        }
+
+        if ($this->db->insert('os_nfse_emitida', $nfse_data)) {
+            $nfse_id = $this->db->insert_id();
+            $this->db->where('idOs', $os_id);
+            $this->db->update('os', ['nfse_status' => 'Emitida', 'valor_com_impostos' => $nfse_data['valor_liquido']]);
+            $this->session->set_flashdata('success', 'NFS-e importada com sucesso!');
+        } else {
+            $this->session->set_flashdata('error', 'Erro ao salvar NFS-e.');
+        }
+
+        redirect('os/visualizar/' . $os_id);
+    }
+
+    /**
      * Pré-visualização da NFS-e em PDF
      * Gera PDF com dados do prestador, tomador, impostos e QR Code PIX
      */
