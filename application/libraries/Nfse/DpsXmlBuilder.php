@@ -346,8 +346,22 @@ class DpsXmlBuilder
 
         // Retenções
         $tribFed->appendChild($dom->createElementNS($ns, 'vRetCP', '0.00'));
-        $vRetIRRF = !empty($servico['irrf_retido']) ? number_format(floatval($servico['valor_irrf'] ?? 0), 2, '.', '') : '0.00';
-        $tribFed->appendChild($dom->createElementNS($ns, 'vRetIRRF', $vRetIRRF));
+
+        // IRRF: SEFIN exige valor > 0 (E0700). Quando não há retenção, informar o IRPJ calculado.
+        $valorIrrf = 0.0;
+        if (!empty($servico['irrf_retido'])) {
+            $valorIrrf = floatval($servico['valor_irrf'] ?? 0);
+        } else {
+            $valorIrrf = floatval($servico['valor_irpj'] ?? $servico['irpj'] ?? $servico['valor_irrf'] ?? 0);
+        }
+        // Garantir > 0 e < valor do serviço para evitar E0700
+        if ($valorIrrf <= 0 && $valorServicos > 0) {
+            $valorIrrf = 0.01;
+        }
+        if ($valorIrrf >= $valorServicos) {
+            $valorIrrf = $valorServicos - 0.01;
+        }
+        $tribFed->appendChild($dom->createElementNS($ns, 'vRetIRRF', number_format($valorIrrf, 2, '.', '')));
 
         // vRetCSLL = soma das retenções de PIS + COFINS + CSLL (NT 007/2026)
         $vRetCSLL = 0.0;
