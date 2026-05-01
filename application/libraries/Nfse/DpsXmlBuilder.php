@@ -261,11 +261,13 @@ class DpsXmlBuilder
         $cServ->appendChild($dom->createElementNS($ns, 'xDescServ', $this->escapeXml($descricao)));
 
         // cNBS (Código Nomenclatura Brasileira de Serviços, 9 dígitos)
-        // Envia apenas se informado pelo usuário; deixar vazio para usar o padrão do CNAE
+        // Obrigatório quando IBSCBS está presente (Reforma Tributária - NT 007/2026)
         $cNbs = preg_replace('/\D/', '', $servico['cNBS'] ?? '');
-        if (strlen($cNbs) === 9) {
-            $cServ->appendChild($dom->createElementNS($ns, 'cNBS', $cNbs));
+        if (strlen($cNbs) !== 9) {
+            // NBS padrão para serviços de tecnologia da informação
+            $cNbs = '620230100';
         }
+        $cServ->appendChild($dom->createElementNS($ns, 'cNBS', $cNbs));
 
         $serv->appendChild($cServ);
 

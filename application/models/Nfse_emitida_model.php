@@ -90,6 +90,14 @@ class Nfse_emitida_model extends CI_Model
             $nfse_data['ambiente'] = $dados['ambiente'] ?? 'homologacao';
         }
 
+        // Só incluir 'n_dps' e 'serie_dps' se as colunas existirem
+        if ($this->db->field_exists('n_dps', 'os_nfse_emitida')) {
+            $nfse_data['n_dps'] = $dados['n_dps'] ?? null;
+        }
+        if ($this->db->field_exists('serie_dps', 'os_nfse_emitida')) {
+            $nfse_data['serie_dps'] = $dados['serie_dps'] ?? '1';
+        }
+
         // Inserir no banco
         if ($this->db->insert('os_nfse_emitida', $nfse_data)) {
             $nfse_id = $this->db->insert_id();

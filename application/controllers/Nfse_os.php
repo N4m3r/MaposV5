@@ -866,6 +866,32 @@ class Nfse_os extends MY_Controller
     // ==================== API NFS-e NACIONAL ====================
 
     /**
+     * Retorna o próximo número sequencial da DPS
+     * Busca o maior n_dps na tabela os_nfse_emitida e incrementa
+     */
+    private function getProximoNumeroDps()
+    {
+        try {
+            if (!$this->db->table_exists('os_nfse_emitida')) {
+                return 1;
+            }
+
+            if (!$this->db->field_exists('n_dps', 'os_nfse_emitida')) {
+                return 1;
+            }
+
+            $sql = "SELECT MAX(CAST(n_dps AS UNSIGNED)) as max_n_dps FROM os_nfse_emitida WHERE n_dps IS NOT NULL AND n_dps != ''";
+            $query = $this->db->query($sql);
+            $maxNDps = intval($query->row()->max_n_dps ?? 0);
+
+            return $maxNDps + 1;
+        } catch (Exception $e) {
+            log_message('error', 'NFS-e Nacional: Erro ao obter próximo n_dps: ' . $e->getMessage());
+            return 1;
+        }
+    }
+
+    /**
      * Emitir NFS-e via API Nacional (Sistema Nacional NFS-e)
      * Chamado via AJAX pelo wizard
      */
@@ -1043,6 +1069,10 @@ class Nfse_os extends MY_Controller
                 'codigo_uf' => $nfseConfig['nfse_codigo_uf'] ?? '13',
             ]);
 
+            // Obter próximo número sequencial da DPS
+            $proximoNDps = $this->getProximoNumeroDps();
+            log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Próximo n_dps=' . $proximoNDps);
+
             $dadosDps = [
                 'prestador' => $prestador,
                 'tomador' => $tomador,
@@ -1051,7 +1081,7 @@ class Nfse_os extends MY_Controller
                 'competencia' => $competencia,
                 'ambiente' => $pemPaths['ambiente'] ?? 'homologacao',
                 'serie' => 1,
-                'n_dps' => null, // Será gerado automaticamente com base no timestamp
+                'n_dps' => $proximoNDps,
             ];
 
             $xmlDps = $xmlBuilder->gerarDps($dadosDps);
@@ -1125,6 +1155,8 @@ class Nfse_os extends MY_Controller
                     'valor_retencao_csll' => $retencoesCalculadas['valor_retencao_csll'] ?? 0,
                     'valor_total_retencao' => $retencoesCalculadas['valor_total_retencao'] ?? 0,
                     'ambiente' => $pemPaths['ambiente'] ?? 'homologacao',
+                    'n_dps' => $proximoNDps,
+                    'serie_dps' => '1',
                 ];
 
                 $emitirResult = $this->nfse_emitida_model->emitir($os_id, $dadosNfse);
