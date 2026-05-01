@@ -73,8 +73,9 @@ class DpsXmlBuilder
         // verAplic
         $infDps->appendChild($dom->createElementNS($ns, 'verAplic', 'MAPOS-NFSE-1.0'));
 
-        // serie (string de ate 5 digitos, conforme pattern ^0{0,4}\d{1,5}$)
-        $infDps->appendChild($dom->createElementNS($ns, 'serie', str_pad((string)$serie, 5, '0', STR_PAD_LEFT)));
+        // serie (sem zeros a esquerda para evitar E0004 no SEFIN)
+        $serieXml = ltrim((string)$serie, '0') ?: '1';
+        $infDps->appendChild($dom->createElementNS($ns, 'serie', $serieXml));
 
         // nDPS (sem zeros à esquerda, conforme pattern TSNumDPS ^[1-9]\d{0,14}$)
         $nDpsValor = $nDps ?? '1';
