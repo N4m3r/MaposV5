@@ -979,10 +979,20 @@ class Nfse_os extends MY_Controller
             $emitente = $this->mapos_model->getEmitente();
 
             // Montar dados do prestador
+            $imPrestador = ($emitente ? preg_replace('/\D/', '', $emitente->inscricao_municipal ?? '') : '');
+            if (empty($imPrestador)) {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Inscrição Municipal do emitente (prestador) não está cadastrada. Cadastre a IM em Configurações > Emitente antes de emitir a NFS-e.',
+                ]);
+                $this->certificado_model->limparPemTemporarios($pemPaths);
+                return;
+            }
+
             $prestador = [
                 'cnpj' => $pemPaths['cnpj'] ?? '',
                 'razao_social' => $pemPaths['razao_social'] ?? ($emitente->nome ?? ''),
-                'im' => ($emitente ? ($emitente->inscricao_municipal ?? '') : ''),
+                'im' => $imPrestador,
                 'ie' => ($emitente ? ($emitente->inscricao_estadual ?? '') : ''),
                 'cnae' => $this->impostos_model->getConfig('IMPOSTO_CODIGO_TRIBUTACAO_NACIONAL') ?: '010701',
                 'email' => ($emitente ? ($emitente->email ?? '') : ''),
