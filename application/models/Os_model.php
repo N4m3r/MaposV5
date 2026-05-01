@@ -476,13 +476,13 @@ class Os_model extends CI_Model
                 'tipo_label' => 'NFS-e',
                 'tipo_icon' => 'bx-file',
                 'id' => $nota->id,
-                'numero' => $nota->numero_nota,
+                'numero' => $nota->numero,
                 'data' => $nota->data_emissao,
                 'valor' => $nota->valor_total,
                 'status' => $nota->situacao,
                 'impostos' => $nota->valor_impostos,
-                'xml_path' => $nota->caminho_xml,
-                'prestador' => $nota->prestador_nome,
+                'xml' => $nota->dados_xml,
+                'chave_acesso' => $nota->chave_acesso,
             ];
         }
 
