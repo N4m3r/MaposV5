@@ -1099,6 +1099,7 @@ class Nfse_os extends MY_Controller
             $tributacao = [
                 'natureza_operacao' => $nfseConfig['nfse_natureza_operacao'] ?? '1',
                 'optante_simples' => $nfseConfig['nfse_optante_simples'] ?? true,
+                'op_simp_nac' => $nfseConfig['nfse_op_simp_nac'] ?? '3',
                 'regime_especial' => $nfseConfig['nfse_regime_especial'] ?? '0',
                 'incentivador_cultural' => $nfseConfig['nfse_incentivador_cultural'] ?? '0',
                 'aliquota_iss' => floatval($this->impostos_model->getConfig('IMPOSTO_ISS_MUNICIPAL') ?: 5.00),

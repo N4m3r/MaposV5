@@ -112,9 +112,6 @@ class DpsXmlBuilder
         $valoresNode = $this->criarValores($dom, $ns, $servico, $tributacao);
         $infDps->appendChild($valoresNode);
 
-        // IBSCBS (Reforma Tributária - obrigatório desde NT 007/2026)
-        $ibscbsNode = $this->criarIbscbs($dom, $ns, $servico);
-        $infDps->appendChild($ibscbsNode);
 
         return $dom->saveXML();
     }
@@ -141,16 +138,13 @@ class DpsXmlBuilder
 
         $im = preg_replace('/\D/', '', $prestador['im'] ?? '');
         if (!empty($im)) {
-            $prest->appendChild($dom->createElementNS($ns, 'IM', $im));
+            // Formatar IM com espaços à esquerda para 15 posições (conforme portal do contribuinte)
+            $imFormatado = str_pad($im, 15, ' ', STR_PAD_LEFT);
+            $prest->appendChild($dom->createElementNS($ns, 'IM', $imFormatado));
         }
 
-        $xNome = !empty($prestador['razao_social']) ? $prestador['razao_social'] : ($prestador['nome_fantasia'] ?? 'PRESTADOR');
-        $prest->appendChild($dom->createElementNS($ns, 'xNome', $this->escapeXml($xNome)));
-
-        // Endereço
-        if (!empty($prestador['endereco'])) {
-            $prest->appendChild($this->criarEndereco($dom, $ns, $prestador['endereco']));
-        }
+        // xNome e endereco do prestador NAO sao incluidos no DPS pelo portal oficial
+        // Fica apenas na NFSe raiz, nao no DPS envelopado
 
         if (!empty($prestador['telefone'])) {
             $fone = preg_replace('/\D/', '', $prestador['telefone']);
@@ -165,14 +159,15 @@ class DpsXmlBuilder
 
         // Regime tributário
         $regTrib = $dom->createElementNS($ns, 'regTrib');
-        $opSimpNac = ($tributacao['optante_simples'] ?? true) ? '1' : '2';
+        // opSimpNac: código conforme cadastro do prestador no CNC NFS-e
+        // 1=SN sublimite, 2=SN excesso, 3=MEI/EPP SN, 4=Fator r, 5=Fixo, 6=Anexo VI
+        // O portal do contribuinte de Manaus emitiu com valor 3 para esta empresa
+        $opSimpNac = $tributacao['op_simp_nac'] ?? '3';
         $regTrib->appendChild($dom->createElementNS($ns, 'opSimpNac', $opSimpNac));
-        // regApTribSN: obrigatório quando opSimpNac=1 (Simples Nacional)
+        // regApTribSN: obrigatório para optantes pelo Simples Nacional
         // 1=Excesso sublimite, 2=Enquadramento Anexos, 3=Fixo, 4=Anexo VI
-        if ($opSimpNac === '1') {
-            $regApTribSN = $tributacao['reg_ap_trib_sn'] ?? '2';
-            $regTrib->appendChild($dom->createElementNS($ns, 'regApTribSN', $regApTribSN));
-        }
+        $regApTribSN = $tributacao['reg_ap_trib_sn'] ?? '2';
+        $regTrib->appendChild($dom->createElementNS($ns, 'regApTribSN', $regApTribSN));
         $regTrib->appendChild($dom->createElementNS($ns, 'regEspTrib', $tributacao['regime_especial'] ?? '0'));
         $prest->appendChild($regTrib);
 
@@ -206,16 +201,6 @@ class DpsXmlBuilder
             $toma->appendChild($this->criarEndereco($dom, $ns, $tomador['endereco']));
         }
 
-        if (!empty($tomador['telefone'])) {
-            $fone = preg_replace('/\D/', '', $tomador['telefone']);
-            if (!empty($fone)) {
-                $toma->appendChild($dom->createElementNS($ns, 'fone', $fone));
-            }
-        }
-
-        if (!empty($tomador['email'])) {
-            $toma->appendChild($dom->createElementNS($ns, 'email', $this->escapeXml($tomador['email'])));
-        }
 
         return $toma;
     }
@@ -271,14 +256,6 @@ class DpsXmlBuilder
         $descricao = !empty($servico['descricao']) ? $servico['descricao'] : 'Serviços prestados conforme contrato.';
         $cServ->appendChild($dom->createElementNS($ns, 'xDescServ', $this->escapeXml($descricao)));
 
-        // cNBS (Código Nomenclatura Brasileira de Serviços, 9 dígitos)
-        // Obrigatório quando IBSCBS está presente (Reforma Tributária - NT 007/2026)
-        $cNbs = preg_replace('/\D/', '', $servico['cNBS'] ?? '');
-        if (strlen($cNbs) !== 9) {
-            // NBS padrão para serviços de tecnologia da informação
-            $cNbs = '620230100';
-        }
-        $cServ->appendChild($dom->createElementNS($ns, 'cNBS', $cNbs));
 
         $serv->appendChild($cServ);
 
@@ -290,21 +267,11 @@ class DpsXmlBuilder
         $valores = $dom->createElementNS($ns, 'valores');
 
         $valorServicos = floatval($servico['valor_servicos'] ?? 0);
-        $valorDeducoes = floatval($servico['valor_deducoes'] ?? 0);
-        $baseCalculo = $valorServicos - $valorDeducoes;
-        if ($baseCalculo < 0) $baseCalculo = 0;
 
-        // vServPrest (obrigatório: vReceb + vServ)
+        // vServPrest (apenas vServ, conforme portal SEFIN)
         $vServPrest = $dom->createElementNS($ns, 'vServPrest');
-        $vServPrest->appendChild($dom->createElementNS($ns, 'vReceb', '0.00'));
         $vServPrest->appendChild($dom->createElementNS($ns, 'vServ', number_format($valorServicos, 2, '.', '')));
         $valores->appendChild($vServPrest);
-
-        // Descontos (obrigatório no schema, mesmo com valor zero)
-        $vDescCondIncond = $dom->createElementNS($ns, 'vDescCondIncond');
-        $vDescCondIncond->appendChild($dom->createElementNS($ns, 'vDescIncond', '0.00'));
-        $vDescCondIncond->appendChild($dom->createElementNS($ns, 'vDescCond', '0.00'));
-        $valores->appendChild($vDescCondIncond);
 
         // Tributação municipal - tag trib (minúsculo conforme schema)
         $trib = $dom->createElementNS($ns, 'trib');
@@ -314,67 +281,19 @@ class DpsXmlBuilder
         $tribISSQN = '1';
         $tribMun->appendChild($dom->createElementNS($ns, 'tribISSQN', $tribISSQN));
 
-        // tpImunidade: só informar quando tribISSQN = 2 (Imunidade)
-        if ($tribISSQN === '2') {
-            $tribMun->appendChild($dom->createElementNS($ns, 'tpImunidade', '1'));
-        }
-
         // tpRetISSQN: 1=Não retido, 2=Retido tomador, 3=Retido intermediário
         $tpRetISSQN = !empty($servico['iss_retido']) ? '2' : '1';
         $tribMun->appendChild($dom->createElementNS($ns, 'tpRetISSQN', $tpRetISSQN));
-
-        $aliquotaIss = floatval($servico['aliquota_iss'] ?? $tributacao['aliquota_iss'] ?? 5.00);
-        $tribMun->appendChild($dom->createElementNS($ns, 'pAliq', number_format($aliquotaIss, 2, '.', '')));
 
         $trib->appendChild($tribMun);
 
         // Tributação federal (tribFed) - opcional, mas deve vir antes de totTrib
         $tribFed = $dom->createElementNS($ns, 'tribFed');
 
-        // PIS/COFINS (apuração própria)
+        // PIS/COFINS (conforme portal: apenas CST)
         $piscofins = $dom->createElementNS($ns, 'piscofins');
-        $piscofins->appendChild($dom->createElementNS($ns, 'CST', '01'));
-        $vBCPisCofins = $baseCalculo;
-        $pAliqPis = floatval($servico['aliquota_pis'] ?? $tributacao['aliquota_pis'] ?? 0.65);
-        $pAliqCofins = floatval($servico['aliquota_cofins'] ?? $tributacao['aliquota_cofins'] ?? 3.00);
-        $vPis = $vBCPisCofins * $pAliqPis / 100;
-        $vCofins = $vBCPisCofins * $pAliqCofins / 100;
-
-        $piscofins->appendChild($dom->createElementNS($ns, 'vBCPisCofins', number_format($vBCPisCofins, 2, '.', '')));
-        $piscofins->appendChild($dom->createElementNS($ns, 'pAliqPis', number_format($pAliqPis, 2, '.', '')));
-        $piscofins->appendChild($dom->createElementNS($ns, 'pAliqCofins', number_format($pAliqCofins, 2, '.', '')));
-        $piscofins->appendChild($dom->createElementNS($ns, 'vPis', number_format($vPis, 2, '.', '')));
-        $piscofins->appendChild($dom->createElementNS($ns, 'vCofins', number_format($vCofins, 2, '.', '')));
-        // tpRetPisCofins: 1=Retido, 2=Não retido (schema v1.01)
-        $tpRetPisCofins = (!empty($servico['pis_retido']) || !empty($servico['cofins_retido'])) ? '1' : '2';
-        $piscofins->appendChild($dom->createElementNS($ns, 'tpRetPisCofins', $tpRetPisCofins));
+        $piscofins->appendChild($dom->createElementNS($ns, 'CST', '00'));
         $tribFed->appendChild($piscofins);
-
-        // Retenções
-        $tribFed->appendChild($dom->createElementNS($ns, 'vRetCP', '0.00'));
-
-        // IRRF: SEFIN exige valor > 0 (E0700). Quando não há retenção, informar o IRPJ calculado.
-        $valorIrrf = 0.0;
-        if (!empty($servico['irrf_retido'])) {
-            $valorIrrf = floatval($servico['valor_irrf'] ?? 0);
-        } else {
-            $valorIrrf = floatval($servico['valor_irpj'] ?? $servico['irpj'] ?? $servico['valor_irrf'] ?? 0);
-        }
-        // Garantir > 0 e < valor do serviço para evitar E0700
-        if ($valorIrrf <= 0 && $valorServicos > 0) {
-            $valorIrrf = 0.01;
-        }
-        if ($valorIrrf >= $valorServicos) {
-            $valorIrrf = $valorServicos - 0.01;
-        }
-        $tribFed->appendChild($dom->createElementNS($ns, 'vRetIRRF', number_format($valorIrrf, 2, '.', '')));
-
-        // vRetCSLL = soma das retenções de PIS + COFINS + CSLL (NT 007/2026)
-        $vRetCSLL = 0.0;
-        if (!empty($servico['pis_retido'])) $vRetCSLL += floatval($servico['valor_pis'] ?? 0);
-        if (!empty($servico['cofins_retido'])) $vRetCSLL += floatval($servico['valor_cofins'] ?? 0);
-        if (!empty($servico['csll_retido'])) $vRetCSLL += floatval($servico['valor_csll'] ?? 0);
-        $tribFed->appendChild($dom->createElementNS($ns, 'vRetCSLL', number_format($vRetCSLL, 2, '.', '')));
 
         $trib->appendChild($tribFed);
 
@@ -395,33 +314,6 @@ class DpsXmlBuilder
         return $valores;
     }
 
-    private function criarIbscbs(DOMDocument $dom, string $ns, array $servico)
-    {
-        $valorServicos = floatval($servico['valor_servicos'] ?? 0);
-        $valorDeducoes = floatval($servico['valor_deducoes'] ?? 0);
-        $baseCalculo = $valorServicos - $valorDeducoes;
-        if ($baseCalculo < 0) $baseCalculo = 0;
-
-        $IBSCBS = $dom->createElementNS($ns, 'IBSCBS');
-
-        $IBSCBS->appendChild($dom->createElementNS($ns, 'finNFSe', '0'));
-        $IBSCBS->appendChild($dom->createElementNS($ns, 'indFinal', '0'));
-        $IBSCBS->appendChild($dom->createElementNS($ns, 'cIndOp', '000000'));
-        $IBSCBS->appendChild($dom->createElementNS($ns, 'indDest', '0'));
-
-        $valores = $dom->createElementNS($ns, 'valores');
-
-        $trib = $dom->createElementNS($ns, 'trib');
-        $gIBSCBS = $dom->createElementNS($ns, 'gIBSCBS');
-        $gIBSCBS->appendChild($dom->createElementNS($ns, 'CST', '000'));
-        $gIBSCBS->appendChild($dom->createElementNS($ns, 'cClassTrib', '000001'));
-        $trib->appendChild($gIBSCBS);
-        $valores->appendChild($trib);
-
-        $IBSCBS->appendChild($valores);
-
-        return $IBSCBS;
-    }
 
     /**
      * Escapa caracteres XML especiais

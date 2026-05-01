@@ -52,6 +52,10 @@ $config['nfse_serie_dps'] = '70000';
 // Simples Nacional (padrão: true para optante)
 $config['nfse_optante_simples'] = true;
 
+// Código opSimpNac: 1=SN sublimite, 2=SN excesso, 3=MEI/EPP SN, 4=Fator r, 5=Fixo, 6=Anexo VI
+// Verifique no cadastro do CNC NFS-e qual o código correto para o prestador
+$config['nfse_op_simp_nac'] = '3';
+
 // Regime Especial Tributação (0 = nenhum)
 // 1 = Microempresa Municipal
 // 2 = Estimativa
