@@ -46,9 +46,8 @@ $config['nfse_temp_path'] = APPPATH . 'private/temp/';
 $config['nfse_natureza_operacao'] = '1';
 
 // Série da DPS (5 dígitos, conforme cadastro no CNC NFS-e do município)
-// Última nota emitida no portal: série 70000, nDPS 62 (27/04/2026)
-// Próximo nDPS deve ser 63 ou superior
-$config['nfse_serie_dps'] = '70000';
+// TESTE: série 1 para verificar se E0010 é causado pela série 70000
+$config['nfse_serie_dps'] = '1';
 
 // Simples Nacional (padrão: true para optante)
 $config['nfse_optante_simples'] = true;
