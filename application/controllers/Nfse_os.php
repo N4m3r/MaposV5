@@ -885,17 +885,17 @@ class Nfse_os extends MY_Controller
                 if ($maxNDps > 0) {
                     $baseNumero = $maxNDps + 1;
                 } else {
-                    // Nenhuma nota local: usar timestamp para evitar conflito com notas do portal
-                    $baseNumero = intval(date('YmdHi')); // ex: 2026050118 (12 dígitos)
+                    // Nenhuma nota local: começar de 1000 para evitar conflito com notas do portal
+                    $baseNumero = 1000;
                 }
             } else {
-                $baseNumero = intval(date('YmdHi'));
+                $baseNumero = 1000;
             }
 
             return $this->formatarNDps($baseNumero);
         } catch (Exception $e) {
             log_message('error', 'NFS-e Nacional: Erro ao obter próximo n_dps: ' . $e->getMessage());
-            return $this->formatarNDps(intval(date('YmdHi')));
+            return $this->formatarNDps(1000);
         }
     }
 

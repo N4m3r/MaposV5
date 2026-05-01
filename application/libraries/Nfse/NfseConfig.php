@@ -81,6 +81,7 @@ class NfseConfig
         // para satisfazer o pattern TSIdDPS de 45 posições.
         $serieId = str_pad($serie, 5, '0', STR_PAD_LEFT);
         $nDPSId  = str_pad((string)$nDPS, 15, '0', STR_PAD_LEFT);
+        $nDPSId  = substr($nDPSId, -15); // Garante exatamente 15 dígitos, trunca se necessário
         // Tipo de Inscrição Federal: 1=CPF, 2=CNPJ
         $tpInsc = (strlen(preg_replace('/\D/', '', $cnpj)) === 11) ? '1' : '2';
         return 'DPS' . $codMun . $tpInsc . $inscFed . $serieId . $nDPSId;
