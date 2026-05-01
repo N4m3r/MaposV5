@@ -73,8 +73,8 @@ class DpsXmlBuilder
         // verAplic
         $infDps->appendChild($dom->createElementNS($ns, 'verAplic', 'MAPOS-NFSE-1.0'));
 
-        // serie
-        $infDps->appendChild($dom->createElementNS($ns, 'serie', str_pad((string)$serie, 1, '0', STR_PAD_LEFT)));
+        // serie (string de ate 5 digitos, conforme pattern ^0{0,4}\d{1,5}$)
+        $infDps->appendChild($dom->createElementNS($ns, 'serie', str_pad((string)$serie, 5, '0', STR_PAD_LEFT)));
 
         // nDPS
         $nDpsValor = $nDps ?? substr($idDps, -15);
@@ -119,12 +119,20 @@ class DpsXmlBuilder
         $prest = $dom->createElementNS($ns, 'prest');
 
         $cnpj = preg_replace('/\D/', '', $prestador['cnpj'] ?? '');
+        $cpf = preg_replace('/\D/', '', $prestador['cpf'] ?? '');
+        $nif = preg_replace('/\D/', '', $prestador['nif'] ?? '');
         if (strlen($cnpj) === 14) {
             $prest->appendChild($dom->createElementNS($ns, 'CNPJ', $cnpj));
+        } elseif (strlen($cpf) === 11) {
+            $prest->appendChild($dom->createElementNS($ns, 'CPF', $cpf));
+        } elseif (!empty($nif)) {
+            $prest->appendChild($dom->createElementNS($ns, 'NIF', $nif));
         }
 
-        // cNaoNIF obrigatório: 1=Contribuinte com NIF, 2=Não contribuinte
-        $prest->appendChild($dom->createElementNS($ns, 'cNaoNIF', '1'));
+        // cNaoNIF é parte do choice com CNPJ/CPF/NIF — só enviar se NÃO houver CNPJ/CPF/NIF
+        if (empty($cnpj) && empty($cpf) && empty($nif)) {
+            $prest->appendChild($dom->createElementNS($ns, 'cNaoNIF', '1'));
+        }
 
         $im = preg_replace('/\D/', '', $prestador['im'] ?? '');
         if (!empty($im)) {
@@ -175,8 +183,10 @@ class DpsXmlBuilder
             $toma->appendChild($dom->createElementNS($ns, 'CPF', $cpfCnpj));
         }
 
-        // cNaoNIF obrigatório
-        $toma->appendChild($dom->createElementNS($ns, 'cNaoNIF', '1'));
+        // cNaoNIF é parte do choice com CNPJ/CPF/NIF — só enviar se NÃO houver CNPJ/CPF/NIF
+        if (empty($cpfCnpj)) {
+            $toma->appendChild($dom->createElementNS($ns, 'cNaoNIF', '1'));
+        }
 
         $xNome = !empty($tomador['razao_social']) ? $tomador['razao_social'] : 'TOMADOR';
         $toma->appendChild($dom->createElementNS($ns, 'xNome', $this->escapeXml($xNome)));
@@ -231,10 +241,9 @@ class DpsXmlBuilder
     {
         $serv = $dom->createElementNS($ns, 'serv');
 
-        // Local de prestação
+        // Local de prestação (choice: cLocPrestacao para Brasil, cPaisPrestacao para exterior)
         $locPrest = $dom->createElementNS($ns, 'locPrest');
         $locPrest->appendChild($dom->createElementNS($ns, 'cLocPrestacao', $this->codigoMunicipio));
-        $locPrest->appendChild($dom->createElementNS($ns, 'cPaisPrestacao', 'BR'));
         $serv->appendChild($locPrest);
 
         // Código do serviço
@@ -284,14 +293,14 @@ class DpsXmlBuilder
         $vDescCondIncond->appendChild($dom->createElementNS($ns, 'vDescCond', '0.00'));
         $valores->appendChild($vDescCondIncond);
 
-        // Tributação municipal - tag Trib (maiúsculo conforme schema)
-        $Trib = $dom->createElementNS($ns, 'Trib');
+        // Tributação municipal - tag trib (minúsculo conforme schema)
+        $trib = $dom->createElementNS($ns, 'trib');
         $tribMun = $dom->createElementNS($ns, 'tribMun');
 
-        // tribISSQN: 1=Operação tributável, 2=Imunidade, 3=Isenção, etc.
+        // tribISSQN: 1=Operação tributável, 2=Imunidade, 3=Exportação de serviço, 4=Não incidência
         $tribMun->appendChild($dom->createElementNS($ns, 'tribISSQN', '1'));
 
-        // tpImunidade obrigatório (0=Não se aplica)
+        // tpImunidade opcional (0=Não se aplica)
         $tribMun->appendChild($dom->createElementNS($ns, 'tpImunidade', '0'));
 
         // tpRetISSQN: 1=Não retido, 2=Retido tomador, 3=Retido intermediário
@@ -301,14 +310,9 @@ class DpsXmlBuilder
         $aliquotaIss = floatval($servico['aliquota_iss'] ?? $tributacao['aliquota_iss'] ?? 5.00);
         $tribMun->appendChild($dom->createElementNS($ns, 'pAliq', number_format($aliquotaIss, 2, '.', '')));
 
-        $Trib->appendChild($tribMun);
+        $trib->appendChild($tribMun);
 
-        // Totais aproximados (obrigatório)
-        $totTrib = $dom->createElementNS($ns, 'totTrib');
-        $totTrib->appendChild($dom->createElementNS($ns, 'indTotTrib', '0'));
-        $Trib->appendChild($totTrib);
-
-        // Tributação federal (tribFed) - obrigatório em v1.01
+        // Tributação federal (tribFed) - opcional, mas deve vir antes de totTrib
         $tribFed = $dom->createElementNS($ns, 'tribFed');
 
         // PIS/COFINS (apuração própria)
@@ -336,9 +340,14 @@ class DpsXmlBuilder
         if (!empty($servico['csll_retido'])) $vRetCSLL += floatval($servico['valor_csll'] ?? 0);
         $tribFed->appendChild($dom->createElementNS($ns, 'vRetCSLL', number_format($vRetCSLL, 2, '.', '')));
 
-        $Trib->appendChild($tribFed);
+        $trib->appendChild($tribFed);
 
-        $valores->appendChild($Trib);
+        // Totais aproximados (obrigatório)
+        $totTrib = $dom->createElementNS($ns, 'totTrib');
+        $totTrib->appendChild($dom->createElementNS($ns, 'indTotTrib', '0'));
+        $trib->appendChild($totTrib);
+
+        $valores->appendChild($trib);
 
         return $valores;
     }
@@ -356,9 +365,6 @@ class DpsXmlBuilder
         $IBSCBS->appendChild($dom->createElementNS($ns, 'indFinal', '0'));
         $IBSCBS->appendChild($dom->createElementNS($ns, 'cIndOp', '000000'));
         $IBSCBS->appendChild($dom->createElementNS($ns, 'indDest', '0'));
-
-        // indZFMALC - novo na NT 007/2026 (0=Não, 1=Sim)
-        $IBSCBS->appendChild($dom->createElementNS($ns, 'indZFMALC', '0'));
 
         $valores = $dom->createElementNS($ns, 'valores');
 
