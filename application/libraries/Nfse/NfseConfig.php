@@ -68,8 +68,8 @@ class NfseConfig
      */
     public static function gerarIdDps($cnpj, $codMun = '1302603', $serie = 1, $nDPS = null)
     {
-        $cnpjLimpo = preg_replace('/\D/', '', $cnpj);
-        $cnpjLimpo = str_pad($cnpjLimpo, 14, '0', STR_PAD_LEFT);
+        $inscFed = preg_replace('/\D/', '', $cnpj);
+        $inscFed = str_pad($inscFed, 14, '0', STR_PAD_LEFT);
         $codMun = str_pad(preg_replace('/\D/', '', $codMun), 7, '0', STR_PAD_LEFT);
         $serie = (string)$serie;
         if ($nDPS === null) {
@@ -81,7 +81,12 @@ class NfseConfig
         // para satisfazer o pattern TSIdDPS de 45 posições.
         $serieId = str_pad($serie, 5, '0', STR_PAD_LEFT);
         $nDPSId  = str_pad((string)$nDPS, 15, '0', STR_PAD_LEFT);
-        return 'DPS' . $codMun . '1' . $cnpjLimpo . $serieId . $nDPSId;
+        if ($nDPSId[0] === '0') {
+            $nDPSId = '1' . substr($nDPSId, 1);
+        }
+        // Tipo de Inscrição Federal: 1=CPF, 2=CNPJ
+        $tpInsc = (strlen(preg_replace('/\D/', '', $cnpj)) === 11) ? '1' : '2';
+        return 'DPS' . $codMun . $tpInsc . $inscFed . $serieId . $nDPSId;
     }
 
     /**
