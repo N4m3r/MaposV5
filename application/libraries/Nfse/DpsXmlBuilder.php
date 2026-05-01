@@ -271,8 +271,9 @@ class DpsXmlBuilder
         $baseCalculo = $valorServicos - $valorDeducoes;
         if ($baseCalculo < 0) $baseCalculo = 0;
 
-        // vServPrest
+        // vServPrest (obrigatório: vReceb + vServ)
         $vServPrest = $dom->createElementNS($ns, 'vServPrest');
+        $vServPrest->appendChild($dom->createElementNS($ns, 'vReceb', '0.00'));
         $vServPrest->appendChild($dom->createElementNS($ns, 'vServ', number_format($valorServicos, 2, '.', '')));
         $valores->appendChild($vServPrest);
 
