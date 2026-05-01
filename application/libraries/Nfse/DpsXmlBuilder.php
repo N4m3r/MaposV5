@@ -77,13 +77,9 @@ class DpsXmlBuilder
         $serieXml = str_pad((string)$serie, 5, '0', STR_PAD_LEFT);
         $infDps->appendChild($dom->createElementNS($ns, 'serie', $serieXml));
 
-        // nDPS (15 posições, deve bater com Id e começar com 1-9 para satisfazer TSNumDPS)
+        // nDPS (número sequencial, conforme portal SEFIN)
         $nDpsValor = $nDps ?? '1';
-        $nDpsXml = str_pad((string)$nDpsValor, 15, '0', STR_PAD_LEFT);
-        if ($nDpsXml[0] === '0') {
-            $nDpsXml = '1' . substr($nDpsXml, 1);
-        }
-        $infDps->appendChild($dom->createElementNS($ns, 'nDPS', $nDpsXml));
+        $infDps->appendChild($dom->createElementNS($ns, 'nDPS', (string)$nDpsValor));
 
         // dCompet (AAAA-MM-DD)
         $infDps->appendChild($dom->createElementNS($ns, 'dCompet', $competencia));

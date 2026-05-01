@@ -896,18 +896,12 @@ class Nfse_os extends MY_Controller
     }
 
     /**
-     * Formata número da DPS para 15 dígitos sem zeros à esquerda
-     * O schema TSNumDPS exige ^[1-9]\d{0,14}$ e o Id TSIdDPS exige 45 chars.
+     * Retorna número da DPS como string (sem formatação artificial)
+     * O schema TSNumDPS exige ^[1-9]\d{0,14}$ e o portal envia números sequenciais simples.
      */
     private function formatarNDps($numero)
     {
-        $str = (string)$numero;
-        // Se já tem 15 dígitos e não começa com zero, usar como está
-        if (strlen($str) === 15 && $str[0] !== '0') {
-            return $str;
-        }
-        // Prefixo 1 + número preenchido com zeros até 14 dígitos = 15 total
-        return '1' . str_pad($str, 14, '0', STR_PAD_LEFT);
+        return (string)intval($numero);
     }
 
     /**
