@@ -875,23 +875,27 @@ class Nfse_os extends MY_Controller
     private function getProximoNumeroDps($serie = '1')
     {
         try {
-            if (!$this->db->table_exists('os_nfse_emitida')) {
-                return $this->formatarNDps(1);
+            $baseNumero = 1;
+
+            if ($this->db->table_exists('os_nfse_emitida') && $this->db->field_exists('n_dps', 'os_nfse_emitida')) {
+                $serieEscapada = $this->db->escape($serie);
+                $sql = "SELECT MAX(CAST(n_dps AS UNSIGNED)) as max_n_dps FROM os_nfse_emitida WHERE n_dps IS NOT NULL AND n_dps != '' AND serie_dps = {$serieEscapada}";
+                $query = $this->db->query($sql);
+                $maxNDps = intval($query->row()->max_n_dps ?? 0);
+                if ($maxNDps > 0) {
+                    $baseNumero = $maxNDps + 1;
+                } else {
+                    // Nenhuma nota local: usar timestamp para evitar conflito com notas do portal
+                    $baseNumero = intval(date('YmdHi')); // ex: 2026050118 (12 dígitos)
+                }
+            } else {
+                $baseNumero = intval(date('YmdHi'));
             }
 
-            if (!$this->db->field_exists('n_dps', 'os_nfse_emitida')) {
-                return $this->formatarNDps(1);
-            }
-
-            $serieEscapada = $this->db->escape($serie);
-            $sql = "SELECT MAX(CAST(n_dps AS UNSIGNED)) as max_n_dps FROM os_nfse_emitida WHERE n_dps IS NOT NULL AND n_dps != '' AND serie_dps = {$serieEscapada}";
-            $query = $this->db->query($sql);
-            $maxNDps = intval($query->row()->max_n_dps ?? 0);
-
-            return $this->formatarNDps($maxNDps + 1);
+            return $this->formatarNDps($baseNumero);
         } catch (Exception $e) {
             log_message('error', 'NFS-e Nacional: Erro ao obter próximo n_dps: ' . $e->getMessage());
-            return $this->formatarNDps(1);
+            return $this->formatarNDps(intval(date('YmdHi')));
         }
     }
 
