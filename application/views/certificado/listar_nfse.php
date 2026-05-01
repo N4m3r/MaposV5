@@ -46,8 +46,8 @@
                             <?php foreach ($notas as $nota): ?>
                                 <tr>
                                     <td><?php echo $nota->id; ?></td>
-                                    <td><?php echo $nota->numero_nota; ?></td>
-                                    <td><?php echo $nota->prestador_nome ?? 'N/A'; ?></td>
+                                    <td><?php echo $nota->numero; ?></td>
+                                    <td><?php echo isset($nota->prestador_nome) ? $nota->prestador_nome : ($nota->chave_acesso ?: 'N/A'); ?></td>
                                     <td><?php echo date('d/m/Y', strtotime($nota->data_emissao)); ?></td>
                                     <td class="text-right">
                                         R$ <?php echo number_format($nota->valor_total, 2, ',', '.'); ?>
@@ -82,8 +82,8 @@
                                         <?php endif; ?>
                                     </td>
                                     <td class="text-center">
-                                        <?php if (!empty($nota->caminho_xml)): ?>
-                                            <a href="<?php echo base_url($nota->caminho_xml); ?>" target="_blank" class="btn btn-mini btn-inverse" title="XML">
+                                        <?php if (!empty($nota->dados_xml)): ?>
+                                            <a href="<?php echo site_url('certificado/download_xml/' . $nota->id); ?>" class="btn btn-mini btn-inverse" title="XML">
                                                 <i class="bx bx-code"></i> XML
                                             </a>
                                         <?php endif; ?>

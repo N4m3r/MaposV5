@@ -677,6 +677,30 @@ class Certificado extends MY_Controller
     }
 
     /**
+     * Download do XML de uma NFS-e importada (do banco de dados)
+     */
+    public function download_xml($id)
+    {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vCertificado')) {
+            $this->session->set_flashdata('error', 'Sem permissão.');
+            redirect('certificado');
+        }
+
+        $nota = $this->db->where('id', $id)->get('certificado_nfe_importada')->row();
+        if (!$nota || empty($nota->dados_xml)) {
+            show_error('XML não encontrado.', 404);
+            return;
+        }
+
+        $filename = 'nfse_' . ($nota->numero ?: $nota->id) . '.xml';
+        header('Content-Type: application/xml; charset=utf-8');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Content-Length: ' . strlen($nota->dados_xml));
+        echo $nota->dados_xml;
+        exit;
+    }
+
+    /**
      * API para consultas AJAX
      */
     public function api_consulta()
