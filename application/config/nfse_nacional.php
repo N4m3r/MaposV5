@@ -45,6 +45,10 @@ $config['nfse_temp_path'] = APPPATH . 'private/temp/';
 // 6 = Exigibilidade suspensa por procedimento administrativo
 $config['nfse_natureza_operacao'] = '1';
 
+// Série da DPS (5 dígitos, conforme cadastro no CNC NFS-e do município)
+// Manaus utiliza série 70000 para DPS no portal do contribuinte
+$config['nfse_serie_dps'] = '70000';
+
 // Simples Nacional (padrão: true para optante)
 $config['nfse_optante_simples'] = true;
 

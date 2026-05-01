@@ -872,7 +872,7 @@ class Nfse_os extends MY_Controller
      * Formato: 1 + número sequencial preenchido com zeros até 14 dígitos = 15 total.
      * Ex: 1 → 100000000000001, 2 → 100000000000002
      */
-    private function getProximoNumeroDps()
+    private function getProximoNumeroDps($serie = '1')
     {
         try {
             if (!$this->db->table_exists('os_nfse_emitida')) {
@@ -883,7 +883,8 @@ class Nfse_os extends MY_Controller
                 return $this->formatarNDps(1);
             }
 
-            $sql = "SELECT MAX(CAST(n_dps AS UNSIGNED)) as max_n_dps FROM os_nfse_emitida WHERE n_dps IS NOT NULL AND n_dps != ''";
+            $serieEscapada = $this->db->escape($serie);
+            $sql = "SELECT MAX(CAST(n_dps AS UNSIGNED)) as max_n_dps FROM os_nfse_emitida WHERE n_dps IS NOT NULL AND n_dps != '' AND serie_dps = {$serieEscapada}";
             $query = $this->db->query($sql);
             $maxNDps = intval($query->row()->max_n_dps ?? 0);
 
@@ -964,9 +965,24 @@ class Nfse_os extends MY_Controller
                 return;
             }
 
-            // Carregar config
-            $this->config->load('nfse_nacional', true);
-            $nfseConfig = $this->config->item('nfse_nacional');
+            // Carregar config (sem segundo parametro true para mergear no array principal de configs)
+            $this->config->load('nfse_nacional');
+            $nfseConfig = [
+                'nfse_ambiente' => $this->config->item('nfse_ambiente'),
+                'nfse_urls' => $this->config->item('nfse_urls'),
+                'nfse_codigo_municipio' => $this->config->item('nfse_codigo_municipio'),
+                'nfse_codigo_uf' => $this->config->item('nfse_codigo_uf'),
+                'nfse_versao_dps' => $this->config->item('nfse_versao_dps'),
+                'nfse_timeout' => $this->config->item('nfse_timeout'),
+                'nfse_ca_path' => $this->config->item('nfse_ca_path'),
+                'nfse_temp_path' => $this->config->item('nfse_temp_path'),
+                'nfse_natureza_operacao' => $this->config->item('nfse_natureza_operacao'),
+                'nfse_serie_dps' => $this->config->item('nfse_serie_dps'),
+                'nfse_optante_simples' => $this->config->item('nfse_optante_simples'),
+                'nfse_regime_especial' => $this->config->item('nfse_regime_especial'),
+                'nfse_incentivador_cultural' => $this->config->item('nfse_incentivador_cultural'),
+                'nfse_responsavel_retencao' => $this->config->item('nfse_responsavel_retencao'),
+            ];
 
             // Instanciar bibliotecas NFS-e Nacional
             $this->load->library('Nfse/NfseConfig');
@@ -1082,7 +1098,7 @@ class Nfse_os extends MY_Controller
             // Tributacao
             $tributacao = [
                 'natureza_operacao' => $nfseConfig['nfse_natureza_operacao'] ?? '1',
-                'optante_simples' => true,
+                'optante_simples' => $nfseConfig['nfse_optante_simples'] ?? true,
                 'regime_especial' => $nfseConfig['nfse_regime_especial'] ?? '0',
                 'incentivador_cultural' => $nfseConfig['nfse_incentivador_cultural'] ?? '0',
                 'aliquota_iss' => floatval($this->impostos_model->getConfig('IMPOSTO_ISS_MUNICIPAL') ?: 5.00),
@@ -1098,8 +1114,9 @@ class Nfse_os extends MY_Controller
             ]);
 
             // Obter próximo número sequencial da DPS
-            $proximoNDps = $this->getProximoNumeroDps();
-            log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Próximo n_dps=' . $proximoNDps);
+            $serieDps = $nfseConfig['nfse_serie_dps'] ?? '1';
+            $proximoNDps = $this->getProximoNumeroDps($serieDps);
+            log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Série DPS=' . $serieDps . ' | Próximo n_dps=' . $proximoNDps);
 
             $dadosDps = [
                 'prestador' => $prestador,
@@ -1108,7 +1125,7 @@ class Nfse_os extends MY_Controller
                 'tributacao' => $tributacao,
                 'competencia' => $competencia,
                 'ambiente' => $pemPaths['ambiente'] ?? 'homologacao',
-                'serie' => 1,
+                'serie' => $serieDps,
                 'n_dps' => $proximoNDps,
             ];
 
@@ -1184,7 +1201,7 @@ class Nfse_os extends MY_Controller
                     'valor_total_retencao' => $retencoesCalculadas['valor_total_retencao'] ?? 0,
                     'ambiente' => $pemPaths['ambiente'] ?? 'homologacao',
                     'n_dps' => $proximoNDps,
-                    'serie_dps' => '1',
+                    'serie_dps' => $serieDps,
                 ];
 
                 $emitirResult = $this->nfse_emitida_model->emitir($os_id, $dadosNfse);
@@ -1279,8 +1296,23 @@ class Nfse_os extends MY_Controller
 
         try {
             // Config e instanciar API
-            $this->config->load('nfse_nacional', true);
-            $nfseConfig = $this->config->item('nfse_nacional');
+            $this->config->load('nfse_nacional');
+            $nfseConfig = [
+                'nfse_ambiente' => $this->config->item('nfse_ambiente'),
+                'nfse_urls' => $this->config->item('nfse_urls'),
+                'nfse_codigo_municipio' => $this->config->item('nfse_codigo_municipio'),
+                'nfse_codigo_uf' => $this->config->item('nfse_codigo_uf'),
+                'nfse_versao_dps' => $this->config->item('nfse_versao_dps'),
+                'nfse_timeout' => $this->config->item('nfse_timeout'),
+                'nfse_ca_path' => $this->config->item('nfse_ca_path'),
+                'nfse_temp_path' => $this->config->item('nfse_temp_path'),
+                'nfse_natureza_operacao' => $this->config->item('nfse_natureza_operacao'),
+                'nfse_serie_dps' => $this->config->item('nfse_serie_dps'),
+                'nfse_optante_simples' => $this->config->item('nfse_optante_simples'),
+                'nfse_regime_especial' => $this->config->item('nfse_regime_especial'),
+                'nfse_incentivador_cultural' => $this->config->item('nfse_incentivador_cultural'),
+                'nfse_responsavel_retencao' => $this->config->item('nfse_responsavel_retencao'),
+            ];
 
             $this->load->library('Nfse/XmlSigner');
 
@@ -1375,8 +1407,23 @@ class Nfse_os extends MY_Controller
         }
 
         try {
-            $this->config->load('nfse_nacional', true);
-            $nfseConfig = $this->config->item('nfse_nacional');
+            $this->config->load('nfse_nacional');
+            $nfseConfig = [
+                'nfse_ambiente' => $this->config->item('nfse_ambiente'),
+                'nfse_urls' => $this->config->item('nfse_urls'),
+                'nfse_codigo_municipio' => $this->config->item('nfse_codigo_municipio'),
+                'nfse_codigo_uf' => $this->config->item('nfse_codigo_uf'),
+                'nfse_versao_dps' => $this->config->item('nfse_versao_dps'),
+                'nfse_timeout' => $this->config->item('nfse_timeout'),
+                'nfse_ca_path' => $this->config->item('nfse_ca_path'),
+                'nfse_temp_path' => $this->config->item('nfse_temp_path'),
+                'nfse_natureza_operacao' => $this->config->item('nfse_natureza_operacao'),
+                'nfse_serie_dps' => $this->config->item('nfse_serie_dps'),
+                'nfse_optante_simples' => $this->config->item('nfse_optante_simples'),
+                'nfse_regime_especial' => $this->config->item('nfse_regime_especial'),
+                'nfse_incentivador_cultural' => $this->config->item('nfse_incentivador_cultural'),
+                'nfse_responsavel_retencao' => $this->config->item('nfse_responsavel_retencao'),
+            ];
 
             require_once APPPATH . 'libraries/Nfse/NfseNacional.php';
             $certAtivo = $this->certificado_model->getCertificadoAtivo();
