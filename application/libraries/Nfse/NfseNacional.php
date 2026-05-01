@@ -52,7 +52,7 @@ class NfseNacional
      */
     public function emitir($xmlDps)
     {
-        // Comprimir DPS com GZip e codificar em Base64
+        // Comprimir DPS com GZip e codificar em Base64 (conforme documentação SEFIN Nacional)
         $xmlGzipped = gzencode($xmlDps, 9);
         if ($xmlGzipped === false) {
             return [
@@ -62,12 +62,10 @@ class NfseNacional
         }
         $xmlBase64 = base64_encode($xmlGzipped);
 
-        // Montar payload JSON conforme especificação da API Nacional
+        // Payload JSON conforme documentação oficial SEFIN Nacional
+        // POST /nfse body: {"dpsXmlGZipB64": "<xml-gzip+base64>"}
         $payload = [
-            'cpfCnpj' => $this->cnpj,
-            'dps' => [
-                'xml' => $xmlBase64,
-            ],
+            'dpsXmlGZipB64' => $xmlBase64,
         ];
 
         $url = $this->baseUrl . 'nfse';
@@ -100,38 +98,6 @@ class NfseNacional
                 'codigo_verificacao' => $data['codigoVerificacao'] ?? $data['codigo_verificacao'] ?? '',
                 'data' => $data,
             ];
-        }
-
-        // Se retornou 404, tentar payload alternativo (sem GZip, apenas Base64)
-        if ($httpCode === 404) {
-            log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Tentativa 1 falhou com 404. Tentando payload sem GZip...');
-            $xmlBase64Raw = base64_encode($xmlDps);
-            $payloadRaw = [
-                'cpfCnpj' => $this->cnpj,
-                'dps' => [
-                    'xml' => $xmlBase64Raw,
-                ],
-            ];
-            $response2 = $this->sendRequest('POST', $url, $payloadRaw);
-            if ($response2 !== false && isset($response2['httpCode']) && $response2['httpCode'] === 201) {
-                $data = $response2['body'] ?? [];
-                return [
-                    'success' => true,
-                    'chave_acesso' => $data['chaveAcesso'] ?? $data['chave_acesso'] ?? '',
-                    'numero' => $data['numero'] ?? $data['nNFSe'] ?? '',
-                    'protocolo' => $data['protocolo'] ?? '',
-                    'data_emissao' => $data['dataHoraEmissao'] ?? $data['data_emissao'] ?? '',
-                    'url_danfe' => $data['urlDanfe'] ?? $data['url_danfe'] ?? '',
-                    'xml_nfse' => $data['xmlNfse'] ?? $data['xml_nfse'] ?? '',
-                    'codigo_verificacao' => $data['codigoVerificacao'] ?? $data['codigo_verificacao'] ?? '',
-                    'data' => $data,
-                ];
-            }
-            if ($response2 !== false) {
-                $httpCode = $response2['httpCode'] ?? 0;
-                $body = $response2['body'] ?? null;
-                log_message('error', 'NFS-e Nacional [DIAGNOSTICO]: Tentativa 2 (sem GZip) HTTP=' . $httpCode . ' Body=' . (is_string($body) ? substr($body, 0, 2000) : json_encode($body)));
-            }
         }
 
         // Erro na emissão
@@ -250,10 +216,7 @@ class NfseNacional
         $eventoBase64 = base64_encode($eventoGzipped);
 
         $payload = [
-            'cpfCnpj' => $this->cnpj,
-            'tipoEvento' => 'Cancelamento',
-            'motivo' => substr($motivo, 0, 255),
-            'xmlEvento' => $eventoBase64,
+            'pedidoRegistroEventoXmlGZipB64' => $eventoBase64,
         ];
 
         $url = $this->baseUrl . 'nfse/' . urlencode($chaveAcesso) . '/eventos';
