@@ -24,6 +24,19 @@
                 <h5>Importar XML da NFS-e</h5>
             </div>
             <div class="widget-content">
+
+                <?php if ($this->session->flashdata('success')): ?>
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i> <?= $this->session->flashdata('success') ?>
+                </div>
+                <?php endif; ?>
+
+                <?php if ($this->session->flashdata('error')): ?>
+                <div class="alert alert-error">
+                    <i class="fas fa-exclamation-circle"></i> <?= $this->session->flashdata('error') ?>
+                </div>
+                <?php endif; ?>
+
                 <form method="post" action="<?= site_url('certificado/importar_nfse') ?>" enctype="multipart/form-data">
 
                     <div class="alert alert-info">

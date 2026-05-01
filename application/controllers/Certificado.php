@@ -242,7 +242,8 @@ class Certificado extends MY_Controller
     }
 
     /**
-     * Importação de NFS-e
+     * Importação de NFS-e via XML
+     * Suporta NFS-e Nacional (DPS), ABRASF e padrões municipais
      */
     public function importar_nfse()
     {
@@ -258,48 +259,88 @@ class Certificado extends MY_Controller
         }
 
         if ($this->input->post()) {
-            // Processar upload de XML
-            if (isset($_FILES['xml_nfse']) && $_FILES['xml_nfse']['tmp_name']) {
-                // Validar extensão e MIME type
+            log_message('debug', '[Certificado importar_nfse] POST recebido. FILES=' . json_encode($_FILES));
+
+            if (isset($_FILES['xml_nfse']) && !empty($_FILES['xml_nfse']['tmp_name'])) {
                 $ext = strtolower(pathinfo($_FILES['xml_nfse']['name'], PATHINFO_EXTENSION));
                 if ($ext !== 'xml') {
-                    $this->session->set_flashdata('error', 'Arquivo deve ser XML.');
+                    log_message('error', '[Certificado importar_nfse] Extensao invalida: ' . $ext);
+                    $this->session->set_flashdata('error', 'Arquivo deve ser XML (.xml)');
                     redirect('certificado/importar_nfse');
                 }
 
-                // Proteger contra XXE
-                libxml_disable_entity_loader(true);
-                $xml = simplexml_load_file($_FILES['xml_nfse']['tmp_name'], 'SimpleXMLElement', LIBXML_NONET);
-
-                if ($xml) {
-                    $dados = [
-                        'chave_acesso' => (string)$xml->Nfse->Numero,
-                        'numero' => (string)$xml->Nfse->Numero,
-                        'data_emissao' => date('Y-m-d H:i:s', strtotime((string)$xml->Nfse->DataEmissao)),
-                        'valor_total' => (float)$xml->Nfse->ValoresNfse->ValorServicos,
-                        'valor_impostos' => (float)$xml->Nfse->ValoresNfse->ValorIss,
-                        'situacao' => 'Autorizada',
-                        'xml' => file_get_contents($_FILES['xml_nfse']['tmp_name'])
-                    ];
-
-                    $resultado = $this->certificado_model->importarNFSe($dados, $cert->id);
-
-                    if (isset($resultado['success'])) {
-                        $this->session->set_flashdata('success', 'NFS-e importada com sucesso!');
-
-                        // Criar lançamento no sistema de impostos
-                        $this->impostos_model->reterImpostos([
-                            'valor_bruto' => $dados['valor_total'],
-                            'cliente_id' => 0, // Sistema
-                            'nota_fiscal' => $dados['numero'],
-                            'data_competencia' => date('Y-m-01', strtotime($dados['data_emissao']))
-                        ]);
-                    } else {
-                        $this->session->set_flashdata('error', $resultado['error']);
-                    }
-                } else {
-                    $this->session->set_flashdata('error', 'Arquivo XML inválido.');
+                $xmlContent = file_get_contents($_FILES['xml_nfse']['tmp_name']);
+                if (empty($xmlContent)) {
+                    log_message('error', '[Certificado importar_nfse] Arquivo XML vazio');
+                    $this->session->set_flashdata('error', 'Arquivo XML vazio.');
+                    redirect('certificado/importar_nfse');
                 }
+
+                log_message('debug', '[Certificado importar_nfse] XML tamanho=' . strlen($xmlContent));
+
+                libxml_use_internal_errors(true);
+                $dom = new DOMDocument();
+                if (!@$dom->loadXML($xmlContent)) {
+                    $erros = libxml_get_errors();
+                    $msgs = [];
+                    foreach ($erros as $e) {
+                        $msgs[] = trim($e->message) . ' (linha ' . $e->line . ')';
+                    }
+                    libxml_clear_errors();
+                    log_message('error', '[Certificado importar_nfse] XML mal formado: ' . implode('; ', $msgs));
+                    $this->session->set_flashdata('error', 'Arquivo XML inválido ou mal formado.');
+                    redirect('certificado/importar_nfse');
+                }
+
+                // Extrair dados com suporte a múltiplos formatos
+                $dadosExtraidos = $this->extrairDadosXmlNfse($dom);
+                log_message('debug', '[Certificado importar_nfse] Dados extraidos=' . json_encode($dadosExtraidos));
+
+                // Validar dados mínimos
+                if (empty($dadosExtraidos['numero_nfse']) && empty($dadosExtraidos['chave_acesso'])) {
+                    log_message('error', '[Certificado importar_nfse] Numero ou chave nao encontrados no XML');
+                    $this->session->set_flashdata('error', 'Não foi possível identificar o número da nota no XML. Verifique se o arquivo é uma NFS-e válida.');
+                    redirect('certificado/importar_nfse');
+                }
+
+                // Usar número como chave fallback
+                $chave = $dadosExtraidos['chave_acesso'] ?: ('MANUAL_' . $dadosExtraidos['numero_nfse']);
+                $numero = $dadosExtraidos['numero_nfse'] ?: $chave;
+                $dataEmissao = $dadosExtraidos['data_emissao'] ?: date('Y-m-d H:i:s');
+                $valorTotal = $dadosExtraidos['valor_servicos'] > 0 ? $dadosExtraidos['valor_servicos'] : 0;
+                $valorImpostos = $dadosExtraidos['valor_deducoes'] > 0 ? $dadosExtraidos['valor_deducoes'] : 0;
+
+                $dados = [
+                    'chave_acesso' => (string)$chave,
+                    'numero' => (string)$numero,
+                    'data_emissao' => $dataEmissao,
+                    'valor_total' => $valorTotal,
+                    'valor_impostos' => $valorImpostos,
+                    'situacao' => 'Autorizada',
+                    'xml' => $xmlContent
+                ];
+
+                log_message('debug', '[Certificado importar_nfse] Chamando importarNFSe com chave=' . $chave . ' numero=' . $numero);
+                $resultado = $this->certificado_model->importarNFSe($dados, $cert->id);
+
+                if (isset($resultado['success'])) {
+                    log_message('info', '[Certificado importar_nfse] Sucesso ID=' . ($resultado['id'] ?? '?'));
+                    $this->session->set_flashdata('success', 'NFS-e #' . $numero . ' importada com sucesso! Valor: R$ ' . number_format($valorTotal, 2, ',', '.'));
+
+                    // Criar lançamento no sistema de impostos
+                    $this->impostos_model->reterImpostos([
+                        'valor_bruto' => $valorTotal,
+                        'cliente_id' => 0,
+                        'nota_fiscal' => $numero,
+                        'data_competencia' => date('Y-m-01', strtotime($dataEmissao))
+                    ]);
+                } else {
+                    log_message('error', '[Certificado importar_nfse] Erro do model: ' . ($resultado['error'] ?? 'desconhecido'));
+                    $this->session->set_flashdata('error', $resultado['error'] ?? 'Erro ao importar nota.');
+                }
+            } else {
+                log_message('error', '[Certificado importar_nfse] Nenhum arquivo enviado. FILES=' . json_encode($_FILES));
+                $this->session->set_flashdata('error', 'Nenhum arquivo XML enviado.');
             }
         }
 
@@ -311,6 +352,109 @@ class Certificado extends MY_Controller
 
         $this->data['view'] = 'certificado/importar_nfse';
         return $this->layout();
+    }
+
+    /**
+     * Extrair dados básicos de um XML de NFS-e
+     * Suporta NFS-e Nacional (DPS) e padrões municipais
+     */
+    private function extrairDadosXmlNfse(DOMDocument $dom)
+    {
+        $dados = [
+            'numero_nfse' => null,
+            'chave_acesso' => null,
+            'protocolo' => null,
+            'codigo_verificacao' => null,
+            'data_emissao' => null,
+            'valor_servicos' => 0,
+            'valor_deducoes' => 0,
+            'valor_liquido' => 0,
+        ];
+
+        // NFS-e Nacional: nNFSe
+        $nNFSe = $dom->getElementsByTagName('nNFSe')->item(0);
+        if ($nNFSe) {
+            $dados['numero_nfse'] = trim($nNFSe->nodeValue);
+        }
+
+        // ABRASF / municipal: Numero
+        if (!$dados['numero_nfse']) {
+            $numNode = $dom->getElementsByTagName('Numero')->item(0);
+            if ($numNode) {
+                $dados['numero_nfse'] = trim($numNode->nodeValue);
+            }
+        }
+
+        // Chave de acesso (Nacional)
+        $chave = $dom->getElementsByTagName('chaveAcesso')->item(0);
+        if (!$chave) {
+            $chave = $dom->getElementsByTagName('ChaveAcesso')->item(0);
+        }
+        if (!$chave) {
+            $chave = $dom->getElementsByTagName('ChaveAcessoNfse')->item(0);
+        }
+        if ($chave) {
+            $dados['chave_acesso'] = trim($chave->nodeValue);
+        }
+
+        // Código de verificação
+        $codVerif = $dom->getElementsByTagName('codigoVerificacao')->item(0);
+        if (!$codVerif) {
+            $codVerif = $dom->getElementsByTagName('CodigoVerificacao')->item(0);
+        }
+        if (!$codVerif) {
+            $codVerif = $dom->getElementsByTagName('CodigoVerificacao')->item(0);
+        }
+        if ($codVerif) {
+            $dados['codigo_verificacao'] = trim($codVerif->nodeValue);
+        }
+
+        // Data de emissão
+        $dhEmi = $dom->getElementsByTagName('dhEmi')->item(0);
+        if (!$dhEmi) {
+            $dhEmi = $dom->getElementsByTagName('DataEmissao')->item(0);
+        }
+        if (!$dhEmi) {
+            $dhEmi = $dom->getElementsByTagName('DataEmissao')->item(0);
+        }
+        if ($dhEmi) {
+            $dt = trim($dhEmi->nodeValue);
+            if (strlen($dt) >= 10) {
+                $dados['data_emissao'] = substr($dt, 0, 10) . ' ' . (substr($dt, 11, 8) ?: '00:00:00');
+            }
+        }
+
+        // Valor dos serviços
+        $vServ = $dom->getElementsByTagName('vServ')->item(0);
+        if (!$vServ) {
+            $vServ = $dom->getElementsByTagName('ValorServicos')->item(0);
+        }
+        if (!$vServ) {
+            $vServ = $dom->getElementsByTagName('ValorServicos')->item(0);
+        }
+        if ($vServ) {
+            $dados['valor_servicos'] = floatval(str_replace(',', '.', trim($vServ->nodeValue)));
+        }
+
+        // Valor líquido
+        $vLiq = $dom->getElementsByTagName('ValorLiquidoNfse')->item(0);
+        if (!$vLiq) {
+            $vLiq = $dom->getElementsByTagName('vLiq')->item(0);
+        }
+        if ($vLiq) {
+            $dados['valor_liquido'] = floatval(str_replace(',', '.', trim($vLiq->nodeValue)));
+        }
+
+        // Deduções
+        $vDed = $dom->getElementsByTagName('vDed')->item(0);
+        if (!$vDed) {
+            $vDed = $dom->getElementsByTagName('ValorDeducoes')->item(0);
+        }
+        if ($vDed) {
+            $dados['valor_deducoes'] = floatval(str_replace(',', '.', trim($vDed->nodeValue)));
+        }
+
+        return $dados;
     }
 
     /**

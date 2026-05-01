@@ -719,6 +719,11 @@ class Certificado_model extends CI_Model
             $certificado_id = $cert->id;
         }
 
+        if (!$this->db->table_exists('certificado_nfe_importada')) {
+            log_message('error', '[Certificado_model] Tabela certificado_nfe_importada nao existe');
+            return ['error' => 'Tabela de notas importadas não existe. Execute as migrations.'];
+        }
+
         // Verificar se já existe
         $this->db->where('chave_acesso', $dados['chave_acesso']);
         if ($this->db->get('certificado_nfe_importada')->num_rows() > 0) {
