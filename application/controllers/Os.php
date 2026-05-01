@@ -518,6 +518,13 @@ class Os extends MY_Controller
         $this->data['historico_nfse'] = $this->nfse_emitida_model->getAllByOsId($os_id);
         $this->data['historico_boleto'] = $this->boleto_os_model->getAllByOsId($os_id);
 
+        // Verificar se existe NFSe importada (XML externo) vinculada a esta OS
+        if ($this->db->table_exists('certificado_nfe_importada')) {
+            $this->data['nfse_importada'] = $this->db->where('os_id', $os_id)->order_by('id', 'DESC')->get('certificado_nfe_importada')->row();
+        } else {
+            $this->data['nfse_importada'] = null;
+        }
+
         // DEBUG: logar estado da NFSe para diagnosticar exibicao na view
         $nfseDebug = $this->data['nfse_atual'];
         log_message('debug', 'OS Visualizar NFSe Debug: os_id=' . $os_id . ' nfse_atual=' . ($nfseDebug ? 'ID=' . ($nfseDebug->id ?? '?') . ' situacao=' . ($nfseDebug->situacao ?? 'null') : 'NULL'));

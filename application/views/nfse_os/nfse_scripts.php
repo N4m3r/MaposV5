@@ -604,6 +604,29 @@ function copiarLinhaDigitavel() {
     if (input) { input.select(); document.execCommand('copy'); alert('Copiado!'); }
 }
 
+function imprimirXmlNfse(importadaId) {
+    var win = window.open('', '_blank');
+    if (!win) { alert('Permita popups para visualizar o XML.'); return; }
+    $.ajax({
+        url: '<?= site_url("certificado/download_xml/") ?>' + importadaId,
+        type: 'GET',
+        dataType: 'text',
+        success: function(xml) {
+            var html = '<!DOCTYPE html><html><head><title>XML NFS-e</title>';
+            html += '<style>body{font-family:monospace;background:#1c1d26;color:#caced8;padding:20px;white-space:pre-wrap;word-break:break-all;}</style>';
+            html += '</head><body><h3>XML NFS-e Importada</h3><pre>' + xml.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</pre></body></html>';
+            win.document.write(html);
+            win.document.close();
+            win.focus();
+            win.print();
+        },
+        error: function() {
+            win.document.write('<p>Erro ao carregar XML.</p>');
+            win.document.close();
+        }
+    });
+}
+
 $(document).ready(function() {
     // Inicializa valores da OS no wizard
     var valorInicial = wizardData.valorServicos || 0;
