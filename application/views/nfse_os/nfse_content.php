@@ -21,7 +21,9 @@ $descontoTomador = floatval($result->valor_desconto ?? 0);
 $valorBaseNFSe = $descontoTomador > 0 ? $descontoTomador : ($totalServico > 0 ? $totalServico : $totalProdutos);
 $ambiente = $ambiente_nfse ?? 'homologacao';
 
-$mostrarWizard = !$nfse_atual || (isset($nfse_atual->situacao) && $nfse_atual->situacao == 'Cancelada');
+// Garantir que a NFSe emitida apareça corretamente
+$situacaoNfse = is_object($nfse_atual) ? ($nfse_atual->situacao ?? '') : ($nfse_atual['situacao'] ?? '');
+$mostrarWizard = empty($nfse_atual) || $situacaoNfse === 'Cancelada';
 
 if (!function_exists('fmtMoney')) {
     function fmtMoney($v) {

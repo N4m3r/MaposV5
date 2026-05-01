@@ -518,6 +518,11 @@ class Os extends MY_Controller
         $this->data['historico_nfse'] = $this->nfse_emitida_model->getAllByOsId($os_id);
         $this->data['historico_boleto'] = $this->boleto_os_model->getAllByOsId($os_id);
 
+        // DEBUG: logar estado da NFSe para diagnosticar exibicao na view
+        $nfseDebug = $this->data['nfse_atual'];
+        log_message('debug', 'OS Visualizar NFSe Debug: os_id=' . $os_id . ' nfse_atual=' . ($nfseDebug ? 'ID=' . ($nfseDebug->id ?? '?') . ' situacao=' . ($nfseDebug->situacao ?? 'null') : 'NULL'));
+
+
         // Carregar dados tributários para wizard NFS-e
         $this->load->model('impostos_model');
         $this->data['tributacao'] = $this->impostos_model->getConfiguracaoTributacao();
