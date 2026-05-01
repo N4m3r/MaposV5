@@ -85,11 +85,12 @@ class XmlSigner
             return false;
         }
 
-        // Canonicalizar o infDPS (C14N) — elemento assinado é o infDPS, não o DPS raiz
-        $canonicalXml = $infDps->C14N(true, false);
+        // Canonicalizar o infDPS (C14N não exclusivo) — deve corresponder ao Transform
+        $canonicalXml = $infDps->C14N(false, false);
 
         // Calcular digest (SHA-256)
         $digest = base64_encode(hash('sha256', $canonicalXml, true));
+        log_message('error', 'XmlSigner [DEBUG]: Digest infDPS tamanho=' . strlen($canonicalXml) . ' | DigestValue=' . $digest);
 
         $dsigNs = 'http://www.w3.org/2000/09/xmldsig#';
 
@@ -140,9 +141,10 @@ class XmlSigner
         $signedInfo->appendChild($reference);
         $signature->appendChild($signedInfo);
 
-        // Canonicalizar SignedInfo para assinar (precisa incluir xmlns no SignedInfo)
+        // Canonicalizar SignedInfo para assinar (C14N não exclusivo, conforme CanonicalizationMethod)
         $signedInfo->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns', $dsigNs);
-        $signedInfoCanonical = $signedInfo->C14N(true, false);
+        $signedInfoCanonical = $signedInfo->C14N(false, false);
+        log_message('error', 'XmlSigner [DEBUG]: SignedInfo canonical tamanho=' . strlen($signedInfoCanonical));
 
         // Assinar com RSA-SHA256
         $signatureValue = '';
@@ -151,6 +153,7 @@ class XmlSigner
             openssl_pkey_free($privateKey);
             return false;
         }
+        log_message('error', 'XmlSigner [DEBUG]: SignatureValue tamanho=' . strlen($signatureValue) . ' | base64=' . base64_encode($signatureValue));
 
         // SignatureValue
         $sigValue = $dom->createElementNS($dsigNs, 'SignatureValue', base64_encode($signatureValue));
