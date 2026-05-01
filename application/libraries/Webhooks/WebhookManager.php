@@ -41,9 +41,17 @@ class WebhookManager
      */
     public function trigger(string $event, array $payload): array
     {
+        if (!$this->db->table_exists('webhooks')) {
+            return [];
+        }
+
         // Busca webhooks para este evento
         $this->db->where('active', 1);
-        $webhooks = $this->db->get('webhooks')->result();
+        $query = $this->db->get('webhooks');
+        if (!$query) {
+            return [];
+        }
+        $webhooks = $query->result();
 
         $results = [];
 
@@ -144,8 +152,16 @@ class WebhookManager
      */
     public function getStats(int $webhookId): array
     {
+        if (!$this->db->table_exists('webhook_logs')) {
+            return ['total' => 0, 'success' => 0, 'failed' => 0, 'success_rate' => 0];
+        }
+
         $this->db->where('webhook_id', $webhookId);
-        $logs = $this->db->get('webhook_logs')->result();
+        $query = $this->db->get('webhook_logs');
+        if (!$query) {
+            return ['total' => 0, 'success' => 0, 'failed' => 0, 'success_rate' => 0];
+        }
+        $logs = $query->result();
 
         $total = count($logs);
         $success = count(array_filter($logs, function($l) { return $l->success; }));
