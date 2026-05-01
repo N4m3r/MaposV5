@@ -298,10 +298,13 @@ class DpsXmlBuilder
         $tribMun = $dom->createElementNS($ns, 'tribMun');
 
         // tribISSQN: 1=Operação tributável, 2=Imunidade, 3=Exportação de serviço, 4=Não incidência
-        $tribMun->appendChild($dom->createElementNS($ns, 'tribISSQN', '1'));
+        $tribISSQN = '1';
+        $tribMun->appendChild($dom->createElementNS($ns, 'tribISSQN', $tribISSQN));
 
-        // tpImunidade opcional (0=Não se aplica)
-        $tribMun->appendChild($dom->createElementNS($ns, 'tpImunidade', '0'));
+        // tpImunidade: só informar quando tribISSQN = 2 (Imunidade)
+        if ($tribISSQN === '2') {
+            $tribMun->appendChild($dom->createElementNS($ns, 'tpImunidade', '1'));
+        }
 
         // tpRetISSQN: 1=Não retido, 2=Retido tomador, 3=Retido intermediário
         $tpRetISSQN = !empty($servico['iss_retido']) ? '2' : '1';
