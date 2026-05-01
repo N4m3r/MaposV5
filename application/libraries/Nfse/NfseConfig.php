@@ -77,9 +77,11 @@ class NfseConfig
             // time() = 10 dígitos + random de 5 dígitos = 15 dígitos
             $nDPS = time() . str_pad(random_int(0, 99999), 5, '0', STR_PAD_LEFT);
         }
-        // nDPS e serie no Id devem ser idênticos aos do XML (sem zeros à esquerda)
-        // para evitar erro E0004 do SEFIN. O schema xs:ID permite tamanho variável.
-        return 'DPS' . $codMun . '1' . $cnpjLimpo . $serie . (string)$nDPS;
+        // nDPS e serie no Id devem ter tamanho fixo: serie=5, nDPS=15
+        // para satisfazer o pattern TSIdDPS de 45 posições.
+        $serieId = str_pad($serie, 5, '0', STR_PAD_LEFT);
+        $nDPSId  = str_pad((string)$nDPS, 15, '0', STR_PAD_LEFT);
+        return 'DPS' . $codMun . '1' . $cnpjLimpo . $serieId . $nDPSId;
     }
 
     /**
