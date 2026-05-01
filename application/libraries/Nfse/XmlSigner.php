@@ -141,19 +141,6 @@ class XmlSigner
         $signedInfo->appendChild($reference);
         $signature->appendChild($signedInfo);
 
-        // KeyInfo
-        $keyInfo = $dom->createElementNS($dsigNs, 'KeyInfo');
-        $x509Data = $dom->createElementNS($dsigNs, 'X509Data');
-        $x509Cert = '';
-        openssl_x509_export($certContent, $x509Cert);
-        $x509Cert = str_replace('-----BEGIN CERTIFICATE-----', '', $x509Cert);
-        $x509Cert = str_replace('-----END CERTIFICATE-----', '', $x509Cert);
-        $x509Cert = preg_replace('/\s+/', '', $x509Cert);
-        $x509CertElement = $dom->createElementNS($dsigNs, 'X509Certificate', $x509Cert);
-        $x509Data->appendChild($x509CertElement);
-        $keyInfo->appendChild($x509Data);
-        $signature->appendChild($keyInfo);
-
         // Inserir Signature como último filho do elemento raiz (Dps) ANTES de canonicalizar SignedInfo
         $rootElement = $dom->documentElement;
         if (!$rootElement) {
@@ -168,7 +155,6 @@ class XmlSigner
 
         if (empty($signedInfoCanonical)) {
             log_message('error', 'XmlSigner: SignedInfo canonicalizado está vazio. Tentando fallback com saveXML.');
-            // Fallback: extrair via saveXML e carregar em novo DOM para C14N
             $signedInfoXml = $dom->saveXML($signedInfo);
             $tempDom = new DOMDocument('1.0', 'UTF-8');
             $tempDom->loadXML($signedInfoXml);
@@ -185,9 +171,22 @@ class XmlSigner
         }
         log_message('error', 'XmlSigner [DEBUG]: SignatureValue tamanho=' . strlen($signatureValue) . ' | base64=' . base64_encode($signatureValue));
 
-        // SignatureValue
+        // SignatureValue (DEVE vir antes do KeyInfo no schema XMLDSIG)
         $sigValue = $dom->createElementNS($dsigNs, 'SignatureValue', base64_encode($signatureValue));
         $signature->appendChild($sigValue);
+
+        // KeyInfo (DEVE vir DEPOIS de SignatureValue no schema XMLDSIG)
+        $keyInfo = $dom->createElementNS($dsigNs, 'KeyInfo');
+        $x509Data = $dom->createElementNS($dsigNs, 'X509Data');
+        $x509Cert = '';
+        openssl_x509_export($certContent, $x509Cert);
+        $x509Cert = str_replace('-----BEGIN CERTIFICATE-----', '', $x509Cert);
+        $x509Cert = str_replace('-----END CERTIFICATE-----', '', $x509Cert);
+        $x509Cert = preg_replace('/\s+/', '', $x509Cert);
+        $x509CertElement = $dom->createElementNS($dsigNs, 'X509Certificate', $x509Cert);
+        $x509Data->appendChild($x509CertElement);
+        $keyInfo->appendChild($x509Data);
+        $signature->appendChild($keyInfo);
 
         // Liberar recursos
         openssl_pkey_free($privateKey);
