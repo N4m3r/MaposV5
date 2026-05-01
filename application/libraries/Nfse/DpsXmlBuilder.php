@@ -76,9 +76,10 @@ class DpsXmlBuilder
         // serie (string de ate 5 digitos, conforme pattern ^0{0,4}\d{1,5}$)
         $infDps->appendChild($dom->createElementNS($ns, 'serie', str_pad((string)$serie, 5, '0', STR_PAD_LEFT)));
 
-        // nDPS (15 dígitos, zeros à esquerda, deve bater com o Id do infDPS)
-        $nDpsValor = $nDps ?? substr($idDps, -15);
-        $infDps->appendChild($dom->createElementNS($ns, 'nDPS', str_pad((string)$nDpsValor, 15, '0', STR_PAD_LEFT)));
+        // nDPS (sem zeros à esquerda, conforme pattern TSNumDPS ^[1-9]\d{0,14}$)
+        $nDpsValor = $nDps ?? '1';
+        $nDpsXml = ltrim((string)$nDpsValor, '0') ?: '1';
+        $infDps->appendChild($dom->createElementNS($ns, 'nDPS', $nDpsXml));
 
         // dCompet (AAAA-MM-DD)
         $infDps->appendChild($dom->createElementNS($ns, 'dCompet', $competencia));
