@@ -60,6 +60,8 @@ $route['certificado'] = 'certificado';
 $route['certificado/configurar'] = 'certificado/configurar';
 $route['certificado/nfse'] = 'certificado/nfse';
 $route['certificado/importar_nfse'] = 'certificado/importar_nfse';
+$route['certificado/preview_importar_ajax'] = 'certificado/preview_importar_ajax';
+$route['certificado/salvar_importacao'] = 'certificado/salvar_importacao';
 $route['certificado/listar_nfse_disponiveis'] = 'certificado/listar_nfse_disponiveis';
 $route['certificado/vincular_nfse_os'] = 'certificado/vincular_nfse_os';
 

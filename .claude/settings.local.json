@@ -105,7 +105,8 @@
       "Bash(unzip -o /tmp/nfse_rtc.zip -d /tmp/nfse_rtc/)",
       "WebFetch(domain:documentacao.nstecnologia.com.br)",
       "WebFetch(domain:portalspedbrasil.com.br)",
-      "Bash(dir certificado *)"
+      "Bash(dir certificado *)",
+      "Bash(awk '{print $NF}')"
     ]
   }
 }

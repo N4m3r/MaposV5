@@ -472,7 +472,9 @@ class Certificado extends MY_Controller
     public function preview_importar_ajax()
     {
         if (!$this->input->is_ajax_request()) {
-            show_404();
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'message' => 'Requisicao AJAX invalida.']);
+            return;
         }
 
         if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cCertificado')) {
