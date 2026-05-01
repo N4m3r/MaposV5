@@ -741,7 +741,8 @@ class Certificado_model extends CI_Model
             'valor_total' => $dados['valor_total'],
             'valor_impostos' => $dados['valor_impostos'] ?? 0,
             'situacao' => $dados['situacao'] ?? 'Autorizada',
-            'dados_xml' => isset($dados['xml']) ? $dados['xml'] : json_encode($dados)
+            'dados_xml' => isset($dados['xml']) ? $dados['xml'] : json_encode($dados),
+            'os_id' => $dados['os_id'] ?? null
         ];
 
         if ($this->db->insert('certificado_nfe_importada', $insert)) {

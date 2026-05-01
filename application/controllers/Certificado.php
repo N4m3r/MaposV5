@@ -350,6 +350,14 @@ class Certificado extends MY_Controller
             date('Y-m-t')
         );
 
+        // Carregar lista de OSs para vinculação
+        $this->db->select('os.idOs, clientes.nomeCliente, os.dataInicial');
+        $this->db->from('os');
+        $this->db->join('clientes', 'clientes.idClientes = os.clientes_id');
+        $this->db->order_by('os.idOs', 'DESC');
+        $this->db->limit(300);
+        $this->data['oss'] = $this->db->get()->result();
+
         $this->data['view'] = 'certificado/importar_nfse';
         return $this->layout();
     }
@@ -455,6 +463,160 @@ class Certificado extends MY_Controller
         }
 
         return $dados;
+    }
+
+    /**
+     * AJAX: preview de importação de NFSe via XML
+     * Recebe arquivo XML, extrai dados e retorna JSON para preview
+     */
+    public function preview_importar_ajax()
+    {
+        if (!$this->input->is_ajax_request()) {
+            show_404();
+        }
+
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cCertificado')) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'message' => 'Sem permissão.']);
+            return;
+        }
+
+        if (!isset($_FILES['xml_nfse']) || empty($_FILES['xml_nfse']['tmp_name'])) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'message' => 'Nenhum arquivo enviado.']);
+            return;
+        }
+
+        $file = $_FILES['xml_nfse'];
+        $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        if ($ext !== 'xml') {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'message' => 'Arquivo deve ser XML (.xml)']);
+            return;
+        }
+
+        $xmlContent = file_get_contents($file['tmp_name']);
+        if (empty($xmlContent)) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'message' => 'Arquivo XML vazio.']);
+            return;
+        }
+
+        libxml_use_internal_errors(true);
+        $dom = new DOMDocument();
+        if (!@$dom->loadXML($xmlContent)) {
+            $erros = libxml_get_errors();
+            $msgs = [];
+            foreach ($erros as $e) {
+                $msgs[] = trim($e->message) . ' (linha ' . $e->line . ')';
+            }
+            libxml_clear_errors();
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'message' => 'XML inválido: ' . implode('; ', $msgs)]);
+            return;
+        }
+
+        $dadosExtraidos = $this->extrairDadosXmlNfse($dom);
+        log_message('debug', '[Certificado preview_importar_ajax] Dados extraidos=' . json_encode($dadosExtraidos));
+
+        if (empty($dadosExtraidos['numero_nfse']) && empty($dadosExtraidos['chave_acesso'])) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'message' => 'Não foi possível identificar dados da nota no XML. Verifique se o arquivo é uma NFS-e válida.']);
+            return;
+        }
+
+        header('Content-Type: application/json');
+        echo json_encode([
+            'success' => true,
+            'numero_nfse' => $dadosExtraidos['numero_nfse'],
+            'chave_acesso' => $dadosExtraidos['chave_acesso'],
+            'codigo_verificacao' => $dadosExtraidos['codigo_verificacao'],
+            'data_emissao' => $dadosExtraidos['data_emissao'],
+            'valor_servicos' => $dadosExtraidos['valor_servicos'],
+            'valor_liquido' => $dadosExtraidos['valor_liquido'],
+            'xml_base64' => base64_encode($xmlContent)
+        ]);
+    }
+
+    /**
+     * Salvar importação de NFSe com vínculo a OS
+     */
+    public function salvar_importacao()
+    {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cCertificado')) {
+            $this->session->set_flashdata('error', 'Sem permissão.');
+            redirect('certificado/importar_nfse');
+        }
+
+        $os_id = $this->input->post('os_id');
+        $xmlBase64 = $this->input->post('xml_base64');
+
+        if (empty($xmlBase64)) {
+            $this->session->set_flashdata('error', 'Dados do XML não recebidos.');
+            redirect('certificado/importar_nfse');
+        }
+
+        $xmlContent = base64_decode($xmlBase64);
+        if (empty($xmlContent)) {
+            $this->session->set_flashdata('error', 'XML inválido ou corrompido.');
+            redirect('certificado/importar_nfse');
+        }
+
+        libxml_use_internal_errors(true);
+        $dom = new DOMDocument();
+        if (!@$dom->loadXML($xmlContent)) {
+            libxml_clear_errors();
+            $this->session->set_flashdata('error', 'XML inválido ou mal formado.');
+            redirect('certificado/importar_nfse');
+        }
+
+        $dadosExtraidos = $this->extrairDadosXmlNfse($dom);
+
+        if (empty($dadosExtraidos['numero_nfse']) && empty($dadosExtraidos['chave_acesso'])) {
+            $this->session->set_flashdata('error', 'Não foi possível identificar o número da nota no XML.');
+            redirect('certificado/importar_nfse');
+        }
+
+        $cert = $this->certificado_model->getCertificadoAtivo();
+        $certId = $cert ? $cert->id : null;
+
+        $chave = $dadosExtraidos['chave_acesso'] ?: ('MANUAL_' . $dadosExtraidos['numero_nfse']);
+        $numero = $dadosExtraidos['numero_nfse'] ?: $chave;
+        $dataEmissao = $dadosExtraidos['data_emissao'] ?: date('Y-m-d H:i:s');
+        $valorTotal = $dadosExtraidos['valor_servicos'] > 0 ? $dadosExtraidos['valor_servicos'] : 0;
+        $valorImpostos = $dadosExtraidos['valor_deducoes'] > 0 ? $dadosExtraidos['valor_deducoes'] : 0;
+
+        $dados = [
+            'chave_acesso' => (string)$chave,
+            'numero' => (string)$numero,
+            'data_emissao' => $dataEmissao,
+            'valor_total' => $valorTotal,
+            'valor_impostos' => $valorImpostos,
+            'situacao' => 'Autorizada',
+            'xml' => $xmlContent,
+            'os_id' => $os_id ?: null
+        ];
+
+        log_message('debug', '[Certificado salvar_importacao] Salvando NFSe numero=' . $numero . ' os_id=' . ($os_id ?: 'null'));
+        $resultado = $this->certificado_model->importarNFSe($dados, $certId);
+
+        if (isset($resultado['success'])) {
+            $this->session->set_flashdata('success', 'NFS-e #' . $numero . ' importada com sucesso!' . ($os_id ? ' Vinculada à OS #' . $os_id . '.' : ''));
+
+            if ($valorTotal > 0) {
+                $this->impostos_model->reterImpostos([
+                    'valor_bruto' => $valorTotal,
+                    'cliente_id' => 0,
+                    'nota_fiscal' => $numero,
+                    'data_competencia' => date('Y-m-01', strtotime($dataEmissao))
+                ]);
+            }
+        } else {
+            log_message('error', '[Certificado salvar_importacao] Erro: ' . ($resultado['error'] ?? 'desconhecido'));
+            $this->session->set_flashdata('error', $resultado['error'] ?? 'Erro ao importar nota.');
+        }
+
+        redirect('certificado/importar_nfse');
     }
 
     /**
