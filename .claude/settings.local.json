@@ -98,7 +98,11 @@
       "Bash([ -f \"C:/Users/thail/Desktop/IVMS-CRUD/MaposV5/$f\" ])",
       "WebFetch(domain:www.iti.gov.br)",
       "mcp__ide__executeCode",
-      "Bash(py *)"
+      "Bash(py *)",
+      "Bash(unzip -o /tmp/nfse_schemas.zip -d /tmp/nfse_schemas/)",
+      "WebFetch(domain:sefin.producaorestrita.nfse.gov.br)",
+      "Bash(unzip -o /tmp/nfse_schemas_dez2025.zip -d /tmp/nfse_schemas_dez/)",
+      "Bash(unzip -o /tmp/nfse_rtc.zip -d /tmp/nfse_rtc/)"
     ]
   }
 }
