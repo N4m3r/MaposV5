@@ -17,7 +17,7 @@ class DpsXmlBuilder
     {
         $this->codigoMunicipio = $config['codigo_municipio'] ?? '1302603';
         $this->codigoUf = $config['codigo_uf'] ?? '13';
-        $this->versaoDps = $config['versao_dps'] ?? '1.00';
+        $this->versaoDps = $config['versao_dps'] ?? '1.01';
     }
 
     /**
@@ -251,10 +251,11 @@ class DpsXmlBuilder
         $descricao = !empty($servico['descricao']) ? $servico['descricao'] : 'Serviços prestados conforme contrato.';
         $cServ->appendChild($dom->createElementNS($ns, 'xDescServ', $this->escapeXml($descricao)));
 
-        // cNBS (opcional, mas recomendado para reforma tributária)
-        $cnae = preg_replace('/\D/', '', $servico['cnae'] ?? '');
-        if (!empty($cnae)) {
-            $cServ->appendChild($dom->createElementNS($ns, 'cNBS', $cnae));
+        // cNBS (opcional - Código Nomenclatura Brasileira de Serviços, formato X.XX.XX.XX)
+        // Não confundir com CNAE. Deixar vazio se não souber o código correto.
+        $cNbs = $servico['cNBS'] ?? '';
+        if (!empty($cNbs)) {
+            $cServ->appendChild($dom->createElementNS($ns, 'cNBS', $cNbs));
         }
 
         $serv->appendChild($cServ);
@@ -306,6 +307,36 @@ class DpsXmlBuilder
         $totTrib = $dom->createElementNS($ns, 'totTrib');
         $totTrib->appendChild($dom->createElementNS($ns, 'indTotTrib', '0'));
         $Trib->appendChild($totTrib);
+
+        // Tributação federal (tribFed) - obrigatório em v1.01
+        $tribFed = $dom->createElementNS($ns, 'tribFed');
+
+        // PIS/COFINS (apuração própria)
+        $piscofins = $dom->createElementNS($ns, 'piscofins');
+        $piscofins->appendChild($dom->createElementNS($ns, 'CST', '01'));
+        $piscofins->appendChild($dom->createElementNS($ns, 'vBCPisCofins', number_format($baseCalculo, 2, '.', '')));
+        $piscofins->appendChild($dom->createElementNS($ns, 'pAliqPis', '0.65'));
+        $piscofins->appendChild($dom->createElementNS($ns, 'pAliqCofins', '3.00'));
+        $piscofins->appendChild($dom->createElementNS($ns, 'vPis', '0.00'));
+        $piscofins->appendChild($dom->createElementNS($ns, 'vCofins', '0.00'));
+        // tpRetPisCofins: 0=Não retidos, 3=PIS/COFINS/CSLL retidos
+        $tpRetPisCofins = (!empty($servico['pis_retido']) || !empty($servico['cofins_retido'])) ? '3' : '0';
+        $piscofins->appendChild($dom->createElementNS($ns, 'tpRetPisCofins', $tpRetPisCofins));
+        $tribFed->appendChild($piscofins);
+
+        // Retenções
+        $tribFed->appendChild($dom->createElementNS($ns, 'vRetCP', '0.00'));
+        $vRetIRRF = !empty($servico['irrf_retido']) ? number_format(floatval($servico['valor_irrf'] ?? 0), 2, '.', '') : '0.00';
+        $tribFed->appendChild($dom->createElementNS($ns, 'vRetIRRF', $vRetIRRF));
+
+        // vRetCSLL = soma das retenções de PIS + COFINS + CSLL (NT 007/2026)
+        $vRetCSLL = 0.0;
+        if (!empty($servico['pis_retido'])) $vRetCSLL += floatval($servico['valor_pis'] ?? 0);
+        if (!empty($servico['cofins_retido'])) $vRetCSLL += floatval($servico['valor_cofins'] ?? 0);
+        if (!empty($servico['csll_retido'])) $vRetCSLL += floatval($servico['valor_csll'] ?? 0);
+        $tribFed->appendChild($dom->createElementNS($ns, 'vRetCSLL', number_format($vRetCSLL, 2, '.', '')));
+
+        $Trib->appendChild($tribFed);
 
         $valores->appendChild($Trib);
 
