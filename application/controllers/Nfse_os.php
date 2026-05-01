@@ -885,17 +885,17 @@ class Nfse_os extends MY_Controller
                 if ($maxNDps > 0) {
                     $baseNumero = $maxNDps + 1;
                 } else {
-                    // Nenhuma nota local: começar de 1000 para evitar conflito com notas do portal
-                    $baseNumero = 1000;
+                    // Nenhuma nota local: começar do 63 (próximo após última nota do portal: nDPS 62)
+                    $baseNumero = 63;
                 }
             } else {
-                $baseNumero = 1000;
+                $baseNumero = 63;
             }
 
             return $this->formatarNDps($baseNumero);
         } catch (Exception $e) {
             log_message('error', 'NFS-e Nacional: Erro ao obter próximo n_dps: ' . $e->getMessage());
-            return $this->formatarNDps(1000);
+            return $this->formatarNDps(63);
         }
     }
 
