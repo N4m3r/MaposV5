@@ -247,16 +247,21 @@ class Certificado extends MY_Controller
      */
     public function importar_nfse()
     {
+        log_message('debug', '[Certificado importar_nfse] ========== INICIO ========== METHOD=' . $_SERVER['REQUEST_METHOD']);
+
         if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cCertificado')) {
+            log_message('error', '[Certificado importar_nfse] BLOQUEADO: sem permissao');
             $this->session->set_flashdata('error', 'Sem permissão.');
             redirect('certificado');
         }
 
         $cert = $this->certificado_model->getCertificadoAtivo();
         if (!$cert) {
+            log_message('error', '[Certificado importar_nfse] BLOQUEADO: nenhum certificado ativo');
             $this->session->set_flashdata('error', 'Configure um certificado primeiro.');
             redirect('certificado/configurar');
         }
+        log_message('debug', '[Certificado importar_nfse] Certificado ativo OK. id=' . $cert->id);
 
         if ($this->input->post()) {
             log_message('debug', '[Certificado importar_nfse] POST recebido. FILES=' . json_encode($_FILES));
@@ -349,6 +354,7 @@ class Certificado extends MY_Controller
             date('Y-m-01'),
             date('Y-m-t')
         );
+        log_message('debug', '[Certificado importar_nfse] Notas carregadas=' . (is_array($this->data['notas']) ? count($this->data['notas']) : 'nao_array'));
 
         // Carregar lista de OSs para vinculação
         $this->db->select('os.idOs, clientes.nomeCliente, os.dataInicial');
@@ -357,8 +363,10 @@ class Certificado extends MY_Controller
         $this->db->order_by('os.idOs', 'DESC');
         $this->db->limit(300);
         $this->data['oss'] = $this->db->get()->result();
+        log_message('debug', '[Certificado importar_nfse] OSs carregadas=' . count($this->data['oss']));
 
         $this->data['view'] = 'certificado/importar_nfse';
+        log_message('debug', '[Certificado importar_nfse] ========== RENDERIZANDO VIEW ==========');
         return $this->layout();
     }
 
@@ -383,6 +391,9 @@ class Certificado extends MY_Controller
         $nNFSe = $dom->getElementsByTagName('nNFSe')->item(0);
         if ($nNFSe) {
             $dados['numero_nfse'] = trim($nNFSe->nodeValue);
+            log_message('debug', '[extrairDadosXmlNfse] nNFSe encontrado=' . $dados['numero_nfse']);
+        } else {
+            log_message('debug', '[extrairDadosXmlNfse] nNFSe NAO encontrado');
         }
 
         // ABRASF / municipal: Numero
@@ -390,6 +401,9 @@ class Certificado extends MY_Controller
             $numNode = $dom->getElementsByTagName('Numero')->item(0);
             if ($numNode) {
                 $dados['numero_nfse'] = trim($numNode->nodeValue);
+                log_message('debug', '[extrairDadosXmlNfse] Numero encontrado=' . $dados['numero_nfse']);
+            } else {
+                log_message('debug', '[extrairDadosXmlNfse] Numero NAO encontrado');
             }
         }
 
@@ -403,6 +417,9 @@ class Certificado extends MY_Controller
         }
         if ($chave) {
             $dados['chave_acesso'] = trim($chave->nodeValue);
+            log_message('debug', '[extrairDadosXmlNfse] chaveAcesso encontrado=' . $dados['chave_acesso']);
+        } else {
+            log_message('debug', '[extrairDadosXmlNfse] chaveAcesso NAO encontrado');
         }
 
         // Código de verificação
@@ -410,18 +427,15 @@ class Certificado extends MY_Controller
         if (!$codVerif) {
             $codVerif = $dom->getElementsByTagName('CodigoVerificacao')->item(0);
         }
-        if (!$codVerif) {
-            $codVerif = $dom->getElementsByTagName('CodigoVerificacao')->item(0);
-        }
         if ($codVerif) {
             $dados['codigo_verificacao'] = trim($codVerif->nodeValue);
+            log_message('debug', '[extrairDadosXmlNfse] codigoVerificacao encontrado=' . $dados['codigo_verificacao']);
+        } else {
+            log_message('debug', '[extrairDadosXmlNfse] codigoVerificacao NAO encontrado');
         }
 
         // Data de emissão
         $dhEmi = $dom->getElementsByTagName('dhEmi')->item(0);
-        if (!$dhEmi) {
-            $dhEmi = $dom->getElementsByTagName('DataEmissao')->item(0);
-        }
         if (!$dhEmi) {
             $dhEmi = $dom->getElementsByTagName('DataEmissao')->item(0);
         }
@@ -430,6 +444,9 @@ class Certificado extends MY_Controller
             if (strlen($dt) >= 10) {
                 $dados['data_emissao'] = substr($dt, 0, 10) . ' ' . (substr($dt, 11, 8) ?: '00:00:00');
             }
+            log_message('debug', '[extrairDadosXmlNfse] dhEmi/DataEmissao encontrado=' . $dt . ' normalizado=' . $dados['data_emissao']);
+        } else {
+            log_message('debug', '[extrairDadosXmlNfse] dhEmi/DataEmissao NAO encontrado');
         }
 
         // Valor dos serviços
@@ -437,11 +454,11 @@ class Certificado extends MY_Controller
         if (!$vServ) {
             $vServ = $dom->getElementsByTagName('ValorServicos')->item(0);
         }
-        if (!$vServ) {
-            $vServ = $dom->getElementsByTagName('ValorServicos')->item(0);
-        }
         if ($vServ) {
             $dados['valor_servicos'] = floatval(str_replace(',', '.', trim($vServ->nodeValue)));
+            log_message('debug', '[extrairDadosXmlNfse] vServ/ValorServicos encontrado=' . $dados['valor_servicos']);
+        } else {
+            log_message('debug', '[extrairDadosXmlNfse] vServ/ValorServicos NAO encontrado');
         }
 
         // Valor líquido
@@ -451,6 +468,9 @@ class Certificado extends MY_Controller
         }
         if ($vLiq) {
             $dados['valor_liquido'] = floatval(str_replace(',', '.', trim($vLiq->nodeValue)));
+            log_message('debug', '[extrairDadosXmlNfse] vLiq/ValorLiquidoNfse encontrado=' . $dados['valor_liquido']);
+        } else {
+            log_message('debug', '[extrairDadosXmlNfse] vLiq/ValorLiquidoNfse NAO encontrado');
         }
 
         // Deduções
@@ -460,8 +480,12 @@ class Certificado extends MY_Controller
         }
         if ($vDed) {
             $dados['valor_deducoes'] = floatval(str_replace(',', '.', trim($vDed->nodeValue)));
+            log_message('debug', '[extrairDadosXmlNfse] vDed/ValorDeducoes encontrado=' . $dados['valor_deducoes']);
+        } else {
+            log_message('debug', '[extrairDadosXmlNfse] vDed/ValorDeducoes NAO encontrado');
         }
 
+        log_message('debug', '[extrairDadosXmlNfse] ========== RESULTADO ==========' . json_encode($dados));
         return $dados;
     }
 
@@ -471,27 +495,38 @@ class Certificado extends MY_Controller
      */
     public function preview_importar_ajax()
     {
+        log_message('debug', '[Certificado preview_importar_ajax] ========== INICIO ==========');
+        log_message('debug', '[Certificado preview_importar_ajax] REQUEST_METHOD=' . ($_SERVER['REQUEST_METHOD'] ?? 'N/A') . ' CONTENT_TYPE=' . ($_SERVER['CONTENT_TYPE'] ?? 'N/A'));
+        log_message('debug', '[Certificado preview_importar_ajax] is_ajax_request=' . ($this->input->is_ajax_request() ? 'sim' : 'nao') . ' HTTP_X_REQUESTED_WITH=' . ($_SERVER['HTTP_X_REQUESTED_WITH'] ?? 'nao_setado'));
+        log_message('debug', '[Certificado preview_importar_ajax] POST=' . json_encode($this->input->post()) . ' FILES=' . json_encode(array_keys($_FILES)));
+
         if (!$this->input->is_ajax_request()) {
+            log_message('error', '[Certificado preview_importar_ajax] BLOQUEADO: nao e requisicao AJAX');
             header('Content-Type: application/json');
             echo json_encode(['success' => false, 'message' => 'Requisicao AJAX invalida.']);
             return;
         }
 
         if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cCertificado')) {
+            log_message('error', '[Certificado preview_importar_ajax] BLOQUEADO: sem permissao cCertificado. Permissao=' . $this->session->userdata('permissao'));
             header('Content-Type: application/json');
             echo json_encode(['success' => false, 'message' => 'Sem permissão.']);
             return;
         }
+        log_message('debug', '[Certificado preview_importar_ajax] Permissao OK');
 
         if (!isset($_FILES['xml_nfse']) || empty($_FILES['xml_nfse']['tmp_name'])) {
+            log_message('error', '[Certificado preview_importar_ajax] BLOQUEADO: nenhum arquivo enviado. FILES=' . json_encode($_FILES));
             header('Content-Type: application/json');
             echo json_encode(['success' => false, 'message' => 'Nenhum arquivo enviado.']);
             return;
         }
+        log_message('debug', '[Certificado preview_importar_ajax] Arquivo recebido. name=' . $_FILES['xml_nfse']['name'] . ' size=' . $_FILES['xml_nfse']['size'] . ' tmp=' . $_FILES['xml_nfse']['tmp_name']);
 
         $file = $_FILES['xml_nfse'];
         $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
         if ($ext !== 'xml') {
+            log_message('error', '[Certificado preview_importar_ajax] BLOQUEADO: extensao invalida=' . $ext);
             header('Content-Type: application/json');
             echo json_encode(['success' => false, 'message' => 'Arquivo deve ser XML (.xml)']);
             return;
@@ -499,10 +534,12 @@ class Certificado extends MY_Controller
 
         $xmlContent = file_get_contents($file['tmp_name']);
         if (empty($xmlContent)) {
+            log_message('error', '[Certificado preview_importar_ajax] BLOQUEADO: arquivo vazio apos file_get_contents');
             header('Content-Type: application/json');
             echo json_encode(['success' => false, 'message' => 'Arquivo XML vazio.']);
             return;
         }
+        log_message('debug', '[Certificado preview_importar_ajax] XML lido. tamanho=' . strlen($xmlContent) . ' primeiros_200_chars=' . substr($xmlContent, 0, 200));
 
         libxml_use_internal_errors(true);
         $dom = new DOMDocument();
@@ -513,20 +550,24 @@ class Certificado extends MY_Controller
                 $msgs[] = trim($e->message) . ' (linha ' . $e->line . ')';
             }
             libxml_clear_errors();
+            log_message('error', '[Certificado preview_importar_ajax] BLOQUEADO: XML mal formado. erros=' . implode('; ', $msgs));
             header('Content-Type: application/json');
             echo json_encode(['success' => false, 'message' => 'XML inválido: ' . implode('; ', $msgs)]);
             return;
         }
+        log_message('debug', '[Certificado preview_importar_ajax] XML parseado com sucesso');
 
         $dadosExtraidos = $this->extrairDadosXmlNfse($dom);
         log_message('debug', '[Certificado preview_importar_ajax] Dados extraidos=' . json_encode($dadosExtraidos));
 
         if (empty($dadosExtraidos['numero_nfse']) && empty($dadosExtraidos['chave_acesso'])) {
+            log_message('error', '[Certificado preview_importar_ajax] BLOQUEADO: numero e chave vazios. dados=' . json_encode($dadosExtraidos));
             header('Content-Type: application/json');
             echo json_encode(['success' => false, 'message' => 'Não foi possível identificar dados da nota no XML. Verifique se o arquivo é uma NFS-e válida.']);
             return;
         }
 
+        log_message('debug', '[Certificado preview_importar_ajax] ========== SUCESSO ========== numero=' . $dadosExtraidos['numero_nfse'] . ' chave=' . $dadosExtraidos['chave_acesso']);
         header('Content-Type: application/json');
         echo json_encode([
             'success' => true,
@@ -545,42 +586,54 @@ class Certificado extends MY_Controller
      */
     public function salvar_importacao()
     {
+        log_message('debug', '[Certificado salvar_importacao] ========== INICIO ==========');
+        log_message('debug', '[Certificado salvar_importacao] REQUEST_METHOD=' . ($_SERVER['REQUEST_METHOD'] ?? 'N/A') . ' POST=' . json_encode($this->input->post()));
+
         if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cCertificado')) {
+            log_message('error', '[Certificado salvar_importacao] BLOQUEADO: sem permissao. Permissao=' . $this->session->userdata('permissao'));
             $this->session->set_flashdata('error', 'Sem permissão.');
             redirect('certificado/importar_nfse');
         }
 
         $os_id = $this->input->post('os_id');
         $xmlBase64 = $this->input->post('xml_base64');
+        log_message('debug', '[Certificado salvar_importacao] os_id=' . ($os_id ?: 'vazio') . ' xml_base64_length=' . strlen($xmlBase64 ?: ''));
 
         if (empty($xmlBase64)) {
+            log_message('error', '[Certificado salvar_importacao] BLOQUEADO: xml_base64 vazio');
             $this->session->set_flashdata('error', 'Dados do XML não recebidos.');
             redirect('certificado/importar_nfse');
         }
 
         $xmlContent = base64_decode($xmlBase64);
         if (empty($xmlContent)) {
+            log_message('error', '[Certificado salvar_importacao] BLOQUEADO: base64_decode retornou vazio');
             $this->session->set_flashdata('error', 'XML inválido ou corrompido.');
             redirect('certificado/importar_nfse');
         }
+        log_message('debug', '[Certificado salvar_importacao] XML decodificado. tamanho=' . strlen($xmlContent) . ' primeiros_200_chars=' . substr($xmlContent, 0, 200));
 
         libxml_use_internal_errors(true);
         $dom = new DOMDocument();
         if (!@$dom->loadXML($xmlContent)) {
             libxml_clear_errors();
+            log_message('error', '[Certificado salvar_importacao] BLOQUEADO: XML mal formado apos decode');
             $this->session->set_flashdata('error', 'XML inválido ou mal formado.');
             redirect('certificado/importar_nfse');
         }
 
         $dadosExtraidos = $this->extrairDadosXmlNfse($dom);
+        log_message('debug', '[Certificado salvar_importacao] Dados extraidos=' . json_encode($dadosExtraidos));
 
         if (empty($dadosExtraidos['numero_nfse']) && empty($dadosExtraidos['chave_acesso'])) {
+            log_message('error', '[Certificado salvar_importacao] BLOQUEADO: numero e chave vazios');
             $this->session->set_flashdata('error', 'Não foi possível identificar o número da nota no XML.');
             redirect('certificado/importar_nfse');
         }
 
         $cert = $this->certificado_model->getCertificadoAtivo();
         $certId = $cert ? $cert->id : null;
+        log_message('debug', '[Certificado salvar_importacao] certId=' . ($certId ?: 'null'));
 
         $chave = $dadosExtraidos['chave_acesso'] ?: ('MANUAL_' . $dadosExtraidos['numero_nfse']);
         $numero = $dadosExtraidos['numero_nfse'] ?: $chave;
@@ -599,10 +652,12 @@ class Certificado extends MY_Controller
             'os_id' => $os_id ?: null
         ];
 
-        log_message('debug', '[Certificado salvar_importacao] Salvando NFSe numero=' . $numero . ' os_id=' . ($os_id ?: 'null'));
+        log_message('debug', '[Certificado salvar_importacao] Chamando importarNFSe. numero=' . $numero . ' os_id=' . ($os_id ?: 'null') . ' chave=' . $chave);
         $resultado = $this->certificado_model->importarNFSe($dados, $certId);
+        log_message('debug', '[Certificado salvar_importacao] Resultado model=' . json_encode($resultado));
 
         if (isset($resultado['success'])) {
+            log_message('info', '[Certificado salvar_importacao] ========== SUCESSO ========== id=' . ($resultado['id'] ?? '?'));
             $this->session->set_flashdata('success', 'NFS-e #' . $numero . ' importada com sucesso!' . ($os_id ? ' Vinculada à OS #' . $os_id . '.' : ''));
 
             if ($valorTotal > 0) {
@@ -614,7 +669,7 @@ class Certificado extends MY_Controller
                 ]);
             }
         } else {
-            log_message('error', '[Certificado salvar_importacao] Erro: ' . ($resultado['error'] ?? 'desconhecido'));
+            log_message('error', '[Certificado salvar_importacao] ========== ERRO ========== msg=' . ($resultado['error'] ?? 'desconhecido'));
             $this->session->set_flashdata('error', $resultado['error'] ?? 'Erro ao importar nota.');
         }
 
