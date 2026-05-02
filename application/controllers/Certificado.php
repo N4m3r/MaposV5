@@ -786,6 +786,7 @@ class Certificado extends MY_Controller
 
     /**
      * Extrair dados completos do XML de NFS-e para impressao
+     * Suporta NFSe Nacional (DPS), ABRASF e padroes municipais
      */
     private function _extrairDadosXmlNfseCompleto($xmlContent)
     {
@@ -843,130 +844,195 @@ class Certificado extends MY_Controller
             return $dados;
         }
 
-        // Numero
-        foreach (['nNFSe', 'Numero', 'numero'] as $tag) {
-            $node = $dom->getElementsByTagName($tag)->item(0);
-            if ($node) { $dados['numero'] = trim($node->nodeValue); break; }
-        }
+        // Helper para extrair texto da primeira tag encontrada
+        $getVal = function ($tags) use ($dom) {
+            foreach ((array)$tags as $tag) {
+                $node = $dom->getElementsByTagName($tag)->item(0);
+                if ($node) return trim($node->nodeValue);
+            }
+            return null;
+        };
 
-        // Serie
-        foreach (['serie', 'Serie'] as $tag) {
-            $node = $dom->getElementsByTagName($tag)->item(0);
-            if ($node) { $dados['serie'] = trim($node->nodeValue); break; }
-        }
+        // Helper para extrair texto de tag dentro de um parente
+        $getChild = function ($parent, $tags) {
+            if (!$parent) return null;
+            foreach ((array)$tags as $tag) {
+                $node = $parent->getElementsByTagName($tag)->item(0);
+                if ($node) return trim($node->nodeValue);
+            }
+            return null;
+        };
 
-        // Chave de acesso (atributo Id da tag infNFSe ou tag filha chaveAcesso)
+        // ===== Numero =====
+        $dados['numero'] = $getVal(['nNFSe', 'Numero', 'numero']);
+
+        // ===== Serie =====
+        $dados['serie'] = $getVal(['serie', 'Serie']);
+
+        // ===== Chave de acesso (atributo Id de infNFSe ou tag filha) =====
         $infNFSe = $dom->getElementsByTagName('infNFSe')->item(0);
         if ($infNFSe && $infNFSe->hasAttribute('Id')) {
             $dados['chave_acesso'] = trim($infNFSe->getAttribute('Id'));
         }
         if (empty($dados['chave_acesso'])) {
-            foreach (['chaveAcesso', 'ChaveAcesso', 'ChaveAcessoNfse', 'ChaveAcessoNFSe'] as $tag) {
-                $node = $dom->getElementsByTagName($tag)->item(0);
-                if ($node) { $dados['chave_acesso'] = trim($node->nodeValue); break; }
+            $dados['chave_acesso'] = $getVal(['chaveAcesso', 'ChaveAcesso', 'ChaveAcessoNfse', 'ChaveAcessoNFSe']);
+        }
+
+        // ===== Codigo verificacao =====
+        $dados['codigo_verificacao'] = $getVal(['codigoVerificacao', 'CodigoVerificacao']);
+
+        // ===== Data emissao =====
+        $dt = $getVal(['dhEmi', 'DataEmissao', 'dataEmissao']);
+        if ($dt && strlen($dt) >= 10) {
+            $dados['data_emissao'] = substr($dt, 0, 10) . ' ' . (substr($dt, 11, 8) ?: '00:00:00');
+        }
+
+        // ===== Competencia =====
+        $dados['competencia'] = $getVal(['dCompet', 'competencia', 'Competencia']);
+
+        // ===== Descricao do servico =====
+        $dados['descricao_servico'] = $getVal(['xDescServ', 'Discriminacao', 'discriminacao', 'Descricao']);
+
+        // ===== Valores =====
+        // vServ pode estar em vServPrest > vServ (NFSe Nacional)
+        $vServNode = $dom->getElementsByTagName('vServ')->item(0);
+        if ($vServNode) {
+            $dados['valor_servicos'] = floatval(str_replace(',', '.', trim($vServNode->nodeValue)));
+        }
+        $vLiqNode = $dom->getElementsByTagName('vLiq')->item(0);
+        if ($vLiqNode) {
+            $dados['valor_liquido'] = floatval(str_replace(',', '.', trim($vLiqNode->nodeValue)));
+        }
+        // ISSQN da NFSe Nacional
+        $vISSNode = $dom->getElementsByTagName('vISSQN')->item(0);
+        if ($vISSNode) {
+            $dados['valor_iss'] = floatval(str_replace(',', '.', trim($vISSNode->nodeValue)));
+        }
+        // Outros impostos (padroes municipais)
+        foreach (['vPIS', 'ValorPis'] as $t) {
+            $n = $dom->getElementsByTagName($t)->item(0);
+            if ($n) { $dados['valor_pis'] = floatval(str_replace(',', '.', trim($n->nodeValue))); break; }
+        }
+        foreach (['vCOFINS', 'ValorCofins'] as $t) {
+            $n = $dom->getElementsByTagName($t)->item(0);
+            if ($n) { $dados['valor_cofins'] = floatval(str_replace(',', '.', trim($n->nodeValue))); break; }
+        }
+        foreach (['vIR', 'ValorIr', 'vIRRF'] as $t) {
+            $n = $dom->getElementsByTagName($t)->item(0);
+            if ($n) { $dados['valor_irrf'] = floatval(str_replace(',', '.', trim($n->nodeValue))); break; }
+        }
+        foreach (['vCSLL', 'ValorCsll'] as $t) {
+            $n = $dom->getElementsByTagName($t)->item(0);
+            if ($n) { $dados['valor_csll'] = floatval(str_replace(',', '.', trim($n->nodeValue))); break; }
+        }
+        foreach (['vINSS', 'ValorInss'] as $t) {
+            $n = $dom->getElementsByTagName($t)->item(0);
+            if ($n) { $dados['valor_inss'] = floatval(str_replace(',', '.', trim($n->nodeValue))); break; }
+        }
+
+        // Total impostos
+        $totTrib = $getVal(['ValorTotalImpostos', 'valorTotalImpostos', 'vTotTrib']);
+        if ($totTrib !== null) {
+            $dados['valor_total_impostos'] = floatval(str_replace(',', '.', $totTrib));
+        } elseif ($dados['valor_iss'] > 0 || $dados['valor_pis'] > 0) {
+            $dados['valor_total_impostos'] = $dados['valor_pis'] + $dados['valor_cofins'] + $dados['valor_inss'] + $dados['valor_irrf'] + $dados['valor_csll'] + $dados['valor_iss'];
+        }
+
+        // Aliquota
+        $dados['aliquota_iss'] = $getVal(['pAliqAplic', 'pAliq', 'Aliquota', 'aliquota']);
+
+        // ===== PRESTADOR =====
+        // NFSe Nacional: <emit> dentro de <infNFSe>
+        $emit = $dom->getElementsByTagName('emit')->item(0);
+        if ($emit) {
+            $dados['prestador']['cpf_cnpj'] = $getChild($emit, ['CNPJ', 'CPF']);
+            $dados['prestador']['nome'] = $getChild($emit, ['xNome', 'RazaoSocial', 'nome']);
+            $dados['prestador']['inscricao_municipal'] = $getChild($emit, ['IM', 'InscricaoMunicipal']);
+            $dados['prestador']['telefone'] = $getChild($emit, ['fone', 'Telefone', 'Fone']);
+            $dados['prestador']['email'] = $getChild($emit, ['email', 'Email', 'xEmail']);
+            $enderNac = $emit->getElementsByTagName('enderNac')->item(0);
+            if ($enderNac) {
+                $dados['prestador']['endereco'] = $getChild($enderNac, ['xLgr', 'Endereco', 'rua']);
+                $dados['prestador']['numero'] = $getChild($enderNac, ['nro', 'Numero', 'numero']);
+                $dados['prestador']['bairro'] = $getChild($enderNac, ['xBairro', 'Bairro', 'bairro']);
+                $dados['prestador']['cidade'] = $getChild($enderNac, ['xMun', 'Cidade', 'cidade']);
+                $dados['prestador']['uf'] = $getChild($enderNac, ['UF', 'Uf', 'uf']);
+                $dados['prestador']['cep'] = $getChild($enderNac, ['CEP', 'Cep', 'cep']);
             }
         }
-
-        // Codigo verificacao
-        foreach (['codigoVerificacao', 'CodigoVerificacao'] as $tag) {
-            $node = $dom->getElementsByTagName($tag)->item(0);
-            if ($node) { $dados['codigo_verificacao'] = trim($node->nodeValue); break; }
-        }
-
-        // Data emissao
-        foreach (['dhEmi', 'DataEmissao', 'dataEmissao'] as $tag) {
-            $node = $dom->getElementsByTagName($tag)->item(0);
-            if ($node) {
-                $dt = trim($node->nodeValue);
-                if (strlen($dt) >= 10) {
-                    $dados['data_emissao'] = substr($dt, 0, 10) . ' ' . (substr($dt, 11, 8) ?: '00:00:00');
-                }
-                break;
+        // Fallback DPS <prest>
+        if (empty($dados['prestador']['nome'])) {
+            $prest = $dom->getElementsByTagName('prest')->item(0);
+            if ($prest) {
+                $dados['prestador']['cpf_cnpj'] = $getChild($prest, ['CNPJ', 'CPF']);
+                $dados['prestador']['nome'] = $getChild($prest, ['xNome', 'RazaoSocial', 'nome']);
+                $dados['prestador']['inscricao_municipal'] = $getChild($prest, ['IM', 'InscricaoMunicipal']);
+                $dados['prestador']['telefone'] = $getChild($prest, ['fone', 'Telefone']);
+                $dados['prestador']['email'] = $getChild($prest, ['email', 'Email']);
             }
         }
-
-        // Competencia
-        foreach (['competencia', 'Competencia'] as $tag) {
-            $node = $dom->getElementsByTagName($tag)->item(0);
-            if ($node) { $dados['competencia'] = trim($node->nodeValue); break; }
-        }
-
-        // Descricao do servico
-        foreach (['xDescServ', 'Discriminacao', 'discriminacao', 'Descricao'] as $tag) {
-            $node = $dom->getElementsByTagName($tag)->item(0);
-            if ($node) { $dados['descricao_servico'] = trim($node->nodeValue); break; }
-        }
-
-        // Valores
-        $mapValores = [
-            'valor_servicos' => ['vServ', 'ValorServicos', 'valorServicos'],
-            'valor_deducoes' => ['vDed', 'ValorDeducoes', 'valorDeducoes'],
-            'valor_pis' => ['vPIS', 'ValorPis', 'valorPis'],
-            'valor_cofins' => ['vCOFINS', 'ValorCofins', 'valorCofins'],
-            'valor_inss' => ['vINSS', 'ValorInss', 'valorInss'],
-            'valor_irrf' => ['vIR', 'ValorIr', 'valorIr'],
-            'valor_csll' => ['vCSLL', 'ValorCsll', 'valorCsll'],
-            'valor_iss' => ['vISS', 'ValorIss', 'valorIss'],
-            'valor_liquido' => ['vLiq', 'ValorLiquidoNfse', 'valorLiquidoNfse'],
-        ];
-        foreach ($mapValores as $key => $tags) {
-            foreach ($tags as $tag) {
-                $node = $dom->getElementsByTagName($tag)->item(0);
-                if ($node) {
-                    $dados[$key] = floatval(str_replace(',', '.', trim($node->nodeValue)));
+        // Fallback padroes municipais
+        if (empty($dados['prestador']['nome'])) {
+            foreach (['PrestadorServico', 'prestador', 'Prestador'] as $prestadorParent) {
+                $parent = $dom->getElementsByTagName($prestadorParent)->item(0);
+                if ($parent) {
+                    $dados['prestador']['cpf_cnpj'] = $getChild($parent, ['CpfCnpj', 'CNPJ', 'cnpj', 'CPF']);
+                    $dados['prestador']['nome'] = $getChild($parent, ['RazaoSocial', 'xNome', 'nome', 'Nome']);
+                    $dados['prestador']['inscricao_municipal'] = $getChild($parent, ['InscricaoMunicipal', 'IM']);
+                    $dados['prestador']['endereco'] = $getChild($parent, ['Endereco', 'xLgr', 'rua', 'Rua']);
+                    $dados['prestador']['numero'] = $getChild($parent, ['Numero', 'nro']);
+                    $dados['prestador']['bairro'] = $getChild($parent, ['Bairro', 'xBairro']);
+                    $dados['prestador']['cidade'] = $getChild($parent, ['Cidade', 'xMun']);
+                    $dados['prestador']['uf'] = $getChild($parent, ['Uf', 'UF']);
+                    $dados['prestador']['cep'] = $getChild($parent, ['Cep', 'CEP']);
+                    $dados['prestador']['telefone'] = $getChild($parent, ['Telefone', 'Fone']);
+                    $dados['prestador']['email'] = $getChild($parent, ['Email', 'xEmail']);
                     break;
                 }
             }
         }
 
-        // Total impostos (soma se nao houver tag direta)
-        foreach (['ValorTotalImpostos', 'valorTotalImpostos', 'vTotTrib'] as $tag) {
-            $node = $dom->getElementsByTagName($tag)->item(0);
-            if ($node) {
-                $dados['valor_total_impostos'] = floatval(str_replace(',', '.', trim($node->nodeValue)));
-                break;
-            }
-        }
-        if ($dados['valor_total_impostos'] == 0) {
-            $dados['valor_total_impostos'] = $dados['valor_pis'] + $dados['valor_cofins'] + $dados['valor_inss'] + $dados['valor_irrf'] + $dados['valor_csll'] + $dados['valor_iss'];
-        }
-
-        // Aliquota ISS
-        foreach (['pAliq', 'Aliquota', 'aliquota'] as $tag) {
-            $node = $dom->getElementsByTagName($tag)->item(0);
-            if ($node) { $dados['aliquota_iss'] = trim($node->nodeValue); break; }
-        }
-
-        // Prestador
-        $prestadorTags = [
-            'cpf_cnpj' => ['CpfCnpj', 'CNPJ', 'cnpj', 'CPF', 'cpf'],
-            'nome' => ['RazaoSocial', 'xNome', 'nome', 'Nome'],
-            'inscricao_municipal' => ['InscricaoMunicipal', 'IM', 'inscricao_municipal'],
-            'endereco' => ['Endereco', 'xLgr', 'rua', 'Rua'],
-            'numero' => ['Numero', 'nro', 'numero'],
-            'bairro' => ['Bairro', 'xBairro', 'bairro'],
-            'cidade' => ['Cidade', 'xMun', 'cidade'],
-            'uf' => ['Uf', 'UF', 'uf'],
-            'cep' => ['Cep', 'CEP', 'cep'],
-            'telefone' => ['Telefone', 'Fone', 'telefone'],
-            'email' => ['Email', 'xEmail', 'email'],
-        ];
-        foreach (['PrestadorServico', 'prestador', 'Prestador'] as $prestadorParent) {
-            $parent = $dom->getElementsByTagName($prestadorParent)->item(0);
-            if ($parent) {
-                foreach ($prestadorTags as $field => $tags) {
-                    foreach ($tags as $tag) {
-                        $node = $parent->getElementsByTagName($tag)->item(0);
-                        if ($node) { $dados['prestador'][$field] = trim($node->nodeValue); break; }
-                    }
+        // ===== TOMADOR =====
+        // NFSe Nacional: <toma> dentro de DPS
+        $toma = $dom->getElementsByTagName('toma')->item(0);
+        if ($toma) {
+            $dados['tomador']['cpf_cnpj'] = $getChild($toma, ['CNPJ', 'CPF']);
+            $dados['tomador']['nome'] = $getChild($toma, ['xNome', 'RazaoSocial', 'nome']);
+            $end = $toma->getElementsByTagName('end')->item(0);
+            if ($end) {
+                $endNac = $end->getElementsByTagName('endNac')->item(0);
+                if ($endNac) {
+                    $dados['tomador']['cidade'] = $getChild($endNac, ['xMun', 'Cidade']);
+                    $dados['tomador']['cep'] = $getChild($endNac, ['CEP', 'Cep']);
                 }
-                break;
+                $dados['tomador']['endereco'] = $getChild($end, ['xLgr', 'Endereco', 'rua']);
+                $dados['tomador']['numero'] = $getChild($end, ['nro', 'Numero']);
+                $dados['tomador']['bairro'] = $getChild($end, ['xBairro', 'Bairro']);
+            }
+        }
+        // Fallback padroes municipais
+        if (empty($dados['tomador']['nome'])) {
+            foreach (['TomadorServico', 'tomador', 'Tomador'] as $tomadorParent) {
+                $parent = $dom->getElementsByTagName($tomadorParent)->item(0);
+                if ($parent) {
+                    $dados['tomador']['cpf_cnpj'] = $getChild($parent, ['CpfCnpj', 'CNPJ', 'CPF']);
+                    $dados['tomador']['nome'] = $getChild($parent, ['RazaoSocial', 'xNome', 'nome', 'Nome']);
+                    $dados['tomador']['inscricao_municipal'] = $getChild($parent, ['InscricaoMunicipal', 'IM']);
+                    $dados['tomador']['endereco'] = $getChild($parent, ['Endereco', 'xLgr', 'rua']);
+                    $dados['tomador']['numero'] = $getChild($parent, ['Numero', 'nro']);
+                    $dados['tomador']['bairro'] = $getChild($parent, ['Bairro', 'xBairro']);
+                    $dados['tomador']['cidade'] = $getChild($parent, ['Cidade', 'xMun']);
+                    $dados['tomador']['uf'] = $getChild($parent, ['Uf', 'UF']);
+                    $dados['tomador']['cep'] = $getChild($parent, ['Cep', 'CEP']);
+                    $dados['tomador']['telefone'] = $getChild($parent, ['Telefone', 'Fone']);
+                    $dados['tomador']['email'] = $getChild($parent, ['Email', 'xEmail']);
+                    break;
+                }
             }
         }
 
-        // Tomador
-        foreach (['TomadorServico', 'tomador', 'Tomador'] as $tomadorParent) {
-            $parent = $dom->getElementsByTagName($tomadorParent)->item(0);
+        return $dados;
+    }
             if ($parent) {
                 foreach ($prestadorTags as $field => $tags) {
                     foreach ($tags as $tag) {
