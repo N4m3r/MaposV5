@@ -2292,6 +2292,155 @@ INSERT IGNORE INTO `atividade_status` (`nome`, `descricao`, `cor`, `icone`, `flu
 ('Concluida', 'Atividade finalizada', '#27ae60', 'bx-check-circle', 'final', 4),
 ('Cancelada', 'Atividade cancelada', '#e74c3c', 'bx-x-circle', 'final', 5);
 
+-- =============================================================================
+-- AGENTE IA - AUTORIZACOES E PERMISSOES
+-- =============================================================================
+
+CREATE TABLE IF NOT EXISTS `whatsapp_integracao` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `numero_telefone` VARCHAR(20) NOT NULL COMMENT 'Numero com DDD e DDI',
+  `clientes_id` INT(11) NULL DEFAULT NULL COMMENT 'Vinculo com cliente',
+  `usuarios_id` INT(11) NULL DEFAULT NULL COMMENT 'Vinculo com usuario interno',
+  `situacao` TINYINT(1) NOT NULL DEFAULT 1 COMMENT '1=Ativo, 0=Inativo',
+  `ultima_interacao` DATETIME NULL DEFAULT NULL,
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_numero_telefone` (`numero_telefone`),
+  INDEX `idx_clientes_id` (`clientes_id`),
+  INDEX `idx_usuarios_id` (`usuarios_id`),
+  INDEX `idx_situacao` (`situacao`),
+  INDEX `idx_numero_situacao` (`numero_telefone`, `situacao`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+COMMENT='Vinculo de numeros WhatsApp com clientes ou usuarios';
+
+CREATE TABLE IF NOT EXISTS `agente_ia_autorizacoes` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `token` VARCHAR(64) NOT NULL,
+  `numero_telefone` VARCHAR(20) NOT NULL,
+  `usuarios_id` INT(11) NULL DEFAULT NULL,
+  `clientes_id` INT(11) NULL DEFAULT NULL,
+  `acao` VARCHAR(100) NOT NULL,
+  `dados_json` JSON NOT NULL,
+  `nivel_criticidade` TINYINT(1) NOT NULL DEFAULT 1,
+  `status` ENUM('pendente','aprovada','rejeitada','expirada','executada') DEFAULT 'pendente',
+  `metodo_autorizacao` ENUM('whatsapp','email','painel') DEFAULT 'whatsapp',
+  `resposta_usuario` VARCHAR(255) NULL,
+  `ip_autorizacao` VARCHAR(45) NULL,
+  `user_agent` VARCHAR(255) NULL,
+  `executado_por` ENUM('agente_ia','usuario') DEFAULT 'agente_ia',
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `expires_at` DATETIME NOT NULL,
+  `executed_at` DATETIME NULL,
+  `resultado_json` JSON NULL,
+  `observacoes` TEXT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_token` (`token`),
+  INDEX `idx_status` (`status`),
+  INDEX `idx_numero_telefone` (`numero_telefone`),
+  INDEX `idx_created_at` (`created_at`),
+  INDEX `idx_expires_at` (`expires_at`),
+  INDEX `idx_acao_status` (`acao`, `status`),
+  INDEX `idx_usuarios_id` (`usuarios_id`),
+  INDEX `idx_clientes_id` (`clientes_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+COMMENT='Tokens de autorizacao para acoes do agente IA';
+
+CREATE TABLE IF NOT EXISTS `agente_ia_permissoes` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `perfil` ENUM('cliente','tecnico','admin','financeiro','vendedor','desconhecido') NOT NULL DEFAULT 'desconhecido',
+  `acao` VARCHAR(100) NOT NULL,
+  `nivel_maximo_automatico` TINYINT(1) NOT NULL DEFAULT 1,
+  `requer_2fa` TINYINT(1) DEFAULT 0,
+  `horario_permitido_inicio` TIME DEFAULT '00:00:00',
+  `horario_permitido_fim` TIME DEFAULT '23:59:59',
+  `ativo` TINYINT(1) DEFAULT 1,
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_perfil_acao` (`perfil`, `acao`),
+  INDEX `idx_perfil` (`perfil`),
+  INDEX `idx_acao` (`acao`),
+  INDEX `idx_ativo` (`ativo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+COMMENT='Permissoes do agente IA por perfil';
+
+INSERT INTO `agente_ia_permissoes` (`perfil`, `acao`, `nivel_maximo_automatico`, `requer_2fa`) VALUES
+('cliente', 'consultar_status_os', 1, 0),
+('cliente', 'consultar_divida', 1, 0),
+('cliente', 'consultar_cliente', 1, 0),
+('cliente', 'consultar_estoque', 1, 0),
+('cliente', 'solicitar_orcamento', 2, 0),
+('tecnico', 'consultar_minhas_os', 1, 0),
+('tecnico', 'consultar_status_os', 1, 0),
+('tecnico', 'atualizar_status_os', 3, 0),
+('tecnico', 'registrar_atividade', 3, 0),
+('tecnico', 'criar_os', 3, 0),
+('admin', 'consultar_status_os', 1, 0),
+('admin', 'consultar_cliente', 1, 0),
+('admin', 'consultar_estoque', 1, 0),
+('admin', 'consultar_lancamentos', 1, 0),
+('admin', 'criar_os', 3, 0),
+('admin', 'atualizar_status_os', 3, 0),
+('admin', 'registrar_atividade', 3, 0),
+('admin', 'aprovar_orcamento', 4, 1),
+('admin', 'gerar_cobranca', 4, 1),
+('admin', 'emitir_nfse', 5, 1),
+('financeiro', 'consultar_lancamentos', 1, 0),
+('financeiro', 'consultar_divida', 1, 0),
+('financeiro', 'gerar_boleto', 4, 1),
+('financeiro', 'gerar_cobranca', 4, 1),
+('vendedor', 'consultar_cliente', 1, 0),
+('vendedor', 'consultar_estoque', 1, 0),
+('vendedor', 'solicitar_orcamento', 2, 0),
+('desconhecido', 'consultar_status_os', 1, 0)
+ON DUPLICATE KEY UPDATE
+  `nivel_maximo_automatico` = VALUES(`nivel_maximo_automatico`),
+  `requer_2fa` = VALUES(`requer_2fa`),
+  `ativo` = 1;
+
+CREATE TABLE IF NOT EXISTS `agente_ia_relatorios_agendados` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `numero_telefone` VARCHAR(20) NOT NULL,
+  `usuarios_id` INT(11) NULL DEFAULT NULL,
+  `tipo_relatorio` VARCHAR(50) NOT NULL,
+  `parametros_json` JSON DEFAULT NULL,
+  `formato` ENUM('texto','pdf_whatsapp','pdf_email','audio') DEFAULT 'texto',
+  `frequencia` ENUM('diario','semanal','mensal','unico') NOT NULL,
+  `horario` TIME DEFAULT '08:00:00',
+  `dia_semana` TINYINT(1) NULL,
+  `dia_mes` TINYINT(2) NULL,
+  `ativo` TINYINT(1) DEFAULT 1,
+  `ultimo_envio` DATETIME NULL,
+  `proximo_envio` DATETIME NOT NULL,
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_numero_telefone` (`numero_telefone`),
+  INDEX `idx_proximo_envio` (`proximo_envio`),
+  INDEX `idx_ativo` (`ativo`),
+  INDEX `idx_usuarios_id` (`usuarios_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+COMMENT='Relatorios agendados via WhatsApp';
+
+CREATE TABLE IF NOT EXISTS `agente_ia_logs_conversa` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `numero_telefone` VARCHAR(20) NOT NULL,
+  `usuarios_id` INT(11) NULL DEFAULT NULL,
+  `clientes_id` INT(11) NULL DEFAULT NULL,
+  `tipo` ENUM('recebido','enviado','sistema','erro') NOT NULL DEFAULT 'recebido',
+  `mensagem` TEXT NOT NULL,
+  `intencao_detectada` VARCHAR(100) NULL,
+  `acao_executada` VARCHAR(100) NULL,
+  `metadados_json` JSON NULL,
+  `ip_origem` VARCHAR(45) NULL,
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_numero_telefone` (`numero_telefone`),
+  INDEX `idx_created_at` (`created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+COMMENT='Log de conversas com o agente IA';
+
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;

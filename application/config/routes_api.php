@@ -87,6 +87,20 @@ $route['api/v2/produtos/(:num)/estoque'] = 'api/v2/ProdutosController/estoque/$1
 $route['api/v2/webhooks'] = 'api/v2/WebhooksController/index';
 $route['api/v2/webhooks/(:num)'] = 'api/v2/WebhooksController/show/$1';
 
+// --- Rotas API v2: Agente IA / Autorizacoes ---
+$route['api/v2/autorizacoes/verificar']  = 'api/v2/AutorizacoesController/verificar';
+$route['api/v2/autorizacoes/solicitar']  = 'api/v2/AutorizacoesController/solicitar';
+$route['api/v2/autorizacoes/validar']    = 'api/v2/AutorizacoesController/validar';
+$route['api/v2/autorizacoes/listar']     = 'api/v2/AutorizacoesController/listar';
+$route['api/v2/autorizacoes/responder']  = 'api/v2/AutorizacoesController/responder';
+
+// --- Rotas API v2: Relatorios ---
+$route['api/v2/relatorios/(:any)']       = 'api/v2/RelatoriosController/index/$1';
+$route['api/v2/relatorios/exportar']     = 'api/v2/RelatoriosController/exportar';
+
+// --- Rotas API v2: Acoes do Agente IA ---
+$route['api/v2/acoes/executar']          = 'api/v2/AcoesController/executar';
+
 // Documentação
 $route['api/v2'] = 'api/docs';
 $route['api/docs'] = 'api/docs';

@@ -18,10 +18,10 @@ class Agente_ia extends CI_Controller
     {
         parent::__construct();
 
-        // Verifica permissao administrativa basica
-        if (!$this->session->userdata('id_usuarios')) {
-            $this->session->set_flashdata('error', 'Acesso negado.');
-            redirect('login');
+        // Verifica permissao do agente IA (vAgenteIA = visualizar, cAgenteIA = configura)
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vAgenteIA')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para acessar o painel do Agente IA.');
+            redirect(base_url());
         }
 
         $this->load->model('agente_ia_autorizacoes_model', 'autModel');

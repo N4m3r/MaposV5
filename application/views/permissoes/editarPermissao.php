@@ -1216,6 +1216,43 @@
                     </div>
                 </div>
 
+                <!-- Agente IA -->
+                <div class="accordion-group widget-box">
+                    <div class="accordion-heading">
+                        <div class="widget-title">
+                            <a data-parent="#collapse-group" href="#collapseGAgenteIA" data-toggle="collapse">
+                                <span><i class='bx bx-bot icon-cli' ></i></span>
+                                <h5 style="padding-left: 28px">Agente IA (WhatsApp/n8n/LLMs)</h5>
+                                <span><i class='bx bx-chevron-right icon-clic'></i></span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="collapse accordion-body" id="collapseGAgenteIA">
+                        <div class="widget-content">
+                        <table class="table table-bordered">
+                            <tr>
+                                <td colspan="4"></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label>
+                                            <input <?php echo (isset($permissoes['vAgenteIA']) && $permissoes['vAgenteIA'] == '1') ? 'checked' : ''; ?> name="vAgenteIA" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> Visualizar Painel Agente IA</span>
+                                        </label>
+                                    </td>
+                                <td>
+                                    <label>
+                                            <input <?php echo (isset($permissoes['cAgenteIA']) && $permissoes['cAgenteIA'] == '1') ? 'checked' : ''; ?> name="cAgenteIA" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> Configurar Agente IA</span>
+                                        </label>
+                                    </td>
+                                    <td colspan="2"></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- NFSe e Boletos -->
                 <div class="accordion-group widget-box">
                     <div class="accordion-heading">

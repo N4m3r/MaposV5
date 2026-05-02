@@ -127,6 +127,20 @@ $route['api/v2/produtos'] = 'api/v2/ProdutosController/index';
 $route['api/v2/produtos/(:num)'] = 'api/v2/ProdutosController/show/$1';
 $route['api/v2/webhooks'] = 'api/v2/WebhooksController/index';
 
+// --- Rotas API v2: Agente IA / Autorizacoes ---
+$route['api/v2/autorizacoes/verificar']  = 'api/v2/AutorizacoesController/verificar';
+$route['api/v2/autorizacoes/solicitar']  = 'api/v2/AutorizacoesController/solicitar';
+$route['api/v2/autorizacoes/validar']    = 'api/v2/AutorizacoesController/validar';
+$route['api/v2/autorizacoes/listar']     = 'api/v2/AutorizacoesController/listar';
+$route['api/v2/autorizacoes/responder']  = 'api/v2/AutorizacoesController/responder';
+
+// --- Rotas API v2: Relatorios ---
+$route['api/v2/relatorios/(:any)']       = 'api/v2/RelatoriosController/index/$1';
+$route['api/v2/relatorios/exportar']     = 'api/v2/RelatoriosController/exportar';
+
+// --- Rotas API v2: Acoes do Agente IA ---
+$route['api/v2/acoes/executar']          = 'api/v2/AcoesController/executar';
+
 // Rotas do Relatório de Atendimentos
 $route['relatorioatendimentos'] = 'relatorioatendimentos';
 $route['relatorioatendimentos/listar'] = 'relatorioatendimentos/listar';
@@ -155,6 +169,16 @@ $route['dashboard/relatorio_atendimentos'] = 'dashboard/relatorio_atendimentos';
 $route['dashboard/relatorio_financeiro'] = 'dashboard/relatorio_financeiro';
 $route['dashboard/relatorio_produtos'] = 'dashboard/relatorio_produtos';
 $route['dashboard/relatorio_clientes'] = 'dashboard/relatorio_clientes';
+
+// ============================================
+// ROTAS DO AGENTE IA (Painel Admin)
+// ============================================
+$route['agente_ia'] = 'agente_ia';
+$route['agente_ia/autorizacoes'] = 'agente_ia/autorizacoes';
+$route['agente_ia/responder'] = 'agente_ia/responder';
+$route['agente_ia/permissoes'] = 'agente_ia/permissoes';
+$route['agente_ia/salvar_permissoes'] = 'agente_ia/salvar_permissoes';
+$route['agente_ia/logs'] = 'agente_ia/logs';
 
 // ============================================
 // ROTAS DO SISTEMA DE OBRAS (Gestão Completa)

@@ -190,6 +190,10 @@ class Permissoes extends MY_Controller
                 'eTecnicoExec' => $this->input->post('eTecnicoExec'),
                 'eTecnicoFotos' => $this->input->post('eTecnicoFotos'),
                 'eTecnicoImped' => $this->input->post('eTecnicoImped'),
+
+                // Permissões Agente IA
+                'vAgenteIA' => $this->input->post('vAgenteIA'),
+                'cAgenteIA' => $this->input->post('cAgenteIA'),
             ];
 
             // Converter null para '0' (checkbox desmarcado)
@@ -364,6 +368,10 @@ class Permissoes extends MY_Controller
                 'eTecnicoExec' => $this->input->post('eTecnicoExec'),
                 'eTecnicoFotos' => $this->input->post('eTecnicoFotos'),
                 'eTecnicoImped' => $this->input->post('eTecnicoImped'),
+
+                // Permissões Agente IA
+                'vAgenteIA' => $this->input->post('vAgenteIA'),
+                'cAgenteIA' => $this->input->post('cAgenteIA'),
 
                 'categoria_d' => $this->input->post('categoria_d'),
                 'categoria_v' => $this->input->post('categoria_v'),

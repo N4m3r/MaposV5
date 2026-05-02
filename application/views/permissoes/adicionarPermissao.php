@@ -972,6 +972,44 @@
                         </div>
                     </div>
 
+                <!-- Agente IA -->
+                <div class="accordion-group widget-box">
+                    <div class="accordion-heading">
+                        <div class="widget-title">
+                            <a data-parent="#collapse-group" href="#collapseGAgenteIA" data-toggle="collapse">
+                                <span><i class='bx bx-bot icon-cli'></i></span>
+                                <h5 style="padding-left: 28px">Agente IA (WhatsApp/n8n/LLMs)</h5>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="collapse accordion-body" id="collapseGAgenteIA">
+                        <div class="widget-content">
+                            <table class="table table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <td colspan="4"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <label>
+                                                <input name="vAgenteIA" class="marcar" type="checkbox" checked="checked" value="1" />
+                                                <span class="lbl"> Visualizar Painel Agente IA</span>
+                                            </label>
+                                        </td>
+                                        <td>
+                                            <label>
+                                                <input name="cAgenteIA" class="marcar" type="checkbox" value="1" />
+                                                <span class="lbl"> Configurar Agente IA</span>
+                                            </label>
+                                        </td>
+                                        <td colspan="2"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- NFSe e Boletos -->
                 <div class="accordion-group widget-box">
                     <div class="accordion-heading">
