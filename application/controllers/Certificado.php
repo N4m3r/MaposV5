@@ -809,6 +809,15 @@ class Certificado extends MY_Controller
             'valor_total_impostos' => 0,
             'valor_liquido' => 0,
             'aliquota_iss' => null,
+            'tributacao_nacional' => null,
+            'tributacao_municipal' => null,
+            'descricao_trib_nac' => null,
+            'descricao_trib_mun' => null,
+            'local_prestacao' => null,
+            'local_emissao' => null,
+            'pais_prestacao' => null,
+            'regime_tributario' => null,
+            'natureza_operacao' => null,
             'prestador' => [
                 'cpf_cnpj' => null,
                 'nome' => null,
@@ -892,6 +901,42 @@ class Certificado extends MY_Controller
 
         // ===== Descricao do servico =====
         $dados['descricao_servico'] = $getVal(['xDescServ', 'Discriminacao', 'discriminacao', 'Descricao']);
+
+        // ===== Tributacao e Local =====
+        $cTribNac = $getVal(['cTribNac']);
+        $xTribNac = $getVal(['xTribNac']);
+        if ($cTribNac || $xTribNac) {
+            $dados['tributacao_nacional'] = trim($cTribNac . ' - ' . $xTribNac, ' -');
+        }
+        $cTribMun = $getVal(['cTribMun']);
+        $xTribMun = $getVal(['xTribMun']);
+        if ($cTribMun || $xTribMun) {
+            $dados['tributacao_municipal'] = trim($cTribMun . ' - ' . $xTribMun, ' -');
+        }
+        $xLocPrest = $getVal(['xLocPrestacao', 'xLocIncid']);
+        $cLocPrest = $getVal(['cLocPrestacao', 'cLocIncid']);
+        if ($xLocPrest || $cLocPrest) {
+            $dados['local_prestacao'] = trim(($xLocPrest ?: $cLocPrest));
+        }
+        $xLocEmi = $getVal(['xLocEmi']);
+        $cLocEmi = $getVal(['cLocEmi']);
+        if ($xLocEmi || $cLocEmi) {
+            $dados['local_emissao'] = trim(($xLocEmi ?: $cLocEmi));
+        }
+        $dados['pais_prestacao'] = $getVal(['xPais', 'cPais']);
+        $regTrib = $dom->getElementsByTagName('regTrib')->item(0);
+        if ($regTrib) {
+            $opSimp = $getChild($regTrib, ['opSimpNac']);
+            $regEsp = $getChild($regTrib, ['regEspTrib']);
+            if ($opSimp) {
+                $mapReg = ['1'=>'Microempresa', '2'=>'Empresa de Pequeno Porte', '3'=>'ME ou EPP optante pelo Simples Nacional', '4'=>'Normal', '5'=>'Imune', '6'=>'Isenta'];
+                $dados['regime_tributario'] = ($mapReg[$opSimp] ?? 'Simples Nacional');
+            }
+            if ($regEsp && $regEsp != '0') {
+                $mapEsp = ['1'=>'Cooperativa', '2'=>'Construtora', '3'=>'Agente Disportivo', '4'=>'Estabelecimento de Saude', '5'=>'Cartao de Credito/Debito', '6'=>'Instituicao Financeira', '7'=>'Seguradora', '8'=>'Administradora de Consorcio', '9'=>'Demais entidades'];
+                $dados['natureza_operacao'] = ($mapEsp[$regEsp] ?? 'Normal');
+            }
+        }
 
         // ===== Valores =====
         // vServ pode estar em vServPrest > vServ (NFSe Nacional)

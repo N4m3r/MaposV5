@@ -62,6 +62,15 @@ $nfCompetencia = !empty($x['competencia']) ? $x['competencia'] : '';
 $nfDesc = !empty($x['descricao_servico']) ? $x['descricao_servico'] : '';
 $nfAliq = !empty($x['aliquota_iss']) ? $x['aliquota_iss'] : ($tributacao['aliquota_iss'] ?? '5.00');
 
+// Tributacao e local
+$nfTribNac = !empty($x['tributacao_nacional']) ? $x['tributacao_nacional'] : '';
+$nfTribMun = !empty($x['tributacao_municipal']) ? $x['tributacao_municipal'] : '';
+$nfLocPrest = !empty($x['local_prestacao']) ? $x['local_prestacao'] : '';
+$nfLocEmi = !empty($x['local_emissao']) ? $x['local_emissao'] : '';
+$nfPais = !empty($x['pais_prestacao']) ? $x['pais_prestacao'] : '';
+$nfRegime = !empty($x['regime_tributario']) ? $x['regime_tributario'] : '';
+$nfNatureza = !empty($x['natureza_operacao']) ? $x['natureza_operacao'] : '';
+
 $vServ = floatval($x['valor_servicos'] ?? $n->valor_total ?? 0);
 $vDed = floatval($x['valor_deducoes'] ?? 0);
 $vLiq = floatval($x['valor_liquido'] ?? 0);
@@ -303,9 +312,6 @@ if ($vLiq == 0 && $vServ > 0) {
 
     <div class="page">
         <div class="documento">
-            <!-- Marca d'agua -->
-            <div class="watermark">Importada</div>
-
             <!-- Cabecalho -->
             <div class="header">
                 <div class="header-left">
@@ -313,7 +319,7 @@ if ($vLiq == 0 && $vServ > 0) {
                 </div>
                 <div class="header-center">
                     <h2>NOTA FISCAL DE SERVICOS ELETRONICA</h2>
-                    <p class="subtitle">IMPORTADA DE OUTRO SISTEMA</p>
+                    <p class="subtitle">NOTA FISCAL DE SERVICO ELETRONICA - NFS-e</p>
                     <?php if ($pNome): ?>
                         <p class="empresa-nome"><?= htmlspecialchars($pNome) ?></p>
                         <p class="empresa-detail">CNPJ: <?= !empty($pCnpj) ? fmtDoc($pCnpj) : '---' ?> <?= !empty($pIM) ? '| IM: ' . htmlspecialchars($pIM) : '' ?></p>
@@ -394,10 +400,54 @@ if ($vLiq == 0 && $vServ > 0) {
                 <?php endif; ?>
             </div>
 
-            <!-- Discriminacao -->
+            <!-- Servico Prestado / Tributacao -->
             <div class="section">
-                <div class="section-title discriminacao">Discriminacao dos Servicos</div>
-                <p style="margin:5px 0; line-height:1.5; font-size:10px;"><?= htmlspecialchars($nfDesc ?: 'Servicos prestados conforme contrato.') ?></p>
+                <div class="section-title discriminacao">Servico Prestado</div>
+                <?php if ($nfTribNac || $nfTribMun || $nfLocPrest || $nfLocEmi || $nfPais || $nfRegime): ?>
+                <div class="row" style="margin-bottom:8px;">
+                    <?php if ($nfTribNac): ?>
+                    <div class="col-half">
+                        <div class="row"><span class="col-left">Cod. Tributacao Nacional:</span><span class="col-right"><?= htmlspecialchars($nfTribNac) ?></span></div>
+                    </div>
+                    <?php endif; ?>
+                    <?php if ($nfTribMun): ?>
+                    <div class="col-half">
+                        <div class="row"><span class="col-left">Cod. Tributacao Municipal:</span><span class="col-right"><?= htmlspecialchars($nfTribMun) ?></span></div>
+                    </div>
+                    <?php endif; ?>
+                </div>
+                <div class="row" style="margin-bottom:8px;">
+                    <?php if ($nfLocPrest || $nfLocEmi): ?>
+                    <div class="col-half">
+                        <div class="row"><span class="col-left">Local da Prestacao:</span><span class="col-right"><?= htmlspecialchars($nfLocPrest ?: $nfLocEmi ?: '---') ?></span></div>
+                    </div>
+                    <?php endif; ?>
+                    <?php if ($nfPais): ?>
+                    <div class="col-half">
+                        <div class="row"><span class="col-left">Pais da Prestacao:</span><span class="col-right"><?= htmlspecialchars($nfPais) ?></span></div>
+                    </div>
+                    <?php endif; ?>
+                </div>
+                <?php if ($nfRegime || $nfNatureza): ?>
+                <div class="row">
+                    <?php if ($nfRegime): ?>
+                    <div class="col-half">
+                        <div class="row"><span class="col-left">Regime Tributario:</span><span class="col-right"><?= htmlspecialchars($nfRegime) ?></span></div>
+                    </div>
+                    <?php endif; ?>
+                    <?php if ($nfNatureza): ?>
+                    <div class="col-half">
+                        <div class="row"><span class="col-left">Natureza Operacao:</span><span class="col-right"><?= htmlspecialchars($nfNatureza) ?></span></div>
+                    </div>
+                    <?php endif; ?>
+                </div>
+                <?php endif; ?>
+                <?php endif; ?>
+
+                <div style="margin-top:10px; border-top:1px solid #eee; padding-top:8px;">
+                    <div class="section-title discriminacao" style="margin-bottom:6px;">Discriminacao dos Servicos</div>
+                    <p style="margin:5px 0; line-height:1.5; font-size:10px;"><?= htmlspecialchars($nfDesc ?: 'Servicos prestados conforme contrato.') ?></p>
+                </div>
                 <?php if ($nfAliq): ?>
                 <div class="row" style="margin-top:6px; font-size:9px; color:#777;">
                     <div class="col-half">
@@ -473,6 +523,19 @@ if ($vLiq == 0 && $vServ > 0) {
                 </table>
             </div>
 
+            <!-- QR Code -->
+            <?php if ($nfChave): ?>
+            <div class="section" style="text-align:center; border-top:1px solid #bbb;">
+                <div class="section-title" style="border-left-color:#333;">Consulta de Autenticidade</div>
+                <div style="display:inline-block; text-align:center;">
+                    <img src="https://chart.googleapis.com/chart?chs=150x150&amp;cht=qr&amp;chl=<?= urlencode('https://www.nfse.gov.br/portal/consulta?chave=' . $nfChave) ?>" alt="QR Code" style="width:120px; height:120px;">
+                    <div style="font-size:9px; color:#666; margin-top:4px;">
+                        Escaneie para consultar a autenticidade da nota no portal nacional
+                    </div>
+                </div>
+            </div>
+            <?php endif; ?>
+
             <!-- Rodape -->
             <div class="footer">
                 <div class="footer-left">
@@ -484,8 +547,8 @@ if ($vLiq == 0 && $vServ > 0) {
                     Gerado em <?= date('d/m/Y \a\s H:i:s') ?>
                 </div>
             </div>
-            <div style="text-align:center; padding:6px 20px; font-size:9px; color:#d9534f; font-weight:bold; letter-spacing:1px; border-top:1px solid #ddd;">
-                IMPORTADA DE OUTRO SISTEMA — CONSULTE A AUTENTICIDADE NO PORTAL DA PREFEITURA
+            <div style="text-align:center; padding:6px 20px; font-size:9px; color:#555; font-weight:bold; letter-spacing:1px; border-top:1px solid #ddd;">
+                Documento gerado eletronicamente. Consulte a autenticidade no portal da NFS-e Nacional.
             </div>
         </div>
     </div>
