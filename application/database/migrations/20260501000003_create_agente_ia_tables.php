@@ -57,7 +57,27 @@ class Migration_Create_agente_ia_tables extends CI_Migration
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
         // ========================================================
-        // 3. SEED: permissoes padrao
+        // 3. TABELA: agente_ia_logs_conversa
+        //    Log de conversas e auditoria do agente
+        // ========================================================
+        $this->db->query("CREATE TABLE IF NOT EXISTS `agente_ia_logs_conversa` (
+            `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+            `numero_telefone` VARCHAR(20) NULL,
+            `tipo` ENUM('entrada','saida','sistema','erro') DEFAULT 'entrada',
+            `mensagem` TEXT NULL,
+            `intencao_detectada` VARCHAR(100) NULL,
+            `os_id` INT(11) NULL,
+            `metadados_json` JSON NULL,
+            `ip_origem` VARCHAR(45) NULL,
+            `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (`id`),
+            INDEX `idx_numero` (`numero_telefone`),
+            INDEX `idx_tipo` (`tipo`),
+            INDEX `idx_created_at` (`created_at`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+        // ========================================================
+        // 4. SEED: permissoes padrao
         // ========================================================
         $this->db->query("INSERT IGNORE INTO `agente_ia_permissoes` (`perfil`, `acao`, `nivel_maximo_automatico`, `requer_2fa`) VALUES
             ('cliente', 'consultar_status_os', 1, 0),

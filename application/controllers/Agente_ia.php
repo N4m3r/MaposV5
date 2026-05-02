@@ -249,19 +249,25 @@ class Agente_ia extends CI_Controller
 
     private function interacoesHoje(): int
     {
+        if (!$this->db->table_exists('agente_ia_logs_conversa')) {
+            return 0;
+        }
         $hoje = date('Y-m-d');
-        return $this->db
+        return (int) $this->db
             ->where('DATE(created_at)', $hoje)
             ->count_all_results('agente_ia_logs_conversa');
     }
 
     private function ultimosLogs(int $limite): array
     {
-        return $this->db
+        if (!$this->db->table_exists('agente_ia_logs_conversa')) {
+            return [];
+        }
+        $query = $this->db
             ->order_by('created_at', 'DESC')
             ->limit($limite)
-            ->get('agente_ia_logs_conversa')
-            ->result_array();
+            ->get('agente_ia_logs_conversa');
+        return $query ? $query->result_array() : [];
     }
 
     private function getTaxaAprovacao(): string

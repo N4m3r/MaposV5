@@ -676,17 +676,17 @@ class Nfse_os extends MY_Controller
         $this->load->model('mapos_model');
         $emitente = $this->mapos_model->getEmitente();
 
-        // Logo do emitente (absoluto para mPDF)
-        $logoUrl = null;
+        // Logo do emitente (caminho absoluto para mPDF)
+        $logoPath = null;
         if (!empty($emitente->url_logo)) {
             $logoRelative = str_replace(base_url(), '', $emitente->url_logo);
             $logoAbsolute = FCPATH . str_replace('/', DIRECTORY_SEPARATOR, $logoRelative);
             if (file_exists($logoAbsolute)) {
-                $logoUrl = base_url($logoRelative);
+                $logoPath = $logoAbsolute;
             }
         }
-        if (!$logoUrl && file_exists(FCPATH . 'assets' . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'logo.png')) {
-            $logoUrl = base_url('assets/img/logo.png');
+        if (!$logoPath && file_exists(FCPATH . 'assets' . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'logo.png')) {
+            $logoPath = FCPATH . 'assets' . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'logo.png';
         }
 
         // Montar objeto boleto temporario em memoria
@@ -710,7 +710,7 @@ class Nfse_os extends MY_Controller
             'emitente' => $emitente,
             'nfse' => $nfse,
             'is_preview' => true,
-            'logo_url' => $logoUrl,
+            'logo_path' => $logoPath,
         ];
 
         $this->load->helper('mpdf');

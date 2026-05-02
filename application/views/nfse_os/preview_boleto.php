@@ -55,11 +55,10 @@ $valorNfse  = floatval($nfse->valor_servicos ?? $nfse->valor_total ?? 0);
 $osNumero   = $os->idOs ?? $boleto->os_id ?? '';
 
 // ========== LOGO ==========
+// mPDF requer caminho absoluto no servidor para embutir imagens
 $logoHtml = '';
-if (!empty($logo_url)) {
-    $logoHtml = '<img src="' . htmlspecialchars($logo_url, ENT_QUOTES, 'UTF-8') . '" style="max-height:50px;max-width:140px;display:block;" alt="Logo">';
-} elseif (!empty($emitente->url_logo)) {
-    $logoHtml = '<img src="' . htmlspecialchars($emitente->url_logo, ENT_QUOTES, 'UTF-8') . '" style="max-height:50px;max-width:140px;display:block;" alt="Logo">';
+if (!empty($logo_path) && file_exists($logo_path)) {
+    $logoHtml = '<img src="' . htmlspecialchars($logo_path, ENT_QUOTES, 'UTF-8') . '" style="max-height:50px;max-width:150px;display:block;" alt="Logo">';
 }
 
 $instrucoes = nl2br(htmlspecialchars($boleto->instrucoes ?? 'Pagavel em qualquer banco ate o vencimento.', ENT_QUOTES, 'UTF-8'));
@@ -383,6 +382,14 @@ $instrucoes = nl2br(htmlspecialchars($boleto->instrucoes ?? 'Pagavel em qualquer
                 <td colspan="5" class="nfse-chave"><?= htmlspecialchars($chaveNfse) ?></td>
             </tr>
             <?php endif; ?>
+            <tr>
+                <td class="nfse-lbl">Valor Servicos:</td>
+                <td><?= fmtMoney($nfse->valor_servicos ?? $nfse->valor_total ?? 0) ?></td>
+                <td class="nfse-lbl">Valor Liquido:</td>
+                <td><?= fmtMoney($nfse->valor_liquido ?? $nfse->valor_total ?? 0) ?></td>
+                <td class="nfse-lbl">Impostos:</td>
+                <td><?= fmtMoney($nfse->valor_total_impostos ?? $nfse->valor_impostos ?? 0) ?></td>
+            </tr>
         </table>
     </div>
     <?php endif; ?>
