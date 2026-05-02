@@ -98,31 +98,20 @@ $instrucoes = nl2br(htmlspecialchars($boleto->instrucoes ?? 'Pagavel em qualquer
         }
         .header-table { width: 100%; border-collapse: collapse; }
         .header-table td { vertical-align: middle; padding: 0; }
-        .header-logo { width: 1%; padding-right: 14px; }
-        .header-logo img { max-height: 48px; max-width: 130px; display: block; }
-        .header-title {
-            font-size: 18pt;
+        .header-logo { width: 1%; padding-right: 14px; white-space: nowrap; }
+        .header-logo img { max-height: 50px; max-width: 150px; display: block; }
+        .header-info {
+            padding-left: 14px;
+        }
+        .header-emitente {
+            font-size: 13pt;
             font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         .header-sub {
-            font-size: 8.5pt;
-            opacity: 0.85;
-            margin-top: 2px;
-        }
-        .header-badge {
-            text-align: right;
-        }
-        .badge-preview {
-            display: inline-block;
-            background: #fc9d0f;
-            color: #fff;
             font-size: 9pt;
-            font-weight: 700;
-            padding: 4px 12px;
-            border-radius: 20px;
-            letter-spacing: 1px;
+            opacity: 0.9;
+            margin-top: 3px;
         }
 
         /* Cards */
@@ -286,20 +275,6 @@ $instrucoes = nl2br(htmlspecialchars($boleto->instrucoes ?? 'Pagavel em qualquer
             text-align: center;
         }
 
-        /* Watermark */
-        .watermark {
-            position: absolute;
-            top: 42%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(-25deg);
-            font-size: 72pt;
-            color: rgba(200, 0, 0, 0.06);
-            font-weight: 900;
-            pointer-events: none;
-            z-index: 0;
-            letter-spacing: 6px;
-        }
-
         @media print {
             body { background: #fff; }
             .page { padding: 12px 16px; }
@@ -309,25 +284,17 @@ $instrucoes = nl2br(htmlspecialchars($boleto->instrucoes ?? 'Pagavel em qualquer
 <body>
 
 <div class="page">
-    <?php if ($is_preview): ?>
-    <div class="watermark">PREVIEW</div>
-    <?php endif; ?>
 
     <!-- CABECALHO -->
     <div class="header">
         <table class="header-table">
             <tr>
                 <td class="header-logo">
-                    <?= $logoHtml ?: '<div style="font-size:16pt;font-weight:700;line-height:1.1;">' . htmlspecialchars($cedenteNome) . '</div>' ?>
+                    <?= $logoHtml ?: '<div style="font-size:14pt;font-weight:700;line-height:1.1;white-space:nowrap;">' . htmlspecialchars($cedenteNome) . '</div>' ?>
                 </td>
-                <td>
-                    <div class="header-title">Boleto de Cobranca</div>
+                <td class="header-info">
+                    <div class="header-emitente"><?= htmlspecialchars($cedenteNome) ?></div>
                     <div class="header-sub">OS #<?= $osNumero ?> &nbsp;|&nbsp; Emissao: <?= $emissao ?></div>
-                </td>
-                <td class="header-badge">
-                    <?php if ($is_preview): ?>
-                        <span class="badge-preview">PREVIEW</span>
-                    <?php endif; ?>
                 </td>
             </tr>
         </table>
