@@ -526,18 +526,32 @@ class Os extends MY_Controller
         }
 
         // Se nao houver NFSe emitida pelo sistema, mas houver importada,
-        // normalizar para formato compativel com a aba boleto
+        // normalizar para formato compativel com a view nfse_content e boleto_content
         if (empty($this->data['nfse_atual']) && !empty($this->data['nfse_importada'])) {
             $imp = $this->data['nfse_importada'];
-            $this->data['nfse_atual'] = new stdClass();
-            $this->data['nfse_atual']->id = $imp->id;
-            $this->data['nfse_atual']->numero_nfse = $imp->numero;
-            $this->data['nfse_atual']->data_emissao = $imp->data_emissao;
-            $this->data['nfse_atual']->valor_servicos = floatval($imp->valor_total ?? 0);
-            $this->data['nfse_atual']->valor_liquido = floatval($imp->valor_total ?? 0);
-            $this->data['nfse_atual']->valor_total_retencao = 0.00;
-            $this->data['nfse_atual']->situacao = $imp->situacao ?? 'Autorizada';
-            $this->data['nfse_atual']->is_importada = true;
+            $nf = new stdClass();
+            $nf->id = $imp->id;
+            $nf->numero_nfse = $imp->numero;
+            $nf->data_emissao = $imp->data_emissao;
+            $nf->chave_acesso = $imp->chave_acesso ?? null;
+            $nf->protocolo = null;
+            $nf->situacao = $imp->situacao ?: 'Autorizada';
+            $nf->valor_servicos = floatval($imp->valor_total ?? 0);
+            $nf->valor_liquido = floatval($imp->valor_total ?? 0);
+            $nf->valor_total_impostos = floatval($imp->valor_impostos ?? 0);
+            $nf->valor_total_retencao = 0.00;
+            $nf->valor_retencao_iss = 0.00;
+            $nf->valor_retencao_irrf = 0.00;
+            $nf->valor_retencao_pis = 0.00;
+            $nf->valor_retencao_cofins = 0.00;
+            $nf->valor_retencao_csll = 0.00;
+            $nf->competencia = $imp->data_emissao ? date('Y-m-01', strtotime($imp->data_emissao)) : date('Y-m-01');
+            $nf->url_danfe = null;
+            $nf->link_impressao = null;
+            $nf->xml_dps = null;
+            $nf->xml_nfse = null;
+            $nf->is_importada = true;
+            $this->data['nfse_atual'] = $nf;
         }
 
         // DEBUG: logar estado da NFSe para diagnosticar exibicao na view
