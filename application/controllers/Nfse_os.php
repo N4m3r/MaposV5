@@ -642,6 +642,29 @@ class Nfse_os extends MY_Controller
                         }
                     }
                 }
+            } elseif ($nfse) {
+                // NFSe em os_nfse_emitida (emitida via API ou importada via XML do proprio sistema)
+                $temXml = !empty($nfse->xml_nfse) || !empty($nfse->xml_dps);
+                $temChaveApi = !empty($nfse->chave_acesso) || !empty($nfse->protocolo);
+                if ($temXml && !$temChaveApi) {
+                    $nfse->is_importada = true;
+                }
+                $xmlContent = $nfse->xml_nfse ?? $nfse->xml_dps ?? '';
+                if (!empty($xmlContent)) {
+                    $xmlData = $this->_extrairDadosXmlNfse($xmlContent);
+                    $descricaoServico = $xmlData['descricao_servico'] ?? null;
+                    if ($xmlData['valor_servicos'] > 0) {
+                        $nfse->valor_servicos = $xmlData['valor_servicos'];
+                    }
+                    if ($xmlData['valor_total_impostos'] > 0) {
+                        $nfse->valor_total_impostos = $xmlData['valor_total_impostos'];
+                    }
+                }
+                // Garantir campos padronizados
+                $nfse->numero_nfse = $nfse->numero_nfse ?? $nfse->numero ?? '';
+                $nfse->valor_servicos = floatval($nfse->valor_servicos ?? $nfse->valor_total ?? 0);
+                $nfse->valor_total_impostos = floatval($nfse->valor_total_impostos ?? $nfse->valor_impostos ?? 0);
+                $nfse->valor_liquido = floatval($nfse->valor_liquido ?? $nfse->valor_total ?? 0);
             }
         }
 
@@ -701,6 +724,29 @@ class Nfse_os extends MY_Controller
                     }
                 }
             }
+        } elseif ($nfse) {
+            // NFSe em os_nfse_emitida (emitida via API ou importada via XML do proprio sistema)
+            $temXml = !empty($nfse->xml_nfse) || !empty($nfse->xml_dps);
+            $temChaveApi = !empty($nfse->chave_acesso) || !empty($nfse->protocolo);
+            if ($temXml && !$temChaveApi) {
+                $nfse->is_importada = true;
+            }
+            $xmlContent = $nfse->xml_nfse ?? $nfse->xml_dps ?? '';
+            if (!empty($xmlContent)) {
+                $xmlData = $this->_extrairDadosXmlNfse($xmlContent);
+                $descricaoServico = $xmlData['descricao_servico'] ?? null;
+                if ($xmlData['valor_servicos'] > 0) {
+                    $nfse->valor_servicos = $xmlData['valor_servicos'];
+                }
+                if ($xmlData['valor_total_impostos'] > 0) {
+                    $nfse->valor_total_impostos = $xmlData['valor_total_impostos'];
+                }
+            }
+            // Garantir campos padronizados
+            $nfse->numero_nfse = $nfse->numero_nfse ?? $nfse->numero ?? '';
+            $nfse->valor_servicos = floatval($nfse->valor_servicos ?? $nfse->valor_total ?? 0);
+            $nfse->valor_total_impostos = floatval($nfse->valor_total_impostos ?? $nfse->valor_impostos ?? 0);
+            $nfse->valor_liquido = floatval($nfse->valor_liquido ?? $nfse->valor_total ?? 0);
         }
         if (!$nfse) {
             $this->session->set_flashdata('error', 'NFS-e nao encontrada.');

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * View: autorizacoes_pendentes.php
  * Painel de autorizacoes pendentes do agente IA
@@ -101,7 +101,7 @@
                                                 <strong>Numero:</strong> <?php echo $aut['numero_telefone']; ?><br>
                                                 <?php if (!empty($aut['usuarios_id'])): ?>
                                                     <strong>Usuario ID:</strong> <?php echo $aut['usuarios_id']; ?> <?php endif; ?>
-                                                <?php if (!empty($aut['clientes_id'])): ?
+                                                <?php if (!empty($aut['clientes_id'])): ?>
                                                     <strong>Cliente ID:</strong> <?php echo $aut['clientes_id']; ?> <?php endif; ?>
                                                 <br>
                                                 <strong>Metodo:</strong> <?php echo ucfirst($aut['metodo_autorizacao'] ?? 'whatsapp'); ?>
@@ -111,7 +111,7 @@
                                             <div class="meta">
                                                 <?php echo date('d/m/Y H:i', strtotime($aut['created_at'])); ?>
                                             </div>
-                                            <?php if ($aut['status'] === 'pendente'): ?
+                                            <?php if ($aut['status'] === 'pendente'): ?>
                                                 <form method="post" action="<?php echo site_url('agente_ia/responder'); ?>" style="margin-top:8px">
                                                     <input type="hidden" name="autorizacao_id" value="<?php echo $aut['id']; ?>">
                                                     <button type="submit" name="resposta" value="aprovar" class="btn btn-mini btn-success">
@@ -121,7 +121,7 @@
                                                         <i class="bx bx-x"></i> Rejeitar
                                                     </button>
                                                 </form>
-                                            <?php else: ?
+                                            <?php else: ?>
                                                 <span class="label label-<?php
                                                     echo match($aut['status']) {
                                                         'aprovada' => 'success',
@@ -137,8 +137,8 @@
                                                     <div class="meta" style="margin-top:5px">
                                                         Executado em <br><?php echo date('d/m/Y H:i', strtotime($aut['executed_at'])); ?>
                                                     </div>
-                                                <?php endif; ?
-                                            <?php endif; ?
+                                                <?php endif; ?>
+                                            <?php endif; ?>
                                         </div>
                                     </div>
                                 </div>
@@ -150,7 +150,7 @@
                 <?php if (!empty($totalPages) && $totalPages > 1): ?>
                     <div class="pagination alternate" style="margin-top:15px">
                         <ul>
-                            <?php for ($p = 1; $p <= $totalPages; $p++): ?
+                            <?php for ($p = 1; $p <= $totalPages; $p++): ?>
                                 <li class="<?php echo ($p == ($page ?? 1)) ? 'active' : ''; ?>">
                                     <a href="?page=<?php echo $p; ?>&amp;status=<?php echo urlencode($filtroStatus ?? ''); ?>"><?php echo $p; ?></a>
                                 </li>

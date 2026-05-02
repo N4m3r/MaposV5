@@ -55,6 +55,7 @@ if (!empty($nfse)) {
     $chaveNfse  = $nfse->chave_acesso ?? '';
     $valorNfse  = floatval($nfse->valor_servicos ?? $nfse->valor_total ?? 0);
     $valorImpostosNfse = floatval($nfse->valor_total_impostos ?? $nfse->valor_impostos ?? 0);
+    $valorLiquidoNfse  = floatval($nfse->valor_liquido ?? ($valorNfse - $valorImpostosNfse));
 
     if (!empty($descricao_servico)) {
         $descServico = $descricao_servico;
@@ -66,7 +67,7 @@ if (!empty($nfse)) {
 // ===== LOGO — caminho absoluto no servidor para mPDF =====
 $logoHtml = '';
 if (!empty($logo_path) && file_exists($logo_path)) {
-    $logoHtml = '<img src="' . $logo_path . '" style="max-height:60px;max-width:180px;display:block;margin-bottom:6px;" alt="Logo">';
+    $logoHtml = '<img src="' . $logo_path . '" style="max-height:80px;max-width:240px;display:block;margin:0 auto;" alt="Logo">';
 }
 
 ?>
@@ -80,26 +81,25 @@ if (!empty($logo_path) && file_exists($logo_path)) {
 body { font-family:Helvetica,Arial,sans-serif; font-size:10pt; color:#2c2c3a; background:#fff; }
 .page { width:100%; max-width:210mm; margin:0 auto; padding:0; }
 
-/* === TOPO DEGRADE COM LOGO === */
+/* === LOGO TOPO === */
+.logo-topo {
+    text-align: center;
+    padding: 16px 0 10px 0;
+}
+.logo-topo img {
+    max-height: 80px;
+    max-width: 240px;
+    display: inline-block;
+}
+
+/* === TOPO DEGRADE === */
 .topo {
     background: #0d1642;
     background: linear-gradient(135deg, #0d1642 0%, #1a237e 45%, #3949ab 100%);
-    padding: 22px 24px 18px 24px;
+    padding: 14px 24px 14px 24px;
     color: #fff;
     border-radius: 0 0 10px 10px;
     margin-bottom: 14px;
-}
-.topo-logo-area {
-    text-align: center;
-    margin-bottom: 10px;
-}
-.topo-logo-area img {
-    max-height: 55px;
-    max-width: 170px;
-    display: inline-block;
-    background: #fff;
-    padding: 4px 8px;
-    border-radius: 4px;
 }
 .topo-emitente {
     text-align: center;
@@ -252,11 +252,13 @@ body { font-family:Helvetica,Arial,sans-serif; font-size:10pt; color:#2c2c3a; ba
 
 <div class="page">
 
-<!-- === TOPO DEGRADE COM LOGO === -->
+<!-- === LOGO ACIMA DO DEGRADE === -->
+<div class="logo-topo">
+    <?= $logoHtml ?: '<div style="font-size:20pt;font-weight:700;padding:4px 0;color:#0d1642;">' . $cedenteNome . '</div>' ?>
+</div>
+
+<!-- === TOPO DEGRADE AZUL === -->
 <div class="topo">
-    <div class="topo-logo-area">
-        <?= $logoHtml ?: '<div style="font-size:18pt;font-weight:700;padding:4px 0;">' . $cedenteNome . '</div>' ?>
-    </div>
     <div class="topo-emitente"><?= $cedenteNome ?></div>
     <div class="topo-dados">
         <?= $cedenteCnpj ? 'CNPJ: ' . $cedenteCnpj . ' &nbsp;|&nbsp; ' : '' ?>
@@ -311,12 +313,12 @@ body { font-family:Helvetica,Arial,sans-serif; font-size:10pt; color:#2c2c3a; ba
 </div>
 
 <!-- === NFSe === -->
-<?php if (!empty($numeroNfse)): ?>
+<?php if (!empty($nfse)): ?>
 <div class="nfse-box">
     <div class="nfse-titulo">NFS-e Vinculada <?= $isImportada ? '(Importada)' : '' ?></div>
     <table class="dados-table">
         <tr>
-            <td class="etq">Numero:</td><td class="info"><?= htmlspecialchars($numeroNfse) ?></td>
+            <td class="etq">Numero:</td><td class="info"><?= !empty($numeroNfse) ? htmlspecialchars($numeroNfse) : '---' ?></td>
             <td class="etq">Data Emissao:</td><td class="info"><?= $dataNfse ?: '---' ?></td>
             <td class="etq">OS:</td><td class="info">#<?= $osNumero ?></td>
         </tr>
@@ -328,7 +330,7 @@ body { font-family:Helvetica,Arial,sans-serif; font-size:10pt; color:#2c2c3a; ba
         <tr>
             <td class="etq">Valor Servicos:</td><td class="info"><?= fmtMoney($valorNfse) ?></td>
             <td class="etq">Impostos:</td><td class="info"><?= fmtMoney($valorImpostosNfse) ?></td>
-            <td class="etq">Liquido:</td><td class="info"><?= fmtMoney($valorNfse - $valorImpostosNfse) ?></td>
+            <td class="etq">Liquido:</td><td class="info"><?= fmtMoney($valorLiquidoNfse) ?></td>
         </tr>
         <?php if (!empty($descServico)): ?>
         <tr>
