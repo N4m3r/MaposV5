@@ -189,6 +189,17 @@ class Agente_ia extends CI_Controller
         $data = [];
         $data['title'] = 'Logs de Conversa - Agente IA';
 
+        // Se a tabela nao existe, exibe lista vazia
+        if (!$this->db->table_exists('agente_ia_logs_conversa')) {
+            $data['logs']       = [];
+            $data['totalPages'] = 0;
+            $data['page']       = 1;
+            $data['view']       = 'agente_ia/logs_conversa';
+            $this->load->view('tema/topo', $data);
+            $this->load->view('tema/conteudo', $data);
+            return;
+        }
+
         $filtro = [];
         $numero = $this->input->get('numero');
         $tipo   = $this->input->get('tipo');
@@ -205,37 +216,29 @@ class Agente_ia extends CI_Controller
             $filtro['data_fim']    = $dataF . ' 23:59:59';
         }
 
-        $page = (int) ($this->input->get('page') ?: 1);
+        $page    = (int) ($this->input->get('page') ?: 1);
         $perPage = (int) ($this->input->get('per_page') ?: 25);
+        $offset  = ($page - 1) * $perPage;
 
-        // Query manual em vez de usar o model (o model de autorizacoes nao cobre logs)
-        $offset = ($page - 1) * $perPage;
-        $this->db->from('agente_ia_logs_conversa');
-        if (!empty($filtro['numero'])) {
-            $this->db->where('numero_telefone', $filtro['numero']);
-        }
-        if (!empty($filtro['tipo'])) {
-            $this->db->where('tipo', $filtro['tipo']);
-        }
-        if (!empty($filtro['data_inicio'])) {
-            $this->db->where('created_at >=', $filtro['data_inicio']);
-            $this->db->where('created_at <=', $filtro['data_fim']);
-        }
-        $countBuilder = clone $this->db;
-        $total = $countBuilder->count_all_results();
+        // Monta condicoes WHERE reutilizaveis
+        $where = [];
+        if (!empty($filtro['numero']))      $where['numero_telefone'] = $filtro['numero'];
+        if (!empty($filtro['tipo']))        $where['tipo']            = $filtro['tipo'];
+        if (!empty($filtro['data_inicio'])) $where['created_at >=']  = $filtro['data_inicio'];
+        if (!empty($filtro['data_fim']))    $where['created_at <=']  = $filtro['data_fim'];
 
-        $this->db->from('agente_ia_logs_conversa');
-        if (!empty($filtro['numero'])) $this->db->where('numero_telefone', $filtro['numero']);
-        if (!empty($filtro['tipo'])) $this->db->where('tipo', $filtro['tipo']);
-        if (!empty($filtro['data_inicio'])) {
-            $this->db->where('created_at >=', $filtro['data_inicio']);
-            $this->db->where('created_at <=', $filtro['data_fim']);
-        }
-        $data['logs'] = $this->db->order_by('created_at', 'DESC')
+        // --- count total ---
+        $this->db->where($where);
+        $total = (int) $this->db->count_all_results('agente_ia_logs_conversa');
+
+        // --- query paginada ---
+        $this->db->where($where);
+        $query = $this->db
+            ->order_by('created_at', 'DESC')
             ->limit($perPage, $offset)
-            ->get()
-            ->result_array();
+            ->get('agente_ia_logs_conversa');
 
+        $data['logs']       = $query ? $query->result_array() : [];
         $data['totalPages'] = (int) ceil($total / $perPage);
         $data['page']       = $page;
         $data['view']       = 'agente_ia/logs_conversa';
