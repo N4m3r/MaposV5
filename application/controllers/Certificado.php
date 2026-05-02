@@ -724,6 +724,7 @@ class Certificado extends MY_Controller
 
     /**
      * Impressao formatada A4 de uma NFS-e importada
+     * Extrai dados reais do XML para preencher o layout
      */
     public function imprimir_nfse_importada($id)
     {
@@ -749,15 +750,213 @@ class Certificado extends MY_Controller
             }
         }
 
+        // Extrair dados completos do XML
+        $xmlData = [];
+        if (!empty($nota->dados_xml)) {
+            $xmlData = $this->_extrairDadosXmlNfseCompleto($nota->dados_xml);
+        }
+
         $data['nota'] = $nota;
         $data['emitente'] = $emitente;
         $data['cliente'] = $cliente;
         $data['os'] = $os;
+        $data['xmlData'] = $xmlData;
         $data['logo_url'] = !empty($emitente->url_logo)
             ? $emitente->url_logo
             : base_url('assets/img/logo.png');
 
         $this->load->view('certificado/imprimir_nfse_importada', $data);
+    }
+
+    /**
+     * Extrair dados completos do XML de NFS-e para impressao
+     */
+    private function _extrairDadosXmlNfseCompleto($xmlContent)
+    {
+        $dados = [
+            'numero' => null,
+            'serie' => null,
+            'chave_acesso' => null,
+            'codigo_verificacao' => null,
+            'data_emissao' => null,
+            'competencia' => null,
+            'descricao_servico' => null,
+            'valor_servicos' => 0,
+            'valor_deducoes' => 0,
+            'valor_pis' => 0,
+            'valor_cofins' => 0,
+            'valor_inss' => 0,
+            'valor_irrf' => 0,
+            'valor_csll' => 0,
+            'valor_iss' => 0,
+            'valor_total_impostos' => 0,
+            'valor_liquido' => 0,
+            'aliquota_iss' => null,
+            'prestador' => [
+                'cpf_cnpj' => null,
+                'nome' => null,
+                'inscricao_municipal' => null,
+                'endereco' => null,
+                'numero' => null,
+                'bairro' => null,
+                'cidade' => null,
+                'uf' => null,
+                'cep' => null,
+                'telefone' => null,
+                'email' => null,
+            ],
+            'tomador' => [
+                'cpf_cnpj' => null,
+                'nome' => null,
+                'inscricao_municipal' => null,
+                'endereco' => null,
+                'numero' => null,
+                'bairro' => null,
+                'cidade' => null,
+                'uf' => null,
+                'cep' => null,
+                'telefone' => null,
+                'email' => null,
+            ],
+        ];
+
+        libxml_use_internal_errors(true);
+        $dom = new DOMDocument();
+        if (!@$dom->loadXML($xmlContent)) {
+            libxml_clear_errors();
+            return $dados;
+        }
+
+        // Numero
+        foreach (['nNFSe', 'Numero', 'numero'] as $tag) {
+            $node = $dom->getElementsByTagName($tag)->item(0);
+            if ($node) { $dados['numero'] = trim($node->nodeValue); break; }
+        }
+
+        // Serie
+        foreach (['serie', 'Serie'] as $tag) {
+            $node = $dom->getElementsByTagName($tag)->item(0);
+            if ($node) { $dados['serie'] = trim($node->nodeValue); break; }
+        }
+
+        // Chave de acesso
+        foreach (['chaveAcesso', 'ChaveAcesso', 'ChaveAcessoNfse', 'ChaveAcessoNFSe'] as $tag) {
+            $node = $dom->getElementsByTagName($tag)->item(0);
+            if ($node) { $dados['chave_acesso'] = trim($node->nodeValue); break; }
+        }
+
+        // Codigo verificacao
+        foreach (['codigoVerificacao', 'CodigoVerificacao'] as $tag) {
+            $node = $dom->getElementsByTagName($tag)->item(0);
+            if ($node) { $dados['codigo_verificacao'] = trim($node->nodeValue); break; }
+        }
+
+        // Data emissao
+        foreach (['dhEmi', 'DataEmissao', 'dataEmissao'] as $tag) {
+            $node = $dom->getElementsByTagName($tag)->item(0);
+            if ($node) {
+                $dt = trim($node->nodeValue);
+                if (strlen($dt) >= 10) {
+                    $dados['data_emissao'] = substr($dt, 0, 10) . ' ' . (substr($dt, 11, 8) ?: '00:00:00');
+                }
+                break;
+            }
+        }
+
+        // Competencia
+        foreach (['competencia', 'Competencia'] as $tag) {
+            $node = $dom->getElementsByTagName($tag)->item(0);
+            if ($node) { $dados['competencia'] = trim($node->nodeValue); break; }
+        }
+
+        // Descricao do servico
+        foreach (['xDescServ', 'Discriminacao', 'discriminacao', 'Descricao'] as $tag) {
+            $node = $dom->getElementsByTagName($tag)->item(0);
+            if ($node) { $dados['descricao_servico'] = trim($node->nodeValue); break; }
+        }
+
+        // Valores
+        $mapValores = [
+            'valor_servicos' => ['vServ', 'ValorServicos', 'valorServicos'],
+            'valor_deducoes' => ['vDed', 'ValorDeducoes', 'valorDeducoes'],
+            'valor_pis' => ['vPIS', 'ValorPis', 'valorPis'],
+            'valor_cofins' => ['vCOFINS', 'ValorCofins', 'valorCofins'],
+            'valor_inss' => ['vINSS', 'ValorInss', 'valorInss'],
+            'valor_irrf' => ['vIR', 'ValorIr', 'valorIr'],
+            'valor_csll' => ['vCSLL', 'ValorCsll', 'valorCsll'],
+            'valor_iss' => ['vISS', 'ValorIss', 'valorIss'],
+            'valor_liquido' => ['vLiq', 'ValorLiquidoNfse', 'valorLiquidoNfse'],
+        ];
+        foreach ($mapValores as $key => $tags) {
+            foreach ($tags as $tag) {
+                $node = $dom->getElementsByTagName($tag)->item(0);
+                if ($node) {
+                    $dados[$key] = floatval(str_replace(',', '.', trim($node->nodeValue)));
+                    break;
+                }
+            }
+        }
+
+        // Total impostos (soma se nao houver tag direta)
+        foreach (['ValorTotalImpostos', 'valorTotalImpostos', 'vTotTrib'] as $tag) {
+            $node = $dom->getElementsByTagName($tag)->item(0);
+            if ($node) {
+                $dados['valor_total_impostos'] = floatval(str_replace(',', '.', trim($node->nodeValue)));
+                break;
+            }
+        }
+        if ($dados['valor_total_impostos'] == 0) {
+            $dados['valor_total_impostos'] = $dados['valor_pis'] + $dados['valor_cofins'] + $dados['valor_inss'] + $dados['valor_irrf'] + $dados['valor_csll'] + $dados['valor_iss'];
+        }
+
+        // Aliquota ISS
+        foreach (['pAliq', 'Aliquota', 'aliquota'] as $tag) {
+            $node = $dom->getElementsByTagName($tag)->item(0);
+            if ($node) { $dados['aliquota_iss'] = trim($node->nodeValue); break; }
+        }
+
+        // Prestador
+        $prestadorTags = [
+            'cpf_cnpj' => ['CpfCnpj', 'CNPJ', 'cnpj', 'CPF', 'cpf'],
+            'nome' => ['RazaoSocial', 'xNome', 'nome', 'Nome'],
+            'inscricao_municipal' => ['InscricaoMunicipal', 'IM', 'inscricao_municipal'],
+            'endereco' => ['Endereco', 'xLgr', 'rua', 'Rua'],
+            'numero' => ['Numero', 'nro', 'numero'],
+            'bairro' => ['Bairro', 'xBairro', 'bairro'],
+            'cidade' => ['Cidade', 'xMun', 'cidade'],
+            'uf' => ['Uf', 'UF', 'uf'],
+            'cep' => ['Cep', 'CEP', 'cep'],
+            'telefone' => ['Telefone', 'Fone', 'telefone'],
+            'email' => ['Email', 'xEmail', 'email'],
+        ];
+        foreach (['PrestadorServico', 'prestador', 'Prestador'] as $prestadorParent) {
+            $parent = $dom->getElementsByTagName($prestadorParent)->item(0);
+            if ($parent) {
+                foreach ($prestadorTags as $field => $tags) {
+                    foreach ($tags as $tag) {
+                        $node = $parent->getElementsByTagName($tag)->item(0);
+                        if ($node) { $dados['prestador'][$field] = trim($node->nodeValue); break; }
+                    }
+                }
+                break;
+            }
+        }
+
+        // Tomador
+        foreach (['TomadorServico', 'tomador', 'Tomador'] as $tomadorParent) {
+            $parent = $dom->getElementsByTagName($tomadorParent)->item(0);
+            if ($parent) {
+                foreach ($prestadorTags as $field => $tags) {
+                    foreach ($tags as $tag) {
+                        $node = $parent->getElementsByTagName($tag)->item(0);
+                        if ($node) { $dados['tomador'][$field] = trim($node->nodeValue); break; }
+                    }
+                }
+                break;
+            }
+        }
+
+        return $dados;
     }
 
     /**
