@@ -57,7 +57,40 @@ class Migration_Create_agente_ia_tables extends CI_Migration
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
         // ========================================================
-        // 3. TABELA: agente_ia_logs_conversa
+        // 3. TABELA: agente_ia_configuracoes
+        //    Configuracoes chave-valor do agente IA
+        // ========================================================
+        $this->db->query("CREATE TABLE IF NOT EXISTS `agente_ia_configuracoes` (
+            `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+            `chave` VARCHAR(100) NOT NULL COMMENT 'Identificador unico da config',
+            `valor` TEXT NULL COMMENT 'Valor da configuracao',
+            `categoria` VARCHAR(50) DEFAULT 'geral' COMMENT 'Agrupamento visual',
+            `descricao` VARCHAR(255) NULL COMMENT 'Texto explicativo para o admin',
+            `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+            `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (`id`),
+            UNIQUE KEY `uk_chave` (`chave`),
+            INDEX `idx_categoria` (`categoria`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+        // Seed de configuracoes padrao
+        $this->db->query("INSERT IGNORE INTO `agente_ia_configuracoes` (`chave`, `valor`, `categoria`, `descricao`) VALUES
+            ('n8n_webhook_url', '', 'integracao', 'URL base do webhook do n8n (ex: http://n8n:5678/webhook)'),
+            ('evolution_api_url', '', 'integracao', 'URL da API Evolution Go (ex: http://evolution:8080)'),
+            ('evolution_api_key', '', 'integracao', 'API Key da instancia Evolution'),
+            ('llm_provider', 'ollama', 'ia', 'Provedor de LLM: ollama, openai, claude'),
+            ('llm_model', 'llama3', 'ia', 'Modelo do LLM (ex: llama3, gpt-4o, claude-3-sonnet)'),
+            ('llm_api_key', '', 'ia', 'API Key do provedor de LLM (se necessario)'),
+            ('llm_base_url', 'http://ollama:11434', 'ia', 'URL base do Ollama ou endpoint compativel'),
+            ('whisper_enabled', '1', 'ia', 'Habilitar transcricao de audio via Whisper'),
+            ('whisper_model', 'base', 'ia', 'Modelo Whisper: tiny, base, small, medium, large'),
+            ('autorizacao_tempo_minutos', '15', 'autorizacao', 'Tempo de expiracao dos tokens de autorizacao'),
+            ('autorizacao_max_tentativas', '3', 'autorizacao', 'Maximo de tentativas de resposta por token'),
+            ('rate_limit_minutos', '5', 'autorizacao', 'Janela de rate limit por numero/acao (minutos)'),
+            ('notificacao_admin_email', '', 'notificacao', 'E-mail para notificacoes criticas do agente')");
+
+        // ========================================================
+        // 4. TABELA: agente_ia_logs_conversa
         //    Log de conversas e auditoria do agente
         // ========================================================
         $this->db->query("CREATE TABLE IF NOT EXISTS `agente_ia_logs_conversa` (
@@ -96,6 +129,8 @@ class Migration_Create_agente_ia_tables extends CI_Migration
 
     public function down()
     {
+        $this->db->query("DROP TABLE IF EXISTS `agente_ia_logs_conversa`");
+        $this->db->query("DROP TABLE IF EXISTS `agente_ia_configuracoes`");
         $this->db->query("DROP TABLE IF EXISTS `agente_ia_permissoes`");
         $this->db->query("DROP TABLE IF EXISTS `agente_ia_autorizacoes`");
     }

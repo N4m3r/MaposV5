@@ -623,9 +623,24 @@ class Nfse_os extends MY_Controller
             $nfse = $this->nfse_emitida_model->getById($boleto->nfse_id);
             if (!$nfse && $this->db->table_exists('certificado_nfe_importada')) {
                 $nfse = $this->db->where('id', $boleto->nfse_id)->get('certificado_nfe_importada')->row();
-                if ($nfse && !empty($nfse->dados_xml)) {
-                    $xmlData = $this->_extrairDadosXmlNfse($nfse->dados_xml);
-                    $descricaoServico = $xmlData['descricao_servico'] ?? null;
+                if ($nfse) {
+                    $nfse->is_importada = true;
+                    // Garantir campos padronizados para a view
+                    $nfse->numero_nfse = $nfse->numero_nfse ?? $nfse->numero ?? '';
+                    $nfse->valor_servicos = floatval($nfse->valor_servicos ?? $nfse->valor_total ?? 0);
+                    $nfse->valor_total_impostos = floatval($nfse->valor_total_impostos ?? $nfse->valor_impostos ?? 0);
+                    $nfse->valor_liquido = floatval($nfse->valor_liquido ?? $nfse->valor_total ?? 0);
+                    if (!empty($nfse->dados_xml)) {
+                        $xmlData = $this->_extrairDadosXmlNfse($nfse->dados_xml);
+                        $descricaoServico = $xmlData['descricao_servico'] ?? null;
+                        // Sobrescrever valores do banco com os do XML se disponiveis
+                        if ($xmlData['valor_servicos'] > 0) {
+                            $nfse->valor_servicos = $xmlData['valor_servicos'];
+                        }
+                        if ($xmlData['valor_total_impostos'] > 0) {
+                            $nfse->valor_total_impostos = $xmlData['valor_total_impostos'];
+                        }
+                    }
                 }
             }
         }
@@ -669,9 +684,22 @@ class Nfse_os extends MY_Controller
         $descricaoServico = null;
         if (!$nfse && $this->db->table_exists('certificado_nfe_importada')) {
             $nfse = $this->db->where('id', $nfse_id)->get('certificado_nfe_importada')->row();
-            if ($nfse && !empty($nfse->dados_xml)) {
-                $xmlData = $this->_extrairDadosXmlNfse($nfse->dados_xml);
-                $descricaoServico = $xmlData['descricao_servico'] ?? null;
+            if ($nfse) {
+                $nfse->is_importada = true;
+                $nfse->numero_nfse = $nfse->numero_nfse ?? $nfse->numero ?? '';
+                $nfse->valor_servicos = floatval($nfse->valor_servicos ?? $nfse->valor_total ?? 0);
+                $nfse->valor_total_impostos = floatval($nfse->valor_total_impostos ?? $nfse->valor_impostos ?? 0);
+                $nfse->valor_liquido = floatval($nfse->valor_liquido ?? $nfse->valor_total ?? 0);
+                if (!empty($nfse->dados_xml)) {
+                    $xmlData = $this->_extrairDadosXmlNfse($nfse->dados_xml);
+                    $descricaoServico = $xmlData['descricao_servico'] ?? null;
+                    if ($xmlData['valor_servicos'] > 0) {
+                        $nfse->valor_servicos = $xmlData['valor_servicos'];
+                    }
+                    if ($xmlData['valor_total_impostos'] > 0) {
+                        $nfse->valor_total_impostos = $xmlData['valor_total_impostos'];
+                    }
+                }
             }
         }
         if (!$nfse) {
@@ -1981,9 +2009,15 @@ class Nfse_os extends MY_Controller
             return null;
         };
 
-        $dados['descricao_servico'] = $getVal(['xDescServ', 'Discriminacao', 'discriminacao', 'Descricao']);
-        $dados['valor_servicos'] = floatval($getVal(['vServPrest', 'ValorServicos', 'vServico']) ?: 0);
-        $dados['valor_total_impostos'] = floatval($getVal(['vTotTrib', 'ValorTotalTributos']) ?: 0);
+        // Buscar descricao em varias tags possiveis do XML
+        $dados['descricao_servico'] = $getVal([
+            'xDescServ', 'Discriminacao', 'discriminacao', 'Descricao',
+            'DescricaoServico', 'descricaoServico', 'DescricaoDoServico',
+            'ServicoPrestado', 'servicoPrestado', 'ItemServico',
+            'DscServico', 'dscServico', 'dsServico', 'DsServico'
+        ]);
+        $dados['valor_servicos'] = floatval($getVal(['vServPrest', 'ValorServicos', 'vServico', 'ValServicos', 'vlServicos', 'ValorServico']) ?: 0);
+        $dados['valor_total_impostos'] = floatval($getVal(['vTotTrib', 'ValorTotalTributos', 'vlTotTrib']) ?: 0);
 
         return $dados;
     }

@@ -25,6 +25,15 @@ class Agente_ia extends MY_Controller
 
         $this->load->model('agente_ia_autorizacoes_model', 'autModel');
         $this->load->model('agente_ia_permissoes_model', 'permModel');
+        $this->load->model('agente_ia_configuracoes_model', 'configModel');
+    }
+
+    private function verificaConfiguracao(): void
+    {
+        if (!$this->db->table_exists('agente_ia_configuracoes')) {
+            $this->session->set_flashdata('error', 'Tabela de configuracoes do Agente IA nao existe. Execute a migration.');
+            redirect('agente_ia');
+        }
     }
 
     // =======================================================================
@@ -159,6 +168,31 @@ class Agente_ia extends MY_Controller
 
         $this->session->set_flashdata('success', $atualizados . ' permissao(s) atualizada(s).');
         redirect('agente_ia/permissoes');
+    }
+
+    // =======================================================================
+    // CONFIGURACOES GERAIS
+    // =======================================================================
+    public function configuracoes()
+    {
+        $this->verificaConfiguracao();
+        $this->data['title'] = 'Configuracoes do Agente IA';
+        $this->data['configs'] = $this->configModel->listar();
+        $this->data['view'] = 'agente_ia/configuracoes';
+        return $this->layout();
+    }
+
+    public function salvar_configuracoes()
+    {
+        $this->verificaConfiguracao();
+        $configs = $this->input->post('configs');
+        if (!$configs || !is_array($configs)) {
+            $this->session->set_flashdata('error', 'Nenhuma configuracao para salvar.');
+            redirect('agente_ia/configuracoes');
+        }
+        $atualizados = $this->configModel->salvarMultiplos($configs);
+        $this->session->set_flashdata('success', $atualizados . ' configuracao(s) salva(s).');
+        redirect('agente_ia/configuracoes');
     }
 
     // =======================================================================
