@@ -1033,19 +1033,6 @@ class Certificado extends MY_Controller
 
         return $dados;
     }
-            if ($parent) {
-                foreach ($prestadorTags as $field => $tags) {
-                    foreach ($tags as $tag) {
-                        $node = $parent->getElementsByTagName($tag)->item(0);
-                        if ($node) { $dados['tomador'][$field] = trim($node->nodeValue); break; }
-                    }
-                }
-                break;
-            }
-        }
-
-        return $dados;
-    }
 
     /**
      * API para consultas AJAX
