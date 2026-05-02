@@ -186,7 +186,7 @@ if (!function_exists('fmtMoney')) {
                             <div class="span12">
                                 <div style="padding:12px 15px; background:rgba(252,157,15,0.15); border:1px solid rgba(252,157,15,0.3); border-radius:4px">
                                     <label class="checkbox" style="font-size:13px; margin-bottom:5px; color:var(--branco,#caced8)">
-                                        <input type="checkbox" name="valor_integral" value="1">
+                                        <input type="checkbox" name="valor_integral" id="boleto-valor-integral" value="1">
                                         <strong style="color:var(--title,#d4d8e0)">Emitir boleto com valor integral</strong> (<?= fmtMoney($valorOriginal) ?>)
                                     </label>
                                     <small style="color:var(--dark-cinz,#8788a4); display:block; margin-top:4px">
@@ -200,12 +200,13 @@ if (!function_exists('fmtMoney')) {
                             <button type="button" class="btn btn-large" id="btn-preview-boleto-emitir" style="background:var(--dark-1,#14141a); border-color:var(--dark-2,#272835); color:var(--branco,#caced8); margin-right:8px">
                                 <i class="fas fa-eye"></i> Preview do Boleto
                             </button>
-                            <button type="submit" class="btn btn-success btn-large" style="background:#26a38e; border-color:#1fb5a8">
+                            <button type="submit" class="btn btn-success btn-large" id="btn-emitir-boleto" style="background:#26a38e; border-color:#1fb5a8">
                                 <i class="fas fa-barcode"></i> Emitir Boleto de <?= fmtMoney($valorLiquido) ?>
                             </button>
                         </div>
                     </form>
                     <script>
+                    // Preview antes de emitir (abre em nova aba)
                     document.getElementById('btn-preview-boleto-emitir').addEventListener('click', function() {
                         var dataVenc = document.getElementById('boleto-data-vencimento').value;
                         var instrucoes = document.getElementById('boleto-instrucoes').value;
@@ -214,6 +215,53 @@ if (!function_exists('fmtMoney')) {
                         url += '?data_vencimento=' + encodeURIComponent(dataVenc);
                         url += '&instrucoes=' + encodeURIComponent(instrucoes);
                         window.open(url, '_blank');
+                    });
+
+                    // Emitir boleto via AJAX — abre preview automaticamente em nova aba
+                    document.getElementById('form-gerar-boleto').addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        var btn = document.getElementById('btn-emitir-boleto');
+                        var dataVenc = document.getElementById('boleto-data-vencimento').value;
+                        var instrucoes = document.getElementById('boleto-instrucoes').value;
+
+                        // Validacao basica
+                        if (!dataVenc) { alert('Informe a data de vencimento.'); return; }
+                        var hoje = new Date(); hoje.setHours(0,0,0,0);
+                        var dataEscolhida = new Date(dataVenc + 'T00:00:00');
+                        if (dataEscolhida < hoje) {
+                            alert('A data de vencimento nao pode ser anterior a hoje.');
+                            return;
+                        }
+
+                        btn.disabled = true;
+                        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Emitindo...';
+
+                        var formData = new FormData(this);
+                        var xhr = new XMLHttpRequest();
+                        xhr.open('POST', this.action, true);
+                        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+                        xhr.onreadystatechange = function() {
+                            if (xhr.readyState === 4) {
+                                btn.disabled = false;
+                                btn.innerHTML = '<i class="fas fa-barcode"></i> Emitir Boleto de <?= fmtMoney($valorLiquido) ?>';
+                                try {
+                                    var resp = JSON.parse(xhr.responseText);
+                                    if (resp.success) {
+                                        // Abre o preview do boleto emitido em nova aba
+                                        var previewUrl = '<?= site_url("nfse_os/preview_boleto/") ?>' + resp.boleto_id;
+                                        window.open(previewUrl, '_blank');
+                                        // Recarrega a pagina para atualizar a aba boleto
+                                        setTimeout(function() { location.reload(); }, 800);
+                                    } else {
+                                        alert(resp.error || 'Erro ao emitir boleto.');
+                                    }
+                                } catch (err) {
+                                    // Se nao retornou JSON (ex: redirect), recarrega a pagina
+                                    location.reload();
+                                }
+                            }
+                        };
+                        xhr.send(formData);
                     });
                     </script>
                 <?php else: ?>
