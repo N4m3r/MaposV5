@@ -114,7 +114,7 @@
                                 <tbody>
                                     <?php if (empty($pendentes)): ?>
                                         <tr><td colspan="6" class="center">Nenhuma autorizacao pendente.</td></tr>
-                                    <?php else: ?
+                                    <?php else: ?>
                                         <?php foreach (array_slice($pendentes, 0, 10) as $p): ?>
                                             <tr>
                                                 <td><span class="label label-info"><?php echo $p['token']; ?></span></td>
@@ -163,7 +163,7 @@
                                 <tbody>
                                     <?php if (empty($ultimosLogs)): ?>
                                         <tr><td colspan="5" class="center">Nenhum log recente.</td></tr>
-                                    <?php else: ?
+                                    <?php else: ?>
                                         <?php foreach (array_slice($ultimosLogs, 0, 8) as $log): ?>
                                             <tr>
                                                 <td><?php echo date('H:i', strtotime($log['created_at'])); ?></td>

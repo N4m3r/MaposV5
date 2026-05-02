@@ -603,25 +603,30 @@ class Nfse_os extends MY_Controller
         $this->load->model('mapos_model');
         $emitente = $this->mapos_model->getEmitente();
 
-        // Logo do emitente (absoluto para mPDF)
-        $logoUrl = null;
+        // Logo do emitente (caminho absoluto para mPDF)
+        $logoPath = null;
         if (!empty($emitente->url_logo)) {
             $logoRelative = str_replace(base_url(), '', $emitente->url_logo);
             $logoAbsolute = FCPATH . str_replace('/', DIRECTORY_SEPARATOR, $logoRelative);
             if (file_exists($logoAbsolute)) {
-                $logoUrl = base_url($logoRelative);
+                $logoPath = $logoAbsolute;
             }
         }
-        if (!$logoUrl && file_exists(FCPATH . 'assets' . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'logo.png')) {
-            $logoUrl = base_url('assets/img/logo.png');
+        if (!$logoPath && file_exists(FCPATH . 'assets' . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'logo.png')) {
+            $logoPath = FCPATH . 'assets' . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'logo.png';
         }
 
-        // Dados da NFSe vinculada
+        // Dados da NFSe vinculada (emitida ou importada)
         $nfse = null;
+        $descricaoServico = null;
         if ($boleto->nfse_id) {
             $nfse = $this->nfse_emitida_model->getById($boleto->nfse_id);
             if (!$nfse && $this->db->table_exists('certificado_nfe_importada')) {
                 $nfse = $this->db->where('id', $boleto->nfse_id)->get('certificado_nfe_importada')->row();
+                if ($nfse && !empty($nfse->dados_xml)) {
+                    $xmlData = $this->_extrairDadosXmlNfse($nfse->dados_xml);
+                    $descricaoServico = $xmlData['descricao_servico'] ?? null;
+                }
             }
         }
 
@@ -631,7 +636,8 @@ class Nfse_os extends MY_Controller
             'emitente' => $emitente,
             'nfse' => $nfse,
             'is_preview' => true,
-            'logo_url' => $logoUrl,
+            'logo_path' => $logoPath,
+            'descricao_servico' => $descricaoServico,
         ];
 
         $this->load->helper('mpdf');
@@ -660,8 +666,13 @@ class Nfse_os extends MY_Controller
         }
 
         $nfse = $this->nfse_emitida_model->getById($nfse_id);
+        $descricaoServico = null;
         if (!$nfse && $this->db->table_exists('certificado_nfe_importada')) {
             $nfse = $this->db->where('id', $nfse_id)->get('certificado_nfe_importada')->row();
+            if ($nfse && !empty($nfse->dados_xml)) {
+                $xmlData = $this->_extrairDadosXmlNfse($nfse->dados_xml);
+                $descricaoServico = $xmlData['descricao_servico'] ?? null;
+            }
         }
         if (!$nfse) {
             $this->session->set_flashdata('error', 'NFS-e nao encontrada.');
@@ -676,17 +687,17 @@ class Nfse_os extends MY_Controller
         $this->load->model('mapos_model');
         $emitente = $this->mapos_model->getEmitente();
 
-        // Logo do emitente (absoluto para mPDF)
-        $logoUrl = null;
+        // Logo do emitente (caminho absoluto para mPDF)
+        $logoPath = null;
         if (!empty($emitente->url_logo)) {
             $logoRelative = str_replace(base_url(), '', $emitente->url_logo);
             $logoAbsolute = FCPATH . str_replace('/', DIRECTORY_SEPARATOR, $logoRelative);
             if (file_exists($logoAbsolute)) {
-                $logoUrl = base_url($logoRelative);
+                $logoPath = $logoAbsolute;
             }
         }
-        if (!$logoUrl && file_exists(FCPATH . 'assets' . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'logo.png')) {
-            $logoUrl = base_url('assets/img/logo.png');
+        if (!$logoPath && file_exists(FCPATH . 'assets' . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'logo.png')) {
+            $logoPath = FCPATH . 'assets' . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'logo.png';
         }
 
         // Montar objeto boleto temporario em memoria
@@ -710,7 +721,8 @@ class Nfse_os extends MY_Controller
             'emitente' => $emitente,
             'nfse' => $nfse,
             'is_preview' => true,
-            'logo_url' => $logoUrl,
+            'logo_path' => $logoPath,
+            'descricao_servico' => $descricaoServico,
         ];
 
         $this->load->helper('mpdf');
@@ -1937,5 +1949,42 @@ class Nfse_os extends MY_Controller
             }
             echo json_encode(['success' => false, 'message' => 'Erro interno: ' . $e->getMessage()]);
         }
+    }
+
+    /**
+     * Extrai dados basicos do XML da NFSe importada (descricao do servico, valor, etc.)
+     */
+    private function _extrairDadosXmlNfse($xmlContent)
+    {
+        $dados = [
+            'descricao_servico' => null,
+            'valor_servicos' => 0,
+            'valor_total_impostos' => 0,
+        ];
+
+        if (empty($xmlContent)) {
+            return $dados;
+        }
+
+        libxml_use_internal_errors(true);
+        $dom = new DOMDocument();
+        if (!@$dom->loadXML($xmlContent)) {
+            libxml_clear_errors();
+            return $dados;
+        }
+
+        $getVal = function ($tags) use ($dom) {
+            foreach ((array)$tags as $tag) {
+                $node = $dom->getElementsByTagName($tag)->item(0);
+                if ($node) return trim($node->nodeValue);
+            }
+            return null;
+        };
+
+        $dados['descricao_servico'] = $getVal(['xDescServ', 'Discriminacao', 'discriminacao', 'Descricao']);
+        $dados['valor_servicos'] = floatval($getVal(['vServPrest', 'ValorServicos', 'vServico']) ?: 0);
+        $dados['valor_total_impostos'] = floatval($getVal(['vTotTrib', 'ValorTotalTributos']) ?: 0);
+
+        return $dados;
     }
 }
