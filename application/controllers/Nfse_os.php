@@ -607,6 +607,9 @@ class Nfse_os extends MY_Controller
         $nfse = null;
         if ($boleto->nfse_id) {
             $nfse = $this->nfse_emitida_model->getById($boleto->nfse_id);
+            if (!$nfse && $this->db->table_exists('certificado_nfe_importada')) {
+                $nfse = $this->db->where('id', $boleto->nfse_id)->get('certificado_nfe_importada')->row();
+            }
         }
 
         $data = [

@@ -42,6 +42,14 @@ class Boleto_os_model extends CI_Model
                 $valor_original = floatval($nfse->valor_servicos);
                 $valor_retencoes = floatval($nfse->valor_total_retencao ?? 0);
                 $tem_retencao_tomador = $valor_retencoes > 0;
+            } elseif ($this->db->table_exists('certificado_nfe_importada')) {
+                // Fallback: NFSe importada via XML (tabela certificado_nfe_importada)
+                $nfseImp = $this->db->where('id', $nfse_id)->get('certificado_nfe_importada')->row();
+                if ($nfseImp) {
+                    $valor_original = floatval($nfseImp->valor_total ?? 0);
+                    $valor_retencoes = 0.00;
+                    $tem_retencao_tomador = false;
+                }
             }
         }
 

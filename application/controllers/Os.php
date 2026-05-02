@@ -525,6 +525,21 @@ class Os extends MY_Controller
             $this->data['nfse_importada'] = null;
         }
 
+        // Se nao houver NFSe emitida pelo sistema, mas houver importada,
+        // normalizar para formato compativel com a aba boleto
+        if (empty($this->data['nfse_atual']) && !empty($this->data['nfse_importada'])) {
+            $imp = $this->data['nfse_importada'];
+            $this->data['nfse_atual'] = new stdClass();
+            $this->data['nfse_atual']->id = $imp->id;
+            $this->data['nfse_atual']->numero_nfse = $imp->numero;
+            $this->data['nfse_atual']->data_emissao = $imp->data_emissao;
+            $this->data['nfse_atual']->valor_servicos = floatval($imp->valor_total ?? 0);
+            $this->data['nfse_atual']->valor_liquido = floatval($imp->valor_total ?? 0);
+            $this->data['nfse_atual']->valor_total_retencao = 0.00;
+            $this->data['nfse_atual']->situacao = $imp->situacao ?? 'Autorizada';
+            $this->data['nfse_atual']->is_importada = true;
+        }
+
         // DEBUG: logar estado da NFSe para diagnosticar exibicao na view
         $nfseDebug = $this->data['nfse_atual'];
         log_message('debug', 'OS Visualizar NFSe Debug: os_id=' . $os_id . ' nfse_atual=' . ($nfseDebug ? 'ID=' . ($nfseDebug->id ?? '?') . ' situacao=' . ($nfseDebug->situacao ?? 'null') : 'NULL'));
