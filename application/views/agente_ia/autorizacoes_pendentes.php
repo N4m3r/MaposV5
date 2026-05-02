@@ -99,7 +99,7 @@
                                             <div class="meta">
                                                 <strong>Token:</strong> <span class="token-code"><?php echo $aut['token']; ?></span><br>
                                                 <strong>Numero:</strong> <?php echo $aut['numero_telefone']; ?><br>
-                                                <?php if (!empty($aut['usuarios_id'])): ?
+                                                <?php if (!empty($aut['usuarios_id'])): ?>
                                                     <strong>Usuario ID:</strong> <?php echo $aut['usuarios_id']; ?> <?php endif; ?>
                                                 <?php if (!empty($aut['clientes_id'])): ?
                                                     <strong>Cliente ID:</strong> <?php echo $aut['clientes_id']; ?> <?php endif; ?>

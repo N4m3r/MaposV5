@@ -196,31 +196,6 @@ class Agente_ia extends MY_Controller
     }
 
     // =======================================================================
-    // CONFIGURACOES GERAIS
-    // =======================================================================
-    public function configuracoes()
-    {
-        $this->verificaConfiguracao();
-        $this->data['title'] = 'Configuracoes do Agente IA';
-        $this->data['configs'] = $this->configModel->listar();
-        $this->data['view'] = 'agente_ia/configuracoes';
-        return $this->layout();
-    }
-
-    public function salvar_configuracoes()
-    {
-        $this->verificaConfiguracao();
-        $configs = $this->input->post('configs');
-        if (!$configs || !is_array($configs)) {
-            $this->session->set_flashdata('error', 'Nenhuma configuracao para salvar.');
-            redirect('agente_ia/configuracoes');
-        }
-        $atualizados = $this->configModel->salvarMultiplos($configs);
-        $this->session->set_flashdata('success', $atualizados . ' configuracao(s) salva(s).');
-        redirect('agente_ia/configuracoes');
-    }
-
-    // =======================================================================
     // LOGS
     // =======================================================================
     public function logs()
