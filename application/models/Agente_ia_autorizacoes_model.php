@@ -61,9 +61,32 @@ class Agente_ia_autorizacoes_model extends CI_Model
     {
         $offset = ($page - 1) * $perPage;
 
-        // Builder base
-        $this->db->from($this->table);
+        // Aplica filtros (reutilizavel)
+        $this->aplicarFiltros($filtros);
 
+        // Count total
+        $total = $this->db->count_all_results($this->table);
+
+        // Reset para query paginada
+        $this->db->reset_query();
+
+        // Reaplica filtros
+        $this->aplicarFiltros($filtros);
+
+        $items = $this->db
+            ->order_by('created_at', 'DESC')
+            ->limit($perPage, $offset)
+            ->get($this->table)
+            ->result_array();
+
+        return ['items' => $items, 'total' => $total];
+    }
+
+    /**
+     * Aplica filtros comuns na query builder
+     */
+    private function aplicarFiltros(array $filtros): void
+    {
         if (!empty($filtros['status'])) {
             $this->db->where('status', $filtros['status']);
         }
@@ -85,30 +108,6 @@ class Agente_ia_autorizacoes_model extends CI_Model
         if (!empty($filtros['data_fim'])) {
             $this->db->where('created_at <=', $filtros['data_fim']);
         }
-
-        // Clone para count total
-        $countBuilder = clone $this->db;
-        $total = $countBuilder->count_all_results();
-
-        // Reexecuta query paginada
-        $this->db->from($this->table);
-        foreach ($filtros as $key => $val) {
-            if ($key === 'status')       $this->db->where('status', $val);
-            if ($key === 'numero')       $this->db->where('numero_telefone', $val);
-            if ($key === 'usuarios_id')  $this->db->where('usuarios_id', (int)$val);
-            if ($key === 'clientes_id')  $this->db->where('clientes_id', (int)$val);
-            if ($key === 'acao')         $this->db->where('acao', $val);
-            if ($key === 'data_inicio')  $this->db->where('created_at >=', $val);
-            if ($key === 'data_fim')     $this->db->where('created_at <=', $val);
-        }
-
-        $items = $this->db
-            ->order_by('created_at', 'DESC')
-            ->limit($perPage, $offset)
-            ->get()
-            ->result_array();
-
-        return ['items' => $items, 'total' => $total];
     }
 
     // ========================================================================

@@ -68,7 +68,7 @@ $instrucoes = nl2br(htmlspecialchars($boleto->instrucoes ?? 'Pagavel em qualquer
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Boleto OS #<?= $osNumero ?></title>
+    <title>OS #<?= $osNumero ?></title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
