@@ -739,7 +739,7 @@ class Certificado extends MY_Controller
     }
 
     /**
-     * Impressao formatada A4 de uma NFS-e importada
+     * Impressao formatada A4 de uma NFS-e importada (PDF via dompdf)
      * Extrai dados reais do XML para preencher o layout
      */
     public function imprimir_nfse_importada($id)
@@ -772,16 +772,124 @@ class Certificado extends MY_Controller
             $xmlData = $this->_extrairDadosXmlNfseCompleto($nota->dados_xml);
         }
 
-        $data['nota'] = $nota;
-        $data['emitente'] = $emitente;
-        $data['cliente'] = $cliente;
-        $data['os'] = $os;
-        $data['xmlData'] = $xmlData;
-        $data['logo_url'] = !empty($emitente->url_logo)
-            ? $emitente->url_logo
-            : base_url('assets/img/logo.png');
+        // Helpers formatadores
+        $fmtDoc = function ($doc) {
+            $doc = preg_replace('/[^0-9]/', '', (string)$doc);
+            if (strlen($doc) === 11) {
+                return preg_replace('/(\d{3})(\d{3})(\d{3})(\d{2})/', '$1.$2.$3-$4', $doc);
+            }
+            if (strlen($doc) === 14) {
+                return preg_replace('/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/', '$1.$2.$3/$4-$5', $doc);
+            }
+            return $doc;
+        };
 
-        $this->load->view('certificado/imprimir_nfse_importada', $data);
+        $fmtMoeda = function ($valor) {
+            return 'R$ ' . number_format(floatval($valor), 2, ',', '.');
+        };
+
+        // Logo path absoluto para dompdf
+        $logoPath = null;
+        if (!empty($emitente->url_logo)) {
+            $logoRelative = str_replace(base_url(), '', $emitente->url_logo);
+            $logoAbsolute = FCPATH . str_replace('/', DIRECTORY_SEPARATOR, $logoRelative);
+            if (file_exists($logoAbsolute)) {
+                $logoPath = $logoAbsolute;
+            }
+        }
+        if (!$logoPath && file_exists(FCPATH . 'assets' . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'logo.png')) {
+            $logoPath = FCPATH . 'assets' . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'logo.png';
+        }
+
+        // QR Code base64
+        $qrBase64 = null;
+        $consultaUrl = null;
+        if (!empty($xmlData['chave_acesso'])) {
+            $consultaUrl = 'https://www.nfse.gov.br/EmissorNacional/ConsultaPublica?' . http_build_query(['chaveAcesso' => $xmlData['chave_acesso']]);
+        } elseif (!empty($nota->chave_acesso)) {
+            $consultaUrl = 'https://www.nfse.gov.br/EmissorNacional/ConsultaPublica?' . http_build_query(['chaveAcesso' => $nota->chave_acesso]);
+        }
+        if ($consultaUrl) {
+            $qrApiUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' . urlencode($consultaUrl);
+            $qrImage = @file_get_contents($qrApiUrl);
+            if ($qrImage !== false) {
+                $qrBase64 = base64_encode($qrImage);
+            }
+        }
+
+        $data = [
+            'n' => $nota,
+            'nfNumero' => $xmlData['numero'] ?: $nota->numero,
+            'nfSerie' => $xmlData['serie'] ?? null,
+            'nfDataEmi' => $xmlData['data_emissao'] ?: $nota->data_emissao,
+            'nfCompetencia' => $xmlData['competencia'] ?? null,
+            'nfCodVerif' => $xmlData['codigo_verificacao'] ?? null,
+            'nfChave' => $xmlData['chave_acesso'] ?: $nota->chave_acesso,
+            'nfTribNac' => $xmlData['tributacao_nacional'] ?? null,
+            'nfTribMun' => $xmlData['tributacao_municipal'] ?? null,
+            'nfLocPrest' => $xmlData['local_prestacao'] ?? null,
+            'nfLocEmi' => $xmlData['local_emissao'] ?? null,
+            'nfPais' => $xmlData['pais_prestacao'] ?? null,
+            'nfRegime' => $xmlData['regime_tributario'] ?? null,
+            'nfNatureza' => $xmlData['natureza_operacao'] ?? null,
+            'nfDesc' => $xmlData['descricao_servico'] ?? null,
+            'nfAliq' => $xmlData['aliquota_iss'] ?? null,
+            'situacao' => $nota->situacao ?: 'Autorizada',
+            'logoPath' => $logoPath,
+            'pNome' => $xmlData['prestador']['nome'] ?? null,
+            'pCnpj' => $xmlData['prestador']['cpf_cnpj'] ?? null,
+            'pIM' => $xmlData['prestador']['inscricao_municipal'] ?? null,
+            'pRua' => $xmlData['prestador']['endereco'] ?? null,
+            'pNumero' => $xmlData['prestador']['numero'] ?? null,
+            'pBairro' => $xmlData['prestador']['bairro'] ?? null,
+            'pCidade' => $xmlData['prestador']['cidade'] ?? null,
+            'pUf' => $xmlData['prestador']['uf'] ?? null,
+            'pCep' => $xmlData['prestador']['cep'] ?? null,
+            'pTel' => $xmlData['prestador']['telefone'] ?? null,
+            'pEmail' => $xmlData['prestador']['email'] ?? null,
+            'tNome' => $xmlData['tomador']['nome'] ?? null,
+            'tDoc' => $xmlData['tomador']['cpf_cnpj'] ?? null,
+            'tIM' => $xmlData['tomador']['inscricao_municipal'] ?? null,
+            'tRua' => $xmlData['tomador']['endereco'] ?? null,
+            'tNumero' => $xmlData['tomador']['numero'] ?? null,
+            'tBairro' => $xmlData['tomador']['bairro'] ?? null,
+            'tCidade' => $xmlData['tomador']['cidade'] ?? null,
+            'tUf' => $xmlData['tomador']['uf'] ?? null,
+            'tCep' => $xmlData['tomador']['cep'] ?? null,
+            'tTel' => $xmlData['tomador']['telefone'] ?? null,
+            'tEmail' => $xmlData['tomador']['email'] ?? null,
+            'vServ' => $xmlData['valor_servicos'] ?: $nota->valor_total,
+            'vDed' => $xmlData['valor_deducoes'] ?? 0,
+            'vPIS' => $xmlData['valor_pis'] ?? 0,
+            'vCOFINS' => $xmlData['valor_cofins'] ?? 0,
+            'vINSS' => $xmlData['valor_inss'] ?? 0,
+            'vIRRF' => $xmlData['valor_irrf'] ?? 0,
+            'vCSLL' => $xmlData['valor_csll'] ?? 0,
+            'vISS' => $xmlData['valor_iss'] ?? 0,
+            'vTotImpostos' => $xmlData['valor_total_impostos'] ?? 0,
+            'vLiq' => $xmlData['valor_liquido'] ?? 0,
+            'qrBase64' => $qrBase64,
+            'fmtDoc' => $fmtDoc,
+            'fmtMoeda' => $fmtMoeda,
+        ];
+
+        // Renderizar PDF com dompdf
+        require_once FCPATH . 'vendor' . DIRECTORY_SEPARATOR . 'autoload_dompdf.php';
+
+        $options = new \Dompdf\Options();
+        $options->set('defaultFont', 'DejaVu Sans');
+        $options->set('isRemoteEnabled', false);
+        $options->set('isHtml5ParserEnabled', true);
+
+        $dompdf = new \Dompdf\Dompdf($options);
+        $dompdf->setPaper('A4', 'portrait');
+
+        $html = $this->load->view('certificado/pdf_nfse_importada', $data, true);
+        $dompdf->loadHtml($html, 'UTF-8');
+        $dompdf->render();
+
+        $filename = 'NFSe_' . ($data['nfNumero'] ?: $id) . '.pdf';
+        $dompdf->stream($filename, ['Attachment' => false]);
     }
 
     /**
