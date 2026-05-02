@@ -528,7 +528,7 @@ if ($vLiq == 0 && $vServ > 0) {
             <div class="section" style="text-align:center; border-top:1px solid #bbb;">
                 <div class="section-title" style="border-left-color:#333;">Consulta de Autenticidade</div>
                 <div style="display:inline-block; text-align:center;">
-                    <img src="https://chart.googleapis.com/chart?chs=150x150&amp;cht=qr&amp;chl=<?= urlencode('https://www.nfse.gov.br/portal/consulta?chave=' . $nfChave) ?>" alt="QR Code" style="width:120px; height:120px;">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&amp;data=<?= urlencode('https://www.nfse.gov.br/portal/consulta?chave=' . $nfChave) ?>" alt="QR Code" style="width:120px; height:120px;">
                     <div style="font-size:9px; color:#666; margin-top:4px;">
                         Escaneie para consultar a autenticidade da nota no portal nacional
                     </div>
