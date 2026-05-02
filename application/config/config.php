@@ -245,7 +245,7 @@ $config['allow_get_array'] = true;
 | your log files will fill up very fast.
 |
 */
-$config['log_threshold'] = 2;
+$config['log_threshold'] = 1;
 
 /*
 |--------------------------------------------------------------------------
@@ -472,6 +472,8 @@ $config['csrf_exclude_uris'] = [
     'nfse_os/gerar_boleto.*+',
     'certificado/api_consulta',
     'certificado/vincular_nfse_os',
+    'certificado/preview_importar_ajax',
+    'certificado/salvar_importacao',
 ];
 
 /*

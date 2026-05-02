@@ -83,7 +83,7 @@ if (!function_exists('fmtDoc')) {
                     <div class="span6 text-right">
                         <table class="table table-condensed" style="margin-bottom:0; background:transparent">
                             <tr><td style="border:none; padding:3px 0; color:var(--dark-cinz,#8788a4)"><strong style="color:var(--branco,#caced8)">Valor Servicos:</strong></td><td style="border:none; padding:3px 0"><?= fmtMoney($nfse_atual->valor_servicos) ?></td></tr>
-                            <tr><td style="border:none; padding:3px 0; color:var(--dark-cinz,#8788a4)"><strong style="color:var(--branco,#caced8)">Impostos:</strong></td><td style="border:none; padding:3px 0"><?= fmtMoney($nfse_atual->valor_total_impostos) ?></td></tr>
+                            <tr><td style="border:none; padding:3px 0; color:var(--dark-cinz,#8788a4)"><strong style="color:var(--branco,#caced8)">Impostos:</strong></td><td style="border:none; padding:3px 0"><?= fmtMoney($nfse_atual->valor_total_impostos ?? 0) ?></td></tr>
                             <tr><td style="border:none; padding:3px 0; color:var(--dark-cinz,#8788a4)"><strong style="color:#62eba6">Valor Liquido:</strong></td><td style="border:none; padding:3px 0"><strong style="color:#62eba6"><?= fmtMoney($nfse_atual->valor_liquido) ?></strong></td></tr>
                         </table>
                     </div>
@@ -93,7 +93,7 @@ if (!function_exists('fmtDoc')) {
 
                 <h6 style="color:var(--title,#d4d8e0)"><i class="fas fa-calculator" style="color:var(--dark-azul,#1086dd)"></i> Detalhamento dos Impostos / DAS</h6>
                 <?php
-                $aliquotaEfetiva = $nfse_atual->valor_servicos > 0 ? round(($nfse_atual->valor_total_impostos / $nfse_atual->valor_servicos) * 100, 2) : 0;
+                $aliquotaEfetiva = ($nfse_atual->valor_servicos ?? 0) > 0 ? round((($nfse_atual->valor_total_impostos ?? 0) / $nfse_atual->valor_servicos) * 100, 2) : 0;
                 ?>
                 <div class="well well-small" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8)">
                         <div class="row-fluid">
@@ -131,44 +131,110 @@ if (!function_exists('fmtDoc')) {
                 </div>
 
                 <div class="btn-group" style="margin-bottom:10px">
-                    <a href="<?= site_url('nfse_os/imprimir_nfse/' . $nfse_atual->id) ?>" target="_blank" class="btn btn-primary" style="background:#1086dd; border-color:#0d6efd">
-                        <i class="fas fa-file-pdf"></i> Imprimir NFS-e
-                    </a>
-                    <?php if (!empty($nfse_atual->url_danfe)): ?>
-                        <a href="<?= htmlspecialchars($nfse_atual->url_danfe, ENT_QUOTES, 'UTF-8') ?>" target="_blank" class="btn btn-success" style="background:#26a38e; border-color:#1fb5a8">
-                            <i class="fas fa-external-link-alt"></i> DANFSe Nacional
+                    <?php if (!empty($nfse_atual->is_importada)): ?>
+                        <a href="<?= site_url('certificado/imprimir_nfse_importada/' . $nfse_atual->id) ?>" target="_blank" class="btn btn-success" style="background:#26a38e; border-color:#1fb5a8">
+                            <i class="fas fa-print"></i> Imprimir
                         </a>
-                    <?php endif; ?>
-                    <?php if ($nfse_atual->link_impressao): ?>
-                        <a href="<?= htmlspecialchars($nfse_atual->link_impressao, ENT_QUOTES, 'UTF-8') ?>" target="_blank" class="btn btn-success" style="background:#26a38e; border-color:#1fb5a8">
-                            <i class="fas fa-print"></i> Imprimir Original
-                        </a>
-                    <?php endif; ?>
-                    <?php if (!empty($nfse_atual->chave_acesso)): ?>
-                        <button type="button" class="btn btn-info" style="background:#52459f; border-color:#52459f" onclick="consultarNFSeNacional(<?= $nfse_atual->id ?>)">
-                            <i class="fas fa-sync-alt"></i> Consultar
-                        </button>
-                    <?php endif; ?>
-                    <?php if (!empty($nfse_atual->xml_dps) || !empty($nfse_atual->xml_nfse)): ?>
-                        <a href="<?= site_url('nfse_os/download_xml/' . $nfse_atual->id) ?>" class="btn btn-info" style="background:#52459f; border-color:#52459f">
+                        <a href="<?= site_url('certificado/download_xml/' . $nfse_atual->id) ?>" class="btn btn-info" style="background:#52459f; border-color:#52459f">
                             <i class="fas fa-file-code"></i> Download XML
                         </a>
-                    <?php endif; ?>
-                    <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eNFSe') && $nfse_atual->situacao != 'Cancelada'): ?>
+                        <button type="button" class="btn btn-info" style="background:#52459f; border-color:#52459f" onclick="window.open('<?= site_url('certificado/visualizar_xml/' . $nfse_atual->id) ?>','_blank')">
+                            <i class="fas fa-eye"></i> Visualizar XML
+                        </button>
+                        <span class="btn" style="background:var(--dark-1,#14141a); border-color:var(--dark-2,#272835); color:#26a38e; cursor:default">
+                            <i class="fas fa-file-import"></i> Importada
+                        </span>
+                    <?php else: ?>
+                        <a href="<?= site_url('nfse_os/imprimir_nfse/' . $nfse_atual->id) ?>" target="_blank" class="btn btn-primary" style="background:#1086dd; border-color:#0d6efd">
+                            <i class="fas fa-file-pdf"></i> Imprimir NFS-e
+                        </a>
+                        <?php if (!empty($nfse_atual->url_danfe)): ?>
+                            <a href="<?= htmlspecialchars($nfse_atual->url_danfe, ENT_QUOTES, 'UTF-8') ?>" target="_blank" class="btn btn-success" style="background:#26a38e; border-color:#1fb5a8">
+                                <i class="fas fa-external-link-alt"></i> DANFSe Nacional
+                            </a>
+                        <?php endif; ?>
+                        <?php if ($nfse_atual->link_impressao): ?>
+                            <a href="<?= htmlspecialchars($nfse_atual->link_impressao, ENT_QUOTES, 'UTF-8') ?>" target="_blank" class="btn btn-success" style="background:#26a38e; border-color:#1fb5a8">
+                                <i class="fas fa-print"></i> Imprimir Original
+                            </a>
+                        <?php endif; ?>
                         <?php if (!empty($nfse_atual->chave_acesso)): ?>
-                            <button type="button" class="btn btn-danger" style="background:#dc3545; border-color:#dc3545" onclick="cancelarNFSeNacional(<?= $nfse_atual->id ?>)">
-                                <i class="fas fa-times"></i> Cancelar Nacional
+                            <button type="button" class="btn btn-info" style="background:#52459f; border-color:#52459f" onclick="consultarNFSeNacional(<?= $nfse_atual->id ?>)">
+                                <i class="fas fa-sync-alt"></i> Consultar
                             </button>
-                        <?php else: ?>
-                            <button type="button" class="btn btn-danger" style="background:#dc3545; border-color:#dc3545" onclick="cancelarNFSe(<?= $nfse_atual->id ?>)">
-                                <i class="fas fa-times"></i> Cancelar
-                            </button>
+                        <?php endif; ?>
+                        <?php if (!empty($nfse_atual->xml_dps) || !empty($nfse_atual->xml_nfse)): ?>
+                            <a href="<?= site_url('nfse_os/download_xml/' . $nfse_atual->id) ?>" class="btn btn-info" style="background:#52459f; border-color:#52459f">
+                                <i class="fas fa-file-code"></i> Download XML
+                            </a>
+                        <?php endif; ?>
+                        <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eNFSe') && $nfse_atual->situacao != 'Cancelada'): ?>
+                            <?php if (!empty($nfse_atual->chave_acesso)): ?>
+                                <button type="button" class="btn btn-danger" style="background:#dc3545; border-color:#dc3545" onclick="cancelarNFSeNacional(<?= $nfse_atual->id ?>)">
+                                    <i class="fas fa-times"></i> Cancelar Nacional
+                                </button>
+                            <?php else: ?>
+                                <button type="button" class="btn btn-danger" style="background:#dc3545; border-color:#dc3545" onclick="cancelarNFSe(<?= $nfse_atual->id ?>)">
+                                    <i class="fas fa-times"></i> Cancelar
+                                </button>
+                            <?php endif; ?>
                         <?php endif; ?>
                     <?php endif; ?>
                 </div>
 
                 <div id="nfse-consulta-resultado" style="display:none; margin-top:10px">
                     <div class="alert" id="nfse-consulta-conteudo" style="background:rgba(16,134,221,0.15); border-color:rgba(16,134,221,0.3); color:#1086dd"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <?php elseif (!empty($nfse_importada)): ?>
+    <!-- NFSe IMPORTADA (XML externo) -->
+    <div class="span12">
+        <div class="widget-box" style="background:var(--wid-dark,#1c1d26); border-color:var(--dark-2,#272835)">
+            <div class="widget-title" style="background:var(--dark-0,#191a22); border-bottom:1px solid var(--dark-2,#272835); color:var(--title,#d4d8e0)">
+                <span class="icon"><i class="fas fa-file-import" style="color:#26a38e"></i></span>
+                <h5 style="color:var(--title,#d4d8e0)">NFS-e Importada — OS #<?= $result->idOs ?></h5>
+                <span class="label" style="margin:8px 10px 0 0; float:right; background:#26a38e; color:#fff">
+                    <?= $nfse_importada->situacao ?: 'Importada' ?>
+                </span>
+            </div>
+            <div class="widget-content" style="background:var(--wid-dark,#1c1d26); color:var(--branco,#caced8)">
+                <div class="row-fluid">
+                    <div class="span6">
+                        <table class="table table-condensed" style="margin-bottom:0; background:transparent">
+                            <tr><td style="border:none; padding:3px 0; color:var(--dark-cinz,#8788a4)"><strong style="color:var(--branco,#caced8)">Numero:</strong></td><td style="border:none; padding:3px 0"><?= $nfse_importada->numero ?: '---' ?></td></tr>
+                            <tr><td style="border:none; padding:3px 0; color:var(--dark-cinz,#8788a4)"><strong style="color:var(--branco,#caced8)">Serie:</strong></td><td style="border:none; padding:3px 0"><?= $nfse_importada->serie ?: '---' ?></td></tr>
+                            <tr><td style="border:none; padding:3px 0; color:var(--dark-cinz,#8788a4)"><strong style="color:var(--branco,#caced8)">Data Emissao:</strong></td><td style="border:none; padding:3px 0"><?= $nfse_importada->data_emissao ? date('d/m/Y', strtotime($nfse_importada->data_emissao)) : '---' ?></td></tr>
+                            <tr><td style="border:none; padding:3px 0; color:var(--dark-cinz,#8788a4)"><strong style="color:var(--branco,#caced8)">Data Importacao:</strong></td><td style="border:none; padding:3px 0"><?= $nfse_importada->data_importacao ? date('d/m/Y H:i', strtotime($nfse_importada->data_importacao)) : '---' ?></td></tr>
+                            <?php if (!empty($nfse_importada->chave_acesso)): ?>
+                            <tr><td style="border:none; padding:3px 0; color:var(--dark-cinz,#8788a4)"><strong style="color:var(--branco,#caced8)">Chave:</strong></td><td style="border:none; padding:3px 0"><small style="font-family:monospace; color:var(--dark-cinz,#8788a4)"><?= preg_replace('/^NFS/i', '', $nfse_importada->chave_acesso) ?></small></td></tr>
+                            <?php endif; ?>
+                        </table>
+                    </div>
+                    <div class="span6 text-right">
+                        <table class="table table-condensed" style="margin-bottom:0; background:transparent">
+                            <tr><td style="border:none; padding:3px 0; color:var(--dark-cinz,#8788a4)"><strong style="color:var(--branco,#caced8)">Valor Total:</strong></td><td style="border:none; padding:3px 0"><?= fmtMoney($nfse_importada->valor_total) ?></td></tr>
+                            <tr><td style="border:none; padding:3px 0; color:var(--dark-cinz,#8788a4)"><strong style="color:var(--branco,#caced8)">Impostos:</strong></td><td style="border:none; padding:3px 0"><?= fmtMoney($nfse_importada->valor_impostos ?? 0) ?></td></tr>
+                            <?php $vlLiquido = floatval($nfse_importada->valor_total ?? 0) - floatval($nfse_importada->valor_impostos ?? 0); ?>
+                            <tr><td style="border:none; padding:3px 0; color:var(--dark-cinz,#8788a4)"><strong style="color:#62eba6">Valor Liquido:</strong></td><td style="border:none; padding:3px 0"><strong style="color:#62eba6"><?= fmtMoney($vlLiquido) ?></strong></td></tr>
+                        </table>
+                    </div>
+                </div>
+
+                <hr style="margin:10px 0; border-top:1px solid var(--dark-2,#272835)">
+
+                <div class="btn-group" style="margin-bottom:10px">
+                    <a href="<?= site_url('certificado/download_xml/' . $nfse_importada->id) ?>" class="btn btn-info" style="background:#52459f; border-color:#52459f">
+                        <i class="fas fa-file-code"></i> Download XML
+                    </a>
+                    <button type="button" class="btn btn-primary" style="background:#1086dd; border-color:#0d6efd" onclick="window.open('<?= site_url('certificado/visualizar_xml/' . $nfse_importada->id) ?>','_blank')">
+                        <i class="fas fa-eye"></i> Visualizar XML
+                    </button>
+                    <a href="<?= site_url('certificado/imprimir_nfse_importada/' . $nfse_importada->id) ?>" target="_blank" class="btn btn-success" style="background:#26a38e; border-color:#1fb5a8">
+                        <i class="fas fa-print"></i> Imprimir
+                    </a>
                 </div>
             </div>
         </div>
@@ -191,11 +257,11 @@ if (!function_exists('fmtDoc')) {
                         <div class="well well-small" style="background:rgba(82,69,159,0.15); border-color:rgba(82,69,159,0.3); color:#caced8">
                             <div style="display:flex; align-items:center; justify-content:space-between">
                                 <div>
-                                    <strong style="color:var(--title,#d4d8e0)"><i class="fas fa-file-import" style="color:#52459f"></i> Já emitiu esta NFS-e em outro sistema?</strong>
+                                    <strong style="color:var(--title,#d4d8e0)"><i class="fas fa-file-import" style="color:#52459f"></i> Ja emitiu esta NFS-e em outro sistema?</strong>
                                     <br>
                                     <small style="color:var(--dark-cinz,#8788a4)">Importe o XML da nota fiscal com preview dos dados antes de salvar.</small>
                                 </div>
-                                <a href="<?= site_url('nfse_os/importar/' . $result->idOs) ?>" class="btn btn-small" style="background:#52459f; border-color:#52459f; color:#fff; white-space:nowrap">
+                                <a href="<?= site_url('certificado/importar_nfse') ?>?os_id=<?= $result->idOs ?>" class="btn btn-small" style="background:#52459f; border-color:#52459f; color:#fff; white-space:nowrap">
                                     <i class="fas fa-upload"></i> Importar XML
                                 </a>
                             </div>

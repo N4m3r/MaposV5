@@ -16,6 +16,7 @@ class Certificado extends MY_Controller
 
         $this->load->model('certificado_model');
         $this->load->model('impostos_model');
+        $this->load->model('mapos_model');
         $this->load->helper(['date', 'currency']);
     }
 
@@ -247,16 +248,21 @@ class Certificado extends MY_Controller
      */
     public function importar_nfse()
     {
+        log_message('debug', '[Certificado importar_nfse] ========== INICIO ========== METHOD=' . $_SERVER['REQUEST_METHOD']);
+
         if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cCertificado')) {
+            log_message('error', '[Certificado importar_nfse] BLOQUEADO: sem permissao');
             $this->session->set_flashdata('error', 'Sem permissão.');
             redirect('certificado');
         }
 
         $cert = $this->certificado_model->getCertificadoAtivo();
         if (!$cert) {
+            log_message('error', '[Certificado importar_nfse] BLOQUEADO: nenhum certificado ativo');
             $this->session->set_flashdata('error', 'Configure um certificado primeiro.');
             redirect('certificado/configurar');
         }
+        log_message('debug', '[Certificado importar_nfse] Certificado ativo OK. id=' . $cert->id);
 
         if ($this->input->post()) {
             log_message('debug', '[Certificado importar_nfse] POST recebido. FILES=' . json_encode($_FILES));
@@ -349,6 +355,7 @@ class Certificado extends MY_Controller
             date('Y-m-01'),
             date('Y-m-t')
         );
+        log_message('debug', '[Certificado importar_nfse] Notas carregadas=' . (is_array($this->data['notas']) ? count($this->data['notas']) : 'nao_array'));
 
         // Carregar lista de OSs para vinculação
         $this->db->select('os.idOs, clientes.nomeCliente, os.dataInicial');
@@ -357,8 +364,10 @@ class Certificado extends MY_Controller
         $this->db->order_by('os.idOs', 'DESC');
         $this->db->limit(300);
         $this->data['oss'] = $this->db->get()->result();
+        log_message('debug', '[Certificado importar_nfse] OSs carregadas=' . count($this->data['oss']));
 
         $this->data['view'] = 'certificado/importar_nfse';
+        log_message('debug', '[Certificado importar_nfse] ========== RENDERIZANDO VIEW ==========');
         return $this->layout();
     }
 
@@ -383,6 +392,9 @@ class Certificado extends MY_Controller
         $nNFSe = $dom->getElementsByTagName('nNFSe')->item(0);
         if ($nNFSe) {
             $dados['numero_nfse'] = trim($nNFSe->nodeValue);
+            log_message('debug', '[extrairDadosXmlNfse] nNFSe encontrado=' . $dados['numero_nfse']);
+        } else {
+            log_message('debug', '[extrairDadosXmlNfse] nNFSe NAO encontrado');
         }
 
         // ABRASF / municipal: Numero
@@ -390,19 +402,41 @@ class Certificado extends MY_Controller
             $numNode = $dom->getElementsByTagName('Numero')->item(0);
             if ($numNode) {
                 $dados['numero_nfse'] = trim($numNode->nodeValue);
+                log_message('debug', '[extrairDadosXmlNfse] Numero encontrado=' . $dados['numero_nfse']);
+            } else {
+                log_message('debug', '[extrairDadosXmlNfse] Numero NAO encontrado');
             }
         }
 
-        // Chave de acesso (Nacional)
-        $chave = $dom->getElementsByTagName('chaveAcesso')->item(0);
-        if (!$chave) {
-            $chave = $dom->getElementsByTagName('ChaveAcesso')->item(0);
+        // Chave de acesso (atributo Id da tag infNFSe ou tag filha)
+        $infNFSe = $dom->getElementsByTagName('infNFSe')->item(0);
+        if ($infNFSe && $infNFSe->hasAttribute('Id')) {
+            $dados['chave_acesso'] = trim($infNFSe->getAttribute('Id'));
+            log_message('debug', '[extrairDadosXmlNfse] chave_acesso extraida do atributo Id de infNFSe=' . $dados['chave_acesso']);
         }
-        if (!$chave) {
-            $chave = $dom->getElementsByTagName('ChaveAcessoNfse')->item(0);
+        if (empty($dados['chave_acesso'])) {
+            $chave = $dom->getElementsByTagName('chaveAcesso')->item(0);
+            if (!$chave) {
+                $chave = $dom->getElementsByTagName('ChaveAcesso')->item(0);
+            }
+            if (!$chave) {
+                $chave = $dom->getElementsByTagName('ChaveAcessoNfse')->item(0);
+            }
+            if ($chave) {
+                $dados['chave_acesso'] = trim($chave->nodeValue);
+                log_message('debug', '[extrairDadosXmlNfse] chaveAcesso encontrado=' . $dados['chave_acesso']);
+            } else {
+                log_message('debug', '[extrairDadosXmlNfse] chaveAcesso NAO encontrado');
+            }
         }
-        if ($chave) {
-            $dados['chave_acesso'] = trim($chave->nodeValue);
+
+        // Descricao do servico
+        $xDescServ = $dom->getElementsByTagName('xDescServ')->item(0);
+        if ($xDescServ) {
+            $dados['descricao_servico'] = trim($xDescServ->nodeValue);
+            log_message('debug', '[extrairDadosXmlNfse] xDescServ encontrado=' . $dados['descricao_servico']);
+        } else {
+            log_message('debug', '[extrairDadosXmlNfse] xDescServ NAO encontrado');
         }
 
         // Código de verificação
@@ -410,18 +444,15 @@ class Certificado extends MY_Controller
         if (!$codVerif) {
             $codVerif = $dom->getElementsByTagName('CodigoVerificacao')->item(0);
         }
-        if (!$codVerif) {
-            $codVerif = $dom->getElementsByTagName('CodigoVerificacao')->item(0);
-        }
         if ($codVerif) {
             $dados['codigo_verificacao'] = trim($codVerif->nodeValue);
+            log_message('debug', '[extrairDadosXmlNfse] codigoVerificacao encontrado=' . $dados['codigo_verificacao']);
+        } else {
+            log_message('debug', '[extrairDadosXmlNfse] codigoVerificacao NAO encontrado');
         }
 
         // Data de emissão
         $dhEmi = $dom->getElementsByTagName('dhEmi')->item(0);
-        if (!$dhEmi) {
-            $dhEmi = $dom->getElementsByTagName('DataEmissao')->item(0);
-        }
         if (!$dhEmi) {
             $dhEmi = $dom->getElementsByTagName('DataEmissao')->item(0);
         }
@@ -430,6 +461,9 @@ class Certificado extends MY_Controller
             if (strlen($dt) >= 10) {
                 $dados['data_emissao'] = substr($dt, 0, 10) . ' ' . (substr($dt, 11, 8) ?: '00:00:00');
             }
+            log_message('debug', '[extrairDadosXmlNfse] dhEmi/DataEmissao encontrado=' . $dt . ' normalizado=' . $dados['data_emissao']);
+        } else {
+            log_message('debug', '[extrairDadosXmlNfse] dhEmi/DataEmissao NAO encontrado');
         }
 
         // Valor dos serviços
@@ -437,11 +471,11 @@ class Certificado extends MY_Controller
         if (!$vServ) {
             $vServ = $dom->getElementsByTagName('ValorServicos')->item(0);
         }
-        if (!$vServ) {
-            $vServ = $dom->getElementsByTagName('ValorServicos')->item(0);
-        }
         if ($vServ) {
             $dados['valor_servicos'] = floatval(str_replace(',', '.', trim($vServ->nodeValue)));
+            log_message('debug', '[extrairDadosXmlNfse] vServ/ValorServicos encontrado=' . $dados['valor_servicos']);
+        } else {
+            log_message('debug', '[extrairDadosXmlNfse] vServ/ValorServicos NAO encontrado');
         }
 
         // Valor líquido
@@ -451,6 +485,9 @@ class Certificado extends MY_Controller
         }
         if ($vLiq) {
             $dados['valor_liquido'] = floatval(str_replace(',', '.', trim($vLiq->nodeValue)));
+            log_message('debug', '[extrairDadosXmlNfse] vLiq/ValorLiquidoNfse encontrado=' . $dados['valor_liquido']);
+        } else {
+            log_message('debug', '[extrairDadosXmlNfse] vLiq/ValorLiquidoNfse NAO encontrado');
         }
 
         // Deduções
@@ -460,8 +497,12 @@ class Certificado extends MY_Controller
         }
         if ($vDed) {
             $dados['valor_deducoes'] = floatval(str_replace(',', '.', trim($vDed->nodeValue)));
+            log_message('debug', '[extrairDadosXmlNfse] vDed/ValorDeducoes encontrado=' . $dados['valor_deducoes']);
+        } else {
+            log_message('debug', '[extrairDadosXmlNfse] vDed/ValorDeducoes NAO encontrado');
         }
 
+        log_message('debug', '[extrairDadosXmlNfse] ========== RESULTADO ==========' . json_encode($dados));
         return $dados;
     }
 
@@ -471,25 +512,38 @@ class Certificado extends MY_Controller
      */
     public function preview_importar_ajax()
     {
+        log_message('debug', '[Certificado preview_importar_ajax] ========== INICIO ==========');
+        log_message('debug', '[Certificado preview_importar_ajax] REQUEST_METHOD=' . ($_SERVER['REQUEST_METHOD'] ?? 'N/A') . ' CONTENT_TYPE=' . ($_SERVER['CONTENT_TYPE'] ?? 'N/A'));
+        log_message('debug', '[Certificado preview_importar_ajax] is_ajax_request=' . ($this->input->is_ajax_request() ? 'sim' : 'nao') . ' HTTP_X_REQUESTED_WITH=' . ($_SERVER['HTTP_X_REQUESTED_WITH'] ?? 'nao_setado'));
+        log_message('debug', '[Certificado preview_importar_ajax] POST=' . json_encode($this->input->post()) . ' FILES=' . json_encode(array_keys($_FILES)));
+
         if (!$this->input->is_ajax_request()) {
-            show_404();
+            log_message('error', '[Certificado preview_importar_ajax] BLOQUEADO: nao e requisicao AJAX');
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'message' => 'Requisicao AJAX invalida.']);
+            return;
         }
 
         if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cCertificado')) {
+            log_message('error', '[Certificado preview_importar_ajax] BLOQUEADO: sem permissao cCertificado. Permissao=' . $this->session->userdata('permissao'));
             header('Content-Type: application/json');
             echo json_encode(['success' => false, 'message' => 'Sem permissão.']);
             return;
         }
+        log_message('debug', '[Certificado preview_importar_ajax] Permissao OK');
 
         if (!isset($_FILES['xml_nfse']) || empty($_FILES['xml_nfse']['tmp_name'])) {
+            log_message('error', '[Certificado preview_importar_ajax] BLOQUEADO: nenhum arquivo enviado. FILES=' . json_encode($_FILES));
             header('Content-Type: application/json');
             echo json_encode(['success' => false, 'message' => 'Nenhum arquivo enviado.']);
             return;
         }
+        log_message('debug', '[Certificado preview_importar_ajax] Arquivo recebido. name=' . $_FILES['xml_nfse']['name'] . ' size=' . $_FILES['xml_nfse']['size'] . ' tmp=' . $_FILES['xml_nfse']['tmp_name']);
 
         $file = $_FILES['xml_nfse'];
         $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
         if ($ext !== 'xml') {
+            log_message('error', '[Certificado preview_importar_ajax] BLOQUEADO: extensao invalida=' . $ext);
             header('Content-Type: application/json');
             echo json_encode(['success' => false, 'message' => 'Arquivo deve ser XML (.xml)']);
             return;
@@ -497,10 +551,12 @@ class Certificado extends MY_Controller
 
         $xmlContent = file_get_contents($file['tmp_name']);
         if (empty($xmlContent)) {
+            log_message('error', '[Certificado preview_importar_ajax] BLOQUEADO: arquivo vazio apos file_get_contents');
             header('Content-Type: application/json');
             echo json_encode(['success' => false, 'message' => 'Arquivo XML vazio.']);
             return;
         }
+        log_message('debug', '[Certificado preview_importar_ajax] XML lido. tamanho=' . strlen($xmlContent) . ' primeiros_200_chars=' . substr($xmlContent, 0, 200));
 
         libxml_use_internal_errors(true);
         $dom = new DOMDocument();
@@ -511,20 +567,24 @@ class Certificado extends MY_Controller
                 $msgs[] = trim($e->message) . ' (linha ' . $e->line . ')';
             }
             libxml_clear_errors();
+            log_message('error', '[Certificado preview_importar_ajax] BLOQUEADO: XML mal formado. erros=' . implode('; ', $msgs));
             header('Content-Type: application/json');
             echo json_encode(['success' => false, 'message' => 'XML inválido: ' . implode('; ', $msgs)]);
             return;
         }
+        log_message('debug', '[Certificado preview_importar_ajax] XML parseado com sucesso');
 
         $dadosExtraidos = $this->extrairDadosXmlNfse($dom);
         log_message('debug', '[Certificado preview_importar_ajax] Dados extraidos=' . json_encode($dadosExtraidos));
 
         if (empty($dadosExtraidos['numero_nfse']) && empty($dadosExtraidos['chave_acesso'])) {
+            log_message('error', '[Certificado preview_importar_ajax] BLOQUEADO: numero e chave vazios. dados=' . json_encode($dadosExtraidos));
             header('Content-Type: application/json');
             echo json_encode(['success' => false, 'message' => 'Não foi possível identificar dados da nota no XML. Verifique se o arquivo é uma NFS-e válida.']);
             return;
         }
 
+        log_message('debug', '[Certificado preview_importar_ajax] ========== SUCESSO ========== numero=' . $dadosExtraidos['numero_nfse'] . ' chave=' . $dadosExtraidos['chave_acesso']);
         header('Content-Type: application/json');
         echo json_encode([
             'success' => true,
@@ -543,42 +603,54 @@ class Certificado extends MY_Controller
      */
     public function salvar_importacao()
     {
+        log_message('debug', '[Certificado salvar_importacao] ========== INICIO ==========');
+        log_message('debug', '[Certificado salvar_importacao] REQUEST_METHOD=' . ($_SERVER['REQUEST_METHOD'] ?? 'N/A') . ' POST=' . json_encode($this->input->post()));
+
         if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cCertificado')) {
+            log_message('error', '[Certificado salvar_importacao] BLOQUEADO: sem permissao. Permissao=' . $this->session->userdata('permissao'));
             $this->session->set_flashdata('error', 'Sem permissão.');
             redirect('certificado/importar_nfse');
         }
 
         $os_id = $this->input->post('os_id');
         $xmlBase64 = $this->input->post('xml_base64');
+        log_message('debug', '[Certificado salvar_importacao] os_id=' . ($os_id ?: 'vazio') . ' xml_base64_length=' . strlen($xmlBase64 ?: ''));
 
         if (empty($xmlBase64)) {
+            log_message('error', '[Certificado salvar_importacao] BLOQUEADO: xml_base64 vazio');
             $this->session->set_flashdata('error', 'Dados do XML não recebidos.');
             redirect('certificado/importar_nfse');
         }
 
         $xmlContent = base64_decode($xmlBase64);
         if (empty($xmlContent)) {
+            log_message('error', '[Certificado salvar_importacao] BLOQUEADO: base64_decode retornou vazio');
             $this->session->set_flashdata('error', 'XML inválido ou corrompido.');
             redirect('certificado/importar_nfse');
         }
+        log_message('debug', '[Certificado salvar_importacao] XML decodificado. tamanho=' . strlen($xmlContent) . ' primeiros_200_chars=' . substr($xmlContent, 0, 200));
 
         libxml_use_internal_errors(true);
         $dom = new DOMDocument();
         if (!@$dom->loadXML($xmlContent)) {
             libxml_clear_errors();
+            log_message('error', '[Certificado salvar_importacao] BLOQUEADO: XML mal formado apos decode');
             $this->session->set_flashdata('error', 'XML inválido ou mal formado.');
             redirect('certificado/importar_nfse');
         }
 
         $dadosExtraidos = $this->extrairDadosXmlNfse($dom);
+        log_message('debug', '[Certificado salvar_importacao] Dados extraidos=' . json_encode($dadosExtraidos));
 
         if (empty($dadosExtraidos['numero_nfse']) && empty($dadosExtraidos['chave_acesso'])) {
+            log_message('error', '[Certificado salvar_importacao] BLOQUEADO: numero e chave vazios');
             $this->session->set_flashdata('error', 'Não foi possível identificar o número da nota no XML.');
             redirect('certificado/importar_nfse');
         }
 
         $cert = $this->certificado_model->getCertificadoAtivo();
         $certId = $cert ? $cert->id : null;
+        log_message('debug', '[Certificado salvar_importacao] certId=' . ($certId ?: 'null'));
 
         $chave = $dadosExtraidos['chave_acesso'] ?: ('MANUAL_' . $dadosExtraidos['numero_nfse']);
         $numero = $dadosExtraidos['numero_nfse'] ?: $chave;
@@ -597,10 +669,12 @@ class Certificado extends MY_Controller
             'os_id' => $os_id ?: null
         ];
 
-        log_message('debug', '[Certificado salvar_importacao] Salvando NFSe numero=' . $numero . ' os_id=' . ($os_id ?: 'null'));
+        log_message('debug', '[Certificado salvar_importacao] Chamando importarNFSe. numero=' . $numero . ' os_id=' . ($os_id ?: 'null') . ' chave=' . $chave);
         $resultado = $this->certificado_model->importarNFSe($dados, $certId);
+        log_message('debug', '[Certificado salvar_importacao] Resultado model=' . json_encode($resultado));
 
         if (isset($resultado['success'])) {
+            log_message('info', '[Certificado salvar_importacao] ========== SUCESSO ========== id=' . ($resultado['id'] ?? '?'));
             $this->session->set_flashdata('success', 'NFS-e #' . $numero . ' importada com sucesso!' . ($os_id ? ' Vinculada à OS #' . $os_id . '.' : ''));
 
             if ($valorTotal > 0) {
@@ -612,11 +686,505 @@ class Certificado extends MY_Controller
                 ]);
             }
         } else {
-            log_message('error', '[Certificado salvar_importacao] Erro: ' . ($resultado['error'] ?? 'desconhecido'));
+            log_message('error', '[Certificado salvar_importacao] ========== ERRO ========== msg=' . ($resultado['error'] ?? 'desconhecido'));
             $this->session->set_flashdata('error', $resultado['error'] ?? 'Erro ao importar nota.');
         }
 
         redirect('certificado/importar_nfse');
+    }
+
+    /**
+     * Download do XML de uma NFS-e importada (do banco de dados)
+     */
+    public function download_xml($id)
+    {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vCertificado')) {
+            $this->session->set_flashdata('error', 'Sem permissão.');
+            redirect('certificado');
+        }
+
+        $nota = $this->db->where('id', $id)->get('certificado_nfe_importada')->row();
+        if (!$nota || empty($nota->dados_xml)) {
+            show_error('XML não encontrado.', 404);
+            return;
+        }
+
+        $filename = 'nfse_' . ($nota->numero ?: $nota->id) . '.xml';
+        header('Content-Type: application/xml; charset=utf-8');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Content-Length: ' . strlen($nota->dados_xml));
+        echo $nota->dados_xml;
+        exit;
+    }
+
+    /**
+     * Visualizar XML de uma NFS-e importada no navegador (sem forcar download)
+     */
+    public function visualizar_xml($id)
+    {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vCertificado')) {
+            show_error('Sem permissao.', 403);
+            return;
+        }
+
+        $nota = $this->db->where('id', $id)->get('certificado_nfe_importada')->row();
+        if (!$nota || empty($nota->dados_xml)) {
+            show_error('XML nao encontrado.', 404);
+            return;
+        }
+
+        header('Content-Type: text/xml; charset=utf-8');
+        echo $nota->dados_xml;
+        exit;
+    }
+
+    /**
+     * Impressao formatada A4 de uma NFS-e importada (PDF via dompdf)
+     * Extrai dados reais do XML para preencher o layout
+     */
+    public function imprimir_nfse_importada($id)
+    {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vCertificado')) {
+            show_error('Sem permissao.', 403);
+            return;
+        }
+
+        $nota = $this->db->where('id', $id)->get('certificado_nfe_importada')->row();
+        if (!$nota) {
+            show_error('Nota nao encontrada.', 404);
+            return;
+        }
+
+        $emitente = $this->mapos_model->getEmitente();
+
+        $cliente = null;
+        $os = null;
+        if (!empty($nota->os_id)) {
+            $os = $this->db->where('idOs', $nota->os_id)->get('os')->row();
+            if ($os && !empty($os->clientes_id)) {
+                $cliente = $this->db->where('idClientes', $os->clientes_id)->get('clientes')->row();
+            }
+        }
+
+        // Extrair dados completos do XML
+        $xmlData = [];
+        if (!empty($nota->dados_xml)) {
+            $xmlData = $this->_extrairDadosXmlNfseCompleto($nota->dados_xml);
+        }
+
+        // Helpers formatadores
+        $fmtDoc = function ($doc) {
+            $doc = preg_replace('/[^0-9]/', '', (string)$doc);
+            if (strlen($doc) === 11) {
+                return preg_replace('/(\d{3})(\d{3})(\d{3})(\d{2})/', '$1.$2.$3-$4', $doc);
+            }
+            if (strlen($doc) === 14) {
+                return preg_replace('/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/', '$1.$2.$3/$4-$5', $doc);
+            }
+            return $doc;
+        };
+
+        $fmtMoeda = function ($valor) {
+            return 'R$ ' . number_format(floatval($valor), 2, ',', '.');
+        };
+
+        // Logo path absoluto para dompdf
+        $logoPath = null;
+        if (!empty($emitente->url_logo)) {
+            $logoRelative = str_replace(base_url(), '', $emitente->url_logo);
+            $logoAbsolute = FCPATH . str_replace('/', DIRECTORY_SEPARATOR, $logoRelative);
+            if (file_exists($logoAbsolute)) {
+                $logoPath = $logoAbsolute;
+            }
+        }
+        if (!$logoPath && file_exists(FCPATH . 'assets' . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'logo.png')) {
+            $logoPath = FCPATH . 'assets' . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'logo.png';
+        }
+
+        // QR Code base64
+        $qrBase64 = null;
+        $consultaUrl = null;
+        if (!empty($xmlData['chave_acesso'])) {
+            $consultaUrl = 'https://www.nfse.gov.br/EmissorNacional/ConsultaPublica?' . http_build_query(['chaveAcesso' => $xmlData['chave_acesso']]);
+        } elseif (!empty($nota->chave_acesso)) {
+            $consultaUrl = 'https://www.nfse.gov.br/EmissorNacional/ConsultaPublica?' . http_build_query(['chaveAcesso' => $nota->chave_acesso]);
+        }
+        if ($consultaUrl) {
+            $qrApiUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' . urlencode($consultaUrl);
+            $qrImage = @file_get_contents($qrApiUrl);
+            if ($qrImage !== false) {
+                $qrBase64 = base64_encode($qrImage);
+            }
+        }
+
+        $data = [
+            'n' => $nota,
+            'nfNumero' => $xmlData['numero'] ?: $nota->numero,
+            'nfSerie' => $xmlData['serie'] ?? null,
+            'nfDataEmi' => $xmlData['data_emissao'] ?: $nota->data_emissao,
+            'nfCompetencia' => $xmlData['competencia'] ?? null,
+            'nfCodVerif' => $xmlData['codigo_verificacao'] ?? null,
+            'nfChave' => $xmlData['chave_acesso'] ?: $nota->chave_acesso,
+            'nfTribNac' => $xmlData['tributacao_nacional'] ?? null,
+            'nfTribMun' => $xmlData['tributacao_municipal'] ?? null,
+            'nfLocPrest' => $xmlData['local_prestacao'] ?? null,
+            'nfLocEmi' => $xmlData['local_emissao'] ?? null,
+            'nfPais' => $xmlData['pais_prestacao'] ?? null,
+            'nfRegime' => $xmlData['regime_tributario'] ?? null,
+            'nfNatureza' => $xmlData['natureza_operacao'] ?? null,
+            'nfDesc' => $xmlData['descricao_servico'] ?? null,
+            'nfAliq' => $xmlData['aliquota_iss'] ?? null,
+            'situacao' => $nota->situacao ?: 'Autorizada',
+            'logoPath' => $logoPath,
+            'pNome' => $xmlData['prestador']['nome'] ?? null,
+            'pCnpj' => $xmlData['prestador']['cpf_cnpj'] ?? null,
+            'pIM' => $xmlData['prestador']['inscricao_municipal'] ?? null,
+            'pRua' => $xmlData['prestador']['endereco'] ?? null,
+            'pNumero' => $xmlData['prestador']['numero'] ?? null,
+            'pBairro' => $xmlData['prestador']['bairro'] ?? null,
+            'pCidade' => $xmlData['prestador']['cidade'] ?? null,
+            'pUf' => $xmlData['prestador']['uf'] ?? null,
+            'pCep' => $xmlData['prestador']['cep'] ?? null,
+            'pTel' => $xmlData['prestador']['telefone'] ?? null,
+            'pEmail' => $xmlData['prestador']['email'] ?? null,
+            'tNome' => $xmlData['tomador']['nome'] ?? null,
+            'tDoc' => $xmlData['tomador']['cpf_cnpj'] ?? null,
+            'tIM' => $xmlData['tomador']['inscricao_municipal'] ?? null,
+            'tRua' => $xmlData['tomador']['endereco'] ?? null,
+            'tNumero' => $xmlData['tomador']['numero'] ?? null,
+            'tBairro' => $xmlData['tomador']['bairro'] ?? null,
+            'tCidade' => $xmlData['tomador']['cidade'] ?? null,
+            'tUf' => $xmlData['tomador']['uf'] ?? null,
+            'tCep' => $xmlData['tomador']['cep'] ?? null,
+            'tTel' => $xmlData['tomador']['telefone'] ?? null,
+            'tEmail' => $xmlData['tomador']['email'] ?? null,
+            'vServ' => $xmlData['valor_servicos'] ?: $nota->valor_total,
+            'vDed' => $xmlData['valor_deducoes'] ?? 0,
+            'vPIS' => $xmlData['valor_pis'] ?? 0,
+            'vCOFINS' => $xmlData['valor_cofins'] ?? 0,
+            'vINSS' => $xmlData['valor_inss'] ?? 0,
+            'vIRRF' => $xmlData['valor_irrf'] ?? 0,
+            'vCSLL' => $xmlData['valor_csll'] ?? 0,
+            'vISS' => $xmlData['valor_iss'] ?? 0,
+            'vTotImpostos' => $xmlData['valor_total_impostos'] ?? 0,
+            'vLiq' => $xmlData['valor_liquido'] ?? 0,
+            'qrBase64' => $qrBase64,
+            'fmtDoc' => $fmtDoc,
+            'fmtMoeda' => $fmtMoeda,
+        ];
+
+        // Renderizar PDF com dompdf
+        require_once FCPATH . 'vendor' . DIRECTORY_SEPARATOR . 'autoload_dompdf.php';
+
+        $options = new \Dompdf\Options();
+        $options->set('defaultFont', 'DejaVu Sans');
+        $options->set('isRemoteEnabled', false);
+        $options->set('isHtml5ParserEnabled', true);
+
+        $dompdf = new \Dompdf\Dompdf($options);
+        $dompdf->setPaper('A4', 'portrait');
+
+        $html = $this->load->view('certificado/pdf_nfse_importada', $data, true);
+        $dompdf->loadHtml($html, 'UTF-8');
+        $dompdf->render();
+
+        $filename = 'NFSe_' . ($data['nfNumero'] ?: $id) . '.pdf';
+        $dompdf->stream($filename, ['Attachment' => false]);
+    }
+
+    /**
+     * Extrair dados completos do XML de NFS-e para impressao
+     * Suporta NFSe Nacional (DPS), ABRASF e padroes municipais
+     */
+    private function _extrairDadosXmlNfseCompleto($xmlContent)
+    {
+        $dados = [
+            'numero' => null,
+            'serie' => null,
+            'chave_acesso' => null,
+            'codigo_verificacao' => null,
+            'data_emissao' => null,
+            'competencia' => null,
+            'descricao_servico' => null,
+            'valor_servicos' => 0,
+            'valor_deducoes' => 0,
+            'valor_pis' => 0,
+            'valor_cofins' => 0,
+            'valor_inss' => 0,
+            'valor_irrf' => 0,
+            'valor_csll' => 0,
+            'valor_iss' => 0,
+            'valor_total_impostos' => 0,
+            'valor_liquido' => 0,
+            'aliquota_iss' => null,
+            'tributacao_nacional' => null,
+            'tributacao_municipal' => null,
+            'descricao_trib_nac' => null,
+            'descricao_trib_mun' => null,
+            'local_prestacao' => null,
+            'local_emissao' => null,
+            'pais_prestacao' => null,
+            'regime_tributario' => null,
+            'natureza_operacao' => null,
+            'prestador' => [
+                'cpf_cnpj' => null,
+                'nome' => null,
+                'inscricao_municipal' => null,
+                'endereco' => null,
+                'numero' => null,
+                'bairro' => null,
+                'cidade' => null,
+                'uf' => null,
+                'cep' => null,
+                'telefone' => null,
+                'email' => null,
+            ],
+            'tomador' => [
+                'cpf_cnpj' => null,
+                'nome' => null,
+                'inscricao_municipal' => null,
+                'endereco' => null,
+                'numero' => null,
+                'bairro' => null,
+                'cidade' => null,
+                'uf' => null,
+                'cep' => null,
+                'telefone' => null,
+                'email' => null,
+            ],
+        ];
+
+        libxml_use_internal_errors(true);
+        $dom = new DOMDocument();
+        if (!@$dom->loadXML($xmlContent)) {
+            libxml_clear_errors();
+            return $dados;
+        }
+
+        // Helper para extrair texto da primeira tag encontrada
+        $getVal = function ($tags) use ($dom) {
+            foreach ((array)$tags as $tag) {
+                $node = $dom->getElementsByTagName($tag)->item(0);
+                if ($node) return trim($node->nodeValue);
+            }
+            return null;
+        };
+
+        // Helper para extrair texto de tag dentro de um parente
+        $getChild = function ($parent, $tags) {
+            if (!$parent) return null;
+            foreach ((array)$tags as $tag) {
+                $node = $parent->getElementsByTagName($tag)->item(0);
+                if ($node) return trim($node->nodeValue);
+            }
+            return null;
+        };
+
+        // ===== Numero =====
+        $dados['numero'] = $getVal(['nNFSe', 'Numero', 'numero']);
+
+        // ===== Serie =====
+        $dados['serie'] = $getVal(['serie', 'Serie']);
+
+        // ===== Chave de acesso (atributo Id de infNFSe ou tag filha) =====
+        $infNFSe = $dom->getElementsByTagName('infNFSe')->item(0);
+        if ($infNFSe && $infNFSe->hasAttribute('Id')) {
+            $dados['chave_acesso'] = trim($infNFSe->getAttribute('Id'));
+        }
+        if (empty($dados['chave_acesso'])) {
+            $dados['chave_acesso'] = $getVal(['chaveAcesso', 'ChaveAcesso', 'ChaveAcessoNfse', 'ChaveAcessoNFSe']);
+        }
+
+        // ===== Codigo verificacao =====
+        $dados['codigo_verificacao'] = $getVal(['codigoVerificacao', 'CodigoVerificacao']);
+
+        // ===== Data emissao =====
+        $dt = $getVal(['dhEmi', 'DataEmissao', 'dataEmissao']);
+        if ($dt && strlen($dt) >= 10) {
+            $dados['data_emissao'] = substr($dt, 0, 10) . ' ' . (substr($dt, 11, 8) ?: '00:00:00');
+        }
+
+        // ===== Competencia =====
+        $dados['competencia'] = $getVal(['dCompet', 'competencia', 'Competencia']);
+
+        // ===== Descricao do servico =====
+        $dados['descricao_servico'] = $getVal(['xDescServ', 'Discriminacao', 'discriminacao', 'Descricao']);
+
+        // ===== Tributacao e Local =====
+        $cTribNac = $getVal(['cTribNac']);
+        $xTribNac = $getVal(['xTribNac']);
+        if ($cTribNac || $xTribNac) {
+            $dados['tributacao_nacional'] = trim($cTribNac . ' - ' . $xTribNac, ' -');
+        }
+        $cTribMun = $getVal(['cTribMun']);
+        $xTribMun = $getVal(['xTribMun']);
+        if ($cTribMun || $xTribMun) {
+            $dados['tributacao_municipal'] = trim($cTribMun . ' - ' . $xTribMun, ' -');
+        }
+        $xLocPrest = $getVal(['xLocPrestacao', 'xLocIncid']);
+        $cLocPrest = $getVal(['cLocPrestacao', 'cLocIncid']);
+        if ($xLocPrest || $cLocPrest) {
+            $dados['local_prestacao'] = trim(($xLocPrest ?: $cLocPrest));
+        }
+        $xLocEmi = $getVal(['xLocEmi']);
+        $cLocEmi = $getVal(['cLocEmi']);
+        if ($xLocEmi || $cLocEmi) {
+            $dados['local_emissao'] = trim(($xLocEmi ?: $cLocEmi));
+        }
+        $dados['pais_prestacao'] = $getVal(['xPais', 'cPais']);
+        $regTrib = $dom->getElementsByTagName('regTrib')->item(0);
+        if ($regTrib) {
+            $opSimp = $getChild($regTrib, ['opSimpNac']);
+            $regEsp = $getChild($regTrib, ['regEspTrib']);
+            if ($opSimp) {
+                $mapReg = ['1'=>'Microempresa', '2'=>'Empresa de Pequeno Porte', '3'=>'ME ou EPP optante pelo Simples Nacional', '4'=>'Normal', '5'=>'Imune', '6'=>'Isenta'];
+                $dados['regime_tributario'] = ($mapReg[$opSimp] ?? 'Simples Nacional');
+            }
+            if ($regEsp && $regEsp != '0') {
+                $mapEsp = ['1'=>'Cooperativa', '2'=>'Construtora', '3'=>'Agente Disportivo', '4'=>'Estabelecimento de Saude', '5'=>'Cartao de Credito/Debito', '6'=>'Instituicao Financeira', '7'=>'Seguradora', '8'=>'Administradora de Consorcio', '9'=>'Demais entidades'];
+                $dados['natureza_operacao'] = ($mapEsp[$regEsp] ?? 'Normal');
+            }
+        }
+
+        // ===== Valores =====
+        // vServ pode estar em vServPrest > vServ (NFSe Nacional)
+        $vServNode = $dom->getElementsByTagName('vServ')->item(0);
+        if ($vServNode) {
+            $dados['valor_servicos'] = floatval(str_replace(',', '.', trim($vServNode->nodeValue)));
+        }
+        $vLiqNode = $dom->getElementsByTagName('vLiq')->item(0);
+        if ($vLiqNode) {
+            $dados['valor_liquido'] = floatval(str_replace(',', '.', trim($vLiqNode->nodeValue)));
+        }
+        // ISSQN da NFSe Nacional
+        $vISSNode = $dom->getElementsByTagName('vISSQN')->item(0);
+        if ($vISSNode) {
+            $dados['valor_iss'] = floatval(str_replace(',', '.', trim($vISSNode->nodeValue)));
+        }
+        // Outros impostos (padroes municipais)
+        foreach (['vPIS', 'ValorPis'] as $t) {
+            $n = $dom->getElementsByTagName($t)->item(0);
+            if ($n) { $dados['valor_pis'] = floatval(str_replace(',', '.', trim($n->nodeValue))); break; }
+        }
+        foreach (['vCOFINS', 'ValorCofins'] as $t) {
+            $n = $dom->getElementsByTagName($t)->item(0);
+            if ($n) { $dados['valor_cofins'] = floatval(str_replace(',', '.', trim($n->nodeValue))); break; }
+        }
+        foreach (['vIR', 'ValorIr', 'vIRRF'] as $t) {
+            $n = $dom->getElementsByTagName($t)->item(0);
+            if ($n) { $dados['valor_irrf'] = floatval(str_replace(',', '.', trim($n->nodeValue))); break; }
+        }
+        foreach (['vCSLL', 'ValorCsll'] as $t) {
+            $n = $dom->getElementsByTagName($t)->item(0);
+            if ($n) { $dados['valor_csll'] = floatval(str_replace(',', '.', trim($n->nodeValue))); break; }
+        }
+        foreach (['vINSS', 'ValorInss'] as $t) {
+            $n = $dom->getElementsByTagName($t)->item(0);
+            if ($n) { $dados['valor_inss'] = floatval(str_replace(',', '.', trim($n->nodeValue))); break; }
+        }
+
+        // Total impostos
+        $totTrib = $getVal(['ValorTotalImpostos', 'valorTotalImpostos', 'vTotTrib']);
+        if ($totTrib !== null) {
+            $dados['valor_total_impostos'] = floatval(str_replace(',', '.', $totTrib));
+        } elseif ($dados['valor_iss'] > 0 || $dados['valor_pis'] > 0) {
+            $dados['valor_total_impostos'] = $dados['valor_pis'] + $dados['valor_cofins'] + $dados['valor_inss'] + $dados['valor_irrf'] + $dados['valor_csll'] + $dados['valor_iss'];
+        }
+
+        // Aliquota
+        $dados['aliquota_iss'] = $getVal(['pAliqAplic', 'pAliq', 'Aliquota', 'aliquota']);
+
+        // ===== PRESTADOR =====
+        // NFSe Nacional: <emit> dentro de <infNFSe>
+        $emit = $dom->getElementsByTagName('emit')->item(0);
+        if ($emit) {
+            $dados['prestador']['cpf_cnpj'] = $getChild($emit, ['CNPJ', 'CPF']);
+            $dados['prestador']['nome'] = $getChild($emit, ['xNome', 'RazaoSocial', 'nome']);
+            $dados['prestador']['inscricao_municipal'] = $getChild($emit, ['IM', 'InscricaoMunicipal']);
+            $dados['prestador']['telefone'] = $getChild($emit, ['fone', 'Telefone', 'Fone']);
+            $dados['prestador']['email'] = $getChild($emit, ['email', 'Email', 'xEmail']);
+            $enderNac = $emit->getElementsByTagName('enderNac')->item(0);
+            if ($enderNac) {
+                $dados['prestador']['endereco'] = $getChild($enderNac, ['xLgr', 'Endereco', 'rua']);
+                $dados['prestador']['numero'] = $getChild($enderNac, ['nro', 'Numero', 'numero']);
+                $dados['prestador']['bairro'] = $getChild($enderNac, ['xBairro', 'Bairro', 'bairro']);
+                $dados['prestador']['cidade'] = $getChild($enderNac, ['xMun', 'Cidade', 'cidade']);
+                $dados['prestador']['uf'] = $getChild($enderNac, ['UF', 'Uf', 'uf']);
+                $dados['prestador']['cep'] = $getChild($enderNac, ['CEP', 'Cep', 'cep']);
+            }
+        }
+        // Fallback DPS <prest>
+        if (empty($dados['prestador']['nome'])) {
+            $prest = $dom->getElementsByTagName('prest')->item(0);
+            if ($prest) {
+                $dados['prestador']['cpf_cnpj'] = $getChild($prest, ['CNPJ', 'CPF']);
+                $dados['prestador']['nome'] = $getChild($prest, ['xNome', 'RazaoSocial', 'nome']);
+                $dados['prestador']['inscricao_municipal'] = $getChild($prest, ['IM', 'InscricaoMunicipal']);
+                $dados['prestador']['telefone'] = $getChild($prest, ['fone', 'Telefone']);
+                $dados['prestador']['email'] = $getChild($prest, ['email', 'Email']);
+            }
+        }
+        // Fallback padroes municipais
+        if (empty($dados['prestador']['nome'])) {
+            foreach (['PrestadorServico', 'prestador', 'Prestador'] as $prestadorParent) {
+                $parent = $dom->getElementsByTagName($prestadorParent)->item(0);
+                if ($parent) {
+                    $dados['prestador']['cpf_cnpj'] = $getChild($parent, ['CpfCnpj', 'CNPJ', 'cnpj', 'CPF']);
+                    $dados['prestador']['nome'] = $getChild($parent, ['RazaoSocial', 'xNome', 'nome', 'Nome']);
+                    $dados['prestador']['inscricao_municipal'] = $getChild($parent, ['InscricaoMunicipal', 'IM']);
+                    $dados['prestador']['endereco'] = $getChild($parent, ['Endereco', 'xLgr', 'rua', 'Rua']);
+                    $dados['prestador']['numero'] = $getChild($parent, ['Numero', 'nro']);
+                    $dados['prestador']['bairro'] = $getChild($parent, ['Bairro', 'xBairro']);
+                    $dados['prestador']['cidade'] = $getChild($parent, ['Cidade', 'xMun']);
+                    $dados['prestador']['uf'] = $getChild($parent, ['Uf', 'UF']);
+                    $dados['prestador']['cep'] = $getChild($parent, ['Cep', 'CEP']);
+                    $dados['prestador']['telefone'] = $getChild($parent, ['Telefone', 'Fone']);
+                    $dados['prestador']['email'] = $getChild($parent, ['Email', 'xEmail']);
+                    break;
+                }
+            }
+        }
+
+        // ===== TOMADOR =====
+        // NFSe Nacional: <toma> dentro de DPS
+        $toma = $dom->getElementsByTagName('toma')->item(0);
+        if ($toma) {
+            $dados['tomador']['cpf_cnpj'] = $getChild($toma, ['CNPJ', 'CPF']);
+            $dados['tomador']['nome'] = $getChild($toma, ['xNome', 'RazaoSocial', 'nome']);
+            $end = $toma->getElementsByTagName('end')->item(0);
+            if ($end) {
+                $endNac = $end->getElementsByTagName('endNac')->item(0);
+                if ($endNac) {
+                    $dados['tomador']['cidade'] = $getChild($endNac, ['xMun', 'Cidade']);
+                    $dados['tomador']['cep'] = $getChild($endNac, ['CEP', 'Cep']);
+                }
+                $dados['tomador']['endereco'] = $getChild($end, ['xLgr', 'Endereco', 'rua']);
+                $dados['tomador']['numero'] = $getChild($end, ['nro', 'Numero']);
+                $dados['tomador']['bairro'] = $getChild($end, ['xBairro', 'Bairro']);
+            }
+        }
+        // Fallback padroes municipais
+        if (empty($dados['tomador']['nome'])) {
+            foreach (['TomadorServico', 'tomador', 'Tomador'] as $tomadorParent) {
+                $parent = $dom->getElementsByTagName($tomadorParent)->item(0);
+                if ($parent) {
+                    $dados['tomador']['cpf_cnpj'] = $getChild($parent, ['CpfCnpj', 'CNPJ', 'CPF']);
+                    $dados['tomador']['nome'] = $getChild($parent, ['RazaoSocial', 'xNome', 'nome', 'Nome']);
+                    $dados['tomador']['inscricao_municipal'] = $getChild($parent, ['InscricaoMunicipal', 'IM']);
+                    $dados['tomador']['endereco'] = $getChild($parent, ['Endereco', 'xLgr', 'rua']);
+                    $dados['tomador']['numero'] = $getChild($parent, ['Numero', 'nro']);
+                    $dados['tomador']['bairro'] = $getChild($parent, ['Bairro', 'xBairro']);
+                    $dados['tomador']['cidade'] = $getChild($parent, ['Cidade', 'xMun']);
+                    $dados['tomador']['uf'] = $getChild($parent, ['Uf', 'UF']);
+                    $dados['tomador']['cep'] = $getChild($parent, ['Cep', 'CEP']);
+                    $dados['tomador']['telefone'] = $getChild($parent, ['Telefone', 'Fone']);
+                    $dados['tomador']['email'] = $getChild($parent, ['Email', 'xEmail']);
+                    break;
+                }
+            }
+        }
+
+        return $dados;
     }
 
     /**

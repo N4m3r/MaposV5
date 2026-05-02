@@ -105,7 +105,15 @@
       "Bash(unzip -o /tmp/nfse_rtc.zip -d /tmp/nfse_rtc/)",
       "WebFetch(domain:documentacao.nstecnologia.com.br)",
       "WebFetch(domain:portalspedbrasil.com.br)",
-      "Bash(dir certificado *)"
+      "Bash(dir certificado *)",
+      "Bash(awk '{print $NF}')",
+      "Bash(composer require *)",
+      "Bash(git clone *)",
+      "Bash(cp -r /tmp/dompdf/src/* vendor/dompdf/dompdf/)",
+      "Bash(cp -r /tmp/html5/src/* vendor/masterminds/html5/)",
+      "Bash(cp -r /tmp/font-lib/src/* vendor/phenx/php-font-lib/)",
+      "Bash(cp -r /tmp/svg-lib/src/* vendor/phenx/php-svg-lib/)",
+      "Bash(unzip -q dompdf-2.0.8.zip)"
     ]
   }
 }

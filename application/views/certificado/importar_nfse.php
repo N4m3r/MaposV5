@@ -318,8 +318,17 @@ $oss = $oss ?? [];
         const csrf = document.querySelector('input[name="<?= $this->security->get_csrf_token_name() ?>"]');
         if (csrf) formData.append(csrf.name, csrf.value);
 
-        fetch('<?= site_url("certificado/preview_importar_ajax") ?>', { method: 'POST', body: formData })
-        .then(r => r.json())
+        fetch('<?= site_url("certificado/preview_importar_ajax") ?>', {
+            method: 'POST',
+            body: formData,
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(r => {
+            if (!r.ok) {
+                return r.text().then(text => { throw new Error('HTTP ' + r.status + ': ' + text.substring(0,200)); });
+            }
+            return r.json();
+        })
         .then(data => {
             loading.style.display = 'none';
             if (!data.success) { alert(data.message || 'Erro ao processar XML.'); resetUpload(); return; }

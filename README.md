@@ -114,11 +114,16 @@ MaposV5/
 ├── install/              # Instalador web
 ├── logs/                 # Logs da aplicacao
 ├── mobile/               # Recursos mobile/PWA
-├── scripts/              # Scripts utilitarios
+├── projeto/              # Arquivos de projeto e planejamento
+├── scripts/              # Scripts utilitarios (instalacao)
+├── tests/                # Scripts de teste e verificacao
+├── tmp/                  # Arquivos temporarios e diagnosticos
+├── tools/                # Ferramentas CLI (migracoes, cache)
 ├── updates/              # Scripts de atualizacao
 ├── .env.example          # Exemplo de variaveis de ambiente
 ├── .htaccess             # Regras Apache
 ├── composer.json         # Dependencias PHP
+├── CHANGELOG.md          # Historico de alteracoes
 └── index.php             # Entry point
 ```
 
@@ -207,8 +212,11 @@ php index.php tools migrate
 # Criar nova migracao
 php index.php tools migration "nome_da_migracao"
 
+# Executar migracoes via CLI helper
+php tools/cli.php migrate
+
 # Limpar cache
-php clear_cache.php
+php tools/clear_cache.php
 
 # Verificar permissoes de arquivos
 php scripts/verificar_permissoes.php

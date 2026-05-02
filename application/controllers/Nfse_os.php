@@ -603,10 +603,26 @@ class Nfse_os extends MY_Controller
         $this->load->model('mapos_model');
         $emitente = $this->mapos_model->getEmitente();
 
+        // Logo do emitente (absoluto para mPDF)
+        $logoUrl = null;
+        if (!empty($emitente->url_logo)) {
+            $logoRelative = str_replace(base_url(), '', $emitente->url_logo);
+            $logoAbsolute = FCPATH . str_replace('/', DIRECTORY_SEPARATOR, $logoRelative);
+            if (file_exists($logoAbsolute)) {
+                $logoUrl = base_url($logoRelative);
+            }
+        }
+        if (!$logoUrl && file_exists(FCPATH . 'assets' . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'logo.png')) {
+            $logoUrl = base_url('assets/img/logo.png');
+        }
+
         // Dados da NFSe vinculada
         $nfse = null;
         if ($boleto->nfse_id) {
             $nfse = $this->nfse_emitida_model->getById($boleto->nfse_id);
+            if (!$nfse && $this->db->table_exists('certificado_nfe_importada')) {
+                $nfse = $this->db->where('id', $boleto->nfse_id)->get('certificado_nfe_importada')->row();
+            }
         }
 
         $data = [
@@ -615,6 +631,7 @@ class Nfse_os extends MY_Controller
             'emitente' => $emitente,
             'nfse' => $nfse,
             'is_preview' => true,
+            'logo_url' => $logoUrl,
         ];
 
         $this->load->helper('mpdf');
@@ -643,6 +660,9 @@ class Nfse_os extends MY_Controller
         }
 
         $nfse = $this->nfse_emitida_model->getById($nfse_id);
+        if (!$nfse && $this->db->table_exists('certificado_nfe_importada')) {
+            $nfse = $this->db->where('id', $nfse_id)->get('certificado_nfe_importada')->row();
+        }
         if (!$nfse) {
             $this->session->set_flashdata('error', 'NFS-e nao encontrada.');
             redirect('os');
@@ -656,6 +676,19 @@ class Nfse_os extends MY_Controller
         $this->load->model('mapos_model');
         $emitente = $this->mapos_model->getEmitente();
 
+        // Logo do emitente (absoluto para mPDF)
+        $logoUrl = null;
+        if (!empty($emitente->url_logo)) {
+            $logoRelative = str_replace(base_url(), '', $emitente->url_logo);
+            $logoAbsolute = FCPATH . str_replace('/', DIRECTORY_SEPARATOR, $logoRelative);
+            if (file_exists($logoAbsolute)) {
+                $logoUrl = base_url($logoRelative);
+            }
+        }
+        if (!$logoUrl && file_exists(FCPATH . 'assets' . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'logo.png')) {
+            $logoUrl = base_url('assets/img/logo.png');
+        }
+
         // Montar objeto boleto temporario em memoria
         $boleto = new stdClass();
         $boleto->sacado_nome = $os->nomeCliente ?? 'Sacado';
@@ -663,8 +696,8 @@ class Nfse_os extends MY_Controller
         $boleto->sacado_endereco = trim(($os->rua ?? '') . ', ' . ($os->numero ?? '') . ' - ' . ($os->bairro ?? ''));
         $boleto->data_vencimento = $data_vencimento;
         $boleto->data_emissao = date('Y-m-d');
-        $boleto->valor_liquido = $nfse->valor_liquido ?? $nfse->valor_servicos ?? 0;
-        $boleto->valor_original = $nfse->valor_servicos ?? 0;
+        $boleto->valor_liquido = $nfse->valor_liquido ?? $nfse->valor_servicos ?? $nfse->valor_total ?? 0;
+        $boleto->valor_original = $nfse->valor_servicos ?? $nfse->valor_total ?? 0;
         $boleto->nosso_numero = 'PREVIEW';
         $boleto->id = 0;
         $boleto->linha_digitavel = '';
@@ -677,6 +710,7 @@ class Nfse_os extends MY_Controller
             'emitente' => $emitente,
             'nfse' => $nfse,
             'is_preview' => true,
+            'logo_url' => $logoUrl,
         ];
 
         $this->load->helper('mpdf');

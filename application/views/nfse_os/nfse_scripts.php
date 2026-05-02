@@ -604,6 +604,34 @@ function copiarLinhaDigitavel() {
     if (input) { input.select(); document.execCommand('copy'); alert('Copiado!'); }
 }
 
+function imprimirXmlNfse(importadaId) {
+    var win = window.open('', '_blank');
+    if (!win) { alert('Permita popups para visualizar o XML.'); return; }
+    $.ajax({
+        url: '<?= site_url("certificado/visualizar_xml/") ?>' + importadaId,
+        type: 'GET',
+        dataType: 'text',
+        success: function(xml) {
+            var html = '<!DOCTYPE html><html><head><title>XML NFS-e</title>';
+            html += '<style>';
+            html += 'body{font-family:monospace;background:#fff;color:#333;padding:20px;white-space:pre-wrap;word-break:break-all;font-size:12px;}';
+            html += 'h3{margin:0 0 10px;font-size:14px;color:#555;border-bottom:1px solid #ddd;padding-bottom:6px;}';
+            html += 'pre{background:#f8f9fa;border:1px solid #e9ecef;padding:12px;border-radius:4px;}';
+            html += '@media print{body{padding:0;color:#000;}pre{border:none;background:transparent;padding:0;}}';
+            html += '</style>';
+            html += '</head><body><h3>NFS-e Importada — XML</h3><pre>' + xml.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</pre></body></html>';
+            win.document.write(html);
+            win.document.close();
+            win.focus();
+            setTimeout(function(){ win.print(); }, 300);
+        },
+        error: function() {
+            win.document.write('<p>Erro ao carregar XML.</p>');
+            win.document.close();
+        }
+    });
+}
+
 $(document).ready(function() {
     // Inicializa valores da OS no wizard
     var valorInicial = wizardData.valorServicos || 0;

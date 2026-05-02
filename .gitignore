@@ -4,6 +4,11 @@
 /install/files
 /docker/data
 
+# Arquivos temporarios e de teste
+/tmp/
+/tests/*.json
+/tests/*.html
+
 # Pastas de documentação (não necessárias no servidor)
 /docs/
 /projeto/
