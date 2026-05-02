@@ -59,55 +59,55 @@ class Agente_ia_autorizacoes_model extends CI_Model
      */
     public function listar(array $filtros = [], int $page = 1, int $perPage = 20): array
     {
+        if (!$this->db->table_exists($this->table)) {
+            log_message('error', "[{$this->table}] Tabela nao existe. Execute a migration.");
+            return ['items' => [], 'total' => 0];
+        }
+
         $offset = ($page - 1) * $perPage;
+        $where  = $this->montarWhere($filtros);
 
-        // Aplica filtros (reutilizavel)
-        $this->aplicarFiltros($filtros);
+        // --- count total ---
+        $this->db->where($where);
+        $total = (int) $this->db->count_all_results($this->table);
 
-        // Count total
-        $total = $this->db->count_all_results($this->table);
-
-        // Reset para query paginada
-        $this->db->reset_query();
-
-        // Reaplica filtros
-        $this->aplicarFiltros($filtros);
-
-        $items = $this->db
+        // --- query paginada ---
+        $this->db->where($where);
+        $query = $this->db
             ->order_by('created_at', 'DESC')
             ->limit($perPage, $offset)
-            ->get($this->table)
-            ->result_array();
+            ->get($this->table);
 
-        return ['items' => $items, 'total' => $total];
+        if ($query === false) {
+            log_message('error', "[{$this->table}] Falha na query: " . $this->db->last_query());
+            return ['items' => [], 'total' => $total];
+        }
+
+        return ['items' => $query->result_array(), 'total' => $total];
     }
 
     /**
-     * Aplica filtros comuns na query builder
+     * Monta array de condicoes WHERE a partir dos filtros
      */
-    private function aplicarFiltros(array $filtros): void
+    private function montarWhere(array $filtros): array
     {
-        if (!empty($filtros['status'])) {
-            $this->db->where('status', $filtros['status']);
+        $where = [];
+
+        if (!empty($filtros['status']))       $where['status']          = $filtros['status'];
+        if (!empty($filtros['numero']))       $where['numero_telefone'] = $filtros['numero'];
+        if (!empty($filtros['usuarios_id']))  $where['usuarios_id']     = (int)$filtros['usuarios_id'];
+        if (!empty($filtros['clientes_id']))  $where['clientes_id']     = (int)$filtros['clientes_id'];
+        if (!empty($filtros['acao']))         $where['acao']            = $filtros['acao'];
+
+        // Intervalo de datas
+        if (!empty($filtros['data_inicio']) || !empty($filtros['data_fim'])) {
+            $inicio = $filtros['data_inicio'] ?? '1970-01-01 00:00:00';
+            $fim    = $filtros['data_fim']    ?? '2099-12-31 23:59:59';
+            $where['created_at >='] = $inicio;
+            $where['created_at <='] = $fim;
         }
-        if (!empty($filtros['numero'])) {
-            $this->db->where('numero_telefone', $filtros['numero']);
-        }
-        if (!empty($filtros['usuarios_id'])) {
-            $this->db->where('usuarios_id', (int)$filtros['usuarios_id']);
-        }
-        if (!empty($filtros['clientes_id'])) {
-            $this->db->where('clientes_id', (int)$filtros['clientes_id']);
-        }
-        if (!empty($filtros['acao'])) {
-            $this->db->where('acao', $filtros['acao']);
-        }
-        if (!empty($filtros['data_inicio'])) {
-            $this->db->where('created_at >=', $filtros['data_inicio']);
-        }
-        if (!empty($filtros['data_fim'])) {
-            $this->db->where('created_at <=', $filtros['data_fim']);
-        }
+
+        return $where;
     }
 
     // ========================================================================
