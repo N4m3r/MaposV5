@@ -131,38 +131,53 @@ if (!function_exists('fmtDoc')) {
                 </div>
 
                 <div class="btn-group" style="margin-bottom:10px">
-                    <a href="<?= site_url('nfse_os/imprimir_nfse/' . $nfse_atual->id) ?>" target="_blank" class="btn btn-primary" style="background:#1086dd; border-color:#0d6efd">
-                        <i class="fas fa-file-pdf"></i> Imprimir NFS-e
-                    </a>
-                    <?php if (!empty($nfse_atual->url_danfe)): ?>
-                        <a href="<?= htmlspecialchars($nfse_atual->url_danfe, ENT_QUOTES, 'UTF-8') ?>" target="_blank" class="btn btn-success" style="background:#26a38e; border-color:#1fb5a8">
-                            <i class="fas fa-external-link-alt"></i> DANFSe Nacional
+                    <?php if (!empty($nfse_atual->is_importada)): ?>
+                        <a href="<?= site_url('certificado/imprimir_nfse_importada/' . $nfse_atual->id) ?>" target="_blank" class="btn btn-success" style="background:#26a38e; border-color:#1fb5a8">
+                            <i class="fas fa-print"></i> Imprimir
                         </a>
-                    <?php endif; ?>
-                    <?php if ($nfse_atual->link_impressao): ?>
-                        <a href="<?= htmlspecialchars($nfse_atual->link_impressao, ENT_QUOTES, 'UTF-8') ?>" target="_blank" class="btn btn-success" style="background:#26a38e; border-color:#1fb5a8">
-                            <i class="fas fa-print"></i> Imprimir Original
-                        </a>
-                    <?php endif; ?>
-                    <?php if (!empty($nfse_atual->chave_acesso)): ?>
-                        <button type="button" class="btn btn-info" style="background:#52459f; border-color:#52459f" onclick="consultarNFSeNacional(<?= $nfse_atual->id ?>)">
-                            <i class="fas fa-sync-alt"></i> Consultar
-                        </button>
-                    <?php endif; ?>
-                    <?php if (!empty($nfse_atual->xml_dps) || !empty($nfse_atual->xml_nfse)): ?>
-                        <a href="<?= site_url('nfse_os/download_xml/' . $nfse_atual->id) ?>" class="btn btn-info" style="background:#52459f; border-color:#52459f">
+                        <a href="<?= site_url('certificado/download_xml/' . $nfse_atual->id) ?>" class="btn btn-info" style="background:#52459f; border-color:#52459f">
                             <i class="fas fa-file-code"></i> Download XML
                         </a>
-                    <?php endif; ?>
-                    <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eNFSe') && $nfse_atual->situacao != 'Cancelada'): ?>
+                        <button type="button" class="btn btn-info" style="background:#52459f; border-color:#52459f" onclick="window.open('<?= site_url('certificado/visualizar_xml/' . $nfse_atual->id) ?>','_blank')">
+                            <i class="fas fa-eye"></i> Visualizar XML
+                        </button>
+                        <span class="btn" style="background:var(--dark-1,#14141a); border-color:var(--dark-2,#272835); color:#26a38e; cursor:default">
+                            <i class="fas fa-file-import"></i> Importada
+                        </span>
+                    <?php else: ?>
+                        <a href="<?= site_url('nfse_os/imprimir_nfse/' . $nfse_atual->id) ?>" target="_blank" class="btn btn-primary" style="background:#1086dd; border-color:#0d6efd">
+                            <i class="fas fa-file-pdf"></i> Imprimir NFS-e
+                        </a>
+                        <?php if (!empty($nfse_atual->url_danfe)): ?>
+                            <a href="<?= htmlspecialchars($nfse_atual->url_danfe, ENT_QUOTES, 'UTF-8') ?>" target="_blank" class="btn btn-success" style="background:#26a38e; border-color:#1fb5a8">
+                                <i class="fas fa-external-link-alt"></i> DANFSe Nacional
+                            </a>
+                        <?php endif; ?>
+                        <?php if ($nfse_atual->link_impressao): ?>
+                            <a href="<?= htmlspecialchars($nfse_atual->link_impressao, ENT_QUOTES, 'UTF-8') ?>" target="_blank" class="btn btn-success" style="background:#26a38e; border-color:#1fb5a8">
+                                <i class="fas fa-print"></i> Imprimir Original
+                            </a>
+                        <?php endif; ?>
                         <?php if (!empty($nfse_atual->chave_acesso)): ?>
-                            <button type="button" class="btn btn-danger" style="background:#dc3545; border-color:#dc3545" onclick="cancelarNFSeNacional(<?= $nfse_atual->id ?>)">
-                                <i class="fas fa-times"></i> Cancelar Nacional
+                            <button type="button" class="btn btn-info" style="background:#52459f; border-color:#52459f" onclick="consultarNFSeNacional(<?= $nfse_atual->id ?>)">
+                                <i class="fas fa-sync-alt"></i> Consultar
                             </button>
-                        <?php else: ?>
-                            <button type="button" class="btn btn-danger" style="background:#dc3545; border-color:#dc3545" onclick="cancelarNFSe(<?= $nfse_atual->id ?>)">
-                                <i class="fas fa-times"></i> Cancelar
-                            </button>
+                        <?php endif; ?>
+                        <?php if (!empty($nfse_atual->xml_dps) || !empty($nfse_atual->xml_nfse)): ?>
+                            <a href="<?= site_url('nfse_os/download_xml/' . $nfse_atual->id) ?>" class="btn btn-info" style="background:#52459f; border-color:#52459f">
+                                <i class="fas fa-file-code"></i> Download XML
+                            </a>
+                        <?php endif; ?>
+                        <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eNFSe') && $nfse_atual->situacao != 'Cancelada'): ?>
+                            <?php if (!empty($nfse_atual->chave_acesso)): ?>
+                                <button type="button" class="btn btn-danger" style="background:#dc3545; border-color:#dc3545" onclick="cancelarNFSeNacional(<?= $nfse_atual->id ?>)">
+                                    <i class="fas fa-times"></i> Cancelar Nacional
+                                </button>
+                            <?php else: ?>
+                                <button type="button" class="btn btn-danger" style="background:#dc3545; border-color:#dc3545" onclick="cancelarNFSe(<?= $nfse_atual->id ?>)">
+                                    <i class="fas fa-times"></i> Cancelar
+                                </button>
+                            <?php endif; ?>
                         <?php endif; ?>
                     <?php endif; ?>
                 </div>
