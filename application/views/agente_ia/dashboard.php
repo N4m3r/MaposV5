@@ -38,8 +38,13 @@
                 <span class="icon"><i class="bx bx-bot iconX"></i></span>
                 <h5>Dashboard do Agente IA</h5>
                 <div class="buttons">
+<<<<<<< HEAD
                     <a href="<?php echo site_url('agente_ia/configuracoes'); ?>" class="btn btn-warning btn-mini">
                         <i class="bx bx-cog"></i> Configuracoes
+=======
+                    <a href="<?php echo site_url('agente_ia/configuracoes'); ?>" class="btn btn-success btn-mini">
+                        <i class="bx bx-slider-alt"></i> Configuracoes
+>>>>>>> 10b417cfe75fa9265859bfcda71135ba088587d4
                     </a>
                     <a href="<?php echo site_url('agente_ia/permissoes'); ?>" class="btn btn-info btn-mini">
                         <i class="bx bx-lock-alt"></i> Permissoes
