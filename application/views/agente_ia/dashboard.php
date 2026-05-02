@@ -170,8 +170,8 @@
                                                 <td><?php echo $log['numero_telefone']; ?></td>
                                                 <td><span class="label label-<?php
                                                     echo match($log['tipo']) {
-                                                        'recebido' => 'success',
-                                                        'enviado' => 'info',
+                                                        'entrada' => 'success',
+                                                        'saida' => 'info',
                                                         'sistema' => 'warning',
                                                         'erro' => 'important',
                                                         default => 'default'

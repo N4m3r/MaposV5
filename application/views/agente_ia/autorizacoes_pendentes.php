@@ -91,7 +91,7 @@
                                     <div class="row-fluid">
                                         <div class="span8">
                                             <div class="acao-label">
-                                                <?php echo $this->nomeAmigavelAcao($aut['acao'] ?? $aut['acao']); ?>
+                                                <?php echo nomeAmigavelAcao($aut['acao'] ?? $aut['acao']); ?>
                                                 <span class="nivel-badge nivel-<?php echo $aut['nivel_criticidade'] ?? 1; ?>">
                                                     Nivel <?php echo $aut['nivel_criticidade'] ?? 1; ?>
                                                 </span>
@@ -166,6 +166,7 @@
 
 <?php
 // Helper local para nomes amigaveis
+if (!function_exists('nomeAmigavelAcao')) {
 function nomeAmigavelAcao(string $acao): string {
     $map = [
         'criar_os' => 'Criar Ordem de Servico',
@@ -178,5 +179,6 @@ function nomeAmigavelAcao(string $acao): string {
         'excluir_os' => 'Excluir Ordem de Servico',
     ];
     return $map[$acao] ?? ucwords(str_replace('_', ' ', $acao));
+}
 }
 ?>

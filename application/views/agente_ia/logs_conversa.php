@@ -10,8 +10,8 @@
 .log-msg { max-width:300px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .log-msg:hover { white-space:normal; overflow:visible; }
 .badge-tipo { font-size:0.75em; padding:2px 6px; border-radius:3px; }
-.tipo-recebido  { background:#d4edda; color:#155724; }
-.tipo-enviado   { background:#cce5ff; color:#004085; }
+.tipo-entrada  { background:#d4edda; color:#155724; }
+.tipo-saida     { background:#cce5ff; color:#004085; }
 .tipo-sistema   { background:#fff3cd; color:#856404; }
 .tipo-erro      { background:#f8d7da; color:#721c24; }
 </style>
@@ -27,8 +27,8 @@
                         <input type="text" name="numero" placeholder="Numero..." class="input-small" value="<?php echo $_GET['numero'] ?? ''; ?>">
                         <select name="tipo" class="input-small">
                             <option value="">Todos</option>
-                            <option value="recebido" <?php echo ($_GET['tipo'] ?? '')==='recebido'?'selected':''; ?>>Recebido</option>
-                            <option value="enviado" <?php echo ($_GET['tipo'] ?? '')==='enviado'?'selected':''; ?>>Enviado</option>
+                            <option value="entrada" <?php echo ($_GET['tipo'] ?? '')==='entrada'?'selected':''; ?>>Entrada</option>
+                            <option value="saida" <?php echo ($_GET['tipo'] ?? '')==='saida'?'selected':''; ?>>Saida</option>
                             <option value="sistema" <?php echo ($_GET['tipo'] ?? '')==='sistema'?'selected':''; ?>>Sistema</option>
                             <option value="erro" <?php echo ($_GET['tipo'] ?? '')==='erro'?'selected':''; ?>>Erro</option>
                         </select>
