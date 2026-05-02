@@ -20,12 +20,22 @@ class Agente_ia extends CI_Controller
 
         // Verifica permissao do agente IA (vAgenteIA = visualizar, cAgenteIA = configura)
         if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vAgenteIA')) {
-            $this->session->set_flashdata('error', 'Você não tem permissão para acessar o painel do Agente IA.');
+            $this->session->set_flashdata('error', 'Voce nao tem permissao para acessar o painel do Agente IA.');
             redirect(base_url());
         }
 
         $this->load->model('agente_ia_autorizacoes_model', 'autModel');
         $this->load->model('agente_ia_permissoes_model', 'permModel');
+        $this->load->model('agente_ia_configuracoes_model', 'configModel');
+    }
+
+    // Verifica permissao de configuracao (cAgenteIA)
+    private function verificaConfiguracao()
+    {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cAgenteIA')) {
+            $this->session->set_flashdata('error', 'Voce nao tem permissao para configurar o Agente IA.');
+            redirect('agente_ia');
+        }
     }
 
     // ========================================================================
@@ -139,6 +149,36 @@ class Agente_ia extends CI_Controller
         } else {
             redirect('agente_ia/autorizacoes?status=rejeitada');
         }
+    }
+
+    // ========================================================================
+    // CONFIGURACOES GERAIS
+    // ========================================================================
+    public function configuracoes()
+    {
+        $this->verificaConfiguracao();
+
+        $data = [];
+        $data['title'] = 'Configuracoes do Agente IA';
+        $data['configs'] = $this->configModel->listar();
+        $data['view'] = 'agente_ia/configuracoes';
+        $this->load->view('tema/topo', $data);
+        $this->load->view('tema/conteudo', $data);
+    }
+
+    public function salvar_configuracoes()
+    {
+        $this->verificaConfiguracao();
+
+        $configs = $this->input->post('configs');
+        if (!$configs || !is_array($configs)) {
+            $this->session->set_flashdata('error', 'Nenhuma configuracao para salvar.');
+            redirect('agente_ia/configuracoes');
+        }
+
+        $atualizados = $this->configModel->salvarMultiplos($configs);
+        $this->session->set_flashdata('success', $atualizados . ' configuracao(s) salva(s).');
+        redirect('agente_ia/configuracoes');
     }
 
     // ========================================================================

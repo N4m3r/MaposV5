@@ -2441,6 +2441,48 @@ CREATE TABLE IF NOT EXISTS `agente_ia_logs_conversa` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
 COMMENT='Log de conversas com o agente IA';
 
+-- =============================================================================
+-- AGENTE IA - CONFIGURACOES GERAIS
+-- =============================================================================
+
+CREATE TABLE IF NOT EXISTS `agente_ia_configuracoes` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `chave` VARCHAR(100) NOT NULL,
+  `valor` TEXT NULL,
+  `descricao` VARCHAR(255) NULL,
+  `grupo` VARCHAR(50) NOT NULL DEFAULT 'geral',
+  `sensivel` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '1=ocultar em logs',
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_chave` (`chave`),
+  INDEX `idx_grupo` (`grupo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+COMMENT='Configuracoes do agente IA (URLs, tokens, etc.)';
+
+-- Valores padrao
+INSERT INTO `agente_ia_configuracoes` (`chave`, `valor`, `descricao`, `grupo`, `sensivel`) VALUES
+('evolution_url', 'http://192.168.100.238:8091', 'URL da API Evolution (evolution-go)', 'evolution', 0),
+('evolution_apikey', '', 'API Key da Evolution API', 'evolution', 1),
+('evolution_instance', '', 'Nome da instancia WhatsApp', 'evolution', 0),
+('evolution_enabled', '0', 'Ativar integracao Evolution', 'evolution', 0),
+('n8n_webhook_url', '', 'URL do webhook do n8n (resposta aprovada)', 'n8n', 0),
+('n8n_apikey', '', 'API Key do n8n', 'n8n', 1),
+('n8n_enabled', '0', 'Ativar integracao n8n', 'n8n', 0),
+('llm_provider', 'openrouter', 'Provedor LLM (openrouter, openai, groq)', 'llm', 0),
+('llm_apikey', '', 'API Key do provedor LLM', 'llm', 1),
+('llm_model', 'google/gemini-2.5-flash-preview', 'Modelo LLM padrao', 'llm', 0),
+('llm_system_prompt', 'Voce e um assistente virtual desta empresa. Seja educado, breve e objetivo.', 'Prompt de sistema do agente', 'llm', 0),
+('llm_enabled', '0', 'Ativar processamento LLM', 'llm', 0),
+('agente_max_tokens', '4096', 'Maximo de tokens por resposta', 'llm', 0),
+('agente_timeout', '30', 'Timeout segundos para resposta da IA', 'llm', 0),
+('numero_whatsapp_principal', '', 'Numero principal do atendimento', 'geral', 0),
+('mensagem_boas_vindas', 'Ola! Sou o assistente virtual. Em que posso ajudar?', 'Mensagem de boas-vindas', 'geral', 0),
+('horario_atendimento_inicio', '08:00', 'Inicio do atendimento automatico', 'geral', 0),
+('horario_atendimento_fim', '18:00', 'Fim do atendimento automatico', 'geral', 0),
+('auto_responder_fora_horario', '1', 'Responder automaticamente fora do horario', 'geral', 0)
+ON DUPLICATE KEY UPDATE `valor` = `valor`;
+
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;

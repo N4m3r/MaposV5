@@ -186,6 +186,8 @@ $route['agente_ia/responder'] = 'agente_ia/responder';
 $route['agente_ia/permissoes'] = 'agente_ia/permissoes';
 $route['agente_ia/salvar_permissoes'] = 'agente_ia/salvar_permissoes';
 $route['agente_ia/logs'] = 'agente_ia/logs';
+$route['agente_ia/configuracoes'] = 'agente_ia/configuracoes';
+$route['agente_ia/salvar_configuracoes'] = 'agente_ia/salvar_configuracoes';
 
 // ============================================
 // ROTAS DO SISTEMA DE OBRAS (Gestão Completa)
