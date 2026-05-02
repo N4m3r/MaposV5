@@ -390,6 +390,12 @@ $instrucoes = nl2br(htmlspecialchars($boleto->instrucoes ?? 'Pagavel em qualquer
                 <td class="nfse-lbl">Impostos:</td>
                 <td><?= fmtMoney($nfse->valor_total_impostos ?? $nfse->valor_impostos ?? 0) ?></td>
             </tr>
+            <?php if (!empty($descricao_servico)): ?>
+            <tr>
+                <td class="nfse-lbl">Descricao:</td>
+                <td colspan="5" style="font-size:8.5pt;color:#3a3a4a;padding-top:4px;"><?= nl2br(htmlspecialchars($descricao_servico)) ?></td>
+            </tr>
+            <?php endif; ?>
         </table>
     </div>
     <?php endif; ?>

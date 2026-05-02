@@ -1950,4 +1950,41 @@ class Nfse_os extends MY_Controller
             echo json_encode(['success' => false, 'message' => 'Erro interno: ' . $e->getMessage()]);
         }
     }
+
+    /**
+     * Extrai dados basicos do XML da NFSe importada (descricao do servico, valor, etc.)
+     */
+    private function _extrairDadosXmlNfse($xmlContent)
+    {
+        $dados = [
+            'descricao_servico' => null,
+            'valor_servicos' => 0,
+            'valor_total_impostos' => 0,
+        ];
+
+        if (empty($xmlContent)) {
+            return $dados;
+        }
+
+        libxml_use_internal_errors(true);
+        $dom = new DOMDocument();
+        if (!@$dom->loadXML($xmlContent)) {
+            libxml_clear_errors();
+            return $dados;
+        }
+
+        $getVal = function ($tags) use ($dom) {
+            foreach ((array)$tags as $tag) {
+                $node = $dom->getElementsByTagName($tag)->item(0);
+                if ($node) return trim($node->nodeValue);
+            }
+            return null;
+        };
+
+        $dados['descricao_servico'] = $getVal(['xDescServ', 'Discriminacao', 'discriminacao', 'Descricao']);
+        $dados['valor_servicos'] = floatval($getVal(['vServPrest', 'ValorServicos', 'vServico']) ?: 0);
+        $dados['valor_total_impostos'] = floatval($getVal(['vTotTrib', 'ValorTotalTributos']) ?: 0);
+
+        return $dados;
+    }
 }
