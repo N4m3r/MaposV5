@@ -55,7 +55,7 @@ $tEmail = !empty($x['tomador']['email']) ? $x['tomador']['email'] : ($c->email ?
 // Dados da nota: prioridade XML > banco
 $nfNumero = !empty($x['numero']) ? $x['numero'] : ($n->numero ?? '');
 $nfSerie = !empty($x['serie']) ? $x['serie'] : ($n->serie ?? '');
-$nfChave = !empty($x['chave_acesso']) ? $x['chave_acesso'] : ($n->chave_acesso ?? '');
+$nfChave = !empty($x['chave_acesso']) ? preg_replace('/^NFS/i', '', $x['chave_acesso']) : ($n->chave_acesso ?? '');
 $nfCodVerif = !empty($x['codigo_verificacao']) ? $x['codigo_verificacao'] : '';
 $nfDataEmi = !empty($x['data_emissao']) ? $x['data_emissao'] : ($n->data_emissao ?? '');
 $nfCompetencia = !empty($x['competencia']) ? $x['competencia'] : '';

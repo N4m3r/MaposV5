@@ -194,7 +194,7 @@ if (!function_exists('fmtDoc')) {
                             <tr><td style="border:none; padding:3px 0; color:var(--dark-cinz,#8788a4)"><strong style="color:var(--branco,#caced8)">Data Emissao:</strong></td><td style="border:none; padding:3px 0"><?= $nfse_importada->data_emissao ? date('d/m/Y', strtotime($nfse_importada->data_emissao)) : '---' ?></td></tr>
                             <tr><td style="border:none; padding:3px 0; color:var(--dark-cinz,#8788a4)"><strong style="color:var(--branco,#caced8)">Data Importacao:</strong></td><td style="border:none; padding:3px 0"><?= $nfse_importada->data_importacao ? date('d/m/Y H:i', strtotime($nfse_importada->data_importacao)) : '---' ?></td></tr>
                             <?php if (!empty($nfse_importada->chave_acesso)): ?>
-                            <tr><td style="border:none; padding:3px 0; color:var(--dark-cinz,#8788a4)"><strong style="color:var(--branco,#caced8)">Chave:</strong></td><td style="border:none; padding:3px 0"><small style="font-family:monospace; color:var(--dark-cinz,#8788a4)"><?= $nfse_importada->chave_acesso ?></small></td></tr>
+                            <tr><td style="border:none; padding:3px 0; color:var(--dark-cinz,#8788a4)"><strong style="color:var(--branco,#caced8)">Chave:</strong></td><td style="border:none; padding:3px 0"><small style="font-family:monospace; color:var(--dark-cinz,#8788a4)"><?= preg_replace('/^NFS/i', '', $nfse_importada->chave_acesso) ?></small></td></tr>
                             <?php endif; ?>
                         </table>
                     </div>
