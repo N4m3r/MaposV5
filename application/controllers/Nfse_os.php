@@ -618,10 +618,15 @@ class Nfse_os extends MY_Controller
 
         // Dados da NFSe vinculada (emitida ou importada)
         $nfse = null;
+        $descricaoServico = null;
         if ($boleto->nfse_id) {
             $nfse = $this->nfse_emitida_model->getById($boleto->nfse_id);
             if (!$nfse && $this->db->table_exists('certificado_nfe_importada')) {
                 $nfse = $this->db->where('id', $boleto->nfse_id)->get('certificado_nfe_importada')->row();
+                if ($nfse && !empty($nfse->dados_xml)) {
+                    $xmlData = $this->_extrairDadosXmlNfse($nfse->dados_xml);
+                    $descricaoServico = $xmlData['descricao_servico'] ?? null;
+                }
             }
         }
 
@@ -632,6 +637,7 @@ class Nfse_os extends MY_Controller
             'nfse' => $nfse,
             'is_preview' => true,
             'logo_path' => $logoPath,
+            'descricao_servico' => $descricaoServico,
         ];
 
         $this->load->helper('mpdf');
@@ -660,8 +666,13 @@ class Nfse_os extends MY_Controller
         }
 
         $nfse = $this->nfse_emitida_model->getById($nfse_id);
+        $descricaoServico = null;
         if (!$nfse && $this->db->table_exists('certificado_nfe_importada')) {
             $nfse = $this->db->where('id', $nfse_id)->get('certificado_nfe_importada')->row();
+            if ($nfse && !empty($nfse->dados_xml)) {
+                $xmlData = $this->_extrairDadosXmlNfse($nfse->dados_xml);
+                $descricaoServico = $xmlData['descricao_servico'] ?? null;
+            }
         }
         if (!$nfse) {
             $this->session->set_flashdata('error', 'NFS-e nao encontrada.');
@@ -711,6 +722,7 @@ class Nfse_os extends MY_Controller
             'nfse' => $nfse,
             'is_preview' => true,
             'logo_path' => $logoPath,
+            'descricao_servico' => $descricaoServico,
         ];
 
         $this->load->helper('mpdf');
