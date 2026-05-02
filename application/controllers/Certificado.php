@@ -408,19 +408,35 @@ class Certificado extends MY_Controller
             }
         }
 
-        // Chave de acesso (Nacional)
-        $chave = $dom->getElementsByTagName('chaveAcesso')->item(0);
-        if (!$chave) {
-            $chave = $dom->getElementsByTagName('ChaveAcesso')->item(0);
+        // Chave de acesso (atributo Id da tag infNFSe ou tag filha)
+        $infNFSe = $dom->getElementsByTagName('infNFSe')->item(0);
+        if ($infNFSe && $infNFSe->hasAttribute('Id')) {
+            $dados['chave_acesso'] = trim($infNFSe->getAttribute('Id'));
+            log_message('debug', '[extrairDadosXmlNfse] chave_acesso extraida do atributo Id de infNFSe=' . $dados['chave_acesso']);
         }
-        if (!$chave) {
-            $chave = $dom->getElementsByTagName('ChaveAcessoNfse')->item(0);
+        if (empty($dados['chave_acesso'])) {
+            $chave = $dom->getElementsByTagName('chaveAcesso')->item(0);
+            if (!$chave) {
+                $chave = $dom->getElementsByTagName('ChaveAcesso')->item(0);
+            }
+            if (!$chave) {
+                $chave = $dom->getElementsByTagName('ChaveAcessoNfse')->item(0);
+            }
+            if ($chave) {
+                $dados['chave_acesso'] = trim($chave->nodeValue);
+                log_message('debug', '[extrairDadosXmlNfse] chaveAcesso encontrado=' . $dados['chave_acesso']);
+            } else {
+                log_message('debug', '[extrairDadosXmlNfse] chaveAcesso NAO encontrado');
+            }
         }
-        if ($chave) {
-            $dados['chave_acesso'] = trim($chave->nodeValue);
-            log_message('debug', '[extrairDadosXmlNfse] chaveAcesso encontrado=' . $dados['chave_acesso']);
+
+        // Descricao do servico
+        $xDescServ = $dom->getElementsByTagName('xDescServ')->item(0);
+        if ($xDescServ) {
+            $dados['descricao_servico'] = trim($xDescServ->nodeValue);
+            log_message('debug', '[extrairDadosXmlNfse] xDescServ encontrado=' . $dados['descricao_servico']);
         } else {
-            log_message('debug', '[extrairDadosXmlNfse] chaveAcesso NAO encontrado');
+            log_message('debug', '[extrairDadosXmlNfse] xDescServ NAO encontrado');
         }
 
         // Código de verificação
@@ -839,10 +855,16 @@ class Certificado extends MY_Controller
             if ($node) { $dados['serie'] = trim($node->nodeValue); break; }
         }
 
-        // Chave de acesso
-        foreach (['chaveAcesso', 'ChaveAcesso', 'ChaveAcessoNfse', 'ChaveAcessoNFSe'] as $tag) {
-            $node = $dom->getElementsByTagName($tag)->item(0);
-            if ($node) { $dados['chave_acesso'] = trim($node->nodeValue); break; }
+        // Chave de acesso (atributo Id da tag infNFSe ou tag filha chaveAcesso)
+        $infNFSe = $dom->getElementsByTagName('infNFSe')->item(0);
+        if ($infNFSe && $infNFSe->hasAttribute('Id')) {
+            $dados['chave_acesso'] = trim($infNFSe->getAttribute('Id'));
+        }
+        if (empty($dados['chave_acesso'])) {
+            foreach (['chaveAcesso', 'ChaveAcesso', 'ChaveAcessoNfse', 'ChaveAcessoNFSe'] as $tag) {
+                $node = $dom->getElementsByTagName($tag)->item(0);
+                if ($node) { $dados['chave_acesso'] = trim($node->nodeValue); break; }
+            }
         }
 
         // Codigo verificacao
