@@ -51,6 +51,7 @@ $valorLiquido  = floatval($boleto->valor_liquido  ?? $valorOriginal);
 $numeroNfse = $nfse->numero_nfse ?? ($nfse->numero ?? '') ?: '';
 $dataNfse   = !empty($nfse->data_emissao) ? date('d/m/Y', strtotime($nfse->data_emissao)) : '';
 $chaveNfse  = $nfse->chave_acesso ?? '';
+$valorNfse  = floatval($nfse->valor_servicos ?? $nfse->valor_total ?? 0);
 $osNumero   = $os->idOs ?? $boleto->os_id ?? '';
 
 // ========== LOGO ==========
@@ -89,6 +90,7 @@ $instrucoes = nl2br(htmlspecialchars($boleto->instrucoes ?? 'Pagavel em qualquer
         /* Cabecalho */
         .header {
             background: #1a237e;
+            background: linear-gradient(135deg, #0d1642 0%, #1a237e 40%, #3949ab 100%);
             border-radius: 8px;
             padding: 16px 20px;
             color: #fff;
@@ -316,7 +318,7 @@ $instrucoes = nl2br(htmlspecialchars($boleto->instrucoes ?? 'Pagavel em qualquer
         <table class="header-table">
             <tr>
                 <td class="header-logo">
-                    <?= $logoHtml ?: '<div style="font-size:20pt;font-weight:700;">MAP-OS</div>' ?>
+                    <?= $logoHtml ?: '<div style="font-size:16pt;font-weight:700;line-height:1.1;">' . htmlspecialchars($cedenteNome) . '</div>' ?>
                 </td>
                 <td>
                     <div class="header-title">Boleto de Cobranca</div>
@@ -456,7 +458,7 @@ $instrucoes = nl2br(htmlspecialchars($boleto->instrucoes ?? 'Pagavel em qualquer
 
     <!-- Rodape legal -->
     <div style="text-align:center;margin-top:14px;font-size:7pt;color:#a0a4b0;">
-        Documento gerado em <?= date('d/m/Y H:i') ?> pelo sistema MAP-OS &mdash; www.mapos.com.br
+        Documento gerado em <?= date('d/m/Y H:i') ?> &mdash; <?= htmlspecialchars($cedenteNome) ?>
     </div>
 </div>
 

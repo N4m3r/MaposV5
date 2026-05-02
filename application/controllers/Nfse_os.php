@@ -660,6 +660,9 @@ class Nfse_os extends MY_Controller
         }
 
         $nfse = $this->nfse_emitida_model->getById($nfse_id);
+        if (!$nfse && $this->db->table_exists('certificado_nfe_importada')) {
+            $nfse = $this->db->where('id', $nfse_id)->get('certificado_nfe_importada')->row();
+        }
         if (!$nfse) {
             $this->session->set_flashdata('error', 'NFS-e nao encontrada.');
             redirect('os');
@@ -693,8 +696,8 @@ class Nfse_os extends MY_Controller
         $boleto->sacado_endereco = trim(($os->rua ?? '') . ', ' . ($os->numero ?? '') . ' - ' . ($os->bairro ?? ''));
         $boleto->data_vencimento = $data_vencimento;
         $boleto->data_emissao = date('Y-m-d');
-        $boleto->valor_liquido = $nfse->valor_liquido ?? $nfse->valor_servicos ?? 0;
-        $boleto->valor_original = $nfse->valor_servicos ?? 0;
+        $boleto->valor_liquido = $nfse->valor_liquido ?? $nfse->valor_servicos ?? $nfse->valor_total ?? 0;
+        $boleto->valor_original = $nfse->valor_servicos ?? $nfse->valor_total ?? 0;
         $boleto->nosso_numero = 'PREVIEW';
         $boleto->id = 0;
         $boleto->linha_digitavel = '';
