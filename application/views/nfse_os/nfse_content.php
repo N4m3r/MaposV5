@@ -217,9 +217,9 @@ if (!function_exists('fmtDoc')) {
                     <button type="button" class="btn btn-primary" style="background:#1086dd; border-color:#0d6efd" onclick="window.open('<?= site_url('certificado/visualizar_xml/' . $nfse_importada->id) ?>','_blank')">
                         <i class="fas fa-eye"></i> Visualizar XML
                     </button>
-                    <button type="button" class="btn btn-success" style="background:#26a38e; border-color:#1fb5a8" onclick="imprimirXmlNfse(<?= $nfse_importada->id ?>)">
+                    <a href="<?= site_url('certificado/imprimir_nfse_importada/' . $nfse_importada->id) ?>" target="_blank" class="btn btn-success" style="background:#26a38e; border-color:#1fb5a8">
                         <i class="fas fa-print"></i> Imprimir
-                    </button>
+                    </a>
                 </div>
             </div>
         </div>

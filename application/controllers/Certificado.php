@@ -16,6 +16,7 @@ class Certificado extends MY_Controller
 
         $this->load->model('certificado_model');
         $this->load->model('impostos_model');
+        $this->load->model('mapos_model');
         $this->load->helper(['date', 'currency']);
     }
 
@@ -719,6 +720,44 @@ class Certificado extends MY_Controller
         header('Content-Type: text/xml; charset=utf-8');
         echo $nota->dados_xml;
         exit;
+    }
+
+    /**
+     * Impressao formatada A4 de uma NFS-e importada
+     */
+    public function imprimir_nfse_importada($id)
+    {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vCertificado')) {
+            show_error('Sem permissao.', 403);
+            return;
+        }
+
+        $nota = $this->db->where('id', $id)->get('certificado_nfe_importada')->row();
+        if (!$nota) {
+            show_error('Nota nao encontrada.', 404);
+            return;
+        }
+
+        $emitente = $this->mapos_model->getEmitente();
+
+        $cliente = null;
+        $os = null;
+        if (!empty($nota->os_id)) {
+            $os = $this->db->where('idOs', $nota->os_id)->get('os')->row();
+            if ($os && !empty($os->clientes_id)) {
+                $cliente = $this->db->where('idClientes', $os->clientes_id)->get('clientes')->row();
+            }
+        }
+
+        $data['nota'] = $nota;
+        $data['emitente'] = $emitente;
+        $data['cliente'] = $cliente;
+        $data['os'] = $os;
+        $data['logo_url'] = !empty($emitente->url_logo)
+            ? $emitente->url_logo
+            : base_url('assets/img/logo.png');
+
+        $this->load->view('certificado/imprimir_nfse_importada', $data);
     }
 
     /**
