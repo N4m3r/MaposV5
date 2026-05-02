@@ -83,7 +83,7 @@ if (!function_exists('fmtDoc')) {
                     <div class="span6 text-right">
                         <table class="table table-condensed" style="margin-bottom:0; background:transparent">
                             <tr><td style="border:none; padding:3px 0; color:var(--dark-cinz,#8788a4)"><strong style="color:var(--branco,#caced8)">Valor Servicos:</strong></td><td style="border:none; padding:3px 0"><?= fmtMoney($nfse_atual->valor_servicos) ?></td></tr>
-                            <tr><td style="border:none; padding:3px 0; color:var(--dark-cinz,#8788a4)"><strong style="color:var(--branco,#caced8)">Impostos:</strong></td><td style="border:none; padding:3px 0"><?= fmtMoney($nfse_atual->valor_total_impostos) ?></td></tr>
+                            <tr><td style="border:none; padding:3px 0; color:var(--dark-cinz,#8788a4)"><strong style="color:var(--branco,#caced8)">Impostos:</strong></td><td style="border:none; padding:3px 0"><?= fmtMoney($nfse_atual->valor_total_impostos ?? 0) ?></td></tr>
                             <tr><td style="border:none; padding:3px 0; color:var(--dark-cinz,#8788a4)"><strong style="color:#62eba6">Valor Liquido:</strong></td><td style="border:none; padding:3px 0"><strong style="color:#62eba6"><?= fmtMoney($nfse_atual->valor_liquido) ?></strong></td></tr>
                         </table>
                     </div>
@@ -93,7 +93,7 @@ if (!function_exists('fmtDoc')) {
 
                 <h6 style="color:var(--title,#d4d8e0)"><i class="fas fa-calculator" style="color:var(--dark-azul,#1086dd)"></i> Detalhamento dos Impostos / DAS</h6>
                 <?php
-                $aliquotaEfetiva = $nfse_atual->valor_servicos > 0 ? round(($nfse_atual->valor_total_impostos / $nfse_atual->valor_servicos) * 100, 2) : 0;
+                $aliquotaEfetiva = ($nfse_atual->valor_servicos ?? 0) > 0 ? round((($nfse_atual->valor_total_impostos ?? 0) / $nfse_atual->valor_servicos) * 100, 2) : 0;
                 ?>
                 <div class="well well-small" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8)">
                         <div class="row-fluid">
