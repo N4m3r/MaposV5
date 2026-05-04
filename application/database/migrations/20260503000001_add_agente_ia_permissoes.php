@@ -19,7 +19,8 @@ class Migration_Add_agente_ia_permissoes extends CI_Migration
         // ================================================================
         $this->db->query("INSERT IGNORE INTO permissoes (nome, permissoes, situacao, data) VALUES
             ('Visualizar Painel Agente IA', 'a:1:{s:9:\"vAgenteIA\";i:1;}', 1, CURDATE()),
-            ('Configurar Agente IA',        'a:1:{s:9:\"cAgenteIA\";i:1;}', 1, CURDATE())");
+            ('Configurar Agente IA',        'a:1:{s:9:\"cAgenteIA\";i:1;}', 1, CURDATE()),
+            ('Autorizar/Rejeitar Agente IA','a:1:{s:9:\"eAgenteIA\";i:1;}', 1, CURDATE())");
 
         // ================================================================
         // 2. Atualiza grupo Administrador (idPermissao = 1)
@@ -28,6 +29,7 @@ class Migration_Add_agente_ia_permissoes extends CI_Migration
         $this->adicionarAoGrupo(1, [
             'vAgenteIA' => '1',
             'cAgenteIA' => '1',
+            'eAgenteIA' => '1',
         ]);
 
         // ================================================================
@@ -50,7 +52,7 @@ class Migration_Add_agente_ia_permissoes extends CI_Migration
         // Reverte: remove vAgenteIA e cAgenteIA dos grupos afetados
         // ================================================================
         foreach ([1, 2, 3, 4] as $id) {
-            $this->removerDoGrupo($id, ['vAgenteIA', 'cAgenteIA']);
+            $this->removerDoGrupo($id, ['vAgenteIA', 'cAgenteIA', 'eAgenteIA']);
         }
     }
 

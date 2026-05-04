@@ -1002,6 +1002,12 @@
                                                 <span class="lbl"> Configurar Agente IA</span>
                                             </label>
                                         </td>
+                                        <td>
+                                            <label>
+                                                <input name="eAgenteIA" class="marcar" type="checkbox" value="1" />
+                                                <span class="lbl"> Autorizar/Rejeitar Agente IA</span>
+                                            </label>
+                                        </td>
                                         <td colspan="2"></td>
                                     </tr>
                                 </tbody>

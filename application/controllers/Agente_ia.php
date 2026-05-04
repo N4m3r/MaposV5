@@ -96,6 +96,12 @@ class Agente_ia extends MY_Controller
     // =======================================================================
     public function responder()
     {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'eAgenteIA')) {
+            $this->session->set_flashdata('error', 'Voce nao tem permissao para autorizar/rejeitar acoes do Agente IA.');
+            redirect('agente_ia/autorizacoes');
+            return;
+        }
+
         $id       = (int) $this->input->post('autorizacao_id');
         $resposta = strtolower(trim($this->input->post('resposta') ?: ''));
 

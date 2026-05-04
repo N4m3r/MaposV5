@@ -372,6 +372,7 @@ class Permissoes extends MY_Controller
                 // Permissões Agente IA
                 'vAgenteIA' => $this->input->post('vAgenteIA'),
                 'cAgenteIA' => $this->input->post('cAgenteIA'),
+                'eAgenteIA' => $this->input->post('eAgenteIA'),
 
                 'categoria_d' => $this->input->post('categoria_d'),
                 'categoria_v' => $this->input->post('categoria_v'),
