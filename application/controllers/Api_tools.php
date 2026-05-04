@@ -10,7 +10,8 @@ class Api_tools extends CI_Controller
     public function __construct()
     {
         parent::__construct();
-        $this->load->library('session');
+        $this->load->helper('url');
+        $this->load->driver('session');
     }
 
     /**
@@ -26,8 +27,8 @@ class Api_tools extends CI_Controller
             return;
         }
 
-        $userId = $this->session->userdata('id');
-        $email = $this->session->userdata('email');
+        $userId = $this->session->userdata('id_admin');
+        $email = $this->session->userdata('email_admin');
 
         if (!$userId) {
             $this->output

@@ -449,6 +449,7 @@ if (!hash_equals('sha256=' . $expected, $signature)) {
 function gerarAuthToken() {
     fetch('<?= base_url('api_tools/auth_token') ?>', {
         method: 'POST',
+        credentials: 'same-origin',
         headers: {
             'X-Requested-With': 'XMLHttpRequest'
         }
@@ -467,6 +468,7 @@ function gerarAuthToken() {
 function gerarToken() {
     fetch('<?= base_url('api_tools/token') ?>', {
         method: 'POST',
+        credentials: 'same-origin',
         headers: {
             'X-Requested-With': 'XMLHttpRequest'
         }
