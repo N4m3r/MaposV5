@@ -27,6 +27,7 @@
                     <li><a href="#vendas" style="color: #fff; text-shadow: none;">Vendas</a></li>
                     <li><a href="#produtos" style="color: #fff; text-shadow: none;">Produtos</a></li>
                     <li><a href="#webhooks" style="color: #fff; text-shadow: none;">Webhooks</a></li>
+                    <li><a href="#agenteia" style="color: #fff; text-shadow: none;">Agente IA / Autorizacoes</a></li>
                 </ul>
             </div>
         </div>
@@ -34,10 +35,22 @@
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-key"></i></span>
-                <h5>Seu Token</h5>
+                <h5>Token de Autorizacao (Agente IA)</h5>
             </div>
             <div class="widget-content">
-                <p>Use o token abaixo para autenticar suas requisições:</p>
+                <p>Gere um token de teste para o fluxo de autorizacoes do Agente IA:</p>
+                <pre id="auth-token-display" style="font-size: 11px; word-break: break-all;">Clique em Gerar</pre>
+                <button class="btn btn-small btn-primary" onclick="gerarAuthToken()">Gerar AUTH-Token</button>
+            </div>
+        </div>
+
+        <div class="widget-box">
+            <div class="widget-title">
+                <span class="icon"><i class="fas fa-key"></i></span>
+                <h5>Seu Token JWT</h5>
+            </div>
+            <div class="widget-content">
+                <p>Use o token abaixo para autenticar suas requisicoes:</p>
                 <pre id="token-display" style="font-size: 11px; word-break: break-all;">Clique em Gerar</pre>
                 <button class="btn btn-small btn-primary" onclick="gerarToken()">Gerar Token</button>
             </div>
@@ -348,10 +361,109 @@ if (!hash_equals('sha256=' . $expected, $signature)) {
 }</pre>
             </div>
         </div>
+
+        <!-- Agente IA / Autorizacoes -->
+        <div class="widget-box" id="agenteia">
+            <div class="widget-title">
+                <span class="icon"><i class="fas fa-robot"></i></span>
+                <h5>Agente IA / Autorizacoes</h5>
+            </div>
+            <div class="widget-content">
+                <p>Endpoints para controle de autorizacoes do Agente IA. O agente solicita aprovacao para acoes criticas via token no formato <code>AUTH-XXXXXXXX</code>.</p>
+
+                <h6><span class="label label-success">GET</span> /autorizacoes/listar</h6>
+                <p>Lista autorizacoes pendentes/aprovadas/rejeitadas.</p>
+                <pre>// Query Parameters:
+?status=pendente     // pendente | aprovada | rejeitada | expirada
+?numero=559199999    // Filtrar por numero
+?page=1
+?per_page=20</pre>
+
+                <hr>
+
+                <h6><span class="label label-info">POST</span> /autorizacoes/verificar</h6>
+                <p>Verifica se um numero pode executar uma acao sem autorizacao.</p>
+                <pre>{
+  "numero_telefone": "5591999999999",
+  "acao": "criar_os"
+}</pre>
+
+                <hr>
+
+                <h6><span class="label label-info">POST</span> /autorizacoes/solicitar</h6>
+                <p>Cria uma nova autorizacao e retorna o token <code>AUTH-XXXXXXXX</code>.</p>
+                <pre>{
+  "numero_telefone": "5591999999999",
+  "acao": "criar_os",
+  "dados_json": "{\"clientes_id\":123}",
+  "metodo": "whatsapp",
+  "minutos_expira": 15
+}
+
+// Resposta:
+{
+  "success": true,
+  "data": {
+    "token": "AUTH-XXXXXXXX",
+    "expires_at": "2026-05-03 15:30:00",
+    "mensagem": "..."
+  }
+}</pre>
+
+                <hr>
+
+                <h6><span class="label label-info">POST</span> /autorizacoes/validar</h6>
+                <p>Valida o token respondido pelo usuario.</p>
+                <pre>{
+  "numero_telefone": "5591999999999",
+  "token": "AUTH-XXXXXXXX",
+  "resposta_usuario": "sim"
+}
+
+// Resposta aprovada:
+{
+  "success": true,
+  "data": {
+    "status": "aprovada",
+    "executar": true,
+    "acao": "criar_os",
+    "dados_json": { ... }
+  }
+}</pre>
+
+                <hr>
+
+                <h6><span class="label label-info">POST</span> /autorizacoes/responder</h6>
+                <p>Admin responde uma autorizacao pelo painel.</p>
+                <pre>{
+  "autorizacao_id": 123,
+  "resposta": "aprovar",
+  "observacoes": "Autorizado pelo gestor"
+}</pre>
+            </div>
+        </div>
     </div>
 </div>
 
 <script>
+function gerarAuthToken() {
+    fetch('<?= base_url('api/auth_token') ?>', {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.token) {
+            document.getElementById('auth-token-display').textContent = data.token;
+        } else {
+            alert('Erro ao gerar token de autorizacao');
+        }
+    })
+    .catch(e => alert('Erro: ' + e.message));
+}
+
 function gerarToken() {
     fetch('<?= base_url('api/token') ?>', {
         method: 'POST',

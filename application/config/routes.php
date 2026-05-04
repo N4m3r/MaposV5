@@ -120,6 +120,7 @@ if (filter_var($_ENV['API_ENABLED'] ?? false, FILTER_VALIDATE_BOOLEAN)) {
 // Rotas API V2 (sempre habilitadas para MAPOS 5.0)
 $route['api/v2'] = 'api/docs';
 $route['api/docs'] = 'api/docs';
+$route['api/auth_token'] = 'api/auth_token';
 $route['api/v2/health'] = 'api/v2/AuthController/health';
 $route['api/v2/auth/login'] = 'api/v2/AuthController/login';
 $route['api/v2/auth/refresh'] = 'api/v2/AuthController/refresh';
