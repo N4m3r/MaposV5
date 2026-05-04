@@ -102,7 +102,7 @@ $coresGrupo = [
                     <?php
                     $grupos = [];
                     foreach ($configs as $c) {
-                        $grupos[$c['categoria']][] = $c;
+                        $grupos[$c['grupo']][] = $c;
                     }
                     foreach ($grupos as $cat => $items):
                         $cor = $coresGrupo[$cat] ?? '#636e72';

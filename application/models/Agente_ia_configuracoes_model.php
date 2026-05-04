@@ -14,18 +14,18 @@ class Agente_ia_configuracoes_model extends CI_Model
     }
 
     /**
-     * Lista todas as configuracoes ou por categoria
+     * Lista todas as configuracoes ou por grupo
      */
-    public function listar(?string $categoria = null): array
+    public function listar(?string $grupo = null): array
     {
         if (!$this->db->table_exists($this->table)) {
             return [];
         }
-        if ($categoria) {
-            $this->db->where('categoria', $categoria);
+        if ($grupo) {
+            $this->db->where('grupo', $grupo);
         }
         return $this->db
-            ->order_by('categoria', 'ASC')
+            ->order_by('grupo', 'ASC')
             ->order_by('chave', 'ASC')
             ->get($this->table)
             ->result_array();
@@ -78,7 +78,7 @@ class Agente_ia_configuracoes_model extends CI_Model
     /**
      * Atualiza ou insere uma configuracao
      */
-    public function set(string $chave, string $valor, string $categoria = 'geral', string $descricao = ''): bool
+    public function set(string $chave, string $valor, string $grupo = 'geral', string $descricao = ''): bool
     {
         if (!$this->db->table_exists($this->table)) {
             return false;
@@ -91,7 +91,7 @@ class Agente_ia_configuracoes_model extends CI_Model
         return $this->db->insert($this->table, [
             'chave'       => $chave,
             'valor'       => $valor,
-            'categoria'   => $categoria,
+            'grupo'       => $grupo,
             'descricao'   => $descricao,
         ]);
     }
