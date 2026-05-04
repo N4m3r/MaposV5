@@ -169,13 +169,13 @@
                                                 <td><?php echo date('H:i', strtotime($log['created_at'])); ?></td>
                                                 <td><?php echo $log['numero_telefone']; ?></td>
                                                 <td><span class="label label-<?php
-                                                    echo match($log['tipo']) {
-                                                        'entrada' => 'success',
-                                                        'saida' => 'info',
-                                                        'sistema' => 'warning',
-                                                        'erro' => 'important',
-                                                        default => 'default'
-                                                    };
+                                                    switch ($log['tipo']) {
+                                                        case 'entrada': echo 'success'; break;
+                                                        case 'saida': echo 'info'; break;
+                                                        case 'sistema': echo 'warning'; break;
+                                                        case 'erro': echo 'important'; break;
+                                                        default: echo 'default';
+                                                    }
                                                 ?>"><?php echo ucfirst($log['tipo']); ?></span></td>
                                                 <td><?php echo $log['intencao_detectada'] ?? '-'; ?></td>
                                                 <td><?php echo htmlspecialchars(mb_strimwidth($log['mensagem'], 0, 60, '...')); ?></td>

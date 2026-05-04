@@ -95,37 +95,6 @@ if (count($faltantes) > 0) {
             INDEX `idx_acao` (`acao`),
             INDEX `idx_ativo` (`ativo`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci", 'agente_ia_permissoes');
-
-        runSql($CI, "INSERT IGNORE INTO `agente_ia_permissoes` (`perfil`, `acao`, `nivel_maximo_automatico`, `requer_2fa`) VALUES
-            ('cliente', 'consultar_status_os', 1, 0),
-            ('cliente', 'consultar_divida', 1, 0),
-            ('cliente', 'consultar_cliente', 1, 0),
-            ('cliente', 'consultar_estoque', 1, 0),
-            ('cliente', 'solicitar_orcamento', 2, 0),
-            ('tecnico', 'consultar_minhas_os', 1, 0),
-            ('tecnico', 'consultar_status_os', 1, 0),
-            ('tecnico', 'atualizar_status_os', 3, 0),
-            ('tecnico', 'registrar_atividade', 3, 0),
-            ('tecnico', 'criar_os', 3, 0),
-            ('admin', 'consultar_status_os', 1, 0),
-            ('admin', 'consultar_cliente', 1, 0),
-            ('admin', 'consultar_estoque', 1, 0),
-            ('admin', 'consultar_lancamentos', 1, 0),
-            ('admin', 'criar_os', 3, 0),
-            ('admin', 'atualizar_status_os', 3, 0),
-            ('admin', 'registrar_atividade', 3, 0),
-            ('admin', 'aprovar_orcamento', 4, 1),
-            ('admin', 'gerar_cobranca', 4, 1),
-            ('admin', 'emitir_nfse', 5, 1),
-            ('financeiro', 'consultar_lancamentos', 1, 0),
-            ('financeiro', 'consultar_divida', 1, 0),
-            ('financeiro', 'gerar_boleto', 4, 1),
-            ('financeiro', 'gerar_cobranca', 4, 1),
-            ('vendedor', 'consultar_cliente', 1, 0),
-            ('vendedor', 'consultar_estoque', 1, 0),
-            ('vendedor', 'solicitar_orcamento', 2, 0),
-            ('desconhecido', 'consultar_status_os', 1, 0)
-            ON DUPLICATE KEY UPDATE `nivel_maximo_automatico`=VALUES(`nivel_maximo_automatico`), `requer_2fa`=VALUES(`requer_2fa`), `ativo`=1", 'Seed permissoes');
     }
 
     // 3. agente_ia_configuracoes
@@ -143,38 +112,6 @@ if (count($faltantes) > 0) {
             UNIQUE KEY `uk_chave` (`chave`),
             INDEX `idx_grupo` (`grupo`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci", 'agente_ia_configuracoes');
-
-        $padroes = [
-            ['evolution_url', 'http://192.168.100.238:8091', 'URL da API Evolution (evolution-go)', 'evolution', 0],
-            ['evolution_apikey', '', 'API Key da Evolution API', 'evolution', 1],
-            ['evolution_instance', '', 'Nome da instancia WhatsApp', 'evolution', 0],
-            ['evolution_enabled', '0', 'Ativar integracao Evolution', 'evolution', 0],
-            ['n8n_webhook_url', '', 'URL do webhook do n8n', 'n8n', 0],
-            ['n8n_apikey', '', 'API Key do n8n', 'n8n', 1],
-            ['n8n_enabled', '0', 'Ativar integracao n8n', 'n8n', 0],
-            ['llm_provider', 'openrouter', 'Provedor LLM (openrouter, openai, groq)', 'llm', 0],
-            ['llm_apikey', '', 'API Key do provedor LLM', 'llm', 1],
-            ['llm_model', 'google/gemini-2.5-flash-preview', 'Modelo LLM padrao', 'llm', 0],
-            ['llm_system_prompt', 'Voce e um assistente virtual desta empresa. Seja educado, breve e objetivo.', 'Prompt de sistema do agente', 'llm', 0],
-            ['llm_enabled', '0', 'Ativar processamento LLM', 'llm', 0],
-            ['agente_max_tokens', '4096', 'Maximo de tokens por resposta', 'llm', 0],
-            ['agente_timeout', '30', 'Timeout segundos para resposta da IA', 'llm', 0],
-            ['numero_whatsapp_principal', '', 'Numero principal do atendimento', 'geral', 0],
-            ['mensagem_boas_vindas', 'Ola! Sou o assistente virtual. Em que posso ajudar?', 'Mensagem de boas-vindas', 'geral', 0],
-            ['horario_atendimento_inicio', '08:00', 'Inicio do atendimento automatico', 'geral', 0],
-            ['horario_atendimento_fim', '18:00', 'Fim do atendimento automatico', 'geral', 0],
-            ['auto_responder_fora_horario', '1', 'Responder automaticamente fora do horario', 'geral', 0],
-            ['autorizacao_tempo_minutos', '15', 'Tempo de expiracao dos tokens de autorizacao', 'autorizacao', 0],
-            ['autorizacao_max_tentativas', '3', 'Maximo de tentativas de resposta por token', 'autorizacao', 0],
-            ['rate_limit_minutos', '5', 'Janela de rate limit por numero/acao (minutos)', 'autorizacao', 0],
-            ['notificacao_admin_email', '', 'E-mail para notificacoes criticas do agente', 'notificacao', 0],
-        ];
-
-        foreach ($padroes as $p) {
-            runSql($CI, "INSERT INTO `agente_ia_configuracoes` (`chave`, `valor`, `descricao`, `grupo`, `sensivel`)
-                VALUES ('{$p[0]}', '{$p[1]}', '{$p[2]}', '{$p[3]}', {$p[4]})
-                ON DUPLICATE KEY UPDATE `valor`=VALUES(`valor`)", 'Seed: ' . $p[0]);
-        }
     }
 
     // 4. agente_ia_logs_conversa
@@ -221,6 +158,78 @@ if (count($faltantes) > 0) {
 
     $CI->db->trans_complete();
     $ok = $CI->db->trans_status();
+}
+
+// =====================================================================
+// SEEDS INDEPENDENTES (rodam sempre que a tabela existir,
+// pois usam INSERT IGNORE / ON DUPLICATE KEY UPDATE)
+// =====================================================================
+
+if ($CI->db->table_exists('agente_ia_permissoes')) {
+    runSql($CI, "INSERT IGNORE INTO `agente_ia_permissoes` (`perfil`, `acao`, `nivel_maximo_automatico`, `requer_2fa`) VALUES
+        ('cliente', 'consultar_status_os', 1, 0),
+        ('cliente', 'consultar_divida', 1, 0),
+        ('cliente', 'consultar_cliente', 1, 0),
+        ('cliente', 'consultar_estoque', 1, 0),
+        ('cliente', 'solicitar_orcamento', 2, 0),
+        ('tecnico', 'consultar_minhas_os', 1, 0),
+        ('tecnico', 'consultar_status_os', 1, 0),
+        ('tecnico', 'atualizar_status_os', 3, 0),
+        ('tecnico', 'registrar_atividade', 3, 0),
+        ('tecnico', 'criar_os', 3, 0),
+        ('admin', 'consultar_status_os', 1, 0),
+        ('admin', 'consultar_cliente', 1, 0),
+        ('admin', 'consultar_estoque', 1, 0),
+        ('admin', 'consultar_lancamentos', 1, 0),
+        ('admin', 'criar_os', 3, 0),
+        ('admin', 'atualizar_status_os', 3, 0),
+        ('admin', 'registrar_atividade', 3, 0),
+        ('admin', 'aprovar_orcamento', 4, 1),
+        ('admin', 'gerar_cobranca', 4, 1),
+        ('admin', 'emitir_nfse', 5, 1),
+        ('financeiro', 'consultar_lancamentos', 1, 0),
+        ('financeiro', 'consultar_divida', 1, 0),
+        ('financeiro', 'gerar_boleto', 4, 1),
+        ('financeiro', 'gerar_cobranca', 4, 1),
+        ('vendedor', 'consultar_cliente', 1, 0),
+        ('vendedor', 'consultar_estoque', 1, 0),
+        ('vendedor', 'solicitar_orcamento', 2, 0),
+        ('desconhecido', 'consultar_status_os', 1, 0)
+        ON DUPLICATE KEY UPDATE `nivel_maximo_automatico`=VALUES(`nivel_maximo_automatico`), `requer_2fa`=VALUES(`requer_2fa`), `ativo`=1", 'Seed permissoes');
+}
+
+if ($CI->db->table_exists('agente_ia_configuracoes')) {
+    $padroes = [
+        ['evolution_url', 'http://192.168.100.238:8091', 'URL da API Evolution (evolution-go)', 'integracao', 0],
+        ['evolution_apikey', '', 'API Key da Evolution API', 'integracao', 1],
+        ['evolution_instance', '', 'Nome da instancia WhatsApp', 'integracao', 0],
+        ['evolution_enabled', '0', 'Ativar integracao Evolution', 'integracao', 0],
+        ['n8n_webhook_url', '', 'URL do webhook do n8n', 'integracao', 0],
+        ['n8n_apikey', '', 'API Key do n8n', 'integracao', 1],
+        ['n8n_enabled', '0', 'Ativar integracao n8n', 'integracao', 0],
+        ['llm_provider', 'openrouter', 'Provedor LLM (openrouter, openai, groq)', 'ia', 0],
+        ['llm_apikey', '', 'API Key do provedor LLM', 'ia', 1],
+        ['llm_model', 'google/gemini-2.5-flash-preview', 'Modelo LLM padrao', 'ia', 0],
+        ['llm_system_prompt', 'Voce e um assistente virtual desta empresa. Seja educado, breve e objetivo.', 'Prompt de sistema do agente', 'ia', 0],
+        ['llm_enabled', '0', 'Ativar processamento LLM', 'ia', 0],
+        ['agente_max_tokens', '4096', 'Maximo de tokens por resposta', 'ia', 0],
+        ['agente_timeout', '30', 'Timeout segundos para resposta da IA', 'ia', 0],
+        ['numero_whatsapp_principal', '', 'Numero principal do atendimento', 'geral', 0],
+        ['mensagem_boas_vindas', 'Ola! Sou o assistente virtual. Em que posso ajudar?', 'Mensagem de boas-vindas', 'geral', 0],
+        ['horario_atendimento_inicio', '08:00', 'Inicio do atendimento automatico', 'geral', 0],
+        ['horario_atendimento_fim', '18:00', 'Fim do atendimento automatico', 'geral', 0],
+        ['auto_responder_fora_horario', '1', 'Responder automaticamente fora do horario', 'geral', 0],
+        ['autorizacao_tempo_minutos', '15', 'Tempo de expiracao dos tokens de autorizacao', 'autorizacao', 0],
+        ['autorizacao_max_tentativas', '3', 'Maximo de tentativas de resposta por token', 'autorizacao', 0],
+        ['rate_limit_minutos', '5', 'Janela de rate limit por numero/acao (minutos)', 'autorizacao', 0],
+        ['notificacao_admin_email', '', 'E-mail para notificacoes criticas do agente', 'notificacao', 0],
+    ];
+
+    foreach ($padroes as $p) {
+        runSql($CI, "INSERT INTO `agente_ia_configuracoes` (`chave`, `valor`, `descricao`, `grupo`, `sensivel`)
+            VALUES ('{$p[0]}', '{$p[1]}', '{$p[2]}', '{$p[3]}', {$p[4]})
+            ON DUPLICATE KEY UPDATE `valor`=VALUES(`valor`)", 'Seed: ' . $p[0]);
+    }
 }
 ?>
 <!DOCTYPE html>

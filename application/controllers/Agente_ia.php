@@ -151,6 +151,11 @@ class Agente_ia extends MY_Controller
 
     public function salvar_configuracoes()
     {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cAgenteIA')) {
+            $this->session->set_flashdata('error', 'Voce nao tem permissao para salvar configuracoes do Agente IA.');
+            redirect('agente_ia/configuracoes');
+            return;
+        }
         $this->verificaConfiguracao();
         $configs = $this->input->post('configs');
         if (!$configs || !is_array($configs)) {

@@ -72,10 +72,10 @@
                                 <div class="perfil-header">
                                     <i class="bx bx-user-circle"></i> <?php echo ucfirst($perfil); ?>
                                 </div>
-                                <?php if (empty($perfilPerms)): ?
+                                <?php if (empty($perfilPerms)): ?>
                                     <div class="muted">Nenhuma permissao definida.</div>
-                                <?php else: ?
-                                    <?php foreach ($perfilPerms as $perm): ?
+                                <?php else: ?>
+                                    <?php foreach ($perfilPerms as $perm): ?>
                                         <div class="perm-row">
                                             <span><?php echo ucwords(str_replace('_', ' ', $perm['acao'])); ?></span>
                                             <span>

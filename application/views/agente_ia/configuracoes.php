@@ -121,7 +121,7 @@ $coresGrupo = [
                                         <?php if (!empty($cfg['descricao'])): ?>
                                             <div class="desc"><?php echo $cfg['descricao']; ?></div>
                                         <?php endif; ?>
-                                        <input type="text"
+                                        <input type="<?php echo (!empty($cfg['sensivel'])) ? 'password' : 'text'; ?>"
                                                name="configs[<?php echo $cfg['id']; ?>][valor]"
                                                value="<?php echo htmlspecialchars($cfg['valor'] ?? ''); ?>"
                                                placeholder="Valor...">

@@ -83,7 +83,7 @@
         <?php if (!empty($totalPages) && $totalPages > 1): ?>
             <div class="pagination alternate">
                 <ul>
-                    <?php for ($p = 1; $p <= $totalPages; $p++): ?
+                    <?php for ($p = 1; $p <= $totalPages; $p++): ?>
                         <li class="<?php echo ($p == ($page ?? 1)) ? 'active' : ''; ?>">
                             <a href="?page=<?php echo $p; ?>&amp;numero=<?php echo urlencode($_GET['numero'] ?? ''); ?>&amp;tipo=<?php echo urlencode($_GET['tipo'] ?? ''); ?>&amp;data=<?php echo urlencode($_GET['data'] ?? ''); ?>"><?php echo $p; ?></a>
                         </li>

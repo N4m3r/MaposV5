@@ -123,13 +123,13 @@
                                                 </form>
                                             <?php else: ?>
                                                 <span class="label label-<?php
-                                                    echo match($aut['status']) {
-                                                        'aprovada' => 'success',
-                                                        'rejeitada' => 'important',
-                                                        'expirada' => 'default',
-                                                        'executada' => 'info',
-                                                        default => 'warning'
-                                                    };
+                                                    switch ($aut['status']) {
+                                                        case 'aprovada': echo 'success'; break;
+                                                        case 'rejeitada': echo 'important'; break;
+                                                        case 'expirada': echo 'default'; break;
+                                                        case 'executada': echo 'info'; break;
+                                                        default: echo 'warning';
+                                                    }
                                                 ?>">
                                                     <?php echo ucfirst($aut['status']); ?>
                                                 </span>
