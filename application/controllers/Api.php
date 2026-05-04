@@ -70,25 +70,4 @@ class Api extends MY_Controller
             ]));
     }
 
-    /**
-     * Gerar token de autorizacao do Agente IA (para testes na API docs)
-     * Formato: AUTH-XXXXXXX
-     */
-    public function auth_token()
-    {
-        if (!$this->input->post()) {
-            show_error('Método não permitido');
-        }
-
-        // Gera token no formato AUTH-XXXXXXXX
-        $token = 'AUTH-' . strtoupper(bin2hex(random_bytes(4)));
-
-        $this->output
-            ->set_content_type('application/json')
-            ->set_output(json_encode([
-                'token' => $token,
-                'expires_in' => 900, // 15 minutos
-                'expires_at' => date('Y-m-d H:i:s', strtotime('+15 minutes'))
-            ]));
-    }
 }

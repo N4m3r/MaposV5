@@ -447,7 +447,7 @@ if (!hash_equals('sha256=' . $expected, $signature)) {
 
 <script>
 function gerarAuthToken() {
-    fetch('<?= base_url('api/auth_token') ?>', {
+    fetch('<?= base_url('api_tools/auth_token') ?>', {
         method: 'POST',
         headers: {
             'X-Requested-With': 'XMLHttpRequest'
@@ -458,14 +458,14 @@ function gerarAuthToken() {
         if (data.token) {
             document.getElementById('auth-token-display').textContent = data.token;
         } else {
-            alert('Erro ao gerar token de autorizacao');
+            alert('Erro ao gerar token de autorizacao: ' + (data.error || 'desconhecido'));
         }
     })
     .catch(e => alert('Erro: ' + e.message));
 }
 
 function gerarToken() {
-    fetch('<?= base_url('api/token') ?>', {
+    fetch('<?= base_url('api_tools/token') ?>', {
         method: 'POST',
         headers: {
             'X-Requested-With': 'XMLHttpRequest'
@@ -476,7 +476,7 @@ function gerarToken() {
         if (data.token) {
             document.getElementById('token-display').textContent = data.token;
         } else {
-            alert('Erro ao gerar token');
+            alert('Erro ao gerar token: ' + (data.error || 'desconhecido'));
         }
     })
     .catch(e => alert('Erro: ' + e.message));
