@@ -44,18 +44,42 @@ class BaseController extends CI_Controller
     }
 
     /**
-     * Autentica requisição via JWT ou API Key fixa
+     * Autentica requisição via JWT, API Key de ambiente ou token fixo
      */
     protected function authenticate(): void
     {
-        // 1. Tenta API Key (para integrações servidor-a-servidor como n8n)
-        $apiKey = $this->input->get_request_header('X-API-Key', true)
-                  ?: $this->input->get('api_key');
+        $authHeader   = $this->input->get_request_header('Authorization', true);
+        $apiKeyHeader = $this->input->get_request_header('X-API-Key', true)
+                        ?: $this->input->get('api_key');
 
-        if ($apiKey) {
+        // 1. Token fixo via Authorization: Bearer <token>
+        $tokenFixo = 't4AZOtKkYyTlFHrYaORx33AsfFmwP6Ja/H1yJKPiV4Q=';
+        if ($authHeader && str_replace('Bearer ', '', $authHeader) === $tokenFixo) {
+            $this->currentUser = (object) [
+                'sub'         => 0,
+                'email'       => 'api@mapos.local',
+                'name'        => 'API Fixa',
+                'permissions' => ['*']
+            ];
+            return;
+        }
+
+        // 2. API Key de ambiente ou token fixo via X-API-Key
+        if ($apiKeyHeader) {
+            // Token fixo via X-API-Key
+            if ($apiKeyHeader === $tokenFixo) {
+                $this->currentUser = (object) [
+                    'sub'         => 0,
+                    'email'       => 'api@mapos.local',
+                    'name'        => 'API Fixa',
+                    'permissions' => ['*']
+                ];
+                return;
+            }
+
+            // API Key configurada via ambiente
             $expectedKey = $_ENV['API_MAPOS_KEY'] ?? '';
-            if ($expectedKey && $apiKey === $expectedKey) {
-                // Cria um usuário virtual de sistema com todas as permissões
+            if ($expectedKey && $apiKeyHeader === $expectedKey) {
                 $this->currentUser = (object) [
                     'sub'         => 0,
                     'email'       => 'api@system',
@@ -66,9 +90,7 @@ class BaseController extends CI_Controller
             }
         }
 
-        // 2. Fallback para JWT Bearer
-        $authHeader = $this->input->get_request_header('Authorization', true);
-
+        // 3. Fallback para JWT Bearer padrão
         if (!$authHeader) {
             $this->unauthorized('Token ou API Key nao fornecido');
             exit;
