@@ -1,0 +1,550 @@
+{
+  "name": "Agente IA - Orcamento por Audio",
+  "id": "agente-ia-orcamento-audio-01",
+  "nodes": [
+    {
+      "id": "wh_audio",
+      "name": "Webhook Audio WhatsApp",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "agente-orcamento-audio",
+        "responseMode": "responseNode"
+      }
+    },
+    {
+      "id": "extrair_audio",
+      "name": "Extrair Dados Audio",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        450,
+        300
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const msg = $input.first().json.body || {};\nconst numero = msg.numero || msg.telefone || msg.sender || '';\nconst audioUrl = msg.audioUrl || msg.url || '';\nconst audioKey = msg.mediaKey || '';\nreturn [{json:{numero,audioUrl,audioKey}}];"
+      }
+    },
+    {
+      "id": "if_tem_audio",
+      "name": "Tem Audio?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        650,
+        300
+      ],
+      "parameters": {
+        "conditions": {
+          "conditions": [
+            {
+              "id": "1",
+              "leftValue": "={{ $json.audioUrl }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      }
+    },
+    {
+      "id": "baixar_audio",
+      "name": "Baixar Audio Evolution",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        850,
+        200
+      ],
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $('Extrair Dados Audio').item.json.audioUrl }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": false,
+        "options": {
+          "response": {
+            "responseFormat": "file"
+          },
+          "redirect": {
+            "followRedirects": true
+          }
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "joJ8NPCSBDuj8bgS",
+          "name": "evolution_api"
+        }
+      }
+    },
+    {
+      "id": "transcrever",
+      "name": "Transcrever Whisper",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1050,
+        200
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "http://whisper:9000/asr",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "audio",
+              "value": "={{ $binary.data ? '/tmp/audio.ogg' : '' }}"
+            },
+            {
+              "name": "language",
+              "value": "pt"
+            },
+            {
+              "name": "task",
+              "value": "transcribe"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "responseFormat": "json"
+          }
+        }
+      }
+    },
+    {
+      "id": "extrair_entidades",
+      "name": "Extrair Entidades LLM",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1250,
+        200
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "http://172.18.0.1:11434/api/generate",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=\"{\\\"model\\\": \\\"hermes3:8b\\\", \\\"prompt\\\": \\\"Voce e um assistente que extrai dados de orcamento de assistencia tecnica a partir de um audio transcrito.\\n\\nTEXTO TRANSCRITO:\\\\n\\\"{{ $json.text || $json.transcription || '' }}\\\"\\n\\nEXTRAIA os seguintes campos em JSON:\\n{\\\"cliente_nome\\\": \\\"nome do cliente mencionado\\\",\\\"equipamento\\\": \\\"modelo do aparelho\\\",\\\"defeito\\\": \\\"descricao do problema\\\",\\\"servico\\\": \\\"tipo de servico\\\",\\\"valor\\\": \\\"valor numerico sem R$\\\",\\\"peca\\\": \\\"peca mencionada\\\",\\\"prazo\\\": \\\"prazo em dias\\\",\\\"observacoes\\\": \\\"outras informacoes\\\"}\\n\\nREGRAS:\\n- Se campo nao estiver no texto, retorne null\\n- Valor deve ser numero decimal (450.00)\\n- Prazo deve ser numero inteiro de dias\\n- Nao invente dados\\n- Responda APENAS com o JSON, sem markdown\\\", \\\"stream\\\": false, \\\"format\\\": \\\"json\\\"}\"",
+        "options": {
+          "response": {
+            "responseFormat": "json"
+          }
+        }
+      }
+    },
+    {
+      "id": "parse_entidades",
+      "name": "Parsear JSON",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1450,
+        200
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "let dados = {};\ntry {\n    const resp = $input.first().json.response || '{}';\n    dados = JSON.parse(resp);\n} catch(e) {\n    dados = {};\n}\nconst numero = $('Extrair Dados Audio').item.json.numero;\nreturn [{json:{cliente_nome:dados.cliente_nome||null,equipamento:dados.equipamento||null,defeito:dados.defeito||null,servico:dados.servico||'orcamento',valor:parseFloat(dados.valor)||null,peca:dados.peca||null,prazo:parseInt(dados.prazo)||null,observacoes:dados.observacoes||'',numero}}];"
+      }
+    },
+    {
+      "id": "if_dados_ok",
+      "name": "Dados Validos?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1650,
+        200
+      ],
+      "parameters": {
+        "conditions": {
+          "conditions": [
+            {
+              "id": "1",
+              "leftValue": "={{ $json.cliente_nome && $json.defeito }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      }
+    },
+    {
+      "id": "verificar_perm_audio",
+      "name": "Verificar Permissao",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.1,
+      "position": [
+        1850,
+        150
+      ],
+      "parameters": {
+        "workflowId": "02_verificar_permissao",
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "numero",
+              "value": "={{ $json.numero }}"
+            },
+            {
+              "name": "acao",
+              "value": "criar_os"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "buscar_cliente",
+      "name": "Buscar Cliente MapOS",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2050,
+        100
+      ],
+      "parameters": {
+        "method": "GET",
+        "url": "https://jj-ferreiras.com.br/MaposV5/api/v2/clientes",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": false,
+        "options": {
+          "response": {
+            "responseFormat": "json"
+          },
+          "pagination": {
+            "paginationCompleteWhen": "entriesReturnedLessThanPageSize"
+          }
+        },
+        "qs": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "={{ $('Parsear JSON').item.json.cliente_nome }}"
+            },
+            {
+              "name": "limit",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Kwp8sScLLeF1kDCE",
+          "name": "mapos_api"
+        }
+      }
+    },
+    {
+      "id": "criar_os_audio",
+      "name": "Criar OS MapOS",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2250,
+        100
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://jj-ferreiras.com.br/MaposV5/api/v2/os",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=\"{\\\"clientes_id\\\": \\\"{{ $('Buscar Cliente MapOS').item.json.data?.[0]?.idClientes || '' }}\\\", \\\"descricaoProduto\\\": \\\"{{ $('Parsear JSON').item.json.equipamento || 'Nao especificado' }}\\\", \\\"defeito\\\": \\\"{{ $('Parsear JSON').item.json.defeito }}\\\", \\\"observacoes\\\": \\\"{{ $('Parsear JSON').item.json.observacoes }}\\\", \\\"status\\\": \\\"Orcamento\\\", \\\"valorTotal\\\": {{ $('Parsear JSON').item.json.valor || 0 }}}\"",
+        "options": {
+          "response": {
+            "responseFormat": "json"
+          }
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Kwp8sScLLeF1kDCE",
+          "name": "mapos_api"
+        }
+      }
+    },
+    {
+      "id": "formatar_sucesso_audio",
+      "name": "Formatar Sucesso",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2450,
+        100
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const os = $input.first().json;\nconst dados = $('Parsear JSON').item.json;\nlet msg = '✅ Orcamento criado por audio!\\n\\n';\nmsg += 'Cliente: ' + (dados.cliente_nome || 'Nao identificado') + '\\n';\nmsg += 'Servico: ' + dados.defeito + '\\n';\nif(dados.valor) msg += 'Valor: R$ ' + dados.valor + '\\n';\nif(dados.prazo) msg += 'Prazo: ' + dados.prazo + ' dias uties\\n';\nif(os.data?.idOs) msg += 'OS: #' + os.data.idOs + '\\n';\nmsg += '\\nDeseja enviar o orcamento ao cliente?';\nreturn [{json:{resposta:msg}}];"
+      }
+    },
+    {
+      "id": "formatar_erro_dados",
+      "name": "Erro Dados",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1850,
+        350
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "return [{json:{resposta:'❌ Nao consegui identificar o cliente ou servico no audio. Pode repetir mais claramente?'}}];"
+      }
+    },
+    {
+      "id": "enviar_whatsapp_audio",
+      "name": "Enviar WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2650,
+        200
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "http://evolution-go:8091/message/sendText",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\"number\":\"{{ $('Extrair Dados Audio').item.json.numero }}\",\"text\":\"{{ $json.resposta }}\"}",
+        "options": {
+          "response": {
+            "responseFormat": "json"
+          }
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "joJ8NPCSBDuj8bgS",
+          "name": "evolution_api"
+        }
+      }
+    },
+    {
+      "id": "responder_audio",
+      "name": "Responder Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        2850,
+        200
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\"status\":\"ok\"}"
+      }
+    }
+  ],
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Manaus"
+  },
+  "connections": {
+    "Webhook Audio WhatsApp": {
+      "main": [
+        [
+          {
+            "node": "Extrair Dados Audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extrair Dados Audio": {
+      "main": [
+        [
+          {
+            "node": "Tem Audio?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tem Audio?": {
+      "main": [
+        [
+          {
+            "node": "Baixar Audio Evolution",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Erro Dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Baixar Audio Evolution": {
+      "main": [
+        [
+          {
+            "node": "Transcrever Whisper",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcrever Whisper": {
+      "main": [
+        [
+          {
+            "node": "Extrair Entidades LLM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extrair Entidades LLM": {
+      "main": [
+        [
+          {
+            "node": "Parsear JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parsear JSON": {
+      "main": [
+        [
+          {
+            "node": "Dados Validos?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dados Validos?": {
+      "main": [
+        [
+          {
+            "node": "Verificar Permissao",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Erro Dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verificar Permissao": {
+      "main": [
+        [
+          {
+            "node": "Buscar Cliente MapOS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Cliente MapOS": {
+      "main": [
+        [
+          {
+            "node": "Criar OS MapOS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Criar OS MapOS": {
+      "main": [
+        [
+          {
+            "node": "Formatar Sucesso",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formatar Sucesso": {
+      "main": [
+        [
+          {
+            "node": "Enviar WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Erro Dados": {
+      "main": [
+        [
+          {
+            "node": "Enviar WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar WhatsApp": {
+      "main": [
+        [
+          {
+            "node": "Responder Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "tags": [
+    {
+      "name": "agente-ia"
+    },
+    {
+      "name": "audio"
+    },
+    {
+      "name": "orcamento"
+    }
+  ]
+}

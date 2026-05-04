@@ -300,4 +300,82 @@ class Agente_ia extends MY_Controller
         $aprovadas = $this->autModel->contarPorStatus('aprovada');
         return round(($aprovadas / $totalDecididas) * 100) . '%';
     }
+
+    // =======================================================================
+    // TEMPLATES DE RELATORIO
+    // =======================================================================
+    public function relatorios_templates()
+    {
+        $this->data['title'] = 'Templates de Relatorio - Agente IA';
+        $this->data['templates'] = [];
+
+        if ($this->db->table_exists('agente_ia_relatorios_templates')) {
+            $this->data['templates'] = $this->db
+                ->order_by('tipo', 'ASC')
+                ->order_by('nome', 'ASC')
+                ->get('agente_ia_relatorios_templates')
+                ->result_array() ?? [];
+        }
+
+        $this->data['view'] = 'agente_ia/relatorios_templates';
+        return $this->layout();
+    }
+
+    public function salvar_template()
+    {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cAgenteIA')) {
+            $this->session->set_flashdata('error', 'Sem permissao para salvar templates.');
+            redirect('agente_ia/relatorios_templates');
+            return;
+        }
+
+        $dados = [
+            'nome'          => $this->input->post('nome'),
+            'tipo'          => $this->input->post('tipo'),
+            'descricao'     => $this->input->post('descricao'),
+            'conteudo_html' => $this->input->post('conteudo_html'),
+            'ativo'         => $this->input->post('ativo') ? 1 : 0,
+            'created_at'    => date('Y-m-d H:i:s'),
+        ];
+
+        if (empty($dados['nome']) || empty($dados['conteudo_html'])) {
+            $this->session->set_flashdata('error', 'Nome e conteudo HTML sao obrigatorios.');
+            redirect('agente_ia/relatorios_templates');
+            return;
+        }
+
+        if (!$this->db->table_exists('agente_ia_relatorios_templates')) {
+            $this->session->set_flashdata('error', 'Tabela de templates nao existe. Execute a migration.');
+            redirect('agente_ia/relatorios_templates');
+            return;
+        }
+
+        $this->db->insert('agente_ia_relatorios_templates', $dados);
+        $this->session->set_flashdata('success', 'Template criado com sucesso.');
+        redirect('agente_ia/relatorios_templates');
+    }
+
+    public function desativar_template($id)
+    {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'eAgenteIA')) {
+            $this->session->set_flashdata('error', 'Sem permissao.');
+            redirect('agente_ia/relatorios_templates');
+            return;
+        }
+        $this->db->where('id', (int)$id)->update('agente_ia_relatorios_templates', ['ativo' => 0]);
+        $this->session->set_flashdata('success', 'Template desativado.');
+        redirect('agente_ia/relatorios_templates');
+    }
+
+    public function ativar_template($id)
+    {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'eAgenteIA')) {
+            $this->session->set_flashdata('error', 'Sem permissao.');
+            redirect('agente_ia/relatorios_templates');
+            return;
+        }
+        $this->db->where('id', (int)$id)->update('agente_ia_relatorios_templates', ['ativo' => 1]);
+        $this->session->set_flashdata('success', 'Template ativado.');
+        redirect('agente_ia/relatorios_templates');
+    }
 }

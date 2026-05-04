@@ -1,0 +1,410 @@
+{
+  "name": "Agente IA - Relatorios",
+  "id": "agente-ia-relatorios-01",
+  "nodes": [
+    {
+      "id": "webhook_rel",
+      "name": "Webhook Relatorio",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "agente-relatorios",
+        "responseMode": "responseNode"
+      }
+    },
+    {
+      "id": "extrair_rel",
+      "name": "Extrair Pedido",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        450,
+        300
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const body = $input.first().json.body || {};\nconst numero = body.numero || body.telefone || '';\nconst texto = body.texto || '';\nconst perfil = body.perfil || 'cliente';\n// Mapeia tipo de relatorio pelo texto\nconst tipos = [\n    {re: /os.*hoje|hoje.*os|dia.*os|os.*dia/i, tipo:'os_diario', titulo:'OS de Hoje'},\n    {re: /os.*mes|mes.*os|mensal/i, tipo:'os_mensal', titulo:'OS do Mes'},\n    {re: /financeiro|lancamento|receber|pagar/i, tipo:'financeiro', titulo:'Resumo Financeiro'},\n    {re: /venda|vendi|ticket|produto/i, tipo:'vendas', titulo:'Relatorio de Vendas'},\n    {re: /cliente.*novo|aniversariante|inadimplente/i, tipo:'clientes', titulo:'Relatorio de Clientes'},\n    {re: /estoque|produto.*baixo|curva abc/i, tipo:'estoque', titulo:'Relatorio de Estoque'},\n    {re: /tecnico|produtividade|atividade.*tecnico/i, tipo:'tecnico', titulo:'Produtividade do Tecnico'},\n    {re: /inadimplencia|divida.*cliente|atraso/i, tipo:'inadimplencia', titulo:'Inadimplencia'},\n    {re: /historico.*os|minhas.*os/i, tipo:'historico_cliente', titulo:'Historico de OS'},\n    {re: /satisfacao|nps|avaliacao/i, tipo:'satisfacao', titulo:'Satisfacao do Cliente'}\n];\nconst encontrado = tipos.find(t => t.re.test(texto)) || {tipo:'os_diario', titulo:'OS de Hoje'};\n// Detecta formato preferido\nconst formato = /pdf|documento|arquivo/i.test(texto) ? 'pdf' : (/email|e-mail/i.test(texto) ? 'email' : 'texto');\nreturn [{json:{numero,texto,perfil,tipo:encontrado.tipo,titulo:encontrado.titulo,formato}}];"
+      }
+    },
+    {
+      "id": "verificar_perm_rel",
+      "name": "Verificar Permissao",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.1,
+      "position": [
+        650,
+        300
+      ],
+      "parameters": {
+        "workflowId": "02_verificar_permissao",
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "numero",
+              "value": "={{ $json.numero }}"
+            },
+            {
+              "name": "acao",
+              "value": "=gerar_relatorio"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "if_perm_rel",
+      "name": "Permitido?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        850,
+        300
+      ],
+      "parameters": {
+        "conditions": {
+          "conditions": [
+            {
+              "id": "1",
+              "leftValue": "={{ $json.executar_acao }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      }
+    },
+    {
+      "id": "buscar_relatorio",
+      "name": "Buscar Relatorio MapOS",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1050,
+        250
+      ],
+      "parameters": {
+        "method": "GET",
+        "url": "https://jj-ferreiras.com.br/MaposV5/api/v2/relatorios/{{ $('Extrair Pedido').item.json.tipo }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": false,
+        "options": {
+          "response": {
+            "responseFormat": "json"
+          }
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Kwp8sScLLeF1kDCE",
+          "name": "mapos_api"
+        }
+      }
+    },
+    {
+      "id": "if_formato",
+      "name": "Formato PDF?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1250,
+        250
+      ],
+      "parameters": {
+        "conditions": {
+          "conditions": [
+            {
+              "id": "1",
+              "leftValue": "={{ $('Extrair Pedido').item.json.formato === 'pdf' || $('Extrair Pedido').item.json.formato === 'email' }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      }
+    },
+    {
+      "id": "gerar_pdf",
+      "name": "Gerar PDF MapOS",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1450,
+        150
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://jj-ferreiras.com.br/MaposV5/api/v2/relatorios/exportar",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=\"{\\\"tipo\\\": \\\"{{ $('Extrair Pedido').item.json.tipo }}\\\", \\\"periodo_inicio\\\": \\\"{{ $today.minus(30, 'days').format('yyyy-MM-dd') }}\\\", \\\"periodo_fim\\\": \\\"{{ $today.format('yyyy-MM-dd') }}\\\", \\\"formato\\\": \\\"pdf\\\", \\\"email\\\": \\\"{{ $('Extrair Pedido').item.json.formato === 'email' ? $('Extrair Pedido').item.json.numero + '@temp.local' : '' }}\\\"}\"",
+        "options": {
+          "response": {
+            "responseFormat": "json"
+          }
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Kwp8sScLLeF1kDCE",
+          "name": "mapos_api"
+        }
+      }
+    },
+    {
+      "id": "formatar_pdf",
+      "name": "Formatar Resposta PDF",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1650,
+        150
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const r = $input.first().json;\nconst url = r.data?.download_url || r.data?.pdf_url || '';\nconst titulo = $('Extrair Pedido').item.json.titulo;\nlet msg = '📊 ' + titulo + '\\n\\n';\nif(url){\n    msg += 'PDF gerado com sucesso!\\n📎 Baixe aqui: ' + url + '\\n(O link expira em 24h)';\n} else {\n    msg += 'PDF gerado. Verifique seu email ou painel do MapOS.';\n}\nreturn [{json:{resposta:msg,url}}];"
+      }
+    },
+    {
+      "id": "formatar_texto",
+      "name": "Formatar Resumo Texto",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1450,
+        350
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const r = $input.first().json;\nconst dados = r.data || {};\nconst titulo = $('Extrair Pedido').item.json.titulo;\nlet msg = '📊 ' + titulo + '\\n\\n';\nif(dados.resumo){\n    msg += dados.resumo;\n} else if(dados.total !== undefined){\n    msg += 'Total: ' + dados.total + ' registros\\n';\n    msg += 'Valor: R$ ' + (dados.valor || '0,00') + '\\n';\n    if(dados.detalhes && dados.detalhes.length){\n        msg += '\\nTop 3:\\n';\n        dados.detalhes.slice(0,3).forEach((d,i)=>{\n            msg += (i+1) + '. ' + (d.nome || d.descricao || d.id) + '\\n';\n        });\n    }\n} else {\n    msg += 'Relatorio disponivel no painel do MapOS.';\n}\nreturn [{json:{resposta:msg}}];"
+      }
+    },
+    {
+      "id": "negado_rel",
+      "name": "Negado",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1050,
+        450
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const r = $input.first().json;\nreturn [{json:{resposta: r.resposta_usuario || '❌ Sem permissao para gerar relatorios.'}}];"
+      }
+    },
+    {
+      "id": "enviar_whatsapp_rel",
+      "name": "Enviar WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1850,
+        250
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "http://evolution-go:8091/message/sendText",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\"number\":\"{{ $('Extrair Pedido').item.json.numero }}\",\"text\":\"{{ $json.resposta }}\"}",
+        "options": {
+          "response": {
+            "responseFormat": "json"
+          }
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "joJ8NPCSBDuj8bgS",
+          "name": "evolution_api"
+        }
+      }
+    },
+    {
+      "id": "responder_rel",
+      "name": "Responder Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        2050,
+        250
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\"status\":\"ok\"}"
+      }
+    }
+  ],
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Manaus"
+  },
+  "connections": {
+    "Webhook Relatorio": {
+      "main": [
+        [
+          {
+            "node": "Extrair Pedido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extrair Pedido": {
+      "main": [
+        [
+          {
+            "node": "Verificar Permissao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verificar Permissao": {
+      "main": [
+        [
+          {
+            "node": "Permitido?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Permitido?": {
+      "main": [
+        [
+          {
+            "node": "Buscar Relatorio MapOS",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Negado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Relatorio MapOS": {
+      "main": [
+        [
+          {
+            "node": "Formato PDF?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formato PDF?": {
+      "main": [
+        [
+          {
+            "node": "Gerar PDF MapOS",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Formatar Resumo Texto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gerar PDF MapOS": {
+      "main": [
+        [
+          {
+            "node": "Formatar Resposta PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formatar Resposta PDF": {
+      "main": [
+        [
+          {
+            "node": "Enviar WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formatar Resumo Texto": {
+      "main": [
+        [
+          {
+            "node": "Enviar WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Negado": {
+      "main": [
+        [
+          {
+            "node": "Enviar WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar WhatsApp": {
+      "main": [
+        [
+          {
+            "node": "Responder Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "tags": [
+    {
+      "name": "agente-ia"
+    },
+    {
+      "name": "relatorios"
+    }
+  ]
+}

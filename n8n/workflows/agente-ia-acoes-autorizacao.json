@@ -1,0 +1,412 @@
+{
+  "name": "Agente IA - Acoes com Autorizacao",
+  "id": "agente-ia-acoes-01",
+  "nodes": [
+    {
+      "id": "webhook_acoes",
+      "name": "Webhook Acao Agente",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "agente-acoes",
+        "responseMode": "responseNode"
+      }
+    },
+    {
+      "id": "extrair1",
+      "name": "Extrair Dados Acao",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        450,
+        300
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const body = $input.first().json.body || {};\nconst numero = body.numero || body.telefone || '';\nconst acao = body.acao || body.intencao || '';\nconst dados = body.dados || {};\nconst textoOriginal = body.texto || '';\nreturn [{json:{numero,acao,dados,textoOriginal}}];"
+      }
+    },
+    {
+      "id": "verificar_perm",
+      "name": "Verificar Permissao",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.1,
+      "position": [
+        650,
+        300
+      ],
+      "parameters": {
+        "workflowId": "02_verificar_permissao",
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "numero",
+              "value": "={{ $json.numero }}"
+            },
+            {
+              "name": "acao",
+              "value": "={{ $json.acao }}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "if_perm1",
+      "name": "Permitido?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        850,
+        300
+      ],
+      "parameters": {
+        "conditions": {
+          "conditions": [
+            {
+              "id": "1",
+              "leftValue": "={{ $json.executar_acao || $json.requer_autorizacao }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      }
+    },
+    {
+      "id": "if_requer_auth",
+      "name": "Requer Autorizacao?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1050,
+        200
+      ],
+      "parameters": {
+        "conditions": {
+          "conditions": [
+            {
+              "id": "1",
+              "leftValue": "={{ $json.requer_autorizacao }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      }
+    },
+    {
+      "id": "solicitar_auth",
+      "name": "Solicitar Autorizacao MapOS",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1250,
+        100
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://jj-ferreiras.com.br/MaposV5/api/v2/autorizacoes/solicitar",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=\"{\\\"numero_telefone\\\": \\\"{{ $('Extrair Dados Acao').item.json.numero }}\\\", \\\"acao\\\": \\\"{{ $('Extrair Dados Acao').item.json.acao }}\\\", \\\"dados_json\\\": {{ JSON.stringify($('Extrair Dados Acao').item.json.dados || {}) }}, \\\"metodo_autorizacao\\\": \\\"whatsapp\\\"}\"",
+        "options": {
+          "response": {
+            "responseFormat": "json"
+          }
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Kwp8sScLLeF1kDCE",
+          "name": "mapos_api"
+        }
+      }
+    },
+    {
+      "id": "formatar_solicitacao",
+      "name": "Formatar Solicitacao",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1450,
+        100
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const r = $input.first().json;\nconst token = r.data?.token || r.token || 'N/A';\nconst acaoNome = r.data?.acao || $('Extrair Dados Acao').item.json.acao;\nconst msg = 'Voce esta solicitando: *' + acaoNome + '*\\n\\nPara confirmar, responda com o codigo: *' + token + '*\\n\\nOu acesse: https://jj-ferreiras.com.br/MaposV5/agente_ia/autorizacoes';\nreturn [{json:{resposta:msg,token}}];"
+      }
+    },
+    {
+      "id": "executar_direto",
+      "name": "Executar Acao MapOS",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1250,
+        300
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://jj-ferreiras.com.br/MaposV5/api/v2/acoes/executar",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=\"{\\\"telefone\\\": \\\"{{ $('Extrair Dados Acao').item.json.numero }}\\\", \\\"acao\\\": \\\"{{ $('Extrair Dados Acao').item.json.acao }}\\\", \\\"dados\\\": {{ JSON.stringify($('Extrair Dados Acao').item.json.dados || {}) }}}\"",
+        "options": {
+          "response": {
+            "responseFormat": "json"
+          }
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Kwp8sScLLeF1kDCE",
+          "name": "mapos_api"
+        }
+      }
+    },
+    {
+      "id": "formatar_exec",
+      "name": "Formatar Resultado",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1450,
+        300
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const r = $input.first().json;\nlet msg = r.message || r.data?.mensagem || 'Acao executada com sucesso!';\nif(r.data?.pdf_url) msg += '\\n📎 PDF: ' + r.data.pdf_url;\nif(r.data?.os_id) msg += '\\n📋 OS #' + r.data.os_id;\nif(r.data?.valor) msg += '\\n💰 Valor: R$ ' + r.data.valor;\nreturn [{json:{resposta:msg}}];"
+      }
+    },
+    {
+      "id": "negado",
+      "name": "Retornar Negado",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1050,
+        450
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const r = $input.first().json;\nconst msg = r.resposta_usuario || '❌ Voce nao tem permissao para esta acao.';\nreturn [{json:{resposta:msg}}];"
+      }
+    },
+    {
+      "id": "enviar_whatsapp",
+      "name": "Enviar WhatsApp Evolution",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1650,
+        200
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "http://evolution-go:8091/message/sendText",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\"number\":\"{{ $('Extrair Dados Acao').item.json.numero }}\",\"text\":\"{{ $json.resposta }}\"}",
+        "options": {
+          "response": {
+            "responseFormat": "json"
+          }
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "joJ8NPCSBDuj8bgS",
+          "name": "evolution_api"
+        }
+      }
+    },
+    {
+      "id": "responder_webhook",
+      "name": "Responder Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1850,
+        200
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\"status\":\"ok\"}"
+      }
+    }
+  ],
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Manaus"
+  },
+  "connections": {
+    "Webhook Acao Agente": {
+      "main": [
+        [
+          {
+            "node": "Extrair Dados Acao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extrair Dados Acao": {
+      "main": [
+        [
+          {
+            "node": "Verificar Permissao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verificar Permissao": {
+      "main": [
+        [
+          {
+            "node": "Permitido?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Permitido?": {
+      "main": [
+        [
+          {
+            "node": "Requer Autorizacao?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Retornar Negado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Requer Autorizacao?": {
+      "main": [
+        [
+          {
+            "node": "Solicitar Autorizacao MapOS",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Executar Acao MapOS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Solicitar Autorizacao MapOS": {
+      "main": [
+        [
+          {
+            "node": "Formatar Solicitacao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formatar Solicitacao": {
+      "main": [
+        [
+          {
+            "node": "Enviar WhatsApp Evolution",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Executar Acao MapOS": {
+      "main": [
+        [
+          {
+            "node": "Formatar Resultado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formatar Resultado": {
+      "main": [
+        [
+          {
+            "node": "Enviar WhatsApp Evolution",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retornar Negado": {
+      "main": [
+        [
+          {
+            "node": "Enviar WhatsApp Evolution",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar WhatsApp Evolution": {
+      "main": [
+        [
+          {
+            "node": "Responder Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "tags": [
+    {
+      "name": "agente-ia"
+    },
+    {
+      "name": "acoes"
+    }
+  ]
+}

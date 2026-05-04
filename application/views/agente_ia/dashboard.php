@@ -47,6 +47,9 @@
                     <a href="<?php echo site_url('agente_ia/logs'); ?>" class="btn btn-mini">
                         <i class="bx bx-list-ul"></i> Logs
                     </a>
+                    <a href="<?php echo site_url('agente_ia/relatorios_templates'); ?>" class="btn btn-mini btn-success">
+                        <i class="bx bx-file"></i> Templates
+                    </a>
                 </div>
             </div>
             <div class="widget-content">

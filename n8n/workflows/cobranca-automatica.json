@@ -1,0 +1,229 @@
+{
+  "name": "Cobranca Automatica - Lembrete",
+  "id": "cobranca-automatica-01",
+  "nodes": [
+    {
+      "id": "cron_cob",
+      "name": "Agendamento Cron",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 24,
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "buscar_cobrancas",
+      "name": "Buscar Cobrancas MapOS",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        450,
+        300
+      ],
+      "parameters": {
+        "method": "GET",
+        "url": "https://jj-ferreiras.com.br/MaposV5/api/v2/cobrancas/pendentes",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": false,
+        "options": {
+          "response": {
+            "responseFormat": "json"
+          },
+          "pagination": {
+            "paginationCompleteWhen": "entriesReturnedLessThanPageSize"
+          }
+        },
+        "qs": {
+          "parameters": [
+            {
+              "name": "dias_ate_vencimento",
+              "value": "3"
+            },
+            {
+              "name": "limit",
+              "value": "100"
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Kwp8sScLLeF1kDCE",
+          "name": "mapos_api"
+        }
+      }
+    },
+    {
+      "id": "split_cobrancas",
+      "name": "Split Items",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        650,
+        300
+      ],
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      }
+    },
+    {
+      "id": "formatar_msg_cob",
+      "name": "Formatar Lembrete",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        850,
+        300
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const item = $input.first().json;\nconst cliente = item.cliente_nome || 'Cliente';\nconst valor = item.valor || '0,00';\nconst vencimento = item.data_vencimento || 'proximos dias';\nconst numero = item.telefone || '';\nconst msg = 'Ola ' + cliente + '!\\n\\nPassando para lembrar que existe uma cobranca no valor de R$ ' + valor + ' com vencimento em ' + vencimento + '.\\n\\nPara mais detalhes ou regularizar, responda aqui ou acesse nosso portal.';\nreturn [{json:{numero,mensagem:msg,cliente,valor,vencimento}}];"
+      }
+    },
+    {
+      "id": "enviar_whatsapp_cob",
+      "name": "Enviar WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1050,
+        300
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "http://evolution-go:8091/message/sendText",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\"number\":\"{{ $json.numero }}\",\"text\":\"{{ $json.mensagem }}\"}",
+        "options": {
+          "response": {
+            "responseFormat": "json"
+          }
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "joJ8NPCSBDuj8bgS",
+          "name": "evolution_api"
+        }
+      }
+    },
+    {
+      "id": "registrar_log_cob",
+      "name": "Registrar Log MapOS",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1250,
+        300
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://jj-ferreiras.com.br/MaposV5/api/v2/notificacoes/log",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\"tipo\":\"cobranca_lembrete\",\"destinatario\":\"{{ $json.numero }}\",\"mensagem\":\"{{ $json.mensagem }}\",\"status\":\"enviado\"}",
+        "options": {
+          "response": {
+            "responseFormat": "json"
+          }
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Kwp8sScLLeF1kDCE",
+          "name": "mapos_api"
+        }
+      }
+    }
+  ],
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Manaus"
+  },
+  "connections": {
+    "Agendamento Cron": {
+      "main": [
+        [
+          {
+            "node": "Buscar Cobrancas MapOS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Cobrancas MapOS": {
+      "main": [
+        [
+          {
+            "node": "Split Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Items": {
+      "main": [
+        [
+          {
+            "node": "Formatar Lembrete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formatar Lembrete": {
+      "main": [
+        [
+          {
+            "node": "Enviar WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar WhatsApp": {
+      "main": [
+        [
+          {
+            "node": "Registrar Log MapOS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "tags": [
+    {
+      "name": "cobranca"
+    },
+    {
+      "name": "automatico"
+    }
+  ]
+}

@@ -1,0 +1,119 @@
+{
+  "name": "MapOS Webhook Dispatcher",
+  "id": "mapos-webhook-dispatcher-01",
+  "nodes": [
+    {
+      "id": "wh_disp",
+      "name": "Webhook MapOS Events",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "mapos-webhook-dispatcher",
+        "responseMode": "responseNode"
+      }
+    },
+    {
+      "id": "identificar_evento",
+      "name": "Identificar Evento",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        450,
+        300
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const body = $input.first().json.body || {};\nconst evento = body.evento || body.event || body.tipo || '';\nconst eventosMap = {\n  'os.created': 'notificacao-whatsapp-eventos',\n  'os.updated': 'notificacao-whatsapp-eventos',\n  'os.finalizada': 'notificacao-whatsapp-eventos',\n  'cobranca.paid': 'cobranca-automatica',\n  'cobranca.vencendo': 'cobranca-automatica',\n  'cliente.novo': 'notificacao-whatsapp-eventos',\n  'webhook.test': 'notificacao-whatsapp-eventos'\n};\nconst workflowDestino = eventosMap[evento] || 'notificacao-whatsapp-eventos';\nreturn [{json:{evento,workflowDestino,body}}];"
+      }
+    },
+    {
+      "id": "executar_workflow",
+      "name": "Executar Workflow Destino",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.1,
+      "position": [
+        650,
+        300
+      ],
+      "parameters": {
+        "workflowId": "={{ $('Identificar Evento').item.json.workflowDestino }}",
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "body",
+              "value": "={{ JSON.stringify($('Identificar Evento').item.json.body) }}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "responder_disp",
+      "name": "Responder 200 OK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        850,
+        300
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\"status\":\"received\",\"evento\":\"{{ $json.evento }}\"}"
+      }
+    }
+  ],
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Manaus"
+  },
+  "connections": {
+    "Webhook MapOS Events": {
+      "main": [
+        [
+          {
+            "node": "Identificar Evento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Identificar Evento": {
+      "main": [
+        [
+          {
+            "node": "Executar Workflow Destino",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Executar Workflow Destino": {
+      "main": [
+        [
+          {
+            "node": "Responder 200 OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "tags": [
+    {
+      "name": "mapos"
+    },
+    {
+      "name": "dispatcher"
+    }
+  ]
+}
