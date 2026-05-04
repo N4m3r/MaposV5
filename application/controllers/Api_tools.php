@@ -37,14 +37,16 @@ class Api_tools extends CI_Controller
             return;
         }
 
-        $key = getenv('JWT_SECRET') ?: 'mapos-secret-key';
+        $this->load->config('jwt');
+        $key = $this->config->item('jwt_key') ?: 'mapos-secret-key';
         $payload = [
             'iss' => base_url(),
             'aud' => base_url(),
             'iat' => time(),
             'exp' => time() + (60 * 60 * 24),
             'sub' => $userId,
-            'email' => $email
+            'email' => $email,
+            'API_TIME' => time()
         ];
 
         $jwt = \Firebase\JWT\JWT::encode($payload, $key, 'HS256');

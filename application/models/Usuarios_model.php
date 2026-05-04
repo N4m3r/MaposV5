@@ -36,6 +36,14 @@ class Usuarios_model extends CI_Model
         return $this->db->get('usuarios')->row();
     }
 
+    public function getByEmail($email)
+    {
+        $this->db->where('email', $email);
+        $this->db->limit(1);
+
+        return $this->db->get('usuarios')->row();
+    }
+
     public function getAll()
     {
         return $this->db->get('usuarios')->result();

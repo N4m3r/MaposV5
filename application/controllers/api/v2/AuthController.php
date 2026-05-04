@@ -163,21 +163,31 @@ class AuthController extends CI_Controller
     }
 
     /**
+     * Retorna a chave JWT do config (API_JWT_KEY)
+     */
+    private function getJwtKey(): string
+    {
+        $this->load->config('jwt');
+        return $this->config->item('jwt_key') ?: 'mapos-secret-key';
+    }
+
+    /**
      * Gera token JWT
      */
     private function generateToken(object $usuario): string
     {
-        $key = getenv('JWT_SECRET') ?: 'mapos-secret-key';
+        $key = $this->getJwtKey();
 
         $payload = [
             'iss' => base_url(),
             'aud' => base_url(),
             'iat' => time(),
-            'exp' => time() + 86400, // 24 horas
+            'exp' => time() + 86400,
             'sub' => $usuario->idUsuarios,
             'email' => $usuario->email,
             'name' => $usuario->nome,
-            'permissions' => $this->getUserPermissions($usuario->permissoes_id)
+            'permissions' => $this->getUserPermissions($usuario->permissoes_id),
+            'API_TIME' => time() // compatibilidade com Authorization_Token library
         ];
 
         return JWT::encode($payload, $key, 'HS256');
@@ -188,15 +198,16 @@ class AuthController extends CI_Controller
      */
     private function generateRefreshToken(object $usuario): string
     {
-        $key = getenv('JWT_SECRET') ?: 'mapos-secret-key';
+        $key = $this->getJwtKey();
 
         $payload = [
             'iss' => base_url(),
             'aud' => base_url(),
             'iat' => time(),
-            'exp' => time() + (86400 * 30), // 30 dias
+            'exp' => time() + (86400 * 30),
             'sub' => $usuario->idUsuarios,
-            'type' => 'refresh'
+            'type' => 'refresh',
+            'API_TIME' => time()
         ];
 
         return JWT::encode($payload, $key, 'HS256');

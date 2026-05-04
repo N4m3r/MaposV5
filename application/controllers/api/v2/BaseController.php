@@ -51,25 +51,29 @@ class BaseController extends CI_Controller
         $authHeader = $this->input->get_request_header('Authorization', true);
 
         if (!$authHeader) {
-            $this->unauthorized('Token não fornecido');
+            $this->unauthorized('Token nao fornecido');
             exit;
         }
 
         $token = str_replace('Bearer ', '', $authHeader);
 
         try {
-            $this->load->library('Authorization_Token');
-            $decoded = $this->authorization_token->validateToken($token);
+            $this->load->config('jwt');
+            $key = $this->config->item('jwt_key');
+            $alg = $this->config->item('jwt_algorithm') ?: 'HS256';
 
-            if (!$decoded) {
-                $this->unauthorized('Token inválido');
+            // Usa Firebase JWT diretamente (mesmo usado pelo AuthController)
+            $decoded = \Firebase\JWT\JWT::decode($token, new \Firebase\JWT\Key($key, $alg));
+
+            if (empty($decoded->sub)) {
+                $this->unauthorized('Token invalido: sem identificacao de usuario');
                 exit;
             }
 
             $this->currentUser = $decoded;
 
         } catch (\Exception $e) {
-            $this->unauthorized('Erro na autenticação: ' . $e->getMessage());
+            $this->unauthorized('Erro na autenticacao: ' . $e->getMessage());
             exit;
         }
     }
