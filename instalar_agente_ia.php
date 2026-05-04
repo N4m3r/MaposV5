@@ -173,7 +173,7 @@ if (count($faltantes) > 0) {
         foreach ($padroes as $p) {
             runSql($CI, "INSERT INTO `agente_ia_configuracoes` (`chave`, `valor`, `descricao`, `grupo`, `sensivel`)
                 VALUES ('{$p[0]}', '{$p[1]}', '{$p[2]}', '{$p[3]}', {$p[4]})
-                ON DUPLICATE KEY UPDATE `valor`=`valo}r`", 'Seed: ' . $p[0]);
+                ON DUPLICATE KEY UPDATE `valor`=VALUES(`valor`)", 'Seed: ' . $p[0]);
         }
     }
 
