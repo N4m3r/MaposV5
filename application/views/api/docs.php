@@ -104,8 +104,21 @@
                 <h5>Autenticação</h5>
             </div>
             <div class="widget-content">
-                <p>A API usa autenticação JWT (JSON Web Token). Inclua o token no header de cada requisição:</p>
+                <p>A API suporta duas formas de autenticação:</p>
 
+                <h6>1. API Key (recomendado para integrações servidor-a-servidor como n8n)</h6>
+                <p>Use uma chave fixa configurada no arquivo <code>.env</code> do MapOS. Envie no header:</p>
+                <pre>X-API-Key: {sua_api_key}</pre>
+                <p>Ou como query param:</p>
+                <pre>?api_key={sua_api_key}</pre>
+
+                <pre>curl -X GET "<?= $apiBaseUrl ?>/clientes?api_key=SUA_CHAVE" \
+  -H "Accept: application/json"</pre>
+
+                <hr>
+
+                <h6>2. JWT (para autenticação de usuário)</h6>
+                <p>Inclua o token no header de cada requisição:</p>
                 <pre>Authorization: Bearer {seu_token_jwt}</pre>
 
                 <h5>Exemplo com cURL</h5>

@@ -44,14 +44,33 @@ class BaseController extends CI_Controller
     }
 
     /**
-     * Autentica requisição via JWT
+     * Autentica requisição via JWT ou API Key fixa
      */
     protected function authenticate(): void
     {
+        // 1. Tenta API Key (para integrações servidor-a-servidor como n8n)
+        $apiKey = $this->input->get_request_header('X-API-Key', true)
+                  ?: $this->input->get('api_key');
+
+        if ($apiKey) {
+            $expectedKey = $_ENV['API_MAPOS_KEY'] ?? '';
+            if ($expectedKey && $apiKey === $expectedKey) {
+                // Cria um usuário virtual de sistema com todas as permissões
+                $this->currentUser = (object) [
+                    'sub'         => 0,
+                    'email'       => 'api@system',
+                    'name'        => 'API System',
+                    'permissions' => ['*', 'configuracoes', 'vAgenteIA', 'cAgenteIA', 'eAgenteIA']
+                ];
+                return;
+            }
+        }
+
+        // 2. Fallback para JWT Bearer
         $authHeader = $this->input->get_request_header('Authorization', true);
 
         if (!$authHeader) {
-            $this->unauthorized('Token nao fornecido');
+            $this->unauthorized('Token ou API Key nao fornecido');
             exit;
         }
 
@@ -62,7 +81,6 @@ class BaseController extends CI_Controller
             $key = $this->config->item('jwt_key');
             $alg = $this->config->item('jwt_algorithm') ?: 'HS256';
 
-            // Usa Firebase JWT diretamente (mesmo usado pelo AuthController)
             $decoded = \Firebase\JWT\JWT::decode($token, new \Firebase\JWT\Key($key, $alg));
 
             if (empty($decoded->sub)) {
@@ -162,10 +180,15 @@ class BaseController extends CI_Controller
      */
     protected function checkPermission(string $permission): void
     {
-        if (!$this->currentUser || !in_array($permission, $this->currentUser->permissions ?? [])) {
-            $this->forbidden('Permissão negada');
-            exit;
+        $permissions = $this->currentUser->permissions ?? [];
+
+        // API key de sistema tem permissao universal '*'
+        if (in_array('*', $permissions) || in_array($permission, $permissions)) {
+            return;
         }
+
+        $this->forbidden('Permissao negada');
+        exit;
     }
 
     /**
