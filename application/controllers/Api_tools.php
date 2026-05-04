@@ -18,7 +18,7 @@ class Api_tools extends CI_Controller
      */
     public function token()
     {
-        if ($this->input->method() !== 'POST') {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->output
                 ->set_status_header(405)
                 ->set_content_type('application/json')
@@ -63,7 +63,7 @@ class Api_tools extends CI_Controller
      */
     public function auth_token()
     {
-        if ($this->input->method() !== 'POST') {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->output
                 ->set_status_header(405)
                 ->set_content_type('application/json')
