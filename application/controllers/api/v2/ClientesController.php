@@ -205,7 +205,7 @@ class ClientesController extends BaseController
             $id = (int) $this->uri->segment(4);
         }
 
-        $ci = \u0026get_instance();
+        $ci = \&get_instance();
         $ci->load->model('os_model');
         $ci->os_model->db->where('idClientes', $id);
         $ordens = $ci->os_model->getAll();

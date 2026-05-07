@@ -63,7 +63,7 @@ class VendasController extends BaseController
         }
 
         // Carrega produtos
-        $ci = \u0026get_instance();
+        $ci = \&get_instance();
         $ci->load->model('vendas_model');
         $venda->produtos = $ci->vendas_model->getProdutos($id);
 
@@ -88,7 +88,7 @@ class VendasController extends BaseController
             return;
         }
 
-        $ci = \u0026get_instance();
+        $ci = \&get_instance();
         $ci->load->model('vendas_model');
 
         $id = $ci->vendas_model->insert($data);
@@ -131,7 +131,7 @@ class VendasController extends BaseController
         $data = $this->getJsonInput();
         unset($data['idVendas']);
 
-        $ci = \u0026get_instance();
+        $ci = \&get_instance();
         $ci->load->model('vendas_model');
         $success = $ci->vendas_model->update($id, $data);
 
@@ -160,7 +160,7 @@ class VendasController extends BaseController
             return;
         }
 
-        $ci = \u0026get_instance();
+        $ci = \&get_instance();
         $ci->load->model('vendas_model');
         $success = $ci->vendas_model->delete($id);
 
