@@ -263,4 +263,25 @@ class BaseController extends CI_Controller
             exit;
         }
     }
+
+    /**
+     * _remap - permite sufixos HTTP (_post, _get, etc.) nos métodos da API v2
+     */
+    public function _remap(string $method, array $params = []): void
+    {
+        $httpMethod = strtolower($this->input->method());
+        $methodWithSuffix = $method . '_' . $httpMethod;
+
+        if (method_exists($this, $methodWithSuffix)) {
+            call_user_func_array([$this, $methodWithSuffix], $params);
+            return;
+        }
+
+        if (method_exists($this, $method)) {
+            call_user_func_array([$this, $method], $params);
+            return;
+        }
+
+        $this->notFound('Endpoint nao encontrado');
+    }
 }
