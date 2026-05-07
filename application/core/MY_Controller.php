@@ -54,8 +54,9 @@ class MY_Controller extends CI_Controller
         $metodos_publicos_tecnico = ['login', 'autenticar', 'logout', 'api_login', 'api_verificar'];
         $metodo = $router->fetch_method();
 
-        // Se for controller da API, não redirecionar (autenticação própria via token)
-        if (strtolower($controller) === 'api' || strpos(strtolower($controller), 'api') === 0) {
+        // Se for controller da API (por classe ou diretório), não redirecionar
+        $directory = $router->fetch_directory();
+        if (strtolower($controller) === 'api' || strpos(strtolower($controller), 'api') === 0 || ($directory && strpos(strtolower($directory), 'api') === 0)) {
             // Não redirecionar - controllers da API têm autenticação própria
         }
         // Se for controller Tecnicos e método público, não redirecionar
