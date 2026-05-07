@@ -9,7 +9,7 @@ require_once APPPATH . 'controllers/api/v2/ApiResponseTrait.php';
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
-class AuthController extends CI_Controller
+class AuthController extends MY_Controller
 {
     use ApiResponseTrait;
 

@@ -14,7 +14,7 @@ if (file_exists(APPPATH . 'Security/RateLimiter.php')) {
     require_once APPPATH . 'Security/RateLimiter.php';
 }
 
-class BaseController extends CI_Controller
+class BaseController extends MY_Controller
 {
     use ApiResponseTrait;
 
