@@ -43,7 +43,7 @@
             "Libraries\\": "application/libraries",
             "Libraries\\Email\\": "application/libraries/Email",
             "Libraries\\Scheduler\\": "application/libraries/Scheduler",
-            "Libraries\\Cache\\": "application/Cache",
+            "Libraries\\Cache\\": "application/libraries/Cache",
             "Libraries\\Validation\\": "application/Validation",
             "Libraries\\Security\\": "application/Security",
             "Libraries\\Notifications\\": "application/libraries/Notifications",
