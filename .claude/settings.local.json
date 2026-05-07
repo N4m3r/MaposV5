@@ -197,7 +197,9 @@
       "Bash(cp -r application/views/agente_ia/* deploy_agente_ia/application/views/agente_ia/)",
       "Bash(cp n8n/workflows/*.json deploy_agente_ia/n8n/workflows/)",
       "Bash(zip -r deploy_agente_ia.zip deploy_agente_ia/)",
-      "Bash(tar -czf deploy_agente_ia.tar.gz deploy_agente_ia/)"
+      "Bash(tar -czf deploy_agente_ia.tar.gz deploy_agente_ia/)",
+      "Bash(git revert *)",
+      "Bash(git rm *)"
     ]
   }
 }
