@@ -286,7 +286,11 @@
       "Bash(\"C:/Program Files/PuTTY/plink\" -ssh -pw \"93982740tT\" jj-ferreiras@ftp.web10f91.kinghost.net \"cd www/MaposV5 && grep 'extends' application/controllers/api/v2/BaseController.php application/controllers/api/v2/AuthController.php\")",
       "Bash(\"C:/Program Files/PuTTY/plink\" -ssh -pw \"93982740tT\" jj-ferreiras@ftp.web10f91.kinghost.net \"cd www/MaposV5 && sed -i '/MY_Controller construct reached/d' application/core/MY_Controller.php && php clear_opcache.php && curl -s -w '\\\\nHTTP_CODE:%{http_code}\\\\n' -H 'X-API-Key: t4AZOtKkYyTlFHrYaORx33AsfFmwP6Ja/H1yJKPiV4Q=' 'https://jj-ferreiras.com.br/MaposV5/api/v2/health?cb=$\\(date +%s\\)' | head -c 300\",)",
       "Bash(pscp -pw \"93982740tT\" \"C:\\\\Users\\\\thail\\\\Desktop\\\\IVMS-CRUD\\\\MaposV5\\\\fix_my_controller_end.php\" jj-ferreiras@ftp.web10f91.kinghost.net:www/MaposV5/)",
-      "Bash(\"C:/Program Files/PuTTY/plink\" -ssh -pw \"93982740tT\" jj-ferreiras@ftp.web10f91.kinghost.net \"cd www/MaposV5 && php fix_my_controller_end.php && curl -s -H 'X-API-Key: t4AZOtKkYyTlFHrYaORx33AsfFmwP6Ja/H1yJKPiV4Q=' 'https://jj-ferreiras.com.br/MaposV5/api/v2/health' | head -c 100\")"
+      "Bash(\"C:/Program Files/PuTTY/plink\" -ssh -pw \"93982740tT\" jj-ferreiras@ftp.web10f91.kinghost.net \"cd www/MaposV5 && php fix_my_controller_end.php && curl -s -H 'X-API-Key: t4AZOtKkYyTlFHrYaORx33AsfFmwP6Ja/H1yJKPiV4Q=' 'https://jj-ferreiras.com.br/MaposV5/api/v2/health' | head -c 100\")",
+      "Bash(cat)",
+      "Bash(ftp -v -n ftp.web10f91.kinghost.net)",
+      "Bash(mkdir -p /tmp/server_files)",
+      "Bash(ftp -n -v ftp.web10f91.kinghost.net)"
     ]
   }
 }
