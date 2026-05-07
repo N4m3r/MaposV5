@@ -112,6 +112,11 @@ class Os_model extends CI_Model
         return $result;
     }
 
+    public function getAll()
+    {
+        return $this->db->get('os')->result();
+    }
+
     public function getById($id)
     {
         $this->db->select('os.*, clientes.*, clientes.celular as celular_cliente, clientes.telefone as telefone_cliente, clientes.contato as contato_cliente, garantias.refGarantia, garantias.textoGarantia, usuarios.telefone as telefone_usuario, usuarios.email as email_usuario, usuarios.nome');

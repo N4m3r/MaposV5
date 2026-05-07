@@ -123,6 +123,11 @@ class Vendas_model extends CI_Model
         return $result;
     }
 
+    public function getAll()
+    {
+        return $this->db->get('vendas')->result();
+    }
+
     public function getById($id)
     {
         $this->db->select('vendas.*, clientes.*, clientes.contato as contato_cliente, clientes.email as emailCliente, lancamentos.data_vencimento, usuarios.telefone as telefone_usuario, usuarios.email as email_usuario, usuarios.nome as nome');

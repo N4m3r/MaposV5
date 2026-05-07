@@ -21,6 +21,31 @@ class OsRepository extends AbstractRepository
     }
 
     /**
+     * Cria nova OS
+     */
+    public function create(array $data): int
+    {
+        $this->model->add('os', $data, true);
+        return $this->model->db->insert_id();
+    }
+
+    /**
+     * Atualiza OS
+     */
+    public function update(int $id, array $data): bool
+    {
+        return $this->model->edit('os', $data, 'idOs', $id);
+    }
+
+    /**
+     * Remove OS
+     */
+    public function delete(int $id): bool
+    {
+        return $this->model->delete('os', 'idOs', $id);
+    }
+
+    /**
      * Busca OS por cliente
      */
     public function findByCliente(int $clienteId, array $status = []): array

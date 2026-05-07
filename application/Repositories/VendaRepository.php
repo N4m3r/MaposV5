@@ -21,6 +21,31 @@ class VendaRepository extends AbstractRepository
     }
 
     /**
+     * Cria nova venda
+     */
+    public function create(array $data): int
+    {
+        $this->model->add('vendas', $data, true);
+        return $this->model->db->insert_id();
+    }
+
+    /**
+     * Atualiza venda
+     */
+    public function update(int $id, array $data): bool
+    {
+        return $this->model->edit('vendas', $data, 'idVendas', $id);
+    }
+
+    /**
+     * Remove venda
+     */
+    public function delete(int $id): bool
+    {
+        return $this->model->delete('vendas', 'idVendas', $id);
+    }
+
+    /**
      * Busca vendas por cliente
      */
     public function findByCliente(int $clienteId): array
