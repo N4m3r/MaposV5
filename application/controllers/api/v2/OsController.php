@@ -68,7 +68,7 @@ class OsController extends BaseController
         }
 
         // Carrega produtos e serviços
-        $ci = \&get_instance();
+        $ci = &get_instance();
         $ci->load->model('os_model');
         $os->produtos = $ci->os_model->getProdutos($id);
         $os->servicos = $ci->os_model->getServicos($id);
@@ -96,7 +96,7 @@ class OsController extends BaseController
             return;
         }
 
-        $ci = \&get_instance();
+        $ci = &get_instance();
         $ci->load->model('os_model');
 
         $id = $ci->os_model->insert($data);
@@ -139,7 +139,7 @@ class OsController extends BaseController
         $data = $this->getJsonInput();
         unset($data['idOs']);
 
-        $ci = \&get_instance();
+        $ci = &get_instance();
         $ci->load->model('os_model');
 
         $success = $ci->os_model->update($id, $data);
@@ -172,7 +172,7 @@ class OsController extends BaseController
             return;
         }
 
-        $ci = \&get_instance();
+        $ci = &get_instance();
         $ci->load->model('os_model');
         $success = $ci->os_model->update($id, ['status' => $status]);
 
@@ -202,7 +202,7 @@ class OsController extends BaseController
             return;
         }
 
-        $ci = \&get_instance();
+        $ci = &get_instance();
         $ci->load->model('os_model');
         $success = $ci->os_model->delete($id);
 

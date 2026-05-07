@@ -15,7 +15,7 @@ class OsRepository extends AbstractRepository
 
     public function __construct()
     {
-        $ci = \&get_instance();
+        $ci = &get_instance();
         $ci->load->model('os_model');
         parent::__construct($ci->os_model);
     }

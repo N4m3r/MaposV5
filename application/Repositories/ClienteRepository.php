@@ -14,7 +14,7 @@ class ClienteRepository extends AbstractRepository
 
     public function __construct()
     {
-        $ci = \&get_instance();
+        $ci = &get_instance();
         $ci->load->model('clientes_model');
         parent::__construct($ci->clientes_model);
     }

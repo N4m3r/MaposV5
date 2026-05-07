@@ -15,7 +15,7 @@ class VendaRepository extends AbstractRepository
 
     public function __construct()
     {
-        $ci = \&get_instance();
+        $ci = &get_instance();
         $ci->load->model('vendas_model');
         parent::__construct($ci->vendas_model);
     }

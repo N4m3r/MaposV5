@@ -20,7 +20,7 @@ class BaseController extends MY_Controller
 
     protected ?object $currentUser = null;
     protected array $allowedMethods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'];
-    protected $cache;
+    public $cache;
     protected $rateLimiter;
 
     public function __construct()
@@ -32,7 +32,15 @@ class BaseController extends MY_Controller
         $this->load->library('form_validation');
 
         // Inicializa cache e rate limiter (fallback se classes nao existirem)
-        $this->cache = null;
+        // Usa stub de cache para evitar conflitos com CI Loader
+        $this->cache = new class {
+            public function remember(string $key, callable $callback, int $ttl = 300): mixed
+            {
+                return $callback();
+            }
+            public function flush(): void {}
+        };
+
         $this->rateLimiter = null;
 
         // Verifica rate limiting (desabilitado temporariamente)
@@ -220,7 +228,7 @@ class BaseController extends MY_Controller
      */
     protected function logAccess(string $endpoint, string $method): void
     {
-        $ci = \&get_instance();
+        $ci = &get_instance();
         $ci->load->model('Audit_model');
 
         $ci->Audit_model->addLog([
