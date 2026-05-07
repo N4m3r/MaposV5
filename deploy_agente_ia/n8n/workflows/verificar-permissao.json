@@ -1,0 +1,124 @@
+{
+  "name": "Verificar Permissao Agente IA",
+  "id": "02_verificar_permissao",
+  "nodes": [
+    {
+      "id": "trigger_perm",
+      "name": "When Executed",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ]
+    },
+    {
+      "id": "extrair_perm",
+      "name": "Extrair Dados",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        450,
+        300
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const body = $input.first().json || {};\nconst numero = body.numero || body.numero_telefone || '';\nconst acao = body.acao || '';\nreturn [{json:{numero,acao}}];"
+      }
+    },
+    {
+      "id": "verificar_api",
+      "name": "Verificar Permissao MapOS",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        650,
+        300
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://jj-ferreiras.com.br/MaposV5/api/v2/autorizacoes/verificar",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=\"{\\\"numero_telefone\\\": \\\"{{ $('Extrair Dados').item.json.numero }}\\\", \\\"acao\\\": \\\"{{ $('Extrair Dados').item.json.acao }}\\\"}\"",
+        "options": {
+          "response": {
+            "responseFormat": "json"
+          }
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Kwp8sScLLeF1kDCE",
+          "name": "mapos_api"
+        }
+      }
+    },
+    {
+      "id": "formatar_resposta",
+      "name": "Formatar Resposta",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        850,
+        300
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const r = $input.first().json.data || {};\nreturn [{json:{\n  executar_acao: r.permitido === true,\n  requer_autorizacao: r.requer_autorizacao === true,\n  requer_2fa: r.requer_2fa === true,\n  perfil: r.perfil || 'desconhecido',\n  usuarios_id: r.usuarios_id || null,\n  clientes_id: r.clientes_id || null,\n  nivel_acao: r.nivel_acao || 1,\n  nivel_maximo_auto: r.nivel_maximo_auto || 1,\n  motivo: r.motivo || ''\n}}];"
+      }
+    }
+  ],
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Manaus"
+  },
+  "connections": {
+    "When Executed": {
+      "main": [
+        [
+          {
+            "node": "Extrair Dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extrair Dados": {
+      "main": [
+        [
+          {
+            "node": "Verificar Permissao MapOS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verificar Permissao MapOS": {
+      "main": [
+        [
+          {
+            "node": "Formatar Resposta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "tags": [
+    {
+      "name": "agente-ia"
+    },
+    {
+      "name": "permissao"
+    }
+  ]
+}
