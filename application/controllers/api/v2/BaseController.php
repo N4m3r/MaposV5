@@ -5,10 +5,14 @@
  */
 
 require_once APPPATH . 'controllers/api/v2/ApiResponseTrait.php';
-require_once APPPATH . 'Security/RateLimiter.php';
 
-use Libraries\Cache\CacheManager;
-use Libraries\Security\RateLimiter;
+// Carrega classes auxiliares manualmente (sem depender do autoload do Composer)
+if (file_exists(APPPATH . 'libraries/Cache/CacheManager.php')) {
+    require_once APPPATH . 'libraries/Cache/CacheManager.php';
+}
+if (file_exists(APPPATH . 'Security/RateLimiter.php')) {
+    require_once APPPATH . 'Security/RateLimiter.php';
+}
 
 class BaseController extends CI_Controller
 {
@@ -16,8 +20,8 @@ class BaseController extends CI_Controller
 
     protected ?object $currentUser = null;
     protected array $allowedMethods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'];
-    protected CacheManager $cache;
-    protected RateLimiter $rateLimiter;
+    protected $cache;
+    protected $rateLimiter;
 
     public function __construct()
     {
@@ -27,11 +31,15 @@ class BaseController extends CI_Controller
         $this->load->helper(['url', 'form']);
         $this->load->library('form_validation');
 
-        // Inicializa cache
-        $this->cache = new CacheManager();
+        // Inicializa cache (fallback se classe nao existir)
+        if (class_exists('Libraries\\Cache\\CacheManager')) {
+            $this->cache = new \Libraries\Cache\CacheManager();
+        }
 
-        // Inicializa rate limiter
-        $this->rateLimiter = new RateLimiter();
+        // Inicializa rate limiter (fallback se classe nao existir)
+        if (class_exists('Libraries\\Security\\RateLimiter')) {
+            $this->rateLimiter = new \Libraries\Security\RateLimiter();
+        }
 
         // Verifica rate limiting
         $this->checkRateLimit();
