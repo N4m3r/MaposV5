@@ -112,10 +112,8 @@ $route['relatoriotecnicos'] = 'relatoriotecnicos';
 $route['webhooks'] = 'webhooks';
 $route['webhooks/docs'] = 'webhooks/docs';
 
-// Rotas da API
-if (filter_var($_ENV['API_ENABLED'] ?? false, FILTER_VALIDATE_BOOLEAN)) {
-    require APPPATH . 'config/routes_api.php';
-}
+// Rotas da API (sempre carregadas para MAPOS 5.0)
+require APPPATH . 'config/routes_api.php';
 
 // Rotas API V2 (sempre habilitadas para MAPOS 5.0)
 $route['api/v2'] = 'api/docs';
