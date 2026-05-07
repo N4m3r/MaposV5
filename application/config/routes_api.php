@@ -114,6 +114,6 @@ $route['api/v2/webhooks/evolution']        = 'api/v2/WhatsappController/evolutio
 $route['api/v2/webhooks/evolution/status'] = 'api/v2/WhatsappController/evolution_status';
 
 // Documentação
-$route['api/v2'] = 'api/docs';
-$route['api/docs'] = 'api/docs';
+$route['api/v2'] = 'api_docs/docs';
+$route['api/docs'] = 'api_docs/docs';
 

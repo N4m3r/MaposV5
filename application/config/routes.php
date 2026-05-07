@@ -116,8 +116,8 @@ $route['webhooks/docs'] = 'webhooks/docs';
 require APPPATH . 'config/routes_api.php';
 
 // Rotas API V2 (sempre habilitadas para MAPOS 5.0)
-$route['api/v2'] = 'api/docs';
-$route['api/docs'] = 'api/docs';
+$route['api/v2'] = 'api_docs/docs';
+$route['api/docs'] = 'api_docs/docs';
 $route['api/v2/health'] = 'api/v2/AuthController/health';
 $route['api/v2/auth/login'] = 'api/v2/AuthController/login';
 $route['api/v2/auth/refresh'] = 'api/v2/AuthController/refresh';

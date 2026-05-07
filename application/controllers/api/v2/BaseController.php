@@ -220,7 +220,7 @@ class BaseController extends MY_Controller
      */
     protected function logAccess(string $endpoint, string $method): void
     {
-        $ci = \u0026get_instance();
+        $ci = \&get_instance();
         $ci->load->model('Audit_model');
 
         $ci->Audit_model->addLog([
