@@ -60,25 +60,29 @@ class Migration_Fix_agente_ia_tables_v2 extends CI_Migration
             // Atualiza seeds com configuracoes padrao corretas
             $this->db->query("INSERT INTO `agente_ia_configuracoes`
                 (`chave`, `valor`, `descricao`, `grupo`, `sensivel`) VALUES
-                ('evolution_url', 'http://192.168.100.238:8091', 'URL da API Evolution (evolution-go)', 'evolution', 0),
-                ('evolution_apikey', '', 'API Key da Evolution API', 'evolution', 1),
-                ('evolution_instance', '', 'Nome da instancia WhatsApp', 'evolution', 0),
-                ('evolution_enabled', '0', 'Ativar integracao Evolution', 'evolution', 0),
-                ('n8n_webhook_url', '', 'URL do webhook do n8n', 'n8n', 0),
-                ('n8n_apikey', '', 'API Key do n8n', 'n8n', 1),
-                ('n8n_enabled', '0', 'Ativar integracao n8n', 'n8n', 0),
-                ('llm_provider', 'openrouter', 'Provedor LLM', 'llm', 0),
-                ('llm_apikey', '', 'API Key do provedor LLM', 'llm', 1),
-                ('llm_model', 'google/gemini-2.5-flash-preview', 'Modelo LLM padrao', 'llm', 0),
-                ('llm_system_prompt', 'Voce e um assistente virtual desta empresa. Seja educado, breve e objetivo.', 'Prompt de sistema', 'llm', 0),
-                ('llm_enabled', '0', 'Ativar processamento LLM', 'llm', 0),
-                ('agente_max_tokens', '4096', 'Maximo de tokens por resposta', 'llm', 0),
-                ('agente_timeout', '30', 'Timeout segundos', 'llm', 0),
+                ('evolution_url', 'http://192.168.100.238:8091', 'URL da API Evolution (evolution-go)', 'integracao', 0),
+                ('evolution_apikey', '', 'API Key da Evolution API', 'integracao', 1),
+                ('evolution_instance', '', 'Nome da instancia WhatsApp', 'integracao', 0),
+                ('evolution_enabled', '0', 'Ativar integracao Evolution', 'integracao', 0),
+                ('n8n_webhook_url', '', 'URL do webhook do n8n', 'integracao', 0),
+                ('n8n_apikey', '', 'API Key do n8n', 'integracao', 1),
+                ('n8n_enabled', '0', 'Ativar integracao n8n', 'integracao', 0),
+                ('llm_provider', 'openrouter', 'Provedor LLM', 'ia', 0),
+                ('llm_apikey', '', 'API Key do provedor LLM', 'ia', 1),
+                ('llm_model', 'google/gemini-2.5-flash-preview', 'Modelo LLM padrao', 'ia', 0),
+                ('llm_system_prompt', 'Voce e um assistente virtual desta empresa. Seja educado, breve e objetivo.', 'Prompt de sistema', 'ia', 0),
+                ('llm_enabled', '0', 'Ativar processamento LLM', 'ia', 0),
+                ('agente_max_tokens', '4096', 'Maximo de tokens por resposta', 'ia', 0),
+                ('agente_timeout', '30', 'Timeout segundos para resposta da IA', 'ia', 0),
                 ('numero_whatsapp_principal', '', 'Numero principal do atendimento', 'geral', 0),
                 ('mensagem_boas_vindas', 'Ola! Sou o assistente virtual. Em que posso ajudar?', 'Mensagem de boas-vindas', 'geral', 0),
                 ('horario_atendimento_inicio', '08:00', 'Inicio atendimento automatico', 'geral', 0),
                 ('horario_atendimento_fim', '18:00', 'Fim atendimento automatico', 'geral', 0),
-                ('auto_responder_fora_horario', '1', 'Auto-responder fora do horario', 'geral', 0)
+                ('auto_responder_fora_horario', '1', 'Auto-responder fora do horario', 'geral', 0),
+                ('autorizacao_tempo_minutos', '15', 'Tempo de expiracao dos tokens de autorizacao', 'autorizacao', 0),
+                ('autorizacao_max_tentativas', '3', 'Maximo de tentativas de resposta por token', 'autorizacao', 0),
+                ('rate_limit_minutos', '5', 'Janela de rate limit por numero/acao (minutos)', 'autorizacao', 0),
+                ('notificacao_admin_email', '', 'E-mail para notificacoes criticas do agente', 'notificacao', 0)
                 ON DUPLICATE KEY UPDATE `valor` = VALUES(`valor`), `grupo` = VALUES(`grupo`), `sensivel` = VALUES(`sensivel`)");
         }
 

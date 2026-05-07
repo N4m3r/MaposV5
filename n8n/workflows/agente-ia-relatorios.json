@@ -223,7 +223,7 @@
       ],
       "parameters": {
         "method": "POST",
-        "url": "http://evolution-go:8091/message/sendText",
+        "url": "http://192.168.100.238:8091/message/sendText",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
@@ -398,7 +398,7 @@
       ]
     }
   },
-  "active": false,
+  "active": true,
   "tags": [
     {
       "name": "agente-ia"

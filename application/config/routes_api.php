@@ -87,6 +87,14 @@ $route['api/v2/produtos/(:num)/estoque'] = 'api/v2/ProdutosController/estoque/$1
 $route['api/v2/webhooks'] = 'api/v2/WebhooksController/index';
 $route['api/v2/webhooks/(:num)'] = 'api/v2/WebhooksController/show/$1';
 
+// Notificacoes (Agente IA / n8n)
+$route['api/v2/notificacoes/template'] = 'api/v2/NotificacoesController/template';
+$route['api/v2/notificacoes/log']      = 'api/v2/NotificacoesController/log';
+
+// Cobrancas
+$route['api/v2/cobrancas']            = 'api/v2/CobrancasController/index';
+$route['api/v2/cobrancas/pendentes'] = 'api/v2/CobrancasController/pendentes';
+
 // --- Rotas API v2: Agente IA / Autorizacoes ---
 $route['api/v2/autorizacoes/verificar']  = 'api/v2/AutorizacoesController/verificar';
 $route['api/v2/autorizacoes/solicitar']  = 'api/v2/AutorizacoesController/solicitar';
@@ -100,6 +108,10 @@ $route['api/v2/relatorios/exportar']     = 'api/v2/RelatoriosController/exportar
 
 // --- Rotas API v2: Acoes do Agente IA ---
 $route['api/v2/acoes/executar']          = 'api/v2/AcoesController/executar';
+
+// Webhooks externos (Evolution API)
+$route['api/v2/webhooks/evolution']        = 'api/v2/WhatsappController/evolution';
+$route['api/v2/webhooks/evolution/status'] = 'api/v2/WhatsappController/evolution_status';
 
 // Documentação
 $route['api/v2'] = 'api/docs';
