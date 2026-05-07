@@ -55,10 +55,80 @@
  * NOTE: If you change these, also change the error_reporting() code below
  */
 
+// -------------------------------------------------------------
+// HANDLERS DE ERRO PARA API V2 (JSON ao invés de HTML)
+// Devem ser registrados ANTES do autoload para capturar erros
+// fatais do Composer e retornar JSON em vez de HTML.
+// ---------------------------------------------------------------
+$isApiV2 = false;
+if (!empty($_SERVER['REQUEST_URI']) && strpos($_SERVER['REQUEST_URI'], '/api/v2') !== false) {
+    $isApiV2 = true;
+}
+
+function apiV2ErrorResponse($message, $code = 500, $details = null)
+{
+    header('Content-Type: application/json; charset=utf-8');
+    http_response_code($code);
+    $response = [
+        'success' => false,
+        'message' => $message,
+        'meta' => [
+            'timestamp' => date('c'),
+            'version' => 'v2'
+        ]
+    ];
+    if ($details !== null) {
+        $response['errors'] = $details;
+    }
+    echo json_encode($response);
+    exit;
+}
+
+if ($isApiV2) {
+    // Desativa exibição HTML de erros do PHP
+    ini_set('display_errors', 0);
+
+    // Captura exceções não tratadas
+    set_exception_handler(function ($e) {
+        apiV2ErrorResponse($e->getMessage(), 500, [
+            'file' => $e->getFile(),
+            'line' => $e->getLine()
+        ]);
+    });
+
+    // Captura erros fatais
+    register_shutdown_function(function () {
+        $error = error_get_last();
+        if ($error !== null && in_array($error['type'], [E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_PARSE], true)) {
+            apiV2ErrorResponse($error['message'], 500, [
+                'file' => $error['file'],
+                'line' => $error['line']
+            ]);
+        }
+    });
+
+    // Erros graves viram JSON
+    set_error_handler(function ($severity, $message, $file, $line) {
+        if (!(error_reporting() & $severity)) {
+            return false;
+        }
+        if (in_array($severity, [E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_USER_ERROR, E_RECOVERABLE_ERROR], true)) {
+            apiV2ErrorResponse($message, 500, [
+                'file' => $file,
+                'line' => $line
+            ]);
+        }
+        return true;
+    });
+}
+
 $composerAutoloadFile = __DIR__ . DIRECTORY_SEPARATOR . 'application' . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
 if (file_exists($composerAutoloadFile)) {
     require_once $composerAutoloadFile;
 } else {
+    if ($isApiV2) {
+        apiV2ErrorResponse('Arquivo autoload não encontrado, necessário executar composer install!', 500);
+    }
     throw new \Exception('Arquivo autoload não encontrado, necessário executar composer install!');
 }
 
