@@ -31,18 +31,12 @@ class BaseController extends CI_Controller
         $this->load->helper(['url', 'form']);
         $this->load->library('form_validation');
 
-        // Inicializa cache (fallback se classe nao existir)
-        if (class_exists('Libraries\\Cache\\CacheManager')) {
-            $this->cache = new \Libraries\Cache\CacheManager();
-        }
+        // Inicializa cache e rate limiter (fallback se classes nao existirem)
+        $this->cache = null;
+        $this->rateLimiter = null;
 
-        // Inicializa rate limiter (fallback se classe nao existir)
-        if (class_exists('Libraries\\Security\\RateLimiter')) {
-            $this->rateLimiter = new \Libraries\Security\RateLimiter();
-        }
-
-        // Verifica rate limiting
-        $this->checkRateLimit();
+        // Verifica rate limiting (desabilitado temporariamente)
+        // $this->checkRateLimit();
 
         // Verifica autenticação
         $this->authenticate();
