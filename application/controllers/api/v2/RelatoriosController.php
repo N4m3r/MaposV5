@@ -12,7 +12,7 @@ require_once APPPATH . 'controllers/api/v2/BaseController.php';
 
 class RelatoriosController extends BaseController
 {
-    protected Agente_ia_relatorios_model $relModel;
+    public Agente_ia_relatorios_model $relModel;
 
     public function __construct()
     {

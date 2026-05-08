@@ -22,8 +22,8 @@ require_once APPPATH . 'controllers/api/v2/BaseController.php';
 
 class AcoesController extends BaseController
 {
-    protected Agente_ia_autorizacoes_model $autModel;
-    protected Agente_ia_permissoes_model   $permModel;
+    public Agente_ia_autorizacoes_model $autModel;
+    public Agente_ia_permissoes_model   $permModel;
 
     public function __construct()
     {
