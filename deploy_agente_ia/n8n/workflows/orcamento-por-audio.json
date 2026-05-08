@@ -136,14 +136,23 @@
       ],
       "parameters": {
         "method": "POST",
-        "url": "http://192.168.100.238:11434/api/generate",
+        "url": "https://ollama.com/api/generate",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "=\"{\\\"model\\\": \\\"hermes3:8b\\\", \\\"prompt\\\": \\\"Voce e um assistente que extrai dados de orcamento de assistencia tecnica a partir de um audio transcrito.\\n\\nTEXTO TRANSCRITO:\\\\n\\\"{{ $json.text || $json.transcription || '' }}\\\"\\n\\nEXTRAIA os seguintes campos em JSON:\\n{\\\"cliente_nome\\\": \\\"nome do cliente mencionado\\\",\\\"equipamento\\\": \\\"modelo do aparelho\\\",\\\"defeito\\\": \\\"descricao do problema\\\",\\\"servico\\\": \\\"tipo de servico\\\",\\\"valor\\\": \\\"valor numerico sem R$\\\",\\\"peca\\\": \\\"peca mencionada\\\",\\\"prazo\\\": \\\"prazo em dias\\\",\\\"observacoes\\\": \\\"outras informacoes\\\"}\\n\\nREGRAS:\\n- Se campo nao estiver no texto, retorne null\\n- Valor deve ser numero decimal (450.00)\\n- Prazo deve ser numero inteiro de dias\\n- Nao invente dados\\n- Responda APENAS com o JSON, sem markdown\\\", \\\"stream\\\": false, \\\"format\\\": \\\"json\\\"}\"",
+        "jsonBody": "=\"{\\\"model\\\": \\\"kimi-k2.6:cloud\\\", \\\"prompt\\\": \\\"Voce e um assistente que extrai dados de orcamento de assistencia tecnica a partir de um audio transcrito.\\n\\nTEXTO TRANSCRITO:\\\\n\\\"{{ $json.text || $json.transcription || '' }}\\\"\\n\\nEXTRAIA os seguintes campos em JSON:\\n{\\\"cliente_nome\\\": \\\"nome do cliente mencionado\\\",\\\"equipamento\\\": \\\"modelo do aparelho\\\",\\\"defeito\\\": \\\"descricao do problema\\\",\\\"servico\\\": \\\"tipo de servico\\\",\\\"valor\\\": \\\"valor numerico sem R$\\\",\\\"peca\\\": \\\"peca mencionada\\\",\\\"prazo\\\": \\\"prazo em dias\\\",\\\"observacoes\\\": \\\"outras informacoes\\\"}\\n\\nREGRAS:\\n- Se campo nao estiver no texto, retorne null\\n- Valor deve ser numero decimal (450.00)\\n- Prazo deve ser numero inteiro de dias\\n- Nao invente dados\\n- Responda APENAS com o JSON, sem markdown\\\", \\\"stream\\\": false, \\\"format\\\": \\\"json\\\"}\"",
         "options": {
           "response": {
             "responseFormat": "json"
           }
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer OLLAMA_API_KEY_AQUI"
+            }
+          ]
         }
       }
     },

@@ -293,7 +293,9 @@
       "Bash(ftp -n -v ftp.web10f91.kinghost.net)",
       "Bash(ping *)",
       "Bash(sshpass *)",
-      "Bash(/c/Program Files/PuTTY/plink.exe *)"
+      "Bash(/c/Program Files/PuTTY/plink.exe *)",
+      "Bash(/c/Program Files/PuTTY/plink *)",
+      "Bash(/c/Program Files/PuTTY/plink *,)"
     ]
   }
 }
