@@ -290,7 +290,10 @@
       "Bash(cat)",
       "Bash(ftp -v -n ftp.web10f91.kinghost.net)",
       "Bash(mkdir -p /tmp/server_files)",
-      "Bash(ftp -n -v ftp.web10f91.kinghost.net)"
+      "Bash(ftp -n -v ftp.web10f91.kinghost.net)",
+      "Bash(ping *)",
+      "Bash(sshpass *)",
+      "Bash(/c/Program Files/PuTTY/plink.exe *)"
     ]
   }
 }

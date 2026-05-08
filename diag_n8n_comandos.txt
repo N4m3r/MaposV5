@@ -1,0 +1,45 @@
+========================================
+DIAGNOSTICO N8N - AGENTE IA
+Execute todos os comandos abaixo no servidor
+========================================
+
+Copie cada bloco e cole no terminal SSH:
+
+--- 1. CONTAINER N8N ---
+docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" | grep -i n8n
+
+--- 2. LOGS N8N (ultimos 50 erros) ---
+N8N=$(docker ps --format "{{.Names}}" | grep -i n8n | head -1)
+docker logs --tail 50 "$N8N" 2>&1 | tail -50
+
+--- 3. LISTAR WORKFLOWS ---
+curl -s http://localhost:5678/rest/workflows | python3 -m json.tool 2>/dev/null | head -80
+
+--- 4. EXECUCOES COM ERRO (ultimas 10) ---
+curl -s "http://localhost:5678/rest/executions?filter={\"status\":[\"error\"]}&limit=10" | python3 -m json.tool 2>/dev/null | head -100
+
+--- 5. EXECUCOES RECENTES (ultimas 10 de qualquer status) ---
+curl -s "http://localhost:5678/rest/executions?limit=10" | python3 -m json.tool 2>/dev/null | head -100
+
+--- 6. CREDENCIAIS CONFIGURADAS ---
+curl -s http://localhost:5678/rest/credentials | python3 -m json.tool 2>/dev/null | head -40
+
+--- 7. TESTE WEBHOOK (simular mensagem do WhatsApp) ---
+curl -s -X POST http://localhost:5678/webhook/agente-ia \
+  -H "Content-Type: application/json" \
+  -d '{"telefone":"92992150107","mensagem":"Oi agente"}' | head -c 200
+
+--- 8. TESTE API MAPOS (verificar se a API produção responde) ---
+curl -s -o /dev/null -w "HTTP: %{http_code} | Tempo: %{time_total}s" \
+  -H "X-API-Key: t4AZOtKkYyTlFHrYaORx33AsfFmwP6Ja/H1yJKPiV4Q=" \
+  "https://jj-ferreiras.com.br/MaposV5/api/v2/health"
+
+--- 9. VARIAVEIS DE AMBIENTE ---
+env | grep -i n8n
+
+--- 10. PORTAS ABERTAS ---
+ss -tlnp | grep -E "5678|8080|3000|11434" 2>/dev/null || netstat -tlnp | grep -E "5678|8080|3000|11434"
+
+========================================
+COLE O OUTPUT COMPLETO AQUI NO CHAT
+========================================
