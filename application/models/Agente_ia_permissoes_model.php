@@ -142,8 +142,8 @@ class Agente_ia_permissoes_model extends CI_Model
                 ->get('usuarios')
                 ->row();
 
-            if ($usuario && !empty($usuario->idPermissao)) {
-                return $this->mapearPermissaoParaPerfil((int)$usuario->idPermissao);
+            if ($usuario && !empty($usuario->permissoes_id)) {
+                return $this->mapearPermissaoParaPerfil((int)$usuario->permissoes_id);
             }
 
             return 'desconhecido';
