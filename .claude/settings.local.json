@@ -295,7 +295,9 @@
       "Bash(sshpass *)",
       "Bash(/c/Program Files/PuTTY/plink.exe *)",
       "Bash(/c/Program Files/PuTTY/plink *)",
-      "Bash(/c/Program Files/PuTTY/plink *,)"
+      "Bash(/c/Program Files/PuTTY/plink *,)",
+      "Bash(plink -V)",
+      "Bash(plink *)"
     ]
   }
 }
