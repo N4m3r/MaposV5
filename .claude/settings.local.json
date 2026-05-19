@@ -297,7 +297,14 @@
       "Bash(/c/Program Files/PuTTY/plink *)",
       "Bash(/c/Program Files/PuTTY/plink *,)",
       "Bash(plink -V)",
-      "Bash(plink *)"
+      "Bash(plink *)",
+      "PowerShell(Out-File *)",
+      "Bash(Get-Content \"C:\\\\Users\\\\thail\\\\Desktop\\\\IVMS-CRUD\\\\MaposV5\\\\add_menu2.b64\")",
+      "Bash(scp *)",
+      "Bash(pscp *)",
+      "Read(//c/Users/thail/.ssh/**)",
+      "Read(//c/Users/thail/.ssh//**)",
+      "Bash(base64 -w0 /tmp/wf01.json)"
     ]
   }
 }
