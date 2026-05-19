@@ -304,7 +304,9 @@
       "Bash(pscp *)",
       "Read(//c/Users/thail/.ssh/**)",
       "Read(//c/Users/thail/.ssh//**)",
-      "Bash(base64 -w0 /tmp/wf01.json)"
+      "Bash(base64 -w0 /tmp/wf01.json)",
+      "PowerShell(pscp *)",
+      "PowerShell(plink *)"
     ]
   }
 }
