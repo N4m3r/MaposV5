@@ -45,3 +45,15 @@ ci_sessions/
 uploads
 application/.env
 assets/userImage
+
+# Arquivos temporarios de debugging e deploy
+/fix_*.php
+/fix_*.py
+/diag_*
+/erro/
+/tmp/
+/certificado/
+*.tar.gz
+*.zip
+*.b64
+recebe_full.json

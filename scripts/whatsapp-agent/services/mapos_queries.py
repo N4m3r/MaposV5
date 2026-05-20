@@ -45,8 +45,8 @@ class MaposQueries:
             SELECT o.idOs, o.dataInicial, o.dataFinal, o.garantia,
                    o.descricaoProduto, o.defeito, o.status,
                    o.observacoes, o.laudoTecnico,
-                   COALESCE((SELECT SUM(valor) FROM produtos_os WHERE os_id = o.idOs), 0) as total_produtos,
-                   COALESCE((SELECT SUM(valor) FROM servicos_os WHERE os_id = o.idOs), 0) as total_servicos
+                   COALESCE((SELECT SUM(subTotal) FROM produtos_os WHERE os_id = o.idOs), 0) as total_produtos,
+                   COALESCE((SELECT SUM(subTotal) FROM servicos_os WHERE os_id = o.idOs), 0) as total_servicos
             FROM os o
             WHERE o.clientes_id = :cliente_id
             ORDER BY o.idOs DESC

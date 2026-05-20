@@ -1,5 +1,8 @@
 import re
+import logging
 from typing import Tuple, Optional
+
+logger = logging.getLogger(__name__)
 
 # Dicionario de comandos conhecidos
 COMANDOS = {
@@ -39,7 +42,12 @@ COMANDOS = {
     ],
     'ajuda': [
         'oi', 'ola', 'ajuda', 'menu', 'comandos', 'o que voce faz',
-        'help', 'como usar', 'opcoes'
+        'help', 'como usar', 'opcoes', 'bom dia', 'boa tarde', 'boa noite',
+        'hey', 'eai', 'fala'
+    ],
+    'sair': [
+        'sair', '#sair', 'encerrar', 'tchau', 'bye', 'obrigado', 'valeu',
+        'ades', 'ate mais', 'ate logo', 'fim'
     ],
     'total_os_abertas': [
         'total os abertas', 'quantas os abertas', 'os em aberto'
@@ -52,7 +60,7 @@ OS_NUMBER_RE = re.compile(r'#?\s*(\d+)')
 
 def classificar(texto: str) -> Tuple[str, Optional[dict]]:
     """
-    Classifica o texto em um comando conhecido.
+    Classifica o texto em um comando conhecido (fallback regex).
     Retorna: (comando, parametros)
     """
     texto_lower = texto.lower().strip()
@@ -91,7 +99,6 @@ def extrair_parametros(texto: str, comando: str) -> dict:
 
     # Extrair nome de cliente (para criar OS)
     if comando == 'criar_os':
-        # Tenta extrair "para [nome]" ou "cliente [nome]"
         cliente_match = re.search(r'(?:para|cliente)\s+([\w\s]+?)(?:,|\s+defeito|$)', texto)
         if cliente_match:
             params['cliente_nome'] = cliente_match.group(1).strip()
@@ -110,37 +117,40 @@ def formatar_resposta(comando: str, dados: dict, usuario: dict = None) -> str:
 
     if comando == 'ajuda':
         if tipo == 'cliente':
-            return f"""Ola {nome}! 👋
+            return f"""Ola {nome}! 👋 Bem-vindo(a) ao assistente virtual da *JJ Ferreiras*!
 
-Eu sou o assistente virtual da JJ Ferreiras. Posso te ajudar com:
+Como posso ajudar? Escolha uma opcao:
 
-* status da minha os* - Ver suas ordens de servico
-* quanto devo* - Valor em aberto
+📋 *status da minha os* - Ver suas ordens de servico
+💰 *quanto devo* - Consultar valor em aberto
+🔍 *detalhes da os* - Ver detalhes de uma OS (informe o numero)
+📝 *criar os* - Abrir nova ordem de servico
 
-Em breve mais comandos!
-"""
+Digite a opcao desejada ou pergunte de forma natural!"""
         elif tipo == 'tecnico':
-            return f"""Ola {nome}! 🔧
+            return f"""Ola {nome}! 🔧 Bem-vindo(a) ao assistente virtual da *JJ Ferreiras*!
 
 Comandos disponiveis:
 
-* minhas os de hoje* - Suas ordens do dia
-* relatorio de os* - Resumo do dia
+📋 *minhas os de hoje* - Suas ordens de servico do dia
+🔍 *detalhes da os* - Ver detalhes de uma OS (informe o numero)
+📊 *relatorio de os* - Resumo de OS do dia
+⚠️ *os atrasadas* - Servicos em atraso
 
-Mais funcoes em breve!
-"""
+Digite a opcao desejada ou pergunte de forma natural!"""
         else:
-            return f"""Ola {nome}! ⚙️
+            return f"""Ola {nome}! ⚙️ Painel administrativo da *JJ Ferreiras*!
 
-Comandos de admin:
+Comandos disponiveis:
 
-* relatorio de os* - Total do dia
-* os atrasadas* - Servicos em atraso
-* vendas pendentes* - Vendas nao faturadas
-* total os abertas* - Quantidade em aberto
+📊 *relatorio de os* - Resumo de OS do dia
+⚠️ *os atrasadas* - Servicos em atraso
+💰 *vendas pendentes* - Vendas nao faturadas
+📄 *cobrancas vencidas* - Cobrancas vencidas
+📋 *total os abertas* - Quantidade em aberto
+🔍 *detalhes da os* - Ver detalhes de uma OS (informe o numero)
 
-Mais funcoes em breve!
-"""
+Digite a opcao desejada ou pergunte de forma natural!"""
 
     elif comando == 'status_os':
         oss = dados.get('oss', [])
@@ -173,8 +183,7 @@ Equipamento: {os['descricaoProduto'] or 'Nao informado'}
 Defeito: {os['defeito'] or 'Nao informado'}
 Status: {os['status']}
 Observacoes: {os['observacoes'] or 'Nenhuma'}
-Laudo: {os['laudoTecnico'] or 'Nenhum'}
-"""
+Laudo: {os['laudoTecnico'] or 'Nenhum'}"""
         return msg
 
     elif comando == 'minhas_os_hoje':
@@ -247,6 +256,13 @@ Laudo: {os['laudoTecnico'] or 'Nenhum'}
         total = dados.get('total', 0)
         return f"Total de OS em aberto: *{total}*"
 
+    elif comando == 'sair':
+        return f"""Ate logo, {nome}! 👋
+
+Se precisar de algo, e so mandar uma mensagem. Estou sempre disponivel!
+
+Digite *ajuda* a qualquer momento para ver o menu de opcoes."""
+
     elif comando == 'criar_os':
         return dados.get('mensagem', 'Comando de criar OS recebido.')
 
@@ -258,7 +274,6 @@ Tente um destes:
 • quanto devo
 • ajuda
 
-Ou entre em contato com nossa equipe.
-"""
+Ou entre em contato com nossa equipe."""
 
     return "Comando processado."
