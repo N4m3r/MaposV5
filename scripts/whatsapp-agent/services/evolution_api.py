@@ -95,6 +95,59 @@ class EvolutionAPI:
         # Metodo 2: Se tem URL direta, baixar
         return {'success': False, 'error': 'Nao foi possivel baixar a midia'}
 
+    def enviar_botoes(self, numero: str, title: str, description: str,
+                      buttons: list, footer: str = ''):
+        """Envia mensagem com botões interativos (max 3 reply buttons).
+        buttons: [{'type':'reply','displayText':'...','id':'...'}]
+        """
+        url = f"{self.base_url}/send/button"
+        payload = {
+            'number': numero,
+            'title': title,
+            'description': description,
+            'footer': footer or 'JJ Ferreiras',
+            'buttons': buttons,
+            'delay': 1200
+        }
+        try:
+            resp = requests.post(url, headers=self.headers, json=payload, timeout=30)
+            data = resp.json() if resp.text else {}
+            return {
+                'success': resp.status_code == 200,
+                'status_code': resp.status_code,
+                'data': data
+            }
+        except Exception as e:
+            logger.error(f"Erro ao enviar botoes: {e}")
+            return {'success': False, 'error': str(e)}
+
+    def enviar_lista(self, numero: str, title: str, description: str,
+                     button_text: str, sections: list, footer: str = ''):
+        """Envia menu de lista interativo com seções e itens.
+        sections: [{'title':'Seção','rows':[{'title':'Item','description':'desc','rowId':'cmd'}]}]
+        """
+        url = f"{self.base_url}/send/list"
+        payload = {
+            'number': numero,
+            'title': title,
+            'description': description,
+            'buttonText': button_text or 'Ver opcoes',
+            'footerText': footer or 'JJ Ferreiras',
+            'sections': sections,
+            'delay': 1200
+        }
+        try:
+            resp = requests.post(url, headers=self.headers, json=payload, timeout=30)
+            data = resp.json() if resp.text else {}
+            return {
+                'success': resp.status_code == 200,
+                'status_code': resp.status_code,
+                'data': data
+            }
+        except Exception as e:
+            logger.error(f"Erro ao enviar lista: {e}")
+            return {'success': False, 'error': str(e)}
+
     def baixar_audio_url(self, url: str) -> dict:
         """Baixa audio de URL direta."""
         try:

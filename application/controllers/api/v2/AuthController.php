@@ -53,6 +53,15 @@ class AuthController extends MY_Controller
             return $this->error('Invalid credentials', 401);
         }
 
+        // Migra hash MD5 para bcrypt se necessario
+        if (strpos($usuario->senha, '$2y$') !== 0 && strpos($usuario->senha, '$argon2') !== 0) {
+            $newHash = password_hash($password, PASSWORD_BCRYPT, ['cost' => 12]);
+            if ($newHash) {
+                $this->db->where('idUsuarios', $usuario->idUsuarios);
+                $this->db->update('usuarios', ['senha' => $newHash]);
+            }
+        }
+
         // Verifica se usuário está ativo
         if ($usuario->situacao != 1) {
             return $this->error('User account is disabled', 403);
@@ -94,10 +103,19 @@ class AuthController extends MY_Controller
         }
 
         try {
-            $key = getenv('JWT_SECRET') ?: 'mapos-secret-key';
+            $key = getenv('JWT_SECRET');
+            if (empty($key)) {
+                log_message('error', 'JWT_SECRET nao configurado no .env - usando chave temporaria');
+                $key = bin2hex(random_bytes(32));
+            }
             $decoded = JWT::decode($refreshToken, new Key($key, 'HS256'));
 
-            // Busca usuário
+            // Valida que é um refresh token
+            if (!isset($decoded->type) || $decoded->type !== 'refresh') {
+                return $this->error('Invalid token type', 401);
+            }
+
+            // Busca usuário e verifica se continua ativo
             $usuario = $this->usuarios_model->getById($decoded->sub);
 
             if (!$usuario || $usuario->situacao != 1) {
@@ -145,21 +163,29 @@ class AuthController extends MY_Controller
 
     /**
      * Verifica senha (suporta hash antigo e novo)
+     * Migra automaticamente de MD5 para bcrypt no login bem-sucedido
      */
     private function verifyPassword(string $password, string $hash): bool
     {
-        // Verifica se é Argon2
+        // Verifica se e Argon2
         if (strpos($hash, '$argon2id$') === 0 || strpos($hash, '$argon2i$') === 0) {
             return password_verify($password, $hash);
         }
 
-        // Verifica se é Bcrypt
+        // Verifica se e Bcrypt
         if (strpos($hash, '$2y$') === 0) {
             return password_verify($password, $hash);
         }
 
-        // Fallback para hash antigo (md5)
-        return md5($password) === $hash;
+        // Fallback para hash antigo (md5) — migrar para bcrypt automaticamente
+        if (md5($password) === $hash) {
+            // Senha correta mas hash inseguro: migrar para bcrypt
+            // O controller que chamou verifyPassword deve re-hashear a senha
+            log_message('warning', 'Senha MD5 detectada para usuario - migracao para bcrypt necessaria');
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -168,7 +194,12 @@ class AuthController extends MY_Controller
     private function getJwtKey(): string
     {
         $this->load->config('jwt');
-        return $this->config->item('jwt_key') ?: 'mapos-secret-key';
+        $key = $this->config->item('jwt_key');
+        if (empty($key)) {
+            log_message('error', 'JWT_SECRET nao configurado no .env - usando chave temporaria');
+            $key = bin2hex(random_bytes(32));
+        }
+        return $key;
     }
 
     /**

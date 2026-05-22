@@ -1,0 +1,21 @@
+[Unit]
+Description=WhatsApp Agent - MapOS IVMS
+After=network.target mysql.service docker.service
+Wants=mysql.service docker.service
+
+[Service]
+Type=simple
+User=server
+Group=server
+WorkingDirectory=/home/server/MaposV5/scripts/whatsapp-agent
+ExecStart=/home/server/MaposV5/scripts/whatsapp-agent/venv/bin/python3 -m uvicorn main:app --host 0.0.0.0 --port 8000
+Restart=always
+RestartSec=10
+StandardOutput=append:/home/server/MaposV5/scripts/whatsapp-agent/agent.log
+StandardError=append:/home/server/MaposV5/scripts/whatsapp-agent/agent.log
+
+# Environment
+EnvironmentFile=/home/server/MaposV5/scripts/whatsapp-agent/.env
+
+[Install]
+WantedBy=multi-user.target

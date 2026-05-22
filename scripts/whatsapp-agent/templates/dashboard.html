@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agente IA WhatsApp - MapOS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #25D366; --primary-dark: #128C7E; --primary-light: #4ae88a;
+            --bg: #0a1015; --bg2: #0f1a22; --card: #141f28; --card2: #1a2730;
+            --text: #e9edef; --muted: #8696a0; --border: #233040;
+            --danger: #e74c3c; --warning: #f1c40f; --info: #3498db; --success: #25D366;
+        }
+        * { scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; min-height: 100vh; }
+
+        /* Top Bar */
+        .top-bar { background: linear-gradient(135deg, var(--card) 0%, var(--card2) 100%); border-bottom: 1px solid var(--border); padding: .75rem 1.5rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px); }
+        .top-bar h5 { margin: 0; color: var(--primary); font-weight: 700; display: flex; align-items: center; gap: .5rem; }
+        .pulse-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--primary); display: inline-block; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: .5; transform: scale(1.3); } }
+
+        /* Nav Tabs */
+        .nav-tabs { border-bottom: 2px solid var(--border); gap: .25rem; flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; }
+        .nav-tabs::-webkit-scrollbar { height: 0; }
+        .nav-tabs .nav-link { color: var(--muted); border: none; border-bottom: 3px solid transparent; padding: .5rem 1rem; white-space: nowrap; font-size: .85rem; transition: all .2s; }
+        .nav-tabs .nav-link:hover { color: var(--text); border-bottom-color: var(--border); }
+        .nav-tabs .nav-link.active { color: var(--primary); border-bottom-color: var(--primary); background: transparent; font-weight: 600; }
+        .nav-tabs .nav-link i { margin-right: .25rem; }
+
+        /* Cards */
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+        .card-header { background: linear-gradient(135deg, var(--card2), var(--card)); border-bottom: 1px solid var(--border); color: var(--text); font-weight: 600; padding: .75rem 1rem; }
+        .card-body { padding: 1rem; }
+
+        /* Stat Cards */
+        .stat-card { text-align: center; padding: 1.25rem; border-radius: 16px; position: relative; overflow: hidden; transition: transform .2s; }
+        .stat-card:hover { transform: translateY(-2px); }
+        .stat-card .stat-icon { font-size: 2rem; margin-bottom: .5rem; display: block; }
+        .stat-card .stat-value { font-size: 1.75rem; font-weight: 800; line-height: 1.1; }
+        .stat-card .stat-label { color: var(--muted); font-size: .75rem; text-transform: uppercase; letter-spacing: .05em; margin-top: .25rem; }
+        .stat-card.green { background: linear-gradient(135deg, rgba(37,211,102,.12), rgba(18,140,126,.08)); border-color: rgba(37,211,102,.2); }
+        .stat-card.blue { background: linear-gradient(135deg, rgba(52,152,219,.12), rgba(41,128,185,.08)); border-color: rgba(52,152,219,.2); }
+        .stat-card.orange { background: linear-gradient(135deg, rgba(243,156,18,.12), rgba(230,126,34,.08)); border-color: rgba(243,156,18,.2); }
+        .stat-card.red { background: linear-gradient(135deg, rgba(231,76,60,.12), rgba(192,57,43,.08)); border-color: rgba(231,76,60,.2); }
+        .stat-card.purple { background: linear-gradient(135deg, rgba(155,89,182,.12), rgba(142,68,173,.08)); border-color: rgba(155,89,182,.2); }
+        .stat-card.teal { background: linear-gradient(135deg, rgba(26,188,156,.12), rgba(22,160,133,.08)); border-color: rgba(26,188,156,.2); }
+
+        /* Section Title */
+        .section-title { color: var(--primary); font-size: .95rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: .5rem; text-transform: uppercase; letter-spacing: .03em; }
+        .section-title i { font-size: 1.1rem; }
+
+        /* Form Controls */
+        .form-control, .form-select { background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: 10px; padding: .45rem .75rem; font-size: .85rem; transition: border-color .2s, box-shadow .2s; }
+        .form-control:focus, .form-select:focus { background: var(--bg); border-color: var(--primary); color: var(--text); box-shadow: 0 0 0 3px rgba(37,211,102,.15); }
+        .form-control::placeholder { color: var(--muted); }
+        .form-label { font-size: .78rem; color: var(--muted); margin-bottom: .25rem; font-weight: 600; text-transform: uppercase; letter-spacing: .03em; }
+
+        /* Buttons */
+        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); border: none; color: #000; font-weight: 700; border-radius: 10px; padding: .5rem 1.25rem; }
+        .btn-primary:hover { background: linear-gradient(135deg, var(--primary-light), var(--primary)); color: #000; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(37,211,102,.3); }
+        .btn-primary:disabled { opacity: .6; transform: none; box-shadow: none; }
+        .btn-outline-primary { color: var(--primary); border: 1px solid var(--primary); border-radius: 10px; }
+        .btn-outline-primary:hover { background: var(--primary); color: #000; }
+        .btn-danger { background: var(--danger); border: none; border-radius: 10px; }
+        .btn-success { background: var(--primary); border: none; color: #000; border-radius: 10px; }
+        .btn-sm { font-size: .78rem; }
+        .btn .spinner-border { width: .85rem; height: .85rem; border-width: 2px; }
+
+        /* Table */
+        .table { color: var(--text); font-size: .82rem; }
+        .table th { border-color: var(--border); color: var(--muted); font-size: .72rem; text-transform: uppercase; letter-spacing: .05em; font-weight: 700; padding: .5rem .5rem; }
+        .table td { border-color: rgba(35,48,64,.5); padding: .4rem .5rem; vertical-align: middle; }
+        .table-hover tbody tr:hover { background: rgba(37,211,102,.04); }
+
+        /* Badges */
+        .badge-status { padding: .25em .6em; border-radius: 6px; font-size: .72rem; font-weight: 600; }
+        .badge-success { background: rgba(37,211,102,.15); color: #4ae88a; }
+        .badge-warning { background: rgba(241,196,15,.15); color: #f1c40f; }
+        .badge-danger { background: rgba(231,76,60,.15); color: #e74c3c; }
+        .badge-info { background: rgba(52,152,219,.15); color: #5dade2; }
+        .badge-secondary { background: rgba(134,150,160,.15); color: #8696a0; }
+
+        /* Intention colors */
+        .int-ajuda { background: rgba(52,152,219,.15); color: #5dade2; }
+        .int-status_os { background: rgba(37,211,102,.15); color: #4ae88a; }
+        .int-criar_os { background: rgba(155,89,182,.15); color: #bb8fce; }
+        .int-relatorio_os { background: rgba(243,156,18,.15); color: #f1c40f; }
+        .int-desconhecido { background: rgba(134,150,160,.15); color: #8696a0; }
+        .int-erro_audio { background: rgba(231,76,60,.15); color: #e74c3c; }
+
+        /* Test Results */
+        .test-result { padding: .75rem 1rem; border-radius: 10px; margin-top: .5rem; font-size: .85rem; }
+        .test-ok { background: rgba(37,211,102,.08); border: 1px solid rgba(37,211,102,.25); color: #4ae88a; }
+        .test-fail { background: rgba(231,76,60,.08); border: 1px solid rgba(231,76,60,.25); color: #e74c3c; }
+
+        /* Collapsible sections */
+        .collapse-toggle { cursor: pointer; user-select: none; }
+        .collapse-toggle .chevron { transition: transform .2s; }
+        .collapse-toggle[aria-expanded="true"] .chevron { transform: rotate(90deg); }
+
+        /* Toast */
+        .toast-container { position: fixed; top: 1rem; right: 1rem; z-index: 9999; }
+        .custom-toast { background: var(--card2); border: 1px solid var(--border); border-radius: 12px; padding: .75rem 1rem; margin-bottom: .5rem; display: flex; align-items: center; gap: .5rem; animation: slideIn .3s ease; min-width: 280px; box-shadow: 0 8px 24px rgba(0,0,0,.4); }
+        .custom-toast.success { border-left: 3px solid var(--primary); }
+        .custom-toast.error { border-left: 3px solid var(--danger); }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        /* Login */
+        #login-screen { max-width: 420px; margin: 120px auto; }
+        #login-screen .card { border-radius: 20px; }
+
+        /* Log content expand */
+        .log-content { max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
+        .log-content.expanded { max-width: none; white-space: pre-wrap; word-break: break-word; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-tabs .nav-link { padding: .4rem .6rem; font-size: .78rem; }
+            .stat-card .stat-value { font-size: 1.3rem; }
+            .stat-card .stat-icon { font-size: 1.5rem; }
+            .container-fluid { padding: .75rem !important; }
+        }
+
+        /* Password toggle */
+        .input-group .btn { border-radius: 0 10px 10px 0; border: 1px solid var(--border); border-left: none; }
+        .input-group .form-control { border-radius: 10px 0 0 10px; }
+
+        /* Notification type badges */
+        .tipo-badge { font-size: .7rem; padding: .2em .5em; border-radius: 4px; }
+        .tipo-relatorio { background: rgba(52,152,219,.15); color: #5dade2; }
+        .tipo-os_vencendo { background: rgba(231,76,60,.15); color: #e74c3c; }
+        .tipo-pesquisa { background: rgba(155,89,182,.15); color: #bb8fce; }
+    </style>
+</head>
+<body>
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- LOGIN -->
+    <div id="login-screen">
+        <div class="card p-4">
+            <div class="text-center mb-4">
+                <div style="font-size:4rem;color:var(--primary)"><i class="bi bi-whatsapp"></i></div>
+                <h4 class="mt-2" style="color:var(--text)">Agente IA WhatsApp</h4>
+                <p class="text-muted mb-0">JJ Ferreiras - Painel de Controle</p>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">API Key</label>
+                <input type="password" id="api-key-input" class="form-control" placeholder="Cole sua API Key aqui" onkeydown="if(event.key==='Enter')doLogin()">
+            </div>
+            <button class="btn btn-primary w-100" onclick="doLogin()" id="login-btn">
+                <i class="bi bi-box-arrow-in-right"></i> Entrar
+            </button>
+        </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="dashboard-content" style="display:none">
+        <div class="top-bar">
+            <h5><i class="bi bi-whatsapp"></i> Agente IA WhatsApp <span class="pulse-dot" id="online-dot"></span></h5>
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge badge-success" style="font-size:.72rem" id="status-badge-text">Online</span>
+                <button class="btn btn-sm btn-outline-primary" onclick="doLogout()"><i class="bi bi-box-arrow-right"></i> Sair</button>
+            </div>
+        </div>
+        <div class="container-fluid p-3 p-md-4">
+            <ul class="nav nav-tabs mb-3" id="mainTabs" role="tablist">
+                <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#tab-status"><i class="bi bi-speedometer2"></i> <span class="d-none d-sm-inline">Status</span></a></li>
+                <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-config"><i class="bi bi-gear"></i> <span class="d-none d-sm-inline">Config</span></a></li>
+                <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-notif"><i class="bi bi-bell"></i> <span class="d-none d-sm-inline">Notificacoes</span></a></li>
+                <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-logs"><i class="bi bi-chat-dots"></i> <span class="d-none d-sm-inline">Logs</span></a></li>
+                <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-sessions"><i class="bi bi-diagram-3"></i> <span class="d-none d-sm-inline">Sessoes</span></a></li>
+                <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-tests"><i class="bi bi-wrench"></i> <span class="d-none d-sm-inline">Testes</span></a></li>
+            </ul>
+
+            <div class="tab-content">
+                <!-- STATUS -->
+                <div class="tab-pane fade show active" id="tab-status">
+                    <div class="row g-3 mb-4" id="stats-cards"></div>
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <span><i class="bi bi-bar-chart"></i> Comandos por Tipo <small class="text-muted">(ultimos 7 dias)</small></span>
+                            <button class="btn btn-sm btn-outline-primary" onclick="loadStats()"><i class="bi bi-arrow-clockwise"></i></button>
+                        </div>
+                        <div class="card-body"><canvas id="cmdChart" height="280"></canvas></div>
+                    </div>
+                </div>
+
+                <!-- CONFIG -->
+                <div class="tab-pane fade" id="tab-config">
+                    <form id="config-form">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <!-- Integracao -->
+                                <div class="card p-3 mb-3">
+                                    <div class="section-title collapse-toggle" data-bs-toggle="collapse" data-bs-target="#cfg-integracao"><i class="bi bi-chevron-right chevron"></i> <i class="bi bi-plug"></i> Integracao</div>
+                                    <div class="collapse show" id="cfg-integracao">
+                                        <div class="mb-2"><label class="form-label">Evolution URL</label><input class="form-control form-control-sm" id="cfg-EVOLUTION_URL"></div>
+                                        <div class="mb-2"><label class="form-label">Evolution API Key</label><div class="input-group"><input class="form-control form-control-sm" type="password" id="cfg-EVOLUTION_API_KEY"><button class="btn btn-sm btn-outline-primary" type="button" onclick="togglePwd('cfg-EVOLUTION_API_KEY')"><i class="bi bi-eye"></i></button></div></div>
+                                        <div class="mb-2"><label class="form-label">Evolution Instance</label><input class="form-control form-control-sm" id="cfg-EVOLUTION_INSTANCE"></div>
+                                        <div class="mb-2"><label class="form-label">MapOS URL</label><input class="form-control form-control-sm" id="cfg-MAPOS_URL"></div>
+                                        <div class="mb-2"><label class="form-label">MapOS API Key</label><div class="input-group"><input class="form-control form-control-sm" type="password" id="cfg-MAPOS_API_KEY"><button class="btn btn-sm btn-outline-primary" type="button" onclick="togglePwd('cfg-MAPOS_API_KEY')"><i class="bi bi-eye"></i></button></div></div>
+                                        <div class="mb-0"><label class="form-label">n8n Webhook URL</label><input class="form-control form-control-sm" id="cfg-N8N_WEBHOOK_URL"></div>
+                                    </div>
+                                </div>
+                                <!-- Notificacoes config -->
+                                <div class="card p-3 mb-3">
+                                    <div class="section-title collapse-toggle" data-bs-toggle="collapse" data-bs-target="#cfg-notif"><i class="bi bi-chevron-right chevron"></i> <i class="bi bi-bell"></i> Notificacoes</div>
+                                    <div class="collapse show" id="cfg-notif">
+                                        <div class="mb-2"><label class="form-label">Relatorio Diario (HH:MM)</label><input class="form-control form-control-sm" id="cfg-RELATORIO_DIARIO_HORA" placeholder="08:00"></div>
+                                        <div class="mb-2"><label class="form-label">OS Vencendo (HH:MM)</label><input class="form-control form-control-sm" id="cfg-NOTIFICACAO_VENCENDO_HORA" placeholder="09:00"></div>
+                                        <div class="mb-0"><label class="form-label">Admin Numero</label><input class="form-control form-control-sm" id="cfg-ADMIN_NUMERO" placeholder="5592992150107"></div>
+                                    </div>
+                                </div>
+                                <!-- Banco de Dados -->
+                                <div class="card p-3">
+                                    <div class="section-title collapse-toggle" data-bs-toggle="collapse" data-bs-target="#cfg-db"><i class="bi bi-chevron-right chevron"></i> <i class="bi bi-database"></i> Banco de Dados</div>
+                                    <div class="collapse show" id="cfg-db">
+                                        <div class="mb-2"><label class="form-label">Host</label><input class="form-control form-control-sm" id="cfg-MYSQL_HOST"></div>
+                                        <div class="row g-2 mb-2">
+                                            <div class="col-6"><label class="form-label">Database</label><input class="form-control form-control-sm" id="cfg-MYSQL_DB"></div>
+                                            <div class="col-6"><label class="form-label">Porta</label><input class="form-control form-control-sm" id="cfg-MYSQL_PORT"></div>
+                                        </div>
+                                        <div class="row g-2">
+                                            <div class="col-6"><label class="form-label">Usuario</label><input class="form-control form-control-sm" id="cfg-MYSQL_USER"></div>
+                                            <div class="col-6"><label class="form-label">Senha</label><div class="input-group"><input class="form-control form-control-sm" type="password" id="cfg-MYSQL_PASS"><button class="btn btn-sm btn-outline-primary" type="button" onclick="togglePwd('cfg-MYSQL_PASS')"><i class="bi bi-eye"></i></button></div></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <!-- IA / LLM -->
+                                <div class="card p-3 mb-3">
+                                    <div class="section-title collapse-toggle" data-bs-toggle="collapse" data-bs-target="#cfg-llm"><i class="bi bi-chevron-right chevron"></i> <i class="bi bi-robot"></i> IA / LLM</div>
+                                    <div class="collapse show" id="cfg-llm">
+                                        <div class="mb-2"><label class="form-label">Provider</label><select class="form-select form-select-sm" id="cfg-LLM_PROVIDER"><option value="">Regex (sem LLM)</option><option value="ollama">Ollama (local)</option><option value="openai">OpenAI-compatible</option><option value="anthropic">Anthropic</option></select></div>
+                                        <div class="mb-2"><label class="form-label">Cloud URL</label><input class="form-control form-control-sm" id="cfg-LLM_CLOUD_URL"></div>
+                                        <div class="mb-2"><label class="form-label">Cloud Model</label><input class="form-control form-control-sm" id="cfg-LLM_CLOUD_MODEL"></div>
+                                        <div class="mb-2"><label class="form-label">Cloud API Key</label><div class="input-group"><input class="form-control form-control-sm" type="password" id="cfg-LLM_CLOUD_API_KEY"><button class="btn btn-sm btn-outline-primary" type="button" onclick="togglePwd('cfg-LLM_CLOUD_API_KEY')"><i class="bi bi-eye"></i></button></div></div>
+                                        <div class="row g-2">
+                                            <div class="col-6"><label class="form-label">Ollama URL</label><input class="form-control form-control-sm" id="cfg-OLLAMA_URL"></div>
+                                            <div class="col-6"><label class="form-label">Ollama Model</label><input class="form-control form-control-sm" id="cfg-LLM_MODEL"></div>
+                                        </div>
+                                        <div class="mt-2"><label class="form-label">Whisper ASR URL</label><input class="form-control form-control-sm" id="cfg-WHISPER_URL"></div>
+                                    </div>
+                                </div>
+                                <!-- Geral -->
+                                <div class="card p-3">
+                                    <div class="section-title"><i class="bi bi-sliders"></i> Geral</div>
+                                    <div class="row g-2">
+                                        <div class="col-6"><label class="form-label">Porta</label><input class="form-control form-control-sm" id="cfg-AGENT_PORT"></div>
+                                        <div class="col-6"><label class="form-label">Log Level</label><select class="form-select form-select-sm" id="cfg-LOG_LEVEL"><option value="DEBUG">DEBUG</option><option value="INFO">INFO</option><option value="WARNING">WARNING</option><option value="ERROR">ERROR</option></select></div>
+                                    </div>
+                                    <div class="form-check form-switch mt-2"><input class="form-check-input" type="checkbox" id="cfg-DEBUG"><label class="form-check-label text-muted small" for="cfg-DEBUG">Modo DEBUG</label></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-3 text-end">
+                            <button type="submit" class="btn btn-primary" id="save-config-btn"><i class="bi bi-save"></i> Salvar Configuracoes</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- NOTIFICACOES -->
+                <div class="tab-pane fade" id="tab-notif">
+                    <div class="card p-3 mb-3">
+                        <div class="section-title"><i class="bi bi-plus-circle"></i> Nova Notificacao</div>
+                        <div class="row g-2">
+                            <div class="col-md-3"><label class="form-label">Numero</label><input class="form-control form-control-sm" id="new-notif-numero" placeholder="5592992150107"></div>
+                            <div class="col-md-3"><label class="form-label">Tipo</label>
+                                <select class="form-select form-select-sm" id="new-notif-tipo">
+                                    <option value="relatorio_diario">Relatorio Diario</option>
+                                    <option value="os_vencendo">OS Vencendo</option>
+                                    <option value="pesquisa_satisfacao">Pesquisa Satisfacao</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2"><label class="form-label">Horario</label><input class="form-control form-control-sm" id="new-notif-horario" type="time" value="08:00"></div>
+                            <div class="col-md-2"><label class="form-label">Dias</label><input class="form-control form-control-sm" id="new-notif-dias" value="1,2,3,4,5" placeholder="1,2,3,4,5"></div>
+                            <div class="col-md-2 d-flex align-items-end"><button class="btn btn-success btn-sm w-100" onclick="addNotification()" id="add-notif-btn"><i class="bi bi-plus"></i> Adicionar</button></div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between"><span><i class="bi bi-list-ul"></i> Notificacoes Agendadas</span><button class="btn btn-sm btn-outline-primary" onclick="loadNotifications()"><i class="bi bi-arrow-clockwise"></i></button></div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-sm table-hover mb-0">
+                                    <thead><tr><th>Numero</th><th>Tipo</th><th>Horario</th><th>Dias</th><th>Status</th><th>Ultimo Envio</th><th></th></tr></thead>
+                                    <tbody id="notif-table"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LOGS -->
+                <div class="tab-pane fade" id="tab-logs">
+                    <div class="card p-3 mb-3">
+                        <div class="row g-2 align-items-end">
+                            <div class="col-md-3"><label class="form-label">Numero</label><input class="form-control form-control-sm" id="log-numero" placeholder="55929..."></div>
+                            <div class="col-md-2"><label class="form-label">Tipo</label>
+                                <select class="form-select form-select-sm" id="log-tipo"><option value="">Todos</option><option value="texto">Texto</option><option value="audio">Audio</option></select>
+                            </div>
+                            <div class="col-md-3"><label class="form-label">Intencao</label>
+                                <select class="form-select form-select-sm" id="log-intencao"><option value="">Todas</option><option value="ajuda">Ajuda</option><option value="status_os">Status OS</option><option value="criar_os">Criar OS</option><option value="alterar_status_os">Alterar Status</option><option value="relatorio_financeiro">Relatorio Financeiro</option><option value="relatorio_os">Relatorio OS</option><option value="quanto_devo">Quanto Devo</option><option value="desconhecido">Desconhecido</option></select>
+                            </div>
+                            <div class="col-md-2"><button class="btn btn-primary btn-sm w-100" onclick="loadLogs()"><i class="bi bi-search"></i> Buscar</button></div>
+                            <div class="col-md-2"><button class="btn btn-outline-primary btn-sm w-100" onclick="loadLogs()"><i class="bi bi-arrow-clockwise"></i> Atualizar</button></div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between">
+                            <span><i class="bi bi-chat-dots"></i> Interacoes <small class="text-muted" id="logs-count"></small></span>
+                            <div class="d-flex gap-1">
+                                <div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="log-auto-refresh" checked><label class="form-check-label text-muted small" for="log-auto-refresh">Auto</label></div>
+                            </div>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive" style="max-height:500px;overflow-y:auto" id="logs-scroll">
+                                <table class="table table-sm table-hover mb-0">
+                                    <thead style="position:sticky;top:0;background:var(--card2);z-index:1)"><tr><th>Hora</th><th>Numero</th><th>Dir</th><th>Intencao</th><th>Conteudo</th><th>Status</th></tr></thead>
+                                    <tbody id="logs-table"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SESSOES -->
+                <div class="tab-pane fade" id="tab-sessions">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between"><span><i class="bi bi-diagram-3"></i> Sessoes Ativas <small class="text-muted" id="sessions-count"></small></span><button class="btn btn-sm btn-outline-primary" onclick="loadSessions()"><i class="bi bi-arrow-clockwise"></i></button></div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-sm table-hover mb-0">
+                                    <thead><tr><th>Numero</th><th>Tipo</th><th>Etapa</th><th>Dados</th><th>Atualizado</th><th></th></tr></thead>
+                                    <tbody id="sessions-table"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TESTES -->
+                <div class="tab-pane fade" id="tab-tests">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="card p-3">
+                                <div class="section-title"><i class="bi bi-plug"></i> Conexoes</div>
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-outline-primary btn-sm" onclick="testConnection('evolution')" id="test-evolution-btn"><i class="bi bi-whatsapp"></i> Testar Evolution API</button>
+                                    <div id="test-evolution-result"></div>
+                                    <button class="btn btn-outline-primary btn-sm" onclick="testConnection('whisper')" id="test-whisper-btn"><i class="bi bi-mic"></i> Testar Whisper ASR</button>
+                                    <div id="test-whisper-result"></div>
+                                    <button class="btn btn-outline-primary btn-sm" onclick="testConnection('database')" id="test-database-btn"><i class="bi bi-database"></i> Testar Banco de Dados</button>
+                                    <div id="test-database-result"></div>
+                                    <button class="btn btn-outline-primary btn-sm" onclick="testConnection('llm')" id="test-llm-btn"><i class="bi bi-robot"></i> Testar LLM</button>
+                                    <div id="test-llm-result"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card p-3 mb-3">
+                                <div class="section-title"><i class="bi bi-send"></i> Enviar Mensagem</div>
+                                <div class="mb-2"><label class="form-label">Numero</label><input class="form-control form-control-sm" id="test-msg-numero" placeholder="5592992150107"></div>
+                                <div class="mb-2"><label class="form-label">Mensagem</label><textarea class="form-control form-control-sm" id="test-msg-texto" rows="3" placeholder="Digite a mensagem..."></textarea></div>
+                                <button class="btn btn-success btn-sm w-100" onclick="sendTestMessage()" id="send-msg-btn"><i class="bi bi-send"></i> Enviar Mensagem</button>
+                                <div id="test-msg-result" class="mt-2"></div>
+                            </div>
+                            <div class="card p-3">
+                                <div class="section-title"><i class="bi bi-file-earmark-bar-graph"></i> Disparar Relatorio</div>
+                                <button class="btn btn-outline-primary btn-sm w-100" onclick="triggerReport()" id="trigger-report-btn"><i class="bi bi-play-fill"></i> Disparar Relatorio Diario Agora</button>
+                                <div id="test-report-result" class="mt-2"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+    <script>
+    const API = window.location.origin;
+    let apiKey = localStorage.getItem('agent_api_key') || '';
+    let cmdChart = null;
+    let autoRefreshStats = null;
+    let autoRefreshLogs = null;
+
+    // ========== API ==========
+    async function api(path, opts = {}) {
+        const headers = opts.headers || {};
+        headers['X-API-Key'] = apiKey;
+        headers['Content-Type'] = headers['Content-Type'] || 'application/json';
+        const res = await fetch(API + path, { ...opts, headers });
+        if (res.status === 401) { doLogout(); throw new Error('Unauthorized'); }
+        return res.json();
+    }
+
+    // ========== Toast ==========
+    function showToast(msg, type = 'success') {
+        const container = document.getElementById('toast-container');
+        const icon = type === 'success' ? 'check-circle-fill' : 'x-circle-fill';
+        const el = document.createElement('div');
+        el.className = `custom-toast ${type}`;
+        el.innerHTML = `<i class="bi bi-${icon}"></i> ${msg}`;
+        container.appendChild(el);
+        setTimeout(() => el.remove(), 4000);
+    }
+
+    // ========== Auth ==========
+    function doLogin() {
+        const key = document.getElementById('api-key-input').value.trim();
+        if (!key) return;
+        apiKey = key;
+        localStorage.setItem('agent_api_key', key);
+        loadDashboard();
+    }
+    function doLogout() {
+        apiKey = '';
+        localStorage.removeItem('agent_api_key');
+        clearInterval(autoRefreshStats);
+        clearInterval(autoRefreshLogs);
+        document.getElementById('login-screen').style.display = 'block';
+        document.getElementById('dashboard-content').style.display = 'none';
+    }
+
+    // ========== Toggle Password ==========
+    function togglePwd(id) {
+        const el = document.getElementById(id);
+        el.type = el.type === 'password' ? 'text' : 'password';
+    }
+
+    // ========== Loading Button ==========
+    function btnLoading(id, loading = true) {
+        const btn = document.getElementById(id);
+        if (!btn) return;
+        if (loading) {
+            btn.dataset.originalHtml = btn.innerHTML;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Aguarde...';
+            btn.disabled = true;
+        } else {
+            btn.innerHTML = btn.dataset.originalHtml || btn.innerHTML;
+            btn.disabled = false;
+        }
+    }
+
+    // ========== Dashboard Load ==========
+    async function loadDashboard() {
+        try {
+            await api('/api/stats');
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('dashboard-content').style.display = 'block';
+            loadStats(); loadConfig(); loadNotifications(); loadLogs(); loadSessions();
+            clearInterval(autoRefreshStats);
+            autoRefreshStats = setInterval(loadStats, 30000);
+        } catch(e) { showToast('API Key invalida', 'error'); doLogout(); }
+    }
+
+    // ========== Stats ==========
+    async function loadStats() {
+        try {
+            const d = await api('/api/stats');
+            const cards = [
+                {label:'Msgs Hoje', value: d.msgs_hoje, icon:'chat-dots-fill', cls:'green'},
+                {label:'Comandos', value: d.comandos_executados, icon:'terminal-fill', cls:'blue'},
+                {label:'Sessoes Ativas', value: d.sessoes_ativas, icon:'diagram-3-fill', cls:'orange'},
+                {label:'Erros Hoje', value: d.erros_hoje, icon:'exclamation-triangle-fill', cls:'red'},
+                {label:'Integrados', value: d.numeros_integrados, icon:'people-fill', cls:'purple'},
+                {label:'Uptime', value: d.uptime_human, icon:'clock-fill', cls:'teal'},
+            ];
+            document.getElementById('stats-cards').innerHTML = cards.map(c => `
+                <div class="col-6 col-md-4 col-lg-2">
+                    <div class="card stat-card ${c.cls} fade-in">
+                        <i class="bi bi-${c.icon} stat-icon" style="color:var(--${c.cls === 'green' ? 'primary' : c.cls === 'blue' ? 'info' : c.cls === 'orange' ? 'warning' : c.cls === 'red' ? 'danger' : c.cls === 'purple' ? 'primary' : 'primary'})"></i>
+                        <div class="stat-value mt-1">${c.value}</div>
+                        <div class="stat-label">${c.label}</div>
+                    </div>
+                </div>`).join('');
+            renderCmdChart(d.comandos_por_tipo || []);
+        } catch(e) {}
+    }
+
+    function renderCmdChart(data) {
+        const ctx = document.getElementById('cmdChart').getContext('2d');
+        if (cmdChart) cmdChart.destroy();
+        const labels = data.map(d => (d.intencao_detectada || 'outros').replace(/_/g,' '));
+        const values = data.map(d => parseInt(d.qtd));
+        const colors = ['#25D366','#3498db','#f39c12','#e74c3c','#9b59b6','#1abc9c','#e67e22','#2ecc71','#95a5a6','#34495e','#16a085','#c0392b','#8e44ad','#d35400','#2c3e50'];
+        cmdChart = new Chart(ctx, {
+            type: 'bar',
+            data: { labels, datasets: [{ label: 'Comandos', data: values, backgroundColor: labels.map((_,i)=>colors[i%colors.length]), borderRadius: 6, borderSkipped: false }] },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false }, tooltip: { backgroundColor: '#1a2730', titleColor: '#e9edef', bodyColor: '#e9edef', borderColor: '#233040', borderWidth: 1, padding: 10, cornerRadius: 8 } },
+                scales: { x: { ticks: { color: '#8696a0', font: { size: 10 } }, grid: { color: '#1a2730' } }, y: { ticks: { color: '#8696a0' }, grid: { color: '#1a2730' } } }
+            }
+        });
+    }
+
+    // ========== Config ==========
+    async function loadConfig() {
+        try {
+            const d = await api('/api/config');
+            const keys = ['EVOLUTION_URL','EVOLUTION_API_KEY','EVOLUTION_INSTANCE','MAPOS_URL','MAPOS_API_KEY','N8N_WEBHOOK_URL',
+                           'LLM_PROVIDER','LLM_CLOUD_URL','LLM_CLOUD_MODEL','LLM_CLOUD_API_KEY','OLLAMA_URL','LLM_MODEL','WHISPER_URL',
+                           'RELATORIO_DIARIO_HORA','NOTIFICACAO_VENCENDO_HORA','ADMIN_NUMERO',
+                           'MYSQL_HOST','MYSQL_DB','MYSQL_USER','MYSQL_PASS','MYSQL_PORT','AGENT_PORT','DEBUG','LOG_LEVEL'];
+            keys.forEach(k => {
+                const el = document.getElementById('cfg-' + k);
+                if (el && d[k] !== undefined) {
+                    if (el.type === 'checkbox') el.checked = d[k] === true || d[k] === 'true' || d[k] === '1';
+                    else el.value = d[k];
+                }
+            });
+        } catch(e) {}
+    }
+
+    document.getElementById('config-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        btnLoading('save-config-btn');
+        const keys = ['EVOLUTION_URL','EVOLUTION_API_KEY','EVOLUTION_INSTANCE','MAPOS_URL','MAPOS_API_KEY','N8N_WEBHOOK_URL',
+                       'LLM_PROVIDER','LLM_CLOUD_URL','LLM_CLOUD_MODEL','LLM_CLOUD_API_KEY','OLLAMA_URL','LLM_MODEL','WHISPER_URL',
+                       'RELATORIO_DIARIO_HORA','NOTIFICACAO_VENCENDO_HORA','ADMIN_NUMERO',
+                       'MYSQL_HOST','MYSQL_DB','MYSQL_USER','MYSQL_PASS','MYSQL_PORT','AGENT_PORT','DEBUG','LOG_LEVEL'];
+        const updates = {};
+        keys.forEach(k => { const el = document.getElementById('cfg-' + k); if (el) { updates[k] = el.type === 'checkbox' ? el.checked : el.value; } });
+        try {
+            const r = await api('/api/config', { method: 'PUT', body: JSON.stringify(updates) });
+            showToast(r.message || 'Configuracoes salvas');
+        } catch(e) { showToast('Erro ao salvar: ' + e.message, 'error'); }
+        btnLoading('save-config-btn', false);
+    });
+
+    // ========== Notifications ==========
+    const tipoLabels = {relatorio_diario:'Relatorio Diario', os_vencendo:'OS Vencendo', pesquisa_satisfacao:'Pesquisa Satisfacao'};
+    const tipoColors = {relatorio_diario:'tipo-relatorio', os_vencendo:'tipo-os_vencendo', pesquisa_satisfacao:'tipo-pesquisa'};
+    const diaNames = {1:'Seg',2:'Ter',3:'Qua',4:'Qui',5:'Sex',6:'Sab',0:'Dom'};
+
+    async function loadNotifications() {
+        try {
+            const data = await api('/api/notifications');
+            const tbody = document.getElementById('notif-table');
+            if (!data.length) { tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted p-4">Nenhuma notificacao agendada</td></tr>'; return; }
+            tbody.innerHTML = data.map(n => `<tr>
+                <td><code>${n.numero_telefone}</code></td>
+                <td><span class="badge-status ${tipoColors[n.tipo_notificacao]||'badge-info'} tipo-badge">${tipoLabels[n.tipo_notificacao]||n.tipo_notificacao}</span></td>
+                <td>${n.horario||'-'}</td>
+                <td>${(n.dias_semana||'').split(',').map(d=>diaNames[d.trim()]||d).join(', ')}</td>
+                <td><span class="badge ${n.situacao==1?'badge-success':'badge-danger'}">${n.situacao==1?'Ativo':'Inativo'}</span></td>
+                <td class="text-muted">${n.ultimo_envio ? n.ultimo_envio.substring(0,16).replace('T',' ') : 'Nunca'}</td>
+                <td><button class="btn btn-danger btn-sm py-0 px-2" onclick="delNotification(${n.id})" title="Remover"><i class="bi bi-trash"></i></button></td>
+            </tr>`).join('');
+        } catch(e) {}
+    }
+    async function addNotification() {
+        const numero = document.getElementById('new-notif-numero').value.trim();
+        const tipo = document.getElementById('new-notif-tipo').value;
+        const horario = document.getElementById('new-notif-horario').value || '08:00';
+        const dias = document.getElementById('new-notif-dias').value || '1,2,3,4,5';
+        if (!numero) return showToast('Informe o numero', 'error');
+        btnLoading('add-notif-btn');
+        try {
+            const r = await api('/api/notifications', { method: 'POST', body: JSON.stringify({ numero_telefone: numero, tipo_notificacao: tipo, horario, dias_semana: dias }) });
+            showToast(r.success ? 'Notificacao criada' : 'Erro: '+(r.error||''), r.success?'success':'error');
+            loadNotifications();
+            document.getElementById('new-notif-numero').value = '';
+        } catch(e) { showToast('Erro: '+e.message, 'error'); }
+        btnLoading('add-notif-btn', false);
+    }
+    async function delNotification(id) {
+        if (!confirm('Remover esta notificacao?')) return;
+        await api(`/api/notifications/${id}`, { method: 'DELETE' });
+        showToast('Notificacao removida');
+        loadNotifications();
+    }
+
+    // ========== Logs ==========
+    async function loadLogs() {
+        try {
+            const numero = document.getElementById('log-numero').value.trim();
+            const tipo = document.getElementById('log-tipo').value;
+            const intencao = document.getElementById('log-intencao').value;
+            const params = new URLSearchParams({ limite: '100' });
+            if (numero) params.set('numero', numero);
+            if (tipo) params.set('tipo', tipo);
+            if (intencao) params.set('intencao', intencao);
+            const data = await api('/api/logs?' + params.toString());
+            document.getElementById('logs-count').textContent = `(${data.length})`;
+            const tbody = document.getElementById('logs-table');
+            if (!data.length) { tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted p-4">Nenhum log encontrado</td></tr>'; return; }
+            tbody.innerHTML = data.map(l => {
+                const dirClass = l.direcao === 'entrada' ? 'badge-info' : 'badge-success';
+                const intClass = 'int-' + (l.intencao_detectada || 'desconhecido');
+                const statusClass = (l.status === 'enviado' || l.status === 'recebido' || l.status === 'respondido') ? 'badge-success' : l.status === 'erro' ? 'badge-danger' : 'badge-warning';
+                const content = (l.conteudo||'').replace(/"/g,'&quot;').replace(/\n/g,' ');
+                const short = content.length > 60 ? content.substring(0,60)+'...' : content;
+                return `<tr>
+                    <td class="text-nowrap">${(l.created_at||'').substring(11,16)}</td>
+                    <td><code style="font-size:.78rem">${l.numero_telefone}</code></td>
+                    <td><span class="badge ${dirClass}" style="font-size:.68rem">${l.direcao}</span></td>
+                    <td><span class="badge-status ${intClass}" title="${l.intencao_detectada||''}">${(l.intencao_detectada||'-').replace(/_/g,' ')}</span></td>
+                    <td><span class="log-content" title="${content}" onclick="this.classList.toggle('expanded')">${short}</span></td>
+                    <td><span class="badge ${statusClass}" style="font-size:.68rem">${l.status}</span></td>
+                </tr>`;
+            }).join('');
+        } catch(e) {}
+    }
+    // Auto-refresh logs
+    document.getElementById('log-auto-refresh').addEventListener('change', (e) => {
+        clearInterval(autoRefreshLogs);
+        if (e.target.checked) autoRefreshLogs = setInterval(loadLogs, 10000);
+    });
+    autoRefreshLogs = setInterval(loadLogs, 10000);
+
+    // ========== Sessions ==========
+    async function loadSessions() {
+        try {
+            const data = await api('/api/sessions');
+            document.getElementById('sessions-count').textContent = `(${data.length})`;
+            const tbody = document.getElementById('sessions-table');
+            if (!data.length) { tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted p-4">Nenhuma sessao ativa</td></tr>'; return; }
+            tbody.innerHTML = data.map(s => {
+                let dados = '';
+                try { const d = typeof s.dados === 'string' ? JSON.parse(s.dados) : s.dados; dados = Object.entries(d).slice(0,3).map(([k,v])=>`${k}: ${v}`).join(', '); } catch { dados = String(s.dados||'').substring(0,80); }
+                const updated = (s.atualizado_em||'').substring(0,16).replace('T',' ');
+                const tipoClass = s.tipo === 'os' ? 'badge-info' : 'badge-warning';
+                return `<tr>
+                    <td><code>${s.numero_telefone}</code></td>
+                    <td><span class="badge ${tipoClass}">${s.tipo}</span></td>
+                    <td>${s.etapa}</td>
+                    <td title="${dados.replace(/"/g,'&quot;')}">${dados.substring(0,50)}${dados.length>50?'...':''}</td>
+                    <td class="text-muted">${updated}</td>
+                    <td><button class="btn btn-danger btn-sm py-0 px-2" onclick="delSession('${s.numero_telefone}')" title="Encerrar"><i class="bi bi-x-lg"></i></button></td>
+                </tr>`;
+            }).join('');
+        } catch(e) {}
+    }
+    async function delSession(numero) {
+        if (!confirm('Encerrar sessao de ' + numero + '?')) return;
+        await api(`/api/sessions/${numero}`, { method: 'DELETE' });
+        showToast('Sessao encerrada');
+        loadSessions();
+    }
+
+    // ========== Tests ==========
+    async function testConnection(type) {
+        const resultId = 'test-' + type + '-result';
+        const btnId = 'test-' + type + '-btn';
+        document.getElementById(resultId).innerHTML = '<div class="test-result"><i class="bi bi-hourglass-split"></i> Testando...</div>';
+        try {
+            const r = await api('/api/test/' + type, { method: 'POST' });
+            const cls = r.success ? 'test-ok' : 'test-fail';
+            const icon = r.success ? 'check-circle-fill' : 'x-circle-fill';
+            let detail = r.message || '';
+            if (r.provider) detail += ` (${r.provider})`;
+            if (r.url) detail += `<br><small class="text-muted">${r.url}</small>`;
+            document.getElementById(resultId).innerHTML = `<div class="test-result ${cls}"><i class="bi bi-${icon}"></i> ${detail}</div>`;
+        } catch(e) {
+            document.getElementById(resultId).innerHTML = `<div class="test-result test-fail"><i class="bi bi-x-circle-fill"></i> Erro: ${e.message}</div>`;
+        }
+    }
+    async function sendTestMessage() {
+        const numero = document.getElementById('test-msg-numero').value.trim();
+        const texto = document.getElementById('test-msg-texto').value.trim();
+        if (!numero || !texto) return showToast('Preencha numero e mensagem', 'error');
+        btnLoading('send-msg-btn');
+        const div = document.getElementById('test-msg-result');
+        div.innerHTML = '<div class="test-result"><i class="bi bi-hourglass-split"></i> Enviando...</div>';
+        try {
+            const r = await api('/api/send-message', { method: 'POST', body: JSON.stringify({ numero, mensagem: texto }) });
+            const cls = r.success ? 'test-ok' : 'test-fail';
+            div.innerHTML = `<div class="test-result ${cls}"><i class="bi bi-${r.success?'check-circle-fill':'x-circle-fill'}"></i> ${r.message||r.error}</div>`;
+        } catch(e) { div.innerHTML = `<div class="test-result test-fail">Erro: ${e.message}</div>`; }
+        btnLoading('send-msg-btn', false);
+    }
+    async function triggerReport() {
+        btnLoading('trigger-report-btn');
+        const div = document.getElementById('test-report-result');
+        div.innerHTML = '<div class="test-result"><i class="bi bi-hourglass-split"></i> Disparando...</div>';
+        try {
+            const r = await api('/api/trigger-report', { method: 'POST' });
+            const cls = r.success ? 'test-ok' : 'test-fail';
+            div.innerHTML = `<div class="test-result ${cls}"><i class="bi bi-${r.success?'check-circle-fill':'x-circle-fill'}"></i> ${r.message||r.error}</div>`;
+        } catch(e) { div.innerHTML = `<div class="test-result test-fail">Erro: ${e.message}</div>`; }
+        btnLoading('trigger-report-btn', false);
+    }
+
+    // ========== Auto-login ==========
+    if (apiKey) loadDashboard();
+    </script>
+</body>
+</html>

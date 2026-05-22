@@ -46,6 +46,14 @@ uploads
 application/.env
 assets/userImage
 
+# WhatsApp agent env
+scripts/whatsapp-agent/.env
+
+# Credenciais e secrets
+.env
+.env.production
+.env.local
+
 # Arquivos temporarios de debugging e deploy
 /fix_*.php
 /fix_*.py

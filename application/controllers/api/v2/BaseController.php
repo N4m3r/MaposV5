@@ -42,9 +42,16 @@ class BaseController extends MY_Controller
         };
 
         $this->rateLimiter = null;
+        if (class_exists('Libraries\Security\RateLimiter')) {
+            $this->rateLimiter = new \Libraries\Security\RateLimiter();
+        } elseif (class_exists('RateLimiter')) {
+            $this->rateLimiter = new \RateLimiter();
+        }
 
-        // Verifica rate limiting (desabilitado temporariamente)
-        // $this->checkRateLimit();
+        // Verifica rate limiting
+        if ($this->rateLimiter) {
+            $this->checkRateLimit();
+        }
 
         // Verifica autenticação
         $this->authenticate();
@@ -59,45 +66,28 @@ class BaseController extends MY_Controller
     protected function authenticate(): void
     {
         $authHeader   = $this->input->get_request_header('Authorization', true);
-        $apiKeyHeader = $this->input->get_request_header('X-API-Key', true)
-                        ?: $this->input->get('api_key');
+        $apiKeyHeader = $this->input->get_request_header('X-API-Key', true);
 
-        // 1. Token fixo via Authorization: Bearer <token>
-        $tokenFixo = 't4AZOtKkYyTlFHrYaORx33AsfFmwP6Ja/H1yJKPiV4Q=';
-        if ($authHeader && str_replace('Bearer ', '', $authHeader) === $tokenFixo) {
+        // 1. API Key via header Authorization: Bearer <key> ou X-API-Key
+        $envApiKey = $_ENV['API_MAPOS_KEY'] ?? '';
+        if ($apiKeyHeader && $envApiKey && $apiKeyHeader === $envApiKey) {
             $this->currentUser = (object) [
                 'sub'         => 0,
-                'email'       => 'api@mapos.local',
-                'name'        => 'API Fixa',
-                'permissions' => ['*']
+                'email'       => 'api@system',
+                'name'        => 'API System',
+                'permissions' => ['*', 'configuracoes', 'vAgenteIA', 'cAgenteIA', 'eAgenteIA']
             ];
             return;
         }
 
-        // 2. API Key de ambiente ou token fixo via X-API-Key
-        if ($apiKeyHeader) {
-            // Token fixo via X-API-Key
-            if ($apiKeyHeader === $tokenFixo) {
-                $this->currentUser = (object) [
-                    'sub'         => 0,
-                    'email'       => 'api@mapos.local',
-                    'name'        => 'API Fixa',
-                    'permissions' => ['*']
-                ];
-                return;
-            }
-
-            // API Key configurada via ambiente
-            $expectedKey = $_ENV['API_MAPOS_KEY'] ?? '';
-            if ($expectedKey && $apiKeyHeader === $expectedKey) {
-                $this->currentUser = (object) [
-                    'sub'         => 0,
-                    'email'       => 'api@system',
-                    'name'        => 'API System',
-                    'permissions' => ['*', 'configuracoes', 'vAgenteIA', 'cAgenteIA', 'eAgenteIA']
-                ];
-                return;
-            }
+        if ($authHeader && $envApiKey && str_replace('Bearer ', '', $authHeader) === $envApiKey) {
+            $this->currentUser = (object) [
+                'sub'         => 0,
+                'email'       => 'api@system',
+                'name'        => 'API System',
+                'permissions' => ['*', 'configuracoes', 'vAgenteIA', 'cAgenteIA', 'eAgenteIA']
+            ];
+            return;
         }
 
         // 3. Fallback para JWT Bearer padrão
@@ -129,14 +119,27 @@ class BaseController extends MY_Controller
     }
 
     /**
-     * Configura headers CORS
+     * Configura headers CORS com whitelist configuravel
      */
     protected function setCorsHeaders(): void
     {
-        header('Access-Control-Allow-Origin: *');
+        $allowedOrigins = array_filter(array_map('trim', explode(',', $_ENV['CORS_ORIGINS'] ?? '')));
+        $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+
+        if (in_array($origin, $allowedOrigins, true)) {
+            header("Access-Control-Allow-Origin: {$origin}");
+        } elseif (!empty($allowedOrigins)) {
+            // Se whitelist existe mas origin nao esta nela, rejeita
+            header('Access-Control-Allow-Origin: none');
+        } else {
+            // Fallback para desenvolvimento: permite qualquer origin se nao configurado
+            header('Access-Control-Allow-Origin: *');
+        }
+
         header('Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS');
-        header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+        header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, X-API-Key');
         header('Access-Control-Expose-Headers: X-RateLimit-Limit, X-RateLimit-Remaining');
+        header('Vary: Origin');
 
         if ($this->input->method() === 'OPTIONS') {
             exit;

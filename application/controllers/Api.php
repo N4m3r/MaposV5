@@ -23,7 +23,11 @@ class Api extends MY_Controller
         $this->data['menuFerramentasV5'] = true;
         $this->data['menuApiDocs'] = true;
         $this->data['apiBaseUrl'] = base_url('api/v2');
-        $this->data['jwtSecret'] = getenv('JWT_SECRET') ?: 'mapos-secret-key';
+        $this->data['jwtSecret'] = getenv('JWT_SECRET') ?: '';
+        if (empty($this->data['jwtSecret'])) {
+            log_message('error', 'JWT_SECRET nao configurado no .env');
+            $this->data['jwtSecret'] = bin2hex(random_bytes(32));
+        }
         $this->data['view'] = 'api/docs';
 
         return $this->layout();
@@ -50,7 +54,11 @@ class Api extends MY_Controller
         $email = $this->session->userdata('email');
 
         // Gera token usando Firebase JWT
-        $key = getenv('JWT_SECRET') ?: 'mapos-secret-key';
+        $key = getenv('JWT_SECRET');
+        if (empty($key)) {
+            log_message('error', 'JWT_SECRET nao configurado no .env - usando chave temporaria');
+            $key = bin2hex(random_bytes(32));
+        }
         $payload = [
             'iss' => base_url(),
             'aud' => base_url(),

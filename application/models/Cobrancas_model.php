@@ -6,6 +6,12 @@ if (! defined('BASEPATH')) {
 
 class Cobrancas_model extends CI_Model
 {
+    /**
+     * Whitelist of allowed payment gateway library names.
+     * Only these values are accepted when dynamically loading a gateway library.
+     */
+    private const ALLOWED_GATEWAYS = ['Asaas', 'MercadoPago', 'GerencianetSdk', 'Cora'];
+
     public function __construct()
     {
         parent::__construct();
@@ -40,12 +46,44 @@ class Cobrancas_model extends CI_Model
 
     public function getByOs($id)
     {
-        return $this->db->query("SELECT DISTINCT `cobrancas`.*,`clientes`.*,`os`.* FROM `cobrancas`,`clientes`,`os` WHERE `charge_id` = $id AND `os`.`idOs` = `cobrancas`.`os_id`")->row();
+        $this->db->select('cobrancas.*, clientes.*, os.*');
+        $this->db->from('cobrancas');
+        $this->db->join('clientes', 'clientes.idClientes = cobrancas.clientes_id');
+        $this->db->join('os', 'os.idOs = cobrancas.os_id');
+        $this->db->where('cobrancas.charge_id', $id);
+        $this->db->group_by('cobrancas.idCobranca');
+
+        return $this->db->get()->row();
     }
 
     public function getByVendas($id)
     {
-        return $this->db->query("SELECT DISTINCT `cobrancas`.*,`clientes`.*,`vendas`.* FROM `cobrancas`,`clientes`,`vendas` WHERE `charge_id` = $id AND `vendas`.`idVendas` = `cobrancas`.`vendas_id`")->row();
+        $this->db->select('cobrancas.*, clientes.*, vendas.*');
+        $this->db->from('cobrancas');
+        $this->db->join('clientes', 'clientes.idClientes = cobrancas.clientes_id');
+        $this->db->join('vendas', 'vendas.idVendas = cobrancas.vendas_id');
+        $this->db->where('cobrancas.charge_id', $id);
+        $this->db->group_by('cobrancas.idCobranca');
+
+        return $this->db->get()->row();
+    }
+
+    /**
+     * Validate and load a payment gateway library.
+     * Only gateway names in the ALLOWED_GATEWAYS whitelist are permitted.
+     *
+     * @param  string     $gatewayName The payment_gateway value from the database
+     * @return bool       True if the library was loaded successfully, false otherwise
+     */
+    private function loadPaymentGateway($gatewayName)
+    {
+        if (! in_array($gatewayName, self::ALLOWED_GATEWAYS, true)) {
+            log_message('error', 'Rejected payment gateway library: ' . $gatewayName . ' is not in the allowed whitelist.');
+            return false;
+        }
+
+        $this->load->library('Gateways/' . $gatewayName, null, 'PaymentGateway');
+        return true;
     }
 
     public function add($table, $data, $returnId = false)
@@ -158,7 +196,9 @@ class Cobrancas_model extends CI_Model
         }
 
         $gatewayDePagamento = $cobranca->payment_gateway;
-        $this->load->library("Gateways/$gatewayDePagamento", null, 'PaymentGateway');
+        if (! $this->loadPaymentGateway($gatewayDePagamento)) {
+            return false;
+        }
 
         $result = $this->PaymentGateway->atualizarDados($cobranca->idCobranca);
 
@@ -173,7 +213,9 @@ class Cobrancas_model extends CI_Model
         }
 
         $gatewayDePagamento = $cobranca->payment_gateway;
-        $this->load->library("Gateways/$gatewayDePagamento", null, 'PaymentGateway');
+        if (! $this->loadPaymentGateway($gatewayDePagamento)) {
+            return false;
+        }
 
         $result = $this->PaymentGateway->confirmarPagamento($cobranca->idCobranca);
 
@@ -188,7 +230,9 @@ class Cobrancas_model extends CI_Model
         }
 
         $gatewayDePagamento = $cobranca->payment_gateway;
-        $this->load->library("Gateways/$gatewayDePagamento", null, 'PaymentGateway');
+        if (! $this->loadPaymentGateway($gatewayDePagamento)) {
+            return false;
+        }
 
         $result = $this->PaymentGateway->cancelar($cobranca->idCobranca);
 
@@ -203,7 +247,9 @@ class Cobrancas_model extends CI_Model
         }
 
         $gatewayDePagamento = $cobranca->payment_gateway;
-        $this->load->library("Gateways/$gatewayDePagamento", null, 'PaymentGateway');
+        if (! $this->loadPaymentGateway($gatewayDePagamento)) {
+            return false;
+        }
 
         $result = $this->PaymentGateway->enviarPorEmail($cobranca->idCobranca);
 

@@ -270,4 +270,112 @@ class Agente_ia_relatorios_model extends CI_Model
         $fim    = date('Y-m-t');
         return $this->osPeriodo($inicio, $fim);
     }
+
+    // ========================================================================
+    // RELATORIO: COBRANCAS VENCIDAS
+    // ========================================================================
+
+    public function cobrancasVencidas(): array
+    {
+        $this->db->from('cobrancas cb');
+        $this->db->select([
+            'cb.idCobranca', 'cb.descricao', 'cb.valor',
+            'cb.data_vencimento', 'cb.baixado', 'cb.data_pagamento',
+            'c.nomeCliente', 'c.celular'
+        ]);
+        $this->db->join('clientes c', 'c.idClientes = cb.clientes_id', 'left');
+        $this->db->where('cb.baixado', 0);
+        $this->db->where('cb.data_vencimento <', date('Y-m-d'));
+        $this->db->order_by('cb.data_vencimento', 'ASC');
+        $this->db->limit(50);
+        $items = $this->db->get()->result_array();
+
+        $totalValor = array_sum(array_column($items, 'valor'));
+
+        return [
+            'tipo'         => 'cobrancas_vencidas',
+            'resumo'       => [
+                'total_cobrancas' => count($items),
+                'valor_total'     => $totalValor,
+            ],
+            'items'        => $items
+        ];
+    }
+
+    // ========================================================================
+    // RELATORIO: OS ATRASADOS (AGRUPADO)
+    // ========================================================================
+
+    public function osAtrasados(): array
+    {
+        // Por status
+        $this->db->from('os o');
+        $this->db->select([
+            'o.status',
+            'COUNT(*) as quantidade',
+            'COALESCE(SUM(o.valorTotal), 0) as valor_total'
+        ]);
+        $this->db->where('o.status NOT IN ("Finalizado", "Cancelado", "Faturado")', null, false);
+        $this->db->where('o.dataFinal <', date('Y-m-d'));
+        $this->db->group_by('o.status');
+        $porStatus = $this->db->get()->result_array();
+
+        // Top clientes com mais atrasos
+        $this->db->from('os o');
+        $this->db->select([
+            'c.nomeCliente',
+            'COUNT(o.idOs) as qtd_atrasadas',
+            'MIN(o.dataFinal) as mais_antiga'
+        ]);
+        $this->db->join('clientes c', 'c.idClientes = o.clientes_id');
+        $this->db->where('o.status NOT IN ("Finalizado", "Cancelado", "Faturado")', null, false);
+        $this->db->where('o.dataFinal <', date('Y-m-d'));
+        $this->db->group_by('c.idClientes');
+        $this->db->order_by('qtd_atrasadas', 'DESC');
+        $this->db->limit(10);
+        $topAtrasados = $this->db->get()->result_array();
+
+        $total = array_sum(array_column($porStatus, 'quantidade'));
+
+        return [
+            'tipo'          => 'os_atrasados',
+            'resumo'        => [
+                'total_os_atrasadas' => (int)$total,
+                'por_status'         => array_column($porStatus, 'quantidade', 'status'),
+            ],
+            'top_atrasados' => $topAtrasados,
+            'items'         => $porStatus
+        ];
+    }
+
+    // ========================================================================
+    // RELATORIO: TOP CLIENTES
+    // ========================================================================
+
+    public function clientesTop(int $limite = 15): array
+    {
+        $this->db->from('clientes c');
+        $this->db->select([
+            'c.idClientes', 'c.nomeCliente', 'c.celular',
+            'COUNT(o.idOs) as total_os',
+            'SUM(CASE WHEN o.status IN ("Finalizado","Faturado") THEN 1 ELSE 0 END) as finalizadas',
+            'COALESCE(SUM(o.valorTotal), 0) as valor_total',
+            'MAX(o.dataInicial) as ultima_os'
+        ]);
+        $this->db->join('os o', 'o.clientes_id = c.idClientes', 'left');
+        $this->db->group_by('c.idClientes');
+        $this->db->having('total_os >', 0);
+        $this->db->order_by('total_os', 'DESC');
+        $this->db->limit($limite);
+        $items = $this->db->get()->result_array();
+
+        return [
+            'tipo'    => 'clientes_top',
+            'resumo'  => [
+                'total_clientes' => count($items),
+                'total_os'       => array_sum(array_column($items, 'total_os')),
+            ],
+            'items'   => $items
+        ];
+    }
 }

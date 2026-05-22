@@ -48,6 +48,29 @@ class Webhook extends CI_Controller
             return;
         }
 
+        // Verificar assinatura HMAC se configurada
+        $webhookSecret = getenv('CORA_WEBHOOK_SECRET') ?: $this->config->item('cora_webhook_secret');
+        if (!empty($webhookSecret)) {
+            $signature = $this->input->get_request_header('X-Signature')
+                ?? $this->input->get_request_header('X-Hub-Signature-256')
+                ?? '';
+
+            if (empty($signature)) {
+                log_message('error', 'Webhook Cora: Assinatura ausente');
+                $this->responseError('Assinatura ausente', 401);
+                return;
+            }
+
+            $expectedSignature = 'sha256=' . hash_hmac('sha256', $input, $webhookSecret);
+            if (!hash_equals($expectedSignature, $signature)) {
+                log_message('error', 'Webhook Cora: Assinatura inválida');
+                $this->responseError('Assinatura inválida', 401);
+                return;
+            }
+        } else {
+            log_message('warning', 'Webhook Cora: CORA_WEBHOOK_SECRET nao configurado - webhook sem verificacao de assinatura');
+        }
+
         // Log da requisição para debugging
         log_info('Webhook Cora recebido: ' . $input);
 

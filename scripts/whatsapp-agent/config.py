@@ -24,8 +24,11 @@ AGENT_URL = os.getenv('AGENT_URL', f'http://localhost:{AGENT_PORT}')
 MAPOS_URL = os.getenv('MAPOS_URL', '').rstrip('/')
 MAPOS_API_KEY = os.getenv('MAPOS_API_KEY', '')
 
+# Administrador — numero com codigo do pais (apenas digitos)
+ADMIN_NUMERO = os.getenv('ADMIN_NUMERO', '')
+
 # n8n (repassar mensagens para o n8n apos processar)
-N8N_WEBHOOK_URL = os.getenv('N8N_WEBHOOK_URL', 'https://n8n.jj-ferreiras.com.br/webhook/recebimento-whatsapp').rstrip('/')
+N8N_WEBHOOK_URL = os.getenv('N8N_WEBHOOK_URL', '').rstrip('/')
 
 # LLM (opcional - vazio = regex)
 LLM_PROVIDER = os.getenv('LLM_PROVIDER', '')  # 'ollama', 'openai', 'anthropic', ''
@@ -41,6 +44,10 @@ LLM_CLOUD_MODEL = os.getenv('LLM_CLOUD_MODEL', '')  # e.g. glm-5.1, gpt-4o-mini,
 # Whisper ASR
 WHISPER_URL = os.getenv('WHISPER_URL', 'http://localhost:9001').rstrip('/')
 WHISPER_LANGUAGE = os.getenv('WHISPER_LANGUAGE', 'pt')
+
+# Notificacoes agendadas
+RELATORIO_DIARIO_HORA = os.getenv('RELATORIO_DIARIO_HORA', '')  # vazio = desativado
+NOTIFICACAO_VENCENDO_HORA = os.getenv('NOTIFICACAO_VENCENDO_HORA', '')  # vazio = desativado
 
 # Debug
 DEBUG = os.getenv('DEBUG', 'false').lower() == 'true'

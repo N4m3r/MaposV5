@@ -147,22 +147,20 @@ class Clientes_model extends CI_Model
      */
     public function removeClientOs($os)
     {
-        try {
-            foreach ($os as $o) {
-                $this->db->where('os_id', $o->idOs);
-                $this->db->delete('servicos_os');
+        $this->db->trans_start();
+        foreach ($os as $o) {
+            $this->db->where('os_id', $o->idOs);
+            $this->db->delete('servicos_os');
 
-                $this->db->where('os_id', $o->idOs);
-                $this->db->delete('produtos_os');
+            $this->db->where('os_id', $o->idOs);
+            $this->db->delete('produtos_os');
 
-                $this->db->where('idOs', $o->idOs);
-                $this->db->delete('os');
-            }
-        } catch (Exception $e) {
-            return false;
+            $this->db->where('idOs', $o->idOs);
+            $this->db->delete('os');
         }
+        $this->db->trans_complete();
 
-        return true;
+        return $this->db->trans_status() !== false;
     }
 
     /**
@@ -186,18 +184,16 @@ class Clientes_model extends CI_Model
      */
     public function removeClientVendas($vendas)
     {
-        try {
-            foreach ($vendas as $v) {
-                $this->db->where('vendas_id', $v->idVendas);
-                $this->db->delete('itens_de_vendas');
+        $this->db->trans_start();
+        foreach ($vendas as $v) {
+            $this->db->where('vendas_id', $v->idVendas);
+            $this->db->delete('itens_de_vendas');
 
-                $this->db->where('idVendas', $v->idVendas);
-                $this->db->delete('vendas');
-            }
-        } catch (Exception $e) {
-            return false;
+            $this->db->where('idVendas', $v->idVendas);
+            $this->db->delete('vendas');
         }
+        $this->db->trans_complete();
 
-        return true;
+        return $this->db->trans_status() !== false;
     }
 }

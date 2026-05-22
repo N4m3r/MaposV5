@@ -2,6 +2,20 @@
 
 use Piggly\Pix\Parser;
 
+if (! function_exists('e')) {
+    /**
+     * Escapa HTML para prevenir XSS.
+     * Uso: <?php echo e($variavel) ?> em vez de <?php echo $variavel ?>
+     */
+    function e($string, $doubleEncode = false)
+    {
+        if ($string === null || $string === '') {
+            return '';
+        }
+        return htmlspecialchars((string) $string, ENT_QUOTES, 'UTF-8', $doubleEncode);
+    }
+}
+
 if (! function_exists('convertUrlToUploadsPath')) {
     function convertUrlToUploadsPath($url)
     {

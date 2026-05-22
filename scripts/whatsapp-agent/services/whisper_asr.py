@@ -42,11 +42,16 @@ def _transcrever_arquivo(file_path: str, whisper_url: str, linguagem: str) -> di
             resp = requests.post(endpoint, files=files, data=data, timeout=60)
             resp.raise_for_status()
 
-            result = resp.json()
-
-            texto = result.get('text', '').strip()
-            if not texto:
-                texto = result.get('transcription', '').strip()
+            # Whisper ASR pode retornar JSON ou texto puro
+            content_type = resp.headers.get('content-type', '')
+            if 'application/json' in content_type:
+                result = resp.json()
+                texto = result.get('text', '').strip()
+                if not texto:
+                    texto = result.get('transcription', '').strip()
+            else:
+                # Resposta em texto puro (padrao do whisper-asr-webservice)
+                texto = resp.text.strip()
 
             return {"texto": texto, "sucesso": bool(texto), "erro": ""}
 

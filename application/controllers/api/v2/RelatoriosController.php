@@ -41,7 +41,8 @@ class RelatoriosController extends BaseController
         if (!$tipo) {
             return $this->error('Informe o tipo de relatorio.', 400, [
                 'tipos_validos' => ['os_periodo','historico_cliente','resumo_financeiro',
-                            'vendas','estoque','produtividade_tecnico','os_hoje','os_mes']
+                            'vendas','estoque','produtividade_tecnico','os_hoje','os_mes',
+                            'cobrancas_vencidas','os_atrasados','clientes_top']
             ]);
         }
 
@@ -178,6 +179,15 @@ class RelatoriosController extends BaseController
                 if (!$tecnico) return null;
                 return $this->relModel->produtividadeTecnico($tecnico, $dtInicio, $dtFim);
 
+            case 'cobrancas_vencidas':
+                return $this->relModel->cobrancasVencidas();
+
+            case 'os_atrasados':
+                return $this->relModel->osAtrasados();
+
+            case 'clientes_top':
+                return $this->relModel->clientesTop();
+
             default:
                 return null;
         }
@@ -310,6 +320,24 @@ class RelatoriosController extends BaseController
                     $r['os_finalizadas'] ?? 0,
                     number_format($r['total_divida'] ?? 0, 2, ',', '.')
                 );
+            case 'cobrancas_vencidas':
+                return sprintf(
+                    "Cobrancas Vencidas:\nTotal: %d cobrancas | Valor: R$ %s",
+                    count($dados['items'] ?? []),
+                    number_format(array_sum(array_column($dados['items'] ?? [], 'valor')), 2, ',', '.')
+                );
+            case 'os_atrasados':
+                return sprintf(
+                    "OS em Atraso:\nTotal: %d OS atrasadas | Valor: R$ %s",
+                    $r['total_os_atrasadas'] ?? 0,
+                    number_format($r['valor_total'] ?? 0, 2, ',', '.')
+                );
+            case 'clientes_top':
+                return sprintf(
+                    "Top Clientes:\nClientes com OS: %d | Total OS: %d",
+                    $r['total_clientes'] ?? 0,
+                    $r['total_os'] ?? 0
+                );
             default:
                 return 'Relatorio gerado. Veja o PDF para mais detalhes.';
         }
@@ -330,6 +358,9 @@ class RelatoriosController extends BaseController
             'vendas'               => 'Relatorio de Vendas',
             'estoque'              => 'Relatorio de Estoque',
             'produtividade_tecnico'=> 'Produtividade do Tecnico',
+            'cobrancas_vencidas'   => 'Cobrancas Vencidas',
+            'os_atrasados'         => 'OS em Atraso',
+            'clientes_top'         => 'Top Clientes',
         ];
         return $map[$tipo] ?? 'Relatorio';
     }

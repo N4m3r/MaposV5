@@ -106,10 +106,10 @@ cat > "$AGENT_DIR/.env" << 'ENVEOF'
 # =============================================================================
 
 # === Banco de Dados MySQL (mesmo do MapOS) ===
-MYSQL_HOST=mysql.jj-ferreiras.com.br
+MYSQL_HOST=mysql30-farm10.kinghost.net
 MYSQL_PORT=3306
-MYSQL_DB=jjferreiras03
-MYSQL_USER=jjferreiras03
+MYSQL_DB=jjferreiras05
+MYSQL_USER=jjferreiras05
 MYSQL_PASS=93982740tT
 
 # === Evolution Go (SaaS) ===

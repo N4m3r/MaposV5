@@ -24,15 +24,15 @@
                 <h5>Logs de Conversa do Agente IA</h5>
                 <div class="buttons">
                     <form method="get" class="form-inline" style="margin:0">
-                        <input type="text" name="numero" placeholder="Numero..." class="input-small" value="<?php echo $_GET['numero'] ?? ''; ?>">
+                        <input type="text" name="numero" placeholder="Numero..." class="input-small" value="<?php echo e($_GET['numero'] ?? ''); ?>">
                         <select name="tipo" class="input-small">
                             <option value="">Todos</option>
-                            <option value="entrada" <?php echo ($_GET['tipo'] ?? '')==='entrada'?'selected':''; ?>>Entrada</option>
-                            <option value="saida" <?php echo ($_GET['tipo'] ?? '')==='saida'?'selected':''; ?>>Saida</option>
-                            <option value="sistema" <?php echo ($_GET['tipo'] ?? '')==='sistema'?'selected':''; ?>>Sistema</option>
-                            <option value="erro" <?php echo ($_GET['tipo'] ?? '')==='erro'?'selected':''; ?>>Erro</option>
+                            <option value="entrada" <?php echo e($_GET['tipo'] ?? '')==='entrada'?'selected':''; ?>>Entrada</option>
+                            <option value="saida" <?php echo e($_GET['tipo'] ?? '')==='saida'?'selected':''; ?>>Saida</option>
+                            <option value="sistema" <?php echo e($_GET['tipo'] ?? '')==='sistema'?'selected':''; ?>>Sistema</option>
+                            <option value="erro" <?php echo e($_GET['tipo'] ?? '')==='erro'?'selected':''; ?>>Erro</option>
                         </select>
-                        <input type="date" name="data" class="input-small" value="<?php echo $_GET['data'] ?? ''; ?>">
+                        <input type="date" name="data" class="input-small" value="<?php echo e($_GET['data'] ?? ''); ?>">
                         <button type="submit" class="btn btn-mini"><i class="bx bx-search"></i></button>
                     </form>
                 </div>

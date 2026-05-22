@@ -45,15 +45,17 @@ class Os extends MY_Controller
         }
         if ($inputDe) {
             $de = explode('/', $inputDe);
-            $de = $de[2] . '-' . $de[1] . '-' . $de[0];
-
-            $where_array['de'] = $de;
+            if (count($de) === 3 && checkdate((int)$de[1], (int)$de[0], (int)$de[2])) {
+                $de = $de[2] . '-' . $de[1] . '-' . $de[0];
+                $where_array['de'] = $de;
+            }
         }
         if ($inputAte) {
             $ate = explode('/', $inputAte);
-            $ate = $ate[2] . '-' . $ate[1] . '-' . $ate[0];
-
-            $where_array['ate'] = $ate;
+            if (count($ate) === 3 && checkdate((int)$ate[1], (int)$ate[0], (int)$ate[2])) {
+                $ate = $ate[2] . '-' . $ate[1] . '-' . $ate[0];
+                $where_array['ate'] = $ate;
+            }
         }
 
         // Verificar se é técnico - se sim, filtrar apenas OS atribuídas a ele
@@ -117,10 +119,16 @@ class Os extends MY_Controller
 
             try {
                 $dataInicial = explode('/', $dataInicial);
+                if (count($dataInicial) !== 3 || !checkdate((int)$dataInicial[1], (int)$dataInicial[0], (int)$dataInicial[2])) {
+                    throw new Exception('Data inicial invalida');
+                }
                 $dataInicial = $dataInicial[2] . '-' . $dataInicial[1] . '-' . $dataInicial[0];
 
                 if ($dataFinal) {
                     $dataFinal = explode('/', $dataFinal);
+                    if (count($dataFinal) !== 3 || !checkdate((int)$dataFinal[1], (int)$dataFinal[0], (int)$dataFinal[2])) {
+                        throw new Exception('Data final invalida');
+                    }
                     $dataFinal = $dataFinal[2] . '-' . $dataFinal[1] . '-' . $dataFinal[0];
                 } else {
                     $dataFinal = date('Y/m/d');
@@ -267,9 +275,15 @@ class Os extends MY_Controller
 
             try {
                 $dataInicial = explode('/', $dataInicial);
+                if (count($dataInicial) !== 3 || !checkdate((int)$dataInicial[1], (int)$dataInicial[0], (int)$dataInicial[2])) {
+                    throw new Exception('Data inicial invalida');
+                }
                 $dataInicial = $dataInicial[2] . '-' . $dataInicial[1] . '-' . $dataInicial[0];
 
                 $dataFinal = explode('/', $dataFinal);
+                if (count($dataFinal) !== 3 || !checkdate((int)$dataFinal[1], (int)$dataFinal[0], (int)$dataFinal[2])) {
+                    throw new Exception('Data final invalida');
+                }
                 $dataFinal = $dataFinal[2] . '-' . $dataFinal[1] . '-' . $dataFinal[0];
             } catch (Exception $e) {
                 $dataInicial = date('Y/m/d');
@@ -377,6 +391,10 @@ class Os extends MY_Controller
                         'tipo' => 'warning',
                     ]);
 
+                    // Notificar cliente via WhatsApp
+                    $this->load->library('Whatsapp_notifier');
+                    $this->whatsapp_notifier->notificarStatusOs($idOs, $novoStatus, $statusAnterior);
+
                     // Gatilho webhook: status alterado
                     $this->webhookManager->trigger('os.status_changed', [
                         'id' => $idOs,
@@ -395,6 +413,9 @@ class Os extends MY_Controller
                         'tecnico_id' => $data['usuarios_id'],
                         'status' => $novoStatus,
                     ]);
+
+                    // Pesquisa de satisfacao via WhatsApp
+                    $this->whatsapp_notifier->enviarPesquisaSatisfacao($idOs);
                 }
 
                 redirect(site_url('os/editar/') . $this->input->post('idOs'));
@@ -1263,8 +1284,8 @@ class Os extends MY_Controller
 
         $upload_conf = [
             'upload_path' => $directory,
-            'allowed_types' => 'jpg|png|gif|jpeg|JPG|PNG|GIF|JPEG|pdf|PDF|cdr|CDR|docx|DOCX|txt', // formatos permitidos para anexos de os
-            'max_size' => 0,
+            'allowed_types' => 'jpg|png|gif|jpeg|pdf|docx|txt|xls|xlsx|doc|zip',
+            'max_size' => 10240, // 10MB max
         ];
 
         $this->upload->initialize($upload_conf);
@@ -1391,7 +1412,7 @@ class Os extends MY_Controller
                 return $this->output
                     ->set_content_type('application/json')
                     ->set_status_header(400)
-                    ->set_output(json_encode(['result' => false, 'messages', 'Desconto não pode ser adiciona. Os não ja Faturada/Cancelada']));
+                    ->set_output(json_encode(['result' => false, 'messages' => 'Desconto nao pode ser adicionado. OS ja Faturada/Cancelada']));
             }
             if ($this->os_model->edit('os', $data, 'idOs', $idOs) == true) {
                 log_info('Adicionou um desconto na OS. ID: ' . $idOs);
@@ -1406,7 +1427,7 @@ class Os extends MY_Controller
                 return $this->output
                     ->set_content_type('application/json')
                     ->set_status_header(400)
-                    ->set_output(json_encode(['result' => false, 'messages', 'Ocorreu um erro ao tentar adiciona desconto a OS.']));
+                    ->set_output(json_encode(['result' => false, 'messages' => 'Ocorreu um erro ao tentar adicionar desconto a OS.']));
             }
         }
 

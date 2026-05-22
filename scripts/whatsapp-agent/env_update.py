@@ -4,6 +4,10 @@ import os
 
 env_path = os.path.join(os.path.dirname(__file__), '.env')
 
+# Valores devem vir do ambiente ou do .env existente, NUNCA hardcoded
+llm_cloud_url = os.environ.get('LLM_CLOUD_URL', 'https://ollama.com/v1')
+llm_cloud_model = os.environ.get('LLM_CLOUD_MODEL', 'glm-5')
+
 with open(env_path, 'r') as f:
     lines = f.readlines()
 
@@ -18,9 +22,9 @@ for line in lines:
     if line.startswith('LLM_MODEL=') and not llm_section_done:
         new_lines.append('\n')
         new_lines.append('# === Cloud LLM (Ollama Cloud - GLM-5) ===\n')
-        new_lines.append('LLM_CLOUD_URL=https://ollama.com/v1\n')
-        new_lines.append('LLM_CLOUD_API_KEY=f6e136e710bb460fa8f20d408d3761d8.64JLJDts4v5fIYV111gLvtqp\n')
-        new_lines.append('LLM_CLOUD_MODEL=glm-5\n')
+        new_lines.append(f'LLM_CLOUD_URL={llm_cloud_url}\n')
+        new_lines.append('LLM_CLOUD_API_KEY=  # Configure sua API key no arquivo .env\n')
+        new_lines.append(f'LLM_CLOUD_MODEL={llm_cloud_model}\n')
         llm_section_done = True
 
 with open(env_path, 'w') as f:
