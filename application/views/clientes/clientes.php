@@ -62,12 +62,12 @@
                     foreach ($results as $r) {
                         echo '<tr>';
                         echo '<td>' . $r->idClientes . '</td>';
-                        echo '<td><a href="' . base_url() . 'index.php/clientes/visualizar/' . $r->idClientes . '" style="margin-right: 1%">' . $r->nomeCliente . '</a></td>';
-                        echo '<td>' . $r->contato . '</td>';
-                        echo '<td>' . $r->documento . '</td>';
-                        echo '<td>' . $r->telefone . '</td>';
-                        echo '<td>' . $r->celular . '</td>';
-                        echo '<td>' . $r->email . '</td>';
+                        echo '<td><a href="' . base_url() . 'index.php/clientes/visualizar/' . $r->idClientes . '" style="margin-right: 1%">' . e($r->nomeCliente) . '</a></td>';
+                        echo '<td>' . e($r->contato) . '</td>';
+                        echo '<td>' . e($r->documento) . '</td>';
+                        echo '<td>' . e($r->telefone) . '</td>';
+                        echo '<td>' . e($r->celular) . '</td>';
+                        echo '<td>' . e($r->email) . '</td>';
 
                         // Verifica se é Fornecedor ou Cliente
                         if ($r->fornecedor == 1) {

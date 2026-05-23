@@ -35,19 +35,19 @@
                 <h5>Editar Produto</h5>
             </div>
             <div class="widget-content nopadding tab-content">
-                <?php echo $custom_error; ?>
+                <?php echo e($custom_error); ?>
                 <form action="<?php echo current_url(); ?>" id="formProduto" method="post" class="form-horizontal">
                     <div class="control-group">
                         <?php echo form_hidden('idProdutos', $result->idProdutos) ?>
                         <label for="codDeBarra" class="control-label">Código de Barra<span class=""></span></label>
                         <div class="controls">
-                            <input id="codDeBarra" type="text" name="codDeBarra" value="<?php echo $result->codDeBarra; ?>" />
+                            <input id="codDeBarra" type="text" name="codDeBarra" value="<?php echo e($result->codDeBarra); ?>" />
                         </div>
                     </div>
                     <div class="control-group">
                         <label for="descricao" class="control-label">Descrição<span class="required">*</span></label>
                         <div class="controls">
-                            <input id="descricao" type="text" name="descricao" value="<?php echo $result->descricao; ?>" />
+                            <input id="descricao" type="text" name="descricao" value="<?php echo e($result->descricao); ?>" />
                         </div>
                     </div>
 

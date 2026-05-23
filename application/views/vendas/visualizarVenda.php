@@ -6,12 +6,12 @@
                     <span class="icon">
                         <i class="fas fa-cash-register"></i>
                     </span>
-                    <h5>Dados da Venda Nº <span><b><?php echo $result->idVendas; ?></b></span></h5>
+                    <h5>Dados da Venda Nº <span><b><?php echo e($result->idVendas); ?></b></span></h5>
                     <div class="buttons">
                         <?php 
                         $editavel = $this->vendas_model->isEditable($result->idVendas);
                         if (($result->faturado != 1 || $editavel) && $this->permission->checkPermission($this->session->userdata('permissao'), 'eVenda')): ?>
-                            <a title="Editar Venda" class="button btn btn-mini btn-success" href="<?php echo base_url() . 'index.php/vendas/editar/' . $result->idVendas; ?>">
+                            <a title="Editar Venda" class="button btn btn-mini btn-success" href="<?php echo base_url() . 'index.php/vendas/editar/' . e($result->idVendas); ?>">
                                 <span class="button__icon"><i class="bx bx-edit"></i></span>
                                 <span class="button__text">Editar</span>
                             </a>
@@ -26,10 +26,10 @@
                                     <span class="button__icon"><i class="bx bx-printer"></i></span>
                                     <span class="button__text">Orçamento</span>
                                 </a>
-                                <a target="_blank" title="Impressão em Papel A4" class="button btn btn-mini btn-inverse" href="<?php echo site_url() ?>/vendas/imprimir/<?php echo $result->idVendas; ?>">
+                                <a target="_blank" title="Impressão em Papel A4" class="button btn btn-mini btn-inverse" href="<?php echo site_url() ?>/vendas/imprimir/<?php echo e($result->idVendas); ?>">
                                     <span class="button__icon"><i class='bx bx-file'></i></span> <span class="button__text">Papel A4</span>
                                 </a>
-                                <a target="_blank" title="Impressão Cupom Não Fiscal" class="button btn btn-mini btn-inverse" href="<?php echo site_url() ?>/vendas/imprimirTermica/<?php echo $result->idVendas; ?>">
+                                <a target="_blank" title="Impressão Cupom Não Fiscal" class="button btn btn-mini btn-inverse" href="<?php echo site_url() ?>/vendas/imprimirTermica/<?php echo e($result->idVendas); ?>">
                                     <span class="button__icon"><i class='bx bx-receipt'></i></span> <span class="button__text">Cupom 80mm</span>
                                 </a>
                             </div>
@@ -63,31 +63,31 @@
                                 <?php else: ?>
                                     <tr>
                                         <td style="width: 25%">
-                                            <img src="<?php echo $emitente->url_logo; ?>" style="max-height: 100px">
+                                            <img src="<?php echo e($emitente->url_logo); ?>" style="max-height: 100px">
                                         </td>
                                         <td>
-                                            <span style="font-size: 17px;"><b><?php echo $emitente->nome; ?></b></span><br>
+                                            <span style="font-size: 17px;"><b><?php echo e($emitente->nome); ?></b></span><br>
                                             <span style="font-size: 12px;">
                                                 <span class="icon">
                                                     <i class="fas fa-fingerprint" style="margin:5px 1px"></i>
-                                                    <?php echo $emitente->cnpj; ?>
+                                                    <?php echo e($emitente->cnpj); ?>
                                                 </span><br>
                                                 <span class="icon">
                                                     <i class="fas fa-map-marker-alt" style="margin:4px 3px"></i>
-                                                    <?php echo $emitente->rua . ', nº:' . $emitente->numero . ', ' . $emitente->bairro . ' - ' . $emitente->cidade . ' - ' . $emitente->uf; ?>
+                                                    <?php echo e($emitente->rua . ', nº:' . $emitente->numero . ', ' . $emitente->bairro . ' - ' . $emitente->cidade . ' - ' . $emitente->uf); ?>
                                                 </span><br>
                                                 <span class="icon">
                                                     <i class="fas fa-comments" style="margin:5px 1px"></i>
-                                                    E-mail: <?php echo $emitente->email . ' - Fone: ' . $emitente->telefone; ?>
+                                                    E-mail: <?php echo e($emitente->email) . ' - Fone: ' . e($emitente->telefone); ?>
                                                 </span><br>
                                                 <span class="icon">
                                                     <i class="fas fa-user-check"></i>
-                                                    Vendedor: <?php echo $result->nome; ?>
+                                                    Vendedor: <?php echo e($result->nome); ?>
                                                 </span>
                                             </span>
                                         </td>
                                         <td style="width: 18%; text-align: center">
-                                            <b>#Venda: </b><span><b><?php echo $result->idVendas; ?></b></span><br>
+                                            <b>#Venda: </b><span><b><?php echo e($result->idVendas); ?></b></span><br>
                                             <br><span>Emissão: <?php echo date('d/m/Y'); ?></span>
                                         </td>
                                     </tr>
@@ -101,14 +101,14 @@
                                         <ul>
                                             <li>
                                                 <h5><b>CLIENTE</b></h5>
-                                                <span><?php echo $result->nomeCliente; ?></span><br>
-                                                <span><?php echo $result->rua . ', ' . $result->numero . ', ' . $result->bairro; ?></span><br>
-                                                <span><?php echo $result->cidade . ' - ' . $result->estado . ' - CEP: ' . $result->cep; ?></span><br>
-                                                <span>Email: <?php echo $result->emailCliente; ?></span><br>
+                                                <span><?php echo e($result->nomeCliente); ?></span><br>
+                                                <span><?php echo e($result->rua . ', ' . $result->numero . ', ' . $result->bairro); ?></span><br>
+                                                <span><?php echo e($result->cidade . ' - ' . $result->estado . ' - CEP: ' . $result->cep); ?></span><br>
+                                                <span>Email: <?php echo e($result->emailCliente); ?></span><br>
                                                 <?php if ($result->contato): ?>
-                                                    <span>Contato: <?php echo $result->contato; ?></span><br>
+                                                    <span>Contato: <?php echo e($result->contato); ?></span><br>
                                                 <?php endif; ?>
-                                                <span>Celular: <?php echo $result->celular; ?></span>
+                                                <span>Celular: <?php echo e($result->celular); ?></span>
                                             </li>
                                         </ul>
                                     </td>
@@ -116,9 +116,9 @@
                                         <ul>
                                             <li>
                                                 <h5><b>VENDEDOR</b></h5>
-                                                <span><?php echo $result->nome; ?></span><br>
-                                                <span>Telefone: <?php echo $result->telefone_usuario; ?></span><br>
-                                                <span>Email: <?php echo $result->email_usuario; ?></span>
+                                                <span><?php echo e($result->nome); ?></span><br>
+                                                <span>Telefone: <?php echo e($result->telefone_usuario); ?></span><br>
+                                                <span>Email: <?php echo e($result->email_usuario); ?></span>
                                             </li>
                                         </ul>
                                     </td>
@@ -137,7 +137,7 @@
                                 <tbody>
                                     <?php if ($result->dataVenda != null): ?>
                                         <tr>
-                                            <td><b>Status Venda: </b><?php echo $result->status; ?></td>
+                                            <td><b>Status Venda: </b><?php echo e($result->status); ?></td>
                                             <td><b>Data da Venda: </b><?php echo date('d/m/Y', strtotime($result->dataVenda)); ?></td>
                                             <td><?php if ($result->garantia): ?><b>Garantia: </b><?php echo $result->garantia . ' dia(s)'; ?><?php endif; ?></td>
                                             <td><?php if (in_array($result->status, ['Finalizado', 'Faturado', 'Orçamento', 'Aberto', 'Em Andamento', 'Aguardando Peças'])): ?><b>Venc. da Garantia: </b><?php echo dateInterval($result->dataVenda, $result->garantia); ?><?php endif; ?></td>
@@ -165,9 +165,9 @@
                                         <?php foreach ($produtos as $p): ?>
                                             <?php $totalProdutos += $p->subTotal; ?>
                                             <tr>
-                                                <td><?php echo $p->codDeBarra; ?></td>
-                                                <td><?php echo $p->descricao; ?></td>
-                                                <td><?php echo $p->quantidade; ?></td>
+                                                <td><?php echo e($p->codDeBarra); ?></td>
+                                                <td><?php echo e($p->descricao); ?></td>
+                                                <td><?php echo e($p->quantidade); ?></td>
                                                 <td><?php echo ($p->preco ?: $p->precoVenda); ?></td>
                                                 <td>R$ <?php echo number_format($p->subTotal, 2, ',', '.'); ?></td>
                                             </tr>

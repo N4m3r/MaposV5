@@ -112,7 +112,7 @@
                     <div class="control-group">
                         <label for="dataExpiracao" class="control-label">Expira em<span class="required">*</span></label>
                         <div class="controls">
-                            <input id="dataExpiracao" type="date" name="dataExpiracao" value="<?php echo $result->dataExpiracao; ?>" />
+                            <input id="dataExpiracao" type="date" name="dataExpiracao" value="<?php echo e($result->dataExpiracao); ?>" />
                         </div>
                     </div>
 
@@ -145,7 +145,7 @@
                                     } else {
                                         $selected = '';
                                     }
-                                    echo '<option value="' . $p->idPermissao . '"' . $selected . '>' . $p->nome . '</option>';
+                                    echo '<option value="' . e($p->idPermissao) . '"' . $selected . '>' . e($p->nome) . '</option>';
                                 } ?>
                             </select>
                         </div>

@@ -36,7 +36,7 @@
         <?php endif; ?>
         <form class="span9" method="get" action="<?= base_url() ?>index.php/produtos" style="display: flex; justify-content: flex-end;">
             <div class="span3">
-                <input type="text" name="pesquisa" id="pesquisa" placeholder="Buscar por Nome ou Cod. barra..." class="span12" value="<?=$this->input->get('pesquisa')?>">
+                <input type="text" name="pesquisa" id="pesquisa" placeholder="Buscar por Nome ou Cod. barra..." class="span12" value="<?= e($this->input->get('pesquisa')) ?>">
             </div>
             <div class="span1">
                 <button class="button btn btn-mini btn-warning" style="min-width: 30px">
@@ -70,8 +70,8 @@
                 foreach ($results as $r) {
                     echo '<tr>';
                     echo '<td>' . $r->idProdutos . '</td>';
-                    echo '<td>' . $r->codDeBarra . '</td>';
-                    echo '<td>' . $r->descricao . '</td>';
+                    echo '<td>' . e($r->codDeBarra) . '</td>';
+                    echo '<td>' . e($r->descricao) . '</td>';
                     echo '<td>' . $r->estoque . '</td>';
                     echo '<td>' . number_format($r->precoVenda, 2, ',', '.') . '</td>';
                     echo '<td>';

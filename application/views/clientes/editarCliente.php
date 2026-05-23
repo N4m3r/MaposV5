@@ -97,14 +97,14 @@
                         <div class="control-group">
                             <label for="documento" class="control-label">CPF/CNPJ</label>
                             <div class="controls">
-                                <input id="documento" class="cpfcnpj" type="text" name="documento" value="<?php echo $result->documento; ?>" />
+                                <input id="documento" class="cpfcnpj" type="text" name="documento" value="<?php echo e($result->documento); ?>" />
                                 <button id="buscar_info_cnpj" class="btn btn-xs" type="button">Buscar(CNPJ)</button>
                             </div>
                         </div>
                         <div class="control-group">
                             <label for="inscricao_municipal" class="control-label">Inscrição Municipal</label>
                             <div class="controls">
-                                <input id="inscricao_municipal" type="text" name="inscricao_municipal" value="<?php echo $result->inscricao_municipal; ?>" placeholder="IM" />
+                                <input id="inscricao_municipal" type="text" name="inscricao_municipal" value="<?php echo e($result->inscricao_municipal); ?>" placeholder="IM" />
                             </div>
                         </div>
                         <div class="control-group">

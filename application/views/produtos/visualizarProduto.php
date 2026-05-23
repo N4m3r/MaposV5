@@ -15,43 +15,43 @@
                         <tr>
                             <td style="text-align: center; width: 30%"><strong>Código de Barra</strong></td>
                             <td>
-                                <?php echo $result->codDeBarra ?>
+                                <?php echo e($result->codDeBarra) ?>
                             </td>
                         </tr>
                         <tr>
                             <td style="text-align: right; width: 30%"><strong>Descrição</strong></td>
                             <td>
-                                <?php echo $result->descricao ?>
+                                <?php echo e($result->descricao) ?>
                             </td>
                         </tr>
                         <tr>
                             <td style="text-align: right"><strong>Unidade</strong></td>
                             <td>
-                                <?php echo $result->unidade ?>
+                                <?php echo e($result->unidade) ?>
                             </td>
                         </tr>
                         <tr>
                             <td style="text-align: right"><strong>Preço de Compra</strong></td>
                             <td>R$
-                                <?php echo $result->precoCompra; ?>
+                                <?php echo e($result->precoCompra); ?>
                             </td>
                         </tr>
                         <tr>
                             <td style="text-align: right"><strong>Preço de Venda</strong></td>
                             <td>R$
-                                <?php echo $result->precoVenda; ?>
+                                <?php echo e($result->precoVenda); ?>
                             </td>
                         </tr>
                         <tr>
                             <td style="text-align: right"><strong>Estoque</strong></td>
                             <td>
-                                <?php echo $result->estoque; ?>
+                                <?php echo e($result->estoque); ?>
                             </td>
                         </tr>
                         <tr>
                             <td style="text-align: right"><strong>Estoque Mínimo</strong></td>
                             <td>
-                                <?php echo $result->estoqueMinimo; ?>
+                                <?php echo e($result->estoqueMinimo); ?>
                             </td>
                         </tr>
                     </tbody>

@@ -25,25 +25,25 @@
                                 <tr>
                                     <td style="text-align: right; width: 30%"><strong>Nome</strong></td>
                                     <td>
-                                        <?php echo $result->nomeCliente ?>
+                                        <?php echo e($result->nomeCliente) ?>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td style="text-align: right"><strong>Documento</strong></td>
                                     <td>
-                                        <?php echo $result->documento ?>
+                                        <?php echo e($result->documento) ?>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td style="text-align: right"><strong>Inscrição Municipal</strong></td>
                                     <td>
-                                        <?php echo $result->inscricao_municipal ?: '—'; ?>
+                                        <?php echo e($result->inscricao_municipal) ?: '—'; ?>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td style="text-align: right"><strong>Inscrição Estadual</strong></td>
                                     <td>
-                                        <?php echo $result->inscricao_estadual ?: '—'; ?>
+                                        <?php echo e($result->inscricao_estadual) ?: '—'; ?>
                                     </td>
                                 </tr>
                                 <tr>
@@ -79,25 +79,25 @@
                                 <tr>
                                     <td style="text-align: right; width: 30%"><strong>Contato:</strong></td>
                                     <td>
-                                        <?php echo $result->contato ?>
+                                        <?php echo e($result->contato) ?>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td style="text-align: right; width: 30%"><strong>Telefone</strong></td>
                                     <td>
-                                        <?php echo $result->telefone ?>
+                                        <?php echo e($result->telefone) ?>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td style="text-align: right"><strong>Celular</strong></td>
                                     <td>
-                                        <?php echo $result->celular ?>
+                                        <?php echo e($result->celular) ?>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td style="text-align: right"><strong>Email</strong></td>
                                     <td>
-                                        <?php echo $result->email ?>
+                                        <?php echo e($result->email) ?>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -121,38 +121,38 @@
                                 <tr>
                                     <td style="text-align: right; width: 30%;"><strong>Rua</strong></td>
                                     <td>
-                                        <?php echo $result->rua ?>
+                                        <?php echo e($result->rua) ?>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td style="text-align: right"><strong>Número</strong></td>
                                     <td>
-                                        <?php echo $result->numero ?>
+                                        <?php echo e($result->numero) ?>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td style="text-align: right"><strong>Complemento</strong></td>
                                     <td>
-                                        <?php echo $result->complemento ?>
+                                        <?php echo e($result->complemento) ?>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td style="text-align: right"><strong>Bairro</strong></td>
                                     <td>
-                                        <?php echo $result->bairro ?>
+                                        <?php echo e($result->bairro) ?>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td style="text-align: right"><strong>Cidade</strong></td>
                                     <td>
-                                        <?php echo $result->cidade ?> -
-                                        <?php echo $result->estado ?>
+                                        <?php echo e($result->cidade) ?> -
+                                        <?php echo e($result->estado) ?>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td style="text-align: right"><strong>CEP</strong></td>
                                     <td>
-                                        <?php echo $result->cep ?>
+                                        <?php echo e($result->cep) ?>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -204,8 +204,8 @@
                         echo '<td>' . $r->idOs . '</td>';
                         echo '<td>' . $dataInicial . '</td>';
                         echo '<td>' . $dataFinal . '</td>';
-                        echo '<td>' . $r->descricaoProduto . '</td>';
-                        echo '<td>' . $r->defeito . '</td>';
+                        echo '<td>' . e($r->descricaoProduto) . '</td>';
+                        echo '<td>' . e($r->defeito) . '</td>';
 
                         echo '<td>';
                         if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vOs')) {
@@ -268,8 +268,8 @@
                         echo '<tr>';
                         echo '<td>' . $r->idVendas . '</td>';
                         echo '<td>' . $dataVenda . '</td>';
-                        echo '<td>' . $faturado . '</td>';
-                        echo '<td>R$' . $r->valorTotal. '</td>';
+                        echo '<td>' . e($faturado) . '</td>';
+                        echo '<td>R$' . e($r->valorTotal). '</td>';
 
                         echo '<td>';
                         if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vOs')) {

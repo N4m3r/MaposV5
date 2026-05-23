@@ -667,7 +667,7 @@
                 <div class="span12" style="margin-left: 0">
                     <label for="cliente">Cliente*</label>
                     <input class="span12" id="cliente" type="text" name="cliente"
-                        value="<?php echo $result->nomeCliente ?>" />
+                        value="<?php echo e($result->nomeCliente) ?>" />
                     <input type="hidden" name="clientes_id" id="clientes_id" value="<?php echo $result->clientes_id ?>">
                     <input type="hidden" name="os_id" id="os_id" value="<?php echo $result->idOs; ?>">
                     <input type="hidden" name="tipoDesconto" id="tipoDesconto"
