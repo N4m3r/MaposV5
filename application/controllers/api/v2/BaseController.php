@@ -71,21 +71,35 @@ class BaseController extends MY_Controller
         // 1. API Key via header Authorization: Bearer <key> ou X-API-Key
         $envApiKey = $_ENV['API_MAPOS_KEY'] ?? '';
         if ($apiKeyHeader && $envApiKey && $apiKeyHeader === $envApiKey) {
+            $scopeHeader = $this->input->get_request_header('X-API-Scopes');
+            if (!empty($scopeHeader)) {
+                $scopes = array_map('trim', explode(',', $scopeHeader));
+            } else {
+                log_message('warning', 'API key authenticated without X-API-Scopes header — full access granted');
+                $scopes = ['*'];
+            }
             $this->currentUser = (object) [
                 'sub'         => 0,
                 'email'       => 'api@system',
                 'name'        => 'API System',
-                'permissions' => ['*', 'configuracoes', 'vAgenteIA', 'cAgenteIA', 'eAgenteIA']
+                'permissions' => $scopes
             ];
             return;
         }
 
         if ($authHeader && $envApiKey && str_replace('Bearer ', '', $authHeader) === $envApiKey) {
+            $scopeHeader = $this->input->get_request_header('X-API-Scopes');
+            if (!empty($scopeHeader)) {
+                $scopes = array_map('trim', explode(',', $scopeHeader));
+            } else {
+                log_message('warning', 'API key authenticated without X-API-Scopes header — full access granted');
+                $scopes = ['*'];
+            }
             $this->currentUser = (object) [
                 'sub'         => 0,
                 'email'       => 'api@system',
                 'name'        => 'API System',
-                'permissions' => ['*', 'configuracoes', 'vAgenteIA', 'cAgenteIA', 'eAgenteIA']
+                'permissions' => $scopes
             ];
             return;
         }

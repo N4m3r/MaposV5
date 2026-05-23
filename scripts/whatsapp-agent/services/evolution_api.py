@@ -1,10 +1,33 @@
 import requests
 import tempfile
 import os
+import time
+import functools
 import logging
 import config
+from services.result import Result
 
 logger = logging.getLogger(__name__)
+
+
+def retry_with_backoff(max_retries=3, base_delay=1):
+    """Retry decorator with exponential backoff."""
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            last_exception = None
+            for attempt in range(max_retries):
+                try:
+                    return func(*args, **kwargs)
+                except Exception as e:
+                    last_exception = e
+                    if attempt < max_retries - 1:
+                        delay = base_delay * (2 ** attempt)
+                        logger.warning(f"Tentativa {attempt + 1}/{max_retries} falhou para {func.__name__}: {e}. Retentando em {delay}s...")
+                        time.sleep(delay)
+            raise last_exception
+        return wrapper
+    return decorator
 
 
 class EvolutionAPI:
@@ -17,6 +40,7 @@ class EvolutionAPI:
             'Content-Type': 'application/json'
         }
 
+    @retry_with_backoff(max_retries=3, base_delay=1)
     def enviar_texto(self, numero: str, mensagem: str, delay: int = 1200):
         """Envia mensagem de texto via Evolution Go"""
         url = f"{self.base_url}/send/text"
@@ -27,15 +51,12 @@ class EvolutionAPI:
         }
         try:
             resp = requests.post(url, headers=self.headers, json=payload, timeout=30)
-            data = resp.json()
-            return {
-                'success': resp.status_code == 200,
-                'status_code': resp.status_code,
-                'data': data
-            }
-        except Exception as e:
-            return {'success': False, 'error': str(e)}
+            resp.raise_for_status()
+            return Result.ok(data=resp.json())
+        except (requests.ConnectionError, requests.Timeout) as e:
+            return Result.fail(f"Conexao falhou: {e}")
 
+    @retry_with_backoff(max_retries=3, base_delay=1)
     def enviar_documento(self, numero: str, file_path: str, caption: str = ''):
         """Envia documento (PDF) via Evolution Go"""
         url = f"{self.base_url}/send/media"
@@ -48,13 +69,10 @@ class EvolutionAPI:
                     'mediatype': 'document'
                 }
                 resp = requests.post(url, headers={'apikey': self.api_key}, files=files, data=data, timeout=60)
-                return {
-                    'success': resp.status_code == 200,
-                    'status_code': resp.status_code,
-                    'data': resp.json() if resp.text else {}
-                }
-        except Exception as e:
-            return {'success': False, 'error': str(e)}
+                resp.raise_for_status()
+                return Result.ok(data=resp.json() if resp.text else {})
+        except (requests.ConnectionError, requests.Timeout) as e:
+            return Result.fail(f"Conexao falhou: {e}")
 
     def baixar_midia(self, message_key: str = None, media_key: str = None, msg_id: str = None) -> dict:
         """
@@ -95,9 +113,10 @@ class EvolutionAPI:
         # Metodo 2: Se tem URL direta, baixar
         return {'success': False, 'error': 'Nao foi possivel baixar a midia'}
 
+    @retry_with_backoff(max_retries=3, base_delay=1)
     def enviar_botoes(self, numero: str, title: str, description: str,
                       buttons: list, footer: str = ''):
-        """Envia mensagem com botões interativos (max 3 reply buttons).
+        """Envia mensagem com botoes interativos (max 3 reply buttons).
         buttons: [{'type':'reply','displayText':'...','id':'...'}]
         """
         url = f"{self.base_url}/send/button"
@@ -111,20 +130,16 @@ class EvolutionAPI:
         }
         try:
             resp = requests.post(url, headers=self.headers, json=payload, timeout=30)
-            data = resp.json() if resp.text else {}
-            return {
-                'success': resp.status_code == 200,
-                'status_code': resp.status_code,
-                'data': data
-            }
-        except Exception as e:
-            logger.error(f"Erro ao enviar botoes: {e}")
-            return {'success': False, 'error': str(e)}
+            resp.raise_for_status()
+            return Result.ok(data=resp.json() if resp.text else {})
+        except (requests.ConnectionError, requests.Timeout) as e:
+            return Result.fail(f"Conexao falhou: {e}")
 
+    @retry_with_backoff(max_retries=3, base_delay=1)
     def enviar_lista(self, numero: str, title: str, description: str,
                      button_text: str, sections: list, footer: str = ''):
-        """Envia menu de lista interativo com seções e itens.
-        sections: [{'title':'Seção','rows':[{'title':'Item','description':'desc','rowId':'cmd'}]}]
+        """Envia menu de lista interativo com secoes e itens.
+        sections: [{'title':'Secao','rows':[{'title':'Item','description':'desc','rowId':'cmd'}]}]
         """
         url = f"{self.base_url}/send/list"
         payload = {
@@ -138,15 +153,10 @@ class EvolutionAPI:
         }
         try:
             resp = requests.post(url, headers=self.headers, json=payload, timeout=30)
-            data = resp.json() if resp.text else {}
-            return {
-                'success': resp.status_code == 200,
-                'status_code': resp.status_code,
-                'data': data
-            }
-        except Exception as e:
-            logger.error(f"Erro ao enviar lista: {e}")
-            return {'success': False, 'error': str(e)}
+            resp.raise_for_status()
+            return Result.ok(data=resp.json() if resp.text else {})
+        except (requests.ConnectionError, requests.Timeout) as e:
+            return Result.fail(f"Conexao falhou: {e}")
 
     def baixar_audio_url(self, url: str) -> dict:
         """Baixa audio de URL direta."""

@@ -68,7 +68,9 @@ class Webhook extends CI_Controller
                 return;
             }
         } else {
-            log_message('warning', 'Webhook Cora: CORA_WEBHOOK_SECRET nao configurado - webhook sem verificacao de assinatura');
+            log_message('error', 'Webhook Cora: CORA_WEBHOOK_SECRET nao configurado - requisicao rejeitada');
+            $this->responseError('Configuracao de webhook incompleta', 503);
+            return;
         }
 
         // Log da requisição para debugging

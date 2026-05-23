@@ -30,7 +30,7 @@
                                     <?php echo form_hidden('idVendas', $result->idVendas) ?>
                                     <div class="span12" style="padding: 1%; margin-left: 0">
                                         <h3>Venda:
-                                            <?php echo $result->idVendas ?>
+                                            <?php echo e($result->idVendas) ?>
                                         </h3>
                                         <div class="span2" style="margin-left: 0">
                                             <label for="dataFinal">Data Final</label>
@@ -38,14 +38,14 @@
                                         </div>
                                         <div class="span3">
                                             <label for="cliente">Cliente<span class="required">*</span></label>
-                                            <input id="cliente" class="span12" type="text" name="cliente" value="<?php echo $result->nomeCliente ?>" />
-                                            <input id="clientes_id" class="span12" type="hidden" name="clientes_id" value="<?php echo $result->clientes_id ?>" />
+                                            <input id="cliente" class="span12" type="text" name="cliente" value="<?php echo e($result->nomeCliente) ?>" />
+                                            <input id="clientes_id" class="span12" type="hidden" name="clientes_id" value="<?php echo e($result->clientes_id) ?>" />
                                             <input id="valorTotal" type="hidden" name="valorTotal" value="" />
                                         </div>
                                         <div class="span3">
                                             <label for="tecnico">Vendedor<span class="required">*</span></label>
-                                            <input id="tecnico" class="span12" type="text" name="tecnico" value="<?php echo $result->nome ?>" />
-                                            <input id="usuarios_id" class="span12" type="hidden" name="usuarios_id" value="<?php echo $result->usuarios_id ?>" />
+                                            <input id="tecnico" class="span12" type="text" name="tecnico" value="<?php echo e($result->nome) ?>" />
+                                            <input id="usuarios_id" class="span12" type="hidden" name="usuarios_id" value="<?php echo e($result->usuarios_id) ?>" />
                                         </div>
                                         <div class="span2">
                                             <label for="status">Status<span class="required">*</span></label>
@@ -65,7 +65,7 @@
                                             <label for="garantia">Garantia (dias)</label>
                                             <input id="garantia" type="number" placeholder="Em dias" min="0" max="9999"
                                                 class="span12" name="garantia"
-                                                value="<?php echo $result->garantia ?>" />
+                                                value="<?php echo e($result->garantia) ?>" />
                                             <?php echo form_error('garantia'); ?>
                                         </div>
                                     </div>
@@ -74,14 +74,14 @@
                                         <label for="observacoes">
                                             <h4>Observações</h4>
                                         </label>
-                                        <textarea class="editor" name="observacoes" id="observacoes" cols="30" rows="5"><?php echo $result->observacoes ?></textarea>
+                                        <textarea class="editor" name="observacoes" id="observacoes" cols="30" rows="5"><?php echo e($result->observacoes) ?></textarea>
                                     </div>
 
                                     <div class="span6" style="padding: 1%; margin-left: 0">
                                         <label for="observacoes_cliente">
                                             <h4>Observações para o Cliente</h4>
                                         </label>
-                                        <textarea class="editor" name="observacoes_cliente" id="observacoes_cliente" cols="30" rows="5"><?php echo $result->observacoes_cliente ?></textarea>
+                                        <textarea class="editor" name="observacoes_cliente" id="observacoes_cliente" cols="30" rows="5"><?php echo e($result->observacoes_cliente) ?></textarea>
                                     </div>
 
                                     <div class="span12" style="padding: 1%; margin-left: 0">
@@ -96,7 +96,7 @@
                                                 <span class="button__icon"><i class="bx bx-sync"></i></span>
                                                 <span class="button__text2">Atualizar</span>
                                             </button>
-                                            <a href="<?php echo base_url() ?>index.php/vendas/visualizar/<?php echo $result->idVendas; ?>" class="button btn btn-primary">
+                                            <a href="<?php echo base_url() ?>index.php/vendas/visualizar/<?php echo e($result->idVendas); ?>" class="button btn btn-primary">
                                                 <span class="button__icon"><i class="bx bx-show"></i></span>
                                                 <span class="button__text2">Visualizar</span>
                                             </a>
@@ -115,7 +115,7 @@
                                     <form id="formProdutos" action="<?php echo base_url(); ?>index.php/vendas/adicionarProduto" method="post">
                                         <div class="span6">
                                             <input type="hidden" name="idProduto" id="idProduto" />
-                                            <input type="hidden" name="idVendasProduto" id="idVendasProduto" value="<?php echo $result->idVendas ?>" />
+                                            <input type="hidden" name="idVendasProduto" id="idVendasProduto" value="<?php echo e($result->idVendas) ?>" />
                                             <input type="hidden" name="estoque" id="estoque" value="" />
                                             <label for="">Produto</label>
                                             <input type="text" class="span12" name="produto" id="produto" placeholder="Digite o nome do produto" />
@@ -138,7 +138,7 @@
                                 <div class="span11">
                                     <form id="formDesconto" action="<?php echo base_url(); ?>index.php/vendas/adicionarDesconto" method="POST">
                                         <div class="span1">
-                                            <input type="hidden" name="idVendas" id="idVendas" value="<?php echo $result->idVendas; ?>" />
+                                            <input type="hidden" name="idVendas" id="idVendas" value="<?php echo e($result->idVendas); ?>" />
                                             <label for="">Desconto</label>
                                             <input style="width: 4em;" id="desconto" name="desconto" type="text" placeholder="0.00" maxlength="6" size="2" /><br />
                                             <strong><span style="color: red" id="errorAlert"></span></strong>
@@ -181,10 +181,10 @@ foreach ($produtos as $p) {
     $preco = $p->preco ?: $p->precoVenda;
     $total = $total + $p->subTotal;
     echo '<tr>';
-    echo '<td>' . $p->descricao . '</td>';
-    echo '<td><div align="center">' . $p->quantidade . '</td>';
-    echo '<td><div align="center">R$: ' . $preco . '</td>';
-    echo '<td><div align="center"><a href="" idAcao="' . $p->idItens . '" prodAcao="' . $p->idProdutos . '" quantAcao="' . $p->quantidade . '" title="Excluir Produto" class="btn-nwe4"><i class="bx bx-trash-alt"></i></a></td>';
+    echo '<td>' . e($p->descricao) . '</td>';
+    echo '<td><div align="center">' . e($p->quantidade) . '</td>';
+    echo '<td><div align="center">R$: ' . e($preco) . '</td>';
+    echo '<td><div align="center"><a href="" idAcao="' . e($p->idItens) . '" prodAcao="' . e($p->idProdutos) . '" quantAcao="' . e($p->quantidade) . '" title="Excluir Produto" class="btn-nwe4"><i class="bx bx-trash-alt"></i></a></td>';
     echo '<td><div align="center">R$: ' . number_format($p->subTotal, 2, '.', '') . '</td>';
     echo '</tr>';
 } ?>
@@ -235,14 +235,14 @@ foreach ($produtos as $p) {
             <div class="span12 alert alert-info" style="margin-left: 0"> Obrigatório o preenchimento dos campos com asterisco.</div>
             <div class="span12" style="margin-left: 0">
                 <label for="descricao">Descrição</label>
-                <input class="span12" id="descricao" type="text" name="descricao" value="Fatura de Venda Nº: <?php echo $result->idVendas; ?> " />
+                <input class="span12" id="descricao" type="text" name="descricao" value="Fatura de Venda Nº: <?php echo e($result->idVendas); ?> " />
             </div>
             <div class="span12" style="margin-left: 0">
                 <div class="span12" style="margin-left: 0">
                     <label for="cliente">Cliente*</label>
-                    <input class="span12" id="cliente" type="text" name="cliente" value="<?php echo $result->nomeCliente ?>" />
-                    <input type="hidden" name="clientes_id" id="clientes_id" value="<?php echo $result->clientes_id ?>">
-                    <input type="hidden" name="vendas_id" id="vendas_id" value="<?php echo $result->idVendas; ?>">
+                    <input class="span12" id="cliente" type="text" name="cliente" value="<?php echo e($result->nomeCliente) ?>" />
+                    <input type="hidden" name="clientes_id" id="clientes_id" value="<?php echo e($result->clientes_id) ?>">
+                    <input type="hidden" name="vendas_id" id="vendas_id" value="<?php echo e($result->idVendas); ?>">
                 </div>
             </div>
             <div class="span12" style="margin-left: 0">

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 class Assinaturas_model extends CI_Model
 {
@@ -210,7 +210,7 @@ class Assinaturas_model extends CI_Model
         $this->db->where('idAssinatura', $id);
         $this->db->delete('os_assinaturas');
 
-        if ($this->db->affected_rows() == '1') {
+        if ($this->db->affected_rows() >= 1) {
             return true;
         }
 

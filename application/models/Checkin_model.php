@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 class Checkin_model extends CI_Model
 {
@@ -175,7 +175,7 @@ class Checkin_model extends CI_Model
         }
 
         $this->db->insert('os_checkin', $data);
-        if ($this->db->affected_rows() == '1') {
+        if ($this->db->affected_rows() >= 1) {
             if ($returnId == true) {
                 return $this->db->insert_id();
             }
@@ -236,7 +236,7 @@ class Checkin_model extends CI_Model
         $this->db->where('idCheckin', $id);
         $this->db->delete('os_checkin');
 
-        if ($this->db->affected_rows() == '1') {
+        if ($this->db->affected_rows() >= 1) {
             return true;
         }
 

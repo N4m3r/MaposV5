@@ -107,9 +107,9 @@
                             };
 
                             echo '<tr>';
-                            echo '<td>' . $r->idVendas . '</td>';
-                            echo '<td><a href="' . base_url() . 'index.php/clientes/visualizar/' . $r->idClientes . '">' . $r->nomeCliente . '</a></td>';
-                            echo '<td class="ph1">' . $r->nome . '</td>';
+                            echo '<td>' . e($r->idVendas) . '</td>';
+                            echo '<td><a href="' . base_url() . 'index.php/clientes/visualizar/' . e($r->idClientes) . '">' . e($r->nomeCliente) . '</a></td>';
+                            echo '<td class="ph1">' . e($r->nome) . '</td>';
                             echo '<td>' . $dataVenda . '</td>';
                             echo '<td class="ph3"><span class="badge" style="background-color: ' . $corGarantia . '; border-color: ' . $corGarantia . '">' . $vencGarantia . '</span> </td>';
 
@@ -129,14 +129,14 @@
                                 echo '<td>R$ 0,00</td>';
                             }
 
-                            echo '<td><span class="badge" style="background-color: ' . $corStatus . '; border-color: ' . $corStatus . '">' . $r->status . '</span> </td>';
+                            echo '<td><span class="badge" style="background-color: ' . $corStatus . '; border-color: ' . $corStatus . '">' . e($r->status) . '</span> </td>';
                             echo '<td>' . $faturado . '</td>';
                             echo '<td style="text-align:left">';
 
                             if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vVenda')) {
-                                echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/vendas/visualizar/' . $r->idVendas . '" class="btn-nwe" title="Ver mais detalhes"><i class="bx bx-show bx-xs"></i></a>';
-                                echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/vendas/imprimir/' . $r->idVendas . '" target="_blank" class="btn-nwe6" title="Imprimir A4"><i class="bx bx-printer bx-xs"></i></a>';
-                                echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/vendas/imprimirTermica/' . $r->idVendas . '" target="_blank" class="btn-nwe6" title="Imprimir Não Fiscal"><i class="bx bx-printer bx-xs"></i></a>';
+                                echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/vendas/visualizar/' . e($r->idVendas) . '" class="btn-nwe" title="Ver mais detalhes"><i class="bx bx-show bx-xs"></i></a>';
+                                echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/vendas/imprimir/' . e($r->idVendas) . '" target="_blank" class="btn-nwe6" title="Imprimir A4"><i class="bx bx-printer bx-xs"></i></a>';
+                                echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/vendas/imprimirTermica/' . e($r->idVendas) . '" target="_blank" class="btn-nwe6" title="Imprimir Não Fiscal"><i class="bx bx-printer bx-xs"></i></a>';
                             }
 
                             $editavel = $this->vendas_model->isEditable($r->idVendas);

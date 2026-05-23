@@ -160,6 +160,15 @@
                                 </label>
                             </div>
                         </div>
+                        <div class="control-group">
+                            <label class="control-label">Consentimento LGPD</label>
+                            <div class="controls">
+                                <label for="consentimento_lgpd" class="btn btn-default">Autorizo o tratamento dos meus dados pessoais conforme a Lei Geral de Proteção de Dados (LGPD)
+                                    <input type="checkbox" id="consentimento_lgpd" name="consentimento_lgpd" class="badgebox" value="1" <?= (isset($result->consentimento_lgpd) && $result->consentimento_lgpd == 1) ? 'checked' : '' ?>>
+                                    <span class="badge">&check;</span>
+                                </label>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="span6">

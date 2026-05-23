@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 class Mapos_model extends CI_Model
 {
@@ -26,7 +26,7 @@ class Mapos_model extends CI_Model
     public function getById($id)
     {
         $this->db->from('usuarios');
-        $this->db->select('usuarios.*, permissoes.nome as permissao');
+        $this->db->select('usuarios.idUsuarios, usuarios.nome, usuarios.rg, usuarios.cpf, usuarios.cep, usuarios.rua, usuarios.numero, usuarios.bairro, usuarios.cidade, usuarios.estado, usuarios.email, usuarios.telefone, usuarios.celular, usuarios.situacao, usuarios.dataCadastro, usuarios.permissoes_id, usuarios.dataExpiracao, usuarios.url_image_user, usuarios.is_tecnico, usuarios.nivel_tecnico, permissoes.nome as permissao');
         $this->db->join('permissoes', 'permissoes.idPermissao = usuarios.permissoes_id', 'left');
         $this->db->where('idUsuarios', $id);
         $this->db->limit(1);
@@ -118,7 +118,7 @@ class Mapos_model extends CI_Model
     public function add($table, $data)
     {
         $this->db->insert($table, $data);
-        if ($this->db->affected_rows() == '1') {
+        if ($this->db->affected_rows() >= 1) {
             return true;
         }
 
@@ -141,7 +141,7 @@ class Mapos_model extends CI_Model
     {
         $this->db->where($fieldID, $ID);
         $this->db->delete($table);
-        if ($this->db->affected_rows() == '1') {
+        if ($this->db->affected_rows() >= 1) {
             return true;
         }
 

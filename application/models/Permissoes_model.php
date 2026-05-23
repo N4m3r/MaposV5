@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 class Permissoes_model extends CI_Model
 {
@@ -46,7 +46,7 @@ class Permissoes_model extends CI_Model
     public function add($table, $data)
     {
         $this->db->insert($table, $data);
-        if ($this->db->affected_rows() == '1') {
+        if ($this->db->affected_rows() >= 1) {
             return true;
         }
 
@@ -69,7 +69,7 @@ class Permissoes_model extends CI_Model
     {
         $this->db->where($fieldID, $ID);
         $this->db->delete($table);
-        if ($this->db->affected_rows() == '1') {
+        if ($this->db->affected_rows() >= 1) {
             return true;
         }
 

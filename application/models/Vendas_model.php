@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 use Piggly\Pix\StaticPayload;
 
@@ -188,7 +188,7 @@ class Vendas_model extends CI_Model
     public function add($table, $data, $returnId = false)
     {
         $this->db->insert($table, $data);
-        if ($this->db->affected_rows() == '1') {
+        if ($this->db->affected_rows() >= 1) {
             if ($returnId == true) {
                 return $this->db->insert_id($table);
             }
@@ -215,7 +215,7 @@ class Vendas_model extends CI_Model
     {
         $this->db->where($fieldID, $ID);
         $this->db->delete($table);
-        if ($this->db->affected_rows() == '1') {
+        if ($this->db->affected_rows() >= 1) {
             return true;
         }
 

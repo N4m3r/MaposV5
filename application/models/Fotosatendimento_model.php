@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 class Fotosatendimento_model extends CI_Model
 {
@@ -106,7 +106,7 @@ class Fotosatendimento_model extends CI_Model
         }
 
         $this->db->insert('os_fotos_atendimento', $data);
-        if ($this->db->affected_rows() == '1') {
+        if ($this->db->affected_rows() >= 1) {
             if ($returnId == true) {
                 return $this->db->insert_id();
             }
@@ -353,7 +353,7 @@ class Fotosatendimento_model extends CI_Model
         $this->db->where('idFoto', $id);
         $this->db->delete('os_fotos_atendimento');
 
-        if ($this->db->affected_rows() == '1') {
+        if ($this->db->affected_rows() >= 1) {
             return true;
         }
 

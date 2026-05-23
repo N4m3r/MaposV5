@@ -6,6 +6,7 @@ import os
 import glob as glob_module
 import time
 import re
+import threading
 import requests as http_requests
 from datetime import datetime
 import config
@@ -20,6 +21,7 @@ from services.llm import classificar_com_llm, interpretar_audio_os, extrair_dado
 from services.whisper_asr import transcrever_audio
 from services.whatsapp_media import download_and_decrypt_audio
 from services.session_store import SessionStore
+from services.result import Result
 from services.dashboard_helpers import (
     get_stats, get_logs, get_sessions, get_notifications,
     create_notification, delete_notification, delete_session,
@@ -48,6 +50,10 @@ ADMIN_NUMERO = config.ADMIN_NUMERO
 # Deduplicacao de mensagens (evita processar a mesma mensagem duas vezes)
 _msg_ids = {}
 _DEDUP_TTL = 60  # segundos para expirar IDs antigos
+_msg_ids_lock = threading.Lock()
+
+# Lock para sessao de criacao de OS (evita race condition)
+_sessao_lock = threading.Lock()
 
 # Mapeamento de permissoes_id para perfil de acesso
 PERMISSOES_MAP = {
@@ -383,7 +389,8 @@ def extrair_numero(payload: dict) -> str:
             return sender.split('@')[0]
 
         return ''
-    except Exception:
+    except Exception as e:
+        logger.warning(f"Erro ao extrair numero: {e}")
         return ''
 
 
@@ -411,13 +418,14 @@ def _is_duplicado(msg_id: str) -> bool:
     if not msg_id:
         return False
     agora = time.time()
-    expirados = [k for k, v in _msg_ids.items() if agora - v > _DEDUP_TTL]
-    for k in expirados:
-        del _msg_ids[k]
-    if msg_id in _msg_ids:
-        return True
-    _msg_ids[msg_id] = agora
-    return False
+    with _msg_ids_lock:
+        expirados = [k for k, v in _msg_ids.items() if agora - v > _DEDUP_TTL]
+        for k in expirados:
+            del _msg_ids[k]
+        if msg_id in _msg_ids:
+            return True
+        _msg_ids[msg_id] = agora
+        return False
 
 
 def extrair_mensagem(payload: dict) -> str:
@@ -464,7 +472,8 @@ def extrair_mensagem(payload: dict) -> str:
             return data['body']
 
         return ''
-    except Exception:
+    except Exception as e:
+        logger.warning(f"Erro ao extrair mensagem: {e}")
         return ''
 
 
@@ -774,14 +783,14 @@ def gerar_pdf_relatorio(tipo: str, numero: str) -> str:
 def enviar_pdf_whatsapp(numero: str, pdf_url: str, caption: str = 'Relatorio'):
     """Baixa o PDF e envia via WhatsApp."""
     if not pdf_url:
-        return {'success': False, 'error': 'URL vazia'}
+        return Result.fail('URL vazia')
 
     try:
         # Baixar o PDF
         resp = http_requests.get(pdf_url, timeout=60)
         if resp.status_code != 200:
             logger.error(f"Erro ao baixar PDF: status={resp.status_code}")
-            return {'success': False, 'error': f'HTTP {resp.status_code}'}
+            return Result.fail(f'HTTP {resp.status_code}')
 
         # Salvar temporariamente
         import tempfile
@@ -791,18 +800,18 @@ def enviar_pdf_whatsapp(numero: str, pdf_url: str, caption: str = 'Relatorio'):
         tmp.close()
 
         # Enviar via Evolution API
-        result = evo.enviar_documento(numero, tmp.name, caption)
-
-        # Limpar arquivo temporario
         try:
-            os.unlink(tmp.name)
-        except Exception:
-            pass
+            result = evo.enviar_documento(numero, tmp.name, caption)
+        finally:
+            try:
+                os.unlink(tmp.name)
+            except Exception:
+                pass
 
         return result
     except Exception as e:
         logger.error(f"Erro ao enviar PDF: {e}")
-        return {'success': False, 'error': str(e)}
+        return Result.fail(str(e))
 
 
 
@@ -992,9 +1001,10 @@ def processar_criacao_os(numero: str, texto: str, usuario: dict) -> str:
     """Processa o fluxo interativo de criacao de OS passo a passo."""
 
     # Verificar se ha sessao ativa
-    sessao = sessions.get_os_session(numero)
-    if sessao and '_clientes' in sessao.get('dados', {}):
-        sessao['clientes'] = sessao['dados'].pop('_clientes')
+    with _sessao_lock:
+        sessao = sessions.get_os_session(numero)
+        if sessao and '_clientes' in sessao.get('dados', {}):
+            sessao['clientes'] = sessao['dados'].pop('_clientes')
 
     # Comando para cancelar
     texto_limpo = texto.lower().strip()
@@ -2396,15 +2406,15 @@ Entre em contato com nossa equipe para cadastrar seu WhatsApp."""
         if resposta:
             resultado_envio = evo.enviar_texto(numero, resposta)
         else:
-            resultado_envio = {'success': True}
-        registrar_log(numero, 'saida', resposta or '[BOTOES INTERATIVOS]', 'criar_os_interativo', 'respondido' if resultado_envio.get('success') else 'erro')
+            resultado_envio = Result.ok()
+        registrar_log(numero, 'saida', resposta or '[BOTOES INTERATIVOS]', 'criar_os_interativo', 'respondido' if resultado_envio.success else 'erro')
         return {
             "status": "ok",
             "comando": "criar_os_interativo",
             "numero": numero,
             "tipo_mensagem": "audio" if audio_info.get('tem_audio') else "texto",
             "texto_processado": texto,
-            "envio_success": resultado_envio.get('success')
+            "envio_success": resultado_envio.success
         }
 
     # ===== VERIFICAR SE HA SESSAO DE ALTERACAO DE STATUS ATIVA =====
@@ -2419,15 +2429,15 @@ Entre em contato com nossa equipe para cadastrar seu WhatsApp."""
         if resposta:
             resultado_envio = evo.enviar_texto(numero, resposta)
         else:
-            resultado_envio = {'success': True}
-        registrar_log(numero, 'saida', resposta or '[BOTOES INTERATIVOS]', 'alterar_status_interativo', 'respondido' if resultado_envio.get('success') else 'erro')
+            resultado_envio = Result.ok()
+        registrar_log(numero, 'saida', resposta or '[BOTOES INTERATIVOS]', 'alterar_status_interativo', 'respondido' if resultado_envio.success else 'erro')
         return {
             "status": "ok",
             "comando": "alterar_status_interativo",
             "numero": numero,
             "tipo_mensagem": "audio" if audio_info.get('tem_audio') else "texto",
             "texto_processado": texto,
-            "envio_success": resultado_envio.get('success')
+            "envio_success": resultado_envio.success
         }
 
     # ===== CLASSIFICAR INTENCAO =====
@@ -2469,14 +2479,14 @@ Entre em contato com nossa equipe para cadastrar seu WhatsApp."""
         resultado_audio_os = criar_os_completa_via_audio(numero, texto, usuario)
         if resultado_audio_os:
             resultado_envio = evo.enviar_texto(numero, resultado_audio_os)
-            registrar_log(numero, 'saida', resultado_audio_os[:200], 'criar_os_audio', 'respondido' if resultado_envio.get('success') else 'erro')
+            registrar_log(numero, 'saida', resultado_audio_os[:200], 'criar_os_audio', 'respondido' if resultado_envio.success else 'erro')
             return {
                 "status": "ok",
                 "comando": "criar_os_audio",
                 "numero": numero,
                 "tipo_mensagem": "audio",
                 "texto_processado": texto,
-                "envio_success": resultado_envio.get('success')
+                "envio_success": resultado_envio.success
             }
         # Se nao conseguiu criar completa, cair no fluxo interativo normalmente
 
@@ -2488,17 +2498,17 @@ Entre em contato com nossa equipe para cadastrar seu WhatsApp."""
     if comando == 'ajuda':
         resultado = _enviar_menu_interativo(numero, usuario)
         # Fallback para texto se lista falhar
-        if not resultado.get('success'):
+        if not resultado.success:
             resposta = nlp.formatar_resposta(comando, dados, usuario)
             resultado = evo.enviar_texto(numero, resposta)
-        registrar_log(numero, 'saida', '[MENU INTERATIVO]', comando, 'respondido' if resultado.get('success') else 'erro')
+        registrar_log(numero, 'saida', '[MENU INTERATIVO]', comando, 'respondido' if resultado.success else 'erro')
         return {
             "status": "ok",
             "comando": comando,
             "numero": numero,
             "tipo_mensagem": "audio" if audio_info.get('tem_audio') else "texto",
             "texto_processado": texto,
-            "envio_success": resultado.get('success')
+            "envio_success": resultado.success
         }
 
     # ===== FORMATAR E ENVIAR RESPOSTA =====
@@ -2521,7 +2531,7 @@ Entre em contato com nossa equipe para cadastrar seu WhatsApp."""
 
     resultado = evo.enviar_texto(numero, resposta)
 
-    status_envio = 'respondido' if resultado.get('success') else 'erro'
+    status_envio = 'respondido' if resultado.success else 'erro'
     registrar_log(numero, 'saida', resposta, comando, status_envio)
 
     # ===== ANALISE GLM PARA RELATORIOS =====
@@ -2552,7 +2562,7 @@ Entre em contato com nossa equipe para cadastrar seu WhatsApp."""
         "numero": numero,
         "tipo_mensagem": "audio" if audio_info.get('tem_audio') else "texto",
         "texto_processado": texto,
-        "envio_success": resultado.get('success')
+        "envio_success": resultado.success
     }
 
 

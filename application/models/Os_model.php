@@ -1,9 +1,18 @@
-<?php
+﻿<?php
 
 use Piggly\Pix\StaticPayload;
 
 class Os_model extends CI_Model
 {
+    protected $table = 'os';
+    protected $primaryKey = 'idOs';
+    protected $fillable = [
+        'dataInicial', 'dataFinal', 'clientes_id', 'usuarios_id', 'garantia', 'garantias_id',
+        'descricaoProduto', 'defeito', 'status', 'observacoes', 'laudoTecnico', 'faturado',
+        'valorTotal', 'desconto', 'valor_desconto', 'tipo_desconto', 'tecnico_responsavel',
+        'lancamento', 'nfse_status', 'boleto_status',
+    ];
+
     public function __construct()
     {
         parent::__construct();
@@ -180,8 +189,11 @@ class Os_model extends CI_Model
 
     public function add($table, $data, $returnId = false)
     {
+        if ($table === $this->table && ! empty($this->fillable)) {
+            $data = array_intersect_key($data, array_flip($this->fillable));
+        }
         $this->db->insert($table, $data);
-        if ($this->db->affected_rows() == '1') {
+        if ($this->db->affected_rows() >= 1) {
             if ($returnId == true) {
                 return $this->db->insert_id($table);
             }
@@ -194,6 +206,9 @@ class Os_model extends CI_Model
 
     public function edit($table, $data, $fieldID, $ID)
     {
+        if ($table === $this->table && ! empty($this->fillable)) {
+            $data = array_intersect_key($data, array_flip($this->fillable));
+        }
         $this->db->where($fieldID, $ID);
         $this->db->update($table, $data);
 
@@ -208,7 +223,7 @@ class Os_model extends CI_Model
     {
         $this->db->where($fieldID, $ID);
         $this->db->delete($table);
-        if ($this->db->affected_rows() == '1') {
+        if ($this->db->affected_rows() >= 1) {
             return true;
         }
 
@@ -304,7 +319,7 @@ class Os_model extends CI_Model
 
     public function autoCompleteProduto($q)
     {
-        $this->db->select('*');
+        $this->db->select('idProdutos, codDeBarra, descricao, precoVenda, estoque');
         $this->db->limit(25);
         $this->db->like('codDeBarra', $q);
         $this->db->or_like('descricao', $q);
@@ -319,7 +334,7 @@ class Os_model extends CI_Model
 
     public function autoCompleteProdutoSaida($q)
     {
-        $this->db->select('*');
+        $this->db->select('idProdutos, codDeBarra, descricao, precoVenda, estoque');
         $this->db->limit(25);
         $this->db->like('codDeBarra', $q);
         $this->db->or_like('descricao', $q);
@@ -335,7 +350,7 @@ class Os_model extends CI_Model
 
     public function autoCompleteCliente($q)
     {
-        $this->db->select('*');
+        $this->db->select('idClientes, nomeCliente, documento, celular, email');
         $this->db->limit(25);
         $this->db->like('nomeCliente', $q);
         $this->db->or_like('telefone', $q);
@@ -344,7 +359,7 @@ class Os_model extends CI_Model
         $query = $this->db->get('clientes');
         if ($query->num_rows() > 0) {
             foreach ($query->result_array() as $row) {
-                $row_set[] = ['label' => $row['nomeCliente'] . ' | Telefone: ' . $row['telefone'] . ' | Celular: ' . $row['celular'] . ' | Documento: ' . $row['documento'], 'id' => $row['idClientes']];
+                $row_set[] = ['label' => $row['nomeCliente'] . ' | Telefone: ' . $row['celular'] . ' | Documento: ' . $row['documento'], 'id' => $row['idClientes']];
             }
             echo json_encode($row_set);
         }
@@ -352,7 +367,7 @@ class Os_model extends CI_Model
 
     public function autoCompleteUsuario($q)
     {
-        $this->db->select('*');
+        $this->db->select('idUsuarios, nome, email, telefone');
         $this->db->limit(25);
         $this->db->like('nome', $q);
         $this->db->where('situacao', 1);
@@ -367,7 +382,7 @@ class Os_model extends CI_Model
 
     public function autoCompleteTermoGarantia($q)
     {
-        $this->db->select('*');
+        $this->db->select('idGarantias, refGarantia, textoGarantia');
         $this->db->limit(25);
         $this->db->like('LOWER(refGarantia)', $q);
         $query = $this->db->get('garantias');
@@ -381,7 +396,7 @@ class Os_model extends CI_Model
 
     public function autoCompleteServico($q)
     {
-        $this->db->select('*');
+        $this->db->select('idServicos, nome, preco');
         $this->db->limit(25);
         $this->db->like('nome', $q);
         $query = $this->db->get('servicos');

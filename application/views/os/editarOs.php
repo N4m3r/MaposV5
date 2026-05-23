@@ -78,13 +78,13 @@
                                         <h3>N° OS: <?php echo $result->idOs; ?></h3>
                                         <div class="span6" style="margin-left: 0">
                                             <label for="cliente">Cliente<span class="required">*</span></label>
-                                            <input id="cliente" class="span12" type="text" name="cliente" value="<?php echo $result->nomeCliente ?>" />
+                                            <input id="cliente" class="span12" type="text" name="cliente" value="<?php echo e($result->nomeCliente) ?>" />
                                             <input id="clientes_id" class="span12" type="hidden" name="clientes_id" value="<?php echo $result->clientes_id ?>" />
                                             <input id="valor" type="hidden" name="valor" value="" />
                                         </div>
                                         <div class="span6">
                                             <label for="tecnico">Técnico / Responsável<span class="required">*</span></label>
-                                            <input id="tecnico" class="span12" type="text" name="tecnico" value="<?php echo $result->nome ?>" />
+                                            <input id="tecnico" class="span12" type="text" name="tecnico" value="<?php echo e($result->nome) ?>" />
                                             <input id="usuarios_id" class="span12" type="hidden" name="usuarios_id" value="<?php echo $result->usuarios_id ?>" />
                                         </div>
                                     </div>
@@ -116,25 +116,25 @@
                                             <input id="garantia" type="number" placeholder="Status s/g inserir nº/0" min="0" max="9999" class="span12" name="garantia" value="<?php echo $result->garantia ?>" />
                                             <?php echo form_error('garantia'); ?>
                                             <label for="termoGarantia">Termo Garantia</label>
-                                            <input id="termoGarantia" class="span12" type="text" name="termoGarantia" value="<?php echo $result->refGarantia ?>" />
+                                            <input id="termoGarantia" class="span12" type="text" name="termoGarantia" value="<?php echo e($result->refGarantia) ?>" />
                                             <input id="garantias_id" class="span12" type="hidden" name="garantias_id" value="<?php echo $result->garantias_id ?>" />
                                         </div>
                                     </div>
                                     <div class="span6" style="padding: 1%; margin-left: 0">
                                         <label for="descricaoProduto"><h4>Descrição Produto/Serviço</h4></label>
-                                        <textarea class="span12 editor" name="descricaoProduto" id="descricaoProduto" cols="30" rows="5"><?php echo $result->descricaoProduto ?></textarea>
+                                        <textarea class="span12 editor" name="descricaoProduto" id="descricaoProduto" cols="30" rows="5"><?php echo e($result->descricaoProduto) ?></textarea>
                                     </div>
                                     <div class="span6" style="padding: 1%; margin-left: 0">
                                         <label for="defeito"><h4>Defeito</h4></label>
-                                        <textarea class="span12 editor" name="defeito" id="defeito" cols="30" rows="5"><?php echo $result->defeito ?></textarea>
+                                        <textarea class="span12 editor" name="defeito" id="defeito" cols="30" rows="5"><?php echo e($result->defeito) ?></textarea>
                                     </div>
                                     <div class="span6" style="padding: 1%; margin-left: 0">
                                         <label for="observacoes"><h4>Observações</h4></label>
-                                        <textarea class="span12 editor" name="observacoes" id="observacoes" cols="30" rows="5"><?php echo $result->observacoes ?></textarea>
+                                        <textarea class="span12 editor" name="observacoes" id="observacoes" cols="30" rows="5"><?php echo e($result->observacoes) ?></textarea>
                                     </div>
                                     <div class="span6" style="padding: 1%; margin-left: 0">
                                         <label for="laudoTecnico"><h4>Laudo Técnico</h4></label>
-                                        <textarea class="span12 editor" name="laudoTecnico" id="laudoTecnico" cols="30" rows="5"><?php echo $result->laudoTecnico ?></textarea>
+                                        <textarea class="span12 editor" name="laudoTecnico" id="laudoTecnico" cols="30" rows="5"><?php echo e($result->laudoTecnico) ?></textarea>
                                     </div>
                                     <div class="span12" style="padding: 0; margin-left: 0">
                                         <div class="span6 offset3" style="display:flex;justify-content: center">
@@ -244,12 +244,12 @@
                                                 $total = $total + $p->subTotal;
                                                 $precoProduto = $p->preco ?: $p->precoVenda;
                                                 echo '<tr>';
-                                                echo '<td>' . $p->descricao . '</td>';
+                                                echo '<td>' . e($p->descricao) . '</td>';
                                                 echo '<td><div align="center">' . $p->quantidade . '</td>';
                                                 echo '<td><div align="center">R$: ' . $precoProduto . '</td>';
                                                 if (strtolower($result->status) != "cancelado") {
                                                     echo '<td><div align="center">';
-                                                    echo '<a href="#" class="btn-nwe4 editar-produto" data-id="' . $p->idProdutos_os . '" data-descricao="' . $p->descricao . '" data-quantidade="' . $p->quantidade . '" data-preco="' . $precoProduto . '" title="Editar Produto"><i class="bx bx-edit"></i></a>&nbsp;';
+                                                    echo '<a href="#" class="btn-nwe4 editar-produto" data-id="' . $p->idProdutos_os . '" data-descricao="' . e($p->descricao) . '" data-quantidade="' . $p->quantidade . '" data-preco="' . $precoProduto . '" title="Editar Produto"><i class="bx bx-edit"></i></a>&nbsp;';
                                                     echo '<a href="" idAcao="' . $p->idProdutos_os . '" prodAcao="' . $p->idProdutos . '" quantAcao="' . $p->quantidade . '" title="Excluir Produto" class="btn-nwe4"><i class="bx bx-trash-alt"></i></a>';
                                                     echo '</td>';
                                                 } else {
@@ -330,11 +330,11 @@
                                                 $subtotals = $preco * $quantidade;
                                                 $totals = $totals + $subtotals;
                                                 echo '<tr>';
-                                                echo '<td>' . $s->nome . '</td>';
+                                                echo '<td>' . e($s->nome) . '</td>';
                                                 echo '<td><div align="center">' . $quantidade . '</div></td>';
                                                 echo '<td><div align="center">R$ ' . $preco . '</div></td>';
                                                 echo '<td><div align="center">';
-                                                echo '<span class="btn-nwe4 editar-servico" data-id="' . $s->idServicos_os . '" data-nome="' . $s->nome . '" data-quantidade="' . $quantidade . '" data-preco="' . $preco . '" title="Editar Serviço"><i class="bx bx-edit"></i></span>&nbsp;';
+                                                echo '<span class="btn-nwe4 editar-servico" data-id="' . $s->idServicos_os . '" data-nome="' . e($s->nome) . '" data-quantidade="' . $quantidade . '" data-preco="' . $preco . '" title="Editar Serviço"><i class="bx bx-edit"></i></span>&nbsp;';
                                                 echo '<span idAcao="' . $s->idServicos_os . '" title="Excluir Serviço" class="btn-nwe4 servico"><i class="bx bx-trash-alt"></i></span>';
                                                 echo '</div></td>';
                                                 echo '<td><div align="center">R$: ' . number_format($subtotals, 2, ',', '.') . '</div></td>';
@@ -425,7 +425,7 @@
                                             foreach ($anotacoes as $a) {
                                                 echo '<tr>';
                                                 echo '<td>' . date('d/m/Y H:i:s', strtotime($a->data_hora)) . '</td>';
-                                                echo '<td>' . $a->anotacao . '</td>';
+                                                echo '<td>' . e($a->anotacao) . '</td>';
                                                 echo '<td><span idAcao="' . $a->idAnotacoes . '" title="Excluir Anotação" class="btn-nwe4 anotacao"><i class="bx bx-trash-alt"></i></span></td>';
                                                 echo '</tr>';
                                             }

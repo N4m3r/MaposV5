@@ -6,6 +6,13 @@ if (! defined('BASEPATH')) {
 
 class Cobrancas_model extends CI_Model
 {
+    protected $table = 'cobrancas';
+    protected $primaryKey = 'idCobranca';
+    protected $fillable = [
+        'charge_id', 'status', 'total', 'payment_method', 'payment_gateway',
+        'os_id', 'vendas_id', 'clientes_id', 'expire_at', 'message',
+        'conditional_discount_date', 'custom_id',
+    ];
     /**
      * Whitelist of allowed payment gateway library names.
      * Only these values are accepted when dynamically loading a gateway library.
@@ -88,8 +95,11 @@ class Cobrancas_model extends CI_Model
 
     public function add($table, $data, $returnId = false)
     {
+        if ($table === $this->table && ! empty($this->fillable)) {
+            $data = array_intersect_key($data, array_flip($this->fillable));
+        }
         $this->db->insert($table, $data);
-        if ($this->db->affected_rows() == '1') {
+        if ($this->db->affected_rows() >= 1) {
             if ($returnId == true) {
                 return $this->db->insert_id($table);
             }
@@ -102,6 +112,9 @@ class Cobrancas_model extends CI_Model
 
     public function edit($table, $data, $fieldID, $ID)
     {
+        if ($table === $this->table && ! empty($this->fillable)) {
+            $data = array_intersect_key($data, array_flip($this->fillable));
+        }
         $this->db->where($fieldID, $ID);
         $this->db->update($table, $data);
 
@@ -116,7 +129,7 @@ class Cobrancas_model extends CI_Model
     {
         $this->db->where($fieldID, $ID);
         $this->db->delete($table);
-        if ($this->db->affected_rows() == '1') {
+        if ($this->db->affected_rows() >= 1) {
             return true;
         }
 

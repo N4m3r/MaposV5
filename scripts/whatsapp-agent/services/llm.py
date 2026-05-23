@@ -79,6 +79,29 @@ def classificar_com_llm(texto: str) -> dict:
     return None
 
 
+def _call_llm(url, headers, payload, timeout=30):
+    """Make an HTTP call to an LLM provider with error handling.
+
+    Returns the JSON response dict or None on failure.
+    """
+    try:
+        resp = requests.post(url, json=payload, headers=headers, timeout=timeout)
+        resp.raise_for_status()
+        return resp.json()
+    except requests.Timeout:
+        logger.warning(f"Timeout ao chamar LLM em {url}")
+        return None
+    except requests.ConnectionError as e:
+        logger.error(f"Erro de conexao ao chamar LLM: {e}")
+        return None
+    except requests.HTTPError as e:
+        logger.error(f"Erro HTTP ao chamar LLM: {e.response.status_code} - {e}")
+        return None
+    except Exception as e:
+        logger.error(f"Erro inesperado ao chamar LLM: {e}")
+        return None
+
+
 def _classificar_ollama(texto: str) -> dict:
     """Classifica usando Ollama (local ou cloud)."""
     url = f"{config.OLLAMA_URL.rstrip('/')}/api/generate"
@@ -99,30 +122,19 @@ def _classificar_ollama(texto: str) -> dict:
     if config.OLLAMA_API_KEY:
         headers["Authorization"] = f"Bearer {config.OLLAMA_API_KEY}"
 
-    try:
-        resp = requests.post(url, json=payload, headers=headers, timeout=60)
-        resp.raise_for_status()
-        data = resp.json()
-
-        response_text = data.get("response", "").strip()
-
-        result = _parse_llm_response(response_text)
-        if result:
-            logger.info(f"LLM classificou: {texto!r} -> {result}")
-            return result
-
-        logger.warning(f"LLM retornou JSON invalido: {response_text!r}")
+    result = _call_llm(url, headers, payload, timeout=60)
+    if result is None:
         return None
 
-    except requests.exceptions.Timeout:
-        logger.error("Timeout ao chamar Ollama")
-        return None
-    except requests.exceptions.ConnectionError:
-        logger.error("Ollama indisponivel (conexao recusada)")
-        return None
-    except Exception as e:
-        logger.error(f"Erro ao chamar Ollama: {e}")
-        return None
+    response_text = result.get("response", "").strip()
+
+    parsed = _parse_llm_response(response_text)
+    if parsed:
+        logger.info(f"LLM classificou: {texto!r} -> {parsed}")
+        return parsed
+
+    logger.warning(f"LLM retornou JSON invalido: {response_text!r}")
+    return None
 
 
 def _classificar_openai(texto: str) -> dict:
@@ -144,30 +156,19 @@ def _classificar_openai(texto: str) -> dict:
     if config.LLM_CLOUD_API_KEY:
         headers["Authorization"] = f"Bearer {config.LLM_CLOUD_API_KEY}"
 
-    try:
-        resp = requests.post(url, json=payload, headers=headers, timeout=30)
-        resp.raise_for_status()
-        data = resp.json()
-
-        response_text = data.get("choices", [{}])[0].get("message", {}).get("content", "").strip()
-
-        result = _parse_llm_response(response_text)
-        if result:
-            logger.info(f"Cloud LLM classificou: {texto!r} -> {result}")
-            return result
-
-        logger.warning(f"Cloud LLM retornou JSON invalido: {response_text!r}")
+    result = _call_llm(url, headers, payload, timeout=30)
+    if result is None:
         return None
 
-    except requests.exceptions.Timeout:
-        logger.error("Timeout ao chamar Cloud LLM")
-        return None
-    except requests.exceptions.ConnectionError:
-        logger.error("Cloud LLM indisponivel (conexao recusada)")
-        return None
-    except Exception as e:
-        logger.error(f"Erro ao chamar Cloud LLM: {e}")
-        return None
+    response_text = result.get("choices", [{}])[0].get("message", {}).get("content", "").strip()
+
+    parsed = _parse_llm_response(response_text)
+    if parsed:
+        logger.info(f"Cloud LLM classificou: {texto!r} -> {parsed}")
+        return parsed
+
+    logger.warning(f"Cloud LLM retornou JSON invalido: {response_text!r}")
+    return None
 
 
 def _classificar_anthropic(texto: str) -> dict:
@@ -192,33 +193,22 @@ def _classificar_anthropic(texto: str) -> dict:
     elif config.AGENT_API_KEY:
         headers["x-api-key"] = config.AGENT_API_KEY
 
-    try:
-        resp = requests.post(url, json=payload, headers=headers, timeout=30)
-        resp.raise_for_status()
-        data = resp.json()
-
-        response_text = ""
-        for block in data.get("content", []):
-            if block.get("type") == "text":
-                response_text += block.get("text", "")
-
-        result = _parse_llm_response(response_text.strip())
-        if result:
-            logger.info(f"Anthropic classificou: {texto!r} -> {result}")
-            return result
-
-        logger.warning(f"Anthropic retornou JSON invalido: {response_text!r}")
+    result = _call_llm(url, headers, payload, timeout=30)
+    if result is None:
         return None
 
-    except requests.exceptions.Timeout:
-        logger.error("Timeout ao chamar Anthropic API")
-        return None
-    except requests.exceptions.ConnectionError:
-        logger.error("Anthropic API indisponivel (conexao recusada)")
-        return None
-    except Exception as e:
-        logger.error(f"Erro ao chamar Anthropic: {e}")
-        return None
+    response_text = ""
+    for block in result.get("content", []):
+        if block.get("type") == "text":
+            response_text += block.get("text", "")
+
+    parsed = _parse_llm_response(response_text.strip())
+    if parsed:
+        logger.info(f"Anthropic classificou: {texto!r} -> {parsed}")
+        return parsed
+
+    logger.warning(f"Anthropic retornou JSON invalido: {response_text!r}")
+    return None
 
 
 def _parse_llm_response(response: str) -> dict:

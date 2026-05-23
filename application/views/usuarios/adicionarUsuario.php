@@ -13,7 +13,7 @@
             </div>
             <div class="widget-content nopadding tab-content">
                 <?php if ($custom_error != '') {
-                    echo '<div class="alert alert-danger">' . $custom_error . '</div>';
+                    echo '<div class="alert alert-danger">' . e($custom_error) . '</div>';
                 } ?>
                 <form action="<?php echo current_url(); ?>" id="formUsuario" method="post" class="form-horizontal">
                     <div class="control-group">
@@ -132,7 +132,7 @@
                         <div class="controls">
                             <select name="permissoes_id" id="permissoes_id">
                                 <?php foreach ($permissoes as $p) {
-                                    echo '<option value="' . $p->idPermissao . '">' . $p->nome . '</option>';
+                                    echo '<option value="' . e($p->idPermissao) . '">' . e($p->nome) . '</option>';
                                 } ?>
                             </select>
                         </div>

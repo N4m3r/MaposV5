@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
@@ -69,7 +69,7 @@ class Financeiro_model extends CI_Model
     public function add($table, $data)
     {
         $this->db->insert($table, $data);
-        if ($this->db->affected_rows() == '1') {
+        if ($this->db->affected_rows() >= 1) {
             return true;
         }
 
@@ -79,7 +79,7 @@ class Financeiro_model extends CI_Model
     public function add1($table, $data1)
     {
         $this->db->insert($table, $data1);
-        if ($this->db->affected_rows() == '1') {
+        if ($this->db->affected_rows() >= 1) {
             return true;
         }
 
@@ -102,7 +102,7 @@ class Financeiro_model extends CI_Model
     {
         $this->db->where($fieldID, $ID);
         $this->db->delete($table);
-        if ($this->db->affected_rows() == '1') {
+        if ($this->db->affected_rows() >= 1) {
             return true;
         }
 

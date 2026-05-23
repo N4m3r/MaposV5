@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
@@ -33,7 +33,7 @@ class Arquivos_model extends CI_Model
     public function add($table, $data)
     {
         $this->db->insert($table, $data);
-        if ($this->db->affected_rows() == '1') {
+        if ($this->db->affected_rows() >= 1) {
             return true;
         }
 
@@ -56,7 +56,7 @@ class Arquivos_model extends CI_Model
     {
         $this->db->where($fieldID, $ID);
         $this->db->delete($table);
-        if ($this->db->affected_rows() == '1') {
+        if ($this->db->affected_rows() >= 1) {
             return true;
         }
 

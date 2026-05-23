@@ -67,20 +67,12 @@ class SessionStore:
         if clientes:
             full_dados['_clientes'] = clientes
         dados_json = json.dumps(full_dados, ensure_ascii=False, default=str)
-        try:
-            execute_update(
-                """INSERT INTO whatsapp_sessoes (numero_telefone, tipo, etapa, dados)
-                   VALUES (:numero, 'os', :etapa, :dados)
-                   ON DUPLICATE KEY UPDATE etapa = :etapa, dados = :dados, atualizado_em = NOW()""",
-                {'numero': numero, 'etapa': etapa, 'dados': dados_json}
-            )
-        except Exception:
-            # Fallback: tenta UPDATE se INSERT falhar por chave duplicada
-            execute_update(
-                """UPDATE whatsapp_sessoes SET etapa = :etapa, dados = :dados, atualizado_em = NOW()
-                   WHERE numero_telefone = :numero AND tipo = 'os'""",
-                {'numero': numero, 'etapa': etapa, 'dados': dados_json}
-            )
+        execute_update(
+            """INSERT INTO whatsapp_sessoes (numero_telefone, tipo, etapa, dados)
+               VALUES (:numero, 'os', :etapa, :dados)
+               ON DUPLICATE KEY UPDATE etapa = :etapa, dados = :dados, atualizado_em = NOW()""",
+            {'numero': numero, 'etapa': etapa, 'dados': dados_json}
+        )
 
     def del_os_session(self, numero: str):
         """Remove a sessao de criacao de OS."""
@@ -109,19 +101,12 @@ class SessionStore:
     def set_status_session(self, numero: str, etapa: str, dados: dict):
         """Salva ou atualiza a sessao de alteracao de status."""
         dados_json = json.dumps(dados, ensure_ascii=False, default=str)
-        try:
-            execute_update(
-                """INSERT INTO whatsapp_sessoes (numero_telefone, tipo, etapa, dados)
-                   VALUES (:numero, 'status', :etapa, :dados)
-                   ON DUPLICATE KEY UPDATE etapa = :etapa, dados = :dados, atualizado_em = NOW()""",
-                {'numero': numero, 'etapa': etapa, 'dados': dados_json}
-            )
-        except Exception:
-            execute_update(
-                """UPDATE whatsapp_sessoes SET etapa = :etapa, dados = :dados, atualizado_em = NOW()
-                   WHERE numero_telefone = :numero AND tipo = 'status'""",
-                {'numero': numero, 'etapa': etapa, 'dados': dados_json}
-            )
+        execute_update(
+            """INSERT INTO whatsapp_sessoes (numero_telefone, tipo, etapa, dados)
+               VALUES (:numero, 'status', :etapa, :dados)
+               ON DUPLICATE KEY UPDATE etapa = :etapa, dados = :dados, atualizado_em = NOW()""",
+            {'numero': numero, 'etapa': etapa, 'dados': dados_json}
+        )
 
     def del_status_session(self, numero: str):
         """Remove a sessao de alteracao de status."""

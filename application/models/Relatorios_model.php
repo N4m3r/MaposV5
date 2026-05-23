@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 class Relatorios_model extends CI_Model
 {
@@ -26,7 +26,7 @@ class Relatorios_model extends CI_Model
     public function add($table, $data)
     {
         $this->db->insert($table, $data);
-        if ($this->db->affected_rows() == '1') {
+        if ($this->db->affected_rows() >= 1) {
             return true;
         }
 
@@ -49,7 +49,7 @@ class Relatorios_model extends CI_Model
     {
         $this->db->where($fieldID, $ID);
         $this->db->delete($table);
-        if ($this->db->affected_rows() == '1') {
+        if ($this->db->affected_rows() >= 1) {
             return true;
         }
 
@@ -63,22 +63,25 @@ class Relatorios_model extends CI_Model
 
     public function clientesCustom($dataInicial = null, $dataFinal = null, $tipo = null)
     {
-        $whereData = '';
-        if ($dataInicial != null) {
-            $whereData .= 'AND dataCadastro >= ' . $this->db->escape($dataInicial);
-        }
-        if ($dataFinal != null) {
-            $whereData .= 'AND dataCadastro <= ' . $this->db->escape($dataFinal);
-        }
-        if ($tipo != null) {
-            $whereData .= 'AND fornecedor = ' . $this->db->escape($tipo);
-        }
-        $query = "SELECT idClientes, nomeCliente, sexo, pessoa_fisica,
+        $this->db->select('idClientes, nomeCliente, sexo, pessoa_fisica,
         documento, telefone, celular, contato, email, fornecedor,
         dataCadastro, rua, numero, complemento, bairro, cidade, estado,
-        cep FROM clientes WHERE dataCadastro $whereData ORDER BY nomeCliente";
+        cep');
+        $this->db->from('clientes');
 
-        return $this->db->query($query, [$dataInicial, $dataFinal])->result();
+        if ($dataInicial != null) {
+            $this->db->where('dataCadastro >=', $dataInicial);
+        }
+        if ($dataFinal != null) {
+            $this->db->where('dataCadastro <=', $dataFinal);
+        }
+        if ($tipo != null) {
+            $this->db->where('fornecedor', $tipo);
+        }
+
+        $this->db->order_by('nomeCliente');
+
+        return $this->db->get()->result();
     }
 
     public function clientesRapid($array = false)
@@ -89,11 +92,6 @@ class Relatorios_model extends CI_Model
         cep');
 
         $this->db->order_by('nomeCliente', 'asc');
-
-        $this->db->select('idClientes, nomeCliente, sexo, pessoa_fisica,
-        documento, telefone, celular, contato, email, fornecedor,
-        dataCadastro, rua, numero, complemento, bairro, cidade, estado,
-        cep');
 
         $result = $this->db->get('clientes');
         if ($array) {
@@ -134,34 +132,34 @@ class Relatorios_model extends CI_Model
 
     public function produtosCustom($precoInicial = null, $precoFinal = null, $estoqueInicial = null, $estoqueFinal = null)
     {
-        $wherePreco = '';
-        $whereEstoque = '';
+        $this->db->select('produtos.*, SUM(produtos.estoque * produtos.precoVenda) as valorEstoque, SUM(produtos.estoque * produtos.precoCompra) as valorEstoqueR');
+        $this->db->from('produtos');
+        $this->db->where('estoque >=', 0);
+
         if ($precoInicial != null) {
-            $wherePreco = 'AND precoVenda BETWEEN ' . $this->db->escape($precoInicial) . ' AND ' . $this->db->escape($precoFinal);
+            $this->db->where('precoVenda >=', $precoInicial);
+            $this->db->where('precoVenda <=', $precoFinal);
         }
         if ($estoqueInicial != null) {
-            $whereEstoque = 'AND estoque BETWEEN ' . $this->db->escape($estoqueInicial) . ' AND ' . $this->db->escape($estoqueFinal);
+            $this->db->where('estoque >=', $estoqueInicial);
+            $this->db->where('estoque <=', $estoqueFinal);
         }
-        $query = "
-            SELECT produtos.*,
-            SUM(produtos.estoque * produtos.precoVenda) as valorEstoque,
-            SUM(produtos.estoque * produtos.precoCompra) as valorEstoqueR
-            FROM produtos
-            WHERE estoque >= 0 $wherePreco $whereEstoque
-            GROUP BY produtos.idProdutos
-            ORDER BY descricao
-        ";
 
-        return $this->db->query($query)->result();
+        $this->db->group_by('produtos.idProdutos');
+        $this->db->order_by('descricao');
+
+        return $this->db->get()->result();
     }
 
     public function produtosEtiquetas($de, $ate)
     {
-        $query = 'SELECT * FROM produtos WHERE idProdutos BETWEEN ' . $this->db->escape($de) . ' AND ' . $this->db->escape($ate) . ' ORDER BY idProdutos';
+        $this->db->select('*');
+        $this->db->from('produtos');
+        $this->db->where('idProdutos >=', $de);
+        $this->db->where('idProdutos <=', $ate);
+        $this->db->order_by('idProdutos');
 
-        $this->db->order_by('descricao', 'asc');
-
-        return $this->db->query($query)->result();
+        return $this->db->get()->result();
     }
 
     public function skuRapid($array = false)
@@ -182,12 +180,14 @@ class Relatorios_model extends CI_Model
         $subQuery2 = $this->db->get_compiled_select();
         $this->db->reset_query();
 
-        $query = $this->db->query("SELECT * FROM ($subQuery1 UNION $subQuery2) as result ORDER BY dataOcorrencia DESC");
+        $this->db->from('(' . $subQuery1 . ' UNION ' . $subQuery2 . ') as result');
+        $this->db->order_by('dataOcorrencia', 'DESC');
+        $result = $this->db->get();
         if ($array) {
-            return $query->result_array();
+            return $result->result_array();
         }
 
-        return $query->result();
+        return $result->result();
     }
 
     public function skuCustom($dataInicial = null, $dataFinal = null, $cliente = null, $origem = null, $array = false)
@@ -208,14 +208,9 @@ class Relatorios_model extends CI_Model
         $subQuery2 = $this->db->get_compiled_select();
         $this->db->reset_query();
 
-        $query = "
-            CREATE TEMPORARY TABLE IF NOT EXISTS results
-            (SELECT * FROM ($subQuery1 UNION $subQuery2) as unionTable)
-        ";
-        $this->db->query($query);
-
-        $this->db->from('results');
+        $this->db->from('(' . $subQuery1 . ' UNION ' . $subQuery2 . ') as result');
         $this->db->order_by('dataOcorrencia', 'desc');
+
         if ($dataInicial) {
             $this->db->where('dataOcorrencia >=', $dataInicial);
         }
@@ -225,11 +220,11 @@ class Relatorios_model extends CI_Model
         }
 
         if ($cliente) {
-            $this->db->where('idClientes =', $cliente);
+            $this->db->where('idClientes', $cliente);
         }
 
         if ($origem) {
-            $this->db->where('origem =', $origem);
+            $this->db->where('origem', $origem);
         }
 
         $result = $this->db->get();
@@ -279,39 +274,38 @@ class Relatorios_model extends CI_Model
 
     public function osCustom($dataInicial = null, $dataFinal = null, $cliente = null, $responsavel = null, $status = null, $array = false)
     {
-        $whereData = '';
-        $whereCliente = '';
-        $whereResponsavel = '';
-        $whereStatus = '';
-        if ($dataInicial != null) {
-            $whereData .= 'AND dataInicial >= ' . $this->db->escape($dataInicial);
-        }
-        if ($dataFinal != null) {
-            $whereData .= 'AND dataInicial <= ' . $this->db->escape($dataFinal);
-        }
-        if ($cliente != null) {
-            $whereCliente = 'AND clientes_id = ' . $this->db->escape($cliente);
-        }
-        if ($responsavel != null) {
-            $whereResponsavel = 'AND usuarios_id = ' . $this->db->escape($responsavel);
-        }
-        if ($status != null) {
-            $whereStatus = 'AND status = ' . $this->db->escape($status);
-        }
         $query = 'CREATE TEMPORARY TABLE IF NOT EXISTS total_produtos SELECT SUM(subTotal) as total_produto, os_id FROM produtos_os GROUP BY os_id; ';
         $this->db->query($query);
 
         $query = 'CREATE TEMPORARY TABLE IF NOT EXISTS total_servicos SELECT SUM(subTotal) as total_servico, os_id FROM servicos_os GROUP BY os_id; ';
         $this->db->query($query);
 
-        $query = "SELECT os.*,clientes.nomeCliente, total_servicos.total_servico, total_produtos.total_produto FROM os
-                   LEFT JOIN total_produtos ON total_produtos.os_id = os.idOs
-                   LEFT JOIN total_servicos ON total_servicos.os_id = os.idOs
-                   LEFT JOIN clientes ON os.clientes_id = clientes.idClientes
-                   WHERE idOs != 0 $whereData $whereCliente $whereResponsavel $whereStatus
-                   ORDER BY os.dataInicial";
+        $this->db->select('os.*, clientes.nomeCliente, total_servicos.total_servico, total_produtos.total_produto');
+        $this->db->from('os');
+        $this->db->join('total_produtos', 'total_produtos.os_id = os.idOs', 'left');
+        $this->db->join('total_servicos', 'total_servicos.os_id = os.idOs', 'left');
+        $this->db->join('clientes', 'os.clientes_id = clientes.idClientes', 'left');
+        $this->db->where('idOs !=', 0);
 
-        $result = $this->db->query($query);
+        if ($dataInicial != null) {
+            $this->db->where('dataInicial >=', $dataInicial);
+        }
+        if ($dataFinal != null) {
+            $this->db->where('dataInicial <=', $dataFinal);
+        }
+        if ($cliente != null) {
+            $this->db->where('os.clientes_id', $cliente);
+        }
+        if ($responsavel != null) {
+            $this->db->where('os.usuarios_id', $responsavel);
+        }
+        if ($status != null) {
+            $this->db->where('os.status', $status);
+        }
+
+        $this->db->order_by('os.dataInicial');
+
+        $result = $this->db->get();
         if ($array) {
             return $result->result_array();
         }
@@ -385,29 +379,28 @@ class Relatorios_model extends CI_Model
 
     public function vendasCustom($dataInicial = null, $dataFinal = null, $cliente = null, $responsavel = null, $array = false)
     {
-        $whereData = '';
-        $whereCliente = '';
-        $whereResponsavel = '';
-        $whereStatus = '';
+        $this->db->select('vendas.*, clientes.nomeCliente, usuarios.nome');
+        $this->db->from('vendas');
+        $this->db->join('clientes', 'vendas.clientes_id = clientes.idClientes', 'left');
+        $this->db->join('usuarios', 'vendas.usuarios_id = usuarios.idUsuarios', 'left');
+        $this->db->where('idVendas !=', 0);
+
         if ($dataInicial != null) {
-            $whereData .= 'AND dataVenda >= ' . $this->db->escape($dataInicial);
+            $this->db->where('dataVenda >=', $dataInicial);
         }
         if ($dataFinal != null) {
-            $whereData .= 'AND dataVenda <= ' . $this->db->escape($dataFinal);
+            $this->db->where('dataVenda <=', $dataFinal);
         }
         if ($cliente != null) {
-            $whereCliente = 'AND clientes_id = ' . $this->db->escape($cliente);
+            $this->db->where('vendas.clientes_id', $cliente);
         }
         if ($responsavel != null) {
-            $whereResponsavel = 'AND usuarios_id = ' . $this->db->escape($responsavel);
+            $this->db->where('vendas.usuarios_id', $responsavel);
         }
 
-        $query = "SELECT vendas.*,clientes.nomeCliente, usuarios.nome FROM vendas
-        LEFT JOIN clientes ON vendas.clientes_id = clientes.idClientes
-        LEFT JOIN usuarios ON vendas.usuarios_id = usuarios.idUsuarios
-        WHERE idVendas != 0 $whereData $whereCliente $whereResponsavel ORDER BY vendas.idVendas";
+        $this->db->order_by('vendas.idVendas');
 
-        $result = $this->db->query($query);
+        $result = $this->db->get();
         if ($array) {
             return $result->result_array();
         }
