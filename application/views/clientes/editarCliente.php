@@ -110,7 +110,7 @@
                         <div class="control-group">
                             <label for="inscricao_estadual" class="control-label">Inscrição Estadual</label>
                             <div class="controls">
-                                <input id="inscricao_estadual" type="text" name="inscricao_estadual" value="<?php echo $result->inscricao_estadual; ?>" placeholder="IE" />
+                                <input id="inscricao_estadual" type="text" name="inscricao_estadual" value="<?php echo e($result->inscricao_estadual); ?>" placeholder="IE" />
                             </div>
                         </div>
                         <div class="control-group">

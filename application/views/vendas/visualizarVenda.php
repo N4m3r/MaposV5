@@ -126,7 +126,7 @@
                                         <td style="width: 15%; padding: 0; text-align: center;">
                                             <img style="margin: 12px 0 0 0;" src="<?php echo base_url(); ?>assets/img/logo_pix.png" width="64px" alt="QR Code de Pagamento"><br>
                                             <img style="margin: 5px 0 0 0;" width="94px" src="<?php echo $qrCode; ?>" alt="QR Code de Pagamento"><br>
-                                            <span style="margin: 0; font-size: 80%; text-align: center;">Chave PIX: <?php echo $chaveFormatada; ?></span>
+                                            <span style="margin: 0; font-size: 80%; text-align: center;">Chave PIX: <?php echo e($chaveFormatada); ?></span>
                                         </td>
                                     <?php endif; ?>
                                 </tr>

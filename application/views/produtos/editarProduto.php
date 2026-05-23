@@ -68,7 +68,7 @@
                     <div class="control-group">
                         <label for="precoCompra" class="control-label">Preço de Compra<span class="required">*</span></label>
                         <div class="controls">
-                            <input id="precoCompra" class="money" data-affixes-stay="true" data-thousands="" data-decimal="." type="text" name="precoCompra" value="<?php echo $result->precoCompra; ?>" />
+                            <input id="precoCompra" class="money" data-affixes-stay="true" data-thousands="" data-decimal="." type="text" name="precoCompra" value="<?php echo e($result->precoCompra); ?>" />
                             Margem <input style="width: 3em;" id="margemLucro" name="margemLucro" type="text" placeholder="%" maxlength="3" size="2" />
                             <strong><span style="color: red" id="errorAlert"></span><strong>
                         </div>
@@ -87,7 +87,7 @@
                     <div class="control-group">
                         <label for="precoVenda" class="control-label">Preço de Venda<span class="required">*</span></label>
                         <div class="controls">
-                            <input id="precoVenda" class="money" data-affixes-stay="true" data-thousands="" data-decimal="." type="text" name="precoVenda" value="<?php echo $result->precoVenda; ?>" />
+                            <input id="precoVenda" class="money" data-affixes-stay="true" data-thousands="" data-decimal="." type="text" name="precoVenda" value="<?php echo e($result->precoVenda); ?>" />
                             <button type="button" class="btn btn-warning" onclick="zerarValorVenda()" title="Zerar Valor" style="margin-left: 10px;">
                                 <i class="bx bx-reset"></i> Zerar
                             </button>
@@ -104,7 +104,7 @@
                     <div class="control-group">
                         <label for="estoque" class="control-label">Estoque<span class="required">*</span></label>
                         <div class="controls">
-                            <input id="estoque" type="text" name="estoque" value="<?php echo $result->estoque; ?>" />
+                            <input id="estoque" type="text" name="estoque" value="<?php echo e($result->estoque); ?>" />
                         </div>
                     </div>
 
