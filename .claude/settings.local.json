@@ -650,7 +650,8 @@
       "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\thail\\\\Desktop\\\\IVMS-CRUD\\\\MaposV5\\\\application\\\\views\" -Recurse -Filter \"*.php\")",
       "Bash(Select-Object -ExpandProperty FullName)",
       "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\thail\\\\Desktop\\\\IVMS-CRUD\\\\MaposV5\\\\scripts\\\\whatsapp-agent\" -Recurse -Name)",
-      "Bash(Sort-Object)"
+      "Bash(Sort-Object)",
+      "Bash(Get-Content *)"
     ]
   }
 }
