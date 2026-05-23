@@ -35,14 +35,14 @@
                         <tr>
                             <td style="text-align: right; width: 30%"><strong>Cliente (Celular)</strong></td>
                             <td>
-                                <?php echo $result->celular; ?>
+                                <?php echo e($result->celular); ?>
                             </td>
                         </tr>
 
                         <tr>
                             <td style="text-align: right; width: 30%"><strong>Cliente (Email)</strong></td>
                             <td>
-                                <?php echo $result->email; ?>
+                                <?php echo e($result->email); ?>
                             </td>
                         </tr>
 
@@ -56,14 +56,14 @@
                         <tr>
                             <td style="text-align: right; width: 30%"><strong>Id externo (charge_id)</strong></td>
                             <td>
-                                <?php echo $result->charge_id; ?>
+                                <?php echo e($result->charge_id); ?>
                             </td>
                         </tr>
 
                         <tr>
                             <td style="text-align: right"><strong>Gateway de Pagamento</strong></td>
                             <td>
-                                <?php echo $result->payment_gateway; ?>
+                                <?php echo e($result->payment_gateway); ?>
                             </td>
                         </tr>
 
@@ -97,21 +97,21 @@
                         <tr>
                             <td style="text-align: right"><strong>Método de pagamento</strong></td>
                             <td>
-                                <?php echo $result->payment_method; ?>
+                                <?php echo e($result->payment_method); ?>
                             </td>
                         </tr>
 
                         <tr>
                             <td style="text-align: right"><strong>Url de pagamento</strong></td>
                             <td>
-                                <?php echo $result->payment_url; ?>
+                                <?php echo e($result->payment_url); ?>
                             </td>
                         </tr>
 
                         <tr>
                             <td style="text-align: right"><strong>Código de barras</strong></td>
                             <td>
-                                <?php echo $result->barcode; ?>
+                                <?php echo e($result->barcode); ?>
                             </td>
                         </tr>
 
@@ -136,7 +136,7 @@
                         <tr>
                             <td style="text-align: right"><strong>Mensagem</strong></td>
                             <td>
-                                <?php echo $result->message; ?>
+                                <?php echo e($result->message); ?>
                             </td>
                         </tr>
                     </tbody>

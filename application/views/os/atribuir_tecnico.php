@@ -582,9 +582,9 @@
                                     </td>
                                     <td>
                                         <a href="<?php echo base_url(); ?>index.php/clientes/visualizar/<?php echo $os->clientes_id; ?>" title="Ver cliente">
-                                            <?php echo $os->nomeCliente; ?>
+                                            <?php echo e($os->nomeCliente); ?>
                                         </a><br>
-                                        <small><i class='fas fa-phone' style="font-size: 10px;"></i> <?php echo $os->telefone ?: 'N/A'; ?></small>
+                                        <small><i class='fas fa-phone' style="font-size: 10px;"></i> <?php echo e($os->telefone ?: 'N/A'); ?></small>
                                     </td>
                                     <td>
                                         <?php echo character_limiter(strip_tags($os->descricaoProduto), 45); ?>
@@ -594,13 +594,13 @@
                                     </td>
                                     <td class="text-center">
                                         <span class="badge" style="background-color: <?php echo $cor; ?>; border-color: <?php echo $cor; ?>; color: #fff;">
-                                            <?php echo $os->status; ?>
+                                            <?php echo e($os->status); ?>
                                         </span>
                                     </td>
                                     <td class="text-center">
                                         <?php if ($os->tecnico_responsavel): ?>
                                             <span class="tecnico-badge tecnico-atribuido">
-                                                <i class='fas fa-user'></i> <?php echo $os->nome_tecnico; ?>
+                                                <i class='fas fa-user'></i> <?php echo e($os->nome_tecnico); ?>
                                             </span>
                                         <?php else: ?>
                                             <span class="tecnico-badge tecnico-pendente">

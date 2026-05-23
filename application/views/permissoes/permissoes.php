@@ -43,12 +43,12 @@
                         }
                         echo '<tr>';
                         echo '<td>' . $r->idPermissao . '</td>';
-                        echo '<td>' . $r->nome . '</td>';
+                        echo '<td>' . e($r->nome) . '</td>';
                         echo '<td>' . date('d/m/Y', strtotime($r->data)) . '</td>';
                         echo '<td>' . $situacao . '</td>';
                         $btnExcluir = $r->idPermissao == 1
                             ? ''
-                            : ' <a href="#modal-excluir" role="button" data-toggle="modal" permissao="' . $r->idPermissao . '" nome="' . $r->nome . '" class="btn-nwe4" title="Excluir Permissão"><i class="bx bx-trash"></i></a>';
+                            : ' <a href="#modal-excluir" role="button" data-toggle="modal" permissao="' . e($r->idPermissao) . '" nome="' . e($r->nome) . '" class="btn-nwe4" title="Excluir Permissão"><i class="bx bx-trash"></i></a>';
                         echo '<td>
                                 <a href="' . base_url() . 'index.php/permissoes/editar/' . $r->idPermissao . '" class="btn-nwe3" title="Editar permissões"><i class="bx bx-edit"></i></a>' . $btnExcluir . '
                               </td>';

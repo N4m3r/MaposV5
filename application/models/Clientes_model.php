@@ -2,14 +2,6 @@
 
 class Clientes_model extends CI_Model
 {
-    protected $table = 'clientes';
-    protected $primaryKey = 'idClientes';
-    protected $fillable = [
-        'nomeCliente', 'pessoa_fisica', 'documento', 'telefone', 'celular',
-        'email', 'rua', 'numero', 'bairro', 'cidade', 'estado', 'cep',
-        'contato', 'complemento', 'fornecedor', 'consentimento_lgpd', 'data_consentimento',
-    ];
-
     public function __construct()
     {
         parent::__construct();
@@ -89,11 +81,8 @@ class Clientes_model extends CI_Model
 
     public function add($table, $data)
     {
-        if ($table === $this->table && ! empty($this->fillable)) {
-            $data = array_intersect_key($data, array_flip($this->fillable));
-        }
         $this->db->insert($table, $data);
-        if ($this->db->affected_rows() >= 1) {
+        if ($this->db->affected_rows() == '1') {
             return $this->db->insert_id($table);
         }
 
@@ -102,9 +91,6 @@ class Clientes_model extends CI_Model
 
     public function edit($table, $data, $fieldID, $ID)
     {
-        if ($table === $this->table && ! empty($this->fillable)) {
-            $data = array_intersect_key($data, array_flip($this->fillable));
-        }
         $this->db->where($fieldID, $ID);
         $this->db->update($table, $data);
 
@@ -119,7 +105,7 @@ class Clientes_model extends CI_Model
     {
         $this->db->where($fieldID, $ID);
         $this->db->delete($table);
-        if ($this->db->affected_rows() >= 1) {
+        if ($this->db->affected_rows() == '1') {
             return true;
         }
 

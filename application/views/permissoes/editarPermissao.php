@@ -95,8 +95,8 @@
                 <div class="widget-content">
                     <div class="span4">
                         <label>Nome da Permissão</label>
-                        <input name="nome" type="text" id="nome" class="span12" value="<?php echo $result->nome; ?>" />
-                        <input type="hidden" name="idPermissao" value="<?php echo $result->idPermissao; ?>">
+                        <input name="nome" type="text" id="nome" class="span12" value="<?php echo e($result->nome); ?>" />
+                        <input type="hidden" name="idPermissao" value="<?php echo e($result->idPermissao); ?>">
                     </div>
                     <div class="span3">
                         <label>Situação</label>

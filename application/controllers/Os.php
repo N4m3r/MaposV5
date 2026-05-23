@@ -868,20 +868,12 @@ class Os extends MY_Controller
             $this->devolucaoEstoque($id);
         }
 
-        $this->db->trans_start();
         $this->os_model->delete('servicos_os', 'os_id', $id);
         $this->os_model->delete('produtos_os', 'os_id', $id);
         $this->os_model->delete('anexos', 'os_id', $id);
         $this->os_model->delete('os', 'idOs', $id);
         if ((int) $os->faturado === 1) {
             $this->os_model->delete('lancamentos', 'descricao', "Fatura de OS - #${id}");
-        }
-        $this->db->trans_complete();
-
-        if ($this->db->trans_status() === false) {
-            $this->session->set_flashdata('error', 'Erro ao excluir OS. Tente novamente.');
-            redirect(site_url('os/gerenciar/'));
-            return;
         }
 
         log_info('Removeu uma OS. ID: ' . $id);
@@ -891,10 +883,6 @@ class Os extends MY_Controller
 
     public function autoCompleteProduto()
     {
-        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vProduto')) {
-            echo json_encode([]);
-            return;
-        }
         if (isset($_GET['term'])) {
             $q = strtolower($_GET['term']);
             $this->os_model->autoCompleteProduto($q);
@@ -903,10 +891,6 @@ class Os extends MY_Controller
 
     public function autoCompleteProdutoSaida()
     {
-        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vProduto')) {
-            echo json_encode([]);
-            return;
-        }
         if (isset($_GET['term'])) {
             $q = strtolower($_GET['term']);
             $this->os_model->autoCompleteProdutoSaida($q);
@@ -915,10 +899,6 @@ class Os extends MY_Controller
 
     public function autoCompleteCliente()
     {
-        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vCliente')) {
-            echo json_encode([]);
-            return;
-        }
         if (isset($_GET['term'])) {
             $q = strtolower($_GET['term']);
             $this->os_model->autoCompleteCliente($q);
@@ -927,10 +907,6 @@ class Os extends MY_Controller
 
     public function autoCompleteUsuario()
     {
-        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vUsuario')) {
-            echo json_encode([]);
-            return;
-        }
         if (isset($_GET['term'])) {
             $q = strtolower($_GET['term']);
             $this->os_model->autoCompleteUsuario($q);
@@ -939,10 +915,6 @@ class Os extends MY_Controller
 
     public function autoCompleteTermoGarantia()
     {
-        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vOs')) {
-            echo json_encode([]);
-            return;
-        }
         if (isset($_GET['term'])) {
             $q = strtolower($_GET['term']);
             $this->os_model->autoCompleteTermoGarantia($q);
@@ -951,10 +923,6 @@ class Os extends MY_Controller
 
     public function autoCompleteServico()
     {
-        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vServico')) {
-            echo json_encode([]);
-            return;
-        }
         if (isset($_GET['term'])) {
             $q = strtolower($_GET['term']);
             $this->os_model->autoCompleteServico($q);
@@ -1317,8 +1285,7 @@ class Os extends MY_Controller
         $upload_conf = [
             'upload_path' => $directory,
             'allowed_types' => 'jpg|png|gif|jpeg|pdf|docx|txt|xls|xlsx|doc|zip',
-            'max_size' => 10240,
-            'encrypt_name' => true,
+            'max_size' => 10240, // 10MB max
         ];
 
         $this->upload->initialize($upload_conf);
