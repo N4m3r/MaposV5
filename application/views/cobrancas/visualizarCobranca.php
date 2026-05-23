@@ -14,21 +14,21 @@
                         <tr>
                             <td style="text-align: right; width: 30%"><strong>Cliente</strong></td>
                             <td>
-                                <?php echo $result->nomeCliente; ?>
+                                <?php echo e($result->nomeCliente); ?>
                             </td>
                         </tr>
 
                         <tr>
                             <td style="text-align: right; width: 30%"><strong>Cliente (Documento)</strong></td>
                             <td>
-                                <?php echo $result->documento; ?>
+                                <?php echo e($result->documento); ?>
                             </td>
                         </tr>
 
                         <tr>
                             <td style="text-align: right; width: 30%"><strong>Cliente (Telefone)</strong></td>
                             <td>
-                                <?php echo $result->telefone; ?>
+                                <?php echo e($result->telefone); ?>
                             </td>
                         </tr>
 
