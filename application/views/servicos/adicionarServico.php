@@ -8,7 +8,7 @@
                 <h5>Cadastro de Serviço</h5>
             </div>
             <div class="widget-content nopadding tab-content">
-                <?php echo $custom_error; ?>
+                <?php echo e($custom_error); ?>
                 <form action="<?php echo current_url(); ?>" id="formServico" method="post" class="form-horizontal">
                     <div class="control-group">
                         <label for="nome" class="control-label">Nome<span class="required">*</span></label>

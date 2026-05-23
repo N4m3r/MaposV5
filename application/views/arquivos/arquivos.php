@@ -18,11 +18,11 @@
             <?php endif ?>
 
             <div class="span5">
-                <input type="text" name="pesquisa" id="pesquisa" placeholder="Digite o nome do documento para pesquisar" class="span12" value="<?= $this->input->get('pesquisa') ?>">
+                <input type="text" name="pesquisa" id="pesquisa" placeholder="Digite o nome do documento para pesquisar" class="span12" value="<?= e($this->input->get('pesquisa')) ?>">
             </div>
             <div class="span3">
-                <input type="text" name="data" id="data" placeholder="Data de" class="span6 datepicker" value="<?= $this->input->get('data') ?>">
-                <input type="text" name="data2" id="data2" placeholder="Data até" class="span6 datepicker" value="<?= $this->input->get('data2') ?>">
+                <input type="text" name="data" id="data" placeholder="Data de" class="span6 datepicker" value="<?= e($this->input->get('data')) ?>">
+                <input type="text" name="data2" id="data2" placeholder="Data até" class="span6 datepicker" value="<?= e($this->input->get('data2')) ?>">
             </div>
             <div class="span1">
                 <button class="button btn btn-mini btn-warning" style="min-width: 30px"><span class="button__icon"><i class='bx bx-search-alt'></i></span></button>
@@ -56,19 +56,19 @@
                         }
                         foreach ($results as $r) : ?>
                             <tr>
-                                <td><?= $r->idDocumentos ?></td>
+                                <td><?= e($r->idDocumentos) ?></td>
                                 <td>
                                     <?php if (@getimagesize($r->path)) : ?>
-                                        <a href="<?= $r->url ?>"> <img src="<?= $r->url ?> "></a>
+                                        <a href="<?= e($r->url) ?>"> <img src="<?= e($r->url) ?> "></a>
                                     <?php else : ?>
                                         <span>-</span>
                                     <?php endif ?>
                                 </td>
-                                <td><?= $r->documento ?></td>
+                                <td><?= e($r->documento) ?></td>
                                 <td><?= date('d/m/Y', strtotime($r->cadastro)) ?></td>
-                                <td><?= $r->descricao ?></td>
-                                <td><?= $r->tamanho ?> KB</td>
-                                <td><?= $r->tipo ?></td>
+                                <td><?= e($r->descricao) ?></td>
+                                <td><?= e($r->tamanho) ?> KB</td>
+                                <td><?= e($r->tipo) ?></td>
                                 <td><?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vArquivo')) : ?>
                                         <a href="<?= base_url() ?>index.php/arquivos/download/<?= $r->idDocumentos; ?>" class="btn-nwe" title="Baixar Arquivo"><i class="bx bx-download"></i>
                                         <?php endif ?>

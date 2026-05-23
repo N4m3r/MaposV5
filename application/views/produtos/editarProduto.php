@@ -111,7 +111,7 @@
                     <div class="control-group">
                         <label for="estoqueMinimo" class="control-label">Estoque Mínimo</label>
                         <div class="controls">
-                            <input id="estoqueMinimo" type="text" name="estoqueMinimo" value="<?php echo $result->estoqueMinimo; ?>" />
+                            <input id="estoqueMinimo" type="text" name="estoqueMinimo" value="<?php echo e($result->estoqueMinimo); ?>" />
                         </div>
                     </div>
 

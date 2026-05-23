@@ -43,12 +43,12 @@
 
                         echo '<tr>';
                         echo '<td>' . $r->idCobranca . '</td>';
-                        echo '<td>' . $r->payment_gateway . '</td>';
-                        echo '<td>' . $r->payment_method . '</td>';
+                        echo '<td>' . e($r->payment_gateway) . '</td>';
+                        echo '<td>' . e($r->payment_method) . '</td>';
                         echo '<td>' . $dataVenda . '</td>';
 
                         if ($r->os_id != '') {
-                            echo '<td><a href="' . base_url() . 'index.php/os/visualizar/' . $r->os_id . '"> Ordem de Serviço: #' . $r->os_id . '</a></td>';
+                            echo '<td><a href="' . base_url() . 'index.php/os/visualizar/' . $r->os_id . '"> Ordem de Serviço: #' . e($r->os_id) . '</a></td>';
                         }
                         if ($r->vendas_id != '') {
                             echo '<td><a href="' . base_url() . 'index.php/vendas/visualizar/' . $r->vendas_id . '"> Venda: #' . $r->vendas_id . '</a></td>';

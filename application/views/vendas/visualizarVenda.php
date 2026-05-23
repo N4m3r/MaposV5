@@ -144,7 +144,7 @@
                                         </tr>
                                     <?php endif; ?>
                                     <tr>
-                                        <td colspan="4"><b>Observações: </b><?php echo htmlspecialchars_decode($result->observacoes_cliente); ?></td>
+                                        <td colspan="4"><b>Observações: </b><?php echo htmlspecialchars_decode(e($result->observacoes_cliente)); ?></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -207,7 +207,7 @@
             <td style="width: 15%; padding: 0;text-align:center;">
                 <img src="<?php echo base_url(); ?>assets/img/logo_pix.png" alt="QR Code de Pagamento" /></br>
                 <img id="qrCodeImage" width="50%" src="<?= $qrCode ?>" alt="QR Code de Pagamento" /></br>
-                <?php echo '<span>Chave PIX: ' . $chaveFormatada . '</span>'; ?></br>
+                <?php echo '<span>Chave PIX: ' . e($chaveFormatada) . '</span>'; ?></br>
                 <?php if ($totalProdutos != 0) {
                     if ($result->valor_desconto != 0) {
                         echo "Valor Total: R$ " . number_format($result->valor_desconto, 2, ',', '.');

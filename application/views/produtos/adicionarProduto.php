@@ -35,7 +35,7 @@
                 <h5>Cadastro de Produto</h5>
             </div>
             <div class="widget-content nopadding tab-content">
-                <?php echo $custom_error; ?>
+                <?php echo e($custom_error); ?>
                 <form action="<?php echo current_url(); ?>" id="formProduto" method="post" class="form-horizontal">
                     <div class="control-group">
                         <label for="codDeBarra" class="control-label">Código de Barra<span class=""></span></label>
