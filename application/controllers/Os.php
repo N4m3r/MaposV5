@@ -854,9 +854,7 @@ class Os extends MY_Controller
         }
 
         if (isset($os->idCobranca) != null) {
-            if ($os->status == 'canceled') {
-                $this->os_model->delete('cobrancas', 'os_id', $id);
-            } else {
+            if ($os->status != 'canceled') {
                 $this->session->set_flashdata('error', 'Existe uma cobrança associada a esta OS, deve cancelar e/ou excluir a cobrança primeiro!');
                 redirect(site_url('os/gerenciar/'));
             }
@@ -868,6 +866,11 @@ class Os extends MY_Controller
             $this->devolucaoEstoque($id);
         }
 
+        $this->db->trans_start();
+
+        if (isset($os->idCobranca) != null) {
+            $this->os_model->delete('cobrancas', 'os_id', $id);
+        }
         $this->os_model->delete('servicos_os', 'os_id', $id);
         $this->os_model->delete('produtos_os', 'os_id', $id);
         $this->os_model->delete('anexos', 'os_id', $id);
@@ -876,8 +879,15 @@ class Os extends MY_Controller
             $this->os_model->delete('lancamentos', 'descricao', "Fatura de OS - #${id}");
         }
 
-        log_info('Removeu uma OS. ID: ' . $id);
-        $this->session->set_flashdata('success', 'OS excluída com sucesso!');
+        $this->db->trans_complete();
+
+        if ($this->db->trans_status() === false) {
+            log_message('error', 'Erro ao excluir OS. ID: ' . $id);
+            $this->session->set_flashdata('error', 'Ocorreu um erro ao excluir a OS. As alterações foram revertidas.');
+        } else {
+            log_info('Removeu uma OS. ID: ' . $id);
+            $this->session->set_flashdata('success', 'OS excluída com sucesso!');
+        }
         redirect(site_url('os/gerenciar/'));
     }
 
@@ -1017,9 +1027,9 @@ class Os extends MY_Controller
 
             log_info('Removeu produto de uma OS. ID (OS): ' . $idOs);
 
-            echo json_encode(['result' => true]);
+            $this->output->set_content_type('application/json')->set_output(json_encode(['result' => true]));
         } else {
-            echo json_encode(['result' => false]);
+            $this->output->set_content_type('application/json')->set_status_header(400)->set_output(json_encode(['result' => false]));
         }
     }
 
@@ -1077,9 +1087,9 @@ class Os extends MY_Controller
             $this->db->set('tipo_desconto', null);
             $this->db->where('idOs', $idOs);
             $this->db->update('os');
-            echo json_encode(['result' => true]);
+            $this->output->set_content_type('application/json')->set_output(json_encode(['result' => true]));
         } else {
-            echo json_encode(['result' => false]);
+            $this->output->set_content_type('application/json')->set_status_header(400)->set_output(json_encode(['result' => false]));
         }
     }
 
@@ -1277,9 +1287,8 @@ class Os extends MY_Controller
             try {
                 mkdir($directory . DIRECTORY_SEPARATOR . 'thumbs', 0755, true);
             } catch (Exception $e) {
-                echo json_encode(['result' => false, 'mensagem' => 'Erro ao criar diretorio de upload.']);
+                $this->output->set_content_type('application/json')->set_status_header(400)->set_output(json_encode(['result' => false, 'mensagem' => 'Erro ao criar diretorio de upload.']));
                 log_message('error', 'Upload directory error: ' . $e->getMessage());
-                exit();
             }
         }
 
@@ -1350,17 +1359,17 @@ class Os extends MY_Controller
         }
 
         if (count($error) > 0) {
-            echo json_encode(['result' => false, 'mensagem' => 'Ocorreu um erro ao processar os arquivos.', 'errors' => $error]);
+            $this->output->set_content_type('application/json')->set_status_header(400)->set_output(json_encode(['result' => false, 'mensagem' => 'Ocorreu um erro ao processar os arquivos.', 'errors' => $error]));
         } else {
             log_info('Adicionou anexo(s) a uma OS. ID (OS): ' . $this->input->post('idOsServico'));
-            echo json_encode(['result' => true, 'mensagem' => 'Arquivo(s) anexado(s) com sucesso.']);
+            $this->output->set_content_type('application/json')->set_output(json_encode(['result' => true, 'mensagem' => 'Arquivo(s) anexado(s) com sucesso.']));
         }
     }
 
     public function excluirAnexo($id = null)
     {
         if ($id == null || ! is_numeric($id)) {
-            echo json_encode(['result' => false, 'mensagem' => 'Erro ao tentar excluir anexo.']);
+            $this->output->set_content_type('application/json')->set_status_header(400)->set_output(json_encode(['result' => false, 'mensagem' => 'Erro ao tentar excluir anexo.']));
         } else {
             $this->db->where('idAnexos', $id);
             $file = $this->db->get('anexos', 1)->row();
@@ -1374,9 +1383,9 @@ class Os extends MY_Controller
 
             if ($this->os_model->delete('anexos', 'idAnexos', $id) == true) {
                 log_info('Removeu anexo de uma OS. ID (OS): ' . $idOs);
-                echo json_encode(['result' => true, 'mensagem' => 'Anexo excluído com sucesso.']);
+                $this->output->set_content_type('application/json')->set_output(json_encode(['result' => true, 'mensagem' => 'Anexo excluído com sucesso.']));
             } else {
-                echo json_encode(['result' => false, 'mensagem' => 'Erro ao tentar excluir anexo.']);
+                $this->output->set_content_type('application/json')->set_status_header(400)->set_output(json_encode(['result' => false, 'mensagem' => 'Erro ao tentar excluir anexo.']));
             }
         }
     }
@@ -1533,13 +1542,12 @@ class Os extends MY_Controller
                 $json = ['result' => false];
             }
 
-            echo json_encode($json);
-            exit();
+            $this->output->set_content_type('application/json')->set_output(json_encode($json));
         }
 
         $this->session->set_flashdata('error', 'Ocorreu um erro ao tentar faturar OS.');
         $json = ['result' => false];
-        echo json_encode($json);
+        $this->output->set_content_type('application/json')->set_status_header(400)->set_output(json_encode($json));
     }
 
     private function enviarOsPorEmail($idOs, $remetentes, $assunto)
@@ -1586,7 +1594,7 @@ class Os extends MY_Controller
     {
         $this->load->library('form_validation');
         if ($this->form_validation->run('anotacoes_os') == false) {
-            echo json_encode(validation_errors());
+            $this->output->set_content_type('application/json')->set_status_header(400)->set_output(json_encode(validation_errors()));
         } else {
             $data = [
                 'anotacao' => '[' . $this->session->userdata('nome_admin') . '] ' . $this->input->post('anotacao'),
@@ -1596,9 +1604,9 @@ class Os extends MY_Controller
 
             if ($this->os_model->add('anotacoes_os', $data) == true) {
                 log_info('Adicionou anotação a uma OS. ID (OS): ' . $this->input->post('os_id'));
-                echo json_encode(['result' => true]);
+                $this->output->set_content_type('application/json')->set_output(json_encode(['result' => true]));
             } else {
-                echo json_encode(['result' => false]);
+                $this->output->set_content_type('application/json')->set_status_header(400)->set_output(json_encode(['result' => false]));
             }
         }
     }
@@ -1610,9 +1618,9 @@ class Os extends MY_Controller
 
         if ($this->os_model->delete('anotacoes_os', 'idAnotacoes', $id) == true) {
             log_info('Removeu anotação de uma OS. ID (OS): ' . $idOs);
-            echo json_encode(['result' => true]);
+            $this->output->set_content_type('application/json')->set_output(json_encode(['result' => true]));
         } else {
-            echo json_encode(['result' => false]);
+            $this->output->set_content_type('application/json')->set_status_header(400)->set_output(json_encode(['result' => false]));
         }
     }
 
@@ -1821,12 +1829,12 @@ class Os extends MY_Controller
     public function historicoAtribuicoes($os_id = null)
     {
         if (! $os_id || ! is_numeric($os_id)) {
-            echo json_encode(['error' => 'OS inválida']);
+            $this->output->set_content_type('application/json')->set_status_header(400)->set_output(json_encode(['error' => 'OS inválida']));
             return;
         }
 
         if (! $this->permission->checkPermission($this->session->userdata('permissao'), 'vOs')) {
-            echo json_encode(['error' => 'Sem permissão']);
+            $this->output->set_content_type('application/json')->set_status_header(403)->set_output(json_encode(['error' => 'Sem permissão']));
             return;
         }
 
@@ -1834,7 +1842,7 @@ class Os extends MY_Controller
 
         $historico = $this->tecnico_model->getHistoricoAtribuicoes($os_id);
 
-        echo json_encode($historico);
+        $this->output->set_content_type('application/json')->set_output(json_encode($historico));
     }
 
     /**

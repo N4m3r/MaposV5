@@ -2,6 +2,15 @@
 
 class Usuarios_model extends CI_Model
 {
+    protected $fillable = [
+        'nome', 'rg', 'cpf', 'cep', 'rua', 'numero', 'bairro',
+        'cidade', 'estado', 'email', 'telefone', 'celular', 'senha',
+        'situacao', 'permissoes_id', 'dataExpiracao', 'url_image_user',
+        'is_tecnico', 'nivel_tecnico', 'app_tecnico_instalado',
+        'coordenadas_base_lat', 'coordenadas_base_lng', 'raio_atuacao_km',
+        'foto_tecnico'
+    ];
+
     public function __construct()
     {
         parent::__construct();
@@ -51,6 +60,9 @@ class Usuarios_model extends CI_Model
 
     public function add($table, $data)
     {
+        if ($table === 'usuarios') {
+            $data = array_intersect_key($data, array_flip($this->fillable));
+        }
         $this->db->insert($table, $data);
         if ($this->db->affected_rows() >= 1) {
             return true;
@@ -61,6 +73,9 @@ class Usuarios_model extends CI_Model
 
     public function edit($table, $data, $fieldID, $ID)
     {
+        if ($table === 'usuarios') {
+            $data = array_intersect_key($data, array_flip($this->fillable));
+        }
         $this->db->where($fieldID, $ID);
         $this->db->update($table, $data);
 

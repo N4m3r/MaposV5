@@ -490,13 +490,17 @@ class Mapos_model extends CI_Model
      */
     public function saveConfiguracao($data)
     {
-        try {
-            foreach ($data as $key => $valor) {
-                $this->db->set('valor', $valor);
-                $this->db->where('config', $key);
-                $this->db->update('configuracoes');
-            }
-        } catch (Exception $e) {
+        $this->db->trans_start();
+
+        foreach ($data as $key => $valor) {
+            $this->db->set('valor', $valor);
+            $this->db->where('config', $key);
+            $this->db->update('configuracoes');
+        }
+
+        $this->db->trans_complete();
+
+        if ($this->db->trans_status() === false) {
             return false;
         }
 

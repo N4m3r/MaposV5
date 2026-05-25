@@ -4,6 +4,13 @@ use Piggly\Pix\StaticPayload;
 
 class Os_model extends CI_Model
 {
+    protected $fillableOs = [
+        'dataInicial', 'dataFinal', 'clientes_id', 'usuarios_id',
+        'garantia', 'garantias_id', 'descricaoProduto', 'defeito',
+        'status', 'observacoes', 'laudoTecnico', 'faturado',
+        'tecnico_responsavel', 'valorTotal', 'desconto', 'tipo_desconto'
+    ];
+
     public function __construct()
     {
         parent::__construct();
@@ -180,6 +187,9 @@ class Os_model extends CI_Model
 
     public function add($table, $data, $returnId = false)
     {
+        if ($table === 'os') {
+            $data = array_intersect_key($data, array_flip($this->fillableOs));
+        }
         $this->db->insert($table, $data);
         if ($this->db->affected_rows() == '1') {
             if ($returnId == true) {

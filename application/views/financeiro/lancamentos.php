@@ -56,12 +56,12 @@ $periodo = $this->input->get('periodo');
 
             <div class="span2">
                 <label>Vencimento (de)</label>
-                <input id="vencimento_de" type="text" class="span12 datepicker" name="vencimento_de" value="<?= $this->input->get('vencimento_de') ? $this->input->get('vencimento_de') : date('d/m/Y') ?>">
+                <input id="vencimento_de" type="text" class="span12 datepicker" name="vencimento_de" value="<?= e($this->input->get('vencimento_de') ? $this->input->get('vencimento_de') : date('d/m/Y')) ?>">
             </div>
 
             <div class="span2">
                 <label>Vencimento (até)</label>
-                <input id="vencimento_ate" type="text" class="span12 datepicker" name="vencimento_ate" value="<?= $this->input->get('vencimento_ate') ? $this->input->get('vencimento_ate') : date('d/m/Y') ?>">
+                <input id="vencimento_ate" type="text" class="span12 datepicker" name="vencimento_ate" value="<?= e($this->input->get('vencimento_ate') ? $this->input->get('vencimento_ate') : date('d/m/Y')) ?>">
             </div>
 
             <div class="span2">
@@ -86,7 +86,7 @@ $periodo = $this->input->get('periodo');
 
             <div class="span2">
                 <label>Cliente/Fornecedor</label>
-                <input id="cliente_busca" type="text" class="span12" name="cliente" value="<?= $this->input->get('cliente') ?>">
+                <input id="cliente_busca" type="text" class="span12" name="cliente" value="<?= e($this->input->get('cliente')) ?>">
             </div>
 
             <div class="span2 pull-right">
@@ -142,15 +142,15 @@ $periodo = $this->input->get('periodo');
                             }
                             echo '<tr>';
                             echo '<td>' . $r->idLancamentos . '</td>';
-                            echo '<td><span class="label label-' . $label . '">' . ucfirst($r->tipo) . '</span></td>';
-                            echo '<td>' . $r->cliente_fornecedor . '</td>';
-                            echo '<td>' . $r->descricao . '</td>';
+                            echo '<td><span class="label label-' . $label . '">' . e(ucfirst($r->tipo)) . '</span></td>';
+                            echo '<td>' . e($r->cliente_fornecedor) . '</td>';
+                            echo '<td>' . e($r->descricao) . '</td>';
                             echo '<td>' . $vencimento . '</td>';
                             echo '<td>' . $status . '</td>';
-                            echo '<td>' . $r->observacoes . '</td>';
-                            echo '<td>' . $r->forma_pgto . '</td>';
+                            echo '<td>' . e($r->observacoes) . '</td>';
+                            echo '<td>' . e($r->forma_pgto) . '</td>';
                             echo '<td> R$ ' . number_format($r->valor, 2, ',', '.') . '</td>'; //valor total sem o desconto
-                            echo  $r->tipo_desconto == "real" ? '<td>' . "R$ ".$r->desconto . '</td>' : ($r->tipo_desconto == "porcento" ? '<td>' . $r->desconto." %" . '</td>' : '<td>' . "0" . '</td>'); // valor do desconto
+                            echo  $r->tipo_desconto == "real" ? '<td>' . "R$ ".e($r->desconto) . '</td>' : ($r->tipo_desconto == "porcento" ? '<td>' . e($r->desconto)." %" . '</td>' : '<td>' . "0" . '</td>'); // valor do desconto
                             echo $r->valor_desconto != 0 ? '<td> R$ ' . number_format($r->valor_desconto, 2, ',', '.') . '</td>' : '<td> R$ ' . number_format($r->valor, 2, ',', '.') . '</td>'; // valor total  com o desconto
                            
                             echo '<td>';
@@ -161,10 +161,10 @@ $periodo = $this->input->get('periodo');
                             }
 
                             if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eLancamento')) {
-                                echo '<a href="#modalEditar" style="margin-right: 1%" data-toggle="modal" role="button" idLancamento="' . $r->idLancamentos . '" descricao="' . $r->descricao . '" valor="' . $r->valor . '" vencimento="' . date('d/m/Y', strtotime($r->data_vencimento)) . '" pagamento="' . $data_pagamento . '" baixado="' . $r->baixado . '" cliente="' . $r->cliente_fornecedor . '" formaPgto="' . $r->forma_pgto . '" tipo="' . $r->tipo . '" observacoes="' . $r->observacoes . '" descontos_editar="' . $r->desconto . '" valor_desconto_editar="' . $r->desconto . '" usuario="' . $r->nome . '" class="btn-nwe3 editar" title="Editar OS"><i class="bx bx-edit"></i></a>';
+                                echo '<a href="#modalEditar" style="margin-right: 1%" data-toggle="modal" role="button" idLancamento="' . e($r->idLancamentos) . '" descricao="' . e($r->descricao) . '" valor="' . e($r->valor) . '" vencimento="' . e(date('d/m/Y', strtotime($r->data_vencimento))) . '" pagamento="' . e($data_pagamento) . '" baixado="' . e($r->baixado) . '" cliente="' . e($r->cliente_fornecedor) . '" formaPgto="' . e($r->forma_pgto) . '" tipo="' . e($r->tipo) . '" observacoes="' . e($r->observacoes) . '" descontos_editar="' . e($r->desconto) . '" valor_desconto_editar="' . e($r->desconto) . '" usuario="' . e($r->nome) . '" class="btn-nwe3 editar" title="Editar OS"><i class="bx bx-edit"></i></a>';
                             }
                             if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dLancamento')) {
-                                echo '<a href="#modalExcluir" data-toggle="modal" role="button" idLancamento="' . $r->idLancamentos . '" class="btn-nwe4 excluir" title="Excluir OS"><i class="bx bx-trash-alt"></i></a>';
+                                echo '<a href="#modalExcluir" data-toggle="modal" role="button" idLancamento="' . e($r->idLancamentos) . '" class="btn-nwe4 excluir" title="Excluir OS"><i class="bx bx-trash-alt"></i></a>';
                             }
 
                             echo '</td>';

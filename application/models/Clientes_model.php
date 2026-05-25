@@ -2,6 +2,13 @@
 
 class Clientes_model extends CI_Model
 {
+    protected $fillable = [
+        'nomeCliente', 'documento', 'telefone', 'celular', 'email',
+        'sexo', 'rua', 'numero', 'complemento', 'bairro', 'cidade',
+        'estado', 'cep', 'contato', 'fornecedor', 'cpfCnpj',
+        'inscricao', 'situacao', 'dataExpiracao', 'obs', 'senha'
+    ];
+
     public function __construct()
     {
         parent::__construct();
@@ -81,6 +88,9 @@ class Clientes_model extends CI_Model
 
     public function add($table, $data)
     {
+        if ($table === 'clientes') {
+            $data = array_intersect_key($data, array_flip($this->fillable));
+        }
         $this->db->insert($table, $data);
         if ($this->db->affected_rows() == '1') {
             return $this->db->insert_id($table);
@@ -91,6 +101,9 @@ class Clientes_model extends CI_Model
 
     public function edit($table, $data, $fieldID, $ID)
     {
+        if ($table === 'clientes') {
+            $data = array_intersect_key($data, array_flip($this->fillable));
+        }
         $this->db->where($fieldID, $ID);
         $this->db->update($table, $data);
 
