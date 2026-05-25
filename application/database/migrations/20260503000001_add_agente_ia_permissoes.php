@@ -18,9 +18,9 @@ class Migration_Add_agente_ia_permissoes extends CI_Migration
         //    Segue o padrao usado em database/sql/permissoes_nfse.sql
         // ================================================================
         $this->db->query("INSERT IGNORE INTO permissoes (nome, permissoes, situacao, data) VALUES
-            ('Visualizar Painel Agente IA', 'a:1:{s:9:\"vAgenteIA\";i:1;}', 1, CURDATE()),
-            ('Configurar Agente IA',        'a:1:{s:9:\"cAgenteIA\";i:1;}', 1, CURDATE()),
-            ('Autorizar/Rejeitar Agente IA','a:1:{s:9:\"eAgenteIA\";i:1;}', 1, CURDATE())");
+            ('Visualizar Painel Agente IA', '{\"vAgenteIA\":\"1\"}', 1, CURDATE()),
+            ('Configurar Agente IA',        '{\"cAgenteIA\":\"1\"}', 1, CURDATE()),
+            ('Autorizar/Rejeitar Agente IA','{\"eAgenteIA\":\"1\"}', 1, CURDATE())");
 
         // ================================================================
         // 2. Atualiza grupo Administrador (idPermissao = 1)
@@ -61,7 +61,7 @@ class Migration_Add_agente_ia_permissoes extends CI_Migration
     // =====================================================================
 
     /**
-     * Adiciona chaves de permissao a um grupo existente via serialize PHP.
+     * Adiciona chaves de permissao a um grupo existente via json_encode/json_decode.
      */
     private function adicionarAoGrupo(int $idPermissao, array $novas): void
     {
@@ -70,7 +70,7 @@ class Migration_Add_agente_ia_permissoes extends CI_Migration
             return;
         }
 
-        $perms = @unserialize($row->permissoes);
+        $perms = @json_decode($row->permissoes, true);
         if (!is_array($perms)) {
             $perms = [];
         }
@@ -80,11 +80,11 @@ class Migration_Add_agente_ia_permissoes extends CI_Migration
         }
 
         $this->db->where('idPermissao', $idPermissao);
-        $this->db->update('permissoes', ['permissoes' => serialize($perms)]);
+        $this->db->update('permissoes', ['permissoes' => json_encode($perms)]);
     }
 
     /**
-     * Remove chaves de permissao de um grupo existente via serialize PHP.
+     * Remove chaves de permissao de um grupo existente via json_encode/json_decode.
      */
     private function removerDoGrupo(int $idPermissao, array $chaves): void
     {
@@ -93,7 +93,7 @@ class Migration_Add_agente_ia_permissoes extends CI_Migration
             return;
         }
 
-        $perms = @unserialize($row->permissoes);
+        $perms = @json_decode($row->permissoes, true);
         if (!is_array($perms)) {
             return;
         }
@@ -103,6 +103,6 @@ class Migration_Add_agente_ia_permissoes extends CI_Migration
         }
 
         $this->db->where('idPermissao', $idPermissao);
-        $this->db->update('permissoes', ['permissoes' => serialize($perms)]);
+        $this->db->update('permissoes', ['permissoes' => json_encode($perms)]);
     }
 }

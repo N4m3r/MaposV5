@@ -143,8 +143,17 @@ class AuthController extends MY_Controller
      */
     public function logout()
     {
-        // Em implementação stateless, o logout é feito no cliente
-        // Aqui podemos adicionar token a uma blacklist se necessário
+        $authHeader = $this->input->get_request_header('Authorization', true);
+        if ($authHeader) {
+            $token = str_replace('Bearer ', '', $authHeader);
+            // Adicionar token a blacklist baseada em arquivo
+            $blacklistDir = APPPATH . 'cache/jwt_blacklist';
+            if (!is_dir($blacklistDir)) {
+                @mkdir($blacklistDir, 0755, true);
+            }
+            $blacklistFile = $blacklistDir . '/' . md5($token) . '.json';
+            @file_put_contents($blacklistFile, json_encode(['token_hash' => md5($token), 'revoked_at' => time()]));
+        }
         return $this->success(['message' => 'Logged out successfully']);
     }
 

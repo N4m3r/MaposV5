@@ -72,7 +72,7 @@ class UsuariosController extends REST_Controller
             ], REST_Controller::HTTP_UNAUTHORIZED);
         }
 
-        $_POST = (array) json_decode(file_get_contents('php://input'), true);
+        $inputData = json_decode(file_get_contents('php://input'), true);
 
         $this->load->library('form_validation');
 
@@ -241,7 +241,7 @@ class UsuariosController extends REST_Controller
      */
     public function login_post()
     {
-        $_POST = (array) json_decode(file_get_contents('php://input'), true);
+        $inputData = json_decode(file_get_contents('php://input'), true);
 
         $this->load->library('form_validation');
         $this->form_validation->set_rules('email', 'E-mail', 'valid_email|required|trim');
@@ -272,7 +272,7 @@ class UsuariosController extends REST_Controller
             if (password_verify($password, $user->senha)) {
                 $this->log_app('Efetuou login no sistema', $user->nome);
                 $permissoes = $this->getInstanceDatabase('permissoes', '*', 'idPermissao = ' . $user->permissoes_id, 1, true);
-                $permissoes = unserialize($permissoes['permissoes']);
+                $permissoes = json_decode($permissoes['permissoes'], true);
 
                 $token_data = [
                     'uid' => $user->idUsuarios,
@@ -323,7 +323,7 @@ class UsuariosController extends REST_Controller
                 ];
 
                 $permissoes = $this->getInstanceDatabase('permissoes', '*', 'idPermissao = ' . $user->permissoes_id, 1, true);
-                $permissoes = unserialize($permissoes['permissoes']);
+                $permissoes = json_decode($permissoes['permissoes'], true);
 
                 $result = [
                     'access_token' => $this->authorization_token->generateToken($token_data),

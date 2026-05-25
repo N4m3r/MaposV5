@@ -1252,7 +1252,7 @@ class Migration_Consolidated_schema_update extends CI_Migration
             // Atualizar admin com todas as permissoes
             $admin = $this->db->where('idPermissao', 1)->get('permissoes')->row();
             if ($admin && !empty($admin->permissoes)) {
-                $perms = @unserialize($admin->permissoes);
+                $perms = @json_decode($admin->permissoes, true);
                 if (is_array($perms)) {
                     $newPerms = [
                         'vTecnicoOS', 'eTecnicoCheckin', 'eTecnicoCheckout', 'eTecnicoFotos', 'vTecnicoDashboard',
@@ -1274,7 +1274,7 @@ class Migration_Consolidated_schema_update extends CI_Migration
                         }
                     }
                     if ($changed) {
-                        $this->db->where('idPermissao', 1)->update('permissoes', ['permissoes' => serialize($perms)]);
+                        $this->db->where('idPermissao', 1)->update('permissoes', ['permissoes' => json_encode($perms)]);
                     }
                 }
             }
@@ -1306,7 +1306,7 @@ class Migration_Consolidated_schema_update extends CI_Migration
                 ];
                 $this->db->insert('permissoes', [
                     'nome' => 'Técnico',
-                    'permissoes' => serialize($tecnico_perms),
+                    'permissoes' => json_encode($tecnico_perms),
                     'situacao' => 1,
                     'data' => date('Y-m-d'),
                 ]);

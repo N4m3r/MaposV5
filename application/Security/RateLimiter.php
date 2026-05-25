@@ -66,7 +66,7 @@ class RateLimiter
         $cacheFile = APPPATH . "cache/ratelimit_{$key}.cache";
 
         if (file_exists($cacheFile)) {
-            $data = unserialize(file_get_contents($cacheFile));
+            $data = json_decode(file_get_contents($cacheFile), true);
             if ($data['expires'] > time()) {
                 return $data['count'];
             }
@@ -84,7 +84,7 @@ class RateLimiter
         $count = 1;
 
         if (file_exists($cacheFile)) {
-            $data = unserialize(file_get_contents($cacheFile));
+            $data = json_decode(file_get_contents($cacheFile), true);
             if ($data['expires'] > time()) {
                 $count = $data['count'] + 1;
             }
@@ -95,7 +95,7 @@ class RateLimiter
             'expires' => $timestamp + $window
         ];
 
-        file_put_contents($cacheFile, serialize($data));
+        file_put_contents($cacheFile, json_encode($data));
     }
 
     /**
@@ -106,7 +106,7 @@ class RateLimiter
         $cacheFile = APPPATH . "cache/ratelimit_{$key}.cache";
 
         if (file_exists($cacheFile)) {
-            $data = unserialize(file_get_contents($cacheFile));
+            $data = json_decode(file_get_contents($cacheFile), true);
             return $data['expires'];
         }
 

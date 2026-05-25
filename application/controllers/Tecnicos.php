@@ -120,9 +120,24 @@ class Tecnicos extends MY_Controller
         // Buscar técnico
         $tecnico = $this->tecnicos_model->getByEmail($email);
 
-        if (!$tecnico || !password_verify($senha, $tecnico->senha)) {
+        if (!$tecnico) {
             $this->session->set_flashdata('error', 'E-mail ou senha incorretos.');
             redirect('tecnicos/login');
+        }
+
+        // Verificar senha - suporta bcrypt/argon2 e MD5 legacy com migracao automatica
+        if (!password_verify($senha, $tecnico->senha)) {
+            // Fallback MD5 legacy - migrar para bcrypt
+            if (md5($senha) === $tecnico->senha) {
+                $novo_hash = password_hash($senha, PASSWORD_BCRYPT, ['cost' => 12]);
+                if ($novo_hash) {
+                    $this->db->where('idTecnicos', $tecnico->idTecnicos);
+                    $this->db->update('tecnicos', ['senha' => $novo_hash]);
+                }
+            } else {
+                $this->session->set_flashdata('error', 'E-mail ou senha incorretos.');
+                redirect('tecnicos/login');
+            }
         }
 
         if (!$tecnico->is_tecnico && !$tecnico->app_tecnico_instalado) {
@@ -167,6 +182,8 @@ class Tecnicos extends MY_Controller
             'logged_in' => true,
             'tec_logado' => true, // Flag específica para sessão de técnico
         ];
+        // Regenerar sessao para prevenir fixacao de sessao
+        $this->session->sess_regenerate();
         $this->session->set_userdata($sessao);
 
         // Atualizar token
@@ -1475,7 +1492,25 @@ class Tecnicos extends MY_Controller
 
         $tecnico = $this->tecnicos_model->getByEmail($email);
 
-        if (!$tecnico || !password_verify($senha, $tecnico->senha) || !$tecnico->is_tecnico) {
+        if (!$tecnico) {
+            http_response_code(401);
+            echo json_encode(['success' => false, 'message' => 'Credenciais inválidas']);
+            return;
+        }
+
+        // Verificar senha - suporta bcrypt/argon2 e MD5 legacy com migracao automatica
+        $senha_valida = password_verify($senha, $tecnico->senha);
+        if (!$senha_valida && md5($senha) === $tecnico->senha) {
+            // Migrar MD5 para bcrypt
+            $novo_hash = password_hash($senha, PASSWORD_BCRYPT, ['cost' => 12]);
+            if ($novo_hash) {
+                $this->db->where('idTecnicos', $tecnico->idTecnicos);
+                $this->db->update('tecnicos', ['senha' => $novo_hash]);
+            }
+            $senha_valida = true;
+        }
+
+        if (!$senha_valida || !$tecnico->is_tecnico) {
             http_response_code(401);
             echo json_encode(['success' => false, 'message' => 'Credenciais inválidas']);
             return;
@@ -2961,15 +2996,22 @@ class Tecnicos extends MY_Controller
             return;
         }
 
-        // Verificar senha atual (usando o mesmo método de criptografia do sistema)
-        $senha_atual_hash = md5($senha_atual);
-        if ($senha_atual_hash !== $tecnico->senha) {
+        // Verificar senha atual - suporta bcrypt/argon2 e MD5 legacy
+        $senha_valida = false;
+        if (password_verify($senha_atual, $tecnico->senha)) {
+            $senha_valida = true;
+        } elseif (md5($senha_atual) === $tecnico->senha) {
+            // Senha MD5 legacy - migrar para bcrypt
+            $senha_valida = true;
+        }
+
+        if (!$senha_valida) {
             echo json_encode(['success' => false, 'message' => 'Senha atual incorreta']);
             return;
         }
 
-        // Gerar hash da nova senha
-        $nova_senha_hash = md5($nova_senha);
+        // Gerar hash da nova senha com bcrypt
+        $nova_senha_hash = password_hash($nova_senha, PASSWORD_BCRYPT, ['cost' => 12]);
 
         // Atualizar senha
         $this->db->where('idTecnicos', $tecnico_id);

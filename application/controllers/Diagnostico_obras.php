@@ -15,6 +15,12 @@ class Diagnostico_obras extends CI_Controller
         parent::__construct();
         $this->load->model('obras_model');
         $this->load->model('obra_atividades_model');
+        $this->load->library('session');
+
+        // Exigir autenticacao administrativa
+        if (!session_id() || !$this->session->userdata('logado') || $this->session->userdata('permissao') != 1) {
+            redirect('login');
+        }
     }
 
     /**

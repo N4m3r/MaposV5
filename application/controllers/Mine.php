@@ -303,6 +303,8 @@ class Mine extends CI_Controller
                     $session_data['cliente_id'] = $usuario->cliente_id;
                 }
 
+                // Regenerar sessao para prevenir fixacao de sessao
+                $this->session->sess_regenerate();
                 $this->session->set_userdata($session_data);
                 log_info('Usuário do cliente efetuou login: ' . $usuario->email);
 
@@ -472,6 +474,8 @@ class Mine extends CI_Controller
                         'conectado' => true, 
                         'isCliente' => true
                     ];
+                    // Regenerar sessao para prevenir fixacao de sessao
+                    $this->session->sess_regenerate();
                     $this->session->set_userdata($session_mine_data);
                     log_info($_SERVER['REMOTE_ADDR'] . ' Efetuou login no sistema');
 
@@ -1544,6 +1548,11 @@ class Mine extends CI_Controller
 
     public function minha_ordem_de_servico($y = null, $when = null)
     {
+        // Exigir autenticacao - qualquer usuario logado pode visualizar
+        if (!session_id() || (!$this->session->userdata('conectado') && !$this->session->userdata('logado'))) {
+            redirect('mine');
+        }
+
         if (($y != null) && (is_numeric($y))) {
             // Do not forget this number -> 44023
             // function sending => y = (7653 * ID) + 44023
@@ -1554,15 +1563,28 @@ class Mine extends CI_Controller
             $y = intval($y);
             $id = ($y - 44023) / 7653;
 
+            // Validar que o ID e um numero inteiro valido
+            if ($id != floor($id) || $id <= 0) {
+                redirect('mine');
+                return;
+            }
+
             $data['menuOs'] = 'os';
             $this->data['custom_error'] = '';
             $this->load->model('mapos_model');
             $this->load->model('os_model');
             $data['result'] = $this->os_model->getById($id);
             if ($data['result'] == null) {
-                // Resposta em caso de não encontrar a ordem de serviço
-                //$this->load->view('conecte/login');
+                redirect('mine');
             } else {
+                // Verificar propriedade: cliente so pode ver suas proprias OS
+                $cliente_logado = $this->session->userdata('cliente_id');
+                if ($this->session->userdata('logado') && $this->session->userdata('permissao') != 1) {
+                    // Admin pode ver qualquer OS
+                } elseif ($cliente_logado && $data['result']->clientes_id != $cliente_logado) {
+                    redirect('mine');
+                }
+
                 $data['produtos'] = $this->os_model->getProdutos($id);
                 $data['servicos'] = $this->os_model->getServicos($id);
                 $data['emitente'] = $this->mapos_model->getEmitente();
@@ -1570,8 +1592,7 @@ class Mine extends CI_Controller
                 $this->load->view('conecte/minha_os', $data);
             }
         } else {
-            // Resposta em caso de não encontrar a ordem de serviço
-            //$this->load->view('conecte/');
+            redirect('mine');
         }
     }
 
@@ -1760,6 +1781,23 @@ class Mine extends CI_Controller
         if ($id != null && is_numeric($id)) {
             $this->db->where('idAnexos', $id);
             $file = $this->db->get('anexos', 1)->row();
+
+            if (!$file) {
+                redirect('mine');
+                return;
+            }
+
+            // Verificar propriedade: anexo deve pertencer a uma OS do cliente logado
+            $cliente_id = $this->session->userdata('cliente_id');
+            if ($cliente_id) {
+                $this->db->where('idAnexos', $id);
+                $this->db->where('os_id IN (SELECT idOs FROM os WHERE clientes_id = ' . (int)$cliente_id . ')', null, false);
+                $owned = $this->db->get('anexos', 1)->row();
+                if (!$owned && $this->session->userdata('permissao') != 1) {
+                    redirect('mine');
+                    return;
+                }
+            }
 
             $this->load->library('zip');
             $path = $file->path;

@@ -49,7 +49,7 @@ class Permissoes extends Seeder
         $data = [
             'idPermissao' => 1,
             'nome' => 'Administrador',
-            'permissoes' => serialize($permissoes),
+            'permissoes' => json_encode($permissoes),
             'situacao' => 1,
             'data' => date('Y-m-d'),
         ];

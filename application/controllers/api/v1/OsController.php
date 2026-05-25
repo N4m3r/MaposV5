@@ -105,7 +105,7 @@ class OsController extends REST_Controller
             ], REST_Controller::HTTP_UNAUTHORIZED);
         }
 
-        $_POST = (array) json_decode(file_get_contents('php://input'), true);
+        $inputData = json_decode(file_get_contents('php://input'), true);
 
         $this->load->library('form_validation');
 
@@ -220,13 +220,13 @@ class OsController extends REST_Controller
             ], REST_Controller::HTTP_BAD_REQUEST);
         }
 
-        $_POST = (array) json_decode(file_get_contents('php://input'), true);
+        $inputData = json_decode(file_get_contents('php://input'), true);
 
-        if (! isset($_POST['dataInicial']) ||
-           ! isset($_POST['dataFinal']) ||
-           ! isset($_POST['status']) ||
-           ! isset($_POST['clientes_id']) ||
-           ! isset($_POST['usuarios_id'])
+        if (! isset($inputData['dataInicial']) ||
+           ! isset($inputData['dataFinal']) ||
+           ! isset($inputData['status']) ||
+           ! isset($inputData['clientes_id']) ||
+           ! isset($inputData['usuarios_id'])
         ) {
             $this->response([
                 'status' => false,
@@ -435,7 +435,8 @@ class OsController extends REST_Controller
     {
         $this->logged_user();
 
-        $_POST = (array) json_decode(trim(file_get_contents('php://input')));
+        $inputData = json_decode(trim(file_get_contents('php://input')), true);
+        $_POST = $inputData ?: [];
         $_POST['idOsProduto'] = $id;
 
         $this->load->library('form_validation');
@@ -586,7 +587,8 @@ class OsController extends REST_Controller
     public function servicos_post($id)
     {
         $this->logged_user();
-        $_POST = (array) json_decode(trim(file_get_contents('php://input')));
+        $inputData = json_decode(trim(file_get_contents('php://input')), true);
+        $_POST = $inputData ?: [];
         $_POST['idOsServico'] = $id;
 
         $this->load->library('form_validation');
@@ -703,7 +705,8 @@ class OsController extends REST_Controller
     {
         $this->logged_user();
 
-        $_POST = (array) json_decode(trim(file_get_contents('php://input')));
+        $inputData = json_decode(trim(file_get_contents('php://input')), true);
+        $_POST = $inputData ?: [];
         $_POST['os_id'] = $id;
 
         $this->load->library('form_validation');
@@ -783,8 +786,9 @@ class OsController extends REST_Controller
 
         $upload_conf = [
             'upload_path' => $directory,
-            'allowed_types' => 'jpg|png|gif|jpeg|JPG|PNG|GIF|JPEG|pdf|PDF|cdr|CDR|docx|DOCX|txt', // formatos permitidos para anexos de os
-            'max_size' => 0,
+            'allowed_types' => 'jpg|png|gif|jpeg|JPG|PNG|GIF|JPEG|pdf|PDF|cdr|CDR|docx|DOCX|txt',
+            'max_size' => 10240,
+            'encrypt_name' => true,
         ];
 
         $this->upload->initialize($upload_conf);

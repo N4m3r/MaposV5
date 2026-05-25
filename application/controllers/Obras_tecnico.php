@@ -417,7 +417,7 @@ class Obras_tecnico extends CI_Controller
         $config['encrypt_name'] = true;
 
         if (!is_dir($config['upload_path'])) {
-            mkdir($config['upload_path'], 0777, true);
+            mkdir($config['upload_path'], 0755, true);
         }
 
         $this->load->library('upload', $config);

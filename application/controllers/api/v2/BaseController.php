@@ -75,8 +75,9 @@ class BaseController extends MY_Controller
             if (!empty($scopeHeader)) {
                 $scopes = array_map('trim', explode(',', $scopeHeader));
             } else {
-                log_message('warning', 'API key authenticated without X-API-Scopes header — full access granted');
-                $scopes = ['*'];
+                log_message('warning', 'API key authenticated without X-API-Scopes header — denied');
+                $this->forbidden('X-API-Scopes header is required when using API key authentication');
+                exit;
             }
             $this->currentUser = (object) [
                 'sub'         => 0,
@@ -92,8 +93,9 @@ class BaseController extends MY_Controller
             if (!empty($scopeHeader)) {
                 $scopes = array_map('trim', explode(',', $scopeHeader));
             } else {
-                log_message('warning', 'API key authenticated without X-API-Scopes header — full access granted');
-                $scopes = ['*'];
+                log_message('warning', 'API key authenticated without X-API-Scopes header — denied');
+                $this->forbidden('X-API-Scopes header is required when using API key authentication');
+                exit;
             }
             $this->currentUser = (object) [
                 'sub'         => 0,
@@ -111,6 +113,13 @@ class BaseController extends MY_Controller
         }
 
         $token = str_replace('Bearer ', '', $authHeader);
+
+        // Verificar se token esta na blacklist (logout)
+        $blacklistFile = APPPATH . 'cache/jwt_blacklist/' . md5($token) . '.json';
+        if (file_exists($blacklistFile)) {
+            $this->unauthorized('Token revoked');
+            exit;
+        }
 
         try {
             $this->load->config('jwt');
@@ -146,8 +155,14 @@ class BaseController extends MY_Controller
             // Se whitelist existe mas origin nao esta nela, rejeita
             header('Access-Control-Allow-Origin: none');
         } else {
-            // Fallback para desenvolvimento: permite qualquer origin se nao configurado
-            header('Access-Control-Allow-Origin: *');
+            // Sem whitelist configurada: rejeitar em producao, permitir apenas localhost em desenvolvimento
+            if (ENVIRONMENT === 'development') {
+                header('Access-Control-Allow-Origin: http://localhost:8000');
+            } else {
+                http_response_code(403);
+                echo json_encode(['error' => 'CORS origin not allowed']);
+                exit;
+            }
         }
 
         header('Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS');

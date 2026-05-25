@@ -68,7 +68,7 @@ class ProdutosController extends REST_Controller
             ], REST_Controller::HTTP_UNAUTHORIZED);
         }
 
-        $_POST = (array) json_decode(file_get_contents('php://input'), true);
+        $inputData = json_decode(file_get_contents('php://input'), true);
 
         $this->load->library('form_validation');
 

@@ -60,8 +60,8 @@
                                 <tr class="log-row">
                                     <td><?php echo $log['id']; ?></td>
                                     <td><?php echo date('d/m H:i', strtotime($log['created_at'])); ?></td>
-                                    <td><?php echo $log['numero_telefone']; ?></td>
-                                    <td><span class="badge-tipo tipo-<?php echo $log['tipo']; ?>"><?php echo ucfirst($log['tipo']); ?></span></td>
+                                    <td><?php echo e($log['numero_telefone']); ?></td>
+                                    <td><span class="badge-tipo tipo-<?php echo e($log['tipo']); ?>"><?php echo e(ucfirst($log['tipo'])); ?></span></td>
                                     <td><?php echo $log['intencao_detectada'] ?? '-'; ?></td>
                                     <td><?php echo $log['acao_executada'] ?? '-'; ?></td>
                                     <td><div class="log-msg" title="<?php echo htmlspecialchars($log['mensagem']); ?>"><?php echo nl2br(htmlspecialchars(mb_strimwidth($log['mensagem'], 0, 120, '...'))); ?></div></td>

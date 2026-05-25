@@ -203,7 +203,7 @@ class Permissoes extends MY_Controller
                 }
             }
 
-            $permissoes = serialize($permissoes);
+            $permissoes = json_encode($permissoes);
 
             $data = [
                 'nome' => $nomePermissao,
@@ -417,7 +417,7 @@ class Permissoes extends MY_Controller
             $current = $this->permissoes_model->getById($this->input->post('idPermissao'));
             $currentPerms = [];
             if ($current && !empty($current->permissoes)) {
-                $decoded = @unserialize($current->permissoes);
+                $decoded = @json_decode($current->permissoes, true);
                 if (is_array($decoded)) {
                     $currentPerms = $decoded;
                 }
@@ -437,7 +437,7 @@ class Permissoes extends MY_Controller
                 }
             }
 
-            $permissoes = serialize($permissoes);
+            $permissoes = json_encode($permissoes);
 
             $data = [
                 'nome' => $nomePermissao,

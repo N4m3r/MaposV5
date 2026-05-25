@@ -17,8 +17,8 @@ $this->load->config('payment_gateways');
                 <div class="modal-body">
                     <div id="forma-pag" class="">
                         <div class="form-group">
-                            <input value="<?php echo $id ?>" name="id" hidden>
-                            <input value="<?php echo $tipo ?>" name="tipo" hidden>
+                            <input value="<?php echo e($id) ?>" name="id" hidden>
+                            <input value="<?php echo e($tipo) ?>" name="tipo" hidden>
                             <label for="gateway_de_pagamento">Gateway de Pagamento: </label>
                             <select id="gateway_de_pagamento" class="form-control span12" name="gateway_de_pagamento" required>
                                 <option value="" selected>Escolha o gateway de pagamento</option>

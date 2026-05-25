@@ -110,7 +110,7 @@ $coresGrupo = [
                         $nome = $gruposPt[$cat] ?? ucfirst($cat);
                     ?>
                         <div class="config-group">
-                            <div class="config-group-header" style="background-color: <?php echo $cor; ?>">
+                            <div class="config-group-header" style="background-color: <?php echo e($cor); ?>">
                                 <i class="bx <?php echo $icone; ?>"></i>
                                 <span><?php echo $nome; ?></span>
                             </div>

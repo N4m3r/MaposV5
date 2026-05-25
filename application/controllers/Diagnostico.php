@@ -8,10 +8,18 @@ if (!defined('BASEPATH')) {
  */
 class Diagnostico extends CI_Controller
 {
+    private static $ALLOWED_TABLES = ['obras', 'obra_etapas', 'obra_atividades', 'obra_equipe', 'obra_checkins', 'obra_atividades_historico', 'usuarios', 'clientes'];
+
     public function __construct()
     {
         parent::__construct();
         $this->load->database();
+        $this->load->library('session');
+
+        // Exigir autenticacao administrativa
+        if (!session_id() || !$this->session->userdata('logado') || $this->session->userdata('permissao') != 1) {
+            redirect('login');
+        }
     }
 
     /**
@@ -181,9 +189,15 @@ class Diagnostico extends CI_Controller
      */
     public function estrutura($tabela)
     {
+        // Whitelist de tabelas permitidas
+        if (!in_array($tabela, self::$ALLOWED_TABLES, true)) {
+            show_error('Tabela nao permitida.', 403);
+            return;
+        }
+
         echo '<!DOCTYPE html>';
         echo '<html><head>';
-        echo '<title>Estrutura: ' . $tabela . '</title>';
+        echo '<title>Estrutura: ' . htmlspecialchars($tabela) . '</title>';
         echo '<style>';
         echo 'body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }';
         echo '.container { max-width: 1200px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; }';
@@ -194,7 +208,7 @@ class Diagnostico extends CI_Controller
         echo '</style>';
         echo '</head><body>';
         echo '<div class="container">';
-        echo '<h1>📋 Estrutura da Tabela: ' . $tabela . '</h1>';
+        echo '<h1>📋 Estrutura da Tabela: ' . htmlspecialchars($tabela) . '</h1>';
         echo '<a href="' . site_url('diagnostico') . '" class="btn">← Voltar</a>';
         echo '<hr>';
 
@@ -208,29 +222,30 @@ class Diagnostico extends CI_Controller
 
             foreach ($campos as $campo) {
                 echo '<tr>';
-                echo '<td><strong>' . $campo->name . '</strong></td>';
-                echo '<td>' . $campo->type . '</td>';
-                echo '<td>' . ($campo->max_length ?? 'N/A') . '</td>';
+                echo '<td><strong>' . htmlspecialchars($campo->name) . '</strong></td>';
+                echo '<td>' . htmlspecialchars($campo->type) . '</td>';
+                echo '<td>' . htmlspecialchars((string)($campo->max_length ?? 'N/A')) . '</td>';
                 echo '<td>' . ($campo->nullable ? 'Sim' : 'Não') . '</td>';
-                echo '<td>' . ($campo->default ?? 'NULL') . '</td>';
+                echo '<td>' . htmlspecialchars($campo->default ?? 'NULL') . '</td>';
                 echo '</tr>';
             }
 
             echo '</table>';
 
-            // Mostrar índices
+            // Mostrar indices - usar $this->db->escape() para seguranca
+            $escapedTable = $this->db->escape_identifiers($tabela);
             echo '<h2>Índices</h2>';
-            $indices = $this->db->query('SHOW INDEX FROM ' . $tabela)->result();
+            $indices = $this->db->query('SHOW INDEX FROM ' . $escapedTable)->result();
 
             if (!empty($indices)) {
                 echo '<table>';
                 echo '<tr><th>Nome</th><th>Coluna</th><th>Único</th><th>Tipo</th></tr>';
                 foreach ($indices as $indice) {
                     echo '<tr>';
-                    echo '<td>' . $indice->Key_name . '</td>';
-                    echo '<td>' . $indice->Column_name . '</td>';
+                    echo '<td>' . htmlspecialchars($indice->Key_name) . '</td>';
+                    echo '<td>' . htmlspecialchars($indice->Column_name) . '</td>';
                     echo '<td>' . ($indice->Non_unique ? 'Não' : 'Sim') . '</td>';
-                    echo '<td>' . $indice->Index_type . '</td>';
+                    echo '<td>' . htmlspecialchars($indice->Index_type) . '</td>';
                     echo '</tr>';
                 }
                 echo '</table>';
@@ -245,6 +260,12 @@ class Diagnostico extends CI_Controller
      */
     public function criar($tabela)
     {
+        // Whitelist de tabelas permitidas
+        if (!in_array($tabela, self::$ALLOWED_TABLES, true)) {
+            show_error('Tabela nao permitida.', 403);
+            return;
+        }
+
         echo '<!DOCTYPE html>';
         echo '<html><head>';
         echo '<title>Criar: ' . $tabela . '</title>';

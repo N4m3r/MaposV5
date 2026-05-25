@@ -14,22 +14,22 @@ class Migration_Add_tecnico_view_permissions extends CI_Migration
         // Atualizar grupo Administrador (id=1) com as novas permissões
         $admin = $this->db->where('idPermissao', 1)->get('permissoes')->row();
         if ($admin && !empty($admin->permissoes)) {
-            $perms = @unserialize($admin->permissoes);
+            $perms = @json_decode($admin->permissoes, true);
             if (is_array($perms)) {
                 $perms['vTecnicoFotos'] = '1';
                 $perms['vTecnicoAssinaturas'] = '1';
-                $this->db->where('idPermissao', 1)->update('permissoes', ['permissoes' => serialize($perms)]);
+                $this->db->where('idPermissao', 1)->update('permissoes', ['permissoes' => json_encode($perms)]);
             }
         }
 
         // Atualizar grupo Técnico com as novas permissões
         $tecnico = $this->db->where('nome', 'Técnico')->get('permissoes')->row();
         if ($tecnico && !empty($tecnico->permissoes)) {
-            $perms = @unserialize($tecnico->permissoes);
+            $perms = @json_decode($tecnico->permissoes, true);
             if (is_array($perms)) {
                 $perms['vTecnicoFotos'] = '1';
                 $perms['vTecnicoAssinaturas'] = '1';
-                $this->db->where('nome', 'Técnico')->update('permissoes', ['permissoes' => serialize($perms)]);
+                $this->db->where('nome', 'Técnico')->update('permissoes', ['permissoes' => json_encode($perms)]);
             }
         }
 
@@ -41,21 +41,21 @@ class Migration_Add_tecnico_view_permissions extends CI_Migration
         // Reverter as alterações se necessário
         $admin = $this->db->where('idPermissao', 1)->get('permissoes')->row();
         if ($admin && !empty($admin->permissoes)) {
-            $perms = @unserialize($admin->permissoes);
+            $perms = @json_decode($admin->permissoes, true);
             if (is_array($perms)) {
                 unset($perms['vTecnicoFotos']);
                 unset($perms['vTecnicoAssinaturas']);
-                $this->db->where('idPermissao', 1)->update('permissoes', ['permissoes' => serialize($perms)]);
+                $this->db->where('idPermissao', 1)->update('permissoes', ['permissoes' => json_encode($perms)]);
             }
         }
 
         $tecnico = $this->db->where('nome', 'Técnico')->get('permissoes')->row();
         if ($tecnico && !empty($tecnico->permissoes)) {
-            $perms = @unserialize($tecnico->permissoes);
+            $perms = @json_decode($tecnico->permissoes, true);
             if (is_array($perms)) {
                 unset($perms['vTecnicoFotos']);
                 unset($perms['vTecnicoAssinaturas']);
-                $this->db->where('nome', 'Técnico')->update('permissoes', ['permissoes' => serialize($perms)]);
+                $this->db->where('nome', 'Técnico')->update('permissoes', ['permissoes' => json_encode($perms)]);
             }
         }
     }

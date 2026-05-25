@@ -223,13 +223,13 @@ class Arquivos extends MY_Controller
 
         $config['upload_path'] = './assets/arquivos/' . $date;
         $config['allowed_types'] = 'txt|jpg|jpeg|gif|png|pdf|PDF|JPG|JPEG|GIF|PNG';
-        $config['max_size'] = 0;
+        $config['max_size'] = 10240;
         $config['max_width'] = '3000';
         $config['max_height'] = '2000';
         $config['encrypt_name'] = true;
 
         if (! is_dir('./assets/arquivos/' . $date)) {
-            mkdir('./assets/arquivos/' . $date, 0777, true);
+            mkdir('./assets/arquivos/' . $date, 0755, true);
         }
 
         $this->load->library('upload', $config);

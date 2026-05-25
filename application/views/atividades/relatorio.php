@@ -22,12 +22,12 @@
                     <div class="span3">
                         <label>Data Início:</label>
                         <input type="date" name="data_inicio" class="input-block-level"
-                               value="<?php echo $filtros['data_inicio'] ?? date('Y-m-01'); ?>">
+                               value="<?php echo e($filtros['data_inicio'] ?? date('Y-m-01')); ?>">
                     </div>
                     <div class="span3">
                         <label>Data Fim:</label>
                         <input type="date" name="data_fim" class="input-block-level"
-                               value="<?php echo $filtros['data_fim'] ?? date('Y-m-t'); ?>">
+                               value="<?php echo e($filtros['data_fim'] ?? date('Y-m-t')); ?>">
                     </div>
                     <div class="span3">
                         <label>Técnico:</label>

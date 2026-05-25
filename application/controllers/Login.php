@@ -22,7 +22,7 @@ class Login extends CI_Controller
     {
         $this->session->sess_destroy();
 
-        return redirect($_SERVER['HTTP_REFERER']);
+        return redirect('login');
     }
 
     public function verificarLogin()
@@ -63,7 +63,9 @@ class Login extends CI_Controller
 
                 // Verificar credenciais do usuario
                 if (password_verify($password, $user->senha)) {
-                    // Login bem-sucedido: limpar tentativas
+                    // Login bem-sucedido: regenerar sessao para prevenir fixacao
+                    $this->session->sess_regenerate();
+                    // Limpar tentativas
                     $this->clearAttempts($ip);
                     $session_admin_data = ['nome_admin' => $user->nome, 'email_admin' => $user->email, 'url_image_user_admin' => $user->url_image_user, 'id_admin' => $user->idUsuarios, 'permissao' => $user->permissoes_id, 'logado' => true];
                     $this->session->set_userdata($session_admin_data);
