@@ -120,11 +120,16 @@ class ClientOsController extends REST_Controller
     public function os_post()
     {
         header('Content-Type: application/json');
-        header('Access-Control-Allow-Origin: *');
+        $allowedOrigins = array_filter(array_map('trim', explode(',', $_ENV['CORS_ORIGINS'] ?? '')));
+        $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+        if (in_array($origin, $allowedOrigins, true)) {
+            header("Access-Control-Allow-Origin: {$origin}");
+        }
         header('Access-Control-Allow-Methods: POST');
         header('Access-Control-Allow-Headers: Content-Type, Authorization');
         
-        $_POST = (array) json_decode(file_get_contents('php://input'), true);
+        $inputData = (array) json_decode(file_get_contents('php://input'), true);
+        $_POST = $inputData;
 
         $clientLogged = $this->logged_client();
 
