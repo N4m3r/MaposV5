@@ -49,7 +49,7 @@
                         <tr>
                             <td style="text-align: right; width: 30%"><strong>Id interno (id)</strong></td>
                             <td>
-                                <?php echo $result->idCobranca; ?>
+                                <?php echo e($result->idCobranca); ?>
                             </td>
                         </tr>
 
@@ -119,7 +119,7 @@
                             <td style="text-align: right"><strong>Link</strong></td>
                             <td>
                                 <?php if ($result->link) { ?>
-                                    <a href="<?php echo $result->link; ?>" target="_blank">Abrir em nova aba</a>
+                                    <a href="<?php echo e($result->link); ?>" target="_blank">Abrir em nova aba</a>
                                 <?php } ?>
                             </td>
                         </tr>
@@ -128,7 +128,7 @@
                             <td style="text-align: right"><strong>PDF</strong></td>
                             <td>
                                 <?php if ($result->pdf) { ?>
-                                    <a href="<?php echo $result->pdf; ?>" target="_blank">Abrir em nova aba</a>
+                                    <a href="<?php echo e($result->pdf); ?>" target="_blank">Abrir em nova aba</a>
                                 <?php } ?>
                             </td>
                         </tr>

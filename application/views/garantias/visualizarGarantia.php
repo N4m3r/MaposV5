@@ -12,7 +12,7 @@
                         echo '<a title="Editar Termo de Garantia" class="button btn btn-mini btn-success" href="' . base_url() . 'index.php/garantias/editar/' . $result->idGarantias . '">
     <span class="button__icon"><i class="bx bx-edit"></i> </span> <span class="button__text">Editar</span></a>';
                     } ?>
-                    <a target="_blank" title="Imprimir" class="button btn btn-mini btn-inverse" href="<?php echo site_url() ?>/garantias/imprimir/<?php echo $result->idGarantias; ?>">
+                    <a target="_blank" title="Imprimir" class="button btn btn-mini btn-inverse" href="<?php echo site_url() ?>/garantias/imprimir/<?php echo e($result->idGarantias); ?>">
                       <span class="button__icon"><i class="bx bx-printer"></i></span> <span class="button__text">Imprimir</span></a>
                 </div>
             </div>
@@ -33,7 +33,7 @@
                                                 <?php echo e($emitente->rua) . ', nº:' . e($emitente->numero) . ', ' . e($emitente->bairro) . ' - ' . e($emitente->cidade) . ' - ' . e($emitente->uf); ?> </span> </br> <span> E-mail:
                                                 <?php echo e($emitente->email) . ' - Fone: ' . e($emitente->telefone); ?></span></td>
                                         <td style="width: 18%; text-align: center">#Garantia: <span>
-                                                <?php echo $result->idGarantias ?></span></br> </br> <span>Emissão:
+                                                <?php echo e($result->idGarantias) ?></span></br> </br> <span>Emissão:
                                                 <?php echo date('d/m/Y'); ?></span>
                                         </td>
                                     </tr>

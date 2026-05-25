@@ -2923,9 +2923,8 @@ class Tecnicos extends MY_Controller
 
         // Data de nascimento - validar e formatar
         if (!empty($data_nascimento)) {
-            $data_parts = explode('/', $data_nascimento);
-            if (count($data_parts) === 3) {
-                $data_formatada = $data_parts[2] . '-' . $data_parts[1] . '-' . $data_parts[0];
+            $data_formatada = parseDateBr($data_nascimento);
+            if ($data_formatada !== null) {
                 $dados['data_nascimento'] = $data_formatada;
             }
         }

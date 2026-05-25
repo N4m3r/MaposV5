@@ -43,7 +43,7 @@
                                     </tr>
                                     <tr>
                                         <td colspan="4" style="width: 100%;"><b>#Venda: </b><span>
-                                                <?php echo $result->idVendas ?></span>
+                                                <?php echo e($result->idVendas) ?></span>
                                             <span style="padding-inline: 1em">Emissão: <?php echo date('d/m/Y H:i:s'); ?></span>
                                             <?php if ($result->faturado) : ?>
                                                 <br>
@@ -65,14 +65,14 @@
                                                 <span>
                                                     <h5><b>CLIENTE</b></h5>
                                                     <span>
-                                                        <?php echo $result->nomeCliente ?></span><br />
+                                                        <?php echo e($result->nomeCliente) ?></span><br />
                                                     <span>
-                                                        <?php echo $result->rua ?>,
-                                                        <?php echo $result->numero ?>,
-                                                        <?php echo $result->bairro ?></span><br />
+                                                        <?php echo e($result->rua) ?>,
+                                                        <?php echo e($result->numero) ?>,
+                                                        <?php echo e($result->bairro) ?></span><br />
                                                     <span>
-                                                        <?php echo $result->cidade ?> -
-                                                        <?php echo $result->estado ?></span>
+                                                        <?php echo e($result->cidade) ?> -
+                                                        <?php echo e($result->estado) ?></span>
                                             </li>
                                         </ul>
                                     </td>
@@ -96,7 +96,7 @@
                                     foreach ($produtos as $p) {
                                         $totalProdutos = $totalProdutos + $p->subTotal;
                                         echo '<tr>';
-                                        echo '<td>' . $p->descricao . '</td>';
+                                        echo '<td>' . e($p->descricao) . '</td>';
                                         echo '<td>' . $p->quantidade . '</td>';
                                         echo '<td>R$ ' . ($p->preco ?: $p->precoVenda) . '</td>';
                                         echo '<td>R$ ' . number_format($p->subTotal, 2, ',', '.') . '</td>';
@@ -132,8 +132,8 @@
                                     <tr>
                                         <td colspan="4" style="text-align: center;">
                                             <img style="margin: 12px 0 0 0;" src="<?= base_url(); ?>assets/img/logo_pix.png" width="64px" alt="QR Code de Pagamento" /><br>
-                                            <img style="margin: 5px 0 0 0;" width="94px" src="<?= $qrCode ?>" alt="QR Code de Pagamento" /><br>
-                                            <span style="margin: 0; font-size: 80%; text-align: center;">Chave PIX: <?= $chaveFormatada ?></span>
+                                            <img style="margin: 5px 0 0 0;" width="94px" src="<?= e($qrCode) ?>" alt="QR Code de Pagamento" /><br>
+                                            <span style="margin: 0; font-size: 80%; text-align: center;">Chave PIX: <?= e($chaveFormatada) ?></span>
                                         </td>
                                     </tr>
                                 <?php endif; ?>

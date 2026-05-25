@@ -21,7 +21,7 @@
                     <?= $topo ?>
                     <div class="widget-title">
                         <h4 style="text-align: center; font-size: 1.1em; padding: 5px;">
-                            <?= ucfirst($title) ?>
+                            <?= e(ucfirst($title)) ?>
                         </h4>
                     </div>
                         <div class="widget-content nopadding tab-content">
@@ -39,10 +39,10 @@
                                     <?php foreach ($clientes as $c) : ?>
                                     <?php $dataCadastro = date('d/m/Y', strtotime($c->dataCadastro)) ?>
                                     <tr>
-                                        <td><?= $c->nomeCliente ?></td>
-                                        <td align="center"><?= $c->documento ?></td>
-                                        <td align="center"><?= $c->telefone ?></td>
-                                        <td align="center"><?= $c->email ?></td>
+                                        <td><?= e($c->nomeCliente) ?></td>
+                                        <td align="center"><?= e($c->documento) ?></td>
+                                        <td align="center"><?= e($c->telefone) ?></td>
+                                        <td align="center"><?= e($c->email) ?></td>
                                         <td align="center"><?= $dataCadastro ?></td>
                                     </tr>
                                     <?php endforeach ?>

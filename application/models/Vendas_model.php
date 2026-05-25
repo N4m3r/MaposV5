@@ -237,7 +237,7 @@ class Vendas_model extends CI_Model
             foreach ($query->result_array() as $row) {
                 $row_set[] = ['label' => $row['descricao'] . ' | Preço: R$ ' . $row['precoVenda'] . ' | Estoque: ' . $row['estoque'], 'estoque' => $row['estoque'], 'id' => $row['idProdutos'], 'preco' => $row['precoVenda']];
             }
-            echo json_encode($row_set);
+            return $row_set;
         }
     }
 
@@ -252,10 +252,9 @@ class Vendas_model extends CI_Model
             foreach ($query->result_array() as $row) {
                 $row_set[] = ['label'=>$row['nomeCliente'].' | Celular: '.$row['celular'].' | Documento: '.$row['documento'],'id'=>$row['idClientes']];
             }
-            echo json_encode($row_set);
+            return $row_set;
         } else {
-            $row_set[] = ['label' => 'Adicionar cliente...', 'id' => null];
-            echo json_encode($row_set);
+            return [['label' => 'Adicionar cliente...', 'id' => null]];
         }
     }
 
@@ -270,7 +269,7 @@ class Vendas_model extends CI_Model
             foreach ($query->result_array() as $row) {
                 $row_set[] = ['label' => $row['nome'] . ' | Telefone: ' . $row['telefone'], 'id' => $row['idUsuarios']];
             }
-            echo json_encode($row_set);
+            return $row_set;
         }
     }
 

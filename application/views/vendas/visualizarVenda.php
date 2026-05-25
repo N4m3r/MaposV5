@@ -125,7 +125,7 @@
                                     <?php if ($qrCode): ?>
                                         <td style="width: 15%; padding: 0; text-align: center;">
                                             <img style="margin: 12px 0 0 0;" src="<?php echo base_url(); ?>assets/img/logo_pix.png" width="64px" alt="QR Code de Pagamento"><br>
-                                            <img style="margin: 5px 0 0 0;" width="94px" src="<?php echo $qrCode; ?>" alt="QR Code de Pagamento"><br>
+                                            <img style="margin: 5px 0 0 0;" width="94px" src="<?php echo e($qrCode); ?>" alt="QR Code de Pagamento"><br>
                                             <span style="margin: 0; font-size: 80%; text-align: center;">Chave PIX: <?php echo e($chaveFormatada); ?></span>
                                         </td>
                                     <?php endif; ?>
@@ -139,12 +139,12 @@
                                         <tr>
                                             <td><b>Status Venda: </b><?php echo e($result->status); ?></td>
                                             <td><b>Data da Venda: </b><?php echo date('d/m/Y', strtotime($result->dataVenda)); ?></td>
-                                            <td><?php if ($result->garantia): ?><b>Garantia: </b><?php echo $result->garantia . ' dia(s)'; ?><?php endif; ?></td>
+                                            <td><?php if ($result->garantia): ?><b>Garantia: </b><?php echo e($result->garantia) . ' dia(s)'; ?><?php endif; ?></td>
                                             <td><?php if (in_array($result->status, ['Finalizado', 'Faturado', 'Orçamento', 'Aberto', 'Em Andamento', 'Aguardando Peças'])): ?><b>Venc. da Garantia: </b><?php echo dateInterval($result->dataVenda, $result->garantia); ?><?php endif; ?></td>
                                         </tr>
                                     <?php endif; ?>
                                     <tr>
-                                        <td colspan="4"><b>Observações: </b><?php echo htmlspecialchars_decode(e($result->observacoes_cliente)); ?></td>
+                                        <td colspan="4"><b>Observações: </b><?php echo e($result->observacoes_cliente); ?></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -206,7 +206,7 @@
         <div class="span12" id="div-pix" style="text-align: center">
             <td style="width: 15%; padding: 0;text-align:center;">
                 <img src="<?php echo base_url(); ?>assets/img/logo_pix.png" alt="QR Code de Pagamento" /></br>
-                <img id="qrCodeImage" width="50%" src="<?= $qrCode ?>" alt="QR Code de Pagamento" /></br>
+                <img id="qrCodeImage" width="50%" src="<?= e($qrCode) ?>" alt="QR Code de Pagamento" /></br>
                 <?php echo '<span>Chave PIX: ' . e($chaveFormatada) . '</span>'; ?></br>
                 <?php if ($totalProdutos != 0) {
                     if ($result->valor_desconto != 0) {

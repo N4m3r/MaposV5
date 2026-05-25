@@ -10,15 +10,15 @@
         <div class="widget-content" style="padding: 20px">
             <form action="<?php echo site_url('mapos/pesquisar') ?>" method="get" class="form-inline">
                 <div class="span4" style="margin-left: 0">
-                    <input type="text" name="termo" class="span12" placeholder="Buscar por nome, documento, telefone, número da OS..." value="<?php echo $this->input->get('termo') ?>" />
+                    <input type="text" name="termo" class="span12" placeholder="Buscar por nome, documento, telefone, número da OS..." value="<?php echo e($this->input->get('termo')) ?>" />
                 </div>
                 <div class="span2">
                     <select name="tipo" class="span12">
-                        <option value="todos" <?php echo $this->input->get('tipo') == 'todos' ? 'selected' : '' ?>>Todos</option>
-                        <option value="clientes" <?php echo $this->input->get('tipo') == 'clientes' ? 'selected' : '' ?>>Clientes</option>
-                        <option value="os" <?php echo $this->input->get('tipo') == 'os' ? 'selected' : '' ?>>Ordens de Serviço</option>
-                        <option value="produtos" <?php echo $this->input->get('tipo') == 'produtos' ? 'selected' : '' ?>>Produtos</option>
-                        <option value="servicos" <?php echo $this->input->get('tipo') == 'servicos' ? 'selected' : '' ?>>Serviços</option>
+                        <option value="todos" <?php echo e($this->input->get('tipo') == 'todos' ? 'selected' : ''); ?>>Todos</option>
+                        <option value="clientes" <?php echo e($this->input->get('tipo') == 'clientes' ? 'selected' : ''); ?>>Clientes</option>
+                        <option value="os" <?php echo e($this->input->get('tipo') == 'os' ? 'selected' : ''); ?>>Ordens de Serviço</option>
+                        <option value="produtos" <?php echo e($this->input->get('tipo') == 'produtos' ? 'selected' : ''); ?>>Produtos</option>
+                        <option value="servicos" <?php echo e($this->input->get('tipo') == 'servicos' ? 'selected' : ''); ?>>Serviços</option>
                     </select>
                 </div>
                 <div class="span2">
@@ -62,16 +62,16 @@
                             <?php if (count($clientes) > 0): ?>
                                 <?php foreach ($clientes as $r): ?>
                                 <tr>
-                                    <td><?php echo $r->idClientes ?></td>
-                                    <td><?php echo $r->nomeCliente ?></td>
-                                    <td><?php echo $r->documento ?></td>
-                                    <td><?php echo $r->telefone ?: $r->celular ?></td>
+                                    <td><?php echo (int)$r->idClientes ?></td>
+                                    <td><?php echo e($r->nomeCliente) ?></td>
+                                    <td><?php echo e($r->documento) ?></td>
+                                    <td><?php echo e($r->telefone ?: $r->celular) ?></td>
                                     <td>
                                         <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vCliente')) { ?>
-                                            <a href="<?php echo base_url() ?>index.php/clientes/visualizar/<?php echo $r->idClientes ?>" class="btn-nwe" title="Ver mais detalhes"><i class="bx bx-show"></i></a>
+                                            <a href="<?php echo base_url() ?>index.php/clientes/visualizar/<?php echo (int)$r->idClientes ?>" class="btn-nwe" title="Ver mais detalhes"><i class="bx bx-show"></i></a>
                                         <?php } ?>
                                         <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eCliente')) { ?>
-                                            <a href="<?php echo base_url() ?>index.php/clientes/editar/<?php echo $r->idClientes ?>" class="btn-nwe3" title="Editar Cliente"><i class="bx bx-edit"></i></a>
+                                            <a href="<?php echo base_url() ?>index.php/clientes/editar/<?php echo (int)$r->idClientes ?>" class="btn-nwe3" title="Editar Cliente"><i class="bx bx-edit"></i></a>
                                         <?php } ?>
                                     </td>
                                 </tr>
@@ -126,16 +126,16 @@
                                     }
                                 ?>
                                 <tr>
-                                    <td><?php echo $r->idOs ?></td>
-                                    <td><?php echo $r->nomeCliente ?></td>
-                                    <td><span class="badge" style="background-color: <?php echo $cor ?>; border-color: <?php echo $cor ?>"><?php echo $r->status ?></span></td>
+                                    <td><?php echo (int)$r->idOs ?></td>
+                                    <td><?php echo e($r->nomeCliente) ?></td>
+                                    <td><span class="badge" style="background-color: <?php echo e($cor); ?>; border-color: <?php echo e($cor); ?>"><?php echo e($r->status) ?></span></td>
                                     <td><?php echo date('d/m/Y', strtotime($r->dataInicial)) ?></td>
                                     <td>
                                         <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vOs')) { ?>
-                                            <a href="<?php echo base_url() ?>index.php/os/visualizar/<?php echo $r->idOs ?>" class="btn-nwe" title="Ver mais detalhes"><i class="bx bx-show"></i></a>
+                                            <a href="<?php echo base_url() ?>index.php/os/visualizar/<?php echo (int)$r->idOs ?>" class="btn-nwe" title="Ver mais detalhes"><i class="bx bx-show"></i></a>
                                         <?php } ?>
                                         <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eOs')) { ?>
-                                            <a href="<?php echo base_url() ?>index.php/os/editar/<?php echo $r->idOs ?>" class="btn-nwe3" title="Editar OS"><i class="bx bx-edit"></i></a>
+                                            <a href="<?php echo base_url() ?>index.php/os/editar/<?php echo (int)$r->idOs ?>" class="btn-nwe3" title="Editar OS"><i class="bx bx-edit"></i></a>
                                         <?php } ?>
                                     </td>
                                 </tr>
@@ -178,17 +178,17 @@
                             <?php if (count($produtos) > 0): ?>
                                 <?php foreach ($produtos as $r): ?>
                                 <tr>
-                                    <td><?php echo $r->idProdutos ?></td>
-                                    <td><?php echo $r->codDeBarra ?></td>
-                                    <td><?php echo $r->descricao ?></td>
+                                    <td><?php echo (int)$r->idProdutos ?></td>
+                                    <td><?php echo e($r->codDeBarra) ?></td>
+                                    <td><?php echo e($r->descricao) ?></td>
                                     <td>R$ <?php echo number_format($r->precoVenda, 2, ',', '.') ?></td>
-                                    <td><?php echo $r->estoque ?></td>
+                                    <td><?php echo e($r->estoque) ?></td>
                                     <td>
                                         <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vProduto')) { ?>
-                                            <a href="<?php echo base_url() ?>index.php/produtos/visualizar/<?php echo $r->idProdutos ?>" class="btn-nwe" title="Ver mais detalhes"><i class="bx bx-show"></i></a>
+                                            <a href="<?php echo base_url() ?>index.php/produtos/visualizar/<?php echo (int)$r->idProdutos ?>" class="btn-nwe" title="Ver mais detalhes"><i class="bx bx-show"></i></a>
                                         <?php } ?>
                                         <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eProduto')) { ?>
-                                            <a href="<?php echo base_url() ?>index.php/produtos/editar/<?php echo $r->idProdutos ?>" class="btn-nwe3" title="Editar Produto"><i class="bx bx-edit"></i></a>
+                                            <a href="<?php echo base_url() ?>index.php/produtos/editar/<?php echo (int)$r->idProdutos ?>" class="btn-nwe3" title="Editar Produto"><i class="bx bx-edit"></i></a>
                                         <?php } ?>
                                     </td>
                                 </tr>
@@ -229,12 +229,12 @@
                             <?php if (count($servicos) > 0): ?>
                                 <?php foreach ($servicos as $r): ?>
                                 <tr>
-                                    <td><?php echo $r->idServicos ?></td>
-                                    <td><?php echo $r->nome ?></td>
+                                    <td><?php echo (int)$r->idServicos ?></td>
+                                    <td><?php echo e($r->nome) ?></td>
                                     <td>R$ <?php echo number_format($r->preco, 2, ',', '.') ?></td>
                                     <td>
                                         <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eServico')) { ?>
-                                            <a href="<?php echo base_url() ?>index.php/servicos/editar/<?php echo $r->idServicos ?>" class="btn-nwe3" title="Editar Serviço"><i class="bx bx-edit"></i></a>
+                                            <a href="<?php echo base_url() ?>index.php/servicos/editar/<?php echo (int)$r->idServicos ?>" class="btn-nwe3" title="Editar Serviço"><i class="bx bx-edit"></i></a>
                                         <?php } ?>
                                     </td>
                                 </tr>

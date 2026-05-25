@@ -213,16 +213,16 @@
                                     <td style="width: 60%; padding-left: 0">
                                         <span>
                                             <h5><b>CLIENTE</b></h5>
-                                            <span><i class='bx bxs-business'></i> <b><?php echo $result->nomeCliente ?></b></span><br />
+                                            <span><i class='bx bxs-business'></i> <b><?php echo e($result->nomeCliente) ?></b></span><br />
                                             <?php if (!empty($result->celular_cliente) || !empty($result->telefone_cliente) || !empty($result->contato_cliente)): ?>
                                                 <span><i class='bx bxs-phone'></i>
-                                                    <?= !empty($result->contato_cliente) ? $result->contato_cliente . ' ' : "" ?>
+                                                    <?= !empty($result->contato_cliente) ? e($result->contato_cliente) . ' ' : "" ?>
                                                     <?php if ($result->celular_cliente == $result->telefone_cliente) { ?>
-                                                        <?= $result->celular_cliente ?>
+                                                        <?= e($result->celular_cliente) ?>
                                                     <?php } else { ?>
-                                                        <?= !empty($result->telefone_cliente) ? $result->telefone_cliente : "" ?>
+                                                        <?= !empty($result->telefone_cliente) ? e($result->telefone_cliente) : "" ?>
                                                         <?= !empty($result->celular_cliente) && !empty($result->telefone_cliente) ? ' / ' : "" ?>
-                                                        <?= !empty($result->celular_cliente) ? $result->celular_cliente : "" ?>
+                                                        <?= !empty($result->celular_cliente) ? e($result->celular_cliente) : "" ?>
                                                     <?php } ?>
                                                 </span></br>
                                             <?php endif; ?>
@@ -231,15 +231,15 @@
                                             $endereco = implode(', ', $retorno_end);
                                             echo '<i class="fas fa-map-marker-alt"></i> ';
                                             if (!empty($endereco)) {
-                                                echo $endereco;
+                                                echo e($endereco);
                                             }
                                             if (!empty($result->cidade) || !empty($result->estado) || !empty($result->cep)) {
-                                                echo "<span> {$result->cep}, {$result->cidade}/{$result->estado}</span><br>";
+                                                echo "<span>" . e("{$result->cep}, {$result->cidade}/{$result->estado}") . "</span><br>";
                                             }
                                             ?>
                                             <?php if (!empty($result->email)): ?>
                                                 <span><i class="fas fa-envelope"></i>
-                                                    <?php echo $result->email ?></span><br>
+                                                    <?php echo e($result->email) ?></span><br>
                                             <?php endif; ?>
                                         </span>
                                     </td>
@@ -250,11 +250,11 @@
                                                     <h5><b>RESPONSÁVEL</b></h5>
                                                 </span>
                                                 <span><b><i class="fas fa-user"></i>
-                                                        <?php echo $result->nome ?></b></span><br />
+                                                        <?php echo e($result->nome) ?></b></span><br />
                                                 <span><i class="fas fa-phone"></i>
-                                                    <?php echo $result->telefone_usuario ?></span><br />
+                                                    <?php echo e($result->telefone_usuario) ?></span><br />
                                                 <span><i class="fas fa-envelope"></i>
-                                                    <?php echo $result->email_usuario ?></span>
+                                                    <?php echo e($result->email_usuario) ?></span>
                                             </li>
                                         </ul>
                                     </td>
@@ -271,7 +271,7 @@
                                     <tr>
                                         <td>
                                             <b>STATUS OS: </b><br>
-                                            <?php echo $result->status ?>
+                                            <?php echo e($result->status) ?>
                                         </td>
 
                                         <td>
@@ -286,7 +286,7 @@
 
                                         <td>
                                             <?php if ($result->garantia) { ?>
-                                                <b>GARANTIA: </b><br><?php echo $result->garantia . ' dia(s)'; ?>
+                                                <b>GARANTIA: </b><br><?php echo e($result->garantia) . ' dia(s)'; ?>
                                             <?php } ?>
                                         </td>
 
@@ -370,10 +370,10 @@
                                         <div class="timeline-item" style="border-left: 2px solid #2d335b; padding-left: 15px; margin-bottom: 15px; position: relative;">
                                             <div style="position: absolute; left: -6px; top: 0; width: 10px; height: 10px; border-radius: 50%; background: #2d335b;"></div>
                                             <div class="timeline-content">
-                                                <p><strong>Técnico:</strong> <?php echo $checkin->nome_tecnico; ?></p>
+                                                <p><strong>Técnico:</strong> <?php echo e($checkin->nome_tecnico); ?></p>
                                                 <p><strong>Entrada:</strong> <?php echo date('d/m/Y H:i', strtotime($checkin->data_entrada)); ?>
                                                     <?php if ($checkin->latitude_entrada && $checkin->longitude_entrada) { ?>
-                                                        <a href="https://www.google.com/maps?q=<?php echo $checkin->latitude_entrada; ?>,<?php echo $checkin->longitude_entrada; ?>" target="_blank" class="btn btn-mini" title="Ver no mapa">
+                                                        <a href="https://www.google.com/maps?q=<?php echo e($checkin->latitude_entrada); ?>,<?php echo e($checkin->longitude_entrada); ?>" target="_blank" class="btn btn-mini" title="Ver no mapa">
                                                             <i class="bx bx-map"></i>
                                                         </a>
                                                     <?php } ?>
@@ -382,7 +382,7 @@
                                                 <?php if ($checkin->data_saida) { ?>
                                                 <p><strong>Saída:</strong> <?php echo date('d/m/Y H:i', strtotime($checkin->data_saida)); ?>
                                                     <?php if ($checkin->latitude_saida && $checkin->longitude_saida) { ?>
-                                                        <a href="https://www.google.com/maps?q=<?php echo $checkin->latitude_saida; ?>,<?php echo $checkin->longitude_saida; ?>" target="_blank" class="btn btn-mini" title="Ver no mapa">
+                                                        <a href="https://www.google.com/maps?q=<?php echo e($checkin->latitude_saida); ?>,<?php echo e($checkin->longitude_saida); ?>" target="_blank" class="btn btn-mini" title="Ver no mapa">
                                                             <i class="bx bx-map"></i>
                                                         </a>
                                                     <?php } ?>
@@ -401,11 +401,11 @@
                                                 <?php } ?>
 
                                                 <?php if ($checkin->observacao_entrada) { ?>
-                                                <p><strong>Obs. Entrada:</strong> <?php echo nl2br($checkin->observacao_entrada); ?></p>
+                                                <p><strong>Obs. Entrada:</strong> <?php echo nl2br(e($checkin->observacao_entrada)); ?></p>
                                                 <?php } ?>
 
                                                 <?php if ($checkin->observacao_saida) { ?>
-                                                <p><strong>Obs. Saída:</strong> <?php echo nl2br($checkin->observacao_saida); ?></p>
+                                                <p><strong>Obs. Saída:</strong> <?php echo nl2br(e($checkin->observacao_saida)); ?></p>
                                                 <?php } ?>
                                             </div>
                                         </div>
@@ -423,10 +423,10 @@
                                         <div class="timeline-item" style="border-left: 2px solid #667eea; padding-left: 15px; margin-bottom: 15px; position: relative;">
                                             <div style="position: absolute; left: -6px; top: 0; width: 10px; height: 10px; border-radius: 50%; background: #667eea;"></div>
                                             <div class="timeline-content">
-                                                <p><strong>Tecnico:</strong> <?php echo $execucao->tecnico_nome ?? 'Tecnico'; ?></p>
+                                                <p><strong>Tecnico:</strong> <?php echo e($execucao->tecnico_nome ?? 'Tecnico'); ?></p>
                                                 <p><strong>Check-in:</strong> <?php echo $execucao->checkin_horario ? date('d/m/Y H:i', strtotime($execucao->checkin_horario)) : '-'; ?>
                                                     <?php if ($execucao->checkin_latitude && $execucao->checkin_longitude) { ?>
-                                                        <a href="https://www.google.com/maps?q=<?php echo $execucao->checkin_latitude; ?>,<?php echo $execucao->checkin_longitude; ?>" target="_blank" class="btn btn-mini" title="Ver no mapa">
+                                                        <a href="https://www.google.com/maps?q=<?php echo e($execucao->checkin_latitude); ?>,<?php echo e($execucao->checkin_longitude); ?>" target="_blank" class="btn btn-mini" title="Ver no mapa">
                                                             <i class="bx bx-map"></i>
                                                         </a>
                                                     <?php } ?>
@@ -435,7 +435,7 @@
                                                 <?php if ($execucao->checkout_horario) { ?>
                                                 <p><strong>Check-out:</strong> <?php echo date('d/m/Y H:i', strtotime($execucao->checkout_horario)); ?>
                                                     <?php if ($execucao->checkout_latitude && $execucao->checkout_longitude) { ?>
-                                                        <a href="https://www.google.com/maps?q=<?php echo $execucao->checkout_latitude; ?>,<?php echo $execucao->checkout_longitude; ?>" target="_blank" class="btn btn-mini" title="Ver no mapa">
+                                                        <a href="https://www.google.com/maps?q=<?php echo e($execucao->checkout_latitude); ?>,<?php echo e($execucao->checkout_longitude); ?>" target="_blank" class="btn btn-mini" title="Ver no mapa">
                                                             <i class="bx bx-map"></i>
                                                         </a>
                                                     <?php } ?>
@@ -459,10 +459,10 @@
                                                 <?php if ($execucao->checklist_json) { ?>
                                                     <?php $checklist = json_decode($execucao->checklist_json, true); ?>
                                                     <?php if (!empty($checklist['observacoes'])) { ?>
-                                                    <p><strong>Observacoes:</strong> <?php echo nl2br($checklist['observacoes']); ?></p>
+                                                    <p><strong>Observacoes:</strong> <?php echo nl2br(e($checklist['observacoes'])); ?></p>
                                                     <?php } ?>
                                                     <?php if (!empty($checklist['nome_cliente_assina'])) { ?>
-                                                    <p><strong>Assinado por:</strong> <?php echo $checklist['nome_cliente_assina']; ?></p>
+                                                    <p><strong>Assinado por:</strong> <?php echo e($checklist['nome_cliente_assina']); ?></p>
                                                     <?php } ?>
                                                 <?php } ?>
                                             </div>
@@ -479,14 +479,14 @@
                                     <div class="fotos-grid">
                                         <?php foreach ($fotosTecnico as $foto) { ?>
                                         <div class="foto-item">
-                                            <a href="<?php echo base_url($foto->caminho); ?>" target="_blank" class="foto-link">
-                                                <img src="<?php echo base_url($foto->caminho); ?>" alt="Foto tecnico" style="max-height: 150px;">
+                                            <a href="<?php echo e(base_url($foto->caminho)); ?>" target="_blank" class="foto-link">
+                                                <img src="<?php echo e(base_url($foto->caminho)); ?>" alt="Foto tecnico" style="max-height: 150px;">
                                             </a>
                                             <?php if ($foto->descricao) { ?>
-                                            <p class="foto-descricao"><?php echo $foto->descricao; ?></p>
+                                            <p class="foto-descricao"><?php echo e($foto->descricao); ?></p>
                                             <?php } ?>
                                             <p class="foto-descricao" style="font-size: 10px;">
-                                                <?php echo $foto->tipo ?? 'Foto'; ?> - <?php echo $foto->tecnico_nome ?? 'Tecnico'; ?>
+                                                <?php echo e($foto->tipo ?? 'Foto'); ?> - <?php echo e($foto->tecnico_nome ?? 'Tecnico'); ?>
                                                 <?php if ($foto->data_envio) echo ' - ' . date('d/m/Y H:i', strtotime($foto->data_envio)); ?>
                                             </p>
                                         </div>
@@ -518,18 +518,18 @@
                                         <div class="fotos-grid">
                                             <?php foreach ($fotosPorEtapa['entrada'] as $foto) { ?>
                                             <div class="foto-item" id="foto-item-<?php echo $foto->idFoto; ?>">
-                                                <a href="<?php echo $foto->url; ?>" target="_blank" class="foto-link">
-                                                    <img src="<?php echo $foto->url; ?>" alt="Foto de entrada">
+                                                <a href="<?php echo e($foto->url); ?>" target="_blank" class="foto-link">
+                                                    <img src="<?php echo e($foto->url); ?>" alt="Foto de entrada">
                                                 </a>
                                                 <?php if ($foto->descricao) { ?>
-                                                <p class="foto-descricao"><?php echo $foto->descricao; ?></p>
+                                                <p class="foto-descricao"><?php echo e($foto->descricao); ?></p>
                                                 <?php } ?>
                                                 <div class="foto-acoes">
                                                     <a href="<?php echo site_url('checkin/downloadFoto/' . $foto->idFoto); ?>" class="btn btn-mini" title="Download">
                                                         <i class="bx bx-download"></i>
                                                     </a>
                                                     <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eOs')) { ?>
-                                                    <button type="button" class="btn btn-mini btn-danger btn-remover-foto" data-foto-id="<?php echo $foto->idFoto; ?>" title="Remover">
+                                                    <button type="button" class="btn btn-mini btn-danger btn-remover-foto" data-foto-id="<?php echo e($foto->idFoto); ?>" title="Remover">
                                                         <i class="bx bx-trash"></i>
                                                     </button>
                                                     <?php } ?>
@@ -546,18 +546,18 @@
                                         <div class="fotos-grid">
                                             <?php foreach ($fotosPorEtapa['durante'] as $foto) { ?>
                                             <div class="foto-item">
-                                                <a href="<?php echo $foto->url; ?>" target="_blank" class="foto-link">
-                                                    <img src="<?php echo $foto->url; ?>" alt="Foto durante atendimento">
+                                                <a href="<?php echo e($foto->url); ?>" target="_blank" class="foto-link">
+                                                    <img src="<?php echo e($foto->url); ?>" alt="Foto durante atendimento">
                                                 </a>
                                                 <?php if ($foto->descricao) { ?>
-                                                <p class="foto-descricao"><?php echo $foto->descricao; ?></p>
+                                                <p class="foto-descricao"><?php echo e($foto->descricao); ?></p>
                                                 <?php } ?>
                                                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eOs')) { ?>
                                                 <div class="foto-acoes">
                                                     <a href="<?php echo site_url('checkin/downloadFoto/' . $foto->idFoto); ?>" class="btn btn-mini" title="Download">
                                                         <i class="bx bx-download"></i>
                                                     </a>
-                                                    <button type="button" class="btn btn-mini btn-danger btn-remover-foto" data-foto-id="<?php echo $foto->idFoto; ?>" title="Remover">
+                                                    <button type="button" class="btn btn-mini btn-danger btn-remover-foto" data-foto-id="<?php echo e($foto->idFoto); ?>" title="Remover">
                                                         <i class="bx bx-trash"></i>
                                                     </button>
                                                 </div>
@@ -587,18 +587,18 @@
                                         <div class="fotos-grid">
                                             <?php foreach ($fotosPorEtapa['saida'] as $foto) { ?>
                                             <div class="foto-item" id="foto-item-<?php echo $foto->idFoto; ?>">
-                                                <a href="<?php echo $foto->url; ?>" target="_blank" class="foto-link">
-                                                    <img src="<?php echo $foto->url; ?>" alt="Foto de saída">
+                                                <a href="<?php echo e($foto->url); ?>" target="_blank" class="foto-link">
+                                                    <img src="<?php echo e($foto->url); ?>" alt="Foto de saída">
                                                 </a>
                                                 <?php if ($foto->descricao) { ?>
-                                                <p class="foto-descricao"><?php echo $foto->descricao; ?></p>
+                                                <p class="foto-descricao"><?php echo e($foto->descricao); ?></p>
                                                 <?php } ?>
                                                 <div class="foto-acoes">
                                                     <a href="<?php echo site_url('checkin/downloadFoto/' . $foto->idFoto); ?>" class="btn btn-mini" title="Download">
                                                         <i class="bx bx-download"></i>
                                                     </a>
                                                     <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eOs')) { ?>
-                                                    <button type="button" class="btn btn-mini btn-danger btn-remover-foto" data-foto-id="<?php echo $foto->idFoto; ?>" title="Remover">
+                                                    <button type="button" class="btn btn-mini btn-danger btn-remover-foto" data-foto-id="<?php echo e($foto->idFoto); ?>" title="Remover">
                                                         <i class="bx bx-trash"></i>
                                                     </button>
                                                     <?php } ?>
@@ -624,7 +624,7 @@
                                                 // Sempre usar url_visualizacao que aponta para verAssinatura (igual ao relatorio_execucao)
                                                 $img_src = $assinatura->url_visualizacao ?? base_url('index.php/checkin/verAssinatura/' . $assinatura->idAssinatura);
                                                 ?>
-                                                <img src="<?php echo $img_src; ?>" alt="Assinatura" style="max-width: 100%; height: auto; max-height: 100px;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                                <img src="<?php echo e($img_src); ?>" alt="Assinatura" style="max-width: 100%; height: auto; max-height: 100px;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                                                 <div style="display: none; padding: 10px; background: #f8f9fa; border-radius: 4px; text-align: center; color: #666;">
                                                     <i class="bx bx-image-alt" style="font-size: 1.5rem; margin-bottom: 5px; display: block;"></i>
                                                     <small>Assinatura salva</small>
@@ -643,16 +643,16 @@
                                                                 echo 'Cliente';
                                                                 break;
                                                             default:
-                                                                echo $assinatura->tipo;
+                                                                echo e($assinatura->tipo);
                                                         }
                                                         ?>
                                                     </strong>
                                                 </p>
                                                 <?php if ($assinatura->nome_assinante) { ?>
                                                 <p style="font-size: 11px; color: #666;">
-                                                    <?php echo $assinatura->nome_assinante; ?>
+                                                    <?php echo e($assinatura->nome_assinante); ?>
                                                     <?php if ($assinatura->documento_assinante) { ?>
-                                                    <br><small><?php echo $assinatura->documento_assinante; ?></small>
+                                                    <br><small><?php echo e($assinatura->documento_assinante); ?></small>
                                                     <?php } ?>
                                                 </p>
                                                 <?php } ?>
@@ -661,7 +661,7 @@
                                                 </p>
                                                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eOs')) { ?>
                                                 <p style="margin-top: 8px;">
-                                                    <button type="button" class="btn btn-mini btn-danger btn-remover-assinatura" data-assinatura-id="<?php echo $assinatura->idAssinatura; ?>" title="Remover Assinatura">
+                                                    <button type="button" class="btn btn-mini btn-danger btn-remover-assinatura" data-assinatura-id="<?php echo e($assinatura->idAssinatura); ?>" title="Remover Assinatura">
                                                         <i class="bx bx-trash"></i> Excluir
                                                     </button>
                                                 </p>
@@ -687,7 +687,7 @@
                                 <tbody>
                                     <?php foreach ($anotacoes as $a) {
                                         echo '<tr>';
-                                        echo '<td>' . $a->anotacao . '</td>';
+                                        echo '<td>' . e($a->anotacao) . '</td>';
                                         echo '<td>' . date('d/m/Y H:i:s', strtotime($a->data_hora)) . '</td>';
                                         echo '</tr>';
                                     }
@@ -715,7 +715,7 @@
                                                 $thumb = $a->url . '/thumbs/' . $a->thumb;
                                                 $link = $a->url . '/' . $a->anexo;
                                             }
-                                            echo '<div class="span3" style="min-height: 150px; margin-left: 0"><a style="min-height: 150px;" href="#modal-anexo" imagem="' . $a->idAnexos . '" link="' . $link . '" role="button" class="btn anexo span12" data-toggle="modal"><img src="' . $thumb . '" alt=""></a></div>';
+                                            echo '<div class="span3" style="min-height: 150px; margin-left: 0"><a style="min-height: 150px;" href="#modal-anexo" imagem="' . e($a->idAnexos) . '" link="' . e($link) . '" role="button" class="btn anexo span12" data-toggle="modal"><img src="' . e($thumb) . '" alt=""></a></div>';
                                         } ?>
                                     </th>
                                 </tbody>
@@ -738,7 +738,7 @@
                                 <tbody>
                                     <?php foreach ($produtos as $p) {
                                         echo '<tr>';
-                                        echo '<td>' . $p->descricao . '</td>';
+                                        echo '<td>' . e($p->descricao) . '</td>';
                                         echo '<td>' . $p->quantidade . '</td>';
                                         if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eOs')) {
                                             echo '<td>R$ ' . $p->preco ?: $p->precoVenda . '</td>';
@@ -775,7 +775,7 @@
                                         $preco = $s->preco ?: $s->precoVenda;
                                         $subtotal = $preco * ($s->quantidade ?: 1);
                                         echo '<tr>';
-                                        echo '<td>' . $s->nome . '</td>';
+                                        echo '<td>' . e($s->nome) . '</td>';
                                         echo '<td>' . ($s->quantidade ?: 1) . '</td>';
                                         if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eOs')) {
                                             echo '<td>R$ ' . $preco . '</td>';
@@ -835,9 +835,9 @@
                                         <tr>
                                             <td>
                                                 <i class="bx <?= $doc['tipo_icon'] ?>"></i>
-                                                <?= $doc['tipo_label'] ?>
+                                                <?= e($doc['tipo_label']) ?>
                                             </td>
-                                            <td><?= $doc['numero'] ?></td>
+                                            <td><?= e($doc['numero']) ?></td>
                                             <td><?= date('d/m/Y', strtotime($doc['data'])) ?></td>
                                             <td class="text-right">
                                                 R$ <?= number_format($doc['valor'], 2, ',', '.') ?>
@@ -871,7 +871,7 @@
                                                         $statusClass .= ' label-info';
                                                 }
                                                 ?>
-                                                <span class="<?= $statusClass ?>"><?= $doc['status'] ?></span>
+                                                <span class="<?= $statusClass ?>"><?= e($doc['status']) ?></span>
                                             </td>
                                             <td class="text-center">
                                                 <?php if ($doc['tipo'] == 'cobranca') { ?>
@@ -1033,8 +1033,8 @@
             <td style="width: 15%; padding: 0;text-align:center;">
                 <img src="<?php echo base_url(); ?>assets/img/logo_pix.png" alt="QR Code de Pagamento" /></br>
                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eOs')) { ?>
-                <img id="qrCodeImage" width="50%" src="<?= $qrCode ?>" alt="QR Code de Pagamento" /></br>
-                <?php echo '<span>Chave PIX: ' . $chaveFormatada . '</span>'; ?></br>
+                <img id="qrCodeImage" width="50%" src="<?= e($qrCode) ?>" alt="QR Code de Pagamento" /></br>
+                <?php echo '<span>Chave PIX: ' . e($chaveFormatada) . '</span>'; ?></br>
                 <?php if ($totalProdutos != 0 || $totalServico != 0) {
                     if ($result->valor_desconto != 0) {
                         echo "Valor Total: R$ " . number_format($result->valor_desconto, 2, ',', '.');
@@ -1644,8 +1644,8 @@ $(document).ready(function() {
             <!-- Resumo da OS -->
             <div class="mobile-os-info">
                 <h4><i class="bx bx-file"></i> OS #<?= sprintf('%04d', $result->idOs) ?></h4>
-                <p><strong>Cliente:</strong> <?= $result->nomeCliente ?></p>
-                <p><strong>Status:</strong> <?= $result->status ?></p>
+                <p><strong>Cliente:</strong> <?= e($result->nomeCliente) ?></p>
+                <p><strong>Status:</strong> <?= e($result->status) ?></p>
             </div>
 
             <!-- checklist de verificação -->

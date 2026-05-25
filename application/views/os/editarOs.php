@@ -21,7 +21,7 @@
                             <span class="button__icon"><i class='bx bx-dollar'></i></span> <span class="button__text">Faturar</span>
                         </a>
                     <?php } ?>
-                    <a title="Visualizar OS" class="button btn btn-primary" href="<?php echo site_url() ?>/os/visualizar/<?php echo $result->idOs; ?>">
+                    <a title="Visualizar OS" class="button btn btn-primary" href="<?php echo site_url() ?>/os/visualizar/<?php echo (int)$result->idOs; ?>">
                         <span class="button__icon"><i class="bx bx-show"></i></span><span class="button__text">Visualizar OS</span>
                     </a>
                     <div class="button-container">
@@ -29,14 +29,14 @@
                             <span class="button__icon"><i class="bx bx-printer"></i></span><span class="button__text">Imprimir</span>
                         </a>
                         <div class="cascading-buttons">
-                            <a target="_blank" title="Impressão em Papel A4" class="button btn btn-mini btn-inverse" href="<?php echo site_url() ?>/os/imprimir/<?php echo $result->idOs; ?>">
+                            <a target="_blank" title="Impressão em Papel A4" class="button btn btn-mini btn-inverse" href="<?php echo site_url() ?>/os/imprimir/<?php echo (int)$result->idOs; ?>">
                                 <span class="button__icon"><i class='bx bx-file'></i></span> <span class="button__text">Papel A4</span>
                             </a>
-                            <a target="_blank" title="Impressão Cupom Não Fical" class="button btn btn-mini btn-inverse" href="<?php echo site_url() ?>/os/imprimirTermica/<?php echo $result->idOs; ?>">
+                            <a target="_blank" title="Impressão Cupom Não Fical" class="button btn btn-mini btn-inverse" href="<?php echo site_url() ?>/os/imprimirTermica/<?php echo (int)$result->idOs; ?>">
                                 <span class="button__icon"><i class='bx bx-receipt'></i></span> <span class="button__text">Cupom 80mm</span>
                             </a>
                             <?php if ($result->garantias_id) { ?>
-                                <a target="_blank" title="Imprimir Termo de Garantia" class="button btn btn-mini btn-inverse" href="<?php echo site_url() ?>/garantias/imprimirGarantiaOs/<?php echo $result->garantias_id; ?>">
+                                <a target="_blank" title="Imprimir Termo de Garantia" class="button btn btn-mini btn-inverse" href="<?php echo site_url() ?>/garantias/imprimirGarantiaOs/<?php echo (int)$result->garantias_id; ?>">
                                     <span class="button__icon"><i class="bx bx-paperclip"></i></span> <span class="button__text">Termo Garantia</span>
                                 </a>
                             <?php } ?>
@@ -53,7 +53,7 @@
                             </a>';
                         }
                     } ?>
-                    <a title="Enviar por E-mail" class="button btn btn-mini btn-warning" href="<?php echo site_url() ?>/os/enviar_email/<?php echo $result->idOs; ?>">
+                    <a title="Enviar por E-mail" class="button btn btn-mini btn-warning" href="<?php echo site_url() ?>/os/enviar_email/<?php echo (int)$result->idOs; ?>">
                         <span class="button__icon"><i class="bx bx-envelope"></i></span> <span class="button__text">Via E-mail</span>
                     </a>
                 </div>
@@ -75,17 +75,17 @@
                                 <form action="<?php echo current_url(); ?>" method="post" id="formOs">
                                     <?php echo form_hidden('idOs', $result->idOs) ?>
                                     <div class="span12" style="padding: 1%; margin-left: 0">
-                                        <h3>N° OS: <?php echo $result->idOs; ?></h3>
+                                        <h3>N° OS: <?php echo e($result->idOs); ?></h3>
                                         <div class="span6" style="margin-left: 0">
                                             <label for="cliente">Cliente<span class="required">*</span></label>
                                             <input id="cliente" class="span12" type="text" name="cliente" value="<?php echo e($result->nomeCliente) ?>" />
-                                            <input id="clientes_id" class="span12" type="hidden" name="clientes_id" value="<?php echo $result->clientes_id ?>" />
+                                            <input id="clientes_id" class="span12" type="hidden" name="clientes_id" value="<?php echo e($result->clientes_id) ?>" />
                                             <input id="valor" type="hidden" name="valor" value="" />
                                         </div>
                                         <div class="span6">
                                             <label for="tecnico">Técnico / Responsável<span class="required">*</span></label>
                                             <input id="tecnico" class="span12" type="text" name="tecnico" value="<?php echo e($result->nome) ?>" />
-                                            <input id="usuarios_id" class="span12" type="hidden" name="usuarios_id" value="<?php echo $result->usuarios_id ?>" />
+                                            <input id="usuarios_id" class="span12" type="hidden" name="usuarios_id" value="<?php echo e($result->usuarios_id) ?>" />
                                         </div>
                                     </div>
                                     <div class="span12" style="padding: 1%; margin-left: 0">
@@ -113,11 +113,11 @@
                                         </div>
                                         <div class="span3">
                                             <label for="garantia">Garantia (dias)</label>
-                                            <input id="garantia" type="number" placeholder="Status s/g inserir nº/0" min="0" max="9999" class="span12" name="garantia" value="<?php echo $result->garantia ?>" />
+                                            <input id="garantia" type="number" placeholder="Status s/g inserir nº/0" min="0" max="9999" class="span12" name="garantia" value="<?php echo e($result->garantia) ?>" />
                                             <?php echo form_error('garantia'); ?>
                                             <label for="termoGarantia">Termo Garantia</label>
                                             <input id="termoGarantia" class="span12" type="text" name="termoGarantia" value="<?php echo e($result->refGarantia) ?>" />
-                                            <input id="garantias_id" class="span12" type="hidden" name="garantias_id" value="<?php echo $result->garantias_id ?>" />
+                                            <input id="garantias_id" class="span12" type="hidden" name="garantias_id" value="<?php echo e($result->garantias_id) ?>" />
                                         </div>
                                     </div>
                                     <div class="span6" style="padding: 1%; margin-left: 0">
@@ -168,15 +168,15 @@
                                     </div>
                                     <div class="span3">
                                         <input type="hidden" name="idOs" id="idOs"
-                                            value="<?php echo $result->idOs; ?>" />
+                                            value="<?php echo e($result->idOs); ?>" />
                                         <label for="">Desconto</label>
                                         <input style="width: 4em;" id="desconto" name="desconto" type="text"
-                                            placeholder="" maxlength="6" size="2" value="<?= $result->desconto ?>" />
+                                            placeholder="" maxlength="6" size="2" value="<?= e($result->desconto) ?>" />
                                         <strong><span style="color: red" id="errorAlert"></span></strong>
                                     </div>
                                     <div class="span2">
                                         <label for="">Total com Desconto</label>
-                                        <input class="span12 money" id="resultado" type="text" data-affixes-stay="true" data-thousands="" data-decimal="." name="resultado" value="<?php echo $result->valor_desconto ?>" readonly />
+                                        <input class="span12 money" id="resultado" type="text" data-affixes-stay="true" data-thousands="" data-decimal="." name="resultado" value="<?php echo e($result->valor_desconto) ?>" readonly />
                                     </div>
                                     <div class="span2">
                                         <label for="">&nbsp;</label>
@@ -194,7 +194,7 @@
                                 <form id="formProdutos" action="<?php echo base_url() ?>index.php/os/adicionarProduto" method="post">
                                     <div class="span6">
                                         <input type="hidden" name="idProduto" id="idProduto" />
-                                        <input type="hidden" name="idOsProduto" id="idOsProduto" value="<?php echo $result->idOs; ?>" />
+                                        <input type="hidden" name="idOsProduto" id="idOsProduto" value="<?php echo e($result->idOs); ?>" />
                                         <input type="hidden" name="estoque" id="estoque" value="" />
                                         <label for="">Produto</label>
                                         <input type="text" class="span12" name="produto" id="produto" placeholder="Digite o nome do produto" />
@@ -285,7 +285,7 @@
                                     <div class="span6">
                                         <input type="hidden" name="idServico" id="idServico" />
                                         <input type="hidden" name="idOsServico" id="idOsServico"
-                                            value="<?php echo $result->idOs; ?>" />
+                                            value="<?php echo e($result->idOs); ?>" />
                                         <label for="">Serviço</label>
                                         <input type="text" class="span12" name="servico" id="servico"
                                             placeholder="Digite o nome do serviço" />
@@ -367,7 +367,7 @@
                                         accept-charset="utf-8" s method="post">
                                         <div class="span10">
                                             <input type="hidden" name="idOsServico" id="idOsServico"
-                                                value="<?php echo $result->idOs; ?>" />
+                                                value="<?php echo e($result->idOs); ?>" />
                                             <label for="">Anexo</label>
                                             <input type="file" class="span12" name="userfile[]" multiple="multiple"
                                                 size="20" />
@@ -637,7 +637,7 @@
             <div class="span12" style="margin-left: 0">
                 <label for="anotacao">Anotação</label>
                 <textarea class="span12" name="anotacao" id="anotacao" cols="30" rows="3"></textarea>
-                <input type="hidden" name="os_id" value="<?php echo $result->idOs; ?>">
+                <input type="hidden" name="os_id" value="<?php echo e($result->idOs); ?>">
             </div>
         </div>
         <div class="modal-footer" style="display:flex;justify-content: center">
@@ -661,17 +661,17 @@
             <div class="span12" style="margin-left: 0">
                 <label for="descricao">Descrição</label>
                 <input class="span12" id="descricao" type="text" name="descricao"
-                    value="Fatura de OS Nº: <?php echo $result->idOs; ?> " />
+                    value="Fatura de OS Nº: <?php echo e($result->idOs); ?> " />
             </div>
             <div class="span12" style="margin-left: 0">
                 <div class="span12" style="margin-left: 0">
                     <label for="cliente">Cliente*</label>
                     <input class="span12" id="cliente" type="text" name="cliente"
                         value="<?php echo e($result->nomeCliente) ?>" />
-                    <input type="hidden" name="clientes_id" id="clientes_id" value="<?php echo $result->clientes_id ?>">
-                    <input type="hidden" name="os_id" id="os_id" value="<?php echo $result->idOs; ?>">
+                    <input type="hidden" name="clientes_id" id="clientes_id" value="<?php echo e($result->clientes_id) ?>">
+                    <input type="hidden" name="os_id" id="os_id" value="<?php echo e($result->idOs); ?>">
                     <input type="hidden" name="tipoDesconto" id="tipoDesconto"
-                        value="<?php echo $result->tipo_desconto; ?>">
+                        value="<?php echo e($result->tipo_desconto); ?>">
                 </div>
             </div>
             <div class="span12" style="margin-left: 0">
@@ -942,7 +942,7 @@
                             text: response.messages
                         });
                         setTimeout(function () {
-                            window.location.href = window.BaseUrl + 'index.php/os/editar/' + <?php echo $result->idOs ?>;
+                            window.location.href = window.BaseUrl + 'index.php/os/editar/' + <?php echo (int)$result->idOs; ?>;
                         }, 2000);
                     } else {
                         Swal.fire({
@@ -1307,7 +1307,7 @@
             var idProduto = $(this).attr('idAcao');
             var quantidade = $(this).attr('quantAcao');
             var produto = $(this).attr('prodAcao');
-            var idOS = "<?php echo $result->idOs ?>"
+            var idOS = "<?php echo (int)$result->idOs; ?>"
             if ((idProduto % 1) == 0) {
                 $("#divProdutos").html("<div class='progress progress-info progress-striped active'><div class='bar' style='width: 100%'></div></div>");
                 $.ajax({
@@ -1338,7 +1338,7 @@
 
         $(document).on('click', '.servico', function (event) {
             var idServico = $(this).attr('idAcao');
-            var idOS = "<?php echo $result->idOs ?>"
+            var idOS = "<?php echo (int)$result->idOs; ?>"
             if ((idServico % 1) == 0) {
                 $("#divServicos").html("<div class='progress progress-info progress-striped active'><div class='bar' style='width: 100%'></div></div>");
                 $.ajax({
@@ -1381,7 +1381,7 @@
         $(document).on('click', '#excluir-anexo', function (event) {
             event.preventDefault();
             var link = $(this).attr('link');
-            var idOS = "<?php echo $result->idOs ?>"
+            var idOS = "<?php echo (int)$result->idOs; ?>"
             $('#modal-anexo').modal('hide');
             $("#divAnexos").html("<div class='progress progress-info progress-striped active'><div class='bar' style='width: 100%'></div></div>");
 
@@ -1406,7 +1406,7 @@
 
         $(document).on('click', '.anotacao', function (event) {
             var idAnotacao = $(this).attr('idAcao');
-            var idOS = "<?php echo $result->idOs ?>"
+            var idOS = "<?php echo (int)$result->idOs; ?>"
             if ((idAnotacao % 1) == 0) {
                 $("#divAnotacoes").html("<div class='progress progress-info progress-striped active'><div class='bar' style='width: 100%'></div></div>");
                 $.ajax({
@@ -1447,9 +1447,9 @@
         // Configuração
         var checkinConfig = {
             baseUrl: '<?php echo base_url(); ?>',
-            os_id: <?php echo $result->idOs; ?>,
-            usuario_id: '<?php echo $this->session->userdata('id_admin'); ?>',
-            usuario_nome: '<?php echo $this->session->userdata('nome'); ?>'
+            os_id: <?php echo (int)$result->idOs; ?>,
+            usuario_id: <?php echo json_encode($this->session->userdata('id_admin'), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>,
+            usuario_nome: <?php echo json_encode($this->session->userdata('nome'), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>
         };
 
         // Variáveis de estado
@@ -1660,7 +1660,7 @@
                 return;
             }
 
-            var nomeCliente = $('#assinatura-cliente-nome').val() || '<?php echo addslashes($result->nomeCliente); ?>' || 'Cliente';
+            var nomeCliente = $('#assinatura-cliente-nome').val() || <?php echo json_encode($result->nomeCliente, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?> || 'Cliente';
             var documentoCliente = $('#assinatura-cliente-documento').val() || '';
 
             var dados = {
@@ -1840,8 +1840,8 @@
 
             // Pré-preenche o nome do cliente se for o modal de assinatura do cliente
             if (modalId === 'modal-assinatura-cliente') {
-                var nomeCliente = '<?php echo addslashes($result->nomeCliente); ?>';
-                var documentoCliente = '<?php echo addslashes($result->documento ?? $result->cpf ?? ''); ?>';
+                var nomeCliente = <?php echo json_encode($result->nomeCliente, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
+                var documentoCliente = <?php echo json_encode($result->documento ?? $result->cpf ?? '', JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
 
                 // Se o campo estiver vazio, preenche com o nome da OS
                 var campoNome = $('#' + modalId + ' .modal-assinatura-nome');
@@ -2001,7 +2001,7 @@
     </div>
     <div class="modal-body">
         <input type="hidden" id="editar-idProdutoOs" />
-        <input type="hidden" id="editar-idOsProduto" value="<?php echo $result->idOs; ?>" />
+        <input type="hidden" id="editar-idOsProduto" value="<?php echo e($result->idOs); ?>" />
         <div class="span12" style="margin-left: 0">
             <label><strong>Produto:</strong></label>
             <span id="editar-descricao-produto" class="uneditable-input span12"></span>
@@ -2030,7 +2030,7 @@
     </div>
     <div class="modal-body">
         <input type="hidden" id="editar-idServicoOs" />
-        <input type="hidden" id="editar-idOsServico" value="<?php echo $result->idOs; ?>" />
+        <input type="hidden" id="editar-idOsServico" value="<?php echo e($result->idOs); ?>" />
         <div class="span12" style="margin-left: 0">
             <label><strong>Serviço:</strong></label>
             <span id="editar-nome-servico" class="uneditable-input span12"></span>

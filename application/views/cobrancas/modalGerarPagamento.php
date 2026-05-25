@@ -23,7 +23,7 @@ $this->load->config('payment_gateways');
                             <select id="gateway_de_pagamento" class="form-control span12" name="gateway_de_pagamento" required>
                                 <option value="" selected>Escolha o gateway de pagamento</option>
                                 <?php foreach ($this->config->item('payment_gateways') as $paymentGateway) : ?>
-                                    <option value="<?php echo $paymentGateway['library_name']; ?>"><?php echo $paymentGateway['name']; ?></option>
+                                    <option value="<?php echo e($paymentGateway['library_name']); ?>"><?php echo e($paymentGateway['name']); ?></option>
                                 <?php endforeach ?>
                             </select>
                             <label id="label_forma_pagamento" for="forma_pagamento" hidden>Forma de Pagamento: </label>

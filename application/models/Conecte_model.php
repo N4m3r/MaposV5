@@ -53,7 +53,7 @@ class Conecte_model extends CI_Model
         $this->db->where('clientes_id', $cliente);
         $this->db->limit($perpage, $start);
         $this->db->order_by('idVendas', 'desc');
-        if ($where) {
+        if (is_array($where) && !empty($where)) {
             $this->db->where($where);
         }
 
@@ -73,7 +73,7 @@ class Conecte_model extends CI_Model
         $this->db->order_by('expire_at', 'desc');
         $this->db->limit($perpage, $start);
         $this->db->order_by('idCobranca', 'desc');
-        if ($where) {
+        if (is_array($where) && !empty($where)) {
             $this->db->where($where);
         }
 
@@ -92,7 +92,7 @@ class Conecte_model extends CI_Model
         $this->db->where('clientes_id', $cliente);
         $this->db->limit($perpage, $start);
         $this->db->order_by('idOs', 'desc');
-        if ($where) {
+        if (is_array($where) && !empty($where)) {
             $this->db->where($where);
         }
 

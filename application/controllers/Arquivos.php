@@ -41,12 +41,10 @@ class Arquivos extends MY_Controller
             $this->data['results'] = $this->arquivos_model->get('documentos', '*', '', $this->data['configuration']['per_page'], $this->uri->segment(3));
         } else {
             if ($de != null) {
-                $de = explode('/', $de);
-                $de = $de[2] . '-' . $de[1] . '-' . $de[0];
+                $de = parseDateBr($de);
 
                 if ($ate != null) {
-                    $ate = explode('/', $ate);
-                    $ate = $ate[2] . '-' . $ate[1] . '-' . $ate[0];
+                    $ate = parseDateBr($ate);
                 } else {
                     $ate = $de;
                 }
@@ -88,8 +86,7 @@ class Arquivos extends MY_Controller
             if ($data == null) {
                 $data = date('Y-m-d');
             } else {
-                $data = explode('/', $data);
-                $data = $data[2] . '-' . $data[1] . '-' . $data[0];
+                $data = parseDateBr($data, date('Y-m-d'));
             }
 
             $data = [
@@ -142,8 +139,7 @@ class Arquivos extends MY_Controller
             if ($data == null) {
                 $data = date('Y-m-d');
             } else {
-                $data = explode('/', $data);
-                $data = $data[2] . '-' . $data[1] . '-' . $data[0];
+                $data = parseDateBr($data, date('Y-m-d'));
             }
 
             $data = [

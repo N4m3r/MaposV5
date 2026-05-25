@@ -930,7 +930,7 @@ echo number_format($soma_descontos_pagos, 2, ',', '.')?></strong></td>
             });
             return false;
         });
-        let controlBaixa = "<?php echo $configuration['control_baixa']; ?>";
+        let controlBaixa = <?php echo json_encode($configuration['control_baixa'], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
         let datePickerOptions = {
             dateFormat: 'dd/mm/yy',
         };

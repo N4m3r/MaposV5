@@ -153,6 +153,51 @@ class Mapos_model extends CI_Model
         return $this->db->count_all($table);
     }
 
+    /**
+     * Fetch OS records for multiple statuses in a single UNION ALL query,
+     * grouped by status. Replaces 6 separate queries on the dashboard.
+     *
+     * @param  array  $statuses  e.g. ['Orçamento', 'Aberto', ...]
+     * @param  int    $limit_per_status  Max rows per status
+     * @return array  Associative array keyed by status
+     */
+    public function getOsByStatusGrouped($statuses, $limit_per_status = 10)
+    {
+        // Initialize result with empty arrays so callers always get every key
+        $result = [];
+        foreach ($statuses as $status) {
+            $result[$status] = [];
+        }
+
+        // Build a UNION ALL query – one sub-select per status with its own LIMIT.
+        // This turns N separate round-trips into 1 query.
+        $union_parts = [];
+        foreach ($statuses as $status) {
+            $status_escaped = $this->db->escape($status);
+            $limit = (int) $limit_per_status;
+            $union_parts[] = "
+                (SELECT os.*, clientes.nomeCliente
+                 FROM os
+                 JOIN clientes ON clientes.idClientes = os.clientes_id
+                 WHERE os.status = $status_escaped
+                 ORDER BY os.idOs DESC
+                 LIMIT $limit)
+            ";
+        }
+
+        $sql = implode(' UNION ALL ', $union_parts);
+        $query = $this->db->query($sql);
+
+        if ($query && $query->num_rows() > 0) {
+            foreach ($query->result() as $row) {
+                $result[$row->status][] = $row;
+            }
+        }
+
+        return $result;
+    }
+
+    /** @deprecated Use getOsByStatusGrouped() instead – kept for backward compat (API) */
     public function getOsOrcamentos()
     {
         $this->db->select('os.*, clientes.nomeCliente');
@@ -163,7 +208,8 @@ class Mapos_model extends CI_Model
 
         return $this->db->get()->result();
     }
-    
+
+    /** @deprecated Use getOsByStatusGrouped() instead – kept for backward compat (API) */
     public function getOsAbertas()
     {
         $this->db->select('os.*, clientes.nomeCliente');
@@ -175,6 +221,7 @@ class Mapos_model extends CI_Model
         return $this->db->get()->result();
     }
 
+    /** @deprecated Use getOsByStatusGrouped() instead – kept for backward compat (API) */
     public function getOsFinalizadas()
     {
         $this->db->select('os.*, clientes.nomeCliente');
@@ -187,6 +234,7 @@ class Mapos_model extends CI_Model
         return $this->db->get()->result();
     }
 
+    /** @deprecated Use getOsByStatusGrouped() instead – kept for backward compat (API) */
     public function getOsAprovadas()
     {
         $this->db->select('os.*, clientes.nomeCliente');
@@ -198,6 +246,7 @@ class Mapos_model extends CI_Model
         return $this->db->get()->result();
     }
 
+    /** @deprecated Use getOsByStatusGrouped() instead – kept for backward compat (API) */
     public function getOsAguardandoPecas()
     {
         $this->db->select('os.*, clientes.nomeCliente');
@@ -209,6 +258,7 @@ class Mapos_model extends CI_Model
         return $this->db->get()->result();
     }
 
+    /** @deprecated Use getOsByStatusGrouped() instead – kept for backward compat (API) */
     public function getOsAndamento()
     {
         $this->db->select('os.*, clientes.nomeCliente');
@@ -299,8 +349,10 @@ class Mapos_model extends CI_Model
                        SUM(CASE WHEN baixado = 1 AND tipo = 'despesa' THEN valor END) as total_despesa,
                        SUM(CASE WHEN baixado = 0 AND tipo = 'receita' THEN valor - (IF(tipo_desconto = 'real', desconto, (desconto * valor) / 100))  END) as total_receita_pendente,
                        SUM(CASE WHEN baixado = 0 AND tipo = 'despesa' THEN valor END) as total_despesa_pendente FROM lancamentos";
-        if ($this->db->query($sql) !== false) {
-            return $this->db->query($sql)->row();
+        // Performance: execute once, not twice (original code ran ->query() twice)
+        $result = $this->db->query($sql);
+        if ($result !== false) {
+            return $result->row();
         }
 
         return false;
@@ -343,8 +395,10 @@ class Mapos_model extends CI_Model
             FROM lancamentos
             WHERE EXTRACT(YEAR FROM data_pagamento) = ?
         ";
-        if ($this->db->query($sql, [intval($numbersOnly)]) !== false) {
-            return $this->db->query($sql, [intval($numbersOnly)])->row();
+        // Performance: execute once, not twice (original code ran ->query() twice)
+        $result = $this->db->query($sql, [intval($numbersOnly)]);
+        if ($result !== false) {
+            return $result->row();
         }
 
         return false;
@@ -363,8 +417,10 @@ class Mapos_model extends CI_Model
             FROM lancamentos
             WHERE EXTRACT(YEAR FROM data_pagamento) = ?
         ';
-        if ($this->db->query($sql, [intval($numbersOnly)]) !== false) {
-            return $this->db->query($sql, [intval($numbersOnly)])->row();
+        // Performance: execute once, not twice (original code ran ->query() twice)
+        $result = $this->db->query($sql, [intval($numbersOnly)]);
+        if ($result !== false) {
+            return $result->row();
         }
 
         return false;
@@ -407,8 +463,10 @@ class Mapos_model extends CI_Model
             FROM lancamentos
             WHERE EXTRACT(YEAR FROM data_pagamento) = ?
         ";
-        if ($this->db->query($sql, [intval($numbersOnly)]) !== false) {
-            return $this->db->query($sql, [intval($numbersOnly)])->row();
+        // Performance: execute once, not twice (original code ran ->query() twice)
+        $result = $this->db->query($sql, [intval($numbersOnly)]);
+        if ($result !== false) {
+            return $result->row();
         }
 
         return false;

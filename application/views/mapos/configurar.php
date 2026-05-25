@@ -51,13 +51,13 @@
             </ul>
             <form action="<?php echo current_url(); ?>" id="formConfigurar" method="post" class="form-horizontal">
                 <div class="widget-content nopadding tab-content">
-                    <?php echo $custom_error; ?>
+                    <?php echo e($custom_error); ?>
                     <!-- Menu Gerais -->
                     <div id="home" class="tab-pane fade in active">
                         <div class="control-group">
                             <label for="app_name" class="control-label">Nome do Sistema</label>
                             <div class="controls">
-                                <input type="text" required name="app_name" value="<?= $configuration['app_name'] ?>">
+                                <input type="text" required name="app_name" value="<?= e($configuration['app_name']) ?>">
                                 <span class="help-inline">Nome do sistema</span>
                             </div>
                         </div>
@@ -142,7 +142,7 @@
                         <div class="control-group">
                             <label for="pix_key" class="control-label">Chave Pix para Recebimento de Pagamentos</label>
                             <div class="controls">
-                                <input type="text" name="pix_key" value="<?= $configuration['pix_key'] ?>">
+                                <input type="text" name="pix_key" value="<?= e($configuration['pix_key'] ?? '') ?>">
                                 <span class="help-inline">Chave Pix para Recebimento de Pagamentos</span>
                             </div>
                         </div>
@@ -163,14 +163,14 @@
                         <div class="control-group">
                             <label for="EFI_CREDENTIAIS_CLIENT_ID" class="control-label">CLIENT_ID</label>
                             <div class="controls">
-                                <input type="text" name="PAYMENT_GATEWAYS_EFI_CREDENTIAIS_CLIENT_ID" value="<?= $_ENV['PAYMENT_GATEWAYS_EFI_CREDENTIAIS_CLIENT_ID'] ?>" id="EFI_CREDENTIAIS_CLIENT_ID">
+                                <input type="text" name="PAYMENT_GATEWAYS_EFI_CREDENTIAIS_CLIENT_ID" value="<?= e($_ENV['PAYMENT_GATEWAYS_EFI_CREDENTIAIS_CLIENT_ID'] ?? '') ?>" id="EFI_CREDENTIAIS_CLIENT_ID">
                                 <span class="help-inline">Pode ser encontrado no menu <a href="https://app.sejaefi.com.br/api/aplicacoes" target="_blank" rel="noopener noreferrer">"API" -> "Aplicações"</a></span>
                             </div>
                         </div>
                         <div class="control-group">
                             <label for="EFI_CREDENTIAIS_CLIENT_SECRET" class="control-label">CLIENT_SECRET</label>
                             <div class="controls">
-                                <input type="text" name="PAYMENT_GATEWAYS_EFI_CREDENTIAIS_CLIENT_SECRET" value="<?= $_ENV['PAYMENT_GATEWAYS_EFI_CREDENTIAIS_CLIENT_SECRET'] ?>" id="EFI_CREDENTIAIS_CLIENT_SECRET">
+                                <input type="text" name="PAYMENT_GATEWAYS_EFI_CREDENTIAIS_CLIENT_SECRET" value="<?= isset($_ENV['PAYMENT_GATEWAYS_EFI_CREDENTIAIS_CLIENT_SECRET']) ? str_repeat('•', 8) . substr($_ENV['PAYMENT_GATEWAYS_EFI_CREDENTIAIS_CLIENT_SECRET'], -4) : '' ?>" id="EFI_CREDENTIAIS_CLIENT_SECRET">
                                 <span class="help-inline">Pode ser encontrado no menu <a href="https://app.sejaefi.com.br/api/aplicacoes" target="_blank" rel="noopener noreferrer">"API" -> "Aplicações"</a></span>
                             </div>
                         </div>
@@ -194,28 +194,28 @@
                         <div class="control-group">
                             <label for="MERCADO_PAGO_CREDENTIALS_PUBLIC_KEY" class="control-label">PUBLIC_KEY</label>
                             <div class="controls">
-                                <input type="text" name="PAYMENT_GATEWAYS_MERCADO_PAGO_CREDENTIALS_PUBLIC_KEY" value="<?= $_ENV['PAYMENT_GATEWAYS_MERCADO_PAGO_CREDENTIALS_PUBLIC_KEY'] ?>" id="MERCADO_PAGO_CREDENTIALS_PUBLIC_KEY">
+                                <input type="text" name="PAYMENT_GATEWAYS_MERCADO_PAGO_CREDENTIALS_PUBLIC_KEY" value="<?= e($_ENV['PAYMENT_GATEWAYS_MERCADO_PAGO_CREDENTIALS_PUBLIC_KEY'] ?? '') ?>" id="MERCADO_PAGO_CREDENTIALS_PUBLIC_KEY">
                                 <span class="help-inline">Pode ser encontrado no menu <a href="https://www.mercadopago.com.br/settings/account/credentials" target="_blank" rel="noopener noreferrer">"Seu Negócio" -> "Configurações" -> "Credenciais"</a></span>
                             </div>
                         </div>
                         <div class="control-group">
                             <label for="MERCADO_PAGO_CREDENTIALS_ACCESS_TOKEN" class="control-label">ACCESS_TOKEN</label>
                             <div class="controls">
-                                <input type="text" name="PAYMENT_GATEWAYS_MERCADO_PAGO_CREDENTIALS_ACCESS_TOKEN" value="<?= $_ENV['PAYMENT_GATEWAYS_MERCADO_PAGO_CREDENTIALS_ACCESS_TOKEN'] ?>" id="MERCADO_PAGO_CREDENTIALS_ACCESS_TOKEN">
+                                <input type="text" name="PAYMENT_GATEWAYS_MERCADO_PAGO_CREDENTIALS_ACCESS_TOKEN" value="<?= isset($_ENV['PAYMENT_GATEWAYS_MERCADO_PAGO_CREDENTIALS_ACCESS_TOKEN']) ? str_repeat('•', 8) . substr($_ENV['PAYMENT_GATEWAYS_MERCADO_PAGO_CREDENTIALS_ACCESS_TOKEN'], -4) : '' ?>" id="MERCADO_PAGO_CREDENTIALS_ACCESS_TOKEN">
                                 <span class="help-inline">Pode ser encontrado no menu <a href="https://www.mercadopago.com.br/settings/account/credentials" target="_blank" rel="noopener noreferrer">"Seu Negócio" -> "Configurações" -> "Credenciais"</a></span>
                             </div>
                         </div>
                         <div class="control-group">
                             <label for="MERCADO_PAGO_CREDENTIALS_CLIENT_ID" class="control-label">CLIENT_ID</label>
                             <div class="controls">
-                                <input type="text" name="PAYMENT_GATEWAYS_MERCADO_PAGO_CREDENTIALS_CLIENT_ID" value="<?= $_ENV['PAYMENT_GATEWAYS_MERCADO_PAGO_CREDENTIALS_CLIENT_ID'] ?>" id="MERCADO_PAGO_CREDENTIALS_CLIENT_ID">
+                                <input type="text" name="PAYMENT_GATEWAYS_MERCADO_PAGO_CREDENTIALS_CLIENT_ID" value="<?= e($_ENV['PAYMENT_GATEWAYS_MERCADO_PAGO_CREDENTIALS_CLIENT_ID'] ?? '') ?>" id="MERCADO_PAGO_CREDENTIALS_CLIENT_ID">
                                 <span class="help-inline">Pode ser encontrado no menu <a href="https://www.mercadopago.com.br/settings/account/credentials" target="_blank" rel="noopener noreferrer">"Seu Negócio" -> "Configurações" -> "Credenciais"</a></span>
                             </div>
                         </div>
                         <div class="control-group">
                             <label for="MERCADO_PAGO_CREDENTIALS_CLIENT_SECRET" class="control-label">CLIENT_SECRET</label>
                             <div class="controls">
-                                <input type="text" name="PAYMENT_GATEWAYS_MERCADO_PAGO_CREDENTIALS_CLIENT_SECRET" value="<?= $_ENV['PAYMENT_GATEWAYS_MERCADO_PAGO_CREDENTIALS_CLIENT_SECRET'] ?>" id="MERCADO_PAGO_CREDENTIALS_CLIENT_SECRET">
+                                <input type="text" name="PAYMENT_GATEWAYS_MERCADO_PAGO_CREDENTIALS_CLIENT_SECRET" value="<?= isset($_ENV['PAYMENT_GATEWAYS_MERCADO_PAGO_CREDENTIALS_CLIENT_SECRET']) ? str_repeat('•', 8) . substr($_ENV['PAYMENT_GATEWAYS_MERCADO_PAGO_CREDENTIALS_CLIENT_SECRET'], -4) : '' ?>" id="MERCADO_PAGO_CREDENTIALS_CLIENT_SECRET">
                                 <span class="help-inline">Pode ser encontrado no menu <a href="https://www.mercadopago.com.br/settings/account/credentials" target="_blank" rel="noopener noreferrer">"Seu Negócio" -> "Configurações" -> "Credenciais"</a></span>
                             </div>
                         </div>
@@ -259,7 +259,7 @@
                         <div class="control-group">
                             <label for="ASAAS_CREDENTIAIS_API_KEY" class="control-label">API_KEY</label>
                             <div class="controls">
-                                <input type="text" name="PAYMENT_GATEWAYS_ASAAS_CREDENTIAIS_API_KEY" value="<?= $_ENV['PAYMENT_GATEWAYS_ASAAS_CREDENTIAIS_API_KEY'] ?>" id="ASAAS_CREDENTIAIS_API_KEY">
+                                <input type="text" name="PAYMENT_GATEWAYS_ASAAS_CREDENTIAIS_API_KEY" value="<?= isset($_ENV['PAYMENT_GATEWAYS_ASAAS_CREDENTIAIS_API_KEY']) ? str_repeat('•', 8) . substr($_ENV['PAYMENT_GATEWAYS_ASAAS_CREDENTIAIS_API_KEY'], -4) : '' ?>" id="ASAAS_CREDENTIAIS_API_KEY">
                                 <span class="help-inline">Pode ser encontrado no menu "Minha Conta", clique em "Integração" e depois em "Gerar API Key"</span>
                             </div>
                         </div>
@@ -293,14 +293,14 @@
                         <div class="control-group">
                             <label for="CORA_CREDENTIAIS_CLIENT_ID" class="control-label">Client ID</label>
                             <div class="controls">
-                                <input type="text" name="PAYMENT_GATEWAYS_CORA_CREDENTIALS_CLIENT_ID" value="<?= $_ENV['PAYMENT_GATEWAYS_CORA_CREDENTIALS_CLIENT_ID'] ?? '' ?>" id="CORA_CREDENTIAIS_CLIENT_ID">
+                                <input type="text" name="PAYMENT_GATEWAYS_CORA_CREDENTIALS_CLIENT_ID" value="<?= e($_ENV['PAYMENT_GATEWAYS_CORA_CREDENTIALS_CLIENT_ID'] ?? '') ?>" id="CORA_CREDENTIAIS_CLIENT_ID">
                                 <span class="help-inline">Encontrado no portal developers.cora.com.br</span>
                             </div>
                         </div>
                         <div class="control-group">
                             <label for="CORA_CREDENTIAIS_CLIENT_SECRET" class="control-label">Client Secret</label>
                             <div class="controls">
-                                <input type="password" name="PAYMENT_GATEWAYS_CORA_CREDENTIALS_CLIENT_SECRET" value="<?= $_ENV['PAYMENT_GATEWAYS_CORA_CREDENTIALS_CLIENT_SECRET'] ?? '' ?>" id="CORA_CREDENTIAIS_CLIENT_SECRET">
+                                <input type="password" name="PAYMENT_GATEWAYS_CORA_CREDENTIALS_CLIENT_SECRET" value="<?= isset($_ENV['PAYMENT_GATEWAYS_CORA_CREDENTIALS_CLIENT_SECRET']) ? str_repeat('•', 8) . substr($_ENV['PAYMENT_GATEWAYS_CORA_CREDENTIALS_CLIENT_SECRET'], -4) : '' ?>" id="CORA_CREDENTIAIS_CLIENT_SECRET">
                                 <span class="help-inline">Encontrado no portal developers.cora.com.br</span>
                             </div>
                         </div>
@@ -393,7 +393,7 @@
                         <div class="control-group">
                             <label for="notifica_whats" class="control-label">Notificação do whatsapp</label>
                             <div class="controls">
-                                <textarea rows="5" cols="20" name="notifica_whats" id="notifica_whats" placeholder="Use as tags abaixo para criar seu texto!" style="margin: 0px; width: 606px; height: 86px;"><?php echo $configuration['notifica_whats']; ?></textarea>
+                                <textarea rows="5" cols="20" name="notifica_whats" id="notifica_whats" placeholder="Use as tags abaixo para criar seu texto!" style="margin: 0px; width: 606px; height: 86px;"><?php echo e($configuration['notifica_whats']); ?></textarea>
                             </div>
                             <div class="span3">
                                 <label for="notifica_whats_select">Tags de preenchimento<span class="required"></span></label>
@@ -504,7 +504,7 @@
                         <div class="control-group">
                             <label for="apiEnabled" class="control-label">URL API</label>
                             <div class="controls">
-                                <span class="span10" id="urlApi" style="margin-top:7px;"><?= trim($_ENV['APP_BASEURL'], '/') . '/' ?>index.php/api/v1</span>
+                                <span class="span10" id="urlApi" style="margin-top:7px;"><?= e(trim($_ENV['APP_BASEURL'] ?? '', '/')) . '/' ?>index.php/api/v1</span>
                             </div>
                         </div>
                         <div class="control-group">
@@ -544,14 +544,14 @@
                         <div class="control-group">
                             <label for="EMAIL_PROTOCOL" class="control-label">Protocolo de E-mail</label>
                             <div class="controls">
-                                <input type="text" name="EMAIL_PROTOCOL" value="<?= $_ENV['EMAIL_PROTOCOL'] ?>" id="EMAIL_PROTOCOL">
+                                <input type="text" name="EMAIL_PROTOCOL" value="<?= e($_ENV['EMAIL_PROTOCOL'] ?? '') ?>" id="EMAIL_PROTOCOL">
                                 <span class="help-inline">Informe o protocolo que será utilizado</span>
                             </div>
                         </div>
                         <div class="control-group">
                             <label for="EMAIL_SMTP_HOST" class="control-label">Endereço do Host</label>
                             <div class="controls">
-                                <input type="text" name="EMAIL_SMTP_HOST" value="<?= $_ENV['EMAIL_SMTP_HOST'] ?>" id="EMAIL_SMTP_HOST">
+                                <input type="text" name="EMAIL_SMTP_HOST" value="<?= e($_ENV['EMAIL_SMTP_HOST'] ?? '') ?>" id="EMAIL_SMTP_HOST">
                                 <span class="help-inline">Informe o endereço do host</span>
                             </div>
                         </div>
@@ -568,21 +568,21 @@
                         <div class="control-group">
                             <label for="EMAIL_SMTP_PORT" class="control-label">Porta</label>
                             <div class="controls">
-                                <input type="text" name="EMAIL_SMTP_PORT" value="<?= $_ENV['EMAIL_SMTP_PORT'] ?>" id="EMAIL_SMTP_PORT">
+                                <input type="text" name="EMAIL_SMTP_PORT" value="<?= e($_ENV['EMAIL_SMTP_PORT'] ?? '') ?>" id="EMAIL_SMTP_PORT">
                                 <span class="help-inline">Informe a porta que será utilizada.</span>
                             </div>
                         </div>
                         <div class="control-group">
                             <label for="EMAIL_SMTP_USER" class="control-label">Usuário</label>
                             <div class="controls">
-                                <input type="text" name="EMAIL_SMTP_USER" value="<?= $_ENV['EMAIL_SMTP_USER'] ?>" id="EMAIL_SMTP_USER">
+                                <input type="text" name="EMAIL_SMTP_USER" value="<?= e($_ENV['EMAIL_SMTP_USER'] ?? '') ?>" id="EMAIL_SMTP_USER">
                                 <span class="help-inline">Informe nome de usuáriodo e-mail.</span>
                             </div>
                         </div>
                         <div class="control-group">
                             <label for="EMAIL_SMTP_PASS" class="control-label">Senha</label>
                             <div class="controls">
-                                <input type="password" name="EMAIL_SMTP_PASS" value="<?= $_ENV['EMAIL_SMTP_PASS'] ?>" id="EMAIL_SMTP_PASS">
+                                <input type="password" name="EMAIL_SMTP_PASS" value="<?= isset($_ENV['EMAIL_SMTP_PASS']) ? str_repeat('•', 8) . substr($_ENV['EMAIL_SMTP_PASS'], -4) : '' ?>" id="EMAIL_SMTP_PASS">
                                 <span class="help-inline">Informe a senha do e-mail.</span>
                             </div>
                         </div>

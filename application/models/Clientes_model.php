@@ -154,23 +154,33 @@ class Clientes_model extends CI_Model
 
     /**
      * Remover todas as OS por cliente
+     * Performance: uses batch DELETE with IN clause instead of 3 queries per OS in a loop
      *
      * @param  array  $os
      * @return bool
      */
     public function removeClientOs($os)
     {
-        $this->db->trans_start();
-        foreach ($os as $o) {
-            $this->db->where('os_id', $o->idOs);
-            $this->db->delete('servicos_os');
-
-            $this->db->where('os_id', $o->idOs);
-            $this->db->delete('produtos_os');
-
-            $this->db->where('idOs', $o->idOs);
-            $this->db->delete('os');
+        if (empty($os)) {
+            return true;
         }
+
+        $os_ids = array_map(function ($o) {
+            return $o->idOs;
+        }, $os);
+
+        $this->db->trans_start();
+
+        // Batch delete – 3 queries total regardless of how many OS
+        $this->db->where_in('os_id', $os_ids);
+        $this->db->delete('servicos_os');
+
+        $this->db->where_in('os_id', $os_ids);
+        $this->db->delete('produtos_os');
+
+        $this->db->where_in('idOs', $os_ids);
+        $this->db->delete('os');
+
         $this->db->trans_complete();
 
         return $this->db->trans_status() !== false;
@@ -191,20 +201,30 @@ class Clientes_model extends CI_Model
 
     /**
      * Remover todas as Vendas por cliente
+     * Performance: uses batch DELETE with IN clause instead of 2 queries per Venda in a loop
      *
      * @param  array  $vendas
      * @return bool
      */
     public function removeClientVendas($vendas)
     {
-        $this->db->trans_start();
-        foreach ($vendas as $v) {
-            $this->db->where('vendas_id', $v->idVendas);
-            $this->db->delete('itens_de_vendas');
-
-            $this->db->where('idVendas', $v->idVendas);
-            $this->db->delete('vendas');
+        if (empty($vendas)) {
+            return true;
         }
+
+        $venda_ids = array_map(function ($v) {
+            return $v->idVendas;
+        }, $vendas);
+
+        $this->db->trans_start();
+
+        // Batch delete – 2 queries total regardless of how many Vendas
+        $this->db->where_in('vendas_id', $venda_ids);
+        $this->db->delete('itens_de_vendas');
+
+        $this->db->where_in('idVendas', $venda_ids);
+        $this->db->delete('vendas');
+
         $this->db->trans_complete();
 
         return $this->db->trans_status() !== false;

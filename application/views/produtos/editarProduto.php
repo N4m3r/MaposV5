@@ -210,7 +210,7 @@
         $.getJSON('<?php echo base_url() ?>assets/json/tabela_medidas.json', function(data) {
             for (i in data.medidas) {
                 $('#unidade').append(new Option(data.medidas[i].descricao, data.medidas[i].sigla));
-                $("#unidade option[value=" + '<?php echo $result->unidade; ?>' + "]").prop("selected", true);
+                $("#unidade option[value=" + <?php echo json_encode($result->unidade, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT); ?> + "]").prop("selected", true);
             }
         });
         $('#formProduto').validate({

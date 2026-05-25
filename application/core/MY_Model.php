@@ -12,6 +12,7 @@ class MY_Model extends CI_Model
     protected $table = '';
     protected $fillable = [];
     protected $returnInsertId = false;
+    protected $softDelete = false;
 
     /**
      * Filter data array to only include fillable fields.
@@ -24,6 +25,18 @@ class MY_Model extends CI_Model
         }
 
         return array_intersect_key($data, array_flip($this->fillable));
+    }
+
+    /**
+     * Apply soft delete filter to queries.
+     * Call this before get() to exclude soft-deleted records.
+     */
+    protected function withTrashed(bool $includeTrashed = false): self
+    {
+        if ($this->softDelete && !$includeTrashed && $this->db->field_exists('deleted_at', $this->table)) {
+            $this->db->where($this->table . '.deleted_at IS NULL', null, false);
+        }
+        return $this;
     }
 
     /**
@@ -54,20 +67,26 @@ class MY_Model extends CI_Model
     }
 
     /**
-     * Find by ID.
+     * Find by ID (respects soft delete).
      */
-    public function findById(int $id)
+    public function findById(int $id, bool $withTrashed = false)
     {
+        if ($this->softDelete && !$withTrashed) {
+            $this->db->where($this->table . '.deleted_at IS NULL', null, false);
+        }
         return $this->db->where($this->primaryKey ?? 'id', $id)
             ->get($this->table)
             ->row();
     }
 
     /**
-     * Get all records.
+     * Get all records (respects soft delete).
      */
-    public function findAll(int $limit = null, int $offset = 0): array
+    public function findAll(int $limit = null, int $offset = 0, bool $withTrashed = false): array
     {
+        if ($this->softDelete && !$withTrashed && $this->db->field_exists('deleted_at', $this->table)) {
+            $this->db->where($this->table . '.deleted_at IS NULL', null, false);
+        }
         if ($limit) {
             $this->db->limit($limit, $offset);
         }
@@ -75,12 +94,12 @@ class MY_Model extends CI_Model
     }
 
     /**
-     * Soft delete (if deleted_at column exists).
+     * Soft delete (if softDelete enabled and deleted_at column exists).
      */
     public function softDelete(int $id): bool
     {
-        if (!$this->db->field_exists('deleted_at', $this->table)) {
-            return $this->delete($id);
+        if (!$this->softDelete || !$this->db->field_exists('deleted_at', $this->table)) {
+            return $this->hardDelete($id);
         }
 
         $this->db->where($this->primaryKey ?? 'id', $id);
@@ -89,12 +108,33 @@ class MY_Model extends CI_Model
     }
 
     /**
-     * Hard delete.
+     * Hard delete - permanently removes the record.
      */
-    public function delete(int $id): bool
+    public function hardDelete(int $id): bool
     {
         $this->db->where($this->primaryKey ?? 'id', $id);
         $this->db->delete($this->table);
         return $this->db->affected_rows() >= 1;
+    }
+
+    /**
+     * Delete - uses soft delete if enabled, otherwise hard delete.
+     */
+    public function delete(int $id): bool
+    {
+        if ($this->softDelete && $this->db->field_exists('deleted_at', $this->table)) {
+            return $this->softDelete($id);
+        }
+        return $this->hardDelete($id);
+    }
+
+    /**
+     * Restore a soft-deleted record.
+     */
+    public function restore(int $id): bool
+    {
+        $this->db->where($this->primaryKey ?? 'id', $id);
+        $this->db->update($this->table, ['deleted_at' => null]);
+        return $this->db->affected_rows() >= 0;
     }
 }

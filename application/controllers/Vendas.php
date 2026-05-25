@@ -92,12 +92,7 @@ class Vendas extends MY_Controller
         } else {
             $dataVenda = $this->input->post('dataVenda');
 
-            try {
-                $dataVenda = explode('/', $dataVenda);
-                $dataVenda = $dataVenda[2] . '-' . $dataVenda[1] . '-' . $dataVenda[0];
-            } catch (Exception $e) {
-                $dataVenda = date('Y-m-d');
-            }
+            $dataVenda = parseDateBr($dataVenda, date('Y-m-d'));
 
             $data = [
                 'dataVenda' => $dataVenda,
@@ -238,12 +233,7 @@ class Vendas extends MY_Controller
         } else {
             $dataVenda = $this->input->post('dataVenda');
 
-            try {
-                $dataVenda = explode('/', $dataVenda);
-                $dataVenda = $dataVenda[2] . '-' . $dataVenda[1] . '-' . $dataVenda[0];
-            } catch (Exception $e) {
-                $dataVenda = date('Y/m/d');
-            }
+            $dataVenda = parseDateBr($dataVenda, date('Y-m-d'));
 
             $data = [
                 'dataVenda' => $dataVenda,
@@ -465,7 +455,10 @@ class Vendas extends MY_Controller
     {
         if ($this->input->get('term')) {
             $q = strtolower($this->input->get('term'));
-            $this->vendas_model->autoCompleteProduto($q);
+            $result = $this->vendas_model->autoCompleteProduto($q);
+            if ($result !== null) {
+                $this->output->set_content_type('application/json')->set_output(json_encode($result));
+            }
         }
     }
 
@@ -473,7 +466,10 @@ class Vendas extends MY_Controller
     {
         if ($this->input->get('term')) {
             $q = strtolower($this->input->get('term'));
-            $this->vendas_model->autoCompleteCliente($q);
+            $result = $this->vendas_model->autoCompleteCliente($q);
+            if ($result !== null) {
+                $this->output->set_content_type('application/json')->set_output(json_encode($result));
+            }
         }
     }
 
@@ -481,7 +477,10 @@ class Vendas extends MY_Controller
     {
         if ($this->input->get('term')) {
             $q = strtolower($this->input->get('term'));
-            $this->vendas_model->autoCompleteUsuario($q);
+            $result = $this->vendas_model->autoCompleteUsuario($q);
+            if ($result !== null) {
+                $this->output->set_content_type('application/json')->set_output(json_encode($result));
+            }
         }
     }
 
@@ -662,16 +661,10 @@ class Vendas extends MY_Controller
             $vencimento = $this->input->post('vencimento');
             $recebimento = $this->input->post('recebimento');
 
-            try {
-                $vencimento = explode('/', $vencimento);
-                $vencimento = $vencimento[2] . '-' . $vencimento[1] . '-' . $vencimento[0];
+            $vencimento = parseDateBr($vencimento, date('Y-m-d'));
 
-                if ($recebimento != null) {
-                    $recebimento = explode('/', $recebimento);
-                    $recebimento = $recebimento[2] . '-' . $recebimento[1] . '-' . $recebimento[0];
-                }
-            } catch (Exception $e) {
-                $vencimento = date('Y-m-d');
+            if ($recebimento != null) {
+                $recebimento = parseDateBr($recebimento);
             }
 
             $vendas = $this->vendas_model->getById($venda_id);

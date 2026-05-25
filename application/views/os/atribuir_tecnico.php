@@ -1,14 +1,14 @@
 <?php if ($this->session->flashdata('success') != null) { ?>
 <div class="alert alert-success">
     <button type="button" class="close" data-dismiss="alert">&times;</button>
-    <?php echo $this->session->flashdata('success'); ?>
+    <?php echo e($this->session->flashdata('success')); ?>
 </div>
 <?php } ?>
 
 <?php if ($this->session->flashdata('error') != null) { ?>
 <div class="alert alert-danger">
     <button type="button" class="close" data-dismiss="alert">&times;</button>
-    <?php echo $this->session->flashdata('error'); ?>
+    <?php echo e($this->session->flashdata('error')); ?>
 </div>
 <?php } ?>
 
@@ -441,7 +441,7 @@
                 <!-- Linha 1: Busca e Filtros principais -->
                 <div class="span4">
                     <label><i class='fas fa-search'></i> Buscar OS</label>
-                    <input type="text" name="busca_global" id="busca_global" placeholder="N° OS, cliente, descrição, defeito, observações, telefone..." class="span12" value="<?= $this->input->get('busca_global') ?>">
+                    <input type="text" name="busca_global" id="busca_global" placeholder="N° OS, cliente, descrição, defeito, observações, telefone..." class="span12" value="<?= e($this->input->get('busca_global')) ?>">
                 </div>
 
                 <div class="span2">
@@ -468,8 +468,8 @@
                         <?php if (!empty($tecnicos) && is_array($tecnicos)): ?>
                             <?php foreach ($tecnicos as $t): ?>
                                 <?php if (is_object($t)): ?>
-                                    <option value="<?php echo $t->idUsuarios; ?>" <?= $this->input->get('tecnico') == $t->idUsuarios ? 'selected' : '' ?>>
-                                        <?php echo $t->nome; ?>
+                                    <option value="<?php echo e($t->idUsuarios); ?>" <?= $this->input->get('tecnico') == $t->idUsuarios ? 'selected' : '' ?>>
+                                        <?php echo e($t->nome); ?>
                                     </option>
                                 <?php endif; ?>
                             <?php endforeach; ?>
@@ -480,8 +480,8 @@
                 <div class="span2">
                     <label><i class='fas fa-calendar'></i> Período</label>
                     <div class="periodo-inputs">
-                        <input type="text" name="data" autocomplete="off" id="data" placeholder="Início" class="datepicker" value="<?= $this->input->get('data') ?>">
-                        <input type="text" name="data2" autocomplete="off" id="data2" placeholder="Fim" class="datepicker" value="<?= $this->input->get('data2') ?>">
+                        <input type="text" name="data" autocomplete="off" id="data" placeholder="Início" class="datepicker" value="<?= e($this->input->get('data')) ?>">
+                        <input type="text" name="data2" autocomplete="off" id="data2" placeholder="Fim" class="datepicker" value="<?= e($this->input->get('data2')) ?>">
                     </div>
                 </div>
 
@@ -578,10 +578,10 @@
                                 ?>
                                 <tr>
                                     <td class="text-center">
-                                        <strong>#<?php echo $os->idOs; ?></strong>
+                                        <strong>#<?php echo e($os->idOs); ?></strong>
                                     </td>
                                     <td>
-                                        <a href="<?php echo base_url(); ?>index.php/clientes/visualizar/<?php echo $os->clientes_id; ?>" title="Ver cliente">
+                                        <a href="<?php echo base_url(); ?>index.php/clientes/visualizar/<?php echo (int)$os->clientes_id; ?>" title="Ver cliente">
                                             <?php echo e($os->nomeCliente); ?>
                                         </a><br>
                                         <small><i class='fas fa-phone' style="font-size: 10px;"></i> <?php echo e($os->telefone ?: 'N/A'); ?></small>
@@ -593,7 +593,7 @@
                                         <?php echo date('d/m/Y', strtotime($os->dataInicial)); ?>
                                     </td>
                                     <td class="text-center">
-                                        <span class="badge" style="background-color: <?php echo $cor; ?>; border-color: <?php echo $cor; ?>; color: #fff;">
+                                        <span class="badge" style="background-color: <?php echo e($cor); ?>; border-color: <?php echo e($cor); ?>; color: #fff;">
                                             <?php echo e($os->status); ?>
                                         </span>
                                     </td>
@@ -609,22 +609,22 @@
                                         <?php endif; ?>
                                     </td>
                                     <td class="text-center">
-                                        <a href="<?php echo base_url(); ?>index.php/os/visualizar/<?php echo $os->idOs; ?>"
+                                        <a href="<?php echo base_url(); ?>index.php/os/visualizar/<?php echo (int)$os->idOs; ?>"
                                            class="btn-nwe btn-acao" title="Visualizar OS">
                                             <i class='fas fa-eye'></i>
                                         </a>
                                         <button class="btn-nwe3 btn-acao btn-atribuir"
-                                                data-os="<?php echo $os->idOs; ?>"
-                                                data-cliente="<?php echo htmlspecialchars($os->nomeCliente); ?>"
-                                                data-tecnico-atual="<?php echo $os->tecnico_responsavel; ?>"
-                                                data-tecnico-nome="<?php echo htmlspecialchars($os->nome_tecnico ?? ''); ?>"
+                                                data-os="<?php echo e($os->idOs); ?>"
+                                                data-cliente="<?php echo e($os->nomeCliente); ?>"
+                                                data-tecnico-atual="<?php echo e($os->tecnico_responsavel); ?>"
+                                                data-tecnico-nome="<?php echo e($os->nome_tecnico ?? ''); ?>"
                                                 title="<?php echo $os->tecnico_responsavel ? 'Trocar Técnico' : 'Atribuir Técnico'; ?>">
                                             <i class='<?php echo $os->tecnico_responsavel ? 'fas fa-exchange-alt' : 'fas fa-user-plus'; ?>'></i>
                                         </button>
                                         <?php if ($os->tecnico_responsavel): ?>
                                             <button class="btn-nwe4 btn-acao btn-remover"
-                                                    data-os="<?php echo $os->idOs; ?>"
-                                                    data-cliente="<?php echo htmlspecialchars($os->nomeCliente); ?>"
+                                                    data-os="<?php echo e($os->idOs); ?>"
+                                                    data-cliente="<?php echo e($os->nomeCliente); ?>"
                                                     title="Remover Técnico">
                                                 <i class='fas fa-user-times'></i>
                                             </button>
@@ -684,8 +684,8 @@
                         <?php if (!empty($tecnicos) && is_array($tecnicos)): ?>
                             <?php foreach ($tecnicos as $t): ?>
                                 <?php if (is_object($t)): ?>
-                                    <option value="<?php echo $t->idUsuarios; ?>">
-                                        <?php echo $t->nome; ?> (<?php echo $t->email; ?>)
+                                    <option value="<?php echo e($t->idUsuarios); ?>">
+                                        <?php echo e($t->nome); ?> (<?php echo e($t->email); ?>)
                                     </option>
                                 <?php endif; ?>
                             <?php endforeach; ?>

@@ -12,6 +12,13 @@ class Cobrancas_model extends CI_Model
      */
     private const ALLOWED_GATEWAYS = ['Asaas', 'MercadoPago', 'GerencianetSdk', 'Cora'];
 
+    protected $fillable = [
+        'charge_id', 'clientes_id', 'os_id', 'vendas_id', 'payment_gateway',
+        'status', 'valor', 'expire_at', 'link', 'pdf_link', 'barcode',
+        'linha_digitavel', 'payment_method', 'payment_date', 'created_at',
+        'updated_at'
+    ];
+
     public function __construct()
     {
         parent::__construct();
@@ -23,7 +30,7 @@ class Cobrancas_model extends CI_Model
         $this->db->from($table);
         $this->db->limit($perpage, $start);
         $this->db->order_by('idCobranca', 'desc');
-        if ($where) {
+        if (is_array($where) && !empty($where)) {
             $this->db->where($where);
         }
 
@@ -88,6 +95,9 @@ class Cobrancas_model extends CI_Model
 
     public function add($table, $data, $returnId = false)
     {
+        if ($table === 'cobrancas') {
+            $data = array_intersect_key($data, array_flip($this->fillable));
+        }
         $this->db->insert($table, $data);
         if ($this->db->affected_rows() == '1') {
             if ($returnId == true) {
@@ -102,6 +112,9 @@ class Cobrancas_model extends CI_Model
 
     public function edit($table, $data, $fieldID, $ID)
     {
+        if ($table === 'cobrancas') {
+            $data = array_intersect_key($data, array_flip($this->fillable));
+        }
         $this->db->where($fieldID, $ID);
         $this->db->update($table, $data);
 

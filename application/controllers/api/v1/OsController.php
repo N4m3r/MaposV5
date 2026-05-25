@@ -38,14 +38,12 @@ class OsController extends REST_Controller
             $where_array['status'] = $status;
         }
         if ($de) {
-            $de = explode('/', $de);
-            $de = $de[2] . '-' . $de[1] . '-' . $de[0];
+            $de = parseDateBr($de);
 
             $where_array['de'] = $de;
         }
         if ($ate) {
-            $ate = explode('/', $ate);
-            $ate = $ate[2] . '-' . $ate[1] . '-' . $ate[0];
+            $ate = parseDateBr($ate);
 
             $where_array['ate'] = $ate;
         }
@@ -120,22 +118,15 @@ class OsController extends REST_Controller
         $dataFinal = $this->post('dataFinal', true);
         $termoGarantiaId = $this->post('termoGarantia', true);
 
-        try {
-            $dataInicial = explode('/', $dataInicial);
-            $dataInicial = $dataInicial[2] . '-' . $dataInicial[1] . '-' . $dataInicial[0];
+        $dataInicial = parseDateBr($dataInicial, date('Y-m-d'));
 
-            if ($dataFinal) {
-                $dataFinal = explode('/', $dataFinal);
-                $dataFinal = $dataFinal[2] . '-' . $dataFinal[1] . '-' . $dataFinal[0];
-            } else {
-                $dataFinal = date('Y/m/d');
-            }
-
-            $termoGarantiaId = (! $termoGarantiaId == null || ! $termoGarantiaId == '') ? $this->post('garantias_id', true) : null;
-        } catch (Exception $e) {
-            $dataInicial = date('Y/m/d');
-            $dataFinal = date('Y/m/d');
+        if ($dataFinal) {
+            $dataFinal = parseDateBr($dataFinal, date('Y-m-d'));
+        } else {
+            $dataFinal = date('Y-m-d');
         }
+
+        $termoGarantiaId = (! $termoGarantiaId == null || ! $termoGarantiaId == '') ? $this->post('garantias_id', true) : null;
 
         $data = [
             'dataInicial' => $dataInicial,
@@ -238,22 +229,15 @@ class OsController extends REST_Controller
         $dataFinal = $this->put('dataFinal', true);
         $termoGarantiaId = $this->put('termoGarantia', true);
 
-        try {
-            $dataInicial = explode('/', $dataInicial);
-            $dataInicial = $dataInicial[2] . '-' . $dataInicial[1] . '-' . $dataInicial[0];
+        $dataInicial = parseDateBr($dataInicial, date('Y-m-d'));
 
-            if ($dataFinal) {
-                $dataFinal = explode('/', $dataFinal);
-                $dataFinal = $dataFinal[2] . '-' . $dataFinal[1] . '-' . $dataFinal[0];
-            } else {
-                $dataFinal = date('Y/m/d');
-            }
-
-            $termoGarantiaId = (! $termoGarantiaId == null || ! $termoGarantiaId == '') ? $this->put('garantias_id') : null;
-        } catch (Exception $e) {
-            $dataInicial = date('Y/m/d');
-            $dataFinal = date('Y/m/d');
+        if ($dataFinal) {
+            $dataFinal = parseDateBr($dataFinal, date('Y-m-d'));
+        } else {
+            $dataFinal = date('Y-m-d');
         }
+
+        $termoGarantiaId = (! $termoGarantiaId == null || ! $termoGarantiaId == '') ? $this->put('garantias_id') : null;
 
         $data = [
             'dataInicial' => $dataInicial,

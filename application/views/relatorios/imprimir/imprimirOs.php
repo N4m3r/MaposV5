@@ -21,7 +21,7 @@
                     <?= $topo ?>
                     <div class="widget-title">
                         <h4 style="text-align: center; font-size: 1.1em; padding: 5px;">
-                            <?= ucfirst($title) ?>
+                            <?= e(ucfirst($title)) ?>
                         </h4>
                     </div>
                     <div class="widget-content nopadding tab-content">
@@ -45,10 +45,10 @@
                                     foreach ($os as $c) {
                                         echo '<tr>';
                                         echo '<td align="center"><small>' . $c->idOs . '</small></td>';
-                                        echo '<td><small>' . $c->nomeCliente . '</small></td>';
-                                        echo '<td align="center"><small>' . $c->status . '</small></td>';
+                                        echo '<td><small>' . e($c->nomeCliente) . '</small></td>';
+                                        echo '<td align="center"><small>' . e($c->status) . '</small></td>';
                                         echo '<td align="center"><small>' . date('d/m/Y', strtotime($c->dataInicial)) . '</small></td>';
-                                        echo '<td><small>' . $c->descricaoProduto . '</small></td>';
+                                        echo '<td><small>' . e($c->descricaoProduto) . '</small></td>';
                                         echo '<td align="center"><small>R$: ' . number_format($c->total_produto, 2, ',', '.') . '</small></td>';
                                         echo '<td align="center"><small>R$: ' . number_format($c->total_servico, 2, ',', '.') . '</small></td>';
                                         echo '<td align="center"><small>R$: ' . number_format($c->total_produto + $c->total_servico, 2, ',', '.') . '</small></td>';

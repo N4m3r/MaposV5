@@ -129,7 +129,7 @@ class Financeiro_model extends CI_Model
             foreach ($query->result_array() as $row) {
                 $row_set[] = ['label' => $row['cliente_fornecedor'], 'id' => $row['cliente_fornecedor']];
             }
-            echo json_encode($row_set);
+            return $row_set;
         }
     }
 
@@ -143,7 +143,7 @@ class Financeiro_model extends CI_Model
             foreach ($query->result_array() as $row) {
                 $row_set[] = ['label' => $row['nomeCliente'], 'id' => $row['idClientes']];
             }
-            echo json_encode($row_set);
+            return $row_set;
         }
     }
 }

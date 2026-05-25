@@ -38,23 +38,22 @@ class Financeiro extends MY_Controller
         $periodo = $this->input->get('periodo');
 
         if (! empty($vencimento_de)) {
-            $date = DateTime::createFromFormat('d/m/Y', $vencimento_de);
+            $dateString = parseDateBr($vencimento_de);
 
             if (empty($where)) {
-                $dateString = $date->format('Y-m-d');
                 $where = "data_vencimento >= '$dateString'";
             } else {
-                $where .= " AND data_vencimento >= '$date'";
+                $where .= " AND data_vencimento >= '$dateString'";
             }
         }
 
         if (! empty($vencimento_ate)) {
-            $date = DateTime::createFromFormat('d/m/Y', $vencimento_ate)->format('Y-m-d');
+            $dateString = parseDateBr($vencimento_ate);
 
             if (empty($where)) {
-                $where = "data_vencimento <= '$date'";
+                $where = "data_vencimento <= '$dateString'";
             } else {
-                $where .= " AND data_vencimento <= '$date'";
+                $where .= " AND data_vencimento <= '$dateString'";
             }
         }
 
@@ -115,17 +114,12 @@ class Financeiro extends MY_Controller
             $vencimento = $this->input->post('vencimento');
             $recebimento = $this->input->post('recebimento');
             if ($recebimento != null) {
-                $recebimento = explode('/', $recebimento);
-                $recebimento = $recebimento[2] . '-' . $recebimento[1] . '-' . $recebimento[0];
+                $recebimento = parseDateBr($recebimento);
             }
             if ($vencimento == null) {
-                $vencimento = date('d/m/Y');
-            }
-            try {
-                $vencimento = explode('/', $vencimento);
-                $vencimento = $vencimento[2] . '-' . $vencimento[1] . '-' . $vencimento[0];
-            } catch (Exception $e) {
-                $vencimento = date('Y/m/d');
+                $vencimento = date('Y-m-d');
+            } else {
+                $vencimento = parseDateBr($vencimento, date('Y-m-d'));
             }
             // Formatação correta dos valores
             $valor = str_replace(',', '.', $this->input->post('valor'));
@@ -212,24 +206,11 @@ class Financeiro extends MY_Controller
             $dia_base_pgto = $this->input->post('dia_base_pgto');
             $recebimento = $this->input->post('recebimento');
 
-            try {
-                $dia_pgto = explode('/', $dia_pgto);
-                $dia_pgto = $dia_pgto[2] . '-' . $dia_pgto[1] . '-' . $dia_pgto[0];
-
-                $dia_base_pgto = explode('/', $dia_base_pgto);
-                $dia_base_pgto = $dia_base_pgto[2] . '-' . $dia_base_pgto[1] . '-' . $dia_base_pgto[0];
-            } catch (Exception $e) {
-                $dia_pgto = date('Y/m/d');
-                $dia_base_pgto = date('Y/m/d');
-            }
+            $dia_pgto = parseDateBr($dia_pgto, date('Y-m-d'));
+            $dia_base_pgto = parseDateBr($dia_base_pgto, date('Y-m-d'));
 
             if ($recebimento) {
-                try {
-
-                    $recebimento = explode('/', $recebimento);
-                    $recebimento = $recebimento[2] . '-' . $recebimento[1] . '-' . $recebimento[0];
-                } catch (Exception) {
-                }
+                $recebimento = parseDateBr($recebimento);
             }
 
             $comissao = $this->input->post('comissao');
@@ -377,19 +358,13 @@ class Financeiro extends MY_Controller
             $pagamento = $this->input->post('pagamento');
 
             if ($pagamento != null) {
-                $pagamento = explode('/', $pagamento);
-                $pagamento = $pagamento[2] . '-' . $pagamento[1] . '-' . $pagamento[0];
+                $pagamento = parseDateBr($pagamento);
             }
 
             if ($vencimento == null) {
-                $vencimento = date('d/m/Y');
-            }
-
-            try {
-                $vencimento = explode('/', $vencimento);
-                $vencimento = $vencimento[2] . '-' . $vencimento[1] . '-' . $vencimento[0];
-            } catch (Exception $e) {
-                $vencimento = date('Y/m/d');
+                $vencimento = date('Y-m-d');
+            } else {
+                $vencimento = parseDateBr($vencimento, date('Y-m-d'));
             }
 
             $valor = $this->input->post('valor');
@@ -454,16 +429,10 @@ class Financeiro extends MY_Controller
             $vencimento = $this->input->post('vencimento');
             $pagamento = $this->input->post('pagamento');
 
-            try {
-                $vencimento = explode('/', $vencimento);
-                $vencimento = $vencimento[2] . '-' . $vencimento[1] . '-' . $vencimento[0];
+            $vencimento = parseDateBr($vencimento, date('Y-m-d'));
 
-                if ($pagamento) {
-                    $pagamento = explode('/', $pagamento);
-                    $pagamento = $pagamento[2] . '-' . $pagamento[1] . '-' . $pagamento[0];
-                }
-            } catch (Exception $e) {
-                $vencimento = date('Y/m/d');
+            if ($pagamento) {
+                $pagamento = parseDateBr($pagamento);
             }
 
             $valor = floatval($this->input->post('valor'));
@@ -592,7 +561,10 @@ class Financeiro extends MY_Controller
     {
         if ($this->input->get('term')) {
             $q = strtolower($this->input->get('term'));
-            $this->financeiro_model->autoCompleteClienteFornecedor($q);
+            $result = $this->financeiro_model->autoCompleteClienteFornecedor($q);
+            if ($result !== null) {
+                $this->output->set_content_type('application/json')->set_output(json_encode($result));
+            }
         }
     }
 
@@ -600,7 +572,10 @@ class Financeiro extends MY_Controller
     {
         if ($this->input->get('term')) {
             $q = strtolower($this->input->get('term'));
-            $this->financeiro_model->autoCompleteClienteReceita($q);
+            $result = $this->financeiro_model->autoCompleteClienteReceita($q);
+            if ($result !== null) {
+                $this->output->set_content_type('application/json')->set_output(json_encode($result));
+            }
         }
     }
 

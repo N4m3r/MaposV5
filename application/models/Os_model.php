@@ -23,7 +23,7 @@ class Os_model extends CI_Model
         $this->db->join('clientes', 'clientes.idClientes = os.clientes_id');
         $this->db->limit($perpage, $start);
         $this->db->order_by('idOs', 'desc');
-        if ($where) {
+        if (is_array($where) && !empty($where)) {
             $this->db->where($where);
         }
 
@@ -314,92 +314,114 @@ class Os_model extends CI_Model
 
     public function autoCompleteProduto($q)
     {
-        $this->db->select('*');
-        $this->db->limit(25);
+        // group_start/group_end ensures OR is scoped, preventing it from
+        // bypassing any WHERE conditions that might be added later
+        $this->db->select('idProdutos, descricao, precoVenda, estoque, codDeBarra');
+        $this->db->group_start();
         $this->db->like('codDeBarra', $q);
         $this->db->or_like('descricao', $q);
+        $this->db->group_end();
+        $this->db->limit(25);
         $query = $this->db->get('produtos');
         if ($query->num_rows() > 0) {
             foreach ($query->result_array() as $row) {
                 $row_set[] = ['label' => $row['descricao'] . ' | Preço: R$ ' . $row['precoVenda'] . ' | Estoque: ' . $row['estoque'], 'estoque' => $row['estoque'], 'id' => $row['idProdutos'], 'preco' => $row['precoVenda']];
             }
-            echo json_encode($row_set);
+            return $row_set;
         }
     }
 
     public function autoCompleteProdutoSaida($q)
     {
-        $this->db->select('*');
-        $this->db->limit(25);
+        // Bug fix: group_start/group_end prevents OR from bypassing the saida=1 filter.
+        // Without grouping, SQL precedence makes it:
+        //   WHERE saida=1 AND codDeBarra LIKE '%q%' OR descricao LIKE '%q%'
+        // which returns ALL rows matching descricao regardless of saida.
+        $this->db->select('idProdutos, descricao, precoVenda, estoque, codDeBarra, saida');
+        $this->db->where('saida', 1);
+        $this->db->group_start();
         $this->db->like('codDeBarra', $q);
         $this->db->or_like('descricao', $q);
-        $this->db->where('saida', 1);
+        $this->db->group_end();
+        $this->db->limit(25);
         $query = $this->db->get('produtos');
         if ($query->num_rows() > 0) {
             foreach ($query->result_array() as $row) {
                 $row_set[] = ['label' => $row['descricao'] . ' | Preço: R$ ' . $row['precoVenda'] . ' | Estoque: ' . $row['estoque'], 'estoque' => $row['estoque'], 'id' => $row['idProdutos'], 'preco' => $row['precoVenda']];
             }
-            echo json_encode($row_set);
+            return $row_set;
         }
     }
 
     public function autoCompleteCliente($q)
     {
-        $this->db->select('*');
-        $this->db->limit(25);
+        // group_start/group_end scopes the OR conditions so they can't
+        // interfere with any future WHERE clauses
+        $this->db->select('idClientes, nomeCliente, telefone, celular, documento');
+        $this->db->group_start();
         $this->db->like('nomeCliente', $q);
         $this->db->or_like('telefone', $q);
         $this->db->or_like('celular', $q);
         $this->db->or_like('documento', $q);
+        $this->db->group_end();
+        $this->db->limit(25);
         $query = $this->db->get('clientes');
         if ($query->num_rows() > 0) {
             foreach ($query->result_array() as $row) {
                 $row_set[] = ['label' => $row['nomeCliente'] . ' | Telefone: ' . $row['telefone'] . ' | Celular: ' . $row['celular'] . ' | Documento: ' . $row['documento'], 'id' => $row['idClientes']];
             }
-            echo json_encode($row_set);
+            return $row_set;
         }
     }
 
     public function autoCompleteUsuario($q)
     {
-        $this->db->select('*');
-        $this->db->limit(25);
-        $this->db->like('nome', $q);
+        // group_start/group_end ensures the OR-like search is scoped
+        // and does not bypass the situacao=1 filter
+        $this->db->select('idUsuarios, nome, telefone');
         $this->db->where('situacao', 1);
+        $this->db->group_start();
+        $this->db->like('nome', $q);
+        $this->db->group_end();
+        $this->db->limit(25);
         $query = $this->db->get('usuarios');
         if ($query->num_rows() > 0) {
             foreach ($query->result_array() as $row) {
                 $row_set[] = ['label' => $row['nome'] . ' | Telefone: ' . $row['telefone'], 'id' => $row['idUsuarios']];
             }
-            echo json_encode($row_set);
+            return $row_set;
         }
     }
 
     public function autoCompleteTermoGarantia($q)
     {
-        $this->db->select('*');
-        $this->db->limit(25);
+        $this->db->select('idGarantias, refGarantia');
+        $this->db->group_start();
         $this->db->like('LOWER(refGarantia)', $q);
+        $this->db->group_end();
+        $this->db->limit(25);
         $query = $this->db->get('garantias');
         if ($query->num_rows() > 0) {
             foreach ($query->result_array() as $row) {
                 $row_set[] = ['label' => $row['refGarantia'], 'id' => $row['idGarantias']];
             }
-            echo json_encode($row_set);
+            return $row_set;
         }
     }
 
     public function autoCompleteServico($q)
     {
-        $this->db->select('*');
-        $this->db->limit(25);
+        $this->db->select('idServicos, nome, preco');
+        $this->db->group_start();
         $this->db->like('nome', $q);
+        $this->db->group_end();
+        $this->db->limit(25);
         $query = $this->db->get('servicos');
         if ($query->num_rows() > 0) {
             foreach ($query->result_array() as $row) {
                 $row_set[] = ['label' => $row['nome'] . ' | Preço: R$ ' . $row['preco'], 'id' => $row['idServicos'], 'preco' => $row['preco']];
             }
-            echo json_encode($row_set);
+            return $row_set;
         }
     }
 
@@ -565,25 +587,29 @@ class Os_model extends CI_Model
 
     public function valorTotalOS($id = null)
     {
-        $totalServico = 0;
-        $totalProdutos = 0;
-        $valorDesconto = 0;
-        if ($servicos = $this->getServicos($id)) {
-            foreach ($servicos as $s) {
-                $preco = $s->preco ?: $s->precoVenda;
-                $totalServico = $totalServico + ($preco * ($s->quantidade ?: 1));
-            }
-        }
-        if ($produtos = $this->getProdutos($id)) {
-            foreach ($produtos as $p) {
-                $totalProdutos = $totalProdutos + $p->subTotal;
-            }
-        }
-        if ($valorDescontoBD = $this->getById($id)) {
-            $valorDesconto = $valorDescontoBD->valor_desconto;
+        // Performance: replaced 3 separate queries (getServicos, getProdutos, getById)
+        // with a single query using subqueries for totals.
+        $sql = "
+            SELECT os.valor_desconto,
+                   COALESCE((SELECT SUM(servicos_os.preco * servicos_os.quantidade)
+                              FROM servicos_os WHERE servicos_os.os_id = ?), 0) AS totalServico,
+                   COALESCE((SELECT SUM(produtos_os.subTotal)
+                              FROM produtos_os WHERE produtos_os.os_id = ?), 0) AS totalProdutos
+            FROM os
+            WHERE os.idOs = ?
+            LIMIT 1
+        ";
+        $row = $this->db->query($sql, [$id, $id, $id])->row();
+
+        if ($row) {
+            return [
+                'totalServico'  => (float) $row->totalServico,
+                'totalProdutos' => (float) $row->totalProdutos,
+                'valor_desconto'=> (float) $row->valor_desconto,
+            ];
         }
 
-        return ['totalServico' => $totalServico, 'totalProdutos' => $totalProdutos, 'valor_desconto' => $valorDesconto];
+        return ['totalServico' => 0, 'totalProdutos' => 0, 'valor_desconto' => 0];
     }
 
     public function isEditable($id = null)
@@ -820,5 +846,18 @@ class Os_model extends CI_Model
         }
 
         return $this->db->count_all_results();
+    }
+
+    /**
+     * Reset discount fields on an OS to zero/null.
+     * Called after any product/service change that invalidates the discount.
+     */
+    public function resetDiscount($osId)
+    {
+        $this->db->set('desconto', 0.00);
+        $this->db->set('valor_desconto', 0.00);
+        $this->db->set('tipo_desconto', null);
+        $this->db->where('idOs', $osId);
+        return $this->db->update('os');
     }
 }

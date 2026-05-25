@@ -531,7 +531,7 @@
         <div class="left-content">
             <div class="greeting-icon">
                 <?php if (isset($emitente) && !empty($emitente->url_logo)): ?>
-                    <img src="<?= $emitente->url_logo ?>" alt="Logo" style="max-width: 120px; max-height: 120px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
+                    <img src="<?= e($emitente->url_logo) ?>" alt="Logo" style="max-width: 120px; max-height: 120px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
                 <?php else: ?>
                     <i class="bx bx-shield-alt-2"></i>
                 <?php endif; ?>
@@ -554,7 +554,7 @@
             </h1>
             <p class="greeting-subtitle">
                 <?php if (isset($emitente) && !empty($emitente->nome)): ?>
-                    <?= $emitente->nome ?>
+                    <?= e($emitente->nome) ?>
                 <?php else: ?>
                     Sistema de Gerenciamento de Ordens de Serviço
                 <?php endif; ?>
@@ -572,7 +572,7 @@
                     <div class="logo-area">
                         <div class="logo-icon">
                             <?php if (isset($emitente) && !empty($emitente->url_logo)): ?>
-                                <img src="<?= $emitente->url_logo ?>" alt="Logo" style="border-radius: 8px;">
+                                <img src="<?= e($emitente->url_logo) ?>" alt="Logo" style="border-radius: 8px;">
                             <?php else: ?>
                                 <img src="<?= base_url() ?>assets/img/logo-two.png" alt="Logo">
                             <?php endif; ?>
@@ -626,7 +626,7 @@
                     <p class="footer-text">
                         <?= date('Y'); ?> &copy;
                         <?php if (isset($emitente) && !empty($emitente->nome)): ?>
-                            <?= $emitente->nome ?>
+                            <?= e($emitente->nome) ?>
                         <?php else: ?>
                             <a href="https://github.com/RamonSilva20/mapos" target="_blank">Map-OS</a>
                         <?php endif; ?>

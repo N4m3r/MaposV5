@@ -98,3 +98,40 @@ if (! function_exists('getAmount')) {
         return floatval(str_replace(',', '.', $removedThousandSeparator));
     }
 }
+
+/**
+ * Resolve email recipients based on notification configuration.
+ * @param string $notificationType The notification type: 'todos', 'cliente', 'tecnico', 'emitente'
+ * @param string $clientEmail Client email
+ * @param string $technicianEmail Technician email
+ * @param string $issuerEmail Issuer/company email
+ * @return array Array of email addresses
+ */
+if (!function_exists('resolveEmailRecipients')) {
+    function resolveEmailRecipients($notificationType, $clientEmail, $technicianEmail, $issuerEmail)
+    {
+        $recipients = [];
+
+        switch ($notificationType) {
+            case 'todos':
+                $recipients[] = $clientEmail;
+                $recipients[] = $technicianEmail;
+                $recipients[] = $issuerEmail;
+                break;
+            case 'cliente':
+                $recipients[] = $clientEmail;
+                break;
+            case 'tecnico':
+                $recipients[] = $technicianEmail;
+                break;
+            case 'emitente':
+                $recipients[] = $issuerEmail;
+                break;
+            default:
+                $recipients[] = $clientEmail;
+                break;
+        }
+
+        return array_filter($recipients);
+    }
+}

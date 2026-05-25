@@ -113,7 +113,7 @@ $totalProdutos = 0; ?>
                     <table>
                         <tr>
                             <td class="title">
-                                <img src="<?= $emitente->url_logo; ?>" style="width:100%; max-width:120px;">
+                                <img src="<?= e($emitente->url_logo); ?>" style="width:100%; max-width:120px;">
                             </td>
                             <td style="text-align: right">
                                 OS #: <?= $result->idOs ?><br>
@@ -130,18 +130,18 @@ $totalProdutos = 0; ?>
                     <table>
                         <tr>
                             <td>
-                                Cliente: <?= $result->nomeCliente ?><br>
-                                <?= $result->rua ?>, <?= $result->numero ?>, <?= $result->bairro ?><br>
-                                <?= $result->cidade ?> - <?= $result->estado ?> <br>
-                                <?= $result->email ?> <br>
-                                <?= $result->celular_cliente ?>
+                                Cliente: <?= e($result->nomeCliente) ?><br>
+                                <?= e($result->rua) ?>, <?= e($result->numero) ?>, <?= e($result->bairro) ?><br>
+                                <?= e($result->cidade) ?> - <?= e($result->estado) ?> <br>
+                                <?= e($result->email) ?> <br>
+                                <?= e($result->celular_cliente) ?>
                             </td>
 
                             <td style="text-align: right">
-                                <?= $emitente->nome; ?> <br>
-                                <?= $emitente->rua ?>, <?= $emitente->numero ?>, <?= $emitente->bairro ?><br>
-                                <?= $emitente->cidade ?> - <?= $emitente->uf ?> CEP: <?= $emitente->cep ?> <br>
-                                Responsável: <?= $result->nome ?>
+                                <?= e($emitente->nome); ?> <br>
+                                <?= e($emitente->rua) ?>, <?= e($emitente->numero) ?>, <?= e($emitente->bairro) ?><br>
+                                <?= e($emitente->cidade) ?> - <?= e($emitente->uf) ?> CEP: <?= e($emitente->cep) ?> <br>
+                                Responsável: <?= e($result->nome) ?>
                             </td>
                         </tr>
                     </table>
@@ -153,7 +153,7 @@ $totalProdutos = 0; ?>
                     Status
                 </td>
                 <td colspan="2" style="text-align: center">
-                    <?= $result->status ?>
+                    <?= e($result->status) ?>
                 </td>
             </tr>
 
@@ -233,7 +233,7 @@ $totalProdutos = 0; ?>
                 <?php foreach ($produtos as $p) {
                     $totalProdutos = $totalProdutos + $p->subTotal;
                     echo '<tr class="item">';
-                    echo '<td>' . $p->descricao . '</td>';
+                    echo '<td>' . e($p->descricao) . '</td>';
                     echo '<td>' . $p->quantidade . '</td>';
                     echo '<td>' . $p->preco ?: $p->precoVenda . '</td>';
                     echo '<td style="text-align: center">R$ ' . number_format($p->subTotal, 2, ',', '.') . '</td>';
@@ -260,7 +260,7 @@ $totalProdutos = 0; ?>
                     $subtotal = $preco * ($s->quantidade ?: 1);
                     $totalServico = $totalServico + $subtotal;
                     echo '<tr class="item">';
-                    echo '<td>' . $s->nome . '</td>';
+                    echo '<td>' . e($s->nome) . '</td>';
                     echo '<td>' . ($s->quantidade ?: 1) . '</td>';
                     echo '<td>' . $preco . '</td>';
                     echo '<td>R$ ' . number_format($subtotal, 2, ',', '.') . '</td>';

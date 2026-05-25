@@ -196,7 +196,7 @@
                     <table>
                         <tr>
                             <td class="title">
-                                <img src="<?= $emitente->url_logo; ?>" style="width:100%; max-width:120px;">
+                                <img src="<?= e($emitente->url_logo); ?>" style="width:100%; max-width:120px;">
                             </td>
                             <td style="text-align: right">
                                 <?php if ($cobranca->payment_method === 'boleto') : ?>
@@ -219,17 +219,17 @@
                     <table>
                         <tr>
                             <td>
-                                <strong>Cliente:</strong> <?= $cobranca->nomeCliente ?><br>
-                                <?= $cobranca->rua ?>, <?= $cobranca->numero ?>, <?= $cobranca->bairro ?><br>
-                                <?= $cobranca->cidade ?> - <?= $cobranca->estado ?> <br>
-                                <?= $cobranca->email ?> <br>
+                                <strong>Cliente:</strong> <?= e($cobranca->nomeCliente) ?><br>
+                                <?= e($cobranca->rua) ?>, <?= e($cobranca->numero) ?>, <?= e($cobranca->bairro) ?><br>
+                                <?= e($cobranca->cidade) ?> - <?= e($cobranca->estado) ?> <br>
+                                <?= e($cobranca->email) ?> <br>
                             </td>
 
                             <td style="text-align: right">
                                 <strong>Emitente:</strong><br>
-                                <?= $emitente->nome; ?> <br>
+                                <?= e($emitente->nome); ?> <br>
                                 <?php if ($emitente->cnpj) : ?>
-                                    CNPJ: <?= $emitente->cnpj; ?><br>
+                                    CNPJ: <?= e($emitente->cnpj); ?><br>
                                 <?php endif; ?>
                             </td>
                         </tr>
@@ -259,12 +259,12 @@
                         <?php if ($cobranca->linha_digitavel) : ?>
                             <div class="codigo-barras">
                                 <strong>Linha Digitável:</strong><br>
-                                <?= $cobranca->linha_digitavel ?>
+                                <?= e($cobranca->linha_digitavel) ?>
                             </div>
                         <?php endif; ?>
 
                         <?php if ($cobranca->pdf) : ?>
-                            <a href="<?= $cobranca->pdf ?>" target="_blank" class="btn-pdf">
+                            <a href="<?= e($cobranca->pdf) ?>" target="_blank" class="btn-pdf">
                                 📄 Visualizar / Imprimir Boleto
                             </a>
                         <?php endif; ?>
@@ -295,19 +295,19 @@
 
                         <?php if ($cobranca->link) : ?>
                             <div>
-                                <img src="<?= $cobranca->link ?>" alt="QR Code PIX" class="qr-code">
+                                <img src="<?= e($cobranca->link) ?>" alt="QR Code PIX" class="qr-code">
                             </div>
                         <?php endif; ?>
 
                         <?php if ($cobranca->pix_code) : ?>
                             <div class="pix-code">
                                 <strong>Código PIX (Copia e Cola):</strong><br>
-                                <?= $cobranca->pix_code ?>
+                                <?= e($cobranca->pix_code) ?>
                             </div>
                         <?php elseif ($cobranca->barcode && $cobranca->payment_method === 'pix') : ?>
                             <div class="pix-code">
                                 <strong>Código PIX (Copia e Cola):</strong><br>
-                                <?= $cobranca->barcode ?>
+                                <?= e($cobranca->barcode) ?>
                             </div>
                         <?php endif; ?>
 
@@ -340,11 +340,11 @@
                 <td colspan="4" style="text-align: center; padding-top: 20px; font-size: 12px; color: #666;">
                     <p>
                         Pagamento processado por <strong>Banco Cora</strong><br>
-                        ID da transação: <?= $cobranca->charge_id ?>
+                        ID da transação: <?= e($cobranca->charge_id) ?>
                     </p>
                     <p>
-                        Em caso de dúvidas, entre em contato com <?= $emitente->nome; ?><br>
-                        E-mail: <?= $emitente->email; ?>
+                        Em caso de dúvidas, entre em contato com <?= e($emitente->nome); ?><br>
+                        E-mail: <?= e($emitente->email); ?>
                     </p>
                 </td>
             </tr>

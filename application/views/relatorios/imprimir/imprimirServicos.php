@@ -21,7 +21,7 @@
                     <?= $topo ?>
                     <div class="widget-title">
                         <h4 style="text-align: center; font-size: 1.1em; padding: 5px;">
-                            <?= ucfirst($title) ?>
+                            <?= e(ucfirst($title)) ?>
                         </h4>
                     </div>
                     <div class="widget_content nopadding">
@@ -37,8 +37,8 @@
                                 <?php
                                     foreach ($servicos as $s) {
                                         echo '<tr>';
-                                        echo '<td>' . $s->nome . '</td>';
-                                        echo '<td>' . $s->descricao . '</td>';
+                                        echo '<td>' . e($s->nome) . '</td>';
+                                        echo '<td>' . e($s->descricao) . '</td>';
                                         echo '<td align="center">R$: ' . $s->preco . '</td>';
                                         echo '</tr>';
                                     }

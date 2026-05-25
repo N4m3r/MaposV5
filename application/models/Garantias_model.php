@@ -106,7 +106,7 @@ class Garantias_model extends CI_Model
             foreach ($query->result_array() as $row) {
                 $row_set[] = ['label' => $row['descricao'] . ' | Preço: R$ ' . $row['precoVenda'] . ' | Estoque: ' . $row['estoque'], 'estoque' => $row['estoque'], 'id' => $row['idProdutos'], 'preco' => $row['precoVenda']];
             }
-            echo json_encode($row_set);
+            return $row_set;
         }
     }
 
@@ -120,7 +120,7 @@ class Garantias_model extends CI_Model
             foreach ($query->result_array() as $row) {
                 $row_set[] = ['label' => $row['nomeCliente'] . ' | Telefone: ' . $row['telefone'], 'id' => $row['idClientes']];
             }
-            echo json_encode($row_set);
+            return $row_set;
         }
     }
 
@@ -135,7 +135,7 @@ class Garantias_model extends CI_Model
             foreach ($query->result_array() as $row) {
                 $row_set[] = ['label' => $row['nome'] . ' | Telefone: ' . $row['telefone'], 'id' => $row['idUsuarios']];
             }
-            echo json_encode($row_set);
+            return $row_set;
         }
     }
 }

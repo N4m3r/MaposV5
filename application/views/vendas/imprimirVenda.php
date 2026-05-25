@@ -63,7 +63,7 @@
                                     <td class="text-center"><?= date('d/m/Y H:i:s', strtotime($result->dataVenda)) ?></td>
                                     <td class="text-center">
                                         <?php if ($result->garantia > 0): ?>
-                                            <?= $result->garantia . ' dia(s)' ?>
+                                            <?= e($result->garantia) ?> dia(s)
                                         <?php else: ?>
                                             Sem garantia
                                         <?php endif; ?>
@@ -104,7 +104,7 @@
                     <div class="subtitle">OBSERVAÇÕES</div>
                     <div class="dados">
                         <div>
-                            <?= htmlspecialchars_decode($result->observacoes_cliente) ?>
+                            <?= e($result->observacoes_cliente) ?>
                         </div>
                     </div>
                 <?php endif; ?>

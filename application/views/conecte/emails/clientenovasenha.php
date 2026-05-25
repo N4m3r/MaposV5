@@ -113,7 +113,7 @@
                     <table>
                         <tr>
                             <td class="title">
-                                <img src="<?= $emitente ? $emitente->url_logo : "" ?>" style="width:100%; max-width:120px;">
+                                <img src="<?= $emitente ? e($emitente->url_logo) : "" ?>" style="width:100%; max-width:120px;">
                             </td>
                             <td style="text-align: right">
                                 <br>
@@ -130,11 +130,11 @@
                     <table>
                         <tr>
                             <td>
-                                Cliente: <?= $cliente->nomeCliente ?><br>
+                                Cliente: <?= e($cliente->nomeCliente) ?><br>
                             </td>
 
                             <td style="text-align: right">
-                                <?= $emitente ? $emitente->nome : ""; ?> <br>
+                                <?= $emitente ? e($emitente->nome) : ""; ?> <br>
 
                             </td>
                         </tr>
@@ -145,7 +145,7 @@
             <tr class="details">
 
                 <td colspan="4" style="text-align: left">
-                    Caro(a) <b><?= $cliente->nomeCliente ?></b>,
+                    Caro(a) <b><?= e($cliente->nomeCliente) ?></b>,
                     <br>
 
                 </td>
@@ -166,7 +166,7 @@
             <tr class="details">
                 <td colspan="4" style="text-align: left">
                     Um abraço! <br>
-                    Equipe <?= $emitente ? $emitente->nome : ""; ?>
+                    Equipe <?= $emitente ? e($emitente->nome) : ""; ?>
                 </td>
             </tr>
 

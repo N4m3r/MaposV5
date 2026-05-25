@@ -13,12 +13,15 @@ class Mapos extends MY_Controller {
         $vstatus = array('Aberto', 'Em Andamento', 'Aguardando Peças', 'Aprovado', 'Orçamento');
         $this->data['vendasstatus'] = $this->mapos_model->getVendasStatus($vstatus);
         $this->data['lancamentos'] = $this->mapos_model->getLancamentos();
-        $this->data['ordens_orcamentos'] = $this->mapos_model->getOsOrcamentos();
-        $this->data['ordens_abertas'] = $this->mapos_model->getOsAbertas();
-        $this->data['ordens_aprovadas'] = $this->mapos_model->getOsAprovadas();
-        $this->data['ordens_finalizadas'] = $this->mapos_model->getOsFinalizadas();
-        $this->data['ordens_aguardando'] = $this->mapos_model->getOsAguardandoPecas();
-        $this->data['ordens_andamento'] = $this->mapos_model->getOsAndamento();
+        // Performance: single UNION ALL query instead of 6 separate queries
+        $dashboardStatuses = ['Orçamento', 'Aberto', 'Aprovado', 'Finalizado', 'Aguardando Peças', 'Em Andamento'];
+        $osGrouped = $this->mapos_model->getOsByStatusGrouped($dashboardStatuses);
+        $this->data['ordens_orcamentos'] = $osGrouped['Orçamento'];
+        $this->data['ordens_abertas'] = $osGrouped['Aberto'];
+        $this->data['ordens_aprovadas'] = $osGrouped['Aprovado'];
+        $this->data['ordens_finalizadas'] = $osGrouped['Finalizado'];
+        $this->data['ordens_aguardando'] = $osGrouped['Aguardando Peças'];
+        $this->data['ordens_andamento'] = $osGrouped['Em Andamento'];
         $this->data['produtos'] = $this->mapos_model->getProdutosMinimo();
         $this->data['os'] = $this->mapos_model->getOsEstatisticas();
         $this->data['estatisticas_financeiro'] = $this->mapos_model->getEstatisticasFinanceiro();

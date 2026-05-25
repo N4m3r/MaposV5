@@ -21,7 +21,7 @@
                     <?= $topo ?>
                     <div class="widget-title">
                         <h4 style="text-align: center; font-size: 1.1em; padding: 5px;">
-                            <?= ucfirst($title) ?>
+                            <?= e(ucfirst($title)) ?>
                         </h4>
                     </div>
                     <div class="widget-content nopadding tab-content">
@@ -41,8 +41,8 @@
                                 <?php
                                     foreach ($produtos as $p) {
                                         echo '<tr>';
-                                        echo '<td>' . $p->descricao . '</td>';
-                                        echo '<td align="center">' . $p->unidade . '</td>';
+                                        echo '<td>' . e($p->descricao) . '</td>';
+                                        echo '<td align="center">' . e($p->unidade) . '</td>';
                                         echo '<td align="center">R$: ' . $p->precoCompra . '</td>';
                                         echo '<td align="center">R$: ' . $p->precoVenda . '</td>';
                                         echo '<td align="center">' . $p->estoque . '</td>';

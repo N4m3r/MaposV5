@@ -5,12 +5,25 @@ if (! defined('BASEPATH')) {
 }
 
 require_once APPPATH . 'libraries/Webhooks/WebhookManager.php';
+require_once APPPATH . 'traits/Os/OsEmailTrait.php';
+require_once APPPATH . 'traits/Os/OsAutocompleteTrait.php';
+require_once APPPATH . 'traits/Os/OsAttachmentTrait.php';
+require_once APPPATH . 'traits/Os/OsItemTrait.php';
+require_once APPPATH . 'traits/Os/OsValidationTrait.php';
+require_once APPPATH . 'traits/LegacyJsonResponseTrait.php';
 
 use Libraries\Webhooks\WebhookManager;
 
 class Os extends MY_Controller
 {
     private WebhookManager $webhookManager;
+
+    use OsEmailTrait;
+    use OsAutocompleteTrait;
+    use OsAttachmentTrait;
+    use OsItemTrait;
+    use OsValidationTrait;
+    use LegacyJsonResponseTrait;
 
     public function __construct()
     {
@@ -44,16 +57,14 @@ class Os extends MY_Controller
             $where_array['pesquisa'] = $pesquisa;
         }
         if ($inputDe) {
-            $de = explode('/', $inputDe);
-            if (count($de) === 3 && checkdate((int)$de[1], (int)$de[0], (int)$de[2])) {
-                $de = $de[2] . '-' . $de[1] . '-' . $de[0];
+            $de = parseDateBr($inputDe);
+            if ($de) {
                 $where_array['de'] = $de;
             }
         }
         if ($inputAte) {
-            $ate = explode('/', $inputAte);
-            if (count($ate) === 3 && checkdate((int)$ate[1], (int)$ate[0], (int)$ate[2])) {
-                $ate = $ate[2] . '-' . $ate[1] . '-' . $ate[0];
+            $ate = parseDateBr($inputAte);
+            if ($ate) {
                 $where_array['ate'] = $ate;
             }
         }
@@ -117,30 +128,12 @@ class Os extends MY_Controller
             $dataFinal = $this->input->post('dataFinal');
             $termoGarantiaId = $this->input->post('termoGarantia');
 
-            try {
-                $dataInicial = explode('/', $dataInicial);
-                if (count($dataInicial) !== 3 || !checkdate((int)$dataInicial[1], (int)$dataInicial[0], (int)$dataInicial[2])) {
-                    throw new Exception('Data inicial invalida');
-                }
-                $dataInicial = $dataInicial[2] . '-' . $dataInicial[1] . '-' . $dataInicial[0];
+            $dataInicial = parseDateBr($dataInicial, date('Y-m-d'));
+            $dataFinal = $dataFinal ? parseDateBr($dataFinal, date('Y-m-d')) : date('Y-m-d');
 
-                if ($dataFinal) {
-                    $dataFinal = explode('/', $dataFinal);
-                    if (count($dataFinal) !== 3 || !checkdate((int)$dataFinal[1], (int)$dataFinal[0], (int)$dataFinal[2])) {
-                        throw new Exception('Data final invalida');
-                    }
-                    $dataFinal = $dataFinal[2] . '-' . $dataFinal[1] . '-' . $dataFinal[0];
-                } else {
-                    $dataFinal = date('Y/m/d');
-                }
-
-                $termoGarantiaId = (! $termoGarantiaId == null || ! $termoGarantiaId == '')
-                    ? $this->input->post('garantias_id')
-                    : null;
-            } catch (Exception $e) {
-                $dataInicial = date('Y/m/d');
-                $dataFinal = date('Y/m/d');
-            }
+            $termoGarantiaId = (! $termoGarantiaId == null || ! $termoGarantiaId == '')
+                ? $this->input->post('garantias_id')
+                : null;
 
             $data = [
                 'dataInicial' => $dataInicial,
@@ -157,7 +150,11 @@ class Os extends MY_Controller
                 'faturado' => 0,
             ];
 
-            if (is_numeric($id = $this->os_model->add('os', $data, true))) {
+            $this->db->trans_start();
+            $id = $this->os_model->add('os', $data, true);
+            $this->db->trans_complete();
+
+            if ($this->db->trans_status() !== false && is_numeric($id)) {
                 $this->load->model('mapos_model');
                 $this->load->model('usuarios_model');
 
@@ -169,26 +166,12 @@ class Os extends MY_Controller
 
                 // Verificar configuração de notificação
                 if ($this->data['configuration']['os_notification'] != 'nenhum' && $this->data['configuration']['email_automatico'] == 1) {
-                    $remetentes = [];
-                    switch ($this->data['configuration']['os_notification']) {
-                        case 'todos':
-                            array_push($remetentes, $os->email);
-                            array_push($remetentes, $tecnico->email);
-                            array_push($remetentes, $emitente->email);
-                            break;
-                        case 'cliente':
-                            array_push($remetentes, $os->email);
-                            break;
-                        case 'tecnico':
-                            array_push($remetentes, $tecnico->email);
-                            break;
-                        case 'emitente':
-                            array_push($remetentes, $emitente->email);
-                            break;
-                        default:
-                            array_push($remetentes, $os->email);
-                            break;
-                    }
+                    $remetentes = resolveEmailRecipients(
+                        $this->data['configuration']['os_notification'],
+                        $os->email,
+                        $tecnico->email ?? '',
+                        $emitente->email ?? ''
+                    );
                     $this->enviarOsPorEmail($idOs, $remetentes, 'Ordem de Serviço - Criada');
                 }
 
@@ -273,21 +256,8 @@ class Os extends MY_Controller
             $dataFinal = $this->input->post('dataFinal');
             $termoGarantiaId = $this->input->post('garantias_id') ?: null;
 
-            try {
-                $dataInicial = explode('/', $dataInicial);
-                if (count($dataInicial) !== 3 || !checkdate((int)$dataInicial[1], (int)$dataInicial[0], (int)$dataInicial[2])) {
-                    throw new Exception('Data inicial invalida');
-                }
-                $dataInicial = $dataInicial[2] . '-' . $dataInicial[1] . '-' . $dataInicial[0];
-
-                $dataFinal = explode('/', $dataFinal);
-                if (count($dataFinal) !== 3 || !checkdate((int)$dataFinal[1], (int)$dataFinal[0], (int)$dataFinal[2])) {
-                    throw new Exception('Data final invalida');
-                }
-                $dataFinal = $dataFinal[2] . '-' . $dataFinal[1] . '-' . $dataFinal[0];
-            } catch (Exception $e) {
-                $dataInicial = date('Y/m/d');
-            }
+            $dataInicial = parseDateBr($dataInicial, date('Y-m-d'));
+            $dataFinal = parseDateBr($dataFinal, date('Y-m-d'));
 
             $data = [
                 'dataInicial' => $dataInicial,
@@ -333,26 +303,12 @@ class Os extends MY_Controller
 
                 // Verificar configuração de notificação
                 if ($this->data['configuration']['os_notification'] != 'nenhum' && $this->data['configuration']['email_automatico'] == 1) {
-                    $remetentes = [];
-                    switch ($this->data['configuration']['os_notification']) {
-                        case 'todos':
-                            array_push($remetentes, $os->email);
-                            array_push($remetentes, $tecnico->email);
-                            array_push($remetentes, $emitente->email);
-                            break;
-                        case 'cliente':
-                            array_push($remetentes, $os->email);
-                            break;
-                        case 'tecnico':
-                            array_push($remetentes, $tecnico->email);
-                            break;
-                        case 'emitente':
-                            array_push($remetentes, $emitente->email);
-                            break;
-                        default:
-                            array_push($remetentes, $os->email);
-                            break;
-                    }
+                    $remetentes = resolveEmailRecipients(
+                        $this->data['configuration']['os_notification'],
+                        $os->email,
+                        $tecnico->email ?? '',
+                        $emitente->email ?? ''
+                    );
                     $this->enviarOsPorEmail($idOs, $remetentes, 'Ordem de Serviço - Editada');
                 }
 
@@ -592,69 +548,6 @@ class Os extends MY_Controller
         return $this->layout();
     }
 
-    public function validarCPF($cpf)
-    {
-        $cpf = preg_replace('/[^0-9]/', '', $cpf);
-        if (strlen($cpf) !== 11 || preg_match('/^(\d)\1+$/', $cpf)) {
-            return false;
-        }
-        $soma1 = 0;
-        for ($i = 0; $i < 9; $i++) {
-            $soma1 += $cpf[$i] * (10 - $i);
-        }
-        $resto1 = $soma1 % 11;
-        $dv1 = ($resto1 < 2) ? 0 : 11 - $resto1;
-        if ($dv1 != $cpf[9]) {
-            return false;
-        }
-        $soma2 = 0;
-        for ($i = 0; $i < 10; $i++) {
-            $soma2 += $cpf[$i] * (11 - $i);
-        }
-        $resto2 = $soma2 % 11;
-        $dv2 = ($resto2 < 2) ? 0 : 11 - $resto2;
-
-        return $dv2 == $cpf[10];
-    }
-
-    public function validarCNPJ($cnpj)
-    {
-        $cnpj = preg_replace('/[^0-9]/', '', $cnpj);
-        if (strlen($cnpj) !== 14 || preg_match('/^(\d)\1+$/', $cnpj)) {
-            return false;
-        }
-        $soma1 = 0;
-        for ($i = 0, $pos = 5; $i < 12; $i++, $pos--) {
-            $pos = ($pos < 2) ? 9 : $pos;
-            $soma1 += $cnpj[$i] * $pos;
-        }
-        $dv1 = ($soma1 % 11 < 2) ? 0 : 11 - ($soma1 % 11);
-        if ($dv1 != $cnpj[12]) {
-            return false;
-        }
-        $soma2 = 0;
-        for ($i = 0, $pos = 6; $i < 13; $i++, $pos--) {
-            $pos = ($pos < 2) ? 9 : $pos;
-            $soma2 += $cnpj[$i] * $pos;
-        }
-        $dv2 = ($soma2 % 11 < 2) ? 0 : 11 - ($soma2 % 11);
-
-        return $dv2 == $cnpj[13];
-    }
-
-    public function formatarChave($chave)
-    {
-        if ($this->validarCPF($chave)) {
-            return substr($chave, 0, 3) . '.' . substr($chave, 3, 3) . '.' . substr($chave, 6, 3) . '-' . substr($chave, 9);
-        } elseif ($this->validarCNPJ($chave)) {
-            return substr($chave, 0, 2) . '.' . substr($chave, 2, 3) . '.' . substr($chave, 5, 3) . '/' . substr($chave, 8, 4) . '-' . substr($chave, 12);
-        } elseif (strlen($chave) === 11) {
-            return '(' . substr($chave, 0, 2) . ') ' . substr($chave, 2, 5) . '-' . substr($chave, 7);
-        }
-
-        return $chave;
-    }
-
     public function imprimir()
     {
         if (! $this->uri->segment(3) || ! is_numeric($this->uri->segment(3))) {
@@ -668,29 +561,23 @@ class Os extends MY_Controller
         }
 
         $this->data['custom_error'] = '';
-        $this->load->model('mapos_model');
-        $this->load->model('assinaturas_model');
-        $this->data['result'] = $this->os_model->getById($this->uri->segment(3));
-        $this->data['produtos'] = $this->os_model->getProdutos($this->uri->segment(3));
-        $this->data['servicos'] = $this->os_model->getServicos($this->uri->segment(3));
+        $data = $this->loadOsPrintData($this->uri->segment(3));
+        $this->data['result'] = $data['result'];
+        $this->data['produtos'] = $data['produtos'];
+        $this->data['servicos'] = $data['servicos'];
+        $this->data['emitente'] = $data['emitente'];
+        $this->data['assinaturas'] = $data['assinaturas'];
+        $this->data['qrCode'] = $data['qrCode'];
+        $this->data['chaveFormatada'] = $data['chaveFormatada'];
         $this->data['anexos'] = $this->os_model->getAnexos($this->uri->segment(3));
-        $this->data['emitente'] = $this->mapos_model->getEmitente();
-        $this->data['assinaturas'] = $this->assinaturas_model->getByOs($this->uri->segment(3));
+
         log_info('OS Imprimir - OS ID: ' . $this->uri->segment(3) . ' - Assinaturas: ' . count($this->data['assinaturas']));
         if (!empty($this->data['assinaturas'])) {
             foreach ($this->data['assinaturas'] as $assinatura) {
                 log_info('OS Imprimir - Assinatura tipo: ' . $assinatura->tipo . ' - Caminho: ' . $assinatura->assinatura);
             }
         }
-        if ($this->data['configuration']['pix_key']) {
-            $this->data['qrCode'] = $this->os_model->getQrCode(
-                $this->uri->segment(3),
-                $this->data['configuration']['pix_key'],
-                $this->data['emitente']
-            );
-            $this->data['chaveFormatada'] = $this->formatarChave($this->data['configuration']['pix_key']);
-        }
-        
+
         $this->data['imprimirAnexo'] = isset($_ENV['IMPRIMIR_ANEXOS']) ? (filter_var($_ENV['IMPRIMIR_ANEXOS'] ?? false, FILTER_VALIDATE_BOOLEAN)) : false;
         $this->data['permissao_eOs'] = $this->permission->checkPermission($this->session->userdata('permissao'), 'eOs');
 
@@ -710,20 +597,44 @@ class Os extends MY_Controller
         }
 
         $this->data['custom_error'] = '';
-        $this->load->model('mapos_model');
-        $this->data['result'] = $this->os_model->getById($this->uri->segment(3));
-        $this->data['produtos'] = $this->os_model->getProdutos($this->uri->segment(3));
-        $this->data['servicos'] = $this->os_model->getServicos($this->uri->segment(3));
-        $this->data['emitente'] = $this->mapos_model->getEmitente();
-        $this->data['qrCode'] = $this->os_model->getQrCode(
-            $this->uri->segment(3),
-            $this->data['configuration']['pix_key'],
-            $this->data['emitente']
-        );
-        $this->data['chaveFormatada'] = $this->formatarChave($this->data['configuration']['pix_key']);
+        $data = $this->loadOsPrintData($this->uri->segment(3));
+        $this->data['result'] = $data['result'];
+        $this->data['produtos'] = $data['produtos'];
+        $this->data['servicos'] = $data['servicos'];
+        $this->data['emitente'] = $data['emitente'];
+        $this->data['qrCode'] = $data['qrCode'];
+        $this->data['chaveFormatada'] = $data['chaveFormatada'];
         $this->data['permissao_eOs'] = $this->permission->checkPermission($this->session->userdata('permissao'), 'eOs');
 
         $this->load->view('os/imprimirOsTermica', $this->data);
+    }
+
+    private function loadOsPrintData($osId)
+    {
+        $this->load->model('mapos_model');
+        $this->load->model('assinaturas_model');
+
+        $result = $this->os_model->getById($osId);
+        $produtos = $this->os_model->getProdutos($osId);
+        $servicos = $this->os_model->getServicos($osId);
+        $emitente = $this->mapos_model->getEmitente();
+        $assinaturas = $this->assinaturas_model->getByOs($osId);
+        $qrCode = $this->os_model->getQrCode(
+            $osId,
+            $this->data['configuration']['pix_key'],
+            $emitente
+        );
+        $chaveFormatada = $this->formatarChave($this->data['configuration']['pix_key']);
+
+        return [
+            'result' => $result,
+            'produtos' => $produtos,
+            'servicos' => $servicos,
+            'emitente' => $emitente,
+            'assinaturas' => $assinaturas,
+            'qrCode' => $qrCode,
+            'chaveFormatada' => $chaveFormatada,
+        ];
     }
 
     public function enviar_email()
@@ -763,29 +674,13 @@ class Os extends MY_Controller
         // Verificar configuração de notificação
         $ValidarEmail = false;
         if ($this->data['configuration']['os_notification'] != 'nenhum') {
-            $remetentes = [];
-            switch ($this->data['configuration']['os_notification']) {
-                case 'todos':
-                    array_push($remetentes, $this->data['result']->email);
-                    array_push($remetentes, $tecnico->email);
-                    array_push($remetentes, $emitente->email);
-                    $ValidarEmail = true;
-                    break;
-                case 'cliente':
-                    array_push($remetentes, $this->data['result']->email);
-                    $ValidarEmail = true;
-                    break;
-                case 'tecnico':
-                    array_push($remetentes, $tecnico->email);
-                    break;
-                case 'emitente':
-                    array_push($remetentes, $emitente->email);
-                    break;
-                default:
-                    array_push($remetentes, $this->data['result']->email);
-                    $ValidarEmail = true;
-                    break;
-            }
+            $remetentes = resolveEmailRecipients(
+                $this->data['configuration']['os_notification'],
+                $this->data['result']->email,
+                $tecnico->email ?? '',
+                $emitente->email ?? ''
+            );
+            $ValidarEmail = in_array($this->data['result']->email, $remetentes);
 
             if ($ValidarEmail) {
                 if (empty($this->data['result']->email) || ! filter_var($this->data['result']->email, FILTER_VALIDATE_EMAIL)) {
@@ -891,518 +786,6 @@ class Os extends MY_Controller
         redirect(site_url('os/gerenciar/'));
     }
 
-    public function autoCompleteProduto()
-    {
-        if ($this->input->get('term')) {
-            $q = strtolower($this->input->get('term'));
-            $this->os_model->autoCompleteProduto($q);
-        }
-    }
-
-    public function autoCompleteProdutoSaida()
-    {
-        if ($this->input->get('term')) {
-            $q = strtolower($this->input->get('term'));
-            $this->os_model->autoCompleteProdutoSaida($q);
-        }
-    }
-
-    public function autoCompleteCliente()
-    {
-        if ($this->input->get('term')) {
-            $q = strtolower($this->input->get('term'));
-            $this->os_model->autoCompleteCliente($q);
-        }
-    }
-
-    public function autoCompleteUsuario()
-    {
-        if ($this->input->get('term')) {
-            $q = strtolower($this->input->get('term'));
-            $this->os_model->autoCompleteUsuario($q);
-        }
-    }
-
-    public function autoCompleteTermoGarantia()
-    {
-        if ($this->input->get('term')) {
-            $q = strtolower($this->input->get('term'));
-            $this->os_model->autoCompleteTermoGarantia($q);
-        }
-    }
-
-    public function autoCompleteServico()
-    {
-        if ($this->input->get('term')) {
-            $q = strtolower($this->input->get('term'));
-            $this->os_model->autoCompleteServico($q);
-        }
-    }
-
-    public function adicionarProduto()
-    {
-        $this->load->library('form_validation');
-
-        if ($this->form_validation->run('adicionar_produto_os') === false) {
-            $errors = validation_errors();
-
-            return $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(400)
-                ->set_output(json_encode($errors));
-        }
-
-        $preco = $this->input->post('preco');
-        $quantidade = $this->input->post('quantidade');
-        $subtotal = $preco * $quantidade;
-        $produto = $this->input->post('idProduto');
-        $data = [
-            'quantidade' => $quantidade,
-            'subTotal' => $subtotal,
-            'produtos_id' => $produto,
-            'preco' => $preco,
-            'os_id' => $this->input->post('idOsProduto'),
-        ];
-
-        $id = $this->input->post('idOsProduto');
-        $os = $this->os_model->getById($id);
-        if ($os == null) {
-            $this->session->set_flashdata('error', 'Erro ao tentar inserir produto na OS.');
-            redirect(base_url() . 'index.php/os/gerenciar/');
-        }
-
-        if ($this->os_model->add('produtos_os', $data) == true) {
-            $this->load->model('produtos_model');
-
-            if ($this->data['configuration']['control_estoque']) {
-                $this->produtos_model->updateEstoque($produto, $quantidade, '-');
-            }
-
-            $this->db->set('desconto', 0.00);
-            $this->db->set('valor_desconto', 0.00);
-            $this->db->set('tipo_desconto', null);
-            $this->db->where('idOs', $id);
-            $this->db->update('os');
-
-            log_info('Adicionou produto a uma OS. ID (OS): ' . $this->input->post('idOsProduto'));
-
-            return $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(200)
-                ->set_output(json_encode(['result' => true]));
-        } else {
-            return $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(500)
-                ->set_output(json_encode(['result' => false]));
-        }
-    }
-
-    public function excluirProduto()
-    {
-        $id = $this->input->post('idProduto');
-        $idOs = $this->input->post('idOs');
-
-        $os = $this->os_model->getById($idOs);
-        if ($os == null) {
-            $this->session->set_flashdata('error', 'Erro ao tentar excluir produto na OS.');
-            redirect(base_url() . 'index.php/os/gerenciar/');
-        }
-
-        if ($this->os_model->delete('produtos_os', 'idProdutos_os', $id) == true) {
-            $quantidade = $this->input->post('quantidade');
-            $produto = $this->input->post('produto');
-
-            $this->load->model('produtos_model');
-
-            if ($this->data['configuration']['control_estoque']) {
-                $this->produtos_model->updateEstoque($produto, $quantidade, '+');
-            }
-
-            $this->db->set('desconto', 0.00);
-            $this->db->set('valor_desconto', 0.00);
-            $this->db->set('tipo_desconto', null);
-            $this->db->where('idOs', $idOs);
-            $this->db->update('os');
-
-            log_info('Removeu produto de uma OS. ID (OS): ' . $idOs);
-
-            $this->output->set_content_type('application/json')->set_output(json_encode(['result' => true]));
-        } else {
-            $this->output->set_content_type('application/json')->set_status_header(400)->set_output(json_encode(['result' => false]));
-        }
-    }
-
-    public function adicionarServico()
-    {
-        $this->load->library('form_validation');
-
-        if ($this->form_validation->run('adicionar_servico_os') === false) {
-            $errors = validation_errors();
-
-            return $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(400)
-                ->set_output(json_encode($errors));
-        }
-
-        $data = [
-            'servicos_id' => $this->input->post('idServico'),
-            'quantidade' => $this->input->post('quantidade'),
-            'preco' => $this->input->post('preco'),
-            'os_id' => $this->input->post('idOsServico'),
-            'subTotal' => $this->input->post('preco') * $this->input->post('quantidade'),
-        ];
-
-        if ($this->os_model->add('servicos_os', $data) == true) {
-            log_info('Adicionou serviço a uma OS. ID (OS): ' . $this->input->post('idOsServico'));
-
-            $this->db->set('desconto', 0.00);
-            $this->db->set('valor_desconto', 0.00);
-            $this->db->set('tipo_desconto', null);
-            $this->db->where('idOs', $this->input->post('idOsServico'));
-            $this->db->update('os');
-
-            return $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(200)
-                ->set_output(json_encode(['result' => true]));
-        } else {
-            return $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(500)
-                ->set_output(json_encode(['result' => false]));
-        }
-    }
-
-    public function excluirServico()
-    {
-        $ID = $this->input->post('idServico');
-        $idOs = $this->input->post('idOs');
-
-        if ($this->os_model->delete('servicos_os', 'idServicos_os', $ID) == true) {
-            log_info('Removeu serviço de uma OS. ID (OS): ' . $idOs);
-            $this->db->set('desconto', 0.00);
-            $this->db->set('valor_desconto', 0.00);
-            $this->db->set('tipo_desconto', null);
-            $this->db->where('idOs', $idOs);
-            $this->db->update('os');
-            $this->output->set_content_type('application/json')->set_output(json_encode(['result' => true]));
-        } else {
-            $this->output->set_content_type('application/json')->set_status_header(400)->set_output(json_encode(['result' => false]));
-        }
-    }
-
-    public function editarProduto()
-    {
-        $this->load->library('form_validation');
-
-        $rules = [
-            [
-                'field' => 'idProdutoOs',
-                'label' => 'ID Produto OS',
-                'rules' => 'trim|required|numeric',
-            ],
-            [
-                'field' => 'quantidade',
-                'label' => 'quantidade',
-                'rules' => 'trim|required|numeric|greater_than[0]',
-            ],
-            [
-                'field' => 'preco',
-                'label' => 'preco',
-                'rules' => 'trim|required|numeric|greater_than[-1]',
-            ],
-        ];
-
-        $this->form_validation->set_rules($rules);
-
-        if ($this->form_validation->run() === false) {
-            $errors = validation_errors();
-            return $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(400)
-                ->set_output(json_encode($errors));
-        }
-
-        $idProdutoOs = $this->input->post('idProdutoOs');
-        $quantidade = $this->input->post('quantidade');
-        $preco = $this->input->post('preco');
-        $subtotal = $preco * $quantidade;
-
-        $data = [
-            'quantidade' => $quantidade,
-            'preco' => $preco,
-            'subTotal' => $subtotal,
-        ];
-
-        $this->db->where('idProdutos_os', $idProdutoOs);
-        if ($this->db->update('produtos_os', $data)) {
-            $this->db->set('desconto', 0.00);
-            $this->db->set('valor_desconto', 0.00);
-            $this->db->set('tipo_desconto', null);
-            $this->db->where('idOs', $this->input->post('idOs'));
-            $this->db->update('os');
-
-            log_info('Editou produto da OS. ID (Produto OS): ' . $idProdutoOs);
-
-            return $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(200)
-                ->set_output(json_encode(['result' => true]));
-        } else {
-            return $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(500)
-                ->set_output(json_encode(['result' => false]));
-        }
-    }
-
-    /**
-     * Zera o preço e subtotal de todos os produtos de uma OS
-     */
-    public function zerarPrecosProdutos()
-    {
-        $idOs = $this->input->post('idOs');
-
-        if (!$idOs) {
-            return $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(400)
-                ->set_output(json_encode(['result' => false, 'message' => 'OS não informada']));
-        }
-
-        // Verifica permissão
-        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'eOs')) {
-            return $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(403)
-                ->set_output(json_encode(['result' => false, 'message' => 'Você não tem permissão para editar a OS']));
-        }
-
-        // Atualiza todos os produtos da OS: preco = 0, subTotal = 0
-        $this->db->where('os_id', $idOs);
-        $data = [
-            'preco' => 0.00,
-            'subTotal' => 0.00,
-        ];
-
-        if ($this->db->update('produtos_os', $data)) {
-            // Limpa descontos da OS
-            $this->db->set('desconto', 0.00);
-            $this->db->set('valor_desconto', 0.00);
-            $this->db->set('tipo_desconto', null);
-            $this->db->where('idOs', $idOs);
-            $this->db->update('os');
-
-            log_info('Zerou preços dos produtos da OS. ID: ' . $idOs);
-
-            return $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(200)
-                ->set_output(json_encode(['result' => true]));
-        } else {
-            return $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(500)
-                ->set_output(json_encode(['result' => false, 'message' => 'Erro ao atualizar preços']));
-        }
-    }
-
-    public function editarServico()
-    {
-        $this->load->library('form_validation');
-
-        $rules = [
-            [
-                'field' => 'idServicoOs',
-                'label' => 'ID Servico OS',
-                'rules' => 'trim|required|numeric',
-            ],
-            [
-                'field' => 'quantidade',
-                'label' => 'quantidade',
-                'rules' => 'trim|required|numeric|greater_than[0]',
-            ],
-            [
-                'field' => 'preco',
-                'label' => 'preco',
-                'rules' => 'trim|required|numeric|greater_than[-1]',
-            ],
-        ];
-
-        $this->form_validation->set_rules($rules);
-
-        if ($this->form_validation->run() === false) {
-            $errors = validation_errors();
-            return $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(400)
-                ->set_output(json_encode($errors));
-        }
-
-        $idServicoOs = $this->input->post('idServicoOs');
-        $quantidade = $this->input->post('quantidade');
-        $preco = $this->input->post('preco');
-        $subtotal = $preco * $quantidade;
-
-        $data = [
-            'quantidade' => $quantidade,
-            'preco' => $preco,
-            'subTotal' => $subtotal,
-        ];
-
-        $this->db->where('idServicos_os', $idServicoOs);
-        if ($this->db->update('servicos_os', $data)) {
-            $this->db->set('desconto', 0.00);
-            $this->db->set('valor_desconto', 0.00);
-            $this->db->set('tipo_desconto', null);
-            $this->db->where('idOs', $this->input->post('idOs'));
-            $this->db->update('os');
-
-            log_info('Editou serviço da OS. ID (Servico OS): ' . $idServicoOs);
-
-            return $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(200)
-                ->set_output(json_encode(['result' => true]));
-        } else {
-            return $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(500)
-                ->set_output(json_encode(['result' => false]));
-        }
-    }
-
-    public function anexar()
-    {
-        $this->load->library('upload');
-        $this->load->library('image_lib');
-
-        $directory = FCPATH . 'assets' . DIRECTORY_SEPARATOR . 'anexos' . DIRECTORY_SEPARATOR . date('m-Y') . DIRECTORY_SEPARATOR . 'OS-' . $this->input->post('idOsServico');
-
-        // If it exist, check if it's a directory
-        if (! is_dir($directory . DIRECTORY_SEPARATOR . 'thumbs')) {
-            // make directory for images and thumbs
-            try {
-                mkdir($directory . DIRECTORY_SEPARATOR . 'thumbs', 0755, true);
-            } catch (Exception $e) {
-                $this->output->set_content_type('application/json')->set_status_header(400)->set_output(json_encode(['result' => false, 'mensagem' => 'Erro ao criar diretorio de upload.']));
-                log_message('error', 'Upload directory error: ' . $e->getMessage());
-            }
-        }
-
-        $upload_conf = [
-            'upload_path' => $directory,
-            'allowed_types' => 'jpg|png|gif|jpeg|pdf|docx|txt|xls|xlsx|doc|zip',
-            'max_size' => 10240, // 10MB max
-        ];
-
-        $this->upload->initialize($upload_conf);
-
-        foreach ($_FILES['userfile'] as $key => $val) {
-            $i = 1;
-            foreach ($val as $v) {
-                $field_name = 'file_' . $i;
-                $_FILES[$field_name][$key] = $v;
-                $i++;
-            }
-        }
-        unset($_FILES['userfile']);
-
-        $error = [];
-        $success = [];
-
-        foreach ($_FILES as $field_name => $file) {
-            if (! $this->upload->do_upload($field_name)) {
-                $error['upload'][] = $this->upload->display_errors();
-            } else {
-                $upload_data = $this->upload->data();
-
-                // Gera um nome de arquivo aleatório mantendo a extensão original
-                $new_file_name = uniqid() . '.' . pathinfo($upload_data['file_name'], PATHINFO_EXTENSION);
-                $new_file_path = $upload_data['file_path'] . $new_file_name;
-
-                rename($upload_data['full_path'], $new_file_path);
-
-                if ($upload_data['is_image'] == 1) {
-                    $resize_conf = [
-                        'source_image' => $new_file_path,
-                        'new_image' => $upload_data['file_path'] . 'thumbs' . DIRECTORY_SEPARATOR . 'thumb_' . $new_file_name,
-                        'width' => 200,
-                        'height' => 125,
-                    ];
-
-                    $this->image_lib->initialize($resize_conf);
-
-                    if (! $this->image_lib->resize()) {
-                        $error['resize'][] = $this->image_lib->display_errors();
-                    } else {
-                        $success[] = $upload_data;
-                        $this->load->model('Os_model');
-                        $result = $this->Os_model->anexar($this->input->post('idOsServico'), $new_file_name, base_url('assets' . DIRECTORY_SEPARATOR . 'anexos' . DIRECTORY_SEPARATOR . date('m-Y') . DIRECTORY_SEPARATOR . 'OS-' . $this->input->post('idOsServico')), 'thumb_' . $new_file_name, $directory);
-                        if (! $result) {
-                            $error['db'][] = 'Erro ao inserir no banco de dados.';
-                        }
-                    }
-                } else {
-                    $success[] = $upload_data;
-
-                    $this->load->model('Os_model');
-
-                    $result = $this->Os_model->anexar($this->input->post('idOsServico'), $new_file_name, base_url('assets' . DIRECTORY_SEPARATOR . 'anexos' . DIRECTORY_SEPARATOR . date('m-Y') . DIRECTORY_SEPARATOR . 'OS-' . $this->input->post('idOsServico')), '', $directory);
-                    if (! $result) {
-                        $error['db'][] = 'Erro ao inserir no banco de dados.';
-                    }
-                }
-            }
-        }
-
-        if (count($error) > 0) {
-            $this->output->set_content_type('application/json')->set_status_header(400)->set_output(json_encode(['result' => false, 'mensagem' => 'Ocorreu um erro ao processar os arquivos.', 'errors' => $error]));
-        } else {
-            log_info('Adicionou anexo(s) a uma OS. ID (OS): ' . $this->input->post('idOsServico'));
-            $this->output->set_content_type('application/json')->set_output(json_encode(['result' => true, 'mensagem' => 'Arquivo(s) anexado(s) com sucesso.']));
-        }
-    }
-
-    public function excluirAnexo($id = null)
-    {
-        if ($id == null || ! is_numeric($id)) {
-            $this->output->set_content_type('application/json')->set_status_header(400)->set_output(json_encode(['result' => false, 'mensagem' => 'Erro ao tentar excluir anexo.']));
-        } else {
-            $this->db->where('idAnexos', $id);
-            $file = $this->db->get('anexos', 1)->row();
-            $idOs = $this->input->post('idOs');
-
-            unlink($file->path . DIRECTORY_SEPARATOR . $file->anexo);
-
-            if ($file->thumb != null) {
-                unlink($file->path . DIRECTORY_SEPARATOR . 'thumbs' . DIRECTORY_SEPARATOR . $file->thumb);
-            }
-
-            if ($this->os_model->delete('anexos', 'idAnexos', $id) == true) {
-                log_info('Removeu anexo de uma OS. ID (OS): ' . $idOs);
-                $this->output->set_content_type('application/json')->set_output(json_encode(['result' => true, 'mensagem' => 'Anexo excluído com sucesso.']));
-            } else {
-                $this->output->set_content_type('application/json')->set_status_header(400)->set_output(json_encode(['result' => false, 'mensagem' => 'Erro ao tentar excluir anexo.']));
-            }
-        }
-    }
-
-    public function downloadanexo($id = null)
-    {
-        if ($id != null && is_numeric($id)) {
-            $this->db->where('idAnexos', $id);
-            $file = $this->db->get('anexos', 1)->row();
-
-            $this->load->library('zip');
-            $path = $file->path;
-            $this->zip->read_file($path . '/' . $file->anexo);
-            $this->zip->download('file' . date('d-m-Y-H.i.s') . '.zip');
-        }
-    }
-
     public function adicionarDesconto()
     {
         if ($this->input->post('desconto') == '') {
@@ -1432,7 +815,7 @@ class Os extends MY_Controller
                     ->set_status_header(201)
                     ->set_output(json_encode(['result' => true, 'messages' => 'Desconto adicionado com sucesso!']));
             } else {
-                log_info('Ocorreu um erro ao tentar adiciona desconto a OS: ' . $idOs);
+                log_info('Ocorreu um erro ao tentar adicionar desconto na OS: ' . $idOs);
 
                 return $this->output
                     ->set_content_type('application/json')
@@ -1444,7 +827,7 @@ class Os extends MY_Controller
         return $this->output
             ->set_content_type('application/json')
             ->set_status_header(400)
-            ->set_output(json_encode(['result' => false, 'messages', 'Ocorreu um erro ao tentar adiciona desconto a OS.']));
+            ->set_output(json_encode(['result' => false, 'messages' => 'Ocorreu um erro ao tentar adicionar desconto na OS.']));
     }
 
     public function faturar()
@@ -1458,13 +841,9 @@ class Os extends MY_Controller
             $vencimento = $this->input->post('vencimento');
             $recebimento = $this->input->post('recebimento');
 
-            try {
-                $vencimento = DateTime::createFromFormat('d/m/Y', $vencimento)->format('Y-m-d');
-                if ($recebimento != null) {
-                    $recebimento = DateTime::createFromFormat('d/m/Y', $recebimento)->format('Y-m-d');
-                }
-            } catch (Exception $e) {
-                $vencimento = date('Y-m-d');
+            $vencimento = parseDateBr($vencimento, date('Y-m-d'));
+            if ($recebimento != null) {
+                $recebimento = parseDateBr($recebimento, date('Y-m-d'));
             }
 
             $os_id = $this->input->post('os_id');
@@ -1548,46 +927,6 @@ class Os extends MY_Controller
         $this->session->set_flashdata('error', 'Ocorreu um erro ao tentar faturar OS.');
         $json = ['result' => false];
         $this->output->set_content_type('application/json')->set_status_header(400)->set_output(json_encode($json));
-    }
-
-    private function enviarOsPorEmail($idOs, $remetentes, $assunto)
-    {
-        $dados = [];
-
-        $this->load->model('mapos_model');
-        $dados['result'] = $this->os_model->getById($idOs);
-        if (! isset($dados['result']->email)) {
-            return false;
-        }
-
-        $dados['produtos'] = $this->os_model->getProdutos($idOs);
-        $dados['servicos'] = $this->os_model->getServicos($idOs);
-        $dados['emitente'] = $this->mapos_model->getEmitente();
-        $emitente = $dados['emitente'];
-        if (! isset($emitente->email)) {
-            return false;
-        }
-
-        $html = $this->load->view('os/emails/os', $dados, true);
-
-        require_once APPPATH . 'libraries/Email/EmailQueue.php';
-        $queue = new \Libraries\Email\EmailQueue();
-
-        $remetentes = array_unique($remetentes);
-        foreach ($remetentes as $remetente) {
-            if ($remetente) {
-                $queue->enqueue([
-                    'to' => $remetente,
-                    'subject' => $assunto,
-                    'body_html' => $html,
-                    'priority' => 3,
-                ]);
-            } else {
-                log_info('Email não adicionado a Lista de envio de e-mails. Verifique se o remetente esta cadastrado. OS ID: ' . $idOs);
-            }
-        }
-
-        return true;
     }
 
     public function adicionarAnotacao()
@@ -1693,12 +1032,16 @@ class Os extends MY_Controller
 
         // Filtro de data
         if ($data) {
-            $data_formatada = date('Y-m-d', strtotime(str_replace('/', '-', $data)));
-            $filtros['data_inicio'] = $data_formatada;
+            $data_formatada = parseDateBr($data);
+            if ($data_formatada) {
+                $filtros['data_inicio'] = $data_formatada;
+            }
         }
         if ($data2) {
-            $data_formatada2 = date('Y-m-d', strtotime(str_replace('/', '-', $data2)));
-            $filtros['data_fim'] = $data_formatada2;
+            $data_formatada2 = parseDateBr($data2);
+            if ($data_formatada2) {
+                $filtros['data_fim'] = $data_formatada2;
+            }
         }
 
         // Filtro de técnico
@@ -1845,71 +1188,4 @@ class Os extends MY_Controller
         $this->output->set_content_type('application/json')->set_output(json_encode($historico));
     }
 
-    /**
-     * Enfileira email via sistema V5 (EmailQueue + TemplateEngine)
-     */
-    private function queueEmailV5($os, $template, $subject, $priority = 3, $attachments = [])
-    {
-        try {
-            require_once APPPATH . 'libraries/Email/EmailQueue.php';
-            require_once APPPATH . 'libraries/Email/TemplateEngine.php';
-
-            $queue = new \Libraries\Email\EmailQueue();
-            $templates = new \Libraries\Email\TemplateEngine();
-
-            // Carrega configs de CC/BCC padrao
-            $cc = [];
-            $bcc = [];
-            $this->db->where('config', 'email_cc_default');
-            $rowCc = $this->db->get('configuracoes')->row();
-            if ($rowCc && !empty($rowCc->valor)) {
-                $cc = array_map('trim', explode(',', $rowCc->valor));
-            }
-            $this->db->where('config', 'email_bcc_default');
-            $rowBcc = $this->db->get('configuracoes')->row();
-            if ($rowBcc && !empty($rowBcc->valor)) {
-                $bcc = array_map('trim', explode(',', $rowBcc->valor));
-            }
-
-            $templateData = [
-                'cliente_nome' => $os->nomeCliente ?? $os->cliente_nome ?? '',
-                'cliente_email' => $os->email ?? '',
-                'os_id' => $os->idOs ?? '',
-                'os_titulo' => $os->produto ?? 'OS #' . ($os->idOs ?? ''),
-                'os_descricao' => $os->descricaoProduto ?? '',
-                'os_status' => $os->status ?? '',
-                'os_data_criacao' => isset($os->dataInicial) ? date('d/m/Y', strtotime($os->dataInicial)) : date('d/m/Y'),
-                'os_data_vencimento' => isset($os->dataFinal) ? date('d/m/Y', strtotime($os->dataFinal)) : '',
-                'os_valor_total' => number_format(($os->totalProdutos ?? 0) + ($os->totalServicos ?? 0), 2, ',', '.'),
-                'os_link_visualizar' => base_url('os/visualizar/' . ($os->idOs ?? '')),
-            ];
-
-            $rendered = $templates->render($template, $templateData);
-
-            $enqueueData = [
-                'to' => $os->email ?? '',
-                'to_name' => $templateData['cliente_nome'],
-                'subject' => $subject,
-                'body_html' => $rendered['html'],
-                'body_text' => $rendered['text'] ?? strip_tags($rendered['html']),
-                'template' => $template,
-                'template_data' => $templateData,
-                'priority' => $priority,
-            ];
-
-            if (!empty($cc)) {
-                $enqueueData['cc'] = $cc;
-            }
-            if (!empty($bcc)) {
-                $enqueueData['bcc'] = $bcc;
-            }
-            if (!empty($attachments)) {
-                $enqueueData['attachments'] = (array) $attachments;
-            }
-
-            $queue->enqueue($enqueueData);
-        } catch (\Exception $e) {
-            log_message('error', '[queueEmailV5] Erro ao enfileirar email: ' . $e->getMessage());
-        }
-    }
 }

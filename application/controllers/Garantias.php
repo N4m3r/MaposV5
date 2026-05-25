@@ -203,7 +203,10 @@ class Garantias extends MY_Controller
     {
         if ($this->input->get('term')) {
             $q = strtolower($this->input->get('term'));
-            $this->vendas_model->autoCompleteProduto($q);
+            $result = $this->vendas_model->autoCompleteProduto($q);
+            if ($result !== null) {
+                $this->output->set_content_type('application/json')->set_output(json_encode($result));
+            }
         }
     }
 
@@ -211,7 +214,10 @@ class Garantias extends MY_Controller
     {
         if ($this->input->get('term')) {
             $q = strtolower($this->input->get('term'));
-            $this->vendas_model->autoCompleteCliente($q);
+            $result = $this->vendas_model->autoCompleteCliente($q);
+            if ($result !== null) {
+                $this->output->set_content_type('application/json')->set_output(json_encode($result));
+            }
         }
     }
 
@@ -219,7 +225,10 @@ class Garantias extends MY_Controller
     {
         if ($this->input->get('term')) {
             $q = strtolower($this->input->get('term'));
-            $this->vendas_model->autoCompleteUsuario($q);
+            $result = $this->vendas_model->autoCompleteUsuario($q);
+            if ($result !== null) {
+                $this->output->set_content_type('application/json')->set_output(json_encode($result));
+            }
         }
     }
 }

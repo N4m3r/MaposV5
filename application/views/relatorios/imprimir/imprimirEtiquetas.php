@@ -28,7 +28,7 @@
                                         ?>
 							<div class="detalheProdutoEtiqueta">
 								<div class="descricaoProdutoEtiqueta">
-									<?php $string = strtoupper($p->descricao); ?>
+									<?php $string = strtoupper(e($p->descricao)); ?>
 									<div>
 										<strong>
 											<?php print(limitarTexto($string, $limite = 23)); ?>
@@ -37,7 +37,7 @@
 								</div>
 								<div class="textoProdutoEtiqueta">Cod:
 									<b>
-										<?php echo $p->idProdutos; ?>
+										<?php echo e($p->idProdutos); ?>
 									</b>
 									<br /> Preço: R$
 									<b>
@@ -46,7 +46,7 @@
 									</b>
 								</div>
 								<div class="barcodecell">
-									<barcode code="<?= $p->codDeBarra ?>" text="0" type="<?= $this->input->get("etiquetaCode") ?>" size="0.7" disableborder="0"
+									<barcode code="<?= e($p->codDeBarra) ?>" text="0" type="<?= e($this->input->get("etiquetaCode")) ?>" size="0.7" disableborder="0"
 									 class="barcode" />
 								</div>
 							</div>
@@ -58,7 +58,7 @@
                                     ?>
 							<div class="detalheProdutoEtiqueta">
 								<div class="descricaoProdutoEtiqueta">
-									<?php $string = strtoupper($p->descricao); ?>
+									<?php $string = strtoupper(e($p->descricao)); ?>
 									<div>
 										<strong>
 											<?php print(limitarTexto($string, $limite = 23)); ?>
@@ -67,7 +67,7 @@
 								</div>
 								<div class="textoProdutoEtiqueta">Cod:
 									<b>
-										<?php echo $p->idProdutos; ?>
+										<?php echo e($p->idProdutos); ?>
 									</b>
 									<br /> Preço: R$
 									<b>
@@ -77,7 +77,7 @@
 								</div>
 
 								<div class="barcodecell">
-									<barcode code="<?= $p->codDeBarra ?>" text="0" type="<?= $this->input->get("etiquetaCode") ?>" size="0.7" disableborder="0"
+									<barcode code="<?= e($p->codDeBarra) ?>" text="0" type="<?= e($this->input->get("etiquetaCode")) ?>" size="0.7" disableborder="0"
 									 class="barcode" />
 								</div>
 
@@ -92,7 +92,7 @@
                                         ?>
 							<div class="detalheProdutoEtiquetaEan13">
 								<div class="descricaoProdutoEtiqueta">
-									<?php $string = strtoupper($p->descricao); ?>
+									<?php $string = strtoupper(e($p->descricao)); ?>
 									<div>
 										<strong>
 											<?php print(limitarTexto($string, $limite = 23)); ?>
@@ -101,7 +101,7 @@
 								</div>
 								<div class="textoProdutoEtiqueta">Cod:
 									<b>
-										<?php echo $p->idProdutos; ?>
+										<?php echo e($p->idProdutos); ?>
 									</b>
 									<br /> Preço: R$
 									<b>
@@ -110,7 +110,7 @@
 									</b>
 								</div>
 								<div class="barcodecell">
-									<barcode code="<?= $p->codDeBarra ?>" text="0" type="<?= $this->input->get("etiquetaCode") ?>" size="0.62" disableborder="0"
+									<barcode code="<?= e($p->codDeBarra) ?>" text="0" type="<?= e($this->input->get("etiquetaCode")) ?>" size="0.62" disableborder="0"
 									 class="barcode" />
 								</div>
 							</div>
@@ -124,7 +124,7 @@
                                     ?>
 							<div class="detalheProdutoEtiquetaEan13">
 								<div class="descricaoProdutoEtiqueta">
-									<?php $string = strtoupper($p->descricao); ?>
+									<?php $string = strtoupper(e($p->descricao)); ?>
 									<div>
 										<strong>
 											<?php print(limitarTexto($string, $limite = 23)); ?>
@@ -133,7 +133,7 @@
 								</div>
 								<div class="textoProdutoEtiqueta">Cod:
 									<b>
-										<?php echo $p->idProdutos; ?>
+										<?php echo e($p->idProdutos); ?>
 									</b>
 									<br /> Preço: R$
 									<b>
@@ -143,7 +143,7 @@
 								</div>
 
 								<div class="barcodecell">
-									<barcode code="<?= $p->codDeBarra ?>" text="0" type="<?= $this->input->get("etiquetaCode") ?>" size="0.62" disableborder="0"
+									<barcode code="<?= e($p->codDeBarra) ?>" text="0" type="<?= e($this->input->get("etiquetaCode")) ?>" size="0.62" disableborder="0"
 									 class="barcode" />
 								</div>
 
