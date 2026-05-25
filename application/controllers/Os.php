@@ -1277,7 +1277,8 @@ class Os extends MY_Controller
             try {
                 mkdir($directory . DIRECTORY_SEPARATOR . 'thumbs', 0755, true);
             } catch (Exception $e) {
-                echo json_encode(['result' => false, 'mensagem' => $e->getMessage()]);
+                echo json_encode(['result' => false, 'mensagem' => 'Erro ao criar diretorio de upload.']);
+                log_message('error', 'Upload directory error: ' . $e->getMessage());
                 exit();
             }
         }

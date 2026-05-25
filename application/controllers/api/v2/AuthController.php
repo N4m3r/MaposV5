@@ -105,8 +105,8 @@ class AuthController extends MY_Controller
         try {
             $key = getenv('JWT_SECRET');
             if (empty($key)) {
-                log_message('error', 'JWT_SECRET nao configurado no .env - usando chave temporaria');
-                $key = bin2hex(random_bytes(32));
+                log_message('error', 'JWT_SECRET nao configurado no .env - autenticacao recusada');
+                return $this->error('Servidor nao configurado para autenticacao JWT. Contate o administrador.', 500);
             }
             $decoded = JWT::decode($refreshToken, new Key($key, 'HS256'));
 
@@ -205,8 +205,8 @@ class AuthController extends MY_Controller
         $this->load->config('jwt');
         $key = $this->config->item('jwt_key');
         if (empty($key)) {
-            log_message('error', 'JWT_SECRET nao configurado no .env - usando chave temporaria');
-            $key = bin2hex(random_bytes(32));
+            log_message('error', 'JWT_SECRET nao configurado no .env - autenticacao recusada');
+            throw new \RuntimeException('JWT key nao configurada. Configure API_JWT_KEY no .env.');
         }
         return $key;
     }

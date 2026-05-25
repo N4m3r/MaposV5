@@ -14,7 +14,11 @@ echo "=== Diagnostico Evolution API ===\n\n";
 
 // 1. Testa conexao com a URL externa
 $url = 'https://evo.jj-ferreiras.com.br/instance/all';
-$apikey = '7bd8a76492e92f7e0e4bad14d42eeb0e889e2cfdcd7c8f0ce9b4e1e6607935e2';
+$apikey = getenv('EVO_API_KEY') ?: '';
+if (empty($apikey)) {
+    echo "ERRO: EVO_API_KEY nao configurada no .env\n";
+    exit(1);
+}
 
 echo "1. Testando URL EXTERNA ($url)\n";
 echo "   Headers: apikey=" . substr($apikey, 0, 8) . "...\n";
@@ -22,8 +26,8 @@ echo "   Headers: apikey=" . substr($apikey, 0, 8) . "...\n";
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $url);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
 curl_setopt($ch, CURLOPT_TIMEOUT, 15);
 curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 8);
 curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);

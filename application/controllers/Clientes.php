@@ -65,9 +65,9 @@ class Clientes extends MY_Controller
         $this->data['custom_error'] = '';
         $this->data['emitente'] = $this->mapos_model->getEmitente();
 
-        $senhaCliente = $this->input->post('senha') ? $this->input->post('senha') : preg_replace('/[^\p{L}\p{N}\s]/', '', set_value('documento'));
+        $senhaCliente = $this->input->post('senha') ? $this->input->post('senha') : preg_replace('/[^0-9]/', '', set_value('documento'));
 
-        $cpf_cnpj = preg_replace('/[^\p{L}\p{N}\s]/', '', set_value('documento'));
+        $cpf_cnpj = preg_replace('/[^0-9]/', '', set_value('documento'));
 
         if (strlen($cpf_cnpj) == 11) {
             $pessoa_fisica = true;

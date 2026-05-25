@@ -159,8 +159,9 @@ class Mapos extends MY_Controller {
 
         if (!$this->upload->do_upload()) {
             $upload_error = $this->upload->display_errors();
-            print_r($upload_error);
-            exit();
+            log_message('error', 'Upload error: ' . strip_tags($upload_error));
+            $this->session->set_flashdata('error', 'Erro ao enviar arquivo. Verifique o tipo e tamanho.');
+            redirect($_SERVER['HTTP_REFERER'] ?? base_url());
         } else {
             $file_info = [$this->upload->data()];
 
@@ -195,8 +196,9 @@ class Mapos extends MY_Controller {
 
         if (!$this->upload->do_upload()) {
             $upload_error = $this->upload->display_errors();
-            print_r($upload_error);
-            exit();
+            log_message('error', 'Upload error: ' . strip_tags($upload_error));
+            $this->session->set_flashdata('error', 'Erro ao enviar arquivo. Verifique o tipo e tamanho.');
+            redirect($_SERVER['HTTP_REFERER'] ?? base_url());
         } else {
             $file_info = [$this->upload->data()];
 
