@@ -54,9 +54,6 @@ class Migration_Add_performance_indexes extends CI_Migration
                 )->result();
 
                 if (empty($existing)) {
-                    $this->dbforge->add_key($index['column']);
-                    $this->dbforge->create_table($index['table'] . '_temp', true);
-
                     $fields = explode(', ', $index['column']);
                     $addIndex = "ALTER TABLE `{$index['table']}` ADD INDEX `{$index['name']}` (" . implode(', ', array_map(function($f) { return "`$f`"; }, $fields)) . ")";
 

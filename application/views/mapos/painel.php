@@ -1235,22 +1235,28 @@ $(document).ready(function() {
         var $btn = $('#btnRunMigrations');
         $btn.prop('disabled', true).html('<i class="bx bx-loader-alt bx-spin"></i> Executando...');
         $.ajax({
-            url: '<?= site_url("migrate/latest") ?>',
+            url: '<?= site_url("migrate/runSequential") ?>',
             type: 'POST',
             dataType: 'json',
-            timeout: 60000,
+            timeout: 120000,
             success: function(resp) {
                 $btn.prop('disabled', false).html('<i class="bx bx-play"></i> Executar Migrations');
                 if (resp.success) {
-                    alert('Migrations executadas com sucesso!');
+                    alert(resp.message || 'Migrations executadas com sucesso!');
                     runHealthCheck();
                 } else {
-                    alert('Erro ao executar migrations: ' + (resp.message || 'Erro desconhecido'));
+                    alert('Erro: ' + (resp.message || 'Erro desconhecido'));
+                    runHealthCheck();
                 }
             },
-            error: function(xhr) {
+            error: function(xhr, status, err) {
                 $btn.prop('disabled', false).html('<i class="bx bx-play"></i> Executar Migrations');
-                alert('Erro na requisicao. Verifique o log do servidor.');
+                var msg = 'Erro na requisicao.';
+                if (xhr.responseText) {
+                    var text = xhr.responseText.replace(/<[^>]+>/g, '').trim();
+                    if (text.length > 0 && text.length < 500) msg += ' ' + text;
+                }
+                alert(msg);
             }
         });
     };

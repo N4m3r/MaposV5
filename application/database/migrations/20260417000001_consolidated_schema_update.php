@@ -1403,9 +1403,6 @@ class Migration_Consolidated_schema_update extends CI_Migration
             $this->db->insert('checklist_templates', ['nome' => 'Reparo Corretivo', 'descricao' => 'Checklist para reparos e correcoes', 'categoria' => 'corretiva']);
             $this->db->insert('checklist_templates', ['nome' => 'Instalacao', 'descricao' => 'Checklist para instalacoes de novos equipamentos', 'categoria' => 'instalacao']);
         }
-
-        // Atualizar versão da migration
-        $this->db->replace('migrations', ['version' => '20260417000001']);
     }
 
     // ============================================================

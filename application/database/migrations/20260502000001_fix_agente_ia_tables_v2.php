@@ -132,9 +132,18 @@ class Migration_Fix_agente_ia_tables_v2 extends CI_Migration
             }
 
             // Indices faltantes
-            $this->db->query("ALTER TABLE `agente_ia_permissoes`
-                ADD INDEX `idx_acao` (`acao`),
-                ADD INDEX `idx_ativo` (`ativo`)");
+            try {
+                $this->db->query("ALTER TABLE `agente_ia_permissoes`
+                    ADD INDEX `idx_acao` (`acao`)");
+            } catch (Exception $e) {
+                log_message('debug', 'Index idx_acao ja existe: ' . $e->getMessage());
+            }
+            try {
+                $this->db->query("ALTER TABLE `agente_ia_permissoes`
+                    ADD INDEX `idx_ativo` (`ativo`)");
+            } catch (Exception $e) {
+                log_message('debug', 'Index idx_ativo ja existe: ' . $e->getMessage());
+            }
         }
 
         // ================================================================

@@ -11,9 +11,16 @@ class Migration_Add_obra_id_to_atividades extends CI_Migration
     public function up()
     {
         // Adiciona campo obra_id na tabela os_atividades
-        $this->db->query("ALTER TABLE `os_atividades`
-            ADD COLUMN IF NOT EXISTS `obra_id` INT(11) NULL AFTER `os_id`,
-            ADD INDEX IF NOT EXISTS `idx_obra` (`obra_id`)");
+        if ($this->db->table_exists('os_atividades') && !$this->db->field_exists('obra_id', 'os_atividades')) {
+            $this->db->query("ALTER TABLE `os_atividades`
+                ADD COLUMN `obra_id` INT(11) NULL AFTER `os_id`");
+        }
+        if ($this->db->table_exists('os_atividades')) {
+            $idx = $this->db->query("SHOW INDEX FROM `os_atividades` WHERE Key_name = 'idx_obra'")->num_rows();
+            if ($idx == 0) {
+                $this->db->query("ALTER TABLE `os_atividades` ADD INDEX `idx_obra` (`obra_id`)");
+            }
+        }
 
         // Tabela de vinculação entre etapas de obra e tipos de atividades
         $this->db->query("CREATE TABLE IF NOT EXISTS `obra_etapa_atividades_tipos` (
@@ -53,13 +60,15 @@ class Migration_Add_obra_id_to_atividades extends CI_Migration
                 REFERENCES `os_atividades`(`idAtividade`) ON DELETE CASCADE
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci");
 
-        echo "Integração criada com sucesso!\n";
+        log_message('info', 'Integração criada com sucesso!');
     }
 
     public function down()
     {
         $this->db->query("DROP TABLE IF EXISTS `obra_etapa_atividades_tipos`");
         $this->db->query("DROP TABLE IF EXISTS `obra_atividades_fotos`");
-        $this->db->query("ALTER TABLE `os_atividades` DROP COLUMN IF EXISTS `obra_id`");
+        if ($this->db->field_exists('obra_id', 'os_atividades')) {
+            $this->db->query("ALTER TABLE `os_atividades` DROP COLUMN `obra_id`");
+        }
     }
 }

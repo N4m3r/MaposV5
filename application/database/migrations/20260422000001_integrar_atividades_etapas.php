@@ -14,7 +14,7 @@ class Migration_Integrar_atividades_etapas extends CI_Migration
     {
         // Verifica se a tabela os_atividades existe
         if (!$this->db->table_exists('os_atividades')) {
-            echo "Tabela os_atividades não existe. Crie o sistema de atividades primeiro.\n";
+            log_message('warning', 'Tabela os_atividades não existe. Pulando integração.');
             return false;
         }
 
@@ -24,9 +24,6 @@ class Migration_Integrar_atividades_etapas extends CI_Migration
             $this->db->query("ALTER TABLE `os_atividades`
                 ADD COLUMN `etapa_id` INT(11) NULL AFTER `obra_id`,
                 ADD INDEX `idx_etapa` (`etapa_id`)");
-            echo "✓ Campo etapa_id adicionado em os_atividades\n";
-        } else {
-            echo "= Campo etapa_id já existe\n";
         }
 
         // Adiciona campo obra_atividade_id (vincula com atividade planejada)
@@ -35,9 +32,6 @@ class Migration_Integrar_atividades_etapas extends CI_Migration
             $this->db->query("ALTER TABLE `os_atividades`
                 ADD COLUMN `obra_atividade_id` INT(11) NULL AFTER `etapa_id`,
                 ADD INDEX `idx_obra_atividade` (`obra_atividade_id`)");
-            echo "✓ Campo obra_atividade_id adicionado em os_atividades\n";
-        } else {
-            echo "= Campo obra_atividade_id já existe\n";
         }
 
         // Cria tabela de vínculo entre atividade registrada e etapa
@@ -59,9 +53,6 @@ class Migration_Integrar_atividades_etapas extends CI_Migration
                 CONSTRAINT `fk_vinculo_etapa` FOREIGN KEY (`etapa_id`)
                     REFERENCES `obra_etapas`(`id`) ON DELETE CASCADE
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci");
-            echo "✓ Tabela obra_atividades_vinculo criada\n";
-        } else {
-            echo "= Tabela obra_atividades_vinculo já existe\n";
         }
 
         // Adiciona campo progresso_real em obra_etapas (para controle real vs planejado)
@@ -70,13 +61,10 @@ class Migration_Integrar_atividades_etapas extends CI_Migration
             if (!$campos_existentes) {
                 $this->db->query("ALTER TABLE `obra_etapas`
                     ADD COLUMN `progresso_real` INT(3) DEFAULT 0 COMMENT 'Progresso baseado nas atividades registradas'");
-                echo "✓ Campo progresso_real adicionado em obra_etapas\n";
-            } else {
-                echo "= Campo progresso_real já existe\n";
             }
         }
 
-        echo "\n✅ Integração de Atividades com Etapas concluída!\n";
+        log_message('info', 'Integração de Atividades com Etapas concluída!');
         return true;
     }
 
@@ -95,7 +83,5 @@ class Migration_Integrar_atividades_etapas extends CI_Migration
 
         // Remove tabela de vínculo
         $this->db->query("DROP TABLE IF EXISTS `obra_atividades_vinculo`");
-
-        echo "Rollback concluído.\n";
     }
 }

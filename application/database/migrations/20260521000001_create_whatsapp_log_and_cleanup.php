@@ -126,13 +126,13 @@ class Migration_20260521000001_create_whatsapp_log_and_cleanup extends CI_Migrat
             $this->db->query('ALTER TABLE agente_ia_notificacoes_agendadas ADD INDEX idx_tipo (tipo_notificacao)');
         }
 
-        echo "Migration 20260521000001: Tabelas criadas com sucesso.\n";
+        log_message('info', 'Migration 20260521000001: Tabelas criadas com sucesso.');
     }
 
     public function down()
     {
         $this->dbforge->drop_table('whatsapp_log_interacoes', TRUE);
         $this->dbforge->drop_table('agente_ia_notificacoes_agendadas', TRUE);
-        echo "Migration 20260521000001: Tabelas removidas.\n";
+        log_message('info', 'Migration 20260521000001: Tabelas removidas.');
     }
 }

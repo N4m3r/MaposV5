@@ -38,7 +38,7 @@ class Migration_Add_tecnico_view_permissions extends CI_Migration
             $this->db->where('nome', 'Técnico')->update('permissoes', ['permissoes' => json_encode($perms)]);
         }
 
-        echo "Permissões vTecnicoFotos e vTecnicoAssinaturas adicionadas com sucesso!\n";
+        log_message('info', 'Permissões vTecnicoFotos e vTecnicoAssinaturas adicionadas com sucesso!');
     }
 
     public function down()

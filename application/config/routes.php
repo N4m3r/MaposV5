@@ -225,6 +225,7 @@ $route['usuarioscliente/get_cnpjs/(:num)'] = 'usuarioscliente/get_cnpjs/$1';
 // Rotas do Gerenciador de Migrações
 $route['migrate'] = 'migrate';
 $route['migrate/latest'] = 'migrate/latest';
+$route['migrate/runSequential'] = 'migrate/runSequential';
 $route['migrate/version/(:num)'] = 'migrate/version/$1';
 $route['migrate/reset'] = 'migrate/reset';
 $route['migrate/status'] = 'migrate/status';
