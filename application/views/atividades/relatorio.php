@@ -75,19 +75,19 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <?php if (!empty($atividades)): ?
-                                <?php foreach ($atividades as $atv): ?
+                            <?php if (!empty($atividades)): ?>
+                                <?php foreach ($atividades as $atv): ?>
                                 <tr>
                                     <td>
                                         <?php echo date('d/m/Y', strtotime($atv->hora_inicio)); ?>
                                     </td>
                                     <td><?php echo htmlspecialchars($atv->nome_tecnico ?? 'N/A'); ?></td>
                                     <td>
-                                        <?php if ($atv->os_id): ?
+                                        <?php if ($atv->os_id): ?>
                                             OS #<?php echo $atv->os_id; ?>
-                                        <?php elseif ($atv->obra_id): ?
+                                        <?php elseif ($atv->obra_id): ?>
                                             Obra: <?php echo htmlspecialchars($atv->obra_nome ?? '#'.$atv->obra_id); ?>
-                                        <?php else: ?
+                                        <?php else: ?>
                                             -
                                         <?php endif; ?>
                                     </td>
@@ -135,12 +135,12 @@
                                         <span class="label <?php echo $statusClass; ?>"><?php echo $statusText; ?></span>
                                     </td>
                                 </tr>
-                                <?php endforeach; ?
-                            <?php else: ?
+                                <?php endforeach; ?>
+                            <?php else: ?>
                                 <tr>
                                     <td colspan="8" class="text-center">Nenhuma atividade encontrada.</td>
                                 </tr>
-                            <?php endif; ?
+                            <?php endif; ?>
                         </tbody>
                     </table>
                 </div>

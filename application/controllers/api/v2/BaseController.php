@@ -18,8 +18,8 @@ class BaseController extends MY_Controller
 {
     use ApiResponseTrait;
 
-    protected ?object $currentUser = null;
-    protected array $allowedMethods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'];
+    protected $currentUser = null;
+    protected $allowedMethods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'];
     public $cache;
     protected $rateLimiter;
 
@@ -34,11 +34,11 @@ class BaseController extends MY_Controller
         // Inicializa cache e rate limiter (fallback se classes nao existirem)
         // Usa stub de cache para evitar conflitos com CI Loader
         $this->cache = new class {
-            public function remember(string $key, callable $callback, int $ttl = 300): mixed
+            public function remember($key, callable $callback, $ttl = 300)
             {
                 return $callback();
             }
-            public function flush(): void {}
+            public function flush() {}
         };
 
         $this->rateLimiter = null;
@@ -226,7 +226,7 @@ class BaseController extends MY_Controller
     /**
      * Cacheia resposta
      */
-    protected function cacheResponse(string $key, callable $callback, int $ttl = 300): mixed
+    protected function cacheResponse($key, callable $callback, $ttl = 300)
     {
         return $this->cache->remember($key, $callback, $ttl);
     }

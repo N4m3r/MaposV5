@@ -32,7 +32,7 @@
                             <label style="margin-right: 5px;">Tecnico:</label>
                             <select name="tecnico_id" class="input-medium" style="margin-bottom: 0;">
                                 <option value="">Todos</option>
-                                <?php foreach ($tecnicos as $tec): ?>
+                                <?php foreach ($tecnicos as $tec): ?>>
                                     <option value="<?= $tec->idUsuarios ?>" <?= ($tecnico_id == $tec->idUsuarios) ? 'selected' : '' ?>><?= $tec->nome ?></option>
                                 <?php endforeach; ?>
                             </select>
@@ -42,7 +42,7 @@
                             <label style="margin-right: 5px;">Obra:</label>
                             <select name="obra_id" class="input-medium" style="margin-bottom: 0;">
                                 <option value="">Todas</option>
-                                <?php foreach ($obras as $ob): ?>
+                                <?php foreach ($obras as $ob): ?>>
                                     <option value="<?= $ob->id ?>" <?= ($obra_id == $ob->id) ? 'selected' : '' ?>><?= $ob->nome ?></option>
                                 <?php endforeach; ?>
                             </select>
@@ -81,7 +81,7 @@
         <div class="col-4">
             <div class="widget-box" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
                 <div class="widget-content" style="padding: 20px;">
-                    <div style="font-size: 2.5rem; font-weight: 700;"><= $data ? date('d/m/Y', strtotime($data)) : date('d/m/Y') ?></div>
+                    <div style="font-size: 2.5rem; font-weight: 700;"><?= $data ? date('d/m/Y', strtotime($data)) : date('d/m/Y') ?></div>
                     <div style="font-size: 1rem; opacity: 0.9;">Data do Relatorio</div>
                 </div>
             </div>
@@ -98,7 +98,7 @@
                 </div>
 
                 <div class="widget-content nopadding">
-                    <?php if (!empty($atividades)): ?>
+                    <?php if (!empty($atividades)): ?>>
 
                         <table class="table table-bordered table-striped">
 
@@ -128,7 +128,7 @@
 
                             <tbody>
 
-                                <?php foreach ($atividades as $atv): ?>
+                                <?php foreach ($atividades as $atv): ?>>
 
 
                                     <tr>
@@ -174,7 +174,7 @@
 
                                         <td>
 
-                                            <?php if ($atv->percentual_novo > 0): ?>
+                                            <?php if ($atv->percentual_novo > 0): ?>>
 
                                                 <div class="progress" style="margin: 0; height: 20px;">
 
@@ -183,13 +183,13 @@
                                                 </div>
 
 
-                                                <?php if ($atv->percentual_anterior != $atv->percentual_novo): ?
+                                                <?php if ($atv->percentual_anterior != $atv->percentual_novo): ?>>
 
                                                     <small style="color: #666;">De <?= $atv->percentual_anterior ?>% para <?= $atv->percentual_novo ?>%</small>
 
                                                 <?php endif; ?>
 
-                                            <?php else: ?
+                                            <?php else: ?>
 
                                                 <span style="color: #999;">-</span>
 
@@ -200,11 +200,11 @@
 
                                         <td>
 
-                                            <?php if ($atv->horas_trabalhadas > 0): ?
+                                            <?php if ($atv->horas_trabalhadas > 0): ?>
 
                                                 <span style="color: #28a745; font-weight: 600;"><?= $atv->horas_trabalhadas ?>h</span>
 
-                                            <?php else: ?
+                                            <?php else: ?>
 
                                                 <span style="color: #999;">-</span>
 
@@ -222,7 +222,7 @@
 
                         </table>
 
-                    <?php else: ?
+                    <?php else: ?>
 
 
                         <div style="text-align: center; padding: 60px 20px;">
@@ -248,7 +248,7 @@
 
     <!-- Timeline Visual -->
 
-    <?php if (!empty($atividades)): ?
+    <?php if (!empty($atividades)): ?>
 
 
         <div class="row" style="margin-top: 20px;">
@@ -281,7 +281,7 @@
                             <div style="position: absolute; left: 10px; top: 0; bottom: 0; width: 2px; background: #667eea;"></div>
 
 
-                            <?php foreach ($atividades as $index => $atv): ?
+                            <?php foreach ($atividades as $index => $atv): ?>
 
 
 
@@ -334,7 +334,7 @@
                                                 </div>
 
 
-                                                <?php if ($atv->horas_trabalhadas > 0): ?
+                                                <?php if ($atv->horas_trabalhadas > 0): ?>
 
 
                                                     <div style="color: #28a745; font-weight: 600;"><?= $atv->horas_trabalhadas ?> horas</div>
@@ -349,7 +349,7 @@
                                         </div>
 
 
-                                        <?php if ($atv->descricao): ?
+                                        <?php if ($atv->descricao): ?>
 
 
                                             <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #e0e0e0; color: #555;">

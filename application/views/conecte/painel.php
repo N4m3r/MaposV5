@@ -31,7 +31,7 @@ $totalCompras = count($compras ?? []);
 $osAbertas = count(array_filter($os ?? [], function($o) { return $o->status == 'Aberto'; }));
 $osAndamento = count(array_filter($os ?? [], function($o) { return $o->status == 'Em Andamento'; }));
 $osFinalizadas = count(array_filter($os ?? [], function($o) { return $o->status == 'Finalizado'; }));
-?\>
+?>
 
 <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet' integrity="sha384-B6nB7GjeyR0Ln2Rf3Znp7Z7r4B4eR3i0Uq8k5+u2C2YJXTHVDbB+m9Z8dDqWlZ4H" crossorigin="anonymous">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" crossorigin="anonymous">

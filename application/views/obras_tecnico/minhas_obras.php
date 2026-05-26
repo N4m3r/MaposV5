@@ -316,7 +316,7 @@
                 <div class="atividade-meta">
                     <i class="icon-building"></i> <?php echo $ativ->obra_nome ?? 'Obra não definida'; ?>
                     <?php if ($ativ->hora_inicio): ?> | <i class="icon-time"></i> <?php echo substr($ativ->hora_inicio, 0, 5); ?>
-                    <?php endif; ?
+                    <?php endif; ?>
                 </div>
             </div>
             <div class="atividade-status <?php echo $ativ->status; ?>">

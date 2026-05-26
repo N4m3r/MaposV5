@@ -9,12 +9,12 @@ class Api_docs extends CI_Controller
         parent::__construct();
     }
 
-    public function docs(): void
+    public function docs()
     {
         $this->load->view('api_docs/swagger');
     }
 
-    public function openapi(): void
+    public function openapi()
     {
         $baseUrl = base_url();
 
