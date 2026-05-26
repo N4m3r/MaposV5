@@ -536,8 +536,8 @@ class Mapos extends MY_Controller {
         }
         $this->load->model('os_model');
         $status = $this->input->get('status') ?: null;
-        $start = $this->input->get('start') ?: null;
-        $end = $this->input->get('end') ?: null;
+        $start = $this->input->get('start') ?: date('Y-m-01');
+        $end = $this->input->get('end') ?: date('Y-m-t');
 
         $allOs = $this->mapos_model->calendario(
             $start,
