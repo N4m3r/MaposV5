@@ -455,9 +455,15 @@ class Os_model extends MY_Model
 
     public function autoCompleteUsuario($q)
     {
-        // group_start/group_end ensures the OR-like search is scoped
-        // and does not bypass the situacao=1 filter
-        $this->db->select('idUsuarios, nome, telefone');
+        $ci = &get_instance();
+        $idPermissao = $ci->session->userdata('permissao');
+        $isAdmin = false;
+        if ($idPermissao) {
+            $ci->load->library('permission');
+            $isAdmin = $ci->permission->checkPermission($idPermissao, 'vCliente');
+        }
+
+        $this->db->select('idUsuarios, nome' . ($isAdmin ? ', telefone' : ''));
         $this->db->where('situacao', 1);
         $this->db->group_start();
         $this->db->like('nome', $q);
@@ -466,7 +472,11 @@ class Os_model extends MY_Model
         $query = $this->db->get('usuarios');
         if ($query->num_rows() > 0) {
             foreach ($query->result_array() as $row) {
-                $row_set[] = ['label' => $row['nome'] . ' | Telefone: ' . $row['telefone'], 'id' => $row['idUsuarios']];
+                $label = $row['nome'];
+                if ($isAdmin && !empty($row['telefone'])) {
+                    $label .= ' | Telefone: ' . $row['telefone'];
+                }
+                $row_set[] = ['label' => $label, 'id' => $row['idUsuarios']];
             }
             return $row_set;
         }

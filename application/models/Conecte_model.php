@@ -4,8 +4,10 @@ if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
 
-class Conecte_model extends CI_Model
+class Conecte_model extends MY_Model
 {
+    protected $softDelete = true;
+
     public function add($table, $data, $returnId = false)
     {
         $this->db->insert($table, $data);

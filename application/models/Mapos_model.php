@@ -1,7 +1,9 @@
 ﻿<?php
 
-class Mapos_model extends CI_Model
+class Mapos_model extends MY_Model
 {
+    protected $softDelete = true;
+
     public function __construct()
     {
         parent::__construct();
@@ -331,7 +333,7 @@ class Mapos_model extends CI_Model
 
     public function getProdutosMinimo()
     {
-        $sql = 'SELECT * FROM produtos WHERE estoque <= estoqueMinimo AND estoqueMinimo > 0 LIMIT 10';
+        $sql = 'SELECT idProdutos, codDeBarra, descricao, unidade, precoCompra, precoVenda, estoque, estoqueMinimo, saida FROM produtos WHERE estoque <= estoqueMinimo AND estoqueMinimo > 0 LIMIT 10';
 
         return $this->db->query($sql)->result();
     }

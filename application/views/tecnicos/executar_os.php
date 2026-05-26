@@ -61,14 +61,14 @@
                                 </div>
                                 <div class="os-detail-item">
                                     <span class="detail-label"><i class="bx bx-flag"></i> Status</span>
-                                    <span class="detail-value status-badge status-<?php echo strtolower(str_replace(' ', '_', $os->status)); ?>"><?php echo $os->status; ?></span>
+                                    <span class="detail-value status-badge status-<?php echo strtolower(str_replace(' ', '_', $os->status)); ?>"><?php echo e($os->status); ?></span>
                                 </div>
                             </div>
                             <?php if ($os->descricaoProduto): ?>
                                 <div class="os-detail-row full-width">
                                     <div class="os-detail-item block">
                                         <span class="detail-label"><i class="bx bx-detail"></i> Descrição</span>
-                                        <span class="detail-value descricao-texto"><?php echo $os->descricaoProduto; ?></span>
+                                        <span class="detail-value descricao-texto"><?php echo e($os->descricaoProduto); ?></span>
                                     </div>
                                 </div>
                             <?php endif; ?>
@@ -76,7 +76,7 @@
                                 <div class="os-detail-row full-width">
                                     <div class="os-detail-item block alert-item">
                                         <span class="detail-label"><i class="bx bx-error-circle"></i> Problema Relatado</span>
-                                        <span class="detail-value"><?php echo $os->defeito; ?></span>
+                                        <span class="detail-value"><?php echo e($os->defeito); ?></span>
                                     </div>
                                 </div>
                             <?php endif; ?>
@@ -84,7 +84,7 @@
                                 <div class="os-detail-row full-width">
                                     <div class="os-detail-item block observacao-item">
                                         <span class="detail-label"><i class="bx bx-note"></i> Observações</span>
-                                        <span class="detail-value"><?php echo $os->observacoes; ?></span>
+                                        <span class="detail-value"><?php echo e($os->observacoes); ?></span>
                                     </div>
                                 </div>
                             <?php endif; ?>
@@ -92,7 +92,7 @@
                                 <div class="os-detail-row full-width">
                                     <div class="os-detail-item block laudo-item">
                                         <span class="detail-label"><i class="bx bx-wrench"></i> Laudo Técnico</span>
-                                        <span class="detail-value"><?php echo $os->laudoTecnico; ?></span>
+                                        <span class="detail-value"><?php echo e($os->laudoTecnico); ?></span>
                                     </div>
                                 </div>
                             <?php endif; ?>

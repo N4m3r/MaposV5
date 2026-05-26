@@ -4,8 +4,17 @@ if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
 
-class Financeiro_model extends CI_Model
+class Financeiro_model extends MY_Model
 {
+    protected $table = 'lancamentos';
+    protected $primaryKey = 'idLancamentos';
+    protected $fillable = [
+        'descricao', 'valor', 'valor_desconto', 'desconto', 'tipo',
+        'data_vencimento', 'data_pagamento', 'baixado', 'cliente_fornecedor',
+        'forma_pgto', 'usuarios_id', 'observacoes', 'categoria_id'
+    ];
+    protected $softDelete = true;
+
     public function __construct()
     {
         parent::__construct();
@@ -13,7 +22,7 @@ class Financeiro_model extends CI_Model
 
     public function get($table, $fields, $where = '', $perpage = 0, $start = 0, $one = false, $array = 'array')
     {
-        $this->db->select($fields . ', usuarios.*');
+        $this->db->select($fields . ', usuarios.idUsuarios, usuarios.nome, usuarios.email, usuarios.telefone, usuarios.celular');
         $this->db->from($table);
         $this->db->join('usuarios', 'usuarios.idUsuarios = usuarios_id', 'left');
         $this->db->order_by('data_vencimento', 'asc');

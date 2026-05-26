@@ -518,8 +518,8 @@ class Financeiro extends MY_Controller
 
         if ($id == null || ! is_numeric($id)) {
             $json = ['result' => false, 'message' => 'ID inválido'];
-            echo json_encode($json);
-            exit();
+            $this->output->set_content_type('application/json')->set_output(json_encode($json));
+            return;
         }
 
         // Começa a transação
@@ -553,8 +553,7 @@ class Financeiro extends MY_Controller
             $json = ['result' => false, 'message' => 'Erro ao excluir lançamento'];
         }
 
-        echo json_encode($json);
-        exit();
+        $this->output->set_content_type('application/json')->set_output(json_encode($json));
     }
     
     public function autoCompleteClienteFornecedor()

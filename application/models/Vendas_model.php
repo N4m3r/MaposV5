@@ -6,8 +6,16 @@ if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
 
-class Vendas_model extends CI_Model
+class Vendas_model extends MY_Model
 {
+    protected $table = 'vendas';
+    protected $primaryKey = 'idVendas';
+    protected $fillable = [
+        'dataVenda', 'clientes_id', 'usuarios_id', 'faturado',
+        'valorTotal', 'desconto', 'tipo_desconto', 'status'
+    ];
+    protected $softDelete = true;
+
     public function __construct()
     {
         parent::__construct();
@@ -260,14 +268,14 @@ class Vendas_model extends CI_Model
 
     public function autoCompleteUsuario($q)
     {
-        $this->db->select('*');
+        $this->db->select('idUsuarios, nome');
         $this->db->limit(25);
         $this->db->like('nome', $q);
         $this->db->where('situacao', 1);
         $query = $this->db->get('usuarios');
         if ($query->num_rows() > 0) {
             foreach ($query->result_array() as $row) {
-                $row_set[] = ['label' => $row['nome'] . ' | Telefone: ' . $row['telefone'], 'id' => $row['idUsuarios']];
+                $row_set[] = ['label' => $row['nome'], 'id' => $row['idUsuarios']];
             }
             return $row_set;
         }

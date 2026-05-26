@@ -4,8 +4,16 @@ if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
 
-class Garantias_model extends CI_Model
+class Garantias_model extends MY_Model
 {
+    protected $table = 'garantias';
+    protected $primaryKey = 'idGarantias';
+    protected $fillable = [
+        'refGarantia', 'dataGarantia', 'dataExpiracao',
+        'clientes_id', 'os_id', 'descricao', 'situacao'
+    ];
+    protected $softDelete = true;
+
     public function __construct()
     {
         parent::__construct();

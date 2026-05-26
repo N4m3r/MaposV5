@@ -118,9 +118,10 @@ class MY_Model extends CI_Model
     }
 
     /**
-     * Delete - uses soft delete if enabled, otherwise hard delete.
+     * Delete by ID - uses soft delete if enabled, otherwise hard delete.
+     * Subclasses may override with delete($table, $fieldID, $ID) signature.
      */
-    public function delete(int $id): bool
+    public function deleteById(int $id): bool
     {
         if ($this->softDelete && $this->db->field_exists('deleted_at', $this->table)) {
             return $this->softDelete($id);
