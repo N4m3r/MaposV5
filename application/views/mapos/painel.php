@@ -1157,9 +1157,19 @@
             <div class="modal-body p-0" id="healthCheckBody">
                 <div class="text-center p-4"><i class="bx bx-loader-alt bx-spin" style="font-size:2rem;"></i><br><span class="text-muted">Verificando sistema...</span></div>
             </div>
-            <div class="modal-footer d-flex justify-content-between">
-                <small class="text-muted" id="healthCheckSummary"></small>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+            <div class="modal-footer d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div class="d-flex gap-2 flex-wrap">
+                    <button type="button" class="btn btn-primary btn-sm" id="btnRunMigrations" style="display:none;" onclick="runMigrations()">
+                        <i class="bx bx-play"></i> Executar Migrations
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="runHealthCheck()">
+                        <i class="bx bx-refresh"></i> Verificar Novamente
+                    </button>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <small class="text-muted" id="healthCheckSummary"></small>
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Fechar</button>
+                </div>
             </div>
         </div>
     </div>
@@ -1171,49 +1181,82 @@ $(document).ready(function() {
     // ==========================================
     // DIAGNOSTICO DO SISTEMA
     // ==========================================
-    $.ajax({
-        url: '<?= site_url("mapos/systemHealthCheck") ?>',
-        type: 'GET',
-        dataType: 'json',
-        timeout: 10000,
-        success: function(resp) {
-            if (!resp || !resp.checks) return;
-            var html = '';
-            var categories = {critico: 'Critico', importante: 'Importante', info: 'Informacao'};
-            var statusIcons = {ok: 'bx-check-circle text-success', alerta: 'bx-error-circle text-warning', erro: 'bx-x-circle text-danger'};
-            var lastCat = '';
-            var errorCount = 0, alertCount = 0, okCount = 0;
-            $.each(resp.checks, function(i, c) {
-                if (c.status === 'erro') errorCount++;
-                else if (c.status === 'alerta') alertCount++;
-                else okCount++;
-                if (c.category !== lastCat) {
-                    var catLabel = categories[c.category] || c.category;
-                    var catColors = {critico: '#dc3545', importante: '#fd7e14', info: '#0d6efd'};
-                    html += '<div style="padding:8px 16px;background:'+catColors[c.category]+';color:#fff;font-weight:600;font-size:0.85rem;letter-spacing:0.5px;">'+catLabel.toUpperCase()+'</div>';
-                    lastCat = c.category;
-                }
-                html += '<div class="d-flex align-items-start px-3 py-2 border-bottom" style="gap:10px;">';
-                html += '<i class="bx '+statusIcons[c.status]+' fs-5 mt-1" style="flex-shrink:0;"></i>';
-                html += '<div class="flex-grow-1"><strong>'+c.name+'</strong>';
-                if (c.message) html += '<br><small class="text-muted">'+c.message+'</small>';
-                html += '</div></div>';
-            });
-            $('#healthCheckBody').html(html);
-            $('#healthCheckSummary').text(resp.summary || '');
-            if (resp.has_critical) {
-                $('#healthCheckHeader').css('background', '#dc3545');
-                $('#healthCheckModal').modal('show');
-            } else if (resp.has_issues) {
-                $('#healthCheckHeader').css('background', '#fd7e14');
-                $('#healthCheckModal').modal('show');
+    function renderHealthCheck(resp) {
+        if (!resp || !resp.checks) return;
+        var html = '';
+        var categories = {critico: 'Critico', importante: 'Importante', info: 'Informacao'};
+        var statusIcons = {ok: 'bx-check-circle text-success', alerta: 'bx-error-circle text-warning', erro: 'bx-x-circle text-danger'};
+        var lastCat = '';
+        var hasMigrations = false;
+        $.each(resp.checks, function(i, c) {
+            if (c.category !== lastCat) {
+                var catLabel = categories[c.category] || c.category;
+                var catColors = {critico: '#dc3545', importante: '#fd7e14', info: '#0d6efd'};
+                html += '<div style="padding:8px 16px;background:'+catColors[c.category]+';color:#fff;font-weight:600;font-size:0.85rem;letter-spacing:0.5px;">'+catLabel.toUpperCase()+'</div>';
+                lastCat = c.category;
             }
-        },
-        error: function() {
-            $('#healthCheckBody').html('<div class="text-center p-4 text-danger"><i class="bx bx-error-circle fs-1"></i><br>Falha ao executar diagnostico. Verifique o log do servidor.</div>');
+            html += '<div class="d-flex align-items-start px-3 py-2 border-bottom" style="gap:10px;">';
+            html += '<i class="bx '+statusIcons[c.status]+' fs-5 mt-1" style="flex-shrink:0;"></i>';
+            html += '<div class="flex-grow-1"><strong>'+c.name+'</strong>';
+            if (c.message) html += '<br><small class="text-muted">'+c.message+'</small>';
+            html += '</div></div>';
+            if (c.name === 'Migrations' && c.status !== 'ok') hasMigrations = true;
+        });
+        $('#healthCheckBody').html(html);
+        $('#healthCheckSummary').text(resp.summary || '');
+        if (hasMigrations) { $('#btnRunMigrations').show(); } else { $('#btnRunMigrations').hide(); }
+        if (resp.has_critical) {
+            $('#healthCheckHeader').css('background', '#dc3545');
+            $('#healthCheckModal').modal('show');
+        } else if (resp.has_issues) {
+            $('#healthCheckHeader').css('background', '#fd7e14');
             $('#healthCheckModal').modal('show');
         }
-    });
+    }
+
+    window.runHealthCheck = function() {
+        $('#healthCheckBody').html('<div class="text-center p-4"><i class="bx bx-loader-alt bx-spin" style="font-size:2rem;"></i><br><span class="text-muted">Verificando sistema...</span></div>');
+        $('#btnRunMigrations').hide();
+        $.ajax({
+            url: '<?= site_url("mapos/systemHealthCheck") ?>',
+            type: 'GET',
+            dataType: 'json',
+            timeout: 10000,
+            success: renderHealthCheck,
+            error: function() {
+                $('#healthCheckBody').html('<div class="text-center p-4 text-danger"><i class="bx bx-error-circle fs-1"></i><br>Falha ao executar diagnostico. Verifique o log do servidor.</div>');
+                $('#healthCheckModal').modal('show');
+            }
+        });
+    };
+
+    window.runMigrations = function() {
+        if (!confirm('Deseja executar as migrations pendentes? Isso pode alterar a estrutura do banco de dados.')) return;
+        var $btn = $('#btnRunMigrations');
+        $btn.prop('disabled', true).html('<i class="bx bx-loader-alt bx-spin"></i> Executando...');
+        $.ajax({
+            url: '<?= site_url("migrate/latest") ?>',
+            type: 'POST',
+            dataType: 'json',
+            timeout: 60000,
+            success: function(resp) {
+                $btn.prop('disabled', false).html('<i class="bx bx-play"></i> Executar Migrations');
+                if (resp.success) {
+                    alert('Migrations executadas com sucesso!');
+                    runHealthCheck();
+                } else {
+                    alert('Erro ao executar migrations: ' + (resp.message || 'Erro desconhecido'));
+                }
+            },
+            error: function(xhr) {
+                $btn.prop('disabled', false).html('<i class="bx bx-play"></i> Executar Migrations');
+                alert('Erro na requisicao. Verifique o log do servidor.');
+            }
+        });
+    };
+
+    // Executar diagnostico ao carregar
+    runHealthCheck();
 
     // ==========================================
     // DETECÇÃO E APLICAÇÃO DE TEMA

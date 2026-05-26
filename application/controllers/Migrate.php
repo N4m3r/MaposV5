@@ -72,18 +72,20 @@ class Migrate extends MY_Controller
         try {
             if ($this->migration->latest() === false) {
                 $error = $this->migration->error_string();
-                log_error('Erro ao executar migrações: ' . $error);
+                log_message('error', 'Erro ao executar migrações: ' . $error);
 
                 if ($this->input->is_ajax_request()) {
+                    header('Content-Type: application/json');
                     echo json_encode(['success' => false, 'message' => $error]);
                     return;
                 }
 
                 $this->session->set_flashdata('error', 'Erro ao executar migrações: ' . $error);
             } else {
-                log_info('Migrações executadas com sucesso pelo usuário: ' . $this->session->userdata('nome'));
+                log_message('info', 'Migrações executadas com sucesso pelo usuário: ' . $this->session->userdata('nome'));
 
                 if ($this->input->is_ajax_request()) {
+                    header('Content-Type: application/json');
                     echo json_encode(['success' => true, 'message' => 'Migrações executadas com sucesso!']);
                     return;
                 }
@@ -91,9 +93,10 @@ class Migrate extends MY_Controller
                 $this->session->set_flashdata('success', 'Migrações executadas com sucesso!');
             }
         } catch (Exception $e) {
-            log_error('Erro ao executar migrações: ' . $e->getMessage());
+            log_message('error', 'Erro ao executar migrações: ' . $e->getMessage());
 
             if ($this->input->is_ajax_request()) {
+                header('Content-Type: application/json');
                 echo json_encode(['success' => false, 'message' => $e->getMessage()]);
                 return;
             }
