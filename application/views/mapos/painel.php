@@ -1146,9 +1146,75 @@
     </div>
 </div>
 
+<!-- Modal de Diagnostico do Sistema -->
+<div id="healthCheckModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-white" id="healthCheckHeader" style="background:#dc3545;">
+                <h5 class="modal-title"><i class="bx bx-heart-pulse"></i> Diagnostico do Sistema</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body p-0" id="healthCheckBody">
+                <div class="text-center p-4"><i class="bx bx-loader-alt bx-spin" style="font-size:2rem;"></i><br><span class="text-muted">Verificando sistema...</span></div>
+            </div>
+            <div class="modal-footer d-flex justify-content-between">
+                <small class="text-muted" id="healthCheckSummary"></small>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="<?php echo base_url() ?>assets/js/jquery.validate.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
+    // ==========================================
+    // DIAGNOSTICO DO SISTEMA
+    // ==========================================
+    $.ajax({
+        url: '<?= site_url("mapos/systemHealthCheck") ?>',
+        type: 'GET',
+        dataType: 'json',
+        timeout: 10000,
+        success: function(resp) {
+            if (!resp || !resp.checks) return;
+            var html = '';
+            var categories = {critico: 'Critico', importante: 'Importante', info: 'Informacao'};
+            var statusIcons = {ok: 'bx-check-circle text-success', alerta: 'bx-error-circle text-warning', erro: 'bx-x-circle text-danger'};
+            var lastCat = '';
+            var errorCount = 0, alertCount = 0, okCount = 0;
+            $.each(resp.checks, function(i, c) {
+                if (c.status === 'erro') errorCount++;
+                else if (c.status === 'alerta') alertCount++;
+                else okCount++;
+                if (c.category !== lastCat) {
+                    var catLabel = categories[c.category] || c.category;
+                    var catColors = {critico: '#dc3545', importante: '#fd7e14', info: '#0d6efd'};
+                    html += '<div style="padding:8px 16px;background:'+catColors[c.category]+';color:#fff;font-weight:600;font-size:0.85rem;letter-spacing:0.5px;">'+catLabel.toUpperCase()+'</div>';
+                    lastCat = c.category;
+                }
+                html += '<div class="d-flex align-items-start px-3 py-2 border-bottom" style="gap:10px;">';
+                html += '<i class="bx '+statusIcons[c.status]+' fs-5 mt-1" style="flex-shrink:0;"></i>';
+                html += '<div class="flex-grow-1"><strong>'+c.name+'</strong>';
+                if (c.message) html += '<br><small class="text-muted">'+c.message+'</small>';
+                html += '</div></div>';
+            });
+            $('#healthCheckBody').html(html);
+            $('#healthCheckSummary').text(resp.summary || '');
+            if (resp.has_critical) {
+                $('#healthCheckHeader').css('background', '#dc3545');
+                $('#healthCheckModal').modal('show');
+            } else if (resp.has_issues) {
+                $('#healthCheckHeader').css('background', '#fd7e14');
+                $('#healthCheckModal').modal('show');
+            }
+        },
+        error: function() {
+            $('#healthCheckBody').html('<div class="text-center p-4 text-danger"><i class="bx bx-error-circle fs-1"></i><br>Falha ao executar diagnostico. Verifique o log do servidor.</div>');
+            $('#healthCheckModal').modal('show');
+        }
+    });
+
     // ==========================================
     // DETECÇÃO E APLICAÇÃO DE TEMA
     // ==========================================

@@ -528,6 +528,215 @@ class Mapos extends MY_Controller {
         return redirect(site_url('mapos/configurar'));
     }
 
+    public function systemHealthCheck()
+    {
+        header('Content-Type: application/json; charset=utf-8');
+        $checks = [];
+        $hasCritical = false;
+        $hasIssues = false;
+
+        $addCheck = function ($category, $name, $status, $message) use (&$checks, &$hasCritical, &$hasIssues) {
+            $checks[] = compact('category', 'name', 'status', 'message');
+            if ($status === 'erro') {
+                $hasIssues = true;
+                if ($category === 'critico') {
+                    $hasCritical = true;
+                }
+            } elseif ($status === 'alerta') {
+                $hasIssues = true;
+            }
+        };
+
+        // === CRITICOS ===
+
+        // 1. Conexao DB
+        $dbConnected = false;
+        try {
+            $dbConnected = $this->db->conn_id !== null && $this->db->conn_id;
+        } catch (Exception $e) {}
+        if ($dbConnected) {
+            $q = $this->db->query('SELECT 1');
+            $dbConnected = $q !== false;
+        }
+        $addCheck('critico', 'Conexao Banco de Dados', $dbConnected ? 'ok' : 'erro',
+            $dbConnected ? 'Conectado (' . $this->db->database . ')' : 'Falha ao conectar: ' . $this->db->_error_message());
+
+        // 2. Tabelas core
+        $coreTables = ['ci_sessions', 'configuracoes', 'migrations', 'permissoes', 'usuarios', 'emitente', 'os', 'clientes', 'lancamentos', 'produtos', 'servicos'];
+        $missingTables = [];
+        foreach ($coreTables as $t) {
+            if (!$this->db->table_exists($t)) {
+                $missingTables[] = $t;
+            }
+        }
+        $addCheck('critico', 'Tabelas Core', empty($missingTables) ? 'ok' : 'erro',
+            empty($missingTables) ? count($coreTables) . ' tabelas verificadas' : 'Tabelas faltando: ' . implode(', ', $missingTables));
+
+        // 3. Sessao
+        $sessDriver = $this->config->item('sess_driver') ?: 'database';
+        $sessOk = true;
+        $sessMsg = 'Driver: ' . $sessDriver;
+        if ($sessDriver === 'database') {
+            if ($this->db->table_exists('ci_sessions')) {
+                $sessMsg .= ' - Tabela OK';
+            } else {
+                $sessOk = false;
+                $sessMsg .= ' - Tabela ci_sessions NAO existe!';
+            }
+        } else {
+            $sessPath = $this->config->item('sess_save_path');
+            $sessMsg .= ' - Path: ' . $sessPath;
+            if ($sessPath && !is_writable($sessPath)) {
+                $sessOk = false;
+                $sessMsg .= ' (NAO gravavel!)';
+            }
+        }
+        $addCheck('critico', 'Sessao', $sessOk ? 'ok' : 'erro', $sessMsg);
+
+        // 4. Chave de criptografia
+        $encKey = $_ENV['APP_ENCRYPTION_KEY'] ?? '';
+        $addCheck('critico', 'Chave de Criptografia', !empty($encKey) ? 'ok' : 'erro',
+            !empty($encKey) ? 'Definida (' . strlen($encKey) . ' chars)' : 'APP_ENCRYPTION_KEY NAO definida no .env!');
+
+        // 5. Extensoes PHP
+        $requiredExt = ['mysqli', 'json', 'mbstring', 'openssl', 'curl', 'gd', 'session'];
+        $missingExt = [];
+        foreach ($requiredExt as $ext) {
+            if (!extension_loaded($ext)) {
+                $missingExt[] = $ext;
+            }
+        }
+        $addCheck('critico', 'Extensoes PHP', empty($missingExt) ? 'ok' : 'erro',
+            empty($missingExt) ? count($requiredExt) . ' extensoes OK' : 'Faltando: ' . implode(', ', $missingExt));
+
+        // === IMPORTANTES ===
+
+        // 6. Migrations pendentes
+        $pendingCount = 0;
+        try {
+            $migrationPath = APPPATH . 'database/migrations/';
+            $files = glob($migrationPath . '*.php');
+            $applied = [];
+            if ($this->db->table_exists('migrations')) {
+                $rows = $this->db->get('migrations')->result();
+                foreach ($rows as $r) {
+                    if (isset($r->version)) {
+                        $applied[] = $r->version;
+                    }
+                }
+            }
+            foreach ($files as $f) {
+                $basename = basename($f, '.php');
+                $version = substr($basename, 0, 14);
+                if (!in_array($version, $applied)) {
+                    $pendingCount++;
+                }
+            }
+        } catch (Exception $e) {
+            $pendingCount = -1;
+        }
+        $addCheck('importante', 'Migrations', $pendingCount === 0 ? 'ok' : ($pendingCount > 0 ? 'alerta' : 'erro'),
+            $pendingCount === 0 ? 'Todas aplicadas (' . count($applied ?? []) . ')' : ($pendingCount > 0 ? $pendingCount . ' migrations pendentes!' : 'Erro ao verificar migrations'));
+
+        // 7. Diretorios gravaveis
+        $writableDirs = [
+            'application/logs/' => APPPATH . 'logs',
+            'application/cache/' => APPPATH . 'cache',
+            'assets/uploads/' => FCPATH . 'assets/uploads',
+            'backups/' => FCPATH . 'backups',
+            'assets/arquivos/' => FCPATH . 'assets/arquivos',
+        ];
+        $notWritable = [];
+        foreach ($writableDirs as $label => $path) {
+            if (!is_dir($path)) {
+                $notWritable[] = $label . ' (nao existe)';
+            } elseif (!is_writable($path)) {
+                $notWritable[] = $label;
+            }
+        }
+        $addCheck('importante', 'Diretorios Gravaveis', empty($notWritable) ? 'ok' : 'alerta',
+            empty($notWritable) ? count($writableDirs) . ' diretorios OK' : 'Sem permissao: ' . implode(', ', $notWritable));
+
+        // 8. Emitente
+        $emitente = $this->mapos_model->getEmitente();
+        $emitOk = $emitente && !empty($emitente->cnpj);
+        $addCheck('importante', 'Emitente Configurado', $emitOk ? 'ok' : 'alerta',
+            $emitOk ? 'CNPJ: ' . substr($emitente->cnpj, 0, 8) . '...' : 'CNPJ nao configurado');
+
+        // 9. Admin existe
+        $adminCount = 0;
+        try {
+            $adminCount = $this->db->where('permissoes_id', 1)->count_all_results('usuarios');
+        } catch (Exception $e) {}
+        $addCheck('importante', 'Usuario Admin', $adminCount > 0 ? 'ok' : 'erro',
+            $adminCount > 0 ? $adminCount . ' admin(s) encontrado(s)' : 'Nenhum usuario com permissao admin!');
+
+        // 10. Integridade permissoes
+        $permsOk = true;
+        $permsMsg = '';
+        try {
+            $permRows = $this->db->get('permissoes')->result();
+            $invalid = 0;
+            foreach ($permRows as $p) {
+                $decoded = json_decode($p->permissoes, true);
+                if ($decoded === null && !empty($p->permissoes)) {
+                    $decoded = @unserialize($p->permissoes);
+                }
+                if (!is_array($decoded) && !empty($p->permissoes)) {
+                    $invalid++;
+                }
+            }
+            if ($invalid > 0) {
+                $permsOk = false;
+                $permsMsg = $invalid . ' grupo(s) com dados corrompidos!';
+            } else {
+                $permsMsg = count($permRows) . ' grupos OK';
+            }
+        } catch (Exception $e) {
+            $permsOk = false;
+            $permsMsg = 'Erro: ' . $e->getMessage();
+        }
+        $addCheck('importante', 'Integridade Permissoes', $permsOk ? 'ok' : 'erro', $permsMsg);
+
+        // 11. Permissao admin funciona
+        $adminPermOk = $this->permission->checkPermission(1, 'vCliente');
+        $addCheck('importante', 'Permissao Admin Funciona', $adminPermOk ? 'ok' : 'erro',
+            $adminPermOk ? 'checkPermission(1, vCliente) = true' : 'checkPermission(1, vCliente) = false! Admin sem acesso!');
+
+        // === INFORMATIVOS ===
+
+        $addCheck('info', 'Versao App', 'ok', $this->config->item('app_version') ?: 'N/A');
+        $addCheck('info', 'Versao PHP', version_compare(PHP_VERSION, '8.0', '>=') ? 'ok' : 'alerta',
+            PHP_VERSION . (version_compare(PHP_VERSION, '8.0', '<') ? ' (recomendado 8.0+)' : ''));
+        $addCheck('info', 'Versao CodeIgniter', 'ok', CI_VERSION);
+        $addCheck('info', 'Ambiente', ENVIRONMENT === 'production' ? 'ok' : 'alerta',
+            ENVIRONMENT . (ENVIRONMENT !== 'production' ? ' (deveria ser production?)' : ''));
+        $addCheck('info', 'Base URL', 'ok', $this->config->item('base_url'));
+
+        // Email
+        $smtpHost = $_ENV['EMAIL_SMTP_HOST'] ?? '';
+        $smtpUser = $_ENV['EMAIL_SMTP_USER'] ?? '';
+        $emailConfigured = !empty($smtpHost) && !empty($smtpUser) && strpos($smtpUser, 'seuemail') === false;
+        $addCheck('info', 'Config Email', $emailConfigured ? 'ok' : 'alerta',
+            $emailConfigured ? 'SMTP: ' . $smtpHost : 'Nao configurado ou com valores padrão');
+
+        // JWT Key
+        $jwtKey = $_ENV['API_JWT_KEY'] ?? '';
+        $addCheck('info', 'API JWT Key', !empty($jwtKey) ? 'ok' : 'alerta',
+            !empty($jwtKey) ? 'Definida' : 'API_JWT_KEY nao definida - API v2 nao funcionara');
+
+        $errorCount = count(array_filter($checks, function ($c) { return $c['status'] === 'erro'; }));
+        $alertCount = count(array_filter($checks, function ($c) { return $c['status'] === 'alerta'; }));
+        $okCount = count(array_filter($checks, function ($c) { return $c['status'] === 'ok'; }));
+
+        echo json_encode([
+            'has_issues' => $hasIssues,
+            'has_critical' => $hasCritical,
+            'checks' => $checks,
+            'summary' => "$okCount OK, $alertCount alerta(s), $errorCount erro(s)",
+        ], JSON_UNESCAPED_UNICODE);
+    }
+
     public function calendario()
     {
         if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vOs')) {
