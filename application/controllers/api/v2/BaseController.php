@@ -256,19 +256,22 @@ class BaseController extends MY_Controller
     }
 
     /**
-     * Loga acesso à API
+     * Loga acesso à API na tabela audit_log
      */
     protected function logAccess(string $endpoint, string $method): void
     {
         $ci = &get_instance();
         $ci->load->model('Audit_model');
 
-        $ci->Audit_model->addLog([
-            'acao' => 'api_access',
-            'tabela' => 'api',
-            'id_registro' => 0,
-            'detalhes' => "{$method} {$endpoint}",
-            'ip' => $this->input->ip_address()
+        $ci->Audit_model->logAction([
+            'user_id'     => $this->authUserId ?? null,
+            'username'    => $this->authUsername ?? 'api',
+            'action'      => 'api_access',
+            'table_name'  => 'api',
+            'record_id'   => null,
+            'new_data'    => "{$method} {$endpoint}",
+            'ip_address'  => $this->input->ip_address(),
+            'user_agent'  => $this->input->user_agent(),
         ]);
     }
 

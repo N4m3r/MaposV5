@@ -16,7 +16,7 @@
     <link href="<?php echo base_url(); ?>assets/font-awesome/css/font-awesome.css" rel="stylesheet" />
     <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/fullcalendar.css" />
     <link href="<?php echo base_url(); ?>assets/css/bootstrap-responsive.min.css" rel="stylesheet">
-    <script type="text/javascript" src="<?php echo base_url(); ?>assets/js/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src="<?php echo base_url(); ?>assets/js/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script type="text/javascript" src="<?= base_url(); ?>assets/js/funcoesGlobal.js"></script>
     <script type="text/javascript" src="<?= base_url(); ?>assets/js/csrf.js"></script>
 </head>
@@ -55,10 +55,10 @@
                                                     </tr>
                                                 <?php } else { ?>
                                                     <tr>
-                                                        <td style="width: 25%"><img src=" <?php echo $emitente[0]->url_logo; ?> "></td>
-                                                        <td><span style="font-size: 20px; "> <?php echo $emitente[0]->nome; ?></span> </br>
-                                                            <span><?php echo $emitente[0]->cnpj; ?> </br> <?php echo $emitente[0]->rua . ', nº:' . $emitente[0]->numero . ', ' . $emitente[0]->bairro . ' - ' . $emitente[0]->cidade . ' - ' . $emitente[0]->uf; ?> </span> </br>
-                                                            <span> E-mail: <?php echo $emitente[0]->email . ' - Fone: ' . $emitente[0]->telefone; ?></span>
+                                                        <td style="width: 25%"><img src=" <?php echo e($emitente[0]->url_logo); ?> "></td>
+                                                        <td><span style="font-size: 20px; "> <?php echo e($emitente[0]->nome); ?></span> </br>
+                                                            <span><?php echo e($emitente[0]->cnpj); ?> </br> <?php echo e($emitente[0]->rua) . ', nº:' . e($emitente[0]->numero) . ', ' . e($emitente[0]->bairro) . ' - ' . e($emitente[0]->cidade) . ' - ' . e($emitente[0]->uf); ?> </span> </br>
+                                                            <span> E-mail: <?php echo e($emitente[0]->email) . ' - Fone: ' . e($emitente[0]->telefone); ?></span>
                                                         </td>
                                                         <td style="width: 18%; text-align: center"><span>Emissão: <?php echo date('d/m/Y') ?></span></td>
                                                     </tr>
@@ -75,9 +75,9 @@
                                                             <li>
                                                                 <span>
                                                                     <h5>Cliente</h5>
-                                                                    <span><?php echo $result->nomeCliente ?></span><br />
-                                                                    <span><?php echo $result->rua ?>, <?php echo $result->numero ?>, <?php echo $result->bairro ?></span><br />
-                                                                    <span><?php echo $result->cidade ?> - <?php echo $result->estado ?></span>
+                                                                    <span><?php echo e($result->nomeCliente) ?></span><br />
+                                                                    <span><?php echo e($result->rua) ?>, <?php echo e($result->numero) ?>, <?php echo e($result->bairro) ?></span><br />
+                                                                    <span><?php echo e($result->cidade) ?> - <?php echo e($result->estado) ?></span>
                                                             </li>
                                                         </ul>
                                                     </td>
@@ -87,9 +87,9 @@
                                                                 <span>
                                                                     <h5>Responsável</h5>
                                                                 </span>
-                                                                <span><?php echo $result->nome ?></span> <br />
-                                                                <span>Telefone: <?php echo $result->telefone ?></span><br />
-                                                                <span>Email: <?php echo $result->email ?></span>
+                                                                <span><?php echo e($result->nome) ?></span> <br />
+                                                                <span>Telefone: <?php echo e($result->telefone) ?></span><br />
+                                                                <span>Email: <?php echo e($result->email) ?></span>
                                                             </li>
                                                         </ul>
                                                     </td>
@@ -163,7 +163,7 @@
                                                     foreach ($produtos as $p) {
                                                         $totalProdutos = $totalProdutos + $p->subTotal;
                                                         echo '<tr>';
-                                                        echo '<td style="text-align: center">' . $p->descricao . '</td>';
+                                                        echo '<td style="text-align: center">' . e($p->descricao) . '</td>';
                                                         echo '<td style="text-align: center">' . $p->quantidade . '</td>';
 
                                                         echo '<td style="text-align: center">R$ ' . number_format($p->subTotal, 2, ',', '.') . '</td>';
@@ -177,7 +177,7 @@
                                                         $preco = $s->preco;
                                                         $totalServico = $totalServico + $preco;
                                                         echo '<tr>';
-                                                        echo '<td style="text-align: center">' . $s->nome . '</td>';
+                                                        echo '<td style="text-align: center">' . e($s->nome) . '</td>';
                                                         echo '<td></td>';
                                                         echo '<td style="text-align: center">R$ ' . number_format($s->preco, 2, ',', '.') . '</td>';
                                                         echo '</tr>';

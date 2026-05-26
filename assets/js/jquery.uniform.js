@@ -109,7 +109,7 @@ Enjoy!
       
       if($el.is(":disabled")) divTag.addClass(options.disabledClass);
       
-      divTag.bind({
+      divTag.on({
         "mouseenter.uniform": function(){
           divTag.addClass(options.hoverClass);
         },
@@ -136,7 +136,7 @@ Enjoy!
         }
       });
       
-      elem.bind({
+      elem.on({
         "focus.uniform": function(){
           divTag.addClass(options.focusClass);
         },
@@ -180,7 +180,7 @@ Enjoy!
       divTag = elem.parent("div");
       spanTag = elem.siblings("span");
 
-      elem.bind({
+      elem.on({
         "change.uniform": function() {
           spanTag.text(elem.find(":selected").html());
           divTag.removeClass(options.activeClass);
@@ -252,7 +252,7 @@ Enjoy!
       //hide normal input and add focus classes
       $(elem)
       .css("opacity", 0)
-      .bind({
+      .on({
         "focus.uniform": function(){
           divTag.addClass(options.focusClass);
         },
@@ -325,7 +325,7 @@ Enjoy!
       //hide normal input and add focus classes
       $(elem)
       .css("opacity", 0)
-      .bind({
+      .on({
         "focus.uniform": function(){
           divTag.addClass(options.focusClass);
         },
@@ -433,7 +433,7 @@ Enjoy!
 
       $el
       .css("opacity", 0)
-      .bind({
+      .on({
         "focus.uniform": function(){
           divTag.addClass(options.focusClass);
         },
@@ -461,12 +461,12 @@ Enjoy!
       if ($.browser.msie){
         // IE considers browser chrome blocking I/O, so it
         // suspends tiemouts until after the file has been selected.
-        $el.bind('click.uniform.ie7', function() {
+        $el.on('click.uniform.ie7', function() {
           setTimeout(setFilename, 0);
         });
       }else{
         // All other browsers behave properly
-        $el.bind('change.uniform', setFilename);
+        $el.on('change.uniform', setFilename);
       }
 
       //handle defaults
@@ -510,7 +510,7 @@ Enjoy!
         }
         
         //unbind events
-        $(this).unbind(".uniform");
+        $(this).off(".uniform");
         
         //reset inline style
         $(this).css("opacity", "1");

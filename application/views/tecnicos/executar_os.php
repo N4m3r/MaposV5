@@ -696,8 +696,8 @@
 </div>
 
 <!-- SweetAlert2 para o Wizard -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.0/dist/sweetalert2.all.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js" crossorigin="anonymous"></script>
 
 <style>
 /* OS Details Card */

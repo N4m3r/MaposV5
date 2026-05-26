@@ -4,20 +4,19 @@ if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
 
-class Cobrancas_model extends CI_Model
+class Cobrancas_model extends MY_Model
 {
-    /**
-     * Whitelist of allowed payment gateway library names.
-     * Only these values are accepted when dynamically loading a gateway library.
-     */
     private const ALLOWED_GATEWAYS = ['Asaas', 'MercadoPago', 'GerencianetSdk', 'Cora'];
 
+    protected $table = 'cobrancas';
+    protected $primaryKey = 'idCobranca';
     protected $fillable = [
         'charge_id', 'clientes_id', 'os_id', 'vendas_id', 'payment_gateway',
         'status', 'valor', 'expire_at', 'link', 'pdf_link', 'barcode',
         'linha_digitavel', 'payment_method', 'payment_date', 'created_at',
         'updated_at'
     ];
+    protected $softDelete = true;
 
     public function __construct()
     {
@@ -99,7 +98,7 @@ class Cobrancas_model extends CI_Model
             $data = array_intersect_key($data, array_flip($this->fillable));
         }
         $this->db->insert($table, $data);
-        if ($this->db->affected_rows() == '1') {
+        if ($this->db->affected_rows() >= 1) {
             if ($returnId == true) {
                 return $this->db->insert_id($table);
             }
@@ -129,7 +128,7 @@ class Cobrancas_model extends CI_Model
     {
         $this->db->where($fieldID, $ID);
         $this->db->delete($table);
-        if ($this->db->affected_rows() == '1') {
+        if ($this->db->affected_rows() >= 1) {
             return true;
         }
 

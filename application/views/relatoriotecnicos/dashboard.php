@@ -415,7 +415,7 @@ $kpi = $results['kpi_geral'];
 </div>
 
 <!-- Scripts para Gráficos -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js" integrity="sha384-5blFK2FKMMdt1Rq7WZjP3J3Iq0qD2awZ+da3O7c0vJARG7P4h0CG7q7y6OR6fJ" crossorigin="anonymous"></script>
 <script>
 // Dados PHP para JS
 const osPorTecnico = <?= json_encode($results['os_por_tecnico']) ?>;

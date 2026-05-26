@@ -33,14 +33,15 @@
   <?php if (($configuration['app_theme'] ?? null) == 'whiteblack') { ?>
     <link rel="stylesheet" href="<?= base_url(); ?>assets/css/tema-white-black.css" />
   <?php } ?>
-  <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700,800' rel='stylesheet' type='text/css'>
-  <link href='https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300;400;500;700&display=swap' rel='stylesheet' type='text/css'>
-  <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
-  <script type="text/javascript" src="<?= base_url(); ?>assets/js/jquery-1.12.4.min.js"></script>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700,800' rel='stylesheet' type='text/css' crossorigin="anonymous">
+  <link href='https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300;400;500;700&display=swap' rel='stylesheet' type='text/css' crossorigin="anonymous">
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet' integrity="sha384-B6nB7GjeyR0Ln2Rf3Znp7Z7r4B4eR3i0Uq8k5+u2C2YJXTHVDbB+m9Z8dDqWlZ4H" crossorigin="anonymous">
+  <script type="text/javascript" src="<?= base_url(); ?>assets/js/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
   <script type="text/javascript" src="<?= base_url(); ?>assets/js/shortcut.js"></script>
   <script type="text/javascript" src="<?= base_url(); ?>assets/js/funcoesGlobal.js"></script>
   <script type="text/javascript" src="<?= base_url(); ?>assets/js/datatables.min.js"></script>
-  <script type="text/javascript" src="<?= base_url(); ?>assets/js/sweetalert.min.js"></script>
+  <!-- TODO: Remove legacy SweetAlert v1 (sweetalert.min.js) after migrating all usages to SweetAlert2 -->
+<script type="text/javascript" src="<?= base_url(); ?>assets/js/sweetalert.min.js"></script>
   <script type="text/javascript" src="<?= base_url(); ?>assets/js/csrf.js"></script>
   <script type="text/javascript">
     shortcut.add("escape", function() {

@@ -6,6 +6,7 @@ import time
 import logging
 from datetime import datetime
 from database import execute_query, execute_scalar
+from services.user_profile import PERMISSOES_MAP, get_perfil
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +42,8 @@ def get_stats() -> dict:
         erros_hoje = execute_scalar(
             "SELECT COUNT(*) FROM whatsapp_log_interacoes WHERE DATE(created_at) = CURDATE() AND status = 'erro'"
         ) or 0
-    except Exception:
+    except Exception as exc:
+        logger.exception("Error in get_stats - counting today's logs: %s", exc)
         msgs_hoje = 0
         erros_hoje = 0
 
@@ -50,7 +52,8 @@ def get_stats() -> dict:
         sessoes_ativas = execute_scalar(
             "SELECT COUNT(*) FROM whatsapp_sessoes WHERE atualizado_em > DATE_SUB(NOW(), INTERVAL 600 SECOND)"
         ) or 0
-    except Exception:
+    except Exception as exc:
+        logger.exception("Error in get_stats - counting active sessions: %s", exc)
         sessoes_ativas = 0
 
     # Contar numeros integrados
@@ -58,7 +61,8 @@ def get_stats() -> dict:
         numeros_integrados = execute_scalar(
             "SELECT COUNT(*) FROM whatsapp_integracao WHERE situacao = 1"
         ) or 0
-    except Exception:
+    except Exception as exc:
+        logger.exception("Error in get_stats - counting integrated numbers: %s", exc)
         numeros_integrados = 0
 
     # Comandos por tipo (ultimos 7 dias)
@@ -72,7 +76,8 @@ def get_stats() -> dict:
                ORDER BY qtd DESC
                LIMIT 15"""
         )
-    except Exception:
+    except Exception as exc:
+        logger.exception("Error in get_stats - counting commands by type: %s", exc)
         comandos_por_tipo = []
 
     return {
@@ -319,8 +324,9 @@ def test_evolution() -> dict:
             'url': url,
             'message': 'Conectado com sucesso' if resp.status_code == 200 else f'Erro HTTP {resp.status_code}'
         }
-    except Exception as e:
-        return {'success': False, 'message': str(e)}
+    except Exception as exc:
+        logger.exception("Error in test_evolution: %s", exc)
+        return {'success': False, 'message': str(exc)}
 
 
 def test_whisper() -> dict:
@@ -335,8 +341,9 @@ def test_whisper() -> dict:
             'url': url,
             'message': 'Whisper ASR acessivel' if resp.status_code in (200, 405, 422) else f'Erro HTTP {resp.status_code}'
         }
-    except Exception as e:
-        return {'success': False, 'message': str(e)}
+    except Exception as exc:
+        logger.exception("Error in test_whisper: %s", exc)
+        return {'success': False, 'message': str(exc)}
 
 
 def test_database() -> dict:
@@ -350,8 +357,9 @@ def test_database() -> dict:
             'host': config.MYSQL_HOST,
             'database': config.MYSQL_DB
         }
-    except Exception as e:
-        return {'success': False, 'message': str(e)}
+    except Exception as exc:
+        logger.exception("Error in test_database: %s", exc)
+        return {'success': False, 'message': str(exc)}
 
 
 def test_llm() -> dict:
@@ -376,5 +384,6 @@ def test_llm() -> dict:
             'provider': config.LLM_PROVIDER,
             'message': 'LLM retornou None (fallback para regex)'
         }
-    except Exception as e:
-        return {'success': False, 'provider': config.LLM_PROVIDER, 'message': str(e)}
+    except Exception as exc:
+        logger.exception("Error in test_llm: %s", exc)
+        return {'success': False, 'provider': config.LLM_PROVIDER, 'message': str(exc)}

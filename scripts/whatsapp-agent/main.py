@@ -22,7 +22,7 @@ from services.os_status import processar_alterar_status
 from services.user_profile import (
     identificar_usuario, _menu_lista, _enviar_menu_interativo,
     _enviar_botoes_confirmacao, eh_admin, eh_admin_ou_tecnico,
-    eh_cliente, limpar_numero, PERMISSOES_MAP
+    eh_cliente, limpar_numero, PERMISSOES_MAP, get_perfil
 )
 from services.webhook_handler import (
     process_webhook, extrair_numero, extrair_mensagem,
@@ -90,7 +90,8 @@ async def health():
     try:
         result = execute_query("SELECT 1 as ok")
         db_ok = bool(result and result[0].get('ok') == 1)
-    except Exception:
+    except Exception as exc:
+        logger.exception("Error in health check - database query: %s", exc)
         db_ok = False
 
     llm_status = "regex" if not config.LLM_PROVIDER else config.LLM_PROVIDER
@@ -113,7 +114,8 @@ async def webhook_evolution(request: Request, x_api_key: str = Header(None)):
     """
     try:
         payload = await request.json()
-    except Exception:
+    except Exception as exc:
+        logger.exception("Error in webhook_evolution - parsing JSON payload: %s", exc)
         payload = {}
     return process_webhook(payload, x_api_key or '')
 
@@ -235,8 +237,9 @@ async def api_send_message(request: Request):
         increment_stat('mensagens_processadas')
         registrar_log(numero, 'saida', mensagem, 'manual', 'enviado')
         return {'success': True, 'message': f'Mensagem enviada para {numero}'}
-    except Exception as ex:
-        return {'success': False, 'error': str(ex)}
+    except Exception as exc:
+        logger.exception("Error in api_send_message: %s", exc)
+        return {'success': False, 'error': str(exc)}
 
 
 @app.post('/api/trigger-report', dependencies=[Depends(verificar_api_key)])
@@ -245,8 +248,9 @@ async def api_trigger_report():
     try:
         enviar_relatorio_diario()
         return {'success': True, 'message': 'Relatorio diario disparado'}
-    except Exception as ex:
-        return {'success': False, 'error': str(ex)}
+    except Exception as exc:
+        logger.exception("Error in api_trigger_report: %s", exc)
+        return {'success': False, 'error': str(exc)}
 
 
 # ========== SCHEDULER ==========

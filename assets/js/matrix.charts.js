@@ -28,7 +28,7 @@ $(document).ready(function(){
     
 	// === Point hover in chart === //
     var previousPoint = null;
-    $(".chart").bind("plothover", function (event, pos, item) {
+    $(".chart").on("plothover", function (event, pos, item) {
 		
         if (item) {
             if (previousPoint != item.dataIndex) {

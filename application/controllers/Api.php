@@ -51,8 +51,9 @@ class Api extends MY_Controller
         // Gera token usando Firebase JWT
         $key = getenv('JWT_SECRET');
         if (empty($key)) {
-            log_message('error', 'JWT_SECRET nao configurado no .env - usando chave temporaria');
-            $key = bin2hex(random_bytes(32));
+            log_message('error', 'Api::token() - JWT_SECRET nao configurado no .env. Autenticacao recusada.');
+            show_error('JWT_SECRET nao configurado. Configure no .env.', 500);
+            return;
         }
         $payload = [
             'iss' => base_url(),

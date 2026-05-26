@@ -18,7 +18,7 @@
 
     var methods = {
         destroy : function () {
-            $(this).unbind(".maskMoney");
+            $(this).off(".maskMoney");
 
             if ($.browser.msie) {
                 this.onpaste = null;
@@ -384,15 +384,15 @@
                     }
                 }
 
-                $input.unbind(".maskMoney");
-                $input.bind("keypress.maskMoney", keypressEvent);
-                $input.bind("keydown.maskMoney", keydownEvent);
-                $input.bind("blur.maskMoney", blurEvent);
-                $input.bind("focus.maskMoney", focusEvent);
-                $input.bind("click.maskMoney", clickEvent);
-                $input.bind("cut.maskMoney", cutPasteEvent);
-                $input.bind("paste.maskMoney", cutPasteEvent);
-                $input.bind("mask.maskMoney", mask);
+                $input.off(".maskMoney");
+                $input.on("keypress.maskMoney", keypressEvent);
+                $input.on("keydown.maskMoney", keydownEvent);
+                $input.on("blur.maskMoney", blurEvent);
+                $input.on("focus.maskMoney", focusEvent);
+                $input.on("click.maskMoney", clickEvent);
+                $input.on("cut.maskMoney", cutPasteEvent);
+                $input.on("paste.maskMoney", cutPasteEvent);
+                $input.on("mask.maskMoney", mask);
             });
         }
     };

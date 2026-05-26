@@ -107,7 +107,7 @@
 			}
 
 			if(this.options.historyEnabled){
-				$(window).bind('hashchange', undefined, function(event){
+				$(window).on('hashchange', undefined, function(event){
 					var hashStep = event.getState( "_" + $(wizard.element).attr( 'id' )) || wizard.firstStep;
 					if(hashStep !== wizard.currentStep){
 						if(wizard.options.validationEnabled && hashStep === wizard._navigate(wizard.currentStep)){
@@ -287,7 +287,7 @@
 			var links = this.steps.filter("#" + step).find(this.options.linkClass);
 
 			if(links != undefined){
-				if(links.filter(":radio,:checkbox").size() > 0){
+				if(links.filter(":radio,:checkbox").length > 0){
 					link = links.filter(this.options.linkClass + ":checked").val();
 				}else{
 					link = $(links).val();
@@ -400,8 +400,8 @@
 
 		destroy: function() {
 			this.element.find("*").removeAttr("disabled").show();
-			this.nextButton.unbind("click").val(this.nextButtonInitinalValue).removeClass("ui-state-disabled").addClass("ui-state-active");
-			this.backButton.unbind("click").val(this.backButtonInitinalValue).removeClass("ui-state-disabled").addClass("ui-state-active");
+			this.nextButton.off("click").val(this.nextButtonInitinalValue).removeClass("ui-state-disabled").addClass("ui-state-active");
+			this.backButton.off("click").val(this.backButtonInitinalValue).removeClass("ui-state-disabled").addClass("ui-state-active");
 			this.backButtonInitinalValue = undefined;
 			this.nextButtonInitinalValue = undefined;
 			this.activatedSteps = undefined;

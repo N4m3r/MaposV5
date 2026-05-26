@@ -669,7 +669,7 @@ $etapaStatusColors = [
     <?php endif; ?>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts" crossorigin="anonymous"></script>
 <script>
 // Variáveis globais
 var osDisponiveis = [];

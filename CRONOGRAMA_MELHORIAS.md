@@ -8,7 +8,7 @@
 
 O agente IA WhatsApp está funcional com **18+ comandos**, criação interativa de OS, alteração de status, 7 tipos de relatório com análise GLM, transcrição de áudio e geração de PDF. Este documento lista as melhorias priorizadas por criticidade e impacto.
 
----
+---im
 
 ## Fase 1 — Correções Críticas (1-3 dias)
 

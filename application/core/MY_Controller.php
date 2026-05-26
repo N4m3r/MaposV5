@@ -112,11 +112,6 @@ class MY_Controller extends CI_Controller
     {
         $permissao_id = $this->session->userdata('permissao');
 
-        // Administrador (idPermissao 1) NUNCA é técnico
-        if ($permissao_id == 1) {
-            return false;
-        }
-
         // Verifica se tem permissao especifica de tecnico
         $this->load->library('permission');
         return $this->permission->checkPermission($permissao_id, 'vTecnicoDashboard');

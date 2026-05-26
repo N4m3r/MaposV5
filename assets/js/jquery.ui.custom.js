@@ -120,14 +120,14 @@ $.fn.extend({
 	},
 
 	disableSelection: function() {
-		return this.bind( ( $.support.selectstart ? "selectstart" : "mousedown" ) +
+		return this.on( ( $.support.selectstart ? "selectstart" : "mousedown" ) +
 			".ui-disableSelection", function( event ) {
 				event.preventDefault();
 			});
 	},
 
 	enableSelection: function() {
-		return this.unbind( ".ui-disableSelection" );
+		return this.off( ".ui-disableSelection" );
 	}
 });
 
@@ -198,7 +198,7 @@ function focusable( element, isTabIndexNotNaN ) {
 }
 
 function visible( element ) {
-	return !$( element ).parents().andSelf().filter(function() {
+	return !$( element ).parents().addBack().filter(function() {
 		return $.curCSS( this, "visibility" ) === "hidden" ||
 			$.expr.filters.hidden( this );
 	}).length;
@@ -478,7 +478,7 @@ $.Widget.prototype = {
 			options );
 
 		var self = this;
-		this.element.bind( "remove." + this.widgetName, function() {
+		this.element.on( "remove." + this.widgetName, function() {
 			self.destroy();
 		});
 
@@ -494,10 +494,10 @@ $.Widget.prototype = {
 
 	destroy: function() {
 		this.element
-			.unbind( "." + this.widgetName )
+			.off( "." + this.widgetName )
 			.removeData( this.widgetName );
 		this.widget()
-			.unbind( "." + this.widgetName )
+			.off( "." + this.widgetName )
 			.removeAttr( "aria-disabled" )
 			.removeClass(
 				this.widgetBaseClass + "-disabled " +
@@ -618,10 +618,10 @@ $.widget("ui.mouse", {
 		var self = this;
 
 		this.element
-			.bind('mousedown.'+this.widgetName, function(event) {
+			.on('mousedown.'+this.widgetName, function(event) {
 				return self._mouseDown(event);
 			})
-			.bind('click.'+this.widgetName, function(event) {
+			.on('click.'+this.widgetName, function(event) {
 				if (true === $.data(event.target, self.widgetName + '.preventClickEvent')) {
 				    $.removeData(event.target, self.widgetName + '.preventClickEvent');
 					event.stopImmediatePropagation();
@@ -635,10 +635,10 @@ $.widget("ui.mouse", {
 	// TODO: make sure destroying one instance of mouse doesn't mess with
 	// other instances of mouse
 	_mouseDestroy: function() {
-		this.element.unbind('.'+this.widgetName);
+		this.element.off('.'+this.widgetName);
 		$(document)
-			.unbind('mousemove.'+this.widgetName, this._mouseMoveDelegate)
-			.unbind('mouseup.'+this.widgetName, this._mouseUpDelegate);
+			.off('mousemove.'+this.widgetName, this._mouseMoveDelegate)
+			.off('mouseup.'+this.widgetName, this._mouseUpDelegate);
 	},
 
 	_mouseDown: function(event) {
@@ -687,8 +687,8 @@ $.widget("ui.mouse", {
 			return self._mouseUp(event);
 		};
 		$(document)
-			.bind('mousemove.'+this.widgetName, this._mouseMoveDelegate)
-			.bind('mouseup.'+this.widgetName, this._mouseUpDelegate);
+			.on('mousemove.'+this.widgetName, this._mouseMoveDelegate)
+			.on('mouseup.'+this.widgetName, this._mouseUpDelegate);
 
 		event.preventDefault();
 		
@@ -718,8 +718,8 @@ $.widget("ui.mouse", {
 
 	_mouseUp: function(event) {
 		$(document)
-			.unbind('mousemove.'+this.widgetName, this._mouseMoveDelegate)
-			.unbind('mouseup.'+this.widgetName, this._mouseUpDelegate);
+			.off('mousemove.'+this.widgetName, this._mouseMoveDelegate)
+			.off('mouseup.'+this.widgetName, this._mouseUpDelegate);
 
 		if (this._mouseStarted) {
 			this._mouseStarted = false;
@@ -1117,7 +1117,7 @@ $.widget("ui.draggable", $.ui.mouse, {
 		if(!this.element.data('draggable')) return;
 		this.element
 			.removeData("draggable")
-			.unbind(".draggable")
+			.off(".draggable")
 			.removeClass("ui-draggable"
 				+ " ui-draggable-dragging"
 				+ " ui-draggable-disabled");
@@ -1325,7 +1325,7 @@ $.widget("ui.draggable", $.ui.mouse, {
 		var handle = !this.options.handle || !$(this.options.handle, this.element).length ? true : false;
 		$(this.options.handle, this.element)
 			.find("*")
-			.andSelf()
+			.addBack()
 			.each(function() {
 				if(this == event.target) handle = true;
 			});
@@ -1947,7 +1947,7 @@ $.widget("ui.droppable", {
 		this.element
 			.removeClass("ui-droppable ui-droppable-disabled")
 			.removeData("droppable")
-			.unbind(".droppable");
+			.off(".droppable");
 
 		return this;
 	},
@@ -2096,7 +2096,7 @@ $.ui.ddmanager = {
 
 		var m = $.ui.ddmanager.droppables[t.options.scope] || [];
 		var type = event ? event.type : null; // workaround for #2317
-		var list = (t.currentItem || t.element).find(":data(droppable)").andSelf();
+		var list = (t.currentItem || t.element).find(":data(droppable)").addBack();
 
 		droppablesLoop: for (var i = 0; i < m.length; i++) {
 
@@ -2132,7 +2132,7 @@ $.ui.ddmanager = {
 	},
 	dragStart: function( draggable, event ) {
 		//Listen for scrolling so that if the dragging causes scrolling the position of the droppables can be recalculated (see #5003)
-		draggable.element.parents( ":not(body,html)" ).bind( "scroll.droppable", function() {
+		draggable.element.parents( ":not(body,html)" ).on( "scroll.droppable", function() {
 			if( !draggable.options.refreshPositions ) $.ui.ddmanager.prepareOffsets( draggable, event );
 		});
 	},
@@ -2179,7 +2179,7 @@ $.ui.ddmanager = {
 
 	},
 	dragStop: function( draggable, event ) {
-		draggable.element.parents( ":not(body,html)" ).unbind( "scroll.droppable" );
+		draggable.element.parents( ":not(body,html)" ).off( "scroll.droppable" );
 		//Call prepareOffsets one final time since IE does not fire return scroll events when overflow was caused by drag (see #5003)
 		if( !draggable.options.refreshPositions ) $.ui.ddmanager.prepareOffsets( draggable, event );
 	}
@@ -2383,7 +2383,7 @@ $.widget("ui.resizable", $.ui.mouse, {
 
 		var _destroy = function(exp) {
 			$(exp).removeClass("ui-resizable ui-resizable-disabled ui-resizable-resizing")
-				.removeData("resizable").unbind(".resizable").find('.ui-resizable-handle').remove();
+				.removeData("resizable").off(".resizable").find('.ui-resizable-handle').remove();
 		};
 
 		//TODO: Unwrap at same DOM position
@@ -3062,7 +3062,7 @@ $.widget("ui.selectable", $.ui.mouse, {
 		this.element
 			.removeClass("ui-selectable ui-selectable-disabled")
 			.removeData("selectable")
-			.unbind(".selectable");
+			.off(".selectable");
 		this._mouseDestroy();
 
 		return this;
@@ -3110,7 +3110,7 @@ $.widget("ui.selectable", $.ui.mouse, {
 			}
 		});
 
-		$(event.target).parents().andSelf().each(function() {
+		$(event.target).parents().addBack().each(function() {
 			var selectee = $.data(this, "selectable-item");
 			if (selectee) {
 				var doSelect = (!event.metaKey && !event.ctrlKey) || !selectee.$element.hasClass('ui-selected');
@@ -3375,7 +3375,7 @@ $.widget("ui.sortable", $.ui.mouse, {
 		if(this.options.handle && !overrideHandle) {
 			var validHandle = false;
 
-			$(this.options.handle, currentItem).find("*").andSelf().each(function() { if(this == event.target) validHandle = true; });
+			$(this.options.handle, currentItem).find("*").addBack().each(function() { if(this == event.target) validHandle = true; });
 			if(!validHandle) return false;
 		}
 
@@ -4392,7 +4392,7 @@ $.widget( "ui.autocomplete", {
 				"aria-autocomplete": "list",
 				"aria-haspopup": "true"
 			})
-			.bind( "keydown.autocomplete", function( event ) {
+			.on( "keydown.autocomplete", function( event ) {
 				if ( self.options.disabled || self.element.propAttr( "readOnly" ) ) {
 					return;
 				}
@@ -4445,13 +4445,13 @@ $.widget( "ui.autocomplete", {
 					break;
 				}
 			})
-			.bind( "keypress.autocomplete", function( event ) {
+			.on( "keypress.autocomplete", function( event ) {
 				if ( suppressKeyPress ) {
 					suppressKeyPress = false;
 					event.preventDefault();
 				}
 			})
-			.bind( "focus.autocomplete", function() {
+			.on( "focus.autocomplete", function() {
 				if ( self.options.disabled ) {
 					return;
 				}
@@ -4459,7 +4459,7 @@ $.widget( "ui.autocomplete", {
 				self.selectedItem = null;
 				self.previous = self.element.val();
 			})
-			.bind( "blur.autocomplete", function( event ) {
+			.on( "blur.autocomplete", function( event ) {
 				if ( self.options.disabled ) {
 					return;
 				}
@@ -4559,7 +4559,7 @@ $.widget( "ui.autocomplete", {
 		self.beforeunloadHandler = function() {
 			self.element.removeAttr( "autocomplete" );
 		};
-		$( window ).bind( "beforeunload", self.beforeunloadHandler );
+		$( window ).on( "beforeunload", self.beforeunloadHandler );
 	},
 
 	destroy: function() {
@@ -4570,7 +4570,7 @@ $.widget( "ui.autocomplete", {
 			.removeAttr( "aria-autocomplete" )
 			.removeAttr( "aria-haspopup" );
 		this.menu.element.remove();
-		$( window ).unbind( "beforeunload", this.beforeunloadHandler );
+		$( window ).off( "beforeunload", this.beforeunloadHandler );
 		$.Widget.prototype.destroy.call( this );
 	},
 
@@ -5027,8 +5027,8 @@ $.widget( "ui.button", {
 	},
 	_create: function() {
 		this.element.closest( "form" )
-			.unbind( "reset.button" )
-			.bind( "reset.button", formResetHandler );
+			.off( "reset.button" )
+			.on( "reset.button", formResetHandler );
 
 		if ( typeof this.options.disabled !== "boolean" ) {
 			this.options.disabled = !!this.element.propAttr( "disabled" );
@@ -5052,7 +5052,7 @@ $.widget( "ui.button", {
 		this.buttonElement
 			.addClass( baseClasses )
 			.attr( "role", "button" )
-			.bind( "mouseenter.button", function() {
+			.on( "mouseenter.button", function() {
 				if ( options.disabled ) {
 					return;
 				}
@@ -5061,13 +5061,13 @@ $.widget( "ui.button", {
 					$( this ).addClass( "ui-state-active" );
 				}
 			})
-			.bind( "mouseleave.button", function() {
+			.on( "mouseleave.button", function() {
 				if ( options.disabled ) {
 					return;
 				}
 				$( this ).removeClass( hoverClass );
 			})
-			.bind( "click.button", function( event ) {
+			.on( "click.button", function( event ) {
 				if ( options.disabled ) {
 					event.preventDefault();
 					event.stopImmediatePropagation();
@@ -5075,16 +5075,16 @@ $.widget( "ui.button", {
 			});
 
 		this.element
-			.bind( "focus.button", function() {
+			.on( "focus.button", function() {
 				// no need to check disabled, focus won't be triggered anyway
 				self.buttonElement.addClass( focusClass );
 			})
-			.bind( "blur.button", function() {
+			.on( "blur.button", function() {
 				self.buttonElement.removeClass( focusClass );
 			});
 
 		if ( toggleButton ) {
-			this.element.bind( "change.button", function() {
+			this.element.on( "change.button", function() {
 				if ( clickDragged ) {
 					return;
 				}
@@ -5094,7 +5094,7 @@ $.widget( "ui.button", {
 			// prevents issue where button state changes but checkbox/radio checked state
 			// does not in Firefox (see ticket #6970)
 			this.buttonElement
-				.bind( "mousedown.button", function( event ) {
+				.on( "mousedown.button", function( event ) {
 					if ( options.disabled ) {
 						return;
 					}
@@ -5102,7 +5102,7 @@ $.widget( "ui.button", {
 					startXPos = event.pageX;
 					startYPos = event.pageY;
 				})
-				.bind( "mouseup.button", function( event ) {
+				.on( "mouseup.button", function( event ) {
 					if ( options.disabled ) {
 						return;
 					}
@@ -5113,7 +5113,7 @@ $.widget( "ui.button", {
 		}
 
 		if ( this.type === "checkbox" ) {
-			this.buttonElement.bind( "click.button", function() {
+			this.buttonElement.on( "click.button", function() {
 				if ( options.disabled || clickDragged ) {
 					return false;
 				}
@@ -5121,7 +5121,7 @@ $.widget( "ui.button", {
 				self.buttonElement.attr( "aria-pressed", self.element[0].checked );
 			});
 		} else if ( this.type === "radio" ) {
-			this.buttonElement.bind( "click.button", function() {
+			this.buttonElement.on( "click.button", function() {
 				if ( options.disabled || clickDragged ) {
 					return false;
 				}
@@ -5139,7 +5139,7 @@ $.widget( "ui.button", {
 			});
 		} else {
 			this.buttonElement
-				.bind( "mousedown.button", function() {
+				.on( "mousedown.button", function() {
 					if ( options.disabled ) {
 						return false;
 					}
@@ -5149,13 +5149,13 @@ $.widget( "ui.button", {
 						lastActive = null;
 					});
 				})
-				.bind( "mouseup.button", function() {
+				.on( "mouseup.button", function() {
 					if ( options.disabled ) {
 						return false;
 					}
 					$( this ).removeClass( "ui-state-active" );
 				})
-				.bind( "keydown.button", function(event) {
+				.on( "keydown.button", function(event) {
 					if ( options.disabled ) {
 						return false;
 					}
@@ -5163,7 +5163,7 @@ $.widget( "ui.button", {
 						$( this ).addClass( "ui-state-active" );
 					}
 				})
-				.bind( "keyup.button", function() {
+				.on( "keyup.button", function() {
 					$( this ).removeClass( "ui-state-active" );
 				});
 
@@ -5603,7 +5603,7 @@ $.widget( "ui.slider", $.ui.mouse, {
 				" ui-widget-content" +
 				" ui-corner-all" )
 			.removeData( "slider" )
-			.unbind( ".slider" );
+			.off( ".slider" );
 
 		this._mouseDestroy();
 
@@ -5666,7 +5666,7 @@ $.widget( "ui.slider", $.ui.mouse, {
 			.focus();
 		
 		offset = closestHandle.offset();
-		mouseOverHandle = !$( event.target ).parents().andSelf().is( ".ui-slider-handle" );
+		mouseOverHandle = !$( event.target ).parents().addBack().is( ".ui-slider-handle" );
 		this._clickOffset = mouseOverHandle ? { left: 0, top: 0 } : {
 			left: event.pageX - offset.left - ( closestHandle.width() / 2 ),
 			top: event.pageY - offset.top -

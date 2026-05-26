@@ -202,11 +202,11 @@
                                     }
                                 } 
                                 if (this.showSwatches) {
-                                    td1.bind('click', {series:s, speed:speed, plot: plot, replot:this.seriesToggleReplot}, handleToggle);
+                                    td1.on('click', {series:s, speed:speed, plot: plot, replot:this.seriesToggleReplot}, handleToggle);
                                     td1.addClass('jqplot-seriesToggle');
                                 }
                                 if (this.showLabels)  {
-                                    td2.bind('click', {series:s, speed:speed, plot: plot, replot:this.seriesToggleReplot}, handleToggle);
+                                    td2.on('click', {series:s, speed:speed, plot: plot, replot:this.seriesToggleReplot}, handleToggle);
                                     td2.addClass('jqplot-seriesToggle');
                                 }
 

@@ -178,13 +178,13 @@
                     <table class="table table-bordered">
                         <tbody>
                             <tr>
-                                <td style="width: 25%"><img src="<?= $dados->url_logo; ?>"></td>
+                                <td style="width: 25%"><img src="<?= e($dados->url_logo); ?>"></td>
                                 <td>
-                                    <span style="font-size: 20px; "><b><?= $dados->nome; ?></b></span></br>
-                                    <i class="fas fa-fingerprint" style="margin:5px 1px"></i> <?= $dados->cnpj; ?> <?php if (!empty($dados->ie)) echo ' - IE:' . $dados->ie ?> <?php if (!empty($dados->inscricao_municipal)) echo ' - IM:' . $dados->inscricao_municipal ?></br>
-                                    <i class="fas fa-map-marker-alt" style="margin:4px 3px"></i> <?= $dados->rua . ', ' . $dados->numero . ', ' . $dados->bairro . ' - ' . $dados->cep . ', ' . $dados->cidade . '/' . $dados->uf; ?></br>
-                                    <i class="fas fa-phone" style="margin:5px 1px"></i> <?= $dados->telefone; ?></br>
-                                    <i class="fas fa-envelope" style="margin:5px 1px"></i> <?= $dados->email; ?></br>
+                                    <span style="font-size: 20px; "><b><?= e($dados->nome); ?></b></span></br>
+                                    <i class="fas fa-fingerprint" style="margin:5px 1px"></i> <?= e($dados->cnpj); ?> <?php if (!empty($dados->ie)) echo ' - IE:' . e($dados->ie) ?> <?php if (!empty($dados->inscricao_municipal)) echo ' - IM:' . e($dados->inscricao_municipal) ?></br>
+                                    <i class="fas fa-map-marker-alt" style="margin:4px 3px"></i> <?= e($dados->rua) . ', ' . e($dados->numero) . ', ' . e($dados->bairro) . ' - ' . e($dados->cep) . ', ' . e($dados->cidade) . '/' . e($dados->uf); ?></br>
+                                    <i class="fas fa-phone" style="margin:5px 1px"></i> <?= e($dados->telefone); ?></br>
+                                    <i class="fas fa-envelope" style="margin:5px 1px"></i> <?= e($dados->email); ?></br>
                                     </span>
                                 </td>
                             </tr>

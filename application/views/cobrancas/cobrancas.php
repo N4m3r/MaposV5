@@ -42,10 +42,10 @@
                         );
 
                         echo '<tr>';
-                        echo '<td>' . $r->idCobranca . '</td>';
+                        echo '<td>' . e($r->idCobranca) . '</td>';
                         echo '<td>' . e($r->payment_gateway) . '</td>';
                         echo '<td>' . e($r->payment_method) . '</td>';
-                        echo '<td>' . $dataVenda . '</td>';
+                        echo '<td>' . e($dataVenda) . '</td>';
 
                         if ($r->os_id != '') {
                             echo '<td><a href="' . base_url() . 'index.php/os/visualizar/' . $r->os_id . '"> Ordem de Serviço: #' . e($r->os_id) . '</a></td>';
@@ -55,7 +55,7 @@
                         }
 
                         echo '<td>' . e($cobrancaStatus) . '</td>';
-                        echo '<td>R$ ' . number_format($r->total / 100, 2, ',', '.') . '</td>';
+                        echo '<td>R$ ' . e(number_format($r->total / 100, 2, ',', '.')) . '</td>';
                         echo '<td>';
                         if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vCobranca')) {
                             echo '<a style="margin-right: 1%" href="#modal-cancelar" role="button" data-toggle="modal" cancela_id="' . $r->idCobranca . '" class="btn-nwe4" title="Cancelar Cobrança"><i class="bx bx-x" ></i></a>';

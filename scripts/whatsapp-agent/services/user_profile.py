@@ -31,6 +31,48 @@ PERMISSOES_MAP = {
 }
 
 
+def get_perfil(usuario: dict) -> str:
+    """Resolve o perfil de acesso de um usuario.
+
+    Usa PERMISSOES_MAP como base e aplica regras de acesso:
+    - financeiro -> admin (acesso administrativo)
+    - vendedor -> tecnico (acesso de tecnico)
+
+    Returns:
+        'admin', 'tecnico', 'cliente', ou o tipo original.
+    """
+    if not usuario:
+        return 'desconhecido'
+
+    tipo = usuario.get('tipo_vinculo', usuario.get('tipo', 'desconhecido'))
+    perm_id = usuario.get('permissoes_id')
+
+    # Primary: resolve from permissoes_id via PERMISSOES_MAP
+    if perm_id is not None:
+        perfil_base = PERMISSOES_MAP.get(int(perm_id))
+        if perfil_base:
+            # Apply access-level overrides for menu/authorization
+            if perfil_base == 'financeiro':
+                return 'admin'
+            if perfil_base == 'vendedor':
+                return 'tecnico'
+            return perfil_base
+
+    # Fallback: resolve from tipo/tipo_vinculo string
+    if tipo == 'cliente':
+        return 'cliente'
+    if tipo in ('admin', 'Administrador'):
+        return 'admin'
+    if tipo in ('tecnico', 'Tecnico'):
+        return 'tecnico'
+    if tipo == 'financeiro':
+        return 'admin'
+    if tipo == 'vendedor':
+        return 'tecnico'
+
+    return tipo
+
+
 def init(evo_api, mapos_queries, session_store):
     """Inicializa dependencias do modulo.
 
@@ -283,28 +325,10 @@ def identificar_usuario(numero: str):
 
 def _menu_lista(usuario: dict) -> dict:
     """Constroi o menu interativo de lista conforme o perfil do usuario."""
-    tipo = usuario.get('tipo_vinculo', 'desconhecido') if usuario else 'desconhecido'
-    perm_id = usuario.get('permissoes_id') if usuario else None
     nome = usuario.get('nome', 'Cliente') if usuario else 'Cliente'
     primeiro_nome = nome.split()[0] if nome else 'Cliente'
 
-    # Determinar perfil
-    if perm_id and int(perm_id) == 1:
-        perfil = 'admin'
-    elif perm_id and int(perm_id) == 2:
-        perfil = 'tecnico'
-    elif tipo == 'cliente' or (perm_id and int(perm_id) in (5, 6)):
-        perfil = 'cliente'
-    elif tipo in ('admin', 'Administrador'):
-        perfil = 'admin'
-    elif tipo in ('tecnico', 'Tecnico'):
-        perfil = 'tecnico'
-    elif tipo == 'financeiro':
-        perfil = 'admin'
-    elif tipo == 'vendedor':
-        perfil = 'tecnico'
-    else:
-        perfil = tipo
+    perfil = get_perfil(usuario)
 
     if perfil == 'cliente':
         sections = [{

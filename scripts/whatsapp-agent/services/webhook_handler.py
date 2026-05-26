@@ -21,7 +21,7 @@ import time
 import requests as http_requests
 
 import config
-from database import execute_query, execute_insert, execute_update
+from database import execute_insert, execute_update
 from services.evolution_api import EvolutionAPI
 from services.mapos_queries import MaposQueries
 from services.session_store import SessionStore
@@ -31,6 +31,11 @@ from services.nlp import _fmt_status_emoji, _fmt_moeda, _fmt_data
 from services.llm import classificar_com_llm, interpretar_audio_os, extrair_dados_os_audio
 from services.whisper_asr import transcrever_audio
 from services.whatsapp_media import download_and_decrypt_audio
+from services.user_profile import (
+    PERMISSOES_MAP, get_perfil, eh_admin, eh_admin_ou_tecnico, eh_cliente,
+    identificar_usuario, limpar_numero, _menu_lista,
+    _enviar_menu_interativo, _enviar_botoes_confirmacao,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -41,18 +46,6 @@ sessions: SessionStore | None = None
 _msg_ids: dict = {}
 _DEDUP_TTL = 60  # seconds to keep dedup IDs
 _msg_ids_lock = threading.Lock()
-
-# Permission map (same as main.py)
-PERMISSOES_MAP = {
-    1: 'admin',
-    2: 'tecnico',
-    3: 'financeiro',
-    4: 'vendedor',
-    5: 'cliente',
-    6: 'cliente',
-}
-
-ADMIN_NUMERO = config.ADMIN_NUMERO
 
 
 def init(evo_instance: EvolutionAPI, queries_instance: MaposQueries,
@@ -252,14 +245,6 @@ def _is_duplicado(msg_id: str) -> bool:
         return False
 
 
-def limpar_numero(numero: str) -> str:
-    """Normalize a phone number: keep digits, prepend 55 if 10-11 digits."""
-    numero = ''.join(filter(str.isdigit, numero))
-    if len(numero) == 11 or len(numero) == 10:
-        numero = '55' + numero
-    return numero
-
-
 def registrar_log(numero: str, direcao: str, conteudo: str,
                    intencao: str = None, status: str = 'recebido'):
     """Log an interaction to the whatsapp_log_interacoes DB table."""
@@ -278,222 +263,6 @@ def registrar_log(numero: str, direcao: str, conteudo: str,
         })
     except Exception as e:
         logger.error(f"Erro ao registrar log: {e}")
-
-
-# ============================================================
-# User identification (kept here because the webhook depends on it)
-# ============================================================
-
-def identificar_usuario(numero: str):
-    """Identify whether a phone number belongs to an admin, tecnico, or client."""
-    numero = limpar_numero(numero)
-
-    if numero == ADMIN_NUMERO:
-        sql_admin = """
-            SELECT u.idUsuarios, u.nome, u.celular, u.permissoes_id,
-                   p.nome as permissao_nome
-            FROM usuarios u
-            LEFT JOIN permissoes p ON p.idPermissao = u.permissoes_id
-            WHERE u.permissoes_id = 1 AND u.situacao = 1
-            LIMIT 1
-        """
-        admin_rows = execute_query(sql_admin)
-        if admin_rows:
-            admin = admin_rows[0]
-            return {
-                'tipo': 'admin',
-                'tipo_vinculo': 'admin',
-                'clientes_id': None,
-                'usuarios_id': admin.get('idUsuarios'),
-                'permissoes_id': 1,
-                'nome': admin.get('nome', 'Administrador'),
-                'numero': numero
-            }
-        return {
-            'tipo': 'admin',
-            'tipo_vinculo': 'admin',
-            'clientes_id': None,
-            'usuarios_id': None,
-            'permissoes_id': 1,
-            'nome': 'Administrador',
-            'numero': numero
-        }
-
-    sql = """
-        SELECT w.*,
-               c.idClientes as cli_id, c.nomeCliente as nome_cliente, c.celular as cli_celular,
-               u.idUsuarios as usr_id, u.nome as nome_usuario, u.celular as usr_celular,
-               u.permissoes_id, p.nome as permissao_nome
-        FROM whatsapp_integracao w
-        LEFT JOIN clientes c ON c.idClientes = w.clientes_id
-        LEFT JOIN usuarios u ON u.idUsuarios = w.usuarios_id
-        LEFT JOIN permissoes p ON p.idPermissao = u.permissoes_id
-        WHERE w.numero_telefone = :numero AND w.situacao = 1
-        LIMIT 1
-    """
-    rows = execute_query(sql, {'numero': numero})
-
-    if rows:
-        row = rows[0]
-        permissoes_id = row.get('permissoes_id')
-        usuarios_id = row.get('usr_id') or row.get('usuarios_id')
-        clientes_id = row.get('cli_id') or row.get('clientes_id')
-
-        if usuarios_id and permissoes_id:
-            perfil = PERMISSOES_MAP.get(int(permissoes_id), 'desconhecido')
-            nome = row.get('nome_usuario') or row.get('nome') or 'Usuario'
-            return {
-                'tipo': perfil,
-                'tipo_vinculo': perfil,
-                'clientes_id': clientes_id if perfil == 'cliente' else None,
-                'usuarios_id': usuarios_id,
-                'permissoes_id': int(permissoes_id),
-                'nome': nome,
-                'numero': numero
-            }
-
-        if clientes_id:
-            return {
-                'tipo': 'cliente',
-                'tipo_vinculo': 'cliente',
-                'clientes_id': clientes_id,
-                'usuarios_id': None,
-                'permissoes_id': None,
-                'nome': row.get('nome_cliente') or row.get('nomeCliente') or 'Cliente',
-                'numero': numero
-            }
-
-        tipo_vinculo = row.get('tipo_vinculo', 'desconhecido')
-        return {
-            'tipo': tipo_vinculo,
-            'tipo_vinculo': tipo_vinculo,
-            'clientes_id': row.get('clientes_id'),
-            'usuarios_id': row.get('usuarios_id'),
-            'permissoes_id': None,
-            'nome': row.get('nome_usuario') or row.get('nome_cliente') or row.get('nome') or 'Usuario',
-            'numero': numero
-        }
-
-    # Second attempt: search directly in usuarios table
-    sql_usr = """
-        SELECT u.idUsuarios, u.nome, u.celular, u.permissoes_id,
-               p.nome as permissao_nome
-        FROM usuarios u
-        LEFT JOIN permissoes p ON p.idPermissao = u.permissoes_id
-        WHERE REPLACE(REPLACE(REPLACE(u.celular, '(', ''), ')', ''), '-', '') LIKE :busca
-           OR u.celular = :celular
-           OR CONCAT('55', u.celular) = :numero
-        LIMIT 1
-    """
-    usr_rows = execute_query(sql_usr, {
-        'busca': f'%{numero[-11:]}%',
-        'celular': numero[-11:] if len(numero) > 10 else numero,
-        'numero': numero
-    })
-    if usr_rows:
-        usr = usr_rows[0]
-        perm_id = int(usr.get('permissoes_id', 0) or 0)
-        perfil = PERMISSOES_MAP.get(perm_id, 'desconhecido')
-
-        try:
-            execute_insert("""
-                INSERT INTO whatsapp_integracao (numero_telefone, usuarios_id, tipo_vinculo, situacao)
-                VALUES (:numero, :usuarios_id, :tipo, 1)
-                ON DUPLICATE KEY UPDATE usuarios_id = :usuarios_id, tipo_vinculo = :tipo, situacao = 1
-            """, {
-                'numero': numero,
-                'usuarios_id': usr['idUsuarios'],
-                'tipo': perfil,
-            })
-        except Exception as e:
-            logger.warning(f"Auto-cadastro whatsapp_integracao: {e}")
-
-        return {
-            'tipo': perfil,
-            'tipo_vinculo': perfil,
-            'clientes_id': None,
-            'usuarios_id': usr['idUsuarios'],
-            'permissoes_id': perm_id,
-            'nome': usr.get('nome', 'Usuario'),
-            'numero': numero
-        }
-
-    # Third attempt: search in clientes table
-    sql_cli = """
-        SELECT idClientes, nomeCliente, celular
-        FROM clientes
-        WHERE REPLACE(REPLACE(REPLACE(celular, '(', ''), ')', ''), '-', '') LIKE :busca
-           OR celular = :celular
-           OR CONCAT('55', celular) = :numero
-        LIMIT 1
-    """
-    cli_rows = execute_query(sql_cli, {
-        'busca': f'%{numero[-11:]}%',
-        'celular': numero[-11:] if len(numero) > 10 else numero,
-        'numero': numero
-    })
-    if cli_rows:
-        cli = cli_rows[0]
-
-        try:
-            execute_insert("""
-                INSERT INTO whatsapp_integracao (numero_telefone, clientes_id, tipo_vinculo, situacao)
-                VALUES (:numero, :clientes_id, 'cliente', 1)
-                ON DUPLICATE KEY UPDATE clientes_id = :clientes_id, tipo_vinculo = 'cliente', situacao = 1
-            """, {
-                'numero': numero,
-                'clientes_id': cli['idClientes'],
-            })
-        except Exception as e:
-            logger.warning(f"Auto-cadastro cliente whatsapp_integracao: {e}")
-
-        return {
-            'tipo': 'cliente',
-            'tipo_vinculo': 'cliente',
-            'clientes_id': cli['idClientes'],
-            'usuarios_id': None,
-            'permissoes_id': None,
-            'nome': cli.get('nomeCliente', 'Cliente'),
-            'numero': numero
-        }
-
-    return None
-
-
-# ============================================================
-# Permission helpers (used by command_router)
-# ============================================================
-
-def eh_admin(usuario: dict) -> bool:
-    """Check if user is administrator."""
-    if not usuario:
-        return False
-    numero = usuario.get('numero', '')
-    if numero == ADMIN_NUMERO:
-        return True
-    return usuario.get('permissoes_id') == 1 or usuario.get('tipo') in ('admin', 'Administrador')
-
-
-def eh_admin_ou_tecnico(usuario: dict) -> bool:
-    """Check if user is admin or tecnico."""
-    if not usuario:
-        return False
-    numero = usuario.get('numero', '')
-    if numero == ADMIN_NUMERO:
-        return True
-    pid = usuario.get('permissoes_id')
-    if pid and int(pid) in (1, 2):
-        return True
-    return usuario.get('tipo') in ('admin', 'tecnico', 'Administrador', 'Tecnico')
-
-
-def eh_cliente(usuario: dict) -> bool:
-    """Check if user is a client (can only see their own data)."""
-    if not usuario:
-        return False
-    return usuario.get('tipo') == 'cliente' or (
-        usuario.get('permissoes_id') and int(usuario.get('permissoes_id', 0)) in (5, 6)
-    )
 
 
 # ============================================================
@@ -563,15 +332,15 @@ def process_webhook(payload: dict, api_key: str) -> dict:
                 try:
                     import os
                     os.unlink(resultado['file_path'])
-                except Exception:
-                    pass
+                except Exception as exc:
+                    logger.debug("Failed to cleanup temp audio file %s: %s", resultado['file_path'], exc)
 
         if audio_file_to_cleanup:
             try:
                 import os
                 os.unlink(audio_file_to_cleanup)
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.debug("Failed to cleanup temp audio file %s: %s", audio_file_to_cleanup, exc)
 
         if transcricao and transcricao.get('sucesso'):
             texto = transcricao['texto']
@@ -823,142 +592,6 @@ Entre em contato com nossa equipe para cadastrar seu WhatsApp."""
         "texto_processado": texto,
         "envio_success": resultado.success
     }
-
-
-# ============================================================
-# Helpers called from process_webhook
-# ============================================================
-
-def _enviar_menu_interativo(numero: str, usuario: dict) -> dict:
-    """Send interactive list menu according to user profile."""
-    menu = _menu_lista(usuario)
-    resultado = evo.enviar_lista(
-        numero=numero,
-        title=menu['title'],
-        description=menu['description'],
-        button_text=menu['buttonText'],
-        sections=menu['sections'],
-        footer=menu.get('footer', '')
-    )
-    return resultado
-
-
-def _menu_lista(usuario: dict) -> dict:
-    """Build the interactive menu list according to user profile."""
-    tipo = usuario.get('tipo_vinculo', 'desconhecido') if usuario else 'desconhecido'
-    perm_id = usuario.get('permissoes_id') if usuario else None
-    nome = usuario.get('nome', 'Cliente') if usuario else 'Cliente'
-    primeiro_nome = nome.split()[0] if nome else 'Cliente'
-
-    if perm_id and int(perm_id) == 1:
-        perfil = 'admin'
-    elif perm_id and int(perm_id) == 2:
-        perfil = 'tecnico'
-    elif tipo == 'cliente' or (perm_id and int(perm_id) in (5, 6)):
-        perfil = 'cliente'
-    elif tipo in ('admin', 'Administrador'):
-        perfil = 'admin'
-    elif tipo in ('tecnico', 'Tecnico'):
-        perfil = 'tecnico'
-    elif tipo == 'financeiro':
-        perfil = 'admin'
-    elif tipo == 'vendedor':
-        perfil = 'tecnico'
-    else:
-        perfil = tipo
-
-    if perfil == 'cliente':
-        sections = [{
-            'title': '📋 Meus Dados',
-            'rows': [
-                {'title': '📋 Status das minhas OS', 'description': 'Ver suas ordens de servico', 'rowId': 'status_os'},
-                {'title': '💰 Quanto devo', 'description': 'Consultar valor em aberto', 'rowId': 'quanto_devo'},
-                {'title': '🔍 Detalhes da OS', 'description': 'Ver detalhes de uma OS pelo numero', 'rowId': 'detalhes_os'},
-            ]
-        }]
-    elif perfil == 'tecnico':
-        sections = [
-            {
-                'title': '📋 Minhas OS',
-                'rows': [
-                    {'title': '📋 OS de hoje', 'description': 'Suas ordens de servico do dia', 'rowId': 'minhas_os_hoje'},
-                    {'title': '🔍 Detalhes da OS', 'description': 'Ver detalhes de uma OS', 'rowId': 'detalhes_os'},
-                    {'title': '📊 Relatorio de OS', 'description': 'Resumo de OS do dia', 'rowId': 'relatorio_os'},
-                    {'title': '⚠️ OS atrasadas', 'description': 'Servicos em atraso', 'rowId': 'os_atrasadas'},
-                    {'title': '👷 Produtividade', 'description': 'Desempenho da equipe', 'rowId': 'relatorio_produtividade'},
-                ]
-            },
-            {
-                'title': '📍 Atendimento',
-                'rows': [
-                    {'title': '📍 Cheguei na OS', 'description': 'Check-in no atendimento', 'rowId': 'checkin_tecnico'},
-                    {'title': '🚪 Saindo da OS', 'description': 'Check-out do atendimento', 'rowId': 'checkout_tecnico'},
-                ]
-            }
-        ]
-    else:
-        # Admin
-        sections = [
-            {
-                'title': '📋 Operacional',
-                'rows': [
-                    {'title': '📊 Relatorio de OS', 'description': 'Resumo de OS do dia', 'rowId': 'relatorio_os'},
-                    {'title': '⚠️ OS atrasadas', 'description': 'Servicos em atraso', 'rowId': 'os_atrasadas'},
-                    {'title': '📋 Total OS abertas', 'description': 'Quantidade em aberto', 'rowId': 'total_os_abertas'},
-                    {'title': '🔍 Detalhes da OS', 'description': 'Ver OS especifica pelo numero', 'rowId': 'detalhes_os'},
-                ]
-            },
-            {
-                'title': '💰 Financeiro',
-                'rows': [
-                    {'title': '📈 Relatorio financeiro', 'description': 'Receitas, despesas e lucro', 'rowId': 'relatorio_financeiro'},
-                    {'title': '📊 Relatorio vendas', 'description': 'Vendas do periodo', 'rowId': 'relatorio_vendas'},
-                    {'title': '📄 Cobrancas vencidas', 'description': 'Cobrancas atrasadas', 'rowId': 'cobrancas_vencidas'},
-                    {'title': '💰 Vendas pendentes', 'description': 'Vendas nao faturadas', 'rowId': 'vendas_pendentes'},
-                    {'title': '💸 OS finalizadas', 'description': 'OS concluidas para cobranca', 'rowId': 'os_finalizadas_mes'},
-                ]
-            },
-            {
-                'title': '📦 Gestao',
-                'rows': [
-                    {'title': '📦 Relatorio estoque', 'description': 'Produtos e alertas', 'rowId': 'relatorio_estoque'},
-                    {'title': '👷 Produtividade', 'description': 'Desempenho dos tecnicos', 'rowId': 'relatorio_produtividade'},
-                    {'title': '🏆 Top clientes', 'description': 'Clientes que mais trazem', 'rowId': 'relatorio_clientes_top'},
-                    {'title': '📅 OS do mes', 'description': 'OS por periodo', 'rowId': 'relatorio_os_periodo'},
-                    {'title': '📋 Relatorio atrasados', 'description': 'Clientes com OS em atraso', 'rowId': 'relatorio_atrasados'},
-                ]
-            },
-            {
-                'title': '📝 Acoes',
-                'rows': [
-                    {'title': '📝 Criar OS', 'description': 'Abrir nova ordem de servico', 'rowId': 'criar_os'},
-                    {'title': '🔄 Alterar status', 'description': 'Mudar status de uma OS', 'rowId': 'alterar_status_os'},
-                    {'title': '📍 Cheguei na OS', 'description': 'Check-in no atendimento', 'rowId': 'checkin_tecnico'},
-                    {'title': '🚪 Saindo da OS', 'description': 'Check-out do atendimento', 'rowId': 'checkout_tecnico'},
-                ]
-            },
-        ]
-
-    return {
-        'numero': usuario.get('numero', '') if usuario else '',
-        'title': f'Ola {primeiro_nome}! JJ Ferreiras',
-        'description': 'Escolha uma opcao no menu abaixo:',
-        'buttonText': 'Ver opcoes',
-        'sections': sections,
-        'footer': 'JJ Ferreiras'
-    }
-
-
-def _enviar_botoes_confirmacao(numero: str, title: str, description: str,
-                                opcoes: list = None, footer: str = ''):
-    """Send interactive confirmation buttons."""
-    if not opcoes:
-        opcoes = [
-            {'displayText': '✅ Confirmar', 'id': 'CONFIRMAR'},
-            {'displayText': '❌ Cancelar', 'id': 'CANCELAR'},
-        ]
-    buttons = [{'type': 'reply', 'displayText': o['displayText'], 'id': o['id']} for o in opcoes[:3]]
-    return evo.enviar_botoes(numero, title, description, buttons, footer)
 
 
 def forward_to_n8n(payload: dict):

@@ -27,13 +27,13 @@
                                 } else { ?>
 
                                     <tr>
-                                        <td style="width: 25%"><img src=" <?php echo $emitente->url_logo; ?> "></td>
+                                        <td style="width: 25%"><img src=" <?php echo e($emitente->url_logo); ?> "></td>
                                         <td> <span style="font-size: 20px; ">
-                                                <?php echo $emitente->nome; ?></span> </br><span>
-                                                <?php echo $emitente->cnpj; ?> </br>
-                                                <?php echo $emitente->rua . ', nº:' . $emitente->numero . ', ' . $emitente->bairro . ' - ' . $emitente->cidade . ' - ' . $emitente->uf; ?> </span> </br> <span> E-mail:
-                                                <?php echo $emitente->email . ' - Fone: ' . $emitente->telefone; ?> </br>
-                                                Responsável: <?php echo $result->nome ?></span></td>
+                                                <?php echo e($emitente->nome); ?></span> </br><span>
+                                                <?php echo e($emitente->cnpj); ?> </br>
+                                                <?php echo e($emitente->rua) . ', nº:' . e($emitente->numero) . ', ' . e($emitente->bairro) . ' - ' . e($emitente->cidade) . ' - ' . e($emitente->uf); ?> </span> </br> <span> E-mail:
+                                                <?php echo e($emitente->email) . ' - Fone: ' . e($emitente->telefone); ?> </br>
+                                                Responsável: <?php echo e($result->nome) ?></span></td>
                                         <td style="width: 18%; text-align: center">#Venda: <span>
                                                 <?php echo $result->idVendas ?></span></br> </br> <span>Emissão:
                                                 <?php echo date('d/m/Y'); ?></span></td>
@@ -53,21 +53,21 @@
                                                 <span>
                                                     <h5>Cliente</h5>
                                                     <span>
-                                                        <?php echo $result->nomeCliente ?>
+                                                        <?php echo e($result->nomeCliente) ?>
                                                     </span><br />
                                                     <span>
-                                                        <?php echo $result->rua ?>, <?php echo $result->numero ?>, <?php echo $result->bairro ?>
+                                                        <?php echo e($result->rua) ?>, <?php echo e($result->numero) ?>, <?php echo e($result->bairro) ?>
                                                     </span><br/>
                                                     <span>
-                                                        <?php echo $result->cidade ?> - <?php echo $result->estado ?> - CEP: <?php echo $result->cep ?>
+                                                        <?php echo e($result->cidade) ?> - <?php echo e($result->estado) ?> - CEP: <?php echo e($result->cep) ?>
                                                     </span><br/>
                                                     <span>
-                                                        Email: <?php echo $result->emailCliente ?>
+                                                        Email: <?php echo e($result->emailCliente) ?>
                                                     </span></br>
                                                     <?php if ($result->contato) { ?>
-                                                        <span>Contato: <?php echo $result->contato ?> </span>
+                                                        <span>Contato: <?php echo e($result->contato) ?> </span>
                                                     <?php } ?>
-                                                    <span>Celular: <?php echo $result->celular ?></span>
+                                                    <span>Celular: <?php echo e($result->celular) ?></span>
 							                    </span>
                                             </li>
                                         </ul>
@@ -76,7 +76,7 @@
                                         <td style="width: 12%; padding: 0;text-align:center;">
                                             <img style="margin:12px 0px 0px 0px" src="<?php echo base_url(); ?>assets/img/logo_pix.png" width="64px" alt="QR Code de Pagamento" /></br>
                                             <img style="margin:5px 0px 0px 0px" width="94px" src="<?= $qrCode ?>" alt="QR Code de Pagamento" /></br>
-                                            <?php echo '<span style="margin:0px;font-size: 80%;text-align:center;">Chave PIX: ' . $chaveFormatada . '</span>' ;?>
+                                            <?php echo '<span style="margin:0px;font-size: 80%;text-align:center;">Chave PIX: ' . e($chaveFormatada) . '</span>' ;?>
                                         </td>
                                     <?php endif ?>
                                 </tr>
@@ -89,7 +89,7 @@
                                 <?php if ($result->dataVenda != null) { ?>
                                     <tr>
                                         <td>
-                                            <b>Status Venda: </b><?php echo $result->status ?>
+                                            <b>Status Venda: </b><?php echo e($result->status) ?>
                                         </td>
 
                                         <td>
@@ -98,7 +98,7 @@
 
                                         <td>
                                             <?php if ($result->garantia) { ?>
-                                                <b>Garantia: </b><?php echo $result->garantia . ' dia(s)'; ?>
+                                                <b>Garantia: </b><?php echo e($result->garantia) . ' dia(s)'; ?>
                                             <?php } ?>
                                         </td>
 
@@ -137,7 +137,7 @@
                                     foreach ($produtos as $p) {
                                         $totalProdutos = $totalProdutos + $p->subTotal;
                                         echo '<tr>';
-                                        echo '<td>' . $p->descricao . '</td>';
+                                        echo '<td>' . e($p->descricao) . '</td>';
                                         echo '<td>' . $p->quantidade . '</td>';
 
                                         echo '<td>R$ ' . number_format($p->subTotal, 2, ',', '.') . '</td>';

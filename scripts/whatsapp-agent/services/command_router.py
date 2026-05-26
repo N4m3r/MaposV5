@@ -20,7 +20,7 @@ from services.session_store import SessionStore
 from services import nlp
 from services.os_creation import processar_criacao_os
 from services.os_status import processar_alterar_status
-from services.user_profile import eh_admin, eh_admin_ou_tecnico, eh_cliente
+from services.user_profile import PERMISSOES_MAP, get_perfil, eh_admin, eh_admin_ou_tecnico, eh_cliente
 from services.webhook_handler import registrar_log
 
 logger = logging.getLogger(__name__)

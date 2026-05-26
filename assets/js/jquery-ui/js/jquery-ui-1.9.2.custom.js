@@ -147,7 +147,7 @@ function focusable( element, isTabIndexNotNaN ) {
 
 function visible( element ) {
 	return $.expr.filters.visible( element ) &&
-		!$( element ).parents().andSelf().filter(function() {
+		!$( element ).parents().addBack().filter(function() {
 			return $.css( this, "visibility" ) === "hidden";
 		}).length;
 }
@@ -274,14 +274,14 @@ if ( $( "<a>" ).data( "a-b", "a" ).removeData( "a-b" ).data( "a-b" ) ) {
 
 $.fn.extend({
 	disableSelection: function() {
-		return this.bind( ( $.support.selectstart ? "selectstart" : "mousedown" ) +
+		return this.on( ( $.support.selectstart ? "selectstart" : "mousedown" ) +
 			".ui-disableSelection", function( event ) {
 				event.preventDefault();
 			});
 	},
 
 	enableSelection: function() {
-		return this.unbind( ".ui-disableSelection" );
+		return this.off( ".ui-disableSelection" );
 	}
 });
 
@@ -607,7 +607,7 @@ $.Widget.prototype = {
 		// we can probably remove the unbind calls in 2.0
 		// all event bindings should go through this._on()
 		this.element
-			.unbind( this.eventNamespace )
+			.off( this.eventNamespace )
 			// 1.9 BC for #7810
 			// TODO remove dual storage
 			.removeData( this.widgetName )
@@ -616,14 +616,14 @@ $.Widget.prototype = {
 			// http://bugs.jquery.com/ticket/9413
 			.removeData( $.camelCase( this.widgetFullName ) );
 		this.widget()
-			.unbind( this.eventNamespace )
+			.off( this.eventNamespace )
 			.removeAttr( "aria-disabled" )
 			.removeClass(
 				this.widgetFullName + "-disabled " +
 				"ui-state-disabled" );
 
 		// clean up events and states
-		this.bindings.unbind( this.eventNamespace );
+		this.bindings.off( this.eventNamespace );
 		this.hoverable.removeClass( "ui-state-hover" );
 		this.focusable.removeClass( "ui-state-focus" );
 	},
@@ -748,16 +748,16 @@ $.Widget.prototype = {
 				eventName = match[1] + instance.eventNamespace,
 				selector = match[2];
 			if ( selector ) {
-				delegateElement.delegate( selector, eventName, handlerProxy );
+				delegateElement.on( eventName, selector, handlerProxy );
 			} else {
-				element.bind( eventName, handlerProxy );
+				element.on( eventName, handlerProxy );
 			}
 		});
 	},
 
 	_off: function( element, eventName ) {
 		eventName = (eventName || "").split( " " ).join( this.eventNamespace + " " ) + this.eventNamespace;
-		element.unbind( eventName ).undelegate( eventName );
+		element.off( eventName ).off( eventName );
 	},
 
 	_delay: function( handler, delay ) {
@@ -885,10 +885,10 @@ $.widget("ui.mouse", {
 		var that = this;
 
 		this.element
-			.bind('mousedown.'+this.widgetName, function(event) {
+			.on('mousedown.'+this.widgetName, function(event) {
 				return that._mouseDown(event);
 			})
-			.bind('click.'+this.widgetName, function(event) {
+			.on('click.'+this.widgetName, function(event) {
 				if (true === $.data(event.target, that.widgetName + '.preventClickEvent')) {
 					$.removeData(event.target, that.widgetName + '.preventClickEvent');
 					event.stopImmediatePropagation();
@@ -902,11 +902,11 @@ $.widget("ui.mouse", {
 	// TODO: make sure destroying one instance of mouse doesn't mess with
 	// other instances of mouse
 	_mouseDestroy: function() {
-		this.element.unbind('.'+this.widgetName);
+		this.element.off('.'+this.widgetName);
 		if ( this._mouseMoveDelegate ) {
 			$(document)
-				.unbind('mousemove.'+this.widgetName, this._mouseMoveDelegate)
-				.unbind('mouseup.'+this.widgetName, this._mouseUpDelegate);
+				.off('mousemove.'+this.widgetName, this._mouseMoveDelegate)
+				.off('mouseup.'+this.widgetName, this._mouseUpDelegate);
 		}
 	},
 
@@ -956,8 +956,8 @@ $.widget("ui.mouse", {
 			return that._mouseUp(event);
 		};
 		$(document)
-			.bind('mousemove.'+this.widgetName, this._mouseMoveDelegate)
-			.bind('mouseup.'+this.widgetName, this._mouseUpDelegate);
+			.on('mousemove.'+this.widgetName, this._mouseMoveDelegate)
+			.on('mouseup.'+this.widgetName, this._mouseUpDelegate);
 
 		event.preventDefault();
 
@@ -987,8 +987,8 @@ $.widget("ui.mouse", {
 
 	_mouseUp: function(event) {
 		$(document)
-			.unbind('mousemove.'+this.widgetName, this._mouseMoveDelegate)
-			.unbind('mouseup.'+this.widgetName, this._mouseUpDelegate);
+			.off('mousemove.'+this.widgetName, this._mouseMoveDelegate)
+			.off('mouseup.'+this.widgetName, this._mouseUpDelegate);
 
 		if (this._mouseStarted) {
 			this._mouseStarted = false;
@@ -1774,7 +1774,7 @@ $.widget("ui.draggable", $.ui.mouse, {
 		var handle = !this.options.handle || !$(this.options.handle, this.element).length ? true : false;
 		$(this.options.handle, this.element)
 			.find("*")
-			.andSelf()
+			.addBack()
 			.each(function() {
 				if(this == event.target) handle = true;
 			});
@@ -2534,7 +2534,7 @@ $.ui.ddmanager = {
 
 		var m = $.ui.ddmanager.droppables[t.options.scope] || [];
 		var type = event ? event.type : null; // workaround for #2317
-		var list = (t.currentItem || t.element).find(":data(droppable)").andSelf();
+		var list = (t.currentItem || t.element).find(":data(droppable)").addBack();
 
 		droppablesLoop: for (var i = 0; i < m.length; i++) {
 
@@ -2570,7 +2570,7 @@ $.ui.ddmanager = {
 	},
 	dragStart: function( draggable, event ) {
 		//Listen for scrolling so that if the dragging causes scrolling the position of the droppables can be recalculated (see #5003)
-		draggable.element.parentsUntil( "body" ).bind( "scroll.droppable", function() {
+		draggable.element.parentsUntil( "body" ).on( "scroll.droppable", function() {
 			if( !draggable.options.refreshPositions ) $.ui.ddmanager.prepareOffsets( draggable, event );
 		});
 	},
@@ -2622,7 +2622,7 @@ $.ui.ddmanager = {
 
 	},
 	dragStop: function( draggable, event ) {
-		draggable.element.parentsUntil( "body" ).unbind( "scroll.droppable" );
+		draggable.element.parentsUntil( "body" ).off( "scroll.droppable" );
 		//Call prepareOffsets one final time since IE does not fire return scroll events when overflow was caused by drag (see #5003)
 		if( !draggable.options.refreshPositions ) $.ui.ddmanager.prepareOffsets( draggable, event );
 	}
@@ -2813,7 +2813,7 @@ $.widget("ui.resizable", $.ui.mouse, {
 
 		var _destroy = function(exp) {
 			$(exp).removeClass("ui-resizable ui-resizable-disabled ui-resizable-resizing")
-				.removeData("resizable").removeData("ui-resizable").unbind(".resizable").find('.ui-resizable-handle').remove();
+				.removeData("resizable").removeData("ui-resizable").off(".resizable").find('.ui-resizable-handle').remove();
 		};
 
 		//TODO: Unwrap at same DOM position
@@ -3515,7 +3515,7 @@ $.widget("ui.selectable", $.ui.mouse, {
 			}
 		});
 
-		$(event.target).parents().andSelf().each(function() {
+		$(event.target).parents().addBack().each(function() {
 			var selectee = $.data(this, "selectable-item");
 			if (selectee) {
 				var doSelect = (!event.metaKey && !event.ctrlKey) || !selectee.$element.hasClass('ui-selected');
@@ -3761,7 +3761,7 @@ $.widget("ui.sortable", $.ui.mouse, {
 		if(this.options.handle && !overrideHandle) {
 			var validHandle = false;
 
-			$(this.options.handle, currentItem).find("*").andSelf().each(function() { if(this == event.target) validHandle = true; });
+			$(this.options.handle, currentItem).find("*").addBack().each(function() { if(this == event.target) validHandle = true; });
 			if(!validHandle) return false;
 		}
 
@@ -6088,8 +6088,8 @@ $.widget( "ui.button", {
 	},
 	_create: function() {
 		this.element.closest( "form" )
-			.unbind( "reset" + this.eventNamespace )
-			.bind( "reset" + this.eventNamespace, formResetHandler );
+			.off( "reset" + this.eventNamespace )
+			.on( "reset" + this.eventNamespace, formResetHandler );
 
 		if ( typeof this.options.disabled !== "boolean" ) {
 			this.options.disabled = !!this.element.prop( "disabled" );
@@ -6115,7 +6115,7 @@ $.widget( "ui.button", {
 		this.buttonElement
 			.addClass( baseClasses )
 			.attr( "role", "button" )
-			.bind( "mouseenter" + this.eventNamespace, function() {
+			.on( "mouseenter" + this.eventNamespace, function() {
 				if ( options.disabled ) {
 					return;
 				}
@@ -6123,13 +6123,13 @@ $.widget( "ui.button", {
 					$( this ).addClass( "ui-state-active" );
 				}
 			})
-			.bind( "mouseleave" + this.eventNamespace, function() {
+			.on( "mouseleave" + this.eventNamespace, function() {
 				if ( options.disabled ) {
 					return;
 				}
 				$( this ).removeClass( activeClass );
 			})
-			.bind( "click" + this.eventNamespace, function( event ) {
+			.on( "click" + this.eventNamespace, function( event ) {
 				if ( options.disabled ) {
 					event.preventDefault();
 					event.stopImmediatePropagation();
@@ -6137,16 +6137,16 @@ $.widget( "ui.button", {
 			});
 
 		this.element
-			.bind( "focus" + this.eventNamespace, function() {
+			.on( "focus" + this.eventNamespace, function() {
 				// no need to check disabled, focus won't be triggered anyway
 				that.buttonElement.addClass( focusClass );
 			})
-			.bind( "blur" + this.eventNamespace, function() {
+			.on( "blur" + this.eventNamespace, function() {
 				that.buttonElement.removeClass( focusClass );
 			});
 
 		if ( toggleButton ) {
-			this.element.bind( "change" + this.eventNamespace, function() {
+			this.element.on( "change" + this.eventNamespace, function() {
 				if ( clickDragged ) {
 					return;
 				}
@@ -6156,7 +6156,7 @@ $.widget( "ui.button", {
 			// prevents issue where button state changes but checkbox/radio checked state
 			// does not in Firefox (see ticket #6970)
 			this.buttonElement
-				.bind( "mousedown" + this.eventNamespace, function( event ) {
+				.on( "mousedown" + this.eventNamespace, function( event ) {
 					if ( options.disabled ) {
 						return;
 					}
@@ -6164,7 +6164,7 @@ $.widget( "ui.button", {
 					startXPos = event.pageX;
 					startYPos = event.pageY;
 				})
-				.bind( "mouseup" + this.eventNamespace, function( event ) {
+				.on( "mouseup" + this.eventNamespace, function( event ) {
 					if ( options.disabled ) {
 						return;
 					}
@@ -6175,7 +6175,7 @@ $.widget( "ui.button", {
 		}
 
 		if ( this.type === "checkbox" ) {
-			this.buttonElement.bind( "click" + this.eventNamespace, function() {
+			this.buttonElement.on( "click" + this.eventNamespace, function() {
 				if ( options.disabled || clickDragged ) {
 					return false;
 				}
@@ -6183,7 +6183,7 @@ $.widget( "ui.button", {
 				that.buttonElement.attr( "aria-pressed", that.element[0].checked );
 			});
 		} else if ( this.type === "radio" ) {
-			this.buttonElement.bind( "click" + this.eventNamespace, function() {
+			this.buttonElement.on( "click" + this.eventNamespace, function() {
 				if ( options.disabled || clickDragged ) {
 					return false;
 				}
@@ -6201,7 +6201,7 @@ $.widget( "ui.button", {
 			});
 		} else {
 			this.buttonElement
-				.bind( "mousedown" + this.eventNamespace, function() {
+				.on( "mousedown" + this.eventNamespace, function() {
 					if ( options.disabled ) {
 						return false;
 					}
@@ -6211,13 +6211,13 @@ $.widget( "ui.button", {
 						lastActive = null;
 					});
 				})
-				.bind( "mouseup" + this.eventNamespace, function() {
+				.on( "mouseup" + this.eventNamespace, function() {
 					if ( options.disabled ) {
 						return false;
 					}
 					$( this ).removeClass( "ui-state-active" );
 				})
-				.bind( "keydown" + this.eventNamespace, function(event) {
+				.on( "keydown" + this.eventNamespace, function(event) {
 					if ( options.disabled ) {
 						return false;
 					}
@@ -6225,7 +6225,7 @@ $.widget( "ui.button", {
 						$( this ).addClass( "ui-state-active" );
 					}
 				})
-				.bind( "keyup" + this.eventNamespace, function() {
+				.on( "keyup" + this.eventNamespace, function() {
 					$( this ).removeClass( "ui-state-active" );
 				});
 
@@ -6632,7 +6632,7 @@ $.extend(Datepicker.prototype, {
 			keypress(this._doKeyPress).keyup(this._doKeyUp).
 			bind("setData.datepicker", function(event, key, value) {
 				inst.settings[key] = value;
-			}).bind("getData.datepicker", function(event, key) {
+			}).on("getData.datepicker", function(event, key) {
 				return this._get(inst, key);
 			});
 		this._autoSize(inst);
@@ -6653,7 +6653,7 @@ $.extend(Datepicker.prototype, {
 			inst.append = $('<span class="' + this._appendClass + '">' + appendText + '</span>');
 			input[isRTL ? 'before' : 'after'](inst.append);
 		}
-		input.unbind('focus', this._showDatepicker);
+		input.off('focus', this._showDatepicker);
 		if (inst.trigger)
 			inst.trigger.remove();
 		var showOn = this._get(inst, 'showOn');
@@ -6716,7 +6716,7 @@ $.extend(Datepicker.prototype, {
 		divSpan.addClass(this.markerClassName).append(inst.dpDiv).
 			bind("setData.datepicker", function(event, key, value){
 				inst.settings[key] = value;
-			}).bind("getData.datepicker", function(event, key){
+			}).on("getData.datepicker", function(event, key){
 				return this._get(inst, key);
 			});
 		$.data(target, PROP_NAME, inst);
@@ -7268,7 +7268,7 @@ $.extend(Datepicker.prototype, {
 
 	/* Tidy up after a dialog display. */
 	_tidyDialog: function(inst) {
-		inst.dpDiv.removeClass(this._dialogClass).unbind('.ui-datepicker-calendar');
+		inst.dpDiv.removeClass(this._dialogClass).off('.ui-datepicker-calendar');
 	},
 
 	/* Close date picker if clicked elsewhere. */
@@ -7877,7 +7877,7 @@ $.extend(Datepicker.prototype, {
 					return false;
 				}
 			};
-			$(this).bind(this.getAttribute('data-event'), handler[this.getAttribute('data-handler')]);
+			$(this).on(this.getAttribute('data-event'), handler[this.getAttribute('data-handler')]);
 		});
 	},
 
@@ -8215,12 +8215,12 @@ $.extend(Datepicker.prototype, {
  */
 function bindHover(dpDiv) {
 	var selector = 'button, .ui-datepicker-prev, .ui-datepicker-next, .ui-datepicker-calendar td a';
-	return dpDiv.delegate(selector, 'mouseout', function() {
+	return dpDiv.on('mouseout', selector, function() {
 			$(this).removeClass('ui-state-hover');
 			if (this.className.indexOf('ui-datepicker-prev') != -1) $(this).removeClass('ui-datepicker-prev-hover');
 			if (this.className.indexOf('ui-datepicker-next') != -1) $(this).removeClass('ui-datepicker-next-hover');
 		})
-		.delegate(selector, 'mouseover', function(){
+		.on('mouseover', selector, function(){
 			if (!$.datepicker._isDisabledDatepicker( instActive.inline ? dpDiv.parent()[0] : instActive.input[0])) {
 				$(this).parents('.ui-datepicker-calendar').find('a').removeClass('ui-state-hover');
 				$(this).addClass('ui-state-hover');
@@ -8389,7 +8389,7 @@ $.widget("ui.dialog", {
 			uiDialogTitlebar = ( this.uiDialogTitlebar = $( "<div>" ) )
 				.addClass( "ui-dialog-titlebar  ui-widget-header  " +
 					"ui-corner-all  ui-helper-clearfix" )
-				.bind( "mousedown", function() {
+				.on( "mousedown", function() {
 					// Dialog isn't getting focus when dragging (#8063)
 					uiDialog.focus();
 				})
@@ -8977,7 +8977,7 @@ $.extend( $.ui.dialog.overlay, {
 			setTimeout(function() {
 				// handle $(el).dialog().dialog('close') (see #4065)
 				if ( $.ui.dialog.overlay.instances.length ) {
-					$( document ).bind( $.ui.dialog.overlay.events, function( event ) {
+					$( document ).on( $.ui.dialog.overlay.events, function( event ) {
 						// stop events if the z-index of the target is < the z-index of the overlay
 						// we cannot return true when we don't want to cancel the event (#3523)
 						if ( $( event.target ).zIndex() < $.ui.dialog.overlay.maxZ ) {
@@ -8988,13 +8988,13 @@ $.extend( $.ui.dialog.overlay, {
 			}, 1 );
 
 			// handle window resize
-			$( window ).bind( "resize.dialog-overlay", $.ui.dialog.overlay.resize );
+			$( window ).on( "resize.dialog-overlay", $.ui.dialog.overlay.resize );
 		}
 
 		var $el = ( this.oldInstances.pop() || $( "<div>" ).addClass( "ui-widget-overlay" ) );
 
 		// allow closing by pressing the escape key
-		$( document ).bind( "keydown.dialog-overlay", function( event ) {
+		$( document ).on( "keydown.dialog-overlay", function( event ) {
 			var instances = $.ui.dialog.overlay.instances;
 			// only react to the event if we're the top overlay
 			if ( instances.length !== 0 && instances[ instances.length - 1 ] === $el &&
@@ -9028,7 +9028,7 @@ $.extend( $.ui.dialog.overlay, {
 		}
 
 		if ( this.instances.length === 0 ) {
-			$( [ document, window ] ).unbind( ".dialog-overlay" );
+			$( [ document, window ] ).off( ".dialog-overlay" );
 		}
 
 		$el.height( 0 ).width( 0 ).remove();
@@ -9158,7 +9158,7 @@ $.widget( "ui.menu", {
 			})
 			// need to catch all clicks on disabled menu
 			// not possible through _on
-			.bind( "click" + this.eventNamespace, $.proxy(function( event ) {
+			.on( "click" + this.eventNamespace, $.proxy(function( event ) {
 				if ( this.options.disabled ) {
 					event.preventDefault();
 				}
@@ -9247,7 +9247,7 @@ $.widget( "ui.menu", {
 		// Destroy (sub)menus
 		this.element
 			.removeAttr( "aria-activedescendant" )
-			.find( ".ui-menu" ).andSelf()
+			.find( ".ui-menu" ).addBack()
 				.removeClass( "ui-menu ui-widget ui-widget-content ui-corner-all ui-menu-icons" )
 				.removeAttr( "role" )
 				.removeAttr( "tabIndex" )
@@ -10055,7 +10055,7 @@ $.widget( "ui.slider", $.ui.mouse, {
 			.focus();
 
 		offset = closestHandle.offset();
-		mouseOverHandle = !$( event.target ).parents().andSelf().is( ".ui-slider-handle" );
+		mouseOverHandle = !$( event.target ).parents().addBack().is( ".ui-slider-handle" );
 		this._clickOffset = mouseOverHandle ? { left: 0, top: 0 } : {
 			left: event.pageX - offset.left - ( closestHandle.width() / 2 ),
 			top: event.pageY - offset.top -
@@ -10948,7 +10948,7 @@ $.widget( "ui.tabs", {
 			.addClass( "ui-tabs ui-widget ui-widget-content ui-corner-all" )
 			.toggleClass( "ui-tabs-collapsible", options.collapsible )
 			// Prevent users from focusing disabled tabs via click
-			.delegate( ".ui-tabs-nav > li", "mousedown" + this.eventNamespace, function( event ) {
+			.on( "mousedown" + this.eventNamespace, ".ui-tabs-nav > li", function( event ) {
 				if ( $( this ).is( ".ui-state-disabled" ) ) {
 					event.preventDefault();
 				}
@@ -10959,7 +10959,7 @@ $.widget( "ui.tabs", {
 			// We don't have to worry about focusing the previously focused
 			// element since clicking on a non-focusable element should focus
 			// the body anyway.
-			.delegate( ".ui-tabs-anchor", "focus" + this.eventNamespace, function() {
+			.on( "focus" + this.eventNamespace, ".ui-tabs-anchor", function() {
 				if ( $( this ).closest( "li" ).is( ".ui-state-disabled" ) ) {
 					this.blur();
 				}
@@ -12349,7 +12349,7 @@ $.widget( "ui.tooltip", {
 		});
 
 		// remove title attributes to prevent native tooltips
-		this.element.find( this.options.items ).andSelf().each(function() {
+		this.element.find( this.options.items ).addBack().each(function() {
 			var element = $( this );
 			if ( element.is( "[title]" ) ) {
 				element
@@ -12361,7 +12361,7 @@ $.widget( "ui.tooltip", {
 
 	_enable: function() {
 		// restore title attributes
-		this.element.find( this.options.items ).andSelf().each(function() {
+		this.element.find( this.options.items ).addBack().each(function() {
 			var element = $( this );
 			if ( element.data( "ui-tooltip-title" ) ) {
 				element.attr( "title", element.data( "ui-tooltip-title" ) );
@@ -13382,7 +13382,7 @@ $.effects.animateClass = function( value, duration, easing, callback ) {
 		var animated = $( this ),
 			baseClass = animated.attr( "class" ) || "",
 			applyClassChange,
-			allAnimations = o.children ? animated.find( "*" ).andSelf() : animated;
+			allAnimations = o.children ? animated.find( "*" ).addBack() : animated;
 
 		// map the animated objects to store the original styles.
 		allAnimations = allAnimations.map(function() {

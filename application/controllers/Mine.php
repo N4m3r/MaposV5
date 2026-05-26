@@ -10,11 +10,27 @@ class Mine extends CI_Controller
     {
         parent::__construct();
         $this->load->model('Conecte_model');
+        $this->load->model('clientes_model');
         $this->load->helper('Security_helper');
     }
 
     public function index()
     {
+        // Suporte a token de acesso (LGPD-safe, sem email na URL)
+        $token = $this->input->get('t');
+        if (!empty($token)) {
+            $cliente = $this->clientes_model->getByToken($token);
+            if ($cliente) {
+                $this->session->set_userdata('conectado', true);
+                $this->session->set_userdata('cliente_id', $cliente->idClientes);
+                $this->session->set_userdata('cliente_nome', $cliente->nomeCliente);
+                $this->session->set_userdata('cliente_email', $cliente->email);
+                $this->session->set_userdata('consentimento_lgpd', (int) ($cliente->consentimento_lgpd ?? 0));
+                redirect('mine/painel');
+                return;
+            }
+        }
+
         // Se já está logado como usuário do portal, redireciona para painel
         if ($this->session->userdata('usuario_cliente_id')) {
             redirect('mine/painel');
@@ -561,6 +577,7 @@ class Mine extends CI_Controller
                         $cliente_id = $cliente->idClientes;
                         // Atualiza sessão
                         $this->session->set_userdata('cliente_id', $cliente_id);
+                        $this->session->set_userdata('consentimento_lgpd', (int) ($cliente->consentimento_lgpd ?? 0));
                     }
                 }
             }
@@ -2751,6 +2768,44 @@ class Mine extends CI_Controller
         } else {
             echo json_encode(['success' => false, 'message' => $result['error'] ?? 'Erro ao salvar assinatura']);
         }
+    }
+
+    /**
+     * POST /mine/lgpd_consentimento
+     * Registra consentimento LGPD do cliente via portal
+     */
+    public function lgpd_consentimento()
+    {
+        $clienteId = $this->session->userdata('cliente_id') ?: $this->session->userdata('usuario_cliente_id');
+        if (!$clienteId) {
+            $this->output->set_status_header(401)->set_content_type('application/json')->set_output(json_encode(['error' => 'Nao autenticado']));
+            return;
+        }
+
+        $origem = 'portal_consentimento';
+        $input = json_decode(file_get_contents('php://input'), true);
+        if ($input && !empty($input['origem_dados'])) {
+            $origem = $input['origem_dados'];
+        }
+
+        $this->db->where('idClientes', $clienteId);
+        $this->db->update('clientes', [
+            'consentimento_lgpd'   => 1,
+            'data_consentimento'    => date('Y-m-d H:i:s'),
+            'origem_dados'          => $origem,
+        ]);
+
+        $this->session->set_userdata('consentimento_lgpd', 1);
+
+        log_audit('CONSENT', 'clientes', $clienteId, null, [
+            'consentimento_lgpd' => 1,
+            'origem_dados'       => $origem,
+        ]);
+
+        $this->output->set_content_type('application/json')->set_output(json_encode([
+            'success' => true,
+            'consentimento_lgpd' => 1,
+        ]));
     }
 
 }

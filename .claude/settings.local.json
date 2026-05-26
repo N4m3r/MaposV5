@@ -651,7 +651,12 @@
       "Bash(Select-Object -ExpandProperty FullName)",
       "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\thail\\\\Desktop\\\\IVMS-CRUD\\\\MaposV5\\\\scripts\\\\whatsapp-agent\" -Recurse -Name)",
       "Bash(Sort-Object)",
-      "Bash(Get-Content *)"
+      "Bash(Get-Content *)",
+      "Bash(openssl dgst *)",
+      "Bash(openssl base64 *)",
+      "Bash(wc -l \"C:\\\\Users\\\\thail\\\\Desktop\\\\IVMS-CRUD\\\\MaposV5\\\\application\\\\controllers\\\\Os.php\")",
+      "Bash(powershell -c \"\\(Get-Content 'C:\\\\Users\\\\thail\\\\Desktop\\\\IVMS-CRUD\\\\MaposV5\\\\application\\\\controllers\\\\Os.php'\\).Count\")",
+      "Bash(powershell *)"
     ]
   }
 }

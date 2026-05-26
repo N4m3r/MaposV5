@@ -157,7 +157,7 @@
                                 echo '<td class="ph1">' . e($r->nome) . '</td>';
                                 echo '<td>' . $dataInicial . '</td>';
                                 echo '<td class="ph2">' . $dataFinal . '</td>';
-                                echo '<td class="ph3"><span class="badge" style="background-color: ' . $corGarantia . '; border-color: ' . $corGarantia . '">' . $vencGarantia . '</span> </td>';
+                                echo '<td class="ph3"><span class="badge" style="background-color: ' . $corGarantia . '; border-color: ' . $corGarantia . '">' . e($vencGarantia) . '</span> </td>';
                                 if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eOs')) {
                                     echo '<td>R$ ' . number_format($r->totalProdutos + $r->totalServicos, 2, ',', '.') . '</td>';
                                     echo '<td>R$ ' . number_format(floatval($r->desconto), 2, ',', '.') . '</td>';

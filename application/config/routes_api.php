@@ -109,6 +109,14 @@ $route['api/v2/relatorios/exportar']     = 'api/v2/RelatoriosController/exportar
 // --- Rotas API v2: Acoes do Agente IA ---
 $route['api/v2/acoes/executar']          = 'api/v2/AcoesController/executar';
 
+// LGPD (Protecao de Dados)
+$route['api/v2/lgpd/clientes/(:num)/exportar']     = 'api/v2/LgpdController/exportar/$1';
+$route['api/v2/lgpd/clientes/(:num)/anonimizar']    = 'api/v2/LgpdController/anonimizar/$1';
+$route['api/v2/lgpd/clientes/(:num)/consentimento'] = 'api/v2/LgpdController/consentimento/$1';
+$route['api/v2/lgpd/clientes/(:num)/revogar_consentimento'] = 'api/v2/LgpdController/revogar_consentimento/$1';
+$route['api/v2/lgpd/vazamentos']                   = 'api/v2/LgpdController/vazamentos';
+$route['api/v2/lgpd/vazamentos/(:num)']             = 'api/v2/LgpdController/vazamento_detalhe/$1';
+
 // Webhooks externos (Evolution API)
 $route['api/v2/webhooks/evolution']        = 'api/v2/WhatsappController/evolution';
 $route['api/v2/webhooks/evolution/status'] = 'api/v2/WhatsappController/evolution_status';

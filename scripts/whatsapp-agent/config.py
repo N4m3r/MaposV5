@@ -27,6 +27,9 @@ MAPOS_API_KEY = os.getenv('MAPOS_API_KEY', '')
 # Administrador — numero com codigo do pais (apenas digitos)
 ADMIN_NUMERO = os.getenv('ADMIN_NUMERO', '')
 
+# Administrador — ID do usuario no MapOS para OS criadas sem tecnico identificado
+ADMIN_USUARIO_ID = int(os.getenv('ADMIN_USUARIO_ID', '1'))
+
 # n8n (repassar mensagens para o n8n apos processar)
 N8N_WEBHOOK_URL = os.getenv('N8N_WEBHOOK_URL', '').rstrip('/')
 

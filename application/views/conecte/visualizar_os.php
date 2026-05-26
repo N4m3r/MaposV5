@@ -227,13 +227,13 @@ function getStatusColor($status) {
                                     </tr>
                                 <?php } else { ?>
                                     <tr>
-                                        <td style="width: 25%"><img src=" <?php echo $emitente->url_logo; ?> " style="max-height: 100px"></td>
+                                        <td style="width: 25%"><img src=" <?php echo e($emitente->url_logo); ?> " style="max-height: 100px"></td>
                                         <td>
-                                            <span style="font-size: 20px;"><?php echo $emitente->nome; ?></span></br>
-                                            <?php if($emitente->cnpj != "00.000.000/0000-00") { ?><span class="icon"><i class="fas fa-fingerprint" style="margin:5px 1px"></i> <?php echo $emitente->cnpj; ?></span></br><?php } ?>
-                                            <span class="icon"><i class="fas fa-map-marker-alt" style="margin:4px 3px"></i> <?php echo $emitente->rua . ', ' . $emitente->numero . ', ' . $emitente->bairro . ' - ' . $emitente->cidade . ' - ' . $emitente->uf; ?></span></br>
-                                            <span class="icon"><i class="fas fa-comments" style="margin:5px 1px"></i> E-mail: <?php echo $emitente->email . ' - Fone: ' . $emitente->telefone; ?></span></br>
-                                            <span class="icon"><i class="fas fa-user-check"></i> Responsável: <?php echo $result->nome ?>
+                                            <span style="font-size: 20px;"><?php echo e($emitente->nome); ?></span></br>
+                                            <?php if($emitente->cnpj != "00.000.000/0000-00") { ?><span class="icon"><i class="fas fa-fingerprint" style="margin:5px 1px"></i> <?php echo e($emitente->cnpj); ?></span></br><?php } ?>
+                                            <span class="icon"><i class="fas fa-map-marker-alt" style="margin:4px 3px"></i> <?php echo e($emitente->rua) . ', ' . e($emitente->numero) . ', ' . e($emitente->bairro) . ' - ' . e($emitente->cidade) . ' - ' . e($emitente->uf); ?></span></br>
+                                            <span class="icon"><i class="fas fa-comments" style="margin:5px 1px"></i> E-mail: <?php echo e($emitente->email) . ' - Fone: ' . e($emitente->telefone); ?></span></br>
+                                            <span class="icon"><i class="fas fa-user-check"></i> Responsável: <?php echo e($result->nome) ?>
                                         </td>
                                         <td style="width: 18%; text-align: center">
                                             <span><b>N° OS: </b><?php echo $result->idOs ?></span></br></br>
@@ -251,7 +251,7 @@ function getStatusColor($status) {
                                     <?php if ($result->dataInicial != null) { ?>
                                         <tr>
                                             <td>
-                                                <b>STATUS OS: </b><?php echo $result->status ?>
+                                                <b>STATUS OS: </b><?php echo e($result->status) ?>
                                             </td>
 
                                             <td>
@@ -343,7 +343,7 @@ function getStatusColor($status) {
                                             $thumb = $a->url . '/thumbs/' . $a->thumb;
                                             $link = $a->url . '/' . $a->anexo;
                                         }
-                                        echo '<div class="span3" style="min-height: 150px; margin-left: 0"><a style="min-height: 150px;" href="#modal-anexo" imagem="' . $a->idAnexos . '" link="' . $link . '" role="button" class="btn anexo span12" data-toggle="modal"><img src="' . $thumb . '" alt=""></a></div>';
+                                        echo '<div class="span3" style="min-height: 150px; margin-left: 0"><a style="min-height: 150px;" href="#modal-anexo" imagem="' . $a->idAnexos . '" link="' . e($link) . '" role="button" class="btn anexo span12" data-toggle="modal"><img src="' . e($thumb) . '" alt=""></a></div>';
                                     } ?>
                                     </th>
                                 </tbody>
@@ -366,7 +366,7 @@ function getStatusColor($status) {
                                     <?php foreach ($produtos as $p) {
                                         $totalProdutos = $totalProdutos + $p->subTotal;
                                         echo '<tr>';
-                                        echo '<td>' . $p->descricao . '</td>';
+                                        echo '<td>' . e($p->descricao) . '</td>';
                                         echo '<td>' . $p->quantidade . '</td>';
                                         echo '<td>R$ ' . $p->preco ?: $p->precoVenda . '</td>';
                                         echo '<td>R$ ' . number_format($p->subTotal, 2, ',', '.') . '</td>';
@@ -398,7 +398,7 @@ function getStatusColor($status) {
                                         $preco = $s->preco ?: $s->precoVenda;
                                         $subtotal = $preco * ($s->quantidade ?: 1);
                                         echo '<tr>';
-                                        echo '<td>' . $s->nome . '</td>';
+                                        echo '<td>' . e($s->nome) . '</td>';
                                         echo '<td>' . ($s->quantidade ?: 1) . '</td>';
                                         echo '<td>R$ ' . $preco . '</td>';
                                         echo '<td>R$ ' . number_format($subtotal, 2, ',', '.') . '</td>';
@@ -430,7 +430,7 @@ function getStatusColor($status) {
                                         <td style="width: 15%; padding-left: 0; text-align:center;">
                                             <img style="margin:0px" src="<?php echo base_url(); ?>assets/img/logo_pix.png" width="48px" alt="QR Code de Pagamento" /></br>
                                             <img style="margin:6px 0px 0px 0px" width="94px" src="<?= $qrCode ?>" alt="QR Code de Pagamento" /></br>
-                                            <?php echo '<span style="margin:0px;font-size: 80%;text-align:center;">Chave PIX: ' . $chaveFormatada . '</span>';?>
+                                            <?php echo '<span style="margin:0px;font-size: 80%;text-align:center;">Chave PIX: ' . e($chaveFormatada) . '</span>';?>
                                         </td>
                                     <?php endif ?>
                                 <?php } ?>

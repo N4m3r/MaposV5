@@ -302,8 +302,8 @@
         cc.zoom = true;
         cc.zoomProxy = true;
               
-        controllerPlot.target.bind('jqplotZoom', plotZoom);
-        controllerPlot.target.bind('jqplotResetZoom', plotReset);
+        controllerPlot.target.on('jqplotZoom', plotZoom);
+        controllerPlot.target.on('jqplotResetZoom', plotReset);
 
         function plotZoom(ev, gridpos, datapos, plot, cursor) {
             tc.doZoom(gridpos, datapos, targetPlot, cursor);
@@ -931,9 +931,9 @@
                 c._zoom.axes.start[ax] = datapos[ax];
             }  
            if(plot.plugins.mobile){
-                $(document).bind('vmousemove.jqplotCursor', {plot:plot}, handleZoomMove);              
+                $(document).on('vmousemove.jqplotCursor', {plot:plot}, handleZoomMove);              
             } else {
-                $(document).bind('mousemove.jqplotCursor', {plot:plot}, handleZoomMove);              
+                $(document).on('mousemove.jqplotCursor', {plot:plot}, handleZoomMove);              
             }
 
         }
@@ -982,7 +982,7 @@
         c._zoom.started = false;
         c._zoom.zooming = false;
         
-        $(document).unbind('mousemove.jqplotCursor', handleZoomMove);
+        $(document).off('mousemove.jqplotCursor', handleZoomMove);
         
         if (document.onselectstart != undefined && c._oldHandlers.onselectstart != null){
             document.onselectstart = c._oldHandlers.onselectstart;

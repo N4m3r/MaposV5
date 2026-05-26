@@ -138,6 +138,33 @@ if (! function_exists('unique')) {
     }
 }
 
+if (! function_exists('validar_cpf')) {
+    function validar_cpf($cpf) {
+        $cpf = preg_replace('/[^0-9]/', '', $cpf);
+        if (strlen($cpf) !== 11 || preg_match('/^(\d)\1{10}$/', $cpf)) return false;
+        for ($i = 9; $i < 11; $i++) {
+            for ($j = 0, $k = 0; $k < $i; $k++) $j += $cpf[$k] * (($i + 1) - $k);
+            $j = ((10 * $j) % 11) % 10;
+            if ($cpf[$k] !== (string) $j) return false;
+        }
+        return true;
+    }
+}
+
+if (! function_exists('validar_cnpj')) {
+    function validar_cnpj($cnpj) {
+        $cnpj = preg_replace('/[^0-9]/', '', $cnpj);
+        if (strlen($cnpj) !== 14 || preg_match('/^(\d)\1{13}$/', $cnpj)) return false;
+        $weights1 = [5,4,3,2,9,8,7,6,5,4,3,2];
+        $weights2 = [6,5,4,3,2,9,8,7,6,5,4,3,2];
+        for ($i = 0, $j = 0; $i < 12; $i++) $j += $cnpj[$i] * $weights1[$i];
+        if (((int) ($j % 11) < 2 ? 0 : 11 - ($j % 11)) !== (int) $cnpj[12]) return false;
+        for ($i = 0, $j = 0; $i < 13; $i++) $j += $cnpj[$i] * $weights2[$i];
+        if (((int) ($j % 11) < 2 ? 0 : 11 - ($j % 11)) !== (int) $cnpj[13]) return false;
+        return true;
+    }
+}
+
 if (! function_exists('valid_pix_key')) {
     function valid_pix_key($value)
     {

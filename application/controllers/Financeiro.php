@@ -559,6 +559,10 @@ class Financeiro extends MY_Controller
     
     public function autoCompleteClienteFornecedor()
     {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vLancamento')) {
+            $this->output->set_status_header(403);
+            return;
+        }
         if ($this->input->get('term')) {
             $q = strtolower($this->input->get('term'));
             $result = $this->financeiro_model->autoCompleteClienteFornecedor($q);
@@ -570,6 +574,10 @@ class Financeiro extends MY_Controller
 
     public function autoCompleteClienteAddReceita()
     {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'aLancamento')) {
+            $this->output->set_status_header(403);
+            return;
+        }
         if ($this->input->get('term')) {
             $q = strtolower($this->input->get('term'));
             $result = $this->financeiro_model->autoCompleteClienteReceita($q);

@@ -171,7 +171,7 @@ $(document).ready(function(){
 			$('#lightbox').slideDown(500);
 		}
 
-		$('#lightbox').live('click', function() {
+		$(document).on('click', '#lightbox', function() {
 			$('#lightbox').hide(200);
 		});
 

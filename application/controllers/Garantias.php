@@ -212,6 +212,10 @@ class Garantias extends MY_Controller
 
     public function autoCompleteCliente()
     {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vGarantia')) {
+            $this->output->set_status_header(403);
+            return;
+        }
         if ($this->input->get('term')) {
             $q = strtolower($this->input->get('term'));
             $result = $this->vendas_model->autoCompleteCliente($q);
@@ -223,6 +227,10 @@ class Garantias extends MY_Controller
 
     public function autoCompleteUsuario()
     {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vGarantia')) {
+            $this->output->set_status_header(403);
+            return;
+        }
         if ($this->input->get('term')) {
             $q = strtolower($this->input->get('term'));
             $result = $this->vendas_model->autoCompleteUsuario($q);

@@ -6,7 +6,7 @@
 <html lang="pt-br">
 
 <head>
-    <title><?= $this->config->item('app_name') ?> - <?= $result->idOs ?> - <?= $result->nomeCliente ?></title>
+    <title><?= $this->config->item('app_name') ?> - <?= $result->idOs ?> - <?= e($result->nomeCliente) ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="<?= base_url() ?>assets/css/bootstrap5.3.2.min.css" />
     <link rel="stylesheet" href="<?= base_url() ?>assets/font-awesome/css/font-awesome.css" />
@@ -25,19 +25,19 @@
                         <img src="<?= $emitente->url_logo ?>" class="img-fluid" style="width:140px;">
                     </div>
                     <div class="emitente">
-                        <span style="font-size: 16px;"><b><?= $emitente->nome ?></b></span></br>
+                        <span style="font-size: 16px;"><b><?= e($emitente->nome) ?></b></span></br>
                         <?php if($emitente->cnpj != "00.000.000/0000-00") : ?>
-                            <span class="align-middle">CNPJ: <?= $emitente->cnpj ?></span></br>
+                            <span class="align-middle">CNPJ: <?= e($emitente->cnpj) ?></span></br>
                         <?php endif; ?>
                         <span class="align-middle">
-                            <?= $emitente->rua.', '.$emitente->numero.', '.$emitente->bairro ?><br>
-                            <?= $emitente->cidade.' - '.$emitente->uf.' - '.$emitente->cep ?>
+                            <?= e($emitente->rua).', '.e($emitente->numero).', '.e($emitente->bairro) ?><br>
+                            <?= e($emitente->cidade).' - '.e($emitente->uf).' - '.e($emitente->cep) ?>
                         </span>
                     </div>
                     <div class="contatoEmitente">
-                        <span style="font-weight: bold;">Tel: <?= $emitente->telefone ?></span></br>
-                        <span style="font-weight: bold;"><?= $emitente->email ?></span></br>
-                        <span style="word-break: break-word;">Responsável: <b><?= $result->nome ?></b></span>
+                        <span style="font-weight: bold;">Tel: <?= e($emitente->telefone) ?></span></br>
+                        <span style="font-weight: bold;"><?= e($emitente->email) ?></span></br>
+                        <span style="word-break: break-word;">Responsável: <b><?= e($result->nome) ?></b></span>
                     </div>
                 <?php endif; ?>
             </header>
@@ -66,7 +66,7 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td class="text-center"><?= $result->status ?></td>
+                                    <td class="text-center"><?= e($result->status) ?></td>
                                     <td class="text-center"><?= date('d/m/Y', strtotime($result->dataInicial)) ?></td>
                                     <td class="text-center"><?= $result->dataFinal ? date('d/m/Y', strtotime($result->dataFinal)) : '' ?></td>
                                     <?php if ($result->garantia) : ?>
@@ -84,15 +84,15 @@
                 <div class="subtitle">DADOS DO CLIENTE</div>
                 <div class="dados">
                     <div>
-                        <span><b><?= $result->nomeCliente ?></b></span><br />
-                        <span>CPF/CNPJ: <?= $result->documento ?></span><br />
-                        <span><?= $result->contato_cliente.' '.$result->telefone ?><?= $result->telefone && $result->celular ? ' / '.$result->celular : $result->celular ?></span><br />
-                        <span><?= $result->email ?></span><br />
+                        <span><b><?= e($result->nomeCliente) ?></b></span><br />
+                        <span>CPF/CNPJ: <?= e($result->documento) ?></span><br />
+                        <span><?= e($result->contato_cliente).' '.e($result->telefone) ?><?= $result->telefone && $result->celular ? ' / '.e($result->celular) : e($result->celular) ?></span><br />
+                        <span><?= e($result->email) ?></span><br />
                     </div>
                     <div style="text-align: right;">
-                        <span><?= $result->rua.', '.$result->numero.', '.$result->bairro ?></span><br />
-                        <span><?= $result->complemento.' - '.$result->cidade.' - '.$result->estado ?></span><br />
-                        <span>CEP: <?= $result->cep ?></span><br />
+                        <span><?= e($result->rua).', '.e($result->numero).', '.e($result->bairro) ?></span><br />
+                        <span><?= e($result->complemento).' - '.e($result->cidade).' - '.e($result->estado) ?></span><br />
+                        <span>CEP: <?= e($result->cep) ?></span><br />
                     </div>
                 </div>
 
@@ -147,7 +147,7 @@
                                 <?php foreach ($produtos as $p) :
                                     $totalProdutos = $totalProdutos + $p->subTotal;
                                     echo '<tr>';
-                                    echo '  <td>' . $p->descricao . '</td>';
+                                    echo '  <td>' . e($p->descricao) . '</td>';
                                     echo '  <td class="text-center">' . $p->quantidade . '</td>';
                                     echo '  <td class="text-center">' . number_format($p->preco ?: $p->precoVenda, 2, ',', '.') . '</td>';
                                     echo '  <td class="text-end">R$ ' . number_format($p->subTotal, 2, ',', '.') . '</td>';
@@ -181,7 +181,7 @@
                                         $subtotal = $preco * ($s->quantidade ?: 1);
                                         $totalServico = $totalServico + $subtotal;
                                         echo '<tr>';
-                                        echo '  <td>' . $s->nome . '</td>';
+                                        echo '  <td>' . e($s->nome) . '</td>';
                                         echo '  <td class="text-center">' . ($s->quantidade ?: 1) . '</td>';
                                         echo '  <td class="text-center">' . number_format($preco, 2, ',', '.') . '</td>';
                                         echo '  <td class="text-end">R$ ' . number_format($subtotal, 2, ',', '.') . '</td>';

@@ -430,16 +430,30 @@ class Relatorios_model extends CI_Model
 
         $relatorio = $this->db->query($query, [$inicio->format('c'), $fim->format('c')])->row_array();
 
-        $mercadoriasTotalSemNf = floatval($relatorio['totalVendas']);
+        // Buscar valores com NFS-e emitida no periodo
+        $servicosTotalComNf = 0;
         $mercadoriasTotalComNf = 0;
+        if ($this->db->table_exists('os_nfse_emitida')) {
+            $nfQuery = "
+                SELECT COALESCE(SUM(nf.valor_servicos), 0) as total_com_nf
+                FROM os_nfse_emitida nf
+                WHERE nf.situacao = 'emitida'
+                AND nf.data_emissao >= ?
+                AND nf.data_emissao <= ?
+            ";
+            $nfResult = $this->db->query($nfQuery, [$inicio->format('c'), $fim->format('c')])->row_array();
+            $servicosTotalComNf = floatval($nfResult['total_com_nf'] ?? 0);
+        }
+
+        $mercadoriasTotalSemNf = floatval($relatorio['totalVendas']);
         $mercadoriasTotal = $mercadoriasTotalSemNf + $mercadoriasTotalComNf;
 
         $industriaTotalSemNf = 0;
         $industriaTotalComNf = 0;
         $industriaTotal = $industriaTotalSemNf + $industriaTotalComNf;
 
-        $servicosTotalSemNf = floatval($relatorio['totalServicos']);
-        $servicosTotalComNf = 0;
+        $servicosTotalSemNf = floatval($relatorio['totalServicos']) - $servicosTotalComNf;
+        if ($servicosTotalSemNf < 0) $servicosTotalSemNf = 0;
         $servicosTotal = $servicosTotalSemNf + $servicosTotalComNf;
 
         $totalMes = $mercadoriasTotal + $industriaTotal + $servicosTotal;
@@ -486,16 +500,30 @@ class Relatorios_model extends CI_Model
 
         $relatorio = $this->db->query($query, [$inicio->format('c'), $fim->format('c')])->row_array();
 
-        $mercadoriasTotalSemNf = floatval($relatorio['totalVendas']);
+        // Buscar valores com NFS-e emitida no periodo
+        $servicosTotalComNf = 0;
         $mercadoriasTotalComNf = 0;
+        if ($this->db->table_exists('os_nfse_emitida')) {
+            $nfQuery = "
+                SELECT COALESCE(SUM(nf.valor_servicos), 0) as total_com_nf
+                FROM os_nfse_emitida nf
+                WHERE nf.situacao = 'emitida'
+                AND nf.data_emissao >= ?
+                AND nf.data_emissao <= ?
+            ";
+            $nfResult = $this->db->query($nfQuery, [$inicio->format('c'), $fim->format('c')])->row_array();
+            $servicosTotalComNf = floatval($nfResult['total_com_nf'] ?? 0);
+        }
+
+        $mercadoriasTotalSemNf = floatval($relatorio['totalVendas']);
         $mercadoriasTotal = $mercadoriasTotalSemNf + $mercadoriasTotalComNf;
 
         $industriaTotalSemNf = 0;
         $industriaTotalComNf = 0;
         $industriaTotal = $industriaTotalSemNf + $industriaTotalComNf;
 
-        $servicosTotalSemNf = floatval($relatorio['totalServicos']);
-        $servicosTotalComNf = 0;
+        $servicosTotalSemNf = floatval($relatorio['totalServicos']) - $servicosTotalComNf;
+        if ($servicosTotalSemNf < 0) $servicosTotalSemNf = 0;
         $servicosTotal = $servicosTotalSemNf + $servicosTotalComNf;
 
         $totalMes = $mercadoriasTotal + $industriaTotal + $servicosTotal;

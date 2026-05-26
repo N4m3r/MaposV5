@@ -71,6 +71,16 @@ class Clientes extends MY_Controller
 
         if (strlen($cpf_cnpj) == 11) {
             $pessoa_fisica = true;
+            if (! validar_cpf($cpf_cnpj)) {
+                $this->session->set_flashdata('error', 'O CPF informado é inválido.');
+                redirect(site_url('clientes/adicionar'));
+            }
+        } elseif (strlen($cpf_cnpj) == 14) {
+            $pessoa_fisica = false;
+            if (! validar_cnpj($cpf_cnpj)) {
+                $this->session->set_flashdata('error', 'O CNPJ informado é inválido.');
+                redirect(site_url('clientes/adicionar'));
+            }
         } else {
             $pessoa_fisica = false;
         }
@@ -138,6 +148,19 @@ class Clientes extends MY_Controller
 
         $this->load->library('form_validation');
         $this->data['custom_error'] = '';
+
+        $cpf_cnpj_edit = preg_replace('/[^0-9]/', '', $this->input->post('documento'));
+        if (strlen($cpf_cnpj_edit) == 11) {
+            if (! validar_cpf($cpf_cnpj_edit)) {
+                $this->session->set_flashdata('error', 'O CPF informado é inválido.');
+                redirect(site_url('clientes/editar/') . $this->uri->segment(3));
+            }
+        } elseif (strlen($cpf_cnpj_edit) == 14) {
+            if (! validar_cnpj($cpf_cnpj_edit)) {
+                $this->session->set_flashdata('error', 'O CNPJ informado é inválido.');
+                redirect(site_url('clientes/editar/') . $this->uri->segment(3));
+            }
+        }
 
         if ($this->form_validation->run('clientes') == false) {
             $this->data['custom_error'] = (validation_errors() ? '<div class="form_error">' . validation_errors() . '</div>' : false);

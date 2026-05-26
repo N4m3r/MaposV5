@@ -724,7 +724,7 @@
     };
     
     
-    // this.eventCanvas._elem.bind($.jqplot.eventListenerHooks[i][0], {plot:this}, $.jqplot.eventListenerHooks[i][1]);
+    // this.eventCanvas._elem.on($.jqplot.eventListenerHooks[i][0], {plot:this}, $.jqplot.eventListenerHooks[i][1]);
     
     // setup default renderers for axes and legend so user doesn't have to
     // called with scope of plot
@@ -887,7 +887,7 @@
         }
         
         var hctx = this.plugins.pieRenderer.highlightCanvas.setContext();
-        this.eventCanvas._elem.bind('mouseleave', {plot:this}, function (ev) { unhighlight(ev.data.plot); });
+        this.eventCanvas._elem.on('mouseleave', {plot:this}, function (ev) { unhighlight(ev.data.plot); });
     }
     
     $.jqplot.preInitHooks.push(preInit);

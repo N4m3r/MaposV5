@@ -2,14 +2,20 @@
 
 use Piggly\Pix\StaticPayload;
 
-class Os_model extends CI_Model
+class Os_model extends MY_Model
 {
+    protected $table = 'os';
+    protected $primaryKey = 'idOs';
+    protected $softDelete = true;
+
     protected $fillableOs = [
         'dataInicial', 'dataFinal', 'clientes_id', 'usuarios_id',
         'garantia', 'garantias_id', 'descricaoProduto', 'defeito',
         'status', 'observacoes', 'laudoTecnico', 'faturado',
         'tecnico_responsavel', 'valorTotal', 'desconto', 'tipo_desconto'
     ];
+
+    private $mainTable = 'os';
 
     public function __construct()
     {
@@ -124,9 +130,13 @@ class Os_model extends CI_Model
         return $this->db->get('os')->result();
     }
 
+    private $osColumns = 'os.idOs, os.dataInicial, os.dataFinal, os.clientes_id, os.usuarios_id, os.descricaoProduto, os.defeito, os.status, os.observacoes, os.laudoTecnico, os.faturado, os.valorTotal, os.garantia, os.tecnico_responsavel, os.desconto, os.valor_desconto, os.tipo_desconto, os.garantias_id';
+    private $clienteColumns = 'clientes.idClientes, clientes.nomeCliente, clientes.celular, clientes.telefone, clientes.contato, clientes.email';
+    private $usuarioColumns = 'usuarios.idUsuarios, usuarios.nome, usuarios.telefone, usuarios.email';
+
     public function getById($id)
     {
-        $this->db->select('os.*, clientes.*, clientes.celular as celular_cliente, clientes.telefone as telefone_cliente, clientes.contato as contato_cliente, garantias.refGarantia, garantias.textoGarantia, usuarios.telefone as telefone_usuario, usuarios.email as email_usuario, usuarios.nome');
+        $this->db->select($this->osColumns . ', ' . $this->clienteColumns . ', clientes.celular as celular_cliente, clientes.telefone as telefone_cliente, clientes.contato as contato_cliente, garantias.refGarantia, garantias.textoGarantia, ' . $this->usuarioColumns . ', usuarios.telefone as telefone_usuario, usuarios.email as email_usuario');
         $this->db->from('os');
         $this->db->join('clientes', 'clientes.idClientes = os.clientes_id');
         $this->db->join('usuarios', 'usuarios.idUsuarios = os.usuarios_id', 'left');
@@ -139,7 +149,7 @@ class Os_model extends CI_Model
 
     public function getByIdCobrancas($id)
     {
-        $this->db->select('os.*, clientes.*, clientes.celular as celular_cliente, garantias.refGarantia, garantias.textoGarantia, usuarios.telefone as telefone_usuario, usuarios.email as email_usuario, usuarios.nome,cobrancas.os_id,cobrancas.idCobranca,cobrancas.status');
+        $this->db->select($this->osColumns . ', ' . $this->clienteColumns . ', clientes.celular as celular_cliente, garantias.refGarantia, garantias.textoGarantia, ' . $this->usuarioColumns . ', usuarios.telefone as telefone_usuario, usuarios.email as email_usuario, cobrancas.os_id, cobrancas.idCobranca, cobrancas.status');
         $this->db->from('os');
         $this->db->join('clientes', 'clientes.idClientes = os.clientes_id');
         $this->db->join('usuarios', 'usuarios.idUsuarios = os.usuarios_id');
@@ -191,8 +201,14 @@ class Os_model extends CI_Model
             $data = array_intersect_key($data, array_flip($this->fillableOs));
         }
         $this->db->insert($table, $data);
-        if ($this->db->affected_rows() == '1') {
-            if ($returnId == true) {
+        if ($this->db->affected_rows() >= 1) {
+            if ($table === $this->mainTable) {
+                $insertId = $this->db->insert_id();
+                log_audit('INSERT', 'os', $insertId, null, $data);
+                if ($returnId) {
+                    return $insertId;
+                }
+            } elseif ($returnId == true) {
                 return $this->db->insert_id($table);
             }
 
@@ -204,10 +220,19 @@ class Os_model extends CI_Model
 
     public function edit($table, $data, $fieldID, $ID)
     {
+        if ($table === 'os') {
+            $data = array_intersect_key($data, array_flip($this->fillableOs));
+        }
+        if ($table === $this->mainTable) {
+            $oldData = (array) $this->db->where($fieldID, $ID)->get($this->mainTable)->row();
+        }
         $this->db->where($fieldID, $ID);
         $this->db->update($table, $data);
 
         if ($this->db->affected_rows() >= 0) {
+            if ($table === $this->mainTable) {
+                log_audit('UPDATE', 'os', $ID, $oldData ?? null, $data);
+            }
             return true;
         }
 
@@ -216,13 +241,49 @@ class Os_model extends CI_Model
 
     public function delete($table, $fieldID, $ID)
     {
+        if ($table === $this->mainTable && $this->db->field_exists('deleted_at', $this->mainTable)) {
+            // Soft delete for OS
+            $this->db->where($fieldID, $ID);
+            $this->db->update($this->mainTable, ['deleted_at' => date('Y-m-d H:i:s')]);
+            if ($this->db->affected_rows() >= 0) {
+                log_audit('DELETE', 'os', $ID);
+                return true;
+            }
+            return false;
+        }
+
+        // Hard delete for other tables (produtos_os, servicos_os, etc.)
         $this->db->where($fieldID, $ID);
         $this->db->delete($table);
-        if ($this->db->affected_rows() == '1') {
+        if ($this->db->affected_rows() >= 1) {
             return true;
         }
 
         return false;
+    }
+
+    /**
+     * Restore a soft-deleted OS
+     */
+    public function restore($id)
+    {
+        $this->db->where($this->primaryKey, $id);
+        $this->db->update($this->mainTable, ['deleted_at' => null]);
+        if ($this->db->affected_rows() >= 0) {
+            log_audit('RESTORE', 'os', $id);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Permanently delete an OS (administrative only)
+     */
+    public function forceDelete($id)
+    {
+        $this->db->where($this->primaryKey, $id);
+        $this->db->delete($this->mainTable);
+        return $this->db->affected_rows() >= 1;
     }
 
     public function count($table)
@@ -355,20 +416,38 @@ class Os_model extends CI_Model
 
     public function autoCompleteCliente($q)
     {
-        // group_start/group_end scopes the OR conditions so they can't
-        // interfere with any future WHERE clauses
-        $this->db->select('idClientes, nomeCliente, telefone, celular, documento');
+        $ci = &get_instance();
+        $idPermissao = $ci->session->userdata('permissao');
+        $isAdmin = false;
+        if ($idPermissao) {
+            $ci->load->library('permission');
+            $isAdmin = $ci->permission->checkPermission($idPermissao, 'cCliente');
+        }
+
+        if ($isAdmin) {
+            $this->db->select('idClientes, nomeCliente, telefone, celular, documento');
+        } else {
+            $this->db->select('idClientes, nomeCliente');
+        }
+
         $this->db->group_start();
         $this->db->like('nomeCliente', $q);
-        $this->db->or_like('telefone', $q);
-        $this->db->or_like('celular', $q);
-        $this->db->or_like('documento', $q);
+        if ($isAdmin) {
+            $this->db->or_like('telefone', $q);
+            $this->db->or_like('celular', $q);
+            $this->db->or_like('documento', $q);
+        }
         $this->db->group_end();
         $this->db->limit(25);
         $query = $this->db->get('clientes');
         if ($query->num_rows() > 0) {
             foreach ($query->result_array() as $row) {
-                $row_set[] = ['label' => $row['nomeCliente'] . ' | Telefone: ' . $row['telefone'] . ' | Celular: ' . $row['celular'] . ' | Documento: ' . $row['documento'], 'id' => $row['idClientes']];
+                if ($isAdmin) {
+                    $label = $row['nomeCliente'] . ' | Telefone: ' . $row['telefone'] . ' | Celular: ' . $row['celular'] . ' | Documento: ' . $row['documento'];
+                } else {
+                    $label = $row['nomeCliente'];
+                }
+                $row_set[] = ['label' => $label, 'id' => $row['idClientes']];
             }
             return $row_set;
         }

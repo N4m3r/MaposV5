@@ -2,6 +2,8 @@ import re
 import logging
 from typing import Tuple, Optional
 
+from services.user_profile import get_perfil
+
 logger = logging.getLogger(__name__)
 
 # Dicionario de comandos conhecidos
@@ -244,28 +246,10 @@ def _fmt_data(data: str) -> str:
 
 def formatar_resposta(comando: str, dados: dict, usuario: dict = None) -> str:
     """Formata resposta otimizada para WhatsApp: concisa, escaneavel, visual."""
-    tipo = usuario.get('tipo_vinculo', 'desconhecido') if usuario else 'desconhecido'
-    perm_id = usuario.get('permissoes_id') if usuario else None
     nome = usuario.get('nome', 'Cliente') if usuario else 'Cliente'
     primeiro_nome = nome.split()[0] if nome else 'Cliente'
 
-    # Determinar perfil
-    if perm_id and int(perm_id) == 1:
-        perfil = 'admin'
-    elif perm_id and int(perm_id) == 2:
-        perfil = 'tecnico'
-    elif tipo == 'cliente' or (perm_id and int(perm_id) in (5, 6)):
-        perfil = 'cliente'
-    elif tipo in ('admin', 'Administrador'):
-        perfil = 'admin'
-    elif tipo in ('tecnico', 'Tecnico'):
-        perfil = 'tecnico'
-    elif tipo == 'financeiro':
-        perfil = 'admin'
-    elif tipo == 'vendedor':
-        perfil = 'tecnico'
-    else:
-        perfil = tipo
+    perfil = get_perfil(usuario)
 
     # ===== AJUDA =====
     if comando == 'ajuda':

@@ -773,7 +773,7 @@
         co._tooltipElem.css({position:'absolute', display:'none'});
         
         this.eventCanvas._elem.before(co._tooltipElem);
-        this.eventCanvas._elem.bind('mouseleave', { elem: co._tooltipElem }, function (ev) { ev.data.elem.hide(); });
+        this.eventCanvas._elem.on('mouseleave', { elem: co._tooltipElem }, function (ev) { ev.data.elem.hide(); });
 
         var co = null;
     };

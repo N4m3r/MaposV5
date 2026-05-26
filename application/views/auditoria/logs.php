@@ -1,15 +1,21 @@
 <style>
-  select {
-    width: 70px;
-  }
+  select { width: 70px; }
 </style>
 <div class="new122" style="margin-top: 0; min-height: 100vh">
 <div class="widget-title" style="margin: -20px 0 0">
-        <span class="icon">
-            <i class="fas fa-clock"></i>
-        </span>
+        <span class="icon"><i class="fas fa-clock"></i></span>
         <h5>Logs</h5>
 </div>
+
+<!-- Tab navigation -->
+<ul class="nav nav-tabs" style="margin-bottom: 15px;">
+    <li class="<?php echo ($tab ?? 'logs') === 'logs' ? 'active' : ''; ?>">
+        <a href="<?php echo site_url('auditoria?tab=logs'); ?>">Logs (Legado)</a>
+    </li>
+    <li class="<?php echo ($tab ?? '') === 'audit' ? 'active' : ''; ?>">
+        <a href="<?php echo site_url('auditoria?tab=audit'); ?>">Auditoria Estruturada</a>
+    </li>
+</ul>
   <a href="#modal-excluir" role="button" data-toggle="modal" class="button btn btn-danger tip-top" style="max-width: 250px" title="Excluir Logs">
   <span class="button__icon"><i class='bx bx-trash'></i></span> <span class="button__text2">Remover Logs - 30 dias ou mais</span></a>
 

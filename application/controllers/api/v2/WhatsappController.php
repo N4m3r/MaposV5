@@ -11,6 +11,7 @@ class WhatsappController extends BaseController
     public function __construct()
     {
         parent::__construct();
+        $this->load->model('agente_ia_configuracoes_model');
     }
 
     /**
@@ -106,14 +107,7 @@ class WhatsappController extends BaseController
 
     private function getN8nWebhook(): string
     {
-        if (!$this->db->table_exists('agente_ia_configuracoes')) {
-            return '';
-        }
-        $row = $this->db
-            ->where('chave', 'n8n_webhook_url')
-            ->get('agente_ia_configuracoes')
-            ->row();
-        return $row ? ($row->valor ?? '') : '';
+        return $this->agente_ia_configuracoes_model->get('n8n_webhook_url');
     }
 
     private function encaminharN8n(string $url, array $dados): void

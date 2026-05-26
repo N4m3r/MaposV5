@@ -117,14 +117,29 @@ $coresGrupo = [
                             <div class="config-group-body">
                                 <?php foreach ($items as $cfg): ?>
                                     <div class="config-item">
-                                        <label><?php echo $cfg['chave']; ?></label>
+                                        <label>
+                                            <?php echo e($cfg['chave']); ?>
+                                            <?php if (!empty($cfg['sensivel'])): ?>
+                                                <span class="label label-inverse" style="font-size: 0.7em; vertical-align: middle;">Sensivel</span>
+                                            <?php endif; ?>
+                                        </label>
                                         <?php if (!empty($cfg['descricao'])): ?>
-                                            <div class="desc"><?php echo $cfg['descricao']; ?></div>
+                                            <div class="desc"><?php echo e($cfg['descricao']); ?></div>
                                         <?php endif; ?>
-                                        <input type="<?php echo (!empty($cfg['sensivel'])) ? 'password' : 'text'; ?>"
-                                               name="configs[<?php echo $cfg['id']; ?>][valor]"
-                                               value="<?php echo htmlspecialchars($cfg['valor'] ?? ''); ?>"
-                                               placeholder="Valor...">
+                                        <?php if (!empty($cfg['sensivel']) && !empty($cfg['valor'])): ?>
+                                            <input type="password"
+                                                   name="configs[<?php echo $cfg['id']; ?>][valor]"
+                                                   value=""
+                                                   placeholder="Deixe vazio para manter o valor atual">
+                                            <input type="hidden"
+                                                   name="configs[<?php echo $cfg['id']; ?>][valor_atual]"
+                                                   value="<?php echo htmlspecialchars($cfg['valor'] ?? ''); ?>">
+                                        <?php else: ?>
+                                            <input type="<?php echo (!empty($cfg['sensivel'])) ? 'password' : 'text'; ?>"
+                                                   name="configs[<?php echo $cfg['id']; ?>][valor]"
+                                                   value="<?php echo htmlspecialchars($cfg['valor'] ?? ''); ?>"
+                                                   placeholder="Valor...">
+                                        <?php endif; ?>
                                     </div>
                                 <?php endforeach; ?>
                             </div>

@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  php-lint:
+    name: PHP Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+
+      - name: Lint PHP files
+        run: find application/ -name "*.php" -exec php -l {} \; 2>&1 | grep -v "No syntax errors" || exit 1
+
+  python-lint:
+    name: Python Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install ruff
+        run: pip install ruff
+
+      - name: Lint Python files
+        run: ruff check scripts/whatsapp-agent/ --select=E,F,W --ignore=E501
+
+  tests:
+    name: Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction
+
+      - name: Run PHPUnit
+        run: |
+          if [ -f "vendor/bin/phpunit" ] && [ -f "phpunit.xml" ]; then
+            vendor/bin/phpunit --configuration phpunit.xml
+          else
+            echo "No PHPUnit configured yet"
+          fi
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install pytest
+        run: pip install pytest
+
+      - name: Run Python tests
+        run: cd scripts/whatsapp-agent && python -m pytest tests/ -v

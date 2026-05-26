@@ -699,7 +699,7 @@
         
         this.eventCanvas._elem.before(this.plugins.barRenderer.highlightCanvas.createElement(this._gridPadding, 'jqplot-barRenderer-highlight-canvas', this._plotDimensions, this));
         this.plugins.barRenderer.highlightCanvas.setContext();
-        this.eventCanvas._elem.bind('mouseleave', {plot:this}, function (ev) { unhighlight(ev.data.plot); });
+        this.eventCanvas._elem.on('mouseleave', {plot:this}, function (ev) { unhighlight(ev.data.plot); });
     }   
     
     function highlight (plot, sidx, pidx, points) {

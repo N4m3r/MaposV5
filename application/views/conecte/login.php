@@ -13,11 +13,11 @@
     <link rel="stylesheet" href="<?php echo base_url() ?>assets/css/matrix-login.css" />
     <link href="<?= base_url('assets/css/particula.css'); ?>" rel="stylesheet">
     <link href="<?php echo base_url(); ?>assets/font-awesome/css/font-awesome.css" rel="stylesheet" />
-    <script src="<?php echo base_url() ?>assets/js/jquery-1.12.4.min.js"></script>
+    <script src="<?php echo base_url() ?>assets/js/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <link rel="shortcut icon" href="<?php echo base_url(); ?>assets/img/favicon.png">
     <script src="<?php echo base_url() ?>assets/js/jquery.mask.min.js"></script>
     <script src="<?php echo base_url() ?>assets/js/funcoes.js"></script>
-    <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet' integrity="sha384-B6nB7GjeyR0Ln2Rf3Znp7Z7r4B4eR3i0Uq8k5+u2C2YJXTHVDbB+m9Z8dDqWlZ4H" crossorigin="anonymous">
     <!-- Script webeddy.com.br -->
     <script>
         function formatar(mascara, documento) {

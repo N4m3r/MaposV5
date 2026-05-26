@@ -42,7 +42,8 @@ class Login extends CI_Controller
         if ($lockoutInfo['locked']) {
             $json = ['result' => false, 'message' => 'Conta temporariamente bloqueada. Tente novamente em ' . $lockoutInfo['minutes'] . ' minutos.', 'MAPOS_TOKEN' => $this->security->get_csrf_hash()];
             echo json_encode($json);
-            exit();
+            $this->output->set_content_type('application/json')->set_output(json_encode($json));
+            return;
         }
 
         $this->load->library('form_validation');
@@ -50,7 +51,7 @@ class Login extends CI_Controller
         $this->form_validation->set_rules('senha', 'Senha', 'required|trim');
         if ($this->form_validation->run() == false) {
             $json = ['result' => false, 'message' => validation_errors()];
-            echo json_encode($json);
+            $this->output->set_content_type('application/json')->set_output(json_encode($json));
         } else {
             $email = $this->input->post('email');
             $password = $this->input->post('senha');
@@ -61,8 +62,8 @@ class Login extends CI_Controller
                 // Verificar se acesso esta expirado
                 if ($this->chk_date($user->dataExpiracao)) {
                     $json = ['result' => false, 'message' => 'A conta do usuario esta expirada, por favor entre em contato com o administrador do sistema.'];
-                    echo json_encode($json);
-                    exit();
+                    $this->output->set_content_type('application/json')->set_output(json_encode($json));
+                    return;
                 }
 
                 // Verificar credenciais do usuario
@@ -75,21 +76,20 @@ class Login extends CI_Controller
                     $this->session->set_userdata($session_admin_data);
                     log_info('Efetuou login no sistema');
                     $json = ['result' => true];
-                    echo json_encode($json);
+                    $this->output->set_content_type('application/json')->set_output(json_encode($json));
                 } else {
                     $this->recordFailedAttempt($ip);
                     $remaining = self::$MAX_ATTEMPTS - $this->getAttemptCount($ip);
                     $json = ['result' => false, 'message' => 'Os dados de acesso estao incorretos.' . ($remaining > 0 ? ' Tentativas restantes: ' . $remaining : ''), 'MAPOS_TOKEN' => $this->security->get_csrf_hash()];
-                    echo json_encode($json);
+                    $this->output->set_content_type('application/json')->set_output(json_encode($json));
                 }
             } else {
                 $this->recordFailedAttempt($ip);
                 $remaining = self::$MAX_ATTEMPTS - $this->getAttemptCount($ip);
                 $json = ['result' => false, 'message' => 'Usuario nao encontrado, verifique se suas credenciais estao corretas.' . ($remaining > 0 ? ' Tentativas restantes: ' . $remaining : ''), 'MAPOS_TOKEN' => $this->security->get_csrf_hash()];
-                echo json_encode($json);
+                $this->output->set_content_type('application/json')->set_output(json_encode($json));
             }
         }
-        exit();
     }
 
     /**

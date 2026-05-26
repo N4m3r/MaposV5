@@ -99,8 +99,8 @@ def enviar_pdf_whatsapp(numero: str, pdf_url: str, caption: str = 'Relatorio') -
         finally:
             try:
                 os.unlink(tmp.name)
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.debug("Failed to cleanup temp PDF file %s: %s", tmp.name, exc)
 
         return result
     except Exception as e:
@@ -222,8 +222,8 @@ def enviar_relatorio_diario():
                     if analise:
                         evo.enviar_texto(numero, f"📊 *Analise IA:*\n{analise}")
                         registrar_log(numero, 'saida', analise, 'relatorio_diario_glm', 'enviado')
-                except Exception:
-                    pass
+                except Exception as exc:
+                    logger.debug("Failed to run LLM analysis for daily report: %s", exc)
 
             # Update last sent timestamp
             execute_update(
@@ -338,8 +338,8 @@ def limpar_pdfs_temp():
             if agora - os.path.getmtime(arq) > limite:
                 os.remove(arq)
                 removidos += 1
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.debug("Failed to remove temp PDF %s: %s", arq, exc)
     if removidos:
         logger.info(f"Limpeza PDFs: {removidos} arquivo(s) removido(s)")
 

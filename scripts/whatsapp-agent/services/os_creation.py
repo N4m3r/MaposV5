@@ -24,6 +24,7 @@ from services.result import Result
 from services import nlp
 from services.nlp import _fmt_status_emoji
 from services.llm import extrair_dados_os_audio, interpretar_audio_os
+from services.user_profile import PERMISSOES_MAP, eh_admin
 
 # --- Dependencias injetadas pelo main.py via init() ---
 evo: EvolutionAPI | None = None
@@ -32,15 +33,6 @@ sessions: SessionStore | None = None
 logger = logging.getLogger(__name__)
 
 _sessao_lock = None  # threading.Lock, setado via init()
-
-PERMISSOES_MAP = {
-    1: 'admin',        # Administrador
-    2: 'tecnico',      # Tecnico
-    3: 'financeiro',   # Financeiro
-    4: 'vendedor',     # Vendedor
-    5: 'cliente',      # Cliente
-    6: 'cliente',      # Cliente secundario
-}
 
 
 def init(evolution_api: EvolutionAPI, mapos_queries: MaposQueries,
@@ -86,16 +78,6 @@ def _enviar_botoes_confirmacao(numero: str, title: str, description: str,
         ]
     buttons = [{'type': 'reply', 'displayText': o['displayText'], 'id': o['id']} for o in opcoes[:3]]
     return evo.enviar_botoes(numero, title, description, buttons, footer)
-
-
-def eh_admin(usuario: dict) -> bool:
-    """Verifica se o usuario e administrador (permissoes_id = 1 ou numero admin)."""
-    if not usuario:
-        return False
-    numero = usuario.get('numero', '')
-    if numero == config.ADMIN_NUMERO:
-        return True
-    return usuario.get('permissoes_id') == 1 or usuario.get('tipo') in ('admin', 'Administrador')
 
 
 # ========== AVANCO DE ETAPAS ==========
@@ -297,7 +279,7 @@ def criar_os_completa_via_audio(numero: str, texto_audio: str, usuario: dict) ->
         valor = sum(i['preco'] * i['quantidade'] for i in itens)
 
     # Criar a OS
-    usuario_id = usuario.get('usuarios_id') or 1
+    usuario_id = usuario.get('usuarios_id') or config.ADMIN_USUARIO_ID
     try:
         resultado = criar_os_via_api(
             cliente_id=cliente_id,
@@ -384,8 +366,8 @@ def _enviar_pdf_whatsapp(numero: str, pdf_url: str, caption: str = 'Relatorio'):
         finally:
             try:
                 os.unlink(tmp.name)
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.debug("Failed to cleanup temp PDF file %s: %s", tmp.name, exc)
 
         return result
     except Exception as e:
@@ -968,7 +950,7 @@ Digite a *quantidade* (ou *1*):"""
     elif etapa == 'confirmar':
         if texto_limpo in ('confirmar', 'confirmo', 'sim', 'confirma', 'ok', 'criar'):
             # Criar a OS via API do MapOS (com fallback para SQL direto)
-            usuario_id = usuario.get('usuarios_id') or 1
+            usuario_id = usuario.get('usuarios_id') or config.ADMIN_USUARIO_ID
             try:
                 resultado = criar_os_via_api(
                     cliente_id=dados.get('cliente_id'),
@@ -1061,7 +1043,7 @@ def criar_os_via_api(cliente_id: int, descricao: str = '', defeito: str = '',
         logger.warning("MAPOS_URL ou MAPOS_API_KEY nao configurados — criando via SQL direto")
         return queries.criar_os(
             cliente_id=cliente_id, descricao=descricao, defeito=defeito,
-            usuario_id=usuario_id or 1, observacoes=observacoes, status=status,
+            usuario_id=usuario_id or config.ADMIN_USUARIO_ID, observacoes=observacoes, status=status,
             valor_total=valor_total, itens=itens
         )
 
@@ -1070,7 +1052,7 @@ def criar_os_via_api(cliente_id: int, descricao: str = '', defeito: str = '',
         'clientes_id': cliente_id,
         'descricaoProduto': descricao or 'Nao especificado',
         'defeito': defeito or '',
-        'usuarios_id': usuario_id or 1,
+        'usuarios_id': usuario_id or config.ADMIN_USUARIO_ID,
         'status': status,
         'observacoes': observacoes or '',
     }
@@ -1105,6 +1087,6 @@ def criar_os_via_api(cliente_id: int, descricao: str = '', defeito: str = '',
     # Fallback: SQL direto
     return queries.criar_os(
         cliente_id=cliente_id, descricao=descricao, defeito=defeito,
-        usuario_id=usuario_id or 1, observacoes=observacoes, status=status,
+        usuario_id=usuario_id or config.ADMIN_USUARIO_ID, observacoes=observacoes, status=status,
         valor_total=valor_total, itens=itens
     )

@@ -1,10 +1,13 @@
 ﻿<?php
 
-class Servicos_model extends CI_Model
+class Servicos_model extends MY_Model
 {
+    protected $table = 'servicos';
+    protected $primaryKey = 'idServicos';
     protected $fillable = [
         'nome', 'descricao', 'preco'
     ];
+    protected $softDelete = true;
 
     public function __construct()
     {

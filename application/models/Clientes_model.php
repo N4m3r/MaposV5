@@ -1,13 +1,18 @@
 <?php
 
-class Clientes_model extends CI_Model
+class Clientes_model extends MY_Model
 {
+    protected $table = 'clientes';
+    protected $primaryKey = 'idClientes';
     protected $fillable = [
         'nomeCliente', 'documento', 'telefone', 'celular', 'email',
         'sexo', 'rua', 'numero', 'complemento', 'bairro', 'cidade',
         'estado', 'cep', 'contato', 'fornecedor', 'cpfCnpj',
         'inscricao', 'situacao', 'dataExpiracao', 'obs', 'senha'
     ];
+    protected $softDelete = true;
+
+    private $mainTable = 'clientes';
 
     public function __construct()
     {
@@ -38,6 +43,10 @@ class Clientes_model extends CI_Model
 
     public function getById($id)
     {
+        $this->db->select('idClientes, nomeCliente, documento, telefone, celular, email, sexo, rua, numero, complemento, bairro, cidade, estado, cep, contato, fornecedor, cpfCnpj, inscricao, situacao, dataExpiracao, obs, dataCadastro, asaas_id, consentimento_lgpd, data_consentimento, origem_dados, token_acesso');
+        if ($this->db->field_exists('deleted_at', $this->mainTable)) {
+            $this->db->where('clientes.deleted_at IS NULL', null, false);
+        }
         $this->db->where('idClientes', $id);
         $this->db->limit(1);
 
@@ -45,10 +54,13 @@ class Clientes_model extends CI_Model
     }
 
     /**
-     * Retorna todos os clientes ativos
+     * Retorna todos os clientes ativos (nao deletados)
      */
     public function getAll()
     {
+        if ($this->db->field_exists('deleted_at', $this->mainTable)) {
+            $this->db->where('clientes.deleted_at IS NULL', null, false);
+        }
         $this->db->order_by('nomeCliente', 'ASC');
         return $this->db->get('clientes')->result();
     }
@@ -92,8 +104,13 @@ class Clientes_model extends CI_Model
             $data = array_intersect_key($data, array_flip($this->fillable));
         }
         $this->db->insert($table, $data);
-        if ($this->db->affected_rows() == '1') {
-            return $this->db->insert_id($table);
+        if ($this->db->affected_rows() >= 1) {
+            $insertId = $this->db->insert_id($table);
+            if ($table === 'clientes') {
+                $this->generateAccessToken($insertId);
+                log_audit('INSERT', 'clientes', $insertId, null, $data);
+            }
+            return $insertId;
         }
 
         return false;
@@ -104,10 +121,16 @@ class Clientes_model extends CI_Model
         if ($table === 'clientes') {
             $data = array_intersect_key($data, array_flip($this->fillable));
         }
+        if ($table === $this->mainTable) {
+            $oldData = (array) $this->db->where($fieldID, $ID)->get($this->mainTable)->row();
+        }
         $this->db->where($fieldID, $ID);
         $this->db->update($table, $data);
 
         if ($this->db->affected_rows() >= 0) {
+            if ($table === $this->mainTable) {
+                log_audit('UPDATE', 'clientes', $ID, $oldData ?? null, $data);
+            }
             return true;
         }
 
@@ -116,13 +139,76 @@ class Clientes_model extends CI_Model
 
     public function delete($table, $fieldID, $ID)
     {
+        if ($table === $this->mainTable && $this->db->field_exists('deleted_at', $this->mainTable)) {
+            // Soft delete for main table
+            $this->db->where($fieldID, $ID);
+            $this->db->update($this->mainTable, ['deleted_at' => date('Y-m-d H:i:s')]);
+            if ($this->db->affected_rows() >= 0) {
+                log_audit('DELETE', 'clientes', $ID);
+                return true;
+            }
+            return false;
+        }
+
+        // Hard delete for other tables (produtos_os, servicos_os, etc.)
         $this->db->where($fieldID, $ID);
         $this->db->delete($table);
-        if ($this->db->affected_rows() == '1') {
+        if ($this->db->affected_rows() >= 1) {
             return true;
         }
 
         return false;
+    }
+
+    /**
+     * Restore a soft-deleted client
+     */
+    public function restore($id)
+    {
+        $this->db->where($this->primaryKey, $id);
+        $this->db->update($this->mainTable, ['deleted_at' => null]);
+        if ($this->db->affected_rows() >= 0) {
+            log_audit('RESTORE', 'clientes', $id);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Permanently delete a client (administrative only)
+     */
+    public function forceDelete($id)
+    {
+        $this->db->where($this->primaryKey, $id);
+        $this->db->delete($this->mainTable);
+        return $this->db->affected_rows() >= 1;
+    }
+
+    /**
+     * Get client by access token
+     */
+    public function getByToken($token)
+    {
+        if (empty($token)) {
+            return null;
+        }
+        $this->db->where('token_acesso', $token);
+        if ($this->db->field_exists('deleted_at', $this->mainTable)) {
+            $this->db->where('deleted_at IS NULL', null, false);
+        }
+        $this->db->limit(1);
+        return $this->db->get('clientes')->row();
+    }
+
+    /**
+     * Generate access token for a client
+     */
+    public function generateAccessToken($id)
+    {
+        $token = bin2hex(random_bytes(32));
+        $this->db->where($this->primaryKey, $id);
+        $this->db->update($this->mainTable, ['token_acesso' => $token]);
+        return $token;
     }
 
     public function count($table)
