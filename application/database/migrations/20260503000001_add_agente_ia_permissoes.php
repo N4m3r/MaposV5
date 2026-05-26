@@ -63,17 +63,23 @@ class Migration_Add_agente_ia_permissoes extends CI_Migration
     /**
      * Adiciona chaves de permissao a um grupo existente via json_encode/json_decode.
      */
+    private function decodePermissions($raw)
+    {
+        if (empty($raw)) return [];
+        $decoded = @json_decode($raw, true);
+        if (is_array($decoded)) return $decoded;
+        $decoded = @unserialize($raw);
+        return is_array($decoded) ? $decoded : [];
+    }
+
     private function adicionarAoGrupo(int $idPermissao, array $novas): void
     {
         $row = $this->db->where('idPermissao', $idPermissao)->get('permissoes')->row();
-        if (!$row || empty($row->permissoes)) {
+        if (!$row) {
             return;
         }
 
-        $perms = @json_decode($row->permissoes, true);
-        if (!is_array($perms)) {
-            $perms = [];
-        }
+        $perms = $this->decodePermissions($row->permissoes);
 
         foreach ($novas as $key => $val) {
             $perms[$key] = $val;
@@ -93,8 +99,8 @@ class Migration_Add_agente_ia_permissoes extends CI_Migration
             return;
         }
 
-        $perms = @json_decode($row->permissoes, true);
-        if (!is_array($perms)) {
+        $perms = $this->decodePermissions($row->permissoes);
+        if (empty($perms)) {
             return;
         }
 

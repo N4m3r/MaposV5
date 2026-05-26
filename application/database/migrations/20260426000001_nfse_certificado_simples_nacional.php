@@ -199,6 +199,9 @@ class Migration_Nfse_certificado_simples_nacional extends CI_Migration
             $admin = $this->db->where('idPermissao', 1)->get('permissoes')->row();
             if ($admin && !empty($admin->permissoes)) {
                 $perms = @json_decode($admin->permissoes, true);
+                if (!is_array($perms)) {
+                    $perms = @unserialize($admin->permissoes);
+                }
                 if (is_array($perms)) {
                     $newPerms = [
                         'vNFSe', 'cNFSe', 'eNFSe', 'rNFSe',
