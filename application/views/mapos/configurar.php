@@ -504,7 +504,7 @@
                         <div class="mb-3">
                             <label for="apiEnabled" class="form-label">URL API</label>
                             <div class="controls">
-                                <span class="col-10" id="urlApi" style="margin-top:7px;"><?= e(trim($_ENV['APP_BASEURL'] ?? '', '/')) . '/' ?>index.php/api/v1</span>
+                                <span class="col-10" id="urlApi" style="margin-top:7px;"><?= e(trim($_ENV['APP_BASEURL'] ?? '', '/')) . '/' ?>index.php/api/v2</span>
                             </div>
                         </div>
                         <div class="mb-3">

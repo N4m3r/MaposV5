@@ -115,37 +115,6 @@ $route['webhooks/docs'] = 'webhooks/docs';
 // Rotas da API (sempre carregadas para MAPOS 5.0)
 require APPPATH . 'config/routes_api.php';
 
-// Rotas API V2 (sempre habilitadas para MAPOS 5.0)
-$route['api/v2'] = 'api_docs/docs';
-$route['api/docs'] = 'api_docs/docs';
-$route['api/v2/health'] = 'api/v2/AuthController/health';
-$route['api/v2/auth/login'] = 'api/v2/AuthController/login';
-$route['api/v2/auth/refresh'] = 'api/v2/AuthController/refresh';
-$route['api/v2/auth/logout'] = 'api/v2/AuthController/logout';
-$route['api/v2/clientes'] = 'api/v2/ClientesController/index';
-$route['api/v2/clientes/(:num)'] = 'api/v2/ClientesController/show/$1';
-$route['api/v2/os'] = 'api/v2/OsController/index';
-$route['api/v2/os/(:num)'] = 'api/v2/OsController/show/$1';
-$route['api/v2/vendas'] = 'api/v2/VendasController/index';
-$route['api/v2/vendas/(:num)'] = 'api/v2/VendasController/show/$1';
-$route['api/v2/produtos'] = 'api/v2/ProdutosController/index';
-$route['api/v2/produtos/(:num)'] = 'api/v2/ProdutosController/show/$1';
-$route['api/v2/webhooks'] = 'api/v2/WebhooksController/index';
-
-// --- Rotas API v2: Agente IA / Autorizacoes ---
-$route['api/v2/autorizacoes/verificar']  = 'api/v2/AutorizacoesController/verificar';
-$route['api/v2/autorizacoes/solicitar']  = 'api/v2/AutorizacoesController/solicitar';
-$route['api/v2/autorizacoes/validar']    = 'api/v2/AutorizacoesController/validar';
-$route['api/v2/autorizacoes/listar']     = 'api/v2/AutorizacoesController/listar';
-$route['api/v2/autorizacoes/responder']  = 'api/v2/AutorizacoesController/responder';
-
-// --- Rotas API v2: Relatorios ---
-$route['api/v2/relatorios/(:any)']       = 'api/v2/RelatoriosController/index/$1';
-$route['api/v2/relatorios/exportar']     = 'api/v2/RelatoriosController/exportar';
-
-// --- Rotas API v2: Acoes do Agente IA ---
-$route['api/v2/acoes/executar']          = 'api/v2/AcoesController/executar';
-
 // Rotas do Relatório de Atendimentos
 $route['relatorioatendimentos'] = 'relatorioatendimentos';
 $route['relatorioatendimentos/listar'] = 'relatorioatendimentos/listar';

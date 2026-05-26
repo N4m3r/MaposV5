@@ -658,7 +658,8 @@
       "Bash(powershell -c \"\\(Get-Content 'C:\\\\Users\\\\thail\\\\Desktop\\\\IVMS-CRUD\\\\MaposV5\\\\application\\\\controllers\\\\Os.php'\\).Count\")",
       "Bash(powershell *)",
       "Bash(findstr /S /N \"bootstrap.min.css\" \"application\\\\views\\\\*.php\")",
-      "Bash(del _migrate_bs5_grid.ps1 _migrate_bs5_assets.ps1 _migrate_bs5_components.ps1 _migrate_bs5_extra.ps1 _migrate_bs5_cleanup.ps1 _migrate_bs5_css.ps1 _migrate_bs5_css_extra.ps1 _migrate_bs5_js.ps1)"
+      "Bash(del _migrate_bs5_grid.ps1 _migrate_bs5_assets.ps1 _migrate_bs5_components.ps1 _migrate_bs5_extra.ps1 _migrate_bs5_cleanup.ps1 _migrate_bs5_css.ps1 _migrate_bs5_css_extra.ps1 _migrate_bs5_js.ps1)",
+      "Bash(Select-String -Pattern \"api_docs\" -SimpleMatch)"
     ]
   }
 }

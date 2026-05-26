@@ -82,6 +82,12 @@ body {
   --blue      : #0039c6;
   --blue2     : #212573;
 
+  /* === Sidebar Accent (default dark theme) === */
+  --sidebar-accent: #0467fc;
+  --sidebar-accent-rgb: 4, 103, 252;
+  --sidebar-hover-bg: rgba(255,255,255,0.06);
+  --sidebar-text-muted: #8a8a8a;
+
   /* === Transition === */
   --tran-02: all 0.2s ease;
   --tran-03: all 0.3s ease;

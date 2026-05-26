@@ -3,6 +3,13 @@
 /*=======================================*/
 /* ===========================> FOCUS <=========================== */
 
+:root {
+  --sidebar-accent: #0467fc;
+  --sidebar-accent-rgb: 4, 103, 252;
+  --sidebar-hover-bg: rgba(255,255,255,0.06);
+  --sidebar-text-muted: #8a8a8a;
+}
+
 /* INPUT DE BUSCA NA PÁGINA */
 #content {
   background: none repeat scroll 0 0 var(--bodycolor-w);

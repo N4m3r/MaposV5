@@ -16,6 +16,22 @@
             </div>
         </div>
     </a>
+    <!-- User Info -->
+    <div class="sidebar-user">
+        <div class="sidebar-user-avatar">
+            <?= strtoupper(mb_substr($this->session->userdata('nome') ?? 'U', 0, 2)) ?>
+        </div>
+        <div class="sidebar-user-info">
+            <div class="sidebar-user-name"><?= e($this->session->userdata('nome') ?? 'Usuario') ?></div>
+            <div class="sidebar-user-role">
+                <?php
+                $perm_id = $this->session->userdata('permissao');
+                $roles = [1 => 'Administrador', 2 => 'Gerente'];
+                echo $roles[$perm_id] ?? 'Usuario';
+                ?>
+            </div>
+        </div>
+    </div>
     <!-- Start Pesquisar-->
     <li class="search-box">
         <form style="display: flex" action="<?= site_url('mapos/pesquisar') ?>">
@@ -284,7 +300,7 @@
                         <li class="<?php if (isset($menuEmailQueue)) { echo 'active'; }; ?>"><a href="<?= site_url('emails/dashboard') ?>"><i class='bx bx-envelope iconX'></i><span class="title">Fila de Emails</span><span class="title-tooltip">Fila Emails</span></a></li>
                         <li class="<?php if (isset($menuEmailConfig)) { echo 'active'; }; ?>"><a href="<?= site_url('email/configuracoes') ?>"><i class='bx bx-cog iconX'></i><span class="title">Config. Emails</span><span class="title-tooltip">Config Emails</span></a></li>
                         <li class="<?php if (isset($menuWebhooks)) { echo 'active'; }; ?>"><a href="<?= site_url('webhooks') ?>"><i class='bx bx-webhook iconX'></i><span class="title">Webhooks</span><span class="title-tooltip">Webhooks</span></a></li>
-                        <li class="<?php if (isset($menuApiDocs)) { echo 'active'; }; ?>"><a href="<?= site_url('api/docs') ?>"><i class='bx bx-code-alt iconX'></i><span class="title">API v2</span><span class="title-tooltip">API v2</span></a></li>
+                        <li class="<?php if (isset($menuApiDocs)) { echo 'active'; }; ?>"><a href="<?= site_url('api/docs/swagger') ?>"><i class='bx bx-code-alt iconX'></i><span class="title">API Docs</span><span class="title-tooltip">API Docs</span></a></li>
                         <li class="<?php if (isset($menuAgenteIA)) { echo 'active'; }; ?>"><a href="<?= site_url('agente_ia') ?>"><i class='bx bx-bot iconX'></i><span class="title">Agente IA</span><span class="title-tooltip">Agente IA</span></a></li>
                     <?php } ?>
                 <?php } ?>
@@ -292,13 +308,15 @@
         </div>
 
         <div class="botton-content">
-            <li class="">
-                <a class="tip-bottom" title="" href="<?= site_url('login/sair'); ?>">
-                    <i class='bx bx-log-out-circle iconX'></i>
-                    <span class="title">Sair</span>
-                    <span class="title-tooltip">Sair</span>
-                </a>
-            </li>
+            <ul style="padding: 0; margin: 0; list-style: none;">
+                <li>
+                    <a class="tip-bottom" title="" href="<?= site_url('login/sair'); ?>">
+                        <i class='bx bx-log-out-circle iconX'></i>
+                        <span class="title">Sair</span>
+                        <span class="title-tooltip">Sair</span>
+                    </a>
+                </li>
+            </ul>
         </div>
     </div>
 </nav>

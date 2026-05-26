@@ -2,6 +2,14 @@
 /*  Thomas Lage - lage.thomas@gmail.com  */
 /*=======================================*/
 /* ===========================> FOCUS <=========================== */
+
+:root {
+  --sidebar-accent: #6dad8d;
+  --sidebar-accent-rgb: 109, 173, 141;
+  --sidebar-hover-bg: rgba(0,0,0,0.04);
+  --sidebar-text-muted: #6dad8d;
+}
+
 input[type="search"],
 select,
 input[type="text"],

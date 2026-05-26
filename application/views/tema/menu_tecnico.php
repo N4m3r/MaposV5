@@ -23,6 +23,16 @@
             </div>
         </div>
     </a>
+    <!-- User Info -->
+    <div class="sidebar-user">
+        <div class="sidebar-user-avatar">
+            <?= strtoupper(mb_substr($this->session->userdata('nome') ?? 'U', 0, 2)) ?>
+        </div>
+        <div class="sidebar-user-info">
+            <div class="sidebar-user-name"><?= e($this->session->userdata('nome') ?? 'Tecnico') ?></div>
+            <div class="sidebar-user-role">Tecnico</div>
+        </div>
+    </div>
 
     <!-- Start Pesquisar-->
     <li class="search-box">
@@ -123,13 +133,15 @@
         </div>
 
         <div class="botton-content">
-            <li class="">
-                <a class="tip-bottom" title="" href="<?= site_url('login/sair'); ?>">
-                    <i class='bx bx-log-out-circle iconX'></i>
-                    <span class="title">Sair</span>
-                    <span class="title-tooltip">Sair</span>
-                </a>
-            </li>
+            <ul style="padding: 0; margin: 0; list-style: none;">
+                <li>
+                    <a class="tip-bottom" title="" href="<?= site_url('login/sair'); ?>">
+                        <i class='bx bx-log-out-circle iconX'></i>
+                        <span class="title">Sair</span>
+                        <span class="title-tooltip">Sair</span>
+                    </a>
+                </li>
+            </ul>
         </div>
     </div>
 </nav>

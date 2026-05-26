@@ -471,6 +471,296 @@ textarea {
    ============================================ */
 
 /* ============================================
+   SIDEBAR ENHANCEMENTS
+   ============================================ */
+
+/* --- Transition --- */
+#sidebar {
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* --- User Block --- */
+#sidebar .sidebar-user {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    margin: 8px 12px 0;
+    border-radius: 10px;
+    background: var(--sidebar-hover-bg);
+    gap: 10px;
+}
+
+#sidebar .sidebar-user-avatar {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--sidebar-accent), rgba(var(--sidebar-accent-rgb), 0.6));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+#sidebar .sidebar-user-info {
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+#sidebar .sidebar-user-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--cinza0);
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#sidebar .sidebar-user-role {
+    font-size: 10px;
+    color: var(--sidebar-text-muted);
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#sidebar.open .sidebar-user {
+    justify-content: center;
+    padding: 8px;
+    margin: 8px 10px 0;
+}
+
+#sidebar.open .sidebar-user-info {
+    display: none;
+}
+
+#sidebar.open .sidebar-user-avatar {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    font-size: 12px;
+}
+
+/* --- Active Indicator (border + bg) --- */
+#sidebar li.active {
+    background: rgba(var(--sidebar-accent-rgb), 0.12);
+    border-radius: 6px;
+    border-left: 3px solid var(--sidebar-accent);
+    position: relative;
+}
+
+#sidebar li.active .iconX,
+#sidebar li.active .title {
+    color: var(--sidebar-accent) !important;
+}
+
+/* --- Hover --- */
+#sidebar li a:hover {
+    background: var(--sidebar-hover-bg);
+    transform: translateX(2px);
+}
+
+#sidebar li a:hover .iconX {
+    transform: scale(1.1);
+    color: var(--sidebar-accent);
+}
+
+#sidebar li a:hover .title {
+    color: var(--sidebar-accent);
+}
+
+#sidebar li a,
+#sidebar li a .iconX,
+#sidebar li a .title {
+    transition: all 0.2s ease;
+}
+
+/* --- Section Dividers --- */
+.menu-divider {
+    padding: 18px 0 6px 15px;
+    position: relative;
+}
+
+.menu-divider::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 15px;
+    right: 15px;
+    height: 1px;
+    background: var(--sidebar-hover-bg);
+}
+
+.menu-divider .divider-text {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--sidebar-text-muted);
+    display: block;
+    position: relative;
+    z-index: 1;
+}
+
+.menu-divider-sub {
+    padding: 10px 0 4px 25px;
+}
+
+.menu-divider-sub .divider-text-sub {
+    font-size: 9px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--sidebar-text-muted);
+    opacity: 0.7;
+}
+
+/* --- Search Box --- */
+#sidebar .search-box {
+    border: 1px solid transparent;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+#sidebar .search-box:focus-within {
+    border-color: rgba(var(--sidebar-accent-rgb), 0.4);
+    box-shadow: 0 0 0 3px rgba(var(--sidebar-accent-rgb), 0.1);
+}
+
+#sidebar .search-box:focus-within .bx-search {
+    color: var(--sidebar-accent);
+}
+
+#sidebar .search-box .bx-search {
+    transition: color 0.2s ease;
+}
+
+.search-box input::placeholder {
+    opacity: 0.5;
+}
+
+/* --- Logout Button --- */
+.botton-content {
+    border-top: 1px solid var(--sidebar-hover-bg);
+}
+
+.botton-content li a .iconX,
+.botton-content li a .title {
+    color: #e05555;
+    opacity: 0.8;
+    transition: all 0.2s ease;
+}
+
+.botton-content li a:hover {
+    background: rgba(224, 85, 85, 0.1);
+    transform: translateX(2px);
+}
+
+.botton-content li a:hover .iconX {
+    color: #e05555;
+    opacity: 1;
+    transform: scale(1.1) rotate(180deg);
+}
+
+.botton-content li a:hover .title {
+    color: #e05555;
+    opacity: 1;
+}
+
+/* --- Scrollbar --- */
+.menu-scrollable::-webkit-scrollbar {
+    width: 4px;
+}
+
+.menu-scrollable::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.menu-scrollable::-webkit-scrollbar-thumb {
+    background: rgba(var(--sidebar-accent-rgb), 0.2);
+    border-radius: 4px;
+}
+
+.menu-scrollable::-webkit-scrollbar-thumb:hover {
+    background: rgba(var(--sidebar-accent-rgb), 0.4);
+}
+
+/* --- Tooltips (collapsed state) --- */
+#sidebar.open li .title-tooltip {
+    display: none;
+    position: absolute;
+    left: 68px;
+    background: rgba(var(--sidebar-accent-rgb), 0.15);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: var(--cinza0);
+    border: 1px solid rgba(var(--sidebar-accent-rgb), 0.2);
+    padding: 5px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    white-space: nowrap;
+    transform: translateY(-50%);
+    pointer-events: none;
+    opacity: 0;
+    z-index: 100000;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+#sidebar.open li:hover .title-tooltip {
+    display: block;
+    opacity: 1;
+    animation: tooltipFadeIn 0.2s ease forwards;
+}
+
+#sidebar.open li .title-tooltip::before {
+    content: '';
+    position: absolute;
+    left: -5px;
+    top: 50%;
+    transform: translateY(-50%) rotate(45deg);
+    width: 8px;
+    height: 8px;
+    background: rgba(var(--sidebar-accent-rgb), 0.15);
+    border-left: 1px solid rgba(var(--sidebar-accent-rgb), 0.2);
+    border-bottom: 1px solid rgba(var(--sidebar-accent-rgb), 0.2);
+}
+
+@keyframes tooltipFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50%) translateX(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(-50%) translateX(0);
+    }
+}
+
+/* --- Collapse Toggle Button --- */
+#sidebar .mode {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 10;
+}
+
+#sidebar .mode:hover {
+    border-color: var(--sidebar-accent);
+    color: var(--sidebar-accent);
+    transform: translateY(-50%) scale(1.15);
+    box-shadow: 0 0 0 4px rgba(var(--sidebar-accent-rgb), 0.15);
+}
+
+/* --- Menu badge enhancement --- */
+#sidebar li.active .menu-badge {
+    background: var(--sidebar-accent);
+}
+
+/* ============================================
+   FIM SIDEBAR ENHANCEMENTS
+   ============================================ */
+
+/* ============================================
    ESTILOS GLOBAIS PARA SELECTS
    ============================================ */
 

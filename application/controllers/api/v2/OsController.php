@@ -243,4 +243,447 @@ class OsController extends BaseController
             'total' => count($os)
         ]);
     }
+
+    // ==============================
+    // SUB-RECURSOS: Produtos na OS
+    // ==============================
+
+    public function produtos(int $osId = 0): void
+    {
+        $this->load->model('os_model');
+
+        if (!$osId) {
+            $osId = (int) $this->uri->segment(4);
+        }
+
+        if (strtolower($this->input->method()) === 'get') {
+            $produtos = $this->os_model->getProdutos($osId);
+            $this->success($produtos);
+            return;
+        }
+
+        if (strtolower($this->input->method()) === 'post') {
+            $this->checkPermission('os_editar');
+            $data = $this->getJsonInput();
+
+            if (empty($data['idProduto']) || empty($data['quantidade'])) {
+                $this->validationError(['idProduto e quantidade sao obrigatorios']);
+                return;
+            }
+
+            $produto = $this->db->where('idProdutos', $data['idProduto'])->get('produtos')->row();
+            if (!$produto) {
+                $this->notFound('Produto');
+                return;
+            }
+
+            $insertData = [
+                'os_id' => $osId,
+                'produtos_id' => $data['idProduto'],
+                'quantidade' => $data['quantidade'],
+                'preco' => $data['preco'] ?? $produto->precoVenda,
+                'subTotal' => ($data['quantidade']) * ($data['preco'] ?? $produto->precoVenda),
+            ];
+
+            $this->db->insert('produtos_os', $insertData);
+
+            // Debitar estoque
+            $this->db->where('idProdutos', $data['idProduto']);
+            $this->db->set('estoque', 'estoque - ' . (int) $data['quantidade'], false);
+            $this->db->update('produtos');
+
+            $this->clearCache('os_*');
+            $this->created(['message' => 'Produto adicionado a OS']);
+            return;
+        }
+    }
+
+    public function produtoUpdate(int $osId = 0, int $prodOsId = 0): void
+    {
+        $this->checkPermission('os_editar');
+        $this->load->model('os_model');
+
+        $data = $this->getJsonInput();
+
+        $updateData = [];
+        if (isset($data['quantidade'])) $updateData['quantidade'] = $data['quantidade'];
+        if (isset($data['preco'])) $updateData['preco'] = $data['preco'];
+        if (isset($data['quantidade']) && isset($data['preco'])) {
+            $updateData['subTotal'] = $data['quantidade'] * $data['preco'];
+        }
+
+        $this->db->where('idProdutos_os', $prodOsId);
+        $this->db->update('produtos_os', $updateData);
+
+        $this->clearCache('os_*');
+        $this->updated(['message' => 'Produto atualizado na OS']);
+    }
+
+    public function produtoDelete(int $osId = 0, int $prodOsId = 0): void
+    {
+        $this->checkPermission('os_editar');
+        $this->load->model('os_model');
+
+        $prodOs = $this->db->where('idProdutos_os', $prodOsId)->get('produtos_os')->row();
+        if ($prodOs) {
+            // Devolver estoque
+            $this->db->where('idProdutos', $prodOs->produtos_id);
+            $this->db->set('estoque', 'estoque + ' . (int) $prodOs->quantidade, false);
+            $this->db->update('produtos');
+        }
+
+        $this->db->where('idProdutos_os', $prodOsId);
+        $this->db->delete('produtos_os');
+
+        $this->clearCache('os_*');
+        $this->deleted('Produto removido da OS');
+    }
+
+    // ==============================
+    // SUB-RECURSOS: Servicos na OS
+    // ==============================
+
+    public function servicos(int $osId = 0): void
+    {
+        $this->load->model('os_model');
+
+        if (!$osId) {
+            $osId = (int) $this->uri->segment(4);
+        }
+
+        if (strtolower($this->input->method()) === 'get') {
+            $servicos = $this->os_model->getServicos($osId);
+            $this->success($servicos);
+            return;
+        }
+
+        if (strtolower($this->input->method()) === 'post') {
+            $this->checkPermission('os_editar');
+            $data = $this->getJsonInput();
+
+            if (empty($data['idServico'])) {
+                $this->validationError(['idServico e obrigatorio']);
+                return;
+            }
+
+            $servico = $this->db->where('idServicos', $data['idServico'])->get('servicos')->row();
+            if (!$servico) {
+                $this->notFound('Servico');
+                return;
+            }
+
+            $insertData = [
+                'os_id' => $osId,
+                'servicos_id' => $data['idServico'],
+                'quantidade' => $data['quantidade'] ?? 1,
+                'preco' => $data['preco'] ?? $servico->preco,
+                'subTotal' => ($data['quantidade'] ?? 1) * ($data['preco'] ?? $servico->preco),
+            ];
+
+            $this->db->insert('servicos_os', $insertData);
+
+            $this->clearCache('os_*');
+            $this->created(['message' => 'Servico adicionado a OS']);
+            return;
+        }
+    }
+
+    public function servicoUpdate(int $osId = 0, int $servOsId = 0): void
+    {
+        $this->checkPermission('os_editar');
+        $data = $this->getJsonInput();
+
+        $updateData = [];
+        if (isset($data['quantidade'])) $updateData['quantidade'] = $data['quantidade'];
+        if (isset($data['preco'])) $updateData['preco'] = $data['preco'];
+        if (isset($data['quantidade']) && isset($data['preco'])) {
+            $updateData['subTotal'] = $data['quantidade'] * $data['preco'];
+        }
+
+        $this->db->where('idServicos_os', $servOsId);
+        $this->db->update('servicos_os', $updateData);
+
+        $this->clearCache('os_*');
+        $this->updated(['message' => 'Servico atualizado na OS']);
+    }
+
+    public function servicoDelete(int $osId = 0, int $servOsId = 0): void
+    {
+        $this->checkPermission('os_editar');
+
+        $this->db->where('idServicos_os', $servOsId);
+        $this->db->delete('servicos_os');
+
+        $this->clearCache('os_*');
+        $this->deleted('Servico removido da OS');
+    }
+
+    // ==============================
+    // SUB-RECURSOS: Anotacoes
+    // ==============================
+
+    public function anotacoes(int $osId = 0): void
+    {
+        $this->load->model('os_model');
+
+        if (!$osId) {
+            $osId = (int) $this->uri->segment(4);
+        }
+
+        if (strtolower($this->input->method()) === 'get') {
+            $anotacoes = $this->db->where('os_id', $osId)->get('anotacoes_os')->result();
+            $this->success($anotacoes);
+            return;
+        }
+
+        if (strtolower($this->input->method()) === 'post') {
+            $this->checkPermission('os_editar');
+            $data = $this->getJsonInput();
+
+            if (empty($data['anotacao'])) {
+                $this->validationError(['anotacao e obrigatoria']);
+                return;
+            }
+
+            $userName = $this->currentUser->name ?? 'Sistema';
+            $insertData = [
+                'os_id' => $osId,
+                'anotacao' => '<b>' . $userName . ':</b> ' . $data['anotacao'],
+                'data_hora' => date('Y-m-d H:i:s'),
+            ];
+
+            $this->db->insert('anotacoes_os', $insertData);
+
+            $this->clearCache('os_*');
+            $this->created(['message' => 'Anotacao adicionada']);
+            return;
+        }
+    }
+
+    public function anotacaoDelete(int $osId = 0, int $anotId = 0): void
+    {
+        $this->checkPermission('os_editar');
+
+        $this->db->where('idAnotacoes', $anotId);
+        $this->db->delete('anotacoes_os');
+
+        $this->clearCache('os_*');
+        $this->deleted('Anotacao removida');
+    }
+
+    // ==============================
+    // SUB-RECURSOS: Anexos
+    // ==============================
+
+    public function anexos(int $osId = 0): void
+    {
+        $this->load->model('os_model');
+
+        if (!$osId) {
+            $osId = (int) $this->uri->segment(4);
+        }
+
+        if (strtolower($this->input->method()) === 'get') {
+            $anexos = $this->db->where('os_id', $osId)->get('anexos')->result();
+            $this->success($anexos);
+            return;
+        }
+
+        if (strtolower($this->input->method()) === 'post') {
+            $this->checkPermission('os_editar');
+
+            if (empty($_FILES['userfile'])) {
+                $this->validationError(['Arquivo e obrigatorio']);
+                return;
+            }
+
+            $uploadPath = FCPATH . 'assets/anexos/';
+            if (!is_dir($uploadPath)) {
+                mkdir($uploadPath, 0755, true);
+            }
+
+            $config['upload_path'] = $uploadPath;
+            $config['allowed_types'] = '*';
+            $config['max_size'] = 10240;
+            $config['encrypt_name'] = true;
+
+            $this->load->library('upload', $config);
+
+            if (!$this->upload->do_upload('userfile')) {
+                $this->validationError([$this->upload->display_errors()]);
+                return;
+            }
+
+            $uploadData = $this->upload->data();
+            $insertData = [
+                'os_id' => $osId,
+                'arquivo' => $uploadData['file_name'],
+                'descricao' => $this->input->post('descricao') ?: $uploadData['orig_name'],
+                'data' => date('Y-m-d H:i:s'),
+            ];
+
+            $this->db->insert('anexos', $insertData);
+
+            $this->clearCache('os_*');
+            $this->created(['message' => 'Anexo adicionado', 'arquivo' => $uploadData['file_name']]);
+            return;
+        }
+    }
+
+    public function anexoDelete(int $osId = 0, int $anexoId = 0): void
+    {
+        $this->checkPermission('os_editar');
+
+        $anexo = $this->db->where('idAnexos', $anexoId)->get('anexos')->row();
+        if ($anexo) {
+            $filePath = FCPATH . 'assets/anexos/' . $anexo->arquivo;
+            if (file_exists($filePath)) {
+                unlink($filePath);
+            }
+        }
+
+        $this->db->where('idAnexos', $anexoId);
+        $this->db->delete('anexos');
+
+        $this->clearCache('os_*');
+        $this->deleted('Anexo removido');
+    }
+
+    // ==============================
+    // Desconto
+    // ==============================
+
+    public function desconto(int $osId = 0): void
+    {
+        $this->checkPermission('os_editar');
+        $this->load->model('os_model');
+
+        $data = $this->getJsonInput();
+
+        if (empty($data['tipo_desconto']) || !isset($data['desconto'])) {
+            $this->validationError(['tipo_desconto e desconto sao obrigatorios']);
+            return;
+        }
+
+        $os = $this->repository->find($osId);
+        if (!$os) {
+            $this->notFound('OS');
+            return;
+        }
+
+        $valorTotal = floatval($os->valorTotal ?? 0);
+        $desconto = floatval($data['desconto']);
+        $tipoDesconto = $data['tipo_desconto'];
+
+        $valorDesconto = $tipoDesconto === 'porcento'
+            ? $valorTotal * ($desconto / 100)
+            : $desconto;
+
+        $updateData = [
+            'tipo_desconto' => $tipoDesconto,
+            'desconto' => $desconto,
+            'valor_desconto' => $valorDesconto,
+        ];
+
+        $this->db->where('idOs', $osId);
+        $this->db->update('os', $updateData);
+
+        $this->clearCache('os_*');
+        $this->updated(['message' => 'Desconto aplicado', 'valor_desconto' => $valorDesconto]);
+    }
+
+    // ==============================
+    // Tecnico
+    // ==============================
+
+    public function listarTecnicos(): void
+    {
+        $this->checkPermission('os_editar');
+
+        $tecnicos = $this->db
+            ->select('idUsuarios, nome, email, telefone')
+            ->where('is_tecnico', 1)
+            ->where('situacao', 1)
+            ->get('usuarios')->result();
+
+        $this->success($tecnicos);
+    }
+
+    public function tecnico(int $osId = 0): void
+    {
+        $this->load->model('os_model');
+
+        $tecnico = $this->db
+            ->select('usuarios.idUsuarios, usuarios.nome, usuarios.email, usuarios.telefone, os_tecnicos.atribuido_em')
+            ->join('usuarios', 'usuarios.idUsuarios = os_tecnicos.tecnico_id')
+            ->where('os_tecnicos.os_id', $osId)
+            ->where('os_tecnicos.ativo', 1)
+            ->get('os_tecnicos')->row();
+
+        $this->success($tecnico);
+    }
+
+    public function atribuirTecnico(): void
+    {
+        $this->checkPermission('os_editar');
+        $data = $this->getJsonInput();
+
+        if (empty($data['os_id']) || empty($data['tecnico_id'])) {
+            $this->validationError(['os_id e tecnico_id sao obrigatorios']);
+            return;
+        }
+
+        // Desativar tecnico anterior
+        $this->db->where('os_id', $data['os_id'])->where('ativo', 1)
+            ->update('os_tecnicos', ['ativo' => 0, 'removido_em' => date('Y-m-d H:i:s')]);
+
+        // Atribuir novo tecnico
+        $insertData = [
+            'os_id' => $data['os_id'],
+            'tecnico_id' => $data['tecnico_id'],
+            'atribuido_em' => date('Y-m-d H:i:s'),
+            'ativo' => 1,
+        ];
+
+        $this->db->insert('os_tecnicos', $insertData);
+
+        // Atualizar OS
+        $this->db->where('idOs', $data['os_id'])
+            ->update('os', ['tecnico_responsavel' => $data['tecnico_id']]);
+
+        $this->clearCache('os_*');
+        $this->created(['message' => 'Tecnico atribuido com sucesso']);
+    }
+
+    public function removerTecnico(): void
+    {
+        $this->checkPermission('os_editar');
+        $data = $this->getJsonInput();
+
+        if (empty($data['os_id'])) {
+            $this->validationError(['os_id e obrigatorio']);
+            return;
+        }
+
+        $this->db->where('os_id', $data['os_id'])->where('ativo', 1)
+            ->update('os_tecnicos', ['ativo' => 0, 'removido_em' => date('Y-m-d H:i:s')]);
+
+        $this->db->where('idOs', $data['os_id'])
+            ->update('os', ['tecnico_responsavel' => null]);
+
+        $this->clearCache('os_*');
+        $this->deleted('Tecnico removido da OS');
+    }
+
+    public function historicoTecnico(int $osId = 0): void
+    {
+        $historico = $this->db
+            ->select('os_tecnicos.*, usuarios.nome as tecnico_nome')
+            ->join('usuarios', 'usuarios.idUsuarios = os_tecnicos.tecnico_id', 'left')
+            ->where('os_tecnicos.os_id', $osId)
+            ->order_by('os_tecnicos.atribuido_em', 'DESC')
+            ->get('os_tecnicos')->result();
+
+        $this->success($historico);
+    }
 }

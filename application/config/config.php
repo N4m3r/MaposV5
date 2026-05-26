@@ -5,7 +5,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 /**
  * App current version
  */
-$config['app_version'] = '4.52.0';
+$config['app_version'] = '5.0.0';
 
 /**
  * Nome do sistema
@@ -456,8 +456,9 @@ $config['csrf_exclude_uris'] = [
     'api/v2/acoes.*+',
     'api/v2/notificacoes.*+',
     'api/v2/lgpd.*+',
-    'api/v1/login',
-    'api/v1/client/auth',
+    'api/v2/client.*+',
+    'api/v2/cobrancas.*+',
+    'api/v2/relatorios.*+',
     'api_tools.*+',
     'nfse_os/calcular_impostos',
     'nfse_os/emitir_nfse_api.*+',
