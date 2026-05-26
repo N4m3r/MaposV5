@@ -418,6 +418,9 @@ class Permissoes extends MY_Controller
             $currentPerms = [];
             if ($current && !empty($current->permissoes)) {
                 $decoded = @json_decode($current->permissoes, true);
+                if (!is_array($decoded)) {
+                    $decoded = @unserialize($current->permissoes);
+                }
                 if (is_array($decoded)) {
                     $currentPerms = $decoded;
                 }

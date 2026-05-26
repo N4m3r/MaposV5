@@ -41,6 +41,11 @@ class Permission
             return false;
         }
 
+        // Admin (idPermissao=1) sempre tem acesso total
+        if ($idPermissao == 1) {
+            return true;
+        }
+
         // Se as permissões não estiverem carregadas, requisita o carregamento
         if ($this->permissions == null) {
             // Se não carregar retorna falso
@@ -70,11 +75,18 @@ class Permission
             $array = $this->CI->db->get($this->table)->row_array();
 
             if (is_array($array) && count($array) > 0) {
-                $array = json_decode($array[$this->select], true);
-                //Atribui as permissoes ao atributo permissions
-                $this->permissions = [$array];
+                $raw = $array[$this->select];
+                $decoded = json_decode($raw, true);
 
-                return true;
+                // Se json_decode falhou, tentar unserialize (formato legado)
+                if ($decoded === null && !empty($raw)) {
+                    $decoded = @unserialize($raw);
+                }
+
+                if (is_array($decoded)) {
+                    $this->permissions = [$decoded];
+                    return true;
+                }
             }
         }
 

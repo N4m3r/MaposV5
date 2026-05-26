@@ -81,7 +81,7 @@
 
 </style>
 
-<?php $permissoes = json_decode($result->permissoes, true);?>
+<?php $permissoes = json_decode($result->permissoes, true); if (!is_array($permissoes)) { $permissoes = @unserialize($result->permissoes); } if (!is_array($permissoes)) { $permissoes = []; } ?>
 <div class="col-12" style="margin-left: 0">
     <form action="<?php echo base_url();?>index.php/permissoes/editar" id="formPermissao" method="post">
         <div class="col-12" style="margin-left: 0">
