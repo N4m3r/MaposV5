@@ -1,8 +1,8 @@
-<!-- Tema Moderno Obras -->
+﻿<!-- Tema Moderno Obras -->
 <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/obras-modern-theme.css">
 
-<div class="row-fluid obras-modern-container" style="margin-top: 0">
-    <div class="span12">
+<div class="row obras-modern-container" style="margin-top: 0">
+    <div class="col-12">
 
         <!-- Header -->
         <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px; padding: 25px; color: white; margin-bottom: 25px;">

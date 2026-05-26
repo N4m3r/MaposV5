@@ -1,12 +1,12 @@
-<div class="row-fluid" style="margin-top: 0">
-    <div class="span12">
+﻿<div class="row" style="margin-top: 0">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="bx bx-user-check"></i></span>
                 <h5>Usuários do Portal do Cliente</h5>
                 <div class="buttons">
                     <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cUsuariosCliente')): ?>
-                        <a href="<?= site_url('usuarioscliente/adicionar') ?>" class="btn btn-success btn-mini">
+                        <a href="<?= site_url('usuarioscliente/adicionar') ?>" class="btn btn-success btn-sm">
                             <i class="bx bx-plus"></i> Novo Usuário
                         </a>
                     <?php endif; ?>
@@ -42,23 +42,23 @@
                                     </td>
                                     <td>
                                         <?php if ($u->ativo): ?>
-                                            <span class="label label-success">Ativo</span>
+                                            <span class="badge bg-success">Ativo</span>
                                         <?php else: ?>
-                                            <span class="label label-important">Inativo</span>
+                                            <span class="badge bg-danger">Inativo</span>
                                         <?php endif; ?>
                                     </td>
                                     <td><?= $u->ultimo_acesso ? date('d/m/Y H:i', strtotime($u->ultimo_acesso)) : 'Nunca' ?></td>
                                     <td class="text-center">
-                                        <a href="<?= site_url('usuarioscliente/visualizar/' . $u->id) ?>" class="btn btn-mini btn-info" title="Visualizar">
+                                        <a href="<?= site_url('usuarioscliente/visualizar/' . $u->id) ?>" class="btn btn-sm btn-info" title="Visualizar">
                                             <i class="bx bx-show"></i>
                                         </a>
                                         <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eUsuariosCliente')): ?>
-                                            <a href="<?= site_url('usuarioscliente/editar/' . $u->id) ?>" class="btn btn-mini btn-warning" title="Editar">
+                                            <a href="<?= site_url('usuarioscliente/editar/' . $u->id) ?>" class="btn btn-sm btn-warning" title="Editar">
                                                 <i class="bx bx-edit"></i>
                                             </a>
                                         <?php endif; ?>
                                         <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dUsuariosCliente')): ?>
-                                            <a href="<?= site_url('usuarioscliente/excluir/' . $u->id) ?>" class="btn btn-mini btn-danger" title="Excluir" onclick="return confirm('Tem certeza que deseja excluir este usuário?');">
+                                            <a href="<?= site_url('usuarioscliente/excluir/' . $u->id) ?>" class="btn btn-sm btn-danger" title="Excluir" onclick="return confirm('Tem certeza que deseja excluir este usuário?');">
                                                 <i class="bx bx-trash"></i>
                                             </a>
                                         <?php endif; ?>

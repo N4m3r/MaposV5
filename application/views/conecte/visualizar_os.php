@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // Inicializar variáveis
 $totalServico = 0;
 $totalProdutos = 0;
@@ -169,8 +169,8 @@ function getStatusColor($status) {
 }
 </style>
 
-<div class="row-fluid" style="margin-top: 0">
-    <div class="span12">
+<div class="row" style="margin-top: 0">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title" style="margin: -20px 0 0">
                 <span class="icon">
@@ -179,14 +179,14 @@ function getStatusColor($status) {
                 <h5>Ordem de Serviço #<?php echo $result->idOs; ?></h5>
                 <div class="buttons" style=" padding-left:5px;">
                     <?php if ($result->status == 'Finalizado' || $result->status == 'Finalizada'): ?>
-                        <a title="Relatório de Atendimento" class="button btn btn-mini btn-success" href="<?php echo base_url('index.php/mine/relatorioAtendimento/' . $result->idOs); ?>">
+                        <a title="Relatório de Atendimento" class="button btn btn-sm btn-success" href="<?php echo base_url('index.php/mine/relatorioAtendimento/' . $result->idOs); ?>">
                             <span class="button__icon"><i class="bx bx-file"></i></span> <span class="button__text">Relatório</span></a>
                     <?php endif; ?>
                     <?php if ($pode_aprovar && in_array($result->status, ['Orçamento', 'Aberto', 'Negociação'])): ?>
-                        <a title="Aprovar" class="button btn btn-mini btn-success" href="<?php echo base_url('index.php/mine/aprovarOs/' . $result->idOs); ?>">
+                        <a title="Aprovar" class="button btn btn-sm btn-success" href="<?php echo base_url('index.php/mine/aprovarOs/' . $result->idOs); ?>">
                             <span class="button__icon"><i class="bx bx-check"></i></span> <span class="button__text">Aprovar</span></a>
                     <?php endif; ?>
-                    <a target="_blank" title="Imprimir" class="button btn btn-mini btn-inverse" href="<?php echo base_url('index.php/mine/imprimirOs/' . $result->idOs); ?>">
+                    <a target="_blank" title="Imprimir" class="button btn btn-sm btn-inverse" href="<?php echo base_url('index.php/mine/imprimirOs/' . $result->idOs); ?>">
                         <span class="button__icon"><i class="bx bx-printer"></i></span> <span class="button__text">Imprimir</span></a>
                 </div>
             </div>
@@ -219,7 +219,7 @@ function getStatusColor($status) {
                 <div class="invoice-content">
                     <div class="invoice-head" style="margin-bottom: 0">
 
-                        <table class="table table-condensed">
+                        <table class="table table-sm">
                             <tbody>
                                 <?php if ($emitente == null) { ?>
                                     <tr>
@@ -246,7 +246,7 @@ function getStatusColor($status) {
                     </div>
                     
                     <div style="margin-top: 0; padding-top: 0">
-                        <table class="table table-condensed">
+                        <table class="table table-sm">
                             <tbody>
                                     <?php if ($result->dataInicial != null) { ?>
                                         <tr>
@@ -276,7 +276,7 @@ function getStatusColor($status) {
                             </tbody>
                         </table>
 
-                        <table class="table table-condensed">
+                        <table class="table table-sm">
                             <?php if ($result->descricaoProduto != null || $result->defeito != null || $result->laudoTecnico != null || $result->observacoes) { ?>
                                     <?php if ($result->descricaoProduto != null) { ?>
                                         <tr>
@@ -327,7 +327,7 @@ function getStatusColor($status) {
                         </table>
                         
                         <?php if ($anexos != null) { ?>
-                            <table class="table table-bordered table-condensed">
+                            <table class="table table-bordered table-sm">
                                 <thead>
                                     <tr>
                                         <th>Anexo</th>
@@ -343,7 +343,7 @@ function getStatusColor($status) {
                                             $thumb = $a->url . '/thumbs/' . $a->thumb;
                                             $link = $a->url . '/' . $a->anexo;
                                         }
-                                        echo '<div class="span3" style="min-height: 150px; margin-left: 0"><a style="min-height: 150px;" href="#modal-anexo" imagem="' . $a->idAnexos . '" link="' . e($link) . '" role="button" class="btn anexo span12" data-toggle="modal"><img src="' . e($thumb) . '" alt=""></a></div>';
+                                        echo '<div class="col-3" style="min-height: 150px; margin-left: 0"><a style="min-height: 150px;" href="#modal-anexo" imagem="' . $a->idAnexos . '" link="' . e($link) . '" role="button" class="btn anexo col-12" data-bs-toggle="modal"><img src="' . e($thumb) . '" alt=""></a></div>';
                                     } ?>
                                     </th>
                                 </tbody>
@@ -353,7 +353,7 @@ function getStatusColor($status) {
                         <?php $totalServico = 0; $totalProdutos = 0; ?>
                         <?php if ($produtos != null) { ?>
                             <br />
-                            <table class="table table-bordered table-condensed" id="tblProdutos">
+                            <table class="table table-bordered table-sm" id="tblProdutos">
                                 <thead>
                                     <tr>
                                         <th>PRODUTO</th>
@@ -383,7 +383,7 @@ function getStatusColor($status) {
                         <?php } ?>
 
                         <?php if ($servicos != null) { ?>
-                            <table class="table table-bordered table-condensed">
+                            <table class="table table-bordered table-sm">
                                 <thead>
                                     <tr>
                                         <th>SERVIÇO</th>
@@ -413,7 +413,7 @@ function getStatusColor($status) {
                             </table>
                         <?php } ?>
 
-                        <table class="table table-condensed">
+                        <table class="table table-sm">
                             <thead>
                                 <td>
                                     <?php if ($totalProdutos != 0 || $totalServico != 0) {
@@ -445,9 +445,9 @@ function getStatusColor($status) {
             <div id="tab-boletos" class="tab-content">
                 <div class="widget-content">
                     <?php if (!empty($cobrancas_os)): ?>
-                        <div class="row-fluid">
+                        <div class="row">
                             <?php foreach ($cobrancas_os as $cobranca): ?>
-                                <div class="span6">
+                                <div class="col-6">
                                     <div class="doc-card">
                                         <div class="doc-header">
                                             <span class="doc-type boleto">
@@ -500,9 +500,9 @@ function getStatusColor($status) {
             <div id="tab-notas" class="tab-content">
                 <div class="widget-content">
                     <?php if (!empty($notas_fiscais_os)): ?>
-                        <div class="row-fluid">
+                        <div class="row">
                             <?php foreach ($notas_fiscais_os as $nf): ?>
-                                <div class="span6">
+                                <div class="col-6">
                                     <div class="doc-card">
                                         <div class="doc-header">
                                             <span class="doc-type nota">
@@ -587,20 +587,20 @@ function copyBarcode(barcode) {
 </script>
 
 <!-- Inicio Modal visualizar anexo -->
-<div id="modal-anexo" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div id="modal-anexo" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">×</button>
         <h3 id="myModalLabel">Visualizar Anexo</h3>
     </div>
     <div class="modal-body">
-        <div class="span12" id="div-visualizar-anexo" style="text-align: center">
+        <div class="col-12" id="div-visualizar-anexo" style="text-align: center">
             <div class='progress progress-info progress-striped active'>
                 <div class='bar' style='width: 100%'></div>
             </div>
         </div>
     </div>
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true">Fechar</button>
+        <button class="btn" data-bs-dismiss="modal" aria-hidden="true">Fechar</button>
         <a href="" id-imagem="" class="btn btn-inverse" id="download">Download</a>
     </div>
 </div>
@@ -641,8 +641,7 @@ function copyBarcode(barcode) {
             }
 
             mywindow.document.write('<html><head><title>Map Os</title>');
-            mywindow.document.write("<link rel='stylesheet' href='<?php echo base_url(); ?>assets/css/bootstrap.min.css' />");
-            mywindow.document.write("<link rel='stylesheet' href='<?php echo base_url(); ?>assets/css/bootstrap-responsive.min.css' />");
+            mywindow.document.write("<link rel='stylesheet' href='<?php echo base_url(); ?>assets/css/bootstrap5.min.css' />");
             mywindow.document.write("<link rel='stylesheet' href='<?php echo base_url(); ?>assets/css/matrix-style.css' />");
             mywindow.document.write("<link rel='stylesheet' href='<?php echo base_url(); ?>assets/css/matrix-media.css' />");
 

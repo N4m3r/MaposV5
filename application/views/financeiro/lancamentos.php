@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/js/jquery-ui/css/smoothness/jquery-ui-1.9.2.custom.css" />
+﻿<link rel="stylesheet" href="<?php echo base_url(); ?>assets/js/jquery-ui/css/smoothness/jquery-ui-1.9.2.custom.css" />
 <script type="text/javascript" src="<?php echo base_url() ?>assets/js/jquery-ui/js/jquery-ui-1.9.2.custom.js"></script>
 <script src="<?php echo base_url() ?>assets/js/sweetalert2.all.min.js"></script>
 <script src="<?php echo base_url() ?>assets/js/dayjs.min.js"></script>
@@ -34,16 +34,16 @@ $periodo = $this->input->get('periodo');
     </div>
     <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'aLancamento')) { ?>
         <div class="" style="display:flex">
-            <a href="#modalReceita" data-toggle="modal" role="button" class="button btn btn-mini btn-success" style="width: 230px">
+            <a href="#modalReceita" data-bs-toggle="modal" role="button" class="button btn btn-sm btn-success" style="width: 230px">
                 <span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2" title="Cadastrar nova receita ou despesa"> Receita/Despesa</span></a>
         </div>
     <?php } ?>
 
-    <div class="span12" style="margin-left: 0;margin-top: 1rem;">
+    <div class="col-12" style="margin-left: 0;margin-top: 1rem;">
         <form action="<?php echo current_url(); ?>" method="get">
-            <div class="span2" style="margin-left: 0">
+            <div class="col-2" style="margin-left: 0">
                 <label>Período</label>
-                <select id="periodo" name="periodo" class="span12">
+                <select id="periodo" name="periodo" class="col-12">
                     <option value="dia" <?= $this->input->get('periodo') === 'dia' ? 'selected' : '' ?>>Dia</option>
                     <option value="semana" <?= $this->input->get('periodo') === 'semana' ? 'selected' : '' ?>>Semana</option>
                     <option value="mesAnterior" <?= $this->input->get('periodo') === 'mesAnterior' ? 'selected' : '' ?>>Mês Anterior</option>
@@ -54,19 +54,19 @@ $periodo = $this->input->get('periodo');
                 </select>
             </div>
 
-            <div class="span2">
+            <div class="col-2">
                 <label>Vencimento (de)</label>
-                <input id="vencimento_de" type="text" class="span12 datepicker" name="vencimento_de" value="<?= e($this->input->get('vencimento_de') ? $this->input->get('vencimento_de') : date('d/m/Y')) ?>">
+                <input id="vencimento_de" type="text" class="col-12 datepicker" name="vencimento_de" value="<?= e($this->input->get('vencimento_de') ? $this->input->get('vencimento_de') : date('d/m/Y')) ?>">
             </div>
 
-            <div class="span2">
+            <div class="col-2">
                 <label>Vencimento (até)</label>
-                <input id="vencimento_ate" type="text" class="span12 datepicker" name="vencimento_ate" value="<?= e($this->input->get('vencimento_ate') ? $this->input->get('vencimento_ate') : date('d/m/Y')) ?>">
+                <input id="vencimento_ate" type="text" class="col-12 datepicker" name="vencimento_ate" value="<?= e($this->input->get('vencimento_ate') ? $this->input->get('vencimento_ate') : date('d/m/Y')) ?>">
             </div>
 
-            <div class="span2">
+            <div class="col-2">
                 <label>Tipo</label>
-                <select name="tipo" class="span12">
+                <select name="tipo" class="col-12">
                     <option value="">Todos</option>
                     <option value="receita" <?= $this->input->get('tipo') === 'receita' ? 'selected' : '' ?>>Receita
                     </option>
@@ -75,21 +75,21 @@ $periodo = $this->input->get('periodo');
                 </select>
             </div>
 
-            <div class="span2">
+            <div class="col-2">
                 <label>Status</label>
-                <select name="status" class="span12">
+                <select name="status" class="col-12">
                     <option value="">Todos (Pendente e Pago)</option>
                     <option value="0" <?= $this->input->get('status') === '0' ? 'selected' : '' ?>>Pendente</option>
                     <option value="1" <?= $this->input->get('status') === '1' ? 'selected' : '' ?>>Pago</option>
                 </select>
             </div>
 
-            <div class="span2">
+            <div class="col-2">
                 <label>Cliente/Fornecedor</label>
-                <input id="cliente_busca" type="text" class="span12" name="cliente" value="<?= e($this->input->get('cliente')) ?>">
+                <input id="cliente_busca" type="text" class="col-12" name="cliente" value="<?= e($this->input->get('cliente')) ?>">
             </div>
 
-            <div class="span2 pull-right">
+            <div class="col-2 float-end">
                 <button type="submit" class="button btn btn-primary btn-sm" style="min-width: 120px">
                     <span class="button__icon"><i class='bx bx-filter-alt'></i></span><span class="button__text2">Filtrar</span></a></button>
             </div>
@@ -161,10 +161,10 @@ $periodo = $this->input->get('periodo');
                             }
 
                             if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eLancamento')) {
-                                echo '<a href="#modalEditar" style="margin-right: 1%" data-toggle="modal" role="button" idLancamento="' . e($r->idLancamentos) . '" descricao="' . e($r->descricao) . '" valor="' . e($r->valor) . '" vencimento="' . e(date('d/m/Y', strtotime($r->data_vencimento))) . '" pagamento="' . e($data_pagamento) . '" baixado="' . e($r->baixado) . '" cliente="' . e($r->cliente_fornecedor) . '" formaPgto="' . e($r->forma_pgto) . '" tipo="' . e($r->tipo) . '" observacoes="' . e($r->observacoes) . '" descontos_editar="' . e($r->desconto) . '" valor_desconto_editar="' . e($r->desconto) . '" usuario="' . e($r->nome) . '" class="btn-nwe3 editar" title="Editar OS"><i class="bx bx-edit"></i></a>';
+                                echo '<a href="#modalEditar" style="margin-right: 1%" data-bs-toggle="modal" role="button" idLancamento="' . e($r->idLancamentos) . '" descricao="' . e($r->descricao) . '" valor="' . e($r->valor) . '" vencimento="' . e(date('d/m/Y', strtotime($r->data_vencimento))) . '" pagamento="' . e($data_pagamento) . '" baixado="' . e($r->baixado) . '" cliente="' . e($r->cliente_fornecedor) . '" formaPgto="' . e($r->forma_pgto) . '" tipo="' . e($r->tipo) . '" observacoes="' . e($r->observacoes) . '" descontos_editar="' . e($r->desconto) . '" valor_desconto_editar="' . e($r->desconto) . '" usuario="' . e($r->nome) . '" class="btn-nwe3 editar" title="Editar OS"><i class="bx bx-edit"></i></a>';
                             }
                             if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dLancamento')) {
-                                echo '<a href="#modalExcluir" data-toggle="modal" role="button" idLancamento="' . e($r->idLancamentos) . '" class="btn-nwe4 excluir" title="Excluir OS"><i class="bx bx-trash-alt"></i></a>';
+                                echo '<a href="#modalExcluir" data-bs-toggle="modal" role="button" idLancamento="' . e($r->idLancamentos) . '" class="btn-nwe4 excluir" title="Excluir OS"><i class="bx bx-trash-alt"></i></a>';
                             }
 
                             echo '</td>';
@@ -248,69 +248,69 @@ echo number_format($soma_descontos_pagos, 2, ',', '.')?></strong></td>
 </div>
 
 <!-- Modal nova receita e despesa -->
-<div id="modalReceita" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div id="modalReceita" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <form id="formReceita" action="<?php echo base_url() ?>index.php/financeiro/adicionarReceita" method="post">
         <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">×</button>
             <h3 id="myModalLabel">Adicionar Receita/Despesa</h3>
         </div>
         <div class="modal-body">
 
-            <div class="span12 alert alert-info" style="margin-left: 0"> Obrigatório o preenchimento dos campos com
+            <div class="col-12 alert alert-info" style="margin-left: 0"> Obrigatório o preenchimento dos campos com
                 asterisco.
             </div>
 
-            <div class="span3" style="margin-left: 0">
+            <div class="col-3" style="margin-left: 0">
 		    		<label for="tipo">Tipo</label>
-		    		<select name="tipo" id="tipo" class="span10">
+		    		<select name="tipo" id="tipo" class="col-10">
 		    			<option value="receita">Receita</option>
 		    			<option value="despesa">Despesa</option>				
 		    		</select>
 	    	</div>
 
-            <div class="span6" style="margin-left: 0">
+            <div class="col-6" style="margin-left: 0">
                 <label for="descricao">Descrição/Referência*</label>
-                <input class="span12" id="descricao" type="text" name="descricao" required />
+                <input class="col-12" id="descricao" type="text" name="descricao" required />
                 <input id="urlAtual" type="hidden" name="urlAtual" value="<?php echo current_url() ?>" />
             </div>
-            <div class="span12" style="margin-left: 0">
-                <div class="span12" style="margin-left: 0">
+            <div class="col-12" style="margin-left: 0">
+                <div class="col-12" style="margin-left: 0">
                     <label for="cliente">Cliente/Fornecedor*</label>
-                    <input class="span12" id="cliente" type="text" name="cliente" value="" required />
-                    <input class="span12" id="idCliente" type="hidden" name="idCliente" value="" />
+                    <input class="col-12" id="cliente" type="text" name="cliente" value="" required />
+                    <input class="col-12" id="idCliente" type="hidden" name="idCliente" value="" />
                 </div>
 
-                <div class="span12" style="margin-left: 0">
+                <div class="col-12" style="margin-left: 0">
                     <label for="observacoes">Observações</label>
-                    <textarea class="span12" id="observacoes" name="observacoes"></textarea>
+                    <textarea class="col-12" id="observacoes" name="observacoes"></textarea>
                 </div>
 
             </div>
-            <div class="span12" style="margin-left: 0">
-                <div class="span4" style="margin-left: 0">
+            <div class="col-12" style="margin-left: 0">
+                <div class="col-4" style="margin-left: 0">
                     <label for="valor">Valor*</label>
-                    <input class="span12 money" id="valor" type="text" name="valor" data-affixes-stay="true" data-thousands="" data-decimal="." required />
+                    <input class="col-12 money" id="valor" type="text" name="valor" data-affixes-stay="true" data-thousands="" data-decimal="." required />
                 </div>
 
-        <div class="span4">  
+        <div class="col-4">  
 	        <label for="descontos">Desconto</label>
-	        <input class="span6 money" id="descontos" type="text" name="descontos" value="" placeholder="em R$" style="float: left;" />
+	        <input class="col-6 money" id="descontos" type="text" name="descontos" value="" placeholder="em R$" style="float: left;" />
             <input class="btn btn-inverse" onclick="mostrarValores();" type="button" name="valor_desconto" value="Aplicar" placeholder="R$" style="margin-left:3px; width: 70px;" />
 	      </div>
 		            
-          <div class="span3">  
+          <div class="col-3">  
           <label for="valor_desconto">Val.Desc <i class="icon-info-sign tip-left" title="Não altere esta campo, caso clicar nele e sair e ficar vázio, terá que recarregar á pagina e inserir de novo"></i></label>
-          <input class="span12 money" id="valor_desconto" readOnly="true" title="Não altere este campo" type="text" name="valor_desconto" value="<?php echo number_format("0.00", 2, ',', '.') ?>"/>
+          <input class="col-12 money" id="valor_desconto" readOnly="true" title="Não altere este campo" type="text" name="valor_desconto" value="<?php echo number_format("0.00", 2, ',', '.') ?>"/>
         </div>
 
-                <div class="span4" style="margin-left: 0">
+                <div class="col-4" style="margin-left: 0">
                     <label for="vencimento">Data Vencimento*</label>
-                    <input class="span12 datepicker" autocomplete="off" id="vencimento" type="text" name="vencimento" required />
+                    <input class="col-12 datepicker" autocomplete="off" id="vencimento" type="text" name="vencimento" required />
                 </div>
 
-                <div class="span5">
+                <div class="col-5">
 		    		<label for="qtdparcelas">Qtd Parcelas</label>
-		    		<select name="qtdparcelas" id="qtdparcelas" class="span10">
+		    		<select name="qtdparcelas" id="qtdparcelas" class="col-10">
 		    			<option value="0">Pagamento á vista</option>
 		    			<option value="1">1x</option>			
 		    			<option value="2">2x</option>			
@@ -325,23 +325,23 @@ echo number_format($soma_descontos_pagos, 2, ',', '.')?></strong></td>
 		    			<option value="11">11x</option>			
 		    			<option value="12">12x</option>			
 		    		</select>
-		    	<a href="#modalReceitaParcelada" id="abrirmodalreceitaparcelada" data-toggle="modal" style="display: none;" role="button"> </a>   
+		    	<a href="#modalReceitaParcelada" id="abrirmodalreceitaparcelada" data-bs-toggle="modal" style="display: none;" role="button"> </a>   
 	    	</div>    
-            <div class="span3" style="margin-left: 0">
-                <div class="span3" style="margin-left: 0">
+            <div class="col-3" style="margin-left: 0">
+                <div class="col-3" style="margin-left: 0">
                     <label for="recebido">Recebido?</label>
                   <input id="recebido" type="checkbox" name="recebido" value="1" />
                 </div>
             </div>
             
-                <div id="divRecebimento" class="span8" style="display: none; margin-left: 0">
-                    <div class="span6" style="margin-left: 0">
+                <div id="divRecebimento" class="col-8" style="display: none; margin-left: 0">
+                    <div class="col-6" style="margin-left: 0">
                         <label for="recebimento">Data Recebimento</label>
-                        <input class="span12 datepicker" autocomplete="off" id="recebimento" type="text" name="recebimento" />
+                        <input class="col-12 datepicker" autocomplete="off" id="recebimento" type="text" name="recebimento" />
                     </div>
-                    <div class="span6">
+                    <div class="col-6">
                         <label for="formaPgto">Forma Pgto</label>
-                        <select name="formaPgto" id="formaPgto" class="span12">
+                        <select name="formaPgto" id="formaPgto" class="col-12">
                             <option value="Dinheiro">Dinheiro</option>
                             <option value="Pix">Pix</option>
                             <option value="Boleto">Boleto</option>
@@ -361,7 +361,7 @@ echo number_format($soma_descontos_pagos, 2, ',', '.')?></strong></td>
 
         </div>
         <div class="modal-footer" style="display:flex;justify-content: right">
-            <button class="button btn btn-warning" id="cancelar_nova_receita" data-dismiss="modal" aria-hidden="true" style="min-width: 110px">
+            <button class="button btn btn-warning" id="cancelar_nova_receita" data-bs-dismiss="modal" aria-hidden="true" style="min-width: 110px">
             <span class="button__icon"><i class="bx bx-x"></i></span><span class="button__text2">Cancelar</span></button>
             <button class="button btn btn-primary" style="min-width: 110px">
             <span class="button__icon"><i class='bx bx-save'></i></span><span class="button__text2">Adicionar Registro</span></button>
@@ -370,58 +370,58 @@ echo number_format($soma_descontos_pagos, 2, ',', '.')?></strong></td>
 </div>
 
 <!-- Modal nova receita e despesa parcelada -->
-<div id="modalReceitaParcelada" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div id="modalReceitaParcelada" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <form id="formReceita_parc" action="<?php echo base_url() ?>index.php/financeiro/adicionarReceita_parc" method="post">
   <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">×</button>
     <h3 id="myModalLabel">Adicionar Receita/Despesa Parcelada</h3>
   </div>
   <div class="modal-body">	
-  		<div class="span12 alert alert-info" style="margin-left: 0"> Obrigatório o preenchimento dos campos com asterisco.</div>
-          <div class="span3" style="margin-left: 0">
+  		<div class="col-12 alert alert-info" style="margin-left: 0"> Obrigatório o preenchimento dos campos com asterisco.</div>
+          <div class="col-3" style="margin-left: 0">
 		    		<label for="tipo_parc" style="margin-left: 0">Tipo</label>
-		    		<select name="tipo_parc" id="tipo_parc" class="span10">
+		    		<select name="tipo_parc" id="tipo_parc" class="col-10">
 		    			<option value="receita">Receita</option>
 		    			<option value="despesa">Despesa</option>				
 		    		</select>
 	    	</div>
-          <div class="span6" style="margin-left: 0"> 
+          <div class="col-6" style="margin-left: 0"> 
     		<label for="descricao_parc">Descrição/Referência*</label>
-    		<input class="span12" id="descricao_parc" type="text" name="descricao_parc" required />
+    		<input class="col-12" id="descricao_parc" type="text" name="descricao_parc" required />
     		<input id="urlAtual" type="hidden" name="urlAtual" value="<?php echo current_url() ?>"/>
     	</div>	
     	        
-    		<div class="span6" style="margin-left: 0"> 
+    		<div class="col-6" style="margin-left: 0"> 
     			<label for="cliente_parc">Cliente/Fornecedor*</label>
-    			<input class="span11" id="cliente_parc" type="text" name="cliente_parc" required />
-                <input class="span11" id="idCliente_parc" type="hidden" name="idCliente_parc" value="" />
+    			<input class="col-11" id="cliente_parc" type="text" name="cliente_parc" required />
+                <input class="col-11" id="idCliente_parc" type="hidden" name="idCliente_parc" value="" />
     		</div>
 		
-			<div class="span6" style="margin-left: 0">
+			<div class="col-6" style="margin-left: 0">
           <label for="observacoes_parc">Observações</label>
-          <textarea class="span12" id="observacoes_parc" name="observacoes_parc"></textarea>
+          <textarea class="col-12" id="observacoes_parc" name="observacoes_parc"></textarea>
         </div>	
 	  
-    	<div class="span12" style="margin-left: 0"> 
-        		<div class="span3" style="margin-left: 0">  
+    	<div class="col-12" style="margin-left: 0"> 
+        		<div class="col-3" style="margin-left: 0">  
     			<label for="valor_parc">Valor*</label>
-    			<input class="span12 money" id="valor_parc" type="text" name="valor_parc" required />
+    			<input class="col-12 money" id="valor_parc" type="text" name="valor_parc" required />
     		</div>
 
-          <div class="span4" style="margin-left: 2">  
+          <div class="col-4" style="margin-left: 2">  
 	        <label for="descontos_parc">Desconto</label>
-	        <input class="span6 money" id="descontos_parc" type="text" name="descontos_parc" value="" placeholder="em R$" style="float: left;" />
+	        <input class="col-6 money" id="descontos_parc" type="text" name="descontos_parc" value="" placeholder="em R$" style="float: left;" />
             <input class="btn btn-inverse" onclick="mostrarValoresParc();" type="button" name="desconto_parc" value="Aplicar" placeholder="R$" style="width: 70px; margin-left:3px;" />
 	      </div>
 		         
-          <div class="span3" style="margin-left: 0">  
+          <div class="col-3" style="margin-left: 0">  
 	        <label for="desconto_parc">Desconto <i class="icon-info-sign tip-left" title="Não altere esta campo, caso clicar nele e sair e ficar vázio, terá que recarregar á pagina e inserir de novo"></i></label>
-            <input class="span6 money"  id="desconto_parc" readOnly="true" title="Não altere este campo" type="text" name="desconto_parc" value="<?php echo number_format("0.00", 2, ',', '.') ?>" style="float: left;" />
+            <input class="col-6 money"  id="desconto_parc" readOnly="true" title="Não altere este campo" type="text" name="desconto_parc" value="<?php echo number_format("0.00", 2, ',', '.') ?>" style="float: left;" />
 	      </div>
 			
-    		<div id="divParcelamento" class="span2" style="margin-left: 0">
+    		<div id="divParcelamento" class="col-2" style="margin-left: 0">
 		    		<label for="qtdparcelas_parc">Parcelas</label>
-		    		<select name="qtdparcelas_parc" id="qtdparcelas_parc" class="span12" style="margin-left: 0">
+		    		<select name="qtdparcelas_parc" id="qtdparcelas_parc" class="col-12" style="margin-left: 0">
 		    			<option value="1">1x</option>
 		    			<option value="2">2x</option>			
 		    			<option value="3">3x</option>			
@@ -437,9 +437,9 @@ echo number_format($soma_descontos_pagos, 2, ',', '.')?></strong></td>
 		    		</select>
 	    	</div>
 
-    		<div class="span4" style="margin-left: 0">
+    		<div class="col-4" style="margin-left: 0">
 		    		<label for="formaPgto_parc">Forma Pgto</label>
-		    		<select name="formaPgto_parc" id="formaPgto_parc" class="span12" style="margin-left: 0">
+		    		<select name="formaPgto_parc" id="formaPgto_parc" class="col-12" style="margin-left: 0">
                              <option value="Dinheiro">Dinheiro</option>
                             <option value="Pix">Pix</option>
                             <option value="Boleto">Boleto</option>
@@ -455,25 +455,25 @@ echo number_format($soma_descontos_pagos, 2, ',', '.')?></strong></td>
 	    	</div>
     	</div>
 
-	    <div class="span12" style="margin-left: 0;"> 
-	    	<div class="span4">
+	    <div class="col-12" style="margin-left: 0;"> 
+	    	<div class="col-4">
 	    		<label for="entrada">Entrada <i class="icon-info-sign tip-right" title="O valor da entrada será lançado como pago no dia atual (Hoje)"></i></label>
-	    		<input class="span12 money" id="entrada" type="text" name="entrada" value="0" />
+	    		<input class="col-12 money" id="entrada" type="text" name="entrada" value="0" />
 	    	</div>
 
-	    	<div class="span4" style="margin-left: 1">
+	    	<div class="col-4" style="margin-left: 1">
 	    		<label for="dia_pgto">Data da Entrada*</label>
-	    		<input class="span12 datepicker" id="dia_pgto" type="text" name="dia_pgto" value="<?php echo date('d/m/Y'); ?>"  autocomplete="off"  required/>
+	    		<input class="col-12 datepicker" id="dia_pgto" type="text" name="dia_pgto" value="<?php echo date('d/m/Y'); ?>"  autocomplete="off"  required/>
 	    	</div>
 	    	
-	    	<div class="span4" style="margin-left: 1">
+	    	<div class="col-4" style="margin-left: 1">
 	    		<label for="dia_base_pgto">Data Base de Pgto* <i class="icon-info-sign tip-left" title="Dia do mês que serão lançadas as parcelas restantes, iniciando-se pela data selecionada."></i></label>
-	    		<input class="span12 datepicker" id="dia_base_pgto" type="text" autocomplete="off" name="dia_base_pgto" required  />
+	    		<input class="col-12 datepicker" id="dia_base_pgto" type="text" autocomplete="off" name="dia_base_pgto" required  />
 	    	</div>
 
-	    	<div class="span12" style="background:#f5f5f5;border-radius:4px;margin: 0;border:1px solid #ddd;">
+	    	<div class="col-12" style="background:#f5f5f5;border-radius:4px;margin: 0;border:1px solid #ddd;">
 		    	<input id="valorparcelas" type="hidden" name="valorparcelas" readonly />
-		    	<div class="span12" style="margin: 14px 0 0 0;float:right;text-align: center; color:#b94a48">
+		    	<div class="col-12" style="margin: 14px 0 0 0;float:right;text-align: center; color:#b94a48">
 		    		<label id="string_parc" style="font-weight: bold;"></label>
 		    	</div>
 	    	</div>
@@ -481,67 +481,67 @@ echo number_format($soma_descontos_pagos, 2, ',', '.')?></strong></td>
 	    </div>
         </div>
         <div class="modal-footer" style="display:flex;justify-content: center">
-            <button class="button btn btn-warning" data-dismiss="modal" aria-hidden="true"><span class="button__icon"><i class="bx bx-x"></i></span><span class="button__text2">Cancelar</span></button>
+            <button class="button btn btn-warning" data-bs-dismiss="modal" aria-hidden="true"><span class="button__icon"><i class="bx bx-x"></i></span><span class="button__text2">Cancelar</span></button>
             <button class="button btn btn-success" id="submitReceita"><span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2">Adicionar Registro</span></button>
         </div>
     </form>
 </div>
 
 <!-- Modal nova despesa (NAO É UTILIZADO MAIS ESSE MODAL)
-<div id="modalDespesa" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div id="modalDespesa" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <form id="formDespesa" action="<?php // echo base_url()?>index.php/financeiro/adicionarDespesa" method="post">
         <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">×</button>
             <h3 id="myModalLabel">MapOS - Adicionar Despesa</h3>
         </div>
         <div class="modal-body">
-            <div class="span12 alert alert-info" style="margin-left: 0"> Obrigatório o preenchimento dos campos com
+            <div class="col-12 alert alert-info" style="margin-left: 0"> Obrigatório o preenchimento dos campos com
                 asterisco.
             </div>
-            <div class="span12" style="margin-left: 0">
+            <div class="col-12" style="margin-left: 0">
                 <label for="descricao">Descrição*</label>
-                <input class="span12" id="descricao" type="text" name="descricao" />
+                <input class="col-12" id="descricao" type="text" name="descricao" />
                 <input id="urlAtual" type="hidden" name="urlAtual" value="<?php  // echo current_url()?>" />
             </div>
-            <div class="span12" style="margin-left: 0">
-                <div class="span12" style="margin-left: 0">
+            <div class="col-12" style="margin-left: 0">
+                <div class="col-12" style="margin-left: 0">
                     <label for="fornecedor">Fornecedor / Empresa*</label>
-                    <input class="span12" id="fornecedor" type="text" name="fornecedor" />
-                    <input class="span12" id="idFornecedor" type="hidden" name="idFornecedor" />
+                    <input class="col-12" id="fornecedor" type="text" name="fornecedor" />
+                    <input class="col-12" id="idFornecedor" type="hidden" name="idFornecedor" />
                 </div>
 
-                <div class="span12" style="margin-left: 0">
+                <div class="col-12" style="margin-left: 0">
                     <label for="observacoes">Observações</label>
-                    <textarea class="span12" id="observacoes" name="observacoes"></textarea>
+                    <textarea class="col-12" id="observacoes" name="observacoes"></textarea>
                 </div>
 
             </div>
-            <div class="span12" style="margin-left: 0">
-                <div class="span4" style="margin-left: 0">
+            <div class="col-12" style="margin-left: 0">
+                <div class="col-4" style="margin-left: 0">
                     <label for="valor">Valor*</label>
                     <input type="hidden" name="tipo" value="despesa" />
-                    <input class="span12 money" type="text" name="valor" data-affixes-stay="true" data-thousands="" data-decimal="." />
+                    <input class="col-12 money" type="text" name="valor" data-affixes-stay="true" data-thousands="" data-decimal="." />
                 </div>
-                <div class="span4">
+                <div class="col-4">
                     <label for="vencimento">Data Vencimento*</label>
-                    <input class="span12 datepicker" autocomplete="off" type="text" name="vencimento" />
+                    <input class="col-12 datepicker" autocomplete="off" type="text" name="vencimento" />
                 </div>
 
             </div>
-            <div class="span12" style="margin-left: 0">
-                <div class="span4" style="margin-left: 0">
+            <div class="col-12" style="margin-left: 0">
+                <div class="col-4" style="margin-left: 0">
                     <label for="pago">Foi Pago?</label>
                     &nbsp &nbsp &nbsp &nbsp<input id="pago" type="checkbox" name="pago" value="1" />
                 </div>
-                <div id="divPagamento" class="span8" style=" display: none">
-                    <div class="span6">
+                <div id="divPagamento" class="col-8" style=" display: none">
+                    <div class="col-6">
                         <label for="pagamento">Data Pagamento</label>
-                        <input class="span12 datepicker" autocomplete="off" id="pagamento" type="text" name="pagamento" />
+                        <input class="col-12 datepicker" autocomplete="off" id="pagamento" type="text" name="pagamento" />
                     </div>
 
-                    <div class="span6">
+                    <div class="col-6">
                         <label for="formaPgto">Forma Pgto</label>
-                        <select name="formaPgto" class="span12">
+                        <select name="formaPgto" class="col-12">
                             <option value="Dinheiro">Dinheiro</option>
                             <option value="Cartão de Crédito">Cartão de Crédito</option>
                             <option value="Cheque">Cheque</option>
@@ -557,7 +557,7 @@ echo number_format($soma_descontos_pagos, 2, ',', '.')?></strong></td>
 
         </div>
         <div class="modal-footer" style="display:flex;justify-content: center">
-            <button class="button btn btn-warning" data-dismiss="modal" aria-hidden="true">
+            <button class="button btn btn-warning" data-bs-dismiss="modal" aria-hidden="true">
                 <span class="button__icon"><i class="bx bx-x"></i></span><span class="button__text2">Cancelar</span></button>
             <button class="button btn btn-danger" id="submitDespesa">
                 <span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2">Adicionar Despesa</span></button>
@@ -567,77 +567,77 @@ echo number_format($soma_descontos_pagos, 2, ',', '.')?></strong></td>
  -->
 
 <!-- Modal editar lançamento -->
-<div id="modalEditar" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div id="modalEditar" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <form id="formEditar" action="<?php echo base_url() ?>index.php/financeiro/editar" method="post">
         <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">×</button>
             <h3 id="myModalLabel">Editar Lançamento</h3>
         </div>
         <div class="modal-body">
-            <div class="span12 alert alert-info" style="margin-left: 0"> Obrigatório o preenchimento dos campos com
+            <div class="col-12 alert alert-info" style="margin-left: 0"> Obrigatório o preenchimento dos campos com
                 asterisco.
             </div>
-            <div class="span12" style="margin-left: 0">
+            <div class="col-12" style="margin-left: 0">
                 <label for="descricao">Descrição/Referência*</label>
-                <input class="span12" id="descricaoEditar" type="text" name="descricao" required />
+                <input class="col-12" id="descricaoEditar" type="text" name="descricao" required />
                 <input id="urlAtualEditar" type="hidden" name="urlAtual" value="" />
             </div>
-            <div class="span12" style="margin-left: 0">
-                <div class="span12" style="margin-left: 0">
+            <div class="col-12" style="margin-left: 0">
+                <div class="col-12" style="margin-left: 0">
                     <label for="fornecedor">Cliente/Fornecedor*</label>
-                    <input class="span12" id="fornecedorEditar" type="text" name="fornecedor" required />
+                    <input class="col-12" id="fornecedorEditar" type="text" name="fornecedor" required />
                 </div>
 
-                <div class="span12" style="margin-left: 0">
+                <div class="col-12" style="margin-left: 0">
                     <label for="observacoes">Observações</label>
-                    <textarea class="span12" id="observacoes_edit" name="observacoes"></textarea>
+                    <textarea class="col-12" id="observacoes_edit" name="observacoes"></textarea>
                 </div>
             </div>
-            <div class="span12" style="margin-left: 0">
-                <div class="span4" style="margin-left: 0">
+            <div class="col-12" style="margin-left: 0">
+                <div class="col-4" style="margin-left: 0">
                     <label for="valor">Valor*</label>
                     <input type="hidden" id="idEditar" name="id" value="" />
-                    <input class="span12 money" type="text" name="valor" id="valorEditar" value="<?php echo number_format("0.00", 2, ',', '.') ?>" required />
+                    <input class="col-12 money" type="text" name="valor" id="valorEditar" value="<?php echo number_format("0.00", 2, ',', '.') ?>" required />
                 </div>
 
-        <div class="span4">  
+        <div class="col-4">  
 	        <label for="descontos">Desconto</label>
-	        <input class="span6 money" id="descontos_editar" type="text" name="descontos_editar" value="" placeholder="em R$" style="float: left;" />
+	        <input class="col-6 money" id="descontos_editar" type="text" name="descontos_editar" value="" placeholder="em R$" style="float: left;" />
             <input class="btn btn-inverse" onclick="mostrarValoresEditar();" type="button" name="valor_desconto_editar" value="Aplicar" placeholder="R$" style="width: 70px; margin-left:3px;" />
 	      </div>
 
-            <div class="span2">  
+            <div class="col-2">  
             <label for="valor_desconto">Val.Desc</label>
-            <input class="span12 money" id="descontoEditar" name="valor_desconto_editar" type="text" value="<?php echo number_format("0.00", 2, ',', '.') ?>" />
+            <input class="col-12 money" id="descontoEditar" name="valor_desconto_editar" type="text" value="<?php echo number_format("0.00", 2, ',', '.') ?>" />
             </div>
 
-                <div class="span4" style="margin-left: 0">
+                <div class="col-4" style="margin-left: 0">
                     <label for="vencimento">Data Vencimento*</label>
-                    <input class="span12 datepicker2" type="text" name="vencimento" id="vencimentoEditar" autocomplete="off" required />
+                    <input class="col-12 datepicker2" type="text" name="vencimento" id="vencimentoEditar" autocomplete="off" required />
                 </div>
-                <div class="span4">
+                <div class="col-4">
                     <label for="vencimento">Tipo*</label>
-                    <select class="span12" name="tipo" id="tipoEditar">
+                    <select class="col-12" name="tipo" id="tipoEditar">
                         <option value="receita">Receita</option>
                         <option value="despesa">Despesa</option>
                     </select>
                 </div>
 
             </div>
-            <div class="span12" style="margin-left: 0">
-                <div class="span4" style="margin-left: 0">
+            <div class="col-12" style="margin-left: 0">
+                <div class="col-4" style="margin-left: 0">
                     <label for="pago">Foi Pago?</label>
                     &nbsp &nbsp &nbsp &nbsp<input id="pagoEditar" type="checkbox" name="pago" value="1" />
                 </div>
-                <div id="divPagamentoEditar" class="span8" style=" display: none">
-                    <div class="span6">
+                <div id="divPagamentoEditar" class="col-8" style=" display: none">
+                    <div class="col-6">
                         <label for="pagamento">Data Pagamento</label>
-                        <input class="span12 datepicker2" id="pagamentoEditar" type="text" name="pagamento" autocomplete="off"  />
+                        <input class="col-12 datepicker2" id="pagamentoEditar" type="text" name="pagamento" autocomplete="off"  />
                     </div>
 
-                    <div class="span6">
+                    <div class="col-6">
                         <label for="formaPgto">Forma Pgto</label>
-                        <select name="formaPgto" id="formaPgtoEditar" class="span12">
+                        <select name="formaPgto" id="formaPgtoEditar" class="col-12">
                             <option value="Dinheiro">Dinheiro</option>
                             <option value="Pix">Pix</option>
                             <option value="Boleto">Boleto</option>
@@ -657,11 +657,11 @@ echo number_format($soma_descontos_pagos, 2, ',', '.')?></strong></td>
 
         </div>
         <div class="modal-footer" style="display:flex;justify-content: center">
-            <label for="documento" class="control-label">Modificado por: </label>
-            <div class="controls span4">
+            <label for="documento" class="form-label">Modificado por: </label>
+            <div class="controls col-4">
                 <input disabled id="usuarioEditar" value="" style="background-color: #f5f5f5; border-color: transparent; height: 10px">
             </div>
-            <button class="button btn btn-warning" data-dismiss="modal" aria-hidden="true" id="btnCancelarEditar" style="min-width: 110px">
+            <button class="button btn btn-warning" data-bs-dismiss="modal" aria-hidden="true" id="btnCancelarEditar" style="min-width: 110px">
                 <span class="button__icon"><i class="bx bx-x"></i></span><span class="button__text2">Cancelar</span></button>
             <button class="button btn btn-primary" style="min-width: 110px">
                 <span class="button__icon"><i class='bx bx-save'></i></span><span class="button__text2">Salvar</span></button>
@@ -670,9 +670,9 @@ echo number_format($soma_descontos_pagos, 2, ',', '.')?></strong></td>
 </div>
 
 <!-- Modal Excluir lançamento-->
-<div id="modalExcluir" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div id="modalExcluir" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">×</button>
         <h3 id="myModalLabel">Excluir Lançamento</h3>
     </div>
     <div class="modal-body">
@@ -680,7 +680,7 @@ echo number_format($soma_descontos_pagos, 2, ',', '.')?></strong></td>
         <input name="id" id="idExcluir" type="hidden" value="" />
     </div>
     <div class="modal-footer" style="display:flex;justify-content:center;">
-        <button class="button btn btn-warning" data-dismiss="modal" aria-hidden="true" id="btnCancelExcluir"><span class="button__icon"><i class="bx bx-x"></i></span><span class="button__text2">Cancelar</span></button>
+        <button class="button btn btn-warning" data-bs-dismiss="modal" aria-hidden="true" id="btnCancelExcluir"><span class="button__icon"><i class="bx bx-x"></i></span><span class="button__text2">Cancelar</span></button>
         <button class="button btn btn-danger" id="btnExcluir"><span class="button__icon"><i class='bx bx-trash'></i></span> <span class="button__text2">Excluir</span></button>
     </div>
 </div>

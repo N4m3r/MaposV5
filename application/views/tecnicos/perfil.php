@@ -1,4 +1,4 @@
-<?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
+﻿<?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
 
 <!-- Meta tags adicionais para mobile -->
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1217,7 +1217,7 @@
 </div>
 
 <!-- Modal de Foto -->
-<div class="modal hide foto-modal" id="cameraModal">
+<div class="modal foto-modal" id="cameraModal">
     <div class="modal-header">
         <button type="button" class="close" onclick="fecharCamera()" style="color: white; opacity: 0.8;">&times;</button>
         <h3><i class="icon-camera"></i> Atualizar Foto de Perfil</h3>
@@ -1225,8 +1225,8 @@
     <div class="modal-body">
         <!-- Abas -->
         <ul class="nav nav-tabs" id="fotoTab">
-            <li class="active"><a href="#tab-camera" data-toggle="tab"><i class="icon-camera"></i> Câmera</a></li>
-            <li><a href="#tab-upload" data-toggle="tab"><i class="icon-upload"></i> Galeria</a></li>
+            <li class="active"><a href="#tab-camera" data-bs-toggle="tab"><i class="icon-camera"></i> Câmera</a></li>
+            <li><a href="#tab-upload" data-bs-toggle="tab"><i class="icon-upload"></i> Galeria</a></li>
         </ul>
 
         <div class="tab-content">
@@ -1864,7 +1864,7 @@ function mostrarErro(msg) {
 </script>
 
 <!-- Modal de Edição de Perfil -->
-<div class="modal hide modal-edicao" id="edicaoModal">
+<div class="modal modal-edicao" id="edicaoModal">
     <div class="modal-header">
         <button type="button" class="close" onclick="fecharModalEdicao()" style="color: white; opacity: 0.8;">&times;</button>
         <h3><i class="icon-pencil"></i> Editar Perfil</h3>

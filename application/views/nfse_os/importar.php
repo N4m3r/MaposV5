@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Importar NFS-e via XML
  * Interface moderna com drag-and-drop e preview
@@ -8,8 +8,8 @@ $os_id = $os_id ?? null;
 $os = $os ?? null;
 ?>
 
-<div class="row-fluid nfse-importar-wrapper">
-    <div class="span12">
+<div class="row nfse-importar-wrapper">
+    <div class="col-12">
 
         <!-- Header -->
         <div class="nfse-importar-header">

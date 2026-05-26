@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Kanban Board View
  * Visualização em Kanban das Ordens de Serviço
@@ -9,26 +9,26 @@ $ci = &get_instance();
 
 <link rel="stylesheet" href="<?= base_url('assets/css/kanban.css') ?>">
 
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <ul class="breadcrumb">
-            <li><a href="<?= base_url() ?>">Dashboard</a><span class="divider">/</span></li>
+            <li><a href="<?= base_url() ?>">Dashboard</a><span class="dropdown-divider">/</span></li>
             <li class="active">Kanban - Ordens de Serviço</li>
         </ul>
     </div>
 </div>
 
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="icon-th"></i></span>
                 <h5>Kanban Board - Total: <?= $total_os ?> OS</h5>
                 <div class="buttons">
-                    <a href="<?= base_url('kanban/print') ?>" target="_blank" class="btn btn-mini">
+                    <a href="<?= base_url('kanban/print') ?>" target="_blank" class="btn btn-sm">
                         <i class="icon-print"></i> Imprimir
                     </a>
-                    <a href="<?= base_url('os') ?>" class="btn btn-mini btn-info">
+                    <a href="<?= base_url('os') ?>" class="btn btn-sm btn-info">
                         <i class="icon-list"></i> Lista
                     </a>
                 </div>
@@ -38,7 +38,7 @@ $ci = &get_instance();
                 <!-- Filtros -->
                 <div class="kanban-filters mb-3">
                     <form method="GET" class="form-inline">
-                        <select name="tecnico" class="span2">
+                        <select name="tecnico" class="col-2">
                             <option value="">Todos os Técnicos</option>
                             <?php foreach ($tecnicos as $t): ?>
                                 <option value="<?= $t->idUsuarios ?>" <?= $filters['tecnico'] == $t->idUsuarios ? 'selected' : '' ?>>
@@ -47,10 +47,10 @@ $ci = &get_instance();
                             <?php endforeach; ?>
                         </select>
 
-                        <input type="date" name="data_inicio" class="span2" placeholder="Data Início"
+                        <input type="date" name="data_inicio" class="col-2" placeholder="Data Início"
                                value="<?= $filters['data_inicio'] ?>">
 
-                        <input type="date" name="data_fim" class="span2" placeholder="Data Fim"
+                        <input type="date" name="data_fim" class="col-2" placeholder="Data Fim"
                                value="<?= $filters['data_fim'] ?>">
 
                         <button type="submit" class="btn btn-primary">
@@ -105,12 +105,12 @@ $ci = &get_instance();
 
                                             <div class="kanban-card-actions">
                                                 <a href="<?= base_url("os/visualizar/{$item->idOs}") ?>"
-                                                   class="btn btn-mini btn-info" title="Visualizar">
+                                                   class="btn btn-sm btn-info" title="Visualizar">
                                                     <i class="icon-eye-open"></i>
                                                 </a>
 
                                                 <a href="<?= base_url("os/editar/{$item->idOs}") ?>"
-                                                   class="btn btn-mini btn-primary" title="Editar">
+                                                   class="btn btn-sm btn-primary" title="Editar">
                                                     <i class="icon-edit"></i>
                                                 </a>
                                             </div>

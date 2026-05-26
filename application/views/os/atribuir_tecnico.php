@@ -1,13 +1,13 @@
-<?php if ($this->session->flashdata('success') != null) { ?>
+﻿<?php if ($this->session->flashdata('success') != null) { ?>
 <div class="alert alert-success">
-    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <button type="button" class="close" data-bs-dismiss="alert">&times;</button>
     <?php echo e($this->session->flashdata('success')); ?>
 </div>
 <?php } ?>
 
 <?php if ($this->session->flashdata('error') != null) { ?>
 <div class="alert alert-danger">
-    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <button type="button" class="close" data-bs-dismiss="alert">&times;</button>
     <?php echo e($this->session->flashdata('error')); ?>
 </div>
 <?php } ?>
@@ -435,18 +435,18 @@
     </div>
 
     <!-- Filtros Aprimorados -->
-    <div class="span12 filtro-box" style="margin-left: 0; margin-top: 15px;">
+    <div class="col-12 filtro-box" style="margin-left: 0; margin-top: 15px;">
         <form method="get" action="<?php echo base_url(); ?>index.php/os/atribuir" id="formFiltros">
-            <div class="row-fluid">
+            <div class="row">
                 <!-- Linha 1: Busca e Filtros principais -->
-                <div class="span4">
+                <div class="col-4">
                     <label><i class='fas fa-search'></i> Buscar OS</label>
-                    <input type="text" name="busca_global" id="busca_global" placeholder="N° OS, cliente, descrição, defeito, observações, telefone..." class="span12" value="<?= e($this->input->get('busca_global')) ?>">
+                    <input type="text" name="busca_global" id="busca_global" placeholder="N° OS, cliente, descrição, defeito, observações, telefone..." class="col-12" value="<?= e($this->input->get('busca_global')) ?>">
                 </div>
 
-                <div class="span2">
+                <div class="col-2">
                     <label><i class='fas fa-flag'></i> Status</label>
-                    <select name="status" id="status" class="span12">
+                    <select name="status" id="status" class="col-12">
                         <option value="">Todos</option>
                         <option value="Aberto" <?php echo $this->input->get('status') == 'Aberto' ? 'selected' : ''; ?>>Aberto</option>
                         <option value="Orçamento" <?php echo $this->input->get('status') == 'Orçamento' ? 'selected' : ''; ?>>Or&ccedil;amento</option>
@@ -460,9 +460,9 @@
                     </select>
                 </div>
 
-                <div class="span2">
+                <div class="col-2">
                     <label><i class='fas fa-user'></i> Técnico</label>
-                    <select name="tecnico" id="tecnico" class="span12">
+                    <select name="tecnico" id="tecnico" class="col-12">
                         <option value="">Todos</option>
                         <option value="sem_tecnico" <?= $this->input->get('tecnico') == 'sem_tecnico' ? 'selected' : '' ?>>⚠ Sem Técnico</option>
                         <?php if (!empty($tecnicos) && is_array($tecnicos)): ?>
@@ -477,7 +477,7 @@
                     </select>
                 </div>
 
-                <div class="span2">
+                <div class="col-2">
                     <label><i class='fas fa-calendar'></i> Período</label>
                     <div class="periodo-inputs">
                         <input type="text" name="data" autocomplete="off" id="data" placeholder="Início" class="datepicker" value="<?= e($this->input->get('data')) ?>">
@@ -485,15 +485,15 @@
                     </div>
                 </div>
 
-                <div class="span2">
+                <div class="col-2">
                     <label>&nbsp;</label>
                     <div style="display: flex; gap: 5px;">
-                        <button type="submit" class="button btn btn-mini btn-success" style="flex: 1;">
+                        <button type="submit" class="button btn btn-sm btn-success" style="flex: 1;">
                             <span class="button__icon"><i class='fas fa-search'></i></span>
                             <span class="button__text2">Filtrar</span>
                         </button>
 
-                        <a href="<?php echo base_url(); ?>index.php/os/atribuir" class="button btn btn-mini" style="flex: 1;">
+                        <a href="<?php echo base_url(); ?>index.php/os/atribuir" class="button btn btn-sm" style="flex: 1;">
                             <span class="button__icon"><i class='fas fa-undo'></i></span>
                             <span class="button__text2">Limpar</span>
                         </a>
@@ -502,8 +502,8 @@
             </div>
 
             <!-- Linha 2: Opções adicionais -->
-            <div class="row-fluid" style="margin-top: 10px;">
-                <div class="span12">
+            <div class="row" style="margin-top: 10px;">
+                <div class="col-12">
                     <div class="checkbox-wrapper" style="display: inline-block;">
                         <input type="checkbox" name="mostrar_finalizados" id="mostrar_finalizados" value="1" <?= $this->input->get('mostrar_finalizados') ? 'checked' : '' ?>>
                         <label for="mostrar_finalizados" style="margin: 0; cursor: pointer;">Mostrar OS Finalizadas/Canceladas/Faturadas</label>
@@ -659,9 +659,9 @@
 </div>
 
 <!-- Modal Atribuir Técnico -->
-<div id="modalAtribuir" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="modalAtribuirLabel" aria-hidden="true">
+<div id="modalAtribuir" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalAtribuirLabel" aria-hidden="true">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">&times;</button>
         <h5 id="modalAtribuirLabel">
             <i class='fas fa-user-plus'></i> Atribuir Técnico
         </h5>
@@ -670,16 +670,16 @@
         <div class="modal-body">
             <input type="hidden" name="os_id" id="os_id_atribuir">
 
-            <div class="control-group">
-                <label class="control-label" style="font-weight: 600;">
+            <div class="mb-3">
+                <label class="form-label" style="font-weight: 600;">
                     OS #<span id="os_numero"></span> - <span id="os_cliente"></span>
                 </label>
             </div>
 
-            <div class="control-group">
-                <label class="control-label" for="tecnico_id">Técnico Responsável:</label>
+            <div class="mb-3">
+                <label class="form-label" for="tecnico_id">Técnico Responsável:</label>
                 <div class="controls">
-                    <select name="tecnico_id" id="tecnico_id" class="span12" required>
+                    <select name="tecnico_id" id="tecnico_id" class="col-12" required>
                         <option value="">Selecione um técnico...</option>
                         <?php if (!empty($tecnicos) && is_array($tecnicos)): ?>
                             <?php foreach ($tecnicos as $t): ?>
@@ -696,10 +696,10 @@
                 </div>
             </div>
 
-            <div class="control-group">
-                <label class="control-label" for="observacao">Observação:</label>
+            <div class="mb-3">
+                <label class="form-label" for="observacao">Observação:</label>
                 <div class="controls">
-                    <textarea name="observacao" id="observacao" class="span12" rows="3" placeholder="Motivo da atribuição (opcional)"></textarea>
+                    <textarea name="observacao" id="observacao" class="col-12" rows="3" placeholder="Motivo da atribuição (opcional)"></textarea>
                 </div>
             </div>
 
@@ -709,7 +709,7 @@
             </div>
         </div>
         <div class="modal-footer" style="display:flex;justify-content: center">
-            <button class="button btn btn-warning" data-dismiss="modal" aria-hidden="true">
+            <button class="button btn btn-warning" data-bs-dismiss="modal" aria-hidden="true">
                 <span class="button__icon"><i class="fas fa-times"></i></span>
                 <span class="button__text2">Cancelar</span>
             </button>
@@ -722,9 +722,9 @@
 </div>
 
 <!-- Modal Remover Técnico -->
-<div id="modalRemover" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="modalRemoverLabel" aria-hidden="true">
+<div id="modalRemover" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalRemoverLabel" aria-hidden="true">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">&times;</button>
         <h5 id="modalRemoverLabel">
             <i class='fas fa-user-times'></i> Remover Técnico
         </h5>
@@ -738,15 +738,15 @@
                 <p>Cliente: <strong id="os_cliente_remover"></strong></p>
             </div>
 
-            <div class="control-group">
-                <label class="control-label" for="motivo">Motivo da remoção:</label>
+            <div class="mb-3">
+                <label class="form-label" for="motivo">Motivo da remoção:</label>
                 <div class="controls">
-                    <textarea name="motivo" id="motivo" class="span12" rows="3" placeholder="Informe o motivo (opcional)"></textarea>
+                    <textarea name="motivo" id="motivo" class="col-12" rows="3" placeholder="Informe o motivo (opcional)"></textarea>
                 </div>
             </div>
         </div>
         <div class="modal-footer" style="display:flex;justify-content: center">
-            <button class="button btn btn-warning" data-dismiss="modal" aria-hidden="true">
+            <button class="button btn btn-warning" data-bs-dismiss="modal" aria-hidden="true">
                 <span class="button__icon"><i class="fas fa-times"></i></span>
                 <span class="button__text2">Cancelar</span>
             </button>

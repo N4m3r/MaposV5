@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * View: Resetar Senha do Usuário do Portal
  */
@@ -9,8 +9,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nova Senha - Portal do Cliente</title>
-    <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/bootstrap-responsive.min.css" />
+    <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/bootstrap5.min.css" />
     <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/matrix-login.css" />
     <link rel="stylesheet" href="<?php echo base_url(); ?>assets/font-awesome/css/font-awesome.css" />
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet' integrity="sha384-B6nB7GjeyR0Ln2Rf3Znp7Z7r4B4eR3i0Uq8k5+u2C2YJXTHVDbB+m9Z8dDqWlZ4H" crossorigin="anonymous">
@@ -102,7 +101,7 @@
             border-radius: 4px;
             margin-bottom: 20px;
         }
-        .alert-error {
+        .alert-danger {
             background: #fee;
             color: #c33;
             border: 1px solid #fcc;
@@ -132,7 +131,7 @@
         </div>
 
         <?php if ($this->session->flashdata('error')): ?>
-            <div class="alert alert-error">
+            <div class="alert alert-danger">
                 <i class="bx bx-error-circle"></i> <?php echo $this->session->flashdata('error'); ?>
             </div>
         <?php endif; ?>

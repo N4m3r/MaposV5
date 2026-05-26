@@ -1,4 +1,4 @@
-<script src="<?php echo base_url() ?>assets/js/jquery.mask.min.js"></script>
+﻿<script src="<?php echo base_url() ?>assets/js/jquery.mask.min.js"></script>
 <script src="<?php echo base_url() ?>assets/js/funcoes.js"></script>
 <script src="<?php echo base_url() ?>assets/js/sweetalert2.all.min.js"></script>
 
@@ -12,7 +12,7 @@
         margin-left: 20px;
     }
 
-    .form-horizontal .control-label {
+    .form-horizontal .form-label {
         padding-top: 9px;
         width: 160px;
     }
@@ -23,7 +23,7 @@
         font-weight: 500;
     }
 
-    .form-horizontal .control-group {
+    .form-horizontal .mb-3 {
         border-top: 0 solid #ffffff;
         border-bottom: 0 solid #eeeeee;
         margin-bottom: 0;
@@ -44,7 +44,7 @@
             display: block !important;
         }
 
-        .form-horizontal .control-label {
+        .form-horizontal .form-label {
             margin-bottom: -6px;
         }
 
@@ -55,117 +55,117 @@
 </style>
 
 <?php if (!isset($dados) || $dados == null) { ?>
-    <div class="row-fluid" style="margin-top:0">
-        <div class="span12">
+    <div class="row" style="margin-top:0">
+        <div class="col-12">
             <div class="widget-box">
                 <div class="widget-title">
                     <h5>Dados do Emitente</h5>
                 </div>
                 <div class="widget-content ">
                     <div class="alert alert-danger">Nenhum dado foi cadastrado até o momento. Essas informações estarão disponíveis na tela de impressão de OS.</div>
-                    <a href="#modalCadastrar" data-toggle="modal" role="button" class="button btn btn-success" style="max-width: 150px"> <span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2">Cadastrar Dados</span></a>
+                    <a href="#modalCadastrar" data-bs-toggle="modal" role="button" class="button btn btn-success" style="max-width: 150px"> <span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2">Cadastrar Dados</span></a>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="modalCadastrar" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div id="modalCadastrar" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <form action="<?= site_url('mapos/cadastrarEmitente'); ?>" id="formCadastrar" enctype="multipart/form-data" method="post" class="form-horizontal">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">×</button>
                 <h5 id="myModalLabel" style="text-align-last:center">Cadastrar Dados do Emitente</h5>
             </div>
             <div class="modal-body" style="display: grid;grid-template-columns: 1fr 1fr">
-                <div class="control-group">
-                    <label for="nome" class="control-label"><span class="required"></span></label>
+                <div class="mb-3">
+                    <label for="nome" class="form-label"><span class="required"></span></label>
                     <div class="controls">
                         <input id="nomeEmitente" placeholder="Razão Social*" type="text" name="nome" value="" />
                     </div>
                 </div>
-                <div class="control-group">
-                    <label for="cnpj" class="control-label"><span class="required"></span></label>
+                <div class="mb-3">
+                    <label for="cnpj" class="form-label"><span class="required"></span></label>
                     <div class="controls">
                         <input class="cnpjEmitente" placeholder="CNPJ*" id="documento" type="text" name="cnpj" value="" title="Para ocultar o CNPJ digite 00.000.000/000-00" />
                         <button style="top:34px;right:40px;position:absolute" id="buscar_info_cnpj" class="btn btn-xs" type="button"><i class="fas fa-search"></i></button>
                     </div>
                 </div>
-                <div class="control-group">
-                    <label for="descricao" class="control-label"></label>
+                <div class="mb-3">
+                    <label for="descricao" class="form-label"></label>
                     <div class="controls">
                         <input type="text" placeholder="IE" name="ie" value="" />
                     </div>
                 </div>
-                <div class="control-group">
-                    <label for="inscricao_municipal" class="control-label"></label>
+                <div class="mb-3">
+                    <label for="inscricao_municipal" class="form-label"></label>
                     <div class="controls">
                         <input type="text" placeholder="Inscrição Municipal" name="inscricao_municipal" value="" />
                     </div>
                 </div>
-                <div class="control-group">
-                    <label for="cep" class="control-label"><span class="required"></span></label>
+                <div class="mb-3">
+                    <label for="cep" class="form-label"><span class="required"></span></label>
                     <div class="controls">
                         <input id="cep" type="text" placeholder="CEP*" name="cep" value="" />
                     </div>
                 </div>
-                <div class="control-group">
-                    <label for="descricao" class="control-label"><span class="required"></span></label>
+                <div class="mb-3">
+                    <label for="descricao" class="form-label"><span class="required"></span></label>
                     <div class="controls">
                         <input id="rua" type="text" placeholder="Logradouro*" name="logradouro" value="" />
                     </div>
                 </div>
-                <div class="control-group">
-                    <label for="descricao" class="control-label"><span class="required"></span></label>
+                <div class="mb-3">
+                    <label for="descricao" class="form-label"><span class="required"></span></label>
                     <div class="controls">
                         <input type="text" id="numero" placeholder="Número*" name="numero" value="" />
                     </div>
                 </div>
-                <div class="control-group">
-                    <label for="descricao" class="control-label"><span class="required"></span></label>
+                <div class="mb-3">
+                    <label for="descricao" class="form-label"><span class="required"></span></label>
                     <div class="controls">
                         <input id="bairro" type="text" placeholder="Bairro*" name="bairro" value="" />
                     </div>
                 </div>
-                <div class="control-group">
-                    <label for="descricao" class="control-label"><span class="required"></span></label>
+                <div class="mb-3">
+                    <label for="descricao" class="form-label"><span class="required"></span></label>
                     <div class="controls">
                         <input id="cidade" type="text" placeholder="Cidade*" name="cidade" value="" />
                     </div>
                 </div>
-                <div class="control-group">
-                    <label for="descricao" class="control-label"><span class="required"></span></label>
+                <div class="mb-3">
+                    <label for="descricao" class="form-label"><span class="required"></span></label>
                     <div class="controls">
                         <input id="estado" type="text" placeholder="UF*" name="uf" value="" />
                     </div>
                 </div>
-                <div class="control-group">
-                    <label for="descricao" class="control-label"><span class="required"></span></label>
+                <div class="mb-3">
+                    <label for="descricao" class="form-label"><span class="required"></span></label>
                     <div class="controls">
                         <input id="telefone" type="text" placeholder="Telefone*" name="telefone" value="" />
                     </div>
                 </div>
-                <div class="control-group">
-                    <label for="descricao" class="control-label"><span class="required"></span></label>
+                <div class="mb-3">
+                    <label for="descricao" class="form-label"><span class="required"></span></label>
                     <div class="controls">
                         <input id="email" type="text" placeholder="E-mail*" name="email" value="" />
                     </div>
                 </div>
-                <div class="control-group">
-                    <label for="logo" class="control-label"><span class="required">Logotipo*</span></label>
+                <div class="mb-3">
+                    <label for="logo" class="form-label"><span class="required">Logotipo*</span></label>
                     <div class="controls">
                         <input type="file" name="userfile" value="" />
                     </div>
                 </div>
             </div>
             <div class="modal-footer" style="display:flex;justify-content: center">
-                <button class="button btn btn-warning" data-dismiss="modal" aria-hidden="true" id="btnCancelExcluir"><span class="button__icon"><i class="bx bx-x"></i></span><span class="button__text2">Cancelar</span></button>
+                <button class="button btn btn-warning" data-bs-dismiss="modal" aria-hidden="true" id="btnCancelExcluir"><span class="button__icon"><i class="bx bx-x"></i></span><span class="button__text2">Cancelar</span></button>
                 <button class="button btn btn-success"><span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2">Cadastrar</span></button>
             </div>
         </form>
     </div>
 
     <?php } else { ?>
-    <div class="row-fluid" style="margin-top:0">
-        <div class="span12">
+    <div class="row" style="margin-top:0">
+        <div class="col-12">
             <div class="widget-box">
                 <div class="widget-title" style="margin: -20px 0 0">
                     <span class="icon">
@@ -192,116 +192,116 @@
                     </table>
 
                     <div style="display:flex">
-                        <a href="#modalAlterar" data-toggle="modal" role="button" class="button btn btn-success"><span class="button__icon"><i class='bx bx-edit'></i></span><span class="button__text2">Atualizar Dados</span></a>
-                        <a href="#modalLogo" data-toggle="modal" role="button" class="button btn btn-inverse"><span class="button__icon"><i class='bx bx-upload'></i></span> <span class="button__text2">Alterar Logo</span></a>
+                        <a href="#modalAlterar" data-bs-toggle="modal" role="button" class="button btn btn-success"><span class="button__icon"><i class='bx bx-edit'></i></span><span class="button__text2">Atualizar Dados</span></a>
+                        <a href="#modalLogo" data-bs-toggle="modal" role="button" class="button btn btn-inverse"><span class="button__icon"><i class='bx bx-upload'></i></span> <span class="button__text2">Alterar Logo</span></a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="modalAlterar" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+    <div id="modalAlterar" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
         aria-hidden="true">
         <form action="<?= site_url('mapos/editarEmitente'); ?>" id="formAlterar" enctype="multipart/form-data" method="post" class="form-horizontal">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">x</button>
                 <h3 id="">Editar Dados do Emitente</h3>
             </div>
             <div class="modal-body" style="display: grid;grid-template-columns: 1fr 1fr">
-                <div class="control-group">
-                    <label for="nome" class="control-label"><span class="required"></span></label>
+                <div class="mb-3">
+                    <label for="nome" class="form-label"><span class="required"></span></label>
                     <div class="controls">
                         <input id="nomeEmitente" type="text" name="nome" value="<?= e($dados->nome); ?>" placeholder="Razão Social*" />
                         <input id="nome" type="hidden" name="id" value="<?= $dados->id; ?>" />
                     </div>
                 </div>
-                <div class="control-group">
-                    <label for="cnpj" class="control-label"><span class="required"></span></label>
+                <div class="mb-3">
+                    <label for="cnpj" class="form-label"><span class="required"></span></label>
                     <div class="controls">
                         <input class="cnpjEmitente" type="text" id="documento" name="cnpj" value="<?= e($dados->cnpj); ?>" placeholder="CNPJ*" title="Para ocultar o CNPJ digite 00.000.000/000-00" />
                         <button style="top:34px;right:40px;position:absolute" id="buscar_info_cnpj" class="btn btn-xs" type="button"><i class="fas fa-search"></i></button>
                     </div>
                 </div>
-                <div class="control-group">
-                    <label for="descricao" class="control-label"></label>
+                <div class="mb-3">
+                    <label for="descricao" class="form-label"></label>
                     <div class="controls">
                         <input type="text" name="ie" value="<?= e($dados->ie); ?>" placeholder="IE" />
                     </div>
                 </div>
-                <div class="control-group">
-                    <label for="inscricao_municipal" class="control-label"></label>
+                <div class="mb-3">
+                    <label for="inscricao_municipal" class="form-label"></label>
                     <div class="controls">
                         <input type="text" name="inscricao_municipal" value="<?= e($dados->inscricao_municipal); ?>" placeholder="Inscrição Municipal" />
                     </div>
                 </div>
-                <div class="control-group">
-                    <label for="cep" class="control-label"><span class="required"></span></label>
+                <div class="mb-3">
+                    <label for="cep" class="form-label"><span class="required"></span></label>
                     <div class="controls">
                         <input id="cep" type="text" name="cep" value="<?= e($dados->cep); ?>" placeholder="CEP*" />
                     </div>
                 </div>
-                <div class="control-group">
-                    <label for="descricao" class="control-label"><span class="required"></span></label>
+                <div class="mb-3">
+                    <label for="descricao" class="form-label"><span class="required"></span></label>
                     <div class="controls">
                         <input type="text" id="rua" name="logradouro" value="<?= e($dados->rua); ?>"
                             placeholder="Logradouro*" />
                     </div>
                 </div>
-                <div class="control-group">
-                    <label for="descricao" class="control-label"><span class="required"></span></label>
+                <div class="mb-3">
+                    <label for="descricao" class="form-label"><span class="required"></span></label>
                     <div class="controls">
                         <input type="text" id="numero" name="numero" value="<?= e($dados->numero); ?>" placeholder="Número*" />
                     </div>
                 </div>
-                <div class="control-group">
-                    <label for="descricao" class="control-label"><span class="required"></span></label>
+                <div class="mb-3">
+                    <label for="descricao" class="form-label"><span class="required"></span></label>
                     <div class="controls">
                         <input type="text" id="bairro" name="bairro" value="<?= e($dados->bairro); ?>" placeholder="Bairro*" />
                     </div>
                 </div>
-                <div class="control-group">
-                    <label for="descricao" class="control-label"><span class="required"></span></label>
+                <div class="mb-3">
+                    <label for="descricao" class="form-label"><span class="required"></span></label>
                     <div class="controls">
                         <input type="text" id="cidade" name="cidade" value="<?= e($dados->cidade); ?>" placeholder="Cidade*" />
                     </div>
                 </div>
-                <div class="control-group">
-                    <label for="descricao" class="control-label"><span class="required"></span></label>
+                <div class="mb-3">
+                    <label for="descricao" class="form-label"><span class="required"></span></label>
                     <div class="controls">
                         <input type="text" id="estado" name="uf" value="<?= e($dados->uf); ?>" placeholder="UF*" />
                     </div>
                 </div>
-                <div class="control-group">
-                    <label for="descricao" class="control-label"><span class="required"></span></label>
+                <div class="mb-3">
+                    <label for="descricao" class="form-label"><span class="required"></span></label>
                     <div class="controls">
                         <input type="text" id="telefone" name="telefone" value="<?= e($dados->telefone); ?>"
                             placeholder="Telefone*" />
                     </div>
                 </div>
-                <div class="control-group">
-                    <label for="descricao" class="control-label"><span class="required"></span></label>
+                <div class="mb-3">
+                    <label for="descricao" class="form-label"><span class="required"></span></label>
                     <div class="controls">
                         <input id="email" type="text" name="email" value="<?= e($dados->email); ?>" placeholder="E-mail*" />
                     </div>
                 </div>
             </div>
             <div class="modal-footer" style="display:flex;justify-content: center">
-                <button class="button btn btn-mini btn-danger" data-dismiss="modal" aria-hidden="true" id="btnCancelExcluir"><span class="button__icon"><i class='bx bx-x'></i></span> <span class="button__text2">Cancelar</span></button>
+                <button class="button btn btn-sm btn-danger" data-bs-dismiss="modal" aria-hidden="true" id="btnCancelExcluir"><span class="button__icon"><i class='bx bx-x'></i></span> <span class="button__text2">Cancelar</span></button>
                 <button class="button btn btn-primary"><span class="button__icon"><i class="bx bx-sync"></i></span><span class="button__text2">Atualizar</span></button>
             </div>
         </form>
     </div>
 
-    <div id="modalLogo" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div id="modalLogo" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <form action="<?= site_url('mapos/editarLogo'); ?>" id="formLogo" enctype="multipart/form-data" method="post" class="form-horizontal">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">x</button>
                 <h3 id="">MapOS - Atualizar Logotipo</h3>
             </div>
             <div class="modal-body">
-                <div class="span12 alert alert-info">Selecione uma nova imagem da logotipo. Tamanho indicado (130 X 130).</div>
-                <div class="control-group">
-                    <label for="logo" class="control-label"><span class="required">Logotipo*</span></label>
+                <div class="col-12 alert alert-info">Selecione uma nova imagem da logotipo. Tamanho indicado (130 X 130).</div>
+                <div class="mb-3">
+                    <label for="logo" class="form-label"><span class="required">Logotipo*</span></label>
                     <div class="controls">
                         <input type="file" name="userfile" value="" />
                         <input id="nome" type="hidden" name="id" value="<?= $dados->id; ?>" />
@@ -309,7 +309,7 @@
                 </div>
             </div>
             <div class="modal-footer" style="display:flex;justify-content: center">
-                <button class="button btn btn-mini btn-danger" data-dismiss="modal" aria-hidden="true" id="btnCancelExcluir"><span class="button__icon"><i class='bx bx-x'></i></span> <span class="button__text2">Cancelar</span></button>
+                <button class="button btn btn-sm btn-danger" data-bs-dismiss="modal" aria-hidden="true" id="btnCancelExcluir"><span class="button__icon"><i class='bx bx-x'></i></span> <span class="button__text2">Cancelar</span></button>
                 <button class="button btn btn-primary"><span class="button__icon"><i class="bx bx-sync"></i></span><span class="button__text2">Atualizar</span></button>
             </div>
         </form>
@@ -331,15 +331,15 @@
                 }
             },
 
-            errorClass: "help-inline",
+            errorClass: "form-text",
             errorElement: "span",
             highlight: function (element, errorClass, validClass) {
-                $(element).parents('.control-group').addClass('error');
-                $(element).parents('.control-group').removeClass('success');
+                $(element).parents('.mb-3').addClass('error');
+                $(element).parents('.mb-3').removeClass('success');
             },
             unhighlight: function (element, errorClass, validClass) {
-                $(element).parents('.control-group').removeClass('error');
-                $(element).parents('.control-group').addClass('success');
+                $(element).parents('.mb-3').removeClass('error');
+                $(element).parents('.mb-3').addClass('success');
             }
         });
 
@@ -409,15 +409,15 @@
                 }
             },
 
-            errorClass: "help-inline",
+            errorClass: "form-text",
             errorElement: "span",
             highlight: function (element, errorClass, validClass) {
-                $(element).parents('.control-group').addClass('error');
-                $(element).parents('.control-group').removeClass('success');
+                $(element).parents('.mb-3').addClass('error');
+                $(element).parents('.mb-3').removeClass('success');
             },
             unhighlight: function (element, errorClass, validClass) {
-                $(element).parents('.control-group').removeClass('error');
-                $(element).parents('.control-group').addClass('success');
+                $(element).parents('.mb-3').removeClass('error');
+                $(element).parents('.mb-3').addClass('success');
             }
         });
 
@@ -487,15 +487,15 @@
                 }
             },
 
-            errorClass: "help-inline",
+            errorClass: "form-text",
             errorElement: "span",
             highlight: function (element, errorClass, validClass) {
-                $(element).parents('.control-group').addClass('error');
-                $(element).parents('.control-group').removeClass('success');
+                $(element).parents('.mb-3').addClass('error');
+                $(element).parents('.mb-3').removeClass('success');
             },
             unhighlight: function (element, errorClass, validClass) {
-                $(element).parents('.control-group').removeClass('error');
-                $(element).parents('.control-group').addClass('success');
+                $(element).parents('.mb-3').removeClass('error');
+                $(element).parents('.mb-3').addClass('success');
             }
         });
     });

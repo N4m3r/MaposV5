@@ -1,4 +1,4 @@
-<style>
+﻿<style>
     .upload-area {
         border: 3px dashed #ddd;
         border-radius: 10px;
@@ -56,8 +56,8 @@
     }
 </style>
 
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon">
@@ -82,13 +82,13 @@
 
                 <!-- Mensagens -->
                 <?php if ($this->session->flashdata('error')): ?>
-                    <div class="alert alert-error">
-                        <button class="close" data-dismiss="alert">×</button>
+                    <div class="alert alert-danger">
+                        <button class="close" data-bs-dismiss="alert">×</button>
                         <i class="icon-remove"></i> <?php echo $this->session->flashdata('error'); ?>
                     </div>
                 <?php endif; ?>
 
-                <?php echo validation_errors('<div class="alert alert-error"><button class="close" data-dismiss="alert">×</button><i class="icon-remove"></i> ', '</div>'); ?>
+                <?php echo validation_errors('<div class="alert alert-danger"><button class="close" data-bs-dismiss="alert">×</button><i class="icon-remove"></i> ', '</div>'); ?>
 
                 <!-- Formulário de Upload -->
                 <form action="<?php echo site_url('backup/processar_restauracao'); ?>" method="POST" enctype="multipart/form-data" id="formRestauracao">
@@ -104,11 +104,11 @@
                     <!-- Informações do Arquivo -->
                     <div id="fileInfo">
                         <h5><i class="icon-file"></i> Arquivo Selecionado</h5>
-                        <div class="row-fluid">
-                            <div class="span6">
+                        <div class="row">
+                            <div class="col-6">
                                 <strong>Nome:</strong> <span id="fileName"></span>
                             </div>
-                            <div class="span6">
+                            <div class="col-6">
                                 <strong>Tamanho:</strong> <span id="fileSize"></span>
                             </div>
                         </div>
@@ -120,9 +120,9 @@
                         <i class="icon-hdd"></i> Ou selecione um backup do servidor:
                     </h5>
 
-                    <div class="row-fluid" style="max-height: 300px; overflow-y: auto;">
+                    <div class="row" style="max-height: 300px; overflow-y: auto;">
                         <?php foreach (array_slice($backups_disponiveis, 0, 10) as $backup): ?>
-                        <div class="span6" style="margin-bottom: 10px;">
+                        <div class="col-6" style="margin-bottom: 10px;">
                             <label class="radio" style="padding: 10px; background: #f5f5f5; border-radius: 5px;">
                                 <input type="radio" name="backup_existente" value="<?php echo $backup['nome']; ?>"
                                        onclick="selecionarBackup('<?php echo $backup['nome']; ?>', '<?php echo $backup['tamanho']; ?>')">

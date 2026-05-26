@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $titulo ?></title>
-    <link rel="stylesheet" href="<?= base_url('assets/css/bootstrap.min.css') ?>">
+    <link rel="stylesheet" href="<?= base_url('assets/css/bootstrap5.min.css') ?>">
     <link rel="stylesheet" href="<?= base_url('assets/css/boxicons.min.css') ?>">
     <style>
         body {
@@ -299,6 +299,6 @@
     </div>
 
     <script src="<?= base_url('assets/js/jquery.min.js') ?>"></script>
-    <script src="<?= base_url('assets/js/bootstrap.min.js') ?>"></script>
+    <script src="<?= base_url('assets/js/bootstrap5.bundle.min.js') ?>"></script>
 </body>
 </html>

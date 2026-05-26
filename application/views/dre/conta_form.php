@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Formulário de Conta DRE
  */
@@ -6,20 +6,20 @@ $is_edit = isset($conta) && $conta;
 ?>
 
 <!-- Header -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <ul class="breadcrumb">
-            <li><a href="<?= site_url('dashboard') ?>">Dashboard</a> <span class="divider">/</span></li>
-            <li><a href="<?= site_url('dre') ?>">DRE Contábil</a> <span class="divider">/</span></li>
-            <li><a href="<?= site_url('dre/contas') ?>">Plano de Contas</a> <span class="divider">/</span></li>
+            <li><a href="<?= site_url('dashboard') ?>">Dashboard</a> <span class="dropdown-divider">/</span></li>
+            <li><a href="<?= site_url('dre') ?>">DRE Contábil</a> <span class="dropdown-divider">/</span></li>
+            <li><a href="<?= site_url('dre/contas') ?>">Plano de Contas</a> <span class="dropdown-divider">/</span></li>
             <li class="active"><?= $is_edit ? 'Editar' : 'Nova' ?> Conta</li>
         </ul>
     </div>
 </div>
 
 <!-- Formulário -->
-<div class="row-fluid">
-    <div class="span8 offset2">
+<div class="row">
+    <div class="col-8 offset-md-2">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-<?= $is_edit ? 'edit' : 'plus' ?>"></i></span>
@@ -29,25 +29,25 @@ $is_edit = isset($conta) && $conta;
                 <form method="post" action="<?= site_url('dre/conta_salvar') ?>" class="form-horizontal">
                     <input type="hidden" name="id" value="<?= $is_edit ? $conta->id : '' ?>" />
 
-                    <div class="control-group">
-                        <label class="control-label">Código: *</label>
+                    <div class="mb-3">
+                        <label class="form-label">Código: *</label>
                         <div class="controls">
-                            <input type="text" name="codigo" class="span4" value="<?= $is_edit ? $conta->codigo : '' ?>" required placeholder="Ex: 1.1" />
-                            <span class="help-inline">Código hierárquico (ex: 1, 1.1, 1.1.1)</span>
+                            <input type="text" name="codigo" class="col-4" value="<?= $is_edit ? $conta->codigo : '' ?>" required placeholder="Ex: 1.1" />
+                            <span class="form-text">Código hierárquico (ex: 1, 1.1, 1.1.1)</span>
                         </div>
                     </div>
 
-                    <div class="control-group">
-                        <label class="control-label">Nome: *</label>
+                    <div class="mb-3">
+                        <label class="form-label">Nome: *</label>
                         <div class="controls">
-                            <input type="text" name="nome" class="span8" value="<?= $is_edit ? $conta->nome : '' ?>" required placeholder="Nome da conta" />
+                            <input type="text" name="nome" class="col-8" value="<?= $is_edit ? $conta->nome : '' ?>" required placeholder="Nome da conta" />
                         </div>
                     </div>
 
-                    <div class="control-group">
-                        <label class="control-label">Tipo: *</label>
+                    <div class="mb-3">
+                        <label class="form-label">Tipo: *</label>
                         <div class="controls">
-                            <select name="tipo" class="span4" required>
+                            <select name="tipo" class="col-4" required>
                                 <option value="">Selecione...</option>
                                 <option value="RECEITA" <?= $is_edit && $conta->tipo == 'RECEITA' ? 'selected' : '' ?>>RECEITA</option>
                                 <option value="CUSTO" <?= $is_edit && $conta->tipo == 'CUSTO' ? 'selected' : '' ?>>CUSTO</option>
@@ -58,10 +58,10 @@ $is_edit = isset($conta) && $conta;
                         </div>
                     </div>
 
-                    <div class="control-group">
-                        <label class="control-label">Grupo DRE: *</label>
+                    <div class="mb-3">
+                        <label class="form-label">Grupo DRE: *</label>
                         <div class="controls">
-                            <select name="grupo" class="span6" required>
+                            <select name="grupo" class="col-6" required>
                                 <optgroup label="Estrutura DRE">
                                     <option value="RECEITA_BRUTA" <?= $is_edit && $conta->grupo == 'RECEITA_BRUTA' ? 'selected' : '' ?>>1. RECEITA BRUTA</option>
                                     <option value="DEDUCOES" <?= $is_edit && $conta->grupo == 'DEDUCOES' ? 'selected' : '' ?>>2. DEDUÇÕES DA RECEITA</option>
@@ -75,18 +75,18 @@ $is_edit = isset($conta) && $conta;
                         </div>
                     </div>
 
-                    <div class="control-group">
-                        <label class="control-label">Ordem:</label>
+                    <div class="mb-3">
+                        <label class="form-label">Ordem:</label>
                         <div class="controls">
-                            <input type="number" name="ordem" class="span2" value="<?= $is_edit ? $conta->ordem : '' ?>" placeholder="0" />
-                            <span class="help-inline">Ordem de exibição na DRE (menor = primeiro)</span>
+                            <input type="number" name="ordem" class="col-2" value="<?= $is_edit ? $conta->ordem : '' ?>" placeholder="0" />
+                            <span class="form-text">Ordem de exibição na DRE (menor = primeiro)</span>
                         </div>
                     </div>
 
-                    <div class="control-group">
-                        <label class="control-label">Nível:</label>
+                    <div class="mb-3">
+                        <label class="form-label">Nível:</label>
                         <div class="controls">
-                            <select name="nivel" class="span2">
+                            <select name="nivel" class="col-2">
                                 <option value="1" <?= $is_edit && $conta->nivel == 1 ? 'selected' : '' ?>>1 - Principal</option>
                                 <option value="2" <?= $is_edit && $conta->nivel == 2 ? 'selected' : '' ?>>2 - Subconta</option>
                                 <option value="3" <?= $is_edit && $conta->nivel == 3 ? 'selected' : '' ?>>3 - Detalhe</option>
@@ -94,8 +94,8 @@ $is_edit = isset($conta) && $conta;
                         </div>
                     </div>
 
-                    <div class="control-group">
-                        <label class="control-label">Sinal:</label>
+                    <div class="mb-3">
+                        <label class="form-label">Sinal:</label>
                         <div class="controls">
                             <label class="radio inline">
                                 <input type="radio" name="sinal" value="POSITIVO" <?= (!$is_edit || $conta->sinal == 'POSITIVO') ? 'checked' : '' ?> />
@@ -108,8 +108,8 @@ $is_edit = isset($conta) && $conta;
                         </div>
                     </div>
 
-                    <div class="control-group">
-                        <label class="control-label">Ativo:</label>
+                    <div class="mb-3">
+                        <label class="form-label">Ativo:</label>
                         <div class="controls">
                             <label class="checkbox">
                                 <input type="checkbox" name="ativo" value="1" <?= !$is_edit || $conta->ativo ? 'checked' : '' ?> />

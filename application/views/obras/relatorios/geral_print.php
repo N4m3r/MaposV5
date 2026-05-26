@@ -1,11 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Relatório da Obra - <?php echo htmlspecialchars($obra->nome ?? 'Obra'); ?></title>
-    <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/bootstrap.min.css">
-    <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/bootstrap-responsive.min.css">
+    <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/bootstrap5.min.css">
     <style>
         * {
             margin: 0;

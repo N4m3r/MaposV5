@@ -1,4 +1,4 @@
-<style>
+﻿<style>
     select {
         width: 70px;
     }
@@ -11,21 +11,21 @@
         </span>
         <h5>Vendas</h5>
     </div>
-    <div class="span12" style="margin-left: 0">
+    <div class="col-12" style="margin-left: 0">
         <form method="get" action="<?php echo base_url(); ?>index.php/vendas/gerenciar">
             <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'aVenda')) { ?>
-                <div class="span3">
-                    <a href="<?php echo base_url(); ?>index.php/vendas/adicionar" class="button btn btn-mini btn-success" style="max-width: 160px">
+                <div class="col-3">
+                    <a href="<?php echo base_url(); ?>index.php/vendas/adicionar" class="button btn btn-sm btn-success" style="max-width: 160px">
                         <span class="button__icon"><i class='bx bx-plus-circle'></i></span>
                         <span class="button__text2">Nova Venda</span>
                     </a>
                 </div>
             <?php } ?>
-            <div class="span3">
-                <input type="text" name="pesquisa" id="pesquisa" placeholder="Nome do cliente a pesquisar" class="span12" value="">
+            <div class="col-3">
+                <input type="text" name="pesquisa" id="pesquisa" placeholder="Nome do cliente a pesquisar" class="col-12" value="">
             </div>
-            <div class="span2">
-                <select name="status" class="span12">
+            <div class="col-2">
+                <select name="status" class="col-12">
                     <option value="">Selecione status</option>
                     <option value="Aberto">Aberto</option>
                     <option value="Faturado">Faturado</option>
@@ -38,12 +38,12 @@
                     <option value="Aprovado">Aprovado</option>
                 </select>
             </div>
-            <div class="span3">
-                <input type="date" name="data" id="data" placeholder="De" class="span6 datepicker" autocomplete="off" value="">
-                <input type="date" name="data2" id="data2" placeholder="Até" class="span6 datepicker" autocomplete="off" value="">
+            <div class="col-3">
+                <input type="date" name="data" id="data" placeholder="De" class="col-6 datepicker" autocomplete="off" value="">
+                <input type="date" name="data2" id="data2" placeholder="Até" class="col-6 datepicker" autocomplete="off" value="">
             </div>
-            <div class="span1">
-                <button class="button btn btn-mini btn-warning" style="min-width: 30px">
+            <div class="col-1">
+                <button class="button btn btn-sm btn-warning" style="min-width: 30px">
                     <span class="button__icon"><i class='bx bx-search-alt'></i></span>
                 </button>
             </div>
@@ -146,7 +146,7 @@
                                     echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/vendas/editar/' . e($r->idVendas) . '" class="btn-nwe3" title="Editar venda"><i class="bx bx-edit bx-xs"></i></a>';
                                 }
                                 if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dVenda')) {
-                                    echo '<a href="#modal-excluir" role="button" data-toggle="modal" venda="' . e($r->idVendas) . '" class="btn-nwe4" title="Excluir Venda"><i class="bx bx-trash-alt bx-xs"></i></a>';
+                                    echo '<a href="#modal-excluir" role="button" data-bs-toggle="modal" venda="' . e($r->idVendas) . '" class="btn-nwe4" title="Excluir Venda"><i class="bx bx-trash-alt bx-xs"></i></a>';
                                 }
                             }
                             echo '</td>';
@@ -160,10 +160,10 @@
 </div>
 
 <!-- Modal -->
-<div id="modal-excluir" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div id="modal-excluir" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <form action="<?php echo base_url() ?>index.php/vendas/excluir" method="post">
         <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">×</button>
             <h5 id="myModalLabel">Excluir Venda</h5>
         </div>
         <div class="modal-body">
@@ -171,7 +171,7 @@
             <h5 style="text-align: center">Deseja realmente excluir esta Venda?</h5>
         </div>
         <div class="modal-footer" style="display:flex;justify-content: center">
-            <button class="button btn btn-warning" data-dismiss="modal" aria-hidden="true">
+            <button class="button btn btn-warning" data-bs-dismiss="modal" aria-hidden="true">
               <span class="button__icon"><i class="bx bx-x"></i></span><span class="button__text2">Cancelar</span></button>
             <button class="button btn btn-danger"><span class="button__icon"><i class='bx bx-trash'></i></span> <span class="button__text2">Excluir</span></button>
         </div>

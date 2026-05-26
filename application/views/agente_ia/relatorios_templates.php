@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * View: relatorios_templates.php
  * Gerenciamento de templates de relatorio do Agente IA
@@ -63,17 +63,17 @@
 }
 </style>
 
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="bx bx-file iconX"></i></span>
                 <h5>Templates de Relatorio - Agente IA</h5>
                 <div class="buttons">
-                    <a href="<?php echo site_url('agente_ia'); ?>" class="btn btn-mini">
+                    <a href="<?php echo site_url('agente_ia'); ?>" class="btn btn-sm">
                         <i class="bx bx-arrow-back"></i> Voltar
                     </a>
-                    <a href="#modalNovoTemplate" data-toggle="modal" class="btn btn-success btn-mini">
+                    <a href="#modalNovoTemplate" data-bs-toggle="modal" class="btn btn-success btn-sm">
                         <i class="bx bx-plus"></i> Novo Template
                     </a>
                 </div>
@@ -93,9 +93,9 @@
                         Nenhum template cadastrado. Clique em <strong>Novo Template</strong> para criar o primeiro.
                     </div>
                 <?php else: ?>
-                    <div class="row-fluid">
+                    <div class="row">
                         <?php foreach ($templates as $t): ?>
-                            <div class="span6">
+                            <div class="col-6">
                                 <div class="template-card">
                                     <div class="titulo">
                                         <span class="tipo-badge badge-<?php echo $t['tipo']; ?>">
@@ -103,23 +103,23 @@
                                         </span>
                                         <?php echo htmlspecialchars($t['nome']); ?>
                                         <?php if (!empty($t['ativo'])): ?>
-                                            <span class="label label-success">Ativo</span>
+                                            <span class="badge bg-success">Ativo</span>
                                         <?php else: ?>
-                                            <span class="label label-inverse">Inativo</span>
+                                            <span class="badge bg-dark">Inativo</span>
                                         <?php endif; ?>
                                     </div>
                                     <div class="desc"><?php echo htmlspecialchars($t['descricao'] ?? ''); ?></div>
                                     <div class="preview-box"><?php echo nl2br(htmlspecialchars(substr($t['conteudo_html'] ?? '', 0, 250))) . (strlen($t['conteudo_html'] ?? '') > 250 ? '...' : ''); ?></div>
                                     <div class="acoes">
-                                        <a href="<?php echo site_url('agente_ia/editar_template/' . $t['id']); ?>" class="btn btn-mini btn-info">
+                                        <a href="<?php echo site_url('agente_ia/editar_template/' . $t['id']); ?>" class="btn btn-sm btn-info">
                                             <i class="bx bx-edit"></i> Editar
                                         </a>
                                         <?php if (!empty($t['ativo'])): ?>
-                                            <a href="<?php echo site_url('agente_ia/desativar_template/' . $t['id']); ?>" class="btn btn-mini btn-warning" onclick="return confirm('Desativar este template?');">
+                                            <a href="<?php echo site_url('agente_ia/desativar_template/' . $t['id']); ?>" class="btn btn-sm btn-warning" onclick="return confirm('Desativar este template?');">
                                                 <i class="bx bx-hide"></i> Desativar
                                             </a>
                                         <?php else: ?>
-                                            <a href="<?php echo site_url('agente_ia/ativar_template/' . $t['id']); ?>" class="btn btn-mini btn-success">
+                                            <a href="<?php echo site_url('agente_ia/ativar_template/' . $t['id']); ?>" class="btn btn-sm btn-success">
                                                 <i class="bx bx-show"></i> Ativar
                                             </a>
                                         <?php endif; ?>
@@ -135,20 +135,20 @@
 </div>
 
 <!-- Modal Novo Template -->
-<div id="modalNovoTemplate" class="modal hide fade" tabindex="-1" role="dialog">
+<div id="modalNovoTemplate" class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">×</button>
+        <button type="button" class="close" data-bs-dismiss="modal">×</button>
         <h3><i class="bx bx-plus"></i> Novo Template de Relatorio</h3>
     </div>
     <form method="post" action="<?php echo site_url('agente_ia/salvar_template'); ?>">
         <div class="modal-body form-template">
-            <div class="control-group">
+            <div class="mb-3">
                 <label>Nome do Template</label>
-                <input type="text" name="nome" class="span12" required placeholder="Ex: Relatorio de OS Mensal - Layout 1">
+                <input type="text" name="nome" class="col-12" required placeholder="Ex: Relatorio de OS Mensal - Layout 1">
             </div>
-            <div class="control-group">
+            <div class="mb-3">
                 <label>Tipo de Relatorio</label>
-                <select name="tipo" class="span12" required>
+                <select name="tipo" class="col-12" required>
                     <option value="os_diario">OS Diario</option>
                     <option value="os_mensal">OS Mensal</option>
                     <option value="financeiro">Financeiro</option>
@@ -161,22 +161,22 @@
                     <option value="historico_cliente">Historico do Cliente</option>
                 </select>
             </div>
-            <div class="control-group">
+            <div class="mb-3">
                 <label>Descricao</label>
-                <input type="text" name="descricao" class="span12" placeholder="Breve descricao do template">
+                <input type="text" name="descricao" class="col-12" placeholder="Breve descricao do template">
             </div>
-            <div class="control-group">
+            <div class="mb-3">
                 <label>Conteudo HTML do Template</label>
-                <textarea name="conteudo_html" class="span12" required placeholder="&lt;table&gt;...&lt;/table&gt;">{{cliente_nome}} - {{periodo_inicio}} ate {{periodo_fim}}</textarea>
+                <textarea name="conteudo_html" class="col-12" required placeholder="&lt;table&gt;...&lt;/table&gt;">{{cliente_nome}} - {{periodo_inicio}} ate {{periodo_fim}}</textarea>
             </div>
-            <div class="control-group">
+            <div class="mb-3">
                 <label class="checkbox">
                     <input type="checkbox" name="ativo" value="1" checked> Ativo
                 </label>
             </div>
         </div>
         <div class="modal-footer">
-            <button class="btn" data-dismiss="modal">Cancelar</button>
+            <button class="btn" data-bs-dismiss="modal">Cancelar</button>
             <button type="submit" class="btn btn-primary">Salvar Template</button>
         </div>
     </form>

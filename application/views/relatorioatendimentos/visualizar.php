@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Visualizar detalhes de um atendimento
  */
@@ -14,27 +14,27 @@ if ($checkin->data_saida) {
 ?>
 
 <!-- Header -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <ul class="breadcrumb">
-            <li><a href="<?php echo site_url('dashboard'); ?>">Dashboard</a> <span class="divider">/</span></li>
-            <li><a href="<?php echo site_url('relatorioatendimentos'); ?>">Relatório de Atendimentos</a> <span class="divider">/</span></li>
+            <li><a href="<?php echo site_url('dashboard'); ?>">Dashboard</a> <span class="dropdown-divider">/</span></li>
+            <li><a href="<?php echo site_url('relatorioatendimentos'); ?>">Relatório de Atendimentos</a> <span class="dropdown-divider">/</span></li>
             <li class="active">Visualizar Atendimento #<?php echo $checkin->idCheckin; ?></li>
         </ul>
     </div>
 </div>
 
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="bx bx-time"></i></span>
                 <h5>Detalhes do Atendimento #<?php echo $checkin->idCheckin; ?></h5>
                 <div class="buttons">
-                    <a href="<?php echo site_url('os/visualizar/' . $checkin->os_id); ?>" class="btn btn-mini btn-info">
+                    <a href="<?php echo site_url('os/visualizar/' . $checkin->os_id); ?>" class="btn btn-sm btn-info">
                         <i class="bx bx-show"></i> Ver OS
                     </a>
-                    <a href="<?php echo site_url('relatorioatendimentos'); ?>" class="btn btn-mini">
+                    <a href="<?php echo site_url('relatorioatendimentos'); ?>" class="btn btn-sm">
                         <i class="bx bx-arrow-back"></i> Voltar
                     </a>
                 </div>
@@ -42,28 +42,28 @@ if ($checkin->data_saida) {
 
             <div class="widget-content">
                 <!-- Status do Atendimento -->
-                <div class="row-fluid" style="margin-bottom: 20px;">
-                    <div class="span12">
+                <div class="row" style="margin-bottom: 20px;">
+                    <div class="col-12">
                         <?php if ($checkin->data_saida): ?>
                             <div class="alert alert-success">
                                 <i class="bx bx-check-circle"></i>
                                 <strong>Atendimento Finalizado</strong>
-                                <span class="pull-right">Tempo total: <strong><?php echo $tempo; ?> horas</strong></span>
+                                <span class="float-end">Tempo total: <strong><?php echo $tempo; ?> horas</strong></span>
                             </div>
                         <?php else: ?>
                             <div class="alert alert-warning">
                                 <i class="bx bx-loader bx-spin"></i>
                                 <strong>Atendimento em Andamento</strong>
-                                <span class="pull-right">Iniciado em: <strong><?php echo date('d/m/Y H:i', strtotime($checkin->data_entrada)); ?></strong></span>
+                                <span class="float-end">Iniciado em: <strong><?php echo date('d/m/Y H:i', strtotime($checkin->data_entrada)); ?></strong></span>
                             </div>
                         <?php endif; ?>
                     </div>
                 </div>
 
                 <!-- Informações Principais -->
-                <div class="row-fluid">
+                <div class="row">
                     <!-- Dados da OS -->
-                    <div class="span6">
+                    <div class="col-6">
                         <div class="widget-box">
                             <div class="widget-title">
                                 <span class="icon"><i class="bx bx-task"></i></span>
@@ -87,9 +87,9 @@ if ($checkin->data_saida) {
                                         <th>Status:</th>
                                         <td>
                                             <?php if ($checkin->data_saida): ?>
-                                                <span class="label label-success">Finalizado</span>
+                                                <span class="badge bg-success">Finalizado</span>
                                             <?php else: ?>
-                                                <span class="label label-warning">Em Andamento</span>
+                                                <span class="badge bg-warning">Em Andamento</span>
                                             <?php endif; ?>
                                         </td>
                                     </tr>
@@ -99,7 +99,7 @@ if ($checkin->data_saida) {
                     </div>
 
                     <!-- Dados do Técnico -->
-                    <div class="span6">
+                    <div class="col-6">
                         <div class="widget-box">
                             <div class="widget-title">
                                 <span class="icon"><i class="bx bx-user"></i></span>
@@ -128,8 +128,8 @@ if ($checkin->data_saida) {
                 </div>
 
                 <!-- Observações -->
-                <div class="row-fluid">
-                    <div class="span6">
+                <div class="row">
+                    <div class="col-6">
                         <div class="widget-box">
                             <div class="widget-title">
                                 <span class="icon"><i class="bx bx-log-in"></i></span>
@@ -145,7 +145,7 @@ if ($checkin->data_saida) {
                         </div>
                     </div>
 
-                    <div class="span6">
+                    <div class="col-6">
                         <div class="widget-box">
                             <div class="widget-title">
                                 <span class="icon"><i class="bx bx-log-out"></i></span>
@@ -163,8 +163,8 @@ if ($checkin->data_saida) {
                 </div>
 
                 <!-- Ações -->
-                <div class="row-fluid">
-                    <div class="span12">
+                <div class="row">
+                    <div class="col-12">
                         <div class="form-actions" style="text-align: right; margin-bottom: 0;">
                             <a href="<?php echo site_url('relatorioatendimentos'); ?>" class="btn">
                                 <i class="bx bx-arrow-back"></i> Voltar para Lista

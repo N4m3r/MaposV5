@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 $atividade_em_andamento = $atividade_em_andamento ?? null;
 $resumo_dia = $resumo_dia ?? ['em_andamento' => null, 'total_atividades' => 0, 'tempo_trabalhado_horas' => 0];
 $estatisticas = $estatisticas ?? ['total_atividades' => 0, 'concluidas' => 0, 'tempo_total_horas' => 0, 'por_categoria' => []];
@@ -99,21 +99,21 @@ $is_admin = $is_admin ?? false;
 }
 </style>
 
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <h2><i class="bx bx-user-circle"></i> Área do Técnico</h2>
 
         <!-- Status do Técnico -->
         <div class="dashboard-card">
-            <div class="row-fluid">
-                <div class="span8">
+            <div class="row">
+                <div class="col-8">
                     <h4>
                         <span class="status-indicator <?= $atividade_em_andamento ? 'status-busy' : 'status-online' ?>"></span>
                         Status: <strong><?= $atividade_em_andamento ? 'EM ATENDIMENTO' : 'DISPONÍVEL' ?></strong>
                     </h4>
                     <p class="text-muted"><?= date('d/m/Y - l') ?></p>
                 </div>
-                <div class="span4 text-right">
+                <div class="col-4 text-right">
                     <?php if ($is_admin): ?>
                         <a href="<?= site_url('atividades/relatorio') ?>" class="btn">
                             <i class="bx bx-chart"></i> Relatórios
@@ -126,8 +126,8 @@ $is_admin = $is_admin ?? false;
 </div>
 
 <!-- OS DO DIA -->
-<div class="row-fluid">
-    <div class="span8">
+<div class="row">
+    <div class="col-8">
         <div class="dashboard-card">
             <h4><i class="bx bx-list-ul"></i> Ordens de Serviço - Hoje</h4>
 
@@ -142,18 +142,18 @@ $is_admin = $is_admin ?? false;
                         }
                     ?>
                     <div class="os-card prioridade-<?= $prioridade ?>">
-                        <div class="row-fluid">
-                            <div class="span8">
+                        <div class="row">
+                            <div class="col-8">
                                 <strong>OS #<?= $os->idOs ?></strong> -
                                 <?= htmlspecialchars($os->nomeCliente ?? 'N/A') ?>
                                 <br>
                                 <small><i class="bx bx-wrench"></i> <?= htmlspecialchars($os->descricaoProduto ?? 'N/A') ?></small>
                                 <?php if ($os->garantia ?? false): ?>
-                                    <span class="label label-warning"><i class="bx bx-shield"></i> Garantia</span>
+                                    <span class="badge bg-warning"><i class="bx bx-shield"></i> Garantia</span>
                                 <?php endif; ?>
                             </div>
-                            <div class="span4 text-right">
-                                <a href="<?= site_url('os/visualizar/' . $os->idOs) ?>" class="btn btn-info btn-small">
+                            <div class="col-4 text-right">
+                                <a href="<?= site_url('os/visualizar/' . $os->idOs) ?>" class="btn btn-info btn-sm">
                                     <i class="bx bx-eye"></i> Ver OS
                                 </a>
                             </div>
@@ -169,13 +169,13 @@ $is_admin = $is_admin ?? false;
     </div>
 
     <!-- ESTATÍSTICAS DO MÊS -->
-    <div class="span4">
+    <div class="col-4">
         <div class="dashboard-card">
             <h4><i class="bx bx-trophy"></i> Desempenho do Mês</h4>
             <br>
-            <p><strong>Total de Atividades:</strong> <span class="pull-right"><?= $estatisticas['total_atividades'] ?></span></p>
-            <p><strong>Concluídas:</strong> <span class="pull-right text-success"><?= $estatisticas['concluidas'] ?></span></p>
-            <p><strong>Horas Totais:</strong> <span class="pull-right"><?= $estatisticas['tempo_total_horas'] ?>h</span></p>
+            <p><strong>Total de Atividades:</strong> <span class="float-end"><?= $estatisticas['total_atividades'] ?></span></p>
+            <p><strong>Concluídas:</strong> <span class="float-end text-success"><?= $estatisticas['concluidas'] ?></span></p>
+            <p><strong>Horas Totais:</strong> <span class="float-end"><?= $estatisticas['tempo_total_horas'] ?>h</span></p>
 
             <hr>
 

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 $os = $os ?? null;
 $atividade_em_andamento = $atividade_em_andamento ?? null;
 $atividades_lista = $atividades_lista ?? [];
@@ -146,22 +146,22 @@ $checkin_realizado = $checkin_realizado ?? false;
 }
 </style>
 
-<div class="row-fluid wizard-container">
-    <div class="span12">
+<div class="row wizard-container">
+    <div class="col-12">
         <!-- Painel de Hora -->
         <div class="painel-hora">
-            <div class="row-fluid">
-                <div class="span4">
+            <div class="row">
+                <div class="col-4">
                     <div class="hora-label">Hora Início</div>
                     <div class="hora-valor" id="hora-inicio">
                         <?= $atividade_em_andamento ? date('H:i', strtotime($atividade_em_andamento->hora_inicio)) : '--:--' ?>
                     </div>
                 </div>
-                <div class="span4">
+                <div class="col-4">
                     <div class="hora-label">Tempo Decorrido</div>
                     <div class="cronometro" id="cronometro">00:00:00</div>
                 </div>
-                <div class="span4">
+                <div class="col-4">
                     <div class="hora-label">Hora Fim</div>
                     <div class="hora-valor" id="hora-fim">--:--</div>
                 </div>
@@ -195,19 +195,19 @@ $checkin_realizado = $checkin_realizado ?? false;
                     <input type="hidden" name="latitude" id="latitude">
                     <input type="hidden" name="longitude" id="longitude">
 
-                    <div class="row-fluid">
-                        <div class="span6">
-                            <div class="control-group">
-                                <label class="control-label">Foto do Local</label>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label class="form-label">Foto do Local</label>
                                 <div class="controls">
                                     <input type="file" name="foto" id="foto-local" accept="image/*" capture="environment" class="input-block-level">
                                     <img id="preview-foto" style="max-width: 100%; margin-top: 10px; display: none;">
                                 </div>
                             </div>
                         </div>
-                        <div class="span6">
-                            <div class="control-group">
-                                <label class="control-label">Localização GPS</label>
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label class="form-label">Localização GPS</label>
                                 <div class="controls">
                                     <button type="button" class="btn btn-info" onclick="obterLocalizacao()">
                                         <i class="bx bx-map-pin"></i> Atualizar Localização
@@ -220,18 +220,18 @@ $checkin_realizado = $checkin_realizado ?? false;
                         </div>
                     </div>
 
-                    <div class="control-group">
-                        <label class="control-label">Observações de Chegada</label>
+                    <div class="mb-3">
+                        <label class="form-label">Observações de Chegada</label>
                         <div class="controls">
                             <textarea name="observacoes" class="input-block-level" rows="3" placeholder="Condições do local, equipamentos encontrados, etc."></textarea>
                         </div>
                     </div>
 
-                    <div class="control-group">
-                        <label class="control-label">Assinatura do Cliente (opcional)</label>
+                    <div class="mb-3">
+                        <label class="form-label">Assinatura do Cliente (opcional)</label>
                         <div class="controls">
                             <canvas id="assinatura-cliente" class="assinatura-canvas"></canvas>
-                            <button type="button" class="btn btn-small" onclick="limparAssinatura()">
+                            <button type="button" class="btn btn-sm" onclick="limparAssinatura()">
                                 <i class="bx bx-eraser"></i> Limpar
                             </button>
                         </div>
@@ -256,8 +256,8 @@ $checkin_realizado = $checkin_realizado ?? false;
             <div class="widget-content">
                 <?php if ($atividade_em_andamento): ?>
                 <div class="card-atividade em-andamento" id="card-atual">
-                    <div class="row-fluid">
-                        <div class="span8">
+                    <div class="row">
+                        <div class="col-8">
                             <h4>
                                 <i class="bx <?= htmlspecialchars($atividade_em_andamento->tipo_icone ?? 'bx-wrench') ?>"
                                    style="color: <?= htmlspecialchars($atividade_em_andamento->tipo_cor ?? '#007bff') ?>"></i>
@@ -269,7 +269,7 @@ $checkin_realizado = $checkin_realizado ?? false;
                                 <p><strong>Equipamento:</strong> <?= htmlspecialchars($atividade_em_andamento->equipamento) ?></p>
                             <?php endif; ?>
                         </div>
-                        <div class="span4 text-right">
+                        <div class="col-4 text-right">
                             <button class="btn btn-warning" onclick="pausarAtividade(<?= $atividade_em_andamento->idAtividade ?>)">
                                 <i class="bx bx-pause"></i> Pausar
                             </button>
@@ -281,8 +281,8 @@ $checkin_realizado = $checkin_realizado ?? false;
                 </div>
 
                 <!-- Botões de Ação -->
-                <div class="row-fluid" style="margin-top: 15px;">
-                    <div class="span6">
+                <div class="row" style="margin-top: 15px;">
+                    <div class="col-6">
                         <button class="btn btn-info" onclick="abrirModalNovaAtividade()">
                             <i class="bx bx-plus"></i> Nova Atividade
                         </button>
@@ -290,7 +290,7 @@ $checkin_realizado = $checkin_realizado ?? false;
                             <i class="bx bx-camera"></i> Adicionar Foto
                         </button>
                     </div>
-                    <div class="span6 text-right">
+                    <div class="col-6 text-right">
                         <button class="btn btn-success btn-large" onclick="abrirModalCheckout()">
                             <i class="bx bx-log-out-circle"></i> FINALIZAR ATENDIMENTO
                         </button>
@@ -321,29 +321,29 @@ $checkin_realizado = $checkin_realizado ?? false;
                 <div class="historico-timeline" id="historico-atividades">
                     <?php foreach ($atividades_lista as $atv): ?>
                     <div class="timeline-item <?= $atv->status == 'em_andamento' ? 'andamento' : '' ?> <?= $atv->status == 'pausada' ? 'pausada' : '' ?>">
-                        <div class="row-fluid">
-                            <div class="span2">
+                        <div class="row">
+                            <div class="col-2">
                                 <strong><?= date('H:i', strtotime($atv->hora_inicio)) ?></strong>
                                 <?php if ($atv->hora_fim): ?>
                                     <br><small>até <?= date('H:i', strtotime($atv->hora_fim)) ?></small>
                                 <?php endif; ?>
                             </div>
-                            <div class="span7">
+                            <div class="col-7">
                                 <strong><?= htmlspecialchars($atv->tipo_nome) ?></strong>
                                 <?php if ($atv->duracao_minutos): ?>
-                                    <span class="label label-info"><?= floor($atv->duracao_minutos / 60) ?>h <?= $atv->duracao_minutos % 60 ?>min</span>
+                                    <span class="badge bg-info"><?= floor($atv->duracao_minutos / 60) ?>h <?= $atv->duracao_minutos % 60 ?>min</span>
                                 <?php endif; ?>
                                 <?php if ($atv->concluida == 1): ?>
-                                    <span class="label label-success"><i class="bx bx-check"></i> Concluída</span>
+                                    <span class="badge bg-success"><i class="bx bx-check"></i> Concluída</span>
                                 <?php elseif ($atv->concluida == 0 && $atv->status == 'finalizada'): ?>
-                                    <span class="label label-warning"><i class="bx bx-x"></i> Não Concluída</span>
+                                    <span class="badge bg-warning"><i class="bx bx-x"></i> Não Concluída</span>
                                 <?php endif; ?>
                                 <br>
                                 <small class="text-muted"><?= htmlspecialchars($atv->equipamento ?? '') ?></small>
                             </div>
-                            <div class="span3 text-right">
+                            <div class="col-3 text-right">
                                 <?php if ($atv->status == 'pausada'): ?>
-                                    <button class="btn btn-small btn-info" onclick="retomarAtividade(<?= $atv->idAtividade ?>)">
+                                    <button class="btn btn-sm btn-info" onclick="retomarAtividade(<?= $atv->idAtividade ?>)">
                                         <i class="bx bx-play"></i> Retomar
                                     </button>
                                 <?php endif; ?>
@@ -359,16 +359,16 @@ $checkin_realizado = $checkin_realizado ?? false;
 </div>
 
 <!-- MODAL: Nova Atividade -->
-<div id="modal-nova-atividade" class="modal hide fade" tabindex="-1">
+<div id="modal-nova-atividade" class="modal fade" tabindex="-1">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">×</button>
+        <button type="button" class="close" data-bs-dismiss="modal">×</button>
         <h3>Nova Atividade</h3>
     </div>
     <div class="modal-body">
         <form id="form-nova-atividade">
             <input type="hidden" name="os_id" value="<?= $os->idOs ?>">
 
-            <div class="control-group">
+            <div class="mb-3">
                 <label>Categoria</label>
                 <div class="controls">
                     <?php foreach ($tipos_atividades as $cat_key => $cat): ?>
@@ -382,14 +382,14 @@ $checkin_realizado = $checkin_realizado ?? false;
                 </div>
             </div>
 
-            <div class="control-group">
+            <div class="mb-3">
                 <label>Tipo de Atividade</label>
                 <div class="controls" id="lista-tipos">
                     <p class="text-muted">Selecione uma categoria acima</p>
                 </div>
             </div>
 
-            <div class="control-group">
+            <div class="mb-3">
                 <label>Equipamento/Local</label>
                 <div class="controls">
                     <input type="text" name="equipamento" class="input-block-level"
@@ -397,7 +397,7 @@ $checkin_realizado = $checkin_realizado ?? false;
                 </div>
             </div>
 
-            <div class="control-group">
+            <div class="mb-3">
                 <label>Descrição Técnica</label>
                 <div class="controls">
                     <textarea name="descricao" class="input-block-level" rows="3"
@@ -405,7 +405,7 @@ $checkin_realizado = $checkin_realizado ?? false;
                 </div>
             </div>
 
-            <div class="control-group">
+            <div class="mb-3">
                 <label>Prioridade</label>
                 <div class="controls">
                     <select name="prioridade" class="input-block-level">
@@ -419,22 +419,22 @@ $checkin_realizado = $checkin_realizado ?? false;
         </form>
     </div>
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal">Cancelar</button>
+        <button class="btn" data-bs-dismiss="modal">Cancelar</button>
         <button class="btn btn-primary" onclick="iniciarAtividade()">Iniciar Atividade</button>
     </div>
 </div>
 
 <!-- MODAL: Finalizar Atividade -->
-<div id="modal-finalizar" class="modal hide fade" tabindex="-1">
+<div id="modal-finalizar" class="modal fade" tabindex="-1">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">×</button>
+        <button type="button" class="close" data-bs-dismiss="modal">×</button>
         <h3>Finalizar Atividade</h3>
     </div>
     <div class="modal-body">
         <form id="form-finalizar">
             <input type="hidden" name="atividade_id" id="finalizar-atividade-id">
 
-            <div class="control-group">
+            <div class="mb-3">
                 <label>Status da Atividade</label>
                 <div class="controls">
                     <label class="radio">
@@ -448,7 +448,7 @@ $checkin_realizado = $checkin_realizado ?? false;
                 </div>
             </div>
 
-            <div class="control-group" id="motivo-nao-concluida" style="display: none;">
+            <div class="mb-3" id="motivo-nao-concluida" style="display: none;">
                 <label>Motivo (não concluída)</label>
                 <div class="controls">
                     <textarea name="motivo_nao_concluida" class="input-block-level" rows="2"
@@ -456,7 +456,7 @@ $checkin_realizado = $checkin_realizado ?? false;
                 </div>
             </div>
 
-            <div class="control-group">
+            <div class="mb-3">
                 <label>Problemas Encontrados</label>
                 <div class="controls">
                     <textarea name="problemas_encontrados" class="input-block-level" rows="2"
@@ -464,7 +464,7 @@ $checkin_realizado = $checkin_realizado ?? false;
                 </div>
             </div>
 
-            <div class="control-group">
+            <div class="mb-3">
                 <label>Solução Aplicada</label>
                 <div class="controls">
                     <textarea name="solucao_aplicada" class="input-block-level" rows="2"
@@ -472,7 +472,7 @@ $checkin_realizado = $checkin_realizado ?? false;
                 </div>
             </div>
 
-            <div class="control-group">
+            <div class="mb-3">
                 <label>Observações Finais</label>
                 <div class="controls">
                     <textarea name="observacoes_final" class="input-block-level" rows="2"
@@ -488,7 +488,7 @@ $checkin_realizado = $checkin_realizado ?? false;
         </div>
     </div>
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal">Cancelar</button>
+        <button class="btn" data-bs-dismiss="modal">Cancelar</button>
         <button class="btn btn-danger" onclick="finalizarAtividade()">
             <i class="bx bx-stop"></i> Finalizar Atividade
         </button>
@@ -496,23 +496,23 @@ $checkin_realizado = $checkin_realizado ?? false;
 </div>
 
 <!-- MODAL: Check-out -->
-<div id="modal-checkout" class="modal hide fade" tabindex="-1">
+<div id="modal-checkout" class="modal fade" tabindex="-1">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">×</button>
+        <button type="button" class="close" data-bs-dismiss="modal">×</button>
         <h3>Finalizar Atendimento - Check-out</h3>
     </div>
     <div class="modal-body">
         <form id="form-checkout">
             <input type="hidden" name="os_id" value="<?= $os->idOs ?>">
 
-            <div class="control-group">
+            <div class="mb-3">
                 <label>Foto de Finalização</label>
                 <div class="controls">
                     <input type="file" name="foto" accept="image/*" capture="environment">
                 </div>
             </div>
 
-            <div class="control-group">
+            <div class="mb-3">
                 <label>Resumo do Trabalho Realizado</label>
                 <div class="controls">
                     <textarea name="resumo_final" class="input-block-level" rows="4"
@@ -520,7 +520,7 @@ $checkin_realizado = $checkin_realizado ?? false;
                 </div>
             </div>
 
-            <div class="control-group">
+            <div class="mb-3">
                 <label>Pendências/Observações</label>
                 <div class="controls">
                     <textarea name="pendencias" class="input-block-level" rows="2"
@@ -528,7 +528,7 @@ $checkin_realizado = $checkin_realizado ?? false;
                 </div>
             </div>
 
-            <div class="control-group">
+            <div class="mb-3">
                 <label>Atividade foi realizada?</label>
                 <div class="controls">
                     <label class="radio inline">
@@ -540,11 +540,11 @@ $checkin_realizado = $checkin_realizado ?? false;
                 </div>
             </div>
 
-            <div class="control-group">
+            <div class="mb-3">
                 <label>Assinatura do Cliente</label>
                 <div class="controls">
                     <canvas id="assinatura-cliente-checkout" class="assinatura-canvas"></canvas>
-                    <button type="button" class="btn btn-small" onclick="limparAssinaturaCheckout()">
+                    <button type="button" class="btn btn-sm" onclick="limparAssinaturaCheckout()">
                         <i class="bx bx-eraser"></i> Limpar
                     </button>
                 </div>
@@ -559,7 +559,7 @@ $checkin_realizado = $checkin_realizado ?? false;
         </div>
     </div>
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal">Cancelar</button>
+        <button class="btn" data-bs-dismiss="modal">Cancelar</button>
         <button class="btn btn-success btn-large" onclick="realizarCheckout()">
             <i class="bx bx-check-double"></i> FINALIZAR ATENDIMENTO
         </button>
@@ -567,16 +567,16 @@ $checkin_realizado = $checkin_realizado ?? false;
 </div>
 
 <!-- MODAL: Foto -->
-<div id="modal-foto" class="modal hide fade" tabindex="-1">
+<div id="modal-foto" class="modal fade" tabindex="-1">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">×</button>
+        <button type="button" class="close" data-bs-dismiss="modal">×</button>
         <h3>Adicionar Foto</h3>
     </div>
     <div class="modal-body">
         <form id="form-foto" enctype="multipart/form-data">
             <input type="hidden" name="atividade_id" id="foto-atividade-id" value="<?= $atividade_em_andamento ? $atividade_em_andamento->idAtividade : '' ?>">
 
-            <div class="control-group">
+            <div class="mb-3">
                 <label>Tipo de Foto</label>
                 <div class="controls">
                     <select name="tipo_foto" class="input-block-level">
@@ -588,14 +588,14 @@ $checkin_realizado = $checkin_realizado ?? false;
                 </div>
             </div>
 
-            <div class="control-group">
+            <div class="mb-3">
                 <label>Foto</label>
                 <div class="controls">
                     <input type="file" name="foto" accept="image/*" capture="environment" class="input-block-level" required>
                 </div>
             </div>
 
-            <div class="control-group">
+            <div class="mb-3">
                 <label>Descrição</label>
                 <div class="controls">
                     <input type="text" name="descricao" class="input-block-level" placeholder="Descreva a foto...">
@@ -604,7 +604,7 @@ $checkin_realizado = $checkin_realizado ?? false;
         </form>
     </div>
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal">Cancelar</button>
+        <button class="btn" data-bs-dismiss="modal">Cancelar</button>
         <button class="btn btn-primary" onclick="adicionarFoto()">Adicionar Foto</button>
     </div>
 </div>

@@ -1,48 +1,48 @@
-<?php
+﻿<?php
 /**
  * Log de Envios de Email
  */
 ?>
 
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <ul class="breadcrumb">
-            <li><a href="<?= base_url() ?>">Dashboard</a><span class="divider">/</span></li>
-            <li><a href="<?= base_url('emails/dashboard') ?>">Emails</a><span class="divider">/</span></li>
+            <li><a href="<?= base_url() ?>">Dashboard</a><span class="dropdown-divider">/</span></li>
+            <li><a href="<?= base_url('emails/dashboard') ?>">Emails</a><span class="dropdown-divider">/</span></li>
             <li class="active">Log de Envios</li>
         </ul>
     </div>
 </div>
 
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <?php if ($this->session->flashdata('success')) { ?>
             <div class="alert alert-success">
-                <button type="button" class="close" data-dismiss="alert">x</button>
+                <button type="button" class="close" data-bs-dismiss="alert">x</button>
                 <?= $this->session->flashdata('success') ?>
             </div>
         <?php } ?>
         <?php if ($this->session->flashdata('error')) { ?>
-            <div class="alert alert-error">
-                <button type="button" class="close" data-dismiss="alert">x</button>
+            <div class="alert alert-danger">
+                <button type="button" class="close" data-bs-dismiss="alert">x</button>
                 <?= $this->session->flashdata('error') ?>
             </div>
         <?php } ?>
     </div>
 </div>
 
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-list-alt"></i></span>
                 <h5>Log de Envios</h5>
                 <div class="buttons">
-                    <a href="<?= base_url('email/logs') ?>" class="btn btn-mini <?= empty($status_filter) ? 'btn-inverse' : '' ?>">Todos</a>
-                    <a href="<?= base_url('email/logs?status=pending') ?>" class="btn btn-mini <?= $status_filter === 'pending' ? 'btn-warning' : '' ?>">Pendentes</a>
-                    <a href="<?= base_url('email/logs?status=sent') ?>" class="btn btn-mini <?= $status_filter === 'sent' ? 'btn-success' : '' ?>">Enviados</a>
-                    <a href="<?= base_url('email/logs?status=failed') ?>" class="btn btn-mini <?= $status_filter === 'failed' ? 'btn-danger' : '' ?>">Falhas</a>
-                    <a href="<?= base_url('email/logs?status=scheduled') ?>" class="btn btn-mini <?= $status_filter === 'scheduled' ? 'btn-info' : '' ?>">Agendados</a>
+                    <a href="<?= base_url('email/logs') ?>" class="btn btn-sm <?= empty($status_filter) ? 'btn-inverse' : '' ?>">Todos</a>
+                    <a href="<?= base_url('email/logs?status=pending') ?>" class="btn btn-sm <?= $status_filter === 'pending' ? 'btn-warning' : '' ?>">Pendentes</a>
+                    <a href="<?= base_url('email/logs?status=sent') ?>" class="btn btn-sm <?= $status_filter === 'sent' ? 'btn-success' : '' ?>">Enviados</a>
+                    <a href="<?= base_url('email/logs?status=failed') ?>" class="btn btn-sm <?= $status_filter === 'failed' ? 'btn-danger' : '' ?>">Falhas</a>
+                    <a href="<?= base_url('email/logs?status=scheduled') ?>" class="btn btn-sm <?= $status_filter === 'scheduled' ? 'btn-info' : '' ?>">Agendados</a>
                 </div>
             </div>
             <div class="widget-content nopadding">
@@ -74,12 +74,12 @@
                                     <td>
                                         <?php
                                         $statusClass = [
-                                            'pending' => 'label label-warning',
-                                            'processing' => 'label label-info',
-                                            'sent' => 'label label-success',
-                                            'failed' => 'label label-important',
+                                            'pending' => 'badge bg-warning',
+                                            'processing' => 'badge bg-info',
+                                            'sent' => 'badge bg-success',
+                                            'failed' => 'badge bg-danger',
                                             'cancelled' => 'label',
-                                            'scheduled' => 'label label-info',
+                                            'scheduled' => 'badge bg-info',
                                         ][$log->status] ?? 'label';
                                         ?>
                                         <span class="<?= $statusClass ?>"><?= ucfirst($log->status) ?></span>
@@ -95,7 +95,7 @@
                                     </td>
                                     <td class="center">
                                         <?php if ($log->status === 'failed'): ?>
-                                            <a href="<?= base_url('email/reenviar/' . $log->id) ?>" class="btn btn-mini btn-success" title="Reenviar">
+                                            <a href="<?= base_url('email/reenviar/' . $log->id) ?>" class="btn btn-sm btn-success" title="Reenviar">
                                                 <i class="fas fa-redo"></i>
                                             </a>
                                         <?php else: ?>
@@ -139,8 +139,8 @@
     </div>
 </div>
 
-<div class="row-fluid">
-    <div class="span12" style="text-align: center; margin-top: 10px; margin-bottom: 40px;">
+<div class="row">
+    <div class="col-12" style="text-align: center; margin-top: 10px; margin-bottom: 40px;">
         <a href="<?= base_url('emails/dashboard') ?>" class="btn btn-large">
             <i class="fas fa-arrow-left"></i> Voltar ao Dashboard
         </a>

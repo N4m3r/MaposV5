@@ -1,8 +1,8 @@
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/js/jquery-ui/css/smoothness/jquery-ui-1.9.2.custom.css" />
+﻿<link rel="stylesheet" href="<?php echo base_url(); ?>assets/js/jquery-ui/css/smoothness/jquery-ui-1.9.2.custom.css" />
 <script type="text/javascript" src="<?php echo base_url() ?>assets/js/jquery-ui/js/jquery-ui-1.9.2.custom.js"></script>
 
-<div class="row-fluid" style="margin-top:0">
-    <div class="span12">
+<div class="row" style="margin-top:0">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon">
@@ -15,8 +15,8 @@
                 <form action="<?php echo current_url(); ?>" id="formArquivo" method="post" class="form-horizontal">
 
 
-                    <div class="control-group">
-                        <label for="nome" class="control-label">Nome do Arquivo*</label>
+                    <div class="mb-3">
+                        <label for="nome" class="form-label">Nome do Arquivo*</label>
                         <div class="controls">
                             <input id="nome" type="text" name="nome" value="<?php echo e($result->documento); ?> " />
 
@@ -24,25 +24,25 @@
                         </div>
                     </div>
 
-                    <div class="control-group">
-                        <label for="descricao" class="control-label">Descrição</label>
+                    <div class="mb-3">
+                        <label for="descricao" class="form-label">Descrição</label>
                         <div class="controls">
                             <textarea rows="3" cols="30" name="descricao" id="descricao"><?php echo e($result->descricao); ?></textarea>
                         </div>
                     </div>
 
-                    <div class="control-group">
-                        <label for="descricao" class="control-label">Data</label>
+                    <div class="mb-3">
+                        <label for="descricao" class="form-label">Data</label>
                         <div class="controls">
                             <input id="data" type="text" class="datepicker" name="data" value="<?php echo date('d/m/Y', strtotime($result->cadastro)); ?>" />
                         </div>
                     </div>
 
                     <div class="form-actions">
-                        <div class="span12">
-                            <div class="span6 offset3" style="display:flex;justify-content: center">
+                        <div class="col-12">
+                            <div class="col-6 offset-md-3" style="display:flex;justify-content: center">
                                 <button type="submit" class="button btn btn-primary"><span class="button__icon"><i class="bx bx-sync"></i></span><span class="button__text2">Atualizar</span></button>
-                                <a href="<?php echo base_url() ?>index.php/arquivos" class="button btn btn-mini btn-warning"><span class="button__icon"><i class="bx bx-undo"></i></span> <span class="button__text2">Voltar</span></a>
+                                <a href="<?php echo base_url() ?>index.php/arquivos" class="button btn btn-sm btn-warning"><span class="button__icon"><i class="bx bx-undo"></i></span> <span class="button__text2">Voltar</span></a>
                             </div>
                         </div>
                     </div>
@@ -68,15 +68,15 @@
                 }
             },
 
-            errorClass: "help-inline",
+            errorClass: "form-text",
             errorElement: "span",
             highlight: function(element, errorClass, validClass) {
-                $(element).parents('.control-group').addClass('error');
-                $(element).parents('.control-group').removeClass('success');
+                $(element).parents('.mb-3').addClass('error');
+                $(element).parents('.mb-3').removeClass('success');
             },
             unhighlight: function(element, errorClass, validClass) {
-                $(element).parents('.control-group').removeClass('error');
-                $(element).parents('.control-group').addClass('success');
+                $(element).parents('.mb-3').removeClass('error');
+                $(element).parents('.mb-3').addClass('success');
             }
         });
 

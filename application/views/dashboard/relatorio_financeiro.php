@@ -1,9 +1,9 @@
-<div class="widget-box">
+﻿<div class="widget-box">
     <div class="widget-title">
         <span class="icon"><i class="bx bx-dollar-circle"></i></span>
         <h5>Relatório Financeiro</h5>
         <div class="buttons" style="margin-top: 5px; margin-right: 10px;">
-            <a href="<?php echo site_url('dashboard'); ?>" class="btn btn-mini" style="color:#fff!important">
+            <a href="<?php echo site_url('dashboard'); ?>" class="btn btn-sm" style="color:#fff!important">
                 <i class="bx bx-arrow-back"></i> Voltar ao Dashboard
             </a>
         </div>
@@ -12,18 +12,18 @@
     <div class="widget-content">
         <!-- Filtros -->
         <form method="get" action="<?php echo site_url('dashboard/relatorio_financeiro'); ?>" class="form-inline" style="margin-bottom: 20px;">
-            <div class="row-fluid">
-                <div class="span4">
+            <div class="row">
+                <div class="col-4">
                     <label>Data Início:</label>
-                    <input type="date" name="data_inicio" class="span12" value="<?php echo $data_inicio; ?>" />
+                    <input type="date" name="data_inicio" class="col-12" value="<?php echo $data_inicio; ?>" />
                 </div>
-                <div class="span4">
+                <div class="col-4">
                     <label>Data Fim:</label>
-                    <input type="date" name="data_fim" class="span12" value="<?php echo $data_fim; ?>" />
+                    <input type="date" name="data_fim" class="col-12" value="<?php echo $data_fim; ?>" />
                 </div>
-                <div class="span4">
+                <div class="col-4">
                     <label>&nbsp;</label>
-                    <button type="submit" class="btn btn-primary span12">
+                    <button type="submit" class="btn btn-primary col-12">
                         <i class="bx bx-search"></i> Filtrar
                     </button>
                 </div>
@@ -31,8 +31,8 @@
         </form>
 
         <!-- Resumo -->
-        <div class="row-fluid" style="margin-bottom: 20px;">
-            <div class="span4">
+        <div class="row" style="margin-bottom: 20px;">
+            <div class="col-4">
                 <div class="widget-box" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white;">
                     <div class="widget-content" style="text-align: center;">
                         <h4>Entradas</h4>
@@ -41,7 +41,7 @@
                 </div>
             </div>
 
-            <div class="span4">
+            <div class="col-4">
                 <div class="widget-box" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
                     <div class="widget-content" style="text-align: center;">
                         <h4>Saídas</h4>
@@ -50,7 +50,7 @@
                 </div>
             </div>
 
-            <div class="span4">
+            <div class="col-4">
                 <div class="widget-box" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
                     <div class="widget-content" style="text-align: center;">
                         <h4>Saldo</h4>
@@ -62,7 +62,7 @@
 
         <!-- Botão Exportar -->
         <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vExportarDados')): ?>
-            <div class="row-fluid" style="margin-bottom: 15px;">
+            <div class="row" style="margin-bottom: 15px;">
                 <a href="<?php echo site_url('dashboard/exportar?tipo=financeiro&data_inicio=' . $data_inicio . '&data_fim=' . $data_fim); ?>"
                    class="btn btn-success">
                     <i class="bx bx-download"></i> Exportar CSV
@@ -71,7 +71,7 @@
         <?php endif; ?>
 
         <!-- Tabela de Lançamentos -->
-        <div class="row-fluid">
+        <div class="row">
             <h5>Lançamentos do Período</h5>
             <table class="table table-bordered table-hover">
                 <thead>

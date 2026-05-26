@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Documentação: Webhooks do MAPOS
  * Sistema de notificações em tempo real
@@ -10,8 +10,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Documentação Webhooks - MAPOS</title>
-    <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/bootstrap-responsive.min.css" />
+    <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/bootstrap5.min.css" />
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet' integrity="sha384-B6nB7GjeyR0Ln2Rf3Znp7Z7r4B4eR3i0Uq8k5+u2C2YJXTHVDbB+m9Z8dDqWlZ4H" crossorigin="anonymous">
     <style>
         body {

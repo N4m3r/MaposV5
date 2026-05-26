@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Menu exclusivo para técnicos
  * Este menu é carregado automaticamente quando o usuário tem permissão de técnico
@@ -15,7 +15,7 @@
             <?= $configuration['app_theme'] == 'white' ||  $configuration['app_theme'] == 'whitegreen' ? '<img src="' . base_url() . 'assets/img/logo-mapos.png">' : '<img src="' . base_url() . 'assets/img/logo-mapos-branco.png">'; ?>
         </div>
     </div>
-    <a href="#" class="visible-phone">
+    <a href="#" class="d-inline d-sm-none">
         <div class="mode">
             <div class="moon-menu">
                 <i class='bx bx-chevron-right iconX open-2'></i>

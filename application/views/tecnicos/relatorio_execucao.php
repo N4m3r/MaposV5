@@ -1,4 +1,4 @@
-<!-- Relatório de Execução - Portal do Técnico -->
+﻿<!-- Relatório de Execução - Portal do Técnico -->
 <div id="content">
 <style>
 .portal-tecnico-content { margin-top: 15px !important; }
@@ -280,8 +280,8 @@
 }
 </style>
 
-<div class="row-fluid portal-tecnico-content">
-    <div class="span12">
+<div class="row portal-tecnico-content">
+    <div class="col-12">
 
         <!-- Header -->
         <div class="widget-box">
@@ -289,10 +289,10 @@
                 <span class="icon"><i class="bx bx-file"></i></span>
                 <h5>Relatório de Execução - OS #<?php echo $os->idOs; ?></h5>
                 <div class="buttons">
-                    <button type="button" class="btn btn-mini btn-success" onclick="abrirModalWhatsApp()">
+                    <button type="button" class="btn btn-sm btn-success" onclick="abrirModalWhatsApp()">
                         <i class="bx bxl-whatsapp"></i> Enviar PDF
                     </button>
-                    <a href="<?php echo site_url('tecnicos/minhas_os'); ?>" class="btn btn-mini">
+                    <a href="<?php echo site_url('tecnicos/minhas_os'); ?>" class="btn btn-sm">
                         <i class="bx bx-arrow-back"></i> Voltar
                     </a>
                 </div>
@@ -794,7 +794,7 @@
 
                 <div class="relatorio-card">
                     <h5><i class="bx bx-pencil"></i> Assinaturas</h5>
-                    <div class="row-fluid">
+                    <div class="row">
                         <!-- Assinaturas do Sistema de Check-in -->
                         <?php if (!empty($assinaturas)): ?>
                             <?php foreach ($assinaturas as $assinatura):
@@ -813,7 +813,7 @@
                                         $tipo_label = ucfirst(str_replace('_', ' ', $assinatura->tipo));
                                 }
                             ?>
-                                <div class="span6">
+                                <div class="col-6">
                                     <div class="assinatura-box">
                                         <h6><?php echo $tipo_label; ?></h6>
                                         <?php if (!empty($assinatura->assinatura)): ?>
@@ -862,23 +862,23 @@
 </div>
 
 <!-- Modal WhatsApp -->
-<div id="modalWhatsApp" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="modalWhatsAppLabel" aria-hidden="true">
+<div id="modalWhatsApp" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalWhatsAppLabel" aria-hidden="true">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">×</button>
         <h3 id="modalWhatsAppLabel"><i class="bx bxl-whatsapp"></i> Enviar Relatório por WhatsApp</h3>
     </div>
     <div class="modal-body">
-        <div class="control-group">
-            <label class="control-label" for="telefone_whatsapp">Número do WhatsApp:</label>
+        <div class="mb-3">
+            <label class="form-label" for="telefone_whatsapp">Número do WhatsApp:</label>
             <div class="controls">
-                <input type="text" id="telefone_whatsapp" name="telefone_whatsapp" class="span12" placeholder="(00) 00000-0000">
-                <span class="help-inline">Informe o número com DDD. Ex: (11) 98765-4321</span>
+                <input type="text" id="telefone_whatsapp" name="telefone_whatsapp" class="col-12" placeholder="(00) 00000-0000">
+                <span class="form-text">Informe o número com DDD. Ex: (11) 98765-4321</span>
             </div>
         </div>
         <div id="mensagem_status" style="display: none; margin-top: 15px;"></divdiv>
     </div>
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true">Cancelar</button>
+        <button class="btn" data-bs-dismiss="modal" aria-hidden="true">Cancelar</button>
         <button class="btn btn-success" id="btnEnviarWhatsApp" onclick="enviarPdfWhatsApp()">
             <i class="bx bxl-whatsapp"></i> Enviar
         </button>
@@ -901,7 +901,7 @@ function enviarPdfWhatsApp() {
     var telefone = $('#telefone_whatsapp').val().replace(/\D/g, '');
 
     if (telefone.length < 10) {
-        $('#mensagem_status').html('<div class="alert alert-error">Número de telefone inválido. Informe o DDD e o número completo.</div>').show();
+        $('#mensagem_status').html('<div class="alert alert-danger">Número de telefone inválido. Informe o DDD e o número completo.</div>').show();
         return;
     }
 
@@ -919,7 +919,7 @@ function enviarPdfWhatsApp() {
             if (response.success) {
                 var htmlSucesso = '<div class="alert alert-success">' +
                     '<i class="bx bx-check"></i> ' + response.message + '<br>' +
-                    '<a href="' + response.whatsapp_link + '" target="_blank" class="btn btn-success btn-small" style="margin-top: 10px;">' +
+                    '<a href="' + response.whatsapp_link + '" target="_blank" class="btn btn-success btn-sm" style="margin-top: 10px;">' +
                     '<i class="bx bxl-whatsapp"></i> Abrir WhatsApp</a>' +
                     '</div>';
                 $('#mensagem_status').html(htmlSucesso).show();
@@ -935,11 +935,11 @@ function enviarPdfWhatsApp() {
                     $('#mensagem_status').hide();
                 }, 10000);
             } else {
-                $('#mensagem_status').html('<div class="alert alert-error"><i class="bx bx-error"></i> ' + response.message + '</div>').show();
+                $('#mensagem_status').html('<div class="alert alert-danger"><i class="bx bx-error"></i> ' + response.message + '</div>').show();
             }
         },
         error: function(xhr, status, error) {
-            $('#mensagem_status').html('<div class="alert alert-error"><i class="bx bx-error"></i> Erro ao enviar: ' + error + '</div>').show();
+            $('#mensagem_status').html('<div class="alert alert-danger"><i class="bx bx-error"></i> Erro ao enviar: ' + error + '</div>').show();
         },
         complete: function() {
             $('#btnEnviarWhatsApp').prop('disabled', false).html('<i class="bx bxl-whatsapp"></i> Enviar');

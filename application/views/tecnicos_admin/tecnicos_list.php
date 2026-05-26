@@ -1,4 +1,4 @@
-<div class="new122">
+﻿<div class="new122">
     <!-- Header -->
     <div class="widget-title" style="margin: -20px 0 0">
         <span class="icon">
@@ -8,8 +8,8 @@
     </div>
 
     <!-- Estatísticas Cards -->
-    <div class="row-fluid" style="margin: 15px 0 20px;">
-        <div class="span3">
+    <div class="row" style="margin: 15px 0 20px;">
+        <div class="col-3">
             <div class="card-stats bg-primary">
                 <div class="card-stats-icon">
                     <i class="bx bx-group"></i>
@@ -20,7 +20,7 @@
                 </div>
             </div>
         </div>
-        <div class="span3">
+        <div class="col-3">
             <div class="card-stats bg-success">
                 <div class="card-stats-icon">
                     <i class="bx bx-check-circle"></i>
@@ -31,7 +31,7 @@
                 </div>
             </div>
         </div>
-        <div class="span3">
+        <div class="col-3">
             <div class="card-stats bg-warning">
                 <div class="card-stats-icon">
                     <i class="bx bx-car"></i>
@@ -42,7 +42,7 @@
                 </div>
             </div>
         </div>
-        <div class="span3">
+        <div class="col-3">
             <div class="card-stats bg-info">
                 <div class="card-stats-icon">
                     <i class="bx bx-star"></i>
@@ -56,8 +56,8 @@
     </div>
 
     <!-- Barra de Ações -->
-    <div class="row-fluid" style="margin-bottom: 15px;">
-        <div class="span12" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+    <div class="row" style="margin-bottom: 15px;">
+        <div class="col-12" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
             <div>
                 <a href="<?= site_url('tecnicos_admin/adicionar_tecnico') ?>" class="button btn btn-success">
                     <span class="button__icon"><i class="bx bx-plus-circle"></i></span>
@@ -65,14 +65,14 @@
                 </a>
             </div>
             <div style="display: flex; gap: 10px; align-items: center;">
-                <div class="input-append" style="margin-bottom: 0;">
+                <div class="input-group" style="margin-bottom: 0;">
                     <input type="text" id="searchTecnicos" placeholder="Buscar técnico por nome, email..."
-                           class="span12" style="min-width: 280px; height: 32px; border-radius: 4px 0 0 4px;">
-                    <span class="add-on" style="height: 32px; line-height: 32px; padding: 0 12px;">
+                           class="col-12" style="min-width: 280px; height: 32px; border-radius: 4px 0 0 4px;">
+                    <span class="input-group-text" style="height: 32px; line-height: 32px; padding: 0 12px;">
                         <i class="bx bx-search"></i>
                     </span>
                 </div>
-                <select id="filterStatus" class="span12" style="width: 120px; margin-bottom: 0;">
+                <select id="filterStatus" class="col-12" style="width: 120px; margin-bottom: 0;">
                     <option value="">Todos</option>
                     <option value="ativo">Ativos</option>
                     <option value="inativo">Inativos</option>

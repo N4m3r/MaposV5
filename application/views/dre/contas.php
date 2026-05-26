@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Plano de Contas DRE
  */
@@ -50,28 +50,28 @@
 </style>
 
 <!-- Header -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <ul class="breadcrumb">
-            <li><a href="<?= site_url('dashboard') ?>">Dashboard</a> <span class="divider">/</span></li>
-            <li><a href="<?= site_url('dre') ?>">DRE Contábil</a> <span class="divider">/</span></li>
+            <li><a href="<?= site_url('dashboard') ?>">Dashboard</a> <span class="dropdown-divider">/</span></li>
+            <li><a href="<?= site_url('dre') ?>">DRE Contábil</a> <span class="dropdown-divider">/</span></li>
             <li class="active">Plano de Contas</li>
         </ul>
     </div>
 </div>
 
 <!-- Botões -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-list-alt"></i></span>
                 <h5>Plano de Contas DRE</h5>
                 <div class="buttons">
-                    <a href="<?= site_url('dre/conta_form') ?>" class="btn btn-success btn-small">
+                    <a href="<?= site_url('dre/conta_form') ?>" class="btn btn-success btn-sm">
                         <i class="fas fa-plus"></i> Nova Conta
                     </a>
-                    <a href="<?= site_url('dre') ?>" class="btn btn-small">
+                    <a href="<?= site_url('dre') ?>" class="btn btn-sm">
                         <i class="fas fa-arrow-left"></i> Voltar
                     </a>
                 </div>
@@ -98,8 +98,8 @@
 </div>
 
 <!-- Lista de Contas -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-content nopadding">
                 <!-- Header da Lista -->
@@ -124,10 +124,10 @@
                         <?= isset($conta->grupo) ? str_replace('_', ' ', $conta->grupo) : '-' ?>
                     </div>
                     <div class="conta-acoes">
-                        <a href="<?= site_url('dre/conta_form/' . $conta->id) ?>" class="btn btn-mini btn-info" title="Editar">
+                        <a href="<?= site_url('dre/conta_form/' . $conta->id) ?>" class="btn btn-sm btn-info" title="Editar">
                             <i class="fas fa-edit"></i>
                         </a>
-                        <a href="<?= site_url('dre/conta_excluir/' . $conta->id) ?>" class="btn btn-mini btn-danger" title="Excluir" onclick="return confirm('Tem certeza que deseja excluir esta conta?')">
+                        <a href="<?= site_url('dre/conta_excluir/' . $conta->id) ?>" class="btn btn-sm btn-danger" title="Excluir" onclick="return confirm('Tem certeza que deseja excluir esta conta?')">
                             <i class="fas fa-trash"></i>
                         </a>
                     </div>
@@ -139,8 +139,8 @@
 </div>
 
 <!-- Estrutura DRE -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-sitemap"></i></span>

@@ -1,9 +1,9 @@
-<div class="widget-box">
+﻿<div class="widget-box">
     <div class="widget-title">
         <span class="icon"><i class="bx bx-package"></i></span>
         <h5>Relatório de Produtos e Serviços</h5>
         <div class="buttons" style="margin-top: 5px; margin-right: 10px;">
-            <a href="<?php echo site_url('dashboard'); ?>" class="btn btn-mini" style="color:#fff!important">
+            <a href="<?php echo site_url('dashboard'); ?>" class="btn btn-sm" style="color:#fff!important">
                 <i class="bx bx-arrow-back"></i> Voltar ao Dashboard
             </a>
         </div>
@@ -12,18 +12,18 @@
     <div class="widget-content">
         <!-- Filtros -->
         <form method="get" action="<?php echo site_url('dashboard/relatorio_produtos'); ?>" class="form-inline" style="margin-bottom: 20px;">
-            <div class="row-fluid">
-                <div class="span4">
+            <div class="row">
+                <div class="col-4">
                     <label>Data Início:</label>
-                    <input type="date" name="data_inicio" class="span12" value="<?php echo $data_inicio; ?>" />
+                    <input type="date" name="data_inicio" class="col-12" value="<?php echo $data_inicio; ?>" />
                 </div>
-                <div class="span4">
+                <div class="col-4">
                     <label>Data Fim:</label>
-                    <input type="date" name="data_fim" class="span12" value="<?php echo $data_fim; ?>" />
+                    <input type="date" name="data_fim" class="col-12" value="<?php echo $data_fim; ?>" />
                 </div>
-                <div class="span4">
+                <div class="col-4">
                     <label>&nbsp;</label>
-                    <button type="submit" class="btn btn-primary span12">
+                    <button type="submit" class="btn btn-primary col-12">
                         <i class="bx bx-search"></i> Filtrar
                     </button>
                 </div>
@@ -31,8 +31,8 @@
         </form>
 
         <!-- Estoque Crítico -->
-        <div class="row-fluid" style="margin-bottom: 30px;">
-            <div class="span12">
+        <div class="row" style="margin-bottom: 30px;">
+            <div class="col-12">
                 <h5><i class="bx bx-error-circle" style="color: #f5576c;"></i> Produtos com Estoque Crítico</h5>
                 <table class="table table-bordered table-hover">
                     <thead>
@@ -52,7 +52,7 @@
                                     <td><?php echo $p->descricao; ?></td>
                                     <td><?php echo $p->estoque; ?></td>
                                     <td><?php echo $p->estoqueMinimo; ?></td>
-                                    <td><span class="label label-important">Crítico</span></td>
+                                    <td><span class="badge bg-danger">Crítico</span></td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php else: ?>
@@ -65,9 +65,9 @@
             </div>
         </div>
 
-        <div class="row-fluid">
+        <div class="row">
             <!-- Produtos Mais Vendidos -->
-            <div class="span6">
+            <div class="col-6">
                 <h5>Produtos Mais Vendidos</h5>
                 <table class="table table-bordered table-hover">
                     <thead>
@@ -96,7 +96,7 @@
             </div>
 
             <!-- Serviços Mais Realizados -->
-            <div class="span6">
+            <div class="col-6">
                 <h5>Serviços Mais Realizados</h5>
                 <table class="table table-bordered table-hover">
                     <thead>

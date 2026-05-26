@@ -1,4 +1,4 @@
-<?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
+﻿<?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
 
 <!-- Página de Etapas - Design Moderno -->
 <style>
@@ -1518,9 +1518,9 @@
 </div>
 
 <!-- Modal Adicionar/Editar Etapa -->
-<div id="modalEtapa" class="modal hide fade modal-etapas" tabindex="-1" role="dialog" aria-labelledby="modalEtapaLabel" aria-hidden="true">
+<div id="modalEtapa" class="modal fade modal-etapas" tabindex="-1" role="dialog" aria-labelledby="modalEtapaLabel" aria-hidden="true">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">&times;</button>
         <h3 id="modalEtapaLabel"><i class="icon-plus-sign"></i> <span id="modalEtapaTitle">Nova Etapa</span></h3>
     </div>
 
@@ -1575,7 +1575,7 @@
         </div>
 
         <div class="modal-footer">
-            <button type="button" class="btn-cancel" data-dismiss="modal">Cancelar</button>
+            <button type="button" class="btn-cancel" data-bs-dismiss="modal">Cancelar</button>
             <button type="submit" class="btn-submit">Salvar Etapa</button>
         </div>
     </form>

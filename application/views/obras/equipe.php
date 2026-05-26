@@ -1,4 +1,4 @@
-<?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
+﻿<?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
 
 <style>
 .equipe-unified { padding: 20px; }
@@ -569,7 +569,7 @@
         </select>
 
         <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
-        <button class="btn-add-equipe" data-toggle="modal" data-target="#modalAdicionar">
+        <button class="btn-add-equipe" data-bs-toggle="modal" data-bs-target="#modalAdicionar">
             <i class="icon-plus"></i> Adicionar Técnico
         </button>
         <?php endif; ?>
@@ -581,7 +581,7 @@
             <div class="team-grid">
                 <!-- Add New Card -->
                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
-                <div class="add-team-card" data-toggle="modal" data-target="#modalAdicionar">
+                <div class="add-team-card" data-bs-toggle="modal" data-bs-target="#modalAdicionar">
                     <div class="add-team-icon">
                         <i class="icon-plus"></i>
                     </div>
@@ -639,7 +639,7 @@
                 <h3>Nenhum técnico alocado</h3>
                 <p>Adicione técnicos à equipe desta obra para começar a registrar atividades.</p>
                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
-                <button class="btn-add-equipe" data-toggle="modal" data-target="#modalAdicionar">
+                <button class="btn-add-equipe" data-bs-toggle="modal" data-bs-target="#modalAdicionar">
                     <i class="icon-plus"></i> Adicionar Primeiro Técnico
                 </button>
                 <?php endif; ?>
@@ -649,9 +649,9 @@
 </div>
 
 <!-- Modal Adicionar - Design Melhorado -->
-<div id="modalAdicionar" class="modal hide fade modal-equipe" tabindex="-1" role="dialog" aria-labelledby="modalAdicionarLabel" aria-hidden="true">
+<div id="modalAdicionar" class="modal fade modal-equipe" tabindex="-1" role="dialog" aria-labelledby="modalAdicionarLabel" aria-hidden="true">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">&times;</button>
         <h3 id="modalAdicionarLabel">
             <i class="icon-plus-sign"></i> Adicionar Técnico à Equipe
         </h3>
@@ -716,7 +716,7 @@
         </div>
 
         <div class="modal-footer">
-            <button type="button" class="btn-modal-cancel" data-dismiss="modal">
+            <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">
                 <i class="icon-remove"></i> Cancelar
             </button>
             <button type="submit" class="btn-modal-submit">

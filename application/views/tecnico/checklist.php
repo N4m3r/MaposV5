@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * View: Checklist Técnico
  * Lista de verificação para OS
@@ -55,26 +55,26 @@
 }
 </style>
 
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <ul class="breadcrumb">
-            <li><a href="<?= site_url('tecnico') ?>">Área do Técnico</a> <span class="divider">/</span></li>
-            <li><a href="<?= site_url('tecnico/os') ?>">Minhas OS</a> <span class="divider">/</span></li>
-            <li><a href="<?= site_url('tecnico/visualizar/' . $os->idOs) ?>">OS #<?= sprintf('%04d', $os->idOs) ?></a> <span class="divider">/</span></li>
+            <li><a href="<?= site_url('tecnico') ?>">Área do Técnico</a> <span class="dropdown-divider">/</span></li>
+            <li><a href="<?= site_url('tecnico/os') ?>">Minhas OS</a> <span class="dropdown-divider">/</span></li>
+            <li><a href="<?= site_url('tecnico/visualizar/' . $os->idOs) ?>">OS #<?= sprintf('%04d', $os->idOs) ?></a> <span class="dropdown-divider">/</span></li>
             <li class="active">Checklist</li>
         </ul>
     </div>
 </div>
 
-<div class="row-fluid">
+<div class="row">
     <!-- Progresso -->
-    <div class="span12">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-tasks"></i></span>
                 <h5>Progresso do Checklist</h5>
                 <div class="buttons">
-                    <a href="<?= site_url('tecnico/visualizar/' . $os->idOs) ?>" class="btn btn-small">
+                    <a href="<?= site_url('tecnico/visualizar/' . $os->idOs) ?>" class="btn btn-sm">
                         <i class="fas fa-arrow-left"></i> Voltar para OS
                     </a>
                 </div>
@@ -87,21 +87,21 @@
                         </div>
                     </div>
                 </div>
-                <div class="row-fluid text-center">
-                    <div class="span3">
-                        <span class="label label-warning"><?= $estatisticas['pendente'] ?></span>
+                <div class="row text-center">
+                    <div class="col-3">
+                        <span class="badge bg-warning"><?= $estatisticas['pendente'] ?></span>
                         <small>Pendentes</small>
                     </div>
-                    <div class="span3">
-                        <span class="label label-success"><?= $estatisticas['ok'] ?></span>
+                    <div class="col-3">
+                        <span class="badge bg-success"><?= $estatisticas['ok'] ?></span>
                         <small>OK</small>
                     </div>
-                    <div class="span3">
-                        <span class="label label-info"><?= $estatisticas['nao_aplicavel'] ?></span>
+                    <div class="col-3">
+                        <span class="badge bg-info"><?= $estatisticas['nao_aplicavel'] ?></span>
                         <small>N/A</small>
                     </div>
-                    <div class="span3">
-                        <span class="label label-important"><?= $estatisticas['com_problema'] ?></span>
+                    <div class="col-3">
+                        <span class="badge bg-danger"><?= $estatisticas['com_problema'] ?></span>
                         <small>Problemas</small>
                     </div>
                 </div>
@@ -110,15 +110,15 @@
     </div>
 </div>
 
-<div class="row-fluid">
+<div class="row">
     <!-- Checklist -->
-    <div class="span8">
+    <div class="col-8">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-clipboard-check"></i></span>
                 <h5>Itens do Checklist</h5>
                 <div class="buttons">
-                    <button class="btn btn-small btn-success" onclick="adicionarItem()">
+                    <button class="btn btn-sm btn-success" onclick="adicionarItem()">
                         <i class="fas fa-plus"></i> Adicionar Item
                     </button>
                 </div>
@@ -127,8 +127,8 @@
                 <div id="checklist-container">
                     <?php foreach ($checklist as $item): ?>
                     <div class="checklist-item <?= $item->status ?>" data-item-id="<?= $item->id ?>">
-                        <div class="row-fluid">
-                            <div class="span6">
+                        <div class="row">
+                            <div class="col-6">
                                 <strong><?= $item->descricao ?></strong>
                                 <?php if ($item->observacao): ?>
                                     <br><small class="text-muted"><?= $item->observacao ?></small>
@@ -141,26 +141,26 @@
                                     </small>
                                 <?php endif; ?>
                             </div>
-                            <div class="span6 text-right">
+                            <div class="col-6 text-right">
                                 <div class="btn-group">
-                                    <button class="btn btn-small btn-success status-btn <?= $item->status == 'ok' ? 'active' : '' ?>"
+                                    <button class="btn btn-sm btn-success status-btn <?= $item->status == 'ok' ? 'active' : '' ?>"
                                             onclick="atualizarStatus(<?= $item->id ?>, 'ok')" title="OK">
                                         <i class="fas fa-check"></i>
                                     </button>
-                                    <button class="btn btn-small btn-warning status-btn <?= $item->status == 'nao_aplicavel' ? 'active' : '' ?>"
+                                    <button class="btn btn-sm btn-warning status-btn <?= $item->status == 'nao_aplicavel' ? 'active' : '' ?>"
                                             onclick="atualizarStatus(<?= $item->id ?>, 'nao_aplicavel')" title="Não Aplicável">
                                         <i class="fas fa-minus"></i>
                                     </button>
-                                    <button class="btn btn-small btn-danger status-btn <?= $item->status == 'com_problema' ? 'active' : '' ?>"
+                                    <button class="btn btn-sm btn-danger status-btn <?= $item->status == 'com_problema' ? 'active' : '' ?>"
                                             onclick="atualizarStatus(<?= $item->id ?>, 'com_problema')" title="Com Problema">
                                         <i class="fas fa-exclamation"></i>
                                     </button>
-                                    <button class="btn btn-small status-btn <?= $item->status == 'pendente' ? 'active' : '' ?>"
+                                    <button class="btn btn-sm status-btn <?= $item->status == 'pendente' ? 'active' : '' ?>"
                                             onclick="atualizarStatus(<?= $item->id ?>, 'pendente')" title="Pendente">
                                         <i class="fas fa-clock"></i>
                                     </button>
                                 </div>
-                                <button class="btn btn-small btn-info" onclick="editarObservacao(<?= $item->id ?>, '<?= htmlspecialchars($item->observacao) ?>')">
+                                <button class="btn btn-sm btn-info" onclick="editarObservacao(<?= $item->id ?>, '<?= htmlspecialchars($item->observacao) ?>')">
                                     <i class="fas fa-comment"></i>
                                 </button>
                             </div>
@@ -171,15 +171,15 @@
 
                 <!-- Adicionar Item Form -->
                 <div id="add-item-form" style="display: none; padding: 15px; border-top: 2px solid #ddd; background: #f5f5f5;">
-                    <div class="row-fluid">
-                        <div class="span10">
-                            <input type="text" id="novo-item-descricao" class="span12" placeholder="Descrição do novo item...">
+                    <div class="row">
+                        <div class="col-10">
+                            <input type="text" id="novo-item-descricao" class="col-12" placeholder="Descrição do novo item...">
                         </div>
-                        <div class="span2">
-                            <button class="btn btn-small btn-success" onclick="salvarNovoItem()">
+                        <div class="col-2">
+                            <button class="btn btn-sm btn-success" onclick="salvarNovoItem()">
                                 <i class="fas fa-save"></i>
                             </button>
-                            <button class="btn btn-small" onclick="cancelarNovoItem()">
+                            <button class="btn btn-sm" onclick="cancelarNovoItem()">
                                 <i class="fas fa-times"></i>
                             </button>
                         </div>
@@ -190,7 +190,7 @@
     </div>
 
     <!-- Timeline -->
-    <div class="span4">
+    <div class="col-4">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-history"></i></span>
@@ -204,17 +204,17 @@
 </div>
 
 <!-- Modal Observação -->
-<div id="modal-observacao" class="modal hide">
+<div id="modal-observacao" class="modal">
     <div class="modal-header">
-        <button data-dismiss="modal" class="close" type="button">×</button>
+        <button data-bs-dismiss="modal" class="close" type="button">×</button>
         <h3>Observação</h3>
     </div>
     <div class="modal-body">
         <input type="hidden" id="obs-item-id">
-        <textarea id="obs-texto" class="span12" rows="3" placeholder="Digite uma observação..."></textarea>
+        <textarea id="obs-texto" class="col-12" rows="3" placeholder="Digite uma observação..."></textarea>
     </div>
     <div class="modal-footer">
-        <a data-dismiss="modal" class="btn" href="#">Cancelar</a>
+        <a data-bs-dismiss="modal" class="btn" href="#">Cancelar</a>
         <button class="btn btn-primary" onclick="salvarObservacao()">Salvar</button>
     </div>
 </div>
@@ -325,7 +325,7 @@ function carregarTimeline() {
                     html += `
                         <div class="timeline-item">
                             <strong>${item.titulo}</strong>
-                            <small class="text-muted pull-right">${moment(item.created_at).fromNow()}</small>
+                            <small class="text-muted float-end">${moment(item.created_at).fromNow()}</small>
                             ${item.descricao ? '<br><small>' + item.descricao + '</small>' : ''}
                             ${item.usuario_nome ? '<br><small class="text-info"><i class="fas fa-user"></i> ' + item.usuario_nome + '</small>' : ''}
                         </div>

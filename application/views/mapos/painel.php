@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Dashboard MapOS - Versão Moderna e Responsiva
  * Mantém o tema original com melhorias visuais e funcionais
@@ -855,7 +855,7 @@
             <div class="widget-card">
                 <div class="widget-header">
                     <h5><i class='bx bx-calendar'></i> Agenda de Ordens de Serviço</h5>
-                    <select class="span2" name="statusOsGet" id="statusOsGet" style="margin: 0;">
+                    <select class="col-2" name="statusOsGet" id="statusOsGet" style="margin: 0;">
                         <option value="">Todos Status</option>
                         <option value="Aberto">Aberto</option>
                         <option value="Faturado">Faturado</option>
@@ -867,7 +867,7 @@
                         <option value="Aguardando Peças">Aguardando Peças</option>
                         <option value="Aprovado">Aprovado</option>
                     </select>
-                    <button type="button" class="btn btn-small btn-info" id="btn-calendar">
+                    <button type="button" class="btn btn-sm btn-info" id="btn-calendar">
                         <i class="bx bx-search"></i> Filtrar
                     </button>
                 </div>
@@ -882,7 +882,7 @@
             <div class="widget-card">
                 <div class="widget-header">
                     <h5><i class='bx bx-clipboard'></i> Ordens de Serviço Recentes</h5>
-                    <a href="<?= site_url('os') ?>" class="btn btn-small">Ver Todas</a>
+                    <a href="<?= site_url('os') ?>" class="btn btn-sm">Ver Todas</a>
                 </div>
                 <div class="widget-body" style="padding: 0;">
                     <table class="modern-table">
@@ -923,7 +923,7 @@
                                     <td><?= $o->dataFinal ? date('d/m/Y', strtotime($o->dataFinal)) : '-' ?></td>
                                     <td>
                                         <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vOs')) : ?>
-                                            <a href="<?= base_url() ?>index.php/os/visualizar/<?= $o->idOs ?>" class="btn btn-small btn-info" title="Visualizar">
+                                            <a href="<?= base_url() ?>index.php/os/visualizar/<?= $o->idOs ?>" class="btn btn-sm btn-info" title="Visualizar">
                                                 <i class="bx bx-show"></i>
                                             </a>
                                         <?php endif ?>
@@ -1046,7 +1046,7 @@
                     <h5><i class='bx bx-trending-up'></i> Balanço Mensal</h5>
                     <form method="get" style="margin: 0; display: flex; gap: 10px;">
                         <input type="number" name="year" style="width: 80px; margin: 0;" value="<?php echo intval(preg_replace('/[^0-9]/', '', $this->input->get('year'))) ?: date('Y') ?>" class="input-small">
-                        <button type="submit" class="btn btn-small btn-info"><i class='bx bx-search'></i></button>
+                        <button type="submit" class="btn btn-sm btn-info"><i class='bx bx-search'></i></button>
                     </form>
                 </div>
                 <div class="widget-body">
@@ -1090,19 +1090,19 @@
 </div>
 
 <!-- Modal Status OS Calendar -->
-<div id="calendarModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div id="calendarModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">×</button>
         <h3 id="myModalLabel"><i class='bx bx-calendar-check'></i> Detalhes da OS</h3>
     </div>
     <div class="modal-body">
-        <div class="row-fluid">
-            <div class="span6">
+        <div class="row">
+            <div class="col-6">
                 <p><strong>OS:</strong> <span id="modalId"></span></p>
                 <p><strong>Cliente:</strong> <span id="modalCliente"></span></p>
                 <p><strong>Status:</strong> <span id="modalStatus"></span></p>
             </div>
-            <div class="span6">
+            <div class="col-6">
                 <p><strong>Data Inicial:</strong> <span id="modalDataInicial"></span></p>
                 <p><strong>Data Final:</strong> <span id="modalDataFinal"></span></p>
                 <p><strong>Garantia:</strong> <span id="modalGarantia"></span></p>
@@ -1115,14 +1115,14 @@
         <p id="modalDefeito" style="background: #f5f5f5; padding: 10px; border-radius: 4px;"></p>
         <p><strong>Observações:</strong></p>
         <p id="modalObservacoes" style="background: #f5f5f5; padding: 10px; border-radius: 4px;"></p>
-        <div class="row-fluid" style="margin-top: 15px;">
-            <div class="span4" style="text-align: center; background: #e8f5e9; padding: 10px; border-radius: 4px;">
+        <div class="row" style="margin-top: 15px;">
+            <div class="col-4" style="text-align: center; background: #e8f5e9; padding: 10px; border-radius: 4px;">
                 <small>Subtotal</small><br><strong id="modalSubtotal"></strong>
             </div>
-            <div class="span4" style="text-align: center; background: #fff3e0; padding: 10px; border-radius: 4px;">
+            <div class="col-4" style="text-align: center; background: #fff3e0; padding: 10px; border-radius: 4px;">
                 <small>Desconto</small><br><strong id="modalDesconto"></strong>
             </div>
-            <div class="span4" style="text-align: center; background: #e3f2fd; padding: 10px; border-radius: 4px;">
+            <div class="col-4" style="text-align: center; background: #e3f2fd; padding: 10px; border-radius: 4px;">
                 <small>Total</small><br><strong id="modalTotal"></strong>
             </div>
         </div>
@@ -1139,7 +1139,7 @@
             </a>
         <?php endif; ?>
         <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dOs')) : ?>
-            <a id="linkExcluir" href="#modal-excluir-os" role="button" data-toggle="modal" os="" class="btn btn-danger tip-top" title="Excluir OS">
+            <a id="linkExcluir" href="#modal-excluir-os" role="button" data-bs-toggle="modal" os="" class="btn btn-danger tip-top" title="Excluir OS">
                 <i class="fas fa-trash-alt"></i> Excluir
             </a>
         <?php endif; ?>

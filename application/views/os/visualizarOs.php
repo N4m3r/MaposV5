@@ -1,4 +1,4 @@
-<link href="<?= base_url('assets/css/custom.css'); ?>" rel="stylesheet">
+﻿<link href="<?= base_url('assets/css/custom.css'); ?>" rel="stylesheet">
 
 <!-- Scripts do Sistema de Check-in (carregados antes dos modais) -->
 <script src="<?php echo base_url(); ?>assets/js/assinatura-canvas.js?v=3"></script>
@@ -14,28 +14,28 @@
     };
 </script>
 
-<div class="row-fluid" style="margin-top: 0">
-    <div class="span12">
+<div class="row" style="margin-top: 0">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title" style="margin: 10px 0 0">
                 <div class="buttons">
                     <?php if ($editavel) {
-                        echo '<a title="Editar OS" class="button btn btn-mini btn-success" href="' . base_url() . 'index.php/os/editar/' . $result->idOs . '">
+                        echo '<a title="Editar OS" class="button btn btn-sm btn-success" href="' . base_url() . 'index.php/os/editar/' . $result->idOs . '">
                             <span class="button__icon"><i class="bx bx-edit"></i> </span> <span class="button__text">Editar</span>
                         </a>';
                     } ?>
 
                     <div class="button-container">
-                        <a target="_blank" title="Imprimir Ordem de Serviço" class="button btn btn-mini btn-inverse"> <span class="button__icon"><i class="bx bx-printer"></i></span><span class="button__text">Imprimir</span></a>
+                        <a target="_blank" title="Imprimir Ordem de Serviço" class="button btn btn-sm btn-inverse"> <span class="button__icon"><i class="bx bx-printer"></i></span><span class="button__text">Imprimir</span></a>
                         <div class="cascading-buttons">
-                            <a target="_blank" title="Impressão em Papel A4" class="button btn btn-mini btn-inverse" href="<?php echo site_url() ?>/os/imprimir/<?php echo $result->idOs; ?>">
+                            <a target="_blank" title="Impressão em Papel A4" class="button btn btn-sm btn-inverse" href="<?php echo site_url() ?>/os/imprimir/<?php echo $result->idOs; ?>">
                                 <span class="button__icon"><i class='bx bx-file'></i></span> <span class="button__text">Papel A4</span>
                             </a>
-                            <a target="_blank" title="Impressão Cupom Não Fical" class="button btn btn-mini btn-inverse" href="<?php echo site_url() ?>/os/imprimirTermica/<?php echo $result->idOs; ?>">
+                            <a target="_blank" title="Impressão Cupom Não Fical" class="button btn btn-sm btn-inverse" href="<?php echo site_url() ?>/os/imprimirTermica/<?php echo $result->idOs; ?>">
                                 <span class="button__icon"><i class='bx bx-receipt'></i></span> <span class="button__text">Cupom 80mm</span>
                             </a>
                             <?php if ($result->garantias_id) { ?>
-                                <a target="_blank" title="Imprimir Termo de Garantia" class="button btn btn-mini btn-inverse" href="<?php echo site_url() ?>/garantias/imprimirGarantiaOs/<?php echo $result->garantias_id; ?>">
+                                <a target="_blank" title="Imprimir Termo de Garantia" class="button btn btn-sm btn-inverse" href="<?php echo site_url() ?>/garantias/imprimirGarantiaOs/<?php echo $result->garantias_id; ?>">
                                     <span class="button__icon"><i class="bx bx-paperclip"></i></span> <span class="button__text">Termo Garantia</span>
                                 </a>
                             <?php } ?>
@@ -48,23 +48,23 @@
                         $troca = [$result->nomeCliente, $result->idOs, $result->status, 'R$ ' . ($result->desconto != 0 && $result->valor_desconto != 0 ? number_format($result->valor_desconto, 2, ',', '.') : number_format($totalProdutos + $totalServico, 2, ',', '.')), strip_tags($result->descricaoProduto), ($emitente ? $emitente->nome : ''), ($emitente ? $emitente->telefone : ''), strip_tags($result->observacoes), strip_tags($result->defeito), strip_tags($result->laudoTecnico), date('d/m/Y', strtotime($result->dataFinal)), date('d/m/Y', strtotime($result->dataInicial)), $result->garantia . ' dias'];
                         $texto_de_notificacao = $this->os_model->criarTextoWhats($texto_de_notificacao, $troca);
                         if (!empty($zapnumber)) {
-                            echo '<a title="Enviar Por WhatsApp" class="button btn btn-mini btn-success" id="enviarWhatsApp" target="_blank" href="https://api.whatsapp.com/send?phone=55' . $zapnumber . '&text=' . $texto_de_notificacao . '">
+                            echo '<a title="Enviar Por WhatsApp" class="button btn btn-sm btn-success" id="enviarWhatsApp" target="_blank" href="https://api.whatsapp.com/send?phone=55' . $zapnumber . '&text=' . $texto_de_notificacao . '">
                                 <span class="button__icon"><i class="bx bxl-whatsapp"></i></span> <span class="button__text">WhatsApp</span>
                             </a>';
                         }
                     } ?>
 
-                    <a title="Enviar OS por E-mail" class="button btn btn-mini btn-warning" href="<?php echo site_url() ?>/os/enviar_email/<?php echo $result->idOs; ?>">
+                    <a title="Enviar OS por E-mail" class="button btn btn-sm btn-warning" href="<?php echo site_url() ?>/os/enviar_email/<?php echo $result->idOs; ?>">
                         <span class="button__icon"><i class="bx bx-envelope"></i></span> <span class="button__text">via E-mail</span>
                     </a>
 
                     <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vCobranca')): ?>
-                        <a href="#modal-gerar-pagamento" id="btn-forma-pagamento" role="button" data-toggle="modal" class="button btn btn-mini btn-primary">
+                        <a href="#modal-gerar-pagamento" id="btn-forma-pagamento" role="button" data-bs-toggle="modal" class="button btn btn-sm btn-primary">
                             <span class="button__icon"><i class='bx bx-dollar'></i></span><span class="button__text">Gerar Pagamento</span>
                         </a>
 
                         <?php if ($qrCode): ?>
-                            <a href="#modal-pix" id="btn-pix" role="button" data-toggle="modal" class="button btn btn-mini btn-info">
+                            <a href="#modal-pix" id="btn-pix" role="button" data-bs-toggle="modal" class="button btn btn-sm btn-info">
                                 <span class="button__icon"><i class='bx bx-qr'></i></span><span class="button__text">Chave PIX</span>
                             </a>
                         <?php endif ?>
@@ -72,7 +72,7 @@
 
                     <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cDocOs')): ?>
                         <?php if (!isset($nfse_atual) || !in_array($nfse_atual->situacao ?? '', ['Emitida', 'Pendente'])): ?>
-                        <a href="#modal-vincular-nfse" id="btn-vincular-nfse" role="button" data-toggle="modal" class="button btn btn-mini btn-success">
+                        <a href="#modal-vincular-nfse" id="btn-vincular-nfse" role="button" data-bs-toggle="modal" class="button btn btn-sm btn-success">
                             <span class="button__icon"><i class='bx bx-link'></i></span><span class="button__text">Vincular NFS-e</span>
                         </a>
                         <?php endif; ?>
@@ -99,13 +99,13 @@
                             // Usa a variável checkinAtivo passada pelo controller
                             if (!$checkinAtivo) {
                                 // Não há atendimento em andamento - mostrar botão Iniciar
-                                echo '<button type="button" id="btn-iniciar-atendimento" class="button btn btn-mini" style="background-color: #28a745; border-color: #28a745; color: white;">';
+                                echo '<button type="button" id="btn-iniciar-atendimento" class="button btn btn-sm" style="background-color: #28a745; border-color: #28a745; color: white;">';
                                 echo '<span class="button__icon"><i class="bx bx-log-in"></i></span>';
                                 echo '<span class="button__text">Iniciar Atendimento</span>';
                                 echo '</button>';
                             } else {
                                 // Há atendimento em andamento - mostrar botão Finalizar
-                                echo '<button type="button" id="btn-finalizar-atendimento" class="button btn btn-mini" style="background-color: #dc3545; border-color: #dc3545; color: white;">';
+                                echo '<button type="button" id="btn-finalizar-atendimento" class="button btn btn-sm" style="background-color: #dc3545; border-color: #dc3545; color: white;">';
                                 echo '<span class="button__icon"><i class="bx bx-log-out"></i></span>';
                                 echo '<span class="button__text">Finalizar Atendimento</span>';
                                 echo '</button>';
@@ -116,7 +116,7 @@
                         // Mostra se: OS estiver finalizada, OU houver checkins, OU houver execuções técnicas
                         $podeMostrarRelatorio = $osFinalizada || !empty($checkins) || !empty($execucoesTecnicas);
                         if ($podeMostrarRelatorio) {
-                            echo '<a target="_blank" title="Imprimir Relatório de Atendimento" class="button btn btn-mini" style="background-color: #6c757d; border-color: #6c757d; color: white;" href="' . site_url('checkin/imprimir/' . $result->idOs) . '">';
+                            echo '<a target="_blank" title="Imprimir Relatório de Atendimento" class="button btn btn-sm" style="background-color: #6c757d; border-color: #6c757d; color: white;" href="' . site_url('checkin/imprimir/' . $result->idOs) . '">';
                             echo '<span class="button__icon"><i class="bx bx-file-report"></i></span>';
                             echo '<span class="button__text">Relatório Atendimento</span>';
                             echo '</a>';
@@ -125,7 +125,7 @@
                         // Botão para visualizar relatório de execução do portal do técnico
                         // Mostra apenas quando houver execuções técnicas do portal
                         if (!empty($execucoesTecnicas)) {
-                            echo '<a target="_blank" title="Ver Relatório de Execução do Técnico" class="button btn btn-mini" style="background-color: #17a2b8; border-color: #17a2b8; color: white;" href="' . site_url('tecnicos/relatorio_execucao/' . $result->idOs) . '">';
+                            echo '<a target="_blank" title="Ver Relatório de Execução do Técnico" class="button btn btn-sm" style="background-color: #17a2b8; border-color: #17a2b8; color: white;" href="' . site_url('tecnicos/relatorio_execucao/' . $result->idOs) . '">';
                             echo '<span class="button__icon"><i class="bx bx-user-check"></i></span>';
                             echo '<span class="button__text">Relatório Execução</span>';
                             echo '</a>';
@@ -189,15 +189,15 @@
                 </style>
 
                 <ul class="nav nav-tabs" id="os-main-tabs">
-                    <li class="active"><a href="#tab-detalhes" data-toggle="tab"><i class='bx bx-file'></i> Detalhes da OS</a></li>
-                    <li><a href="#tab-notas-fiscais" data-toggle="tab"><i class='bx bx-receipt'></i> Notas Fiscais</a></li>
+                    <li class="active"><a href="#tab-detalhes" data-bs-toggle="tab"><i class='bx bx-file'></i> Detalhes da OS</a></li>
+                    <li><a href="#tab-notas-fiscais" data-bs-toggle="tab"><i class='bx bx-receipt'></i> Notas Fiscais</a></li>
                 </ul>
 
                 <div class="tab-content">
                     <div class="tab-pane active" id="tab-detalhes">
                 <div class="invoice-content">
                     <div class="invoice-head" style="margin-bottom: 0; margin-top:-30px">
-                        <table class="table table-condensed">
+                        <table class="table table-sm">
                             <tbody>
                                 <?php if ($emitente == null) { ?>
                                     <tr>
@@ -265,7 +265,7 @@
                     </div>
 
                     <div style="margin-top: 0; padding-top: 0">
-                        <table class="table table-condensed">
+                        <table class="table table-sm">
                             <tbody>
                                 <?php if ($result->dataInicial != null) { ?>
                                     <tr>
@@ -373,7 +373,7 @@
                                                 <p><strong>Técnico:</strong> <?php echo e($checkin->nome_tecnico); ?></p>
                                                 <p><strong>Entrada:</strong> <?php echo date('d/m/Y H:i', strtotime($checkin->data_entrada)); ?>
                                                     <?php if ($checkin->latitude_entrada && $checkin->longitude_entrada) { ?>
-                                                        <a href="https://www.google.com/maps?q=<?php echo e($checkin->latitude_entrada); ?>,<?php echo e($checkin->longitude_entrada); ?>" target="_blank" class="btn btn-mini" title="Ver no mapa">
+                                                        <a href="https://www.google.com/maps?q=<?php echo e($checkin->latitude_entrada); ?>,<?php echo e($checkin->longitude_entrada); ?>" target="_blank" class="btn btn-sm" title="Ver no mapa">
                                                             <i class="bx bx-map"></i>
                                                         </a>
                                                     <?php } ?>
@@ -382,7 +382,7 @@
                                                 <?php if ($checkin->data_saida) { ?>
                                                 <p><strong>Saída:</strong> <?php echo date('d/m/Y H:i', strtotime($checkin->data_saida)); ?>
                                                     <?php if ($checkin->latitude_saida && $checkin->longitude_saida) { ?>
-                                                        <a href="https://www.google.com/maps?q=<?php echo e($checkin->latitude_saida); ?>,<?php echo e($checkin->longitude_saida); ?>" target="_blank" class="btn btn-mini" title="Ver no mapa">
+                                                        <a href="https://www.google.com/maps?q=<?php echo e($checkin->latitude_saida); ?>,<?php echo e($checkin->longitude_saida); ?>" target="_blank" class="btn btn-sm" title="Ver no mapa">
                                                             <i class="bx bx-map"></i>
                                                         </a>
                                                     <?php } ?>
@@ -395,9 +395,9 @@
                                                     echo $intervalo->format('%h horas %i minutos');
                                                     ?>
                                                 </p>
-                                                <p><span class="label label-success">Finalizado</span></p>
+                                                <p><span class="badge bg-success">Finalizado</span></p>
                                                 <?php } else { ?>
-                                                <p><span class="label label-warning">Em Andamento</span></p>
+                                                <p><span class="badge bg-warning">Em Andamento</span></p>
                                                 <?php } ?>
 
                                                 <?php if ($checkin->observacao_entrada) { ?>
@@ -426,7 +426,7 @@
                                                 <p><strong>Tecnico:</strong> <?php echo e($execucao->tecnico_nome ?? 'Tecnico'); ?></p>
                                                 <p><strong>Check-in:</strong> <?php echo $execucao->checkin_horario ? date('d/m/Y H:i', strtotime($execucao->checkin_horario)) : '-'; ?>
                                                     <?php if ($execucao->checkin_latitude && $execucao->checkin_longitude) { ?>
-                                                        <a href="https://www.google.com/maps?q=<?php echo e($execucao->checkin_latitude); ?>,<?php echo e($execucao->checkin_longitude); ?>" target="_blank" class="btn btn-mini" title="Ver no mapa">
+                                                        <a href="https://www.google.com/maps?q=<?php echo e($execucao->checkin_latitude); ?>,<?php echo e($execucao->checkin_longitude); ?>" target="_blank" class="btn btn-sm" title="Ver no mapa">
                                                             <i class="bx bx-map"></i>
                                                         </a>
                                                     <?php } ?>
@@ -435,7 +435,7 @@
                                                 <?php if ($execucao->checkout_horario) { ?>
                                                 <p><strong>Check-out:</strong> <?php echo date('d/m/Y H:i', strtotime($execucao->checkout_horario)); ?>
                                                     <?php if ($execucao->checkout_latitude && $execucao->checkout_longitude) { ?>
-                                                        <a href="https://www.google.com/maps?q=<?php echo e($execucao->checkout_latitude); ?>,<?php echo e($execucao->checkout_longitude); ?>" target="_blank" class="btn btn-mini" title="Ver no mapa">
+                                                        <a href="https://www.google.com/maps?q=<?php echo e($execucao->checkout_latitude); ?>,<?php echo e($execucao->checkout_longitude); ?>" target="_blank" class="btn btn-sm" title="Ver no mapa">
                                                             <i class="bx bx-map"></i>
                                                         </a>
                                                     <?php } ?>
@@ -451,9 +451,9 @@
                                                     }
                                                     ?>
                                                 </p>
-                                                <p><span class="label label-success">Finalizado</span></p>
+                                                <p><span class="badge bg-success">Finalizado</span></p>
                                                 <?php } else { ?>
-                                                <p><span class="label label-warning">Em Andamento</span></p>
+                                                <p><span class="badge bg-warning">Em Andamento</span></p>
                                                 <?php } ?>
 
                                                 <?php if ($execucao->checklist_json) { ?>
@@ -525,11 +525,11 @@
                                                 <p class="foto-descricao"><?php echo e($foto->descricao); ?></p>
                                                 <?php } ?>
                                                 <div class="foto-acoes">
-                                                    <a href="<?php echo site_url('checkin/downloadFoto/' . $foto->idFoto); ?>" class="btn btn-mini" title="Download">
+                                                    <a href="<?php echo site_url('checkin/downloadFoto/' . $foto->idFoto); ?>" class="btn btn-sm" title="Download">
                                                         <i class="bx bx-download"></i>
                                                     </a>
                                                     <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eOs')) { ?>
-                                                    <button type="button" class="btn btn-mini btn-danger btn-remover-foto" data-foto-id="<?php echo e($foto->idFoto); ?>" title="Remover">
+                                                    <button type="button" class="btn btn-sm btn-danger btn-remover-foto" data-foto-id="<?php echo e($foto->idFoto); ?>" title="Remover">
                                                         <i class="bx bx-trash"></i>
                                                     </button>
                                                     <?php } ?>
@@ -554,10 +554,10 @@
                                                 <?php } ?>
                                                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eOs')) { ?>
                                                 <div class="foto-acoes">
-                                                    <a href="<?php echo site_url('checkin/downloadFoto/' . $foto->idFoto); ?>" class="btn btn-mini" title="Download">
+                                                    <a href="<?php echo site_url('checkin/downloadFoto/' . $foto->idFoto); ?>" class="btn btn-sm" title="Download">
                                                         <i class="bx bx-download"></i>
                                                     </a>
-                                                    <button type="button" class="btn btn-mini btn-danger btn-remover-foto" data-foto-id="<?php echo e($foto->idFoto); ?>" title="Remover">
+                                                    <button type="button" class="btn btn-sm btn-danger btn-remover-foto" data-foto-id="<?php echo e($foto->idFoto); ?>" title="Remover">
                                                         <i class="bx bx-trash"></i>
                                                     </button>
                                                 </div>
@@ -571,7 +571,7 @@
                                         // Verifica se há checkin ativo - variável $checkinAtivo já foi passada pelo controller
                                         if (isset($checkinAtivo) && $checkinAtivo && $this->permission->checkPermission($this->session->userdata('permissao'), 'eOs')) {
                                         ?>
-                                        <div class="span12" style="margin-top: 10px;">
+                                        <div class="col-12" style="margin-top: 10px;">
                                             <input type="file" id="foto-durante-input" class="checkin-foto-input" data-etapa="durante" accept="image/*" style="display: none;">
                                             <button type="button" class="btn btn-success" onclick="document.getElementById('foto-durante-input').click()">
                                                 <i class="bx bx-plus"></i> Adicionar Foto
@@ -594,11 +594,11 @@
                                                 <p class="foto-descricao"><?php echo e($foto->descricao); ?></p>
                                                 <?php } ?>
                                                 <div class="foto-acoes">
-                                                    <a href="<?php echo site_url('checkin/downloadFoto/' . $foto->idFoto); ?>" class="btn btn-mini" title="Download">
+                                                    <a href="<?php echo site_url('checkin/downloadFoto/' . $foto->idFoto); ?>" class="btn btn-sm" title="Download">
                                                         <i class="bx bx-download"></i>
                                                     </a>
                                                     <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eOs')) { ?>
-                                                    <button type="button" class="btn btn-mini btn-danger btn-remover-foto" data-foto-id="<?php echo e($foto->idFoto); ?>" title="Remover">
+                                                    <button type="button" class="btn btn-sm btn-danger btn-remover-foto" data-foto-id="<?php echo e($foto->idFoto); ?>" title="Remover">
                                                         <i class="bx bx-trash"></i>
                                                     </button>
                                                     <?php } ?>
@@ -616,9 +616,9 @@
                                 <?php if (!empty($assinaturas)) { ?>
                                 <div class="assinaturas-section" style="margin-top: 20px;">
                                     <h6><i class="bx bx-pen"></i> Assinaturas</h6>
-                                    <div class="row-fluid">
+                                    <div class="row">
                                         <?php foreach ($assinaturas as $assinatura) { ?>
-                                        <div class="span3" id="assinatura-item-<?php echo $assinatura->idAssinatura; ?>" style="text-align: center; margin-bottom: 15px;">
+                                        <div class="col-3" id="assinatura-item-<?php echo $assinatura->idAssinatura; ?>" style="text-align: center; margin-bottom: 15px;">
                                             <div style="border: 1px solid #ddd; padding: 10px; border-radius: 4px;">
                                                 <?php
                                                 // Sempre usar url_visualizacao que aponta para verAssinatura (igual ao relatorio_execucao)
@@ -661,7 +661,7 @@
                                                 </p>
                                                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eOs')) { ?>
                                                 <p style="margin-top: 8px;">
-                                                    <button type="button" class="btn btn-mini btn-danger btn-remover-assinatura" data-assinatura-id="<?php echo e($assinatura->idAssinatura); ?>" title="Remover Assinatura">
+                                                    <button type="button" class="btn btn-sm btn-danger btn-remover-assinatura" data-assinatura-id="<?php echo e($assinatura->idAssinatura); ?>" title="Remover Assinatura">
                                                         <i class="bx bx-trash"></i> Excluir
                                                     </button>
                                                 </p>
@@ -699,7 +699,7 @@
                         <?php } ?>
 
                         <?php if ($anexos != null) { ?>
-                            <table class="table table-bordered table-condensed">
+                            <table class="table table-bordered table-sm">
                                 <thead>
                                     <tr>
                                         <th>Anexo</th>
@@ -715,7 +715,7 @@
                                                 $thumb = $a->url . '/thumbs/' . $a->thumb;
                                                 $link = $a->url . '/' . $a->anexo;
                                             }
-                                            echo '<div class="span3" style="min-height: 150px; margin-left: 0"><a style="min-height: 150px;" href="#modal-anexo" imagem="' . e($a->idAnexos) . '" link="' . e($link) . '" role="button" class="btn anexo span12" data-toggle="modal"><img src="' . e($thumb) . '" alt=""></a></div>';
+                                            echo '<div class="col-3" style="min-height: 150px; margin-left: 0"><a style="min-height: 150px;" href="#modal-anexo" imagem="' . e($a->idAnexos) . '" link="' . e($link) . '" role="button" class="btn anexo col-12" data-bs-toggle="modal"><img src="' . e($thumb) . '" alt=""></a></div>';
                                         } ?>
                                     </th>
                                 </tbody>
@@ -724,7 +724,7 @@
 
                         <?php if ($produtos != null) { ?>
                             <br />
-                            <table class="table table-bordered table-condensed" id="tblProdutos">
+                            <table class="table table-bordered table-sm" id="tblProdutos">
                                 <thead>
                                     <tr>
                                         <th>PRODUTO</th>
@@ -758,7 +758,7 @@
                             </table>
                         <?php } ?>
                         <?php if ($servicos != null) { ?>
-                            <table class="table table-bordered table-condensed">
+                            <table class="table table-bordered table-sm">
                                 <thead>
                                     <tr>
                                         <th>SERVIÇO</th>
@@ -794,7 +794,7 @@
                             </table>
                         <?php } ?>
                         <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eOs')) { ?>
-                        <table class="table table-bordered table-condensed">
+                        <table class="table table-bordered table-sm">
                             <?php if ($totalProdutos != 0 || $totalServico != 0) {
                                 if ($result->valor_desconto != 0) {
                                     echo "<td>";
@@ -852,23 +852,23 @@
                                                     case 'pago':
                                                     case 'Normal':
                                                     case 'Retido':
-                                                        $statusClass .= ' label-success';
+                                                        $statusClass .= ' badge bg-success';
                                                         break;
                                                     case 'PENDING':
                                                     case 'Pending':
                                                     case 'pending':
                                                     case 'Aguardando':
-                                                        $statusClass .= ' label-warning';
+                                                        $statusClass .= ' badge bg-warning';
                                                         break;
                                                     case 'CANCELLED':
                                                     case 'Cancelled':
                                                     case 'cancelled':
                                                     case 'Cancelado':
                                                     case 'Estornado':
-                                                        $statusClass .= ' label-important';
+                                                        $statusClass .= ' badge bg-danger';
                                                         break;
                                                     default:
-                                                        $statusClass .= ' label-info';
+                                                        $statusClass .= ' badge bg-info';
                                                 }
                                                 ?>
                                                 <span class="<?= $statusClass ?>"><?= e($doc['status']) ?></span>
@@ -876,23 +876,23 @@
                                             <td class="text-center">
                                                 <?php if ($doc['tipo'] == 'cobranca') { ?>
                                                     <?php if (!empty($doc['link'])) { ?>
-                                                        <a href="<?= $doc['link'] ?>" target="_blank" class="btn btn-mini btn-info" title="Pagar">
+                                                        <a href="<?= $doc['link'] ?>" target="_blank" class="btn btn-sm btn-info" title="Pagar">
                                                             <i class="bx bx-dollar-circle"></i> Pagar
                                                         </a>
                                                     <?php } ?>
                                                     <?php if (!empty($doc['pdf'])) { ?>
-                                                        <a href="<?= $doc['pdf'] ?>" target="_blank" class="btn btn-mini btn-inverse" title="PDF">
+                                                        <a href="<?= $doc['pdf'] ?>" target="_blank" class="btn btn-sm btn-inverse" title="PDF">
                                                             <i class="bx bx-file"></i> PDF
                                                         </a>
                                                     <?php } ?>
                                                     <?php if (!empty($doc['barcode'])) { ?>
-                                                        <button class="btn btn-mini btn-primary" onclick="copyBarcode('<?= $doc['barcode'] ?>')" title="Copiar Código">
+                                                        <button class="btn btn-sm btn-primary" onclick="copyBarcode('<?= $doc['barcode'] ?>')" title="Copiar Código">
                                                             <i class="bx bx-copy"></i> Código
                                                         </button>
                                                     <?php } ?>
                                                 <?php } elseif ($doc['tipo'] == 'nfse') { ?>
                                                     <?php if (!empty($doc['xml_path'])) { ?>
-                                                        <a href="<?= base_url($doc['xml_path']) ?>" target="_blank" class="btn btn-mini btn-info" title="XML">
+                                                        <a href="<?= base_url($doc['xml_path']) ?>" target="_blank" class="btn btn-sm btn-info" title="XML">
                                                             <i class="bx bx-code"></i> XML
                                                         </a>
                                                     <?php } ?>
@@ -1001,35 +1001,35 @@
 <?= $modalGerarPagamento ?>
 
 <!-- Modal visualizar anexo -->
-<div id="modal-anexo" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+<div id="modal-anexo" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
     aria-hidden="true">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">x</button>
         <h3 id="myModalLabel">Visualizar Anexo</h3>
     </div>
     <div class="modal-body">
-        <div class="span12" id="div-visualizar-anexo" style="text-align: center">
+        <div class="col-12" id="div-visualizar-anexo" style="text-align: center">
             <div class='progress progress-info progress-striped active'>
                 <div class='bar' style='width: 100%'></div>
             </div>
         </div>
     </div>
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true">Fechar</button>
+        <button class="btn" data-bs-dismiss="modal" aria-hidden="true">Fechar</button>
         <a href="" id-imagem="" class="btn btn-inverse" id="download">Download</a>
         <a href="" link="" class="btn btn-danger" id="excluir-anexo">Excluir Anexo</a>
     </div>
 </div>
 
 <!-- Modal PIX -->
-<div id="modal-pix" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+<div id="modal-pix" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
     aria-hidden="true">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">x</button>
         <h3 id="myModalLabel">Pagamento via PIX</h3>
     </div>
     <div class="modal-body">
-        <div class="span12" id="div-pix" style="text-align: center">
+        <div class="col-12" id="div-pix" style="text-align: center">
             <td style="width: 15%; padding: 0;text-align:center;">
                 <img src="<?php echo base_url(); ?>assets/img/logo_pix.png" alt="QR Code de Pagamento" /></br>
                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eOs')) { ?>
@@ -1050,22 +1050,22 @@
     </div>
     <div class="modal-footer">
         <?php if (!empty($zapnumber)) {
-            echo "<button id='pixWhatsApp' class='btn btn-success' data-dismiss='modal' aria-hidden='true' style='color: #FFF'><i class='bx bxl-whatsapp'></i> WhatsApp</button>";
+            echo "<button id='pixWhatsApp' class='btn btn-success' data-bs-dismiss='modal' aria-hidden='true' style='color: #FFF'><i class='bx bxl-whatsapp'></i> WhatsApp</button>";
         } ?>
         <button class="btn btn-primary" id="copyButton" style="margin:5px; color: #FFF"><i class="fas fa-copy"></i> Copia e Cola</button>
-        <button class="btn btn-danger" data-dismiss="modal" aria-hidden="true" style="color: #FFF">Fechar</button>
+        <button class="btn btn-danger" data-bs-dismiss="modal" aria-hidden="true" style="color: #FFF">Fechar</button>
     </div>
 </div>
 
 <!-- Modal Vincular NFS-e -->
 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cDocOs')): ?>
-<div id="modal-vincular-nfse" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabelVincular" aria-hidden="true">
+<div id="modal-vincular-nfse" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabelVincular" aria-hidden="true">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">x</button>
         <h3 id="myModalLabelVincular">Vincular NFS-e à OS #<?= $result->idOs ?></h3>
     </div>
     <div class="modal-body">
-        <div class="span12">
+        <div class="col-12">
             <div class="alert alert-info">
                 <i class="fas fa-info-circle"></i> Selecione uma NFS-e importada para vincular a esta ordem de serviço.
             </div>
@@ -1080,7 +1080,7 @@
         </div>
     </div>
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true">Cancelar</button>
+        <button class="btn" data-bs-dismiss="modal" aria-hidden="true">Cancelar</button>
         <button class="btn btn-success" id="btn-confirmar-vinculo" disabled>
             <i class="fas fa-link"></i> Vincular Selecionada
         </button>
@@ -1129,7 +1129,7 @@ $(document).ready(function() {
                 });
             },
             error: function() {
-                $('#lista-nfse-disponiveis').html('<div class="alert alert-error">Erro ao carregar NFS-e.</div>');
+                $('#lista-nfse-disponiveis').html('<div class="alert alert-danger">Erro ao carregar NFS-e.</div>');
             }
         });
     }
@@ -1525,7 +1525,7 @@ $(document).ready(function() {
     }
 
     /* Layout de assinaturas em coluna no mobile */
-    .modal-checkin .row-fluid .span6 {
+    .modal-checkin .row .col-6 {
         width: 100% !important;
         float: none !important;
         margin-left: 0 !important;
@@ -1569,9 +1569,9 @@ $(document).ready(function() {
 </style>
 
 <!-- Modal de Check-in (Início do Atendimento) -->
-<div id="modal-checkin" class="modal hide fade modal-checkin" tabindex="-1" role="dialog" aria-labelledby="modalCheckinLabel" aria-hidden="true">
+<div id="modal-checkin" class="modal fade modal-checkin" tabindex="-1" role="dialog" aria-labelledby="modalCheckinLabel" aria-hidden="true">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">×</button>
         <h3 id="modalCheckinLabel"><i class="bx bx-log-in"></i> Iniciar Atendimento</h3>
     </div>
     <div class="modal-body">
@@ -1605,7 +1605,7 @@ $(document).ready(function() {
             <!-- Observações -->
             <div class="checkin-section">
                 <h6><i class="bx bx-note"></i> Observações de Entrada</h6>
-                <textarea id="checkin-observacao" class="span12" rows="3" placeholder="Descreva o estado inicial, equipamentos recebidos, etc."></textarea>
+                <textarea id="checkin-observacao" class="col-12" rows="3" placeholder="Descreva o estado inicial, equipamentos recebidos, etc."></textarea>
             </div>
 
             <!-- Geolocalização -->
@@ -1613,7 +1613,7 @@ $(document).ready(function() {
                 <h6><i class="bx bx-map"></i> Localização</h6>
                 <input type="hidden" id="checkin-latitude">
                 <input type="hidden" id="checkin-longitude">
-                <button type="button" id="btn-geo-checkin" class="btn btn-small">
+                <button type="button" id="btn-geo-checkin" class="btn btn-sm">
                     <i class="bx bx-map"></i> <span id="checkin-geo-btn-text">Capturar Localização</span>
                 </button>
                 <span id="checkin-geo-status" class="text-muted" style="margin-left: 10px; display: inline-block;"></span>
@@ -1621,7 +1621,7 @@ $(document).ready(function() {
         </form>
     </div>
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true">Cancelar</button>
+        <button class="btn" data-bs-dismiss="modal" aria-hidden="true">Cancelar</button>
         <button class="btn btn-success" id="btn-confirmar-checkin">
             <i class="bx bx-log-in"></i> Iniciar Atendimento
         </button>
@@ -1629,7 +1629,7 @@ $(document).ready(function() {
 </div>
 
 <!-- Modal de Confirmação Mobile (Tela Cheia) - Abre antes do checkout -->
-<div id="modal-mobile-confirmacao" class="modal hide fade modal-mobile-fullscreen" tabindex="-1" role="dialog" aria-labelledby="modalMobileConfirmacaoLabel" aria-hidden="true">
+<div id="modal-mobile-confirmacao" class="modal fade modal-mobile-fullscreen" tabindex="-1" role="dialog" aria-labelledby="modalMobileConfirmacaoLabel" aria-hidden="true">
     <div class="modal-header modal-mobile-header">
         <h3 id="modalMobileConfirmacaoLabel"><i class="bx bx-mobile"></i> Finalizar Atendimento - Mobile</h3>
     </div>
@@ -1694,7 +1694,7 @@ $(document).ready(function() {
         </div>
     </div>
     <div class="modal-footer modal-mobile-footer">
-        <button class="btn btn-large" data-dismiss="modal" aria-hidden="true">
+        <button class="btn btn-large" data-bs-dismiss="modal" aria-hidden="true">
             <i class="bx bx-x"></i> Cancelar
         </button>
         <button class="btn btn-success btn-large" id="btn-salvar-mobile-confirmacao">
@@ -1922,9 +1922,9 @@ $(document).ready(function() {
 </style>
 
 <!-- Modal de Check-out (Finalização do Atendimento) -->
-<div id="modal-checkout" class="modal hide fade modal-checkin" tabindex="-1" role="dialog" aria-labelledby="modalCheckoutLabel" aria-hidden="true">
+<div id="modal-checkout" class="modal fade modal-checkin" tabindex="-1" role="dialog" aria-labelledby="modalCheckoutLabel" aria-hidden="true">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">×</button>
         <h3 id="modalCheckoutLabel"><i class="bx bx-log-out"></i> Finalizar Atendimento</h3>
     </div>
     <div class="modal-body">
@@ -1932,15 +1932,15 @@ $(document).ready(function() {
             <!-- Assinaturas -->
             <div class="checkin-section">
                 <h6><i class="bx bx-pen"></i> Assinaturas</h6>
-                <div class="row-fluid">
-                    <div class="span6">
+                <div class="row">
+                    <div class="col-6">
                         <?php $this->load->view('checkin/assinatura_canvas', [
                             'id' => 'assinatura-tecnico-saida',
                             'titulo' => 'Assinatura do Técnico (Saída)',
                             'mostrar_campos' => false
                         ]); ?>
                     </div>
-                    <div class="span6">
+                    <div class="col-6">
                         <?php $this->load->view('checkin/assinatura_canvas', [
                             'id' => 'assinatura-cliente-saida',
                             'titulo' => 'Assinatura do Cliente',
@@ -1978,7 +1978,7 @@ $(document).ready(function() {
             <!-- Observações -->
             <div class="checkin-section">
                 <h6><i class="bx bx-note"></i> Observações de Saída</h6>
-                <textarea id="checkout-observacao" class="span12" rows="3" placeholder="Descreva o serviço realizado, peças trocadas, recomendações, etc."></textarea>
+                <textarea id="checkout-observacao" class="col-12" rows="3" placeholder="Descreva o serviço realizado, peças trocadas, recomendações, etc."></textarea>
             </div>
 
             <!-- Geolocalização -->
@@ -1986,7 +1986,7 @@ $(document).ready(function() {
                 <h6><i class="bx bx-map"></i> Localização de Saída</h6>
                 <input type="hidden" id="checkout-latitude">
                 <input type="hidden" id="checkout-longitude">
-                <button type="button" id="btn-geo-checkout" class="btn btn-small">
+                <button type="button" id="btn-geo-checkout" class="btn btn-sm">
                     <i class="bx bx-map"></i> <span id="checkout-geo-btn-text">Capturar Localização</span>
                 </button>
                 <span id="checkout-geo-status" class="text-muted" style="margin-left: 10px; display: inline-block;"></span>
@@ -1994,7 +1994,7 @@ $(document).ready(function() {
         </form>
     </div>
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true">Cancelar</button>
+        <button class="btn" data-bs-dismiss="modal" aria-hidden="true">Cancelar</button>
         <button class="btn btn-danger" id="btn-confirmar-checkout">
             <i class="bx bx-log-out"></i> Finalizar Atendimento
         </button>

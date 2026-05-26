@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Simulador de Impostos Simples Nacional
  */
@@ -42,19 +42,19 @@
 </style>
 
 <!-- Header -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <ul class="breadcrumb">
-            <li><a href="<?= site_url('dashboard') ?>">Dashboard</a> <span class="divider">/</span></li>
-            <li><a href="<?= site_url('impostos') ?>">Impostos</a> <span class="divider">/</span></li>
+            <li><a href="<?= site_url('dashboard') ?>">Dashboard</a> <span class="dropdown-divider">/</span></li>
+            <li><a href="<?= site_url('impostos') ?>">Impostos</a> <span class="dropdown-divider">/</span></li>
             <li class="active">Simulador</li>
         </ul>
     </div>
 </div>
 
-<div class="row-fluid">
+<div class="row">
     <!-- Formulário -->
-    <div class="span5">
+    <div class="col-5">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-calculator"></i></span>
@@ -63,20 +63,20 @@
             <div class="widget-content">
                 <form method="post" action="<?= site_url('impostos/simulador') ?>" class="form-horizontal">
 
-                    <div class="control-group">
-                        <label class="control-label">Valor do Serviço:*</label>
+                    <div class="mb-3">
+                        <label class="form-label">Valor do Serviço:*</label>
                         <div class="controls">
-                            <div class="input-prepend">
-                                <span class="add-on">R$</span>
-                                <input type="text" name="valor_bruto" class="span6" required placeholder="0,00" value="<?= $this->input->post('valor_bruto') ?>" />
+                            <div class="input-group">
+                                <span class="input-group-text">R$</span>
+                                <input type="text" name="valor_bruto" class="col-6" required placeholder="0,00" value="<?= $this->input->post('valor_bruto') ?>" />
                             </div>
                         </div>
                     </div>
 
-                    <div class="control-group">
-                        <label class="control-label">Anexo:*</label>
+                    <div class="mb-3">
+                        <label class="form-label">Anexo:*</label>
                         <div class="controls">
-                            <select name="anexo" class="span8" required>
+                            <select name="anexo" class="col-8" required>
                                 <?php foreach ($anexos as $key => $nome): ?>
                                 <option value="<?= $key ?>" <?= $this->input->post('anexo') == $key ? 'selected' : '' ?>><?= $nome ?></option>
                                 <?php endforeach; ?>
@@ -84,10 +84,10 @@
                         </div>
                     </div>
 
-                    <div class="control-group">
-                        <label class="control-label">Faixa:*</label>
+                    <div class="mb-3">
+                        <label class="form-label">Faixa:*</label>
                         <div class="controls">
-                            <select name="faixa" class="span8" required>
+                            <select name="faixa" class="col-8" required>
                                 <option value="1" <?= $this->input->post('faixa') == '1' ? 'selected' : '' ?>>1ª Faixa</option>
                                 <option value="2" <?= $this->input->post('faixa') == '2' ? 'selected' : '' ?>>2ª Faixa</option>
                                 <option value="3" <?= $this->input->post('faixa') == '3' ? 'selected' : '' ?>>3ª Faixa</option>
@@ -109,19 +109,19 @@
     </div>
 
     <!-- Resultado -->
-    <div class="span7">
+    <div class="col-7">
         <?php if ($resultado): ?>
         <div class="resultado-box">
             <h3>Resultado da Simulação</h3>
 
-            <div class="row-fluid">
-                <div class="span6">
+            <div class="row">
+                <div class="col-6">
                     <div class="valor-principal">
                         R$ <?= number_format($resultado['valor_bruto'], 2, ',', '.') ?>
                         <div class="valor-secundario">VALOR BRUTO</div>
                     </div>
                 </div>
-                <div class="span6">
+                <div class="col-6">
                     <div class="valor-principal">
                         R$ <?= number_format($resultado['valor_liquido'], 2, ',', '.') ?>
                         <div class="valor-secundario">VALOR LÍQUIDO (A RECEBER)</div>
@@ -133,8 +133,8 @@
 
             <h4 style="margin-bottom: 15px;">Desconto de Impostos: R$ <?= number_format($resultado['valor_total_impostos'], 2, ',', '.') ?></h4>
 
-            <div class="row-fluid">
-                <div class="span6">
+            <div class="row">
+                <div class="col-6">
                     <div class="imposto-item">
                         <span>IRPJ <span class="aliquota-info">(<?= $resultado['aliquota_irpj'] ?>%)</span></span>
                         <span>R$ <?= number_format($resultado['irpj_valor'], 2, ',', '.') ?></span>
@@ -148,7 +148,7 @@
                         <span>R$ <?= number_format($resultado['cofins_valor'], 2, ',', '.') ?></span>
                     </div>
                 </div>
-                <div class="span6">
+                <div class="col-6">
                     <div class="imposto-item">
                         <span>PIS <span class="aliquota-info">(<?= $resultado['aliquota_pis'] ?>%)</span></span>
                         <span>R$ <?= number_format($resultado['pis_valor'], 2, ',', '.') ?></span>
@@ -193,8 +193,8 @@
 </div>
 
 <!-- Exemplos -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-lightbulb"></i></span>
@@ -225,7 +225,7 @@
                             <td>R$ <?= number_format($impostos, 2, ',', '.') ?></td>
                             <td>R$ <?= number_format($liquido, 2, ',', '.') ?></td>
                             <td>
-                                <a href="<?= site_url('impostos/simulador') ?>" class="btn btn-mini">Usar este valor</a>
+                                <a href="<?= site_url('impostos/simulador') ?>" class="btn btn-sm">Usar este valor</a>
                             </td>
                         </tr>
                         <?php endforeach; ?>

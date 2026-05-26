@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Dashboard de Impostos
  */
@@ -39,51 +39,51 @@ $data_fim = $results['data_fim'];
 </style>
 
 <!-- Header -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <ul class="breadcrumb">
-            <li><a href="<?= site_url('dashboard') ?>">Dashboard</a> <span class="divider">/</span></li>
+            <li><a href="<?= site_url('dashboard') ?>">Dashboard</a> <span class="dropdown-divider">/</span></li>
             <li class="active">Impostos Simples Nacional</li>
         </ul>
     </div>
 </div>
 
 <!-- Filtros -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-filter"></i></span>
                 <h5>Período</h5>
                 <div class="buttons">
-                    <a href="<?= site_url('impostos/exportar?data_inicio=' . $data_inicio . '&data_fim=' . $data_fim) ?>" class="btn btn-success btn-small">
+                    <a href="<?= site_url('impostos/exportar?data_inicio=' . $data_inicio . '&data_fim=' . $data_fim) ?>" class="btn btn-success btn-sm">
                         <i class="fas fa-download"></i> Exportar
                     </a>
                 </div>
             </div>
             <div class="widget-content">
                 <form method="get" action="<?= site_url('impostos') ?>" class="form-inline">
-                    <div class="row-fluid">
-                        <div class="span3">
+                    <div class="row">
+                        <div class="col-3">
                             <label>Data Início:</label>
-                            <input type="date" name="data_inicio" class="span12" value="<?= $data_inicio ?>" />
+                            <input type="date" name="data_inicio" class="col-12" value="<?= $data_inicio ?>" />
                         </div>
-                        <div class="span3">
+                        <div class="col-3">
                             <label>Data Fim:</label>
-                            <input type="date" name="data_fim" class="span12" value="<?= $data_fim ?>" />
+                            <input type="date" name="data_fim" class="col-12" value="<?= $data_fim ?>" />
                         </div>
-                        <div class="span2">
+                        <div class="col-2">
                             <label>&nbsp;</label>
-                            <button type="submit" class="btn btn-primary span12">
+                            <button type="submit" class="btn btn-primary col-12">
                                 <i class="fas fa-search"></i> Filtrar
                             </button>
                         </div>
-                        <div class="span4">
+                        <div class="col-4">
                             <label>&nbsp;</label>
-                            <div class="btn-group span12">
-                                <a href="?data_inicio=<?= date('Y-m-01') ?>&data_fim=<?= date('Y-m-t') ?>" class="btn btn-small">Mês Atual</a>
-                                <a href="?data_inicio=<?= date('Y-m-01', strtotime('-1 month')) ?>&data_fim=<?= date('Y-m-t', strtotime('-1 month')) ?>" class="btn btn-small">Mês Anterior</a>
-                                <a href="?data_inicio=<?= date('Y-01-01') ?>&data_fim=<?= date('Y-m-d') ?>" class="btn btn-small">Ano</a>
+                            <div class="btn-group col-12">
+                                <a href="?data_inicio=<?= date('Y-m-01') ?>&data_fim=<?= date('Y-m-t') ?>" class="btn btn-sm">Mês Atual</a>
+                                <a href="?data_inicio=<?= date('Y-m-01', strtotime('-1 month')) ?>&data_fim=<?= date('Y-m-t', strtotime('-1 month')) ?>" class="btn btn-sm">Mês Anterior</a>
+                                <a href="?data_inicio=<?= date('Y-01-01') ?>&data_fim=<?= date('Y-m-d') ?>" class="btn btn-sm">Ano</a>
                             </div>
                         </div>
                     </div>
@@ -94,8 +94,8 @@ $data_fim = $results['data_fim'];
 </div>
 
 <!-- Cards de Totais -->
-<div class="row-fluid">
-    <div class="span3">
+<div class="row">
+    <div class="col-3">
         <div class="imposto-card">
             <h4><i class="fas fa-dollar-sign"></i> Valor Bruto</h4>
             <div class="valor">R$ <?= number_format($totais->total_bruto ?: 0, 2, ',', '.') ?></div>
@@ -103,7 +103,7 @@ $data_fim = $results['data_fim'];
         </div>
     </div>
 
-    <div class="span3">
+    <div class="col-3">
         <div class="imposto-card imposto-negativo">
             <h4><i class="fas fa-minus-circle"></i> Total Impostos</h4>
             <div class="valor">R$ <?= number_format($totais->total_impostos ?: 0, 2, ',', '.') ?></div>
@@ -111,7 +111,7 @@ $data_fim = $results['data_fim'];
         </div>
     </div>
 
-    <div class="span3">
+    <div class="col-3">
         <div class="imposto-card">
             <h4><i class="fas fa-hand-holding-usd"></i> Valor Líquido</h4>
             <div class="valor">R$ <?= number_format($totais->total_liquido ?: 0, 2, ',', '.') ?></div>
@@ -119,7 +119,7 @@ $data_fim = $results['data_fim'];
         </div>
     </div>
 
-    <div class="span3">
+    <div class="col-3">
         <div class="imposto-card">
             <h4><i class="fas fa-percentage"></i> Alíquota Média</h4>
             <div class="valor"><?= number_format($totais->percentual_imposto ?: 0, 2) ?>%</div>
@@ -129,8 +129,8 @@ $data_fim = $results['data_fim'];
 </div>
 
 <!-- Detalhamento de Impostos -->
-<div class="row-fluid">
-    <div class="span6">
+<div class="row">
+    <div class="col-6">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-chart-pie"></i></span>
@@ -142,7 +142,7 @@ $data_fim = $results['data_fim'];
         </div>
     </div>
 
-    <div class="span6">
+    <div class="col-6">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-chart-bar"></i></span>
@@ -156,8 +156,8 @@ $data_fim = $results['data_fim'];
 </div>
 
 <!-- Tabela de Detalhamento -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-list"></i></span>
@@ -207,36 +207,36 @@ $data_fim = $results['data_fim'];
 </div>
 
 <!-- Informações de Tributação NFS-e -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-file-invoice"></i></span>
                 <h5>Configuração de Tributação para NFS-e</h5>
             </div>
             <div class="widget-content">
-                <div class="row-fluid">
-                    <div class="span4">
+                <div class="row">
+                    <div class="col-4">
                         <div class="alert alert-info" style="margin-bottom: 0;">
                             <i class="fas fa-barcode"></i> <strong>Código Tributação Nacional:</strong><br>
                             <span style="font-size: 18px;"><?= $this->impostos_model->getConfig('IMPOSTO_CODIGO_TRIBUTACAO_NACIONAL') ?: '010701' ?></span>
                         </div>
                     </div>
-                    <div class="span4">
+                    <div class="col-4">
                         <div class="alert alert-info" style="margin-bottom: 0;">
                             <i class="fas fa-city"></i> <strong>Código Tributação Municipal:</strong><br>
                             <span style="font-size: 18px;"><?= $this->impostos_model->getConfig('IMPOSTO_CODIGO_TRIBUTACAO_MUNICIPAL') ?: '100' ?></span>
                         </div>
                     </div>
-                    <div class="span4">
+                    <div class="col-4">
                         <div class="alert alert-success" style="margin-bottom: 0;">
                             <i class="fas fa-percentage"></i> <strong>Alíquota ISS:</strong><br>
                             <span style="font-size: 18px;"><?= $this->impostos_model->getConfig('IMPOSTO_ISS_MUNICIPAL') ?: '5.00' ?>%</span>
                         </div>
                     </div>
                 </div>
-                <div class="row-fluid" style="margin-top: 10px;">
-                    <div class="span12">
+                <div class="row" style="margin-top: 10px;">
+                    <div class="col-12">
                         <div class="well well-small">
                             <i class="fas fa-info-circle"></i> <strong>Descrição do Serviço:</strong><br>
                             <?= $this->impostos_model->getConfig('IMPOSTO_DESCRICAO_SERVICO') ?: 'Suporte técnico em informática, inclusive instalação, configuração e manutenção de programas de computação e bancos de dados.' ?>
@@ -249,8 +249,8 @@ $data_fim = $results['data_fim'];
 </div>
 
 <!-- Ações Rápidas -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-cogs"></i></span>

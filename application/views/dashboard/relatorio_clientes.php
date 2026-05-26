@@ -1,9 +1,9 @@
-<div class="widget-box">
+﻿<div class="widget-box">
     <div class="widget-title">
         <span class="icon"><i class="bx bx-user-check"></i></span>
         <h5>Relatório de Clientes</h5>
         <div class="buttons" style="margin-top: 5px; margin-right: 10px;">
-            <a href="<?php echo site_url('dashboard'); ?>" class="btn btn-mini" style="color:#fff!important">
+            <a href="<?php echo site_url('dashboard'); ?>" class="btn btn-sm" style="color:#fff!important">
                 <i class="bx bx-arrow-back"></i> Voltar ao Dashboard
             </a>
         </div>
@@ -12,18 +12,18 @@
     <div class="widget-content">
         <!-- Filtros -->
         <form method="get" action="<?php echo site_url('dashboard/relatorio_clientes'); ?>" class="form-inline" style="margin-bottom: 20px;">
-            <div class="row-fluid">
-                <div class="span4">
+            <div class="row">
+                <div class="col-4">
                     <label>Data Início:</label>
-                    <input type="date" name="data_inicio" class="span12" value="<?php echo $data_inicio; ?>" />
+                    <input type="date" name="data_inicio" class="col-12" value="<?php echo $data_inicio; ?>" />
                 </div>
-                <div class="span4">
+                <div class="col-4">
                     <label>Data Fim:</label>
-                    <input type="date" name="data_fim" class="span12" value="<?php echo $data_fim; ?>" />
+                    <input type="date" name="data_fim" class="col-12" value="<?php echo $data_fim; ?>" />
                 </div>
-                <div class="span4">
+                <div class="col-4">
                     <label>&nbsp;</label>
-                    <button type="submit" class="btn btn-primary span12">
+                    <button type="submit" class="btn btn-primary col-12">
                         <i class="bx bx-search"></i> Filtrar
                     </button>
                 </div>
@@ -32,7 +32,7 @@
 
         <!-- Botão Exportar -->
         <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vExportarDados')): ?>
-            <div class="row-fluid" style="margin-bottom: 15px;">
+            <div class="row" style="margin-bottom: 15px;">
                 <a href="<?php echo site_url('dashboard/exportar?tipo=clientes&data_inicio=' . $data_inicio . '&data_fim=' . $data_fim); ?>"
                    class="btn btn-success">
                     <i class="bx bx-download"></i> Exportar CSV
@@ -40,9 +40,9 @@
             </div>
         <?php endif; ?>
 
-        <div class="row-fluid">
+        <div class="row">
             <!-- Lista de Clientes -->
-            <div class="span12">
+            <div class="col-12">
                 <h5>Clientes - Análise de Atendimentos</h5>
                 <table class="table table-bordered table-hover">
                     <thead>
@@ -76,8 +76,8 @@
         </div>
 
         <!-- Top Clientes -->
-        <div class="row-fluid" style="margin-top: 30px;">
-            <div class="span12">
+        <div class="row" style="margin-top: 30px;">
+            <div class="col-12">
                 <h5><i class="bx bx-trophy" style="color: #f9ca24;"></i> Top 10 Clientes</h5>
                 <table class="table table-bordered table-hover">
                     <thead>

@@ -1,23 +1,23 @@
-<?php
+﻿<?php
 /**
  * View para edição de Template de Email
  */
 $ci = &get_instance();
 ?>
 
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <ul class="breadcrumb">
-            <li><a href="<?= base_url() ?>">Dashboard</a><span class="divider">/</span></li>
-            <li><a href="<?= base_url('emails') ?>">Gerenciamento de Emails</a><span class="divider">/</span></li>
+            <li><a href="<?= base_url() ?>">Dashboard</a><span class="dropdown-divider">/</span></li>
+            <li><a href="<?= base_url('emails') ?>">Gerenciamento de Emails</a><span class="dropdown-divider">/</span></li>
             <li class="active">Editar Template: <?= ucfirst(str_replace('_', ' ', $template_name)) ?></li>
         </ul>
     </div>
 </div>
 
 <?php if ($this->session->flashdata('success')): ?>
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="alert alert-success">
             <i class="fas fa-check-circle"></i> <?= $this->session->flashdata('success') ?>
         </div>
@@ -26,27 +26,27 @@ $ci = &get_instance();
 <?php endif; ?>
 
 <?php if ($this->session->flashdata('error')): ?>
-<div class="row-fluid">
-    <div class="span12">
-        <div class="alert alert-error">
+<div class="row">
+    <div class="col-12">
+        <div class="alert alert-danger">
             <i class="fas fa-exclamation-triangle"></i> <?= $this->session->flashdata('error') ?>
         </div>
     </div>
 </div>
 <?php endif; ?>
 
-<div class="row-fluid">
+<div class="row">
     <!-- Editor de Template -->
-    <div class="span8">
+    <div class="col-8">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-code"></i></span>
                 <h5>Editor HTML - <?= ucfirst(str_replace('_', ' ', $template_name)) ?></h5>
                 <div class="buttons">
-                    <button type="button" class="btn btn-info btn-mini" onclick="abrirModalTags()">
+                    <button type="button" class="btn btn-info btn-sm" onclick="abrirModalTags()">
                         <i class="fas fa-tags"></i> Tags Disponíveis
                     </button>
-                    <a href="<?= base_url('emails') ?>" class="btn btn-mini">
+                    <a href="<?= base_url('emails') ?>" class="btn btn-sm">
                         <i class="fas fa-arrow-left"></i> Voltar
                     </a>
                 </div>
@@ -55,10 +55,10 @@ $ci = &get_instance();
                 <form method="post" action="<?= base_url('email/salvar_template') ?>" id="formTemplate">
                     <input type="hidden" name="template" value="<?= $template_name ?>">
 
-                    <div class="control-group">
-                        <label class="control-label" for="templateContent">Código HTML do Template:</label>
+                    <div class="mb-3">
+                        <label class="form-label" for="templateContent">Código HTML do Template:</label>
                         <div class="controls">
-                            <textarea name="content" id="templateContent" class="span12" rows="25" style="font-family: 'Consolas', 'Monaco', 'Courier New', monospace; font-size: 13px;"><?= htmlspecialchars($template_content) ?></textarea>
+                            <textarea name="content" id="templateContent" class="col-12" rows="25" style="font-family: 'Consolas', 'Monaco', 'Courier New', monospace; font-size: 13px;"><?= htmlspecialchars($template_content) ?></textarea>
                         </div>
                     </div>
 
@@ -77,7 +77,7 @@ $ci = &get_instance();
     </div>
 
     <!-- Sidebar com Ajuda -->
-    <div class="span4">
+    <div class="col-4">
         <!-- Tags Rápidas -->
         <div class="widget-box">
             <div class="widget-title">
@@ -94,7 +94,7 @@ $ci = &get_instance();
                         '{{data_atual}}', '{{titulo}}', '{{mensagem}}'
                     ];
                     foreach ($tagsRapidas as $tag): ?>
-                        <button type="button" class="btn btn-mini btn-tag" data-tag="<?= $tag ?>" style="margin: 2px;" title="Inserir tag">
+                        <button type="button" class="btn btn-sm btn-tag" data-tag="<?= $tag ?>" style="margin: 2px;" title="Inserir tag">
                             <code><?= $tag ?></code>
                         </button>
                     <?php endforeach; ?>
@@ -152,9 +152,9 @@ $ci = &get_instance();
 </div>
 
 <!-- Modal de Tags Disponíveis -->
-<div id="modalTags" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="modalTagsLabel" aria-hidden="true" style="width: 700px; margin-left: -350px;">
+<div id="modalTags" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalTagsLabel" aria-hidden="true" style="width: 700px; margin-left: -350px;">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">×</button>
         <h3 id="modalTagsLabel"><i class="fas fa-tags"></i> Tags Disponíveis para Templates</h3>
     </div>
     <div class="modal-body" style="max-height: 450px; overflow-y: auto;">
@@ -164,13 +164,13 @@ $ci = &get_instance();
             <!-- Tags de Cliente -->
             <div class="accordion-group">
                 <div class="accordion-heading">
-                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordionTags" href="#collapseCliente">
+                    <a class="accordion-toggle" data-bs-toggle="collapse" data-parent="#accordionTags" href="#collapseCliente">
                         <i class="fas fa-user"></i> <strong>Cliente</strong>
                     </a>
                 </div>
                 <div id="collapseCliente" class="accordion-body collapse">
                     <div class="accordion-inner">
-                        <table class="table table-condensed table-striped">
+                        <table class="table table-sm table-striped">
                             <tbody>
                                 <tr class="tag-row" data-tag="{{cliente_nome}}"><td><code>{{cliente_nome}}</code></td><td>Nome completo do cliente</td></tr>
                                 <tr class="tag-row" data-tag="{{cliente_email}}"><td><code>{{cliente_email}}</code></td><td>Email do cliente</td></tr>
@@ -187,13 +187,13 @@ $ci = &get_instance();
             <!-- Tags de OS -->
             <div class="accordion-group">
                 <div class="accordion-heading">
-                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordionTags" href="#collapseOS">
+                    <a class="accordion-toggle" data-bs-toggle="collapse" data-parent="#accordionTags" href="#collapseOS">
                         <i class="fas fa-wrench"></i> <strong>Ordem de Serviço</strong>
                     </a>
                 </div>
                 <div id="collapseOS" class="accordion-body collapse">
                     <div class="accordion-inner">
-                        <table class="table table-condensed table-striped">
+                        <table class="table table-sm table-striped">
                             <tbody>
                                 <tr class="tag-row" data-tag="{{os_id}}"><td><code>{{os_id}}</code></td><td>Número da OS</td></tr>
                                 <tr class="tag-row" data-tag="{{os_titulo}}"><td><code>{{os_titulo}}</code></td><td>Título da OS</td></tr>
@@ -212,13 +212,13 @@ $ci = &get_instance();
             <!-- Tags de Venda -->
             <div class="accordion-group">
                 <div class="accordion-heading">
-                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordionTags" href="#collapseVenda">
+                    <a class="accordion-toggle" data-bs-toggle="collapse" data-parent="#accordionTags" href="#collapseVenda">
                         <i class="fas fa-shopping-cart"></i> <strong>Venda</strong>
                     </a>
                 </div>
                 <div id="collapseVenda" class="accordion-body collapse">
                     <div class="accordion-inner">
-                        <table class="table table-condensed table-striped">
+                        <table class="table table-sm table-striped">
                             <tbody>
                                 <tr class="tag-row" data-tag="{{venda_id}}"><td><code>{{venda_id}}</code></td><td>ID da venda</td></tr>
                                 <tr class="tag-row" data-tag="{{venda_data}}"><td><code>{{venda_data}}</code></td><td>Data da venda</td></tr>
@@ -234,13 +234,13 @@ $ci = &get_instance();
             <!-- Tags de Cobrança -->
             <div class="accordion-group">
                 <div class="accordion-heading">
-                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordionTags" href="#collapseCobranca">
+                    <a class="accordion-toggle" data-bs-toggle="collapse" data-parent="#accordionTags" href="#collapseCobranca">
                         <i class="fas fa-dollar-sign"></i> <strong>Cobrança</strong>
                     </a>
                 </div>
                 <div id="collapseCobranca" class="accordion-body collapse">
                     <div class="accordion-inner">
-                        <table class="table table-condensed table-striped">
+                        <table class="table table-sm table-striped">
                             <tbody>
                                 <tr class="tag-row" data-tag="{{cobranca_descricao}}"><td><code>{{cobranca_descricao}}</code></td><td>Descrição da cobrança</td></tr>
                                 <tr class="tag-row" data-tag="{{cobranca_valor}}"><td><code>{{cobranca_valor}}</code></td><td>Valor da cobrança</td></tr>
@@ -256,13 +256,13 @@ $ci = &get_instance();
             <!-- Tags de Sistema -->
             <div class="accordion-group">
                 <div class="accordion-heading">
-                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordionTags" href="#collapseSistema">
+                    <a class="accordion-toggle" data-bs-toggle="collapse" data-parent="#accordionTags" href="#collapseSistema">
                         <i class="fas fa-cog"></i> <strong>Sistema</strong>
                     </a>
                 </div>
                 <div id="collapseSistema" class="accordion-body collapse">
                     <div class="accordion-inner">
-                        <table class="table table-condensed table-striped">
+                        <table class="table table-sm table-striped">
                             <tbody>
                                 <tr class="tag-row" data-tag="{{usuario_nome}}"><td><code>{{usuario_nome}}</code></td><td>Nome do usuário logado</td></tr>
                                 <tr class="tag-row" data-tag="{{usuario_email}}"><td><code>{{usuario_email}}</code></td><td>Email do usuário logado</td></tr>
@@ -283,13 +283,13 @@ $ci = &get_instance();
             <!-- Tags Personalizadas -->
             <div class="accordion-group">
                 <div class="accordion-heading">
-                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordionTags" href="#collapsePersonalizado">
+                    <a class="accordion-toggle" data-bs-toggle="collapse" data-parent="#accordionTags" href="#collapsePersonalizado">
                         <i class="fas fa-pencil-alt"></i> <strong>Personalizadas</strong>
                     </a>
                 </div>
                 <div id="collapsePersonalizado" class="accordion-body collapse">
                     <div class="accordion-inner">
-                        <table class="table table-condensed table-striped">
+                        <table class="table table-sm table-striped">
                             <tbody>
                                 <tr class="tag-row" data-tag="{{titulo}}"><td><code>{{titulo}}</code></td><td>Título do email</td></tr>
                                 <tr class="tag-row" data-tag="{{mensagem}}"><td><code>{{mensagem}}</code></td><td>Mensagem principal</td></tr>
@@ -304,14 +304,14 @@ $ci = &get_instance();
         </div>
     </div>
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true">Fechar</button>
+        <button class="btn" data-bs-dismiss="modal" aria-hidden="true">Fechar</button>
     </div>
 </div>
 
 <!-- Modal de Preview -->
-<div id="modalPreview" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="modalPreviewLabel" aria-hidden="true" style="width: 80%; margin-left: -40%;">
+<div id="modalPreview" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalPreviewLabel" aria-hidden="true" style="width: 80%; margin-left: -40%;">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">×</button>
         <h3 id="modalPreviewLabel"><i class="fas fa-eye"></i> Preview do Template</h3>
     </div>
     <div class="modal-body" style="max-height: 500px; overflow-y: auto;">
@@ -321,7 +321,7 @@ $ci = &get_instance();
         <iframe id="previewFrame" src="" style="width: 100%; height: 400px; border: 1px solid #ddd;"></iframe>
     </div>
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true">Fechar</button>
+        <button class="btn" data-bs-dismiss="modal" aria-hidden="true">Fechar</button>
         <button class="btn btn-primary" onclick="window.open('<?= base_url('email/preview/' . $template_name) ?>', '_blank')">
             <i class="fas fa-external-link-alt"></i> Abrir em Nova Janela
         </button>

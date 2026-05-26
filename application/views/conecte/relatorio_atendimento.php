@@ -1,4 +1,4 @@
-<?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
+﻿<?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
 <!-- Relatório de Atendimento - Área do Cliente -->
 <?php
 // Carregar helper de permissões
@@ -282,16 +282,16 @@ $CI->load->helper('cliente_permissions');
 }
 </style>
 
-<div class="row-fluid cliente-relatorio-content">
+<div class="row cliente-relatorio-content">
     <?php if (empty($os) || !is_object($os)): ?>
-    <div class="span12">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="bx bx-error"></i></span>
                 <h5>Erro ao carregar relatório</h5>
             </div>
             <div class="widget-content">
-                <div class="alert alert-error">
+                <div class="alert alert-danger">
                     <strong>Erro:</strong> Não foi possível carregar os dados da OS. Por favor, tente novamente.
                 </div>
                 <a href="<?php echo base_url('index.php/mine/os'); ?>" class="btn btn-primary">
@@ -301,14 +301,14 @@ $CI->load->helper('cliente_permissions');
         </div>
     </div>
 <?php else: ?>
-<div class="span12">
+<div class="col-12">
         <!-- Header -->
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="bx bx-file"></i></span>
                 <h5>Relatório de Atendimento - OS #<?php echo $os->idOs ?? 'N/A'; ?></h5>
                 <div class="buttons">
-                    <a href="<?php echo base_url('index.php/mine/visualizarOs/' . ($os->idOs ?? '')); ?>" class="btn btn-mini">
+                    <a href="<?php echo base_url('index.php/mine/visualizarOs/' . ($os->idOs ?? '')); ?>" class="btn btn-sm">
                         <i class="bx bx-arrow-back"></i> Voltar para OS
                     </a>
                 </div>
@@ -680,7 +680,7 @@ $CI->load->helper('cliente_permissions');
                                 <canvas id="canvasAssinatura" style="width: 100%; max-width: 600px; height: 200px; cursor: crosshair;"></canvas>
                             </div>
                             <div style="margin-top: 10px;">
-                                <button type="button" class="btn btn-small" onclick="limparAssinatura()"
+                                <button type="button" class="btn btn-sm" onclick="limparAssinatura()"
                                         style="background: #f8f9fa; border: 1px solid #ddd; padding: 8px 16px; cursor: pointer; margin-right: 10px;">
                                     <i class="bx bx-eraser"></i> Limpar
                                 </button>
@@ -704,9 +704,9 @@ $CI->load->helper('cliente_permissions');
                 <div class="relatorio-card">
                     <h5><i class="bx bx-pen"></i> Assinaturas</h5>
 
-                    <div class="row-fluid">
+                    <div class="row">
                         <?php if (isset($assinaturasPorTipo['tecnico_entrada'])): ?>
-                        <div class="span6">
+                        <div class="col-6">
                             <div class="assinatura-box">
                                 <h6>Assinatura do Técnico (Entrada)</h6>
                                 <img src="<?php echo base_url($assinaturasPorTipo['tecnico_entrada']->assinatura ?? ''); ?>" alt="Assinatura do técnico" class="assinatura-img">
@@ -715,7 +715,7 @@ $CI->load->helper('cliente_permissions');
                         <?php endif; ?>
 
                         <?php if (isset($assinaturasPorTipo['cliente_saida'])): ?>
-                        <div class="span6">
+                        <div class="col-6">
                             <div class="assinatura-box">
                                 <h6>Assinatura do Cliente (Saída)</h6>
                                 <img src="<?php echo base_url($assinaturasPorTipo['cliente_saida']->assinatura ?? ''); ?>" alt="Assinatura do cliente" class="assinatura-img">

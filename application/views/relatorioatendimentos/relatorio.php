@@ -1,15 +1,15 @@
-<!-- Header -->
-<div class="row-fluid">
-    <div class="span12">
+﻿<!-- Header -->
+<div class="row">
+    <div class="col-12">
         <ul class="breadcrumb">
-            <li><a href="<?php echo site_url('dashboard'); ?>">Dashboard</a> <span class="divider">/</span></li>
+            <li><a href="<?php echo site_url('dashboard'); ?>">Dashboard</a> <span class="dropdown-divider">/</span></li>
             <li class="active">Relatório de Atendimentos</li>
         </ul>
     </div>
 </div>
 
-<div class="row-fluid" style="margin-top: 0">
-    <div class="span12">
+<div class="row" style="margin-top: 0">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-time"></i></span>
@@ -20,20 +20,20 @@
                 <!-- Filtros -->
                 <div class="filtros-relatorio" style="background: #f5f5f5; padding: 15px; border-radius: 4px; margin-bottom: 20px;">
                     <form id="form-filtros" class="form-inline">
-                        <div class="row-fluid">
-                            <div class="span3">
+                        <div class="row">
+                            <div class="col-3">
                                 <label for="filtro-data-inicio">Data Início:</label>
-                                <input type="date" id="filtro-data-inicio" class="span12" value="<?php echo $results['data_inicio']; ?>">
+                                <input type="date" id="filtro-data-inicio" class="col-12" value="<?php echo $results['data_inicio']; ?>">
                             </div>
 
-                            <div class="span3">
+                            <div class="col-3">
                                 <label for="filtro-data-fim">Data Fim:</label>
-                                <input type="date" id="filtro-data-fim" class="span12" value="<?php echo $results['data_fim']; ?>">
+                                <input type="date" id="filtro-data-fim" class="col-12" value="<?php echo $results['data_fim']; ?>">
                             </div>
 
-                            <div class="span4">
+                            <div class="col-4">
                                 <label for="filtro-tecnico">Técnico:</label>
-                                <select id="filtro-tecnico" class="span12">
+                                <select id="filtro-tecnico" class="col-12">
                                     <option value="">Todos os Técnicos</option>
                                     <?php foreach ($results['tecnicos'] as $tecnico): ?>
                                         <option value="<?php echo $tecnico->idUsuarios; ?>"
@@ -44,8 +44,8 @@
                                 </select>
                             </div>
 
-                            <div class="span2" style="padding-top: 25px;">
-                                <button type="button" id="btn-filtrar" class="btn btn-primary span12">
+                            <div class="col-2" style="padding-top: 25px;">
+                                <button type="button" id="btn-filtrar" class="btn btn-primary col-12">
                                     <i class="fas fa-filter"></i> Filtrar
                                 </button>
                             </div>
@@ -54,8 +54,8 @@
                 </div>
 
                 <!-- Cards de Estatísticas -->
-                <div id="cards-estatisticas" class="row-fluid" style="margin-bottom: 20px;">
-                    <div class="span3">
+                <div id="cards-estatisticas" class="row" style="margin-bottom: 20px;">
+                    <div class="col-3">
                         <div class="card-estatistica" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
                             <div class="icone" style="font-size: 36px; opacity: 0.8; margin-bottom: 10px;">
                                 <i class="fas fa-calendar-check"></i>
@@ -65,7 +65,7 @@
                         </div>
                     </div>
 
-                    <div class="span3">
+                    <div class="col-3">
                         <div class="card-estatistica" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
                             <div class="icone" style="font-size: 36px; opacity: 0.8; margin-bottom: 10px;">
                                 <i class="fas fa-time"></i>
@@ -75,7 +75,7 @@
                         </div>
                     </div>
 
-                    <div class="span3">
+                    <div class="col-3">
                         <div class="card-estatistica" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
                             <div class="icone" style="font-size: 36px; opacity: 0.8; margin-bottom: 10px;">
                                 <i class="fas fa-check-circle"></i>
@@ -85,7 +85,7 @@
                         </div>
                     </div>
 
-                    <div class="span3">
+                    <div class="col-3">
                         <div class="card-estatistica" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
                             <div class="icone" style="font-size: 36px; opacity: 0.8; margin-bottom: 10px;">
                                 <i class="fas fa-loader"></i>
@@ -97,8 +97,8 @@
                 </div>
 
                 <!-- Botão Exportar -->
-                <div class="row-fluid" style="margin-bottom: 20px;">
-                    <div class="span12" style="text-align: right;">
+                <div class="row" style="margin-bottom: 20px;">
+                    <div class="col-12" style="text-align: right;">
                         <a href="#" id="btn-exportar" class="btn btn-success">
                             <i class="fas fa-download"></i> Exportar Excel
                         </a>
@@ -106,9 +106,9 @@
                 </div>
 
                 <!-- Gráficos -->
-                <div class="row-fluid" style="margin-bottom: 20px;">
+                <div class="row" style="margin-bottom: 20px;">
                     <!-- Gráfico de Atendimentos por Dia -->
-                    <div class="span6">
+                    <div class="col-6">
                         <div class="widget-box">
                             <div class="widget-title">
                                 <span class="icon"><i class="fas fa-line-chart"></i></span>
@@ -121,7 +121,7 @@
                     </div>
 
                     <!-- Gráfico por Técnico -->
-                    <div class="span6">
+                    <div class="col-6">
                         <div class="widget-box">
                             <div class="widget-title">
                                 <span class="icon"><i class="fas fa-bar-chart"></i></span>
@@ -134,9 +134,9 @@
                     </div>
                 </div>
 
-                <div class="row-fluid" style="margin-bottom: 20px;">
+                <div class="row" style="margin-bottom: 20px;">
                     <!-- Gráfico por Status -->
-                    <div class="span6">
+                    <div class="col-6">
                         <div class="widget-box">
                             <div class="widget-title">
                                 <span class="icon"><i class="fas fa-pie-chart-alt"></i></span>
@@ -149,7 +149,7 @@
                     </div>
 
                     <!-- Gráfico de Tempo Médio -->
-                    <div class="span6">
+                    <div class="col-6">
                         <div class="widget-box">
                             <div class="widget-title">
                                 <span class="icon"><i class="fas fa-time"></i></span>
@@ -653,7 +653,7 @@ $(document).ready(function() {
         margin-bottom: 15px;
     }
 
-    #cards-estatisticas .span3 {
+    #cards-estatisticas .col-3 {
         width: 100%;
         margin-left: 0;
     }
@@ -672,9 +672,9 @@ $(document).ready(function() {
 
 /* Filtros em mobile */
 @media (max-width: 768px) {
-    .filtros-relatorio .span3,
-    .filtros-relatorio .span4,
-    .filtros-relatorio .span2 {
+    .filtros-relatorio .col-3,
+    .filtros-relatorio .col-4,
+    .filtros-relatorio .col-2 {
         width: 100%;
         margin-left: 0;
         margin-bottom: 10px;

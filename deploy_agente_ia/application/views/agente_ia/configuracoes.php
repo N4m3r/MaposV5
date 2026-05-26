@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * View: configuracoes.php
  * Painel de configuracoes do Agente IA
@@ -81,17 +81,17 @@ $coresGrupo = [
 }
 </style>
 
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="bx bx-cog iconX"></i></span>
                 <h5>Configuracoes do Agente IA</h5>
                 <div class="buttons">
-                    <a href="<?php echo site_url('agente_ia'); ?>" class="btn btn-mini">
+                    <a href="<?php echo site_url('agente_ia'); ?>" class="btn btn-sm">
                         <i class="bx bx-arrow-back"></i> Voltar
                     </a>
-                    <button type="submit" form="formConfigs" class="btn btn-success btn-mini">
+                    <button type="submit" form="formConfigs" class="btn btn-success btn-sm">
                         <i class="bx bx-save"></i> Salvar
                     </button>
                 </div>

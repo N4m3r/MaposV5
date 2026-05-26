@@ -1,15 +1,15 @@
-<!-- Header -->
-<div class="row-fluid">
-    <div class="span12">
+﻿<!-- Header -->
+<div class="row">
+    <div class="col-12">
         <ul class="breadcrumb">
-            <li><a href="<?php echo site_url('dashboard'); ?>">Dashboard</a> <span class="divider">/</span></li>
+            <li><a href="<?php echo site_url('dashboard'); ?>">Dashboard</a> <span class="dropdown-divider">/</span></li>
             <li class="active">Gerenciador de Migrações</li>
         </ul>
     </div>
 </div>
 
-<div class="row-fluid" style="margin-top: 0">
-    <div class="span12">
+<div class="row" style="margin-top: 0">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-database"></i></span>
@@ -20,28 +20,28 @@
                 <!-- Alertas -->
                 <?php if ($this->session->flashdata('success')): ?>
                     <div class="alert alert-success">
-                        <button type="button" class="close" data-dismiss="alert">×</button>
+                        <button type="button" class="close" data-bs-dismiss="alert">×</button>
                         <?php echo $this->session->flashdata('success'); ?>
                     </div>
                 <?php endif; ?>
 
                 <?php if ($this->session->flashdata('error')): ?>
                     <div class="alert alert-danger">
-                        <button type="button" class="close" data-dismiss="alert">×</button>
+                        <button type="button" class="close" data-bs-dismiss="alert">×</button>
                         <?php echo $this->session->flashdata('error'); ?>
                     </div>
                 <?php endif; ?>
 
                 <!-- Informações -->
-                <div class="row-fluid" style="margin-bottom: 20px;">
-                    <div class="span6">
+                <div class="row" style="margin-bottom: 20px;">
+                    <div class="col-6">
                         <div class="alert alert-info">
                             <strong>Versão Atual:</strong> <span id="current-version"><?php echo $current_version ?: 'Nenhuma'; ?></span><br>
                             <strong>Total de Migrações:</strong> <?php echo count($migrations); ?><br>
                             <strong>Pendentes:</strong> <span id="pending-count">0</span>
                         </div>
                     </div>
-                    <div class="span6" style="text-align: right;">
+                    <div class="col-6" style="text-align: right;">
                         <button id="btn-run-all" class="btn btn-success btn-large">
                             <i class="fas fa-play"></i> Executar Todas as Migrações
                         </button>
@@ -71,18 +71,18 @@
                                         <td><?php echo $migration['name']; ?></td>
                                         <td>
                                             <?php if ($migration['applied']): ?>
-                                                <span class="label label-success"><i class="fas fa-check"></i> Aplicada</span>
+                                                <span class="badge bg-success"><i class="fas fa-check"></i> Aplicada</span>
                                             <?php else: ?>
-                                                <span class="label label-warning"><i class="fas fa-clock"></i> Pendente</span>
+                                                <span class="badge bg-warning"><i class="fas fa-clock"></i> Pendente</span>
                                             <?php endif; ?>
                                         </td>
                                         <td>
                                             <?php if (!$migration['applied']): ?>
-                                                <button class="btn btn-mini btn-success btn-run-version" data-version="<?php echo $migration['version']; ?>">
+                                                <button class="btn btn-sm btn-success btn-run-version" data-version="<?php echo $migration['version']; ?>">
                                                     <i class="fas fa-play"></i> Executar
                                                 </button>
                                             <?php else: ?>
-                                                <button class="btn btn-mini" disabled>
+                                                <button class="btn btn-sm" disabled>
                                                     <i class="fas fa-check"></i> Aplicada
                                                 </button>
                                             <?php endif; ?>
@@ -95,8 +95,8 @@
                 </div>
 
                 <!-- Scripts SQL -->
-                <div class="row-fluid" style="margin-top: 20px;">
-                    <div class="span12">
+                <div class="row" style="margin-top: 20px;">
+                    <div class="col-12">
                         <div class="alert alert-warning">
                             <h5><i class="fas fa-exclamation-triangle"></i> Migração Manual via SQL</h5>
                             <p>Se as migrações automáticas não funcionarem, você pode executar o script SQL manualmente:</p>
@@ -129,7 +129,7 @@ $(document).ready(function() {
 
     // Atualiza contador de pendentes
     function updatePendingCount() {
-        var pending = $('span.label-warning').length;
+        var pending = $('span.badge bg-warning').length;
         $('#pending-count').text(pending);
     }
     updatePendingCount();

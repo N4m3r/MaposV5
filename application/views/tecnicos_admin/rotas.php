@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Rastreamento de Rotas dos Técnicos
  */
@@ -9,8 +9,8 @@ $rotas = $rotas ?? [];
 $tecnicos = $tecnicos ?? [];
 ?>
 
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="icon-road"></i></span>
@@ -51,12 +51,12 @@ $tecnicos = $tecnicos ?? [];
                 <?php endif; ?>
 
                 <!-- Lista de Pontos -->
-                <div class="row-fluid">
-                    <div class="span5">
+                <div class="row">
+                    <div class="col-5">
                         <h5>Pontos de Rastreamento</h5>
                         <?php if (!empty($rotas)): ?>
                             <div style="max-height: 500px; overflow-y: auto;">
-                                <table class="table table-bordered table-striped table-condensed">
+                                <table class="table table-bordered table-striped table-sm">
                                     <thead>
                                         <tr>
                                             <th>Hora</th>
@@ -84,7 +84,7 @@ $tecnicos = $tecnicos ?? [];
                                                 <td>
                                                     <?php if ($rota->latitude && $rota->longitude): ?>
                                                         <a href="https://www.google.com/maps?q=<?php echo $rota->latitude; ?>,<?php echo $rota->longitude; ?>"
-                                                           target="_blank" class="btn btn-mini">
+                                                           target="_blank" class="btn btn-sm">
                                                             <i class="icon-map-marker"></i> Ver no Mapa
                                                         </a>
                                                     <?php else: ?>
@@ -109,7 +109,7 @@ $tecnicos = $tecnicos ?? [];
                     </div>
 
                     <!-- Placeholder para Mapa -->
-                    <div class="span7">
+                    <div class="col-7">
                         <h5>Visualização no Mapa</h5>
                         <div style="background: #f5f5f5; border: 2px dashed #ddd; height: 400px; display: flex; align-items: center; justify-content: center;">
                             <div class="text-center text-muted">
@@ -123,18 +123,18 @@ $tecnicos = $tecnicos ?? [];
 
                         <!-- Resumo -->
                         <?php if (!empty($rotas)): ?>
-                            <div class="row-fluid" style="margin-top: 15px;">
-                                <div class="span4">
+                            <div class="row" style="margin-top: 15px;">
+                                <div class="col-4">
                                     <div class="alert alert-success">
                                         <strong>Login:</strong> <?php echo count(array_filter($rotas, function($r) { return $r->tipo == 'login'; })); ?>
                                     </div>
                                 </div>
-                                <div class="span4">
+                                <div class="col-4">
                                     <div class="alert alert-info">
                                         <strong>Check-ins:</strong> <?php echo count(array_filter($rotas, function($r) { return $r->tipo == 'checkin'; })); ?>
                                     </div>
                                 </div>
-                                <div class="span4">
+                                <div class="col-4">
                                     <div class="alert alert-warning">
                                         <strong>Check-outs:</strong> <?php echo count(array_filter($rotas, function($r) { return $r->tipo == 'checkout'; })); ?>
                                     </div>

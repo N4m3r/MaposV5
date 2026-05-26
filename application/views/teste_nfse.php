@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * View: Diagnóstico Completo do Módulo NFSe
  */
@@ -273,17 +273,17 @@ $dpsTest ? $okCount++ : $errCount++;
 $normTest ? $okCount++ : $errCount++;
 ?>
 
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="widget-box" style="background:var(--wid-dark,#1c1d26); border-color:var(--dark-2,#272835)">
             <div class="widget-title" style="background:var(--dark-0,#191a22); border-bottom:1px solid var(--dark-2,#272835); color:var(--title,#d4d8e0)">
                 <span class="icon"><i class="fas fa-stethoscope" style="color:#1086dd"></i></span>
                 <h5 style="color:var(--title,#d4d8e0)">Diagnostico NFSe &mdash; Ambiente: <span style="color:#1086dd"><?php echo ucfirst($ambienteSistema); ?></span></h5>
                 <div style="float:right; margin:8px 10px 0 0">
-                    <a href="<?php echo site_url('nfse_os'); ?>" class="btn btn-mini" style="background:var(--dark-1,#14141a); border-color:var(--dark-2,#272835); color:var(--branco,#caced8)">
+                    <a href="<?php echo site_url('nfse_os'); ?>" class="btn btn-sm" style="background:var(--dark-1,#14141a); border-color:var(--dark-2,#272835); color:var(--branco,#caced8)">
                         <i class="fas fa-arrow-left"></i> Voltar
                     </a>
-                    <button onclick="location.reload()" class="btn btn-mini" style="background:var(--dark-1,#14141a); border-color:var(--dark-2,#272835); color:var(--branco,#caced8)">
+                    <button onclick="location.reload()" class="btn btn-sm" style="background:var(--dark-1,#14141a); border-color:var(--dark-2,#272835); color:var(--branco,#caced8)">
                         <i class="fas fa-sync-alt"></i> Recarregar
                     </button>
                 </div>
@@ -307,7 +307,7 @@ $normTest ? $okCount++ : $errCount++;
 
                 <!-- PHP Extensions -->
                 <h5 style="color:var(--title,#d4d8e0); margin-top:20px"><i class="fas fa-microchip" style="color:#1086dd"></i> Extensoes PHP</h5>
-                <table class="table table-condensed" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8); margin-bottom:15px">
+                <table class="table table-sm" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8); margin-bottom:15px">
                     <thead><tr style="background:var(--dark-1,#14141a)">
                         <th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0); width:25%">Extensao</th>
                         <th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0); width:15%">Status</th>
@@ -321,7 +321,7 @@ $normTest ? $okCount++ : $errCount++;
 
                 <!-- Tabelas -->
                 <h5 style="color:var(--title,#d4d8e0); margin-top:20px"><i class="fas fa-database" style="color:#1086dd"></i> Tabelas do Banco</h5>
-                <table class="table table-condensed" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8); margin-bottom:15px">
+                <table class="table table-sm" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8); margin-bottom:15px">
                     <thead><tr style="background:var(--dark-1,#14141a)">
                         <th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0); width:25%">Tabela</th>
                         <th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0); width:15%">Status</th>
@@ -335,7 +335,7 @@ $normTest ? $okCount++ : $errCount++;
 
                 <!-- Colunas -->
                 <h5 style="color:var(--title,#d4d8e0); margin-top:20px"><i class="fas fa-columns" style="color:#1086dd"></i> Colunas do Banco</h5>
-                <table class="table table-condensed" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8); margin-bottom:15px">
+                <table class="table table-sm" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8); margin-bottom:15px">
                     <thead><tr style="background:var(--dark-1,#14141a)">
                         <th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0); width:25%">Coluna</th>
                         <th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0); width:15%">Status</th>
@@ -349,7 +349,7 @@ $normTest ? $okCount++ : $errCount++;
 
                 <!-- Configuracoes Impostos -->
                 <h5 style="color:var(--title,#d4d8e0); margin-top:20px"><i class="fas fa-sliders-h" style="color:#1086dd"></i> Configuracoes de Impostos</h5>
-                <table class="table table-condensed" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8); margin-bottom:15px">
+                <table class="table table-sm" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8); margin-bottom:15px">
                     <thead><tr style="background:var(--dark-1,#14141a)">
                         <th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0); width:25%">Configuracao</th>
                         <th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0); width:15%">Status</th>
@@ -366,7 +366,7 @@ $normTest ? $okCount++ : $errCount++;
 
                 <!-- Emitente -->
                 <h5 style="color:var(--title,#d4d8e0); margin-top:20px"><i class="fas fa-building" style="color:#1086dd"></i> Dados do Emitente (Prestador)</h5>
-                <table class="table table-condensed" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8); margin-bottom:15px">
+                <table class="table table-sm" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8); margin-bottom:15px">
                     <thead><tr style="background:var(--dark-1,#14141a)">
                         <th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0); width:25%">Campo</th>
                         <th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0); width:15%">Status</th>
@@ -387,7 +387,7 @@ $normTest ? $okCount++ : $errCount++;
 
                 <!-- Certificado -->
                 <h5 style="color:var(--title,#d4d8e0); margin-top:20px"><i class="fas fa-certificate" style="color:#1086dd"></i> Certificado Digital</h5>
-                <table class="table table-condensed" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8); margin-bottom:15px">
+                <table class="table table-sm" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8); margin-bottom:15px">
                     <thead><tr style="background:var(--dark-1,#14141a)">
                         <th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0); width:25%">Item</th>
                         <th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0); width:15%">Status</th>
@@ -401,7 +401,7 @@ $normTest ? $okCount++ : $errCount++;
 
                 <!-- Testes Funcionais -->
                 <h5 style="color:var(--title,#d4d8e0); margin-top:20px"><i class="fas fa-vial" style="color:#1086dd"></i> Testes Funcionais</h5>
-                <table class="table table-condensed" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8); margin-bottom:15px">
+                <table class="table table-sm" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8); margin-bottom:15px">
                     <thead><tr style="background:var(--dark-1,#14141a)">
                         <th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0); width:25%">Teste</th>
                         <th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0); width:15%">Status</th>
@@ -423,7 +423,7 @@ $normTest ? $okCount++ : $errCount++;
 
                 <!-- Diretorios -->
                 <h5 style="color:var(--title,#d4d8e0); margin-top:20px"><i class="fas fa-folder-open" style="color:#1086dd"></i> Permissoes de Diretorio</h5>
-                <table class="table table-condensed" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8); margin-bottom:15px">
+                <table class="table table-sm" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8); margin-bottom:15px">
                     <thead><tr style="background:var(--dark-1,#14141a)">
                         <th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0); width:25%">Diretorio/Arquivo</th>
                         <th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0); width:15%">Status</th>

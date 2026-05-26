@@ -1,4 +1,4 @@
-<div class="widget-box">
+﻿<div class="widget-box">
     <div class="widget-title" style="margin: -20px 0 0">
         <span class="icon">
             <i class="bx bx-receipt"></i>
@@ -45,9 +45,9 @@
                         echo '<td>';
                         if (!empty($r->link_impressao) || !empty($r->pdf_url) || !empty($r->link_pdf)) {
                             $link = $r->link_impressao ?? $r->pdf_url ?? $r->link_pdf;
-                            echo '<a href="' . $link . '" target="_blank" class="btn btn-mini btn-success" title="Download PDF"><i class="bx bx-download"></i> PDF</a>';
+                            echo '<a href="' . $link . '" target="_blank" class="btn btn-sm btn-success" title="Download PDF"><i class="bx bx-download"></i> PDF</a>';
                         }
-                        echo '<a href="' . base_url('index.php/mine/visualizarOs/' . ($r->os_id ?? 0)) . '" class="btn btn-mini btn-info" style="margin-left: 5px;" title="Ver OS"><i class="bx bx-show"></i> OS</a>';
+                        echo '<a href="' . base_url('index.php/mine/visualizarOs/' . ($r->os_id ?? 0)) . '" class="btn btn-sm btn-info" style="margin-left: 5px;" title="Ver OS"><i class="bx bx-show"></i> OS</a>';
                         echo '</td>';
                         echo '</tr>';
                     }

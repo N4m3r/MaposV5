@@ -1,6 +1,6 @@
-<?php $totalProdutos = 0; ?>
-<div class="row-fluid" style="margin-top: 0">
-    <div class="span12">
+﻿<?php $totalProdutos = 0; ?>
+<div class="row" style="margin-top: 0">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title" style="margin: -20px 0 0">
                 <span class="icon">
@@ -9,10 +9,10 @@
                 <h5>Termo de Garantia</h5>
                 <div class="buttons">
                     <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eGarantia')) {
-                        echo '<a title="Editar Termo de Garantia" class="button btn btn-mini btn-success" href="' . base_url() . 'index.php/garantias/editar/' . $result->idGarantias . '">
+                        echo '<a title="Editar Termo de Garantia" class="button btn btn-sm btn-success" href="' . base_url() . 'index.php/garantias/editar/' . $result->idGarantias . '">
     <span class="button__icon"><i class="bx bx-edit"></i> </span> <span class="button__text">Editar</span></a>';
                     } ?>
-                    <a target="_blank" title="Imprimir" class="button btn btn-mini btn-inverse" href="<?php echo site_url() ?>/garantias/imprimir/<?php echo e($result->idGarantias); ?>">
+                    <a target="_blank" title="Imprimir" class="button btn btn-sm btn-inverse" href="<?php echo site_url() ?>/garantias/imprimir/<?php echo e($result->idGarantias); ?>">
                       <span class="button__icon"><i class="bx bx-printer"></i></span> <span class="button__text">Imprimir</span></a>
                 </div>
             </div>

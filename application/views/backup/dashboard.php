@@ -1,5 +1,5 @@
-<div class="row-fluid">
-    <div class="span12">
+﻿<div class="row">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon">
@@ -12,49 +12,49 @@
                 <!-- Mensagens -->
                 <?php if ($this->session->flashdata('success')): ?>
                     <div class="alert alert-success">
-                        <button class="close" data-dismiss="alert">×</button>
+                        <button class="close" data-bs-dismiss="alert">×</button>
                         <i class="icon-check"></i> <?php echo $this->session->flashdata('success'); ?>
                     </div>
                 <?php endif; ?>
 
                 <?php if ($this->session->flashdata('error')): ?>
-                    <div class="alert alert-error">
-                        <button class="close" data-dismiss="alert">×</button>
+                    <div class="alert alert-danger">
+                        <button class="close" data-bs-dismiss="alert">×</button>
                         <i class="icon-remove"></i> <?php echo $this->session->flashdata('error'); ?>
                     </div>
                 <?php endif; ?>
 
                 <?php if ($this->session->flashdata('warning')): ?>
                     <div class="alert alert-warning">
-                        <button class="close" data-dismiss="alert">×</button>
+                        <button class="close" data-bs-dismiss="alert">×</button>
                         <i class="icon-exclamation-sign"></i> <?php echo $this->session->flashdata('warning'); ?>
                     </div>
                 <?php endif; ?>
 
                 <!-- Informações do Banco -->
-                <div class="row-fluid" style="margin-bottom: 20px;">
-                    <div class="span3">
+                <div class="row" style="margin-bottom: 20px;">
+                    <div class="col-3">
                         <div class="stat-box" style="background: #5bc0de; color: white; padding: 15px; border-radius: 5px; text-align: center;">
                             <i class="icon-hdd" style="font-size: 30px; display: block; margin-bottom: 10px;"></i>
                             <span style="font-size: 12px; opacity: 0.9;">Banco de Dados</span>
                             <strong style="display: block; font-size: 18px; margin-top: 5px;"><?php echo $database_info['nome']; ?></strong>
                         </div>
                     </div>
-                    <div class="span3">
+                    <div class="col-3">
                         <div class="stat-box" style="background: #5cb85c; color: white; padding: 15px; border-radius: 5px; text-align: center;">
                             <i class="icon-table" style="font-size: 30px; display: block; margin-bottom: 10px;"></i>
                             <span style="font-size: 12px; opacity: 0.9;">Tabelas</span>
                             <strong style="display: block; font-size: 18px; margin-top: 5px;"><?php echo $database_info['tabelas']; ?></strong>
                         </div>
                     </div>
-                    <div class="span3">
+                    <div class="col-3">
                         <div class="stat-box" style="background: #f0ad4e; color: white; padding: 15px; border-radius: 5px; text-align: center;">
                             <i class="icon-backward" style="font-size: 30px; display: block; margin-bottom: 10px;"></i>
                             <span style="font-size: 12px; opacity: 0.9;">Backups Disponíveis</span>
                             <strong style="display: block; font-size: 18px; margin-top: 5px;"><?php echo count($backups); ?></strong>
                         </div>
                     </div>
-                    <div class="span3">
+                    <div class="col-3">
                         <div class="stat-box" style="background: #d9534f; color: white; padding: 15px; border-radius: 5px; text-align: center;">
                             <i class="icon-time" style="font-size: 30px; display: block; margin-bottom: 10px;"></i>
                             <span style="font-size: 12px; opacity: 0.9;">Último Backup</span>
@@ -66,8 +66,8 @@
                 </div>
 
                 <!-- Ações Principais -->
-                <div class="row-fluid" style="margin-bottom: 20px;">
-                    <div class="span12">
+                <div class="row" style="margin-bottom: 20px;">
+                    <div class="col-12">
                         <a href="#" id="btnNovoBackup" class="btn btn-success">
                             <i class="icon-plus icon-white"></i> Realizar Backup Agora
                         </a>
@@ -120,23 +120,23 @@
                                 <td>
                                     <strong><?php echo htmlspecialchars($backup['nome']); ?></strong>
                                     <?php if (strpos($backup['nome'], 'auto_backup_pre_restore') !== false): ?>
-                                        <span class="label label-warning">Auto (Pré-Restauração)</span>
+                                        <span class="badge bg-warning">Auto (Pré-Restauração)</span>
                                     <?php endif; ?>
                                 </td>
                                 <td><?php echo date('d/m/Y H:i', strtotime($backup['data'])); ?></td>
                                 <td><?php echo $backup['tamanho']; ?></td>
                                 <td>
                                     <a href="<?php echo site_url('backup/download/' . $backup['nome']); ?>"
-                                       class="btn btn-mini btn-primary" title="Download">
+                                       class="btn btn-sm btn-primary" title="Download">
                                         <i class="icon-download-alt icon-white"></i>
                                     </a>
                                     <a href="#"
                                        onclick="return verificarBackup('<?php echo $backup['nome']; ?>')"
-                                       class="btn btn-mini btn-info" title="Verificar">
+                                       class="btn btn-sm btn-info" title="Verificar">
                                         <i class="icon-check icon-white"></i>
                                     </a>
                                     <a href="<?php echo site_url('backup/excluir/' . $backup['nome']); ?>"
-                                       class="btn btn-mini btn-danger"
+                                       class="btn btn-sm btn-danger"
                                        onclick="return confirm('Tem certeza que deseja excluir este backup?')"
                                        title="Excluir">
                                         <i class="icon-trash icon-white"></i>
@@ -166,9 +166,9 @@
 </div>
 
 <!-- Modal de Verificação -->
-<div id="modalVerificacao" class="modal hide fade" tabindex="-1" role="dialog">
+<div id="modalVerificacao" class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">×</button>
+        <button type="button" class="close" data-bs-dismiss="modal">×</button>
         <h3><i class="icon-check"></i> Verificação de Backup</h3>
     </div>
     <div class="modal-body">
@@ -177,7 +177,7 @@
         </div>
     </div>
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal">Fechar</button>
+        <button class="btn" data-bs-dismiss="modal">Fechar</button>
     </div>
 </div>
 
@@ -230,18 +230,18 @@ function verificarBackup(arquivo) {
             var html = '';
             if (response.valido) {
                 html += '<div class="alert alert-success"><i class="icon-ok"></i> <strong>Arquivo válido!</strong></div>';
-                html += '<table class="table table-condensed">';
+                html += '<table class="table table-sm">';
                 html += '<tr><td><strong>Tamanho:</strong></td><td>' + response.tamanho + '</td></tr>';
-                html += '<tr><td><strong>Estrutura:</strong></td><td>' + (response.tem_estrutura ? '<span class="label label-success">Sim</span>' : '<span class="label">Não</span>') + '</td></tr>';
-                html += '<tr><td><strong>Dados:</strong></td><td>' + (response.tem_dados ? '<span class="label label-success">Sim</span>' : '<span class="label">Não</span>') + '</td></tr>';
+                html += '<tr><td><strong>Estrutura:</strong></td><td>' + (response.tem_estrutura ? '<span class="badge bg-success">Sim</span>' : '<span class="label">Não</span>') + '</td></tr>';
+                html += '<tr><td><strong>Dados:</strong></td><td>' + (response.tem_dados ? '<span class="badge bg-success">Sim</span>' : '<span class="label">Não</span>') + '</td></tr>';
                 html += '</table>';
             } else {
-                html = '<div class="alert alert-error"><i class="icon-remove"></i> <strong>Problema encontrado:</strong> ' + response.mensagem + '</div>';
+                html = '<div class="alert alert-danger"><i class="icon-remove"></i> <strong>Problema encontrado:</strong> ' + response.mensagem + '</div>';
             }
             $('#verificacaoResultado').html(html);
         },
         error: function() {
-            $('#verificacaoResultado').html('<div class="alert alert-error">Erro ao verificar arquivo.</div>');
+            $('#verificacaoResultado').html('<div class="alert alert-danger">Erro ao verificar arquivo.</div>');
         }
     });
 

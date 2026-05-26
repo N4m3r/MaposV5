@@ -1,4 +1,4 @@
-/* Personalização da DIV com os campos de usuário e senha na área de login */
+﻿/* Personalização da DIV com os campos de usuário e senha na área de login */
 
 .div-login {
     background-color: rgba(242, 242, 242, 0.1);
@@ -61,7 +61,7 @@
     color: #888!important;
 }
 
-.modal-body .control-group .help-inline {
+.modal-body .mb-3 .help-inline {
     margin-bottom: 8px!important;
 }
 
@@ -528,11 +528,11 @@ select:disabled {
 }
 
 /* Para selects com classes específicas do sistema antigo */
-select.span12,
-select.span6,
-select.span5,
-select.span4,
-select.span3 {
+select.col-12,
+select.col-6,
+select.col-5,
+select.col-4,
+select.col-3 {
     height: 46px !important;
     color: #000 !important;
     padding: 10px 35px 10px 15px !important;

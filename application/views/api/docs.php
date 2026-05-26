@@ -1,22 +1,22 @@
-<div class="row-fluid">
-    <div class="span12">
+﻿<div class="row">
+    <div class="col-12">
         <ul class="breadcrumb">
-            <li><a href="<?= base_url() ?>">Dashboard</a><span class="divider">/</span></li>
+            <li><a href="<?= base_url() ?>">Dashboard</a><span class="dropdown-divider">/</span></li>
             <li class="active">API v2 Documentação</li>
         </ul>
     </div>
 </div>
 
-<div class="row-fluid">
+<div class="row">
     <!-- Sidebar -->
-    <div class="span3">
+    <div class="col-3">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-book"></i></span>
                 <h5>Índice</h5>
             </div>
             <div class="widget-content" style="background: #2c3e50;">
-                <ul class="nav nav-list" style="padding-left: 15px;">
+                <ul class="nav nav flex-column" style="padding-left: 15px;">
                     <li class="nav-header" style="color: #fff; text-shadow: none; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 5px; margin-bottom: 10px;">Geral</li>
                     <li><a href="#intro" style="color: #fff; text-shadow: none;">Introdução</a></li>
                     <li><a href="#auth" style="color: #fff; text-shadow: none;">Autenticação</a></li>
@@ -40,7 +40,7 @@
             <div class="widget-content">
                 <p>Gere um token de teste para o fluxo de autorizacoes do Agente IA:</p>
                 <pre id="auth-token-display" style="font-size: 11px; word-break: break-all;">Clique em Gerar</pre>
-                <button class="btn btn-small btn-primary" onclick="gerarAuthToken()">Gerar AUTH-Token</button>
+                <button class="btn btn-sm btn-primary" onclick="gerarAuthToken()">Gerar AUTH-Token</button>
             </div>
         </div>
 
@@ -52,13 +52,13 @@
             <div class="widget-content">
                 <p>Use o token abaixo para autenticar suas requisicoes:</p>
                 <pre id="token-display" style="font-size: 11px; word-break: break-all;">Clique em Gerar</pre>
-                <button class="btn btn-small btn-primary" onclick="gerarToken()">Gerar Token</button>
+                <button class="btn btn-sm btn-primary" onclick="gerarToken()">Gerar Token</button>
             </div>
         </div>
     </div>
 
     <!-- Content -->
-    <div class="span9">
+    <div class="col-9">
         <!-- Introdução -->
         <div class="widget-box" id="intro">
             <div class="widget-title">
@@ -74,7 +74,7 @@
                 <h5>Health Check</h5>
                 <p>Verifique se a API está online:</p>
                 <pre>GET <?= $apiBaseUrl ?>/health</pre>
-                <p><a href="<?= $apiBaseUrl ?>/health" target="_blank" class="btn btn-mini btn-info">Testar Health Check</a></p>
+                <p><a href="<?= $apiBaseUrl ?>/health" target="_blank" class="btn btn-sm btn-info">Testar Health Check</a></p>
 
                 <h5>Formato de Resposta</h5>
                 <p>Todas as respostas são em JSON:</p>
@@ -175,7 +175,7 @@ X-RateLimit-Reset: 1640995200</pre>
             </div>
             <div class="widget-content">
 
-                <h6><span class="label label-success">GET</span> /clientes</h6>
+                <h6><span class="badge bg-success">GET</span> /clientes</h6>
                 <p>Lista todos os clientes.</p>
                 <pre>// Query Parameters:
 ?page=1        // Página atual
@@ -185,12 +185,12 @@ X-RateLimit-Reset: 1640995200</pre>
 
                 <hr>
 
-                <h6><span class="label label-success">GET</span> /clientes/{id}</h6>
+                <h6><span class="badge bg-success">GET</span> /clientes/{id}</h6>
                 <p>Obtém detalhes de um cliente.</p>
 
                 <hr>
 
-                <h6><span class="label label-info">POST</span> /clientes</h6>
+                <h6><span class="badge bg-info">POST</span> /clientes</h6>
                 <p>Cria um novo cliente.</p>
                 <pre>{
   "nomeCliente": "João Silva",
@@ -207,12 +207,12 @@ X-RateLimit-Reset: 1640995200</pre>
 
                 <hr>
 
-                <h6><span class="label label-warning">PUT</span> /clientes/{id}</h6>
+                <h6><span class="badge bg-warning">PUT</span> /clientes/{id}</h6>
                 <p>Atualiza um cliente.</p>
 
                 <hr>
 
-                <h6><span class="label label-important">DELETE</span> /clientes/{id}</h6>
+                <h6><span class="badge bg-danger">DELETE</span> /clientes/{id}</h6>
                 <p>Remove um cliente.</p>
             </div>
         </div>
@@ -225,7 +225,7 @@ X-RateLimit-Reset: 1640995200</pre>
             </div>
             <div class="widget-content">
 
-                <h6><span class="label label-success">GET</span> /os</h6>
+                <h6><span class="badge bg-success">GET</span> /os</h6>
                 <p>Lista todas as OS.</p>
                 <pre>// Query Parameters:
 ?status=Aberto        // Filtrar por status
@@ -236,7 +236,7 @@ X-RateLimit-Reset: 1640995200</pre>
 
                 <hr>
 
-                <h6><span class="label label-info">POST</span> /os</h6>
+                <h6><span class="badge bg-info">POST</span> /os</h6>
                 <p>Cria uma nova OS.</p>
                 <pre>{
   "clientes_id": 123,
@@ -254,7 +254,7 @@ X-RateLimit-Reset: 1640995200</pre>
 
                 <hr>
 
-                <h6><span class="label label-warning">PUT</span> /os/{id}/status</h6>
+                <h6><span class="badge bg-warning">PUT</span> /os/{id}/status</h6>
                 <p>Atualiza status da OS.</p>
                 <pre>{ "status": "Finalizado", "observacoes": "Reparo concluído" }</pre>
             </div>
@@ -268,12 +268,12 @@ X-RateLimit-Reset: 1640995200</pre>
             </div>
             <div class="widget-content">
 
-                <h6><span class="label label-success">GET</span> /vendas</h6>
+                <h6><span class="badge bg-success">GET</span> /vendas</h6>
                 <p>Lista todas as vendas.</p>
 
                 <hr>
 
-                <h6><span class="label label-info">POST</span> /vendas</h6>
+                <h6><span class="badge bg-info">POST</span> /vendas</h6>
                 <p>Cria uma nova venda.</p>
                 <pre>{
   "clientes_id": 123,
@@ -300,7 +300,7 @@ X-RateLimit-Reset: 1640995200</pre>
             </div>
             <div class="widget-content">
 
-                <h6><span class="label label-success">GET</span> /produtos</h6>
+                <h6><span class="badge bg-success">GET</span> /produtos</h6>
                 <p>Lista todos os produtos.</p>
                 <pre>// Query Parameters:
 ?estoque_baixo=true   // Apenas produtos com estoque baixo
@@ -308,7 +308,7 @@ X-RateLimit-Reset: 1640995200</pre>
 
                 <hr>
 
-                <h6><span class="label label-success">GET</span> /produtos/{id}/estoque</h6>
+                <h6><span class="badge bg-success">GET</span> /produtos/{id}/estoque</h6>
                 <p>Consulta movimentações de estoque.</p>
             </div>
         </div>
@@ -384,7 +384,7 @@ if (!hash_equals('sha256=' . $expected, $signature)) {
             <div class="widget-content">
                 <p>Endpoints para controle de autorizacoes do Agente IA. O agente solicita aprovacao para acoes criticas via token no formato <code>AUTH-XXXXXXXX</code>.</p>
 
-                <h6><span class="label label-success">GET</span> /autorizacoes/listar</h6>
+                <h6><span class="badge bg-success">GET</span> /autorizacoes/listar</h6>
                 <p>Lista autorizacoes pendentes/aprovadas/rejeitadas.</p>
                 <pre>// Query Parameters:
 ?status=pendente     // pendente | aprovada | rejeitada | expirada
@@ -394,7 +394,7 @@ if (!hash_equals('sha256=' . $expected, $signature)) {
 
                 <hr>
 
-                <h6><span class="label label-info">POST</span> /autorizacoes/verificar</h6>
+                <h6><span class="badge bg-info">POST</span> /autorizacoes/verificar</h6>
                 <p>Verifica se um numero pode executar uma acao sem autorizacao.</p>
                 <pre>{
   "numero_telefone": "5591999999999",
@@ -403,7 +403,7 @@ if (!hash_equals('sha256=' . $expected, $signature)) {
 
                 <hr>
 
-                <h6><span class="label label-info">POST</span> /autorizacoes/solicitar</h6>
+                <h6><span class="badge bg-info">POST</span> /autorizacoes/solicitar</h6>
                 <p>Cria uma nova autorizacao e retorna o token <code>AUTH-XXXXXXXX</code>.</p>
                 <pre>{
   "numero_telefone": "5591999999999",
@@ -425,7 +425,7 @@ if (!hash_equals('sha256=' . $expected, $signature)) {
 
                 <hr>
 
-                <h6><span class="label label-info">POST</span> /autorizacoes/validar</h6>
+                <h6><span class="badge bg-info">POST</span> /autorizacoes/validar</h6>
                 <p>Valida o token respondido pelo usuario.</p>
                 <pre>{
   "numero_telefone": "5591999999999",
@@ -446,7 +446,7 @@ if (!hash_equals('sha256=' . $expected, $signature)) {
 
                 <hr>
 
-                <h6><span class="label label-info">POST</span> /autorizacoes/responder</h6>
+                <h6><span class="badge bg-info">POST</span> /autorizacoes/responder</h6>
                 <p>Admin responde uma autorizacao pelo painel.</p>
                 <pre>{
   "autorizacao_id": 123,

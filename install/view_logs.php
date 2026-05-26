@@ -69,7 +69,7 @@ $cleared = isset($_GET['cleared']);
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>MapOS V5 - Logs de Instalação</title>
-    <link rel="stylesheet" href="../install/assets/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="../install/assets/css/bootstrap5.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css" />
     <style>
         body { background: #f5f5f5; padding: 20px; }

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * View: dashboard.php
  * Dashboard geral do Agente IA no MapOS
@@ -31,23 +31,23 @@
 .dash-section { margin-top: 20px; }
 </style>
 
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="bx bx-bot iconX"></i></span>
                 <h5>Dashboard do Agente IA</h5>
                 <div class="buttons">
-                    <a href="<?php echo site_url('agente_ia/configuracoes'); ?>" class="btn btn-warning btn-mini">
+                    <a href="<?php echo site_url('agente_ia/configuracoes'); ?>" class="btn btn-warning btn-sm">
                         <i class="bx bx-cog"></i> Configuracoes
                     </a>
-                    <a href="<?php echo site_url('agente_ia/permissoes'); ?>" class="btn btn-info btn-mini">
+                    <a href="<?php echo site_url('agente_ia/permissoes'); ?>" class="btn btn-info btn-sm">
                         <i class="bx bx-lock-alt"></i> Permissoes
                     </a>
-                    <a href="<?php echo site_url('agente_ia/logs'); ?>" class="btn btn-mini">
+                    <a href="<?php echo site_url('agente_ia/logs'); ?>" class="btn btn-sm">
                         <i class="bx bx-list-ul"></i> Logs
                     </a>
-                    <a href="<?php echo site_url('agente_ia/relatorios_templates'); ?>" class="btn btn-mini btn-success">
+                    <a href="<?php echo site_url('agente_ia/relatorios_templates'); ?>" class="btn btn-sm btn-success">
                         <i class="bx bx-file"></i> Templates
                     </a>
                 </div>
@@ -55,38 +55,38 @@
             <div class="widget-content">
 
                 <!-- Cards de metricas -->
-                <div class="row-fluid">
-                    <div class="span2">
+                <div class="row">
+                    <div class="col-2">
                         <div class="metric-card card-green">
                             <span class="number"><?php echo $stats['aut_pendentes'] ?? 0; ?></span>
                             <span class="label-text">Pendentes</span>
                         </div>
                     </div>
-                    <div class="span2">
+                    <div class="col-2">
                         <div class="metric-card card-blue">
                             <span class="number"><?php echo $stats['aut_executadas'] ?? 0; ?></span>
                             <span class="label-text">Executadas Hoje</span>
                         </div>
                     </div>
-                    <div class="span2">
+                    <div class="col-2">
                         <div class="metric-card card-orange">
                             <span class="number"><?php echo $stats['interacoes_hoje'] ?? 0; ?></span>
                             <span class="label-text">Interacoes Hoje</span>
                         </div>
                     </div>
-                    <div class="span2">
+                    <div class="col-2">
                         <div class="metric-card card-red">
                             <span class="number"><?php echo $stats['aut_expiradas'] ?? 0; ?></span>
                             <span class="label-text">Expiradas</span>
                         </div>
                     </div>
-                    <div class="span2">
+                    <div class="col-2">
                         <div class="metric-card card-purple">
                             <span class="number"><?php echo $stats['numeros_vinculados'] ?? 0; ?></span>
                             <span class="label-text">Numeros Vinculados</span>
                         </div>
                     </div>
-                    <div class="span2">
+                    <div class="col-2">
                         <div class="metric-card" style="background:linear-gradient(135deg,#667eea,#764ba2);color:#fff">
                             <span class="number"><?php echo $stats['taxa_aprovacao'] ?? '0%'; ?></span>
                             <span class="label-text">Taxa Aprovacao</span>
@@ -100,7 +100,7 @@
                         <div class="widget-title">
                             <span class="icon"><i class="bx bx-time-five iconX"></i></span>
                             <h5>Autorizacoes Pendentes Rápidas</h5>
-                            <a href="<?php echo site_url('agente_ia'); ?>" class="btn btn-mini">Ver todas</a>
+                            <a href="<?php echo site_url('agente_ia'); ?>" class="btn btn-sm">Ver todas</a>
                         </div>
                         <div class="widget-content nopadding">
                             <table class="table table-bordered table-striped">
@@ -131,8 +131,8 @@
                                                 <td>
                                                     <form method="post" action="<?php echo site_url('agente_ia/responder'); ?>" style="margin:0">
                                                         <input type="hidden" name="autorizacao_id" value="<?php echo $p['id']; ?>">
-                                                        <button type="submit" name="resposta" value="aprovar" class="btn btn-mini btn-success"><i class="bx bx-check"></i></button>
-                                                        <button type="submit" name="resposta" value="rejeitar" class="btn btn-mini btn-danger"><i class="bx bx-x"></i></button>
+                                                        <button type="submit" name="resposta" value="aprovar" class="btn btn-sm btn-success"><i class="bx bx-check"></i></button>
+                                                        <button type="submit" name="resposta" value="rejeitar" class="btn btn-sm btn-danger"><i class="bx bx-x"></i></button>
                                                     </form>
                                                 </td>
                                             </tr>
@@ -150,7 +150,7 @@
                         <div class="widget-title">
                             <span class="icon"><i class="bx bx-message-detail iconX"></i></span>
                             <h5>Ultimas Interacoes</h5>
-                            <a href="<?php echo site_url('agente_ia/logs'); ?>" class="btn btn-mini">Ver todos</a>
+                            <a href="<?php echo site_url('agente_ia/logs'); ?>" class="btn btn-sm">Ver todos</a>
                         </div>
                         <div class="widget-content nopadding">
                             <table class="table table-bordered table-striped">

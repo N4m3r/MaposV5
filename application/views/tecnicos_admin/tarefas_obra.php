@@ -1,4 +1,4 @@
-<div class="new122">
+﻿<div class="new122">
     <!-- Header -->
     <div class="widget-title" style="margin: -20px 0 0; display: flex; justify-content: space-between; align-items: center;">
         <div>
@@ -6,15 +6,15 @@
             <h5>Tarefas da Obra: <?= htmlspecialchars($obra->nome, ENT_QUOTES, 'UTF-8') ?></h5>
         </div>
         <div class="buttons">
-            <a href="<?= site_url('tecnicos_admin/ver_obra/' . $obra->id) ?>" class="button btn btn-mini btn-default">
+            <a href="<?= site_url('tecnicos_admin/ver_obra/' . $obra->id) ?>" class="button btn btn-sm btn-default">
                 <span class="button__icon"><i class="bx bx-arrow-back"></i></span>
                 <span class="button__text2">Voltar a Obra</span>
             </a>
-            <a href="#modal-nova-tarefa" data-toggle="modal" class="button btn btn-mini btn-success">
+            <a href="#modal-nova-tarefa" data-bs-toggle="modal" class="button btn btn-sm btn-success">
                 <span class="button__icon"><i class="bx bx-plus"></i></span>
                 <span class="button__text2">Nova Tarefa</span>
             </a>
-            <a href="<?= site_url('tecnicos_admin/relatorio_atividades_dia?obra_id=' . $obra->id) ?>" class="button btn btn-mini btn-info">
+            <a href="<?= site_url('tecnicos_admin/relatorio_atividades_dia?obra_id=' . $obra->id) ?>" class="button btn btn-sm btn-info">
                 <span class="button__icon"><i class="bx bx-file"></i></span>
                 <span class="button__text2">Relatorio do Dia</span>
             </a>
@@ -22,26 +22,26 @@
     </div>
 
     <!-- Estatisticas -->
-    <div class="row-fluid" style="margin-top: 20px;">
-        <div class="span3">
+    <div class="row" style="margin-top: 20px;">
+        <div class="col-3">
             <div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 10px;">
                 <div style="font-size: 2rem; font-weight: 700;"><?= $stats['total'] ?></div>
                 <div style="font-size: 0.9rem; opacity: 0.9;">Total de Tarefas</div>
             </div>
         </div>
-        <div class="span3">
+        <div class="col-3">
             <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 20px; border-radius: 10px;">
                 <div style="font-size: 2rem; font-weight: 700;"><?= $stats['pendentes'] ?></div>
                 <div style="font-size: 0.9rem; opacity: 0.9;">Pendentes</div>
             </div>
         </div>
-        <div class="span3">
+        <div class="col-3">
             <div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; padding: 20px; border-radius: 10px;">
                 <div style="font-size: 2rem; font-weight: 700;"><?= $stats['em_andamento'] ?></div>
                 <div style="font-size: 0.9rem; opacity: 0.9;">Em Andamento</div>
             </div>
         </div>
-        <div class="span3">
+        <div class="col-3">
             <div class="stat-card" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; padding: 20px; border-radius: 10px;">
                 <div style="font-size: 2rem; font-weight: 700;"><?= $stats['concluidas'] ?></div>
                 <div style="font-size: 0.9rem; opacity: 0.9;">Concluidas</div>
@@ -50,8 +50,8 @@
     </div>
 
     <!-- Lista de Tarefas -->
-    <div class="row-fluid" style="margin-top: 20px;">
-        <div class="span12">
+    <div class="row" style="margin-top: 20px;">
+        <div class="col-12">
             <div class="widget-box">
                 <div class="widget-title">
                     <span class="icon"><i class="bx bx-list-check"></i></span>
@@ -117,7 +117,7 @@
                                                 <br><small style="color: #666;"><?= htmlspecialchars(substr($tarefa->descricao, 0, 100), ENT_QUOTES, 'UTF-8') ?>...</small>
                                             <?php endif; ?>
                                             <?php if ($atrasada): ?>
-                                                <span class="label label-important">ATRASADA</span>
+                                                <span class="badge bg-danger">ATRASADA</span>
                                             <?php endif; ?>
                                         </td>
                                         <td><?= $tarefa->tecnico_nome ?: 'Nao atribuido' ?></td>
@@ -146,16 +146,16 @@
                                         </td>
                                         <td>
                                             <div class="btn-group">
-                                                <a href="#modal-editar-tarefa" data-toggle="modal" data-id="<?= $tarefa->id ?>"
-                                                   class="btn btn-mini btn-info btn-editar" title="Editar">
+                                                <a href="#modal-editar-tarefa" data-bs-toggle="modal" data-id="<?= $tarefa->id ?>"
+                                                   class="btn btn-sm btn-info btn-editar" title="Editar">
                                                     <i class="bx bx-edit"></i>
                                                 </a>
-                                                <a href="#modal-historico" data-toggle="modal" data-id="<?= $tarefa->id ?>"
-                                                   class="btn btn-mini btn-default btn-historico" title="Historico">
+                                                <a href="#modal-historico" data-bs-toggle="modal" data-id="<?= $tarefa->id ?>"
+                                                   class="btn btn-sm btn-default btn-historico" title="Historico">
                                                     <i class="bx bx-history"></i>
                                                 </a>
                                                 <a href="<?= site_url('tecnicos_admin/excluir_tarefa/' . $tarefa->id) ?>"
-                                                   class="btn btn-mini btn-danger" title="Excluir"
+                                                   class="btn btn-sm btn-danger" title="Excluir"
                                                    onclick="return confirm('Tem certeza que deseja excluir esta tarefa?')">
                                                     <i class="bx bx-trash"></i>
                                                 </a>
@@ -168,7 +168,7 @@
                                     <td colspan="8" style="text-align: center; padding: 40px;">
                                         <i class="bx bx-task-x" style="font-size: 3rem; color: #ddd;"></i>
                                         <p style="color: #999; margin-top: 10px;">Nenhuma tarefa cadastrada.</p>
-                                        <a href="#modal-nova-tarefa" data-toggle="modal" class="btn btn-small btn-success">
+                                        <a href="#modal-nova-tarefa" data-bs-toggle="modal" class="btn btn-sm btn-success">
                                             <i class="bx bx-plus"></i> Criar Primeira Tarefa
                                         </a>
                                     </td>
@@ -183,32 +183,32 @@
 </div>
 
 <!-- Modal: Nova Tarefa -->
-<div id="modal-nova-tarefa" class="modal hide fade" tabindex="-1" role="dialog">
+<div id="modal-nova-tarefa" class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">×</button>
         <h5><i class="bx bx-plus-circle"></i> Nova Tarefa</h5>
     </div>
     <form action="<?= site_url('tecnicos_admin/salvar_tarefa') ?>" method="post">
         <input type="hidden" name="obra_id" value="<?= $obra->id ?>">
         <div class="modal-body">
-            <div class="control-group">
-                <label class="control-label">Titulo *</label>
+            <div class="mb-3">
+                <label class="form-label">Titulo *</label>
                 <div class="controls">
-                    <input type="text" name="titulo" class="span11" required placeholder="Ex: Instalacao eletrica - Quadro principal">
+                    <input type="text" name="titulo" class="col-11" required placeholder="Ex: Instalacao eletrica - Quadro principal">
                 </div>
             </div>
-            <div class="control-group">
-                <label class="control-label">Descricao</label>
+            <div class="mb-3">
+                <label class="form-label">Descricao</label>
                 <div class="controls">
-                    <textarea name="descricao" class="span11" rows="3" placeholder="Detalhes da tarefa..."></textarea>
+                    <textarea name="descricao" class="col-11" rows="3" placeholder="Detalhes da tarefa..."></textarea>
                 </div>
             </div>
-            <div class="row-fluid">
-                <div class="span6">
-                    <div class="control-group">
-                        <label class="control-label">Tecnico Responsavel *</label>
+            <div class="row">
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label class="form-label">Tecnico Responsavel *</label>
                         <div class="controls">
-                            <select name="tecnico_id" class="span12" required>
+                            <select name="tecnico_id" class="col-12" required>
                                 <option value="">Selecione...</option>
                                 <?php foreach ($tecnicos as $tec): ?>
                                     <option value="<?= $tec->idUsuarios ?>"><?= $tec->nome ?></option>
@@ -217,11 +217,11 @@
                         </div>
                     </div>
                 </div>
-                <div class="span6">
-                    <div class="control-group">
-                        <label class="control-label">Prioridade</label>
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label class="form-label">Prioridade</label>
                         <div class="controls">
-                            <select name="prioridade" class="span12">
+                            <select name="prioridade" class="col-12">
                                 <option value="baixa">Baixa</option>
                                 <option value="normal" selected>Normal</option>
                                 <option value="alta">Alta</option>
@@ -231,28 +231,28 @@
                     </div>
                 </div>
             </div>
-            <div class="row-fluid">
-                <div class="span4">
-                    <div class="control-group">
-                        <label class="control-label">Data de Inicio</label>
+            <div class="row">
+                <div class="col-4">
+                    <div class="mb-3">
+                        <label class="form-label">Data de Inicio</label>
                         <div class="controls">
-                            <input type="date" name="data_inicio" class="span12" value="<?= date('Y-m-d') ?>">
+                            <input type="date" name="data_inicio" class="col-12" value="<?= date('Y-m-d') ?>">
                         </div>
                     </div>
                 </div>
-                <div class="span4">
-                    <div class="control-group">
-                        <label class="control-label">Data de Termino *</label>
+                <div class="col-4">
+                    <div class="mb-3">
+                        <label class="form-label">Data de Termino *</label>
                         <div class="controls">
-                            <input type="date" name="data_fim_prevista" class="span12" required>
+                            <input type="date" name="data_fim_prevista" class="col-12" required>
                         </div>
                     </div>
                 </div>
-                <div class="span4">
-                    <div class="control-group">
-                        <label class="control-label">Status Inicial</label>
+                <div class="col-4">
+                    <div class="mb-3">
+                        <label class="form-label">Status Inicial</label>
                         <div class="controls">
-                            <select name="status" class="span12">
+                            <select name="status" class="col-12">
                                 <option value="pendente" selected>Pendente</option>
                                 <option value="em_andamento">Em Andamento</option>
                             </select>
@@ -262,40 +262,40 @@
             </div>
         </div>
         <div class="modal-footer">
-            <button class="btn" data-dismiss="modal">Cancelar</button>
+            <button class="btn" data-bs-dismiss="modal">Cancelar</button>
             <button type="submit" class="btn btn-success"><i class="bx bx-save"></i> Salvar Tarefa</button>
         </div>
     </form>
 </div>
 
 <!-- Modal: Editar Tarefa -->
-<div id="modal-editar-tarefa" class="modal hide fade" tabindex="-1" role="dialog">
+<div id="modal-editar-tarefa" class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">×</button>
         <h5><i class="bx bx-edit"></i> Editar Tarefa</h5>
     </div>
     <form action="<?= site_url('tecnicos_admin/salvar_tarefa') ?>" method="post" id="form-editar-tarefa">
         <input type="hidden" name="obra_id" value="<?= $obra->id ?>">
         <input type="hidden" name="tarefa_id" id="edit-tarefa-id">
         <div class="modal-body">
-            <div class="control-group">
-                <label class="control-label">Titulo *</label>
+            <div class="mb-3">
+                <label class="form-label">Titulo *</label>
                 <div class="controls">
-                    <input type="text" name="titulo" id="edit-titulo" class="span11" required>
+                    <input type="text" name="titulo" id="edit-titulo" class="col-11" required>
                 </div>
             </div>
-            <div class="control-group">
-                <label class="control-label">Descricao</label>
+            <div class="mb-3">
+                <label class="form-label">Descricao</label>
                 <div class="controls">
-                    <textarea name="descricao" id="edit-descricao" class="span11" rows="3"></textarea>
+                    <textarea name="descricao" id="edit-descricao" class="col-11" rows="3"></textarea>
                 </div>
             </div>
-            <div class="row-fluid">
-                <div class="span6">
-                    <div class="control-group">
-                        <label class="control-label">Tecnico Responsavel *</label>
+            <div class="row">
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label class="form-label">Tecnico Responsavel *</label>
                         <div class="controls">
-                            <select name="tecnico_id" id="edit-tecnico" class="span12" required>
+                            <select name="tecnico_id" id="edit-tecnico" class="col-12" required>
                                 <?php foreach ($tecnicos as $tec): ?>
                                     <option value="<?= $tec->idUsuarios ?>"><?= $tec->nome ?></option>
                                 <?php endforeach; ?>
@@ -303,11 +303,11 @@
                         </div>
                     </div>
                 </div>
-                <div class="span6">
-                    <div class="control-group">
-                        <label class="control-label">Prioridade</label>
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label class="form-label">Prioridade</label>
                         <div class="controls">
-                            <select name="prioridade" id="edit-prioridade" class="span12">
+                            <select name="prioridade" id="edit-prioridade" class="col-12">
                                 <option value="baixa">Baixa</option>
                                 <option value="normal">Normal</option>
                                 <option value="alta">Alta</option>
@@ -317,28 +317,28 @@
                     </div>
                 </div>
             </div>
-            <div class="row-fluid">
-                <div class="span4">
-                    <div class="control-group">
-                        <label class="control-label">Data de Inicio</label>
+            <div class="row">
+                <div class="col-4">
+                    <div class="mb-3">
+                        <label class="form-label">Data de Inicio</label>
                         <div class="controls">
-                            <input type="date" name="data_inicio" id="edit-data-inicio" class="span12">
+                            <input type="date" name="data_inicio" id="edit-data-inicio" class="col-12">
                         </div>
                     </div>
                 </div>
-                <div class="span4">
-                    <div class="control-group">
-                        <label class="control-label">Data de Termino *</label>
+                <div class="col-4">
+                    <div class="mb-3">
+                        <label class="form-label">Data de Termino *</label>
                         <div class="controls">
-                            <input type="date" name="data_fim_prevista" id="edit-data-fim" class="span12" required>
+                            <input type="date" name="data_fim_prevista" id="edit-data-fim" class="col-12" required>
                         </div>
                     </div>
                 </div>
-                <div class="span4">
-                    <div class="control-group">
-                        <label class="control-label">Status</label>
+                <div class="col-4">
+                    <div class="mb-3">
+                        <label class="form-label">Status</label>
                         <div class="controls">
-                            <select name="status" id="edit-status" class="span12">
+                            <select name="status" id="edit-status" class="col-12">
                                 <option value="pendente">Pendente</option>
                                 <option value="em_andamento">Em Andamento</option>
                                 <option value="pausada">Pausada</option>
@@ -349,30 +349,30 @@
                     </div>
                 </div>
             </div>
-            <div class="control-group">
-                <label class="control-label">Progresso (%)</label>
+            <div class="mb-3">
+                <label class="form-label">Progresso (%)</label>
                 <div class="controls">
-                    <input type="number" name="percentual" id="edit-percentual" class="span4" min="0" max="100" value="0">
+                    <input type="number" name="percentual" id="edit-percentual" class="col-4" min="0" max="100" value="0">
                 </div>
             </div>
-            <div class="control-group">
-                <label class="control-label">Observacoes</label>
+            <div class="mb-3">
+                <label class="form-label">Observacoes</label>
                 <div class="controls">
-                    <textarea name="observacoes" id="edit-observacoes" class="span11" rows="2" placeholder="Observacoes sobre a execucao..."></textarea>
+                    <textarea name="observacoes" id="edit-observacoes" class="col-11" rows="2" placeholder="Observacoes sobre a execucao..."></textarea>
                 </div>
             </div>
         </div>
         <div class="modal-footer">
-            <button class="btn" data-dismiss="modal">Cancelar</button>
+            <button class="btn" data-bs-dismiss="modal">Cancelar</button>
             <button type="submit" class="btn btn-primary"><i class="bx bx-save"></i> Atualizar Tarefa</button>
         </div>
     </form>
 </div>
 
 <!-- Modal: Historico da Tarefa -->
-<div id="modal-historico" class="modal hide fade" tabindex="-1" role="dialog">
+<div id="modal-historico" class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">×</button>
         <h5><i class="bx bx-history"></i> Historico da Tarefa</h5>
     </div>
     <div class="modal-body">
@@ -381,7 +381,7 @@
         </div>
     </div>
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal">Fechar</button>
+        <button class="btn" data-bs-dismiss="modal">Fechar</button>
     </div>
 </div>
 

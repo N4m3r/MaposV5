@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Relatórios de Produtividade dos Técnicos
  */
@@ -8,8 +8,8 @@ $data_inicio = $data_inicio ?? date('Y-m-01');
 $data_fim = $data_fim ?? date('Y-m-t');
 ?>
 
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="icon-bar-chart"></i></span>
@@ -35,15 +35,15 @@ $data_fim = $data_fim ?? date('Y-m-t');
 
                 <!-- Estatísticas Gerais -->
                 <?php if ($estatisticas): ?>
-                    <div class="row-fluid" style="margin-bottom: 20px;">
-                        <div class="span4">
+                    <div class="row" style="margin-bottom: 20px;">
+                        <div class="col-4">
                             <div class="alert alert-info">
                                 <h4><i class="icon-tasks"></i> Total de OS</h4>
                                 <p style="font-size: 2em; margin: 10px 0;"><?php echo $estatisticas->total_os ?? 0; ?></p>
                             </div>
                         </div>
 
-                        <div class="span4">
+                        <div class="col-4">
                             <div class="alert alert-success">
                                 <h4><i class="icon-time"></i> Tempo Médio</h4>
                                 <p style="font-size: 2em; margin: 10px 0;">
@@ -52,7 +52,7 @@ $data_fim = $data_fim ?? date('Y-m-t');
                             </div>
                         </div>
 
-                        <div class="span4">
+                        <div class="col-4">
                             <div class="alert alert-warning">
                                 <h4><i class="icon-group"></i> Técnicos Ativos</h4>
                                 <p style="font-size: 2em; margin: 10px 0;"><?php echo count($tecnicos); ?></p>
@@ -84,10 +84,10 @@ $data_fim = $data_fim ?? date('Y-m-t');
                                     <td>-</td>
                                     <td>-</td>
                                     <td>
-                                        <a href="<?php echo site_url('tecnicos_admin/ver_tecnico/' . ($tec->idUsuarios ?? $tec->id)); ?>" class="btn btn-mini btn-info">
+                                        <a href="<?php echo site_url('tecnicos_admin/ver_tecnico/' . ($tec->idUsuarios ?? $tec->id)); ?>" class="btn btn-sm btn-info">
                                             <i class="icon-eye-open icon-white"></i> Detalhes
                                         </a>
-                                        <a href="<?php echo site_url('tecnicos_admin/rotas/' . ($tec->idUsuarios ?? $tec->id)); ?>" class="btn btn-mini btn-warning">
+                                        <a href="<?php echo site_url('tecnicos_admin/rotas/' . ($tec->idUsuarios ?? $tec->id)); ?>" class="btn btn-sm btn-warning">
                                             <i class="icon-road icon-white"></i> Rotas
                                         </a>
                                     </td>

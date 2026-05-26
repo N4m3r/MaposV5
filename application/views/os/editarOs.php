@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/js/jquery-ui/css/smoothness/jquery-ui-1.9.2.custom.css" />
+﻿<link rel="stylesheet" href="<?php echo base_url(); ?>assets/js/jquery-ui/css/smoothness/jquery-ui-1.9.2.custom.css" />
 <script type="text/javascript" src="<?php echo base_url() ?>assets/js/jquery-ui/js/jquery-ui-1.9.2.custom.js"></script>
 <script type="text/javascript" src="<?php echo base_url() ?>assets/js/jquery.validate.js"></script>
 <script src="<?php echo base_url() ?>assets/js/sweetalert2.all.min.js"></script>
@@ -9,15 +9,15 @@
 <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/custom.css" />
 <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/assinatura.css" />
 
-<div class="row-fluid" style="margin-top:0">
-    <div class="span12">
+<div class="row" style="margin-top:0">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title" style="margin: -20px 0 0">
                 <span class="icon"><i class="fas fa-diagnoses"></i></span>
                 <h5>Editar Ordem de Serviço</h5>
                 <div class="buttons">
                     <?php if ($result->faturado == 0) { ?>
-                        <a href="#modal-faturar" id="btn-faturar" role="button" data-toggle="modal" class="button btn btn-mini btn-danger">
+                        <a href="#modal-faturar" id="btn-faturar" role="button" data-bs-toggle="modal" class="button btn btn-sm btn-danger">
                             <span class="button__icon"><i class='bx bx-dollar'></i></span> <span class="button__text">Faturar</span>
                         </a>
                     <?php } ?>
@@ -25,18 +25,18 @@
                         <span class="button__icon"><i class="bx bx-show"></i></span><span class="button__text">Visualizar OS</span>
                     </a>
                     <div class="button-container">
-                        <a target="_blank" title="Imprimir Ordem de Serviço" class="button btn btn-mini btn-inverse">
+                        <a target="_blank" title="Imprimir Ordem de Serviço" class="button btn btn-sm btn-inverse">
                             <span class="button__icon"><i class="bx bx-printer"></i></span><span class="button__text">Imprimir</span>
                         </a>
                         <div class="cascading-buttons">
-                            <a target="_blank" title="Impressão em Papel A4" class="button btn btn-mini btn-inverse" href="<?php echo site_url() ?>/os/imprimir/<?php echo (int)$result->idOs; ?>">
+                            <a target="_blank" title="Impressão em Papel A4" class="button btn btn-sm btn-inverse" href="<?php echo site_url() ?>/os/imprimir/<?php echo (int)$result->idOs; ?>">
                                 <span class="button__icon"><i class='bx bx-file'></i></span> <span class="button__text">Papel A4</span>
                             </a>
-                            <a target="_blank" title="Impressão Cupom Não Fical" class="button btn btn-mini btn-inverse" href="<?php echo site_url() ?>/os/imprimirTermica/<?php echo (int)$result->idOs; ?>">
+                            <a target="_blank" title="Impressão Cupom Não Fical" class="button btn btn-sm btn-inverse" href="<?php echo site_url() ?>/os/imprimirTermica/<?php echo (int)$result->idOs; ?>">
                                 <span class="button__icon"><i class='bx bx-receipt'></i></span> <span class="button__text">Cupom 80mm</span>
                             </a>
                             <?php if ($result->garantias_id) { ?>
-                                <a target="_blank" title="Imprimir Termo de Garantia" class="button btn btn-mini btn-inverse" href="<?php echo site_url() ?>/garantias/imprimirGarantiaOs/<?php echo (int)$result->garantias_id; ?>">
+                                <a target="_blank" title="Imprimir Termo de Garantia" class="button btn btn-sm btn-inverse" href="<?php echo site_url() ?>/garantias/imprimirGarantiaOs/<?php echo (int)$result->garantias_id; ?>">
                                     <span class="button__icon"><i class="bx bx-paperclip"></i></span> <span class="button__text">Termo Garantia</span>
                                 </a>
                             <?php } ?>
@@ -48,50 +48,50 @@
                         $troca = [$result->nomeCliente, $result->idOs, $result->status, 'R$ ' . ($result->desconto != 0 && $result->valor_desconto != 0 ? number_format($result->valor_desconto, 2, ',', '.') : number_format($totalProdutos + $totalServico, 2, ',', '.')), strip_tags($result->descricaoProduto), ($emitente ? $emitente->nome : ''), ($emitente ? $emitente->telefone : ''), strip_tags($result->observacoes), strip_tags($result->defeito), strip_tags($result->laudoTecnico), date('d/m/Y', strtotime($result->dataFinal)), date('d/m/Y', strtotime($result->dataInicial)), $result->garantia . ' dias'];
                         $texto_de_notificacao = $this->os_model->criarTextoWhats($texto_de_notificacao, $troca);
                         if (!empty($zapnumber)) {
-                            echo '<a title="Via WhatsApp" class="button btn btn-mini btn-success" id="enviarWhatsApp" target="_blank" href="https://wa.me/send?phone=55' . $zapnumber . '&text=' . $texto_de_notificacao . '" ' . ($zapnumber == '' ? 'disabled' : '') . '>
+                            echo '<a title="Via WhatsApp" class="button btn btn-sm btn-success" id="enviarWhatsApp" target="_blank" href="https://wa.me/send?phone=55' . $zapnumber . '&text=' . $texto_de_notificacao . '" ' . ($zapnumber == '' ? 'disabled' : '') . '>
                                 <span class="button__icon"><i class="bx bxl-whatsapp"></i></span> <span class="button__text">WhatsApp</span>
                             </a>';
                         }
                     } ?>
-                    <a title="Enviar por E-mail" class="button btn btn-mini btn-warning" href="<?php echo site_url() ?>/os/enviar_email/<?php echo (int)$result->idOs; ?>">
+                    <a title="Enviar por E-mail" class="button btn btn-sm btn-warning" href="<?php echo site_url() ?>/os/enviar_email/<?php echo (int)$result->idOs; ?>">
                         <span class="button__icon"><i class="bx bx-envelope"></i></span> <span class="button__text">Via E-mail</span>
                     </a>
                 </div>
             </div>
             <div class="widget-content nopadding tab-content">
-                <div class="span12" id="divProdutosServicos" style=" margin-left: 0">
+                <div class="col-12" id="divProdutosServicos" style=" margin-left: 0">
                     <ul class="nav nav-tabs">
-                        <li class="active" id="tabDetalhes"><a href="#tab1" data-toggle="tab">Detalhes da OS</a></li>
-                        <li id="tabDesconto"><a href="#tab2" data-toggle="tab">Desconto</a></li>
-                        <li id="tabProdutos"><a href="#tab3" data-toggle="tab">Produtos</a></li>
-                        <li id="tabServicos"><a href="#tab4" data-toggle="tab">Serviços</a></li>
-                        <li id="tabAnexos"><a href="#tab5" data-toggle="tab">Anexos</a></li>
-                        <li id="tabAnotacoes"><a href="#tab6" data-toggle="tab">Anotações</a></li>
-                        <li id="tabCheckin"><a href="#tab7" data-toggle="tab">Check-in</a></li>
+                        <li class="active" id="tabDetalhes"><a href="#tab1" data-bs-toggle="tab">Detalhes da OS</a></li>
+                        <li id="tabDesconto"><a href="#tab2" data-bs-toggle="tab">Desconto</a></li>
+                        <li id="tabProdutos"><a href="#tab3" data-bs-toggle="tab">Produtos</a></li>
+                        <li id="tabServicos"><a href="#tab4" data-bs-toggle="tab">Serviços</a></li>
+                        <li id="tabAnexos"><a href="#tab5" data-bs-toggle="tab">Anexos</a></li>
+                        <li id="tabAnotacoes"><a href="#tab6" data-bs-toggle="tab">Anotações</a></li>
+                        <li id="tabCheckin"><a href="#tab7" data-bs-toggle="tab">Check-in</a></li>
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane active" id="tab1">
-                            <div class="span12" id="divCadastrarOs">
+                            <div class="col-12" id="divCadastrarOs">
                                 <form action="<?php echo current_url(); ?>" method="post" id="formOs">
                                     <?php echo form_hidden('idOs', $result->idOs) ?>
-                                    <div class="span12" style="padding: 1%; margin-left: 0">
+                                    <div class="col-12" style="padding: 1%; margin-left: 0">
                                         <h3>N° OS: <?php echo e($result->idOs); ?></h3>
-                                        <div class="span6" style="margin-left: 0">
+                                        <div class="col-6" style="margin-left: 0">
                                             <label for="cliente">Cliente<span class="required">*</span></label>
-                                            <input id="cliente" class="span12" type="text" name="cliente" value="<?php echo e($result->nomeCliente) ?>" />
-                                            <input id="clientes_id" class="span12" type="hidden" name="clientes_id" value="<?php echo e($result->clientes_id) ?>" />
+                                            <input id="cliente" class="col-12" type="text" name="cliente" value="<?php echo e($result->nomeCliente) ?>" />
+                                            <input id="clientes_id" class="col-12" type="hidden" name="clientes_id" value="<?php echo e($result->clientes_id) ?>" />
                                             <input id="valor" type="hidden" name="valor" value="" />
                                         </div>
-                                        <div class="span6">
+                                        <div class="col-6">
                                             <label for="tecnico">Técnico / Responsável<span class="required">*</span></label>
-                                            <input id="tecnico" class="span12" type="text" name="tecnico" value="<?php echo e($result->nome) ?>" />
-                                            <input id="usuarios_id" class="span12" type="hidden" name="usuarios_id" value="<?php echo e($result->usuarios_id) ?>" />
+                                            <input id="tecnico" class="col-12" type="text" name="tecnico" value="<?php echo e($result->nome) ?>" />
+                                            <input id="usuarios_id" class="col-12" type="hidden" name="usuarios_id" value="<?php echo e($result->usuarios_id) ?>" />
                                         </div>
                                     </div>
-                                    <div class="span12" style="padding: 1%; margin-left: 0">
-                                        <div class="span3">
+                                    <div class="col-12" style="padding: 1%; margin-left: 0">
+                                        <div class="col-3">
                                             <label for="status">Status<span class="required">*</span></label>
-                                            <select class="span12" name="status" id="status">
+                                            <select class="col-12" name="status" id="status">
                                                 <option value="Aberto" <?php if ($result->status == 'Aberto') { echo 'selected'; } ?>>Aberto</option>
                                                 <option value="Orçamento" <?php if ($result->status == 'Orçamento') { echo 'selected'; } ?>>Or&ccedil;amento</option>
                                                 <option value="Negociação" <?php if ($result->status == 'Negociação') { echo 'selected'; } ?>>Negocia&ccedil;&atilde;o</option>
@@ -103,43 +103,43 @@
                                                 <option value="Cancelado" <?php if ($result->status == 'Cancelado') { echo 'selected'; } ?>>Cancelado</option>
                                             </select>
                                         </div>
-                                        <div class="span3">
+                                        <div class="col-3">
                                             <label for="dataInicial">Data Inicial<span class="required">*</span></label>
-                                            <input id="dataInicial" autocomplete="off" class="span12 datepicker" type="text" name="dataInicial" value="<?php echo date('d/m/Y', strtotime($result->dataInicial)); ?>" />
+                                            <input id="dataInicial" autocomplete="off" class="col-12 datepicker" type="text" name="dataInicial" value="<?php echo date('d/m/Y', strtotime($result->dataInicial)); ?>" />
                                         </div>
-                                        <div class="span3">
+                                        <div class="col-3">
                                             <label for="dataFinal">Data Final<span class="required">*</span></label>
-                                            <input id="dataFinal" autocomplete="off" class="span12 datepicker" type="text" name="dataFinal" value="<?php echo date('d/m/Y', strtotime($result->dataFinal)); ?>" />
+                                            <input id="dataFinal" autocomplete="off" class="col-12 datepicker" type="text" name="dataFinal" value="<?php echo date('d/m/Y', strtotime($result->dataFinal)); ?>" />
                                         </div>
-                                        <div class="span3">
+                                        <div class="col-3">
                                             <label for="garantia">Garantia (dias)</label>
-                                            <input id="garantia" type="number" placeholder="Status s/g inserir nº/0" min="0" max="9999" class="span12" name="garantia" value="<?php echo e($result->garantia) ?>" />
+                                            <input id="garantia" type="number" placeholder="Status s/g inserir nº/0" min="0" max="9999" class="col-12" name="garantia" value="<?php echo e($result->garantia) ?>" />
                                             <?php echo form_error('garantia'); ?>
                                             <label for="termoGarantia">Termo Garantia</label>
-                                            <input id="termoGarantia" class="span12" type="text" name="termoGarantia" value="<?php echo e($result->refGarantia) ?>" />
-                                            <input id="garantias_id" class="span12" type="hidden" name="garantias_id" value="<?php echo e($result->garantias_id) ?>" />
+                                            <input id="termoGarantia" class="col-12" type="text" name="termoGarantia" value="<?php echo e($result->refGarantia) ?>" />
+                                            <input id="garantias_id" class="col-12" type="hidden" name="garantias_id" value="<?php echo e($result->garantias_id) ?>" />
                                         </div>
                                     </div>
-                                    <div class="span6" style="padding: 1%; margin-left: 0">
+                                    <div class="col-6" style="padding: 1%; margin-left: 0">
                                         <label for="descricaoProduto"><h4>Descrição Produto/Serviço</h4></label>
-                                        <textarea class="span12 editor" name="descricaoProduto" id="descricaoProduto" cols="30" rows="5"><?php echo e($result->descricaoProduto) ?></textarea>
+                                        <textarea class="col-12 editor" name="descricaoProduto" id="descricaoProduto" cols="30" rows="5"><?php echo e($result->descricaoProduto) ?></textarea>
                                     </div>
-                                    <div class="span6" style="padding: 1%; margin-left: 0">
+                                    <div class="col-6" style="padding: 1%; margin-left: 0">
                                         <label for="defeito"><h4>Defeito</h4></label>
-                                        <textarea class="span12 editor" name="defeito" id="defeito" cols="30" rows="5"><?php echo e($result->defeito) ?></textarea>
+                                        <textarea class="col-12 editor" name="defeito" id="defeito" cols="30" rows="5"><?php echo e($result->defeito) ?></textarea>
                                     </div>
-                                    <div class="span6" style="padding: 1%; margin-left: 0">
+                                    <div class="col-6" style="padding: 1%; margin-left: 0">
                                         <label for="observacoes"><h4>Observações</h4></label>
-                                        <textarea class="span12 editor" name="observacoes" id="observacoes" cols="30" rows="5"><?php echo e($result->observacoes) ?></textarea>
+                                        <textarea class="col-12 editor" name="observacoes" id="observacoes" cols="30" rows="5"><?php echo e($result->observacoes) ?></textarea>
                                     </div>
-                                    <div class="span6" style="padding: 1%; margin-left: 0">
+                                    <div class="col-6" style="padding: 1%; margin-left: 0">
                                         <label for="laudoTecnico"><h4>Laudo Técnico</h4></label>
-                                        <textarea class="span12 editor" name="laudoTecnico" id="laudoTecnico" cols="30" rows="5"><?php echo e($result->laudoTecnico) ?></textarea>
+                                        <textarea class="col-12 editor" name="laudoTecnico" id="laudoTecnico" cols="30" rows="5"><?php echo e($result->laudoTecnico) ?></textarea>
                                     </div>
-                                    <div class="span12" style="padding: 0; margin-left: 0">
-                                        <div class="span6 offset3" style="display:flex;justify-content: center">
+                                    <div class="col-12" style="padding: 0; margin-left: 0">
+                                        <div class="col-6 offset-md-3" style="display:flex;justify-content: center">
                                             <button class="button btn btn-primary" id="btnContinuar"><span class="button__icon"><i class="bx bx-sync"></i></span><span class="button__text2">Atualizar</span></button>
-                                            <a href="<?php echo base_url() ?>index.php/os" class="button btn btn-mini btn-warning"><span class="button__icon"><i class="bx bx-undo"></i></span> <span class="button__text2">Voltar</span></a>
+                                            <a href="<?php echo base_url() ?>index.php/os" class="button btn btn-sm btn-warning"><span class="button__icon"><i class="bx bx-undo"></i></span> <span class="button__text2">Voltar</span></a>
                                         </div>
                                     </div>
                                 </form>
@@ -150,15 +150,15 @@
                         <?php $total = 0; foreach ($produtos as $p) {$total = $total + $p->subTotal;}?>
                         <?php $totals = 0; foreach ($servicos as $s) { $preco = $s->preco ?: $s->precoVenda; $subtotals = $preco * ($s->quantidade ?: 1); $totals = $totals + $subtotals;}?>
                         <div class="tab-pane" id="tab2">
-                            <div class="span12 well" style="padding: 1%; margin-left: 0">
+                            <div class="col-12 well" style="padding: 1%; margin-left: 0">
                                 <form id="formDesconto" action="<?php echo base_url(); ?>index.php/os/adicionarDesconto" method="POST">
                                     <div id="divValorTotal">
-                                        <div class="span2">
+                                        <div class="col-2">
                                             <label for="">Valor Total Da OS:</label>
-                                            <input class="span12 money" id="valorTotal" name="valorTotal" type="text" data-affixes-stay="true" data-thousands="" data-decimal="." name="valor" value="<?php echo number_format($totals + $total, 2, '.', ''); ?>" readonly />
+                                            <input class="col-12 money" id="valorTotal" name="valorTotal" type="text" data-affixes-stay="true" data-thousands="" data-decimal="." name="valor" value="<?php echo number_format($totals + $total, 2, '.', ''); ?>" readonly />
                                         </div>
                                     </div>
-                                    <div class="span1">
+                                    <div class="col-1">
                                         <label for="">Tipo Desc.</label>
                                         <select style="width: 4em;" name="tipoDesconto" id="tipoDesconto">
                                             <option value="real">R$</option>
@@ -166,7 +166,7 @@
                                         </select>
                                         <strong><span style="color: red" id="errorAlert"></span></strong>
                                     </div>
-                                    <div class="span3">
+                                    <div class="col-3">
                                         <input type="hidden" name="idOs" id="idOs"
                                             value="<?php echo e($result->idOs); ?>" />
                                         <label for="">Desconto</label>
@@ -174,11 +174,11 @@
                                             placeholder="" maxlength="6" size="2" value="<?= e($result->desconto) ?>" />
                                         <strong><span style="color: red" id="errorAlert"></span></strong>
                                     </div>
-                                    <div class="span2">
+                                    <div class="col-2">
                                         <label for="">Total com Desconto</label>
-                                        <input class="span12 money" id="resultado" type="text" data-affixes-stay="true" data-thousands="" data-decimal="." name="resultado" value="<?php echo e($result->valor_desconto) ?>" readonly />
+                                        <input class="col-12 money" id="resultado" type="text" data-affixes-stay="true" data-thousands="" data-decimal="." name="resultado" value="<?php echo e($result->valor_desconto) ?>" readonly />
                                     </div>
-                                    <div class="span2">
+                                    <div class="col-2">
                                         <label for="">&nbsp;</label>
                                         <button class="button btn btn-success" id="btnAdicionarDesconto">
                                             <span class="button__icon"><i class='bx bx-plus-circle'></i></span> <span class="button__text2">Aplicar</span>
@@ -190,25 +190,25 @@
 
                         <!--Produtos-->
                         <div class="tab-pane" id="tab3">
-                            <div class="span12 well" style="padding: 1%; margin-left: 0">
+                            <div class="col-12 well" style="padding: 1%; margin-left: 0">
                                 <form id="formProdutos" action="<?php echo base_url() ?>index.php/os/adicionarProduto" method="post">
-                                    <div class="span6">
+                                    <div class="col-6">
                                         <input type="hidden" name="idProduto" id="idProduto" />
                                         <input type="hidden" name="idOsProduto" id="idOsProduto" value="<?php echo e($result->idOs); ?>" />
                                         <input type="hidden" name="estoque" id="estoque" value="" />
                                         <label for="">Produto</label>
-                                        <input type="text" class="span12" name="produto" id="produto" placeholder="Digite o nome do produto" />
+                                        <input type="text" class="col-12" name="produto" id="produto" placeholder="Digite o nome do produto" />
                                     </div>
-                                    <div class="span2">
+                                    <div class="col-2">
                                         <label for="">Preço</label>
-                                        <input type="text" placeholder="Preço" id="preco" name="preco" class="span12 money" data-affixes-stay="true" data-thousands="" data-decimal="." />
+                                        <input type="text" placeholder="Preço" id="preco" name="preco" class="col-12 money" data-affixes-stay="true" data-thousands="" data-decimal="." />
                                     </div>
-                                    <div class="span2">
+                                    <div class="col-2">
                                         <label for="">Quantidade</label>
                                         <input type="text" placeholder="Quantidade" id="quantidade" name="quantidade"
-                                            class="span12" />
+                                            class="col-12" />
                                     </div>
-                                    <div class="span2">
+                                    <div class="col-2">
                                         <label for="">&nbsp;</label>
                                         <button class="button btn btn-success" id="btnAdicionarProduto">
                                             <span class="button__icon"><i class='bx bx-plus-circle'></i></span> <span class="button__text2">Adicionar</span>
@@ -221,7 +221,7 @@
                                     <span class="icon"><i class="bx bx-package"></i></span>
                                     <h5 style="display: inline-block; margin: 0;">Produtos Adicionados</h5>
                                     <div class="buttons" style="float: right;">
-                                        <button type="button" class="btn btn-warning btn-mini" id="btnZerarPrecosProdutos" title="Zerar preço unit. e sub-total de todos os produtos">
+                                        <button type="button" class="btn btn-warning btn-sm" id="btnZerarPrecosProdutos" title="Zerar preço unit. e sub-total de todos os produtos">
                                             <i class="bx bx-reset"></i> Zerar Preços
                                         </button>
                                     </div>
@@ -279,29 +279,29 @@
 
                         <!--Serviços-->
                         <div class="tab-pane" id="tab4">
-                            <div class="span12 well" style="padding: 1%; margin-left: 0">
+                            <div class="col-12 well" style="padding: 1%; margin-left: 0">
                                 <form id="formServicos" action="<?php echo base_url() ?>index.php/os/adicionarServico"
                                     method="post">
-                                    <div class="span6">
+                                    <div class="col-6">
                                         <input type="hidden" name="idServico" id="idServico" />
                                         <input type="hidden" name="idOsServico" id="idOsServico"
                                             value="<?php echo e($result->idOs); ?>" />
                                         <label for="">Serviço</label>
-                                        <input type="text" class="span12" name="servico" id="servico"
+                                        <input type="text" class="col-12" name="servico" id="servico"
                                             placeholder="Digite o nome do serviço" />
                                     </div>
-                                    <div class="span2">
+                                    <div class="col-2">
                                         <label for="">Preço</label>
                                         <input type="text" placeholder="Preço" id="preco_servico" name="preco"
-                                            class="span12 money" data-affixes-stay="true" data-thousands=""
+                                            class="col-12 money" data-affixes-stay="true" data-thousands=""
                                             data-decimal="." />
                                     </div>
-                                    <div class="span2">
+                                    <div class="col-2">
                                         <label for="">Quantidade</label>
                                         <input type="text" placeholder="Quantidade" id="quantidade_servico"
-                                            name="quantidade" class="span12" />
+                                            name="quantidade" class="col-12" />
                                     </div>
-                                    <div class="span2">
+                                    <div class="col-2">
                                         <label for="">&nbsp;</label>
                                         <button class="button btn btn-success">
                                             <span class="button__icon"><i class='bx bx-plus-circle'></i></span><span
@@ -361,18 +361,18 @@
 
                         <!--Anexos-->
                         <div class="tab-pane" id="tab5">
-                            <div class="span12" style="padding: 1%; margin-left: 0">
-                                <div class="span12 well" style="padding: 1%; margin-left: 0" id="form-anexos">
+                            <div class="col-12" style="padding: 1%; margin-left: 0">
+                                <div class="col-12 well" style="padding: 1%; margin-left: 0" id="form-anexos">
                                     <form id="formAnexos" enctype="multipart/form-data" action="javascript:;"
                                         accept-charset="utf-8" s method="post">
-                                        <div class="span10">
+                                        <div class="col-10">
                                             <input type="hidden" name="idOsServico" id="idOsServico"
                                                 value="<?php echo e($result->idOs); ?>" />
                                             <label for="">Anexo</label>
-                                            <input type="file" class="span12" name="userfile[]" multiple="multiple"
+                                            <input type="file" class="col-12" name="userfile[]" multiple="multiple"
                                                 size="20" />
                                         </div>
-                                        <div class="span2">
+                                        <div class="col-2">
                                             <label for="">.</label>
                                             <button class="button btn btn-success">
                                                 <span class="button__icon"><i class='bx bx-paperclip'></i></span><span
@@ -380,7 +380,7 @@
                                         </div>
                                     </form>
                                 </div>
-                                <div class="span12 pull-left" id="divAnexos" style="margin-left: 0">
+                                <div class="col-12 float-start" id="divAnexos" style="margin-left: 0">
                                     <?php
                                     foreach ($anexos as $a) {
                                         if ($a->thumb == null) {
@@ -390,8 +390,8 @@
                                             $thumb = $a->url . '/thumbs/' . $a->thumb;
                                             $link = $a->url . '/' . $a->anexo;
                                         }
-                                        echo '<div class="span3" style="min-height: 150px; margin-left: 0">
-                                                    <a style="min-height: 150px;" href="#modal-anexo" imagem="' . $a->idAnexos . '" link="' . $link . '" role="button" class="btn anexo span12" data-toggle="modal">
+                                        echo '<div class="col-3" style="min-height: 150px; margin-left: 0">
+                                                    <a style="min-height: 150px;" href="#modal-anexo" imagem="' . $a->idAnexos . '" link="' . $link . '" role="button" class="btn anexo col-12" data-bs-toggle="modal">
                                                         <img src="' . $thumb . '" alt="">
                                                     </a>
                                                 </div>';
@@ -403,11 +403,11 @@
 
                         <!--Anotações-->
                         <div class="tab-pane" id="tab6">
-                            <div class="span12" style="padding: 1%; margin-left: 0">
+                            <div class="col-12" style="padding: 1%; margin-left: 0">
 
-                                <div class="span12" id="divAnotacoes" style="margin-left: 0">
+                                <div class="col-12" id="divAnotacoes" style="margin-left: 0">
 
-                                    <a href="#modal-anotacao" id="btn-anotacao" role="button" data-toggle="modal"
+                                    <a href="#modal-anotacao" id="btn-anotacao" role="button" data-bs-toggle="modal"
                                         class="button btn btn-success" style="max-width: 160px">
                                         <span class="button__icon"><i class='bx bx-plus-circle'></i></span><span
                                             class="button__text2">Adicionar anotação</span></a>
@@ -444,10 +444,10 @@
 
                         <!-- Check-in -->
                         <div class="tab-pane" id="tab7">
-                            <div class="span12" style="padding: 1%; margin-left: 0">
+                            <div class="col-12" style="padding: 1%; margin-left: 0">
 
                                 <!-- Stepper Visual -->
-                                <div class="span12" style="margin-left: 0; margin-bottom: 20px;">
+                                <div class="col-12" style="margin-left: 0; margin-bottom: 20px;">
                                     <div id="checkin-stepper" style="display: flex; align-items: center; justify-content: center; gap: 0;">
                                         <div class="checkin-step" id="step-1" style="display: flex; align-items: center; gap: 8px; opacity: 0.4;">
                                             <span style="width:32px;height:32px;border-radius:50%;background:#5bc0de;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:bold;">1</span>
@@ -467,7 +467,7 @@
                                 </div>
 
                                 <!-- Status + Timer -->
-                                <div id="checkin-status-container" class="span12 well" style="padding: 1%; margin-left: 0; text-align: center;">
+                                <div id="checkin-status-container" class="col-12 well" style="padding: 1%; margin-left: 0; text-align: center;">
                                     <span id="checkin-status-text" style="font-size: 16px; font-weight: bold;">Aguardando início</span>
                                     <span id="checkin-timer" style="display: none; margin-left: 15px; font-family: monospace; font-size: 18px; color: #f0ad4e;"></span>
                                     <div id="checkin-info-adicional" style="font-size: 12px; color: #888; margin-top: 4px;"></div>
@@ -476,8 +476,8 @@
                                 <!-- ============================================ -->
                                 <!-- ETAPA 1: CHECK-IN (sempre visível quando inativo) -->
                                 <!-- ============================================ -->
-                                <div id="panel-checkin" class="span12" style="margin-left: 0;">
-                                    <div class="span12 well" style="padding: 15px; margin-left: 0; border-left: 4px solid #5bc0de;">
+                                <div id="panel-checkin" class="col-12" style="margin-left: 0;">
+                                    <div class="col-12 well" style="padding: 15px; margin-left: 0; border-left: 4px solid #5bc0de;">
                                         <h5 style="margin-top: 0;"><i class="bx bx-log-in"></i> Check-in do Técnico</h5>
 
                                         <?php $this->load->view('checkin/assinatura_canvas', [
@@ -486,18 +486,18 @@
                                             'mostrar_campos' => false
                                         ]); ?>
 
-                                        <div class="span12" style="margin-left: 0; margin-top: 15px;">
+                                        <div class="col-12" style="margin-left: 0; margin-top: 15px;">
                                             <label>Fotos da Entrada (opcional):</label>
-                                            <input type="file" id="fotos-entrada" accept="image/*" multiple class="span12">
-                                            <div id="fotos-entrada-preview" class="row-fluid" style="margin-top: 10px;"></div>
+                                            <input type="file" id="fotos-entrada" accept="image/*" multiple class="col-12">
+                                            <div id="fotos-entrada-preview" class="row" style="margin-top: 10px;"></div>
                                         </div>
 
-                                        <div class="span12" style="margin-left: 0; margin-top: 15px;">
+                                        <div class="col-12" style="margin-left: 0; margin-top: 15px;">
                                             <label for="observacao-entrada">Observação de Entrada (opcional):</label>
-                                            <textarea id="observacao-entrada" class="span12" rows="2" placeholder="Descreva o estado inicial do equipamento, local, etc."></textarea>
+                                            <textarea id="observacao-entrada" class="col-12" rows="2" placeholder="Descreva o estado inicial do equipamento, local, etc."></textarea>
                                         </div>
 
-                                        <div class="span12" style="margin-left: 0; margin-top: 15px; text-align: center;">
+                                        <div class="col-12" style="margin-left: 0; margin-top: 15px; text-align: center;">
                                             <button type="button" class="btn btn-success btn-large" id="btn-confirmar-inicio">
                                                 <i class="bx bx-play-circle"></i> Iniciar Atendimento
                                             </button>
@@ -508,11 +508,11 @@
                                 <!-- ============================================ -->
                                 <!-- ETAPA 2: EM ATENDIMENTO (fotos durante) -->
                                 <!-- ============================================ -->
-                                <div id="panel-fotos-durante" class="span12" style="display: none; margin-left: 0;">
-                                    <div class="span12 well" style="padding: 15px; margin-left: 0; border-left: 4px solid #f0ad4e;">
+                                <div id="panel-fotos-durante" class="col-12" style="display: none; margin-left: 0;">
+                                    <div class="col-12 well" style="padding: 15px; margin-left: 0; border-left: 4px solid #f0ad4e;">
                                         <h5 style="margin-top: 0;"><i class="bx bx-camera"></i> Fotos durante o Atendimento (opcional)</h5>
-                                        <input type="file" id="fotos-durante" accept="image/*" multiple class="span12">
-                                        <div id="fotos-durante-preview" class="row-fluid" style="margin-top: 10px;"></div>
+                                        <input type="file" id="fotos-durante" accept="image/*" multiple class="col-12">
+                                        <div id="fotos-durante-preview" class="row" style="margin-top: 10px;"></div>
                                         <div id="fotos-durante-container"></div>
                                     </div>
                                 </div>
@@ -520,8 +520,8 @@
                                 <!-- ============================================ -->
                                 <!-- ETAPA 3: CHECK-OUT (sempre visível quando ativo) -->
                                 <!-- ============================================ -->
-                                <div id="panel-checkout" class="span12" style="display: none; margin-left: 0;">
-                                    <div class="span12 well" style="padding: 15px; margin-left: 0; border-left: 4px solid #d9534f;">
+                                <div id="panel-checkout" class="col-12" style="display: none; margin-left: 0;">
+                                    <div class="col-12 well" style="padding: 15px; margin-left: 0; border-left: 4px solid #d9534f;">
                                         <h5 style="margin-top: 0;"><i class="bx bx-log-out"></i> Check-out - Finalização</h5>
 
                                         <!-- Assinatura do Técnico Saída (inline) -->
@@ -539,18 +539,18 @@
                                             'campos' => ['nome' => true, 'documento' => true]
                                         ]); ?>
 
-                                        <div class="span12" style="margin-left: 0; margin-top: 15px;">
+                                        <div class="col-12" style="margin-left: 0; margin-top: 15px;">
                                             <label>Fotos da Saída (opcional):</label>
-                                            <input type="file" id="fotos-saida" accept="image/*" multiple class="span12">
-                                            <div id="fotos-saida-preview" class="row-fluid" style="margin-top: 10px;"></div>
+                                            <input type="file" id="fotos-saida" accept="image/*" multiple class="col-12">
+                                            <div id="fotos-saida-preview" class="row" style="margin-top: 10px;"></div>
                                         </div>
 
-                                        <div class="span12" style="margin-left: 0; margin-top: 15px;">
+                                        <div class="col-12" style="margin-left: 0; margin-top: 15px;">
                                             <label for="observacao-saida">Observação de Saída (opcional):</label>
-                                            <textarea id="observacao-saida" class="span12" rows="2" placeholder="Descreva o serviço realizado, estado final, etc."></textarea>
+                                            <textarea id="observacao-saida" class="col-12" rows="2" placeholder="Descreva o serviço realizado, estado final, etc."></textarea>
                                         </div>
 
-                                        <div class="span12" style="margin-left: 0; margin-top: 15px; text-align: center;">
+                                        <div class="col-12" style="margin-left: 0; margin-top: 15px; text-align: center;">
                                             <button type="button" class="btn btn-danger btn-large" id="btn-confirmar-fim">
                                                 <i class="bx bx-check-double"></i> Finalizar Atendimento
                                             </button>
@@ -559,7 +559,7 @@
                                 </div>
 
                                 <!-- Histórico -->
-                                <div id="checkin-historico" class="span12" style="margin-top: 20px;">
+                                <div id="checkin-historico" class="col-12" style="margin-top: 20px;">
                                     <h5>Histórico de Atendimentos</h5>
                                     <div id="checkin-historico-conteudo">
                                         <p class="text-muted">Carregando histórico...</p>
@@ -567,25 +567,25 @@
                                 </div>
 
                                 <!-- Assinaturas Salvas -->
-                                <div id="assinaturas-salvas" class="span12" style="margin-top: 20px;">
+                                <div id="assinaturas-salvas" class="col-12" style="margin-top: 20px;">
                                     <h5>Assinaturas Registradas</h5>
-                                    <div id="assinaturas-salvas-conteudo" class="row-fluid"></div>
+                                    <div id="assinaturas-salvas-conteudo" class="row"></div>
                                 </div>
 
                                 <!-- Fotos Salvas -->
-                                <div id="fotos-salvas" class="span12" style="margin-top: 20px;">
+                                <div id="fotos-salvas" class="col-12" style="margin-top: 20px;">
                                     <h5>Fotos do Atendimento</h5>
                                     <div id="fotos-salvas-conteudo">
-                                        <div class="row-fluid">
-                                            <div class="span4">
+                                        <div class="row">
+                                            <div class="col-4">
                                                 <h6>Entrada</h6>
                                                 <div id="fotos-entrada-salvas"></div>
                                             </div>
-                                            <div class="span4">
+                                            <div class="col-4">
                                                 <h6>Durante</h6>
                                                 <div id="fotos-durante-salvas"></div>
                                             </div>
-                                            <div class="span4">
+                                            <div class="col-4">
                                                 <h6>Saída</h6>
                                                 <div id="fotos-saida-salvas"></div>
                                             </div>
@@ -604,69 +604,69 @@
 </div>
 
 <!-- Modal visualizar anexo -->
-<div id="modal-anexo" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+<div id="modal-anexo" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
     aria-hidden="true">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">×</button>
         <h3 id="myModalLabel">Visualizar Anexo</h3>
     </div>
     <div class="modal-body">
-        <div class="span12" id="div-visualizar-anexo" style="text-align: center">
+        <div class="col-12" id="div-visualizar-anexo" style="text-align: center">
             <div class='progress progress-info progress-striped active'>
                 <div class='bar' style='width: 100%'></div>
             </div>
         </div>
     </div>
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true">Fechar</button>
+        <button class="btn" data-bs-dismiss="modal" aria-hidden="true">Fechar</button>
         <a href="" id-imagem="" class="btn btn-inverse" id="download">Download</a>
         <a href="" link="" class="btn btn-danger" id="excluir-anexo">Excluir Anexo</a>
     </div>
 </div>
 
 <!-- Modal cadastro anotações -->
-<div id="modal-anotacao" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+<div id="modal-anotacao" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
     aria-hidden="true">
     <form action="#" method="POST" id="formAnotacao">
         <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">×</button>
             <h3 id="myModalLabel">Adicionar Anotação</h3>
         </div>
         <div class="modal-body">
-            <div class="span12" id="divFormAnotacoes" style="margin-left: 0"></div>
-            <div class="span12" style="margin-left: 0">
+            <div class="col-12" id="divFormAnotacoes" style="margin-left: 0"></div>
+            <div class="col-12" style="margin-left: 0">
                 <label for="anotacao">Anotação</label>
-                <textarea class="span12" name="anotacao" id="anotacao" cols="30" rows="3"></textarea>
+                <textarea class="col-12" name="anotacao" id="anotacao" cols="30" rows="3"></textarea>
                 <input type="hidden" name="os_id" value="<?php echo e($result->idOs); ?>">
             </div>
         </div>
         <div class="modal-footer" style="display:flex;justify-content: center">
-            <button class="btn" data-dismiss="modal" aria-hidden="true" id="btn-close-anotacao">Fechar</button>
+            <button class="btn" data-bs-dismiss="modal" aria-hidden="true" id="btn-close-anotacao">Fechar</button>
             <button class="btn btn-primary">Adicionar</button>
         </div>
     </form>
 </div>
 
 <!-- Modal Faturar-->
-<div id="modal-faturar" class="modal hide fade " tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+<div id="modal-faturar" class="modal fade " tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
     aria-hidden="true">
     <form id="formFaturar" action="<?php echo current_url() ?>" method="post">
         <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">×</button>
             <h3 id="myModalLabel">Faturar OS</h3>
         </div>
         <div class="modal-body">
-            <div class="span12 alert alert-info" style="margin-left: 0"> Obrigatório o preenchimento dos campos com
+            <div class="col-12 alert alert-info" style="margin-left: 0"> Obrigatório o preenchimento dos campos com
                 asterisco.</div>
-            <div class="span12" style="margin-left: 0">
+            <div class="col-12" style="margin-left: 0">
                 <label for="descricao">Descrição</label>
-                <input class="span12" id="descricao" type="text" name="descricao"
+                <input class="col-12" id="descricao" type="text" name="descricao"
                     value="Fatura de OS Nº: <?php echo e($result->idOs); ?> " />
             </div>
-            <div class="span12" style="margin-left: 0">
-                <div class="span12" style="margin-left: 0">
+            <div class="col-12" style="margin-left: 0">
+                <div class="col-12" style="margin-left: 0">
                     <label for="cliente">Cliente*</label>
-                    <input class="span12" id="cliente" type="text" name="cliente"
+                    <input class="col-12" id="cliente" type="text" name="cliente"
                         value="<?php echo e($result->nomeCliente) ?>" />
                     <input type="hidden" name="clientes_id" id="clientes_id" value="<?php echo e($result->clientes_id) ?>">
                     <input type="hidden" name="os_id" id="os_id" value="<?php echo e($result->idOs); ?>">
@@ -674,41 +674,41 @@
                         value="<?php echo e($result->tipo_desconto); ?>">
                 </div>
             </div>
-            <div class="span12" style="margin-left: 0">
-                <div class="span6" style="margin-left: 0">
+            <div class="col-12" style="margin-left: 0">
+                <div class="col-6" style="margin-left: 0">
                     <label for="valor">Valor*</label>
                     <input type="hidden" id="tipo" name="tipo" value="receita" />
-                    <input class="span12 money" id="valor" type="text" data-affixes-stay="true" data-thousands=""
+                    <input class="col-12 money" id="valor" type="text" data-affixes-stay="true" data-thousands=""
                         data-decimal="." name="valor"
                         value="<?php echo number_format($totals + $total, 2, '.', ''); ?>" />
                 </div>
-                <div class="span6" style="margin-left: 2;">
+                <div class="col-6" style="margin-left: 2;">
                     <label for="valor">Valor Com Desconto*</label>
-                    <input class="span12 money" id="faturar-desconto" type="text" name="faturar-desconto"
+                    <input class="col-12 money" id="faturar-desconto" type="text" name="faturar-desconto"
                         value="<?php echo number_format($result->valor_desconto, 2, '.', ''); ?> " />
                     <strong><span style="color: red" id="resultado"></span></strong>
                 </div>
             </div>
-            <div class="span12" style="margin-left: 0">
-                <div class="span4" style="margin-left: 0">
+            <div class="col-12" style="margin-left: 0">
+                <div class="col-4" style="margin-left: 0">
                     <label for="vencimento">Data Entrada*</label>
-                    <input class="span12 datepicker" autocomplete="off" id="vencimento" type="text" name="vencimento" />
+                    <input class="col-12 datepicker" autocomplete="off" id="vencimento" type="text" name="vencimento" />
                 </div>
             </div>
-            <div class="span12" style="margin-left: 0">
-                <div class="span4" style="margin-left: 0">
+            <div class="col-12" style="margin-left: 0">
+                <div class="col-4" style="margin-left: 0">
                     <label for="recebido">Recebido?</label>
                     &nbsp &nbsp &nbsp &nbsp <input id="recebido" type="checkbox" name="recebido" value="1" />
                 </div>
-                <div id="divRecebimento" class="span8" style=" display: none">
-                    <div class="span6">
+                <div id="divRecebimento" class="col-8" style=" display: none">
+                    <div class="col-6">
                         <label for="recebimento">Data Recebimento</label>
-                        <input class="span12 datepicker" autocomplete="off" id="recebimento" type="text"
+                        <input class="col-12 datepicker" autocomplete="off" id="recebimento" type="text"
                             name="recebimento" />
                     </div>
-                    <div class="span6">
+                    <div class="col-6">
                         <label for="formaPgto">Forma Pgto</label>
-                        <select name="formaPgto" id="formaPgto" class="span12">
+                        <select name="formaPgto" id="formaPgto" class="col-12">
                             <option value="Dinheiro">Dinheiro</option>
                             <option value="Cartão de Crédito">Cartão de Crédito</option>
                             <option value="Cartão de Débito">Cartão de Débito</option>
@@ -722,7 +722,7 @@
             </div>
         </div>
         <div class="modal-footer" style="display:flex;justify-content: center">
-            <button class="button btn btn-warning" data-dismiss="modal" aria-hidden="true"
+            <button class="button btn btn-warning" data-bs-dismiss="modal" aria-hidden="true"
                 id="btn-cancelar-faturar"><span class="button__icon"><i class="bx bx-x"></i></span><span
                     class="button__text2">Cancelar</span></button>
             <button class="button btn btn-danger"><span class="button__icon"><i class='bx bx-dollar'></i></span>
@@ -1103,14 +1103,14 @@
                     required: 'Campo Requerido.'
                 }
             },
-            errorClass: "help-inline",
+            errorClass: "form-text",
             errorElement: "span",
             highlight: function (element, errorClass, validClass) {
-                $(element).parents('.control-group').addClass('error');
+                $(element).parents('.mb-3').addClass('error');
             },
             unhighlight: function (element, errorClass, validClass) {
-                $(element).parents('.control-group').removeClass('error');
-                $(element).parents('.control-group').addClass('success');
+                $(element).parents('.mb-3').removeClass('error');
+                $(element).parents('.mb-3').addClass('success');
             }
         });
 
@@ -1291,11 +1291,11 @@
                             $("#userfile").val('');
 
                         } else {
-                            $("#divAnexos").html('<div class="alert fade in"><button type="button" class="close" data-dismiss="alert">×</button><strong>Atenção!</strong> ' + data.mensagem + '</div>');
+                            $("#divAnexos").html('<div class="alert fade in"><button type="button" class="close" data-bs-dismiss="alert">×</button><strong>Atenção!</strong> ' + data.mensagem + '</div>');
                         }
                     },
                     error: function () {
-                        $("#divAnexos").html('<div class="alert alert-danger fade in"><button type="button" class="close" data-dismiss="alert">×</button><strong>Atenção!</strong> Ocorreu um erro. Verifique se você anexou o(s) arquivo(s).</div>');
+                        $("#divAnexos").html('<div class="alert alert-danger fade in"><button type="button" class="close" data-bs-dismiss="alert">×</button><strong>Atenção!</strong> Ocorreu um erro. Verifique se você anexou o(s) arquivo(s).</div>');
                     }
                 });
                 $("#form-anexos").show('1000');
@@ -1724,7 +1724,7 @@
                     var reader = new FileReader();
                     reader.onload = function(e) {
                         arrayFotos.push(e.target.result);
-                        $(container).append('<div class="span3" style="margin-bottom: 10px;"><img src="' + e.target.result + '" style="max-width: 100%; border: 1px solid #ddd;"></div>');
+                        $(container).append('<div class="col-3" style="margin-bottom: 10px;"><img src="' + e.target.result + '" style="max-width: 100%; border: 1px solid #ddd;"></div>');
                     };
                     reader.readAsDataURL(file);
                 });
@@ -1793,7 +1793,7 @@
         function renderizarAssinaturaItem(titulo, assinatura) {
             // Usar url_visualizacao que aponta para verAssinatura
             var imgSrc = assinatura.url_visualizacao || '<?php echo base_url('index.php/checkin/verAssinatura/'); ?>' + assinatura.idAssinatura;
-            return '<div class="span4 assinatura-salva-item">' +
+            return '<div class="col-4 assinatura-salva-item">' +
                 '<h6>' + titulo + '</h6>' +
                 '<img src="' + imgSrc + '" style="max-width: 100%;" onerror="this.style.display=\'none\'; this.parentNode.innerHTML += \'<div style=\\\'padding:10px;text-align:center;color:#666\\\'>Assinatura salva</div>\';">' +
                 (assinatura.nome_assinante ? '<div class="assinatura-info"><strong>' + assinatura.nome_assinante + '</strong></div>' : '') +
@@ -1993,59 +1993,59 @@
 </script>
 
 <!-- Modal Editar Produto -->
-<div id="modal-editar-produto" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+<div id="modal-editar-produto" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
     aria-hidden="true">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">x</button>
         <h5 id="myModalLabel"><i class="bx bx-edit"></i> Editar Produto</h5>
     </div>
     <div class="modal-body">
         <input type="hidden" id="editar-idProdutoOs" />
         <input type="hidden" id="editar-idOsProduto" value="<?php echo e($result->idOs); ?>" />
-        <div class="span12" style="margin-left: 0">
+        <div class="col-12" style="margin-left: 0">
             <label><strong>Produto:</strong></label>
-            <span id="editar-descricao-produto" class="uneditable-input span12"></span>
+            <span id="editar-descricao-produto" class="uneditable-input col-12"></span>
         </div>
-        <div class="span6" style="margin-left: 0">
+        <div class="col-6" style="margin-left: 0">
             <label for="editar-quantidade-produto">Quantidade</label>
-            <input type="text" id="editar-quantidade-produto" class="span12" />
+            <input type="text" id="editar-quantidade-produto" class="col-12" />
         </div>
-        <div class="span6" style="margin-left: 0">
+        <div class="col-6" style="margin-left: 0">
             <label for="editar-preco-produto">Preço Unit.</label>
-            <input type="text" id="editar-preco-produto" class="span12 money" data-affixes-stay="true" data-thousands="" data-decimal="." />
+            <input type="text" id="editar-preco-produto" class="col-12 money" data-affixes-stay="true" data-thousands="" data-decimal="." />
         </div>
     </div>
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true">Cancelar</button>
+        <button class="btn" data-bs-dismiss="modal" aria-hidden="true">Cancelar</button>
         <button class="btn btn-primary" id="btn-salvar-produto"><i class="bx bx-save"></i> Salvar</button>
     </div>
 </div>
 
 <!-- Modal Editar Serviço -->
-<div id="modal-editar-servico" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+<div id="modal-editar-servico" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
     aria-hidden="true">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">x</button>
         <h5 id="myModalLabel"><i class="bx bx-edit"></i> Editar Serviço</h5>
     </div>
     <div class="modal-body">
         <input type="hidden" id="editar-idServicoOs" />
         <input type="hidden" id="editar-idOsServico" value="<?php echo e($result->idOs); ?>" />
-        <div class="span12" style="margin-left: 0">
+        <div class="col-12" style="margin-left: 0">
             <label><strong>Serviço:</strong></label>
-            <span id="editar-nome-servico" class="uneditable-input span12"></span>
+            <span id="editar-nome-servico" class="uneditable-input col-12"></span>
         </div>
-        <div class="span6" style="margin-left: 0">
+        <div class="col-6" style="margin-left: 0">
             <label for="editar-quantidade-servico">Quantidade</label>
-            <input type="text" id="editar-quantidade-servico" class="span12" />
+            <input type="text" id="editar-quantidade-servico" class="col-12" />
         </div>
-        <div class="span6" style="margin-left: 0">
+        <div class="col-6" style="margin-left: 0">
             <label for="editar-preco-servico">Preço Unit.</label>
-            <input type="text" id="editar-preco-servico" class="span12 money" data-affixes-stay="true" data-thousands="" data-decimal="." />
+            <input type="text" id="editar-preco-servico" class="col-12 money" data-affixes-stay="true" data-thousands="" data-decimal="." />
         </div>
     </div>
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true">Cancelar</button>
+        <button class="btn" data-bs-dismiss="modal" aria-hidden="true">Cancelar</button>
         <button class="btn btn-primary" id="btn-salvar-servico"><i class="bx bx-save"></i> Salvar</button>
     </div>
 </div>
@@ -2302,7 +2302,7 @@ $(document).ready(function() {
     }
 
     // Evento de clique nas abas
-    $('.nav-tabs a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+    $('.nav-tabs a[data-bs-toggle="tab"]').on('shown.bs.tab', function(e) {
         var tabId = $(e.target).attr('href').replace('#', '');
         localStorage.setItem(storageKey, tabId);
 

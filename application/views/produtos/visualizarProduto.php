@@ -1,8 +1,8 @@
-<div class="accordion" id="collapse-group">
+﻿<div class="accordion" id="collapse-group">
     <div class="accordion-group widget-box">
         <div class="accordion-heading">
             <div class="widget-title" style="margin: -20px 0 0">
-                <a data-parent="#collapse-group" href="#collapseGOne" data-toggle="collapse">
+                <a data-parent="#collapse-group" href="#collapseGOne" data-bs-toggle="collapse">
                     <span class="icon"><i class="fas fa-shopping-bag"></i></span>
                     <h5>Dados do Produto</h5>
                 </a>

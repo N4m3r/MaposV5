@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * View: Painel do Usuário do Portal do Cliente
  * Com suporte a permissões para cobranças, boletos, notas fiscais e obras
@@ -255,20 +255,20 @@ if (!function_exists('getPainelUsuarioStatusColor')) {
     }
 </style>
 
-<div class="row-fluid" style="margin-top: 0">
-    <div class="span12">
+<div class="row" style="margin-top: 0">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="bx bx-home"></i></span>
                 <h5>Bem-vindo, <?= htmlspecialchars($usuario->nome) ?>!</h5>
             </div>
             <div class="widget-content">
-                <div class="row-fluid">
-                    <div class="span8">
+                <div class="row">
+                    <div class="col-8">
                         <p><strong>CNPJs vinculados:</strong></p>
                         <?php if (!empty($cnpjs)): ?>
                             <?php foreach ($cnpjs as $cnpj): ?>
-                                <span class="label label-info" style="margin-right: 5px; display: inline-block; margin-bottom: 5px;">
+                                <span class="badge bg-info" style="margin-right: 5px; display: inline-block; margin-bottom: 5px;">
                                     <i class="bx bx-buildings"></i> <?= $cnpj->cnpj ?>
                                 </span>
                             <?php endforeach; ?>
@@ -276,18 +276,18 @@ if (!function_exists('getPainelUsuarioStatusColor')) {
                             <span class="label">Nenhum CNPJ vinculado</span>
                         <?php endif; ?>
                     </div>
-                    <div class="span4 text-right">
+                    <div class="col-4 text-right">
                         <?php if ($podeSolicitarOrcamento): ?>
-                            <a href="<?= base_url('index.php/mine/adicionarOs') ?>" class="btn btn-small btn-success" style="margin-right: 5px;">
+                            <a href="<?= base_url('index.php/mine/adicionarOs') ?>" class="btn btn-sm btn-success" style="margin-right: 5px;">
                                 <i class="bx bx-plus"></i> Nova OS
                             </a>
                         <?php endif; ?>
                         <?php if ($podeEditarPerfil): ?>
-                            <a href="<?= base_url('index.php/mine/conta') ?>" class="btn btn-small btn-info" style="margin-right: 5px;">
+                            <a href="<?= base_url('index.php/mine/conta') ?>" class="btn btn-sm btn-info" style="margin-right: 5px;">
                                 <i class="bx bx-user"></i> Perfil
                             </a>
                         <?php endif; ?>
-                        <a href="<?= base_url('index.php/mine/sair_usuario') ?>" class="btn btn-small btn-danger">
+                        <a href="<?= base_url('index.php/mine/sair_usuario') ?>" class="btn btn-sm btn-danger">
                             <i class="bx bx-log-out"></i> Sair
                         </a>
                     </div>
@@ -298,8 +298,8 @@ if (!function_exists('getPainelUsuarioStatusColor')) {
 </div>
 
 <!-- Cards de Acesso Rápido -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="quick-access-row">
             <div class="quick-access-title">
                 <i class="bx bx-grid-alt"></i> Acesso Rápido
@@ -351,26 +351,26 @@ if (!function_exists('getPainelUsuarioStatusColor')) {
 
 <?php if ($podeVerOS): ?>
 <!-- Estatísticas -->
-<div class="row-fluid">
-    <div class="span3">
+<div class="row">
+    <div class="col-3">
         <div class="stat-card-modern">
             <div class="number"><?= $stats['total'] ?? 0 ?></div>
             <div class="label">Total de OS</div>
         </div>
     </div>
-    <div class="span3">
+    <div class="col-3">
         <div class="stat-card-modern">
             <div class="number" style="color: #e74c3c;"><?= ($stats['Aberto'] ?? 0) + ($stats['Orçamento'] ?? 0) ?></div>
             <div class="label">Em Aberto</div>
         </div>
     </div>
-    <div class="span3">
+    <div class="col-3">
         <div class="stat-card-modern">
             <div class="number" style="color: #3498db;"><?= $stats['Em Andamento'] ?? 0 ?></div>
             <div class="label">Em Andamento</div>
         </div>
     </div>
-    <div class="span3">
+    <div class="col-3">
         <div class="stat-card-modern">
             <div class="number" style="color: #27ae60;"><?= $stats['Finalizado'] ?? 0 ?></div>
             <div class="label">Finalizadas</div>
@@ -379,12 +379,12 @@ if (!function_exists('getPainelUsuarioStatusColor')) {
 </div>
 
 <!-- Ordens de Serviço Recentes -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="widget-card-modern">
             <div class="widget-header-modern">
                 <h5><i class='bx bx-file'></i> Ordens de Serviço Recentes</h5>
-                <a href="<?= base_url('index.php/mine/os') ?>" class="btn btn-mini btn-info">
+                <a href="<?= base_url('index.php/mine/os') ?>" class="btn btn-sm btn-info">
                     <i class="bx bx-list-ul"></i> Ver Todas
                 </a>
             </div>
@@ -414,7 +414,7 @@ if (!function_exists('getPainelUsuarioStatusColor')) {
                                     </span>
                                 </td>
                                 <td class="text-center">
-                                    <a href="<?= base_url('index.php/mine/visualizarOs/' . $o->idOs) ?>" class="btn btn-mini btn-info" title="Visualizar">
+                                    <a href="<?= base_url('index.php/mine/visualizarOs/' . $o->idOs) ?>" class="btn btn-sm btn-info" title="Visualizar">
                                         <i class="bx bx-show"></i>
                                     </a>
                                 </td>
@@ -435,8 +435,8 @@ if (!function_exists('getPainelUsuarioStatusColor')) {
 
 <?php if ($podeVerFinanceiro && ($totalCobrancas > 0 || $totalBoletos > 0)): ?>
 <!-- Seção Financeira -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="quick-access-row">
             <div class="quick-access-title">
                 <i class="bx bx-money"></i> Resumo Financeiro
@@ -445,13 +445,13 @@ if (!function_exists('getPainelUsuarioStatusColor')) {
     </div>
 </div>
 
-<div class="row-fluid">
+<div class="row">
     <?php if ($podeVerCobrancas && $totalCobrancas > 0): ?>
-    <div class="span6">
+    <div class="col-6">
         <div class="widget-card-modern">
             <div class="widget-header-modern">
                 <h5><i class='bx bx-credit-card-front'></i> Cobranças Recentes</h5>
-                <a href="<?= base_url('index.php/mine/cobrancas') ?>" class="btn btn-mini btn-info">Ver Todas</a>
+                <a href="<?= base_url('index.php/mine/cobrancas') ?>" class="btn btn-sm btn-info">Ver Todas</a>
             </div>
             <div class="widget-content" style="padding: 0">
                 <table class="modern-table">
@@ -498,11 +498,11 @@ if (!function_exists('getPainelUsuarioStatusColor')) {
     <?php endif; ?>
 
     <?php if ($podeVerBoletos && $totalBoletos > 0): ?>
-    <div class="span6">
+    <div class="col-6">
         <div class="widget-card-modern">
             <div class="widget-header-modern">
                 <h5><i class='bx bx-barcode'></i> Boletos Recentes</h5>
-                <a href="<?= base_url('index.php/mine/boletos') ?>" class="btn btn-mini btn-info">Ver Todos</a>
+                <a href="<?= base_url('index.php/mine/boletos') ?>" class="btn btn-sm btn-info">Ver Todos</a>
             </div>
             <div class="widget-content" style="padding: 0">
                 <table class="modern-table">
@@ -552,12 +552,12 @@ if (!function_exists('getPainelUsuarioStatusColor')) {
 
 <?php if ($podeVerObras && $totalObras > 0): ?>
 <!-- Seção de Obras -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="widget-card-modern">
             <div class="widget-header-modern">
                 <h5><i class='bx bx-building-house'></i> Obras</h5>
-                <a href="<?= base_url('index.php/mine/obras') ?>" class="btn btn-mini btn-info">Ver Todas</a>
+                <a href="<?= base_url('index.php/mine/obras') ?>" class="btn btn-sm btn-info">Ver Todas</a>
             </div>
             <div class="widget-content" style="padding: 0">
                 <table class="modern-table">
@@ -607,12 +607,12 @@ if (!function_exists('getPainelUsuarioStatusColor')) {
 
 <?php if ($podeVerNotasFiscais && $totalNotasFiscais > 0): ?>
 <!-- Seção de Notas Fiscais -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="widget-card-modern">
             <div class="widget-header-modern">
                 <h5><i class='bx bx-receipt'></i> Notas Fiscais de Serviço (NFS-e)</h5>
-                <a href="<?= base_url('index.php/mine/notasfiscais') ?>" class="btn btn-mini btn-info">Ver Todas</a>
+                <a href="<?= base_url('index.php/mine/notasfiscais') ?>" class="btn btn-sm btn-info">Ver Todas</a>
             </div>
             <div class="widget-content" style="padding: 0">
                 <table class="modern-table">
@@ -647,7 +647,7 @@ if (!function_exists('getPainelUsuarioStatusColor')) {
                             </td>
                             <td>
                                 <?php if (!empty($nf->link_pdf) || !empty($nf->pdf_url)): ?>
-                                    <a href="<?= $nf->link_pdf ?? $nf->pdf_url ?>" target="_blank" class="btn btn-mini btn-success" title="Download PDF">
+                                    <a href="<?= $nf->link_pdf ?? $nf->pdf_url ?>" target="_blank" class="btn btn-sm btn-success" title="Download PDF">
                                         <i class="bx bx-download"></i>
                                     </a>
                                 <?php endif; ?>

@@ -1,28 +1,28 @@
-<?php
+﻿<?php
 /**
  * View: Visualizar Detalhes do Usuário do Portal do Cliente
  */
 ?>
 
-<div class="row-fluid" style="margin-top: 0">
-    <div class="span12">
+<div class="row" style="margin-top: 0">
+    <div class="col-12">
         <ul class="breadcrumb">
-            <li><a href="<?= site_url('dashboard') ?>">Dashboard</a> <span class="divider">/</span></li>
-            <li><a href="<?= site_url('usuarioscliente') ?>">Usuários Cliente</a> <span class="divider">/</span></li>
+            <li><a href="<?= site_url('dashboard') ?>">Dashboard</a> <span class="dropdown-divider">/</span></li>
+            <li><a href="<?= site_url('usuarioscliente') ?>">Usuários Cliente</a> <span class="dropdown-divider">/</span></li>
             <li class="active"><?= htmlspecialchars($usuario->nome) ?></li>
         </ul>
     </div>
 </div>
 
-<div class="row-fluid">
-    <div class="span4">
+<div class="row">
+    <div class="col-4">
         <!-- Informações do Usuário -->
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="bx bx-user"></i></span>
                 <h5>Dados do Usuário</h5>
                 <div class="buttons">
-                    <a href="<?= site_url('usuarioscliente/editar/' . $usuario->id) ?>" class="btn btn-mini btn-warning">
+                    <a href="<?= site_url('usuarioscliente/editar/' . $usuario->id) ?>" class="btn btn-sm btn-warning">
                         <i class="bx bx-edit"></i> Editar
                     </a>
                 </div>
@@ -33,9 +33,9 @@
                 <p><strong>Telefone:</strong> <?= $usuario->telefone ? htmlspecialchars($usuario->telefone) : '-' ?></p>
                 <p><strong>Status:</strong>
                     <?php if ($usuario->ativo): ?>
-                        <span class="label label-success">Ativo</span>
+                        <span class="badge bg-success">Ativo</span>
                     <?php else: ?>
-                        <span class="label label-important">Inativo</span>
+                        <span class="badge bg-danger">Inativo</span>
                     <?php endif; ?>
                 </p>
                 <p><strong>Último Acesso:</strong> <?= $usuario->ultimo_acesso ? date('d/m/Y H:i', strtotime($usuario->ultimo_acesso)) : 'Nunca' ?></p>
@@ -82,13 +82,13 @@
                 <h5>Estatísticas de OS</h5>
             </div>
             <div class="widget-content">
-                <div class="row-fluid">
-                    <div class="span6">
+                <div class="row">
+                    <div class="col-6">
                         <p><strong>Total:</strong> <span class="badge badge-info"><?= $stats['total'] ?></span></p>
                         <p><strong>Abertas:</strong> <span class="badge badge-warning"><?= $stats['Aberto'] ?></span></p>
                         <p><strong>Orçamento:</strong> <span class="badge"><?= $stats['Orçamento'] ?></span></p>
                     </div>
-                    <div class="span6">
+                    <div class="col-6">
                         <p><strong>Finalizadas:</strong> <span class="badge badge-success"><?= $stats['Finalizado'] ?></span></p>
                         <p><strong>Faturadas:</strong> <span class="badge badge-inverse"><?= $stats['Faturado'] ?></span></p>
                         <p><strong>Canceladas:</strong> <span class="badge badge-important"><?= $stats['Cancelado'] ?></span></p>
@@ -98,7 +98,7 @@
         </div>
     </div>
 
-    <div class="span8">
+    <div class="col-8">
         <!-- Permissões -->
         <div class="widget-box">
             <div class="widget-title">
@@ -106,7 +106,7 @@
                 <h5>Permissões Configuradas</h5>
             </div>
             <div class="widget-content">
-                <div class="row-fluid">
+                <div class="row">
                     <?php
                     $grupos = [
                         'Visualização' => ['visualizar_os', 'visualizar_detalhes_os', 'visualizar_produtos_os', 'visualizar_servicos_os', 'visualizar_anexos_os', 'visualizar_documentos_fiscais'],
@@ -116,11 +116,11 @@
                     ];
                     ?>
                     <?php foreach ($grupos as $nome => $chaves): ?>
-                    <div class="span3">
+                    <div class="col-3">
                         <h6><?= $nome ?></h6>
                         <?php foreach ($chaves as $chave): ?>
                             <?php if (isset($permissoes[$chave]) && $permissoes[$chave]): ?>
-                                <span class="label label-success"><i class="bx bx-check"></i></span>
+                                <span class="badge bg-success"><i class="bx bx-check"></i></span>
                             <?php else: ?>
                                 <span class="label"><i class="bx bx-x"></i></span>
                             <?php endif; ?>
@@ -140,7 +140,7 @@
             </div>
             <div class="widget-content nopadding">
                 <?php if (!empty($os)): ?>
-                    <table class="table table-bordered table-striped table-condensed">
+                    <table class="table table-bordered table-striped table-sm">
                         <thead>
                             <tr>
                                 <th>OS #</th>
@@ -160,7 +160,7 @@
                                 <td><?= $o->documento ?></td>
                                 <td><span class="label"><?= $o->status ?></span></td>
                                 <td class="text-center">
-                                    <a href="<?= site_url('os/visualizar/' . $o->idOs) ?>" class="btn btn-mini btn-info" target="_blank">
+                                    <a href="<?= site_url('os/visualizar/' . $o->idOs) ?>" class="btn btn-sm btn-info" target="_blank">
                                         <i class="bx bx-show"></i>
                                     </a>
                                 </td>

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Formulário de Lançamento DRE
  */
@@ -63,20 +63,20 @@ foreach ($contas as $c) {
 </style>
 
 <!-- Header -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <ul class="breadcrumb">
-            <li><a href="<?= site_url('dashboard') ?>">Dashboard</a> <span class="divider">/</span></li>
-            <li><a href="<?= site_url('dre') ?>">DRE Contábil</a> <span class="divider">/</span></li>
-            <li><a href="<?= site_url('dre/lancamentos') ?>">Lançamentos</a> <span class="divider">/</span></li>
+            <li><a href="<?= site_url('dashboard') ?>">Dashboard</a> <span class="dropdown-divider">/</span></li>
+            <li><a href="<?= site_url('dre') ?>">DRE Contábil</a> <span class="dropdown-divider">/</span></li>
+            <li><a href="<?= site_url('dre/lancamentos') ?>">Lançamentos</a> <span class="dropdown-divider">/</span></li>
             <li class="active"><?= $is_edit ? 'Editar' : 'Novo' ?> Lançamento</li>
         </ul>
     </div>
 </div>
 
 <!-- Formulário -->
-<div class="row-fluid">
-    <div class="span8 offset2">
+<div class="row">
+    <div class="col-8 offset-md-2">
         <!-- Vincular OS -->
         <?php if (!$is_edit): ?>
         <div class="widget-box">
@@ -85,10 +85,10 @@ foreach ($contas as $c) {
                 <h5>Vincular a uma Ordem de Serviço (opcional)</h5>
             </div>
             <div class="widget-content">
-                <div class="control-group">
-                    <label class="control-label">Buscar OS:</label>
+                <div class="mb-3">
+                    <label class="form-label">Buscar OS:</label>
                     <div class="controls" style="position: relative;">
-                        <input type="text" id="os-search-input" class="span8" placeholder="Digite o número ou cliente da OS..." autocomplete="off" />
+                        <input type="text" id="os-search-input" class="col-8" placeholder="Digite o número ou cliente da OS..." autocomplete="off" />
                         <div id="os-search-results" class="os-search-results"></div>
                         <input type="hidden" id="os-selected-id" name="os_id" value="" />
                     </div>
@@ -96,7 +96,7 @@ foreach ($contas as $c) {
                 <div id="os-selected-info" style="display: none;" class="alert alert-info">
                     <i class="fas fa-check-circle"></i> <strong id="os-selected-label"></strong>
                     <span id="os-selected-details" style="margin-left: 10px;"></span>
-                    <button type="button" id="os-clear-btn" class="btn btn-mini btn-danger pull-right"><i class="fas fa-times"></i> Remover</button>
+                    <button type="button" id="os-clear-btn" class="btn btn-sm btn-danger float-end"><i class="fas fa-times"></i> Remover</button>
                 </div>
             </div>
         </div>
@@ -111,10 +111,10 @@ foreach ($contas as $c) {
                 <form method="post" action="<?= site_url('dre/lancamento_salvar') ?>" class="form-horizontal" id="lancamento-form">
                     <input type="hidden" name="id" value="<?= $is_edit ? $lancamento->id : '' ?>" />
 
-                    <div class="control-group">
-                        <label class="control-label">Conta: *</label>
+                    <div class="mb-3">
+                        <label class="form-label">Conta: *</label>
                         <div class="controls">
-                            <select name="conta_id" class="span8" required id="conta-select">
+                            <select name="conta_id" class="col-8" required id="conta-select">
                                 <option value="">Selecione a conta...</option>
                                 <?php foreach ($contasPorGrupo as $grupoKey => $contasGrupo): ?>
                                 <optgroup label="<?= $grupoLabels[$grupoKey] ?? str_replace('_', ' ', $grupoKey) ?>">
@@ -129,8 +129,8 @@ foreach ($contas as $c) {
                         </div>
                     </div>
 
-                    <div class="control-group">
-                        <label class="control-label">Tipo: *</label>
+                    <div class="mb-3">
+                        <label class="form-label">Tipo: *</label>
                         <div class="controls">
                             <label class="radio inline">
                                 <input type="radio" name="tipo_movimento" value="CREDITO" id="tipo-credito" <?= (!$is_edit || $lancamento->tipo_movimento == 'CREDITO') ? 'checked' : '' ?> />
@@ -143,34 +143,34 @@ foreach ($contas as $c) {
                         </div>
                     </div>
 
-                    <div class="control-group">
-                        <label class="control-label">Data: *</label>
+                    <div class="mb-3">
+                        <label class="form-label">Data: *</label>
                         <div class="controls">
-                            <input type="date" name="data" class="span3" id="lanc-data" value="<?= $is_edit ? $lancamento->data : date('Y-m-d') ?>" required />
+                            <input type="date" name="data" class="col-3" id="lanc-data" value="<?= $is_edit ? $lancamento->data : date('Y-m-d') ?>" required />
                         </div>
                     </div>
 
-                    <div class="control-group">
-                        <label class="control-label">Valor: *</label>
+                    <div class="mb-3">
+                        <label class="form-label">Valor: *</label>
                         <div class="controls">
-                            <div class="input-prepend">
-                                <span class="add-on">R$</span>
-                                <input type="text" name="valor" class="span3" id="lanc-valor" value="<?= $is_edit ? number_format($lancamento->valor, 2, ',', '.') : '' ?>" required placeholder="0,00" />
+                            <div class="input-group">
+                                <span class="input-group-text">R$</span>
+                                <input type="text" name="valor" class="col-3" id="lanc-valor" value="<?= $is_edit ? number_format($lancamento->valor, 2, ',', '.') : '' ?>" required placeholder="0,00" />
                             </div>
                         </div>
                     </div>
 
-                    <div class="control-group">
-                        <label class="control-label">Descrição:</label>
+                    <div class="mb-3">
+                        <label class="form-label">Descrição:</label>
                         <div class="controls">
-                            <textarea name="descricao" class="span8" rows="3" id="lanc-descricao"><?= $is_edit ? $lancamento->descricao : '' ?></textarea>
+                            <textarea name="descricao" class="col-8" rows="3" id="lanc-descricao"><?= $is_edit ? $lancamento->descricao : '' ?></textarea>
                         </div>
                     </div>
 
-                    <div class="control-group">
-                        <label class="control-label">Documento:</label>
+                    <div class="mb-3">
+                        <label class="form-label">Documento:</label>
                         <div class="controls">
-                            <input type="text" name="documento" class="span4" id="lanc-documento" value="<?= $is_edit ? $lancamento->documento : '' ?>" placeholder="Nº NF, OS, etc" />
+                            <input type="text" name="documento" class="col-4" id="lanc-documento" value="<?= $is_edit ? $lancamento->documento : '' ?>" placeholder="Nº NF, OS, etc" />
                         </div>
                     </div>
 

@@ -1,4 +1,4 @@
-<?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
+﻿<?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
 
 <link href="<?= base_url() ?>assets/css/dashboard.css" rel="stylesheet">
 <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" integrity="sha384-B6nB7GjeyR0Ln2Rf3Znp7Z7r4B4eR3i0Uq8k5+u2C2YJXTHVDbB+m9Z8dDqWlZ4H" crossorigin="anonymous">
@@ -533,8 +533,8 @@
             </div>
         </div>
 
-        <div class="row-fluid">
-            <div class="span6">
+        <div class="row">
+            <div class="col-6">
                 <h4 style="margin-bottom: 15px;">Módulos por Status</h4>
                 <table class="table table-bordered">
                     <thead>
@@ -546,24 +546,24 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td><span class="label label-success">Concluído</span></td>
+                            <td><span class="badge bg-success">Concluído</span></td>
                             <td><?= $stats['concluidos'] ?? 0 ?></td>
                             <td><?= $total_modulos > 0 ? round(($stats['concluidos'] / $total_modulos) * 100) : 0 ?>%</td>
                         </tr>
                         <tr>
-                            <td><span class="label label-warning">Em Progresso</span></td>
+                            <td><span class="badge bg-warning">Em Progresso</span></td>
                             <td><?= $stats['em_progresso'] ?? 0 ?></td>
                             <td><?= $total_modulos > 0 ? round(($stats['em_progresso'] / $total_modulos) * 100) : 0 ?>%</td>
                         </tr>
                         <tr>
-                            <td><span class="label label-info">Planejado</span></td>
+                            <td><span class="badge bg-info">Planejado</span></td>
                             <td><?= $stats['planejados'] ?? 0 ?></td>
                             <td><?= $total_modulos > 0 ? round(($stats['planejados'] / $total_modulos) * 100) : 0 ?>%</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-            <div class="span6">
+            <div class="col-6">
                 <h4 style="margin-bottom: 15px;">Referência GitHub</h4>
                 <p style="margin-bottom: 15px;">Acesse o repositório original para comparar com a versão base do sistema:</p>
                 <a href="https://github.com/RamonSilva20/mapos/pulse" target="_blank" class="github-link">

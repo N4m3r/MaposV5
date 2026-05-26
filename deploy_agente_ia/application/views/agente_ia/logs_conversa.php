@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * View: logs_conversa.php
  * Historico de conversas com o agente IA
@@ -16,8 +16,8 @@
 .tipo-erro      { background:#f8d7da; color:#721c24; }
 </style>
 
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="bx bx-message-square-detail iconX"></i></span>
@@ -33,7 +33,7 @@
                             <option value="erro" <?php echo ($_GET['tipo'] ?? '')==='erro'?'selected':''; ?>>Erro</option>
                         </select>
                         <input type="date" name="data" class="input-small" value="<?php echo $_GET['data'] ?? ''; ?>">
-                        <button type="submit" class="btn btn-mini"><i class="bx bx-search"></i></button>
+                        <button type="submit" class="btn btn-sm"><i class="bx bx-search"></i></button>
                     </form>
                 </div>
             </div>

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * View: Login de Usuário do Portal do Cliente
  * Design Moderno com Animações
@@ -10,7 +10,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal do Cliente - Login</title>
-    <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/bootstrap5.min.css" />
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet' integrity="sha384-B6nB7GjeyR0Ln2Rf3Znp7Z7r4B4eR3i0Uq8k5+u2C2YJXTHVDbB+m9Z8dDqWlZ4H" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" crossorigin="anonymous">
     <script src="<?php echo base_url() ?>assets/js/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
@@ -355,7 +355,7 @@
             }
         }
 
-        .alert-error {
+        .alert-danger {
             background: linear-gradient(135deg, #fee2e2, #fecaca);
             color: #dc2626;
             border: 1px solid #fca5a5;
@@ -585,7 +585,7 @@
             </div>
 
             <?php if ($this->session->flashdata('error')): ?>
-                <div class="alert alert-error" id="alertError">
+                <div class="alert alert-danger" id="alertError">
                     <i class="bx bx-error-circle"></i>
                     <span><?php echo $this->session->flashdata('error'); ?></span>
                 </div>

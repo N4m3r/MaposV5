@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/js/jquery-ui/css/smoothness/jquery-ui-1.9.2.custom.css" />
+﻿<link rel="stylesheet" href="<?php echo base_url(); ?>assets/js/jquery-ui/css/smoothness/jquery-ui-1.9.2.custom.css" />
 <script type="text/javascript" src="<?php echo base_url() ?>assets/js/jquery-ui/js/jquery-ui-1.9.2.custom.js"></script>
 <script type="text/javascript" src="<?php echo base_url() ?>assets/js/jquery.validate.js"></script>
 
@@ -6,8 +6,8 @@
 <script type="text/javascript" src="<?php echo base_url() ?>assets/trumbowyg/trumbowyg.js"></script>
 <script type="text/javascript" src="<?php echo base_url() ?>assets/trumbowyg/langs/pt_br.js"></script>
 
-<div class="row-fluid" style="margin-top:0">
-    <div class="span12">
+<div class="row" style="margin-top:0">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon">
@@ -18,35 +18,35 @@
             <div class="widget-content">
 
                 <?php if ($custom_error == true) { ?>
-                    <div class="span12 alert alert-danger" id="divInfo" style="padding: 1%;">Dados incompletos, verifique os campos com asterisco.</div>
+                    <div class="col-12 alert alert-danger" id="divInfo" style="padding: 1%;">Dados incompletos, verifique os campos com asterisco.</div>
                 <?php
                 } ?>
                 <form action="<?php echo current_url(); ?>" method="post" id="formGarantia">
-                    <div class="span12">
-                        <div class="span2">
+                    <div class="col-12">
+                        <div class="col-2">
                             <label for="dataGarantia">Data<span class="required">*</span></label>
-                            <input id="dataGarantia" class="span12 datepicker" type="text" name="dataGarantia" value="<?php echo date('d/m/Y'); ?>" disabled />
+                            <input id="dataGarantia" class="col-12 datepicker" type="text" name="dataGarantia" value="<?php echo date('d/m/Y'); ?>" disabled />
                         </div>
-                        <div class="span3">
+                        <div class="col-3">
                             <label for="usuarios_id">Responsável<span class="required">*</span></label>
-                            <input id="usuarios_id" class="span12" type="text" name="usuarios_id" value="<?php echo e($this->session->userdata('nome_admin')) ?>" disabled />
+                            <input id="usuarios_id" class="col-12" type="text" name="usuarios_id" value="<?php echo e($this->session->userdata('nome_admin')) ?>" disabled />
                         </div>
-                        <div class="span7">
+                        <div class="col-7">
                             <label for="refGarantia">Ref Garantia<span class="required">*</span></label>
-                            <input type="text" class="span12" name="refGarantia" required placeholder="Informe uma referência: Exemplos: TV, Notebook, Celular">
+                            <input type="text" class="col-12" name="refGarantia" required placeholder="Informe uma referência: Exemplos: TV, Notebook, Celular">
                         </div>
-                        <div class="span12" style="margin-left: 0">
+                        <div class="col-12" style="margin-left: 0">
                             <label for="textoGarantia">
                                 <h4 class="text-center">Termo de Garantia<span class="required">*</span></h4>
                             </label>
-                            <textarea required class="span12 editor" name="textoGarantia" id="textoGarantia" cols="30" rows="5"></textarea></textarea>
+                            <textarea required class="col-12 editor" name="textoGarantia" id="textoGarantia" cols="30" rows="5"></textarea></textarea>
                         </div>
                     </div>
-                    <div class="span12" style="padding: 1%; margin-left: 0">
-                        <div class="span6 offset3" style="display:flex;justify-content: center">
+                    <div class="col-12" style="padding: 1%; margin-left: 0">
+                        <div class="col-6 offset-md-3" style="display:flex;justify-content: center">
                             <button class="button btn btn-success" id="btnContinuar">
                               <span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2">Adicionar</span></button>
-                            <a href="<?php echo base_url() ?>index.php/garantias" class="button btn btn-mini btn-warning">
+                            <a href="<?php echo base_url() ?>index.php/garantias" class="button btn btn-sm btn-warning">
                               <span class="button__icon"><i class="bx bx-undo"></i></span> <span class="button__text2">Voltar</span></a>
                         </div>
                     </div>
@@ -103,14 +103,14 @@
                 }
 
             },
-            errorClass: "help-inline",
+            errorClass: "form-text",
             errorElement: "span",
             highlight: function(element, errorClass, validClass) {
-                $(element).parents('.control-group').addClass('error');
+                $(element).parents('.mb-3').addClass('error');
             },
             unhighlight: function(element, errorClass, validClass) {
-                $(element).parents('.control-group').removeClass('error');
-                $(element).parents('.control-group').addClass('success');
+                $(element).parents('.mb-3').removeClass('error');
+                $(element).parents('.mb-3').addClass('success');
             }
         });
         $(".datepicker").datepicker({

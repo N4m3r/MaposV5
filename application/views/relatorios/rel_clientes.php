@@ -1,5 +1,5 @@
-<div class="row-fluid" style="margin-top: 0">
-    <div class="span4">
+﻿<div class="row" style="margin-top: 0">
+    <div class="col-4">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon">
@@ -18,7 +18,7 @@
         </div>
     </div>
 
-    <div class="span8">
+    <div class="col-8">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon">
@@ -27,25 +27,25 @@
                 <h5>Relatórios Customizáveis</h5>
             </div>
             <div class="widget-content">
-                <div class="span12 well">
+                <div class="col-12 well">
                     <form target="_blank" action="<?php echo base_url() ?>index.php/relatorios/clientesCustom"
                           method="get">
-                        <div class="span4">
+                        <div class="col-4">
                             <label for="">Cadastrado de:</label>
-                            <input type="date" name="dataInicial" class="span12"/>
+                            <input type="date" name="dataInicial" class="col-12"/>
                         </div>
-                        <div class="span4">
+                        <div class="col-4">
                             <label for="">até:</label>
-                            <input type="date" name="dataFinal" class="span12"/>
+                            <input type="date" name="dataFinal" class="col-12"/>
                         </div>
-                        <div class="span4">
+                        <div class="col-4">
                             <label for="">.</label>
                             <button class="button btn btn-inverse"><span class="button__icon"><i class="bx bx-printer"></i></span> <span class="button__text2">Imprimir</span></button>
                         </div>
-                        <div class="span12 well" style="margin-left: 0">
-                        <div class="span12">
+                        <div class="col-12 well" style="margin-left: 0">
+                        <div class="col-12">
                             <label for="">Tipo de cliente:</label>
-                            <select name="tipocliente" class="span12">
+                            <select name="tipocliente" class="col-12">
                                 <option value="0">Cliente</option>
                                 <option value="1">Fornecedor</option>
                             </select>

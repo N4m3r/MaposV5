@@ -1,21 +1,21 @@
-<div class="row-fluid">
-    <div class="span12">
+﻿<div class="row">
+    <div class="col-12">
         <ul class="breadcrumb">
-            <li><a href="<?= base_url() ?>">Dashboard</a><span class="divider">/</span></li>
+            <li><a href="<?= base_url() ?>">Dashboard</a><span class="dropdown-divider">/</span></li>
             <li class="active">Webhooks</li>
         </ul>
     </div>
 </div>
 
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <a href="<?= site_url('webhooks/create') ?>" class="btn btn-success"><i class="fas fa-plus"></i> Novo Webhook</a>
     </div>
 </div>
 
-<div class="row-fluid" style="margin-top: 20px;">
+<div class="row" style="margin-top: 20px;">
     <!-- Webhooks -->
-    <div class="span8">
+    <div class="col-8">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-webhook"></i></span>
@@ -42,27 +42,27 @@
                                         <?php
                                         $events = json_decode($webhook->events ?? '[]', true);
                                         foreach ($events as $event): ?>
-                                            <span class="label label-info"><?= $event ?></span>
+                                            <span class="badge bg-info"><?= $event ?></span>
                                         <?php endforeach; ?>
                                     </td>
                                     <td class="center">
                                         <?php if ($webhook->active): ?>
-                                            <span class="label label-success">Ativo</span>
+                                            <span class="badge bg-success">Ativo</span>
                                         <?php else: ?>
                                             <span class="label">Inativo</span>
                                         <?php endif; ?>
                                     </td>
                                     <td class="center">
-                                        <a href="<?= site_url('webhooks/edit/' . $webhook->id) ?>" class="btn btn-mini btn-info" title="Editar">
+                                        <a href="<?= site_url('webhooks/edit/' . $webhook->id) ?>" class="btn btn-sm btn-info" title="Editar">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <a href="<?= site_url('webhooks/logs/' . $webhook->id) ?>" class="btn btn-mini btn-warning" title="Logs">
+                                        <a href="<?= site_url('webhooks/logs/' . $webhook->id) ?>" class="btn btn-sm btn-warning" title="Logs">
                                             <i class="fas fa-list"></i>
                                         </a>
-                                        <button onclick="testWebhook(<?= $webhook->id ?>)" class="btn btn-mini btn-success" title="Testar">
+                                        <button onclick="testWebhook(<?= $webhook->id ?>)" class="btn btn-sm btn-success" title="Testar">
                                             <i class="fas fa-play"></i>
                                         </button>
-                                        <a href="<?= site_url('webhooks/delete/' . $webhook->id) ?>" class="btn btn-mini btn-danger" title="Excluir" onclick="return confirm('Tem certeza?')">
+                                        <a href="<?= site_url('webhooks/delete/' . $webhook->id) ?>" class="btn btn-sm btn-danger" title="Excluir" onclick="return confirm('Tem certeza?')">
                                             <i class="fas fa-trash"></i>
                                         </a>
                                     </td>
@@ -81,7 +81,7 @@
     </div>
 
     <!-- Logs Recentes -->
-    <div class="span4">
+    <div class="col-4">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-history"></i></span>
@@ -100,9 +100,9 @@
                                     </td>
                                     <td width="60" class="center">
                                         <?php if ($log->success): ?>
-                                            <span class="label label-success"><?= $log->http_code ?></span>
+                                            <span class="badge bg-success"><?= $log->http_code ?></span>
                                         <?php else: ?>
-                                            <span class="label label-important"><?= $log->http_code ?: 'ERR' ?></span>
+                                            <span class="badge bg-danger"><?= $log->http_code ?: 'ERR' ?></span>
                                         <?php endif; ?>
                                     </td>
                                 </tr>

@@ -1,5 +1,5 @@
-<div class="row-fluid" style="margin-top: 0">
-    <div class="span4">
+﻿<div class="row" style="margin-top: 0">
+    <div class="col-4">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon">
@@ -15,7 +15,7 @@
             </div>
         </div>
     </div>
-    <div class="span8">
+    <div class="col-8">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon">
@@ -24,30 +24,30 @@
                 <h5>Relatórios Customizáveis</h5>
             </div>
             <div class="widget-content">
-                <div class="span12 well">
-                    <div class="span12 alert alert-info">Deixe em branco caso não deseje utilizar o parâmetro.</div>
+                <div class="col-12 well">
+                    <div class="col-12 alert alert-info">Deixe em branco caso não deseje utilizar o parâmetro.</div>
                     <form target="_blank" action="<?php echo base_url() ?>index.php/relatorios/produtosCustom" method="get">
-                        <div class="span12 well">
-                            <div class="span6">
+                        <div class="col-12 well">
+                            <div class="col-6">
                                 <label for="">Preço de Venda de:</label>
-                                <input type="text" name="precoInicial" class="span12 money" />
+                                <input type="text" name="precoInicial" class="col-12 money" />
                             </div>
-                            <div class="span6">
+                            <div class="col-6">
                                 <label for="">até:</label>
-                                <input type="text" name="precoFinal" class="span12 money" />
+                                <input type="text" name="precoFinal" class="col-12 money" />
                             </div>
                         </div>
-                        <div class="span12 well" style="margin-left: 0">
-                            <div class="span6">
+                        <div class="col-12 well" style="margin-left: 0">
+                            <div class="col-6">
                                 <label for="">Estoque de:</label>
-                                <input type="text" name="estoqueInicial" class="span12" />
+                                <input type="text" name="estoqueInicial" class="col-12" />
                             </div>
-                            <div class="span6">
+                            <div class="col-6">
                                 <label for="">até:</label>
-                                <input type="text" name="estoqueFinal" class="span12" />
+                                <input type="text" name="estoqueFinal" class="col-12" />
                             </div>
                         </div>
-                        <div class="span12" style="display: flex; justify-content: center">
+                        <div class="col-12" style="display: flex; justify-content: center">
                             <button type="reset" class="button btn btn-warning">
                                 <span class="button__icon"><i class="bx bx-brush-alt"></i></span>
                                 <span class="button__text">Limpar</span>

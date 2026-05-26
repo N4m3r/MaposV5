@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Importar NFS-e via XML
  * Interface moderna com drag-and-drop, preview e vinculacao a OS
@@ -101,8 +101,8 @@ $oss = $oss ?? [];
 .nfse-os-select { width: 100%; }
 </style>
 
-<div class="row-fluid nfse-import-wrapper">
-    <div class="span12">
+<div class="row nfse-import-wrapper">
+    <div class="col-12">
 
         <!-- Header -->
         <div class="nfse-import-header">
@@ -117,7 +117,7 @@ $oss = $oss ?? [];
         </div>
         <?php endif; ?>
         <?php if ($this->session->flashdata('error')): ?>
-        <div class="alert alert-error">
+        <div class="alert alert-danger">
             <i class="fas fa-exclamation-circle"></i> <?= $this->session->flashdata('error') ?>
         </div>
         <?php endif; ?>
@@ -192,7 +192,7 @@ $oss = $oss ?? [];
                 <label style="font-size:13px; color:var(--title,#d4d8e0); font-weight:bold; margin-bottom:8px; display:block;">
                     <i class="fas fa-link" style="color:#52459f"></i> Vincular a Ordem de Servico
                 </label>
-                <select name="os_id" id="os-select" class="span12 nfse-os-select" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8);">
+                <select name="os_id" id="os-select" class="col-12 nfse-os-select" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8);">
                     <option value="">-- Selecione uma OS --</option>
                     <?php foreach ($oss as $o): ?>
                         <option value="<?= $o->idOs ?>">#<?= str_pad($o->idOs, 6, '0', STR_PAD_LEFT) ?> — <?= htmlspecialchars($o->nomeCliente ?? '') ?> — <?= date('d/m/Y', strtotime($o->dataInicial ?? 'now')) ?></option>

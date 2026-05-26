@@ -1,9 +1,9 @@
-<script src="<?php echo base_url() ?>assets/js/jquery.mask.min.js"></script>
+﻿<script src="<?php echo base_url() ?>assets/js/jquery.mask.min.js"></script>
 <script src="<?php echo base_url() ?>assets/js/sweetalert2.all.min.js"></script>
 <script src="<?php echo base_url() ?>assets/js/funcoes.js"></script>
 
-<div class="row-fluid" style="margin-top:0">
-    <div class="span12">
+<div class="row" style="margin-top:0">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title" style="margin: -20px 0 0">
                 <span class="icon">
@@ -16,109 +16,109 @@
                     echo '<div class="alert alert-danger">' . e($custom_error) . '</div>';
                 } ?>
                 <form action="<?php echo current_url(); ?>" id="formUsuario" method="post" class="form-horizontal">
-                    <div class="control-group">
+                    <div class="mb-3">
                         <?php echo form_hidden('idUsuarios', $result->idUsuarios) ?>
-                        <label for="nome" class="control-label">Nome<span class="required">*</span></label>
+                        <label for="nome" class="form-label">Nome<span class="required">*</span></label>
                         <div class="controls">
                             <input id="nome" type="text" name="nome" value="<?php echo e($result->nome); ?>" />
                         </div>
                     </div>
 
-                    <div class="control-group">
-                        <label for="rg" class="control-label">RG<span class="required">*</span></label>
+                    <div class="mb-3">
+                        <label for="rg" class="form-label">RG<span class="required">*</span></label>
                         <div class="controls">
                             <input id="rg" type="text" name="rg" value="<?php echo e($result->rg); ?>" />
                         </div>
                     </div>
 
-                    <div class="control-group">
-                        <label for="cpf" class="control-label">CPF<span class="required">*</span></label>
+                    <div class="mb-3">
+                        <label for="cpf" class="form-label">CPF<span class="required">*</span></label>
                         <div class="controls">
                             <input class="cpfUser" type="text" name="cpf" value="<?php echo e($result->cpf); ?>"/>
                         </div>
                     </div>
-                    <div class="control-group">
-                        <label for="telefone" class="control-label">Telefone<span class="required">*</span></label>
+                    <div class="mb-3">
+                        <label for="telefone" class="form-label">Telefone<span class="required">*</span></label>
                         <div class="controls">
                             <input id="telefone" type="text" name="telefone" value="<?php echo e($result->telefone); ?>" />
                         </div>
                     </div>
 
-                    <div class="control-group">
-                        <label for="celular" class="control-label">Celular</label>
+                    <div class="mb-3">
+                        <label for="celular" class="form-label">Celular</label>
                         <div class="controls">
                             <input id="celular" type="text" name="celular" value="<?php echo e($result->celular); ?>" />
                         </div>
                     </div>
 
-                    <div class="control-group">
-                        <label for="email" class="control-label">Email<span class="required">*</span></label>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email<span class="required">*</span></label>
                         <div class="controls">
                             <input id="email" type="text" name="email" value="<?php echo e($result->email); ?>" />
                         </div>
                     </div>
 
-                    <div class="control-group">
-                        <label for="senha" class="control-label">Senha</label>
+                    <div class="mb-3">
+                        <label for="senha" class="form-label">Senha</label>
                         <div class="controls">
                             <input id="senha" type="password" name="senha" value="" placeholder="Não preencha se não quiser alterar." />
                             <i class="icon-exclamation-sign tip-top" title="Se não quiser alterar a senha, não preencha esse campo."></i>
                         </div>
                     </div>
 
-                    <div class="control-group" class="control-label">
-                        <label for="cep" class="control-label">CEP<span class="required">*</span></label>
+                    <div class="mb-3" class="form-label">
+                        <label for="cep" class="form-label">CEP<span class="required">*</span></label>
                         <div class="controls">
                             <input id="cep" type="text" name="cep" value="<?php echo e($result->cep); ?>" />
                         </div>
                     </div>
 
-                    <div class="control-group">
-                        <label for="rua" class="control-label">Rua<span class="required">*</span></label>
+                    <div class="mb-3">
+                        <label for="rua" class="form-label">Rua<span class="required">*</span></label>
                         <div class="controls">
                             <input id="rua" type="text" name="rua" value="<?php echo e($result->rua); ?>" />
                         </div>
                     </div>
 
-                    <div class="control-group">
-                        <label for="numero" class="control-label">Numero<span class="required">*</span></label>
+                    <div class="mb-3">
+                        <label for="numero" class="form-label">Numero<span class="required">*</span></label>
                         <div class="controls">
                             <input id="numero" type="text" name="numero" value="<?php echo e($result->numero); ?>" />
                         </div>
                     </div>
 
-                    <div class="control-group">
-                        <label for="bairro" class="control-label">Bairro<span class="required">*</span></label>
+                    <div class="mb-3">
+                        <label for="bairro" class="form-label">Bairro<span class="required">*</span></label>
                         <div class="controls">
                             <input id="bairro" type="text" name="bairro" value="<?php echo e($result->bairro); ?>" />
                         </div>
                     </div>
 
-                    <div class="control-group">
-                        <label for="cidade" class="control-label">Cidade<span class="required">*</span></label>
+                    <div class="mb-3">
+                        <label for="cidade" class="form-label">Cidade<span class="required">*</span></label>
                         <div class="controls">
                             <input id="cidade" type="text" name="cidade" value="<?php echo e($result->cidade); ?>" />
                         </div>
                     </div>
 
-                    <div class="control-group">
-                        <label for="estado" class="control-label">Estado<span class="required">*</span></label>
+                    <div class="mb-3">
+                        <label for="estado" class="form-label">Estado<span class="required">*</span></label>
                         <div class="controls">
                             <input id="estado" type="text" name="estado" value="<?php echo e($result->estado); ?>" />
                         </div>
                     </div>
 
                     <!--DATA-->
-                    <div class="control-group">
-                        <label for="dataExpiracao" class="control-label">Expira em<span class="required">*</span></label>
+                    <div class="mb-3">
+                        <label for="dataExpiracao" class="form-label">Expira em<span class="required">*</span></label>
                         <div class="controls">
                             <input id="dataExpiracao" type="date" name="dataExpiracao" value="<?php echo e($result->dataExpiracao); ?>" />
                         </div>
                     </div>
 
 
-                    <div class="control-group">
-                        <label class="control-label">Situação*</label>
+                    <div class="mb-3">
+                        <label class="form-label">Situação*</label>
                         <div class="controls">
                             <select name="situacao" id="situacao">
                                 <?php if ($result->situacao == 1) {
@@ -135,8 +135,8 @@
                     </div>
 
 
-                    <div class="control-group">
-                        <label class="control-label">Permissões<span class="required">*</span></label>
+                    <div class="mb-3">
+                        <label class="form-label">Permissões<span class="required">*</span></label>
                         <div class="controls">
                             <select name="permissoes_id" id="permissoes_id">
                                 <?php foreach ($permissoes as $p) {
@@ -152,11 +152,11 @@
                     </div>
 
                     <div class="form-actions">
-                        <div class="span12">
-                            <div class="span6 offset3" style="display:flex">
+                        <div class="col-12">
+                            <div class="col-6 offset-md-3" style="display:flex">
                                 <button type="submit" class="button btn btn-primary">
                                   <span class="button__icon"><i class="bx bx-sync"></i></span><span class="button__text2">Atualizar</span></button>
-                                <a href="<?php echo base_url() ?>index.php/usuarios" id="" class="button btn btn-mini btn-warning">
+                                <a href="<?php echo base_url() ?>index.php/usuarios" id="" class="button btn btn-sm btn-warning">
                                   <span class="button__icon"><i class="bx bx-undo"></i></span> <span class="button__text">Voltar</span></a>
                             </div>
                         </div>
@@ -245,14 +245,14 @@
 
             },
 
-            errorClass: "help-inline",
+            errorClass: "form-text",
             errorElement: "span",
             highlight: function(element, errorClass, validClass) {
-                $(element).parents('.control-group').addClass('error');
+                $(element).parents('.mb-3').addClass('error');
             },
             unhighlight: function(element, errorClass, validClass) {
-                $(element).parents('.control-group').removeClass('error');
-                $(element).parents('.control-group').addClass('success');
+                $(element).parents('.mb-3').removeClass('error');
+                $(element).parents('.mb-3').addClass('success');
             }
         });
 

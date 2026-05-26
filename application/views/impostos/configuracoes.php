@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Configuracoes de Impostos Simples Nacional
  * Adaptado ao tema escuro MapOS v5
@@ -116,10 +116,10 @@ function fmtCnpj($cnpj) {
     background: var(--wid-dark, #1c1d26);
     color: var(--branco, #caced8);
 }
-.impostos-container .control-label {
+.impostos-container .form-label {
     color: var(--branco, #caced8);
 }
-.impostos-container .help-inline {
+.impostos-container .form-text {
     color: var(--branco, #caced8);
     opacity: 0.7;
 }
@@ -128,7 +128,7 @@ function fmtCnpj($cnpj) {
     border-color: var(--dark-2, #272835) !important;
     color: var(--branco, #caced8) !important;
 }
-.impostos-container .add-on {
+.impostos-container .input-group-text {
     background: var(--dark-1, #14141a);
     border-color: var(--dark-2, #272835);
     color: var(--branco, #caced8);
@@ -167,13 +167,13 @@ function fmtCnpj($cnpj) {
     margin-left: 8px;
     vertical-align: middle;
 }
-/* Garantir que input-append nao esconda o valor */
-.impostos-container .input-append input[type="text"] {
+/* Garantir que input-group nao esconda o valor */
+.impostos-container .input-group input[type="text"] {
     width: 60px !important;
     text-align: right;
     padding-right: 6px;
 }
-.impostos-container .input-append .add-on {
+.impostos-container .input-group .input-group-text {
     padding-left: 8px;
     padding-right: 8px;
 }
@@ -182,19 +182,19 @@ function fmtCnpj($cnpj) {
 <div class="impostos-container">
 
 <!-- Header -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <ul class="breadcrumb">
-            <li><a href="<?= site_url('dashboard') ?>">Dashboard</a> <span class="divider">/</span></li>
-            <li><a href="<?= site_url('impostos') ?>">Impostos</a> <span class="divider">/</span></li>
+            <li><a href="<?= site_url('dashboard') ?>">Dashboard</a> <span class="dropdown-divider">/</span></li>
+            <li><a href="<?= site_url('impostos') ?>">Impostos</a> <span class="dropdown-divider">/</span></li>
             <li class="active">Configuracoes</li>
         </ul>
     </div>
 </div>
 
 <!-- Informacoes do Certificado Digital -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div id="certificado-card" class="certificado-card <?= $certificado_info ? '' : 'sem-certificado' ?>">
             <?php if ($certificado_info): ?>
                 <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
@@ -248,8 +248,8 @@ function fmtCnpj($cnpj) {
 </div>
 
 <!-- Configuracoes Principais -->
-<div class="row-fluid">
-    <div class="span6">
+<div class="row">
+    <div class="col-6">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-cogs"></i></span>
@@ -258,41 +258,41 @@ function fmtCnpj($cnpj) {
             <div class="widget-content">
                 <form method="post" action="<?= site_url('impostos/configuracoes') ?>" class="form-horizontal" id="form-config-impostos">
 
-                    <div class="control-group">
-                        <label class="control-label">Anexo Simples:*</label>
+                    <div class="mb-3">
+                        <label class="form-label">Anexo Simples:*</label>
                         <div class="controls">
-                            <select name="anexo_padrao" id="select-anexo" class="span8" required>
+                            <select name="anexo_padrao" id="select-anexo" class="col-8" required>
                                 <?php foreach ($anexos as $key => $nome): ?>
                                 <option value="<?= $key ?>" <?= $configs['anexo_padrao'] == $key ? 'selected' : '' ?>><?= $nome ?></option>
                                 <?php endforeach; ?>
                             </select>
-                            <span class="help-inline">Anexo do Simples Nacional da empresa</span>
+                            <span class="form-text">Anexo do Simples Nacional da empresa</span>
                         </div>
                     </div>
 
-                    <div class="control-group">
-                        <label class="control-label">Faixa Atual:*</label>
+                    <div class="mb-3">
+                        <label class="form-label">Faixa Atual:*</label>
                         <div class="controls">
-                            <select name="faixa_atual" id="select-faixa" class="span4" required>
+                            <select name="faixa_atual" id="select-faixa" class="col-4" required>
                                 <option value="1" <?= $configs['faixa_atual'] == '1' ? 'selected' : '' ?>>1a Faixa (ate R$ 180.000)</option>
                                 <option value="2" <?= $configs['faixa_atual'] == '2' ? 'selected' : '' ?>>2a Faixa (ate R$ 360.000)</option>
                                 <option value="3" <?= $configs['faixa_atual'] == '3' ? 'selected' : '' ?>>3a Faixa (ate R$ 720.000)</option>
                                 <option value="4" <?= $configs['faixa_atual'] == '4' ? 'selected' : '' ?>>4a Faixa (ate R$ 1.800.000)</option>
                                 <option value="5" <?= $configs['faixa_atual'] == '5' ? 'selected' : '' ?>>5a Faixa (ate R$ 4.800.000)</option>
                             </select>
-                            <span class="help-inline">Faixa de faturamento anual</span>
+                            <span class="form-text">Faixa de faturamento anual</span>
                         </div>
                     </div>
 
-                    <div class="control-group">
-                        <label class="control-label">ISS Municipal:*</label>
+                    <div class="mb-3">
+                        <label class="form-label">ISS Municipal:*</label>
                         <div class="controls">
-                            <div class="input-append">
+                            <div class="input-group">
                                 <?php $iss_valor = str_replace(',', '.', $configs['iss_municipal'] ?? '5.00'); ?>
-                                <input type="text" name="iss_municipal" id="input-iss" class="span3" pattern="^[0-9]+(\.[0-9]+)?$" value="<?= htmlspecialchars($iss_valor) ?>" required />
-                                <span class="add-on">%</span>
+                                <input type="text" name="iss_municipal" id="input-iss" class="col-3" pattern="^[0-9]+(\.[0-9]+)?$" value="<?= htmlspecialchars($iss_valor) ?>" required />
+                                <span class="input-group-text">%</span>
                             </div>
-                            <span class="help-inline">Aliquota de ISS do municipio (ex: 5.00)</span>
+                            <span class="form-text">Aliquota de ISS do municipio (ex: 5.00)</span>
                         </div>
                     </div>
 
@@ -303,31 +303,31 @@ function fmtCnpj($cnpj) {
                         Configuracao especifica para emissao de Nota Fiscal de Servicos Eletronica (NFS-e).
                     </div>
 
-                    <div class="control-group">
-                        <label class="control-label">Cod. Tributacao Nacional:*</label>
+                    <div class="mb-3">
+                        <label class="form-label">Cod. Tributacao Nacional:*</label>
                         <div class="controls">
-                            <input type="text" name="codigo_tributacao_nacional" id="input-codigo-nacional" class="span3" value="<?= htmlspecialchars($configs['codigo_tributacao_nacional']) ?>" required maxlength="10" />
-                            <span class="help-inline">Codigo LC 116/2003 (ex: 010701)</span>
+                            <input type="text" name="codigo_tributacao_nacional" id="input-codigo-nacional" class="col-3" value="<?= htmlspecialchars($configs['codigo_tributacao_nacional']) ?>" required maxlength="10" />
+                            <span class="form-text">Codigo LC 116/2003 (ex: 010701)</span>
                         </div>
                     </div>
 
-                    <div class="control-group">
-                        <label class="control-label">Cod. Tributacao Municipal:*</label>
+                    <div class="mb-3">
+                        <label class="form-label">Cod. Tributacao Municipal:*</label>
                         <div class="controls">
-                            <input type="text" name="codigo_tributacao_municipal" id="input-codigo-municipal" class="span3" value="<?= htmlspecialchars($configs['codigo_tributacao_municipal']) ?>" required maxlength="10" />
-                            <span class="help-inline">Codigo do servico na cidade</span>
+                            <input type="text" name="codigo_tributacao_municipal" id="input-codigo-municipal" class="col-3" value="<?= htmlspecialchars($configs['codigo_tributacao_municipal']) ?>" required maxlength="10" />
+                            <span class="form-text">Codigo do servico na cidade</span>
                         </div>
                     </div>
 
-                    <div class="control-group">
-                        <label class="control-label">Descricao do Servico:*</label>
+                    <div class="mb-3">
+                        <label class="form-label">Descricao do Servico:*</label>
                         <div class="controls">
-                            <textarea name="descricao_servico" id="input-descricao" class="span8" rows="3" required><?= htmlspecialchars($configs['descricao_servico']) ?></textarea>
-                            <span class="help-inline">Descricao completa para a nota fiscal</span>
+                            <textarea name="descricao_servico" id="input-descricao" class="col-8" rows="3" required><?= htmlspecialchars($configs['descricao_servico']) ?></textarea>
+                            <span class="form-text">Descricao completa para a nota fiscal</span>
                         </div>
                     </div>
 
-                    <div class="control-group">
+                    <div class="mb-3">
                         <div class="controls">
                             <label class="checkbox" style="color: var(--branco, #caced8);">
                                 <input type="checkbox" name="retencao_automatica" value="1" <?= $configs['retencao_automatica'] ? 'checked' : '' ?> />
@@ -336,7 +336,7 @@ function fmtCnpj($cnpj) {
                         </div>
                     </div>
 
-                    <div class="control-group">
+                    <div class="mb-3">
                         <div class="controls">
                             <label class="checkbox" style="color: var(--branco, #caced8);">
                                 <input type="checkbox" name="dre_integracao" value="1" <?= $configs['dre_integracao'] ? 'checked' : '' ?> />
@@ -357,7 +357,7 @@ function fmtCnpj($cnpj) {
         </div>
     </div>
 
-    <div class="span6">
+    <div class="col-6">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-info-circle"></i></span>
@@ -405,8 +405,8 @@ function fmtCnpj($cnpj) {
 </div>
 
 <!-- Aliquotas Anexo III -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-table"></i></span>
@@ -450,8 +450,8 @@ function fmtCnpj($cnpj) {
 </div>
 
 <!-- Aliquotas Anexo IV -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-table"></i></span>
@@ -495,8 +495,8 @@ function fmtCnpj($cnpj) {
 </div>
 
 <!-- Aliquotas Anexo V -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-table"></i></span>

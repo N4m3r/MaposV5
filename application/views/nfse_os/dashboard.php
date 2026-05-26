@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Dashboard de NFS-e e Boletos
  * Visão geral de notas fiscais e cobranças vinculadas a OS
@@ -7,14 +7,14 @@
 
 <link href="<?= base_url('assets/css/custom.css'); ?>" rel="stylesheet">
 
-<div class="row-fluid" style="margin-top: 0">
-    <div class="span12">
+<div class="row" style="margin-top: 0">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="bx bx-receipt"></i></span>
                 <h5>Dashboard NFS-e e Boletos</h5>
                 <div class="buttons">
-                    <a href="<?= site_url('nfse_os/relatorio') ?>" class="button btn btn-mini btn-primary">
+                    <a href="<?= site_url('nfse_os/relatorio') ?>" class="button btn btn-sm btn-primary">
                         <span class="button__icon"><i class="bx bx-chart"></i></span>
                         <span class="button__text">Relatório Completo</span>
                     </a>
@@ -23,16 +23,16 @@
             <div class="widget-content">
 
                 <!-- Cards de Resumo -->
-                <div class="row-fluid">
+                <div class="row">
                     <!-- NFS-e -->
-                    <div class="span6">
+                    <div class="col-6">
                         <div class="widget-box" style="border-left: 4px solid #5bc0de;">
                             <div class="widget-title" style="background: #f0f9fc;">
                                 <span class="icon" style="color: #5bc0de;"><i class="bx bx-file"></i></span>
                                 <h5>NFS-e - Mês Atual</h5>
                             </div>
                             <div class="widget-content">
-                                <div class="row-fluid">
+                                <div class="row">
                                     <?php
                                     $total_nfse = 0;
                                     $emitidas = 0;
@@ -43,15 +43,15 @@
                                         if ($r->situacao == 'Pendente') $pendentes = $r->total;
                                     }
                                     ?>
-                                    <div class="span4 text-center" style="border-right: 1px solid #eee;">
+                                    <div class="col-4 text-center" style="border-right: 1px solid #eee;">
                                         <h3 style="margin: 0; color: #5bc0de;"><?= $emitidas ?></h3>
                                         <small>Emitidas</small>
                                     </div>
-                                    <div class="span4 text-center" style="border-right: 1px solid #eee;">
+                                    <div class="col-4 text-center" style="border-right: 1px solid #eee;">
                                         <h3 style="margin: 0; color: #f0ad4e;"><?= $pendentes ?></h3>
                                         <small>Pendentes</small>
                                     </div>
-                                    <div class="span4 text-center">
+                                    <div class="col-4 text-center">
                                         <h3 style="margin: 0; color: #5cb85c;">R$ <?= number_format($total_nfse, 2, ',', '.') ?></h3>
                                         <small>Valor Total</small>
                                     </div>
@@ -61,14 +61,14 @@
                     </div>
 
                     <!-- Boletos -->
-                    <div class="span6">
+                    <div class="col-6">
                         <div class="widget-box" style="border-left: 4px solid #5cb85c;">
                             <div class="widget-title" style="background: #f0fff0;">
                                 <span class="icon" style="color: #5cb85c;"><i class="bx bx-barcode"></i></span>
                                 <h5>Boletos - Mês Atual</h5>
                             </div>
                             <div class="widget-content">
-                                <div class="row-fluid">
+                                <div class="row">
                                     <?php
                                     $total_boleto = 0;
                                     $pagos = 0;
@@ -79,15 +79,15 @@
                                         if ($r->status == 'Vencido') $vencidos = $r->total;
                                     }
                                     ?>
-                                    <div class="span4 text-center" style="border-right: 1px solid #eee;">
+                                    <div class="col-4 text-center" style="border-right: 1px solid #eee;">
                                         <h3 style="margin: 0; color: #5cb85c;"><?= $pagos ?></h3>
                                         <small>Pagos</small>
                                     </div>
-                                    <div class="span4 text-center" style="border-right: 1px solid #eee;">
+                                    <div class="col-4 text-center" style="border-right: 1px solid #eee;">
                                         <h3 style="margin: 0; color: #d9534f;"><?= $vencidos ?></h3>
                                         <small>Vencidos</small>
                                     </div>
-                                    <div class="span4 text-center">
+                                    <div class="col-4 text-center">
                                         <h3 style="margin: 0; color: #5cb85c;">R$ <?= number_format($total_boleto, 2, ',', '.') ?></h3>
                                         <small>Valor Total</small>
                                     </div>
@@ -99,12 +99,12 @@
 
                 <!-- Boletos Vencidos Alert -->
                 <?php if (!empty($vencidos)) { ?>
-                <div class="row-fluid" style="margin-top: 20px;">
-                    <div class="span12">
+                <div class="row" style="margin-top: 20px;">
+                    <div class="col-12">
                         <div class="alert alert-danger">
                             <strong><i class="bx bx-error-circle"></i> Atenção!</strong>
                             Existem <strong><?= count($vencidos) ?></strong> boleto(s) vencido(s) não pagos.
-                            <a href="<?= site_url('nfse_os/relatorio?vencidos=1') ?>" class="btn btn-mini btn-danger pull-right">Ver Todos</a>
+                            <a href="<?= site_url('nfse_os/relatorio?vencidos=1') ?>" class="btn btn-sm btn-danger float-end">Ver Todos</a>
                         </div>
                     </div>
                 </div>
@@ -112,8 +112,8 @@
 
                 <!-- Tabela de Boletos Vencidos -->
                 <?php if (!empty($vencidos)) { ?>
-                <div class="row-fluid" style="margin-top: 20px;">
-                    <div class="span12">
+                <div class="row" style="margin-top: 20px;">
+                    <div class="col-12">
                         <div class="widget-box">
                             <div class="widget-title" style="background: #f2dede;">
                                 <span class="icon" style="color: #a94442;"><i class="bx bx-time"></i></span>
@@ -146,15 +146,15 @@
                                             <td><?= date('d/m/Y', strtotime($boleto->data_vencimento)) ?></td>
                                             <td class="text-right">R$ <?= number_format($boleto->valor_liquido, 2, ',', '.') ?></td>
                                             <td>
-                                                <span class="label label-important"><?= intval($dias_atraso) ?> dias</span>
+                                                <span class="badge bg-danger"><?= intval($dias_atraso) ?> dias</span>
                                             </td>
                                             <td><?= htmlspecialchars($boleto->celular_cliente ?? '', ENT_QUOTES, 'UTF-8') ?></td>
                                             <td class="text-center">
-                                                <a href="<?= site_url('os/visualizar/' . $boleto->os_id) ?>" class="btn btn-mini btn-info" title="Ver OS">
+                                                <a href="<?= site_url('os/visualizar/' . $boleto->os_id) ?>" class="btn btn-sm btn-info" title="Ver OS">
                                                     <i class="bx bx-show"></i>
                                                 </a>
                                                 <?php if ($boleto->linha_digitavel) { ?>
-                                                <button class="btn btn-mini btn-primary" onclick="copiar('<?= htmlspecialchars($boleto->linha_digitavel, ENT_QUOTES, 'UTF-8') ?>')" title="Copiar Linha Digitável">
+                                                <button class="btn btn-sm btn-primary" onclick="copiar('<?= htmlspecialchars($boleto->linha_digitavel, ENT_QUOTES, 'UTF-8') ?>')" title="Copiar Linha Digitável">
                                                     <i class="bx bx-copy"></i>
                                                 </button>
                                                 <?php } ?>
@@ -170,8 +170,8 @@
                 <?php } ?>
 
                 <!-- Dicas -->
-                <div class="row-fluid" style="margin-top: 20px;">
-                    <div class="span12">
+                <div class="row" style="margin-top: 20px;">
+                    <div class="col-12">
                         <div class="alert alert-info">
                             <h5><i class="bx bx-info-circle"></i> Fluxo Recomendado:</h5>
                             <ol style="margin: 10px 0 0 20px;">

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-br">
 
 <head>
@@ -8,8 +8,7 @@
   <meta name="csrf-token-name" content="<?= config_item("csrf_token_name") ?>">
   <meta name="csrf-cookie-name" content="<?= config_item("csrf_cookie_name") ?>">
   <link rel="shortcut icon" type="image/png" href="<?= base_url(); ?>assets/img/favicon.png" />
-  <link rel="stylesheet" href="<?= base_url(); ?>assets/css/bootstrap.min.css" />
-  <link rel="stylesheet" href="<?= base_url(); ?>assets/css/bootstrap-responsive.min.css" />
+  <link rel="stylesheet" href="<?= base_url(); ?>assets/css/bootstrap5.min.css" />
   <link rel="stylesheet" href="<?= base_url(); ?>assets/css/matrix-style.css" />
   <link rel="stylesheet" href="<?= base_url(); ?>assets/css/matrix-media.css" />
   <link rel="stylesheet" href="<?= base_url(); ?>assets/css/custom.css" />
@@ -120,13 +119,13 @@
         </li>
 
         <li class="dropdown">
-          <a href="#" class="tip-right dropdown-toggle" data-toggle="dropdown" title="Meu Perfil">
+          <a href="#" class="tip-right dropdown-toggle" data-bs-toggle="dropdown" title="Meu Perfil">
             <i class='bx bx-user-circle iconN'></i><span class="text"></span>
           </a>
           <ul class="dropdown-menu">
             <li class=""><a title="Dashboard" href="<?= site_url('tecnicos/dashboard'); ?>"><i class='bx bx-home-alt'></i> <span class="text">Dashboard</span></a></li>
             <li class=""><a title="Meu Perfil" href="<?= site_url('tecnicos/perfil'); ?>"><i class='bx bx-user'></i> <span class="text">Meu Perfil</span></a></li>
-            <li class="divider"></li>
+            <li class="dropdown-divider"></li>
             <li class=""><a title="Sair" href="<?= site_url('tecnicos/logout'); ?>"><i class='bx bx-log-out-circle'></i> <span class="text">Sair</span></a></li>
           </ul>
         </li>
@@ -147,7 +146,7 @@
       <div class="notificacoes-header" style="position:absolute;right:45px;top:50%;transform:translateY(-50%);z-index:1000;">
         <ul class="nav" style="margin:0;">
           <li class="dropdown" id="notifications-dropdown" style="list-style:none;">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Notificações" style="padding:10px;display:block;position:relative;">
+            <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown" title="Notificações" style="padding:10px;display:block;position:relative;">
               <i class='bx bx-bell' style="font-size:22px;color:#fff;"></i>
               <span class="notif-badge" id="notif-count" style="display:none;position:absolute;top:2px;right:2px;background:#e74c3c;color:#fff;font-size:10px;font-weight:bold;border-radius:50%;min-width:18px;height:18px;line-height:18px;text-align:center;padding:0 4px;">0</span>
             </a>
@@ -208,16 +207,16 @@
         </li>
 
         <li class="dropdown">
-          <a href="#" class="tip-right dropdown-toggle" data-toggle="dropdown" title="Perfis"><i class='bx bx-user-circle iconN'></i><span class="text"></span></a>
+          <a href="#" class="tip-right dropdown-toggle" data-bs-toggle="dropdown" title="Perfis"><i class='bx bx-user-circle iconN'></i><span class="text"></span></a>
           <ul class="dropdown-menu">
             <li class=""><a title="Área do Cliente" href="<?= site_url(); ?>/mine" target="_blank"> <span class="text">Área do Cliente</span></a></li>
             <li class=""><a title="Meu Perfil" href="<?= site_url('mapos/minhaConta'); ?>"><span class="text">Meu Perfil</span></a></li>
-            <li class="divider"></li>
+            <li class="dropdown-divider"></li>
             <li class=""><a title="Sair do Sistema" href="<?= site_url('login/sair'); ?>"><i class='bx bx-log-out-circle'></i> <span class="text">Sair do Sistema</span></a></li>
           </ul>
         </li>
         <li class="dropdown">
-          <a href="#" class="tip-right dropdown-toggle" data-toggle="dropdown" title="Relatórios"><i class='bx bx-pie-chart-alt-2 iconN'></i><span class="text"></span></a>
+          <a href="#" class="tip-right dropdown-toggle" data-bs-toggle="dropdown" title="Relatórios"><i class='bx bx-pie-chart-alt-2 iconN'></i><span class="text"></span></a>
           <ul class="dropdown-menu">
             <li><a href="<?= site_url('relatorios/clientes') ?>">Clientes</a></li>
             <li><a href="<?= site_url('relatorios/produtos') ?>">Produtos</a></li>
@@ -230,7 +229,7 @@
           </ul>
         </li>
         <li class="dropdown">
-          <a href="#" class="tip-right dropdown-toggle" data-toggle="dropdown" title="Configurações"><i class='bx bx-cog iconN'></i><span class="text"></span></a>
+          <a href="#" class="tip-right dropdown-toggle" data-bs-toggle="dropdown" title="Configurações"><i class='bx bx-cog iconN'></i><span class="text"></span></a>
           <ul class="dropdown-menu">
             <li><a href="<?= site_url('mapos/configurar') ?>">Sistema</a></li>
             <li><a href="<?= site_url('usuarios') ?>">Usuários</a></li>
@@ -244,7 +243,7 @@
 
         <!-- Notificações -->
         <li class="dropdown" id="notifications-dropdown" style="position:relative;z-index:99999;">
-          <a href="#" class="tip-right dropdown-toggle" data-toggle="dropdown" title="Notificações">
+          <a href="#" class="tip-right dropdown-toggle" data-bs-toggle="dropdown" title="Notificações">
             <i class='bx bx-bell iconN'></i>
             <span class="notif-badge" id="notif-count" style="display:none;">0</span>
           </a>

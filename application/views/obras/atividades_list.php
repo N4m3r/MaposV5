@@ -1,4 +1,4 @@
-<?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
+﻿<?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
 
 <style>
 .atividades-modern {
@@ -665,9 +665,9 @@
 </div>
 
 <!-- Modal Iniciar Registro de Atividade (Hora Início/Fim) -->
-<div id="modalIniciarRegistro" class="modal hide fade modal-atividades" tabindex="-1" role="dialog" aria-labelledby="modalRegistroLabel" aria-hidden="true">
+<div id="modalIniciarRegistro" class="modal fade modal-atividades" tabindex="-1" role="dialog" aria-labelledby="modalRegistroLabel" aria-hidden="true">
     <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true" style="color: white; opacity: 0.8;">&times;</button>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true" style="color: white; opacity: 0.8;">&times;</button>
         <h3 id="modalRegistroLabel"><i class="bx bx-timer"></i> Iniciar Atividade - Registro de Tempo</h3>
     </div>
 
@@ -792,7 +792,7 @@
         </div>
 
         <div class="modal-footer">
-            <button type="button" class="atividades-btn-cancel" data-dismiss="modal">
+            <button type="button" class="atividades-btn-cancel" data-bs-dismiss="modal">
                 <i class="bx bx-x"></i> Cancelar
             </button>
             <button type="submit" class="atividades-btn-submit" id="btnIniciarRegistro" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
@@ -885,9 +885,9 @@ function iniciarRegistroAtividade(event) {
 
 <!-- Modal Adicionar Atividade (Integrado com Wizard) -->
 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
-<div id="modalAdicionar" class="modal hide fade modal-atividades" tabindex="-1" role="dialog" aria-labelledby="modalAtividadeLabel" aria-hidden="true">
+<div id="modalAdicionar" class="modal fade modal-atividades" tabindex="-1" role="dialog" aria-labelledby="modalAtividadeLabel" aria-hidden="true">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">&times;</button>
         <h3 id="modalAtividadeLabel"><i class="icon-plus-sign"></i> Nova Atividade - Wizard</h3>
     </div>
 
@@ -1020,7 +1020,7 @@ function iniciarRegistroAtividade(event) {
         </div>
 
         <div class="modal-footer">
-            <button type="button" class="atividades-btn-cancel" data-dismiss="modal">
+            <button type="button" class="atividades-btn-cancel" data-bs-dismiss="modal">
                 <i class="icon-remove"></i> Cancelar
             </button>
             <button type="submit" class="atividades-btn-submit" id="btnSalvarAtividade" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">

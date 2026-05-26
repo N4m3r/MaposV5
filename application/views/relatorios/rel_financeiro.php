@@ -1,5 +1,5 @@
-<div class="row-fluid" style="margin-top: 0">
-    <div class="span4">
+﻿<div class="row" style="margin-top: 0">
+    <div class="col-4">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon">
@@ -16,7 +16,7 @@
         </div>
     </div>
 
-    <div class="span8">
+    <div class="col-8">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon">
@@ -26,31 +26,31 @@
             </div>
             <div class="widget-content">
                 <form target="_blank" action="<?php echo base_url() ?>index.php/relatorios/financeiroCustom" method="get">
-                    <div class="span12 well">
+                    <div class="col-12 well">
 
-                        <div class="span6">
+                        <div class="col-6">
                             <label for="">Vencimento de:</label>
-                            <input type="date" name="dataInicial" class="span12" />
+                            <input type="date" name="dataInicial" class="col-12" />
                         </div>
-                        <div class="span6">
+                        <div class="col-6">
                             <label for="">até:</label>
-                            <input type="date" name="dataFinal" class="span12" />
+                            <input type="date" name="dataFinal" class="col-12" />
                         </div>
 
                     </div>
 
-                    <div class="span12 well" style="margin-left: 0">
-                        <div class="span6">
+                    <div class="col-12 well" style="margin-left: 0">
+                        <div class="col-6">
                             <label for="">Tipo:</label>
-                            <select name="tipo" class="span12">
+                            <select name="tipo" class="col-12">
                                 <option value="todos">Todos</option>
                                 <option value="receita">Receita</option>
                                 <option value="despesa">Despesa</option>
                             </select>
                         </div>
-                        <div class="span6">
+                        <div class="col-6">
                             <label for="">Situação:</label>
-                            <select name="situacao" class="span12">
+                            <select name="situacao" class="col-12">
                                 <option value="todos">Todos</option>
                                 <option value="pago">Pago</option>
                                 <option value="pendente">Pendente</option>
@@ -58,17 +58,17 @@
                         </div>
                     </div>
 
-                    <div class="span12 well" style="margin-left: 0">
-                        <div class="span12">
+                    <div class="col-12 well" style="margin-left: 0">
+                        <div class="col-12">
                             <label for="">Tipo de impressão:</label>
-                            <select name="format" class="span12">
+                            <select name="format" class="col-12">
                                 <option value="">PDF</option>
                                 <option value="xls">XLS</option>
                             </select>
                         </div>
                     </div>
 
-                    <div class="span12" style="display:flex;justify-content: center">
+                    <div class="col-12" style="display:flex;justify-content: center">
                         <button type="reset" class="button btn btn-warning">
                             <span class="button__icon"><i class="bx bx-brush-alt"></i></span>
                             <span class="button__text">Limpar</span>

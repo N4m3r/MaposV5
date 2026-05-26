@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Detalhe de Performance por Técnico
  */
@@ -34,11 +34,11 @@ $data_fim = $d['data_fim'];
 </style>
 
 <!-- Header -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <ul class="breadcrumb">
-            <li><a href="<?= site_url('dashboard') ?>">Dashboard</a> <span class="divider">/</span></li>
-            <li><a href="<?= site_url('relatoriotecnicos') ?>">Relatório de Técnicos</a> <span class="divider">/</span></li>
+            <li><a href="<?= site_url('dashboard') ?>">Dashboard</a> <span class="dropdown-divider">/</span></li>
+            <li><a href="<?= site_url('relatoriotecnicos') ?>">Relatório de Técnicos</a> <span class="dropdown-divider">/</span></li>
             <li class="active"><?= $tecnico->nome ?></li>
         </ul>
     </div>
@@ -46,8 +46,8 @@ $data_fim = $d['data_fim'];
 
 <!-- KPIs do Técnico -->
 <?php if ($performance): ?>
-<div class="row-fluid">
-    <div class="span2">
+<div class="row">
+    <div class="col-2">
         <div class="widget-box">
             <div class="detail-kpi">
                 <div class="value"><?= $performance->total_os ?></div>
@@ -55,7 +55,7 @@ $data_fim = $d['data_fim'];
             </div>
         </div>
     </div>
-    <div class="span2">
+    <div class="col-2">
         <div class="widget-box">
             <div class="detail-kpi">
                 <div class="value" style="color:#27ae60;"><?= $performance->os_finalizadas ?></div>
@@ -63,7 +63,7 @@ $data_fim = $d['data_fim'];
             </div>
         </div>
     </div>
-    <div class="span2">
+    <div class="col-2">
         <div class="widget-box">
             <div class="detail-kpi">
                 <div class="value" style="color:#3498db;"><?= $performance->horas_trabalhadas ?>h</div>
@@ -71,7 +71,7 @@ $data_fim = $d['data_fim'];
             </div>
         </div>
     </div>
-    <div class="span2">
+    <div class="col-2">
         <div class="widget-box">
             <div class="detail-kpi">
                 <div class="value" style="color:#9b59b6;"><?= $performance->media_horas_dia ?>h</div>
@@ -79,7 +79,7 @@ $data_fim = $d['data_fim'];
             </div>
         </div>
     </div>
-    <div class="span2">
+    <div class="col-2">
         <div class="widget-box">
             <div class="detail-kpi">
                 <div class="value" style="color:#e67e22;"><?= $performance->media_os_dia ?></div>
@@ -87,7 +87,7 @@ $data_fim = $d['data_fim'];
             </div>
         </div>
     </div>
-    <div class="span2">
+    <div class="col-2">
         <div class="widget-box">
             <div class="detail-kpi">
                 <div class="value" style="color: <?= $performance->eficiencia >= 80 ? '#27ae60' : '#e74c3c' ?>;">
@@ -101,14 +101,14 @@ $data_fim = $d['data_fim'];
 <?php endif; ?>
 
 <!-- Evolução Diária -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-chart-line"></i></span>
                 <h5>Evolução Diária - <?= $tecnico->nome ?></h5>
                 <div class="buttons">
-                    <a href="<?= site_url('relatoriotecnicos') ?>?data_inicio=<?= $data_inicio ?>&data_fim=<?= $data_fim ?>" class="btn btn-small">
+                    <a href="<?= site_url('relatoriotecnicos') ?>?data_inicio=<?= $data_inicio ?>&data_fim=<?= $data_fim ?>" class="btn btn-sm">
                         <i class="fas fa-arrow-left"></i> Voltar
                     </a>
                 </div>
@@ -123,8 +123,8 @@ $data_fim = $d['data_fim'];
 </div>
 
 <!-- Atividades Detalhadas -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-list"></i></span>
@@ -158,9 +158,9 @@ $data_fim = $d['data_fim'];
                                 <td>
                                     <?php
                                     $status_class = '';
-                                    if (in_array($a->status, ['Finalizado', 'Faturado'])) $status_class = 'label-success';
-                                    elseif ($a->status == 'Cancelado') $status_class = 'label-important';
-                                    else $status_class = 'label-info';
+                                    if (in_array($a->status, ['Finalizado', 'Faturado'])) $status_class = 'badge bg-success';
+                                    elseif ($a->status == 'Cancelado') $status_class = 'badge bg-danger';
+                                    else $status_class = 'badge bg-info';
                                     ?>
                                     <span class="label <?= $status_class ?>"><?= $a->status ?></span>
                                 </td>

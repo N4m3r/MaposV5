@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Análise Vertical e Horizontal do DRE
  */
@@ -31,19 +31,19 @@ if (!empty($meses)) {
 </style>
 
 <!-- Header -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <ul class="breadcrumb">
-            <li><a href="<?= site_url('dashboard') ?>">Dashboard</a> <span class="divider">/</span></li>
-            <li><a href="<?= site_url('dre') ?>">DRE Contábil</a> <span class="divider">/</span></li>
+            <li><a href="<?= site_url('dashboard') ?>">Dashboard</a> <span class="dropdown-divider">/</span></li>
+            <li><a href="<?= site_url('dre') ?>">DRE Contábil</a> <span class="dropdown-divider">/</span></li>
             <li class="active">Análise Vertical/Horizontal</li>
         </ul>
     </div>
 </div>
 
 <!-- Filtros -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-filter"></i></span>
@@ -51,26 +51,26 @@ if (!empty($meses)) {
             </div>
             <div class="widget-content">
                 <form method="get" action="<?= site_url('dre/analise') ?>" class="form-inline">
-                    <div class="row-fluid">
-                        <div class="span3">
+                    <div class="row">
+                        <div class="col-3">
                             <label>Ano:</label>
-                            <select name="ano" class="span12">
+                            <select name="ano" class="col-12">
                                 <?php for ($y = date('Y'); $y >= date('Y') - 5; $y--): ?>
                                 <option value="<?= $y ?>" <?= $y == $ano ? 'selected' : '' ?>><?= $y ?></option>
                                 <?php endfor; ?>
                             </select>
                         </div>
-                        <div class="span2">
+                        <div class="col-2">
                             <label>&nbsp;</label>
-                            <button type="submit" class="btn btn-primary span12">
+                            <button type="submit" class="btn btn-primary col-12">
                                 <i class="fas fa-search"></i> Gerar Análise
                             </button>
                         </div>
-                        <div class="span7">
+                        <div class="col-7">
                             <label>&nbsp;</label>
                             <div class="btn-group">
-                                <a href="<?= site_url('dre') ?>" class="btn btn-small"><i class="fas fa-arrow-left"></i> Voltar ao DRE</a>
-                                <a href="<?= site_url('dre/relatorio?data_inicio=' . $ano . '-01-01&data_fim=' . $ano . '-12-31') ?>" class="btn btn-small btn-info"><i class="fas fa-print"></i> Relatório Anual</a>
+                                <a href="<?= site_url('dre') ?>" class="btn btn-sm"><i class="fas fa-arrow-left"></i> Voltar ao DRE</a>
+                                <a href="<?= site_url('dre/relatorio?data_inicio=' . $ano . '-01-01&data_fim=' . $ano . '-12-31') ?>" class="btn btn-sm btn-info"><i class="fas fa-print"></i> Relatório Anual</a>
                             </div>
                         </div>
                     </div>
@@ -81,8 +81,8 @@ if (!empty($meses)) {
 </div>
 
 <!-- Análise Vertical -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-chart-bar"></i></span>
@@ -129,8 +129,8 @@ if (!empty($meses)) {
 </div>
 
 <!-- Análise Horizontal (Variação Mensal) -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-chart-line"></i></span>
@@ -180,8 +180,8 @@ if (!empty($meses)) {
 </div>
 
 <!-- Evolução Anual -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-chart-area"></i></span>

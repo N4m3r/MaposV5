@@ -10,7 +10,7 @@
   <link rel="shortcut icon" href="<?php echo $dashboard_url; ?>install/assets/images/favicon.ico" type="image/x-icon" />
 
   <title><?php echo $settings['title']; ?></title>
-  <link rel='stylesheet' type='text/css' href='<?php echo $dashboard_url; ?>install/assets/css/bootstrap.min.css' />
+  <link rel='stylesheet' type='text/css' href='<?php echo $dashboard_url; ?>install/assets/css/bootstrap5.min.css' />
   <link rel='stylesheet' type='text/css' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css' />
 
   <link rel='stylesheet' type='text/css' href='<?php echo $dashboard_url; ?>install/assets/css/install.css' />

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Email Dashboard View
  * Painel administrativo de emails
@@ -8,19 +8,19 @@ $ci = &get_instance();
 $ci->load->helper('date');
 ?>
 
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <ul class="breadcrumb">
-            <li><a href="<?= base_url() ?>">Dashboard</a><span class="divider">/</span></li>
+            <li><a href="<?= base_url() ?>">Dashboard</a><span class="dropdown-divider">/</span></li>
             <li class="active">Gerenciamento de Emails</li>
         </ul>
     </div>
 </div>
 
 <?php if (!empty($db_error)): ?>
-<div class="row-fluid">
-    <div class="span12">
-        <div class="alert alert-error">
+<div class="row">
+    <div class="col-12">
+        <div class="alert alert-danger">
             <h4><i class="fas fa-exclamation-triangle"></i> Erro no Banco de Dados</h4>
             <p><?= $db_error_message ?></p>
             <hr>
@@ -31,9 +31,9 @@ $ci->load->helper('date');
 </div>
 <?php endif; ?>
 
-<div class="row-fluid">
+<div class="row">
     <!-- Stats Cards -->
-    <div class="span3">
+    <div class="col-3">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-clock"></i></span>
@@ -46,7 +46,7 @@ $ci->load->helper('date');
         </div>
     </div>
 
-    <div class="span3">
+    <div class="col-3">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-spinner"></i></span>
@@ -59,7 +59,7 @@ $ci->load->helper('date');
         </div>
     </div>
 
-    <div class="span3">
+    <div class="col-3">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-check-circle"></i></span>
@@ -72,7 +72,7 @@ $ci->load->helper('date');
         </div>
     </div>
 
-    <div class="span3">
+    <div class="col-3">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-times-circle"></i></span>
@@ -86,8 +86,8 @@ $ci->load->helper('date');
     </div>
 </div>
 
-<div class="row-fluid" style="margin-top: 15px;">
-    <div class="span2 offset1">
+<div class="row" style="margin-top: 15px;">
+    <div class="col-2 offset-md-1">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-chart-line"></i></span>
@@ -100,7 +100,7 @@ $ci->load->helper('date');
         </div>
     </div>
 
-    <div class="span2">
+    <div class="col-2">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-calendar-day"></i></span>
@@ -113,7 +113,7 @@ $ci->load->helper('date');
         </div>
     </div>
 
-    <div class="span2">
+    <div class="col-2">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-eye"></i></span>
@@ -126,7 +126,7 @@ $ci->load->helper('date');
         </div>
     </div>
 
-    <div class="span2">
+    <div class="col-2">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-mouse-pointer"></i></span>
@@ -139,7 +139,7 @@ $ci->load->helper('date');
         </div>
     </div>
 
-    <div class="span2">
+    <div class="col-2">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-exclamation-circle"></i></span>
@@ -153,15 +153,15 @@ $ci->load->helper('date');
     </div>
 </div>
 
-<div class="row-fluid">
+<div class="row">
     <!-- Templates -->
-    <div class="span6">
+    <div class="col-6">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-envelope"></i></span>
                 <h5>Templates de Email</h5>
                 <div class="buttons">
-                    <button type="button" class="btn btn-success btn-mini" onclick="abrirModalTags()">
+                    <button type="button" class="btn btn-success btn-sm" onclick="abrirModalTags()">
                         <i class="fas fa-tags"></i> Tags Disponíveis
                     </button>
                 </div>
@@ -180,10 +180,10 @@ $ci->load->helper('date');
                                 <tr>
                                     <td><?= ucfirst(str_replace('_', ' ', $template)) ?></td>
                                     <td class="center">
-                                        <a href="<?= base_url("email/preview/{$template}") ?>" class="btn btn-mini btn-info" target="_blank" title="Visualizar">
+                                        <a href="<?= base_url("email/preview/{$template}") ?>" class="btn btn-sm btn-info" target="_blank" title="Visualizar">
                                             <i class="fas fa-eye"></i>
                                         </a>
-                                        <a href="<?= base_url("email/editar_template/{$template}") ?>" class="btn btn-mini btn-primary" title="Editar">
+                                        <a href="<?= base_url("email/editar_template/{$template}") ?>" class="btn btn-sm btn-primary" title="Editar">
                                             <i class="fas fa-edit"></i> Editar
                                         </a>
                                     </td>
@@ -201,7 +201,7 @@ $ci->load->helper('date');
     </div>
 
     <!-- Actions -->
-    <div class="span6">
+    <div class="col-6">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-cogs"></i></span>
@@ -228,9 +228,9 @@ $ci->load->helper('date');
 </div>
 
 <!-- Modal de Tags Disponíveis -->
-<div id="modalTags" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="modalTagsLabel" aria-hidden="true">
+<div id="modalTags" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalTagsLabel" aria-hidden="true">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">×</button>
         <h3 id="modalTagsLabel"><i class="fas fa-tags"></i> Tags Disponíveis para Templates</h3>
     </div>
     <div class="modal-body">
@@ -240,13 +240,13 @@ $ci->load->helper('date');
             <!-- Tags de Cliente -->
             <div class="accordion-group">
                 <div class="accordion-heading">
-                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordionTags" href="#collapseCliente">
+                    <a class="accordion-toggle" data-bs-toggle="collapse" data-parent="#accordionTags" href="#collapseCliente">
                         <i class="fas fa-user"></i> <strong>Cliente</strong>
                     </a>
                 </div>
                 <div id="collapseCliente" class="accordion-body collapse">
                     <div class="accordion-inner">
-                        <table class="table table-condensed table-striped">
+                        <table class="table table-sm table-striped">
                             <tbody>
                                 <tr><td><code>{{cliente_nome}}</code></td><td>Nome completo do cliente</td></tr>
                                 <tr><td><code>{{cliente_email}}</code></td><td>Email do cliente</td></tr>
@@ -263,13 +263,13 @@ $ci->load->helper('date');
             <!-- Tags de OS -->
             <div class="accordion-group">
                 <div class="accordion-heading">
-                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordionTags" href="#collapseOS">
+                    <a class="accordion-toggle" data-bs-toggle="collapse" data-parent="#accordionTags" href="#collapseOS">
                         <i class="fas fa-wrench"></i> <strong>Ordem de Serviço</strong>
                     </a>
                 </div>
                 <div id="collapseOS" class="accordion-body collapse">
                     <div class="accordion-inner">
-                        <table class="table table-condensed table-striped">
+                        <table class="table table-sm table-striped">
                             <tbody>
                                 <tr><td><code>{{os_id}}</code></td><td>Número da OS</td></tr>
                                 <tr><td><code>{{os_titulo}}</code></td><td>Título da OS</td></tr>
@@ -288,13 +288,13 @@ $ci->load->helper('date');
             <!-- Tags de Venda -->
             <div class="accordion-group">
                 <div class="accordion-heading">
-                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordionTags" href="#collapseVenda">
+                    <a class="accordion-toggle" data-bs-toggle="collapse" data-parent="#accordionTags" href="#collapseVenda">
                         <i class="fas fa-shopping-cart"></i> <strong>Venda</strong>
                     </a>
                 </div>
                 <div id="collapseVenda" class="accordion-body collapse">
                     <div class="accordion-inner">
-                        <table class="table table-condensed table-striped">
+                        <table class="table table-sm table-striped">
                             <tbody>
                                 <tr><td><code>{{venda_id}}</code></td><td>ID da venda</td></tr>
                                 <tr><td><code>{{venda_data}}</code></td><td>Data da venda</td></tr>
@@ -310,13 +310,13 @@ $ci->load->helper('date');
             <!-- Tags de Cobrança -->
             <div class="accordion-group">
                 <div class="accordion-heading">
-                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordionTags" href="#collapseCobranca">
+                    <a class="accordion-toggle" data-bs-toggle="collapse" data-parent="#accordionTags" href="#collapseCobranca">
                         <i class="fas fa-dollar-sign"></i> <strong>Cobrança</strong>
                     </a>
                 </div>
                 <div id="collapseCobranca" class="accordion-body collapse">
                     <div class="accordion-inner">
-                        <table class="table table-condensed table-striped">
+                        <table class="table table-sm table-striped">
                             <tbody>
                                 <tr><td><code>{{cobranca_descricao}}</code></td><td>Descrição da cobrança</td></tr>
                                 <tr><td><code>{{cobranca_valor}}</code></td><td>Valor da cobrança</td></tr>
@@ -332,13 +332,13 @@ $ci->load->helper('date');
             <!-- Tags de Sistema -->
             <div class="accordion-group">
                 <div class="accordion-heading">
-                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordionTags" href="#collapseSistema">
+                    <a class="accordion-toggle" data-bs-toggle="collapse" data-parent="#accordionTags" href="#collapseSistema">
                         <i class="fas fa-cog"></i> <strong>Sistema</strong>
                     </a>
                 </div>
                 <div id="collapseSistema" class="accordion-body collapse">
                     <div class="accordion-inner">
-                        <table class="table table-condensed table-striped">
+                        <table class="table table-sm table-striped">
                             <tbody>
                                 <tr><td><code>{{usuario_nome}}</code></td><td>Nome do usuário logado</td></tr>
                                 <tr><td><code>{{usuario_email}}</code></td><td>Email do usuário logado</td></tr>
@@ -359,13 +359,13 @@ $ci->load->helper('date');
             <!-- Tags Personalizadas -->
             <div class="accordion-group">
                 <div class="accordion-heading">
-                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordionTags" href="#collapsePersonalizado">
+                    <a class="accordion-toggle" data-bs-toggle="collapse" data-parent="#accordionTags" href="#collapsePersonalizado">
                         <i class="fas fa-pencil-alt"></i> <strong>Personalizadas</strong>
                     </a>
                 </div>
                 <div id="collapsePersonalizado" class="accordion-body collapse">
                     <div class="accordion-inner">
-                        <table class="table table-condensed table-striped">
+                        <table class="table table-sm table-striped">
                             <tbody>
                                 <tr><td><code>{{titulo}}</code></td><td>Título do email</td></tr>
                                 <tr><td><code>{{mensagem}}</code></td><td>Mensagem principal</td></tr>
@@ -384,7 +384,7 @@ $ci->load->helper('date');
         </div>
     </div>
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true">Fechar</button>
+        <button class="btn" data-bs-dismiss="modal" aria-hidden="true">Fechar</button>
     </div>
 </div>
 

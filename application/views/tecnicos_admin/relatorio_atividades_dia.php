@@ -1,4 +1,4 @@
-<div class="new122">
+﻿<div class="new122">
     <!-- Header -->
     <div class="widget-title" style="margin: -20px 0 0; display: flex; justify-content: space-between; align-items: center;">
         <div>
@@ -6,11 +6,11 @@
             <h5>Relatorio de Atividades do Dia</h5>
         </div>
         <div class="buttons">
-            <a href="<?= site_url('tecnicos_admin/execucao_obras') ?>" class="button btn btn-mini btn-default">
+            <a href="<?= site_url('tecnicos_admin/execucao_obras') ?>" class="button btn btn-sm btn-default">
                 <span class="button__icon"><i class="bx bx-arrow-back"></i></span>
                 <span class="button__text2">Voltar</span>
             </a>
-            <a href="#" onclick="window.print()" class="button btn btn-mini btn-info">
+            <a href="#" onclick="window.print()" class="button btn btn-sm btn-info">
                 <span class="button__icon"><i class="bx bx-printer"></i></span>
                 <span class="button__text2">Imprimir</span>
             </a>
@@ -18,17 +18,17 @@
     </div>
 
     <!-- Filtros -->
-    <div class="row-fluid" style="margin-top: 20px;">
-        <div class="span12">
+    <div class="row" style="margin-top: 20px;">
+        <div class="col-12">
             <div class="widget-box" style="background: #f8f9fa;">
                 <div class="widget-content">
                     <form method="get" class="form-inline" style="margin: 0; display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
-                        <div class="control-group" style="margin: 0;">
+                        <div class="mb-3" style="margin: 0;">
                             <label style="margin-right: 5px;">Data:</label>
                             <input type="date" name="data" value="<?= $data ?>" class="input-small" style="margin-bottom: 0;">
                         </div>
 
-                        <div class="control-group" style="margin: 0;">
+                        <div class="mb-3" style="margin: 0;">
                             <label style="margin-right: 5px;">Tecnico:</label>
                             <select name="tecnico_id" class="input-medium" style="margin-bottom: 0;">
                                 <option value="">Todos</option>
@@ -38,7 +38,7 @@
                             </select>
                         </div>
 
-                        <div class="control-group" style="margin: 0;">
+                        <div class="mb-3" style="margin: 0;">
                             <label style="margin-right: 5px;">Obra:</label>
                             <select name="obra_id" class="input-medium" style="margin-bottom: 0;">
                                 <option value="">Todas</option>
@@ -59,8 +59,8 @@
     </div>
 
     <!-- Resumo -->
-    <div class="row-fluid" style="margin-top: 20px;">
-        <div class="span4">
+    <div class="row" style="margin-top: 20px;">
+        <div class="col-4">
             <div class="widget-box" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
                 <div class="widget-content" style="padding: 20px;">
                     <div style="font-size: 2.5rem; font-weight: 700;"><?= count($atividades) ?></div>
@@ -69,7 +69,7 @@
             </div>
         </div>
 
-        <div class="span4">
+        <div class="col-4">
             <div class="widget-box" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white;">
                 <div class="widget-content" style="padding: 20px;">
                     <div style="font-size: 2.5rem; font-weight: 700;"><?= number_format($total_horas, 2, ',', '.') ?>h</div>
@@ -78,7 +78,7 @@
             </div>
         </div>
 
-        <div class="span4">
+        <div class="col-4">
             <div class="widget-box" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
                 <div class="widget-content" style="padding: 20px;">
                     <div style="font-size: 2.5rem; font-weight: 700;"><= $data ? date('d/m/Y', strtotime($data)) : date('d/m/Y') ?></div>
@@ -89,8 +89,8 @@
     </div>
 
     <!-- Lista de Atividades -->
-    <div class="row-fluid" style="margin-top: 20px;">
-        <div class="span12">
+    <div class="row" style="margin-top: 20px;">
+        <div class="col-12">
             <div class="widget-box">
                 <div class="widget-title">
                     <span class="icon"><i class="bx bx-list-ul"></i></span>
@@ -251,10 +251,10 @@
     <?php if (!empty($atividades)): ?
 
 
-        <div class="row-fluid" style="margin-top: 20px;">
+        <div class="row" style="margin-top: 20px;">
 
 
-            <div class="span12">
+            <div class="col-12">
 
 
                 <div class="widget-box">

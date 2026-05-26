@@ -1,4 +1,4 @@
-<!--sidebar-menu tecnico-->
+﻿<!--sidebar-menu tecnico-->
 <nav id="sidebar" style="background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);">
     <div id="newlog">
         <div class="icon2">
@@ -8,7 +8,7 @@
             <img src="<?php echo base_url() ?>assets/img/logo-mapos-branco.png">
         </div>
     </div>
-    <a href="#" class="visible-phone">
+    <a href="#" class="d-inline d-sm-none">
         <div class="mode">
             <div class="moon-menu">
                 <i class='bx bx-chevron-right iconX open-2'></i>

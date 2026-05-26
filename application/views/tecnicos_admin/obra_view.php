@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // Status labels e cores
 $statusLabels = [
     'Prospeccao' => 'Prospecção',
@@ -44,15 +44,15 @@ $etapaStatusColors = [
         <span class="icon"><i class="bx bx-building"></i></span>
         <h5>Detalhes da Obra</h5>
         <div class="buttons">
-            <a href="<?= site_url('tecnicos_admin/obras') ?>" class="button btn btn-mini btn-default">
+            <a href="<?= site_url('tecnicos_admin/obras') ?>" class="button btn btn-sm btn-default">
                 <span class="button__icon"><i class="bx bx-arrow-back"></i></span>
                 <span class="button__text2">Voltar</span>
             </a>
-            <a href="<?= site_url('tecnicos_admin/editar_obra/' . $obra->id) ?>" class="button btn btn-mini btn-warning">
+            <a href="<?= site_url('tecnicos_admin/editar_obra/' . $obra->id) ?>" class="button btn btn-sm btn-warning">
                 <span class="button__icon"><i class="bx bx-edit"></i></span>
                 <span class="button__text2">Editar</span>
             </a>
-            <a href="<?= site_url('tecnicos_admin/tarefas_obra/' . $obra->id) ?>" class="button btn btn-mini btn-success">
+            <a href="<?= site_url('tecnicos_admin/tarefas_obra/' . $obra->id) ?>" class="button btn btn-sm btn-success">
                 <span class="button__icon"><i class="bx bx-task"></i></span>
                 <span class="button__text2">Tarefas</span>
             </a>
@@ -93,9 +93,9 @@ $etapaStatusColors = [
             </div>
         </div>
 
-        <div class="row-fluid">
+        <div class="row">
             <!-- Coluna Principal -->
-            <div class="span8">
+            <div class="col-8">
                 <!-- Informações da Obra -->
                 <div class="widget-box" style="border-radius: 16px; overflow: hidden; margin-bottom: 20px;">
                     <div class="widget-title" style="background: #f8f9fa;">
@@ -103,8 +103,8 @@ $etapaStatusColors = [
                         <h5>Informações da Obra</h5>
                     </div>
                     <div class="widget-content" style="padding: 20px;">
-                        <div class="row-fluid">
-                            <div class="span6">
+                        <div class="row">
+                            <div class="col-6">
                                 <div class="info-item" style="margin-bottom: 15px;">
                                     <div style="font-size: 0.85rem; color: #888; margin-bottom: 5px;"><i class="bx bx-user"></i> Cliente</div>
                                     <div style="font-weight: 600; color: #333;"><?= htmlspecialchars($obra->cliente_nome ?? 'Não informado', ENT_COMPAT | ENT_HTML5, 'UTF-8') ?></div>
@@ -118,7 +118,7 @@ $etapaStatusColors = [
                                     <div style="font-weight: 600; color: #333;"><?= htmlspecialchars($obra->endereco ?? 'Não informado', ENT_COMPAT | ENT_HTML5, 'UTF-8') ?></div>
                                 </div>
                             </div>
-                            <div class="span6">
+                            <div class="col-6">
                                 <div class="info-item" style="margin-bottom: 15px;">
                                     <div style="font-size: 0.85rem; color: #888; margin-bottom: 5px;"><i class="bx bx-calendar-check"></i> Previsão de Término</div>
                                     <div style="font-weight: 600; color: #333;"><?= isset($obra->data_fim_prevista) ? date('d/m/Y', strtotime($obra->data_fim_prevista)) : '-' ?></div>
@@ -148,9 +148,9 @@ $etapaStatusColors = [
                     <div class="widget-title" style="background: #f8f9fa; display: flex; justify-content: space-between; align-items: center;">
                         <div>
                             <span class="icon"><i class="bx bx-list-check"></i></span>
-                            <h5>Etapas da Obra <span class="label label-info" style="margin-left: 10px;"><?= count($etapas ?? []) ?></span></h5>
+                            <h5>Etapas da Obra <span class="badge bg-info" style="margin-left: 10px;"><?= count($etapas ?? []) ?></span></h5>
                         </div>
-                        <a href="#modal-etapa" data-toggle="modal" class="btn btn-mini btn-success"><i class="bx bx-plus"></i> Adicionar</a>
+                        <a href="#modal-etapa" data-bs-toggle="modal" class="btn btn-sm btn-success"><i class="bx bx-plus"></i> Adicionar</a>
                     </div>
                     <div class="widget-content" style="padding: 20px;">
                         <?php if (!empty($etapas)): ?>
@@ -174,8 +174,8 @@ $etapaStatusColors = [
                                             <span class="etapa-status" style="padding: 4px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; background: <?= $etapaStatusColors[$etapaStatus]['bg'] ?? '#f5f5f5' ?>; color: <?= $etapaStatusColors[$etapaStatus]['color'] ?? '#666' ?>;">
                                                 <?= $etapaStatusLabels[$etapaStatus] ?? ucfirst($etapaStatus) ?>
                                             </span>
-                                            <button type="button" class="btn btn-mini" onclick="editarEtapa(<?= $etapa->id ?>)"><i class="bx bx-edit"></i></button>
-                                            <button type="button" class="btn btn-mini btn-danger" onclick="excluirEtapa(<?= $etapa->id ?>)"><i class="bx bx-trash"></i></button>
+                                            <button type="button" class="btn btn-sm" onclick="editarEtapa(<?= $etapa->id ?>)"><i class="bx bx-edit"></i></button>
+                                            <button type="button" class="btn btn-sm btn-danger" onclick="excluirEtapa(<?= $etapa->id ?>)"><i class="bx bx-trash"></i></button>
                                         </div>
                                     </div>
 
@@ -202,8 +202,8 @@ $etapaStatusColors = [
                                         </div>
                                         <div style="display: flex; gap: 5px;">
                                             <?php if ($etapaStatus !== 'concluida'): ?>
-                                            <button type="button" class="btn btn-mini btn-success" onclick="atualizarStatusEtapa(<?= $etapa->id ?>, 'em_andamento')"><i class="bx bx-play"></i> Iniciar</button>
-                                            <button type="button" class="btn btn-mini btn-primary" onclick="atualizarStatusEtapa(<?= $etapa->id ?>, 'concluida')"><i class="bx bx-check"></i> Concluir</button>
+                                            <button type="button" class="btn btn-sm btn-success" onclick="atualizarStatusEtapa(<?= $etapa->id ?>, 'em_andamento')"><i class="bx bx-play"></i> Iniciar</button>
+                                            <button type="button" class="btn btn-sm btn-primary" onclick="atualizarStatusEtapa(<?= $etapa->id ?>, 'concluida')"><i class="bx bx-check"></i> Concluir</button>
                                             <?php endif; ?>
                                         </div>
                                     </div>
@@ -214,7 +214,7 @@ $etapaStatusColors = [
                             <div style="text-align: center; padding: 40px; color: #888;">
                                 <div style="font-size: 3rem; margin-bottom: 15px;"><i class="bx bx-list-ul"></i></div>
                                 <p>Nenhuma etapa cadastrada</p>
-                                <a href="#modal-etapa" data-toggle="modal" class="btn btn-success" style="margin-top: 10px;"><i class="bx bx-plus"></i> Adicionar Etapa</a>
+                                <a href="#modal-etapa" data-bs-toggle="modal" class="btn btn-success" style="margin-top: 10px;"><i class="bx bx-plus"></i> Adicionar Etapa</a>
                             </div>
                         <?php endif; ?>
                     </div>
@@ -227,7 +227,7 @@ $etapaStatusColors = [
                             <span class="icon"><i class="bx bx-clipboard"></i></span>
                             <h5>Ordens de Serviço Vinculadas <span class="badge badge-info"><?= count($os_vinculadas ?? []) ?></span></h5>
                         </div>
-                        <a href="#modal-vincular-os" data-toggle="modal" class="btn btn-mini btn-success"><i class="bx bx-link"></i> Vincular OS</a>
+                        <a href="#modal-vincular-os" data-bs-toggle="modal" class="btn btn-sm btn-success"><i class="bx bx-link"></i> Vincular OS</a>
                     </div>
                     <div class="widget-content" style="padding: 20px;">
                         <?php if (!empty($os_vinculadas)): ?>
@@ -252,11 +252,11 @@ $etapaStatusColors = [
                                         </div>
                                     </div>
                                     <div style="display: flex; gap: 5px;">
-                                        <a href="<?= site_url('os/visualizar/' . $os->idOs) ?>" class="btn btn-mini btn-info" title="Visualizar OS"><i class="bx bx-show"></i></a>
+                                        <a href="<?= site_url('os/visualizar/' . $os->idOs) ?>" class="btn btn-sm btn-info" title="Visualizar OS"><i class="bx bx-show"></i></a>
                                         <form method="post" action="<?= site_url('tecnicos_admin/desvincular_os_obra') ?>" style="display: inline;" onsubmit="return confirm('Deseja realmente desvincular esta OS da obra?');">
                                             <input type="hidden" name="obra_id" value="<?= $obra->id ?>">
                                             <input type="hidden" name="os_id" value="<?= $os->idOs ?>">
-                                            <button type="submit" class="btn btn-mini btn-danger" title="Desvincular OS"><i class="bx bx-unlink"></i></button>
+                                            <button type="submit" class="btn btn-sm btn-danger" title="Desvincular OS"><i class="bx bx-unlink"></i></button>
                                         </form>
                                     </div>
                                 </div>
@@ -266,7 +266,7 @@ $etapaStatusColors = [
                             <div style="text-align: center; padding: 40px; color: #888;">
                                 <div style="font-size: 3rem; margin-bottom: 15px;"><i class="bx bx-clipboard"></i></div>
                                 <p>Nenhuma OS vinculada a esta obra</p>
-                                <a href="#modal-vincular-os" data-toggle="modal" class="btn btn-success" style="margin-top: 10px;"><i class="bx bx-link"></i> Vincular OS</a>
+                                <a href="#modal-vincular-os" data-bs-toggle="modal" class="btn btn-success" style="margin-top: 10px;"><i class="bx bx-link"></i> Vincular OS</a>
                             </div>
                         <?php endif; ?>
                     </div>
@@ -279,7 +279,7 @@ $etapaStatusColors = [
                             <span class="icon"><i class="bx bx-timeline"></i></span>
                             <h5>Timeline da Obra</h5>
                         </div>
-                        <a href="#modal-atividade" data-toggle="modal" class="btn btn-mini btn-primary"><i class="bx bx-plus"></i> Registrar Atividade</a>
+                        <a href="#modal-atividade" data-bs-toggle="modal" class="btn btn-sm btn-primary"><i class="bx bx-plus"></i> Registrar Atividade</a>
                     </div>
                     <div class="widget-content" style="padding: 20px;">
                         <div id="timeline-obra" style="max-height: 400px; overflow-y: auto;">
@@ -290,7 +290,7 @@ $etapaStatusColors = [
             </div>
 
             <!-- Coluna Lateral -->
-            <div class="span4">
+            <div class="col-4">
                 <!-- Equipe -->
                 <div class="widget-box" style="border-radius: 16px; overflow: hidden; margin-bottom: 20px;">
                     <div class="widget-title" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
@@ -315,7 +315,7 @@ $etapaStatusColors = [
                                     <form method="post" action="<?= site_url('tecnicos_admin/remover_tecnico_equipe') ?>" style="display: inline;" onsubmit="return confirm('Deseja remover este técnico da equipe?');">
                                         <input type="hidden" name="obra_id" value="<?= $obra->id ?>">
                                         <input type="hidden" name="tecnico_id" value="<?= $membro->tecnico_id ?>">
-                                        <button type="submit" class="btn btn-mini btn-danger" title="Remover da equipe"><i class="bx bx-x"></i></button>
+                                        <button type="submit" class="btn btn-sm btn-danger" title="Remover da equipe"><i class="bx bx-x"></i></button>
                                     </form>
                                 </div>
                                 <?php endforeach; ?>
@@ -337,7 +337,7 @@ $etapaStatusColors = [
                     </div>
                     <div class="widget-content" style="padding: 20px;">
                         <div style="display: flex; flex-direction: column; gap: 10px;">
-                            <a href="#modal-equipe" data-toggle="modal" class="quick-action" style="display: flex; align-items: center; gap: 12px; padding: 15px; background: #e3f2fd; border-radius: 12px; text-decoration: none; color: #1976d2;">
+                            <a href="#modal-equipe" data-bs-toggle="modal" class="quick-action" style="display: flex; align-items: center; gap: 12px; padding: 15px; background: #e3f2fd; border-radius: 12px; text-decoration: none; color: #1976d2;">
                                 <i class="bx bx-user-plus" style="font-size: 1.3rem;"></i>
                                 <span style="font-weight: 600;">Alocar Técnico</span>
                             </a>
@@ -345,7 +345,7 @@ $etapaStatusColors = [
                                 <i class="bx bx-file" style="font-size: 1.3rem;"></i>
                                 <span style="font-weight: 600;">Criar OS para Obra</span>
                             </a>
-                            <a href="#modal-materiais" data-toggle="modal" class="quick-action" style="display: flex; align-items: center; gap: 12px; padding: 15px; background: #fff3e0; border-radius: 12px; text-decoration: none; color: #f57c00;">
+                            <a href="#modal-materiais" data-bs-toggle="modal" class="quick-action" style="display: flex; align-items: center; gap: 12px; padding: 15px; background: #fff3e0; border-radius: 12px; text-decoration: none; color: #f57c00;">
                                 <i class="bx bx-package" style="font-size: 1.3rem;"></i>
                                 <span style="font-weight: 600;">Materiais</span>
                             </a>
@@ -367,71 +367,71 @@ $etapaStatusColors = [
         </div>
 
         <!-- Modal: Adicionar Etapa -->
-        <div id="modal-etapa" class="modal hide fade" tabindex="-1" role="dialog">
+        <div id="modal-etapa" class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">×</button>
+                <button type="button" class="close" data-bs-dismiss="modal">×</button>
                 <h5><i class="bx bx-plus-circle"></i> Adicionar Etapa</h5>
             </div>
             <form action="<?= site_url('tecnicos_admin/adicionar_etapa') ?>" method="post">
                 <input type="hidden" name="obra_id" value="<?= $obra->id ?>">
                 <div class="modal-body">
-                    <div class="control-group">
-                        <label class="control-label">Nome da Etapa *</label>
+                    <div class="mb-3">
+                        <label class="form-label">Nome da Etapa *</label>
                         <div class="controls">
-                            <input type="text" name="nome" class="span12" placeholder="Ex: Preparação, Instalação, Testes" required>
+                            <input type="text" name="nome" class="col-12" placeholder="Ex: Preparação, Instalação, Testes" required>
                         </div>
                     </div>
-                    <div class="row-fluid">
-                        <div class="span6">
-                            <div class="control-group">
-                                <label class="control-label">Data Início Prevista</label>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label class="form-label">Data Início Prevista</label>
                                 <div class="controls">
-                                    <input type="date" name="data_inicio_prevista" class="span12">
+                                    <input type="date" name="data_inicio_prevista" class="col-12">
                                 </div>
                             </div>
                         </div>
-                        <div class="span6">
-                            <div class="control-group">
-                                <label class="control-label">Data Fim Prevista</label>
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label class="form-label">Data Fim Prevista</label>
                                 <div class="controls">
-                                    <input type="date" name="data_fim_prevista" class="span12">
+                                    <input type="date" name="data_fim_prevista" class="col-12">
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="control-group">
-                        <label class="control-label">Descrição</label>
+                    <div class="mb-3">
+                        <label class="form-label">Descrição</label>
                         <div class="controls">
-                            <textarea name="descricao" class="span12" rows="3" placeholder="Descrição detalhada da etapa"></textarea>
+                            <textarea name="descricao" class="col-12" rows="3" placeholder="Descrição detalhada da etapa"></textarea>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn" data-dismiss="modal">Cancelar</button>
+                    <button class="btn" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-primary"><i class="bx bx-save"></i> Salvar Etapa</button>
                 </div>
             </form>
         </div>
 
         <!-- Modal: Editar Etapa -->
-        <div id="modal-editar-etapa" class="modal hide fade" tabindex="-1" role="dialog">
+        <div id="modal-editar-etapa" class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">×</button>
+                <button type="button" class="close" data-bs-dismiss="modal">×</button>
                 <h5><i class="bx bx-edit"></i> Editar Etapa</h5>
             </div>
             <form id="form-editar-etapa" action="" method="post">
                 <div class="modal-body">
                     <input type="hidden" name="etapa_id" id="edit-etapa-id">
-                    <div class="control-group">
-                        <label class="control-label">Nome da Etapa *</label>
+                    <div class="mb-3">
+                        <label class="form-label">Nome da Etapa *</label>
                         <div class="controls">
-                            <input type="text" name="nome" id="edit-etapa-nome" class="span12" required>
+                            <input type="text" name="nome" id="edit-etapa-nome" class="col-12" required>
                         </div>
                     </div>
-                    <div class="control-group">
-                        <label class="control-label">Status</label>
+                    <div class="mb-3">
+                        <label class="form-label">Status</label>
                         <div class="controls">
-                            <select name="status" id="edit-etapa-status" class="span12">
+                            <select name="status" id="edit-etapa-status" class="col-12">
                                 <option value="pendente">Pendente</option>
                                 <option value="em_andamento">Em Andamento</option>
                                 <option value="concluida">Concluída</option>
@@ -439,42 +439,42 @@ $etapaStatusColors = [
                             </select>
                         </div>
                     </div>
-                    <div class="row-fluid">
-                        <div class="span6">
-                            <div class="control-group">
-                                <label class="control-label">% Concluído</label>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label class="form-label">% Concluído</label>
                                 <div class="controls">
-                                    <input type="number" name="percentual_concluido" id="edit-etapa-percentual" class="span12" min="0" max="100">
+                                    <input type="number" name="percentual_concluido" id="edit-etapa-percentual" class="col-12" min="0" max="100">
                                 </div>
                             </div>
                         </div>
-                        <div class="span6">
-                            <div class="control-group">
-                                <label class="control-label">Data Fim Prevista</label>
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label class="form-label">Data Fim Prevista</label>
                                 <div class="controls">
-                                    <input type="date" name="data_fim_prevista" id="edit-etapa-data-fim" class="span12">
+                                    <input type="date" name="data_fim_prevista" id="edit-etapa-data-fim" class="col-12">
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="control-group">
-                        <label class="control-label">Descrição</label>
+                    <div class="mb-3">
+                        <label class="form-label">Descrição</label>
                         <div class="controls">
-                            <textarea name="descricao" id="edit-etapa-descricao" class="span12" rows="3"></textarea>
+                            <textarea name="descricao" id="edit-etapa-descricao" class="col-12" rows="3"></textarea>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn" data-dismiss="modal">Cancelar</button>
+                    <button class="btn" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-primary"><i class="bx bx-save"></i> Atualizar</button>
                 </div>
             </form>
         </div>
 
         <!-- Modal: Alocar Técnico -->
-        <div id="modal-equipe" class="modal hide fade" tabindex="-1" role="dialog" style="width: 600px; margin-left: -300px;">
+        <div id="modal-equipe" class="modal fade" tabindex="-1" role="dialog" style="width: 600px; margin-left: -300px;">
             <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-                <button type="button" class="close" data-dismiss="modal" style="color: white; opacity: 0.8;">×</button>
+                <button type="button" class="close" data-bs-dismiss="modal" style="color: white; opacity: 0.8;">×</button>
                 <h5 style="color: white;"><i class="bx bx-user-plus"></i> Alocar Técnico à Obra</h5>
             </div>
             <form action="<?= site_url('tecnicos_admin/alocar_tecnico') ?>" method="post">
@@ -483,23 +483,23 @@ $etapaStatusColors = [
                     <div class="alert alert-info">
                         <i class="bx bx-info-circle"></i> Selecione um técnico disponível para alocar a esta obra.
                     </div>
-                    <div class="control-group">
-                        <label class="control-label">Técnico *</label>
+                    <div class="mb-3">
+                        <label class="form-label">Técnico *</label>
                         <div class="controls">
-                            <select name="tecnico_id" id="select-tecnico" class="span12" required>
+                            <select name="tecnico_id" id="select-tecnico" class="col-12" required>
                                 <option value="">-- Carregando técnicos disponíveis... --</option>
                             </select>
                         </div>
-                        <span class="help-block" id="msg-tecnico" style="color: #666; font-size: 0.85rem;">
+                        <span class="form-text" id="msg-tecnico" style="color: #666; font-size: 0.85rem;">
                             <i class="bx bx-loader bx-spin"></i> Carregando técnicos...
                         </span>
                     </div>
-                    <div class="row-fluid">
-                        <div class="span6">
-                            <div class="control-group">
-                                <label class="control-label">Função na Obra</label>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label class="form-label">Função na Obra</label>
                                 <div class="controls">
-                                    <select name="funcao" class="span12">
+                                    <select name="funcao" class="col-12">
                                         <option value="Técnico">Técnico</option>
                                         <option value="Encarregado">Encarregado</option>
                                         <option value="Auxiliar">Auxiliar</option>
@@ -510,11 +510,11 @@ $etapaStatusColors = [
                                 </div>
                             </div>
                         </div>
-                        <div class="span6">
-                            <div class="control-group">
-                                <label class="control-label">Nível de Experiência</label>
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label class="form-label">Nível de Experiência</label>
                                 <div class="controls">
-                                    <select name="nivel_tecnico" class="span12">
+                                    <select name="nivel_tecnico" class="col-12">
                                         <option value="">-- Selecione --</option>
                                         <option value="1">Nível 1 - Júnior</option>
                                         <option value="2">Nível 2 - Pleno</option>
@@ -526,35 +526,35 @@ $etapaStatusColors = [
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn" data-dismiss="modal">Cancelar</button>
+                    <button class="btn" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-success" id="btn-alocar" disabled><i class="bx bx-save"></i> Alocar Técnico</button>
                 </div>
             </form>
         </div>
 
         <!-- Modal: Vincular OS -->
-        <div id="modal-vincular-os" class="modal hide fade" tabindex="-1" role="dialog" style="width: 800px; margin-left: -400px;">
+        <div id="modal-vincular-os" class="modal fade" tabindex="-1" role="dialog" style="width: 800px; margin-left: -400px;">
             <div class="modal-header" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white;">
-                <button type="button" class="close" data-dismiss="modal" style="color: white; opacity: 0.8;">×</button>
+                <button type="button" class="close" data-bs-dismiss="modal" style="color: white; opacity: 0.8;">×</button>
                 <h5 style="color: white;"><i class="bx bx-link"></i> Vincular OS à Obra</h5>
             </div>
             <form action="<?= site_url('tecnicos_admin/vincular_os_obra') ?>" method="post">
                 <input type="hidden" name="obra_id" value="<?= $obra->id ?>">
                 <div class="modal-body" style="max-height: 500px; overflow-y: auto;">
                     <!-- Busca -->
-                    <div class="row-fluid" style="margin-bottom: 15px;">
-                        <div class="span8">
-                            <div class="control-group" style="margin-bottom: 0;">
+                    <div class="row" style="margin-bottom: 15px;">
+                        <div class="col-8">
+                            <div class="mb-3" style="margin-bottom: 0;">
                                 <div class="controls">
-                                    <div class="input-append span12" style="margin-left: 0;">
-                                        <input type="text" id="buscar-os-termo" class="span10" placeholder="Buscar por número da OS, cliente ou CNPJ...">
+                                    <div class="input-group col-12" style="margin-left: 0;">
+                                        <input type="text" id="buscar-os-termo" class="col-10" placeholder="Buscar por número da OS, cliente ou CNPJ...">
                                         <button type="button" class="btn btn-info" id="btn-buscar-os"><i class="bx bx-search"></i> Buscar</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="span4">
-                            <select id="filtro-status-os" class="span12">
+                        <div class="col-4">
+                            <select id="filtro-status-os" class="col-12">
                                 <option value="">Todos os Status</option>
                                 <option value="Aberto">Aberto</option>
                                 <option value="Em Andamento">Em Andamento</option>
@@ -598,7 +598,7 @@ $etapaStatusColors = [
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn" data-dismiss="modal" type="button">Cancelar</button>
+                    <button class="btn" data-bs-dismiss="modal" type="button">Cancelar</button>
                     <button type="submit" class="btn btn-success" id="btn-vincular-os" disabled>
                         <i class="bx bx-link"></i> Vincular à Obra
                     </button>
@@ -607,18 +607,18 @@ $etapaStatusColors = [
         </div>
 
         <!-- Modal: Registrar Atividade -->
-        <div id="modal-atividade" class="modal hide fade" tabindex="-1" role="dialog">
+        <div id="modal-atividade" class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">×</button>
+                <button type="button" class="close" data-bs-dismiss="modal">×</button>
                 <h5><i class="bx bx-plus-circle"></i> Registrar Atividade</h5>
             </div>
             <form action="<?= site_url('tecnicos_admin/adicionar_comentario') ?>" method="post">
                 <input type="hidden" name="obra_id" value="<?= $obra->id ?>">
                 <div class="modal-body">
-                    <div class="control-group">
-                        <label class="control-label">Tipo</label>
+                    <div class="mb-3">
+                        <label class="form-label">Tipo</label>
                         <div class="controls">
-                            <select name="tipo" class="span12">
+                            <select name="tipo" class="col-12">
                                 <option value="comentario">Comentário</option>
                                 <option value="atualizacao">Atualização</option>
                                 <option value="problema">Problema</option>
@@ -626,24 +626,24 @@ $etapaStatusColors = [
                             </select>
                         </div>
                     </div>
-                    <div class="control-group">
-                        <label class="control-label">Descrição *</label>
+                    <div class="mb-3">
+                        <label class="form-label">Descrição *</label>
                         <div class="controls">
-                            <textarea name="descricao" class="span12" rows="4" placeholder="Descreva a atividade, atualização ou observação..." required></textarea>
+                            <textarea name="descricao" class="col-12" rows="4" placeholder="Descreva a atividade, atualização ou observação..." required></textarea>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn" data-dismiss="modal">Cancelar</button>
+                    <button class="btn" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-primary"><i class="bx bx-save"></i> Registrar</button>
                 </div>
             </form>
         </div>
 
         <!-- Modal: Gerenciar Materiais -->
-        <div id="modal-materiais" class="modal hide fade" tabindex="-1" role="dialog">
+        <div id="modal-materiais" class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">×</button>
+                <button type="button" class="close" data-bs-dismiss="modal">×</button>
                 <h5><i class="bx bx-package"></i> Materiais da Obra</h5>
             </div>
             <div class="modal-body">
@@ -652,7 +652,7 @@ $etapaStatusColors = [
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn" data-dismiss="modal">Fechar</button>
+                <button class="btn" data-bs-dismiss="modal">Fechar</button>
             </div>
         </div>
 
@@ -1031,7 +1031,7 @@ function carregarTimeline() {
                 html += '</div>';
                 container.html(html);
             } else {
-                container.html('<p style="text-align: center; color: #888; padding: 20px;">Nenhuma atividade registrada.<br><a href="#modal-atividade" data-toggle="modal">Clique aqui para adicionar</a></p>');
+                container.html('<p style="text-align: center; color: #888; padding: 20px;">Nenhuma atividade registrada.<br><a href="#modal-atividade" data-bs-toggle="modal">Clique aqui para adicionar</a></p>');
             }
         },
         error: function() {

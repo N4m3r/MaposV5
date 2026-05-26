@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Relatório DRE - Impressão
  */
@@ -122,8 +122,8 @@ $comparativo = $results['comparativo'];
 </style>
 
 <!-- Botões de Ação -->
-<div class="row-fluid no-print">
-    <div class="span12">
+<div class="row no-print">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-content">
                 <div class="btn-group">

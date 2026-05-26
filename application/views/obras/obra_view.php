@@ -1,4 +1,4 @@
-<?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
+﻿<?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
 
 <!-- Nova Visualização de Obra - Design Moderno -->
 <style>
@@ -1372,44 +1372,44 @@ $(document).ready(function() {
 </script>
 
 <!-- Wizard Modal -->
-<div id="wizardModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="wizardModalLabel" aria-hidden="true" style="width: 800px; max-width: 90%; left: 50%; margin-left: -400px;">
+<div id="wizardModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="wizardModalLabel" aria-hidden="true" style="width: 800px; max-width: 90%; left: 50%; margin-left: -400px;">
     <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 4px 4px 0 0;">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true" style="color: white; opacity: 0.8;">&times;</button>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true" style="color: white; opacity: 0.8;">&times;</button>
         <h3 id="wizardModalLabel"><i class="icon-magic"></i> Nova Etapa + Atividades</h3>
     </div>
     <form id="wizardForm" action="<?php echo site_url('obras/salvarWizard/' . $obra->id); ?>" method="post">
         <div class="modal-body" style="max-height: 500px; overflow-y: auto;">
-            <div class="row-fluid">
-                <div class="span12">
+            <div class="row">
+                <div class="col-12">
                     <h4><i class="icon-tasks"></i> Informações da Etapa</h4>
                     <hr style="margin: 10px 0;">
 
-                    <div class="row-fluid">
-                        <div class="span2">
+                    <div class="row">
+                        <div class="col-2">
                             <label for="etapa_numero">Número <span class="required">*</span></label>
-                            <input type="number" name="etapa_numero" id="etapa_numero" class="span12" value="<?php echo (count($etapas ?? []) + 1); ?>" min="1" required>
+                            <input type="number" name="etapa_numero" id="etapa_numero" class="col-12" value="<?php echo (count($etapas ?? []) + 1); ?>" min="1" required>
                         </div>
-                        <div class="span10">
+                        <div class="col-10">
                             <label for="etapa_nome">Nome da Etapa <span class="required">*</span></label>
-                            <input type="text" name="etapa_nome" id="etapa_nome" class="span12" placeholder="Ex: Fundação, Estrutura, Acabamento..." required>
+                            <input type="text" name="etapa_nome" id="etapa_nome" class="col-12" placeholder="Ex: Fundação, Estrutura, Acabamento..." required>
                         </div>
                     </div>
 
-                    <div class="row-fluid" style="margin-top: 10px;">
-                        <div class="span12">
+                    <div class="row" style="margin-top: 10px;">
+                        <div class="col-12">
                             <label for="etapa_descricao">Descrição</label>
-                            <textarea name="etapa_descricao" id="etapa_descricao" class="span12" rows="2" placeholder="Descreva o que será feito nesta etapa..."></textarea>
+                            <textarea name="etapa_descricao" id="etapa_descricao" class="col-12" rows="2" placeholder="Descreva o que será feito nesta etapa..."></textarea>
                         </div>
                     </div>
 
-                    <div class="row-fluid" style="margin-top: 10px;">
-                        <div class="span6">
+                    <div class="row" style="margin-top: 10px;">
+                        <div class="col-6">
                             <label for="etapa_data_inicio">Data de Início Prevista</label>
-                            <input type="date" name="etapa_data_inicio" id="etapa_data_inicio" class="span12">
+                            <input type="date" name="etapa_data_inicio" id="etapa_data_inicio" class="col-12">
                         </div>
-                        <div class="span6">
+                        <div class="col-6">
                             <label for="etapa_data_fim">Data de Término Prevista</label>
-                            <input type="date" name="etapa_data_fim" id="etapa_data_fim" class="span12">
+                            <input type="date" name="etapa_data_fim" id="etapa_data_fim" class="col-12">
                         </div>
                     </div>
 
@@ -1427,7 +1427,7 @@ $(document).ready(function() {
             </div>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn" data-dismiss="modal">Cancelar</button>
+            <button type="button" class="btn" data-bs-dismiss="modal">Cancelar</button>
             <button type="submit" class="btn btn-primary"><i class="icon-save"></i> Salvar Etapa e Atividades</button>
         </div>
     </form>
@@ -1454,12 +1454,12 @@ function adicionarAtividade() {
     const index = atividadeCount++;
 
     const html = `
-        <div class="row-fluid atividade-item" style="margin-bottom: 10px;" id="atividade-${index}">
-            <div class="span8">
-                <input type="text" name="atividades[${index}][titulo]" class="span12" placeholder="Título da atividade" required>
+        <div class="row atividade-item" style="margin-bottom: 10px;" id="atividade-${index}">
+            <div class="col-8">
+                <input type="text" name="atividades[${index}][titulo]" class="col-12" placeholder="Título da atividade" required>
             </div>
-            <div class="span3">
-                <select name="atividades[${index}][tipo]" class="span12">
+            <div class="col-3">
+                <select name="atividades[${index}][tipo]" class="col-12">
                     <option value="trabalho">Trabalho</option>
                     <option value="visita">Visita</option>
                     <option value="manutencao">Manutenção</option>
@@ -1467,7 +1467,7 @@ function adicionarAtividade() {
                     <option value="outro">Outro</option>
                 </select>
             </div>
-            <div class="span1">
+            <div class="col-1">
                 <button type="button" class="btn btn-danger btn-block" onclick="removerAtividade(${index})" title="Remover">
                     <i class="icon-trash"></i>
                 </button>

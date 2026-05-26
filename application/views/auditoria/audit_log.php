@@ -1,4 +1,4 @@
-<div class="new122" style="margin-top: 0; min-height: 100vh">
+﻿<div class="new122" style="margin-top: 0; min-height: 100vh">
 <div class="widget-title" style="margin: -20px 0 0">
     <span class="icon"><i class="fas fa-shield-alt"></i></span>
     <h5>Auditoria Estruturada</h5>
@@ -35,12 +35,12 @@
     </select>
     <input type="date" name="date_from" class="input-small" value="<?php echo e($filters['date_from'] ?? ''); ?>" placeholder="De">
     <input type="date" name="date_to" class="input-small" value="<?php echo e($filters['date_to'] ?? ''); ?>" placeholder="Ate">
-    <button type="submit" class="btn btn-primary btn-small"><i class="fas fa-search"></i> Filtrar</button>
-    <a href="<?php echo site_url('auditoria?tab=audit'); ?>" class="btn btn-small">Limpar</a>
+    <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-search"></i> Filtrar</button>
+    <a href="<?php echo site_url('auditoria?tab=audit'); ?>" class="btn btn-sm">Limpar</a>
 </form>
 
 <!-- Clean button -->
-<a href="#modal-clean-audit" role="button" data-toggle="modal" class="button btn btn-danger tip-top" style="max-width: 280px" title="Limpar Auditoria">
+<a href="#modal-clean-audit" role="button" data-bs-toggle="modal" class="button btn btn-danger tip-top" style="max-width: 280px" title="Limpar Auditoria">
     <span class="button__icon"><i class='bx bx-trash'></i></span> <span class="button__text2">Remover Registros Antigos (90+ dias)</span>
 </a>
 
@@ -66,15 +66,15 @@
                         <td>
                             <?php
                             $actionLabel = [
-                                'INSERT' => '<span class="label label-success">INSERT</span>',
-                                'UPDATE' => '<span class="label label-info">UPDATE</span>',
-                                'DELETE' => '<span class="label label-important">DELETE</span>',
-                                'LOGIN'  => '<span class="label label-warning">LOGIN</span>',
-                                'EXPORT' => '<span class="label label-inverse">EXPORT</span>',
-                                'ANONIMIZAR' => '<span class="label label-important">ANONIMIZAR</span>',
-                                'CONSENT' => '<span class="label label-info">CONSENT</span>',
-                                'REVOKE_CONSENT' => '<span class="label label-warning">REVOKE</span>',
-                                'BREACH_NOTIFY' => '<span class="label label-important">VAZAMENTO</span>',
+                                'INSERT' => '<span class="badge bg-success">INSERT</span>',
+                                'UPDATE' => '<span class="badge bg-info">UPDATE</span>',
+                                'DELETE' => '<span class="badge bg-danger">DELETE</span>',
+                                'LOGIN'  => '<span class="badge bg-warning">LOGIN</span>',
+                                'EXPORT' => '<span class="badge bg-dark">EXPORT</span>',
+                                'ANONIMIZAR' => '<span class="badge bg-danger">ANONIMIZAR</span>',
+                                'CONSENT' => '<span class="badge bg-info">CONSENT</span>',
+                                'REVOKE_CONSENT' => '<span class="badge bg-warning">REVOKE</span>',
+                                'BREACH_NOTIFY' => '<span class="badge bg-danger">VAZAMENTO</span>',
                             ];
                             echo $actionLabel[$r->action] ?? '<span class="label">' . e($r->action) . '</span>';
                             ?>
@@ -84,7 +84,7 @@
                         <td style="white-space: nowrap;"><?php echo e($r->ip_address ?? '-'); ?></td>
                         <td>
                             <?php if ($r->old_data || $r->new_data): ?>
-                                <a href="#modal-diff-<?php echo $r->id; ?>" role="button" data-toggle="modal" class="btn btn-mini btn-info">
+                                <a href="#modal-diff-<?php echo $r->id; ?>" role="button" data-bs-toggle="modal" class="btn btn-sm btn-info">
                                     <i class="fas fa-code-compare"></i> Ver
                                 </a>
                             <?php else: ?>
@@ -108,9 +108,9 @@
 <!-- Diff modals for each row -->
 <?php foreach ($results as $r): ?>
     <?php if ($r->old_data || $r->new_data): ?>
-    <div id="modal-diff-<?php echo $r->id; ?>" class="modal hide fade" tabindex="-1" role="dialog">
+    <div id="modal-diff-<?php echo $r->id; ?>" class="modal fade" tabindex="-1" role="dialog">
         <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
             <h5>Auditoria #<?php echo $r->id; ?> — <?php echo e($r->action); ?> em <?php echo e($r->table_name); ?></h5>
         </div>
         <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
@@ -133,17 +133,17 @@
             <?php endif; ?>
         </div>
         <div class="modal-footer">
-            <button class="btn" data-dismiss="modal">Fechar</button>
+            <button class="btn" data-bs-dismiss="modal">Fechar</button>
         </div>
     </div>
     <?php endif; ?>
 <?php endforeach; ?>
 
 <!-- Clean modal -->
-<div id="modal-clean-audit" class="modal hide fade" tabindex="-1" role="dialog">
+<div id="modal-clean-audit" class="modal fade" tabindex="-1" role="dialog">
     <form action="<?php echo site_url('auditoria/clean_audit') ?>" method="post">
         <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
             <h5>Limpeza de Registros de Auditoria</h5>
         </div>
         <div class="modal-body">
@@ -153,7 +153,7 @@
             </div>
         </div>
         <div class="modal-footer">
-            <button class="btn" data-dismiss="modal">Cancelar</button>
+            <button class="btn" data-bs-dismiss="modal">Cancelar</button>
             <button class="btn btn-danger">Excluir</button>
         </div>
     </form>

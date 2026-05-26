@@ -1,4 +1,4 @@
-<style>
+﻿<style>
   select {
     width: 70px;
   }
@@ -10,20 +10,20 @@
         </span>
         <h5>Serviços</h5>
     </div>
-    <div class="span12" style="margin-left: 0">
+    <div class="col-12" style="margin-left: 0">
         <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'aServico')) : ?>
-            <div class="span3 flexxn" style="display: flex;">
-                <a href="<?= base_url() ?>index.php/servicos/adicionar" class="button btn btn-mini btn-success" style="max-width: 160px">
+            <div class="col-3 flexxn" style="display: flex;">
+                <a href="<?= base_url() ?>index.php/servicos/adicionar" class="button btn btn-sm btn-success" style="max-width: 160px">
                     <span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2"> Serviços</span>
                 </a>
             </div>
         <?php endif; ?>
-        <form class="span9" method="get" action="<?= base_url() ?>index.php/servicos" style="display: flex; justify-content: flex-end;">
-            <div class="span3">
-                <input type="text" name="pesquisa" id="pesquisa" placeholder="Buscar por Nome ou Descrição..." class="span12" value="<?= e($this->input->get('pesquisa')) ?>">
+        <form class="col-9" method="get" action="<?= base_url() ?>index.php/servicos" style="display: flex; justify-content: flex-end;">
+            <div class="col-3">
+                <input type="text" name="pesquisa" id="pesquisa" placeholder="Buscar por Nome ou Descrição..." class="col-12" value="<?= e($this->input->get('pesquisa')) ?>">
             </div>
-            <div class="span1">
-                <button class="button btn btn-mini btn-warning" style="min-width: 30px">
+            <div class="col-1">
+                <button class="button btn btn-sm btn-warning" style="min-width: 30px">
                     <span class="button__icon"><i class='bx bx-search-alt'></i></span></button>
             </div>
         </form>
@@ -59,7 +59,7 @@
                                 echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/servicos/editar/' . $r->idServicos . '" class="btn-nwe3" title="Editar Serviço"><i class="bx bx-edit bx-xs"></i></a>';
                             }
                             if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dServico')) {
-                                echo '<a href="#modal-excluir" role="button" data-toggle="modal" servico="' . $r->idServicos . '" class="btn-nwe4" title="Excluir Serviço"><i class="bx bx-trash-alt bx-xs"></i></a>  ';
+                                echo '<a href="#modal-excluir" role="button" data-bs-toggle="modal" servico="' . $r->idServicos . '" class="btn-nwe4" title="Excluir Serviço"><i class="bx bx-trash-alt bx-xs"></i></a>  ';
                             }
                             echo '</td>';
                             echo '</tr>';
@@ -72,10 +72,10 @@
 <?php echo $this->pagination->create_links(); ?>
 
 <!-- Modal -->
-<div id="modal-excluir" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div id="modal-excluir" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <form action="<?php echo base_url() ?>index.php/servicos/excluir" method="post">
         <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">×</button>
             <h5 id="myModalLabel">Excluir Serviço</h5>
         </div>
         <div class="modal-body">
@@ -83,7 +83,7 @@
             <h5 style="text-align: center">Deseja realmente excluir este serviço?</h5>
         </div>
         <div class="modal-footer" style="display:flex;justify-content: center">
-          <button class="button btn btn-warning" data-dismiss="modal" aria-hidden="true"><span class="button__icon"><i class="bx bx-x"></i></span><span class="button__text2">Cancelar</span></button>
+          <button class="button btn btn-warning" data-bs-dismiss="modal" aria-hidden="true"><span class="button__icon"><i class="bx bx-x"></i></span><span class="button__text2">Cancelar</span></button>
           <button class="button btn btn-danger"><span class="button__icon"><i class='bx bx-trash'></i></span> <span class="button__text2">Excluir</span></button>
         </div>
     </form>

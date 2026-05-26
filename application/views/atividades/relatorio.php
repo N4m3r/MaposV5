@@ -1,13 +1,13 @@
-<?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
+﻿<?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
 
-<div class="span12" style="margin-top: 20px; margin-left: 0;">
-    <div class="row-fluid">
-        <div class="span12" style="margin-bottom: 15px;">
-            <a href="<?php echo site_url('atividades'); ?>" class="btn btn-mini">
+<div class="col-12" style="margin-top: 20px; margin-left: 0;">
+    <div class="row">
+        <div class="col-12" style="margin-bottom: 15px;">
+            <a href="<?php echo site_url('atividades'); ?>" class="btn btn-sm">
                 <i class="bx bx-arrow-back"></i> Voltar
             </a>
             <?php if ($this->session->userdata('permissao') == 1): ?>
-            <button class="btn btn-mini btn-success" onclick="exportarRelatorio()">
+            <button class="btn btn-sm btn-success" onclick="exportarRelatorio()">
                 <i class="bx bx-export"></i> Exportar
             </button>
             <?php endif; ?>
@@ -15,21 +15,21 @@
     </div>
 
     <!-- Filtros -->
-    <div class="row-fluid">
-        <div class="span12" style="background: #f9f9f9; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+    <div class="row">
+        <div class="col-12" style="background: #f9f9f9; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
             <form method="get" action="<?php echo site_url('atividades/relatorio'); ?>" class="form-inline">
-                <div class="row-fluid">
-                    <div class="span3">
+                <div class="row">
+                    <div class="col-3">
                         <label>Data Início:</label>
                         <input type="date" name="data_inicio" class="input-block-level"
                                value="<?php echo e($filtros['data_inicio'] ?? date('Y-m-01')); ?>">
                     </div>
-                    <div class="span3">
+                    <div class="col-3">
                         <label>Data Fim:</label>
                         <input type="date" name="data_fim" class="input-block-level"
                                value="<?php echo e($filtros['data_fim'] ?? date('Y-m-t')); ?>">
                     </div>
-                    <div class="span3">
+                    <div class="col-3">
                         <label>Técnico:</label>
                         <select name="tecnico_id" class="input-block-level">
                             <option value="">Todos</option>
@@ -41,7 +41,7 @@
                             <?php endforeach; ?>
                         </select>
                     </div>
-                    <div class="span3" style="padding-top: 25px;">
+                    <div class="col-3" style="padding-top: 25px;">
                         <button type="submit" class="btn btn-primary">
                             <i class="bx bx-filter"></i> Filtrar
                         </button>
@@ -52,8 +52,8 @@
     </div>
 
     <!-- Tabela de Atividades -->
-    <div class="row-fluid">
-        <div class="span12">
+    <div class="row">
+        <div class="col-12">
             <div class="widget-box">
                 <div class="widget-title">
                     <span class="icon"><i class="bx bx-list-ul"></i></span>
@@ -111,24 +111,24 @@
                                         $statusText = '';
                                         switch ($atv->status) {
                                             case 'em_andamento':
-                                                $statusClass = 'label-warning';
+                                                $statusClass = 'badge bg-warning';
                                                 $statusText = 'Em Andamento';
                                                 break;
                                             case 'pausada':
-                                                $statusClass = 'label-info';
+                                                $statusClass = 'badge bg-info';
                                                 $statusText = 'Pausada';
                                                 break;
                                             case 'finalizada':
                                                 if ($atv->concluida) {
-                                                    $statusClass = 'label-success';
+                                                    $statusClass = 'badge bg-success';
                                                     $statusText = 'Concluída';
                                                 } else {
-                                                    $statusClass = 'label-important';
+                                                    $statusClass = 'badge bg-danger';
                                                     $statusText = 'Não Concluída';
                                                 }
                                                 break;
                                             default:
-                                                $statusClass = 'label-default';
+                                                $statusClass = 'badge bg-secondary';
                                                 $statusText = $atv->status;
                                         }
                                         ?>

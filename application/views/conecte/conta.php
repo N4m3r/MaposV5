@@ -1,7 +1,7 @@
-<div class="widget-box">
+﻿<div class="widget-box">
     <div class="widget-title">
         <ul class="nav nav-tabs">
-            <li class="active"><a data-toggle="tab" href="#tab1">Meus Dados</a></li>
+            <li class="active"><a data-bs-toggle="tab" href="#tab1">Meus Dados</a></li>
 
             <div>
                 <a title="Editar" class="button btn btn-success" style="max-width: 140px;margin: 5px" href="<?php echo base_url() ?>index.php/mine/editarDados/<?php echo $result->idClientes ?>">
@@ -16,7 +16,7 @@
                 <div class="accordion-group widget-box">
                     <div class="accordion-heading">
                         <div class="widget-title">
-                            <a data-parent="#collapse-group" href="#collapseGOne" data-toggle="collapse">
+                            <a data-parent="#collapse-group" href="#collapseGOne" data-bs-toggle="collapse">
                               <span><i class='bx bx-user icon-cli' ></i></span>
                               <h5 style="padding-left: 28px">Dados Pessoais</h5>
                             </a>
@@ -58,7 +58,7 @@
                 <div class="accordion-group widget-box">
                     <div class="accordion-heading">
                         <div class="widget-title">
-                            <a data-parent="#collapse-group" href="#collapseGTwo" data-toggle="collapse">
+                            <a data-parent="#collapse-group" href="#collapseGTwo" data-bs-toggle="collapse">
                               <span><i class='bx bx-phone icon-cli'></i></span>
                               <h5 style="padding-left: 28px">Contatos</h5>
                             </a>
@@ -94,7 +94,7 @@
                 <div class="accordion-group widget-box">
                     <div class="accordion-heading">
                         <div class="widget-title">
-                            <a data-parent="#collapse-group" href="#collapseGThree" data-toggle="collapse">
+                            <a data-parent="#collapse-group" href="#collapseGThree" data-bs-toggle="collapse">
                               <span><i class='bx bx-map-alt icon-cli' ></i></span>
                               <h5 style="padding-left: 28px">Endereço</h5>
                             </a>

@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/js/jquery-ui/css/smoothness/jquery-ui-1.9.2.custom.css" />
+﻿<link rel="stylesheet" href="<?php echo base_url(); ?>assets/js/jquery-ui/css/smoothness/jquery-ui-1.9.2.custom.css" />
 <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/table-custom.css" />
 <script type="text/javascript" src="<?php echo base_url() ?>assets/js/jquery-ui/js/jquery-ui-1.9.2.custom.js"></script>
 <script src="<?php echo base_url() ?>assets/js/sweetalert2.all.min.js"></script>
@@ -18,21 +18,21 @@
             </span>
             <h5>Ordens de Serviço</h5>
         </div>
-    <div class="span12" style="margin-left: 0">
+    <div class="col-12" style="margin-left: 0">
         <form method="get" action="<?php echo base_url(); ?>index.php/os/gerenciar">
             <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'aOs')) { ?>
-                <div class="span3">
-                    <a href="<?php echo base_url(); ?>index.php/os/adicionar" class="button btn btn-mini btn-success" style="max-width: 160px">
+                <div class="col-3">
+                    <a href="<?php echo base_url(); ?>index.php/os/adicionar" class="button btn btn-sm btn-success" style="max-width: 160px">
                         <span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2">Ordem de Serviço</span></a>
                 </div>
             <?php
             } ?>
 
-            <div class="span3">
-                <input type="text" name="pesquisa" id="pesquisa" placeholder="Nome do cliente a pesquisar" class="span12" value="<?= e($this->input->get('pesquisa')) ?>">
+            <div class="col-3">
+                <input type="text" name="pesquisa" id="pesquisa" placeholder="Nome do cliente a pesquisar" class="col-12" value="<?= e($this->input->get('pesquisa')) ?>">
             </div>
-            <div class="span2">
-                <select name="status" id="status" class="span12">
+            <div class="col-2">
+                <select name="status" id="status" class="col-12">
                     <option value="">Todos os status</option>
                     <option value="Aberto" <?php echo $this->input->get('status') == 'Aberto' ? 'selected' : ''; ?>>Aberto</option>
                     <option value="Orçamento" <?php echo $this->input->get('status') == 'Orçamento' ? 'selected' : ''; ?>>Or&ccedil;amento</option>
@@ -47,12 +47,12 @@
 
             </div>
 
-            <div class="span3">
-                <input type="text" name="data" autocomplete="off" id="data" placeholder="Data Inicial" class="span6 datepicker" value="<?= e($this->input->get('data')) ?>">
-                <input type="text" name="data2" autocomplete="off" id="data2" placeholder="Data Final" class="span6 datepicker" value="<?= e($this->input->get('data2')) ?>">
+            <div class="col-3">
+                <input type="text" name="data" autocomplete="off" id="data" placeholder="Data Inicial" class="col-6 datepicker" value="<?= e($this->input->get('data')) ?>">
+                <input type="text" name="data2" autocomplete="off" id="data2" placeholder="Data Final" class="col-6 datepicker" value="<?= e($this->input->get('data2')) ?>">
             </div>
-            <div class="span1">
-                <button class="button btn btn-mini btn-warning" style="min-width: 30px">
+            <div class="col-1">
+                <button class="button btn btn-sm btn-warning" style="min-width: 30px">
                     <span class="button__icon"><i class='bx bx-search-alt'></i></span></button>
             </div>
         </form>
@@ -178,7 +178,7 @@
                                     echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/os/editar/' . $r->idOs . '" class="btn-nwe3" title="Editar OS"><i class="bx bx-edit"></i></a>';
                                 }
                                 if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dOs') && $editavel) {
-                                    echo '<a href="#modal-excluir" role="button" data-toggle="modal" os="' . $r->idOs . '" class="btn-nwe4" title="Excluir OS"><i class="bx bx-trash-alt"></i></a>  ';
+                                    echo '<a href="#modal-excluir" role="button" data-bs-toggle="modal" os="' . $r->idOs . '" class="btn-nwe4" title="Excluir OS"><i class="bx bx-trash-alt"></i></a>  ';
                                 }
                                 echo '</td>';
                                 echo '</tr>';
@@ -192,10 +192,10 @@
     <?php echo $this->pagination->create_links(); ?>
 
     <!-- Modal -->
-    <div id="modal-excluir" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div id="modal-excluir" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <form action="<?php echo base_url() ?>index.php/os/excluir" method="post">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">×</button>
                 <h5 id="myModalLabel">Excluir OS</h5>
             </div>
             <div class="modal-body">
@@ -203,7 +203,7 @@
                 <h5 style="text-align: center">Deseja realmente excluir esta OS?</h5>
             </div>
             <div class="modal-footer" style="display:flex;justify-content: center">
-                <button class="button btn btn-warning" data-dismiss="modal" aria-hidden="true">
+                <button class="button btn btn-warning" data-bs-dismiss="modal" aria-hidden="true">
                     <span class="button__icon"><i class="bx bx-x"></i></span><span class="button__text2">Cancelar</span></button>
                 <button class="button btn btn-danger"><span class="button__icon"><i class='bx bx-trash'></i></span> <span class="button__text2">Excluir</span></button>
             </div>

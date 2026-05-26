@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 $atividades = $atividades ?? [];
 $estatisticas = $estatisticas ?? ['total_atividades' => 0, 'concluidas' => 0, 'tempo_total_horas' => 0, 'por_categoria' => []];
 $filtros = $filtros ?? ['data_inicio' => date('Y-m-01'), 'data_fim' => date('Y-m-t')];
@@ -131,32 +131,32 @@ $filtros = $filtros ?? ['data_inicio' => date('Y-m-01'), 'data_fim' => date('Y-m
 }
 </style>
 
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <h2><i class="bx bx-history"></i> Histórico de Atividades</h2>
 
         <!-- Resumo -->
         <div class="resumo-card">
-            <div class="row-fluid">
-                <div class="span3">
+            <div class="row">
+                <div class="col-3">
                     <div class="stat">
                         <div class="stat-number"><?= $estatisticas['total_atividades'] ?></div>
                         <div class="stat-label">Total de Atividades</div>
                     </div>
                 </div>
-                <div class="span3">
+                <div class="col-3">
                     <div class="stat">
                         <div class="stat-number"><?= $estatisticas['concluidas'] ?></div>
                         <div class="stat-label">Concluídas</div>
                     </div>
                 </div>
-                <div class="span3">
+                <div class="col-3">
                     <div class="stat">
                         <div class="stat-number"><?= $estatisticas['tempo_total_horas'] ?></div>
                         <div class="stat-label">Horas Trabalhadas</div>
                     </div>
                 </div>
-                <div class="span3">
+                <div class="col-3">
                     <div class="stat">
                         <?php
                         $taxa = $estatisticas['total_atividades'] > 0
@@ -193,22 +193,22 @@ $filtros = $filtros ?? ['data_inicio' => date('Y-m-01'), 'data_fim' => date('Y-m
 
         <!-- Filtros -->
         <div class="filtro-section">
-            <form method="get" class="row-fluid">
-                <div class="span3">
+            <form method="get" class="row">
+                <div class="col-3">
                     <label>Data Início</label>
                     <input type="date" name="data_inicio" value="<?= $filtros['data_inicio'] ?>" class="input-block-level">
                 </div>
-                <div class="span3">
+                <div class="col-3">
                     <label>Data Fim</label>
                     <input type="date" name="data_fim" value="<?= $filtros['data_fim'] ?>" class="input-block-level">
                 </div>
-                <div class="span3">
+                <div class="col-3">
                     <label>&nbsp;</label>
                     <button type="submit" class="btn btn-primary input-block-level">
                         <i class="bx bx-filter"></i> Filtrar
                     </button>
                 </div>
-                <div class="span3">
+                <div class="col-3">
                     <label>&nbsp;</label>
                     <a href="<?= site_url('atividades/historico') ?>" class="btn input-block-level">
                         <i class="bx bx-reset"></i> Limpar
@@ -258,9 +258,9 @@ $filtros = $filtros ?? ['data_inicio' => date('Y-m-01'), 'data_fim' => date('Y-m
                                         <div>
                                             <strong><i class="bx bx-wrench"></i> <?= htmlspecialchars($atv->tipo_nome) ?></strong>
                                             <?php if ($atv->concluida == 1): ?>
-                                                <span class="label label-success"><i class="bx bx-check"></i> Concluída</span>
+                                                <span class="badge bg-success"><i class="bx bx-check"></i> Concluída</span>
                                             <?php elseif ($atv->status == 'finalizada'): ?>
-                                                <span class="label label-important"><i class="bx bx-x"></i> Não Concluída</span>
+                                                <span class="badge bg-danger"><i class="bx bx-x"></i> Não Concluída</span>
                                             <?php elseif ($atv->status == 'pausada'): ?>
                                                 <span class="label"><i class="bx bx-pause"></i> Pausada</span>
                                             <?php endif; ?>

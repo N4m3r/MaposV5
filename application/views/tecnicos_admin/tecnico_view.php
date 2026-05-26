@@ -1,11 +1,11 @@
-<?php
+﻿<?php
 /**
  * View de Detalhes do Técnico
  * Exibe informações completas, estatísticas, OS recentes e estoque
  */
 
 if (!isset($tecnico) || !$tecnico) {
-    echo '<div class="alert alert-error">Técnico não encontrado.</div>';
+    echo '<div class="alert alert-danger">Técnico não encontrado.</div>';
     return;
 }
 
@@ -15,17 +15,17 @@ $os_recentes = $os_recentes ?? [];
 $estoque = $estoque ?? [];
 ?>
 
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="icon-user"></i></span>
                 <h5>Detalhes do Técnico</h5>
                 <div class="buttons">
-                    <a href="<?php echo site_url('tecnicos_admin/editar_tecnico/' . $id); ?>" class="btn btn-mini btn-warning">
+                    <a href="<?php echo site_url('tecnicos_admin/editar_tecnico/' . $id); ?>" class="btn btn-sm btn-warning">
                         <i class="icon-edit icon-white"></i> Editar
                     </a>
-                    <a href="<?php echo site_url('tecnicos_admin/tecnicos'); ?>" class="btn btn-mini">
+                    <a href="<?php echo site_url('tecnicos_admin/tecnicos'); ?>" class="btn btn-sm">
                         <i class="icon-arrow-left"></i> Voltar
                     </a>
                 </div>
@@ -33,8 +33,8 @@ $estoque = $estoque ?? [];
             <div class="widget-content">
 
                 <!-- Informações Básicas -->
-                <div class="row-fluid">
-                    <div class="span4">
+                <div class="row">
+                    <div class="col-4">
                         <h4><i class="icon-user"></i> <?php echo $tecnico->nome; ?></h4>
                         <table class="table table-bordered">
                             <tr><td><strong>E-mail:</strong></td><td><?php echo $tecnico->email; ?></td></tr>
@@ -44,7 +44,7 @@ $estoque = $estoque ?? [];
                             <tr><td><strong>Especialidades:</strong></td><td><?php echo $tecnico->especialidades ?: '-'; ?></td></tr>
                         </table>
                     </div>
-                    <div class="span4">
+                    <div class="col-4">
                         <h4><i class="icon-car"></i> Veículo</h4>
                         <table class="table table-bordered">
                             <tr><td><strong>Tipo:</strong></td><td><?php echo $tecnico->veiculo_tipo ?: '-'; ?></td></tr>
@@ -62,7 +62,7 @@ $estoque = $estoque ?? [];
                             </td></tr>
                         </table>
                     </div>
-                    <div class="span4">
+                    <div class="col-4">
                         <h4><i class="icon-dashboard"></i> Estatísticas (Mês)</h4>
                         <table class="table table-bordered">
                             <tr>
@@ -84,8 +84,8 @@ $estoque = $estoque ?? [];
                 <hr>
 
                 <!-- OS Recentes -->
-                <div class="row-fluid">
-                    <div class="span8">
+                <div class="row">
+                    <div class="col-8">
                         <h4><i class="icon-tasks"></i> Ordens de Serviço Recentes</h4>
                         <?php if (!empty($os_recentes)): ?>
                             <table class="table table-bordered table-striped">
@@ -110,7 +110,7 @@ $estoque = $estoque ?? [];
                                             </td>
                                             <td><?php echo isset($os->data_checkin) ? date('d/m/Y', strtotime($os->data_checkin)) : '-'; ?></td>
                                             <td>
-                                                <a href="<?php echo site_url('os/visualizar/' . ($os->idOs ?? $os->os_id)); ?>" class="btn btn-mini btn-info">
+                                                <a href="<?php echo site_url('os/visualizar/' . ($os->idOs ?? $os->os_id)); ?>" class="btn btn-sm btn-info">
                                                     <i class="icon-eye-open icon-white"></i>
                                                 </a>
                                             </td>
@@ -124,14 +124,14 @@ $estoque = $estoque ?? [];
                     </div>
 
                     <!-- Estoque -->
-                    <div class="span4">
+                    <div class="col-4">
                         <h4><i class="icon-shopping-cart"></i> Estoque no Veículo</h4>
-                        <a href="<?php echo site_url('tecnicos_admin/estoque_tecnico/' . $id); ?>" class="btn btn-mini btn-success pull-right">
+                        <a href="<?php echo site_url('tecnicos_admin/estoque_tecnico/' . $id); ?>" class="btn btn-sm btn-success float-end">
                             <i class="icon-plus icon-white"></i> Gerenciar Estoque
                         </a>
                         <div class="clearfix"></div>
                         <?php if (!empty($estoque)): ?>
-                            <table class="table table-bordered table-striped table-condensed">
+                            <table class="table table-bordered table-striped table-sm">
                                 <thead>
                                     <tr>
                                         <th>Produto</th>

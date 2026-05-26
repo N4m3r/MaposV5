@@ -1,4 +1,4 @@
-<style>
+﻿<style>
   select {
     width: 70px;
   }
@@ -48,7 +48,7 @@
                         echo '<td>' . $situacao . '</td>';
                         $btnExcluir = $r->idPermissao == 1
                             ? ''
-                            : ' <a href="#modal-excluir" role="button" data-toggle="modal" permissao="' . e($r->idPermissao) . '" nome="' . e($r->nome) . '" class="btn-nwe4" title="Excluir Permissão"><i class="bx bx-trash"></i></a>';
+                            : ' <a href="#modal-excluir" role="button" data-bs-toggle="modal" permissao="' . e($r->idPermissao) . '" nome="' . e($r->nome) . '" class="btn-nwe4" title="Excluir Permissão"><i class="bx bx-trash"></i></a>';
                         echo '<td>
                                 <a href="' . base_url() . 'index.php/permissoes/editar/' . $r->idPermissao . '" class="btn-nwe3" title="Editar permissões"><i class="bx bx-edit"></i></a>' . $btnExcluir . '
                               </td>';
@@ -61,10 +61,10 @@
 <?php echo $this->pagination->create_links(); ?>
 
 <!-- Modal -->
-<div id="modal-excluir" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div id="modal-excluir" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <form action="<?php echo base_url() ?>index.php/permissoes/excluir" method="post">
         <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">×</button>
             <h5 id="myModalLabel">Excluir Permissão</h5>
         </div>
         <div class="modal-body">
@@ -73,7 +73,7 @@
             <p style="text-align: center; color: #a94442;">Esta ação não poderá ser desfeita.</p>
         </div>
         <div class="modal-footer" style="display:flex;justify-content: center">
-            <button class="button btn btn-warning" data-dismiss="modal" aria-hidden="true"><span class="button__icon"><i class="bx bx-x"></i></span><span class="button__text2">Cancelar</span></button>
+            <button class="button btn btn-warning" data-bs-dismiss="modal" aria-hidden="true"><span class="button__icon"><i class="bx bx-x"></i></span><span class="button__text2">Cancelar</span></button>
             <button class="button btn btn-danger"><span class="button__icon"><i class='bx bx-trash'></i></span> <span class="button__text2">Excluir</span></button>
         </div>
     </form>

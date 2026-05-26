@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Lançamentos DRE
  */
@@ -13,55 +13,55 @@
 </style>
 
 <!-- Header -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <ul class="breadcrumb">
-            <li><a href="<?= site_url('dashboard') ?>">Dashboard</a> <span class="divider">/</span></li>
-            <li><a href="<?= site_url('dre') ?>">DRE Contábil</a> <span class="divider">/</span></li>
+            <li><a href="<?= site_url('dashboard') ?>">Dashboard</a> <span class="dropdown-divider">/</span></li>
+            <li><a href="<?= site_url('dre') ?>">DRE Contábil</a> <span class="dropdown-divider">/</span></li>
             <li class="active">Lançamentos</li>
         </ul>
     </div>
 </div>
 
 <!-- Filtros -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-filter"></i></span>
                 <h5>Filtros</h5>
                 <div class="buttons">
-                    <a href="<?= site_url('dre/lancamento_form') ?>" class="btn btn-success btn-small">
+                    <a href="<?= site_url('dre/lancamento_form') ?>" class="btn btn-success btn-sm">
                         <i class="fas fa-plus"></i> Novo Lançamento
                     </a>
-                    <a href="<?= site_url('dre') ?>" class="btn btn-small">
+                    <a href="<?= site_url('dre') ?>" class="btn btn-sm">
                         <i class="fas fa-arrow-left"></i> Voltar
                     </a>
                 </div>
             </div>
             <div class="widget-content">
                 <form method="get" action="<?= site_url('dre/lancamentos') ?>" class="form-inline">
-                    <div class="row-fluid">
-                        <div class="span2">
+                    <div class="row">
+                        <div class="col-2">
                             <label>Data Início:</label>
-                            <input type="date" name="data_inicio" class="span12" value="<?= $data_inicio ?>" />
+                            <input type="date" name="data_inicio" class="col-12" value="<?= $data_inicio ?>" />
                         </div>
-                        <div class="span2">
+                        <div class="col-2">
                             <label>Data Fim:</label>
-                            <input type="date" name="data_fim" class="span12" value="<?= $data_fim ?>" />
+                            <input type="date" name="data_fim" class="col-12" value="<?= $data_fim ?>" />
                         </div>
-                        <div class="span3">
+                        <div class="col-3">
                             <label>Conta:</label>
-                            <select name="conta_id" class="span12">
+                            <select name="conta_id" class="col-12">
                                 <option value="">Todas as contas</option>
                                 <?php foreach ($contas as $c): ?>
                                 <option value="<?= $c->id ?>"><?= $c->codigo ?> - <?= $c->nome ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
-                        <div class="span2">
+                        <div class="col-2">
                             <label>&nbsp;</label>
-                            <button type="submit" class="btn btn-primary span12">
+                            <button type="submit" class="btn btn-primary col-12">
                                 <i class="fas fa-search"></i> Filtrar
                             </button>
                         </div>
@@ -73,8 +73,8 @@
 </div>
 
 <!-- Lista de Lançamentos -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-book"></i></span>
@@ -85,14 +85,14 @@
                 <div class="alert alert-info" style="margin: 20px;">
                     <i class="fas fa-info-circle"></i> Nenhum lançamento encontrado para o período selecionado.
                     <br><br>
-                    <a href="<?= site_url('dre/lancamento_form') ?>" class="btn btn-small">
+                    <a href="<?= site_url('dre/lancamento_form') ?>" class="btn btn-sm">
                         <i class="fas fa-plus"></i> Adicionar Lançamento
                     </a>
                     ou
                     <form method="post" action="<?= site_url('dre/integrar') ?>" style="display: inline;">
                         <input type="hidden" name="data_inicio" value="<?= $data_inicio ?>" />
                         <input type="hidden" name="data_fim" value="<?= $data_fim ?>" />
-                        <button type="submit" class="btn btn-small btn-inverse">
+                        <button type="submit" class="btn btn-sm btn-inverse">
                             <i class="fas fa-sync"></i> Importar Dados Automáticos
                         </button>
                     </form>
@@ -130,10 +130,10 @@
                                 </span>
                             </td>
                             <td class="text-center">
-                                <a href="<?= site_url('dre/lancamento_form/' . $l->id) ?>" class="btn btn-mini btn-info" title="Editar">
+                                <a href="<?= site_url('dre/lancamento_form/' . $l->id) ?>" class="btn btn-sm btn-info" title="Editar">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <a href="<?= site_url('dre/lancamento_excluir/' . $l->id) ?>" class="btn btn-mini btn-danger" title="Excluir" onclick="return confirm('Tem certeza que deseja excluir este lançamento?')">
+                                <a href="<?= site_url('dre/lancamento_excluir/' . $l->id) ?>" class="btn btn-sm btn-danger" title="Excluir" onclick="return confirm('Tem certeza que deseja excluir este lançamento?')">
                                     <i class="fas fa-trash"></i>
                                 </a>
                             </td>

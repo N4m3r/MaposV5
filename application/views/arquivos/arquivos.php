@@ -1,8 +1,8 @@
-<div class="new122">
+﻿<div class="new122">
     <link rel="stylesheet" href="<?= base_url(); ?>assets/js/jquery-ui/css/smoothness/jquery-ui-1.9.2.custom.css" />
     <script type="text/javascript" src="<?= base_url() ?>assets/js/jquery-ui/js/jquery-ui-1.9.2.custom.js"></script>
 
-    <div class="span12" style="margin-left: 0">
+    <div class="col-12" style="margin-left: 0">
     <div class="widget-title" style="margin: -20px 0 0">
                 <span class="icon">
                     <i class="fas fa-hdd"></i>
@@ -11,21 +11,21 @@
             </div>
         <form method="get" action="<?= current_url(); ?>">
             <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'aArquivo')) : ?>
-                <div class="span3">
-                    <a href="<?= base_url(); ?>index.php/arquivos/adicionar" class="button btn btn-mini btn-success" style="max-width:150px">
+                <div class="col-3">
+                    <a href="<?= base_url(); ?>index.php/arquivos/adicionar" class="button btn btn-sm btn-success" style="max-width:150px">
                         <span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2">Arquivo</span></a>
                 </div>
             <?php endif ?>
 
-            <div class="span5">
-                <input type="text" name="pesquisa" id="pesquisa" placeholder="Digite o nome do documento para pesquisar" class="span12" value="<?= e($this->input->get('pesquisa')) ?>">
+            <div class="col-5">
+                <input type="text" name="pesquisa" id="pesquisa" placeholder="Digite o nome do documento para pesquisar" class="col-12" value="<?= e($this->input->get('pesquisa')) ?>">
             </div>
-            <div class="span3">
-                <input type="text" name="data" id="data" placeholder="Data de" class="span6 datepicker" value="<?= e($this->input->get('data')) ?>">
-                <input type="text" name="data2" id="data2" placeholder="Data até" class="span6 datepicker" value="<?= e($this->input->get('data2')) ?>">
+            <div class="col-3">
+                <input type="text" name="data" id="data" placeholder="Data de" class="col-6 datepicker" value="<?= e($this->input->get('data')) ?>">
+                <input type="text" name="data2" id="data2" placeholder="Data até" class="col-6 datepicker" value="<?= e($this->input->get('data2')) ?>">
             </div>
-            <div class="span1">
-                <button class="button btn btn-mini btn-warning" style="min-width: 30px"><span class="button__icon"><i class='bx bx-search-alt'></i></span></button>
+            <div class="col-1">
+                <button class="button btn btn-sm btn-warning" style="min-width: 30px"><span class="button__icon"><i class='bx bx-search-alt'></i></span></button>
             </div>
         </form>
     </div>
@@ -78,7 +78,7 @@
                                         <?php endif ?>
 
                                         <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dArquivo')) : ?>
-                                            <a href="#modal-excluir" style="margin-right: 1%" role="button" data-toggle="modal" arquivo="<?= $r->idDocumentos ?>" class="btn-nwe4" title="Excluir"><i class="bx bx-trash-alt"></i></a>
+                                            <a href="#modal-excluir" style="margin-right: 1%" role="button" data-bs-toggle="modal" arquivo="<?= $r->idDocumentos ?>" class="btn-nwe4" title="Excluir"><i class="bx bx-trash-alt"></i></a>
                                         </a>
                                     <?php endif ?>
                                 </td>
@@ -92,10 +92,10 @@
 
     <?= $this->pagination->create_links() ?>
 
-    <div id="modal-excluir" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div id="modal-excluir" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <form action="<?= base_url() ?>index.php/arquivos/excluir" method="post">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">×</button>
                 <h5 id="myModalLabel">Excluir Arquivo</h5>
             </div>
             <div class="modal-body">
@@ -103,7 +103,7 @@
                 <h5 style="text-align: center">Deseja realmente excluir este arquivo?</h5>
             </div>
             <div class="modal-footer" style="display:flex;justify-content: center">
-                <button class="button btn btn-warning" data-dismiss="modal" aria-hidden="true">
+                <button class="button btn btn-warning" data-bs-dismiss="modal" aria-hidden="true">
                     <span class="button__icon"><i class="bx bx-x"></i></span><span class="button__text2">Cancelar</span></button>
                 <button class="button btn btn-danger"><span class="button__icon"><i class='bx bx-trash'></i></span> <span class="button__text2">Excluir</span></button>
             </div>

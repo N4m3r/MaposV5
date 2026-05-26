@@ -1,4 +1,4 @@
-<!-- Executar OS - Portal do Técnico -->
+﻿<!-- Executar OS - Portal do Técnico -->
 <style>
 .portal-tecnico-content { margin-top: 0 !important; }
 @media (max-width: 768px) { .portal-tecnico-content { margin-top: 0 !important; } }
@@ -37,7 +37,7 @@
                 <h2><i class='bx bx-play-circle' style="margin-right: 8px;"></i>Executar OS #<?php echo $os->idOs; ?></h2>
                 <p>Execute as atividades desta ordem de serviço</p>
             </div>
-            <a href="<?php echo site_url('tecnicos/minhas_os'); ?>" class="btn btn-mini" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none;">
+            <a href="<?php echo site_url('tecnicos/minhas_os'); ?>" class="btn btn-sm" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none;">
                 <i class="bx bx-arrow-back"></i> Voltar
             </a>
         </div>
@@ -47,8 +47,8 @@
         <div class="tec-card-body">
 
                 <!-- Informações da OS -->
-                <div class="row-fluid">
-                    <div class="span12">
+                <div class="row">
+                    <div class="col-12">
                         <div class="os-details-card">
                             <div class="os-detail-row">
                                 <div class="os-detail-item">
@@ -101,8 +101,8 @@
                 </div>
 
                 <!-- Informações do Cliente -->
-                <div class="row-fluid">
-                    <div class="span12">
+                <div class="row">
+                    <div class="col-12">
                         <div class="client-card">
                             <div class="client-avatar">
                                 <i class="bx bx-user"></i>
@@ -186,7 +186,7 @@
                         <h6><i class="bx bx-pen"></i> Assinatura do Técnico</h6>
                         <canvas id="assinaturaTecnico"></canvas>
                         <div style="margin-top: 10px; text-align: center;">
-                            <button type="button" class="btn btn-mini" onclick="limparAssinaturaTecnico()">
+                            <button type="button" class="btn btn-sm" onclick="limparAssinaturaTecnico()">
                                 <i class="bx bx-trash"></i> Limpar Assinatura
                             </button>
                         </div>
@@ -208,7 +208,7 @@
                         <div class="widget-title">
                             <span class="icon"><i class="bx bx-task"></i></span>
                             <h5>Progresso da Execução</h5>
-                            <span class="label label-success">Em Execução</span>
+                            <span class="badge bg-success">Em Execução</span>
                         </div>
                         <div class="widget-content">
                             <div class="progress">
@@ -454,7 +454,7 @@
                                     <p>Descreva o que foi realizado:</p>
 
                                     <div class="wizard-observacoes">
-                                        <textarea id="wizardObservacoes" rows="6" class="span12"
+                                        <textarea id="wizardObservacoes" rows="6" class="col-12"
                                             placeholder="Descreva:
 - O que foi realizado
 - Problemas encontrados
@@ -514,17 +514,17 @@
                                             </button>
                                         </div>
                                         <div class="assinatura-botoes">
-                                            <button type="button" class="btn btn-mini" onclick="limparAssinaturaCliente()">
+                                            <button type="button" class="btn btn-sm" onclick="limparAssinaturaCliente()">
                                                 <i class="bx bx-trash"></i> Limpar Assinatura
                                             </button>
-                                            <button type="button" class="btn btn-mini btn-info" onclick="toggleFullscreenAssinatura()">
+                                            <button type="button" class="btn btn-sm btn-info" onclick="toggleFullscreenAssinatura()">
                                                 <i class="bx bx-fullscreen"></i> Tela Cheia
                                             </button>
                                         </div>
 
-                                        <div class="control-group" style="margin-top: 15px;">
+                                        <div class="mb-3" style="margin-top: 15px;">
                                             <label>Nome de quem assina:</label>
-                                            <input type="text" id="wizardNomeAssinante" placeholder="Nome completo" class="span12">
+                                            <input type="text" id="wizardNomeAssinante" placeholder="Nome completo" class="col-12">
                                         </div>
 
                                         <label class="checklist-item-label" style="margin-top: 15px;">
@@ -570,7 +570,7 @@
 
             <div class="form-group">
                 <label>Motivo do Impedimento:</label>
-                <select id="impedimentoMotivo" class="span12">
+                <select id="impedimentoMotivo" class="col-12">
                     <option value="">-- Selecione o motivo --</option>
                     <option value="cliente_ausente">Cliente ausente</option>
                     <option value="endereco_errado">Endereço incorreto</option>
@@ -587,12 +587,12 @@
 
             <div class="form-group" id="outroMotivoContainer" style="display: none;">
                 <label>Descreva o motivo:</label>
-                <textarea id="impedimentoOutroMotivo" rows="3" class="span12" placeholder="Descreva detalhadamente o motivo do impedimento..."></textarea>
+                <textarea id="impedimentoOutroMotivo" rows="3" class="col-12" placeholder="Descreva detalhadamente o motivo do impedimento..."></textarea>
             </div>
 
             <div class="form-group">
                 <label>Observações Adicionais:</label>
-                <textarea id="impedimentoObservacoes" rows="2" class="span12" placeholder="Informações complementares sobre o impedimento..."></textarea>
+                <textarea id="impedimentoObservacoes" rows="2" class="col-12" placeholder="Informações complementares sobre o impedimento..."></textarea>
             </div>
 
             <!-- Seleção de Fotos - Galeria ou Câmera -->
@@ -637,7 +637,7 @@
 
             <div class="form-group">
                 <label>Motivo da Não Finalização:</label>
-                <select id="retornoMotivo" class="span12">
+                <select id="retornoMotivo" class="col-12">
                     <option value="">-- Selecione o motivo --</option>
                     <option value="tempo_excedido">Tempo de atendimento excedido</option>
                     <option value="complexidade">Serviço mais complexo que o previsto</option>
@@ -652,12 +652,12 @@
 
             <div class="form-group" id="retornoOutroMotivoContainer" style="display: none;">
                 <label>Descreva o motivo:</label>
-                <textarea id="retornoOutroMotivo" rows="3" class="span12" placeholder="Descreva detalhadamente o motivo..."></textarea>
+                <textarea id="retornoOutroMotivo" rows="3" class="col-12" placeholder="Descreva detalhadamente o motivo..."></textarea>
             </div>
 
             <div class="form-group">
                 <label>Observações sobre o Retorno:</label>
-                <textarea id="retornoObservacoes" rows="3" class="span12" placeholder="Descreva o que foi feito hoje, o que falta fazer, e o que será feito no retorno..."></textarea>
+                <textarea id="retornoObservacoes" rows="3" class="col-12" placeholder="Descreva o que foi feito hoje, o que falta fazer, e o que será feito no retorno..."></textarea>
             </div>
 
             <!-- Seleção de Fotos -->
@@ -2997,7 +2997,7 @@ let fotoServicoBase64 = null;
 let abaAtiva = 'camera';
 
 // Evento para mudança de aba
-jQuery(document).on('shown', '#fotoTabs a[data-toggle="tab"]', function (e) {
+jQuery(document).on('shown', '#fotoTabs a[data-bs-toggle="tab"]', function (e) {
     const target = jQuery(e.target).attr('href');
     if (target === '#tabUpload') {
         abaAtiva = 'upload';
@@ -3543,8 +3543,8 @@ async function salvarChecklistItem(itemId, status) {
 
             const botoes = item.querySelectorAll('.checklist-actions .btn');
             if (botoes.length >= 2) {
-                botoes[0].className = 'btn btn-mini ' + (status === 'conforme' ? 'btn-success' : '');
-                botoes[1].className = 'btn btn-mini ' + (status === 'nao_conforme' ? 'btn-danger' : '');
+                botoes[0].className = 'btn btn-sm ' + (status === 'conforme' ? 'btn-success' : '');
+                botoes[1].className = 'btn btn-sm ' + (status === 'nao_conforme' ? 'btn-danger' : '');
             }
 
             atualizarProgresso();

@@ -1,4 +1,4 @@
-<?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
+﻿<?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
 
 <style>
 .atividade-exec-container { padding: 20px; max-width: 900px; margin: 0 auto; }
@@ -579,16 +579,16 @@
         </form>
 
         <!-- Finalizar -->
-        <a href="#modalFinalizar" class="exec-btn exec-btn-primary" data-toggle="modal">
+        <a href="#modalFinalizar" class="exec-btn exec-btn-primary" data-bs-toggle="modal">
             <i class="icon-check"></i>
             <span>Finalizar</span>
         </a>
     </div>
 
     <!-- Modal Finalizar -->
-    <div id="modalFinalizar" class="modal hide fade" tabindex="-1" role="dialog">
+    <div id="modalFinalizar" class="modal fade" tabindex="-1" role="dialog">
         <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
             <h3>Finalizar Atividade</h3>
         </div>
 
@@ -614,7 +614,7 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn" data-bs-dismiss="modal">Cancelar</button>
                 <button type="submit" class="btn btn-success">Finalizar Atividade</button>
             </div>
         </form>

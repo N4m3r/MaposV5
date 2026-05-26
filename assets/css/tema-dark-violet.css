@@ -1,14 +1,14 @@
-/* ======================================*/
+﻿/* ======================================*/
 /*  Thomas Lage - lage.thomas@gmail.com  */
 /*=======================================*/
 /* ===========================> FOCUS <=========================== */
 input[type="search"],
 select,
 input[type="text"],
-.row-fluid input[class*="span"],
+.row input[class*="span"],
 input[type="number"],
 select[class*="span"],
-.row-fluid select[class*="span"] {
+.row select[class*="span"] {
   background  : var(--dark-violet-cont);
   border-color: var(--dark-viol);
   color: var(--branco);
@@ -678,7 +678,7 @@ textarea, .uneditable-input {
         padding-left: 8px;
     }
 
-    .row-fluid .Sspan12 {
+    .row .Sspan12 {
         margin-top: 2px;
     }
 

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-br">
 
 <head>
@@ -8,13 +8,11 @@
     <meta name="description" content="<?php echo $this->config->item('app_name') . ' - ' . $this->config->item('app_subname') ?>">
     <meta name="csrf-token-name" content="<?= config_item("csrf_token_name") ?>">
     <meta name="csrf-cookie-name" content="<?= config_item("csrf_cookie_name") ?>">
-    <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/bootstrap-responsive.min.css" />
+    <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/bootstrap5.min.css" />
     <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/matrix-style.css" />
     <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/matrix-media.css" />
     <link href="<?php echo base_url(); ?>assets/font-awesome/css/font-awesome.css" rel="stylesheet" />
     <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/fullcalendar.css" />
-    <link href="<?php echo base_url(); ?>assets/css/bootstrap-responsive.min.css" rel="stylesheet">
     <script type="text/javascript" src="<?php echo base_url(); ?>assets/js/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <!-- TODO: Remove legacy SweetAlert v1 (sweetalert.min.js) after migrating all usages to SweetAlert2 -->
 <script type="text/javascript" src="<?= base_url(); ?>assets/js/sweetalert.min.js"></script>
@@ -57,11 +55,11 @@ $podeEditarPerfil = clienteHasPermission('editar_perfil');
                 $linkSair = ($tipoAcesso == 'usuario_cliente') ? 'mine/sair_usuario' : 'mine/sair';
                 ?>
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class='bx bx-user-circle iconN1'></i> <?= htmlspecialchars($nomeUsuario) ?> </a>
+                    <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown"><i class='bx bx-user-circle iconN1'></i> <?= htmlspecialchars($nomeUsuario) ?> </a>
                     <ul class="dropdown-menu">
                         <?php if ($podeEditarPerfil): ?>
                         <li class=""><a title="Meu Perfil" href="<?php echo base_url() ?>index.php/mine/conta"><i class="fas fa-user"></i> <span class="text">Meu Perfil</span></a></li>
-                        <li class="divider"></li>
+                        <li class="dropdown-divider"></li>
                         <?php endif; ?>
                         <li class=""><a title="Sair" href="<?php echo base_url() ?>index.php/<?= $linkSair ?>"><i class="fas fa-sign-out-alt"></i> <span class="text">Sair</span></a></li>
                     </ul>
@@ -79,7 +77,7 @@ $podeEditarPerfil = clienteHasPermission('editar_perfil');
                 <img src="<?= base_url() ?>assets/img/logo-mapos-branco.png">
             </div>
         </div>
-        <a href="#" class="visible-phone">
+        <a href="#" class="d-inline d-sm-none">
             <div class="mode">
                 <div class="moon-menu">
                     <i class='bx bx-chevron-right iconX open-2'></i>
@@ -133,9 +131,9 @@ $podeEditarPerfil = clienteHasPermission('editar_perfil');
         </div>
 
         <div class="container-fluid">
-            <div class="row-fluid">
+            <div class="row">
 
-                <div class="span12">
+                <div class="col-12">
                     <?php if ($var = $this->session->flashdata('success')) : ?><script>
                             swal("Sucesso!", <?php echo json_encode(strip_tags($var)); ?>, "success");
                         </script><?php endif; ?>
@@ -154,8 +152,8 @@ $podeEditarPerfil = clienteHasPermission('editar_perfil');
         </div>
     </div>
     <!--Footer-part-->
-    <div class="row-fluid">
-        <div id="footer" class="span12">
+    <div class="row">
+        <div id="footer" class="col-12">
             <?= date('Y') ?> &copy;
             <?php echo $this->config->item('app_name'); ?> - Versão:
             <?php echo $this->config->item('app_version'); ?>
@@ -165,7 +163,7 @@ $podeEditarPerfil = clienteHasPermission('editar_perfil');
     <!-- javascript
 ================================================== -->
 
-    <script src="<?= base_url(); ?>assets/js/bootstrap.min.js"></script>
+    <script src="<?= base_url(); ?>assets/js/bootstrap5.bundle.min.js"></script>
     <script src="<?= base_url(); ?>assets/js/matrix.js"></script>
 
     <style>

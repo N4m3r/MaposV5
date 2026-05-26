@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Dashboard de Performance dos Técnicos
  * Relatório completo com gráficos e métricas
@@ -94,42 +94,42 @@ $kpi = $results['kpi_geral'];
 </style>
 
 <!-- Header -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <ul class="breadcrumb">
-            <li><a href="<?= site_url('dashboard') ?>">Dashboard</a> <span class="divider">/</span></li>
+            <li><a href="<?= site_url('dashboard') ?>">Dashboard</a> <span class="dropdown-divider">/</span></li>
             <li class="active">Relatório de Performance dos Técnicos</li>
         </ul>
     </div>
 </div>
 
 <!-- Título e Filtros -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-chart-line"></i></span>
                 <h5>Performance dos Técnicos</h5>
                 <div class="buttons">
-                    <a href="<?= site_url('relatoriotecnicos/exportar?data_inicio=' . $data_inicio . '&data_fim=' . $data_fim) ?>" class="btn btn-success btn-small">
+                    <a href="<?= site_url('relatoriotecnicos/exportar?data_inicio=' . $data_inicio . '&data_fim=' . $data_fim) ?>" class="btn btn-success btn-sm">
                         <i class="fas fa-download"></i> Exportar CSV
                     </a>
                 </div>
             </div>
             <div class="widget-content">
                 <form method="get" action="<?= site_url('relatoriotecnicos') ?>" class="form-inline">
-                    <div class="row-fluid">
-                        <div class="span2">
+                    <div class="row">
+                        <div class="col-2">
                             <label>Data Início:</label>
-                            <input type="date" name="data_inicio" class="span12" value="<?= $data_inicio ?>" />
+                            <input type="date" name="data_inicio" class="col-12" value="<?= $data_inicio ?>" />
                         </div>
-                        <div class="span2">
+                        <div class="col-2">
                             <label>Data Fim:</label>
-                            <input type="date" name="data_fim" class="span12" value="<?= $data_fim ?>" />
+                            <input type="date" name="data_fim" class="col-12" value="<?= $data_fim ?>" />
                         </div>
-                        <div class="span3">
+                        <div class="col-3">
                             <label>Técnico:</label>
-                            <select name="tecnico_id" class="span12">
+                            <select name="tecnico_id" class="col-12">
                                 <option value="">Todos os Técnicos</option>
                                 <?php foreach ($results['tecnicos'] as $tecnico): ?>
                                     <option value="<?= $tecnico->idUsuarios ?>" <?= ($tecnico_id == $tecnico->idUsuarios) ? 'selected' : '' ?>>
@@ -138,18 +138,18 @@ $kpi = $results['kpi_geral'];
                                 <?php endforeach; ?>
                             </select>
                         </div>
-                        <div class="span2">
+                        <div class="col-2">
                             <label>&nbsp;</label>
-                            <button type="submit" class="btn btn-primary span12">
+                            <button type="submit" class="btn btn-primary col-12">
                                 <i class="fas fa-search"></i> Filtrar
                             </button>
                         </div>
-                        <div class="span3">
+                        <div class="col-3">
                             <label>&nbsp;</label>
-                            <div class="btn-group span12">
-                                <a href="?data_inicio=<?= date('Y-m-d') ?>&data_fim=<?= date('Y-m-d') ?>" class="btn btn-small">Hoje</a>
-                                <a href="?data_inicio=<?= date('Y-m-01') ?>&data_fim=<?= date('Y-m-d') ?>" class="btn btn-small">Mês</a>
-                                <a href="?data_inicio=<?= date('Y-m-01', strtotime('-1 month')) ?>&data_fim=<?= date('Y-m-t', strtotime('-1 month')) ?>" class="btn btn-small">Mês Ant.</a>
+                            <div class="btn-group col-12">
+                                <a href="?data_inicio=<?= date('Y-m-d') ?>&data_fim=<?= date('Y-m-d') ?>" class="btn btn-sm">Hoje</a>
+                                <a href="?data_inicio=<?= date('Y-m-01') ?>&data_fim=<?= date('Y-m-d') ?>" class="btn btn-sm">Mês</a>
+                                <a href="?data_inicio=<?= date('Y-m-01', strtotime('-1 month')) ?>&data_fim=<?= date('Y-m-t', strtotime('-1 month')) ?>" class="btn btn-sm">Mês Ant.</a>
                             </div>
                         </div>
                     </div>
@@ -160,14 +160,14 @@ $kpi = $results['kpi_geral'];
 </div>
 
 <!-- KPIs Gerais -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <h5><i class="fas fa-tachometer-alt"></i> Indicadores Gerais</h5>
     </div>
 </div>
 
-<div class="row-fluid">
-    <div class="span2">
+<div class="row">
+    <div class="col-2">
         <div class="widget-box">
             <div class="kpi-card">
                 <div class="kpi-value"><?= $kpi['total_os'] ?></div>
@@ -175,7 +175,7 @@ $kpi = $results['kpi_geral'];
             </div>
         </div>
     </div>
-    <div class="span2">
+    <div class="col-2">
         <div class="widget-box">
             <div class="kpi-card">
                 <div class="kpi-value" style="color: #27ae60;"><?= $kpi['os_finalizadas'] ?></div>
@@ -183,7 +183,7 @@ $kpi = $results['kpi_geral'];
             </div>
         </div>
     </div>
-    <div class="span2">
+    <div class="col-2">
         <div class="widget-box">
             <div class="kpi-card">
                 <div class="kpi-value" style="color: #3498db;"><?= $kpi['taxa_conclusao'] ?>%</div>
@@ -191,7 +191,7 @@ $kpi = $results['kpi_geral'];
             </div>
         </div>
     </div>
-    <div class="span2">
+    <div class="col-2">
         <div class="widget-box">
             <div class="kpi-card">
                 <div class="kpi-value"><?= $kpi['total_tecnicos'] ?></div>
@@ -199,7 +199,7 @@ $kpi = $results['kpi_geral'];
             </div>
         </div>
     </div>
-    <div class="span2">
+    <div class="col-2">
         <div class="widget-box">
             <div class="kpi-card">
                 <div class="kpi-value" style="color: #9b59b6;"><?= $kpi['media_os_tecnico'] ?></div>
@@ -207,7 +207,7 @@ $kpi = $results['kpi_geral'];
             </div>
         </div>
     </div>
-    <div class="span2">
+    <div class="col-2">
         <div class="widget-box">
             <div class="kpi-card">
                 <div class="kpi-value" style="color: #e67e22;"><?= count($results['ranking']) ?></div>
@@ -218,9 +218,9 @@ $kpi = $results['kpi_geral'];
 </div>
 
 <!-- Gráficos Principais -->
-<div class="row-fluid">
+<div class="row">
     <!-- OS por Técnico -->
-    <div class="span6">
+    <div class="col-6">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-chart-bar"></i></span>
@@ -235,7 +235,7 @@ $kpi = $results['kpi_geral'];
     </div>
 
     <!-- Horas Trabalhadas -->
-    <div class="span6">
+    <div class="col-6">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-clock"></i></span>
@@ -251,9 +251,9 @@ $kpi = $results['kpi_geral'];
 </div>
 
 <!-- Ranking e Eficiência -->
-<div class="row-fluid">
+<div class="row">
     <!-- Ranking -->
-    <div class="span4">
+    <div class="col-4">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-trophy"></i></span>
@@ -280,7 +280,7 @@ $kpi = $results['kpi_geral'];
     </div>
 
     <!-- Gráfico de Eficiência -->
-    <div class="span4">
+    <div class="col-4">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-percentage"></i></span>
@@ -295,7 +295,7 @@ $kpi = $results['kpi_geral'];
     </div>
 
     <!-- Projeções -->
-    <div class="span4">
+    <div class="col-4">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-chart-line"></i></span>
@@ -336,15 +336,15 @@ $kpi = $results['kpi_geral'];
 </div>
 
 <!-- Tabela de Performance Detalhada -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-table"></i></span>
                 <h5>Performance Detalhada por Técnico</h5>
             </div>
             <div class="widget-content nopadding">
-                <table class="table table-bordered table-hover table-condensed">
+                <table class="table table-bordered table-hover table-sm">
                     <thead>
                         <tr>
                             <th>Técnico</th>
@@ -368,7 +368,7 @@ $kpi = $results['kpi_geral'];
                                 </td>
                                 <td class="text-center"><?= $t->total_os ?></td>
                                 <td class="text-center">
-                                    <span class="label label-success"><?= $t->os_finalizadas ?></span>
+                                    <span class="badge bg-success"><?= $t->os_finalizadas ?></span>
                                 </td>
                                 <td class="text-center"><?= $t->horas_trabalhadas ?>h</td>
                                 <td class="text-center"><?= $t->media_horas_os ?>h</td>
@@ -384,7 +384,7 @@ $kpi = $results['kpi_geral'];
                                 </td>
                                 <td class="text-center">R$ <?= number_format($t->ticket_medio, 2, ',', '.') ?></td>
                                 <td class="text-center">
-                                    <a href="<?= site_url('relatoriotecnicos/detalhe/' . $t->idUsuarios . '?data_inicio=' . $data_inicio . '&data_fim=' . $data_fim) ?>" class="btn btn-mini btn-info" title="Ver Detalhes">
+                                    <a href="<?= site_url('relatoriotecnicos/detalhe/' . $t->idUsuarios . '?data_inicio=' . $data_inicio . '&data_fim=' . $data_fim) ?>" class="btn btn-sm btn-info" title="Ver Detalhes">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                 </td>
@@ -398,8 +398,8 @@ $kpi = $results['kpi_geral'];
 </div>
 
 <!-- Gráfico Comparativo Mensal -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-chart-area"></i></span>

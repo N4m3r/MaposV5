@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Relatório de NFS-e e Boletos
  * Filtros e listagem completa
@@ -7,14 +7,14 @@
 
 <link href="<?= base_url('assets/css/custom.css'); ?>" rel="stylesheet">
 
-<div class="row-fluid" style="margin-top: 0">
-    <div class="span12">
+<div class="row" style="margin-top: 0">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="bx bx-chart"></i></span>
                 <h5>Relatório de NFS-e e Boletos</h5>
                 <div class="buttons">
-                    <a href="<?= site_url('nfse_os') ?>" class="button btn btn-mini btn-info">
+                    <a href="<?= site_url('nfse_os') ?>" class="button btn btn-sm btn-info">
                         <span class="button__icon"><i class="bx bx-dashboard"></i></span>
                         <span class="button__text">Dashboard</span>
                     </a>
@@ -24,17 +24,17 @@
             <div class="widget-content">
 
                 <!-- Filtros -->
-                <div class="row-fluid" style="margin-bottom: 20px;">
-                    <div class="span12">
+                <div class="row" style="margin-bottom: 20px;">
+                    <div class="col-12">
                         <form method="get" action="<?= site_url('nfse_os/relatorio') ?>" class="form-inline">
-                            <div class="span3">
+                            <div class="col-3">
                                 <label>Período:</label>
                                 <input type="date" name="data_inicio" value="<?= $filtros['data_inicio'] ?>" class="input-small" style="width: 42%;">
                                 <span> até </span>
                                 <input type="date" name="data_fim" value="<?= $filtros['data_fim'] ?>" class="input-small" style="width: 42%;">
                             </div>
 
-                            <div class="span2">
+                            <div class="col-2">
                                 <label>Status NFSe:</label>
                                 <select name="status_nfse" class="input-medium">
                                     <option value="">Todos</option>
@@ -44,7 +44,7 @@
                                 </select>
                             </div>
 
-                            <div class="span2">
+                            <div class="col-2">
                                 <label>Status Boleto:</label>
                                 <select name="status_boleto" class="input-medium">
                                     <option value="">Todos</option>
@@ -56,7 +56,7 @@
                                 </select>
                             </div>
 
-                            <div class="span3">
+                            <div class="col-3">
                                 <button type="submit" class="btn btn-primary" style="margin-top: 24px;">
                                     <i class="bx bx-search"></i> Filtrar
                                 </button>
@@ -70,8 +70,8 @@
                 </div>
 
                 <!-- Resumo Estatístico -->
-                <div class="row-fluid" style="margin-bottom: 20px;">
-                    <div class="span3">
+                <div class="row" style="margin-bottom: 20px;">
+                    <div class="col-3">
                         <div class="alert alert-success" style="margin: 0;">
                             <strong>Total NFSe Emitida</strong>
                             <br>
@@ -79,7 +79,7 @@
                         </div>
                     </div>
 
-                    <div class="span3">
+                    <div class="col-3">
                         <div class="alert alert-info" style="margin: 0;">
                             <strong>Total Boleto Pago</strong>
                             <br>
@@ -87,7 +87,7 @@
                         </div>
                     </div>
 
-                    <div class="span3">
+                    <div class="col-3">
                         <div class="alert alert-warning" style="margin: 0;">
                             <strong>Boletos Vencidos</strong>
                             <br>
@@ -95,7 +95,7 @@
                         </div>
                     </div>
 
-                    <div class="span3">
+                    <div class="col-3">
                         <div class="alert alert-danger" style="margin: 0;">
                             <strong>Valor Vencido</strong>
                             <br>
@@ -107,8 +107,8 @@
                 </div>
 
                 <!-- Tabela de NFS-e -->
-                <div class="row-fluid" style="margin-bottom: 20px;">
-                    <div class="span12">
+                <div class="row" style="margin-bottom: 20px;">
+                    <div class="col-12">
                         <div class="widget-box">
                             <div class="widget-title">
                                 <span class="icon"><i class="bx bx-file"></i></span>
@@ -171,13 +171,13 @@
                                                 $label_class = 'label';
                                                 switch ($nfse->situacao) {
                                                     case 'Emitida':
-                                                        $label_class .= ' label-success';
+                                                        $label_class .= ' badge bg-success';
                                                         break;
                                                     case 'Pendente':
-                                                        $label_class .= ' label-warning';
+                                                        $label_class .= ' badge bg-warning';
                                                         break;
                                                     case 'Cancelada':
-                                                        $label_class .= ' label-important';
+                                                        $label_class .= ' badge bg-danger';
                                                         break;
                                                 }
                                                 ?>
@@ -185,18 +185,18 @@
                                             </td>
 
                                             <td class="text-center">
-                                                <a href="<?= site_url('os/visualizar/' . $nfse->os_id) ?>" class="btn btn-mini btn-info" title="Ver OS">
+                                                <a href="<?= site_url('os/visualizar/' . $nfse->os_id) ?>" class="btn btn-sm btn-info" title="Ver OS">
                                                     <i class="bx bx-show"></i>
                                                 </a>
 
                                                 <?php if ($nfse->xml_path) { ?>
-                                                <a href="<?= base_url(htmlspecialchars($nfse->xml_path, ENT_QUOTES, 'UTF-8')) ?>" target="_blank" class="btn btn-mini btn-success" title="XML">
+                                                <a href="<?= base_url(htmlspecialchars($nfse->xml_path, ENT_QUOTES, 'UTF-8')) ?>" target="_blank" class="btn btn-sm btn-success" title="XML">
                                                     <i class="bx bx-code"></i>
                                                 </a>
                                                 <?php } ?>
 
                                                 <?php if ($nfse->link_impressao) { ?>
-                                                <a href="<?= htmlspecialchars($nfse->link_impressao, ENT_QUOTES, 'UTF-8') ?>" target="_blank" class="btn btn-mini btn-inverse" title="Imprimir">
+                                                <a href="<?= htmlspecialchars($nfse->link_impressao, ENT_QUOTES, 'UTF-8') ?>" target="_blank" class="btn btn-sm btn-inverse" title="Imprimir">
                                                     <i class="bx bx-printer"></i>
                                                 </a>
                                                 <?php } ?>
@@ -212,8 +212,8 @@
                 </div>
 
                 <!-- Tabela de Boletos -->
-                <div class="row-fluid">
-                    <div class="span12">
+                <div class="row">
+                    <div class="col-12">
                         <div class="widget-box">
                             <div class="widget-title">
                                 <span class="icon"><i class="bx bx-barcode"></i></span>
@@ -284,16 +284,16 @@
                                                 $label_class = 'label';
                                                 switch ($boleto->status) {
                                                     case 'Pago':
-                                                        $label_class .= ' label-success';
+                                                        $label_class .= ' badge bg-success';
                                                         break;
                                                     case 'Emitido':
-                                                        $label_class .= ' label-info';
+                                                        $label_class .= ' badge bg-info';
                                                         break;
                                                     case 'Pendente':
-                                                        $label_class .= ' label-warning';
+                                                        $label_class .= ' badge bg-warning';
                                                         break;
                                                     case 'Vencido':
-                                                        $label_class .= ' label-important';
+                                                        $label_class .= ' badge bg-danger';
                                                         break;
                                                     case 'Cancelado':
                                                         $label_class .= '';
@@ -304,18 +304,18 @@
                                             </td>
 
                                             <td class="text-center">
-                                                <a href="<?= site_url('os/visualizar/' . $boleto->os_id) ?>" class="btn btn-mini btn-info" title="Ver OS">
+                                                <a href="<?= site_url('os/visualizar/' . $boleto->os_id) ?>" class="btn btn-sm btn-info" title="Ver OS">
                                                     <i class="bx bx-show"></i>
                                                 </a>
 
                                                 <?php if ($boleto->linha_digitavel) { ?>
-                                                <button class="btn btn-mini btn-primary" onclick="copiar('<?= $boleto->linha_digitavel ?>')" title="Copiar Linha Digitável">
+                                                <button class="btn btn-sm btn-primary" onclick="copiar('<?= $boleto->linha_digitavel ?>')" title="Copiar Linha Digitável">
                                                     <i class="bx bx-copy"></i>
                                                 </button>
                                                 <?php } ?>
 
                                                 <?php if ($boleto->pdf_path) { ?>
-                                                <a href="<?= base_url($boleto->pdf_path) ?>" target="_blank" class="btn btn-mini btn-inverse" title="PDF">
+                                                <a href="<?= base_url($boleto->pdf_path) ?>" target="_blank" class="btn btn-sm btn-inverse" title="PDF">
                                                     <i class="bx bx-file"></i>
                                                 </a>
                                                 <?php } ?>

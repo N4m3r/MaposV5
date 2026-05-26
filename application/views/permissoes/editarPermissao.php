@@ -1,4 +1,4 @@
-
+﻿
 <style>
     .widget-title h5 {
         font-weight : 500;
@@ -82,9 +82,9 @@
 </style>
 
 <?php $permissoes = json_decode($result->permissoes, true);?>
-<div class="span12" style="margin-left: 0">
+<div class="col-12" style="margin-left: 0">
     <form action="<?php echo base_url();?>index.php/permissoes/editar" id="formPermissao" method="post">
-        <div class="span12" style="margin-left: 0">
+        <div class="col-12" style="margin-left: 0">
             <div class="widget-box">
                 <div class="widget-title">
                <span class="icon">
@@ -93,14 +93,14 @@
                     <h5 style="padding:12px;padding-left:18px!important;margin:-10px 0 0!important;font-size:1.7em;">Editar Permissão</h5>
                 </div>
                 <div class="widget-content">
-                    <div class="span4">
+                    <div class="col-4">
                         <label>Nome da Permissão</label>
-                        <input name="nome" type="text" id="nome" class="span12" value="<?php echo e($result->nome); ?>" />
+                        <input name="nome" type="text" id="nome" class="col-12" value="<?php echo e($result->nome); ?>" />
                         <input type="hidden" name="idPermissao" value="<?php echo e($result->idPermissao); ?>">
                     </div>
-                    <div class="span3">
+                    <div class="col-3">
                         <label>Situação</label>
-                        <select name="situacao" id="situacao" class="span12">
+                        <select name="situacao" id="situacao" class="col-12">
                             <?php if ($result->situacao == 1) {
                                 $sim = 'selected';
                                 $nao ='';
@@ -112,15 +112,15 @@
                             <option value="0" <?php echo $nao;?>>Inativo</option>
                         </select>
                     </div>
-                    <div class="span4">
+                    <div class="col-4">
                         <label>
                             <input name="" type="checkbox" value="1" id="marcarTodos" />
                             <span class="lbl"> Marcar Todos</span>
                         </label>
                     </div>
 
-                    <div class="control-group">
-                        <label for="documento" class="control-label"></label>
+                    <div class="mb-3">
+                        <label for="documento" class="form-label"></label>
                         <div class="controls">
 
                     <div class="widget-content" style="padding: 5px 0 !important">
@@ -130,7 +130,7 @@
                 <div class="accordion-group widget-box">
                     <div class="accordion-heading">
                         <div class="widget-title">
-                            <a data-parent="#collapse-group" href="#collapseGOne" data-toggle="collapse">
+                            <a data-parent="#collapse-group" href="#collapseGOne" data-bs-toggle="collapse">
                                 <span><i class='bx bx-group icon-cli' ></i></span>
                                 <h5 style="padding-left: 28px">Clientes</h5>
                                 <span><i class='bx bx-chevron-right icon-clic'></i></span>
@@ -178,7 +178,7 @@
                 <div class="accordion-group widget-box">
                     <div class="accordion-heading">
                         <div class="widget-title">
-                            <a data-parent="#collapse-group" href="#collapseGTwo" data-toggle="collapse">
+                            <a data-parent="#collapse-group" href="#collapseGTwo" data-bs-toggle="collapse">
                                 <span><i class='bx bx-package icon-cli'></i></span>
                                 <h5 style="padding-left: 28px">Produtos</h5>
                                 <span><i class='bx bx-chevron-right icon-clic'></i></span>
@@ -226,7 +226,7 @@
                 <div class="accordion-group widget-box">
                     <div class="accordion-heading">
                         <div class="widget-title">
-                            <a data-parent="#collapse-group" href="#collapseGThree" data-toggle="collapse">
+                            <a data-parent="#collapse-group" href="#collapseGThree" data-bs-toggle="collapse">
                                 <span><i class='bx bx-stopwatch icon-cli' ></i></span>
                                 <h5 style="padding-left: 28px">Serviços</h5>
                                 <span><i class='bx bx-chevron-right icon-clic'></i></span>
@@ -274,7 +274,7 @@
                 <div class="accordion-group widget-box">
                     <div class="accordion-heading">
                         <div class="widget-title">
-                            <a data-parent="#collapse-group" href="#collapseGFour" data-toggle="collapse">
+                            <a data-parent="#collapse-group" href="#collapseGFour" data-bs-toggle="collapse">
                                 <span><i class='bx bx-spreadsheet icon-cli' ></i></span>
                                 <h5 style="padding-left: 28px">Ordens de Serviço</h5>
                                 <span><i class='bx bx-chevron-right icon-clic'></i></span>
@@ -330,7 +330,7 @@
                 <div class="accordion-group widget-box">
                     <div class="accordion-heading">
                         <div class="widget-title">
-                            <a data-parent="#collapse-group" href="#collapseGObras" data-toggle="collapse">
+                            <a data-parent="#collapse-group" href="#collapseGObras" data-bs-toggle="collapse">
                                 <span><i class='bx bx-building-house icon-cli' ></i></span>
                                 <h5 style="padding-left: 28px">Obras e Projetos</h5>
                                 <span><i class='bx bx-chevron-right icon-clic'></i></span>
@@ -428,7 +428,7 @@
                 <div class="accordion-group widget-box">
                     <div class="accordion-heading">
                         <div class="widget-title">
-                            <a data-parent="#collapse-group" href="#collapseGTecnico" data-toggle="collapse">
+                            <a data-parent="#collapse-group" href="#collapseGTecnico" data-bs-toggle="collapse">
                                 <span><i class='bx bx-user-check icon-cli' ></i></span>
                                 <h5 style="padding-left: 28px">Permissões de Técnico (OS)</h5>
                                 <span><i class='bx bx-chevron-right icon-clic'></i></span>
@@ -502,7 +502,7 @@
                 <div class="accordion-group widget-box">
                     <div class="accordion-heading">
                         <div class="widget-title">
-                            <a data-parent="#collapse-group" href="#collapseGFive" data-toggle="collapse">
+                            <a data-parent="#collapse-group" href="#collapseGFive" data-bs-toggle="collapse">
                                 <span><i class='bx bx-cart-alt icon-cli' ></i></span>
                                 <h5 style="padding-left: 28px">Vendas</h5>
                                 <span><i class='bx bx-chevron-right icon-clic'></i></span>
@@ -550,7 +550,7 @@
                 <div class="accordion-group widget-box">
                     <div class="accordion-heading">
                         <div class="widget-title">
-                            <a data-parent="#collapse-group" href="#collapseGSix" data-toggle="collapse">
+                            <a data-parent="#collapse-group" href="#collapseGSix" data-bs-toggle="collapse">
                                 <span><i class='bx bx-credit-card-front icon-cli' ></i></span>
                                 <h5 style="padding-left: 28px">Cobranças</h5>
                                 <span><i class='bx bx-chevron-right icon-clic'></i></span>
@@ -598,7 +598,7 @@
                 <div class="accordion-group widget-box">
                     <div class="accordion-heading">
                         <div class="widget-title">
-                            <a data-parent="#collapse-group" href="#collapseGSeven" data-toggle="collapse">
+                            <a data-parent="#collapse-group" href="#collapseGSeven" data-bs-toggle="collapse">
                                 <span><i class='bx bx-receipt icon-cli' ></i></span>
                                 <h5 style="padding-left: 28px">Garantias</h5>
                                 <span><i class='bx bx-chevron-right icon-clic'></i></span>
@@ -646,7 +646,7 @@
                 <div class="accordion-group widget-box">
                     <div class="accordion-heading">
                         <div class="widget-title">
-                            <a data-parent="#collapse-group" href="#collapseGEight" data-toggle="collapse">
+                            <a data-parent="#collapse-group" href="#collapseGEight" data-bs-toggle="collapse">
                                 <span><i class='bx bx-box icon-cli' ></i></span>
                                 <h5 style="padding-left: 28px">Arquivos</h5>
                                 <span><i class='bx bx-chevron-right icon-clic'></i></span>
@@ -694,7 +694,7 @@
                 <div class="accordion-group widget-box">
                     <div class="accordion-heading">
                         <div class="widget-title">
-                            <a data-parent="#collapse-group" href="#collapseGPagamento" data-toggle="collapse">
+                            <a data-parent="#collapse-group" href="#collapseGPagamento" data-bs-toggle="collapse">
                                 <span><i class='bx bx-money icon-cli' ></i></span>
                                 <h5 style="padding-left: 28px">Pagamentos</h5>
                                 <span><i class='bx bx-chevron-right icon-clic'></i></span>
@@ -742,7 +742,7 @@
                 <div class="accordion-group widget-box">
                     <div class="accordion-heading">
                         <div class="widget-title">
-                            <a data-parent="#collapse-group" href="#collapseGNine" data-toggle="collapse">
+                            <a data-parent="#collapse-group" href="#collapseGNine" data-bs-toggle="collapse">
                                 <span><i class='bx bx-bar-chart-square icon-cli' ></i></span>
                                 <h5 style="padding-left: 28px">Financeiro</h5>
                                 <span><i class='bx bx-chevron-right icon-clic'></i></span>
@@ -790,7 +790,7 @@
                 <div class="accordion-group widget-box">
                     <div class="accordion-heading">
                         <div class="widget-title">
-                            <a data-parent="#collapse-group" href="#collapseGTen" data-toggle="collapse">
+                            <a data-parent="#collapse-group" href="#collapseGTen" data-bs-toggle="collapse">
                                 <span><i class='bx bx-chart icon-cli' ></i></span>
                                 <h5 style="padding-left: 28px">Relatórios</h5>
                                 <span><i class='bx bx-chevron-right icon-clic'></i></span>
@@ -859,7 +859,7 @@
                 <div class="accordion-group widget-box">
                     <div class="accordion-heading">
                         <div class="widget-title">
-                            <a data-parent="#collapse-group" href="#collapseGDashboard" data-toggle="collapse">
+                            <a data-parent="#collapse-group" href="#collapseGDashboard" data-bs-toggle="collapse">
                                 <span><i class='bx bx-dashboard icon-cli' ></i></span>
                                 <h5 style="padding-left: 28px">Dashboard e Relatórios Avançados</h5>
                                 <span><i class='bx bx-chevron-right icon-clic'></i></span>
@@ -902,7 +902,7 @@
                 <div class="accordion-group widget-box">
                     <div class="accordion-heading">
                         <div class="widget-title">
-                            <a data-parent="#collapse-group" href="#collapseGEleven" data-toggle="collapse">
+                            <a data-parent="#collapse-group" href="#collapseGEleven" data-bs-toggle="collapse">
                                 <span><i class='bx bx-cog icon-cli' ></i></span>
                                 <h5 style="padding-left: 28px">Configurações e Sistema</h5>
                                 <span><i class='bx bx-chevron-right icon-clic'></i></span>
@@ -965,7 +965,7 @@
                 <div class="accordion-group widget-box">
                     <div class="accordion-heading">
                         <div class="widget-title">
-                            <a data-parent="#collapse-group" href="#collapseGBackup" data-toggle="collapse">
+                            <a data-parent="#collapse-group" href="#collapseGBackup" data-bs-toggle="collapse">
                                 <span><i class='bx bx-data icon-cli' ></i></span>
                                 <h5 style="padding-left: 28px">Backup</h5>
                                 <span><i class='bx bx-chevron-right icon-clic'></i></span>
@@ -998,7 +998,7 @@
                 <div class="accordion-group widget-box">
                     <div class="accordion-heading">
                         <div class="widget-title">
-                            <a data-parent="#collapse-group" href="#collapseGClientePortal" data-toggle="collapse">
+                            <a data-parent="#collapse-group" href="#collapseGClientePortal" data-bs-toggle="collapse">
                                 <span><i class='bx bx-user-circle icon-cli' ></i></span>
                                 <h5 style="padding-left: 28px">Portal do Cliente - Usuários</h5>
                                 <span><i class='bx bx-chevron-right icon-clic'></i></span>
@@ -1054,7 +1054,7 @@
                 <div class="accordion-group widget-box">
                     <div class="accordion-heading">
                         <div class="widget-title">
-                            <a data-parent="#collapse-group" href="#collapseGV5" data-toggle="collapse">
+                            <a data-parent="#collapse-group" href="#collapseGV5" data-bs-toggle="collapse">
                                 <span><i class='bx bx-rocket icon-cli' ></i></span>
                                 <h5 style="padding-left: 28px">Novas Funcionalidades V5</h5>
                                 <span><i class='bx bx-chevron-right icon-clic'></i></span>
@@ -1220,7 +1220,7 @@
                 <div class="accordion-group widget-box">
                     <div class="accordion-heading">
                         <div class="widget-title">
-                            <a data-parent="#collapse-group" href="#collapseGAgenteIA" data-toggle="collapse">
+                            <a data-parent="#collapse-group" href="#collapseGAgenteIA" data-bs-toggle="collapse">
                                 <span><i class='bx bx-bot icon-cli' ></i></span>
                                 <h5 style="padding-left: 28px">Agente IA (WhatsApp/n8n/LLMs)</h5>
                                 <span><i class='bx bx-chevron-right icon-clic'></i></span>
@@ -1263,7 +1263,7 @@
                 <div class="accordion-group widget-box">
                     <div class="accordion-heading">
                         <div class="widget-title">
-                            <a data-parent="#collapse-group" href="#collapseGNFSe" data-toggle="collapse">
+                            <a data-parent="#collapse-group" href="#collapseGNFSe" data-bs-toggle="collapse">
                                 <span><i class='bx bx-receipt icon-cli' ></i></span>
                                 <h5 style="padding-left: 28px">NFSe e Boletos</h5>
                                 <span><i class='bx bx-chevron-right icon-clic'></i></span>
@@ -1341,11 +1341,11 @@
                 </div>
 
                     <div class="form-actions">
-                        <div class="span12">
-                            <div class="span6 offset3" style="display:flex;justify-content: center">
+                        <div class="col-12">
+                            <div class="col-6 offset-md-3" style="display:flex;justify-content: center">
                               <button type="submit" class="button btn btn-primary">
                               <span class="button__icon"><i class='bx bx-save'></i></span><span class="button__text2">Salvar</span></button>
-                                <a title="Voltar" class="button btn btn-mini btn-warning" href="<?php echo site_url() ?>/permissoes">
+                                <a title="Voltar" class="button btn btn-sm btn-warning" href="<?php echo site_url() ?>/permissoes">
                                   <span class="button__icon"><i class="bx bx-undo"></i></span> <span class="button__text2">Voltar</span></a>
                             </div>
                         </div>

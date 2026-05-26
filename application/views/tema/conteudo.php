@@ -1,4 +1,4 @@
-<div id="content">
+﻿<div id="content">
 <!--start-top-serch-->
   <div id="content-header">
    <div></div>
@@ -17,8 +17,8 @@
       </div>
     </div>
     <div class="container-flu">
-      <div class="row-fluid">
-        <div class="span12">
+      <div class="row">
+        <div class="col-12">
           <?php if ($var = $this->session->flashdata('success')): ?><script>swal("Sucesso!", <?php echo json_encode(strip_tags($var)); ?>, "success");</script><?php endif; ?>
           <?php if ($var = $this->session->flashdata('error')): ?><script>swal("Falha!", <?php echo json_encode(strip_tags($var)); ?>, "error");</script><?php endif; ?>
           <?php

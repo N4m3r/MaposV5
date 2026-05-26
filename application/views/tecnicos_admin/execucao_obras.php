@@ -1,4 +1,4 @@
-<!-- Visão de Execução das Obras - Dashboard Simplificado -->
+﻿<!-- Visão de Execução das Obras - Dashboard Simplificado -->
 <div class="new122">
     <!-- Header -->
     <div class="widget-title" style="margin: -20px 0 0; display: flex; justify-content: space-between; align-items: center;">
@@ -9,11 +9,11 @@
             <h5>Execução das Obras</h5>
         </div>
         <div class="buttons">
-            <a href="<?= site_url('tecnicos_admin/obras') ?>" class="button btn btn-mini btn-default">
+            <a href="<?= site_url('tecnicos_admin/obras') ?>" class="button btn btn-sm btn-default">
                 <span class="button__icon"><i class="bx bx-building"></i></span>
                 <span class="button__text2">Gestão de Obras</span>
             </a>
-            <a href="#modal-vincular-os-obra" data-toggle="modal" class="button btn btn-mini btn-success">
+            <a href="#modal-vincular-os-obra" data-bs-toggle="modal" class="button btn btn-sm btn-success">
                 <span class="button__icon"><i class="bx bx-link"></i></span>
                 <span class="button__text2">Vincular OS</span>
             </a>
@@ -21,7 +21,7 @@
     </div>
 
     <!-- Dashboard de Obras -->
-    <div class="row-fluid" style="margin-top: 20px;">
+    <div class="row" style="margin-top: 20px;">
         <?php if (!empty($obras)): ?>
             <?php foreach ($obras as $obra): ?>
                 <?php
@@ -46,7 +46,7 @@
                 $percentualObra = $obra->percentual_concluido ?? 0;
                 $corProgresso = $percentualObra >= 80 ? '#4caf50' : ($percentualObra >= 50 ? '#ff9800' : '#2196f3');
                 ?>
-                <div class="span6" style="margin-bottom: 20px;">
+                <div class="col-6" style="margin-bottom: 20px;">
                     <div class="obra-execucao-card" style="
                         background: white;
                         border-radius: 16px;
@@ -161,10 +161,10 @@
 
                         <!-- Ações -->
                         <div style="padding: 15px 20px; display: flex; gap: 10px;">
-                            <a href="<?= site_url('tecnicos_admin/ver_obra/' . $obra->id) ?>" class="btn btn-small btn-info" style="flex: 1;">
+                            <a href="<?= site_url('tecnicos_admin/ver_obra/' . $obra->id) ?>" class="btn btn-sm btn-info" style="flex: 1;">
                                 <i class="bx bx-show"></i> Ver Detalhes
                             </a>
-                            <a href="<?= site_url('os/adicionar?obra_id=' . $obra->id) ?>" class="btn btn-small btn-success" style="flex: 1;">
+                            <a href="<?= site_url('os/adicionar?obra_id=' . $obra->id) ?>" class="btn btn-sm btn-success" style="flex: 1;">
                                 <i class="bx bx-plus"></i> Nova OS
                             </a>
                         </div>
@@ -172,7 +172,7 @@
                 </div>
             <?php endforeach; ?>
         <?php else: ?>
-            <div class="span12" style="text-align: center; padding: 60px 20px;">
+            <div class="col-12" style="text-align: center; padding: 60px 20px;">
                 <div style="font-size: 4rem; color: #e0e0e0; margin-bottom: 20px;">
                     <i class="bx bx-rocket"></i>
                 </div>
@@ -187,18 +187,18 @@
 </div>
 
 <!-- Modal: Vincular OS à Obra (Simplificado) -->
-<div id="modal-vincular-os-obra" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="modalVincularLabel" aria-hidden="true">
+<div id="modal-vincular-os-obra" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalVincularLabel" aria-hidden="true">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">×</button>
         <h5 id="modalVincularLabel"><i class="bx bx-link"></i> Vincular OS à Obra</h5>
     </div>
     <form action="<?= site_url('tecnicos_admin/vincular_os_obra') ?>" method="post">
         <div class="modal-body">
             <!-- Passo 1: Selecionar a Obra -->
-            <div class="control-group">
-                <label class="control-label">Obra *</label>
+            <div class="mb-3">
+                <label class="form-label">Obra *</label>
                 <div class="controls">
-                    <select name="obra_id" id="select-obra-vincular" class="span12" required>
+                    <select name="obra_id" id="select-obra-vincular" class="col-12" required>
                         <option value="">-- Selecione a Obra --</option>
                         <?php foreach ($obras as $o): ?>
                             <option value="<?= $o->id ?>">
@@ -210,14 +210,14 @@
             </div>
 
             <!-- Passo 2: Selecionar a OS -->
-            <div class="control-group" style="margin-top: 15px;">
-                <label class="control-label">Ordem de Serviço *</label>
+            <div class="mb-3" style="margin-top: 15px;">
+                <label class="form-label">Ordem de Serviço *</label>
                 <div class="controls">
-                    <select name="os_id" id="select-os-vincular" class="span12" required disabled>
+                    <select name="os_id" id="select-os-vincular" class="col-12" required disabled>
                         <option value="">-- Primeiro selecione uma obra --</option>
                     </select>
                 </div>
-                <span class="help-block" id="msg-os" style="color: #666; font-size: 0.85rem;">
+                <span class="form-text" id="msg-os" style="color: #666; font-size: 0.85rem;">
                     <i class="bx bx-info-circle"></i> Selecione uma obra para ver as OS disponíveis
                 </span>
             </div>
@@ -231,7 +231,7 @@
             </div>
         </div>
         <div class="modal-footer">
-            <button class="btn" data-dismiss="modal" aria-hidden="true">Cancelar</button>
+            <button class="btn" data-bs-dismiss="modal" aria-hidden="true">Cancelar</button>
             <button type="submit" class="btn btn-success" id="btn-vincular" disabled>
                 <i class="bx bx-link"></i> Vincular à Obra
             </button>
@@ -411,8 +411,8 @@ $(document).ready(function() {
     animation: slideInUp 0.4s ease forwards;
 }
 
-.span6:nth-child(1) .obra-execucao-card { animation-delay: 0s; }
-.span6:nth-child(2) .obra-execucao-card { animation-delay: 0.1s; }
-.span6:nth-child(3) .obra-execucao-card { animation-delay: 0.2s; }
-.span6:nth-child(4) .obra-execucao-card { animation-delay: 0.3s; }
+.col-6:nth-child(1) .obra-execucao-card { animation-delay: 0s; }
+.col-6:nth-child(2) .obra-execucao-card { animation-delay: 0.1s; }
+.col-6:nth-child(3) .obra-execucao-card { animation-delay: 0.2s; }
+.col-6:nth-child(4) .obra-execucao-card { animation-delay: 0.3s; }
 </style>

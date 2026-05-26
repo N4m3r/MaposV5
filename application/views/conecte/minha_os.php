@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-br">
 
 <head>
@@ -9,13 +9,11 @@
     <meta name="csrf-token-name" content="<?= config_item("csrf_token_name") ?>">
     <meta name="csrf-cookie-name" content="<?= config_item("csrf_cookie_name") ?>">
     <link rel="shortcut icon" type="image/png" href="<?php echo base_url(); ?>assets/img/favicon.png" />
-    <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/bootstrap-responsive.min.css" />
+    <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/bootstrap5.min.css" />
     <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/matrix-style.css" />
     <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/matrix-media.css" />
     <link href="<?php echo base_url(); ?>assets/font-awesome/css/font-awesome.css" rel="stylesheet" />
     <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/fullcalendar.css" />
-    <link href="<?php echo base_url(); ?>assets/css/bootstrap-responsive.min.css" rel="stylesheet">
     <script type="text/javascript" src="<?php echo base_url(); ?>assets/js/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script type="text/javascript" src="<?= base_url(); ?>assets/js/funcoesGlobal.js"></script>
     <script type="text/javascript" src="<?= base_url(); ?>assets/js/csrf.js"></script>
@@ -23,14 +21,14 @@
 
 <body>
     <div class="container-fluid">
-        <div class="row-fluid">
-            <div class="span12">
+        <div class="row">
+            <div class="col-12">
                 <?php
                     $totalServico = 0;
                     $totalProdutos = 0;
                 ?>
-                <div class="row-fluid" style="margin-top: 0">
-                    <div class="span12">
+                <div class="row" style="margin-top: 0">
+                    <div class="col-12">
                         <div class="widget-box">
                             <div class="widget-title">
                                 <span class="icon">
@@ -39,14 +37,14 @@
                                 <h5>Ordem de Serviço</h5>
                                 <div class="buttons">
 
-                                    <a id="imprimir" title="Imprimir" class="btn btn-mini btn-inverse" href=""><i class="fas fa-print"></i> Imprimir</a>
+                                    <a id="imprimir" title="Imprimir" class="btn btn-sm btn-inverse" href=""><i class="fas fa-print"></i> Imprimir</a>
                                 </div>
                             </div>
                             <div class="widget-content" id="printOs">
                                 <div class="invoice-content">
                                     <div class="invoice-head" style="margin-bottom: 0">
 
-                                        <table class="table table-condensed">
+                                        <table class="table table-sm">
                                             <tbody>
                                                 <?php if ($emitente == null) { ?>
 
@@ -67,7 +65,7 @@
                                             </tbody>
                                         </table>
 
-                                        <table class="table table-condensed">
+                                        <table class="table table-sm">
                                             <tbody>
                                                 <tr>
                                                     <td style="width: 50%; padding-left: 0">
@@ -103,7 +101,7 @@
 
                                         <?php if ($result->descricaoProduto != null || $result->defeito != null || $result->laudoTecnico != null || $result->observacoes) { ?>
 
-                                            <table class="table table-condensed">
+                                            <table class="table table-sm">
                                                 <tbody>
                                                     <?php if ($result->descricaoProduto != null) { ?>
                                                         <tr>
@@ -149,7 +147,7 @@
 
                                         <?php if ($produtos != null || $servicos != null) { ?>
                                             <br />
-                                            <table class="table table-condensed" id="tblProdutos">
+                                            <table class="table table-sm" id="tblProdutos">
                                                 <thead>
                                                     <tr>
                                                         <th style="font-size: large">Item</th>
@@ -212,7 +210,7 @@
                         function Popup(data) {
                             var mywindow = window.open('', 'MapOs', 'height=600,width=800');
                             mywindow.document.write('<html><head><title>Map Os</title>');
-                            mywindow.document.write("<link rel='stylesheet' href='<?php echo base_url(); ?>assets/css/bootstrap.min.css' /><link rel='stylesheet' href='<?php echo base_url(); ?>assets/css/bootstrap-responsive.min.css' />");
+                            mywindow.document.write("<link rel='stylesheet' href='<?php echo base_url(); ?>assets/css/bootstrap5.min.css' />");
                             mywindow.document.write("<link rel='stylesheet' href='<?php echo base_url(); ?>assets/css/matrix-style.css' /> <link rel='stylesheet' href='<?php echo base_url(); ?>assets/css/matrix-media.css' />");
 
 
@@ -235,14 +233,14 @@
 
     </div>
     <!--Footer-part-->
-    <div class="row-fluid">
-        <div id="footer" class="span12"> <?= date('Y') ?> &copy; <?php echo $this->config->item('app_name'); ?> - Versão <?php echo $this->config->item('app_version'); ?></div>
+    <div class="row">
+        <div id="footer" class="col-12"> <?= date('Y') ?> &copy; <?php echo $this->config->item('app_name'); ?> - Versão <?php echo $this->config->item('app_version'); ?></div>
     </div>
 
     <!-- javascript
 ================================================== -->
 
-    <script src="<?php echo base_url(); ?>assets/js/bootstrap.min.js"></script>
+    <script src="<?php echo base_url(); ?>assets/js/bootstrap5.bundle.min.js"></script>
 
 
 </body>

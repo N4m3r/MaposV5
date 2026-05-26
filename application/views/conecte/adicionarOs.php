@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/js/jquery-ui/css/smoothness/jquery-ui-1.9.2.custom.css" />
+﻿<link rel="stylesheet" href="<?php echo base_url(); ?>assets/js/jquery-ui/css/smoothness/jquery-ui-1.9.2.custom.css" />
 <script type="text/javascript" src="<?php echo base_url() ?>assets/js/jquery-ui/js/jquery-ui-1.9.2.custom.js"></script>
 <script type="text/javascript" src="<?php echo base_url() ?>assets/js/jquery.validate.js"></script>
 
@@ -447,8 +447,8 @@
     }
 </style>
 
-<div class="row-fluid" style="margin-top:0">
-    <div class="span12">
+<div class="row" style="margin-top:0">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title" style="margin: -20px 0 0">
                 <span class="icon">
@@ -457,7 +457,7 @@
                 <h5>Solicitar Nova Ordem de Serviço</h5>
             </div>
             <div class="widget-content nopadding tab-content">
-                <div class="span12" id="divProdutosServicos" style="margin-left: 0">
+                <div class="col-12" id="divProdutosServicos" style="margin-left: 0">
                     <div class="wizard-container">
                         <form action="<?php echo current_url(); ?>" method="post" id="formOs">
                             <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>">
@@ -882,14 +882,14 @@
                     required: 'O campo descrição da OS é obrigatório.'
                 }
             },
-            errorClass: "help-inline",
+            errorClass: "form-text",
             errorElement: "span",
             highlight: function(element, errorClass, validClass) {
-                $(element).parents('.control-group').addClass('error');
+                $(element).parents('.mb-3').addClass('error');
             },
             unhighlight: function(element, errorClass, validClass) {
-                $(element).parents('.control-group').removeClass('error');
-                $(element).parents('.control-group').addClass('success');
+                $(element).parents('.mb-3').removeClass('error');
+                $(element).parents('.mb-3').addClass('success');
             }
         });
     });

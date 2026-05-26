@@ -1,4 +1,4 @@
-<script src="<?php echo base_url() ?>assets/js/jquery.mask.min.js"></script>
+﻿<script src="<?php echo base_url() ?>assets/js/jquery.mask.min.js"></script>
 <script src="<?php echo base_url() ?>assets/js/sweetalert2.all.min.js"></script>
 <script src="<?php echo base_url() ?>assets/js/funcoes.js"></script>
 <script>
@@ -35,11 +35,11 @@
         text-indent: 0;
     }
 
-    .control-group.error .help-inline {
+    .mb-3.error .form-text {
         display: flex;
     }
 
-    .form-horizontal .control-group {
+    .form-horizontal .mb-3 {
         border-bottom: 1px solid #ffffff;
     }
 
@@ -48,7 +48,7 @@
         padding-bottom: 8px 0;
     }
 
-    .form-horizontal .control-label {
+    .form-horizontal .form-label {
         text-align: left;
         padding-top: 15px;
     }
@@ -70,7 +70,7 @@
             display: contents !important;
         }
 
-        .form-horizontal .control-label {
+        .form-horizontal .form-label {
             margin-bottom: -6px;
         }
 
@@ -79,8 +79,8 @@
         }
     }
 </style>
-<div class="row-fluid" style="margin-top:0">
-    <div class="span12">
+<div class="row" style="margin-top:0">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title" style="margin: -20px 0 0">
                 <span class="icon">
@@ -93,66 +93,66 @@
             } ?>
             <form action="<?php echo current_url(); ?>" id="formCliente" method="post" class="form-horizontal">
                 <div class="widget-content nopadding tab-content">
-                    <div class="span6">
-                        <div class="control-group">
-                            <label for="documento" class="control-label">CPF/CNPJ</label>
+                    <div class="col-6">
+                        <div class="mb-3">
+                            <label for="documento" class="form-label">CPF/CNPJ</label>
                             <div class="controls">
                                 <input id="documento" class="cpfcnpj" type="text" name="documento" value="<?php echo e($result->documento); ?>" />
                                 <button id="buscar_info_cnpj" class="btn btn-xs" type="button">Buscar(CNPJ)</button>
                             </div>
                         </div>
-                        <div class="control-group">
-                            <label for="inscricao_municipal" class="control-label">Inscrição Municipal</label>
+                        <div class="mb-3">
+                            <label for="inscricao_municipal" class="form-label">Inscrição Municipal</label>
                             <div class="controls">
                                 <input id="inscricao_municipal" type="text" name="inscricao_municipal" value="<?php echo e($result->inscricao_municipal); ?>" placeholder="IM" />
                             </div>
                         </div>
-                        <div class="control-group">
-                            <label for="inscricao_estadual" class="control-label">Inscrição Estadual</label>
+                        <div class="mb-3">
+                            <label for="inscricao_estadual" class="form-label">Inscrição Estadual</label>
                             <div class="controls">
                                 <input id="inscricao_estadual" type="text" name="inscricao_estadual" value="<?php echo e($result->inscricao_estadual); ?>" placeholder="IE" />
                             </div>
                         </div>
-                        <div class="control-group">
+                        <div class="mb-3">
                             <?php echo form_hidden('idClientes', $result->idClientes) ?>
-                            <label for="nomeCliente" class="control-label">Nome/Razão Social<span class="required">*</span></label>
+                            <label for="nomeCliente" class="form-label">Nome/Razão Social<span class="required">*</span></label>
                             <div class="controls">
                                 <input id="nomeCliente" type="text" name="nomeCliente" value="<?php echo e($result->nomeCliente); ?>" />
                             </div>
                         </div>
-                        <div class="control-group">
-                            <label for="contato" class="control-label">Contato:</label>
+                        <div class="mb-3">
+                            <label for="contato" class="form-label">Contato:</label>
                             <div class="controls">
                                 <input class="contato" type="text" name="contato" value="<?php echo e($result->contato); ?>" />
                             </div>
                         </div>
-                        <div class="control-group">
-                            <label for="telefone" class="control-label">Telefone</label>
+                        <div class="mb-3">
+                            <label for="telefone" class="form-label">Telefone</label>
                             <div class="controls">
                                 <input id="telefone" type="text" name="telefone" value="<?php echo e($result->telefone); ?>" />
                             </div>
                         </div>
-                        <div class="control-group">
-                            <label for="celular" class="control-label">Celular</label>
+                        <div class="mb-3">
+                            <label for="celular" class="form-label">Celular</label>
                             <div class="controls">
                                 <input id="celular" type="text" name="celular" value="<?php echo e($result->celular); ?>" />
                             </div>
                         </div>
-                        <div class="control-group">
-                            <label for="email" class="control-label">Email</label>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
                             <div class="controls">
                                 <input id="email" type="text" name="email" value="<?php echo e($result->email); ?>" />
                             </div>
                         </div>
-                        <div class="control-group">
-                            <label for="senha" class="control-label">Senha</label>
+                        <div class="mb-3">
+                            <label for="senha" class="form-label">Senha</label>
                             <div class="controls">
                                 <input id="senha" type="password" name="senha" value="" placeholder="Não preencha se não quiser alterar." />
                                 <img id="imgSenha" src="<?php echo base_url() ?>assets/img/eye.svg" alt="">
                             </div>
                         </div>
-                        <div class="control-group">
-                            <label class="control-label">Tipo de Cliente</label>
+                        <div class="mb-3">
+                            <label class="form-label">Tipo de Cliente</label>
                             <div class="controls">
                                 <label for="fornecedor" class="btn btn-default">Fornecedor
                                     <input type="checkbox" id="fornecedor" name="fornecedor" class="badgebox" value="1" <?= ($result->fornecedor == 1) ? 'checked' : '' ?>>
@@ -162,45 +162,45 @@
                         </div>
                     </div>
 
-                    <div class="span6">
-                        <div class="control-group" class="control-label">
-                            <label for="cep" class="control-label">CEP</label>
+                    <div class="col-6">
+                        <div class="mb-3" class="form-label">
+                            <label for="cep" class="form-label">CEP</label>
                             <div class="controls">
                                 <input id="cep" type="text" name="cep" value="<?php echo e($result->cep); ?>" />
                             </div>
                         </div>
-                        <div class="control-group" class="control-label">
-                            <label for="rua" class="control-label">Rua</label>
+                        <div class="mb-3" class="form-label">
+                            <label for="rua" class="form-label">Rua</label>
                             <div class="controls">
                                 <input id="rua" type="text" name="rua" value="<?php echo e($result->rua); ?>" />
                             </div>
                         </div>
-                        <div class="control-group">
-                            <label for="numero" class="control-label">Número</label>
+                        <div class="mb-3">
+                            <label for="numero" class="form-label">Número</label>
                             <div class="controls">
                                 <input id="numero" type="text" name="numero" value="<?php echo e($result->numero); ?>" />
                             </div>
                         </div>
-                        <div class="control-group">
-                            <label for="complemento" class="control-label">Complemento</label>
+                        <div class="mb-3">
+                            <label for="complemento" class="form-label">Complemento</label>
                             <div class="controls">
                                 <input id="complemento" type="text" name="complemento" value="<?php echo e($result->complemento); ?>" />
                             </div>
                         </div>
-                        <div class="control-group" class="control-label">
-                            <label for="bairro" class="control-label">Bairro</label>
+                        <div class="mb-3" class="form-label">
+                            <label for="bairro" class="form-label">Bairro</label>
                             <div class="controls">
                                 <input id="bairro" type="text" name="bairro" value="<?php echo e($result->bairro); ?>" />
                             </div>
                         </div>
-                        <div class="control-group" class="control-label">
-                            <label for="cidade" class="control-label">Cidade</label>
+                        <div class="mb-3" class="form-label">
+                            <label for="cidade" class="form-label">Cidade</label>
                             <div class="controls">
                                 <input id="cidade" type="text" name="cidade" value="<?php echo e($result->cidade); ?>" />
                             </div>
                         </div>
-                        <div class="control-group" class="control-label">
-                            <label for="estado" class="control-label">Estado</label>
+                        <div class="mb-3" class="form-label">
+                            <label for="estado" class="form-label">Estado</label>
                             <div class="controls">
                                 <select id="estado" name="estado" class="">
                                     <option value="">Selecione...</option>
@@ -210,8 +210,8 @@
                     </div>
                 </div>
                 <div class="form-actions">
-                    <div class="span12">
-                        <div class="span6 offset3" style="display:flex;justify-content: center">
+                    <div class="col-12">
+                        <div class="col-6 offset-md-3" style="display:flex;justify-content: center">
                             <button type="submit" class="button btn btn-primary" style="max-width: 160px">
                                 <span class="button__icon"><i class="bx bx-sync"></i></span><span class="button__text2">Atualizar</span></button>
                             <a title="Voltar" class="button btn btn-warning" href="<?php echo site_url() ?>/clientes"><span class="button__icon"><i class="bx bx-undo"></i></span> <span class="button__text2">Voltar</span></a>
@@ -262,14 +262,14 @@
                 },
             },
 
-            errorClass: "help-inline",
+            errorClass: "form-text",
             errorElement: "span",
             highlight: function(element, errorClass, validClass) {
-                $(element).parents('.control-group').addClass('error');
+                $(element).parents('.mb-3').addClass('error');
             },
             unhighlight: function(element, errorClass, validClass) {
-                $(element).parents('.control-group').removeClass('error');
-                $(element).parents('.control-group').addClass('success');
+                $(element).parents('.mb-3').removeClass('error');
+                $(element).parents('.mb-3').addClass('success');
             }
         });
     });

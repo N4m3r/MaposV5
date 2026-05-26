@@ -1,4 +1,4 @@
-<div class="new122" style="margin-top: 0; min-height: 100vh">
+﻿<div class="new122" style="margin-top: 0; min-height: 100vh">
 <div class="widget-title" style="margin: -20px 0 0">
     <span class="icon"><i class="fas fa-exclamation-triangle"></i></span>
     <h5>Notificacoes de Vazamento (LGPD Art. 48)</h5>
@@ -11,7 +11,7 @@
     <li class="active"><a href="<?php echo site_url('auditoria/vazamentos'); ?>">Vazamentos</a></li>
 </ul>
 
-<a href="#modal-novo-vazamento" role="button" data-toggle="modal" class="button btn btn-warning tip-top" style="max-width: 300px" title="Registrar Vazamento">
+<a href="#modal-novo-vazamento" role="button" data-bs-toggle="modal" class="button btn btn-warning tip-top" style="max-width: 300px" title="Registrar Vazamento">
     <span class="button__icon"><i class='fas fa-exclamation-triangle'></i></span>
     <span class="button__text2">Registrar Novo Vazamento</span>
 </a>
@@ -41,35 +41,35 @@
                         <td>
                             <?php
                             $statusLabels = [
-                                'investigando' => '<span class="label label-warning">Investigando</span>',
-                                'notificado'   => '<span class="label label-info">Notificado</span>',
-                                'resolvido'    => '<span class="label label-success">Resolvido</span>',
+                                'investigando' => '<span class="badge bg-warning">Investigando</span>',
+                                'notificado'   => '<span class="badge bg-info">Notificado</span>',
+                                'resolvido'    => '<span class="badge bg-success">Resolvido</span>',
                             ];
                             echo $statusLabels[$b->status] ?? '<span class="label">' . e($b->status) . '</span>';
                             ?>
                         </td>
                         <td>
                             <?php if ($b->notificado_anpd): ?>
-                                <span class="label label-success">Sim</span>
+                                <span class="badge bg-success">Sim</span>
                                 <br><small><?php echo $b->data_notificacao_anpd ? date('d/m/Y', strtotime($b->data_notificacao_anpd)) : ''; ?></small>
                             <?php else: ?>
-                                <span class="label label-important">Nao</span>
+                                <span class="badge bg-danger">Nao</span>
                             <?php endif; ?>
                         </td>
                         <td>
                             <?php if ($b->titulares_notificados): ?>
-                                <span class="label label-success">Notificados</span>
+                                <span class="badge bg-success">Notificados</span>
                                 <br><small><?php echo $b->num_titulares_afetados; ?> titular(es)</small>
                             <?php else: ?>
                                 <a href="<?php echo site_url('auditoria/vazamento_notificar_titulares/' . $b->id); ?>"
-                                   class="btn btn-mini btn-warning"
+                                   class="btn btn-sm btn-warning"
                                    onclick="return confirm('Confirma notificacao aos titulares afetados?');">
                                     <i class="fas fa-bell"></i> Notificar
                                 </a>
                             <?php endif; ?>
                         </td>
                         <td>
-                            <a href="#modal-detalhe-<?php echo $b->id; ?>" role="button" data-toggle="modal" class="btn btn-mini btn-info">
+                            <a href="#modal-detalhe-<?php echo $b->id; ?>" role="button" data-bs-toggle="modal" class="btn btn-sm btn-info">
                                 <i class="fas fa-eye"></i>
                             </a>
                         </td>
@@ -89,9 +89,9 @@
 
 <!-- Detail modals -->
 <?php foreach ($breaches as $b): ?>
-<div id="modal-detalhe-<?php echo $b->id; ?>" class="modal hide fade" tabindex="-1">
+<div id="modal-detalhe-<?php echo $b->id; ?>" class="modal fade" tabindex="-1">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
         <h5>Vazamento #<?php echo $b->id; ?> — <?php echo e($b->titulo); ?></h5>
     </div>
     <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
@@ -107,44 +107,44 @@
         <p><small class="muted">Criado em: <?php echo $b->created_at; ?></small></p>
     </div>
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal">Fechar</button>
+        <button class="btn" data-bs-dismiss="modal">Fechar</button>
     </div>
 </div>
 <?php endforeach; ?>
 
 <!-- New breach modal -->
-<div id="modal-novo-vazamento" class="modal hide fade" tabindex="-1" style="width: 700px; margin-left: -250px;">
+<div id="modal-novo-vazamento" class="modal fade" tabindex="-1" style="width: 700px; margin-left: -250px;">
     <form action="<?php echo site_url('auditoria/vazamento_novo'); ?>" method="post">
         <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
             <h5>Registrar Notificacao de Vazamento (LGPD Art. 48)</h5>
         </div>
         <div class="modal-body">
             <label>Titulo *</label>
-            <input type="text" name="titulo" class="span6" required style="width: 100%;">
+            <input type="text" name="titulo" class="col-6" required style="width: 100%;">
 
             <label>Descricao do Incidente *</label>
-            <textarea name="descricao" rows="4" class="span6" required style="width: 100%;"></textarea>
+            <textarea name="descricao" rows="4" class="col-6" required style="width: 100%;"></textarea>
 
             <label>Tipo de Dado Afetado</label>
-            <input type="text" name="tipo_dado_afetado" class="span6" placeholder="Ex: dados pessoais, financeiros, credenciais" style="width: 100%;">
+            <input type="text" name="tipo_dado_afetado" class="col-6" placeholder="Ex: dados pessoais, financeiros, credenciais" style="width: 100%;">
 
             <label>Medidas Adotadas</label>
-            <textarea name="medidas_adotadas" rows="3" class="span6" placeholder="Acoes tomadas para conter e mitigar o vazamento" style="width: 100%;"></textarea>
+            <textarea name="medidas_adotadas" rows="3" class="col-6" placeholder="Acoes tomadas para conter e mitigar o vazamento" style="width: 100%;"></textarea>
 
-            <div class="row-fluid" style="margin-top: 10px;">
-                <div class="span6">
+            <div class="row" style="margin-top: 10px;">
+                <div class="col-6">
                     <label>Data da Ocorrencia *</label>
                     <input type="datetime-local" name="data_ocorrencia" required>
                 </div>
-                <div class="span6">
+                <div class="col-6">
                     <label>Data da Descoberta *</label>
                     <input type="datetime-local" name="data_descoberta" required>
                 </div>
             </div>
 
-            <div class="row-fluid" style="margin-top: 10px;">
-                <div class="span6">
+            <div class="row" style="margin-top: 10px;">
+                <div class="col-6">
                     <label>Status</label>
                     <select name="status">
                         <option value="investigando">Investigando</option>
@@ -152,7 +152,7 @@
                         <option value="resolvido">Resolvido</option>
                     </select>
                 </div>
-                <div class="span6" style="padding-top: 25px;">
+                <div class="col-6" style="padding-top: 25px;">
                     <label class="checkbox">
                         <input type="checkbox" name="notificado_anpd" value="1"> ANPD ja notificada
                     </label>
@@ -160,7 +160,7 @@
             </div>
         </div>
         <div class="modal-footer">
-            <button class="btn" data-dismiss="modal">Cancelar</button>
+            <button class="btn" data-bs-dismiss="modal">Cancelar</button>
             <button class="btn btn-warning">Registrar Vazamento</button>
         </div>
     </form>

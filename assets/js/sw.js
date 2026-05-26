@@ -8,7 +8,7 @@ const STATIC_ASSETS = [
   '/',
   '/assets/css/matrix-style.css',
   '/assets/css/matrix-media.css',
-  '/assets/css/bootstrap-responsive.min.css',
+  '/assets/css/bootstrap5.min.css',
   '/assets/css/font-awesome.css',
   '/assets/js/matrix.js',
   '/assets/js/matrix.dashboard.js',

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 $os_pendentes = $os_pendentes ?? [];
 $os_hoje = $os_hoje ?? [];
 $atividade_andamento = $atividade_andamento ?? null;
@@ -81,21 +81,21 @@ $atividade_andamento = $atividade_andamento ?? null;
 }
 </style>
 
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <h2><i class="bx bx-clipboard"></i> Selecionar Ordem de Serviço</h2>
 
         <!-- Atividade em Andamento -->
         <?php if ($atividade_andamento): ?>
         <div class="alert-atividade">
-            <div class="row-fluid">
-                <div class="span8">
+            <div class="row">
+                <div class="col-8">
                     <h4><i class="bx bx-time-five"></i> Você tem uma atividade em andamento</h4>
                     <p>OS #<?= $atividade_andamento->os_id ?> - <?= htmlspecialchars($atividade_andamento->nomeCliente ?? 'N/A') ?></p>
                     <p><i class="bx bx-wrench"></i> <?= htmlspecialchars($atividade_andamento->tipo_nome) ?></p>
                     <p><i class="bx bx-play-circle"></i> Início: <strong><?= date('H:i', strtotime($atividade_andamento->hora_inicio)) ?></strong></p>
                 </div>
-                <div class="span4 text-right">
+                <div class="col-4 text-right">
                     <a href="<?= site_url('atividades/wizard/' . $atividade_andamento->os_id) ?>" class="btn btn-large btn-light">
                         <i class="bx bx-play-circle"></i> Continuar Atendimento
                     </a>
@@ -161,9 +161,9 @@ $atividade_andamento = $atividade_andamento ?? null;
             </div>
             <div class="widget-content">
                 <?php if (count($os_pendentes) > 0): ?>
-                    <div class="row-fluid">
+                    <div class="row">
                         <?php foreach ($os_pendentes as $os): ?>
-                            <div class="span6">
+                            <div class="col-6">
                                 <div class="os-card">
                                     <div class="os-header">
                                         <span class="os-numero">OS #<?= $os->idOs ?></span>
@@ -175,7 +175,7 @@ $atividade_andamento = $atividade_andamento ?? null;
                                         <p><i class="bx bx-wrench"></i> <?= truncar_texto($os->descricaoProduto ?? 'N/A', 50) ?></p>
                                     </div>
                                     <?php if (!$atividade_andamento): ?>
-                                        <a href="<?= site_url('atividades/wizard/' . $os->idOs) ?>" class="btn btn-small btn-success">
+                                        <a href="<?= site_url('atividades/wizard/' . $os->idOs) ?>" class="btn btn-sm btn-success">
                                             <i class="bx bx-play"></i> Iniciar
                                         </a>
                                     <?php endif; ?>

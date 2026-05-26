@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Dashboard da Área do Cliente - Versão Moderna
  * Com controle de acesso baseado em permissões
@@ -460,7 +460,7 @@ $osFinalizadas = count(array_filter($os ?? [], function($o) { return $o->status 
             <div class="widget-card">
                 <div class="widget-header">
                     <h5><i class='bx bx-file'></i> Últimas Ordens de Serviço</h5>
-                    <a href="<?= base_url('index.php/mine/os') ?>" class="btn btn-small">Ver Todas</a>
+                    <a href="<?= base_url('index.php/mine/os') ?>" class="btn btn-sm">Ver Todas</a>
                 </div>
                 <div class="widget-body" style="padding: 0">
                     <?php if (!empty($os)): ?>
@@ -502,15 +502,15 @@ $osFinalizadas = count(array_filter($os ?? [], function($o) { return $o->status 
                                     </span>
                                 </td>
                                 <td>
-                                    <a href="<?= base_url('index.php/mine/visualizarOs/' . $o->idOs) ?>" class="btn btn-small" title="Visualizar">
+                                    <a href="<?= base_url('index.php/mine/visualizarOs/' . $o->idOs) ?>" class="btn btn-sm" title="Visualizar">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                     <?php if ($o->status == 'Finalizado' || $o->status == 'Finalizada'): ?>
-                                        <a href="<?= base_url('index.php/mine/relatorioAtendimento/' . $o->idOs) ?>" class="btn btn-small" style="background: #28a745; color: white;" title="Relatório de Atendimento">
+                                        <a href="<?= base_url('index.php/mine/relatorioAtendimento/' . $o->idOs) ?>" class="btn btn-sm" style="background: #28a745; color: white;" title="Relatório de Atendimento">
                                             <i class="bx bx-file"></i>
                                         </a>
                                     <?php endif; ?>
-                                    <a href="<?= base_url('index.php/mine/imprimirOs/' . $o->idOs) ?>" class="btn btn-small" target="_blank" title="Imprimir">
+                                    <a href="<?= base_url('index.php/mine/imprimirOs/' . $o->idOs) ?>" class="btn btn-sm" target="_blank" title="Imprimir">
                                         <i class="fas fa-print"></i>
                                     </a>
                                 </td>
@@ -536,7 +536,7 @@ $osFinalizadas = count(array_filter($os ?? [], function($o) { return $o->status 
             <div class="widget-card">
                 <div class="widget-header">
                     <h5><i class='bx bx-cart-alt'></i> Últimas Compras</h5>
-                    <a href="<?= base_url('index.php/mine/compras') ?>" class="btn btn-small">Ver Todas</a>
+                    <a href="<?= base_url('index.php/mine/compras') ?>" class="btn btn-sm">Ver Todas</a>
                 </div>
                 <div class="widget-body" style="padding: 0">
                     <?php if (!empty($compras)): ?>
@@ -569,7 +569,7 @@ $osFinalizadas = count(array_filter($os ?? [], function($o) { return $o->status 
                                     </span>
                                 </td>
                                 <td>
-                                    <a href="<?= base_url('index.php/mine/visualizarCompra/' . $c->idVendas) ?>" class="btn btn-small" title="Visualizar">
+                                    <a href="<?= base_url('index.php/mine/visualizarCompra/' . $c->idVendas) ?>" class="btn btn-sm" title="Visualizar">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                 </td>

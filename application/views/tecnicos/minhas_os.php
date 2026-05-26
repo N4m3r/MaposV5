@@ -1,4 +1,4 @@
-<!-- Minhas OS - Portal do Técnico -->
+﻿<!-- Minhas OS - Portal do Técnico -->
 <style>
 .portal-tecnico-content { margin-top: 0 !important; }
 @media (max-width: 768px) { .portal-tecnico-content { margin-top: 0 !important; } }
@@ -37,7 +37,7 @@
                 <h2><i class='bx bx-clipboard' style="margin-right: 8px;"></i>Minhas Ordens de Serviço</h2>
                 <p>Gerencie suas ordens de serviço</p>
             </div>
-            <a href="<?php echo site_url('tecnicos/dashboard'); ?>" class="btn btn-mini btn-info" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none;">
+            <a href="<?php echo site_url('tecnicos/dashboard'); ?>" class="btn btn-sm btn-info" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none;">
                 <i class="bx bx-arrow-back"></i> Voltar
             </a>
         </div>
@@ -109,12 +109,12 @@
                                     </div>
                                     <?php if ($os->status == 'Finalizada' || $os->status == 'Finalizado'): ?>
                                         <a href="<?php echo site_url('tecnicos/relatorio_execucao/' . $os->idOs); ?>"
-                                           class="btn btn-mini btn-info" title="Ver relatório de execução">
+                                           class="btn btn-sm btn-info" title="Ver relatório de execução">
                                             <i class="bx bx-file"></i> Relatório
                                         </a>
                                     <?php else: ?>
                                         <a href="<?php echo site_url('tecnicos/executar_os/' . $os->idOs); ?>"
-                                           class="btn btn-mini btn-success">
+                                           class="btn btn-sm btn-success">
                                             <i class="bx bx-play"></i> Executar
                                         </a>
                                     <?php endif; ?>

@@ -1,4 +1,4 @@
-<?php $totalProdutos = 0; ?>
+﻿<?php $totalProdutos = 0; ?>
 <!DOCTYPE html>
 <html lang="pt-br">
 
@@ -6,8 +6,7 @@
     <title>Map_Vendas_<?php echo e($result->idVendas) ?>_<?php echo e($result->nomeCliente) ?></title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/bootstrap-responsive.min.css" />
+    <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/bootstrap5.min.css" />
     <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/matrix-style.css" />
     <link href="<?php echo base_url(); ?>assets/font-awesome/css/font-awesome.css" rel="stylesheet" />
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700,800' rel='stylesheet' type='text/css' crossorigin="anonymous">
@@ -22,8 +21,8 @@
 
 <body>
     <div class="container-fluid">
-        <div class="row-fluid">
-            <div class="span12">
+        <div class="row">
+            <div class="col-12">
                 <div class="invoice-content">
                     <div class="invoice-head">
                         <table class="table">
@@ -82,7 +81,7 @@
                     </div>
                     <div style="margin-top: 0; padding-top: 0">
                         <?php if ($produtos != null) { ?>
-                            <table class="table table-bordered table-condensed" id="tblProdutos">
+                            <table class="table table-bordered table-sm" id="tblProdutos">
                                 <thead>
                                     <tr>
                                         <th style="font-size: 15px">Produto</th>
@@ -139,7 +138,7 @@
                                 <?php endif; ?>
                             <?php } ?>
                             </table>
-                            <table class="table table-bordered table-condensed" style="font-size: 15px">
+                            <table class="table table-bordered table-sm" style="font-size: 15px">
                                 <tbody>
                                     <tr>
                                         <td colspan="5">
@@ -156,7 +155,7 @@
             </div>
         </div>
     </div>
-    <script src="<?php echo base_url(); ?>assets/js/bootstrap.min.js"></script>
+    <script src="<?php echo base_url(); ?>assets/js/bootstrap5.bundle.min.js"></script>
     <script src="<?php echo base_url(); ?>assets/js/matrix.js"></script>
     <script>
         // Aguarda o carregamento completo de todas as imagens antes de imprimir

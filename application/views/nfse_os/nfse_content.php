@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * NFS-e — Sub-aba Servicos dentro de Notas Fiscais
  * Tema Dark MapOS
@@ -44,10 +44,10 @@ if (!function_exists('fmtDoc')) {
 }
 ?>
 
-<div class="row-fluid" style="margin-top:0">
+<div class="row" style="margin-top:0">
 
     <?php if ($ambiente == 'homologacao'): ?>
-    <div class="span12">
+    <div class="col-12">
         <div class="alert" style="background:rgba(252,157,15,0.15); border-color:rgba(252,157,15,0.3); color:#fc9d0f">
             <i class="fas fa-flask"></i> <strong>Ambiente de Homologacao</strong> — NFS-e de teste, sem valor fiscal.
             <a href="<?= site_url('certificado/configurar') ?>" style="color:#1086dd; text-decoration:underline">Alterar para Producao</a>
@@ -57,7 +57,7 @@ if (!function_exists('fmtDoc')) {
 
     <?php if ($nfse_atual && !$mostrarWizard): ?>
     <!-- NFSe EMITIDA -->
-    <div class="span12">
+    <div class="col-12">
         <div class="widget-box" style="background:var(--wid-dark,#1c1d26); border-color:var(--dark-2,#272835)">
             <div class="widget-title" style="background:var(--dark-0,#191a22); border-bottom:1px solid var(--dark-2,#272835); color:var(--title,#d4d8e0)">
                 <span class="icon"><i class="fas fa-file-invoice" style="color:var(--dark-azul,#1086dd)"></i></span>
@@ -67,9 +67,9 @@ if (!function_exists('fmtDoc')) {
                 </span>
             </div>
             <div class="widget-content" style="background:var(--wid-dark,#1c1d26); color:var(--branco,#caced8)">
-                <div class="row-fluid">
-                    <div class="span6">
-                        <table class="table table-condensed" style="margin-bottom:0; background:transparent">
+                <div class="row">
+                    <div class="col-6">
+                        <table class="table table-sm" style="margin-bottom:0; background:transparent">
                             <tr><td style="border:none; padding:3px 0; color:var(--dark-cinz,#8788a4)"><strong style="color:var(--branco,#caced8)">Numero:</strong></td><td style="border:none; padding:3px 0"><?= $nfse_atual->numero_nfse ?: 'Pendente' ?></td></tr>
                             <tr><td style="border:none; padding:3px 0; color:var(--dark-cinz,#8788a4)"><strong style="color:var(--branco,#caced8)">Data Emissao:</strong></td><td style="border:none; padding:3px 0"><?= $nfse_atual->data_emissao ? date('d/m/Y H:i', strtotime($nfse_atual->data_emissao)) : '---' ?></td></tr>
                             <?php if (!empty($nfse_atual->chave_acesso)): ?>
@@ -80,8 +80,8 @@ if (!function_exists('fmtDoc')) {
                             <?php endif; ?>
                         </table>
                     </div>
-                    <div class="span6 text-right">
-                        <table class="table table-condensed" style="margin-bottom:0; background:transparent">
+                    <div class="col-6 text-right">
+                        <table class="table table-sm" style="margin-bottom:0; background:transparent">
                             <tr><td style="border:none; padding:3px 0; color:var(--dark-cinz,#8788a4)"><strong style="color:var(--branco,#caced8)">Valor Servicos:</strong></td><td style="border:none; padding:3px 0"><?= fmtMoney($nfse_atual->valor_servicos) ?></td></tr>
                             <tr><td style="border:none; padding:3px 0; color:var(--dark-cinz,#8788a4)"><strong style="color:var(--branco,#caced8)">Impostos:</strong></td><td style="border:none; padding:3px 0"><?= fmtMoney($nfse_atual->valor_total_impostos ?? 0) ?></td></tr>
                             <tr><td style="border:none; padding:3px 0; color:var(--dark-cinz,#8788a4)"><strong style="color:#62eba6">Valor Liquido:</strong></td><td style="border:none; padding:3px 0"><strong style="color:#62eba6"><?= fmtMoney($nfse_atual->valor_liquido) ?></strong></td></tr>
@@ -96,8 +96,8 @@ if (!function_exists('fmtDoc')) {
                 $aliquotaEfetiva = ($nfse_atual->valor_servicos ?? 0) > 0 ? round((($nfse_atual->valor_total_impostos ?? 0) / $nfse_atual->valor_servicos) * 100, 2) : 0;
                 ?>
                 <div class="well well-small" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8)">
-                        <div class="row-fluid">
-                        <div class="span6">
+                        <div class="row">
+                        <div class="col-6">
                             <span class="label" style="background:#1086dd; color:#fff">Simples Nacional</span>
                             <div style="margin-top:8px; color:var(--branco,#caced8)">
                                 <strong style="color:var(--title,#d4d8e0)">DAS Estimado:</strong> <?= fmtMoney($nfse_atual->valor_total_impostos) ?><br>
@@ -105,7 +105,7 @@ if (!function_exists('fmtDoc')) {
                                 <strong style="color:var(--title,#d4d8e0)">Competencia:</strong> <?= date('m/Y', strtotime($nfse_atual->competencia ?? date('Y-m-01'))) ?>
                             </div>
                         </div>
-                        <div class="span6" style="color:var(--branco,#caced8)">
+                        <div class="col-6" style="color:var(--branco,#caced8)">
                             <strong style="color:var(--title,#d4d8e0)">Base Calculo:</strong> <?= fmtMoney($nfse_atual->valor_servicos) ?><br>
                             <strong style="color:var(--title,#d4d8e0)">Registrado no DRE:</strong> <i class="fas fa-check-circle" style="color:#62eba6"></i> Sim
                         </div>
@@ -191,7 +191,7 @@ if (!function_exists('fmtDoc')) {
 
     <?php elseif (!empty($nfse_importada)): ?>
     <!-- NFSe IMPORTADA (XML externo) -->
-    <div class="span12">
+    <div class="col-12">
         <div class="widget-box" style="background:var(--wid-dark,#1c1d26); border-color:var(--dark-2,#272835)">
             <div class="widget-title" style="background:var(--dark-0,#191a22); border-bottom:1px solid var(--dark-2,#272835); color:var(--title,#d4d8e0)">
                 <span class="icon"><i class="fas fa-file-import" style="color:#26a38e"></i></span>
@@ -201,9 +201,9 @@ if (!function_exists('fmtDoc')) {
                 </span>
             </div>
             <div class="widget-content" style="background:var(--wid-dark,#1c1d26); color:var(--branco,#caced8)">
-                <div class="row-fluid">
-                    <div class="span6">
-                        <table class="table table-condensed" style="margin-bottom:0; background:transparent">
+                <div class="row">
+                    <div class="col-6">
+                        <table class="table table-sm" style="margin-bottom:0; background:transparent">
                             <tr><td style="border:none; padding:3px 0; color:var(--dark-cinz,#8788a4)"><strong style="color:var(--branco,#caced8)">Numero:</strong></td><td style="border:none; padding:3px 0"><?= $nfse_importada->numero ?: '---' ?></td></tr>
                             <tr><td style="border:none; padding:3px 0; color:var(--dark-cinz,#8788a4)"><strong style="color:var(--branco,#caced8)">Serie:</strong></td><td style="border:none; padding:3px 0"><?= $nfse_importada->serie ?: '---' ?></td></tr>
                             <tr><td style="border:none; padding:3px 0; color:var(--dark-cinz,#8788a4)"><strong style="color:var(--branco,#caced8)">Data Emissao:</strong></td><td style="border:none; padding:3px 0"><?= $nfse_importada->data_emissao ? date('d/m/Y', strtotime($nfse_importada->data_emissao)) : '---' ?></td></tr>
@@ -213,8 +213,8 @@ if (!function_exists('fmtDoc')) {
                             <?php endif; ?>
                         </table>
                     </div>
-                    <div class="span6 text-right">
-                        <table class="table table-condensed" style="margin-bottom:0; background:transparent">
+                    <div class="col-6 text-right">
+                        <table class="table table-sm" style="margin-bottom:0; background:transparent">
                             <tr><td style="border:none; padding:3px 0; color:var(--dark-cinz,#8788a4)"><strong style="color:var(--branco,#caced8)">Valor Total:</strong></td><td style="border:none; padding:3px 0"><?= fmtMoney($nfse_importada->valor_total) ?></td></tr>
                             <tr><td style="border:none; padding:3px 0; color:var(--dark-cinz,#8788a4)"><strong style="color:var(--branco,#caced8)">Impostos:</strong></td><td style="border:none; padding:3px 0"><?= fmtMoney($nfse_importada->valor_impostos ?? 0) ?></td></tr>
                             <?php $vlLiquido = floatval($nfse_importada->valor_total ?? 0) - floatval($nfse_importada->valor_impostos ?? 0); ?>
@@ -242,7 +242,7 @@ if (!function_exists('fmtDoc')) {
 
     <?php else: ?>
     <!-- WIZARD EMISSAO NFS-e -->
-    <div class="span12">
+    <div class="col-12">
         <div class="widget-box" style="background:var(--wid-dark,#1c1d26); border-color:var(--dark-2,#272835)">
             <div class="widget-title" style="background:var(--dark-0,#191a22); border-bottom:1px solid var(--dark-2,#272835); color:var(--title,#d4d8e0)">
                 <span class="icon"><i class="fas fa-file-invoice" style="color:var(--dark-azul,#1086dd)"></i></span>
@@ -252,8 +252,8 @@ if (!function_exists('fmtDoc')) {
 
                 <!-- Importar XML externo -->
                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cNFSe')): ?>
-                <div class="row-fluid" style="margin-bottom:15px">
-                    <div class="span12">
+                <div class="row" style="margin-bottom:15px">
+                    <div class="col-12">
                         <div class="well well-small" style="background:rgba(82,69,159,0.15); border-color:rgba(82,69,159,0.3); color:#caced8">
                             <div style="display:flex; align-items:center; justify-content:space-between">
                                 <div>
@@ -261,7 +261,7 @@ if (!function_exists('fmtDoc')) {
                                     <br>
                                     <small style="color:var(--dark-cinz,#8788a4)">Importe o XML da nota fiscal com preview dos dados antes de salvar.</small>
                                 </div>
-                                <a href="<?= site_url('certificado/importar_nfse') ?>?os_id=<?= $result->idOs ?>" class="btn btn-small" style="background:#52459f; border-color:#52459f; color:#fff; white-space:nowrap">
+                                <a href="<?= site_url('certificado/importar_nfse') ?>?os_id=<?= $result->idOs ?>" class="btn btn-sm" style="background:#52459f; border-color:#52459f; color:#fff; white-space:nowrap">
                                     <i class="fas fa-upload"></i> Importar XML
                                 </a>
                             </div>
@@ -271,8 +271,8 @@ if (!function_exists('fmtDoc')) {
                 <?php endif; ?>
 
                 <!-- Passos -->
-                <div class="row-fluid" style="margin-bottom:20px">
-                    <div class="span12">
+                <div class="row" style="margin-bottom:20px">
+                    <div class="col-12">
                         <ul class="wizard-steps" id="wizard-steps">
                             <li class="active" data-step="1"><span class="wizard-step-number">1</span><span class="wizard-step-label">Dados</span></li>
                             <li data-step="2"><span class="wizard-step-number">2</span><span class="wizard-step-label">Impostos</span></li>
@@ -286,11 +286,11 @@ if (!function_exists('fmtDoc')) {
                 <div class="wizard-step-panel active" id="wizard-step-1">
 
                     <!-- RESUMO DA OS -->
-                    <div class="row-fluid" style="margin-bottom:15px">
-                        <div class="span12">
+                    <div class="row" style="margin-bottom:15px">
+                        <div class="col-12">
                             <div class="well well-small" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8)">
-                                <div class="row-fluid">
-                                    <div class="span6">
+                                <div class="row">
+                                    <div class="col-6">
                                         <h6 style="margin-top:0; color:var(--title,#d4d8e0)">
                                             <i class="fas fa-clipboard-list" style="color:var(--dark-azul,#1086dd)"></i>
                                             Resumo da OS #<?= $result->idOs ?>
@@ -298,7 +298,7 @@ if (!function_exists('fmtDoc')) {
                                         <strong style="color:var(--title,#d4d8e0)"><?= htmlspecialchars($result->nomeCliente ?? '') ?></strong><br>
                                         <span style="color:var(--dark-cinz,#8788a4)"><?= !empty($result->documento) ? 'CPF/CNPJ: ' . fmtDoc($result->documento) : 'Documento nao informado' ?></span>
                                     </div>
-                                    <div class="span6 text-right">
+                                    <div class="col-6 text-right">
                                         <div style="display:inline-block; text-align:left; min-width:180px">
                                             <div style="margin-bottom:4px"><strong style="color:var(--title,#d4d8e0)">Servicos:</strong> <span style="color:var(--branco,#caced8)"><?= fmtMoney($totalServico) ?></span></div>
                                             <?php if ($totalProdutos > 0): ?>
@@ -318,8 +318,8 @@ if (!function_exists('fmtDoc')) {
                         </div>
                     </div>
 
-                    <div class="row-fluid">
-                        <div class="span6">
+                    <div class="row">
+                        <div class="col-6">
                             <div class="well well-small" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8)">
                                 <h6 style="margin-top:0; color:var(--title,#d4d8e0); border-bottom:1px solid var(--dark-2,#272835); padding-bottom:6px"><i class="fas fa-building" style="color:var(--dark-azul,#1086dd)"></i> Prestador</h6>
                                 <?php if ($emitente): ?>
@@ -332,7 +332,7 @@ if (!function_exists('fmtDoc')) {
                                 <?php endif; ?>
                             </div>
                         </div>
-                        <div class="span6">
+                        <div class="col-6">
                             <div class="well well-small" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8)">
                                 <h6 style="margin-top:0; color:var(--title,#d4d8e0); border-bottom:1px solid var(--dark-2,#272835); padding-bottom:6px"><i class="fas fa-user" style="color:var(--dark-azul,#1086dd)"></i> Tomador</h6>
                                 <strong style="color:var(--title,#d4d8e0)"><?= htmlspecialchars($result->nomeCliente ?? '') ?></strong><br>
@@ -351,7 +351,7 @@ if (!function_exists('fmtDoc')) {
 
                     <?php if (!empty($servicos) || !empty($produtos)): ?>
                     <h6 style="color:var(--title,#d4d8e0)"><i class="fas fa-list" style="color:var(--dark-azul,#1086dd)"></i> Itens da OS</h6>
-                    <table class="table table-condensed table-bordered" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8)">
+                    <table class="table table-sm table-bordered" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8)">
                         <thead>
                             <tr style="background:var(--dark-1,#14141a)">
                                 <th style="border-color:var(--dark-2,#272835); color:var(--title,#d4d8e0)">Item</th>
@@ -430,15 +430,15 @@ if (!function_exists('fmtDoc')) {
 
                         <hr style="margin:10px 0; border-top:1px solid var(--dark-2,#272835)">
                         <div style="margin-bottom:6px"><strong style="font-size:13px; color:var(--title,#d4d8e0)"><i class="fas fa-hand-holding-usd" style="color:#fd7670"></i> Retencoes do Tomador</strong> <small style="color:var(--dark-cinz,#8788a4)">(impostos retidos na fonte)</small></div>
-                        <div class="row-fluid">
-                            <div class="span4"><label class="checkbox" style="font-size:12px; margin-bottom:5px; color:var(--branco,#caced8)"><input type="checkbox" id="retem-iss" name="retem_iss" value="1"> ISS (<span id="aliquota-iss-display"><?= $tributacao['aliquota_iss'] ?? '5.00' ?>%</span>) <span id="retem-iss-valor" style="color:#fd7670; font-weight:bold"></span></label></div>
-                            <div class="span4"><label class="checkbox" style="font-size:12px; margin-bottom:5px; color:var(--branco,#caced8)"><input type="checkbox" id="retem-irrf" name="retem_irrf" value="1"> IRRF (1,5%) <span id="retem-irrf-valor" style="color:#fd7670; font-weight:bold"></span></label></div>
-                            <div class="span4"><label class="checkbox" style="font-size:12px; margin-bottom:5px; color:var(--branco,#caced8)"><input type="checkbox" id="retem-pis" name="retem_pis" value="1"> PIS (0,65%) <span id="retem-pis-valor" style="color:#fd7670; font-weight:bold"></span></label></div>
+                        <div class="row">
+                            <div class="col-4"><label class="checkbox" style="font-size:12px; margin-bottom:5px; color:var(--branco,#caced8)"><input type="checkbox" id="retem-iss" name="retem_iss" value="1"> ISS (<span id="aliquota-iss-display"><?= $tributacao['aliquota_iss'] ?? '5.00' ?>%</span>) <span id="retem-iss-valor" style="color:#fd7670; font-weight:bold"></span></label></div>
+                            <div class="col-4"><label class="checkbox" style="font-size:12px; margin-bottom:5px; color:var(--branco,#caced8)"><input type="checkbox" id="retem-irrf" name="retem_irrf" value="1"> IRRF (1,5%) <span id="retem-irrf-valor" style="color:#fd7670; font-weight:bold"></span></label></div>
+                            <div class="col-4"><label class="checkbox" style="font-size:12px; margin-bottom:5px; color:var(--branco,#caced8)"><input type="checkbox" id="retem-pis" name="retem_pis" value="1"> PIS (0,65%) <span id="retem-pis-valor" style="color:#fd7670; font-weight:bold"></span></label></div>
                         </div>
-                        <div class="row-fluid">
-                            <div class="span4"><label class="checkbox" style="font-size:12px; margin-bottom:5px; color:var(--branco,#caced8)"><input type="checkbox" id="retem-cofins" name="retem_cofins" value="1"> COFINS (3,0%) <span id="retem-cofins-valor" style="color:#fd7670; font-weight:bold"></span></label></div>
-                            <div class="span4"><label class="checkbox" style="font-size:12px; margin-bottom:5px; color:var(--branco,#caced8)"><input type="checkbox" id="retem-csll" name="retem_csll" value="1"> CSLL (1,0%) <span id="retem-csll-valor" style="color:#fd7670; font-weight:bold"></span></label></div>
-                            <div class="span4"><strong style="font-size:13px; color:var(--title,#d4d8e0)">Total Retido:</strong> <span id="retem-total-valor" style="color:#fd7670; font-weight:bold; font-size:14px">R$ 0,00</span></div>
+                        <div class="row">
+                            <div class="col-4"><label class="checkbox" style="font-size:12px; margin-bottom:5px; color:var(--branco,#caced8)"><input type="checkbox" id="retem-cofins" name="retem_cofins" value="1"> COFINS (3,0%) <span id="retem-cofins-valor" style="color:#fd7670; font-weight:bold"></span></label></div>
+                            <div class="col-4"><label class="checkbox" style="font-size:12px; margin-bottom:5px; color:var(--branco,#caced8)"><input type="checkbox" id="retem-csll" name="retem_csll" value="1"> CSLL (1,0%) <span id="retem-csll-valor" style="color:#fd7670; font-weight:bold"></span></label></div>
+                            <div class="col-4"><strong style="font-size:13px; color:var(--title,#d4d8e0)">Total Retido:</strong> <span id="retem-total-valor" style="color:#fd7670; font-weight:bold; font-size:14px">R$ 0,00</span></div>
                         </div>
                         <p style="margin:4px 0 0 0; font-size:11px; color:var(--dark-cinz,#8788a4)"><i class="fas fa-exclamation-circle" style="color:#fd7670"></i> As retencoes NAO reduzem o valor da NFS-e. Sao registradas para controle e compensacao no DAS.</p>
                         <div id="aviso-retencao-iss" style="display:none; margin-top:8px; padding:8px 12px; background:rgba(253,118,112,0.15); border:1px solid rgba(253,118,112,0.3); border-radius:4px; color:#fd7670">
@@ -447,54 +447,54 @@ if (!function_exists('fmtDoc')) {
                         </div>
                     </div>
 
-                    <div class="row-fluid" style="margin-top:15px">
-                        <div class="span6">
-                            <div class="control-group">
-                                <label class="control-label" style="color:var(--title,#d4d8e0)"><strong>Valor dos Servicos:</strong></label>
+                    <div class="row" style="margin-top:15px">
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label class="form-label" style="color:var(--title,#d4d8e0)"><strong>Valor dos Servicos:</strong></label>
                                 <div class="controls">
-                                    <div class="input-prepend input-append">
-                                        <span class="add-on" style="background:var(--dark-2,#272835); border-color:var(--dark-2,#272835); color:var(--branco,#caced8)">R$</span>
-                                        <input type="text" name="valor_servicos" id="valor-servicos-wizard" class="span8" value="<?= number_format($valorBaseNFSe, 2, ',', '.') ?>" placeholder="0,00" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8)">
+                                    <div class="input-group input-group">
+                                        <span class="input-group-text" style="background:var(--dark-2,#272835); border-color:var(--dark-2,#272835); color:var(--branco,#caced8)">R$</span>
+                                        <input type="text" name="valor_servicos" id="valor-servicos-wizard" class="col-8" value="<?= number_format($valorBaseNFSe, 2, ',', '.') ?>" placeholder="0,00" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8)">
                                     </div>
-                                    <span class="help-block" id="valor-servicos-help" style="color:var(--dark-cinz,#8788a4)">Valor dos servicos prestados</span>
+                                    <span class="form-text" id="valor-servicos-help" style="color:var(--dark-cinz,#8788a4)">Valor dos servicos prestados</span>
                                 </div>
                             </div>
                         </div>
-                        <div class="span6">
-                            <div class="control-group">
-                                <label class="control-label" style="color:var(--title,#d4d8e0)"><strong>Deducoes:</strong></label>
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label class="form-label" style="color:var(--title,#d4d8e0)"><strong>Deducoes:</strong></label>
                                 <div class="controls">
-                                    <div class="input-prepend input-append">
-                                        <span class="add-on" style="background:var(--dark-2,#272835); border-color:var(--dark-2,#272835); color:var(--branco,#caced8)">R$</span>
-                                        <input type="text" name="valor_deducoes" id="valor-deducoes-wizard" class="span8" value="0,00" placeholder="0,00" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8)">
+                                    <div class="input-group input-group">
+                                        <span class="input-group-text" style="background:var(--dark-2,#272835); border-color:var(--dark-2,#272835); color:var(--branco,#caced8)">R$</span>
+                                        <input type="text" name="valor_deducoes" id="valor-deducoes-wizard" class="col-8" value="0,00" placeholder="0,00" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8)">
                                     </div>
-                                    <span class="help-block" style="color:var(--dark-cinz,#8788a4)">Deducoes legais (materiais, insumos)</span>
+                                    <span class="form-text" style="color:var(--dark-cinz,#8788a4)">Deducoes legais (materiais, insumos)</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="control-group">
-                        <label class="control-label" style="color:var(--title,#d4d8e0)"><strong>Descricao do Servico:</strong></label>
+                    <div class="mb-3">
+                        <label class="form-label" style="color:var(--title,#d4d8e0)"><strong>Descricao do Servico:</strong></label>
                         <div class="controls">
-                            <textarea name="descricao_servico" id="descricao-servico-wizard" class="span12" rows="3" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8)"><?= htmlspecialchars($tributacao['descricao_servico']) ?></textarea>
+                            <textarea name="descricao_servico" id="descricao-servico-wizard" class="col-12" rows="3" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8)"><?= htmlspecialchars($tributacao['descricao_servico']) ?></textarea>
                         </div>
                     </div>
 
-                    <div class="row-fluid">
-                        <div class="span6">
-                            <div class="control-group">
-                                <label class="control-label" style="color:var(--dark-cinz,#8788a4)">Codigo Tributacao LC 116:</label>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label class="form-label" style="color:var(--dark-cinz,#8788a4)">Codigo Tributacao LC 116:</label>
                                 <div class="controls">
-                                    <input type="text" class="span12" value="<?= $tributacao['codigo_tributacao_nacional'] ?>" readonly style="background:var(--dark-1,#14141a); border-color:var(--dark-2,#272835); color:var(--dark-cinz,#8788a4)">
+                                    <input type="text" class="col-12" value="<?= $tributacao['codigo_tributacao_nacional'] ?>" readonly style="background:var(--dark-1,#14141a); border-color:var(--dark-2,#272835); color:var(--dark-cinz,#8788a4)">
                                 </div>
                             </div>
                         </div>
-                        <div class="span6">
-                            <div class="control-group">
-                                <label class="control-label" style="color:var(--dark-cinz,#8788a4)">Codigo Municipal:</label>
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label class="form-label" style="color:var(--dark-cinz,#8788a4)">Codigo Municipal:</label>
                                 <div class="controls">
-                                    <input type="text" class="span12" value="<?= $tributacao['codigo_tributacao_municipal'] ?>" readonly style="background:var(--dark-1,#14141a); border-color:var(--dark-2,#272835); color:var(--dark-cinz,#8788a4)">
+                                    <input type="text" class="col-12" value="<?= $tributacao['codigo_tributacao_municipal'] ?>" readonly style="background:var(--dark-1,#14141a); border-color:var(--dark-2,#272835); color:var(--dark-cinz,#8788a4)">
                                 </div>
                             </div>
                         </div>
@@ -506,10 +506,10 @@ if (!function_exists('fmtDoc')) {
                     <div id="wizard-loading-indicator" style="display:none; margin-bottom:15px; padding:12px 15px; background:rgba(16,134,221,0.15); border:1px solid rgba(16,134,221,0.3); border-radius:4px; color:#1086dd; text-align:center">
                         <i class="fas fa-spinner fa-spin"></i> <strong>Calculando impostos...</strong> Aguarde um instante.
                     </div>
-                    <div class="row-fluid">
-                        <div class="span6">
+                    <div class="row">
+                        <div class="col-6">
                             <h6 style="color:var(--title,#d4d8e0)"><i class="fas fa-calculator" style="color:var(--dark-azul,#1086dd)"></i> Calculo de Impostos <span class="label" style="background:#1086dd; color:#fff; font-size:11px">Simples Nacional</span></h6>
-                            <table class="table table-condensed" id="impostos-table" style="font-size:13px; background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8)">
+                            <table class="table table-sm" id="impostos-table" style="font-size:13px; background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8)">
                                 <tbody>
                                     <tr><td style="border-color:var(--dark-2,#272835)"><strong>Valor Bruto</strong></td><td class="text-right" id="imp-valor-bruto" style="border-color:var(--dark-2,#272835)">—</td></tr>
                                     <tr><td style="border-color:var(--dark-2,#272835)"><strong>(-) Deducoes</strong></td><td class="text-right" id="imp-deducoes" style="border-color:var(--dark-2,#272835)">—</td></tr>
@@ -525,7 +525,7 @@ if (!function_exists('fmtDoc')) {
                                 <i class="fas fa-info-circle" style="color:#1086dd"></i> Simples Nacional: imposto recolhido via DAS mensal. O valor liquido NAO e reduzido pelas retencoes.
                             </p>
                         </div>
-                        <div class="span6">
+                        <div class="col-6">
                             <div class="well well-small" style="text-align:center; padding:30px 20px; background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835)">
                                 <i class="fas fa-file-pdf" style="font-size:48px; color:#fd7670; display:block; margin-bottom:15px"></i>
                                 <h5 style="color:var(--title,#d4d8e0)">Pre-visualizacao do Documento NFS-e</h5>
@@ -539,9 +539,9 @@ if (!function_exists('fmtDoc')) {
 
                 <!-- PASSO 3 -->
                 <div class="wizard-step-panel" id="wizard-step-3">
-                    <div class="row-fluid">
-                        <div class="span12">
-                            <div class="control-group">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="mb-3">
                                 <label class="checkbox" style="font-size:14px; margin-bottom:15px; color:var(--branco,#caced8)">
                                     <input type="checkbox" id="gerar-boleto-wizard" value="1" checked>
                                     <strong style="color:var(--title,#d4d8e0)">Gerar boleto de cobranca junto com a NFS-e</strong>
@@ -551,32 +551,32 @@ if (!function_exists('fmtDoc')) {
                                 <div class="alert" style="margin-bottom:15px; background:rgba(16,134,221,0.15); border-color:rgba(16,134,221,0.3); color:#1086dd">
                                     <i class="fas fa-info-circle"></i> O boleto sera gerado com o <strong>valor integral</strong> dos servicos. O DAS (Simples Nacional) e recolhido mensalmente pelo prestador e <strong>nao desconta</strong> do boleto.
                                 </div>
-                                <div class="row-fluid">
-                                    <div class="span4">
-                                        <div class="control-group">
-                                            <label class="control-label" style="color:var(--title,#d4d8e0)"><strong>Valor do Boleto:</strong></label>
+                                <div class="row">
+                                    <div class="col-4">
+                                        <div class="mb-3">
+                                            <label class="form-label" style="color:var(--title,#d4d8e0)"><strong>Valor do Boleto:</strong></label>
                                             <div class="controls">
-                                                <div class="input-prepend input-append">
-                                                    <span class="add-on" style="background:var(--dark-2,#272835); border-color:var(--dark-2,#272835); color:var(--branco,#caced8)">R$</span>
-                                                    <input type="text" id="valor-boleto-wizard" class="span8" readonly style="background:var(--dark-1,#14141a); border-color:var(--dark-2,#272835); color:#62eba6; font-weight:bold">
+                                                <div class="input-group input-group">
+                                                    <span class="input-group-text" style="background:var(--dark-2,#272835); border-color:var(--dark-2,#272835); color:var(--branco,#caced8)">R$</span>
+                                                    <input type="text" id="valor-boleto-wizard" class="col-8" readonly style="background:var(--dark-1,#14141a); border-color:var(--dark-2,#272835); color:#62eba6; font-weight:bold">
                                                 </div>
                                                 <small id="valor-boleto-ajuda" style="color:var(--dark-cinz,#8788a4); font-size:11px">Valor integral = Servicos - Deducoes</small>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="span4">
-                                        <div class="control-group">
-                                            <label class="control-label" style="color:var(--title,#d4d8e0)"><strong>Data de Vencimento:</strong></label>
+                                    <div class="col-4">
+                                        <div class="mb-3">
+                                            <label class="form-label" style="color:var(--title,#d4d8e0)"><strong>Data de Vencimento:</strong></label>
                                             <div class="controls">
-                                                <input type="date" name="data_vencimento" id="data-vencimento-wizard" class="span12" value="<?= date('Y-m-d', strtotime('+5 days')) ?>" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8)">
+                                                <input type="date" name="data_vencimento" id="data-vencimento-wizard" class="col-12" value="<?= date('Y-m-d', strtotime('+5 days')) ?>" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8)">
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="span4">
-                                        <div class="control-group">
-                                            <label class="control-label" style="color:var(--title,#d4d8e0)"><strong>Instrucoes:</strong></label>
+                                    <div class="col-4">
+                                        <div class="mb-3">
+                                            <label class="form-label" style="color:var(--title,#d4d8e0)"><strong>Instrucoes:</strong></label>
                                             <div class="controls">
-                                                <textarea name="instrucoes" id="instrucoes-boleto-wizard" class="span12" rows="2" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8)">Pagavel em qualquer banco ate o vencimento. Apos o vencimento, consultar multas e juros.</textarea>
+                                                <textarea name="instrucoes" id="instrucoes-boleto-wizard" class="col-12" rows="2" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8)">Pagavel em qualquer banco ate o vencimento. Apos o vencimento, consultar multas e juros.</textarea>
                                             </div>
                                         </div>
                                     </div>
@@ -601,11 +601,11 @@ if (!function_exists('fmtDoc')) {
                     <div class="alert" style="margin-bottom:20px; background:rgba(16,134,221,0.15); border-color:rgba(16,134,221,0.3); color:#1086dd">
                         <i class="fas fa-clipboard-check"></i> <strong>Resumo da Emissao</strong> — Verifique os dados antes de confirmar.
                     </div>
-                    <div class="row-fluid">
-                        <div class="span6">
+                    <div class="row">
+                        <div class="col-6">
                             <div class="well well-small" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835)">
                                 <h6 style="margin-top:0; color:var(--title,#d4d8e0)"><i class="fas fa-file-invoice" style="color:var(--dark-azul,#1086dd)"></i> NFS-e <span class="label" style="background:#1086dd; color:#fff; font-size:11px">Simples Nacional</span></h6>
-                                <table class="table table-condensed" style="margin-bottom:0; font-size:12px; background:transparent; border-color:var(--dark-2,#272835); color:var(--branco,#caced8)">
+                                <table class="table table-sm" style="margin-bottom:0; font-size:12px; background:transparent; border-color:var(--dark-2,#272835); color:var(--branco,#caced8)">
                                     <tr><td style="border:none; padding:2px 0; color:var(--dark-cinz,#8788a4)"><strong style="color:var(--branco,#caced8)">Prestador:</strong></td><td style="border:none; padding:2px 0"><span id="res-prestador"><?= htmlspecialchars($emitente->nome ?? $emitente->razaosocial ?? '—') ?></span></td></tr>
                                     <tr><td style="border:none; padding:2px 0; color:var(--dark-cinz,#8788a4)"><strong style="color:var(--branco,#caced8)">Tomador:</strong></td><td style="border:none; padding:2px 0"><span id="res-tomador"><?= htmlspecialchars($result->nomeCliente ?? '—') ?></span></td></tr>
                                     <tr><td style="border:none; padding:2px 0; color:var(--dark-cinz,#8788a4)"><strong style="color:var(--branco,#caced8)">Valor Servicos:</strong></td><td style="border:none; padding:2px 0"><span id="res-valor-servicos">—</span></td></tr>
@@ -617,7 +617,7 @@ if (!function_exists('fmtDoc')) {
                                 </table>
                             </div>
                         </div>
-                        <div class="span6">
+                        <div class="col-6">
                             <div class="well well-small" id="res-boleto-section" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835)">
                                 <h6 style="margin-top:0; color:var(--title,#d4d8e0)"><i class="fas fa-barcode" style="color:#fc9d0f"></i> Boleto</h6>
                                 <p id="res-boleto-info" style="color:var(--branco,#caced8)">—</p>
@@ -646,7 +646,7 @@ if (!function_exists('fmtDoc')) {
 
     <!-- Historico -->
     <?php if ($nfse_atual && !empty($historico_nfse) && is_array($historico_nfse) && count($historico_nfse) > 1): ?>
-    <div class="span12" style="margin-top:10px">
+    <div class="col-12" style="margin-top:10px">
         <div class="widget-box" style="background:var(--wid-dark,#1c1d26); border-color:var(--dark-2,#272835)">
             <div class="widget-title" style="background:var(--dark-0,#191a22); border-bottom:1px solid var(--dark-2,#272835); color:var(--title,#d4d8e0)">
                 <span class="icon"><i class="fas fa-history" style="color:var(--dark-azul,#1086dd)"></i></span>

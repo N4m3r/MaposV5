@@ -1,4 +1,4 @@
-<?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
+﻿<?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
 
 <style>
 .obra-execucao { padding: 20px; }
@@ -539,75 +539,75 @@
         </div>
 
         <!-- Modal: Atualizar Progresso -->
-        <div id="modal-atualizar-progresso" class="modal hide fade" tabindex="-1" role="dialog">
+        <div id="modal-atualizar-progresso" class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-header" style="background: linear-gradient(135deg, #11998e, #38ef7d); color: white;">
-                <button type="button" class="close" data-dismiss="modal" style="color: white;">×</button>
+                <button type="button" class="close" data-bs-dismiss="modal" style="color: white;">×</button>
                 <h4><i class="icon-refresh"></i> Atualizar Progresso</h4>
             </div>
             <form id="form-atualizar-progresso" action="<?= site_url('tecnicos_admin/tecnico_atualizar_etapa') ?>" method="post">
                 <input type="hidden" name="etapa_id" id="progresso-etapa-id">
                 <div class="modal-body" style="padding: 30px;">
-                    <div class="control-group">
+                    <div class="mb-3">
                         <label style="font-weight: 600; color: #333;">Etapa</label>
-                        <input type="text" id="progresso-etapa-nome" class="span12" readonly style="background: #f5f5f5; border: none; padding: 12px; border-radius: 8px;">
+                        <input type="text" id="progresso-etapa-nome" class="col-12" readonly style="background: #f5f5f5; border: none; padding: 12px; border-radius: 8px;">
                     </div>
 
-                    <div class="control-group" style="margin-top: 20px;">
+                    <div class="mb-3" style="margin-top: 20px;">
                         <label style="font-weight: 600; color: #333;">% Concluído</label>
-                        <input type="range" name="percentual" id="progresso-percentual" class="span12" min="0" max="100" style="margin: 15px 0;">
+                        <input type="range" name="percentual" id="progresso-percentual" class="col-12" min="0" max="100" style="margin: 15px 0;">
                         <div style="text-align: center; font-size: 32px; font-weight: 700; color: #11998e;">
                             <span id="progresso-valor">0</span>%
                         </div>
                     </div>
 
-                    <div class="control-group" style="margin-top: 20px;">
+                    <div class="mb-3" style="margin-top: 20px;">
                         <label style="font-weight: 600; color: #333;">Observação</label>
-                        <textarea name="observacao" class="span12" rows="3" placeholder="Descreva o que foi realizado..." style="border-radius: 10px; border: 2px solid #e8e8e8; padding: 12px;"></textarea>
+                        <textarea name="observacao" class="col-12" rows="3" placeholder="Descreva o que foi realizado..." style="border-radius: 10px; border: 2px solid #e8e8e8; padding: 12px;"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-large" data-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-large" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-success btn-large"><i class="icon-save"></i> Salvar Progresso</button>
                 </div>
             </form>
         </div>
 
         <!-- Modal: Tarefa -->
-        <div id="modal-tarefa-progresso" class="modal hide fade" tabindex="-1" role="dialog">
+        <div id="modal-tarefa-progresso" class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-header" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white;">
-                <button type="button" class="close" data-dismiss="modal" style="color: white;">×</button>
+                <button type="button" class="close" data-bs-dismiss="modal" style="color: white;">×</button>
                 <h4><i class="icon-pushpin"></i> Atualizar Tarefa</h4>
             </div>
             <form id="form-tarefa-progresso">
                 <input type="hidden" name="tarefa_id" id="tarefa-id">
                 <div class="modal-body" style="padding: 30px;">
-                    <div class="control-group">
+                    <div class="mb-3">
                         <label style="font-weight: 600; color: #333;">Tarefa</label>
-                        <input type="text" id="tarefa-titulo" class="span12" readonly style="background: #f5f5f5; border: none; padding: 12px; border-radius: 8px;">
+                        <input type="text" id="tarefa-titulo" class="col-12" readonly style="background: #f5f5f5; border: none; padding: 12px; border-radius: 8px;">
                     </div>
 
-                    <div class="control-group" style="margin-top: 20px;">
+                    <div class="mb-3" style="margin-top: 20px;">
                         <label style="font-weight: 600; color: #333;">% Concluído</label>
-                        <input type="range" name="percentual" id="tarefa-percentual" class="span12" min="0" max="100" style="margin: 15px 0;">
+                        <input type="range" name="percentual" id="tarefa-percentual" class="col-12" min="0" max="100" style="margin: 15px 0;">
                         <div style="text-align: center; font-size: 32px; font-weight: 700; color: #667eea;">
                             <span id="tarefa-valor">0</span>%
                         </div>
                     </div>
 
                     <div class="form-row" style="margin-top: 20px;">
-                        <div class="control-group" style="flex: 1;">
+                        <div class="mb-3" style="flex: 1;">
                             <label style="font-weight: 600; color: #333;">Horas Trabalhadas</label>
-                            <input type="number" name="horas_trabalhadas" id="tarefa-horas" class="span12" step="0.5" min="0" placeholder="Ex: 2.5" style="border-radius: 10px; border: 2px solid #e8e8e8; padding: 12px;">
+                            <input type="number" name="horas_trabalhadas" id="tarefa-horas" class="col-12" step="0.5" min="0" placeholder="Ex: 2.5" style="border-radius: 10px; border: 2px solid #e8e8e8; padding: 12px;">
                         </div>
                     </div>
 
-                    <div class="control-group" style="margin-top: 20px;">
+                    <div class="mb-3" style="margin-top: 20px;">
                         <label style="font-weight: 600; color: #333;">Observação</label>
-                        <textarea name="observacao" id="tarefa-observacao" class="span12" rows="3" placeholder="O que foi realizado..." style="border-radius: 10px; border: 2px solid #e8e8e8; padding: 12px;"></textarea>
+                        <textarea name="observacao" id="tarefa-observacao" class="col-12" rows="3" placeholder="O que foi realizado..." style="border-radius: 10px; border: 2px solid #e8e8e8; padding: 12px;"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-large" data-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-large" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-success btn-large"><i class="icon-save"></i> Salvar</button>
                 </div>
             </form>

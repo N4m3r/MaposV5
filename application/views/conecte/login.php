@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-br">
 
 <head>
@@ -8,8 +8,7 @@
     <meta name="description" content="<?php echo $this->config->item('app_name') . ' - ' . $this->config->item('app_subname') ?>">
     <meta name="csrf-token-name" content="<?= config_item("csrf_token_name") ?>">
     <meta name="csrf-cookie-name" content="<?= config_item("csrf_cookie_name") ?>">
-    <link rel="stylesheet" href="<?php echo base_url() ?>assets/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="<?php echo base_url() ?>assets/css/bootstrap-responsive.min.css" />
+    <link rel="stylesheet" href="<?php echo base_url() ?>assets/css/bootstrap5.min.css" />
     <link rel="stylesheet" href="<?php echo base_url() ?>assets/css/matrix-login.css" />
     <link href="<?= base_url('assets/css/particula.css'); ?>" rel="stylesheet">
     <link href="<?php echo base_url(); ?>assets/font-awesome/css/font-awesome.css" rel="stylesheet" />
@@ -63,19 +62,19 @@ $parse_cpfcnpj = $this->input->get('c');
                                         </div>
                                     </div>
                                     <div id="mcell">Versão: <?= $this->config->item('app_version'); ?></div>
-                                    <div class="control-group">
+                                    <div class="mb-3">
                                         <div class="controls">
                                             <div class="main_input_box">
-                                                <span class="add-on bg_lg"><i class='bx bx-user-plus iconU'></i></span>
+                                                <span class="input-group-text bg_lg"><i class='bx bx-user-plus iconU'></i></span>
                                                 <input id="email" name="email" type="text" placeholder="Email" value="<?php echo trim($parse_email); ?>" />
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div class="control-group">
+                                    <div class="mb-3">
                                         <div class="controls">
                                             <div class="main_input_box">
-                                                <span class="add-on bg_ly"><i class='bx bx-id-card iconU'></i></span>
+                                                <span class="input-group-text bg_ly"><i class='bx bx-id-card iconU'></i></span>
                                                 <input class="" maxlength="18" size="18" name="senha" type="password" placeholder="Senha" value="" />
                                             </div>
                                         </div>
@@ -100,7 +99,7 @@ $parse_cpfcnpj = $this->input->get('c');
         </div>
     </div>
 
-    <script src="<?php echo base_url() ?>assets/js/bootstrap.min.js"></script>
+    <script src="<?php echo base_url() ?>assets/js/bootstrap5.bundle.min.js"></script>
     <script src="<?php echo base_url() ?>assets/js/jquery.validate.js"></script>
     <script src="<?php echo base_url() ?>assets/js/sweetalert2.all.min.js"></script>
     <?php if ($this->session->flashdata('success') != null) { ?>
@@ -179,14 +178,14 @@ $parse_cpfcnpj = $this->input->get('c');
                     return false;
                 },
 
-                errorClass: "help-inline",
+                errorClass: "form-text",
                 errorElement: "span",
                 highlight: function(element, errorClass, validClass) {
-                    $(element).parents('.control-group').addClass('error');
+                    $(element).parents('.mb-3').addClass('error');
                 },
                 unhighlight: function(element, errorClass, validClass) {
-                    $(element).parents('.control-group').removeClass('error');
-                    $(element).parents('.control-group').addClass('success');
+                    $(element).parents('.mb-3').removeClass('error');
+                    $(element).parents('.mb-3').addClass('success');
                 }
             });
 

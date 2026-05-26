@@ -1,4 +1,4 @@
-<style>
+﻿<style>
     /* Hiding the checkbox, but allowing it to be focused */
     .badgebox {
         opacity: 0;
@@ -25,8 +25,8 @@
         text-indent: 0;
     }
 </style>
-<div class="row-fluid" style="margin-top:0">
-    <div class="span12">
+<div class="row" style="margin-top:0">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title" style="margin: -20px 0 0">
                 <span class="icon">
@@ -37,20 +37,20 @@
             <div class="widget-content nopadding tab-content">
                 <?php echo e($custom_error); ?>
                 <form action="<?php echo current_url(); ?>" id="formProduto" method="post" class="form-horizontal">
-                    <div class="control-group">
-                        <label for="codDeBarra" class="control-label">Código de Barra<span class=""></span></label>
+                    <div class="mb-3">
+                        <label for="codDeBarra" class="form-label">Código de Barra<span class=""></span></label>
                         <div class="controls">
                             <input id="codDeBarra" type="text" name="codDeBarra" value="<?php echo set_value('codDeBarra'); ?>" />
                         </div>
                     </div>
-                    <div class="control-group">
-                        <label for="descricao" class="control-label">Descrição<span class="required">*</span></label>
+                    <div class="mb-3">
+                        <label for="descricao" class="form-label">Descrição<span class="required">*</span></label>
                         <div class="controls">
                             <input id="descricao" type="text" name="descricao" value="<?php echo set_value('descricao'); ?>" />
                         </div>
                     </div>
-                    <div class="control-group">
-                        <label class="control-label">Tipo de Movimento</label>
+                    <div class="mb-3">
+                        <label class="form-label">Tipo de Movimento</label>
                         <div class="controls">
                             <label for="entrada" class="btn btn-default" style="margin-top: 5px;">Entrada
                                 <input type="checkbox" id="entrada" name="entrada" class="badgebox" value="1" checked>
@@ -62,15 +62,15 @@
                             </label>
                         </div>
                     </div>
-                    <div class="control-group">
-                        <label for="precoCompra" class="control-label">Preço de Compra<span class="required">*</span></label>
+                    <div class="mb-3">
+                        <label for="precoCompra" class="form-label">Preço de Compra<span class="required">*</span></label>
                         <div class="controls">
                             <input id="precoCompra" class="money" data-affixes-stay="true" data-thousands="" data-decimal="." type="text" name="precoCompra" value="<?php echo set_value('precoCompra'); ?>" />
                             <strong><span style="color: red" id="errorAlert"></span><strong>
                         </div>
                     </div>
-                    <div class="control-group">
-                        <label for="Lucro" class="control-label">Lucro</label>
+                    <div class="mb-3">
+                        <label for="Lucro" class="form-label">Lucro</label>
                         <div class="controls">
                             <select id="selectLucro" name="selectLucro" style="width: 10.5em;">
                               <option value="markup">Markup</option>
@@ -80,8 +80,8 @@
                             <i class="icon-info-sign tip-left" title="Markup: Porcentagem aplicada ao valor de compra | Margem de Lucro: Porcentagem aplicada ao valor de venda"></i>
                         </div>
                     </div>
-                    <div class="control-group">
-                        <label for="precoVenda" class="control-label">Preço de Venda<span class="required">*</span></label>
+                    <div class="mb-3">
+                        <label for="precoVenda" class="form-label">Preço de Venda<span class="required">*</span></label>
                         <div class="controls">
                             <input id="precoVenda" class="money" data-affixes-stay="true" data-thousands="" data-decimal="." type="text" name="precoVenda" value="<?php echo set_value('precoVenda'); ?>" />
                             <button type="button" class="btn btn-warning" onclick="zerarValorVenda()" title="Zerar Valor" style="margin-left: 10px;">
@@ -89,29 +89,29 @@
                             </button>
                         </div>
                     </div>
-                    <div class="control-group">
-                        <label for="unidade" class="control-label">Unidade<span class="required">*</span></label>
+                    <div class="mb-3">
+                        <label for="unidade" class="form-label">Unidade<span class="required">*</span></label>
                         <div class="controls">
                             <select id="unidade" name="unidade"></select>
                         </div>
                     </div>
-                    <div class="control-group">
-                        <label for="estoque" class="control-label">Estoque<span class="required">*</span></label>
+                    <div class="mb-3">
+                        <label for="estoque" class="form-label">Estoque<span class="required">*</span></label>
                         <div class="controls">
                             <input id="estoque" type="text" name="estoque" value="<?php echo set_value('estoque'); ?>" />
                         </div>
                     </div>
-                    <div class="control-group">
-                        <label for="estoqueMinimo" class="control-label">Estoque Mínimo</label>
+                    <div class="mb-3">
+                        <label for="estoqueMinimo" class="form-label">Estoque Mínimo</label>
                         <div class="controls">
                             <input id="estoqueMinimo" type="text" name="estoqueMinimo" value="<?php echo set_value('estoqueMinimo'); ?>" />
                         </div>
                     </div>
                     <div class="form-actions">
-                        <div class="span12">
-                            <div class="span6 offset3" style="display: flex;justify-content: center">
-                                <button type="submit" class="button btn btn-mini btn-success" style="max-width: 160px"><span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2">Adicionar</span></button>
-                                <a href="<?php echo base_url() ?>index.php/produtos" id="" class="button btn btn-mini btn-warning"><span class="button__icon"><i class="bx bx-undo"></i></span><span class="button__text2">Voltar</span></a>
+                        <div class="col-12">
+                            <div class="col-6 offset-md-3" style="display: flex;justify-content: center">
+                                <button type="submit" class="button btn btn-sm btn-success" style="max-width: 160px"><span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2">Adicionar</span></button>
+                                <a href="<?php echo base_url() ?>index.php/produtos" id="" class="button btn btn-sm btn-warning"><span class="button__icon"><i class="bx bx-undo"></i></span><span class="button__text2">Voltar</span></a>
                             </div>
                         </div>
                     </div>
@@ -230,14 +230,14 @@
                     required: 'Campo Requerido.'
                 }
             },
-            errorClass: "help-inline",
+            errorClass: "form-text",
             errorElement: "span",
             highlight: function(element, errorClass, validClass) {
-                $(element).parents('.control-group').addClass('error');
+                $(element).parents('.mb-3').addClass('error');
             },
             unhighlight: function(element, errorClass, validClass) {
-                $(element).parents('.control-group').removeClass('error');
-                $(element).parents('.control-group').addClass('success');
+                $(element).parents('.mb-3').removeClass('error');
+                $(element).parents('.mb-3').addClass('success');
             }
         });
     });

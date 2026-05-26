@@ -1,4 +1,4 @@
-<!-- Gestão de Obras - Versão Moderna -->
+﻿<!-- Gestão de Obras - Versão Moderna -->
 <div class="new122">
     <!-- Header -->
     <div class="widget-title" style="margin: -20px 0 0">
@@ -7,7 +7,7 @@
         </span>
         <h5>Gestão de Obras</h5>
         <div class="buttons">
-            <a href="#modal-nova-obra" data-toggle="modal" class="button btn btn-mini btn-success">
+            <a href="#modal-nova-obra" data-bs-toggle="modal" class="button btn btn-sm btn-success">
                 <span class="button__icon"><i class="bx bx-plus-circle"></i></span>
                 <span class="button__text2">Nova Obra</span>
             </a>
@@ -15,38 +15,38 @@
     </div>
 
     <!-- Estatísticas -->
-    <div class="row-fluid" style="margin: 15px 0 25px;">
-        <div class="span2">
+    <div class="row" style="margin: 15px 0 25px;">
+        <div class="col-2">
             <div class="status-card total">
                 <span class="status-number"><?= count($obras) ?></span>
                 <span class="status-label">Total</span>
             </div>
         </div>
-        <div class="span2">
+        <div class="col-2">
             <div class="status-card planejada">
                 <span class="status-number">-</span>
                 <span class="status-label">Planejadas</span>
             </div>
         </div>
-        <div class="span2">
+        <div class="col-2">
             <div class="status-card andamento">
                 <span class="status-number">-</span>
                 <span class="status-label">Em Andamento</span>
             </div>
         </div>
-        <div class="span2">
+        <div class="col-2">
             <div class="status-card paralisada">
                 <span class="status-number">-</span>
                 <span class="status-label">Paralisadas</span>
             </div>
         </div>
-        <div class="span2">
+        <div class="col-2">
             <div class="status-card concluida">
                 <span class="status-number">-</span>
                 <span class="status-label">Concluídas</span>
             </div>
         </div>
-        <div class="span2">
+        <div class="col-2">
             <div class="status-card progresso">
                 <span class="status-number">-</span>
                 <span class="status-label">Progresso Médio</span>
@@ -56,7 +56,7 @@
 
     <!-- Lista de Obras -->
     <?php if (!empty($obras)): ?>
-        <div class="row-fluid">
+        <div class="row">
             <?php foreach ($obras as $obra):
                 $statusConfigArray = [
                     'planejamento' => ['label' => 'Planejada', 'class' => 'planejada', 'icon' => 'bx-calendar'],
@@ -80,7 +80,7 @@
                 ];
                 $tipoColor = $tipoColors[$tipoObra] ?? '#888';
             ?>
-                <div class="span4" style="margin-bottom: 20px;">
+                <div class="col-4" style="margin-bottom: 20px;">
                     <div class="obra-card">
                         <div class="obra-header">
                             <div class="obra-icon" style="background: <?= $tipoColor ?>;">
@@ -203,7 +203,7 @@
                 </div>
             </div>
 
-            <a href="#modal-nova-obra" data-toggle="modal" class="button btn btn-success btn-large">
+            <a href="#modal-nova-obra" data-bs-toggle="modal" class="button btn btn-success btn-large">
                 <span class="button__icon"><i class="bx bx-plus-circle"></i></span>
                 <span class="button__text2">Criar Primeira Obra</span>
             </a>
@@ -212,56 +212,56 @@
 </div>
 
 <!-- Modal Nova Obra -->
-<div id="modal-nova-obra" class="modal hide fade" tabindex="-1" role="dialog">
+<div id="modal-nova-obra" class="modal fade" tabindex="-1" role="dialog">
     <form action="<?= site_url('tecnicos_admin/adicionar_obra') ?>" method="post">
         <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">×</button>
+            <button type="button" class="close" data-bs-dismiss="modal">×</button>
             <h5><i class="bx bx-plus-circle"></i> Nova Obra</h5>
         </div>
 
         <div class="modal-body">
-            <div class="row-fluid">
-                <div class="span8">
-                    <div class="control-group">
-                        <label class="control-label">Nome da Obra *</label>
+            <div class="row">
+                <div class="col-8">
+                    <div class="mb-3">
+                        <label class="form-label">Nome da Obra *</label>
                         <div class="controls">
-                            <input type="text" name="nome" class="span12" placeholder="Ex: Instalação CFTV Condomínio XYZ"
+                            <input type="text" name="nome" class="col-12" placeholder="Ex: Instalação CFTV Condomínio XYZ"
                                    required>
                         </div>
                     </div>
                 </div>
-                <div class="span4">
-                    <div class="control-group">
-                        <label class="control-label">Código</label>
+                <div class="col-4">
+                    <div class="mb-3">
+                        <label class="form-label">Código</label>
                         <div class="controls">
-                            <input type="text" name="codigo" class="span12" placeholder="OB-2024-001">
+                            <input type="text" name="codigo" class="col-12" placeholder="OB-2024-001">
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Busca por CNPJ -->
-            <div class="control-group">
-                <label class="control-label">Buscar por CNPJ</label>
+            <div class="mb-3">
+                <label class="form-label">Buscar por CNPJ</label>
                 <div class="controls">
-                    <div class="input-append span12" style="margin-left: 0;">
-                        <input type="text" id="buscar-cnpj-obra" class="span4" placeholder="00.000.000/0000-00" maxlength="18">
+                    <div class="input-group col-12" style="margin-left: 0;">
+                        <input type="text" id="buscar-cnpj-obra" class="col-4" placeholder="00.000.000/0000-00" maxlength="18">
                         <button type="button" class="btn btn-info" id="btn-buscar-cnpj-obra">
                             <i class="bx bx-search"></i> Buscar
                         </button>
-                        <span class="help-inline" id="msg-busca-cnpj" style="color: #666;">
+                        <span class="form-text" id="msg-busca-cnpj" style="color: #666;">
                             Digite o CNPJ para buscar cliente cadastrado
                         </span>
                     </div>
                 </div>
             </div>
 
-            <div class="row-fluid">
-                <div class="span6">
-                    <div class="control-group">
-                        <label class="control-label">Cliente *</label>
+            <div class="row">
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label class="form-label">Cliente *</label>
                         <div class="controls">
-                            <select name="cliente_id" id="select-cliente-obra" class="span12" required>
+                            <select name="cliente_id" id="select-cliente-obra" class="col-12" required>
                                 <option value="">Selecione...</option>
                                 <?php
                                 // Buscar clientes ativos
@@ -281,11 +281,11 @@
                         </div>
                     </div>
                 </div>
-                <div class="span6">
-                    <div class="control-group">
-                        <label class="control-label">Tipo de Obra</label>
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label class="form-label">Tipo de Obra</label>
                         <div class="controls">
-                            <select name="tipo_obra" class="span12">
+                            <select name="tipo_obra" class="col-12">
                                 <option value="Condominio">Condomínio</option>
                                 <option value="Comercio">Comércio</option>
                                 <option value="Residencia">Residência</option>
@@ -297,43 +297,43 @@
                 </div>
             </div>
 
-            <div class="control-group">
-                <label class="control-label">Endereço</label>
+            <div class="mb-3">
+                <label class="form-label">Endereço</label>
                 <div class="controls">
-                    <input type="text" name="endereco" class="span12" placeholder="Rua, número, bairro, cidade">
+                    <input type="text" name="endereco" class="col-12" placeholder="Rua, número, bairro, cidade">
                 </div>
             </div>
 
-            <div class="row-fluid">
-                <div class="span6">
-                    <div class="control-group">
-                        <label class="control-label">Data de Início</label>
+            <div class="row">
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label class="form-label">Data de Início</label>
                         <div class="controls">
-                            <input type="date" name="data_inicio" class="span12">
+                            <input type="date" name="data_inicio" class="col-12">
                         </div>
                     </div>
                 </div>
-                <div class="span6">
-                    <div class="control-group">
-                        <label class="control-label">Previsão de Término</label>
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label class="form-label">Previsão de Término</label>
                         <div class="controls">
-                            <input type="date" name="data_previsao_fim" class="span12">
+                            <input type="date" name="data_previsao_fim" class="col-12">
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="control-group">
-                <label class="control-label">Descrição / Observações</label>
+            <div class="mb-3">
+                <label class="form-label">Descrição / Observações</label>
                 <div class="controls">
-                    <textarea name="descricao" class="span12" rows="3"
+                    <textarea name="descricao" class="col-12" rows="3"
                               placeholder="Descreva os detalhes da obra..."></textarea>
                 </div>
             </div>
         </div>
 
         <div class="modal-footer" style="display: flex; justify-content: center; gap: 10px;">
-            <button type="button" class="button btn btn-warning" data-dismiss="modal">
+            <button type="button" class="button btn btn-warning" data-bs-dismiss="modal">
                 <span class="button__icon"><i class="bx bx-x"></i></span>
                 <span class="button__text2">Cancelar</span>
             </button>
@@ -655,9 +655,9 @@
     animation: fadeInUp 0.4s ease forwards;
 }
 
-.span4:nth-child(1) .obra-card { animation-delay: 0s; }
-.span4:nth-child(2) .obra-card { animation-delay: 0.1s; }
-.span4:nth-child(3) .obra-card { animation-delay: 0.2s; }
+.col-4:nth-child(1) .obra-card { animation-delay: 0s; }
+.col-4:nth-child(2) .obra-card { animation-delay: 0.1s; }
+.col-4:nth-child(3) .obra-card { animation-delay: 0.2s; }
 </style>
 
 <script>

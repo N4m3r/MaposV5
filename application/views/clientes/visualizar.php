@@ -1,9 +1,9 @@
-<div class="widget-box">
+﻿<div class="widget-box">
     <div class="widget-title" style="margin: 0;font-size: 1.1em">
         <ul class="nav nav-tabs">
-            <li class="active"><a data-toggle="tab" href="#tab1">Dados do Cliente</a></li>
-            <li><a data-toggle="tab" href="#tab2">Ordens de Serviço</a></li>
-            <li><a data-toggle="tab" href="#tab3">Vendas</a></li>
+            <li class="active"><a data-bs-toggle="tab" href="#tab1">Dados do Cliente</a></li>
+            <li><a data-bs-toggle="tab" href="#tab2">Ordens de Serviço</a></li>
+            <li><a data-bs-toggle="tab" href="#tab3">Vendas</a></li>
         </ul>
     </div>
     <div class="widget-content tab-content">
@@ -12,7 +12,7 @@
                 <div class="accordion-group widget-box">
                     <div class="accordion-heading">
                         <div class="widget-title">
-                            <a data-parent="#collapse-group" href="#collapseGOne" data-toggle="collapse">
+                            <a data-parent="#collapse-group" href="#collapseGOne" data-bs-toggle="collapse">
                                 <span><i class='bx bx-user icon-cli' ></i></span>
                                 <h5 style="padding-left: 28px">Dados Pessoais</h5>
                             </a>
@@ -66,7 +66,7 @@
                 <div class="accordion-group widget-box">
                     <div class="accordion-heading">
                         <div class="widget-title">
-                            <a data-parent="#collapse-group" href="#collapseGTwo" data-toggle="collapse">
+                            <a data-parent="#collapse-group" href="#collapseGTwo" data-bs-toggle="collapse">
                                 <span><i class='bx bx-phone icon-cli'></i></span>
                                 <h5 style="padding-left: 28px">Contatos</h5>
                             </a>
@@ -108,7 +108,7 @@
                 <div class="accordion-group widget-box">
                     <div class="accordion-heading">
                         <div class="widget-title">
-                            <a data-parent="#collapse-group" href="#collapseGThree" data-toggle="collapse">
+                            <a data-parent="#collapse-group" href="#collapseGThree" data-bs-toggle="collapse">
                                 <span><i class='bx bx-map-alt icon-cli' ></i></span>
                                 <h5 style="padding-left: 28px">Endereço</h5>
                             </a>
@@ -291,10 +291,10 @@
     </div>
     <div class="modal-footer" style="display:flex;justify-content: center">
         <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eCliente')) {
-            echo '<a title="Icon Title" class="button btn btn-mini btn-info" style="min-width: 140px; top:10px" href="' . base_url() . 'index.php/clientes/editar/' . $result->idClientes . '">
+            echo '<a title="Icon Title" class="button btn btn-sm btn-info" style="min-width: 140px; top:10px" href="' . base_url() . 'index.php/clientes/editar/' . $result->idClientes . '">
 <span class="button__icon"><i class="bx bx-edit"></i></span> <span class="button__text2"> Editar</span></a>';
         } ?>
-        <a title="Voltar" class="button btn btn-mini btn-warning" style="min-width: 140px; top:10px" href="<?php echo site_url() ?>/clientes">
+        <a title="Voltar" class="button btn btn-sm btn-warning" style="min-width: 140px; top:10px" href="<?php echo site_url() ?>/clientes">
           <span class="button__icon"><i class="bx bx-undo"></i></span><span class="button__text2">Voltar</span></a>
     </div>
 </div>

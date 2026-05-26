@@ -1,50 +1,50 @@
-<?php
+﻿<?php
 /**
  * Lista de Retenções de Impostos
  */
 ?>
 
 <!-- Header -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <ul class="breadcrumb">
-            <li><a href="<?= site_url('dashboard') ?>">Dashboard</a> <span class="divider">/</span></li>
-            <li><a href="<?= site_url('impostos') ?>">Impostos</a> <span class="divider">/</span></li>
+            <li><a href="<?= site_url('dashboard') ?>">Dashboard</a> <span class="dropdown-divider">/</span></li>
+            <li><a href="<?= site_url('impostos') ?>">Impostos</a> <span class="dropdown-divider">/</span></li>
             <li class="active">Retenções</li>
         </ul>
     </div>
 </div>
 
 <!-- Filtros e Totais -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-filter"></i></span>
                 <h5>Período e Totais</h5>
                 <div class="buttons">
-                    <a href="<?= site_url('impostos/exportar?data_inicio=' . $data_inicio . '&data_fim=' . $data_fim) ?>" class="btn btn-success btn-small">
+                    <a href="<?= site_url('impostos/exportar?data_inicio=' . $data_inicio . '&data_fim=' . $data_fim) ?>" class="btn btn-success btn-sm">
                         <i class="fas fa-download"></i> Exportar
                     </a>
                 </div>
             </div>
             <div class="widget-content">
-                <div class="row-fluid">
-                    <div class="span3">
+                <div class="row">
+                    <div class="col-3">
                         <form method="get" action="<?= site_url('impostos/retencoes') ?>">
                             <label>Data Início:</label>
-                            <input type="date" name="data_inicio" class="span12" value="<?= $data_inicio ?>" />
+                            <input type="date" name="data_inicio" class="col-12" value="<?= $data_inicio ?>" />
                     </div>
-                    <div class="span3">
+                    <div class="col-3">
                             <label>Data Fim:</label>
-                            <input type="date" name="data_fim" class="span12" value="<?= $data_fim ?>" />
+                            <input type="date" name="data_fim" class="col-12" value="<?= $data_fim ?>" />
                     </div>
-                    <div class="span2">
+                    <div class="col-2">
                             <label>&nbsp;</label>
-                            <button type="submit" class="btn btn-primary span12">Filtrar</button>
+                            <button type="submit" class="btn btn-primary col-12">Filtrar</button>
                         </form>
                     </div>
-                    <div class="span4">
+                    <div class="col-4">
                         <div class="well well-small text-center">
                             <strong>Total Retido no Período:</strong> <br>
                             <span style="font-size: 24px; color: #e74c3c;">R$ <?= number_format($totais->total_impostos ?: 0, 2, ',', '.') ?></span>
@@ -57,8 +57,8 @@
 </div>
 
 <!-- Lista de Retenções -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-list"></i></span>
@@ -101,11 +101,11 @@
                                 </span>
                             </td>
                             <td class="text-center">
-                                <a href="#" class="btn btn-mini btn-info" title="Ver Detalhes" onclick="verDetalhes(<?= $r->id ?>); return false;">
+                                <a href="#" class="btn btn-sm btn-info" title="Ver Detalhes" onclick="verDetalhes(<?= $r->id ?>); return false;">
                                     <i class="fas fa-eye"></i>
                                 </a>
                                 <?php if ($r->status == 'Retido'): ?>
-                                <a href="<?= site_url('impostos/atualizar_status/' . $r->id) ?>" class="btn btn-mini btn-success" title="Marcar como Recolhido"
+                                <a href="<?= site_url('impostos/atualizar_status/' . $r->id) ?>" class="btn btn-sm btn-success" title="Marcar como Recolhido"
                                    onclick="return confirm('Confirmar que este imposto foi recolhido ao governo?')">
                                     <i class="fas fa-check"></i>
                                 </a>
@@ -122,15 +122,15 @@
 </div>
 
 <!-- Modal de Detalhes -->
-<div id="modal-detalhes" class="modal hide">
+<div id="modal-detalhes" class="modal">
     <div class="modal-header">
-        <button data-dismiss="modal" class="close" type="button">×</button>
+        <button data-bs-dismiss="modal" class="close" type="button">×</button>
         <h3>Detalhes da Retenção</h3>
     </div>
     <div class="modal-body">
         <!-- Preenchido via JS -->
     </div>
     <div class="modal-footer">
-        <a data-dismiss="modal" class="btn" href="#">Fechar</a>
+        <a data-bs-dismiss="modal" class="btn" href="#">Fechar</a>
     </div>
 </div>

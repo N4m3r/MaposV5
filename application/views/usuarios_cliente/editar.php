@@ -1,36 +1,36 @@
-<?php
+﻿<?php
 /**
  * View: Editar Usuário do Portal do Cliente - Versão Intuitiva
  */
 ?>
 
-<div class="row-fluid" style="margin-top: 0">
-    <div class="span12">
+<div class="row" style="margin-top: 0">
+    <div class="col-12">
         <ul class="breadcrumb">
-            <li><a href="<?= site_url('dashboard') ?>">Dashboard</a> <span class="divider">/</span></li>
-            <li><a href="<?= site_url('usuarioscliente') ?>">Usuários Cliente</a> <span class="divider">/</span></li>
+            <li><a href="<?= site_url('dashboard') ?>">Dashboard</a> <span class="dropdown-divider">/</span></li>
+            <li><a href="<?= site_url('usuarioscliente') ?>">Usuários Cliente</a> <span class="dropdown-divider">/</span></li>
             <li class="active">Editar: <?= htmlspecialchars($usuario->nome, ENT_QUOTES, 'UTF-8') ?></li>
         </ul>
     </div>
 </div>
 
 <!-- Cabeçalho com Resumo -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="widget-box" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
             <div class="widget-content" style="padding: 20px; color: white;">
-                <div class="row-fluid">
-                    <div class="span8">
+                <div class="row">
+                    <div class="col-8">
                         <h3 style="margin: 0; color: white;"><i class="bx bx-user-circle"></i> <?= htmlspecialchars($usuario->nome) ?></h3>
                         <p style="margin: 10px 0 0; opacity: 0.9;">
                             <i class="bx bx-envelope"></i> <?= $usuario->email ?> &nbsp;|&nbsp;
                             <i class="bx bx-phone"></i> <?= $usuario->telefone ?: 'N/A' ?> &nbsp;|&nbsp;
-                            <span class="label <?= $usuario->ativo ? 'label-success' : 'label-important' ?>" style="background: <?= $usuario->ativo ? '#2ecc71' : '#e74c3c' ?>;">
+                            <span class="label <?= $usuario->ativo ? 'badge bg-success' : 'badge bg-danger' ?>" style="background: <?= $usuario->ativo ? '#2ecc71' : '#e74c3c' ?>;">
                                 <?= $usuario->ativo ? 'Ativo' : 'Inativo' ?>
                             </span>
                         </p>
                     </div>
-                    <div class="span4 text-right">
+                    <div class="col-4 text-right">
                         <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 8px; display: inline-block;">
                             <span style="font-size: 24px; font-weight: bold;"><?= count($cnpjs) ?></span><br>
                             <small>CNPJ(s) Vinculado(s)</small>
@@ -47,9 +47,9 @@
 
     <!-- Debug: Mostrar erros de validação -->
     <?php if (validation_errors()): ?>
-    <div class="row-fluid" style="margin-top: 20px;">
-        <div class="span12">
-            <div class="alert alert-error">
+    <div class="row" style="margin-top: 20px;">
+        <div class="col-12">
+            <div class="alert alert-danger">
                 <strong>Erros de validação:</strong>
                 <?= validation_errors() ?>
             </div>
@@ -57,9 +57,9 @@
     </div>
     <?php endif; ?>
 
-<div class="row-fluid" style="margin-top: 20px;">
+<div class="row" style="margin-top: 20px;">
     <!-- Coluna Esquerda: Dados do Usuário -->
-    <div class="span6">
+    <div class="col-6">
         <div class="widget-box">
             <div class="widget-title" style="background: #f8f9fa;">
                 <span class="icon"><i class="bx bx-user-pin" style="color: #667eea;"></i></span>
@@ -67,52 +67,52 @@
             </div>
             <div class="widget-content">
 
-                    <div class="control-group">
-                        <label class="control-label">Nome Completo: <span class="required" style="color: #e74c3c;">*</span></label>
+                    <div class="mb-3">
+                        <label class="form-label">Nome Completo: <span class="required" style="color: #e74c3c;">*</span></label>
                         <div class="controls">
-                            <input type="text" name="nome" class="span12" value="<?= set_value('nome', $usuario->nome) ?>" required />
+                            <input type="text" name="nome" class="col-12" value="<?= set_value('nome', $usuario->nome) ?>" required />
                             <?= form_error('nome') ?>
                         </div>
                     </div>
 
-                    <div class="control-group">
-                        <label class="control-label">Email: <span class="required" style="color: #e74c3c;">*</span></label>
+                    <div class="mb-3">
+                        <label class="form-label">Email: <span class="required" style="color: #e74c3c;">*</span></label>
                         <div class="controls">
-                            <input type="email" name="email" class="span12" value="<?= set_value('email', $usuario->email) ?>" required />
+                            <input type="email" name="email" class="col-12" value="<?= set_value('email', $usuario->email) ?>" required />
                             <?= form_error('email') ?>
                         </div>
                     </div>
 
-                    <div class="control-group">
-                        <label class="control-label">Telefone:</label>
+                    <div class="mb-3">
+                        <label class="form-label">Telefone:</label>
                         <div class="controls">
-                            <input type="text" name="telefone" class="span12" value="<?= set_value('telefone', $usuario->telefone) ?>" id="telefone" placeholder="(00) 00000-0000" />
+                            <input type="text" name="telefone" class="col-12" value="<?= set_value('telefone', $usuario->telefone) ?>" id="telefone" placeholder="(00) 00000-0000" />
                         </div>
                     </div>
 
-                    <div class="control-group">
-                        <label class="control-label">Nova Senha:</label>
+                    <div class="mb-3">
+                        <label class="form-label">Nova Senha:</label>
                         <div class="controls">
-                            <input type="password" name="senha" class="span12" minlength="6" />
+                            <input type="password" name="senha" class="col-12" minlength="6" />
                             <?= form_error('senha') ?>
-                            <span class="help-inline" style="color: #666; font-size: 12px;">
+                            <span class="form-text" style="color: #666; font-size: 12px;">
                                 <i class="bx bx-info-circle"></i> Deixe em branco para manter a senha atual
                             </span>
                         </div>
                     </div>
 
-                    <div class="control-group">
-                        <label class="control-label">Confirmar Senha:</label>
+                    <div class="mb-3">
+                        <label class="form-label">Confirmar Senha:</label>
                         <div class="controls">
-                            <input type="password" name="confirmar_senha" class="span12" />
+                            <input type="password" name="confirmar_senha" class="col-12" />
                             <?= form_error('confirmar_senha') ?>
                         </div>
                     </div>
 
-                    <div class="control-group">
-                        <label class="control-label">Cliente Vinculado:</label>
+                    <div class="mb-3">
+                        <label class="form-label">Cliente Vinculado:</label>
                         <div class="controls">
-                            <select name="cliente_id" class="span12" id="select-cliente-principal">
+                            <select name="cliente_id" class="col-12" id="select-cliente-principal">
                                 <option value="">-- Nenhum --</option>
                                 <?php foreach ($clientes as $c): ?>
                                     <option value="<?= $c->idClientes ?>"
@@ -124,14 +124,14 @@
                                     </option>
                                 <?php endforeach; ?>
                             </select>
-                            <span class="help-inline" style="color: #666; font-size: 12px;">
+                            <span class="form-text" style="color: #666; font-size: 12px;">
                                 <i class="bx bx-link"></i> Vincula automaticamente todas as OS deste cliente
                             </span>
                         </div>
                     </div>
 
-                    <div class="control-group">
-                        <label class="control-label">Status:</label>
+                    <div class="mb-3">
+                        <label class="form-label">Status:</label>
                         <div class="controls">
                             <label class="checkbox inline" style="padding-top: 5px;">
                                 <input type="checkbox" name="ativo" value="1" <?= set_checkbox('ativo', '1', $usuario->ativo == 1) ?> />
@@ -151,10 +151,10 @@
                 <span class="icon"><i class="bx bx-shield" style="color: #9b59b6;"></i></span>
                 <h5>Permissões de Acesso</h5>
                 <div class="buttons">
-                    <button type="button" class="btn btn-mini btn-info" id="btn-marcar-todos">
+                    <button type="button" class="btn btn-sm btn-info" id="btn-marcar-todos">
                         <i class="bx bx-check-square"></i> Marcar Todos
                     </button>
-                    <button type="button" class="btn btn-mini btn-default" id="btn-desmarcar-todos">
+                    <button type="button" class="btn btn-sm btn-default" id="btn-desmarcar-todos">
                         <i class="bx bx-square"></i> Desmarcar Todos
                     </button>
                 </div>
@@ -218,7 +218,7 @@
                                 <h6 style="margin: 0; color: #2c3e50; font-size: 14px; font-weight: 600;">
                                     <i class="<?= $iconesGrupo[$grupo] ?? 'bx bx-folder-open' ?>" style="color: #667eea; margin-right: 8px;"></i> <?= $grupo ?>
                                 </h6>
-                                <button type="button" class="btn btn-mini btn-marcar-grupo" data-grupo="<?= md5($grupo) ?>">
+                                <button type="button" class="btn btn-sm btn-marcar-grupo" data-grupo="<?= md5($grupo) ?>">
                                     <i class="bx bx-check-square"></i> Marcar Grupo
                                 </button>
                             </div>
@@ -246,13 +246,13 @@
     </div>
 
     <!-- Coluna Direita: Gerenciamento de CNPJs -->
-    <div class="span6">
+    <div class="col-6">
         <div class="widget-box">
             <div class="widget-title" style="background: #f8f9fa;">
                 <span class="icon"><i class="bx bx-buildings" style="color: #27ae60;"></i></span>
                 <h5>CNPJs Vinculados</h5>
                 <div class="buttons">
-                    <span class="label label-info" id="contador-cnpjs"><?= count($cnpjs) ?> CNPJ(s)</span>
+                    <span class="badge bg-info" id="contador-cnpjs"><?= count($cnpjs) ?> CNPJ(s)</span>
                 </div>
             </div>
             <div class="widget-content">
@@ -268,8 +268,8 @@
                     <?php if (!empty($cnpjs)): ?>
                         <?php foreach ($cnpjs as $index => $cnpj): ?>
                         <div class="cnpj-card" style="background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; margin-bottom: 10px; position: relative;">
-                            <div class="row-fluid">
-                                <div class="span9">
+                            <div class="row">
+                                <div class="col-9">
                                     <div style="font-weight: bold; color: #2c3e50; font-size: 16px;">
                                         <i class="bx bx-building"></i> <span class="cnpj-numero"><?= $cnpj->cnpj ?></span>
                                     </div>
@@ -280,8 +280,8 @@
                                     <input type="hidden" name="cnpjs[]" value="<?= $cnpj->cnpj ?>">
                                     <input type="hidden" name="cnpjs_razao[]" value="<?= htmlspecialchars($cnpj->razao_social ?: '', ENT_QUOTES, 'UTF-8') ?>">
                                 </div>
-                                <div class="span3 text-right">
-                                    <button type="button" class="btn btn-small btn-danger btn-remover-cnpj-card" title="Remover CNPJ">
+                                <div class="col-3 text-right">
+                                    <button type="button" class="btn btn-sm btn-danger btn-remover-cnpj-card" title="Remover CNPJ">
                                         <i class="bx bx-trash"></i> Remover
                                     </button>
                                 </div>
@@ -302,13 +302,13 @@
                     </h6>
 
                     <!-- Opção 1: Selecionar de Clientes Cadastrados -->
-                    <div class="control-group" style="margin-bottom: 15px;">
+                    <div class="mb-3" style="margin-bottom: 15px;">
                         <label style="font-weight: normal; color: #666;">
                             <i class="bx bx-search"></i> Buscar cliente cadastrado:
                         </label>
                         <div class="controls" style="margin-left: 0;">
-                            <div class="input-append" style="width: 100%;">
-                                <select id="select-cliente-cnpj" class="span10">
+                            <div class="input-group" style="width: 100%;">
+                                <select id="select-cliente-cnpj" class="col-10">
                                     <option value="">-- Selecione um cliente --</option>
                                     <?php foreach ($clientes as $c): ?>
                                         <?php if (!empty($c->documento)): ?>
@@ -327,14 +327,14 @@
                     </div>
 
                     <!-- Opção 2: Digitar Manualmente -->
-                    <div class="control-group" style="margin-bottom: 0;">
+                    <div class="mb-3" style="margin-bottom: 0;">
                         <label style="font-weight: normal; color: #666;">
                             <i class="bx bx-pencil"></i> Ou digite o CNPJ manualmente:
                         </label>
                         <div class="controls" style="margin-left: 0;">
-                            <div class="input-append" style="width: 100%;">
-                                <input type="text" id="input-cnpj-manual" class="span8" placeholder="00.000.000/0000-00" maxlength="18" />
-                                <input type="text" id="input-razao-manual" class="span4" placeholder="Razão Social" />
+                            <div class="input-group" style="width: 100%;">
+                                <input type="text" id="input-cnpj-manual" class="col-8" placeholder="00.000.000/0000-00" maxlength="18" />
+                                <input type="text" id="input-razao-manual" class="col-4" placeholder="Razão Social" />
                                 <button type="button" class="btn btn-success" id="btn-adicionar-manual">
                                     <i class="bx bx-plus"></i> Adicionar
                                 </button>
@@ -430,8 +430,8 @@ $(document).ready(function() {
 
         var cardHtml = `
             <div class="cnpj-card" style="background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; margin-bottom: 10px; position: relative; animation: slideIn 0.3s ease;">
-                <div class="row-fluid">
-                    <div class="span9">
+                <div class="row">
+                    <div class="col-9">
                         <div style="font-weight: bold; color: #2c3e50; font-size: 16px;">
                             <i class="bx bx-building"></i> <span class="cnpj-numero">${cnpjFormatado}</span>
                         </div>
@@ -442,8 +442,8 @@ $(document).ready(function() {
                         <input type="hidden" name="cnpjs[]" value="${cnpjFormatado}">
                         <input type="hidden" name="cnpjs_razao[]" value="${razaoSocial || ''}">
                     </div>
-                    <div class="span3 text-right">
-                        <button type="button" class="btn btn-small btn-danger btn-remover-cnpj-card" title="Remover CNPJ">
+                    <div class="col-3 text-right">
+                        <button type="button" class="btn btn-sm btn-danger btn-remover-cnpj-card" title="Remover CNPJ">
                             <i class="bx bx-trash"></i> Remover
                         </button>
                     </div>

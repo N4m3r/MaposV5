@@ -51,31 +51,31 @@
 .status-expirada { border-left: 4px solid #6c757d; }
 </style>
 
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="bx bx-shield iconX"></i></span>
                 <h5>Autorizacoes do Agente IA</h5>
                 <div class="buttons">
-                    <a title="Todas" class="btn btn-mini" href="?status=">Todas</a>
-                    <a title="Pendentes" class="btn btn-mini btn-warning" href="?status=pendente">Pendentes</a>
-                    <a title="Aprovadas" class="btn btn-mini btn-success" href="?status=aprovada">Aprovadas</a>
-                    <a title="Rejeitadas" class="btn btn-mini btn-danger" href="?status=rejeitada">Rejeitadas</a>
-                    <a title="Expiradas" class="btn btn-mini" href="?status=expirada">Expiradas</a>
+                    <a title="Todas" class="btn btn-sm" href="?status=">Todas</a>
+                    <a title="Pendentes" class="btn btn-sm btn-warning" href="?status=pendente">Pendentes</a>
+                    <a title="Aprovadas" class="btn btn-sm btn-success" href="?status=aprovada">Aprovadas</a>
+                    <a title="Rejeitadas" class="btn btn-sm btn-danger" href="?status=rejeitada">Rejeitadas</a>
+                    <a title="Expiradas" class="btn btn-sm" href="?status=expirada">Expiradas</a>
                 </div>
             </div>
             <div class="widget-content">
 
-                <div class="row-fluid" style="margin-bottom:15px">
-                    <div class="span6">
+                <div class="row" style="margin-bottom:15px">
+                    <div class="col-6">
                         <strong>Total:</strong> <?php echo $total ?? 0; ?> autorizacoes
                         <?php if (!empty($filtroStatus)): ?>
                             <span class="label label-info">Status: <?php echo ucfirst($filtroStatus); ?></span>
                         <?php endif; ?>
                     </div>
-                    <div class="span6" style="text-align:right">
-                        <a href="<?php echo site_url('agente_ia/permissoes'); ?>" class="btn btn-info btn-small">
+                    <div class="col-6" style="text-align:right">
+                        <a href="<?php echo site_url('agente_ia/permissoes'); ?>" class="btn btn-info btn-sm">
                             <i class="bx bx-cog"></i> Gerenciar Permissoes
                         </a>
                     </div>
@@ -84,12 +84,12 @@
                 <?php if (empty($autorizacoes)): ?>
                     <div class="alert alert-info">Nenhuma autorizacao encontrada.</div>
                 <?php else: ?>
-                    <div class="row-fluid">
+                    <div class="row">
                         <?php foreach ($autorizacoes as $aut): ?>
-                            <div class="span6">
+                            <div class="col-6">
                                 <div class="autorizacao-card status-<?php echo $aut['status']; ?>">
-                                    <div class="row-fluid">
-                                        <div class="span8">
+                                    <div class="row">
+                                        <div class="col-8">
                                             <div class="acao-label">
                                                 <?php echo nomeAmigavelAcao($aut['acao'] ?? $aut['acao']); ?>
                                                 <span class="nivel-badge nivel-<?php echo $aut['nivel_criticidade'] ?? 1; ?>">
@@ -107,17 +107,17 @@
                                                 <strong>Metodo:</strong> <?php echo ucfirst($aut['metodo_autorizacao'] ?? 'whatsapp'); ?>
                                             </div>
                                         </div>
-                                        <div class="span4" style="text-align:right">
+                                        <div class="col-4" style="text-align:right">
                                             <div class="meta">
                                                 <?php echo date('d/m/Y H:i', strtotime($aut['created_at'])); ?>
                                             </div>
                                             <?php if ($aut['status'] === 'pendente'): ?>
                                                 <form method="post" action="<?php echo site_url('agente_ia/responder'); ?>" style="margin-top:8px">
                                                     <input type="hidden" name="autorizacao_id" value="<?php echo $aut['id']; ?>">
-                                                    <button type="submit" name="resposta" value="aprovar" class="btn btn-mini btn-success">
+                                                    <button type="submit" name="resposta" value="aprovar" class="btn btn-sm btn-success">
                                                         <i class="bx bx-check"></i> Aprovar
                                                     </button>
-                                                    <button type="submit" name="resposta" value="rejeitar" class="btn btn-mini btn-danger" style="margin-left:4px">
+                                                    <button type="submit" name="resposta" value="rejeitar" class="btn btn-sm btn-danger" style="margin-left:4px">
                                                         <i class="bx bx-x"></i> Rejeitar
                                                     </button>
                                                 </form>

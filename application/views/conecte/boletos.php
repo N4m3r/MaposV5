@@ -1,4 +1,4 @@
-<div class="widget-box">
+﻿<div class="widget-box">
     <div class="widget-title" style="margin: -20px 0 0">
         <span class="icon">
             <i class="bx bx-barcode"></i>
@@ -50,7 +50,7 @@
                         echo '<td>';
                         if (!empty($r->link) || !empty($r->link_boleto)) {
                             $link = $r->link ?? $r->link_boleto ?? '#';
-                            echo '<a href="' . $link . '" target="_blank" class="btn btn-mini btn-success" title="Visualizar Boleto"><i class="bx bx-barcode"></i> Ver Boleto</a>';
+                            echo '<a href="' . $link . '" target="_blank" class="btn btn-sm btn-success" title="Visualizar Boleto"><i class="bx bx-barcode"></i> Ver Boleto</a>';
                         }
                         echo '</td>';
                         echo '</tr>';

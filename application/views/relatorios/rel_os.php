@@ -1,5 +1,5 @@
-<div class="row-fluid" style="margin-top: 0">
-    <div class="span4">
+﻿<div class="row" style="margin-top: 0">
+    <div class="col-4">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon">
@@ -15,7 +15,7 @@
             </div>
         </div>
     </div>
-    <div class="span8">
+    <div class="col-8">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon">
@@ -24,34 +24,34 @@
                 <h5>Relatórios Customizáveis</h5>
             </div>
             <div class="widget-content">
-                <div class="span12 well">
+                <div class="col-12 well">
                     <form target="_blank" action="<?php echo base_url() ?>index.php/relatorios/osCustom" method="get">
-                        <div class="span12 well">
-                            <div class="span6">
+                        <div class="col-12 well">
+                            <div class="col-6">
                                 <label for="">Data de:</label>
-                                <input type="date" name="dataInicial" class="span12" />
+                                <input type="date" name="dataInicial" class="col-12" />
                             </div>
-                            <div class="span6">
+                            <div class="col-6">
                                 <label for="">até:</label>
-                                <input type="date" name="dataFinal" class="span12" />
+                                <input type="date" name="dataFinal" class="col-12" />
                             </div>
                         </div>
-                        <div class="span12 well" style="margin-left: 0">
-                            <div class="span6">
+                        <div class="col-12 well" style="margin-left: 0">
+                            <div class="col-6">
                                 <label for="">Cliente:</label>
-                                <input type="text" id="cliente" class="span12" />
+                                <input type="text" id="cliente" class="col-12" />
                                 <input type="hidden" name="cliente" id="clienteHide" />
                             </div>
-                            <div class="span6">
+                            <div class="col-6">
                                 <label for="">Responsável:</label>
-                                <input type="text" id="tecnico" class="span12" />
+                                <input type="text" id="tecnico" class="col-12" />
                                 <input type="hidden" name="responsavel" id="responsavelHide" />
                             </div>
                         </div>
-                        <div class="span12 well" style="margin-left: 0">
-                            <div class="span6">
+                        <div class="col-12 well" style="margin-left: 0">
+                            <div class="col-6">
                                 <label for="">Status:</label>
-                                <select name="status" id="" class="span12">
+                                <select name="status" id="" class="col-12">
                                     <option value=""></option>
                                     <option value="Orçamento">Orçamento</option>
                                     <option value="Aberto">Aberto</option>
@@ -63,15 +63,15 @@
                                     <option value="Aguardando Peças">Aguardando Peças</option>
                                 </select>
                             </div>
-                            <div class="span6">
+                            <div class="col-6">
                                 <label for="">Tipo de impressão:</label>
-                                <select name="format" class="span12">
+                                <select name="format" class="col-12">
                                     <option value="">PDF</option>
                                     <option value="xls">XLS</option>
                                 </select>
                             </div>
                         </div>
-                        <div class="span12" style="display:flex;justify-content: center">
+                        <div class="col-12" style="display:flex;justify-content: center">
                             <button type="reset" class="button btn btn-warning">
                                 <span class="button__icon"><i class="bx bx-brush-alt"></i></span>
                                 <span class="button__text">Limpar</span>

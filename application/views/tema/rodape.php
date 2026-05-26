@@ -1,18 +1,18 @@
-    </div><!-- fecha span12 -->
-  </div><!-- fecha row-fluid -->
+    </div><!-- fecha col-12 -->
+  </div><!-- fecha row -->
 </div><!-- fecha container-flu -->
 </div><!-- fecha #content -->
 
 <!-- Footer -->
-<div class="row-fluid">
-    <div id="footer" class="span12">
+<div class="row">
+    <div id="footer" class="col-12">
         <a class="pecolor" href="https://github.com/RamonSilva20/mapos" target="_blank">
             <?= date('Y') ?> &copy; Ramon Silva - Map-OS - Versão: <?= $this->config->item('app_version') ?>
         </a>
     </div>
 </div>
 <!--end-Footer-part-->
-<script src="<?= base_url() ?>assets/js/bootstrap.min.js"></script>
+<script src="<?= base_url() ?>assets/js/bootstrap5.bundle.min.js"></script>
 <script src="<?= base_url() ?>assets/js/matrix.js"></script>
 <script type="text/javascript">
 // ==============================

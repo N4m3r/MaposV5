@@ -1,4 +1,4 @@
-<?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
+﻿<?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
 
 <!-- Tema Moderno Obras -->
 <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/obras-modern-theme.css">
@@ -189,7 +189,7 @@
 
         <?php if (isset($results) && count($results) > 0): ?>
             <!-- Card View -->
-            <div class="row-fluid" style="padding: 15px;">
+            <div class="row" style="padding: 15px;">
                 <?php $count = 0; ?>
                 <?php foreach ($results as $r): ?>
                     <?php
@@ -219,7 +219,7 @@
                     }
                     ?>
 
-                    <div class="span4" style="margin-bottom: 15px;">
+                    <div class="col-4" style="margin-bottom: 15px;">
                         <div class="obra-card-cliente">
                             <div class="obra-card-header">
                                 <div>
@@ -272,7 +272,7 @@
                     </div>
 
                     <?php if (++$count % 3 == 0): ?>
-                        </div><div class="row-fluid" style="padding: 0 15px;">
+                        </div><div class="row" style="padding: 0 15px;">
                     <?php endif; ?>
 
                 <?php endforeach; ?>

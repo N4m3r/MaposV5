@@ -1,11 +1,11 @@
-!function($, wysi) {
+﻿!function($, wysi) {
     "use strict";
 
     var tpl = {
         "font-styles": function(locale, options) {
             var size = (options && options.size) ? ' btn-'+options.size : '';
             return "<li class='dropdown'>" +
-              "<a class='btn dropdown-toggle" + size + "' data-toggle='dropdown' href='#'>" +
+              "<a class='btn dropdown-toggle" + size + "' data-bs-toggle='dropdown' href='#'>" +
               "<i class='icon-font'></i>&nbsp;<span class='current-font'>" + locale.font_styles.normal + "</span>&nbsp;<b class='caret'></b>" +
               "</a>" +
               "<ul class='dropdown-menu'>" +
@@ -45,15 +45,15 @@
             return "<li>" +
               "<div class='bootstrap-wysihtml5-insert-link-modal modal hide fade'>" +
                 "<div class='modal-header'>" +
-                  "<a class='close' data-dismiss='modal'></a>" +
+                  "<a class='close' data-bs-dismiss='modal'></a>" +
                   "<h3>" + locale.link.insert + "</h3>" +
                 "</div>" +
                 "<div class='modal-body'>" +
                   "<input value='http://' class='bootstrap-wysihtml5-insert-link-url m-wrap large' type='text'>" +
                 "</div>" +
                 "<div class='modal-footer'>" +
-                  "<a href='#' class='btn' data-dismiss='modal'>" + locale.link.cancel + "</a>" +
-                  "<a href='#' class='btn green  btn-primary' data-dismiss='modal'>" + locale.link.insert + "</a>" +
+                  "<a href='#' class='btn' data-bs-dismiss='modal'>" + locale.link.cancel + "</a>" +
+                  "<a href='#' class='btn green  btn-primary' data-bs-dismiss='modal'>" + locale.link.insert + "</a>" +
                 "</div>" +
               "</div>" +
               "<a class='btn" + size + "' data-wysihtml5-command='createLink' title='" + locale.link.insert + "'><i class='icon-share'></i></a>" +
@@ -65,15 +65,15 @@
             return "<li>" +
               "<div class='bootstrap-wysihtml5-insert-image-modal modal hide fade'>" +
                 "<div class='modal-header'>" +
-                  "<a class='close' data-dismiss='modal'></a>" +
+                  "<a class='close' data-bs-dismiss='modal'></a>" +
                   "<h3>" + locale.image.insert + "</h3>" +
                 "</div>" +
                 "<div class='modal-body'>" +
                   "<input value='http://' class='bootstrap-wysihtml5-insert-image-url  m-wrap large' type='text'>" +
                 "</div>" +
                 "<div class='modal-footer'>" +
-                  "<a href='#' class='btn' data-dismiss='modal'>" + locale.image.cancel + "</a>" +
-                  "<a href='#' class='btn  green btn-primary' data-dismiss='modal'>" + locale.image.insert + "</a>" +
+                  "<a href='#' class='btn' data-bs-dismiss='modal'>" + locale.image.cancel + "</a>" +
+                  "<a href='#' class='btn  green btn-primary' data-bs-dismiss='modal'>" + locale.image.insert + "</a>" +
                 "</div>" +
               "</div>" +
               "<a class='btn" + size + "' data-wysihtml5-command='insertImage' title='" + locale.image.insert + "'><i class='icon-picture'></i></a>" +
@@ -92,7 +92,7 @@
         "color": function(locale, options) {
             var size = (options && options.size) ? ' btn-'+options.size : '';
             return "<li class='dropdown'>" +
-              "<a class='btn dropdown-toggle" + size + "' data-toggle='dropdown' href='#'>" +
+              "<a class='btn dropdown-toggle" + size + "' data-bs-toggle='dropdown' href='#'>" +
                 "<span class='current-color'>" + locale.colours.black + "</span>&nbsp;<b class='caret'></b>" +
               "</a>" +
               "<ul class='dropdown-menu'>" +
@@ -256,7 +256,7 @@
 
                 if (!activeButton) {
                     insertImageModal.modal('show');
-                    insertImageModal.on('click.dismiss.modal', '[data-dismiss="modal"]', function(e) {
+                    insertImageModal.on('click.bs.dismiss.modal', '[data-bs-dismiss="modal"]', function(e) {
                         e.stopPropagation();
                     });
                     return false;
@@ -308,7 +308,7 @@
 
                 if (!activeButton) {
                     insertLinkModal.appendTo('body').modal('show');
-                    insertLinkModal.on('click.dismiss.modal', '[data-dismiss="modal"]', function(e) {
+                    insertLinkModal.on('click.bs.dismiss.modal', '[data-bs-dismiss="modal"]', function(e) {
                         e.stopPropagation();
                     });
                     return false;

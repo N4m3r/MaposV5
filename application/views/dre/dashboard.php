@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Dashboard DRE - Demonstração do Resultado do Exercício
  */
@@ -99,54 +99,54 @@ $resumoOS = $results['resumoOS'] ?? ['total_os' => 0, 'valor_total' => 0, 'os_fi
 </style>
 
 <!-- Header -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <ul class="breadcrumb">
-            <li><a href="<?= site_url('dashboard') ?>">Dashboard</a> <span class="divider">/</span></li>
+            <li><a href="<?= site_url('dashboard') ?>">Dashboard</a> <span class="dropdown-divider">/</span></li>
             <li class="active">DRE - Demonstração do Resultado</li>
         </ul>
     </div>
 </div>
 
 <!-- Filtros -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-filter"></i></span>
                 <h5>Filtros</h5>
                 <div class="buttons">
-                    <a href="<?= site_url('dre/exportar?data_inicio=' . $data_inicio . '&data_fim=' . $data_fim) ?>" class="btn btn-success btn-small">
+                    <a href="<?= site_url('dre/exportar?data_inicio=' . $data_inicio . '&data_fim=' . $data_fim) ?>" class="btn btn-success btn-sm">
                         <i class="fas fa-download"></i> Exportar CSV
                     </a>
-                    <a href="<?= site_url('dre/relatorio?data_inicio=' . $data_inicio . '&data_fim=' . $data_fim) ?>" class="btn btn-info btn-small">
+                    <a href="<?= site_url('dre/relatorio?data_inicio=' . $data_inicio . '&data_fim=' . $data_fim) ?>" class="btn btn-info btn-sm">
                         <i class="fas fa-print"></i> Relatório Completo
                     </a>
                 </div>
             </div>
             <div class="widget-content">
                 <form method="get" action="<?= site_url('dre') ?>" class="form-inline">
-                    <div class="row-fluid">
-                        <div class="span3">
+                    <div class="row">
+                        <div class="col-3">
                             <label>Data Início:</label>
-                            <input type="date" name="data_inicio" class="span12" value="<?= $data_inicio ?>" />
+                            <input type="date" name="data_inicio" class="col-12" value="<?= $data_inicio ?>" />
                         </div>
-                        <div class="span3">
+                        <div class="col-3">
                             <label>Data Fim:</label>
-                            <input type="date" name="data_fim" class="span12" value="<?= $data_fim ?>" />
+                            <input type="date" name="data_fim" class="col-12" value="<?= $data_fim ?>" />
                         </div>
-                        <div class="span2">
+                        <div class="col-2">
                             <label>&nbsp;</label>
-                            <button type="submit" class="btn btn-primary span12">
+                            <button type="submit" class="btn btn-primary col-12">
                                 <i class="fas fa-search"></i> Gerar DRE
                             </button>
                         </div>
-                        <div class="span4">
+                        <div class="col-4">
                             <label>&nbsp;</label>
-                            <div class="btn-group span12">
-                                <a href="?data_inicio=<?= date('Y-m-01') ?>&data_fim=<?= date('Y-m-t') ?>" class="btn btn-small">Mês Atual</a>
-                                <a href="?data_inicio=<?= date('Y-m-01', strtotime('-1 month')) ?>&data_fim=<?= date('Y-m-t', strtotime('-1 month')) ?>" class="btn btn-small">Mês Anterior</a>
-                                <a href="?data_inicio=<?= date('Y-01-01') ?>&data_fim=<?= date('Y-m-d') ?>" class="btn btn-small">Ano</a>
+                            <div class="btn-group col-12">
+                                <a href="?data_inicio=<?= date('Y-m-01') ?>&data_fim=<?= date('Y-m-t') ?>" class="btn btn-sm">Mês Atual</a>
+                                <a href="?data_inicio=<?= date('Y-m-01', strtotime('-1 month')) ?>&data_fim=<?= date('Y-m-t', strtotime('-1 month')) ?>" class="btn btn-sm">Mês Anterior</a>
+                                <a href="?data_inicio=<?= date('Y-01-01') ?>&data_fim=<?= date('Y-m-d') ?>" class="btn btn-sm">Ano</a>
                             </div>
                         </div>
                     </div>
@@ -157,8 +157,8 @@ $resumoOS = $results['resumoOS'] ?? ['total_os' => 0, 'valor_total' => 0, 'os_fi
 </div>
 
 <!-- Cards de Indicadores -->
-<div class="row-fluid">
-    <div class="span3">
+<div class="row">
+    <div class="col-3">
         <div class="dre-card">
             <h4><i class="fas fa-dollar-sign"></i> Receita Bruta</h4>
             <div class="dre-value">R$ <?= number_format($indicadores['receita_bruta'], 2, ',', '.') ?></div>
@@ -174,7 +174,7 @@ $resumoOS = $results['resumoOS'] ?? ['total_os' => 0, 'valor_total' => 0, 'os_fi
             <?php endif; ?>
         </div>
     </div>
-    <div class="span3">
+    <div class="col-3">
         <div class="dre-card">
             <h4><i class="fas fa-chart-line"></i> Lucro Bruto</h4>
             <div class="dre-value <?= $indicadores['lucro_bruto'] >= 0 ? 'positive' : 'negative' ?>">
@@ -183,7 +183,7 @@ $resumoOS = $results['resumoOS'] ?? ['total_os' => 0, 'valor_total' => 0, 'os_fi
             <div class="dre-percent">Margem: <?= $indicadores['margem_bruta'] ?>%</div>
         </div>
     </div>
-    <div class="span3">
+    <div class="col-3">
         <div class="dre-card">
             <h4><i class="fas fa-briefcase"></i> Lucro Operacional</h4>
             <div class="dre-value <?= $indicadores['lucro_operacional'] >= 0 ? 'positive' : 'negative' ?>">
@@ -192,7 +192,7 @@ $resumoOS = $results['resumoOS'] ?? ['total_os' => 0, 'valor_total' => 0, 'os_fi
             <div class="dre-percent">Margem: <?= $indicadores['margem_operacional'] ?>%</div>
         </div>
     </div>
-    <div class="span3">
+    <div class="col-3">
         <div class="dre-card">
             <h4><i class="fas fa-piggy-bank"></i> Lucro Líquido</h4>
             <div class="dre-value <?= $indicadores['lucro_liquido'] >= 0 ? 'positive' : 'negative' ?>">
@@ -205,37 +205,37 @@ $resumoOS = $results['resumoOS'] ?? ['total_os' => 0, 'valor_total' => 0, 'os_fi
 
 <!-- Resumo de OS no Período -->
 <?php if ($resumoOS['total_os'] > 0): ?>
-<div class="row-fluid" style="margin-top: 15px;">
-    <div class="span12">
+<div class="row" style="margin-top: 15px;">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-tools"></i></span>
                 <h5>Ordens de Serviço no Período</h5>
                 <div class="buttons">
-                    <a href="<?= site_url('os/gerenciar?data=' . date('d/m/Y', strtotime($data_inicio)) . '&data2=' . date('d/m/Y', strtotime($data_fim))) ?>" class="btn btn-small btn-info">
+                    <a href="<?= site_url('os/gerenciar?data=' . date('d/m/Y', strtotime($data_inicio)) . '&data2=' . date('d/m/Y', strtotime($data_fim))) ?>" class="btn btn-sm btn-info">
                         <i class="fas fa-external-link-alt"></i> Ver OS
                     </a>
                 </div>
             </div>
             <div class="widget-content">
-                <div class="row-fluid">
-                    <div class="span2" style="text-align: center;">
+                <div class="row">
+                    <div class="col-2" style="text-align: center;">
                         <div style="font-size: 28px; font-weight: bold; color: #2c3e50;"><?= $resumoOS['total_os'] ?></div>
                         <div style="font-size: 11px; color: #888; margin-top: 4px;">Total de OS</div>
                     </div>
-                    <div class="span2" style="text-align: center;">
+                    <div class="col-2" style="text-align: center;">
                         <div style="font-size: 28px; font-weight: bold; color: #27ae60;"><?= $resumoOS['os_finalizadas'] + $resumoOS['os_faturadas'] ?></div>
                         <div style="font-size: 11px; color: #888; margin-top: 4px;">Finalizadas/Faturadas</div>
                     </div>
-                    <div class="span3" style="text-align: center;">
+                    <div class="col-3" style="text-align: center;">
                         <div style="font-size: 22px; font-weight: bold; color: #3498db;">R$ <?= number_format($resumoOS['valor_finalizado'], 2, ',', '.') ?></div>
                         <div style="font-size: 11px; color: #888; margin-top: 4px;">Valor Finalizado</div>
                     </div>
-                    <div class="span3" style="text-align: center;">
+                    <div class="col-3" style="text-align: center;">
                         <div style="font-size: 22px; font-weight: bold; color: #2c3e50;">R$ <?= number_format($resumoOS['valor_total'], 2, ',', '.') ?></div>
                         <div style="font-size: 11px; color: #888; margin-top: 4px;">Valor Total (todas OS)</div>
                     </div>
-                    <div class="span2" style="text-align: center;">
+                    <div class="col-2" style="text-align: center;">
                         <?php
                         $percentual = $resumoOS['valor_total'] > 0 ? round(($resumoOS['valor_finalizado'] / $resumoOS['valor_total']) * 100, 1) : 0;
                         ?>
@@ -250,8 +250,8 @@ $resumoOS = $results['resumoOS'] ?? ['total_os' => 0, 'valor_total' => 0, 'os_fi
 <?php endif; ?>
 
 <!-- Gráfico de Evolução -->
-<div class="row-fluid">
-    <div class="span8">
+<div class="row">
+    <div class="col-8">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-chart-area"></i></span>
@@ -266,7 +266,7 @@ $resumoOS = $results['resumoOS'] ?? ['total_os' => 0, 'valor_total' => 0, 'os_fi
     </div>
 
     <!-- Métricas -->
-    <div class="span4">
+    <div class="col-4">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-calculator"></i></span>
@@ -294,8 +294,8 @@ $resumoOS = $results['resumoOS'] ?? ['total_os' => 0, 'valor_total' => 0, 'os_fi
 </div>
 
 <!-- Tabela DRE -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-table"></i></span>
@@ -371,8 +371,8 @@ $resumoOS = $results['resumoOS'] ?? ['total_os' => 0, 'valor_total' => 0, 'os_fi
 </div>
 
 <!-- Ações Rápidas -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-cogs"></i></span>
@@ -394,7 +394,7 @@ $resumoOS = $results['resumoOS'] ?? ['total_os' => 0, 'valor_total' => 0, 'os_fi
                     </a>
                 </div>
 
-                <form method="post" action="<?= site_url('dre/integrar') ?>" class="form-inline pull-right" style="margin: 0;">
+                <form method="post" action="<?= site_url('dre/integrar') ?>" class="form-inline float-end" style="margin: 0;">
                     <input type="hidden" name="data_inicio" value="<?= $data_inicio ?>" />
                     <input type="hidden" name="data_fim" value="<?= $data_fim ?>" />
                     <button type="submit" class="btn btn-inverse" onclick="return confirm('Importar dados de OS, Vendas e Financeiro automaticamente?')">

@@ -712,7 +712,7 @@ var CheckinFotos = {
         if (!fotos || fotos.length === 0) {
             html = '<p class="text-muted">Nenhuma foto encontrada.</p>';
         } else {
-            html += '<div class="row-fluid">';
+            html += '<div class="row">';
 
             for (var i = 0; i < fotos.length; i++) {
                 var foto = fotos[i];
@@ -725,7 +725,7 @@ var CheckinFotos = {
                     imgUrl = this.config.baseUrl + 'index.php/checkin/verFotoDB/' + foto.idFoto;
                 }
 
-                html += '<div class="span' + span + ' text-center" style="margin-bottom: 15px;">';
+                html += '<div class="col-' + span + ' text-center" style="margin-bottom: 15px;">';
                 html += '<div class="thumbnail">';
                 html += '<img src="' + imgUrl + '" style="max-height: 150px; cursor: pointer;" class="foto-preview" data-foto-id="' + foto.idFoto + '">';
 

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Boleto — Sub-aba dentro de Notas Fiscais
  * Tema Dark MapOS
@@ -15,10 +15,10 @@ if (!function_exists('fmtMoney')) {
 }
 ?>
 
-<div class="row-fluid" style="margin-top:0">
+<div class="row" style="margin-top:0">
 
     <?php if (!$nfse_atual && !$boleto_atual): ?>
-    <div class="span12">
+    <div class="col-12">
         <div class="alert" style="background:rgba(16,134,221,0.15); border-color:rgba(16,134,221,0.3); color:#1086dd">
             <i class="fas fa-info-circle"></i> <strong>Nenhuma NFS-e emitida</strong><br>
             Emita uma NFS-e primeiro para gerar boletos de cobranca.
@@ -27,7 +27,7 @@ if (!function_exists('fmtMoney')) {
 
     <?php elseif ($boleto_atual): ?>
     <!-- BOLETO GERADO -->
-    <div class="span12">
+    <div class="col-12">
         <div class="widget-box" style="background:var(--wid-dark,#1c1d26); border-color:var(--dark-2,#272835)">
             <div class="widget-title" style="background:var(--dark-0,#191a22); border-bottom:1px solid var(--dark-2,#272835); color:var(--title,#d4d8e0)">
                 <span class="icon"><i class="fas fa-barcode" style="color:var(--dark-azul,#1086dd)"></i></span>
@@ -41,9 +41,9 @@ if (!function_exists('fmtMoney')) {
                 <span class="label" style="margin:8px 10px 0 0; float:right; background:<?= $boletoStatusColor ?>; color:#fff"><?= $boleto_atual->status ?></span>
             </div>
             <div class="widget-content" style="background:var(--wid-dark,#1c1d26); color:var(--branco,#caced8)">
-                <div class="row-fluid">
-                    <div class="span6">
-                        <table class="table table-condensed" style="margin-bottom:0; background:transparent">
+                <div class="row">
+                    <div class="col-6">
+                        <table class="table table-sm" style="margin-bottom:0; background:transparent">
                             <tr>
                                 <td style="border:none; padding:2px 0; color:var(--dark-cinz,#8788a4)"><strong style="color:var(--branco,#caced8)">Status:</strong></td>
                                 <td style="border:none; padding:2px 0"><span class="label" style="background:<?= $boletoStatusColor ?>; color:#fff"><?= $boleto_atual->status ?></span></td>
@@ -58,8 +58,8 @@ if (!function_exists('fmtMoney')) {
                             </tr>
                         </table>
                     </div>
-                    <div class="span6 text-right">
-                        <table class="table table-condensed" style="margin-bottom:0; background:transparent">
+                    <div class="col-6 text-right">
+                        <table class="table table-sm" style="margin-bottom:0; background:transparent">
                             <tr>
                                 <td style="border:none; padding:2px 0; color:var(--dark-cinz,#8788a4)"><strong style="color:var(--branco,#caced8)">Vencimento:</strong></td>
                                 <td style="border:none; padding:2px 0"><?= $boleto_atual->data_vencimento ? date('d/m/Y', strtotime($boleto_atual->data_vencimento)) : '---' ?></td>
@@ -96,8 +96,8 @@ if (!function_exists('fmtMoney')) {
                 <hr style="margin:10px 0; border-top:1px solid var(--dark-2,#272835)">
                 <div class="well well-small" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835)">
                     <strong style="color:var(--title,#d4d8e0)">Linha Digitavel:</strong><br>
-                    <div class="input-append" style="margin-top:5px">
-                        <input type="text" id="linha-digitavel" value="<?= htmlspecialchars($boleto_atual->linha_digitavel, ENT_QUOTES, 'UTF-8') ?>" class="span10" readonly style="font-family:monospace; background:var(--dark-1,#14141a); border-color:var(--dark-2,#272835); color:#62eba6">
+                    <div class="input-group" style="margin-top:5px">
+                        <input type="text" id="linha-digitavel" value="<?= htmlspecialchars($boleto_atual->linha_digitavel, ENT_QUOTES, 'UTF-8') ?>" class="col-10" readonly style="font-family:monospace; background:var(--dark-1,#14141a); border-color:var(--dark-2,#272835); color:#62eba6">
                         <button type="button" class="btn" onclick="copiarLinhaDigitavel()" style="background:var(--dark-2,#272835); border-color:var(--dark-2,#272835); color:var(--branco,#caced8)"><i class="fas fa-copy"></i> Copiar</button>
                     </div>
                 </div>
@@ -123,7 +123,7 @@ if (!function_exists('fmtMoney')) {
 
     <?php elseif ($nfse_atual): ?>
     <!-- FORMULARIO GERAR BOLETO -->
-    <div class="span12">
+    <div class="col-12">
         <div class="widget-box" style="background:var(--wid-dark,#1c1d26); border-color:var(--dark-2,#272835)">
             <div class="widget-title" style="background:var(--dark-0,#191a22); border-bottom:1px solid var(--dark-2,#272835); color:var(--title,#d4d8e0)">
                 <span class="icon"><i class="fas fa-barcode" style="color:var(--dark-azul,#1086dd)"></i></span>
@@ -144,12 +144,12 @@ if (!function_exists('fmtMoney')) {
                         <i class="fas fa-calculator" style="color:var(--dark-azul,#1086dd)"></i> Resumo Financeiro da NFS-e
                         <span class="label" style="font-size:11px; margin-left:5px; background:#1086dd; color:#fff">Simples Nacional</span>
                     </h6>
-                    <div class="row-fluid">
-                        <div class="span6 text-center" style="border-right:1px solid var(--dark-2,#272835)">
+                    <div class="row">
+                        <div class="col-6 text-center" style="border-right:1px solid var(--dark-2,#272835)">
                             <h4 style="margin:5px 0; color:var(--title,#d4d8e0)"><?= fmtMoney($valorOriginal) ?></h4>
                             <small style="color:var(--dark-cinz,#8788a4)">Valor dos Servicos</small>
                         </div>
-                        <div class="span6 text-center">
+                        <div class="col-6 text-center">
                             <h4 style="margin:5px 0; color:#62eba6"><?= fmtMoney($valorLiquido) ?></h4>
                             <small style="color:var(--dark-cinz,#8788a4)"><strong style="color:var(--branco,#caced8)">Valor Liquido da NFS-e</strong></small>
                         </div>
@@ -161,20 +161,20 @@ if (!function_exists('fmtMoney')) {
 
                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cBoletoOS')): ?>
                     <form method="post" id="form-gerar-boleto" action="<?= site_url('nfse_os/gerar_boleto/' . $result->idOs . '/' . $nfse_atual->id) ?>">
-                        <div class="row-fluid">
-                            <div class="span6">
-                                <div class="control-group">
-                                    <label class="control-label" style="color:var(--title,#d4d8e0)"><strong>Data de Vencimento:</strong></label>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="mb-3">
+                                    <label class="form-label" style="color:var(--title,#d4d8e0)"><strong>Data de Vencimento:</strong></label>
                                     <div class="controls">
-                                        <input type="date" name="data_vencimento" id="boleto-data-vencimento" class="span12" value="<?= date('Y-m-d', strtotime('+5 days')) ?>" required style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8)">
+                                        <input type="date" name="data_vencimento" id="boleto-data-vencimento" class="col-12" value="<?= date('Y-m-d', strtotime('+5 days')) ?>" required style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8)">
                                     </div>
                                 </div>
                             </div>
-                            <div class="span6">
-                                <div class="control-group">
-                                    <label class="control-label" style="color:var(--title,#d4d8e0)"><strong>Descricao / Instrucoes:</strong></label>
+                            <div class="col-6">
+                                <div class="mb-3">
+                                    <label class="form-label" style="color:var(--title,#d4d8e0)"><strong>Descricao / Instrucoes:</strong></label>
                                     <div class="controls">
-                                        <textarea name="instrucoes" id="boleto-instrucoes" class="span12" rows="2" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8)">Pagavel em qualquer banco ate o vencimento. Apos o vencimento, consultar multas e juros.</textarea>
+                                        <textarea name="instrucoes" id="boleto-instrucoes" class="col-12" rows="2" style="background:var(--dark-0,#191a22); border-color:var(--dark-2,#272835); color:var(--branco,#caced8)">Pagavel em qualquer banco ate o vencimento. Apos o vencimento, consultar multas e juros.</textarea>
                                     </div>
                                 </div>
                             </div>
@@ -182,8 +182,8 @@ if (!function_exists('fmtMoney')) {
 
                         <?php $temRetencao = floatval($nfse_atual->valor_total_retencao ?? 0) > 0; ?>
                         <?php if ($temRetencao): ?>
-                        <div class="row-fluid" style="margin-top:10px">
-                            <div class="span12">
+                        <div class="row" style="margin-top:10px">
+                            <div class="col-12">
                                 <div style="padding:12px 15px; background:rgba(252,157,15,0.15); border:1px solid rgba(252,157,15,0.3); border-radius:4px">
                                     <label class="checkbox" style="font-size:13px; margin-bottom:5px; color:var(--branco,#caced8)">
                                         <input type="checkbox" name="valor_integral" id="boleto-valor-integral" value="1">
@@ -274,7 +274,7 @@ if (!function_exists('fmtMoney')) {
 
     <!-- Historico -->
     <?php if (!empty($historico_boleto) && count($historico_boleto) > 1): ?>
-    <div class="span12" style="margin-top:10px">
+    <div class="col-12" style="margin-top:10px">
         <div class="widget-box" style="background:var(--wid-dark,#1c1d26); border-color:var(--dark-2,#272835)">
             <div class="widget-title" style="background:var(--dark-0,#191a22); border-bottom:1px solid var(--dark-2,#272835); color:var(--title,#d4d8e0)">
                 <span class="icon"><i class="fas fa-history" style="color:var(--dark-azul,#1086dd)"></i></span>

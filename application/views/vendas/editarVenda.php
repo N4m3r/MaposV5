@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/js/jquery-ui/css/smoothness/jquery-ui-1.9.2.custom.css" />
+﻿<link rel="stylesheet" href="<?php echo base_url(); ?>assets/js/jquery-ui/css/smoothness/jquery-ui-1.9.2.custom.css" />
 <script type="text/javascript" src="<?php echo base_url() ?>assets/js/jquery-ui/js/jquery-ui-1.9.2.custom.js"></script>
 <script type="text/javascript" src="<?php echo base_url() ?>assets/js/jquery.validate.js"></script>
 <script src="<?php echo base_url() ?>assets/js/sweetalert2.all.min.js"></script>
@@ -8,8 +8,8 @@
 
 <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/custom.css" />
 
-<div class="row-fluid" style="margin-top:0">
-    <div class="span12">
+<div class="row" style="margin-top:0">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title" style="margin: -20px 0 0">
                 <span class="icon">
@@ -18,38 +18,38 @@
                 <h5>Editar Venda</h5>
             </div>
             <div class="widget-content nopadding tab-content">
-                <div class="span12" id="divProdutosServicos" style=" margin-left: 0">
+                <div class="col-12" id="divProdutosServicos" style=" margin-left: 0">
                     <ul class="nav nav-tabs">
-                        <li class="active" id="tabDetalhes"><a href="#tab1" data-toggle="tab">Detalhes da Venda</a></li>
-                        <li id="tabProdutos"><a href="#tab2" data-toggle="tab">Produtos</a></li>
+                        <li class="active" id="tabDetalhes"><a href="#tab1" data-bs-toggle="tab">Detalhes da Venda</a></li>
+                        <li id="tabProdutos"><a href="#tab2" data-bs-toggle="tab">Produtos</a></li>
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane active" id="tab1">
-                            <div class="span12" id="divEditarVenda">
+                            <div class="col-12" id="divEditarVenda">
                                 <form action="<?php echo current_url(); ?>" method="post" id="formVendas">
                                     <?php echo form_hidden('idVendas', $result->idVendas) ?>
-                                    <div class="span12" style="padding: 1%; margin-left: 0">
+                                    <div class="col-12" style="padding: 1%; margin-left: 0">
                                         <h3>Venda:
                                             <?php echo e($result->idVendas) ?>
                                         </h3>
-                                        <div class="span2" style="margin-left: 0">
+                                        <div class="col-2" style="margin-left: 0">
                                             <label for="dataFinal">Data Final</label>
-                                            <input id="dataVenda" class="span12 datepicker" type="text" name="dataVenda" value="<?php echo date('d/m/Y', strtotime($result->dataVenda)); ?>" />
+                                            <input id="dataVenda" class="col-12 datepicker" type="text" name="dataVenda" value="<?php echo date('d/m/Y', strtotime($result->dataVenda)); ?>" />
                                         </div>
-                                        <div class="span3">
+                                        <div class="col-3">
                                             <label for="cliente">Cliente<span class="required">*</span></label>
-                                            <input id="cliente" class="span12" type="text" name="cliente" value="<?php echo e($result->nomeCliente) ?>" />
-                                            <input id="clientes_id" class="span12" type="hidden" name="clientes_id" value="<?php echo e($result->clientes_id) ?>" />
+                                            <input id="cliente" class="col-12" type="text" name="cliente" value="<?php echo e($result->nomeCliente) ?>" />
+                                            <input id="clientes_id" class="col-12" type="hidden" name="clientes_id" value="<?php echo e($result->clientes_id) ?>" />
                                             <input id="valorTotal" type="hidden" name="valorTotal" value="" />
                                         </div>
-                                        <div class="span3">
+                                        <div class="col-3">
                                             <label for="tecnico">Vendedor<span class="required">*</span></label>
-                                            <input id="tecnico" class="span12" type="text" name="tecnico" value="<?php echo e($result->nome) ?>" />
-                                            <input id="usuarios_id" class="span12" type="hidden" name="usuarios_id" value="<?php echo e($result->usuarios_id) ?>" />
+                                            <input id="tecnico" class="col-12" type="text" name="tecnico" value="<?php echo e($result->nome) ?>" />
+                                            <input id="usuarios_id" class="col-12" type="hidden" name="usuarios_id" value="<?php echo e($result->usuarios_id) ?>" />
                                         </div>
-                                        <div class="span2">
+                                        <div class="col-2">
                                             <label for="status">Status<span class="required">*</span></label>
-                                            <select class="span12" name="status" id="status" value="">
+                                            <select class="col-12" name="status" id="status" value="">
                                                 <option <?= $result->status == 'Orçamento' ? 'selected' : '' ?> value="Orçamento">Orçamento</option>
                                                 <option <?= $result->status == 'Aberto' ? 'selected' : '' ?> value="Aberto">Aberto</option>
                                                 <option <?= $result->status == 'Faturado' ? 'selected' : '' ?> value="Faturado">Faturado</option>
@@ -61,33 +61,33 @@
                                                 <option <?= $result->status == 'Aprovado' ? 'selected' : '' ?> value="Aprovado">Aprovado</option>
                                             </select>
                                         </div>
-                                        <div class="span2">
+                                        <div class="col-2">
                                             <label for="garantia">Garantia (dias)</label>
                                             <input id="garantia" type="number" placeholder="Em dias" min="0" max="9999"
-                                                class="span12" name="garantia"
+                                                class="col-12" name="garantia"
                                                 value="<?php echo e($result->garantia) ?>" />
                                             <?php echo form_error('garantia'); ?>
                                         </div>
                                     </div>
 
-                                    <div class="span6" style="padding: 1%; margin-left: 0">
+                                    <div class="col-6" style="padding: 1%; margin-left: 0">
                                         <label for="observacoes">
                                             <h4>Observações</h4>
                                         </label>
                                         <textarea class="editor" name="observacoes" id="observacoes" cols="30" rows="5"><?php echo e($result->observacoes) ?></textarea>
                                     </div>
 
-                                    <div class="span6" style="padding: 1%; margin-left: 0">
+                                    <div class="col-6" style="padding: 1%; margin-left: 0">
                                         <label for="observacoes_cliente">
                                             <h4>Observações para o Cliente</h4>
                                         </label>
                                         <textarea class="editor" name="observacoes_cliente" id="observacoes_cliente" cols="30" rows="5"><?php echo e($result->observacoes_cliente) ?></textarea>
                                     </div>
 
-                                    <div class="span12" style="padding: 1%; margin-left: 0">
-                                        <div class="span12" style="display:flex; justify-content: center;">
+                                    <div class="col-12" style="padding: 1%; margin-left: 0">
+                                        <div class="col-12" style="display:flex; justify-content: center;">
                                             <?php if ($result->faturado == 0) { ?>
-                                                <a href="#modal-faturar" id="btn-faturar" role="button" data-toggle="modal" class="button btn btn-danger">
+                                                <a href="#modal-faturar" id="btn-faturar" role="button" data-bs-toggle="modal" class="button btn btn-danger">
                                                     <span class="button__icon"><i class='bx bx-dollar'></i></span> 
                                                     <span class="button__text2">Faturar</span>
                                                 </a>
@@ -110,40 +110,40 @@
                             </div>
                         </div>
                         <div class="tab-pane" id="tab2">
-                            <div class="span12 well" style="padding: 1%; margin-left: 0">
-                                <div class="span11">
+                            <div class="col-12 well" style="padding: 1%; margin-left: 0">
+                                <div class="col-11">
                                     <form id="formProdutos" action="<?php echo base_url(); ?>index.php/vendas/adicionarProduto" method="post">
-                                        <div class="span6">
+                                        <div class="col-6">
                                             <input type="hidden" name="idProduto" id="idProduto" />
                                             <input type="hidden" name="idVendasProduto" id="idVendasProduto" value="<?php echo e($result->idVendas) ?>" />
                                             <input type="hidden" name="estoque" id="estoque" value="" />
                                             <label for="">Produto</label>
-                                            <input type="text" class="span12" name="produto" id="produto" placeholder="Digite o nome do produto" />
+                                            <input type="text" class="col-12" name="produto" id="produto" placeholder="Digite o nome do produto" />
                                         </div>
-                                        <div class="span2">
+                                        <div class="col-2">
                                             <label for="">Preço</label>
-                                            <input type="text" placeholder="Preço" id="preco" name="preco" class="span12 money" />
+                                            <input type="text" placeholder="Preço" id="preco" name="preco" class="col-12 money" />
                                         </div>
-                                        <div class="span2">
+                                        <div class="col-2">
                                             <label for="">Quantidade</label>
-                                            <input type="text" placeholder="Quantidade" id="quantidade" name="quantidade" class="span12" />
+                                            <input type="text" placeholder="Quantidade" id="quantidade" name="quantidade" class="col-12" />
                                         </div>
-                                        <div class="span2">
+                                        <div class="col-2">
                                             <label for="">&nbsp</label>
                                             <button class="button btn btn-success" id="btnAdicionarProduto">
                                                 <span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2">Adicionar</span></button>
                                         </div>
                                     </form>
                                 </div>
-                                <div class="span11">
+                                <div class="col-11">
                                     <form id="formDesconto" action="<?php echo base_url(); ?>index.php/vendas/adicionarDesconto" method="POST">
-                                        <div class="span1">
+                                        <div class="col-1">
                                             <input type="hidden" name="idVendas" id="idVendas" value="<?php echo e($result->idVendas); ?>" />
                                             <label for="">Desconto</label>
                                             <input style="width: 4em;" id="desconto" name="desconto" type="text" placeholder="0.00" maxlength="6" size="2" /><br />
                                             <strong><span style="color: red" id="errorAlert"></span></strong>
                                         </div>
-                                        <div class="span1">
+                                        <div class="col-1">
                                         <label for="">Tipo Desc.</label>
                                         <select style="width: 4em;" name="tipoDesconto" id="tipoDesconto">
                                             <option value="real">R$</option>
@@ -151,11 +151,11 @@
                                         </select>
                                         <strong><span style="color: red" id="errorAlert"></span></strong>
                                         </div>
-                                        <div class="span2">
+                                        <div class="col-2">
                                             <label for="">Total com Desconto</label>
-                                            <input class="span12 money" id="resultado" type="text" data-affixes-stay="true" data-thousands="" data-decimal="." name="resultado" value="" readonly />
+                                            <input class="col-12 money" id="resultado" type="text" data-affixes-stay="true" data-thousands="" data-decimal="." name="resultado" value="" readonly />
                                         </div>
-                                        <div class="span2">
+                                        <div class="col-2">
                                             <label for="">&nbsp;</label>
                                             <button class="button btn btn-success" id="btnAdicionarDesconto">
                                                 <span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2">Aplicar</span></button>
@@ -163,7 +163,7 @@
                                     </form>
                                 </div>
                             </div>
-                            <div class="span12" id="divProdutos" style="margin-left: 0">
+                            <div class="col-12" id="divProdutos" style="margin-left: 0">
                                 <table class="table table-bordered" id="tblProdutos">
                                     <thead>
                                         <tr>
@@ -225,56 +225,56 @@ foreach ($produtos as $p) {
 </div>
 
 <!-- Modal Faturar-->
-<div id="modal-faturar" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div id="modal-faturar" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <form id="formFaturar" action="<?php echo current_url() ?>" method="post">
         <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">×</button>
             <h3 id="myModalLabel">Faturar Venda</h3>
         </div>
         <div class="modal-body">
-            <div class="span12 alert alert-info" style="margin-left: 0"> Obrigatório o preenchimento dos campos com asterisco.</div>
-            <div class="span12" style="margin-left: 0">
+            <div class="col-12 alert alert-info" style="margin-left: 0"> Obrigatório o preenchimento dos campos com asterisco.</div>
+            <div class="col-12" style="margin-left: 0">
                 <label for="descricao">Descrição</label>
-                <input class="span12" id="descricao" type="text" name="descricao" value="Fatura de Venda Nº: <?php echo e($result->idVendas); ?> " />
+                <input class="col-12" id="descricao" type="text" name="descricao" value="Fatura de Venda Nº: <?php echo e($result->idVendas); ?> " />
             </div>
-            <div class="span12" style="margin-left: 0">
-                <div class="span12" style="margin-left: 0">
+            <div class="col-12" style="margin-left: 0">
+                <div class="col-12" style="margin-left: 0">
                     <label for="cliente">Cliente*</label>
-                    <input class="span12" id="cliente" type="text" name="cliente" value="<?php echo e($result->nomeCliente) ?>" />
+                    <input class="col-12" id="cliente" type="text" name="cliente" value="<?php echo e($result->nomeCliente) ?>" />
                     <input type="hidden" name="clientes_id" id="clientes_id" value="<?php echo e($result->clientes_id) ?>">
                     <input type="hidden" name="vendas_id" id="vendas_id" value="<?php echo e($result->idVendas); ?>">
                 </div>
             </div>
-            <div class="span12" style="margin-left: 0">
-                <div class="span5" style="margin-left: 0">
+            <div class="col-12" style="margin-left: 0">
+                <div class="col-5" style="margin-left: 0">
                     <label for="valor">Valor*</label>
                     <input type="hidden" id="tipo" name="tipo" value="receita" />
-                    <input class="span12 money" id="valor" type="text" name="valor" value="<?php echo number_format($total, 2, '.', ''); ?> " />
+                    <input class="col-12 money" id="valor" type="text" name="valor" value="<?php echo number_format($total, 2, '.', ''); ?> " />
                 </div>
-                <div class="span5" style="margin-left: 2">
+                <div class="col-5" style="margin-left: 2">
                     <label for="valor">Valor Com Desconto*</label>
-                    <input class="span12 money" id="faturar-desconto" type="text" name="faturar-desconto" value="<?php echo number_format($result->valor_desconto, 2, '.', ''); ?> " />
+                    <input class="col-12 money" id="faturar-desconto" type="text" name="faturar-desconto" value="<?php echo number_format($result->valor_desconto, 2, '.', ''); ?> " />
                 </div>
             </div>
-            <div class="span12" style="margin-left: 0">
-                <div class="span4" style="margin-left: 0">
+            <div class="col-12" style="margin-left: 0">
+                <div class="col-4" style="margin-left: 0">
                     <label for="vencimento">Data Entrada*</label>
-                    <input class="span12 datepicker" autocomplete="off" id="vencimento" type="text" name="vencimento" />
+                    <input class="col-12 datepicker" autocomplete="off" id="vencimento" type="text" name="vencimento" />
                 </div>
             </div>
-            <div class="span12" style="margin-left: 0">
-                <div class="span4" style="margin-left: 0">
+            <div class="col-12" style="margin-left: 0">
+                <div class="col-4" style="margin-left: 0">
                     <label for="recebido">Recebido?</label>
                     &nbsp &nbsp &nbsp &nbsp<input id="recebido" type="checkbox" name="recebido" value="1" />
                 </div>
-                <div id="divRecebimento" class="span8" style=" display: none">
-                    <div class="span6">
+                <div id="divRecebimento" class="col-8" style=" display: none">
+                    <div class="col-6">
                         <label for="recebimento">Data Recebimento</label>
-                        <input class="span12 datepicker" autocomplete="off" id="recebimento" type="text" name="recebimento" />
+                        <input class="col-12 datepicker" autocomplete="off" id="recebimento" type="text" name="recebimento" />
                     </div>
-                    <div class="span6">
+                    <div class="col-6">
                         <label for="formaPgto">Forma Pgto</label>
-                        <select name="formaPgto" id="formaPgto" class="span12">
+                        <select name="formaPgto" id="formaPgto" class="col-12">
                             <option value="Dinheiro">Dinheiro</option>
                             <option value="Cartão de Crédito">Cartão de Crédito</option>
                             <option value="Débito">Débito</option>
@@ -288,7 +288,7 @@ foreach ($produtos as $p) {
             </div>
         </div>
         <div class="modal-footer" style="display:flex">
-            <button class="button btn btn-warning" data-dismiss="modal" aria-hidden="true" id="btn-cancelar-faturar">
+            <button class="button btn btn-warning" data-bs-dismiss="modal" aria-hidden="true" id="btn-cancelar-faturar">
                 <span class="button__icon"><i class="bx bx-x"></i></span><span class="button__text2">Cancelar</span></button>
             <button class="button btn btn-danger"><span class="button__icon"><i class='bx bx-dollar'></i></span> <span class="button__text2">Faturar</span></button>
         </div>        
@@ -559,14 +559,14 @@ foreach ($produtos as $p) {
                     required: 'Campo Requerido.'
                 }
             },
-            errorClass: "help-inline",
+            errorClass: "form-text",
             errorElement: "span",
             highlight: function(element, errorClass, validClass) {
-                $(element).parents('.control-group').addClass('error');
+                $(element).parents('.mb-3').addClass('error');
             },
             unhighlight: function(element, errorClass, validClass) {
-                $(element).parents('.control-group').removeClass('error');
-                $(element).parents('.control-group').addClass('success');
+                $(element).parents('.mb-3').removeClass('error');
+                $(element).parents('.mb-3').addClass('success');
             }
         });
         $("#formProdutos").validate({

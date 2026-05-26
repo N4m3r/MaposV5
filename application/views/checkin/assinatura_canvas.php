@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * View: Componente de Assinatura Digital
  * Uso: $this->load->view('checkin/assinatura_canvas', [
@@ -29,10 +29,10 @@ $container_preview_id = $id . '-preview';
 
     <!-- Botões -->
     <div class="assinatura-botoes" style="margin-bottom: 15px;">
-        <button type="button" class="btn btn-small" id="<?php echo $btn_limpar_id; ?>">
+        <button type="button" class="btn btn-sm" id="<?php echo $btn_limpar_id; ?>">
             <i class="bx bx-eraser"></i> Limpar
         </button>
-        <button type="button" class="btn btn-small btn-info btn-assinatura-preview" data-target="<?php echo $id; ?>">
+        <button type="button" class="btn btn-sm btn-info btn-assinatura-preview" data-bs-target="<?php echo $id; ?>">
             <i class="bx bx-show"></i> Pré-visualizar
         </button>
     </div>
@@ -45,18 +45,18 @@ $container_preview_id = $id . '-preview';
 
     <!-- Campos adicionais -->
     <?php if ($mostrar_campos): ?>
-    <div class="assinatura-campos row-fluid">
+    <div class="assinatura-campos row">
         <?php if (isset($campos['nome']) && $campos['nome']): ?>
-        <div class="span6">
+        <div class="col-6">
             <label for="<?php echo $id; ?>-nome">Nome:</label>
-            <input type="text" class="span12 assinatura-nome" id="<?php echo $id; ?>-nome" placeholder="Digite o nome">
+            <input type="text" class="col-12 assinatura-nome" id="<?php echo $id; ?>-nome" placeholder="Digite o nome">
         </div>
         <?php endif; ?>
 
         <?php if (isset($campos['documento']) && $campos['documento']): ?>
-        <div class="span6">
+        <div class="col-6">
             <label for="<?php echo $id; ?>-documento">Documento:</label>
-            <input type="text" class="span12 assinatura-documento" id="<?php echo $id; ?>-documento" placeholder="CPF/RG">
+            <input type="text" class="col-12 assinatura-documento" id="<?php echo $id; ?>-documento" placeholder="CPF/RG">
         </div>
         <?php endif; ?>
     </div>
@@ -92,7 +92,7 @@ $container_preview_id = $id . '-preview';
     });
 
     // Botão preview - usa event delegation
-    $(document).on('click', '.btn-assinatura-preview[data-target="<?php echo $id; ?>"]', function(e) {
+    $(document).on('click', '.btn-assinatura-preview[data-bs-target="<?php echo $id; ?>"]', function(e) {
         e.preventDefault();
         if (typeof AssinaturaManager === 'undefined') {
             alert('Sistema de assinaturas não carregado. Recarregue a página.');

@@ -1,22 +1,22 @@
-<?php
+﻿<?php
 /**
  * Configuração do Certificado Digital
  */
 ?>
 
 <!-- Header -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <ul class="breadcrumb">
-            <li><a href="<?= site_url('dashboard') ?>">Dashboard</a> <span class="divider">/</span></li>
-            <li><a href="<?= site_url('certificado') ?>">Certificado</a> <span class="divider">/</span></li>
+            <li><a href="<?= site_url('dashboard') ?>">Dashboard</a> <span class="dropdown-divider">/</span></li>
+            <li><a href="<?= site_url('certificado') ?>">Certificado</a> <span class="dropdown-divider">/</span></li>
             <li class="active">Configurar</li>
         </ul>
     </div>
 </div>
 
-<div class="row-fluid">
-    <div class="span8 offset2">
+<div class="row">
+    <div class="col-8 offset-md-2">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-certificate"></i></span>
@@ -31,8 +31,8 @@
                         Após salvar, o sistema detectará automaticamente o Anexo do Simples Nacional e as alíquotas do DAS.
                     </div>
 
-                    <div class="control-group">
-                        <label class="control-label">Tipo de Certificado:*</label>
+                    <div class="mb-3">
+                        <label class="form-label">Tipo de Certificado:*</label>
                         <div class="controls">
                             <label class="radio inline">
                                 <input type="radio" name="tipo" value="A1" checked onchange="toggleTipo('A1')" />
@@ -45,41 +45,41 @@
                         </div>
                     </div>
 
-                    <div class="control-group">
-                        <label class="control-label">CNPJ:*</label>
+                    <div class="mb-3">
+                        <label class="form-label">CNPJ:*</label>
                         <div class="controls">
-                            <input type="text" name="cnpj" class="span6" id="cnpj" required
+                            <input type="text" name="cnpj" class="col-6" id="cnpj" required
                                    placeholder="00.000.000/0000-00" maxlength="18"
                                    value="<?= $certificado ? maskCnpj($certificado->cnpj) : '' ?>" />
-                            <a href="#" class="btn btn-small btn-info" onclick="consultarCNPJ(); return false;">
+                            <a href="#" class="btn btn-sm btn-info" onclick="consultarCNPJ(); return false;">
                                 <i class="fas fa-search"></i> Consultar
                             </a>
                         </div>
                     </div>
 
-                    <div class="control-group">
-                        <label class="control-label">Razão Social:*</label>
+                    <div class="mb-3">
+                        <label class="form-label">Razão Social:*</label>
                         <div class="controls">
-                            <input type="text" name="razao_social" class="span8" id="razao_social" required
+                            <input type="text" name="razao_social" class="col-8" id="razao_social" required
                                    value="<?= $certificado ? $certificado->razao_social : '' ?>" />
                         </div>
                     </div>
 
-                    <div class="control-group">
-                        <label class="control-label">Nome Fantasia:</label>
+                    <div class="mb-3">
+                        <label class="form-label">Nome Fantasia:</label>
                         <div class="controls">
-                            <input type="text" name="nome_fantasia" class="span8" id="nome_fantasia"
+                            <input type="text" name="nome_fantasia" class="col-8" id="nome_fantasia"
                                    value="<?= $certificado ? $certificado->nome_fantasia : '' ?>" />
                         </div>
                     </div>
 
                     <!-- Campos para A1 -->
                     <div id="campos-a1">
-                        <div class="control-group">
-                            <label class="control-label">Arquivo PFX:*</label>
+                        <div class="mb-3">
+                            <label class="form-label">Arquivo PFX:*</label>
                             <div class="controls">
-                                <input type="file" name="certificado" class="span6" accept=".pfx,.p12" />
-                                <span class="help-inline">Arquivo .pfx ou .p12</span>
+                                <input type="file" name="certificado" class="col-6" accept=".pfx,.p12" />
+                                <span class="form-text">Arquivo .pfx ou .p12</span>
                             </div>
                         </div>
                     </div>
@@ -93,19 +93,19 @@
                         </div>
                     </div>
 
-                    <div class="control-group">
-                        <label class="control-label">Senha do Certificado:*</label>
+                    <div class="mb-3">
+                        <label class="form-label">Senha do Certificado:*</label>
                         <div class="controls">
-                            <input type="password" name="senha" class="span6" required
+                            <input type="password" name="senha" class="col-6" required
                                    placeholder="Senha do certificado" />
-                            <span class="help-inline">Será criptografada com AES-256</span>
+                            <span class="form-text">Será criptografada com AES-256</span>
                         </div>
                     </div>
 
-                    <div class="control-group">
-                        <label class="control-label">Ambiente:</label>
+                    <div class="mb-3">
+                        <label class="form-label">Ambiente:</label>
                         <div class="controls">
-                            <select name="ambiente" class="span6">
+                            <select name="ambiente" class="col-6">
                                 <option value="homologacao" <?= (!$certificado || $certificado->ambiente == 'homologacao') ? 'selected' : '' ?>>
                                     Homologação (Testes)
                                 </option>
@@ -113,7 +113,7 @@
                                     Produção
                                 </option>
                             </select>
-                            <span class="help-inline">
+                            <span class="form-text">
                                 <i class="fas fa-info-circle"></i>
                                 Use <strong>Homologação</strong> para testes. <strong>Produção</strong> emite notas reais.
                             </span>
@@ -136,10 +136,10 @@
                     Se a consulta da Receita não identificou o Simples Nacional, você pode forçar a configuração manualmente.
                 </div>
                 <form method="post" action="<?= site_url('certificado/forcar_simples_nacional') ?>" class="form-horizontal">
-                    <div class="control-group">
-                        <label class="control-label">Anexo Simples:*</label>
+                    <div class="mb-3">
+                        <label class="form-label">Anexo Simples:*</label>
                         <div class="controls">
-                            <select name="anexo_forcado" class="span6" required>
+                            <select name="anexo_forcado" class="col-6" required>
                                 <option value="III">Anexo III — Serviços em geral</option>
                                 <option value="IV">Anexo IV — Construção / ISS próprio</option>
                                 <option value="V">Anexo V — Comércio / Indústria</option>
@@ -158,8 +158,8 @@
 </div>
 
 <!-- Resultado da Consulta -->
-<div id="resultado-consulta" class="row-fluid" style="display: none;">
-    <div class="span8 offset2">
+<div id="resultado-consulta" class="row" style="display: none;">
+    <div class="col-8 offset-md-2">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-building"></i></span>

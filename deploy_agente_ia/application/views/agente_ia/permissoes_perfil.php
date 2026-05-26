@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * View: permissoes_perfil.php
  * Gerenciamento de permissoes do agente IA por perfil
@@ -35,17 +35,17 @@
 .chk-2fa { margin-left:8px; }
 </style>
 
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="bx bx-lock-alt iconX"></i></span>
                 <h5>Permissoes do Agente IA por Perfil</h5>
                 <div class="buttons">
-                    <a href="<?php echo site_url('agente_ia'); ?>" class="btn btn-mini">
+                    <a href="<?php echo site_url('agente_ia'); ?>" class="btn btn-sm">
                         <i class="bx bx-arrow-back"></i> Voltar
                     </a>
-                    <button type="submit" form="formPerms" class="btn btn-success btn-mini">
+                    <button type="submit" form="formPerms" class="btn btn-success btn-sm">
                         <i class="bx bx-save"></i> Salvar
                     </button>
                 </div>

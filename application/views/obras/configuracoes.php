@@ -1,7 +1,7 @@
-<?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
+﻿<?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
 
-<div class="row-fluid" style="padding: 0 20px 20px 20px;">
-    <div class="span12">
+<div class="row" style="padding: 0 20px 20px 20px;">
+    <div class="col-12">
         <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; padding: 24px; color: white; margin-bottom: 24px;">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
                 <div>
@@ -20,7 +20,7 @@
         </div>
         <?php endif; ?>
         <?php if ($this->session->flashdata('error')): ?>
-        <div class="alert alert-error">
+        <div class="alert alert-danger">
             <i class="bx bx-error-circle"></i> <?php echo htmlspecialchars($this->session->flashdata('error')); ?>
         </div>
         <?php endif; ?>
@@ -28,10 +28,10 @@
 </div>
 
 <!-- Layout com sidebar de abas -->
-<div class="row-fluid" style="padding: 0 20px 20px 20px;">
+<div class="row" style="padding: 0 20px 20px 20px;">
 
     <!-- Sidebar -->
-    <div class="span3" style="margin-bottom: 20px;">
+    <div class="col-3" style="margin-bottom: 20px;">
         <div style="background: white; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); overflow: hidden;">
             <div id="aba-btn-geral" class="aba-menu active" onclick="mostrarAba('geral')" style="padding: 14px 18px; cursor: pointer; display: flex; align-items: center; gap: 10px; color: #666; border-left: 3px solid transparent; border-bottom: 1px solid #f0f0f0; font-size: 14px;">
                 <i class="bx bx-slider" style="font-size: 18px;"></i> <span>Geral</span>
@@ -67,40 +67,40 @@
     </div>
 
     <!-- Conteudo -->
-    <div class="span9">
+    <div class="col-9">
 
         <!-- ABA GERAL -->
         <div id="aba-geral" class="aba-box" style="display: block;">
             <div style="background: white; border-radius: 10px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 20px;">
                 <h4 style="margin: 0 0 16px 0;"><i class="bx bx-slider" style="color: #667eea;"></i> Configuracoes Gerais</h4>
                 <form method="post" action="<?php echo site_url('obras/salvarConfiguracao'); ?>">
-                    <div class="control-group">
-                        <label class="control-label">Nome do Sistema de Obras</label>
+                    <div class="mb-3">
+                        <label class="form-label">Nome do Sistema de Obras</label>
                         <div class="controls">
-                            <input type="text" name="nome_sistema" class="span6" value="<?php echo htmlspecialchars($config['nome_sistema'] ?? 'Gestao de Obras'); ?>">
+                            <input type="text" name="nome_sistema" class="col-6" value="<?php echo htmlspecialchars($config['nome_sistema'] ?? 'Gestao de Obras'); ?>">
                         </div>
                     </div>
-                    <div class="row-fluid">
-                        <div class="span6">
-                            <div class="control-group">
-                                <label class="control-label">Prazo Padrao para Inicio (dias)</label>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label class="form-label">Prazo Padrao para Inicio (dias)</label>
                                 <div class="controls">
-                                    <input type="number" name="prazo_inicio_padrao" class="span6" value="<?php echo (int)($config['prazo_inicio_padrao'] ?? 7); ?>" min="0">
+                                    <input type="number" name="prazo_inicio_padrao" class="col-6" value="<?php echo (int)($config['prazo_inicio_padrao'] ?? 7); ?>" min="0">
                                 </div>
                             </div>
                         </div>
-                        <div class="span6">
-                            <div class="control-group">
-                                <label class="control-label">Prazo Padrao para Execucao (dias)</label>
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label class="form-label">Prazo Padrao para Execucao (dias)</label>
                                 <div class="controls">
-                                    <input type="number" name="prazo_execucao_padrao" class="span6" value="<?php echo (int)($config['prazo_execucao_padrao'] ?? 30); ?>" min="1">
+                                    <input type="number" name="prazo_execucao_padrao" class="col-6" value="<?php echo (int)($config['prazo_execucao_padrao'] ?? 30); ?>" min="1">
                                 </div>
                             </div>
                         </div>
                     </div>
                     <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
                     <h5 style="margin: 0 0 12px 0;">Funcionalidades</h5>
-                    <table class="table table-condensed table-bordered">
+                    <table class="table table-sm table-bordered">
                         <tbody>
                             <tr>
                                 <td>Sistema de Atividades</td>
@@ -156,8 +156,8 @@
                             <td><i class="bx <?php echo htmlspecialchars($tipo->icone); ?>"></i> <?php echo htmlspecialchars($tipo->nome); ?></td>
                             <td><?php echo htmlspecialchars($tipo->descricao ?? ''); ?></td>
                             <td>
-                                <button class="btn btn-mini" onclick="abrirModal('tipo-obra', <?php echo (int)$tipo->id; ?>)"><i class="bx bx-edit"></i></button>
-                                <button class="btn btn-mini btn-danger" onclick="excluirItem('tipo-obra', <?php echo (int)$tipo->id; ?>, '<?php echo htmlspecialchars($tipo->nome); ?>')"><i class="bx bx-trash"></i></button>
+                                <button class="btn btn-sm" onclick="abrirModal('tipo-obra', <?php echo (int)$tipo->id; ?>)"><i class="bx bx-edit"></i></button>
+                                <button class="btn btn-sm btn-danger" onclick="excluirItem('tipo-obra', <?php echo (int)$tipo->id; ?>, '<?php echo htmlspecialchars($tipo->nome); ?>')"><i class="bx bx-trash"></i></button>
                             </td>
                         </tr>
                         <?php endforeach; ?>
@@ -188,8 +188,8 @@
                             <td><span class="label"><?php echo htmlspecialchars($tipo->categoria ?? 'outro'); ?></span></td>
                             <td><?php echo htmlspecialchars($tipo->descricao ?? ''); ?></td>
                             <td>
-                                <button class="btn btn-mini" onclick="abrirModal('tipo-atividade', <?php echo (int)($tipo->idTipo ?? $tipo->id); ?>)"><i class="bx bx-edit"></i></button>
-                                <button class="btn btn-mini btn-danger" onclick="excluirItem('tipo-atividade', <?php echo (int)($tipo->idTipo ?? $tipo->id); ?>, '<?php echo htmlspecialchars($tipo->nome); ?>')"><i class="bx bx-trash"></i></button>
+                                <button class="btn btn-sm" onclick="abrirModal('tipo-atividade', <?php echo (int)($tipo->idTipo ?? $tipo->id); ?>)"><i class="bx bx-edit"></i></button>
+                                <button class="btn btn-sm btn-danger" onclick="excluirItem('tipo-atividade', <?php echo (int)($tipo->idTipo ?? $tipo->id); ?>, '<?php echo htmlspecialchars($tipo->nome); ?>')"><i class="bx bx-trash"></i></button>
                             </td>
                         </tr>
                         <?php endforeach; ?>
@@ -218,12 +218,12 @@
                             <td><span style="display: inline-block; width: 20px; height: 20px; border-radius: 50%; background: <?php echo htmlspecialchars($status->cor); ?>;"></span></td>
                             <td><i class="bx <?php echo htmlspecialchars($status->icone); ?>"></i> <?php echo htmlspecialchars($status->nome); ?></td>
                             <td><?php echo (int)$status->ordem; ?></td>
-                            <td><?php echo ($status->finalizado ?? false) ? '<span class="label label-success">Sim</span>' : '<span class="label">Nao</span>'; ?></td>
+                            <td><?php echo ($status->finalizado ?? false) ? '<span class="badge bg-success">Sim</span>' : '<span class="label">Nao</span>'; ?></td>
                             <td><?php echo htmlspecialchars($status->descricao ?? ''); ?></td>
                             <td>
-                                <button class="btn btn-mini" onclick="abrirModal('status-obra', <?php echo (int)$status->id; ?>)"><i class="bx bx-edit"></i></button>
+                                <button class="btn btn-sm" onclick="abrirModal('status-obra', <?php echo (int)$status->id; ?>)"><i class="bx bx-edit"></i></button>
                                 <?php if (!in_array($status->nome, ['Prospeccao', 'Em Andamento', 'Concluida'])): ?>
-                                <button class="btn btn-mini btn-danger" onclick="excluirItem('status-obra', <?php echo (int)$status->id; ?>, '<?php echo htmlspecialchars($status->nome); ?>')"><i class="bx bx-trash"></i></button>
+                                <button class="btn btn-sm btn-danger" onclick="excluirItem('status-obra', <?php echo (int)$status->id; ?>, '<?php echo htmlspecialchars($status->nome); ?>')"><i class="bx bx-trash"></i></button>
                                 <?php endif; ?>
                             </td>
                         </tr>
@@ -255,9 +255,9 @@
                             <td><span class="label"><?php echo htmlspecialchars($status->fluxo ?? 'normal'); ?></span></td>
                             <td><?php echo htmlspecialchars($status->descricao ?? ''); ?></td>
                             <td>
-                                <button class="btn btn-mini" onclick="abrirModal('status-atividade', <?php echo (int)$status->id; ?>)"><i class="bx bx-edit"></i></button>
+                                <button class="btn btn-sm" onclick="abrirModal('status-atividade', <?php echo (int)$status->id; ?>)"><i class="bx bx-edit"></i></button>
                                 <?php if (!in_array($status->nome, ['Agendada', 'Iniciada', 'Concluida'])): ?>
-                                <button class="btn btn-mini btn-danger" onclick="excluirItem('status-atividade', <?php echo (int)$status->id; ?>, '<?php echo htmlspecialchars($status->nome); ?>')"><i class="bx bx-trash"></i></button>
+                                <button class="btn btn-sm btn-danger" onclick="excluirItem('status-atividade', <?php echo (int)$status->id; ?>, '<?php echo htmlspecialchars($status->nome); ?>')"><i class="bx bx-trash"></i></button>
                                 <?php endif; ?>
                             </td>
                         </tr>
@@ -288,8 +288,8 @@
                             <td><i class="bx <?php echo htmlspecialchars($esp->icone); ?>"></i> <?php echo htmlspecialchars($esp->nome); ?></td>
                             <td><?php echo htmlspecialchars($esp->descricao ?? ''); ?></td>
                             <td>
-                                <button class="btn btn-mini" onclick="abrirModal('especialidade', <?php echo (int)$esp->id; ?>)"><i class="bx bx-edit"></i></button>
-                                <button class="btn btn-mini btn-danger" onclick="excluirItem('especialidade', <?php echo (int)$esp->id; ?>, '<?php echo htmlspecialchars($esp->nome); ?>')"><i class="bx bx-trash"></i></button>
+                                <button class="btn btn-sm" onclick="abrirModal('especialidade', <?php echo (int)$esp->id; ?>)"><i class="bx bx-edit"></i></button>
+                                <button class="btn btn-sm btn-danger" onclick="excluirItem('especialidade', <?php echo (int)$esp->id; ?>, '<?php echo htmlspecialchars($esp->nome); ?>')"><i class="bx bx-trash"></i></button>
                             </td>
                         </tr>
                         <?php endforeach; ?>
@@ -321,8 +321,8 @@
                             <td><span class="label" style="background: <?php echo $nivelCor; ?>; color: white;"><?php echo htmlspecialchars($funcao->nivel ?? 'baixo'); ?></span></td>
                             <td><?php echo htmlspecialchars($funcao->descricao ?? ''); ?></td>
                             <td>
-                                <button class="btn btn-mini" onclick="abrirModal('funcao', <?php echo (int)$funcao->id; ?>)"><i class="bx bx-edit"></i></button>
-                                <button class="btn btn-mini btn-danger" onclick="excluirItem('funcao', <?php echo (int)$funcao->id; ?>, '<?php echo htmlspecialchars($funcao->nome); ?>')"><i class="bx bx-trash"></i></button>
+                                <button class="btn btn-sm" onclick="abrirModal('funcao', <?php echo (int)$funcao->id; ?>)"><i class="bx bx-edit"></i></button>
+                                <button class="btn btn-sm btn-danger" onclick="excluirItem('funcao', <?php echo (int)$funcao->id; ?>, '<?php echo htmlspecialchars($funcao->nome); ?>')"><i class="bx bx-trash"></i></button>
                             </td>
                         </tr>
                         <?php endforeach; ?>
@@ -337,7 +337,7 @@
                 <h4 style="margin: 0 0 16px 0;"><i class="bx bx-bell" style="color: #e74c3c;"></i> Configuracoes de Notificacoes</h4>
                 <form method="post" action="<?php echo site_url('obras/salvarConfiguracaoNotificacoes'); ?>">
                     <h5>Eventos que geram notificacoes</h5>
-                    <table class="table table-condensed table-bordered">
+                    <table class="table table-sm table-bordered">
                         <tbody>
                             <tr><td>Nova obra cadastrada</td><td style="width: 60px; text-align: center;"><input type="checkbox" name="notif_nova_obra" <?php echo ($config_notif['nova_obra'] ?? true) ? 'checked' : ''; ?>></td></tr>
                             <tr><td>Obra concluida</td><td style="width: 60px; text-align: center;"><input type="checkbox" name="notif_obra_concluida" <?php echo ($config_notif['obra_concluida'] ?? true) ? 'checked' : ''; ?>></td></tr>
@@ -349,7 +349,7 @@
                     </table>
                     <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
                     <h5>Canais de Notificacao</h5>
-                    <table class="table table-condensed table-bordered">
+                    <table class="table table-sm table-bordered">
                         <tbody>
                             <tr><td>E-mail</td><td style="width: 60px; text-align: center;"><input type="checkbox" name="canal_email" <?php echo ($config_notif['canal_email'] ?? true) ? 'checked' : ''; ?>></td></tr>
                             <tr><td>Notificacao no Sistema</td><td style="width: 60px; text-align: center;"><input type="checkbox" name="canal_sistema" <?php echo ($config_notif['canal_sistema'] ?? true) ? 'checked' : ''; ?>></td></tr>
@@ -366,15 +366,15 @@
 </div>
 
 <!-- MODAL DE EDICAO -->
-<div id="modalEditar" class="modal hide fade" tabindex="-1" role="dialog" aria-hidden="true" style="z-index: 10000;">
+<div id="modalEditar" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" style="z-index: 10000;">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">&times;</button>
         <h3 id="modalEditarTitulo">Editar Item</h3>
     </div>
     <div class="modal-body" id="modalEditarBody">
     </div>
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true">Cancelar</button>
+        <button class="btn" data-bs-dismiss="modal" aria-hidden="true">Cancelar</button>
         <button class="btn btn-primary" onclick="salvarModal()"><i class="bx bx-save"></i> Salvar</button>
     </div>
 </div>
@@ -499,42 +499,42 @@ function abrirModal(tipo, id) {
     if (tipo === 'tipo-obra') {
         titulo.innerHTML = (id ? '<i class="bx bx-edit"></i> Editar' : '<i class="bx bx-plus"></i> Novo') + ' Tipo de Obra';
         html = '<input type="hidden" id="f_id" value="' + (id || '') + '">' +
-            '<div class="control-group"><label class="control-label">Nome</label><div class="controls"><input type="text" id="f_nome" class="span12" value="' + escapeHtml(nomeItem) + '" required></div></div>' +
-            '<div class="control-group"><label class="control-label">Descricao</label><div class="controls"><textarea id="f_descricao" class="span12" rows="2">' + escapeHtml(descricaoItem) + '</textarea></div></div>' +
-            '<div class="row-fluid"><div class="span6"><div class="control-group"><label class="control-label">Cor</label><div class="controls"><input type="color" id="f_cor" value="' + corItem + '" style="width:60px;height:40px;"></div></div></div><div class="span6"><div class="control-group"><label class="control-label">Icone</label><div class="controls"><select id="f_icone" class="span12">' + opcoesIcone(iconeItem) + '</select></div></div></div></div>';
+            '<div class="mb-3"><label class="form-label">Nome</label><div class="controls"><input type="text" id="f_nome" class="col-12" value="' + escapeHtml(nomeItem) + '" required></div></div>' +
+            '<div class="mb-3"><label class="form-label">Descricao</label><div class="controls"><textarea id="f_descricao" class="col-12" rows="2">' + escapeHtml(descricaoItem) + '</textarea></div></div>' +
+            '<div class="row"><div class="col-6"><div class="mb-3"><label class="form-label">Cor</label><div class="controls"><input type="color" id="f_cor" value="' + corItem + '" style="width:60px;height:40px;"></div></div></div><div class="col-6"><div class="mb-3"><label class="form-label">Icone</label><div class="controls"><select id="f_icone" class="col-12">' + opcoesIcone(iconeItem) + '</select></div></div></div></div>';
     } else if (tipo === 'tipo-atividade') {
         titulo.innerHTML = (id ? '<i class="bx bx-edit"></i> Editar' : '<i class="bx bx-plus"></i> Novo') + ' Tipo de Atividade';
         html = '<input type="hidden" id="f_id" value="' + (id || '') + '">' +
-            '<div class="control-group"><label class="control-label">Nome</label><div class="controls"><input type="text" id="f_nome" class="span12" value="' + escapeHtml(nomeItem) + '" required></div></div>' +
-            '<div class="control-group"><label class="control-label">Descricao</label><div class="controls"><textarea id="f_descricao" class="span12" rows="2">' + escapeHtml(descricaoItem) + '</textarea></div></div>' +
-            '<div class="row-fluid"><div class="span4"><div class="control-group"><label class="control-label">Categoria</label><div class="controls"><select id="f_categoria" class="span12"><option value="execucao"' + (categoriaItem === 'execucao' ? ' selected' : '') + '>Execucao</option><option value="visita"' + (categoriaItem === 'visita' ? ' selected' : '') + '>Visita</option><option value="manutencao"' + (categoriaItem === 'manutencao' ? ' selected' : '') + '>Manutencao</option><option value="impedimento"' + (categoriaItem === 'impedimento' ? ' selected' : '') + '>Impedimento</option><option value="outro"' + (categoriaItem === 'outro' ? ' selected' : '') + '>Outro</option></select></div></div></div><div class="span4"><div class="control-group"><label class="control-label">Duracao (min)</label><div class="controls"><input type="number" id="f_duracao" class="span12" value="' + duracaoItem + '" min="5"></div></div></div><div class="span4"><div class="control-group"><label class="control-label">Cor</label><div class="controls"><input type="color" id="f_cor" value="' + corItem + '" style="width:60px;height:40px;"></div></div></div></div>' +
-            '<div class="control-group"><label class="control-label">Icone</label><div class="controls"><select id="f_icone" class="span12">' + opcoesIcone(iconeItem) + '</select></div></div>';
+            '<div class="mb-3"><label class="form-label">Nome</label><div class="controls"><input type="text" id="f_nome" class="col-12" value="' + escapeHtml(nomeItem) + '" required></div></div>' +
+            '<div class="mb-3"><label class="form-label">Descricao</label><div class="controls"><textarea id="f_descricao" class="col-12" rows="2">' + escapeHtml(descricaoItem) + '</textarea></div></div>' +
+            '<div class="row"><div class="col-4"><div class="mb-3"><label class="form-label">Categoria</label><div class="controls"><select id="f_categoria" class="col-12"><option value="execucao"' + (categoriaItem === 'execucao' ? ' selected' : '') + '>Execucao</option><option value="visita"' + (categoriaItem === 'visita' ? ' selected' : '') + '>Visita</option><option value="manutencao"' + (categoriaItem === 'manutencao' ? ' selected' : '') + '>Manutencao</option><option value="impedimento"' + (categoriaItem === 'impedimento' ? ' selected' : '') + '>Impedimento</option><option value="outro"' + (categoriaItem === 'outro' ? ' selected' : '') + '>Outro</option></select></div></div></div><div class="col-4"><div class="mb-3"><label class="form-label">Duracao (min)</label><div class="controls"><input type="number" id="f_duracao" class="col-12" value="' + duracaoItem + '" min="5"></div></div></div><div class="col-4"><div class="mb-3"><label class="form-label">Cor</label><div class="controls"><input type="color" id="f_cor" value="' + corItem + '" style="width:60px;height:40px;"></div></div></div></div>' +
+            '<div class="mb-3"><label class="form-label">Icone</label><div class="controls"><select id="f_icone" class="col-12">' + opcoesIcone(iconeItem) + '</select></div></div>';
     } else if (tipo === 'status-obra') {
         titulo.innerHTML = (id ? '<i class="bx bx-edit"></i> Editar' : '<i class="bx bx-plus"></i> Novo') + ' Status de Obra';
         html = '<input type="hidden" id="f_id" value="' + (id || '') + '">' +
-            '<div class="control-group"><label class="control-label">Nome</label><div class="controls"><input type="text" id="f_nome" class="span12" value="' + escapeHtml(nomeItem) + '" required></div></div>' +
-            '<div class="control-group"><label class="control-label">Descricao</label><div class="controls"><textarea id="f_descricao" class="span12" rows="2">' + escapeHtml(descricaoItem) + '</textarea></div></div>' +
-            '<div class="row-fluid"><div class="span4"><div class="control-group"><label class="control-label">Cor</label><div class="controls"><input type="color" id="f_cor" value="' + corItem + '" style="width:60px;height:40px;"></div></div></div><div class="span4"><div class="control-group"><label class="control-label">Ordem</label><div class="controls"><input type="number" id="f_ordem" class="span12" value="' + ordemItem + '" min="1"></div></div></div><div class="span4"><div class="control-group"><label class="control-label">Finalizado?</label><div class="controls"><input type="checkbox" id="f_finalizado"' + (finalizadoItem ? ' checked' : '') + '></div></div></div></div>' +
-            '<div class="control-group"><label class="control-label">Icone</label><div class="controls"><select id="f_icone" class="span12">' + opcoesIcone(iconeItem) + '</select></div></div>';
+            '<div class="mb-3"><label class="form-label">Nome</label><div class="controls"><input type="text" id="f_nome" class="col-12" value="' + escapeHtml(nomeItem) + '" required></div></div>' +
+            '<div class="mb-3"><label class="form-label">Descricao</label><div class="controls"><textarea id="f_descricao" class="col-12" rows="2">' + escapeHtml(descricaoItem) + '</textarea></div></div>' +
+            '<div class="row"><div class="col-4"><div class="mb-3"><label class="form-label">Cor</label><div class="controls"><input type="color" id="f_cor" value="' + corItem + '" style="width:60px;height:40px;"></div></div></div><div class="col-4"><div class="mb-3"><label class="form-label">Ordem</label><div class="controls"><input type="number" id="f_ordem" class="col-12" value="' + ordemItem + '" min="1"></div></div></div><div class="col-4"><div class="mb-3"><label class="form-label">Finalizado?</label><div class="controls"><input type="checkbox" id="f_finalizado"' + (finalizadoItem ? ' checked' : '') + '></div></div></div></div>' +
+            '<div class="mb-3"><label class="form-label">Icone</label><div class="controls"><select id="f_icone" class="col-12">' + opcoesIcone(iconeItem) + '</select></div></div>';
     } else if (tipo === 'status-atividade') {
         titulo.innerHTML = (id ? '<i class="bx bx-edit"></i> Editar' : '<i class="bx bx-plus"></i> Novo') + ' Status de Atividade';
         html = '<input type="hidden" id="f_id" value="' + (id || '') + '">' +
-            '<div class="control-group"><label class="control-label">Nome</label><div class="controls"><input type="text" id="f_nome" class="span12" value="' + escapeHtml(nomeItem) + '" required></div></div>' +
-            '<div class="control-group"><label class="control-label">Descricao</label><div class="controls"><textarea id="f_descricao" class="span12" rows="2">' + escapeHtml(descricaoItem) + '</textarea></div></div>' +
-            '<div class="row-fluid"><div class="span6"><div class="control-group"><label class="control-label">Cor</label><div class="controls"><input type="color" id="f_cor" value="' + corItem + '" style="width:60px;height:40px;"></div></div></div><div class="span6"><div class="control-group"><label class="control-label">Fluxo</label><div class="controls"><select id="f_fluxo" class="span12"><option value="inicial"' + (fluxoItem === 'inicial' ? ' selected' : '') + '>Inicial</option><option value="normal"' + (fluxoItem === 'normal' ? ' selected' : '') + '>Normal</option><option value="pausa"' + (fluxoItem === 'pausa' ? ' selected' : '') + '>Pausa</option><option value="final"' + (fluxoItem === 'final' ? ' selected' : '') + '>Final</option></select></div></div></div></div>' +
-            '<div class="control-group"><label class="control-label">Icone</label><div class="controls"><select id="f_icone" class="span12">' + opcoesIcone(iconeItem) + '</select></div></div>';
+            '<div class="mb-3"><label class="form-label">Nome</label><div class="controls"><input type="text" id="f_nome" class="col-12" value="' + escapeHtml(nomeItem) + '" required></div></div>' +
+            '<div class="mb-3"><label class="form-label">Descricao</label><div class="controls"><textarea id="f_descricao" class="col-12" rows="2">' + escapeHtml(descricaoItem) + '</textarea></div></div>' +
+            '<div class="row"><div class="col-6"><div class="mb-3"><label class="form-label">Cor</label><div class="controls"><input type="color" id="f_cor" value="' + corItem + '" style="width:60px;height:40px;"></div></div></div><div class="col-6"><div class="mb-3"><label class="form-label">Fluxo</label><div class="controls"><select id="f_fluxo" class="col-12"><option value="inicial"' + (fluxoItem === 'inicial' ? ' selected' : '') + '>Inicial</option><option value="normal"' + (fluxoItem === 'normal' ? ' selected' : '') + '>Normal</option><option value="pausa"' + (fluxoItem === 'pausa' ? ' selected' : '') + '>Pausa</option><option value="final"' + (fluxoItem === 'final' ? ' selected' : '') + '>Final</option></select></div></div></div></div>' +
+            '<div class="mb-3"><label class="form-label">Icone</label><div class="controls"><select id="f_icone" class="col-12">' + opcoesIcone(iconeItem) + '</select></div></div>';
     } else if (tipo === 'especialidade') {
         titulo.innerHTML = (id ? '<i class="bx bx-edit"></i> Editar' : '<i class="bx bx-plus"></i> Nova') + ' Especialidade';
         html = '<input type="hidden" id="f_id" value="' + (id || '') + '">' +
-            '<div class="control-group"><label class="control-label">Nome</label><div class="controls"><input type="text" id="f_nome" class="span12" value="' + escapeHtml(nomeItem) + '" required></div></div>' +
-            '<div class="control-group"><label class="control-label">Descricao</label><div class="controls"><textarea id="f_descricao" class="span12" rows="2">' + escapeHtml(descricaoItem) + '</textarea></div></div>' +
-            '<div class="row-fluid"><div class="span6"><div class="control-group"><label class="control-label">Cor</label><div class="controls"><input type="color" id="f_cor" value="' + corItem + '" style="width:60px;height:40px;"></div></div></div><div class="span6"><div class="control-group"><label class="control-label">Icone</label><div class="controls"><select id="f_icone" class="span12">' + opcoesIcone(iconeItem) + '</select></div></div></div></div>';
+            '<div class="mb-3"><label class="form-label">Nome</label><div class="controls"><input type="text" id="f_nome" class="col-12" value="' + escapeHtml(nomeItem) + '" required></div></div>' +
+            '<div class="mb-3"><label class="form-label">Descricao</label><div class="controls"><textarea id="f_descricao" class="col-12" rows="2">' + escapeHtml(descricaoItem) + '</textarea></div></div>' +
+            '<div class="row"><div class="col-6"><div class="mb-3"><label class="form-label">Cor</label><div class="controls"><input type="color" id="f_cor" value="' + corItem + '" style="width:60px;height:40px;"></div></div></div><div class="col-6"><div class="mb-3"><label class="form-label">Icone</label><div class="controls"><select id="f_icone" class="col-12">' + opcoesIcone(iconeItem) + '</select></div></div></div></div>';
     } else if (tipo === 'funcao') {
         titulo.innerHTML = (id ? '<i class="bx bx-edit"></i> Editar' : '<i class="bx bx-plus"></i> Nova') + ' Funcao';
         html = '<input type="hidden" id="f_id" value="' + (id || '') + '">' +
-            '<div class="control-group"><label class="control-label">Nome</label><div class="controls"><input type="text" id="f_nome" class="span12" value="' + escapeHtml(nomeItem) + '" required></div></div>' +
-            '<div class="control-group"><label class="control-label">Descricao</label><div class="controls"><textarea id="f_descricao" class="span12" rows="2">' + escapeHtml(descricaoItem) + '</textarea></div></div>' +
-            '<div class="control-group"><label class="control-label">Nivel</label><div class="controls"><select id="f_nivel" class="span12"><option value="baixo"' + (nivelItem === 'baixo' ? ' selected' : '') + '>Baixo</option><option value="medio"' + (nivelItem === 'medio' ? ' selected' : '') + '>Medio</option><option value="alto"' + (nivelItem === 'alto' ? ' selected' : '') + '>Alto</option></select></div></div>';
+            '<div class="mb-3"><label class="form-label">Nome</label><div class="controls"><input type="text" id="f_nome" class="col-12" value="' + escapeHtml(nomeItem) + '" required></div></div>' +
+            '<div class="mb-3"><label class="form-label">Descricao</label><div class="controls"><textarea id="f_descricao" class="col-12" rows="2">' + escapeHtml(descricaoItem) + '</textarea></div></div>' +
+            '<div class="mb-3"><label class="form-label">Nivel</label><div class="controls"><select id="f_nivel" class="col-12"><option value="baixo"' + (nivelItem === 'baixo' ? ' selected' : '') + '>Baixo</option><option value="medio"' + (nivelItem === 'medio' ? ' selected' : '') + '>Medio</option><option value="alto"' + (nivelItem === 'alto' ? ' selected' : '') + '>Alto</option></select></div></div>';
     }
 
     body.innerHTML = html;

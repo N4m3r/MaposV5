@@ -1,19 +1,19 @@
-<?php
+﻿<?php
 $eventsSelected = json_decode($webhook->events ?? '[]', true);
 ?>
 
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <ul class="breadcrumb">
-            <li><a href="<?= base_url() ?>">Dashboard</a><span class="divider">/</span></li>
-            <li><a href="<?= site_url('webhooks') ?>">Webhooks</a><span class="divider">/</span></li>
+            <li><a href="<?= base_url() ?>">Dashboard</a><span class="dropdown-divider">/</span></li>
+            <li><a href="<?= site_url('webhooks') ?>">Webhooks</a><span class="dropdown-divider">/</span></li>
             <li class="active">Editar Webhook</li>
         </ul>
     </div>
 </div>
 
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-webhook"></i></span>
@@ -21,22 +21,22 @@ $eventsSelected = json_decode($webhook->events ?? '[]', true);
             </div>
             <div class="widget-content">
                 <form action="<?= site_url('webhooks/edit/' . $webhook->id) ?>" method="post" class="form-horizontal">
-                    <div class="control-group">
-                        <label class="control-label" for="name">Nome:</label>
+                    <div class="mb-3">
+                        <label class="form-label" for="name">Nome:</label>
                         <div class="controls">
-                            <input type="text" name="name" id="name" class="span6" required value="<?= htmlspecialchars($webhook->name) ?>">
+                            <input type="text" name="name" id="name" class="col-6" required value="<?= htmlspecialchars($webhook->name) ?>">
                         </div>
                     </div>
 
-                    <div class="control-group">
-                        <label class="control-label" for="url">URL:</label>
+                    <div class="mb-3">
+                        <label class="form-label" for="url">URL:</label>
                         <div class="controls">
-                            <input type="url" name="url" id="url" class="span6" required value="<?= htmlspecialchars($webhook->url) ?>">
+                            <input type="url" name="url" id="url" class="col-6" required value="<?= htmlspecialchars($webhook->url) ?>">
                         </div>
                     </div>
 
-                    <div class="control-group">
-                        <label class="control-label">Eventos:</label>
+                    <div class="mb-3">
+                        <label class="form-label">Eventos:</label>
                         <div class="controls">
                             <?php foreach ($events as $key => $label): ?>
                                 <label class="checkbox">
@@ -46,7 +46,7 @@ $eventsSelected = json_decode($webhook->events ?? '[]', true);
                         </div>
                     </div>
 
-                    <div class="control-group">
+                    <div class="mb-3">
                         <div class="controls">
                             <label class="checkbox">
                                 <input type="checkbox" name="active" value="1" <?= $webhook->active ? 'checked' : '' ?>> Webhook ativo

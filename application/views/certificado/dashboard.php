@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Dashboard do Certificado Digital
  */
@@ -65,18 +65,18 @@
 </style>
 
 <!-- Header -->
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <ul class="breadcrumb">
-            <li><a href="<?= site_url('dashboard') ?>">Dashboard</a> <span class="divider">/</span></li>
+            <li><a href="<?= site_url('dashboard') ?>">Dashboard</a> <span class="dropdown-divider">/</span></li>
             <li class="active">Certificado Digital</li>
         </ul>
     </div>
 </div>
 
 <!-- Status do Certificado -->
-<div class="row-fluid">
-    <div class="span8">
+<div class="row">
+    <div class="col-8">
         <?php if ($certificado): ?>
             <?php
             $cardClass = 'valid';
@@ -87,8 +87,8 @@
             }
             ?>
             <div class="cert-card <?= $cardClass ?>">
-                <div class="row-fluid">
-                    <div class="span8">
+                <div class="row">
+                    <div class="col-8">
                         <div class="cert-title">
                             <i class="fas fa-certificate"></i> <?= $certificado->razao_social ?>
                         </div>
@@ -103,7 +103,7 @@
                             <?php endif; ?>
                         </div>
                     </div>
-                    <div class="span4 text-right">
+                    <div class="col-4 text-right">
                         <div class="cert-info" style="font-size: 32px; font-weight: bold;">
                             <?= $validade['dias'] ?>
                         </div>
@@ -114,13 +114,13 @@
                     </div>
                 </div>
 
-                <div class="row-fluid" style="margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.3);">
-                    <div class="span6">
+                <div class="row" style="margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.3);">
+                    <div class="col-6">
                         <div class="cert-info">
                             <strong>Válido até:</strong> <?= date('d/m/Y H:i', strtotime($certificado->data_validade)) ?>
                         </div>
                     </div>
-                    <div class="span6 text-right">
+                    <div class="col-6 text-right">
                         <div class="cert-info">
                             <strong>Último acesso:</strong> <?= $certificado->ultimo_acesso ? date('d/m/Y H:i', strtotime($certificado->ultimo_acesso)) : 'Nunca' ?>
                         </div>
@@ -142,7 +142,7 @@
         <?php endif; ?>
     </div>
 
-    <div class="span4">
+    <div class="col-4">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-bolt"></i></span>
@@ -192,7 +192,7 @@
                         <i class="fas fa-exclamation-triangle"></i> <strong>Não Configurado</strong><br>
                         Clique em "Sincronizar Alíquotas" ou configure manualmente em Impostos > Configurações.
                         <br>
-                        <a href="<?= site_url('certificado/configurar') ?>" class="btn btn-small btn-info" style="margin-top:8px">
+                        <a href="<?= site_url('certificado/configurar') ?>" class="btn btn-sm btn-info" style="margin-top:8px">
                             <i class="fas fa-magic"></i> Forçar Simples Nacional
                         </a>
                     </div>
@@ -204,8 +204,8 @@
 </div>
 
 <!-- Consultas Realizadas -->
-<div class="row-fluid">
-    <div class="span6">
+<div class="row">
+    <div class="col-6">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-history"></i></span>
@@ -232,12 +232,12 @@
                         if ($c->tipo_consulta === 'SIMPLES_NACIONAL' && is_array($dadosConsulta)):
                         ?>
                         <div style="margin-top: 5px; padding: 5px 8px; background: #f8f9fa; border-radius: 3px; font-size: 11px;">
-                            <span class="label label-success">Optante Simples Nacional</span>
+                            <span class="badge bg-success">Optante Simples Nacional</span>
                             <?php if (!empty($dadosConsulta['anexo_sugerido'])): ?>
-                                <span class="label label-info">Anexo <?= htmlspecialchars($dadosConsulta['anexo_sugerido']) ?></span>
+                                <span class="badge bg-info">Anexo <?= htmlspecialchars($dadosConsulta['anexo_sugerido']) ?></span>
                             <?php endif; ?>
                             <?php if (!empty($dadosConsulta['simei'])): ?>
-                                <span class="label label-warning">MEI</span>
+                                <span class="badge bg-warning">MEI</span>
                             <?php endif; ?>
                             <?php if (!empty($dadosConsulta['cnae_descricao'])): ?>
                                 <br><strong>CNAE:</strong> <small><?= htmlspecialchars(substr($dadosConsulta['cnae_descricao'], 0, 80)) ?></small>
@@ -269,7 +269,7 @@
         </div>
     </div>
 
-    <div class="span6">
+    <div class="col-6">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-info-circle"></i></span>

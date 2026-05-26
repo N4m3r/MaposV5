@@ -1,4 +1,4 @@
-<!-- Templates de Checklists - Versão Moderna -->
+﻿<!-- Templates de Checklists - Versão Moderna -->
 <div class="new122">
     <!-- Header -->
     <div class="widget-title" style="margin: -20px 0 0">
@@ -7,7 +7,7 @@
         </span>
         <h5>Templates de Checklist</h5>
         <div class="buttons">
-            <a href="#modal-novo-checklist" data-toggle="modal" class="button btn btn-mini btn-success">
+            <a href="#modal-novo-checklist" data-bs-toggle="modal" class="button btn btn-sm btn-success">
                 <span class="button__icon"><i class="bx bx-plus-circle"></i></span>
                 <span class="button__text2">Novo Template</span>
             </a>
@@ -16,7 +16,7 @@
 
     <!-- Grid de Cards -->
     <?php if (!empty($checklists)): ?>
-        <div class="row-fluid" style="margin-top: 20px;">
+        <div class="row" style="margin-top: 20px;">
             <?php foreach ($checklists as $checklist):
                 // Decodificar itens JSON
                 $itens = [];
@@ -40,7 +40,7 @@
                 ];
                 $tipoStyle = $tipoColors[$checklist->tipo_servico ?? 'MC'] ?? $tipoColors['MC'];
             ?>
-                <div class="span4" style="margin-bottom: 20px;">
+                <div class="col-4" style="margin-bottom: 20px;">
                     <div class="checklist-card">
                         <div class="checklist-header">
                             <div class="checklist-icon">
@@ -121,15 +121,15 @@
             </div>
             <h3 style="color: #666; font-weight: 400; margin-bottom: 10px;">Nenhum template cadastrado</h3>
             <p style="color: #999; margin-bottom: 30px;">Crie templates de checklist para padronizar os serviços.</p>
-            <a href="#modal-novo-checklist" data-toggle="modal" class="button btn btn-success btn-large">
+            <a href="#modal-novo-checklist" data-bs-toggle="modal" class="button btn btn-success btn-large">
                 <span class="button__icon"><i class="bx bx-plus-circle"></i></span>
                 <span class="button__text2">Criar Primeiro Template</span>
             </a>
         </div>
 
         <!-- Exemplos -->
-        <div class="row-fluid">
-            <div class="span6">
+        <div class="row">
+            <div class="col-6">
                 <div class="example-card">
                     <div class="example-header">
                         <i class="bx bx-video"></i>
@@ -145,7 +145,7 @@
                 </div>
             </div>
 
-            <div class="span6">
+            <div class="col-6">
                 <div class="example-card">
                     <div class="example-header">
                         <i class="bx bx-wrench"></i>
@@ -165,9 +165,9 @@
 </div>
 
 <!-- Modal Novo Checklist - Versão Intuitiva -->
-<div id="modal-novo-checklist" class="modal hide fade" tabindex="-1" role="dialog" style="width: 750px; margin-left: -375px;">
+<div id="modal-novo-checklist" class="modal fade" tabindex="-1" role="dialog" style="width: 750px; margin-left: -375px;">
     <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-        <button type="button" class="close" data-dismiss="modal" style="color: white; opacity: 0.8;">×</button>
+        <button type="button" class="close" data-bs-dismiss="modal" style="color: white; opacity: 0.8;">×</button>
         <h5 style="color: white;"><i class="bx bx-plus-circle"></i> Criar Novo Template de Checklist</h5>
     </div>
 
@@ -176,27 +176,27 @@
 
             <!-- Preview do Header -->
             <div class="preview-header" style="background: #f8f9fa; border-radius: 12px; padding: 20px; margin-bottom: 25px; border: 2px dashed #667eea;">
-                <div class="row-fluid">
-                    <div class="span6">
-                        <div class="control-group" style="margin-bottom: 15px;">
-                            <label class="control-label" style="font-weight: 600; color: #333;">
+                <div class="row">
+                    <div class="col-6">
+                        <div class="mb-3" style="margin-bottom: 15px;">
+                            <label class="form-label" style="font-weight: 600; color: #333;">
                                 <i class="bx bx-tag"></i> Nome do Template *
                             </label>
                             <div class="controls">
-                                <input type="text" name="nome_template" id="novo-nome-template" class="span12"
+                                <input type="text" name="nome_template" id="novo-nome-template" class="col-12"
                                        placeholder="Ex: Instalação CFTV - Padrão Residencial"
                                        style="font-size: 16px; padding: 10px; border-radius: 8px; border: 2px solid #e0e0e0;"
                                        required>
                             </div>
                         </div>
                     </div>
-                    <div class="span3">
-                        <div class="control-group" style="margin-bottom: 15px;">
-                            <label class="control-label" style="font-weight: 600; color: #333;">
+                    <div class="col-3">
+                        <div class="mb-3" style="margin-bottom: 15px;">
+                            <label class="form-label" style="font-weight: 600; color: #333;">
                                 <i class="bx bx-folder"></i> Tipo de OS *
                             </label>
                             <div class="controls">
-                                <select name="tipo_os" id="novo-tipo-os" class="span12"
+                                <select name="tipo_os" id="novo-tipo-os" class="col-12"
                                         style="height: 44px; border-radius: 8px; border: 2px solid #e0e0e0;">
                                     <option value="CFTV">CFTV</option>
                                     <option value="Alarme">Alarme</option>
@@ -209,13 +209,13 @@
                             </div>
                         </div>
                     </div>
-                    <div class="span3">
-                        <div class="control-group" style="margin-bottom: 15px;">
-                            <label class="control-label" style="font-weight: 600; color: #333;">
+                    <div class="col-3">
+                        <div class="mb-3" style="margin-bottom: 15px;">
+                            <label class="form-label" style="font-weight: 600; color: #333;">
                                 <i class="bx bx-wrench"></i> Serviço *
                             </label>
                             <div class="controls">
-                                <select name="tipo_servico" id="novo-tipo-servico" class="span12"
+                                <select name="tipo_servico" id="novo-tipo-servico" class="col-12"
                                         style="height: 44px; border-radius: 8px; border: 2px solid #e0e0e0;">
                                     <option value="INS">Instalação</option>
                                     <option value="MP">Manutenção Preventiva</option>
@@ -238,8 +238,8 @@
                         <div class="preview-info" style="flex: 1;">
                             <div id="preview-nome" style="font-weight: 600; font-size: 16px; color: #333;">Nome do Template</div>
                             <div style="display: flex; gap: 10px; margin-top: 5px;">
-                                <span id="preview-tipo-os" class="label label-info">CFTV</span>
-                                <span id="preview-tipo-servico" class="label label-success">Instalação</span>
+                                <span id="preview-tipo-os" class="badge bg-info">CFTV</span>
+                                <span id="preview-tipo-servico" class="badge bg-success">Instalação</span>
                                 <span id="preview-contador" class="label"><i class="bx bx-list-check"></i> 0 itens</span>
                             </div>
                         </div>
@@ -272,14 +272,14 @@
                         <i class="bx bx-plus-circle"></i> Adicionar Novo Item
                     </div>
 
-                    <div class="row-fluid">
-                        <div class="span9">
-                            <input type="text" id="novo-item-descricao" class="span12"
+                    <div class="row">
+                        <div class="col-9">
+                            <input type="text" id="novo-item-descricao" class="col-12"
                                    placeholder="Descreva o item (ex: Verificar integridade das câmeras)"
                                    style="padding: 12px; font-size: 14px; border-radius: 8px; border: 2px solid #e0e0e0;">
                         </div>
-                        <div class="span3">
-                            <button type="button" class="button btn btn-primary span12" onclick="adicionarItemNovo()"
+                        <div class="col-3">
+                            <button type="button" class="button btn btn-primary col-12" onclick="adicionarItemNovo()"
                                     style="height: 46px;">
                                 <span class="button__icon"><i class="bx bx-plus"></i></span>
                                 <span class="button__text2">Adicionar</span>
@@ -288,7 +288,7 @@
                     </div>
 
                     <div style="margin-top: 15px;">
-                        <input type="text" id="novo-item-dica" class="span12"
+                        <input type="text" id="novo-item-dica" class="col-12"
                                placeholder="Dica opcional: ex: Verificar pontos de emenda e conectores"
                                style="padding: 10px; font-size: 13px; border-radius: 6px; border: 1px solid #e0e0e0;">
                     </div>
@@ -307,7 +307,7 @@
             </div>
 
             <div style="display: flex; gap: 10px;">
-                <button type="button" class="button btn btn-warning" data-dismiss="modal">
+                <button type="button" class="button btn btn-warning" data-bs-dismiss="modal">
                     <span class="button__icon"><i class="bx bx-x"></i></span>
                     <span class="button__text2">Cancelar</span>
                 </button>
@@ -565,15 +565,15 @@
     animation: fadeInUp 0.4s ease forwards;
 }
 
-.span4:nth-child(1) .checklist-card { animation-delay: 0s; }
-.span4:nth-child(2) .checklist-card { animation-delay: 0.1s; }
-.span4:nth-child(3) .checklist-card { animation-delay: 0.2s; }
+.col-4:nth-child(1) .checklist-card { animation-delay: 0s; }
+.col-4:nth-child(2) .checklist-card { animation-delay: 0.1s; }
+.col-4:nth-child(3) .checklist-card { animation-delay: 0.2s; }
 </style>
 
 <!-- Modal Visualizar e Usar Checklist -->
-<div id="modal-usar-checklist" class="modal hide fade" tabindex="-1" role="dialog" style="width: 700px; margin-left: -350px;">
+<div id="modal-usar-checklist" class="modal fade" tabindex="-1" role="dialog" style="width: 700px; margin-left: -350px;">
     <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-        <button type="button" class="close" data-dismiss="modal" style="color: white; opacity: 0.8;">×</button>
+        <button type="button" class="close" data-bs-dismiss="modal" style="color: white; opacity: 0.8;">×</button>
         <h5 style="color: white;"><i class="bx bx-clipboard-check"></i> <span id="checklist-titulo-modal">Checklist</span></h5>
     </div>
 
@@ -609,7 +609,7 @@
         </div>
 
         <div class="checklist-actions-right" style="display: flex; gap: 10px;">
-            <button type="button" class="button btn btn-warning" data-dismiss="modal">
+            <button type="button" class="button btn btn-warning" data-bs-dismiss="modal">
                 <span class="button__icon"><i class="bx bx-x"></i></span>
                 <span class="button__text2">Cancelar</span>
             </button>
@@ -1089,15 +1089,15 @@ function renderizarItensNovo() {
                 </div>
 
                 <div class="item-actions" style="display: flex; gap: 5px; flex-shrink: 0;">
-                    <button type="button" class="btn btn-small" onclick="moverItemNovo(${index}, -1)" title="Mover para cima" ${index === 0 ? 'disabled' : ''}
+                    <button type="button" class="btn btn-sm" onclick="moverItemNovo(${index}, -1)" title="Mover para cima" ${index === 0 ? 'disabled' : ''}
                             style="padding: 5px 8px;">
                         <i class="bx bx-chevron-up"></i>
                     </button>
-                    <button type="button" class="btn btn-small" onclick="moverItemNovo(${index}, 1)" title="Mover para baixo" ${index === itensChecklistNovo.length - 1 ? 'disabled' : ''}
+                    <button type="button" class="btn btn-sm" onclick="moverItemNovo(${index}, 1)" title="Mover para baixo" ${index === itensChecklistNovo.length - 1 ? 'disabled' : ''}
                             style="padding: 5px 8px;">
                         <i class="bx bx-chevron-down"></i>
                     </button>
-                    <button type="button" class="btn btn-small btn-danger" onclick="removerItemNovo(${index})" title="Remover"
+                    <button type="button" class="btn btn-sm btn-danger" onclick="removerItemNovo(${index})" title="Remover"
                             style="padding: 5px 8px;">
                         <i class="bx bx-trash"></i>
                     </button>

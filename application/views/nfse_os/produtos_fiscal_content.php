@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Conteúdo Produtos - Tabela fiscal de produtos da OS
  * Usado como sub-aba dentro de Notas Fiscais
@@ -10,10 +10,10 @@ $tributacao = $tributacao ?? [];
 $result = $result ?? null;
 ?>
 
-<div class="row-fluid" style="margin-top: 20px;">
+<div class="row" style="margin-top: 20px;">
 
     <?php if (!empty($produtos)): ?>
-    <div class="span12">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="bx bx-box"></i></span>
@@ -55,22 +55,22 @@ $result = $result ?? null;
     </div>
 
     <?php if (!empty($tributacao)): ?>
-    <div class="span12" style="margin-top: 10px;">
+    <div class="col-12" style="margin-top: 10px;">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="fas fa-calculator"></i></span>
                 <h5>Informações Tributárias</h5>
             </div>
             <div class="widget-content">
-                <div class="row-fluid">
-                    <div class="span6">
+                <div class="row">
+                    <div class="col-6">
                         <div class="well well-small">
                             <strong>Código Tributação LC 116:</strong> <?= $tributacao['codigo_tributacao_nacional'] ?? '---' ?><br>
                             <strong>Código Municipal:</strong> <?= $tributacao['codigo_tributacao_municipal'] ?? '---' ?><br>
                             <strong>Alíquota ISS:</strong> <?= $tributacao['aliquota_iss'] ?? '---' ?>%
                         </div>
                     </div>
-                    <div class="span6">
+                    <div class="col-6">
                         <div class="well well-small">
                             <strong>Descrição Serviço:</strong><br>
                             <small><?= htmlspecialchars($tributacao['descricao_servico'] ?? '---') ?></small>
@@ -83,7 +83,7 @@ $result = $result ?? null;
     <?php endif; ?>
 
     <?php else: ?>
-    <div class="span12">
+    <div class="col-12">
         <div class="alert alert-info">
             <i class="bx bx-info-circle"></i> Nenhum produto vinculado a esta OS.
         </div>

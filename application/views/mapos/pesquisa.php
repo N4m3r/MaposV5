@@ -1,4 +1,4 @@
-<div class="span12" style="margin-left: 0; margin-top: 0">
+﻿<div class="col-12" style="margin-left: 0; margin-top: 0">
     <!-- Formulário de Busca Unificada -->
     <div class="widget-box" style="margin-bottom: 20px">
         <div class="widget-title" style="margin: -20px 0 0">
@@ -9,11 +9,11 @@
         </div>
         <div class="widget-content" style="padding: 20px">
             <form action="<?php echo site_url('mapos/pesquisar') ?>" method="get" class="form-inline">
-                <div class="span4" style="margin-left: 0">
-                    <input type="text" name="termo" class="span12" placeholder="Buscar por nome, documento, telefone, número da OS..." value="<?php echo e($this->input->get('termo')) ?>" />
+                <div class="col-4" style="margin-left: 0">
+                    <input type="text" name="termo" class="col-12" placeholder="Buscar por nome, documento, telefone, número da OS..." value="<?php echo e($this->input->get('termo')) ?>" />
                 </div>
-                <div class="span2">
-                    <select name="tipo" class="span12">
+                <div class="col-2">
+                    <select name="tipo" class="col-12">
                         <option value="todos" <?php echo e($this->input->get('tipo') == 'todos' ? 'selected' : ''); ?>>Todos</option>
                         <option value="clientes" <?php echo e($this->input->get('tipo') == 'clientes' ? 'selected' : ''); ?>>Clientes</option>
                         <option value="os" <?php echo e($this->input->get('tipo') == 'os' ? 'selected' : ''); ?>>Ordens de Serviço</option>
@@ -21,7 +21,7 @@
                         <option value="servicos" <?php echo e($this->input->get('tipo') == 'servicos' ? 'selected' : ''); ?>>Serviços</option>
                     </select>
                 </div>
-                <div class="span2">
+                <div class="col-2">
                     <button type="submit" class="button btn btn-warning">
                         <span class="button__icon"><i class='bx bx-search-alt'></i></span>
                         <span class="button__text2">Buscar</span>
@@ -34,12 +34,12 @@
     <?php if ($this->input->get('termo')): ?>
 
     <!-- Resultados da Busca -->
-    <div class="span12" style="margin-left: 0">
+    <div class="col-12" style="margin-left: 0">
 
         <!-- Clientes e OS lado a lado quando busca é 'todos' -->
         <?php if ($tipo == 'todos' || $tipo == 'clientes'): ?>
         <!-- Clientes -->
-        <div class="span6" style="margin-left: 0">
+        <div class="col-6" style="margin-left: 0">
             <div class="widget-box">
                 <div class="widget-title" style="margin: -20px 0 0">
                     <span class="icon">
@@ -90,7 +90,7 @@
 
         <?php if ($tipo == 'todos' || $tipo == 'os'): ?>
         <!-- OS -->
-        <div class="span6" style="<?php echo $tipo == 'os' ? 'margin-left: 0; width: 100%' : '' ?>">
+        <div class="col-6" style="<?php echo $tipo == 'os' ? 'margin-left: 0; width: 100%' : '' ?>">
             <div class="widget-box">
                 <div class="widget-title" style="margin: -20px 0 0">
                     <span class="icon">
@@ -154,7 +154,7 @@
 
         <?php if ($tipo == 'produtos'): ?>
         <!-- Produtos -->
-        <div class="span12" style="margin-left: 0">
+        <div class="col-12" style="margin-left: 0">
             <div class="widget-box">
                 <div class="widget-title" style="margin: -20px 0 0">
                     <span class="icon">
@@ -207,7 +207,7 @@
 
         <?php if ($tipo == 'servicos'): ?>
         <!-- Serviços -->
-        <div class="span12" style="margin-left: 0">
+        <div class="col-12" style="margin-left: 0">
             <div class="widget-box">
                 <div class="widget-title" style="margin: -20px 0 0">
                     <span class="icon">
@@ -253,7 +253,7 @@
 
         <!-- Resumo quando busca é 'todos' -->
         <?php if ($tipo == 'todos'): ?>
-        <div class="span12" style="margin-left: 0; margin-top: 20px">
+        <div class="col-12" style="margin-left: 0; margin-top: 20px">
             <div class="widget-box">
                 <div class="widget-title" style="margin: -20px 0 0">
                     <span class="icon">
@@ -262,25 +262,25 @@
                     <h5>Resumo da Busca</h5>
                 </div>
                 <div class="widget-content" style="padding: 15px">
-                    <div class="span3" style="text-align: center">
+                    <div class="col-3" style="text-align: center">
                         <h3><?php echo count($clientes) ?></h3>
                         <p>Clientes</p>
-                        <a href="?termo=<?php echo urlencode($termo) ?>&tipo=clientes" class="btn btn-small btn-info">Ver apenas clientes</a>
+                        <a href="?termo=<?php echo urlencode($termo) ?>&tipo=clientes" class="btn btn-sm btn-info">Ver apenas clientes</a>
                     </div>
-                    <div class="span3" style="text-align: center">
+                    <div class="col-3" style="text-align: center">
                         <h3><?php echo count($os) ?></h3>
                         <p>Ordens de Serviço</p>
-                        <a href="?termo=<?php echo urlencode($termo) ?>&tipo=os" class="btn btn-small btn-info">Ver apenas OS</a>
+                        <a href="?termo=<?php echo urlencode($termo) ?>&tipo=os" class="btn btn-sm btn-info">Ver apenas OS</a>
                     </div>
-                    <div class="span3" style="text-align: center">
+                    <div class="col-3" style="text-align: center">
                         <h3><?php echo count($produtos) ?></h3>
                         <p>Produtos</p>
-                        <a href="?termo=<?php echo urlencode($termo) ?>&tipo=produtos" class="btn btn-small btn-info">Ver apenas produtos</a>
+                        <a href="?termo=<?php echo urlencode($termo) ?>&tipo=produtos" class="btn btn-sm btn-info">Ver apenas produtos</a>
                     </div>
-                    <div class="span3" style="text-align: center">
+                    <div class="col-3" style="text-align: center">
                         <h3><?php echo count($servicos) ?></h3>
                         <p>Serviços</p>
-                        <a href="?termo=<?php echo urlencode($termo) ?>&tipo=servicos" class="btn btn-small btn-info">Ver apenas serviços</a>
+                        <a href="?termo=<?php echo urlencode($termo) ?>&tipo=servicos" class="btn btn-sm btn-info">Ver apenas serviços</a>
                     </div>
                     <div class="clearfix"></div>
                 </div>
@@ -293,7 +293,7 @@
     <?php else: ?>
 
     <!-- Mensagem quando não há termo de busca -->
-    <div class="span12" style="margin-left: 0; text-align: center; padding: 50px">
+    <div class="col-12" style="margin-left: 0; text-align: center; padding: 50px">
         <div class="alert alert-info">
             <h4><i class="fas fa-info-circle"></i> Digite um termo de busca</h4>
             <p>Utilize o campo acima para buscar por <strong>Clientes</strong>, <strong>Ordens de Serviço</strong>, <strong>Produtos</strong> ou <strong>Serviços</strong>.</p>

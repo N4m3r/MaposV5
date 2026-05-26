@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/js/jquery-ui/css/smoothness/jquery-ui-1.9.2.custom.css" />
+﻿<link rel="stylesheet" href="<?php echo base_url(); ?>assets/js/jquery-ui/css/smoothness/jquery-ui-1.9.2.custom.css" />
 <script type="text/javascript" src="<?php echo base_url() ?>assets/js/jquery-ui/js/jquery-ui-1.9.2.custom.js"></script>
 <script type="text/javascript" src="<?php echo base_url() ?>assets/js/jquery.validate.js"></script>
 
@@ -8,42 +8,42 @@
 
 <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/custom.css" />
 
-<div class="row-fluid" style="margin-top:0">
-    <div class="span12">
+<div class="row" style="margin-top:0">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <h5>Cadastro de OS</h5>
             </div>
             <div class="widget-content nopadding tab-content">
-                <div class="span12" id="divProdutosServicos" style=" margin-left: 0">
+                <div class="col-12" id="divProdutosServicos" style=" margin-left: 0">
 
                     <ul class="nav nav-tabs">
-                        <li class="active" id="tabDetalhes"><a href="#tab1" data-toggle="tab">Detalhes da OS</a></li>
+                        <li class="active" id="tabDetalhes"><a href="#tab1" data-bs-toggle="tab">Detalhes da OS</a></li>
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane active" id="tab1">
-                            <div class="span12" id="divCadastrarOs">
+                            <div class="col-12" id="divCadastrarOs">
                                 <?php if ($custom_error == true) { ?>
-                                    <div class="span12 alert alert-danger" id="divInfo" style="padding: 1%;">Dados incompletos, verifique os campos com asterisco ou se selecionou corretamente cliente, responsável e garantia.<br />Ou se tem um cliente e um termo de garantia cadastrado.</div>
+                                    <div class="col-12 alert alert-danger" id="divInfo" style="padding: 1%;">Dados incompletos, verifique os campos com asterisco ou se selecionou corretamente cliente, responsável e garantia.<br />Ou se tem um cliente e um termo de garantia cadastrado.</div>
                                 <?php
                                 } ?>
                                 <form action="<?php echo current_url(); ?>" method="post" id="formOs">
-                                    <div class="span12" style="padding: 1%">
-                                        <div class="span6">
+                                    <div class="col-12" style="padding: 1%">
+                                        <div class="col-6">
                                             <label for="cliente">Cliente<span class="required">*</span></label>
-                                            <input id="cliente" class="span12" type="text" name="cliente" value="" />
-                                            <input id="clientes_id" class="span12" type="hidden" name="clientes_id" value="" />
+                                            <input id="cliente" class="col-12" type="text" name="cliente" value="" />
+                                            <input id="clientes_id" class="col-12" type="hidden" name="clientes_id" value="" />
                                         </div>
-                                        <div class="span6">
+                                        <div class="col-6">
                                             <label for="tecnico">Técnico / Responsável<span class="required">*</span></label>
-                                            <input id="tecnico" class="span12" type="text" name="tecnico" value="<?= $this->session->userdata('nome_admin'); ?>" />
-                                            <input id="usuarios_id" class="span12" type="hidden" name="usuarios_id" value="<?= $this->session->userdata('id_admin'); ?>" />
+                                            <input id="tecnico" class="col-12" type="text" name="tecnico" value="<?= $this->session->userdata('nome_admin'); ?>" />
+                                            <input id="usuarios_id" class="col-12" type="hidden" name="usuarios_id" value="<?= $this->session->userdata('id_admin'); ?>" />
                                         </div>
                                     </div>
-                                    <div class="span12" style="padding: 1%; margin-left: 0">
-                                        <div class="span3">
+                                    <div class="col-12" style="padding: 1%; margin-left: 0">
+                                        <div class="col-3">
                                             <label for="status">Status<span class="required">*</span></label>
-                                            <select class="span12" name="status" id="status">
+                                            <select class="col-12" name="status" id="status">
                                                 <option value="Aberto">Aberto</option>
                                                 <option value="Orçamento">Or&ccedil;amento</option>
                                                 <option value="Negociação">Negocia&ccedil;&atilde;o</option>
@@ -55,52 +55,52 @@
                                                 <option value="Cancelado">Cancelado</option>
                                             </select>
                                         </div>
-                                        <div class="span3">
+                                        <div class="col-3">
                                             <label for="dataInicial">Data Inicial<span class="required">*</span></label>
-                                            <input id="dataInicial" autocomplete="off" class="span12 datepicker" type="text" name="dataInicial" value="<?php echo date('d/m/Y'); ?>" />
+                                            <input id="dataInicial" autocomplete="off" class="col-12 datepicker" type="text" name="dataInicial" value="<?php echo date('d/m/Y'); ?>" />
                                         </div>
-                                        <div class="span3">
+                                        <div class="col-3">
                                             <label for="dataFinal">Data Final<span class="required">*</span></label>
-                                            <input id="dataFinal" autocomplete="off" class="span12 datepicker" type="text" name="dataFinal" value="" />
+                                            <input id="dataFinal" autocomplete="off" class="col-12 datepicker" type="text" name="dataFinal" value="" />
                                         </div>
-                                        <div class="span3">
+                                        <div class="col-3">
                                             <label for="garantia">Garantia (dias)</label>
-                                            <input id="garantia" type="number" placeholder="Status s/g inserir nº/0" min="0" max="9999" class="span12" name="garantia" value="" />
+                                            <input id="garantia" type="number" placeholder="Status s/g inserir nº/0" min="0" max="9999" class="col-12" name="garantia" value="" />
                                             <?php echo form_error('garantia'); ?>
                                             <label for="termoGarantia">Termo Garantia</label>
-                                            <input id="termoGarantia" class="span12" type="text" name="termoGarantia" value="" />
-                                            <input id="garantias_id" class="span12" type="hidden" name="garantias_id" value="" />
+                                            <input id="termoGarantia" class="col-12" type="text" name="termoGarantia" value="" />
+                                            <input id="garantias_id" class="col-12" type="hidden" name="garantias_id" value="" />
                                         </div>
                                     </div>
-                                    <div class="span6" style="padding: 1%; margin-left: 0">
+                                    <div class="col-6" style="padding: 1%; margin-left: 0">
                                         <label for="descricaoProduto">
                                             <h4>Descrição Produto/Serviço</h4>
                                         </label>
-                                        <textarea class="span12 editor" name="descricaoProduto" id="descricaoProduto" cols="30" rows="5"></textarea>
+                                        <textarea class="col-12 editor" name="descricaoProduto" id="descricaoProduto" cols="30" rows="5"></textarea>
                                     </div>
-                                    <div class="span6" style="padding: 1%; margin-left: 0">
+                                    <div class="col-6" style="padding: 1%; margin-left: 0">
                                         <label for="defeito">
                                             <h4>Defeito</h4>
                                         </label>
-                                        <textarea class="span12 editor" name="defeito" id="defeito" cols="30" rows="5"></textarea>
+                                        <textarea class="col-12 editor" name="defeito" id="defeito" cols="30" rows="5"></textarea>
                                     </div>
-                                    <div class="span6" style="padding: 1%; margin-left: 0">
+                                    <div class="col-6" style="padding: 1%; margin-left: 0">
                                         <label for="observacoes">
                                             <h4>Observações</h4>
                                         </label>
-                                        <textarea class="span12 editor" name="observacoes" id="observacoes" cols="30" rows="5"></textarea>
+                                        <textarea class="col-12 editor" name="observacoes" id="observacoes" cols="30" rows="5"></textarea>
                                     </div>
-                                    <div class="span6" style="padding: 1%; margin-left: 0">
+                                    <div class="col-6" style="padding: 1%; margin-left: 0">
                                         <label for="laudoTecnico">
                                             <h4>Laudo Técnico</h4>
                                         </label>
-                                        <textarea class="span12 editor" name="laudoTecnico" id="laudoTecnico" cols="30" rows="5"></textarea>
+                                        <textarea class="col-12 editor" name="laudoTecnico" id="laudoTecnico" cols="30" rows="5"></textarea>
                                     </div>
-                                    <div class="span12" style="padding: 1%; margin-left: 0">
-                                        <div class="span6 offset3" style="display:flex">
+                                    <div class="col-12" style="padding: 1%; margin-left: 0">
+                                        <div class="col-6 offset-md-3" style="display:flex">
                                             <button class="button btn btn-success" id="btnContinuar">
                                               <span class="button__icon"><i class='bx bx-chevrons-right'></i></span><span class="button__text2">Continuar</span></button>
-                                            <a href="<?php echo base_url() ?>index.php/os" class="button btn btn-mini btn-warning" style="max-width: 160px">
+                                            <a href="<?php echo base_url() ?>index.php/os" class="button btn btn-sm btn-warning" style="max-width: 160px">
                                               <span class="button__icon"><i class="bx bx-undo"></i></span><span class="button__text2">Voltar</span></a>
                                         </div>
                                     </div>
@@ -168,14 +168,14 @@
                     required: 'Campo Requerido.'
                 }
             },
-            errorClass: "help-inline",
+            errorClass: "form-text",
             errorElement: "span",
             highlight: function(element, errorClass, validClass) {
-                $(element).parents('.control-group').addClass('error');
+                $(element).parents('.mb-3').addClass('error');
             },
             unhighlight: function(element, errorClass, validClass) {
-                $(element).parents('.control-group').removeClass('error');
-                $(element).parents('.control-group').addClass('success');
+                $(element).parents('.mb-3').removeClass('error');
+                $(element).parents('.mb-3').addClass('success');
             }
         });
         $(".datepicker").datepicker({

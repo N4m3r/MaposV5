@@ -1,21 +1,21 @@
-<div class="row-fluid">
-    <div class="span12">
+﻿<div class="row">
+    <div class="col-12">
         <ul class="breadcrumb">
-            <li><a href="<?php echo base_url() ?>">Dashboard</a><span class="divider">/</span></li>
-            <li><a href="<?php echo site_url('certificado') ?>">Certificado Digital</a><span class="divider">/</span></li>
+            <li><a href="<?php echo base_url() ?>">Dashboard</a><span class="dropdown-divider">/</span></li>
+            <li><a href="<?php echo site_url('certificado') ?>">Certificado Digital</a><span class="dropdown-divider">/</span></li>
             <li class="active">NFS-e Importadas</li>
         </ul>
     </div>
 </div>
 
-<div class="row-fluid">
-    <div class="span12">
+<div class="row">
+    <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="bx bx-receipt"></i></span>
                 <h5>NFS-e Importadas</h5>
                 <div class="buttons">
-                    <a href="<?php echo site_url('certificado/importar_nfse') ?>" class="btn btn-mini btn-success">
+                    <a href="<?php echo site_url('certificado/importar_nfse') ?>" class="btn btn-sm btn-success">
                         <i class="bx bx-upload"></i> Importar Nova
                     </a>
                 </div>
@@ -61,20 +61,20 @@
                                         switch ($nota->situacao) {
                                             case 'Normal':
                                             case 'Autorizada':
-                                                $statusClass .= ' label-success';
+                                                $statusClass .= ' badge bg-success';
                                                 break;
                                             case 'Cancelada':
-                                                $statusClass .= ' label-important';
+                                                $statusClass .= ' badge bg-danger';
                                                 break;
                                             default:
-                                                $statusClass .= ' label-info';
+                                                $statusClass .= ' badge bg-info';
                                         }
                                         ?>
                                         <span class="<?php echo $statusClass; ?>"><?php echo $nota->situacao; ?></span>
                                     </td>
                                     <td>
                                         <?php if ($nota->os_id): ?>
-                                            <a href="<?php echo site_url('os/visualizar/' . $nota->os_id); ?>" class="btn btn-mini btn-info">
+                                            <a href="<?php echo site_url('os/visualizar/' . $nota->os_id); ?>" class="btn btn-sm btn-info">
                                                 OS #<?php echo $nota->os_id; ?>
                                             </a>
                                         <?php else: ?>
@@ -83,7 +83,7 @@
                                     </td>
                                     <td class="text-center">
                                         <?php if (!empty($nota->dados_xml)): ?>
-                                            <a href="<?php echo site_url('certificado/download_xml/' . $nota->id); ?>" class="btn btn-mini btn-inverse" title="XML">
+                                            <a href="<?php echo site_url('certificado/download_xml/' . $nota->id); ?>" class="btn btn-sm btn-inverse" title="XML">
                                                 <i class="bx bx-code"></i> XML
                                             </a>
                                         <?php endif; ?>
