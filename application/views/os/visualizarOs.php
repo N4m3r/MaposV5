@@ -179,8 +179,8 @@
                         border-color: #4a4d7a;
                     }
                     .os-tab-btn i { font-size: 15px; }
-                    .tab-content-custom > .tab-pane { display: none; }
-                    .tab-content-custom > .tab-pane.active { display: block; }
+                    .tab-content-custom > .tab-pane { display: none !important; }
+                    .tab-content-custom > .tab-pane.active { display: block !important; }
 
                     @media print {
                         #os-main-tabs { display: none !important; }
@@ -190,11 +190,8 @@
                         #tab-notas-fiscais { display: none !important; }
                     }
                     @media (max-width: 767px) {
-                        #os-main-tabs > li { display: block; width: 100%; float: none; }
-                        #os-main-tabs > li > a { border: 1px solid var(--dark-2); border-radius: 0; margin-bottom: 2px; }
                         .os-tabs { flex-direction: column; }
                         .os-tab-btn { width: 100%; justify-content: center; }
-                        #nf-sub-tabs .os-tab-btn { display: block; width: 100%; }
                     }
                 </style>
 
