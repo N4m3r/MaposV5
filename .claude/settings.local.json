@@ -676,7 +676,10 @@
       "Bash(where.exe winscp *)",
       "Bash(sftp -oBatchMode=no -oStrictHostKeyChecking=no jjferreiras05@ftp.web10f91.kinghost.net)",
       "Bash(C:\\\\Program Files\\\\PuTTY\\\\plink.exe *)",
-      "Bash(C:\\\\xampp\\\\mysql\\\\bin\\\\mysql.exe *)"
+      "Bash(C:\\\\xampp\\\\mysql\\\\bin\\\\mysql.exe *)",
+      "Bash(cat .env)",
+      "Bash(cat .env.production)",
+      "Bash(cat .env.example)"
     ]
   }
 }
