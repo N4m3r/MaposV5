@@ -131,7 +131,7 @@ class Os_model extends MY_Model
     }
 
     private $osColumns = 'os.idOs, os.dataInicial, os.dataFinal, os.clientes_id, os.usuarios_id, os.descricaoProduto, os.defeito, os.status, os.observacoes, os.laudoTecnico, os.faturado, os.valorTotal, os.garantia, os.tecnico_responsavel, os.desconto, os.valor_desconto, os.tipo_desconto, os.garantias_id';
-    private $clienteColumns = 'clientes.idClientes, clientes.nomeCliente, clientes.celular, clientes.telefone, clientes.contato, clientes.email';
+    private $clienteColumns = 'clientes.idClientes, clientes.nomeCliente, clientes.celular, clientes.telefone, clientes.contato, clientes.email, clientes.rua, clientes.numero, clientes.complemento, clientes.bairro, clientes.cidade, clientes.estado, clientes.cep, clientes.documento';
     private $usuarioColumns = 'usuarios.idUsuarios, usuarios.nome, usuarios.telefone, usuarios.email';
 
     public function getById($id)

@@ -227,8 +227,13 @@
                                                 </span></br>
                                             <?php endif; ?>
                                             <?php
-                                            $retorno_end = array_filter([$result->rua, $result->numero, $result->complemento, $result->bairro . ' - ']);
-                                            $endereco = implode(', ', $retorno_end);
+                                            $endereco_parts = array_filter([
+                                                !empty($result->rua) ? $result->rua : null,
+                                                !empty($result->numero) ? $result->numero : null,
+                                                !empty($result->complemento) ? $result->complemento : null,
+                                                !empty($result->bairro) ? $result->bairro : null,
+                                            ]);
+                                            $endereco = implode(', ', $endereco_parts);
                                             echo '<i class="fas fa-map-marker-alt"></i> ';
                                             if (!empty($endereco)) {
                                                 echo e($endereco);
