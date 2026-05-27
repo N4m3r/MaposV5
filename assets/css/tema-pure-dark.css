@@ -201,11 +201,61 @@ body {
 }
 
 #sidebar > ul > li > ul {
-    background-color: #fbfcff;
+    background-color: rgba(28, 29, 38, 0.98);
 }
 
 #sidebar > ul li ul li a {
-    color: black;
+    color: var(--branco);
+}
+
+#sidebar > ul li ul li a:hover {
+    background-color: rgba(16, 134, 221, 0.15);
+    color: var(--dark-azul);
+    border-radius: 4px;
+}
+
+#sidebar > ul li ul li.active > a {
+    color: var(--dark-azul);
+    background: rgba(16, 134, 221, 0.12);
+    border-radius: 4px;
+}
+
+/* Submenu flyout dark override */
+#sidebar > ul > li.submenu > ul {
+    background-color: rgba(28, 29, 38, 0.98) !important;
+    box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.5) !important;
+    border: 1px solid rgba(16, 134, 221, 0.1) !important;
+}
+
+#sidebar > ul > li.submenu > ul > li > a {
+    color: var(--branco) !important;
+}
+
+#sidebar > ul > li.submenu > ul > li > a:hover {
+    background-color: rgba(16, 134, 221, 0.15) !important;
+    color: var(--dark-azul) !important;
+    border-radius: 4px;
+}
+
+#sidebar > ul > li.submenu > ul > li.active > a {
+    color: var(--dark-azul) !important;
+    background: rgba(16, 134, 221, 0.12) !important;
+    border-radius: 4px;
+}
+
+/* Submenu nível 2 */
+#sidebar > ul > li.submenu > ul > li.submenu > ul {
+    background-color: rgba(20, 20, 26, 0.98) !important;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+}
+
+#sidebar > ul > li.submenu > ul > li.submenu > ul > li > a {
+    color: var(--branco) !important;
+}
+
+#sidebar > ul > li.submenu > ul > li.submenu > ul > li > a:hover {
+    background-color: rgba(16, 134, 221, 0.15) !important;
+    color: var(--dark-azul) !important;
 }
 
 #sidebar > ul {
@@ -653,6 +703,288 @@ textarea, .uneditable-input {
 .pass-user {
     color: var(--cinza0);
 }
+
+/* ============================================
+   TOPBAR DARK OVERRIDES
+   ============================================ */
+.navebarn {
+    background: var(--dark-1) !important;
+    border-bottom-color: rgba(16, 134, 221, 0.15) !important;
+}
+
+.topbar-action {
+    color: var(--branco) !important;
+}
+
+.topbar-action:hover {
+    background: rgba(255, 255, 255, 0.06) !important;
+    color: var(--dark-azul) !important;
+}
+
+.topbar-user {
+    background: rgba(255, 255, 255, 0.06) !important;
+}
+
+.topbar-user:hover {
+    background: rgba(16, 134, 221, 0.1) !important;
+    border-color: rgba(16, 134, 221, 0.2) !important;
+}
+
+.topbar-user-name {
+    color: var(--branco) !important;
+}
+
+.topbar-user-role {
+    color: var(--dark-cinz) !important;
+}
+
+.topbar-dropdown .dropdown-menu {
+    background: var(--dark-2) !important;
+    border-color: rgba(16, 134, 221, 0.15) !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;
+}
+
+.topbar-dropdown .dropdown-menu li a {
+    color: var(--branco) !important;
+}
+
+.topbar-dropdown .dropdown-menu li a:hover {
+    background: rgba(16, 134, 221, 0.1) !important;
+    color: var(--dark-azul) !important;
+}
+
+.topbar-dropdown .dropdown-menu .dropdown-divider {
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.topbar-dropdown .dropdown-menu .dropdown-header {
+    color: var(--dark-cinz) !important;
+}
+
+/* ============================================
+   CARDS, FORMS, TABLES DARK OVERRIDES
+   ============================================ */
+
+/* Cards (Bootstrap 5) */
+.card {
+    background: var(--wid-dark) !important;
+    border-color: var(--dark-2) !important;
+    color: var(--branco) !important;
+}
+
+.card-header {
+    background: var(--dark-2) !important;
+    border-color: var(--dark-1) !important;
+    color: var(--branco) !important;
+}
+
+.card-body {
+    color: var(--branco) !important;
+}
+
+.card-title {
+    color: var(--branco) !important;
+}
+
+.card-footer {
+    background: var(--dark-2) !important;
+    border-color: var(--dark-1) !important;
+    color: var(--dark-cinz) !important;
+}
+
+/* Form controls */
+.form-control {
+    background: var(--dark-2) !important;
+    border-color: var(--dark-1) !important;
+    color: var(--branco) !important;
+}
+
+.form-control:focus {
+    border-color: var(--dark-azul) !important;
+    box-shadow: 0 0 0 3px rgba(16, 134, 221, 0.15) !important;
+    color: var(--branco) !important;
+}
+
+.form-control::placeholder {
+    color: var(--dark-cinz) !important;
+    opacity: 0.6 !important;
+}
+
+.form-select {
+    background-color: var(--dark-2) !important;
+    border-color: var(--dark-1) !important;
+    color: var(--branco) !important;
+}
+
+.form-select:focus {
+    border-color: var(--dark-azul) !important;
+    box-shadow: 0 0 0 3px rgba(16, 134, 221, 0.15) !important;
+}
+
+.form-label {
+    color: var(--branco) !important;
+}
+
+.form-text {
+    color: var(--dark-cinz) !important;
+}
+
+input, textarea, select {
+    background: var(--dark-2) !important;
+    color: var(--branco) !important;
+    border-color: var(--dark-1) !important;
+}
+
+input:focus, textarea:focus, select:focus {
+    border-color: var(--dark-azul) !important;
+    box-shadow: 0 0 0 3px rgba(16, 134, 221, 0.15) !important;
+}
+
+input::placeholder, textarea::placeholder {
+    color: var(--dark-cinz) !important;
+    opacity: 0.6 !important;
+}
+
+/* Tables */
+.table {
+    color: var(--branco) !important;
+}
+
+.table thead th {
+    color: var(--dark-cinz) !important;
+    border-color: var(--dark-2) !important;
+}
+
+.table-bordered {
+    border-color: var(--dark-2) !important;
+}
+
+.table-bordered th,
+.table-bordered td {
+    border-color: var(--dark-2) !important;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background: rgba(255, 255, 255, 0.02) !important;
+}
+
+.table-hover tbody tr:hover {
+    background: rgba(16, 134, 221, 0.08) !important;
+}
+
+.table-dark {
+    background: var(--dark-1) !important;
+}
+
+/* Badges */
+.badge {
+    border-radius: 4px;
+}
+
+/* Pagination */
+.page-link {
+    background: var(--dark-2) !important;
+    border-color: var(--dark-1) !important;
+    color: var(--branco) !important;
+}
+
+.page-link:hover {
+    background: rgba(16, 134, 221, 0.1) !important;
+    color: var(--dark-azul) !important;
+}
+
+.page-item.active .page-link {
+    background: var(--dark-azul) !important;
+    border-color: var(--dark-azul) !important;
+    color: #fff !important;
+}
+
+.page-item.disabled .page-link {
+    color: var(--dark-cinz) !important;
+    opacity: 0.5 !important;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+    background: var(--dark-2) !important;
+}
+
+.breadcrumb-item a {
+    color: var(--dark-azul) !important;
+}
+
+.breadcrumb-item.active {
+    color: var(--dark-cinz) !important;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    color: var(--dark-cinz) !important;
+}
+
+/* Alerts */
+.alert-info {
+    background: rgba(16, 134, 221, 0.1) !important;
+    border-color: rgba(16, 134, 221, 0.3) !important;
+    color: var(--branco) !important;
+}
+
+.alert-success {
+    background: rgba(40, 167, 69, 0.1) !important;
+    border-color: rgba(40, 167, 69, 0.3) !important;
+    color: var(--branco) !important;
+}
+
+.alert-warning {
+    background: rgba(255, 193, 7, 0.1) !important;
+    border-color: rgba(255, 193, 7, 0.3) !important;
+    color: var(--branco) !important;
+}
+
+.alert-danger {
+    background: rgba(220, 53, 69, 0.1) !important;
+    border-color: rgba(220, 53, 69, 0.3) !important;
+    color: var(--branco) !important;
+}
+
+/* Tabs */
+.nav-tabs {
+    border-color: var(--dark-2) !important;
+}
+
+.nav-tabs .nav-link {
+    color: var(--dark-cinz) !important;
+    border-color: var(--dark-2) !important;
+}
+
+.nav-tabs .nav-link:hover {
+    border-color: var(--dark-2) var(--dark-2) var(--dark-2) !important;
+}
+
+.nav-tabs .nav-link.active {
+    background: var(--dark-2) !important;
+    color: var(--dark-azul) !important;
+    border-color: var(--dark-2) !important;
+}
+
+/* List groups */
+.list-group-item {
+    background: var(--wid-dark) !important;
+    border-color: var(--dark-1) !important;
+    color: var(--branco) !important;
+}
+
+.list-group-item:hover {
+    background: rgba(16, 134, 221, 0.08) !important;
+}
+
+/* Close button */
+.btn-close {
+    filter: invert(1) !important;
+}
+
+/* ============================================
+   FIM TOPBAR + COMPONENTS DARK OVERRIDES
+   ============================================ */
 
 @media (min-width: 1024px) and (max-width: 1366px) {
     #sidebar .search-box {

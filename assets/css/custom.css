@@ -934,3 +934,118 @@ select.form-select {
    FIM ESTILOS GLOBAIS PARA SELECTS
    ============================================ */
 
+/* ============================================
+   SUBMENU UX - Animações e hierarquia visual
+   ============================================ */
+
+/* Submenu smooth slide-in animation */
+#sidebar > ul > li.submenu.open > ul,
+#sidebar > ul > li.submenu.active > ul {
+    animation: submenuSlideIn 0.2s ease-out;
+}
+
+@keyframes submenuSlideIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Submenu parent link styling */
+#sidebar > ul > li.submenu > a {
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+/* Arrow rotation for open/active submenus */
+#sidebar > ul > li.submenu > a .arrow {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 0.9em;
+    opacity: 0.5;
+}
+
+#sidebar > ul > li.submenu.open > a .arrow,
+#sidebar > ul > li.submenu.active > a .arrow {
+    transform: rotate(180deg);
+    opacity: 1;
+    color: var(--sidebar-accent);
+}
+
+/* Active submenu parent indicator */
+#sidebar > ul > li.submenu.open > a,
+#sidebar > ul > li.submenu.active > a {
+    background: var(--sidebar-hover-bg);
+    border-radius: 6px;
+}
+
+/* Submenu item dot indicator */
+#sidebar > ul > li.submenu > ul > li {
+    position: relative;
+    padding-left: 0;
+}
+
+#sidebar > ul > li.submenu > ul > li::before {
+    content: '';
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--sidebar-text-muted);
+    opacity: 0.4;
+    transition: all 0.2s ease;
+}
+
+#sidebar > ul > li.submenu > ul > li:hover::before,
+#sidebar > ul > li.submenu > ul > li.active::before {
+    background: var(--sidebar-accent);
+    opacity: 1;
+    width: 6px;
+    height: 6px;
+}
+
+/* Submenu item link styling */
+#sidebar > ul > li.submenu > ul > li > a {
+    padding-left: 30px;
+    transition: all 0.2s ease;
+}
+
+/* Submenu item icon styling */
+#sidebar > ul > li.submenu > ul > li > a i {
+    font-size: 1.1em;
+    min-width: 18px;
+    margin-right: 6px;
+    opacity: 0.6;
+    transition: all 0.2s ease;
+}
+
+#sidebar > ul > li.submenu > ul > li > a:hover i {
+    opacity: 1;
+    color: var(--sidebar-accent);
+}
+
+#sidebar > ul > li.submenu > ul > li.active > a i {
+    opacity: 1;
+    color: var(--sidebar-accent);
+}
+
+/* Submenu item text */
+#sidebar > ul > li.submenu > ul > li > a .title {
+    font-size: 0.92em;
+    opacity: 0.85;
+    transition: all 0.2s ease;
+}
+
+#sidebar > ul > li.submenu > ul > li > a:hover .title {
+    opacity: 1;
+}
+
+#sidebar > ul > li.submenu > ul > li.active > a .title {
+    opacity: 1;
+    color: var(--sidebar-accent);
+}
+
+/* ============================================
+   FIM SUBMENU UX
+   ============================================ */
+
