@@ -2442,6 +2442,102 @@ UPDATE `dre_lancamentos` SET `os_id` = `id_os` WHERE `os_id` IS NULL AND `id_os`
 UPDATE `dre_lancamentos` SET `venda_id` = `id_venda` WHERE `venda_id` IS NULL AND `id_venda` IS NOT NULL;
 UPDATE `dre_lancamentos` SET `lancamento_id` = `id_lancamento` WHERE `lancamento_id` IS NULL AND `id_lancamento` IS NOT NULL;
 
+-- ============================================================
+-- TABELAS DE NOTIFICACOES WHATSAPP
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS `notificacoes_config` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `whatsapp_provedor` VARCHAR(50) DEFAULT 'desativado',
+  `whatsapp_ativo` TINYINT(1) DEFAULT 0,
+  `evolution_url` VARCHAR(255) DEFAULT NULL,
+  `evolution_apikey` VARCHAR(255) DEFAULT NULL,
+  `evolution_instance` VARCHAR(100) DEFAULT 'mapos',
+  `meta_phone_number_id` VARCHAR(255) DEFAULT NULL,
+  `meta_access_token` VARCHAR(255) DEFAULT NULL,
+  `z_api_url` VARCHAR(255) DEFAULT NULL,
+  `z_api_token` VARCHAR(255) DEFAULT NULL,
+  `notificacao_os_criada` TINYINT(1) DEFAULT 1,
+  `notificacao_os_atualizada` TINYINT(1) DEFAULT 1,
+  `notificacao_os_pronta` TINYINT(1) DEFAULT 1,
+  `notificacao_os_orcamento` TINYINT(1) DEFAULT 1,
+  `notificacao_venda_realizada` TINYINT(1) DEFAULT 0,
+  `notificacao_cobranca_gerada` TINYINT(1) DEFAULT 0,
+  `notificacao_cobranca_vencimento` TINYINT(1) DEFAULT 0,
+  `notificacao_lembrete_aniversario` TINYINT(1) DEFAULT 0,
+  `horario_envio_inicio` TIME DEFAULT '08:00:00',
+  `horario_envio_fim` TIME DEFAULT '18:00:00',
+  `enviar_fim_semana` TINYINT(1) DEFAULT 0,
+  `respeitar_horario` TINYINT(1) DEFAULT 1,
+  `updated_at` DATETIME DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Inserir config padrao se nao existir
+SET @cfg_exists = (SELECT COUNT(*) FROM `notificacoes_config` WHERE `id` = 1);
+SET @sql = IF(@cfg_exists = 0, 'INSERT INTO `notificacoes_config` (`id`, `whatsapp_provedor`, `whatsapp_ativo`) VALUES (1, ''desativado'', 0)', 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+CREATE TABLE IF NOT EXISTS `notificacoes_templates` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `chave` VARCHAR(100) NOT NULL,
+  `nome` VARCHAR(255) NOT NULL,
+  `descricao` TEXT DEFAULT NULL,
+  `categoria` VARCHAR(50) DEFAULT 'sistema',
+  `canal` VARCHAR(20) DEFAULT 'whatsapp',
+  `assunto` VARCHAR(255) DEFAULT NULL,
+  `mensagem` TEXT NOT NULL,
+  `variaveis` JSON DEFAULT NULL,
+  `ativo` TINYINT(1) DEFAULT 1,
+  `e_marketing` TINYINT(1) DEFAULT 0,
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_chave` (`chave`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Templates padrao
+SET @tpl_count = (SELECT COUNT(*) FROM `notificacoes_templates`);
+SET @sql = IF(@tpl_count = 0, CONCAT('INSERT INTO `notificacoes_templates` (`chave`, `nome`, `categoria`, `canal`, `mensagem`, `ativo`) VALUES
+  (''os_criada'', ''OS Criada'', ''os'', ''whatsapp'', ''Ola {cliente_nome}! Sua OS #{os_id} foi criada com status: {os_status}. Acompanhe pelo link: {link_sistema}'', 1),
+  (''os_atualizada'', ''OS Atualizada'', ''os'', ''whatsapp'', ''Ola {cliente_nome}! Sua OS #{os_id} teve o status atualizado para: {os_status}'', 1),
+  (''os_pronta'', ''OS Pronta'', ''os'', ''whatsapp'', ''Ola {cliente_nome}! Sua OS #{os_id} foi finalizada e esta pronta para retirada!'', 1),
+  (''os_orcamento'', ''Orcamento Disponivel'', ''os'', ''whatsapp'', ''Ola {cliente_nome}! O orcamento da OS #{os_id} esta disponivel. Valor: R$ {os_valor}'', 1),
+  (''venda_realizada'', ''Venda Realizada'', ''venda'', ''whatsapp'', ''Ola {cliente_nome}! Sua venda #{venda_id} foi realizada com sucesso!'', 1),
+  (''cobranca_gerada'', ''Cobranca Gerada'', ''cobranca'', ''whatsapp'', ''Ola {cliente_nome}! Sua cobranca #{cobranca_id} foi gerada. Vencimento: {cobranca_vencimento}'', 1),
+  (''cobranca_vencimento'', ''Cobranca Vencendo'', ''cobranca'', ''whatsapp'', ''Ola {cliente_nome}! Sua cobranca #{cobranca_id} vence em breve. Valor: R$ {cobranca_valor}'', 1),
+  (''aniversario'', ''Aniversario'', ''marketing'', ''whatsapp'', ''Feliz aniversario {cliente_nome}! Desejamos um otimo dia! Aproveite nossa promocao especial!'', 1)
+'), 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+CREATE TABLE IF NOT EXISTS `notificacoes_log` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `template_chave` VARCHAR(100) DEFAULT NULL,
+  `cliente_id` INT DEFAULT NULL,
+  `telefone` VARCHAR(20) DEFAULT NULL,
+  `mensagem` TEXT DEFAULT NULL,
+  `canal` VARCHAR(20) DEFAULT 'whatsapp',
+  `status` VARCHAR(20) DEFAULT 'pendente',
+  `tentativas` INT DEFAULT 0,
+  `erro` TEXT DEFAULT NULL,
+  `os_id` INT DEFAULT NULL,
+  `sent_at` DATETIME DEFAULT NULL,
+  `delivered_at` DATETIME DEFAULT NULL,
+  `read_at` DATETIME DEFAULT NULL,
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_status` (`status`),
+  KEY `idx_created` (`created_at`),
+  KEY `idx_template` (`template_chave`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Permissao cConfiguracao: garantir que existe
+SET @perm_exists = (SELECT COUNT(*) FROM `permissoes` WHERE `idPermissao` = 1);
+SET @perm_has_config = (SELECT COUNT(*) FROM `permissoes` WHERE `idPermissao` = 1 AND `permissoes` LIKE '%cConfiguracao%');
+SET @sql = IF(@perm_exists > 0 AND @perm_has_config = 0, CONCAT('UPDATE `permissoes` SET `permissoes` = CONCAT(`permissoes`, '',cConfiguracao,'') WHERE `idPermissao` = 1'), 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- ============================================================

@@ -403,6 +403,31 @@
                         <li class="<?php if (isset($menuModulos)) { echo 'active'; }; ?>"><a class="tip-bottom" href="<?= site_url('modulos') ?>"><i class='bx bx-extension iconX'></i><span class="title">Modulos</span><span class="title-tooltip">Modulos</span></a></li>
                     <?php } ?>
 
+                    <!-- Comunicacao (WhatsApp/Notificacoes) -->
+                    <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cConfiguracao')) { ?>
+                        <li class="menu-divider-sub"><span class="divider-text-sub">Comunicacao</span></li>
+                        <li class="<?php if (isset($menuConfiguracoesNotificacoes)) { echo 'active'; }; ?>">
+                            <a href="<?= site_url('notificacoes/configuracoes') ?>">
+                                <i class='bx bxl-whatsapp iconX'></i>
+                                <span class="title">Notificacoes</span>
+                                <span class="title-tooltip">Notificacoes</span>
+                            </a>
+                        </li>
+                        <li class="<?php if (isset($menuConfiguracoesTemplates)) { echo 'active'; }; ?>">
+                            <a href="<?= site_url('notificacoes/templates') ?>">
+                                <i class='bx bx-message-square-dots iconX'></i>
+                                <span class="title">Templates</span>
+                                <span class="title-tooltip">Templates</span>
+                            </a>
+                        </li>
+                        <li class="<?php if (isset($menuConfiguracoesLogs)) { echo 'active'; }; ?>">
+                            <a href="<?= site_url('notificacoes/logs') ?>">
+                                <i class='bx bx-history iconX'></i>
+                                <span class="title">Historico</span>
+                                <span class="title-tooltip">Historico</span>
+                            </a>
+                        </li>
+                    <?php } ?>
 
                     <!-- Ferramentas Admin - apenas para administradores -->
                     <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cPermissao')) { ?>
