@@ -505,12 +505,12 @@
                             // Verificar impedimento em ambas as atividades (real e planejada)
                             $impedimento = ($atividade_real->impedimento ?? $atividade->impedimento ?? 0);
                             $tipo_execucao = $impedimento ? 'impedimento' : 'trabalho';
-                            $tipo_icon = $tipo_execucao === 'impedimento' ? 'warning-sign' : 'wrench';
+                            $tipo_icon = $tipo_execucao === 'impedimento' ? 'bx-error-circle' : 'bx-wrench';
                             $tipo_cor = $tipo_execucao === 'impedimento' ? '#e67e22' : '#27ae60';
                             $tipo_label = $tipo_execucao === 'impedimento' ? 'Impedimento' : 'Trabalho';
                             ?>
                             <span style="color: <?php echo $tipo_cor; ?>; font-weight: 600;">
-                                <i class="icon-<?php echo $tipo_icon; ?>"></i> <?php echo $tipo_label; ?>
+                                <i class="bx <?php echo $tipo_icon; ?>"></i> <?php echo $tipo_label; ?>
                             </span>
                             <?php if (!empty($atividade_real->tipo_nome)): ?>
                             <br><small style="color: #666;"><?php echo htmlspecialchars($atividade_real->tipo_nome); ?></small>
@@ -748,7 +748,7 @@
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                             <div style="display: flex; align-items: center; gap: 10px;">
                                 <span style="background: <?php echo $exec->reatendimento ? '#9b59b6' : '#27ae60'; ?>; color: white; padding: 4px 12px; border-radius: 15px; font-size: 12px; font-weight: 600;">
-                                    <i class="icon-<?php echo $exec->reatendimento ? 'refresh' : 'ok'; ?>"></i>
+                                    <i class="bx <?php echo $exec->reatendimento ? 'bx-refresh' : 'bx-check'; ?>"></i>
                                     <?php echo $exec->reatendimento ? 'Reatendimento #' . ($index + 1) : 'Execução Original'; ?>
                                 </span>
                                 <span style="font-size: 13px; color: #666;">

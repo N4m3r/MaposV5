@@ -1956,7 +1956,13 @@ div.dataTables_wrapper .ui-widget-header {
 }
 
 .widget-title span.icon {
-  font-size: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  margin-right: 8px;
+  font-size: 1.4em;
 }
 
 .icon-cli {

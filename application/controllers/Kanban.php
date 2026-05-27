@@ -11,14 +11,14 @@ if (!defined('BASEPATH')) {
 class Kanban extends MY_Controller
 {
     private $columns = [
-        'Aberto' => ['label' => 'Aberto', 'color' => 'secondary', 'icon' => 'fa-folder-open'],
-        'Orçamento' => ['label' => 'Orçamento', 'color' => 'info', 'icon' => 'fa-calculator'],
-        'Aprovado' => ['label' => 'Aprovado', 'color' => 'success', 'icon' => 'fa-check'],
-        'Em Andamento' => ['label' => 'Em Andamento', 'color' => 'primary', 'icon' => 'fa-cogs'],
-        'Aguardando Peças' => ['label' => 'Aguardando Peças', 'color' => 'warning', 'icon' => 'fa-box'],
-        'Pronto' => ['label' => 'Pronto', 'color' => 'info', 'icon' => 'fa-clock'],
-        'Finalizado' => ['label' => 'Finalizado', 'color' => 'success', 'icon' => 'fa-check-circle'],
-        'Cancelado' => ['label' => 'Cancelado', 'color' => 'danger', 'icon' => 'fa-times']
+        'Aberto' => ['label' => 'Aberto', 'color' => 'secondary', 'icon' => 'bx-folder-open'],
+        'Orçamento' => ['label' => 'Orçamento', 'color' => 'info', 'icon' => 'bx-calculator'],
+        'Aprovado' => ['label' => 'Aprovado', 'color' => 'success', 'icon' => 'bx-check'],
+        'Em Andamento' => ['label' => 'Em Andamento', 'color' => 'primary', 'icon' => 'bx-cog'],
+        'Aguardando Peças' => ['label' => 'Aguardando Peças', 'color' => 'warning', 'icon' => 'bx-box'],
+        'Pronto' => ['label' => 'Pronto', 'color' => 'info', 'icon' => 'bx-clock'],
+        'Finalizado' => ['label' => 'Finalizado', 'color' => 'success', 'icon' => 'bx-check-circle'],
+        'Cancelado' => ['label' => 'Cancelado', 'color' => 'danger', 'icon' => 'bx-x']
     ];
 
     public function __construct()

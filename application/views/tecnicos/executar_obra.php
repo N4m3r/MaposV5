@@ -1169,12 +1169,12 @@ textarea.wizard-input {
                                 ?>
                                 <div class="atividade-item">
                                     <div class="atividade-icon <?= $statusAtivClass ?>">
-                                        <i class="icon-<?=
-                                            ($statusAtiv === 'concluida' || $statusAtiv === 'concluido') ? 'check' :
-                                            (($statusAtiv === 'em_andamento' || $statusAtiv === 'iniciada') ? 'play' :
-                                            (($statusAtiv === 'reaberta' || $statusAtiv === 'reaberto') ? 'refresh' :
-                                            (($statusAtiv === 'pausada' || $statusAtiv === 'pausado') ? 'pause' :
-                                            (($statusAtiv === 'impedimento') ? 'warning-sign' : 'time'))))
+                                        <i class="bx <?=
+                                            ($statusAtiv === 'concluida' || $statusAtiv === 'concluido') ? 'bx-check' :
+                                            (($statusAtiv === 'em_andamento' || $statusAtiv === 'iniciada') ? 'bx-play' :
+                                            (($statusAtiv === 'reaberta' || $statusAtiv === 'reaberto') ? 'bx-refresh' :
+                                            (($statusAtiv === 'pausada' || $statusAtiv === 'pausado') ? 'bx-pause' :
+                                            (($statusAtiv === 'impedimento') ? 'bx-error-circle' : 'bx-time-five'))))
                                         ?>"></i>
                                     </div>
                                     <div class="atividade-info">
@@ -2554,15 +2554,15 @@ const WizardAtendimento = {
                                      ((status === 'concluida' || status === 'concluido') ? 'concluida' :
                                      ((status === 'em_andamento' || status === 'iniciada') ? 'andamento' :
                                      ((status === 'reaberta' || status === 'reaberto') ? 'reaberta' : 'aberta')));
-                const iconName = isImpedimento ? 'warning-sign' :
-                                  ((status === 'concluida' || status === 'concluido') ? 'check' :
-                                  ((status === 'em_andamento' || status === 'iniciada') ? 'play' :
-                                  ((status === 'reaberta' || status === 'reaberto') ? 'refresh' : 'time')));
+                const iconName = isImpedimento ? 'bx-error-circle' :
+                                  ((status === 'concluida' || status === 'concluido') ? 'bx-check' :
+                                  ((status === 'em_andamento' || status === 'iniciada') ? 'bx-play' :
+                                  ((status === 'reaberta' || status === 'reaberto') ? 'bx-refresh' : 'bx-time-five')));
                 const isRecomendada = index === 0 ? '<span style="background:#11998e;color:white;font-size:10px;padding:2px 6px;border-radius:10px;margin-left:8px;">RECOMENDADA</span>' : '';
                 return `
                 <div class="atividade-selecao" data-atividade-id="${atv.id}" data-atividade-index="${index}" onclick="WizardAtendimento.selecionarAtividade(this)">
                     <div class="atividade-icon ${statusClass}">
-                        <i class="icon-${iconName}"></i>
+                        <i class="bx ${iconName}"></i>
                     </div>
                     <div class="atividade-selecao-info">
                         <h5>${atv.titulo || atv.descricao || 'Atividade #' + atv.id}${isRecomendada}</h5>

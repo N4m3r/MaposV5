@@ -66,7 +66,7 @@ $ci = &get_instance();
                     <?php foreach ($boards as $status => $board): ?>
                         <div class="kanban-column" data-status="<?= $status ?>">
                             <div class="kanban-header bg-<?= $board['color'] ?>">
-                                <i class="icon <?= $board['icon'] ?>"></i>
+                                <i class="bx <?= $board['icon'] ?>"></i>
                                 <span class="kanban-title"><?= htmlspecialchars($board['title']) ?></span>
                                 <span class="kanban-count badge"><?= $board['count'] ?></span>
                             </div>
