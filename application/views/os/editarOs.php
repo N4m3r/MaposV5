@@ -8,6 +8,19 @@
 
 <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/custom.css" />
 <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/assinatura.css" />
+<style>
+    .os-tabs { display: flex; gap: 6px; padding: 10px 0 8px 0; flex-wrap: wrap; }
+    .os-tab-btn { display: inline-flex; align-items: center; gap: 5px; padding: 8px 16px; border: 1px solid var(--dark-2, #272835); border-radius: 6px; background: var(--dark-2, #272835); color: var(--dark-cinz, #8788a4); font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; text-decoration: none; }
+    .os-tab-btn:hover { background: #2d2e3a; color: var(--branco, #caced8); text-decoration: none; }
+    .os-tab-btn.active { background: #2d335b; color: #fff; font-weight: bold; border-color: #4a4d7a; }
+    .os-tab-btn i { font-size: 15px; }
+    .tab-content > .tab-pane { display: none; }
+    .tab-content > .tab-pane.active { display: block; }
+    @media (max-width: 767px) {
+        .os-tabs { flex-direction: column; }
+        .os-tab-btn { width: 100%; justify-content: center; }
+    }
+</style>
 
 <div class="row" style="margin-top:0">
     <div class="col-12">
@@ -60,15 +73,15 @@
             </div>
             <div class="widget-content nopadding tab-content">
                 <div class="col-12" id="divProdutosServicos" style=" margin-left: 0">
-                    <ul class="nav nav-tabs">
-                        <li class="active" id="tabDetalhes"><a href="#tab1" data-bs-toggle="tab">Detalhes da OS</a></li>
-                        <li id="tabDesconto"><a href="#tab2" data-bs-toggle="tab">Desconto</a></li>
-                        <li id="tabProdutos"><a href="#tab3" data-bs-toggle="tab">Produtos</a></li>
-                        <li id="tabServicos"><a href="#tab4" data-bs-toggle="tab">Serviços</a></li>
-                        <li id="tabAnexos"><a href="#tab5" data-bs-toggle="tab">Anexos</a></li>
-                        <li id="tabAnotacoes"><a href="#tab6" data-bs-toggle="tab">Anotações</a></li>
-                        <li id="tabCheckin"><a href="#tab7" data-bs-toggle="tab">Check-in</a></li>
-                    </ul>
+                    <div class="os-tabs">
+                        <button class="os-tab-btn active" onclick="showOsTab('tab1', this)" data-tab="tab1"><i class="bx bx-file"></i> Detalhes da OS</button>
+                        <button class="os-tab-btn" onclick="showOsTab('tab2', this)" data-tab="tab2"><i class="bx bx-dollar-circle"></i> Desconto</button>
+                        <button class="os-tab-btn" onclick="showOsTab('tab3', this)" data-tab="tab3"><i class="bx bx-package"></i> Produtos</button>
+                        <button class="os-tab-btn" onclick="showOsTab('tab4', this)" data-tab="tab4"><i class="bx bx-wrench"></i> Serviços</button>
+                        <button class="os-tab-btn" onclick="showOsTab('tab5', this)" data-tab="tab5"><i class="bx bx-paperclip"></i> Anexos</button>
+                        <button class="os-tab-btn" onclick="showOsTab('tab6', this)" data-tab="tab6"><i class="bx bx-note"></i> Anotações</button>
+                        <button class="os-tab-btn" onclick="showOsTab('tab7', this)" data-tab="tab7"><i class="bx bx-map"></i> Check-in</button>
+                    </div>
                     <div class="tab-content">
                         <div class="tab-pane active" id="tab1">
                             <div class="col-12" id="divCadastrarOs">
@@ -2278,52 +2291,29 @@
 
 <!-- Script para persistência da aba ativa -->
 <script>
-$(document).ready(function() {
-    // Nome da chave no localStorage
-    var storageKey = 'os_editar_tab_ativa';
+function showOsTab(tabId, btn) {
+    document.querySelectorAll('.os-tabs .os-tab-btn').forEach(function(b) { b.classList.remove('active'); });
+    document.querySelectorAll('.tab-content .tab-pane').forEach(function(p) { p.classList.remove('active'); });
+    btn.classList.add('active');
+    var pane = document.getElementById(tabId);
+    if (pane) pane.classList.add('active');
+    localStorage.setItem('os_editar_tab_ativa', tabId);
+    if (history.replaceState) history.replaceState(null, null, '#' + tabId);
+}
 
-    // Função para ativar uma aba
-    function ativarAba(tabId) {
-        // Remove 'active' de todas as abas e conteúdos
-        $('.nav-tabs li').removeClass('active');
-        $('.tab-content .tab-pane').removeClass('active');
-
-        // Ativa a aba clicada
-        $('a[href="#' + tabId + '"]').parent().addClass('active');
-        $('#' + tabId).addClass('active');
-
-        // Salva no localStorage
-        localStorage.setItem(storageKey, tabId);
-
-        // Atualiza o hash da URL (para permitir links diretos)
-        if (history.replaceState) {
-            history.replaceState(null, null, '#' + tabId);
-        }
-    }
-
-    // Evento de clique nas abas
-    $('.nav-tabs a[data-bs-toggle="tab"]').on('shown.bs.tab', function(e) {
-        var tabId = $(e.target).attr('href').replace('#', '');
-        localStorage.setItem(storageKey, tabId);
-
-        // Atualiza o hash da URL
-        if (history.replaceState) {
-            history.replaceState(null, null, '#' + tabId);
-        }
-    });
-
-    // Verifica se há hash na URL primeiro
+(function() {
     var hashTab = window.location.hash.replace('#', '');
-    if (hashTab && $('#' + hashTab).length > 0) {
-        ativarAba(hashTab);
+    if (hashTab && document.getElementById(hashTab)) {
+        var btn = document.querySelector('.os-tab-btn[data-tab="' + hashTab + '"]');
+        if (btn) showOsTab(hashTab, btn);
     } else {
-        // Se não houver hash, verifica no localStorage
-        var tabSalva = localStorage.getItem(storageKey);
-        if (tabSalva && $('#' + tabSalva).length > 0) {
-            ativarAba(tabSalva);
+        var tabSalva = localStorage.getItem('os_editar_tab_ativa');
+        if (tabSalva && document.getElementById(tabSalva)) {
+            var btn = document.querySelector('.os-tab-btn[data-tab="' + tabSalva + '"]');
+            if (btn) showOsTab(tabSalva, btn);
         }
     }
-});
+})();
 </script>
 
 <!-- Scripts do Sistema de Check-in -->

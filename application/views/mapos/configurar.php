@@ -1,4 +1,16 @@
 <style>
+    .os-tabs { display: flex; gap: 6px; padding: 10px 0 8px 0; flex-wrap: wrap; }
+    .os-tab-btn { display: inline-flex; align-items: center; gap: 5px; padding: 8px 16px; border: 1px solid var(--dark-2, #272835); border-radius: 6px; background: var(--dark-2, #272835); color: var(--dark-cinz, #8788a4); font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; text-decoration: none; }
+    .os-tab-btn:hover { background: #2d2e3a; color: var(--branco, #caced8); text-decoration: none; }
+    .os-tab-btn.active { background: #2d335b; color: #fff; font-weight: bold; border-color: #4a4d7a; }
+    .os-tab-btn i { font-size: 15px; }
+    .tab-content > .tab-pane { display: none; }
+    .tab-content > .tab-pane.active { display: block; }
+    .tab-pane.fade { opacity: 1; transition: none; }
+    @media (max-width: 767px) {
+        .os-tabs { flex-direction: column; }
+        .os-tab-btn { width: 100%; justify-content: center; }
+    }
     .config-select {
         background-color: var(--input-bg, #fff);
         color: var(--input-color, #333);
@@ -39,16 +51,16 @@
                 </span>
                 <h5>Configurações do Sistema</h5>
             </div>
-            <ul class="nav nav-tabs">
-                <li class="active"><a data-bs-toggle="tab" href="#home">Gerais</a></li>
-                <li><a data-bs-toggle="tab" href="#menu1">Financeiro</a></li>
-                <li><a data-bs-toggle="tab" href="#menu2">Produtos</a></li>
-                <li><a data-bs-toggle="tab" href="#menu3">Notificações</a></li>
-                <li><a data-bs-toggle="tab" href="#menu4">Atualizações</a></li>
-                <li><a data-bs-toggle="tab" href="#menu5">OS</a></li>
-                <li><a data-bs-toggle="tab" href="#menu6">API</a></li>
-                <li><a data-bs-toggle="tab" href="#menu7">E-mail</a></li>
-            </ul>
+            <div class="os-tabs">
+                <button class="os-tab-btn active" onclick="showOsTab('home', this)" data-tab="home"><i class="bx bx-cog"></i> Gerais</button>
+                <button class="os-tab-btn" onclick="showOsTab('menu1', this)" data-tab="menu1"><i class="bx bx-dollar-circle"></i> Financeiro</button>
+                <button class="os-tab-btn" onclick="showOsTab('menu2', this)" data-tab="menu2"><i class="bx bx-package"></i> Produtos</button>
+                <button class="os-tab-btn" onclick="showOsTab('menu3', this)" data-tab="menu3"><i class="bx bx-bell"></i> Notificações</button>
+                <button class="os-tab-btn" onclick="showOsTab('menu4', this)" data-tab="menu4"><i class="bx bx-refresh"></i> Atualizações</button>
+                <button class="os-tab-btn" onclick="showOsTab('menu5', this)" data-tab="menu5"><i class="bx bx-file"></i> OS</button>
+                <button class="os-tab-btn" onclick="showOsTab('menu6', this)" data-tab="menu6"><i class="bx bx-link"></i> API</button>
+                <button class="os-tab-btn" onclick="showOsTab('menu7', this)" data-tab="menu7"><i class="bx bx-envelope"></i> E-mail</button>
+            </div>
             <form action="<?php echo current_url(); ?>" id="formConfigurar" method="post" class="form-horizontal">
                 <div class="widget-content nopadding tab-content">
                     <?php echo e($custom_error); ?>
@@ -653,4 +665,13 @@
             $(this).prop('selectedIndex', 0);
         });
     });
+</script>
+<script>
+function showOsTab(tabId, btn) {
+    document.querySelectorAll('.os-tabs .os-tab-btn').forEach(function(b) { b.classList.remove('active'); });
+    document.querySelectorAll('.tab-content .tab-pane').forEach(function(p) { p.classList.remove('active'); });
+    btn.classList.add('active');
+    var pane = document.getElementById(tabId);
+    if (pane) pane.classList.add('active');
+}
 </script>

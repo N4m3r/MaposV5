@@ -1,10 +1,23 @@
+<style>
+    .os-tabs { display: flex; gap: 6px; padding: 10px 0 8px 0; flex-wrap: wrap; }
+    .os-tab-btn { display: inline-flex; align-items: center; gap: 5px; padding: 8px 16px; border: 1px solid var(--dark-2, #272835); border-radius: 6px; background: var(--dark-2, #272835); color: var(--dark-cinz, #8788a4); font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; text-decoration: none; }
+    .os-tab-btn:hover { background: #2d2e3a; color: var(--branco, #caced8); text-decoration: none; }
+    .os-tab-btn.active { background: #2d335b; color: #fff; font-weight: bold; border-color: #4a4d7a; }
+    .os-tab-btn i { font-size: 15px; }
+    .tab-content > .tab-pane { display: none; }
+    .tab-content > .tab-pane.active { display: block; }
+    @media (max-width: 767px) {
+        .os-tabs { flex-direction: column; }
+        .os-tab-btn { width: 100%; justify-content: center; }
+    }
+</style>
 <div class="widget-box">
     <div class="widget-title" style="margin: 0;font-size: 1.1em">
-        <ul class="nav nav-tabs">
-            <li class="active"><a data-bs-toggle="tab" href="#tab1">Dados do Cliente</a></li>
-            <li><a data-bs-toggle="tab" href="#tab2">Ordens de Serviço</a></li>
-            <li><a data-bs-toggle="tab" href="#tab3">Vendas</a></li>
-        </ul>
+        <div class="os-tabs">
+            <button class="os-tab-btn active" onclick="showOsTab('tab1', this)" data-tab="tab1"><i class="bx bx-user"></i> Dados do Cliente</button>
+            <button class="os-tab-btn" onclick="showOsTab('tab2', this)" data-tab="tab2"><i class="bx bx-file"></i> Ordens de Serviço</button>
+            <button class="os-tab-btn" onclick="showOsTab('tab3', this)" data-tab="tab3"><i class="bx bx-cart"></i> Vendas</button>
+        </div>
     </div>
     <div class="widget-content tab-content">
         <div id="tab1" class="tab-pane active" style="min-height: 300px">
@@ -298,3 +311,12 @@
           <span class="button__icon"><i class="bx bx-undo"></i></span><span class="button__text2">Voltar</span></a>
     </div>
 </div>
+<script>
+function showOsTab(tabId, btn) {
+    document.querySelectorAll('.os-tabs .os-tab-btn').forEach(function(b) { b.classList.remove('active'); });
+    document.querySelectorAll('.tab-content .tab-pane').forEach(function(p) { p.classList.remove('active'); });
+    btn.classList.add('active');
+    var pane = document.getElementById(tabId);
+    if (pane) pane.classList.add('active');
+}
+</script>

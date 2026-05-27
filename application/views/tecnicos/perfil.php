@@ -364,26 +364,20 @@
     font-size: 16px;
 }
 
-.foto-modal .nav-tabs {
-    border-bottom: 2px solid #eee;
+.foto-modal .os-tabs {
     margin-bottom: 20px;
 }
 
-.foto-modal .nav-tabs > li > a {
+.foto-modal .os-tab-btn {
     padding: 15px 25px;
     font-weight: 600;
-    color: #666;
-    border: none;
-    background: transparent;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    border-radius: 8px;
 }
 
-.foto-modal .nav-tabs > li.active > a {
-    color: #667eea;
-    border-bottom: 3px solid #667eea;
-    background: #f8f9ff;
+.foto-modal .os-tab-btn.active {
+    background: #667eea;
+    color: #fff;
+    border-color: #667eea;
 }
 
 .foto-preview-area {
@@ -827,24 +821,19 @@
     }
 
     /* Abas no mobile */
-    .foto-modal .nav-tabs {
+    .foto-modal .os-tabs {
         display: flex;
         margin: -15px -15px 15px -15px;
-        border-bottom: 2px solid #eee;
     }
 
-    .foto-modal .nav-tabs > li {
+    .foto-modal .os-tab-btn {
         flex: 1;
-        text-align: center;
-    }
-
-    .foto-modal .nav-tabs > li > a {
+        justify-content: center;
         padding: 15px 10px;
         font-size: 14px;
-        display: block;
     }
 
-    .foto-modal .nav-tabs > li > a i {
+    .foto-modal .os-tab-btn i {
         display: block;
         font-size: 20px;
         margin-bottom: 5px;
@@ -971,12 +960,12 @@
 }
 
 @media (max-width: 380px) {
-    .foto-modal .nav-tabs > li > a {
+    .foto-modal .os-tab-btn {
         font-size: 12px;
         padding: 12px 8px;
     }
 
-    .foto-modal .nav-tabs > li > a i {
+    .foto-modal .os-tab-btn i {
         font-size: 18px;
     }
 
@@ -1224,10 +1213,10 @@
     </div>
     <div class="modal-body">
         <!-- Abas -->
-        <ul class="nav nav-tabs" id="fotoTab">
-            <li class="active"><a href="#tab-camera" data-bs-toggle="tab"><i class="bx bx-camera"></i> Câmera</a></li>
-            <li><a href="#tab-upload" data-bs-toggle="tab"><i class="bx bx-upload"></i> Galeria</a></li>
-        </ul>
+        <div class="os-tabs" id="fotoTab">
+            <button class="os-tab-btn active" onclick="showOsTab('tab-camera', this)" data-tab="tab-camera"><i class="bx bx-camera"></i> Câmera</button>
+            <button class="os-tab-btn" onclick="showOsTab('tab-upload', this)" data-tab="tab-upload"><i class="bx bx-upload"></i> Galeria</button>
+        </div>
 
         <div class="tab-content">
             <!-- Aba Câmera -->
@@ -1860,6 +1849,15 @@ function mostrarErro(msg) {
     el.textContent = msg;
     el.style.display = 'block';
     document.getElementById('msg-sucesso').style.display = 'none';
+}
+</script>
+<script>
+function showOsTab(tabId, btn) {
+    document.querySelectorAll('.os-tabs .os-tab-btn').forEach(function(b) { b.classList.remove('active'); });
+    document.querySelectorAll('.tab-content .tab-pane').forEach(function(p) { p.classList.remove('active'); });
+    btn.classList.add('active');
+    var pane = document.getElementById(tabId);
+    if (pane) pane.classList.add('active');
 }
 </script>
 

@@ -137,45 +137,54 @@
             <div class="widget-content" id="printOs">
                 <style>
                     /* ===== Sub-abas Notas Fiscais — Tema Dark MapOS ===== */
-                    #nf-sub-tabs { margin-bottom: 0; border-bottom: 1px solid var(--dark-2, #272835); }
-                    #nf-sub-tabs > li { margin-bottom: -1px; }
-                    #nf-sub-tabs > li > a {
-                        padding: 10px 15px;
+                    #nf-sub-tabs { margin-bottom: 0; }
+                    #nf-sub-tabs .os-tab-btn {
+                        padding: 8px 14px;
                         font-size: 13px;
-                        border: 1px solid transparent;
-                        border-bottom-color: var(--dark-2, #272835);
-                        margin-right: 3px;
-                        color: var(--dark-cinz, #8788a4);
-                        border-radius: 4px 4px 0 0;
-                        background: transparent;
-                        transition: var(--tran-03);
-                    }
-                    #nf-sub-tabs > li > a:hover {
-                        background: var(--dark-2, #272835);
-                        color: var(--branco, #caced8);
-                        border-color: var(--dark-2, #272835);
-                    }
-                    #nf-sub-tabs > li.nf-active > a,
-                    #nf-sub-tabs > li.nf-active > a:hover {
-                        border: 1px solid var(--dark-2, #272835);
-                        border-bottom-color: transparent;
-                        background: var(--wid-dark, #1c1d26);
-                        color: var(--branco, #caced8);
-                        font-weight: bold;
-                    }
-                    #nf-sub-content {
-                        border: 1px solid var(--dark-2, #272835);
-                        border-top: none;
-                        padding: 15px;
-                        background: var(--wid-dark, #1c1d26);
-                        color: var(--branco, #caced8);
-                        border-radius: 0 0 6px 6px;
                     }
                     .nf-pane { display: none; }
                     .nf-pane.nf-active { display: block; }
 
+                    /* ===== Abas estilo botão — OS ===== */
+                    .os-tabs {
+                        display: flex;
+                        gap: 6px;
+                        padding: 10px 0 8px 0;
+                        flex-wrap: wrap;
+                    }
+                    .os-tab-btn {
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 5px;
+                        padding: 8px 16px;
+                        border: 1px solid var(--dark-2, #272835);
+                        border-radius: 6px;
+                        background: var(--dark-2, #272835);
+                        color: var(--dark-cinz, #8788a4);
+                        font-size: 13px;
+                        font-weight: 500;
+                        cursor: pointer;
+                        transition: all 0.2s;
+                        text-decoration: none;
+                    }
+                    .os-tab-btn:hover {
+                        background: #2d2e3a;
+                        color: var(--branco, #caced8);
+                        text-decoration: none;
+                    }
+                    .os-tab-btn.active {
+                        background: #2d335b;
+                        color: #fff;
+                        font-weight: bold;
+                        border-color: #4a4d7a;
+                    }
+                    .os-tab-btn i { font-size: 15px; }
+                    .tab-content-custom > .tab-pane { display: none; }
+                    .tab-content-custom > .tab-pane.active { display: block; }
+
                     @media print {
                         #os-main-tabs { display: none !important; }
+                        .os-tabs { display: none !important; }
                         #nf-sub-tabs { display: none !important; }
                         .tab-content > .tab-pane { display: block !important; opacity: 1 !important; }
                         #tab-notas-fiscais { display: none !important; }
@@ -183,17 +192,22 @@
                     @media (max-width: 767px) {
                         #os-main-tabs > li { display: block; width: 100%; float: none; }
                         #os-main-tabs > li > a { border: 1px solid var(--dark-2); border-radius: 0; margin-bottom: 2px; }
-                        #nf-sub-tabs > li { display: block; width: 100%; float: none; }
-                        #nf-sub-tabs > li > a { border: 1px solid var(--dark-2); border-radius: 0; margin-bottom: 2px; }
+                        .os-tabs { flex-direction: column; }
+                        .os-tab-btn { width: 100%; justify-content: center; }
+                        #nf-sub-tabs .os-tab-btn { display: block; width: 100%; }
                     }
                 </style>
 
-                <ul class="nav nav-tabs" id="os-main-tabs">
-                    <li class="active"><a href="#tab-detalhes" data-bs-toggle="tab"><i class='bx bx-file'></i> Detalhes da OS</a></li>
-                    <li><a href="#tab-notas-fiscais" data-bs-toggle="tab"><i class='bx bx-receipt'></i> Notas Fiscais</a></li>
-                </ul>
+                <div class="os-tabs" id="os-main-tabs">
+                    <button class="os-tab-btn active" onclick="showOsTab('tab-detalhes', this)">
+                        <i class="bx bx-file"></i> Detalhes da OS
+                    </button>
+                    <button class="os-tab-btn" onclick="showOsTab('tab-notas-fiscais', this)">
+                        <i class="bx bx-receipt"></i> Notas Fiscais
+                    </button>
+                </div>
 
-                <div class="tab-content">
+                <div class="tab-content tab-content-custom">
                     <div class="tab-pane active" id="tab-detalhes">
                 <div class="invoice-content">
                     <div class="invoice-head" style="margin-bottom: 0; margin-top:-30px">
@@ -924,11 +938,11 @@
 
                     <!-- ===== ABA NOTAS FISCAIS ===== -->
                     <div class="tab-pane" id="tab-notas-fiscais">
-                        <ul class="nav nav-tabs" id="nf-sub-tabs">
-                            <li class="nf-active"><a href="#subtab-nfse" data-nf="nfse"><i class="fas fa-file-invoice"></i> Serviços (NFS-e)</a></li>
-                            <li><a href="#subtab-produtos" data-nf="produtos"><i class="bx bx-box"></i> Produtos NF-e</a></li>
-                            <li><a href="#subtab-boletos" data-nf="boletos"><i class="fas fa-barcode"></i> Boletos</a></li>
-                        </ul>
+                        <div class="os-tabs" id="nf-sub-tabs">
+                            <button class="os-tab-btn active" onclick="showNfSubTab('subtab-nfse', this)"><i class="fas fa-file-invoice"></i> Serviços (NFS-e)</button>
+                            <button class="os-tab-btn" onclick="showNfSubTab('subtab-produtos', this)"><i class="bx bx-box"></i> Produtos NF-e</button>
+                            <button class="os-tab-btn" onclick="showNfSubTab('subtab-boletos', this)"><i class="fas fa-barcode"></i> Boletos</button>
+                        </div>
 
                         <div id="nf-sub-content">
                             <div class="nf-pane nf-active" id="subtab-nfse">
@@ -977,49 +991,37 @@
 
 <!-- Controle das abas principais e sub-abas de Notas Fiscais -->
 <script>
-(function($) {
-    $(function() {
-        // Controle das abas principais (Detalhes / Notas Fiscais)
-        var $mainTabs = $('#os-main-tabs');
-        var $mainPanes = $mainTabs.closest('.tab-content').find('.tab-pane');
+function showOsTab(tabId, btn) {
+    // Desativa todos os botões e painéis
+    document.querySelectorAll('#os-main-tabs .os-tab-btn').forEach(function(b) { b.classList.remove('active'); });
+    document.querySelectorAll('.tab-content-custom .tab-pane').forEach(function(p) { p.classList.remove('active'); });
 
-        $mainTabs.on('click', 'a', function(e) {
-            e.preventDefault();
-            var target = $(this).attr('href');
+    // Ativa o botão clicado e o painel correspondente
+    btn.classList.add('active');
+    var pane = document.getElementById(tabId);
+    if (pane) pane.classList.add('active');
 
-            $mainTabs.find('li').removeClass('active');
-            $mainPanes.removeClass('active');
+    // Ao abrir Notas Fiscais, garantir primeira sub-aba ativa
+    if (tabId === 'tab-notas-fiscais') {
+        var nfBtns = document.querySelectorAll('#nf-sub-tabs .os-tab-btn');
+        var nfPanes = document.querySelectorAll('#nf-sub-content .nf-pane');
+        var hasActive = false;
+        nfBtns.forEach(function(b) { if (b.classList.contains('active')) hasActive = true; });
+        if (!hasActive && nfBtns.length > 0) {
+            nfBtns[0].classList.add('active');
+            if (nfPanes.length > 0) nfPanes[0].classList.add('nf-active');
+        }
+    }
+}
 
-            $(this).closest('li').addClass('active');
-            $(target).addClass('active');
-
-            // Ao abrir Notas Fiscais, garantir primeira sub-aba ativa
-            if (target === '#tab-notas-fiscais') {
-                var $nfTabs = $('#nf-sub-tabs');
-                var $nfPanes = $('#nf-sub-content').find('.nf-pane');
-                if (!$nfTabs.find('li.nf-active').length) {
-                    $nfTabs.find('li:first').addClass('nf-active');
-                    $nfPanes.first().addClass('nf-active');
-                }
-            }
-        });
-
-        // Controle das sub-abas de Notas Fiscais
-        var $tabs = $('#nf-sub-tabs');
-        var $panes = $('#nf-sub-content').find('.nf-pane');
-
-        $tabs.on('click', 'a', function(e) {
-            e.preventDefault();
-            var target = $(this).attr('href');
-
-            $tabs.find('li').removeClass('nf-active');
-            $panes.removeClass('nf-active');
-
-            $(this).closest('li').addClass('nf-active');
-            $(target).addClass('nf-active');
-        });
-    });
-})(jQuery);
+// Controle das sub-abas de Notas Fiscais
+function showNfSubTab(tabId, btn) {
+    document.querySelectorAll('#nf-sub-tabs .os-tab-btn').forEach(function(b) { b.classList.remove('active'); });
+    document.querySelectorAll('#nf-sub-content .nf-pane').forEach(function(p) { p.classList.remove('nf-active'); });
+    btn.classList.add('active');
+    var pane = document.getElementById(tabId);
+    if (pane) pane.classList.add('nf-active');
+}
 </script>
 
 <?= $modalGerarPagamento ?>

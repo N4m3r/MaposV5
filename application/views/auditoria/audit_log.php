@@ -5,14 +5,21 @@
 </div>
 
 <!-- Tab navigation -->
-<ul class="nav nav-tabs" style="margin-bottom: 15px;">
-    <li class="<?php echo ($tab === 'logs') ? 'active' : ''; ?>">
-        <a href="<?php echo site_url('auditoria?tab=logs'); ?>">Logs (Legado)</a>
-    </li>
-    <li class="<?php echo ($tab === 'audit') ? 'active' : ''; ?>">
-        <a href="<?php echo site_url('auditoria?tab=audit'); ?>">Auditoria Estruturada</a>
-    </li>
-</ul>
+<style>
+    .os-tabs { display: flex; gap: 6px; padding: 0 0 15px 0; flex-wrap: wrap; }
+    .os-tab-btn { display: inline-flex; align-items: center; gap: 5px; padding: 8px 16px; border: 1px solid var(--dark-2, #272835); border-radius: 6px; background: var(--dark-2, #272835); color: var(--dark-cinz, #8788a4); font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; text-decoration: none; }
+    .os-tab-btn:hover { background: #2d2e3a; color: var(--branco, #caced8); text-decoration: none; }
+    .os-tab-btn.active { background: #2d335b; color: #fff; font-weight: bold; border-color: #4a4d7a; }
+    .os-tab-btn i { font-size: 15px; }
+    @media (max-width: 767px) {
+        .os-tabs { flex-direction: column; }
+        .os-tab-btn { width: 100%; justify-content: center; }
+    }
+</style>
+<div class="os-tabs" style="margin-bottom: 15px;">
+    <a class="os-tab-btn <?php echo ($tab === 'logs') ? 'active' : ''; ?>" href="<?php echo site_url('auditoria?tab=logs'); ?>"><i class="bx bx-list-ul"></i> Logs (Legado)</a>
+    <a class="os-tab-btn <?php echo ($tab === 'audit') ? 'active' : ''; ?>" href="<?php echo site_url('auditoria?tab=audit'); ?>"><i class="bx bx-shield-alt"></i> Auditoria Estruturada</a>
+</div>
 
 <!-- Filters -->
 <form method="get" class="form-inline" style="margin-bottom: 15px;">

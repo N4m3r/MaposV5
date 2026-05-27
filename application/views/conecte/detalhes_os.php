@@ -3,6 +3,17 @@
 <script type="text/javascript" src="<?php echo base_url() ?>assets/trumbowyg/langs/pt_br.js"></script>
 
 <style>
+    .os-tabs { display: flex; gap: 6px; padding: 10px 0 8px 0; flex-wrap: wrap; }
+    .os-tab-btn { display: inline-flex; align-items: center; gap: 5px; padding: 8px 16px; border: 1px solid var(--dark-2, #272835); border-radius: 6px; background: var(--dark-2, #272835); color: var(--dark-cinz, #8788a4); font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; text-decoration: none; }
+    .os-tab-btn:hover { background: #2d2e3a; color: var(--branco, #caced8); text-decoration: none; }
+    .os-tab-btn.active { background: #2d335b; color: #fff; font-weight: bold; border-color: #4a4d7a; }
+    .os-tab-btn i { font-size: 15px; }
+    .tab-content > .tab-pane { display: none; }
+    .tab-content > .tab-pane.active { display: block; }
+    @media (max-width: 767px) {
+        .os-tabs { flex-direction: column; }
+        .os-tab-btn { width: 100%; justify-content: center; }
+    }
     .ui-datepicker {
         z-index: 9999 !important;
     }
@@ -31,12 +42,12 @@
 
 
                 <div class="col-12" id="divProdutosServicos" style=" margin-left: 0">
-                    <ul class="nav nav-tabs">
-                        <li class="active" id="tabDetalhes"><a href="#tab1" data-bs-toggle="tab">Detalhes da OS</a></li>
-                        <li id="tabProdutos"><a href="#tab2" data-bs-toggle="tab">Produtos</a></li>
-                        <li id="tabServicos"><a href="#tab3" data-bs-toggle="tab">Serviços</a></li>
-                        <li id="tabAnexos"><a href="#tab4" data-bs-toggle="tab">Anexos</a></li>
-                    </ul>
+                    <div class="os-tabs">
+                        <button class="os-tab-btn active" onclick="showOsTab('tab1', this)" data-tab="tab1"><i class="bx bx-file"></i> Detalhes da OS</button>
+                        <button class="os-tab-btn" onclick="showOsTab('tab2', this)" data-tab="tab2"><i class="bx bx-package"></i> Produtos</button>
+                        <button class="os-tab-btn" onclick="showOsTab('tab3', this)" data-tab="tab3"><i class="bx bx-wrench"></i> Serviços</button>
+                        <button class="os-tab-btn" onclick="showOsTab('tab4', this)" data-tab="tab4"><i class="bx bx-paperclip"></i> Anexos</button>
+                    </div>
                     <div class="tab-content">
                         <div class="tab-pane active" id="tab1">
 
@@ -355,4 +366,13 @@ foreach ($servicos as $s) {
         $("#div-visualizar-anexo").html('<img src="' + link + '" alt="">');
         $("#download").attr('href', "<?php echo base_url(); ?>index.php/mine/downloadanexo/" + id);
     });
+</script>
+<script>
+function showOsTab(tabId, btn) {
+    document.querySelectorAll('.os-tabs .os-tab-btn').forEach(function(b) { b.classList.remove('active'); });
+    document.querySelectorAll('.tab-content .tab-pane').forEach(function(p) { p.classList.remove('active'); });
+    btn.classList.add('active');
+    var pane = document.getElementById(tabId);
+    if (pane) pane.classList.add('active');
+}
 </script>
