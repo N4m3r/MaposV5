@@ -935,6 +935,42 @@ select.form-select {
    ============================================ */
 
 /* ============================================
+   WIDGET TITLE ICON SIZING
+   ============================================ */
+
+/* Consistent sizing for both Boxicons and Font Awesome in widget titles */
+.widget-title span.icon i.bx,
+.widget-title span.icon i.fas {
+    font-size: 1.4em;
+    vertical-align: middle;
+}
+
+/* BS2 label compatibility - make label-* classes work like badges */
+.label {
+    display: inline-block;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.4;
+    border-radius: 3px;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+}
+
+.label-primary { background-color: #667eea; }
+.label-success { background-color: #26a38e; }
+.label-warning { background-color: #fc9d0f; color: #333; }
+.label-important { background-color: #e05555; }
+.label-info { background-color: #5bc0de; }
+.label-inverse { background-color: #333; }
+
+/* ============================================
+   FIM WIDGET TITLE ICON SIZING
+   ============================================ */
+
+/* ============================================
    SUBMENU UX - Animações e hierarquia visual
    ============================================ */
 
