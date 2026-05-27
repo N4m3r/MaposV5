@@ -2,6 +2,9 @@ SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
 
+-- Selecionar o banco de dados
+USE `jjferreiras05`;
+
 
 
 -- -----------------------------------------------------
@@ -713,10 +716,10 @@ CREATE TABLE IF NOT EXISTS `webhooks` (
   `url` VARCHAR(500) NOT NULL,
   `secret` VARCHAR(255) NULL,
   `events` JSON NULL,
-  `is_active` TINYINT(1) DEFAULT 1,
+  `active` TINYINT(1) NOT NULL DEFAULT 1,
   `created_at` DATETIME NOT NULL,
   `updated_at` DATETIME NOT NULL,
-  INDEX `idx_is_active` (`is_active`)
+  INDEX `idx_active` (`active`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- -----------------------------------------------------
@@ -1084,6 +1087,120 @@ CREATE TABLE IF NOT EXISTS `os_boleto_emitido` (
 -- para evitar problemas de serialização. O instalador usa PHP para gerar os dados corretamente.
 -- Veja install/do_install.php para os inserts programáticos.
 
+-- ============================================================
+-- CORRECOES E ADICOES DE COLUNAS FALTANTES EM TABELAS EXISTENTES
+-- Execute ANTES dos INSERTs para garantir que as colunas existam
+-- ============================================================
+
+-- dre_contas: colunas que faltam em banco existente
+ALTER TABLE `dre_contas` ADD COLUMN IF NOT EXISTS `grupo` VARCHAR(100) DEFAULT NULL AFTER `tipo`;
+ALTER TABLE `dre_contas` ADD COLUMN IF NOT EXISTS `sinal` ENUM('POSITIVO','NEGATIVO') DEFAULT 'POSITIVO' AFTER `grupo`;
+ALTER TABLE `dre_contas` ADD COLUMN IF NOT EXISTS `conta_pai_id` INT(11) UNSIGNED DEFAULT NULL AFTER `sinal`;
+ALTER TABLE `dre_contas` ADD COLUMN IF NOT EXISTS `nivel` INT DEFAULT 1 AFTER `conta_pai_id`;
+ALTER TABLE `dre_contas` ADD COLUMN IF NOT EXISTS `ordem` INT DEFAULT 0 AFTER `nivel`;
+ALTER TABLE `dre_contas` ADD COLUMN IF NOT EXISTS `ativo` TINYINT(1) DEFAULT 1 AFTER `ordem`;
+ALTER TABLE `dre_contas` ADD COLUMN IF NOT EXISTS `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE `dre_contas` ADD COLUMN IF NOT EXISTS `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+
+-- cobrancas: colunas que podem faltar
+ALTER TABLE `cobrancas` ADD COLUMN IF NOT EXISTS `linha_digitavel` VARCHAR(255) DEFAULT NULL;
+ALTER TABLE `cobrancas` ADD COLUMN IF NOT EXISTS `pix_code` TEXT DEFAULT NULL;
+ALTER TABLE `cobrancas` ADD COLUMN IF NOT EXISTS `payment_gateway` VARCHAR(255) DEFAULT NULL;
+ALTER TABLE `cobrancas` ADD COLUMN IF NOT EXISTS `paid_at` DATETIME DEFAULT NULL;
+ALTER TABLE `cobrancas` ADD COLUMN IF NOT EXISTS `updated_at` DATETIME DEFAULT NULL;
+ALTER TABLE `cobrancas` ADD COLUMN IF NOT EXISTS `deleted_at` DATETIME DEFAULT NULL;
+
+-- os: coluna obra_id
+ALTER TABLE `os` ADD COLUMN IF NOT EXISTS `obra_id` INT(11) UNSIGNED DEFAULT NULL COMMENT 'ID da obra vinculada' AFTER `garantias_id`;
+
+-- os: coluna deleted_at (soft delete)
+ALTER TABLE `os` ADD COLUMN IF NOT EXISTS `deleted_at` DATETIME DEFAULT NULL;
+
+-- os: colunas NFS-e e boleto que podem faltar
+ALTER TABLE `os` ADD COLUMN IF NOT EXISTS `nfse_status` ENUM('Pendente','Emitida','Cancelada') DEFAULT 'Pendente' COMMENT 'Status da NFS-e vinculada';
+ALTER TABLE `os` ADD COLUMN IF NOT EXISTS `boleto_status` ENUM('Pendente','Emitido','Pago','Vencido','Cancelado') DEFAULT 'Pendente' COMMENT 'Status do boleto vinculado';
+ALTER TABLE `os` ADD COLUMN IF NOT EXISTS `data_vencimento_boleto` DATE DEFAULT NULL COMMENT 'Data de vencimento do boleto';
+ALTER TABLE `os` ADD COLUMN IF NOT EXISTS `valor_com_impostos` DECIMAL(15,2) DEFAULT NULL COMMENT 'Valor liquido apos deducao de impostos';
+ALTER TABLE `os` ADD COLUMN IF NOT EXISTS `certificado_vinculado` INT(11) UNSIGNED DEFAULT NULL COMMENT 'ID do certificado digital vinculado';
+ALTER TABLE `os` ADD COLUMN IF NOT EXISTS `retencao_impostos` TINYINT(1) DEFAULT 0 COMMENT 'Flag de retencao de impostos';
+ALTER TABLE `os` ADD COLUMN IF NOT EXISTS `calculo_impostos` TEXT DEFAULT NULL COMMENT 'JSON com detalhes dos impostos calculados';
+
+-- clientes: colunas LGPD e token_acesso
+ALTER TABLE `clientes` ADD COLUMN IF NOT EXISTS `inscricao_estadual` VARCHAR(50) DEFAULT NULL;
+ALTER TABLE `clientes` ADD COLUMN IF NOT EXISTS `inscricao_municipal` VARCHAR(50) DEFAULT NULL;
+ALTER TABLE `clientes` ADD COLUMN IF NOT EXISTS `consentimento_lgpd` TINYINT(1) DEFAULT 0;
+ALTER TABLE `clientes` ADD COLUMN IF NOT EXISTS `data_consentimento` DATETIME DEFAULT NULL;
+ALTER TABLE `clientes` ADD COLUMN IF NOT EXISTS `origem_dados` VARCHAR(50) DEFAULT NULL;
+ALTER TABLE `clientes` ADD COLUMN IF NOT EXISTS `token_acesso` VARCHAR(64) DEFAULT NULL;
+ALTER TABLE `clientes` ADD COLUMN IF NOT EXISTS `deleted_at` DATETIME DEFAULT NULL;
+
+-- produtos, servicos, usuarios, lancamentos: soft delete
+ALTER TABLE `produtos` ADD COLUMN IF NOT EXISTS `deleted_at` DATETIME DEFAULT NULL;
+ALTER TABLE `servicos` ADD COLUMN IF NOT EXISTS `deleted_at` DATETIME DEFAULT NULL;
+ALTER TABLE `usuarios` ADD COLUMN IF NOT EXISTS `deleted_at` DATETIME DEFAULT NULL;
+ALTER TABLE `lancamentos` ADD COLUMN IF NOT EXISTS `deleted_at` DATETIME DEFAULT NULL;
+
+-- obra_etapas: coluna progresso_real
+ALTER TABLE `obra_etapas` ADD COLUMN IF NOT EXISTS `progresso_real` INT(3) DEFAULT 0 COMMENT 'Progresso baseado nas atividades registradas';
+
+-- os_nfse_emitida: coluna n_dps
+ALTER TABLE `os_nfse_emitida` ADD COLUMN IF NOT EXISTS `n_dps` VARCHAR(50) DEFAULT NULL;
+
+-- os: indices de performance
+ALTER TABLE `os` ADD INDEX IF NOT EXISTS `idx_obra_id` (`obra_id`);
+ALTER TABLE `os` ADD INDEX IF NOT EXISTS `idx_os_status` (`status`);
+ALTER TABLE `os` ADD INDEX IF NOT EXISTS `idx_os_dataInicial` (`dataInicial`);
+ALTER TABLE `os` ADD INDEX IF NOT EXISTS `idx_os_clientes_id` (`clientes_id`);
+ALTER TABLE `os` ADD INDEX IF NOT EXISTS `idx_os_usuarios_id` (`usuarios_id`);
+ALTER TABLE `os` ADD INDEX IF NOT EXISTS `idx_os_status_data` (`status`, `dataInicial`);
+ALTER TABLE `lancamentos` ADD INDEX IF NOT EXISTS `idx_lanc_baixado` (`baixado`);
+ALTER TABLE `lancamentos` ADD INDEX IF NOT EXISTS `idx_lanc_data_vencimento` (`data_vencimento`);
+ALTER TABLE `lancamentos` ADD INDEX IF NOT EXISTS `idx_lanc_tipo` (`tipo`);
+ALTER TABLE `lancamentos` ADD INDEX IF NOT EXISTS `idx_lanc_tipo_baixado` (`tipo`, `baixado`);
+ALTER TABLE `produtos_os` ADD INDEX IF NOT EXISTS `idx_produtos_os_os_id` (`os_id`);
+ALTER TABLE `servicos_os` ADD INDEX IF NOT EXISTS `idx_servicos_os_os_id` (`os_id`);
+ALTER TABLE `clientes` ADD INDEX IF NOT EXISTS `idx_clientes_nomeCliente` (`nomeCliente`);
+ALTER TABLE `clientes` ADD INDEX IF NOT EXISTS `idx_clientes_documento` (`documento`);
+ALTER TABLE `clientes` ADD INDEX IF NOT EXISTS `idx_clientes_email` (`email`);
+ALTER TABLE `clientes` ADD INDEX IF NOT EXISTS `idx_clientes_token_acesso` (`token_acesso`);
+ALTER TABLE `usuarios` ADD INDEX IF NOT EXISTS `idx_usuarios_email` (`email`);
+ALTER TABLE `usuarios` ADD INDEX IF NOT EXISTS `idx_usuarios_situacao` (`situacao`);
+ALTER TABLE `cobrancas` ADD INDEX IF NOT EXISTS `idx_cobrancas_status` (`status`);
+ALTER TABLE `cobrancas` ADD INDEX IF NOT EXISTS `idx_cobrancas_os_id` (`os_id`);
+
+-- usuarios: colunas de tecnico que podem faltar
+ALTER TABLE `usuarios` ADD COLUMN IF NOT EXISTS `is_tecnico` TINYINT(1) NOT NULL DEFAULT 0 COMMENT 'Indica se e tecnico de campo' AFTER `url_image_user`;
+ALTER TABLE `usuarios` ADD COLUMN IF NOT EXISTS `nivel_tecnico` ENUM('I','II','III','IV') DEFAULT 'II' COMMENT 'Nivel do tecnico' AFTER `is_tecnico`;
+ALTER TABLE `usuarios` ADD COLUMN IF NOT EXISTS `especialidades` VARCHAR(255) DEFAULT NULL COMMENT 'Especialidades separadas por virgula' AFTER `nivel_tecnico`;
+ALTER TABLE `usuarios` ADD COLUMN IF NOT EXISTS `veiculo_placa` VARCHAR(10) DEFAULT NULL AFTER `especialidades`;
+ALTER TABLE `usuarios` ADD COLUMN IF NOT EXISTS `veiculo_tipo` ENUM('Moto','Carro','Nenhum') DEFAULT 'Nenhum' AFTER `veiculo_placa`;
+ALTER TABLE `usuarios` ADD COLUMN IF NOT EXISTS `coordenadas_base_lat` DECIMAL(10,8) DEFAULT NULL AFTER `veiculo_tipo`;
+ALTER TABLE `usuarios` ADD COLUMN IF NOT EXISTS `coordenadas_base_lng` DECIMAL(11,8) DEFAULT NULL AFTER `coordenadas_base_lat`;
+ALTER TABLE `usuarios` ADD COLUMN IF NOT EXISTS `raio_atuacao_km` INT DEFAULT 50 AFTER `coordenadas_base_lng`;
+ALTER TABLE `usuarios` ADD COLUMN IF NOT EXISTS `plantao_24h` TINYINT(1) DEFAULT 0 AFTER `raio_atuacao_km`;
+ALTER TABLE `usuarios` ADD COLUMN IF NOT EXISTS `app_tecnico_instalado` TINYINT(1) DEFAULT 0 AFTER `plantao_24h`;
+ALTER TABLE `usuarios` ADD COLUMN IF NOT EXISTS `token_app` VARCHAR(255) DEFAULT NULL AFTER `app_tecnico_instalado`;
+ALTER TABLE `usuarios` ADD COLUMN IF NOT EXISTS `token_expira` DATETIME DEFAULT NULL AFTER `token_app`;
+ALTER TABLE `usuarios` ADD COLUMN IF NOT EXISTS `ultimo_acesso_app` DATETIME DEFAULT NULL AFTER `token_expira`;
+ALTER TABLE `usuarios` ADD COLUMN IF NOT EXISTS `foto_tecnico` VARCHAR(255) DEFAULT NULL AFTER `ultimo_acesso_app`;
+
+-- lancamentos: colunas que podem faltar
+ALTER TABLE `lancamentos` ADD COLUMN IF NOT EXISTS `observacoes` TEXT DEFAULT NULL;
+ALTER TABLE `lancamentos` ADD COLUMN IF NOT EXISTS `webhook_notificado` TINYINT(1) DEFAULT 0;
+
+-- vendas: colunas que podem faltar
+ALTER TABLE `vendas` ADD COLUMN IF NOT EXISTS `observacoes` TEXT DEFAULT NULL;
+ALTER TABLE `vendas` ADD COLUMN IF NOT EXISTS `observacoes_cliente` TEXT DEFAULT NULL;
+ALTER TABLE `vendas` ADD COLUMN IF NOT EXISTS `garantia` VARCHAR(45) DEFAULT NULL;
+ALTER TABLE `vendas` ADD COLUMN IF NOT EXISTS `status` VARCHAR(45) DEFAULT NULL;
+
+-- emitente: colunas que podem faltar
+ALTER TABLE `emitente` ADD COLUMN IF NOT EXISTS `cep` VARCHAR(20) DEFAULT NULL;
+ALTER TABLE `emitente` ADD COLUMN IF NOT EXISTS `inscricao_municipal` VARCHAR(50) DEFAULT NULL;
+
+-- webhooks: corrigir coluna is_active para active
+ALTER TABLE `webhooks` CHANGE COLUMN IF EXISTS `is_active` `active` TINYINT(1) NOT NULL DEFAULT 1;
+
 INSERT IGNORE INTO `usuarios` (`idUsuarios`, `nome`, `rg`, `cpf`, `cep`, `rua`, `numero`, `bairro`, `cidade`, `estado`, `email`, `senha`, `telefone`, `celular`, `situacao`, `dataCadastro`, `permissoes_id`,`dataExpiracao`) VALUES
 (1, 'admin_name', '', '', '', '', '', '', '', '', 'admin_email', 'admin_password', '', '', 1, 'admin_created_at', 1, '3000-01-01');
 
@@ -1430,7 +1547,6 @@ CREATE TABLE IF NOT EXISTS `obra_equipe` (
   `ativo` TINYINT(1) DEFAULT 1,
   `observacoes` TEXT,
   `visivel_cliente` TINYINT(1) DEFAULT 1,
-  `ativo` TINYINT(1) DEFAULT 1,
   `valor_contrato` DECIMAL(15,2) NULL,
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -1503,8 +1619,7 @@ CREATE TABLE IF NOT EXISTS `os_checkin` (
   `data_atualizacao` DATETIME NULL,
   PRIMARY KEY (`idCheckin`),
   INDEX `idx_os_id` (`os_id`),
-  INDEX `idx_status` (`status`),
-  INDEX `idx_ativo` (`ativo`)
+  INDEX `idx_status` (`status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- -----------------------------------------------------
@@ -2365,7 +2480,15 @@ CREATE TABLE IF NOT EXISTS `agente_ia_permissoes` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
 COMMENT='Permissoes do agente IA por perfil';
 
-INSERT INTO `agente_ia_permissoes` (`perfil`, `acao`, `nivel_maximo_automatico`, `requer_2fa`) VALUES
+-- Garantir que a coluna perfil tenha todos os valores ENUM
+ALTER TABLE `agente_ia_permissoes` MODIFY COLUMN `perfil` ENUM('cliente','tecnico','admin','financeiro','vendedor','desconhecido') NOT NULL DEFAULT 'desconhecido';
+ALTER TABLE `agente_ia_permissoes` ADD COLUMN IF NOT EXISTS `nivel_maximo_automatico` TINYINT(1) NOT NULL DEFAULT 1 AFTER `acao`;
+ALTER TABLE `agente_ia_permissoes` ADD COLUMN IF NOT EXISTS `requer_2fa` TINYINT(1) DEFAULT 0 AFTER `nivel_maximo_automatico`;
+ALTER TABLE `agente_ia_permissoes` ADD COLUMN IF NOT EXISTS `horario_permitido_inicio` TIME DEFAULT '00:00:00' AFTER `requer_2fa`;
+ALTER TABLE `agente_ia_permissoes` ADD COLUMN IF NOT EXISTS `horario_permitido_fim` TIME DEFAULT '23:59:59' AFTER `horario_permitido_inicio`;
+ALTER TABLE `agente_ia_permissoes` ADD COLUMN IF NOT EXISTS `ativo` TINYINT(1) DEFAULT 1 AFTER `horario_permitido_fim`;
+
+INSERT IGNORE INTO `agente_ia_permissoes` (`perfil`, `acao`, `nivel_maximo_automatico`, `requer_2fa`) VALUES
 ('cliente', 'consultar_status_os', 1, 0),
 ('cliente', 'consultar_divida', 1, 0),
 ('cliente', 'consultar_cliente', 1, 0),
@@ -2461,7 +2584,7 @@ CREATE TABLE IF NOT EXISTS `agente_ia_configuracoes` (
 COMMENT='Configuracoes do agente IA (URLs, tokens, etc.)';
 
 -- Valores padrao
-INSERT INTO `agente_ia_configuracoes` (`chave`, `valor`, `descricao`, `grupo`, `sensivel`) VALUES
+INSERT IGNORE INTO `agente_ia_configuracoes` (`chave`, `valor`, `descricao`, `grupo`, `sensivel`) VALUES
 ('evolution_url', 'http://192.168.100.238:8091', 'URL da API Evolution (evolution-go)', 'evolution', 0),
 ('evolution_apikey', '', 'API Key da Evolution API', 'evolution', 1),
 ('evolution_instance', '', 'Nome da instancia WhatsApp', 'evolution', 0),
@@ -2482,6 +2605,491 @@ INSERT INTO `agente_ia_configuracoes` (`chave`, `valor`, `descricao`, `grupo`, `
 ('horario_atendimento_fim', '18:00', 'Fim do atendimento automatico', 'geral', 0),
 ('auto_responder_fora_horario', '1', 'Responder automaticamente fora do horario', 'geral', 0)
 ON DUPLICATE KEY UPDATE `valor` = `valor`;
+
+-- ============================================================
+-- TABELAS FALTANTES - REFERENCIADAS NO CODIGO PHP
+-- ============================================================
+
+-- -----------------------------------------------------
+-- Table `os_atividades`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `os_atividades` (
+  `idAtividade` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `os_id` INT(11) NOT NULL,
+  `obra_id` INT(11) UNSIGNED DEFAULT NULL,
+  `etapa_id` INT(11) DEFAULT NULL,
+  `obra_atividade_id` INT(11) DEFAULT NULL,
+  `tipo_atividade_id` INT(11) UNSIGNED DEFAULT NULL,
+  `tecnico_id` INT(11) NOT NULL,
+  `tipo_atividade` VARCHAR(50) NOT NULL,
+  `categoria` VARCHAR(30) NOT NULL,
+  `titulo` VARCHAR(200) NOT NULL,
+  `descricao` TEXT DEFAULT NULL,
+  `equipamento` VARCHAR(100) DEFAULT NULL,
+  `local_instalacao` VARCHAR(200) DEFAULT NULL,
+  `status` ENUM('pendente','em_andamento','pausada','concluida','cancelada','impedimento','reaberta') DEFAULT 'pendente',
+  `prioridade` ENUM('baixa','normal','alta','urgente') DEFAULT 'normal',
+  `hora_inicio` DATETIME NOT NULL,
+  `hora_fim` DATETIME DEFAULT NULL,
+  `duracao_minutos` INT DEFAULT NULL,
+  `pausado_em` DATETIME DEFAULT NULL,
+  `concluida` TINYINT(1) DEFAULT 0,
+  `motivo_nao_concluida` TEXT DEFAULT NULL,
+  `reatendimento` TINYINT(1) DEFAULT 0,
+  `motivo_reabertura` TEXT DEFAULT NULL,
+  `foto_checkin` VARCHAR(255) DEFAULT NULL,
+  `foto_checkout` VARCHAR(255) DEFAULT NULL,
+  `latitude` DECIMAL(10,8) DEFAULT NULL,
+  `longitude` DECIMAL(11,8) DEFAULT NULL,
+  `checkin_lat` DECIMAL(10,8) DEFAULT NULL,
+  `checkin_lng` DECIMAL(11,8) DEFAULT NULL,
+  `observacoes` TEXT DEFAULT NULL,
+  `problemas_encontrados` TEXT DEFAULT NULL,
+  `solucao_aplicada` TEXT DEFAULT NULL,
+  `assinatura_cliente` TEXT DEFAULT NULL,
+  `assinatura_tecnico` TEXT DEFAULT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`idAtividade`),
+  INDEX `idx_os_id` (`os_id`),
+  INDEX `idx_tecnico_id` (`tecnico_id`),
+  INDEX `idx_status` (`status`),
+  INDEX `idx_obra_id` (`obra_id`),
+  INDEX `idx_tipo_atividade` (`tipo_atividade`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `atividades_materiais` (PHP usa este nome, NAO os_atividades_materiais)
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `atividades_materiais` (
+  `idMaterialUso` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `atividade_id` INT(11) UNSIGNED NOT NULL,
+  `produto_id` INT(11) DEFAULT NULL,
+  `nome_produto` VARCHAR(100) NOT NULL,
+  `quantidade` DECIMAL(10,2) NOT NULL,
+  `unidade` VARCHAR(10) DEFAULT 'un',
+  `preco_unitario` DECIMAL(10,2) DEFAULT NULL,
+  `observacao` VARCHAR(255) DEFAULT NULL,
+  `baixou_estoque` TINYINT(1) DEFAULT 0,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`idMaterialUso`),
+  INDEX `idx_atividade` (`atividade_id`),
+  INDEX `idx_produto` (`produto_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `atividades_pausas` (PHP usa este nome, NAO os_atividades_pausas)
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `atividades_pausas` (
+  `idPausa` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `atividade_id` INT(11) UNSIGNED NOT NULL,
+  `pausa_inicio` DATETIME NOT NULL,
+  `pausa_fim` DATETIME DEFAULT NULL,
+  `motivo` VARCHAR(100) DEFAULT NULL,
+  `observacao` TEXT DEFAULT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`idPausa`),
+  INDEX `idx_atividade_pausa` (`atividade_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `atividades_fotos` (PHP usa este nome, NAO os_atividades_fotos)
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `atividades_fotos` (
+  `idFoto` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `atividade_id` INT(11) UNSIGNED NOT NULL,
+  `os_id` INT(11) NOT NULL,
+  `tecnico_id` INT(11) NOT NULL,
+  `foto_base64` LONGTEXT DEFAULT NULL,
+  `caminho_arquivo` VARCHAR(255) DEFAULT NULL,
+  `tipo_foto` VARCHAR(30) DEFAULT 'execucao',
+  `descricao` VARCHAR(255) DEFAULT NULL,
+  `etapa` VARCHAR(20) DEFAULT 'durante',
+  `latitude` DECIMAL(10,8) DEFAULT NULL,
+  `longitude` DECIMAL(11,8) DEFAULT NULL,
+  `data_hora` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`idFoto`),
+  INDEX `idx_atividade_foto` (`atividade_id`),
+  INDEX `idx_os_foto` (`os_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `os_atividades_checklist`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `os_atividades_checklist` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `atividade_id` INT(11) UNSIGNED NOT NULL,
+  `descricao` VARCHAR(255) NOT NULL,
+  `concluido` TINYINT(1) DEFAULT 0,
+  `ordem` INT DEFAULT 0,
+  `obrigatorio` TINYINT(1) DEFAULT 0,
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_atividade` (`atividade_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `os_tecnicos` - Atribuicao de tecnicos a OS
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `os_tecnicos` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `os_id` INT(11) NOT NULL,
+  `tecnico_id` INT(11) NOT NULL,
+  `atribuido_em` DATETIME NOT NULL,
+  `ativo` TINYINT(1) DEFAULT 1,
+  `removido_em` DATETIME DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `idx_os_id` (`os_id`),
+  INDEX `idx_tecnico_id` (`tecnico_id`),
+  INDEX `idx_ativo` (`ativo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `obra_tarefas`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `obra_tarefas` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `obra_id` INT(11) NOT NULL,
+  `tecnico_id` INT(11) DEFAULT NULL,
+  `titulo` VARCHAR(255) NOT NULL,
+  `descricao` TEXT DEFAULT NULL,
+  `status` ENUM('pendente','em_andamento','pausada','concluida','cancelada') DEFAULT 'pendente',
+  `prioridade` ENUM('baixa','normal','alta','urgente') DEFAULT 'normal',
+  `data_inicio` DATE DEFAULT NULL,
+  `data_fim_prevista` DATE DEFAULT NULL,
+  `data_fim_real` DATE DEFAULT NULL,
+  `percentual_concluido` INT DEFAULT 0,
+  `observacoes` TEXT DEFAULT NULL,
+  `criado_por` INT(11) DEFAULT NULL,
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_obra_id` (`obra_id`),
+  INDEX `idx_tecnico_id` (`tecnico_id`),
+  INDEX `idx_status` (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `obra_tarefas_historico`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `obra_tarefas_historico` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `tarefa_id` INT(11) NOT NULL,
+  `tecnico_id` INT(11) DEFAULT NULL,
+  `tipo` VARCHAR(50) NOT NULL,
+  `descricao` TEXT NOT NULL,
+  `percentual_anterior` INT DEFAULT 0,
+  `percentual_novo` INT DEFAULT 0,
+  `horas_trabalhadas` DECIMAL(5,2) DEFAULT 0.00,
+  `data_registro` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `localizacao_lat` DECIMAL(10,8) DEFAULT NULL,
+  `localizacao_lng` DECIMAL(11,8) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `idx_tarefa_id` (`tarefa_id`),
+  INDEX `idx_tecnico_id` (`tecnico_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `obra_comentarios`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `obra_comentarios` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `obra_id` INT(11) NOT NULL,
+  `tecnico_id` INT(11) NOT NULL,
+  `tipo` VARCHAR(50) NOT NULL,
+  `descricao` TEXT NOT NULL,
+  `data_criacao` DATETIME NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `idx_obra_id` (`obra_id`),
+  INDEX `idx_tecnico_id` (`tecnico_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `obra_etapa_progresso`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `obra_etapa_progresso` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `etapa_id` INT(11) NOT NULL,
+  `obra_id` INT(11) NOT NULL,
+  `tecnico_id` INT(11) NOT NULL,
+  `percentual_concluido` INT DEFAULT 0,
+  `observacao` TEXT DEFAULT NULL,
+  `data_registro` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_etapa_id` (`etapa_id`),
+  INDEX `idx_obra_id` (`obra_id`),
+  INDEX `idx_tecnico_id` (`tecnico_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `obra_cliente_notificacoes`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `obra_cliente_notificacoes` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `obra_id` INT(11) NOT NULL,
+  `cliente_id` INT(11) NOT NULL,
+  `tipo` VARCHAR(50) NOT NULL,
+  `titulo` VARCHAR(255) NOT NULL,
+  `mensagem` TEXT DEFAULT NULL,
+  `url_destino` VARCHAR(500) DEFAULT NULL,
+  `entidade_relacionada` VARCHAR(100) DEFAULT NULL,
+  `entidade_id` INT(11) DEFAULT NULL,
+  `lida` TINYINT(1) DEFAULT 0,
+  `data_leitura` DATETIME DEFAULT NULL,
+  `created_at` DATETIME NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `idx_obra_id` (`obra_id`),
+  INDEX `idx_cliente_id` (`cliente_id`),
+  INDEX `idx_lida` (`lida`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `obra_mensagens`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `obra_mensagens` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `obra_id` INT(11) NOT NULL,
+  `remetente_tipo` VARCHAR(20) NOT NULL COMMENT 'cliente, tecnico, admin',
+  `remetente_id` INT(11) NOT NULL,
+  `mensagem` TEXT NOT NULL,
+  `anexo_url` VARCHAR(500) DEFAULT NULL,
+  `anexo_tipo` VARCHAR(50) DEFAULT NULL,
+  `resposta_para` INT(11) DEFAULT NULL,
+  `lida` TINYINT(1) DEFAULT 0,
+  `data_leitura` DATETIME DEFAULT NULL,
+  `created_at` DATETIME NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `idx_obra_id` (`obra_id`),
+  INDEX `idx_remetente` (`remetente_tipo`, `remetente_id`),
+  INDEX `idx_lida` (`lida`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `obra_compartilhamentos`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `obra_compartilhamentos` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `obra_id` INT(11) NOT NULL,
+  `cliente_id` INT(11) NOT NULL,
+  `token` VARCHAR(64) NOT NULL,
+  `tipo` VARCHAR(50) NOT NULL,
+  `data_inicio` DATE DEFAULT NULL,
+  `data_fim` DATE DEFAULT NULL,
+  `etapa_id` INT(11) DEFAULT NULL,
+  `data_expiracao` DATETIME NOT NULL,
+  `acessos_permitidos` INT DEFAULT 0,
+  `acessos_realizados` INT DEFAULT 0,
+  `ativo` TINYINT(1) DEFAULT 1,
+  `created_at` DATETIME NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `idx_obra_id` (`obra_id`),
+  INDEX `idx_token` (`token`),
+  INDEX `idx_cliente_id` (`cliente_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `obra_cliente_acessos`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `obra_cliente_acessos` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `obra_id` INT(11) NOT NULL,
+  `cliente_id` INT(11) NOT NULL,
+  `ip` VARCHAR(45) NOT NULL,
+  `user_agent` VARCHAR(500) DEFAULT NULL,
+  `pagina_acessada` VARCHAR(255) DEFAULT NULL,
+  `tempo_na_pagina` INT DEFAULT 0,
+  `created_at` DATETIME NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `idx_obra_id` (`obra_id`),
+  INDEX `idx_cliente_id` (`cliente_id`),
+  INDEX `idx_created_at` (`created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `obra_atividades_vinculo`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `obra_atividades_vinculo` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `atividade_realizada_id` INT(11) UNSIGNED NOT NULL COMMENT 'ID da os_atividades',
+  `obra_atividade_id` INT(11) DEFAULT NULL COMMENT 'ID da obra_atividades (planejada)',
+  `etapa_id` INT(11) NOT NULL,
+  `obra_id` INT(11) NOT NULL,
+  `tecnico_id` INT(11) NOT NULL,
+  `data_vinculo` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_atividade_realizada` (`atividade_realizada_id`),
+  INDEX `idx_etapa_vinculo` (`etapa_id`),
+  INDEX `idx_obra_vinculo` (`obra_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `obra_etapa_atividades_tipos`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `obra_etapa_atividades_tipos` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `etapa_id` INT(11) NOT NULL,
+  `obra_id` INT(11) NOT NULL,
+  `tipo_atividade_id` INT(11) UNSIGNED NOT NULL,
+  `ordem` INT DEFAULT 0,
+  `obrigatorio` TINYINT(1) DEFAULT 0,
+  `duracao_estimada` INT DEFAULT NULL COMMENT 'minutos estimados',
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_etapa` (`etapa_id`),
+  INDEX `idx_obra` (`obra_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `obra_atividades_fotos`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `obra_atividades_fotos` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `atividade_id` INT(11) UNSIGNED NOT NULL,
+  `obra_id` INT(11) NOT NULL,
+  `etapa_id` INT(11) DEFAULT NULL,
+  `caminho_arquivo` VARCHAR(255) NOT NULL,
+  `tipo` ENUM('checkin','execucao','checkout','problema') DEFAULT 'execucao',
+  `descricao` VARCHAR(255) DEFAULT NULL,
+  `latitude` DECIMAL(10,8) DEFAULT NULL,
+  `longitude` DECIMAL(11,8) DEFAULT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_atividade_foto` (`atividade_id`),
+  INDEX `idx_obra_foto` (`obra_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `obras_config`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `obras_config` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `chave` VARCHAR(100) NOT NULL,
+  `valor` TEXT DEFAULT NULL,
+  `descricao` VARCHAR(255) DEFAULT NULL,
+  `grupo` VARCHAR(50) DEFAULT 'geral',
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_chave` (`chave`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `audit_log`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `audit_log` (
+  `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `user_id` INT(11) UNSIGNED DEFAULT NULL,
+  `username` VARCHAR(150) DEFAULT NULL,
+  `action` VARCHAR(30) NOT NULL,
+  `table_name` VARCHAR(100) NOT NULL,
+  `record_id` VARCHAR(50) DEFAULT NULL,
+  `old_data` JSON DEFAULT NULL,
+  `new_data` JSON DEFAULT NULL,
+  `ip_address` VARCHAR(45) DEFAULT NULL,
+  `user_agent` VARCHAR(500) DEFAULT NULL,
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_audit_table_record` (`table_name`, `record_id`),
+  INDEX `idx_audit_user` (`user_id`),
+  INDEX `idx_audit_action` (`action`),
+  INDEX `idx_audit_created` (`created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `data_breach_notifications`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `data_breach_notifications` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `titulo` VARCHAR(255) NOT NULL,
+  `descricao` TEXT NOT NULL,
+  `tipo_dado_afetado` VARCHAR(255) NOT NULL COMMENT 'Ex: dados pessoais, financeiros, credenciais',
+  `medidas_adotadas` TEXT DEFAULT NULL,
+  `data_ocorrencia` DATETIME NOT NULL,
+  `data_descoberta` DATETIME NOT NULL,
+  `notificado_anpd` TINYINT(1) DEFAULT 0,
+  `data_notificacao_anpd` DATETIME DEFAULT NULL,
+  `titulares_notificados` TINYINT(1) DEFAULT 0,
+  `data_notificacao_titulares` DATETIME DEFAULT NULL,
+  `num_titulares_afetados` INT(11) DEFAULT 0,
+  `status` VARCHAR(30) DEFAULT 'investigando' COMMENT 'investigando, notificado, resolvido',
+  `registrado_por` INT(11) UNSIGNED DEFAULT NULL,
+  `created_at` DATETIME NOT NULL,
+  `updated_at` DATETIME DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `idx_status` (`status`),
+  INDEX `idx_data_ocorrencia` (`data_ocorrencia`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `agente_ia_relatorios`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `agente_ia_relatorios` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `tipo` VARCHAR(50) NOT NULL COMMENT 'diario,semanal,mensal',
+  `numero_telefone` VARCHAR(20) NOT NULL,
+  `conteudo` LONGTEXT DEFAULT NULL,
+  `enviado` TINYINT(1) DEFAULT 0,
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `agente_ia_relatorios_templates`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `agente_ia_relatorios_templates` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `tipo` VARCHAR(50) NOT NULL COMMENT 'diario,semanal,mensal',
+  `nome` VARCHAR(100) NOT NULL,
+  `descricao` TEXT DEFAULT NULL,
+  `conteudo_template` LONGTEXT DEFAULT NULL,
+  `ativo` TINYINT(1) DEFAULT 1,
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `agente_ia_notificacoes_agendadas`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `agente_ia_notificacoes_agendadas` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `numero_telefone` VARCHAR(20) NOT NULL,
+  `tipo_notificacao` ENUM('relatorio_diario','os_vencendo','os_atrasada','pesquisa_satisfacao') NOT NULL,
+  `horario` TIME DEFAULT NULL,
+  `dias_semana` VARCHAR(20) DEFAULT '1,2,3,4,5' COMMENT 'Dias da semana (1=Seg, 7=Dom)',
+  `situacao` TINYINT(1) DEFAULT 1,
+  `ultimo_envio` DATETIME DEFAULT NULL,
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_numero` (`numero_telefone`),
+  INDEX `idx_tipo` (`tipo_notificacao`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- -----------------------------------------------------
+-- Table `whatsapp_log_interacoes`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `whatsapp_log_interacoes` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `numero_telefone` VARCHAR(20) NOT NULL,
+  `tipo_mensagem` ENUM('texto','audio','documento','imagem') DEFAULT 'texto',
+  `direcao` ENUM('entrada','saida') NOT NULL,
+  `conteudo` TEXT DEFAULT NULL,
+  `intencao_detectada` VARCHAR(50) DEFAULT NULL,
+  `status` VARCHAR(20) DEFAULT 'recebido',
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_numero` (`numero_telefone`),
+  INDEX `idx_intencao` (`intencao_detectada`),
+  INDEX `idx_created` (`created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- ============================================================
+-- ATUALIZAR VERSAO DA MIGRATION
+-- ============================================================
+DELETE FROM `migrations`;
+INSERT INTO `migrations` (`version`) VALUES ('20260526000001');
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;

@@ -100,10 +100,10 @@ CREATE TABLE IF NOT EXISTS `cobrancas` (
     PRIMARY KEY (`idCobranca`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-CALL add_column_if_not_exists('cobrancas', 'linha_digitavel', "VARCHAR(255) DEFAULT NULL AFTER `barcode`");
-CALL add_column_if_not_exists('cobrancas', 'pix_code', "TEXT DEFAULT NULL AFTER `link`");
-CALL add_column_if_not_exists('cobrancas', 'paid_at', "DATETIME DEFAULT NULL AFTER `expire_at`");
-CALL add_column_if_not_exists('cobrancas', 'updated_at', "DATETIME DEFAULT NULL AFTER `created_at`");
+CALL add_column_if_not_exists('cobrancas', 'linha_digitavel', "VARCHAR(255) DEFAULT NULL");
+CALL add_column_if_not_exists('cobrancas', 'pix_code', "TEXT DEFAULT NULL");
+CALL add_column_if_not_exists('cobrancas', 'paid_at', "DATETIME DEFAULT NULL");
+CALL add_column_if_not_exists('cobrancas', 'updated_at', "DATETIME DEFAULT NULL");
 CALL create_index_if_not_exists('cobrancas', 'idx_cobrancas_charge_id', '`charge_id`');
 CALL create_index_if_not_exists('cobrancas', 'idx_cobrancas_status_gateway', '`status`, `payment_gateway`');
 
@@ -113,7 +113,7 @@ CALL add_column_if_not_exists('os', 'nfse_status', "ENUM('Pendente','Emitida','C
 CALL add_column_if_not_exists('os', 'boleto_status', "ENUM('Pendente','Emitido','Pago','Vencido','Cancelado') DEFAULT 'Pendente' COMMENT 'Status do boleto vinculado'");
 CALL add_column_if_not_exists('os', 'data_vencimento_boleto', "DATE DEFAULT NULL COMMENT 'Data de vencimento do boleto'");
 CALL add_column_if_not_exists('os', 'valor_com_impostos', "DECIMAL(15,2) DEFAULT NULL COMMENT 'Valor liquido apos deducao de impostos'");
-CALL add_column_if_not_exists('os', 'certificado_vinculado', "INT(11) UNSIGNED DEFAULT NULL AFTER `garantia`");
+CALL add_column_if_not_exists('os', 'certificado_vinculado', "INT(11) UNSIGNED DEFAULT NULL");
 CALL add_column_if_not_exists('os', 'retencao_impostos', "TINYINT(1) DEFAULT 0");
 CALL add_column_if_not_exists('os', 'calculo_impostos', "TEXT DEFAULT NULL COMMENT 'JSON com detalhes dos impostos calculados'");
 CALL add_column_if_not_exists('os', 'obra_id', "INT(11) UNSIGNED DEFAULT NULL COMMENT 'ID da obra vinculada'");
@@ -640,13 +640,13 @@ CREATE TABLE IF NOT EXISTS `dre_lancamentos` (
     `updated_at` DATETIME DEFAULT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-CALL add_column_if_not_exists('dre_lancamentos', 'os_id', "INT(11) UNSIGNED DEFAULT NULL AFTER `documento`");
-CALL add_column_if_not_exists('dre_lancamentos', 'venda_id', "INT(11) UNSIGNED DEFAULT NULL AFTER `os_id`");
-CALL add_column_if_not_exists('dre_lancamentos', 'lancamento_id', "INT(11) UNSIGNED DEFAULT NULL AFTER `venda_id`");
-CALL add_column_if_not_exists('dre_lancamentos', 'usuarios_id', "INT(11) UNSIGNED DEFAULT NULL AFTER `lancamento_id`");
-CALL add_column_if_not_exists('dre_lancamentos', 'updated_at', "DATETIME DEFAULT NULL AFTER `created_at`");
-CALL add_column_if_not_exists('dre_lancamentos', 'tipo_movimento', "ENUM('CREDITO','DEBITO') DEFAULT 'CREDITO' AFTER `valor`");
-CALL add_column_if_not_exists('dre_lancamentos', 'documento', "VARCHAR(100) DEFAULT NULL AFTER `tipo_movimento`");
+CALL add_column_if_not_exists('dre_lancamentos', 'os_id', "INT(11) UNSIGNED DEFAULT NULL");
+CALL add_column_if_not_exists('dre_lancamentos', 'venda_id', "INT(11) UNSIGNED DEFAULT NULL");
+CALL add_column_if_not_exists('dre_lancamentos', 'lancamento_id', "INT(11) UNSIGNED DEFAULT NULL");
+CALL add_column_if_not_exists('dre_lancamentos', 'usuarios_id', "INT(11) UNSIGNED DEFAULT NULL");
+CALL add_column_if_not_exists('dre_lancamentos', 'updated_at', "DATETIME DEFAULT NULL");
+CALL add_column_if_not_exists('dre_lancamentos', 'tipo_movimento', "ENUM('CREDITO','DEBITO') DEFAULT 'CREDITO'");
+CALL add_column_if_not_exists('dre_lancamentos', 'documento', "VARCHAR(100) DEFAULT NULL");
 CALL create_index_if_not_exists('dre_lancamentos', 'idx_conta_id', '`conta_id`');
 CALL create_index_if_not_exists('dre_lancamentos', 'idx_data_referencia', '`data`');
 CALL create_index_if_not_exists('dre_lancamentos', 'idx_os_id', '`os_id`');
@@ -1257,7 +1257,7 @@ CREATE TABLE IF NOT EXISTS `obras_config` (
 -- ============================================================
 -- MIGRATION: 20260426000001 - nfse certificado + simples_nacional
 -- ============================================================
-CALL add_column_if_not_exists('certificado_digital', 'ambiente', "ENUM('homologacao','producao') DEFAULT 'homologacao' AFTER `ativo`");
+CALL add_column_if_not_exists('certificado_digital', 'ambiente', "ENUM('homologacao','producao') DEFAULT 'homologacao'");
 
 -- ============================================================
 -- MIGRATION: 20260428000001 - remove lucro_presumido (skip - config change)

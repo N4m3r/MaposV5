@@ -108,8 +108,8 @@ class Github_updater
                     unlink("{$hash}.zip");
                 }
 
-                if ($this->commandExists('composer')) {
-                    shell_exec('cd ../../ && composer install --no-dev');
+                if ($this->commandExists('composer') && function_exists('shell_exec')) {
+                    @shell_exec('cd ../../ && composer install --no-dev');
                 }
 
                 // Update the current commit hash

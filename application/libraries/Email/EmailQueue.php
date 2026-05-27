@@ -84,8 +84,12 @@ class EmailQueue
 
         // Busca emails pendentes ou agendados que chegaram a hora
         $this->ci->db->where_in('status', ['pending', 'scheduled']);
-        $this->ci->db->where('(scheduled_at IS NULL OR scheduled_at <= "' . date('Y-m-d H:i:s') . '")', null, false);
-        $this->ci->db->order_by('priority', 'ASC');
+        if ($this->ci->db->field_exists('scheduled_at', $this->table)) {
+            $this->ci->db->where('(scheduled_at IS NULL OR scheduled_at <= "' . date('Y-m-d H:i:s') . '")', null, false);
+        }
+        if ($this->ci->db->field_exists('priority', $this->table)) {
+            $this->ci->db->order_by('priority', 'ASC');
+        }
         $this->ci->db->order_by('created_at', 'ASC');
         $this->ci->db->limit($limit);
 

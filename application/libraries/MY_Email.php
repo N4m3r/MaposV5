@@ -113,8 +113,11 @@ class MY_Email extends CI_Email
      */
     public function start_process()
     {
+        if (!function_exists('shell_exec')) {
+            return false;
+        }
         $filename = FCPATH . 'index.php';
-        $exec = shell_exec("{$this->phpcli} {$filename} {$this->main_controller} > /dev/null &");
+        $exec = @shell_exec("{$this->phpcli} {$filename} {$this->main_controller} > /dev/null &");
 
         return $exec;
     }
