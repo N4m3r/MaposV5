@@ -17,10 +17,10 @@ $dias_restantes = $data_prevista ? ceil((strtotime($data_prevista) - time()) / 8
 
 // Status da obra com cor
 $statusObra = $obra->status ?? 'Em Andamento';
-$statusConfig = ['bg' => '#7f8c8d', 'text' => '#fff', 'icon' => 'icon-question-sign'];
+$statusConfig = ['bg' => '#7f8c8d', 'text' => '#fff', 'icon' => 'bx bx-help-circle'];
 foreach ($status_obra as $s) {
     if (strcasecmp($statusObra, $s->nome) === 0) {
-        $statusConfig = ['bg' => $s->cor ?? '#7f8c8d', 'text' => '#fff', 'icon' => $s->icone ?? 'icon-question-sign'];
+        $statusConfig = ['bg' => $s->cor ?? '#7f8c8d', 'text' => '#fff', 'icon' => $s->icone ?? 'bx bx-help-circle'];
         break;
     }
 }
@@ -31,7 +31,7 @@ foreach ($status_obra as $s) {
     <div class="relatorio-header-content">
         <div class="relatorio-title">
             <div class="relatorio-icon">
-                <i class="icon-dashboard"></i>
+                <i class="bx bx-dashboard"></i>
             </div>
             <div class="relatorio-text">
                 <h1>Relatório de Progresso</h1>
@@ -40,10 +40,10 @@ foreach ($status_obra as $s) {
         </div>
         <div class="relatorio-actions">
             <a href="<?php echo site_url('obras/visualizar/' . $obra->id); ?>" class="btn-action btn-back">
-                <i class="icon-arrow-left"></i> Voltar
+                <i class="bx bx-arrow-back"></i> Voltar
             </a>
             <button onclick="window.print()" class="btn-action btn-print">
-                <i class="icon-print"></i> Imprimir
+                <i class="bx bx-printer"></i> Imprimir
             </button>
         </div>
     </div>
@@ -56,13 +56,13 @@ foreach ($status_obra as $s) {
             <h2 class="obra-nome"><?php echo htmlspecialchars($obra->nome); ?></h2>
             <div class="obra-meta">
                 <span class="obra-meta-item">
-                    <i class="icon-user"></i> <?php echo htmlspecialchars($obra->cliente_nome ?? 'Cliente não definido'); ?>
+                    <i class="bx bx-user"></i> <?php echo htmlspecialchars($obra->cliente_nome ?? 'Cliente não definido'); ?>
                 </span>
                 <span class="obra-meta-item">
-                    <i class="icon-map-marker"></i> <?php echo htmlspecialchars($obra->endereco ?? 'Endereço não definido'); ?>
+                    <i class="bx bx-map"></i> <?php echo htmlspecialchars($obra->endereco ?? 'Endereço não definido'); ?>
                 </span>
                 <span class="obra-meta-item">
-                    <i class="icon-user-md"></i> Gestor: <?php echo htmlspecialchars($obra->gestor_nome ?? 'Não definido'); ?>
+                    <i class="bx bx-user-md"></i> Gestor: <?php echo htmlspecialchars($obra->gestor_nome ?? 'Não definido'); ?>
                 </span>
             </div>
         </div>
@@ -72,7 +72,7 @@ foreach ($status_obra as $s) {
                 <?php echo $statusObra; ?>
             </div>
             <div class="data-relatorio">
-                <i class="icon-calendar"></i> <?php echo date('d/m/Y'); ?>
+                <i class="bx bx-calendar"></i> <?php echo date('d/m/Y'); ?>
             </div>
         </div>
     </div>
@@ -83,7 +83,7 @@ foreach ($status_obra as $s) {
     <!-- Progresso Principal -->
     <div class="stat-card progresso-principal">
         <div class="stat-card-header">
-            <i class="icon-tasks"></i>
+            <i class="bx bx-list-check"></i>
             <span>Progresso Geral</span>
         </div>
         <div class="stat-card-body">
@@ -99,7 +99,7 @@ foreach ($status_obra as $s) {
     <!-- Cards de Status -->
     <div class="stat-card status-card">
         <div class="stat-card-header">
-            <i class="icon-list"></i>
+            <i class="bx bx-list-ul"></i>
             <span>Atividades</span>
         </div>
         <div class="stat-card-body">
@@ -127,7 +127,7 @@ foreach ($status_obra as $s) {
     <!-- Horas Trabalhadas -->
     <div class="stat-card horas-card">
         <div class="stat-card-header">
-            <i class="icon-time"></i>
+            <i class="bx bx-time-five"></i>
             <span>Horas Trabalhadas</span>
         </div>
         <div class="stat-card-body">
@@ -137,7 +137,7 @@ foreach ($status_obra as $s) {
             </div>
             <?php if ($total_horas > 0 && $concluidas > 0): ?>
             <div class="horas-media">
-                <i class="icon-info-sign"></i> Média de <?php echo round($total_horas / $concluidas, 1); ?>h por atividade
+                <i class="bx bx-info-circle"></i> Média de <?php echo round($total_horas / $concluidas, 1); ?>h por atividade
             </div>
             <?php endif; ?>
         </div>
@@ -147,7 +147,7 @@ foreach ($status_obra as $s) {
     <?php if ($data_inicio): ?>
     <div class="stat-card cronograma-card">
         <div class="stat-card-header">
-            <i class="icon-calendar"></i>
+            <i class="bx bx-calendar"></i>
             <span>Cronograma</span>
         </div>
         <div class="stat-card-body">
@@ -173,7 +173,7 @@ foreach ($status_obra as $s) {
 <!-- Gráfico de Etapas -->
 <div class="etapas-section">
     <div class="section-header">
-        <h3><i class="icon-sitemap"></i> Progresso por Etapas</h3>
+        <h3><i class="bx bx-sitemap"></i> Progresso por Etapas</h3>
         <span class="etapas-count"><?php echo count($etapas); ?> etapa(s)</span>
     </div>
 
@@ -207,11 +207,11 @@ foreach ($status_obra as $s) {
 
                 <div class="etapa-stats">
                     <div class="etapa-stat">
-                        <i class="icon-tasks"></i>
+                        <i class="bx bx-list-check"></i>
                         <?php echo $etapa->atividades_concluidas ?? 0; ?>/<?php echo $etapa->total_atividades ?? 0; ?> atividades
                     </div>
                     <div class="etapa-stat">
-                        <i class="icon-clock"></i>
+                        <i class="bx bx-clock"></i>
                         <?php echo $etapa->horas_trabalhadas ?? 0; ?>h trabalhadas
                     </div>
                 </div>
@@ -228,7 +228,7 @@ foreach ($status_obra as $s) {
     </div>
     <?php else: ?>
     <div class="empty-state">
-        <i class="icon-info-sign"></i>
+        <i class="bx bx-info-circle"></i>
         <h4>Nenhuma etapa cadastrada</h4>
         <p>Adicione etapas para acompanhar o progresso da obra.</p>
     </div>
@@ -239,7 +239,7 @@ foreach ($status_obra as $s) {
 <?php if (!empty($etapas)): ?>
 <div class="resumo-visual-section">
     <div class="section-header">
-        <h3><i class="icon-bar-chart"></i> Distribuição do Progresso</h3>
+        <h3><i class="bx bx-bar-chart"></i> Distribuição do Progresso</h3>
     </div>
     <div class="resumo-barras">
         <?php foreach ($etapas as $etapa):

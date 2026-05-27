@@ -233,15 +233,15 @@
     <div class="relatorio-header">
         <div class="relatorio-header-content">
             <div class="relatorio-title">
-                <h1><i class="icon-file-alt"></i> Relatório Diário de Obra (RDO)</h1>
+                <h1><i class="bx bx-file-alt"></i> Relatório Diário de Obra (RDO)</h1>
                 <div class="relatorio-subtitle"><?php echo $obra->nome; ?></div>
             </div>
             <div class="relatorio-actions">
                 <a href="<?php echo site_url('obras/visualizar/' . $obra->id); ?>" class="relatorio-btn relatorio-btn-secondary">
-                    <i class="icon-arrow-left"></i> Voltar
+                    <i class="bx bx-arrow-back"></i> Voltar
                 </a>
                 <button onclick="window.print()" class="relatorio-btn relatorio-btn-primary">
-                    <i class="icon-print"></i> Imprimir
+                    <i class="bx bx-printer"></i> Imprimir
                 </button>
             </div>
         </div>
@@ -251,7 +251,7 @@
     <div class="relatorio-card">
         <div class="relatorio-card-header">
             <div class="relatorio-card-title">
-                <i class="icon-info-sign"></i> Informações da Obra
+                <i class="bx bx-info-circle"></i> Informações da Obra
             </div>
         </div>
 
@@ -282,7 +282,7 @@
     <div class="relatorio-card">
         <div class="relatorio-card-header">
             <div class="relatorio-card-title">
-                <i class="icon-calendar"></i> Selecionar Data
+                <i class="bx bx-calendar"></i> Selecionar Data
             </div>
         </div>
 
@@ -292,7 +292,7 @@
                 <input type="date" name="data" value="<?php echo $data_relatorio; ?>" class="relatorio-filter-input">
             </div>
             <button type="submit" class="relatorio-filter-btn">
-                <i class="icon-search"></i> Filtrar
+                <i class="bx bx-search"></i> Filtrar
             </button>
         </form>
     </div>
@@ -301,7 +301,7 @@
     <div class="relatorio-card">
         <div class="relatorio-card-header">
             <div class="relatorio-card-title">
-                <i class="icon-tasks"></i> Atividades Realizadas
+                <i class="bx bx-list-check"></i> Atividades Realizadas
             </div>
             <div style="font-size: 14px; color: #888;">
                 <?php echo count($atividades); ?> atividade(s)
@@ -359,7 +359,7 @@
         </div>
         <?php else: ?>
         <div class="empty-state">
-            <div class="empty-state-icon"><i class="icon-tasks"></i></div>
+            <div class="empty-state-icon"><i class="bx bx-list-check"></i></div>
             <div class="empty-state-text">Nenhuma atividade registrada nesta data.</div>
         </div>
         <?php endif; ?>
@@ -370,7 +370,7 @@
     <div class="relatorio-card">
         <div class="relatorio-card-header">
             <div class="relatorio-card-title">
-                <i class="icon-chart-bar"></i> Resumo do Dia
+                <i class="bx bx-bar-chart"></i> Resumo do Dia
             </div>
         </div>
 

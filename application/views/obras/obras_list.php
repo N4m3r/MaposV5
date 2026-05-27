@@ -858,21 +858,21 @@ if (empty($obras)) {
     <div class="obras-main-header">
         <div class="obras-header-content">
             <div class="obras-header-title">
-                <h1><i class="icon-building"></i> Gerenciamento de Obras</h1>
+                <h1><i class="bx bx-building"></i> Gerenciamento de Obras</h1>
                 <p>Acompanhe e gerencie todas as obras do sistema</p>
             </div>
             <div style="display: flex; gap: 12px; align-items: center;">
                 <a href="<?php echo site_url('obras/adicionar'); ?>" class="obras-filter-btn obras-add-btn">
-                    <i class="icon-plus"></i> Nova Obra
+                    <i class="bx bx-plus"></i> Nova Obra
                 </a>
                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cObras')): ?>
                 <a href="<?php echo site_url('obras/configuracoes'); ?>" class="obras-filter-btn" style="background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); color: white;">
-                    <i class="icon-cog"></i> Configurações
+                    <i class="bx bx-cog"></i> Configurações
                 </a>
                 <?php endif; ?>
                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
                 <button type="button" class="obras-filter-btn" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white;" onclick="atualizarTodosProgressos()">
-                    <i class="icon-refresh"></i> Recalcular Progressos
+                    <i class="bx bx-refresh"></i> Recalcular Progressos
                 </button>
                 <?php endif; ?>
             </div>
@@ -883,7 +883,7 @@ if (empty($obras)) {
     <div class="obras-stats-row">
         <div class="obras-stat-card">
             <div class="obras-stat-icon blue">
-                <i class="icon-building"></i>
+                <i class="bx bx-building"></i>
             </div>
             <div class="obras-stat-info">
                 <div class="obras-stat-value"><?php echo isset($total_obras) ? $total_obras : count($obras); ?></div>
@@ -893,7 +893,7 @@ if (empty($obras)) {
 
         <div class="obras-stat-card">
             <div class="obras-stat-icon green">
-                <i class="icon-play-circle"></i>
+                <i class="bx bx-play-circle"></i>
             </div>
             <div class="obras-stat-info">
                 <div class="obras-stat-value"><?php echo isset($obras_em_andamento) ? $obras_em_andamento : count(array_filter($obras ?? [], function($o) { return ($o->status ?? '') == 'em-andamento'; })); ?></div>
@@ -903,7 +903,7 @@ if (empty($obras)) {
 
         <div class="obras-stat-card">
             <div class="obras-stat-icon cyan">
-                <i class="icon-calendar"></i>
+                <i class="bx bx-calendar"></i>
             </div>
             <div class="obras-stat-info">
                 <div class="obras-stat-value"><?php echo isset($obras_contratadas) ? $obras_contratadas : count(array_filter($obras ?? [], function($o) { return ($o->status ?? '') == 'contratada'; })); ?></div>
@@ -913,7 +913,7 @@ if (empty($obras)) {
 
         <div class="obras-stat-card">
             <div class="obras-stat-icon orange">
-                <i class="icon-check-circle"></i>
+                <i class="bx bx-check-circle"></i>
             </div>
             <div class="obras-stat-info">
                 <div class="obras-stat-value"><?php echo isset($obras_concluidas) ? $obras_concluidas : count(array_filter($obras ?? [], function($o) { return ($o->status ?? '') == 'concluida'; })); ?></div>
@@ -935,12 +935,12 @@ if (empty($obras)) {
     <!-- Filtros -->
     <div class="obras-filter-bar">
         <div class="obras-filter-group">
-            <label><i class="icon-search"></i> Buscar:</label>
+            <label><i class="bx bx-search"></i> Buscar:</label>
             <input type="text" id="searchObra" class="obras-filter-input" placeholder="Nome da obra..." onkeyup="filtrarObras()">
         </div>
 
         <div class="obras-filter-group">
-            <label><i class="icon-filter"></i> Status:</label>
+            <label><i class="bx bx-filter"></i> Status:</label>
             <select id="filterStatus" class="obras-filter-select" onchange="filtrarObras()">
                 <option value="">Todos</option>
                 <?php foreach ($status_obra as $s): ?>
@@ -950,7 +950,7 @@ if (empty($obras)) {
         </div>
 
         <button class="obras-filter-btn secondary" onclick="limparFiltros()">
-            <i class="icon-refresh"></i> Limpar
+            <i class="bx bx-refresh"></i> Limpar
         </button>
     </div>
 
@@ -1050,14 +1050,14 @@ if (empty($obras)) {
                 <span class="obra-card-status-badge"><?php echo $status_label; ?></span>
                 <h3 class="obra-card-title"><?php echo htmlspecialchars($obra->nome); ?></h3>
                 <div class="obra-card-cliente">
-                    <i class="icon-user"></i> <?php echo htmlspecialchars($obra->cliente_nome ?? 'Sem cliente'); ?>
+                    <i class="bx bx-user"></i> <?php echo htmlspecialchars($obra->cliente_nome ?? 'Sem cliente'); ?>
                 </div>
             </div>
 
             <div class="obra-card-body">
                 <div class="obra-card-info-row">
                     <span class="obra-card-info-label">
-                        <i class="icon-map-marker"></i> Endereço
+                        <i class="bx bx-map"></i> Endereço
                     </span>
                     <span class="obra-card-info-value">
                         <?php echo htmlspecialchars($obra->endereco ?? 'Não informado'); ?>
@@ -1066,7 +1066,7 @@ if (empty($obras)) {
 
                 <div class="obra-card-info-row">
                     <span class="obra-card-info-label">
-                        <i class="icon-calendar"></i> Início
+                        <i class="bx bx-calendar"></i> Início
                     </span>
                     <span class="obra-card-info-value">
                         <?php echo $obra->data_inicio_contrato ? date('d/m/Y', strtotime($obra->data_inicio_contrato)) : 'Não definido'; ?>
@@ -1075,7 +1075,7 @@ if (empty($obras)) {
 
                 <div class="obra-card-info-row">
                     <span class="obra-card-info-label">
-                        <i class="icon-flag-checkered"></i> Previsão
+                        <i class="bx bx-flag-checkered"></i> Previsão
                     </span>
                     <span class="obra-card-info-value">
                         <?php echo $obra->data_fim_prevista ? date('d/m/Y', strtotime($obra->data_fim_prevista)) : 'Não definido'; ?>
@@ -1112,11 +1112,11 @@ if (empty($obras)) {
 
             <div class="obra-card-actions">
                 <a href="<?php echo site_url('obras/visualizar/' . $obra->id); ?>" class="obra-card-btn view">
-                    <i class="icon-eye-open"></i> Visualizar
+                    <i class="bx bx-show"></i> Visualizar
                 </a>
                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
                 <a href="<?php echo site_url('obras/editar/' . $obra->id); ?>" class="obra-card-btn edit">
-                    <i class="icon-edit"></i> Editar
+                    <i class="bx bx-edit"></i> Editar
                 </a>
                 <?php endif; ?>
                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dObras')): ?>
@@ -1124,7 +1124,7 @@ if (empty($obras)) {
                     <input type="hidden" name="id" value="<?php echo $obra->id; ?>">
                     <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>">
                     <button type="submit" class="obra-card-btn" style="background: #e74c3c;">
-                        <i class="icon-trash"></i> Excluir
+                        <i class="bx bx-trash"></i> Excluir
                     </button>
                 </form>
                 <?php endif; ?>
@@ -1132,11 +1132,11 @@ if (empty($obras)) {
                 <!-- Botão de Ações Rápidas -->
                 <div class="obra-quick-actions">
                     <button type="button" class="obra-card-btn quick-action-toggle" onclick="toggleQuickMenu(<?php echo $obra->id; ?>)">
-                        <i class="icon-chevron-down"></i> Ações
+                        <i class="bx bx-chevron-down"></i> Ações
                     </button>
                     <div class="obra-quick-menu" id="quickMenu_<?php echo $obra->id; ?>">
                         <div class="obra-quick-menu-header">
-                            <i class="icon-bolt"></i> Ações Rápidas
+                            <i class="bx bx-bolt"></i> Ações Rápidas
                         </div>
                         <div class="obra-quick-menu-item" onclick="atualizarStatusRapido(<?php echo $obra->id; ?>, 'prospeccao')">
                             <span class="obra-status-dot" style="background: #a8edea;"></span> Prospecção
@@ -1158,7 +1158,7 @@ if (empty($obras)) {
                         </div>
                         <div class="obra-quick-menu-divider"></div>
                         <a href="<?php echo site_url('obras/relatorioGeral/' . $obra->id); ?>" class="obra-quick-menu-item">
-                            <i class="icon-file-alt" style="color: #667eea;"></i> Relatório Geral
+                            <i class="bx bx-file-alt" style="color: #667eea;"></i> Relatório Geral
                         </a>
                     </div>
                 </div>
@@ -1179,12 +1179,12 @@ if (empty($obras)) {
     <!-- Empty State -->
     <div class="obras-empty-state">
         <div class="obras-empty-icon">
-            <i class="icon-building"></i>
+            <i class="bx bx-building"></i>
         </div>
         <h3 class="obras-empty-title">Nenhuma obra encontrada</h3>
         <p class="obras-empty-desc">Comece cadastrando uma nova obra para gerenciar seus projetos.</p>
         <a href="<?php echo site_url('obras/adicionar'); ?>" class="obras-filter-btn">
-            <i class="icon-plus"></i> Cadastrar Nova Obra
+            <i class="bx bx-plus"></i> Cadastrar Nova Obra
         </a>
     </div>
     <?php endif; ?>
@@ -1337,9 +1337,9 @@ function mostrarToast(titulo, mensagem, tipo) {
     const toast = document.createElement('div');
     toast.className = 'obra-toast ' + tipo;
 
-    let iconClass = 'icon-info-sign';
-    if (tipo === 'success') iconClass = 'icon-check';
-    if (tipo === 'error') iconClass = 'icon-remove';
+    let iconClass = 'bx bx-info-circle';
+    if (tipo === 'success') iconClass = 'bx bx-check';
+    if (tipo === 'error') iconClass = 'bx bx-x';
 
     toast.innerHTML = `
         <div class="obra-toast-icon">

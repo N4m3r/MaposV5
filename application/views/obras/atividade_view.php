@@ -365,11 +365,11 @@
     <!-- Verificar se atividade existe -->
     <?php if (empty($atividade)): ?>
     <div class="atividade-card" style="text-align: center; padding: 60px 20px;">
-        <i class="icon-warning-sign" style="font-size: 48px; color: #e74c3c;"></i>
+        <i class="bx bx-error" style="font-size: 48px; color: #e74c3c;"></i>
         <h2 style="margin: 20px 0; color: #333;">Atividade não encontrada</h2>
         <p style="color: #666;">A atividade solicitada não existe ou foi removida.</p>
         <a href="<?php echo site_url('obras'); ?>" class="action-btn action-btn-primary" style="display: inline-flex; margin-top: 20px;">
-            <i class="icon-arrow-left"></i> Voltar para Obras
+            <i class="bx bx-arrow-back"></i> Voltar para Obras
         </a>
     </div>
     <?php return; endif; ?>
@@ -383,10 +383,10 @@
                     <a href="<?php echo site_url('obras/visualizar/' . ($obra->id ?? 0)); ?>"><?php echo htmlspecialchars($obra->nome ?? 'Obra'); ?></a> &raquo;
                     <span>Atividade #<?php echo $atividade->id ?? ''; ?></span>
                 </div>
-                <h1><i class="icon-tasks"></i> <?php echo htmlspecialchars($atividade->titulo ?? 'Atividade sem nome'); ?></h1>
+                <h1><i class="bx bx-list-check"></i> <?php echo htmlspecialchars($atividade->titulo ?? 'Atividade sem nome'); ?></h1>
                 <div class="atividade-subtitle">
-                    <i class="icon-user"></i> Técnico: <?php echo htmlspecialchars($atividade_real->nome_tecnico ?? $atividade->tecnico_nome ?? 'Não atribuído'); ?>
-                    | <i class="icon-calendar"></i> Data: <?php echo (!empty($atividade_real->hora_inicio)) ? date('d/m/Y', strtotime($atividade_real->hora_inicio)) : date('d/m/Y', strtotime($atividade->data_atividade ?? 'now')); ?>
+                    <i class="bx bx-user"></i> Técnico: <?php echo htmlspecialchars($atividade_real->nome_tecnico ?? $atividade->tecnico_nome ?? 'Não atribuído'); ?>
+                    | <i class="bx bx-calendar"></i> Data: <?php echo (!empty($atividade_real->hora_inicio)) ? date('d/m/Y', strtotime($atividade_real->hora_inicio)) : date('d/m/Y', strtotime($atividade->data_atividade ?? 'now')); ?>
                 </div>
             </div>
             <div class="atividade-status-section">
@@ -395,7 +395,7 @@
                 $status_atual = $impedimento ? 'impedimento' : ($atividade->status ?? 'agendada');
                 ?>
                 <span class="atividade-status-badge <?php echo $status_atual; ?>" id="statusBadge">
-                    <i class="icon-time"></i>
+                    <i class="bx bx-time-five"></i>
                     <span id="statusText">
                         <?php
                         $statusLabels = [
@@ -414,7 +414,7 @@
 
                 <!-- Botão para alterar status -->
                 <button type="button" class="action-btn" style="margin-top: 10px; background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3);" onclick="toggleStatusForm()">
-                    <i class="icon-edit"></i> Alterar Status
+                    <i class="bx bx-edit"></i> Alterar Status
                 </button>
 
                 <!-- Formulário de alteração de status -->
@@ -435,10 +435,10 @@
 
                         <div style="display: flex; gap: 8px;">
                             <button type="submit" class="action-btn action-btn-success" style="flex: 1; padding: 10px;">
-                                <i class="icon-save"></i> Salvar
+                                <i class="bx bx-save"></i> Salvar
                             </button>
                             <button type="button" class="action-btn" style="flex: 1; background: rgba(255,255,255,0.2); color: white; padding: 10px;" onclick="toggleStatusForm()">
-                                <i class="icon-remove"></i> Cancelar
+                                <i class="bx bx-x"></i> Cancelar
                             </button>
                         </div>
                     </form>
@@ -455,14 +455,14 @@
             <?php if (!empty($atividade_real)): ?>
             <div class="wizard-info-section">
                 <div class="wizard-info-header">
-                    <i class="icon-time"></i>
+                    <i class="bx bx-time-five"></i>
                     <h2>Registro do Wizard de Atendimento</h2>
                 </div>
 
                 <div class="wizard-info-grid">
                     <!-- Etapa -->
                     <div class="wizard-info-item etapa">
-                        <div class="label"><i class="icon-hard-hat"></i> Etapa</div>
+                        <div class="label"><i class="bx bx-hard-hat"></i> Etapa</div>
                         <div class="value">
                             <?php
                             $etapa_nome = null;
@@ -499,7 +499,7 @@
 
                     <!-- Tipo -->
                     <div class="wizard-info-item tipo">
-                        <div class="label"><i class="icon-tasks"></i> Tipo</div>
+                        <div class="label"><i class="bx bx-list-check"></i> Tipo</div>
                         <div class="value">
                             <?php
                             // Verificar impedimento em ambas as atividades (real e planejada)
@@ -522,7 +522,7 @@
                             if ($impedimento && $motivo_impedimento): ?>
                             <div style="margin-top: 8px; padding: 10px 12px; background: #fff3e0; border-left: 4px solid #e67e22; border-radius: 6px;">
                                 <div style="font-size: 11px; color: #d35400; font-weight: 600; margin-bottom: 4px;">
-                                    <i class="icon-warning-sign"></i> Motivo do Impedimento
+                                    <i class="bx bx-error"></i> Motivo do Impedimento
                                     <?php if ($tipo_impedimento): ?>
                                     (<?php echo ucfirst(htmlspecialchars($tipo_impedimento)); ?>)
                                     <?php endif; ?>
@@ -546,7 +546,7 @@
                                 ?>
                                 <div style="margin-top: 10px;">
                                     <div style="font-size: 11px; color: #e67e22; font-weight: 600; margin-bottom: 6px;">
-                                        <i class="icon-camera"></i> Fotos do Impedimento (<?php echo count($fotos_impedimento); ?>)
+                                        <i class="bx bx-camera"></i> Fotos do Impedimento (<?php echo count($fotos_impedimento); ?>)
                                     </div>
                                     <div style="display: flex; gap: 6px; flex-wrap: wrap;">
                                         <?php foreach (array_slice($fotos_impedimento, 0, 6) as $foto):
@@ -583,7 +583,7 @@
 
                     <!-- Hora Início -->
                     <div class="wizard-info-item inicio">
-                        <div class="label"><i class="icon-signin"></i> Hora Início</div>
+                        <div class="label"><i class="bx bx-log-in"></i> Hora Início</div>
                         <div class="value" style="color: #27ae60;">
                             <?php echo !empty($atividade_real->hora_inicio) ? date('d/m/Y H:i', strtotime($atividade_real->hora_inicio)) : '--:--'; ?>
                         </div>
@@ -591,7 +591,7 @@
 
                     <!-- Hora Fim -->
                     <div class="wizard-info-item fim">
-                        <div class="label"><i class="icon-signout"></i> Hora Fim</div>
+                        <div class="label"><i class="bx bx-log-out"></i> Hora Fim</div>
                         <div class="value" style="color: #e74c3c;">
                             <?php echo !empty($atividade_real->hora_fim) ? date('d/m/Y H:i', strtotime($atividade_real->hora_fim)) : '--:--'; ?>
                         </div>
@@ -599,7 +599,7 @@
 
                     <!-- Horas Trabalhadas -->
                     <div class="wizard-info-item duracao">
-                        <div class="label"><i class="icon-time"></i> Horas Trabalhadas</div>
+                        <div class="label"><i class="bx bx-time-five"></i> Horas Trabalhadas</div>
                         <div class="value">
                             <?php
                             if (!empty($atividade_real->duracao_minutos)) {
@@ -623,12 +623,12 @@
 
                     <!-- Visível ao Cliente -->
                     <div class="wizard-info-item visivel">
-                        <div class="label"><i class="icon-eye-open"></i> Visível ao Cliente</div>
+                        <div class="label"><i class="bx bx-show"></i> Visível ao Cliente</div>
                         <div class="value">
                             <?php if ($atividade->visivel_cliente ?? 0): ?>
-                                <span style="color: #27ae60;"><i class="icon-check"></i> Sim</span>
+                                <span style="color: #27ae60;"><i class="bx bx-check"></i> Sim</span>
                             <?php else: ?>
-                                <span style="color: #e74c3c;"><i class="icon-remove"></i> Não</span>
+                                <span style="color: #e74c3c;"><i class="bx bx-x"></i> Não</span>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -653,7 +653,7 @@
                 if (!empty($latitude) && !empty($longitude)): ?>
                 <div class="localizacao-box">
                     <div class="titulo">
-                        <i class="icon-map-marker"></i> Localização Registrada
+                        <i class="bx bx-map"></i> Localização Registrada
                     </div>
                     <div style="font-size: 13px; color: #555;">
                         <strong>Latitude:</strong> <?php echo $latitude; ?> |
@@ -661,7 +661,7 @@
                         <a href="https://www.google.com/maps?q=<?php echo $latitude; ?>,<?php echo $longitude; ?>"
                            target="_blank"
                            style="margin-left: 10px; color: #3498db; text-decoration: none;">
-                            <i class="icon-external-link"></i> Ver no Maps
+                            <i class="bx bx-link-external"></i> Ver no Maps
                         </a>
                     </div>
                 </div>
@@ -673,7 +673,7 @@
             <div class="atividade-card">
                 <div class="atividade-card-header">
                     <div class="atividade-card-title">
-                        <i class="icon-camera"></i> Fotos Registradas (<?php echo count($fotos_atividade); ?>)
+                        <i class="bx bx-camera"></i> Fotos Registradas (<?php echo count($fotos_atividade); ?>)
                     </div>
                 </div>
                 <div class="fotos-section">
@@ -735,7 +735,7 @@
             <div class="atividade-card" style="background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%); border-color: #9b59b6;">
                 <div class="atividade-card-header">
                     <div class="atividade-card-title" style="color: #9b59b6;">
-                        <i class="icon-refresh"></i> Histórico de Execuções e Reatendimentos
+                        <i class="bx bx-refresh"></i> Histórico de Execuções e Reatendimentos
                         <span style="background: #9b59b6; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; margin-left: 10px;">
                             <?php echo count($historico_execucoes); ?> registro(s)
                         </span>
@@ -752,7 +752,7 @@
                                     <?php echo $exec->reatendimento ? 'Reatendimento #' . ($index + 1) : 'Execução Original'; ?>
                                 </span>
                                 <span style="font-size: 13px; color: #666;">
-                                    <i class="icon-user"></i> <?php echo htmlspecialchars($exec->nome_tecnico ?? 'Técnico não definido'); ?>
+                                    <i class="bx bx-user"></i> <?php echo htmlspecialchars($exec->nome_tecnico ?? 'Técnico não definido'); ?>
                                 </span>
                             </div>
                             <div style="font-size: 12px; color: #888;">
@@ -785,7 +785,7 @@
                                     ][$exec->status] ?? '#95a5a6';
                                     ?>
                                     <span style="color: <?php echo $execStatusClass; ?>;">
-                                        <i class="icon-time"></i>
+                                        <i class="bx bx-time-five"></i>
                                         <?php
                                         echo [
                                             'reaberta' => 'Reaberta',
@@ -802,7 +802,7 @@
                         <?php if (!empty($exec->duracao_minutos)): ?>
                         <div style="background: #f8f9fa; padding: 10px 15px; border-radius: 8px; margin-top: 10px;">
                             <span style="font-size: 12px; color: #666;">
-                                <i class="icon-time" style="color: #667eea;"></i>
+                                <i class="bx bx-time-five" style="color: #667eea;"></i>
                                 Duração:
                                 <strong>
                                     <?php
@@ -819,7 +819,7 @@
                         <?php if (!empty($exec->motivo_reabertura)): ?>
                         <div style="background: #fff3e0; padding: 10px 15px; border-radius: 8px; margin-top: 10px; border-left: 3px solid #ff9800;">
                             <span style="font-size: 12px; color: #e65100;">
-                                <i class="icon-info-sign"></i>
+                                <i class="bx bx-info-circle"></i>
                                 <strong>Motivo da Reabertura:</strong> <?php echo htmlspecialchars($exec->motivo_reabertura); ?>
                             </span>
                         </div>
@@ -828,7 +828,7 @@
                         <?php if ($exec->status === 'reaberta'): ?>
                         <div style="margin-top: 10px; text-align: right;">
                             <a href="<?php echo site_url('obras/iniciarReatendimento/' . $exec->idAtividade); ?>" class="action-btn action-btn-success" style="display: inline-flex; padding: 8px 16px; font-size: 13px;">
-                                <i class="icon-play"></i> Iniciar Reatendimento
+                                <i class="bx bx-play"></i> Iniciar Reatendimento
                             </a>
                         </div>
                         <?php endif; ?>
@@ -869,14 +869,14 @@
             <div class="atividade-card">
                 <div class="atividade-card-header">
                     <div class="atividade-card-title">
-                        <i class="icon-edit"></i> Anotações e Registros
+                        <i class="bx bx-edit"></i> Anotações e Registros
                     </div>
                 </div>
                 <div class="anotacoes-section">
                     <?php if (!empty($observacoes)): ?>
                     <div class="anotacao-item">
                         <div class="anotacao-header">
-                            <span><i class="icon-comment"></i> Observações Gerais</span>
+                            <span><i class="bx bx-comment"></i> Observações Gerais</span>
                         </div>
                         <div class="anotacao-content">
                             <?php echo nl2br(htmlspecialchars($observacoes)); ?>
@@ -887,7 +887,7 @@
                     <?php if (!empty($problemas)): ?>
                     <div class="anotacao-item problema">
                         <div class="anotacao-header">
-                            <span><i class="icon-warning-sign"></i> Problemas Encontrados</span>
+                            <span><i class="bx bx-error"></i> Problemas Encontrados</span>
                         </div>
                         <div class="anotacao-content">
                             <?php echo nl2br(htmlspecialchars($problemas)); ?>
@@ -898,7 +898,7 @@
                     <?php if (!empty($solucao)): ?>
                     <div class="anotacao-item solucao">
                         <div class="anotacao-header">
-                            <span><i class="icon-check"></i> Solução Aplicada</span>
+                            <span><i class="bx bx-check"></i> Solução Aplicada</span>
                         </div>
                         <div class="anotacao-content">
                             <?php echo nl2br(htmlspecialchars($solucao)); ?>
@@ -912,12 +912,12 @@
             <?php else: ?>
             <!-- Mensagem quando não há registro do wizard -->
             <div class="atividade-card" style="text-align: center; padding: 40px;">
-                <i class="icon-info-sign" style="font-size: 48px; color: #95a5a6;"></i>
+                <i class="bx bx-info-circle" style="font-size: 48px; color: #95a5a6;"></i>
                 <h3 style="margin: 15px 0; color: #666;">Sem Registro do Wizard</h3>
                 <p style="color: #888;">Esta atividade ainda não foi executada através do wizard de atendimento.</p>
                 <?php if ($atividade->status === 'agendada'): ?>
                 <a href="<?php echo site_url('tecnicos/executar_obra/' . ($obra->id ?? 0)); ?>" class="action-btn action-btn-success" style="display: inline-flex; margin-top: 20px;">
-                    <i class="icon-play"></i> Iniciar Atendimento
+                    <i class="bx bx-play"></i> Iniciar Atendimento
                 </a>
                 <?php endif; ?>
             </div>
@@ -926,13 +926,13 @@
             <!-- Ações -->
             <div class="actions-bar">
                 <a href="<?php echo site_url('obras/atividades/' . ($obra->id ?? 0)); ?>" class="action-btn action-btn-secondary">
-                    <i class="icon-arrow-left"></i> Voltar
+                    <i class="bx bx-arrow-back"></i> Voltar
                 </a>
                 <a href="<?php echo site_url('obras/editarAtividade/' . ($atividade->id ?? 0)); ?>" class="action-btn action-btn-primary">
-                    <i class="icon-edit"></i> Editar Atividade
+                    <i class="bx bx-edit"></i> Editar Atividade
                 </a>
                 <a href="<?php echo site_url('obras/imprimirAtividade/' . ($atividade->id ?? 0)); ?>" target="_blank" class="action-btn" style="background: linear-gradient(135deg, #e67e22, #d35400); color: white;">
-                    <i class="icon-print"></i> Imprimir Relatório
+                    <i class="bx bx-printer"></i> Imprimir Relatório
                 </a>
             </div>
         </div>
@@ -943,7 +943,7 @@
             <div class="atividade-card">
                 <div class="atividade-card-header">
                     <div class="atividade-card-title">
-                        <i class="icon-building"></i> Obra
+                        <i class="bx bx-building"></i> Obra
                     </div>
                 </div>
                 <div style="text-align: center; padding: 15px;">
@@ -954,7 +954,7 @@
                         <?php echo htmlspecialchars($obra->cliente_nome ?? 'Cliente não definido'); ?>
                     </div>
                     <a href="<?php echo site_url('obras/visualizar/' . ($obra->id ?? 0)); ?>" class="action-btn action-btn-primary" style="display: inline-flex;">
-                        <i class="icon-eye-open"></i> Ver Obra
+                        <i class="bx bx-show"></i> Ver Obra
                     </a>
                 </div>
             </div>
@@ -964,7 +964,7 @@
             <div class="atividade-card">
                 <div class="atividade-card-header">
                     <div class="atividade-card-title">
-                        <i class="icon-history"></i> Histórico
+                        <i class="bx bx-history"></i> Histórico
                     </div>
                 </div>
                 <div style="max-height: 300px; overflow-y: auto;">

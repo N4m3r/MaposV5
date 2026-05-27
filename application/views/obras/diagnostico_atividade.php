@@ -36,6 +36,6 @@
     </div>
 
     <a href="<?php echo site_url('obras/visualizarAtividade/' . $atividade_id); ?>" class="btn btn-primary">
-        <i class="icon-arrow-left"></i> Voltar para Visualização
+        <i class="bx bx-arrow-back"></i> Voltar para Visualização
     </a>
 </div>

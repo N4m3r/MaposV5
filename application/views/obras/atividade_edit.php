@@ -227,7 +227,7 @@
                     <a href="<?php echo site_url('obras/visualizarAtividade/' . $atividade->id); ?>">Visualizar</a> &raquo;
                     <span>Editar</span>
                 </div>
-                <h1><i class="icon-edit"></i> Editar Atividade</h1>
+                <h1><i class="bx bx-edit"></i> Editar Atividade</h1>
             </div>
         </div>
     </div>
@@ -235,14 +235,14 @@
     <!-- Mensagens -->
     <?php if ($this->session->flashdata('success')): ?>
     <div style="background: #d4edda; border: 1px solid #28a745; color: #155724; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
-        <i class="icon-ok" style="font-size: 20px;"></i>
+        <i class="bx bx-check" style="font-size: 20px;"></i>
         <strong><?php echo $this->session->flashdata('success'); ?></strong>
     </div>
     <?php endif; ?>
 
     <?php if ($this->session->flashdata('error')): ?>
     <div style="background: #f8d7da; border: 1px solid #dc3545; color: #721c24; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
-        <i class="icon-remove" style="font-size: 20px;"></i>
+        <i class="bx bx-x" style="font-size: 20px;"></i>
         <strong><?php echo $this->session->flashdata('error'); ?></strong>
     </div>
     <?php endif; ?>
@@ -251,7 +251,7 @@
         <!-- Dados da Atividade -->
         <div class="edit-card">
             <div class="edit-card-header">
-                <div class="edit-card-icon"><i class="icon-file-alt"></i></div>
+                <div class="edit-card-icon"><i class="bx bx-file-alt"></i></div>
                 <div class="edit-card-title">Dados da Atividade</div>
             </div>
 
@@ -348,11 +348,11 @@
         <!-- Actions -->
         <div class="form-actions">
             <button type="submit" class="form-btn form-btn-primary">
-                <i class="icon-save"></i> Salvar Alterações
+                <i class="bx bx-save"></i> Salvar Alterações
             </button>
 
             <a href="<?php echo site_url('obras/visualizarAtividade/' . $atividade->id); ?>" class="form-btn form-btn-secondary" style="text-decoration: none;">
-                <i class="icon-remove"></i> Cancelar
+                <i class="bx bx-x"></i> Cancelar
             </a>
         </div>
     </form>

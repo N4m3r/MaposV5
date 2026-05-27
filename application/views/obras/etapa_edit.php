@@ -267,17 +267,17 @@
         <div class="etapa-edit-header-content">
             <div class="etapa-edit-header-left">
                 <div class="etapa-edit-breadcrumb">
-                    <a href="<?php echo site_url('obras'); ?>"><i class="icon-arrow-left"></i> Obras</a> &raquo;
+                    <a href="<?php echo site_url('obras'); ?>"><i class="bx bx-arrow-back"></i> Obras</a> &raquo;
                     <a href="<?php echo site_url('obras/visualizar/' . $obra->id); ?>"><?php echo htmlspecialchars($obra->nome); ?></a> &raquo;
                     <a href="<?php echo site_url('obras/etapas/' . $obra->id); ?>">Etapas</a> &raquo;
                     <span>Editar</span>
                 </div>
-                <h1><i class="icon-edit"></i> Editar Etapa</h1>
+                <h1><i class="bx bx-edit"></i> Editar Etapa</h1>
                 <div class="etapa-edit-subtitle">Modifique os dados da etapa #<?php echo $etapa->numero_etapa; ?> - <?php echo htmlspecialchars($etapa->nome); ?></div>
             </div>
             <div class="etapa-edit-actions">
                 <a href="<?php echo site_url('obras/etapas/' . $obra->id); ?>" class="etapa-edit-btn etapa-edit-btn-secondary">
-                    <i class="icon-arrow-left"></i> Voltar para Etapas
+                    <i class="bx bx-arrow-back"></i> Voltar para Etapas
                 </a>
             </div>
         </div>
@@ -286,7 +286,7 @@
     <!-- Form -->
     <div class="etapa-edit-form-container">
         <div class="etapa-edit-form-header">
-            <i class="icon-tasks"></i>
+            <i class="bx bx-list-check"></i>
             <h2>Informações da Etapa</h2>
         </div>
 
@@ -294,7 +294,7 @@
             <div class="etapa-edit-form-row">
                 <div class="etapa-edit-form-group">
                     <label class="etapa-edit-form-label" for="numero_etapa">
-                        <i class="icon-sort-by-order"></i> Número da Etapa <span class="required">*</span>
+                        <i class="bx bx-sort-by-order"></i> Número da Etapa <span class="required">*</span>
                     </label>
                     <input type="number" name="numero_etapa" id="numero_etapa" class="etapa-edit-form-input" value="<?php echo $etapa->numero_etapa; ?>" min="1" required>
                     <div class="etapa-edit-form-hint">Ordem de execução desta etapa</div>
@@ -302,7 +302,7 @@
 
                 <div class="etapa-edit-form-group">
                     <label class="etapa-edit-form-label" for="nome">
-                        <i class="icon-tag"></i> Nome da Etapa <span class="required">*</span>
+                        <i class="bx bx-tag"></i> Nome da Etapa <span class="required">*</span>
                     </label>
                     <input type="text" name="nome" id="nome" class="etapa-edit-form-input" value="<?php echo htmlspecialchars($etapa->nome); ?>" maxlength="100" placeholder="Ex: Fundação, Estrutura, Acabamento..." required>
                 </div>
@@ -310,7 +310,7 @@
 
             <div class="etapa-edit-form-group">
                 <label class="etapa-edit-form-label" for="especialidade">
-                    <i class="icon-briefcase"></i> Especialidade
+                    <i class="bx bx-briefcase"></i> Especialidade
                 </label>
                 <select name="especialidade" id="especialidade" class="etapa-edit-form-select">
                     <option value="">Selecione uma especialidade...</option>
@@ -322,7 +322,7 @@
 
             <div class="etapa-edit-form-group">
                 <label class="etapa-edit-form-label" for="descricao">
-                    <i class="icon-align-left"></i> Descrição
+                    <i class="bx bx-align-left"></i> Descrição
                 </label>
                 <textarea name="descricao" id="descricao" class="etapa-edit-form-textarea" rows="3" placeholder="Descreva os detalhes desta etapa..."><?php echo htmlspecialchars($etapa->descricao ?? ''); ?></textarea>
             </div>
@@ -330,14 +330,14 @@
             <div class="etapa-edit-form-row">
                 <div class="etapa-edit-form-group">
                     <label class="etapa-edit-form-label" for="data_inicio_prevista">
-                        <i class="icon-calendar"></i> Data Início Prevista
+                        <i class="bx bx-calendar"></i> Data Início Prevista
                     </label>
                     <input type="date" name="data_inicio_prevista" id="data_inicio_prevista" class="etapa-edit-form-input" value="<?php echo $etapa->data_inicio_prevista; ?>">
                 </div>
 
                 <div class="etapa-edit-form-group">
                     <label class="etapa-edit-form-label" for="data_fim_prevista">
-                        <i class="icon-calendar-check"></i> Data Término Prevista
+                        <i class="bx bx-calendar-check"></i> Data Término Prevista
                     </label>
                     <input type="date" name="data_fim_prevista" id="data_fim_prevista" class="etapa-edit-form-input" value="<?php echo $etapa->data_fim_prevista; ?>">
                 </div>
@@ -345,7 +345,7 @@
 
             <div class="etapa-edit-form-group">
                 <label class="etapa-edit-form-label">
-                    <i class="icon-info-sign"></i> Status da Etapa
+                    <i class="bx bx-info-circle"></i> Status da Etapa
                 </label>
                 <select name="status" class="etapa-edit-form-select">
                     <?php foreach ($status_obra as $s): ?>
@@ -359,10 +359,10 @@
 
             <div class="etapa-edit-form-actions">
                 <a href="<?php echo site_url('obras/etapas/' . $obra->id); ?>" class="etapa-edit-btn-cancel">
-                    <i class="icon-remove"></i> Cancelar
+                    <i class="bx bx-x"></i> Cancelar
                 </a>
                 <button type="submit" class="etapa-edit-btn-submit">
-                    <i class="icon-save"></i> Salvar Alterações
+                    <i class="bx bx-save"></i> Salvar Alterações
                 </button>
             </div>
         </form>

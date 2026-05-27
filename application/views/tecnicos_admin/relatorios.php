@@ -12,7 +12,7 @@ $data_fim = $data_fim ?? date('Y-m-t');
     <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
-                <span class="icon"><i class="icon-bar-chart"></i></span>
+                <span class="icon"><i class="bx bx-bar-chart"></i></span>
                 <h5>Relatórios de Produtividade</h5>
             </div>
             <div class="widget-content">
@@ -25,11 +25,11 @@ $data_fim = $data_fim ?? date('Y-m-t');
                     <input type="date" name="data_fim" value="<?php echo $data_fim; ?>" class="input-small">
 
                     <button type="submit" class="btn btn-primary">
-                        <i class="icon-filter icon-white"></i> Filtrar
+                        <i class="bx bx-filter text-white"></i> Filtrar
                     </button>
 
                     <a href="<?php echo site_url('tecnicos_admin/relatorios'); ?>" class="btn">
-                        <i class="icon-refresh"></i> Limpar
+                        <i class="bx bx-refresh"></i> Limpar
                     </a>
                 </form>
 
@@ -38,14 +38,14 @@ $data_fim = $data_fim ?? date('Y-m-t');
                     <div class="row" style="margin-bottom: 20px;">
                         <div class="col-4">
                             <div class="alert alert-info">
-                                <h4><i class="icon-tasks"></i> Total de OS</h4>
+                                <h4><i class="bx bx-list-check"></i> Total de OS</h4>
                                 <p style="font-size: 2em; margin: 10px 0;"><?php echo $estatisticas->total_os ?? 0; ?></p>
                             </div>
                         </div>
 
                         <div class="col-4">
                             <div class="alert alert-success">
-                                <h4><i class="icon-time"></i> Tempo Médio</h4>
+                                <h4><i class="bx bx-time-five"></i> Tempo Médio</h4>
                                 <p style="font-size: 2em; margin: 10px 0;">
                                     <?php echo round($estatisticas->media_tempo ?? 0, 2); ?>h
                                 </p>
@@ -54,7 +54,7 @@ $data_fim = $data_fim ?? date('Y-m-t');
 
                         <div class="col-4">
                             <div class="alert alert-warning">
-                                <h4><i class="icon-group"></i> Técnicos Ativos</h4>
+                                <h4><i class="bx bx-group"></i> Técnicos Ativos</h4>
                                 <p style="font-size: 2em; margin: 10px 0;"><?php echo count($tecnicos); ?></p>
                             </div>
                         </div>
@@ -85,10 +85,10 @@ $data_fim = $data_fim ?? date('Y-m-t');
                                     <td>-</td>
                                     <td>
                                         <a href="<?php echo site_url('tecnicos_admin/ver_tecnico/' . ($tec->idUsuarios ?? $tec->id)); ?>" class="btn btn-sm btn-info">
-                                            <i class="icon-eye-open icon-white"></i> Detalhes
+                                            <i class="bx bx-show text-white"></i> Detalhes
                                         </a>
                                         <a href="<?php echo site_url('tecnicos_admin/rotas/' . ($tec->idUsuarios ?? $tec->id)); ?>" class="btn btn-sm btn-warning">
-                                            <i class="icon-road icon-white"></i> Rotas
+                                            <i class="bx bx-trip text-white"></i> Rotas
                                         </a>
                                     </td>
                                 </tr>

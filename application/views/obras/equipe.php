@@ -530,10 +530,10 @@
         <div class="equipe-header-content">
             <div class="equipe-title-section">
                 <div class="equipe-subtitle">
-                    <a href="<?php echo site_url('obras'); ?>"><i class="icon-arrow-left"></i> Obras</a> &raquo;
+                    <a href="<?php echo site_url('obras'); ?>"><i class="bx bx-arrow-back"></i> Obras</a> &raquo;
                     <a href="<?php echo site_url('obras/visualizar/' . $obra->id); ?>"><?php echo $obra->nome; ?></a>
                 </div>
-                <h1><i class="icon-group"></i> Gerenciar Equipe</h1>
+                <h1><i class="bx bx-group"></i> Gerenciar Equipe</h1>
             </div>
             <div class="equipe-stats-header">
                 <div class="equipe-stat-header">
@@ -550,7 +550,7 @@
 
     <!-- Filter Bar -->
     <div class="filter-bar-equipe">
-        <i class="icon-search" style="font-size: 22px; color: #11998e;"></i>
+        <i class="bx bx-search" style="font-size: 22px; color: #11998e;"></i>
         <input type="text" id="searchEquipe" placeholder="Buscar técnico por nome..." onkeyup="filtrarEquipe()">
 
         <select id="filterFuncao" onchange="filtrarEquipe()">
@@ -570,7 +570,7 @@
 
         <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
         <button class="btn-add-equipe" data-bs-toggle="modal" data-bs-target="#modalAdicionar">
-            <i class="icon-plus"></i> Adicionar Técnico
+            <i class="bx bx-plus"></i> Adicionar Técnico
         </button>
         <?php endif; ?>
     </div>
@@ -583,7 +583,7 @@
                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
                 <div class="add-team-card" data-bs-toggle="modal" data-bs-target="#modalAdicionar">
                     <div class="add-team-icon">
-                        <i class="icon-plus"></i>
+                        <i class="bx bx-plus"></i>
                     </div>
                     <div class="add-team-text">Adicionar Técnico</div>
                     <div class="add-team-subtext">Clique para alocar novo membro à equipe</div>
@@ -606,18 +606,18 @@
 
                     <div class="team-details">
                         <div class="team-detail-row">
-                            <span class="team-detail-label"><i class="icon-calendar"></i> Data de Entrada</span>
+                            <span class="team-detail-label"><i class="bx bx-calendar"></i> Data de Entrada</span>
                             <span class="team-detail-value"><?php echo date('d/m/Y', strtotime($membro->data_entrada)); ?></span>
                         </div>
                         <div class="team-detail-row">
-                            <span class="team-detail-label"><i class="icon-refresh"></i> Status na Equipe</span>
+                            <span class="team-detail-label"><i class="bx bx-refresh"></i> Status na Equipe</span>
                             <span class="team-detail-value" style="color: <?php echo $membro->ativo ? '#2e7d32' : '#666'; ?>;">
                                 <?php echo $membro->ativo ? 'Ativo' : 'Inativo'; ?>
                             </span>
                         </div>
                         <?php if ($membro->nivel_tecnico): ?>
                         <div class="team-detail-row">
-                            <span class="team-detail-label"><i class="icon-star"></i> Nível Técnico</span>
+                            <span class="team-detail-label"><i class="bx bx-star"></i> Nível Técnico</span>
                             <span class="team-detail-value"><?php echo $membro->nivel_tecnico; ?></span>
                         </div>
                         <?php endif; ?>
@@ -626,7 +626,7 @@
                     <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
                     <div class="team-actions">
                         <a href="<?php echo site_url('obras/removerTecnico/' . $membro->id); ?>" class="team-btn team-btn-danger" onclick="return confirm('Tem certeza que deseja remover este técnico da equipe?')">
-                            <i class="icon-remove"></i> Remover da Equipe
+                            <i class="bx bx-x"></i> Remover da Equipe
                         </a>
                     </div>
                     <?php endif; ?>
@@ -635,12 +635,12 @@
             </div>
         <?php else: ?>
             <div class="empty-state-equipe">
-                <i class="icon-group"></i>
+                <i class="bx bx-group"></i>
                 <h3>Nenhum técnico alocado</h3>
                 <p>Adicione técnicos à equipe desta obra para começar a registrar atividades.</p>
                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
                 <button class="btn-add-equipe" data-bs-toggle="modal" data-bs-target="#modalAdicionar">
-                    <i class="icon-plus"></i> Adicionar Primeiro Técnico
+                    <i class="bx bx-plus"></i> Adicionar Primeiro Técnico
                 </button>
                 <?php endif; ?>
             </div>
@@ -653,7 +653,7 @@
     <div class="modal-header">
         <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">&times;</button>
         <h3 id="modalAdicionarLabel">
-            <i class="icon-plus-sign"></i> Adicionar Técnico à Equipe
+            <i class="bx bx-plus-circle"></i> Adicionar Técnico à Equipe
         </h3>
     </div>
 
@@ -664,7 +664,7 @@
             <!-- Seleção de Técnico -->
             <div class="form-group-equipe">
                 <label class="form-label-equipe" for="tecnico_id">
-                    <i class="icon-user"></i> Selecione o Técnico <span class="required">*</span>
+                    <i class="bx bx-user"></i> Selecione o Técnico <span class="required">*</span>
                 </label>
                 <select name="tecnico_id" id="tecnico_id" class="form-select-equipe" required>
                     <option value="" disabled selected>-- Escolha um técnico --</option>
@@ -693,7 +693,7 @@
             <!-- Seleção de Função -->
             <div class="form-group-equipe">
                 <label class="form-label-equipe" for="funcao">
-                    <i class="icon-briefcase"></i> Função na Obra <span class="required">*</span>
+                    <i class="bx bx-briefcase"></i> Função na Obra <span class="required">*</span>
                 </label>
                 <select name="funcao" id="funcao" class="form-select-equipe" required>
                     <option value="" disabled selected>-- Selecione a função --</option>
@@ -705,7 +705,7 @@
 
             <!-- Alerta Informativo -->
             <div class="alert-equipe">
-                <i class="icon-info-sign"></i>
+                <i class="bx bx-info-circle"></i>
                 <div class="alert-equipe-content">
                     <div class="alert-equipe-title">Importante</div>
                     <div class="alert-equipe-text">
@@ -717,10 +717,10 @@
 
         <div class="modal-footer">
             <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">
-                <i class="icon-remove"></i> Cancelar
+                <i class="bx bx-x"></i> Cancelar
             </button>
             <button type="submit" class="btn-modal-submit">
-                <i class="icon-plus icon-white"></i> Adicionar à Equipe
+                <i class="bx bx-plus text-white"></i> Adicionar à Equipe
             </button>
         </div>
     </form>

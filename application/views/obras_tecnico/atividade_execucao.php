@@ -285,16 +285,16 @@
             <span>Atividade</span>
         </div>
         <h1 class="atividade-exec-title">
-            <i class="icon-tasks"></i> <?php echo htmlspecialchars($atividade->titulo); ?>
+            <i class="bx bx-list-check"></i> <?php echo htmlspecialchars($atividade->titulo); ?>
         </h1>
         <div class="atividade-exec-subtitle">
-            <i class="icon-building"></i> <?php echo $obra->nome; ?>
+            <i class="bx bx-building"></i> <?php echo $obra->nome; ?>
         </div>
     </div>
 
     <!-- Status Banner -->
     <div class="status-banner <?php echo $atividade->status; ?>">
-        <i class="icon-time"></i>
+        <i class="bx bx-time-five"></i>
         <?php
         $statusMessages = [
             'agendada' => 'Aguardando Início',
@@ -320,7 +320,7 @@
     <div class="exec-card">
         <div class="exec-card-header">
             <div class="exec-card-title">
-                <i class="icon-info-sign"></i> Informações
+                <i class="bx bx-info-circle"></i> Informações
             </div>
         </div>
 
@@ -544,14 +544,14 @@
         <div class="exec-card">
             <div class="exec-card-header">
                 <div class="exec-card-title">
-                    <i class="icon-camera"></i> Foto de Check-in
+                    <i class="bx bx-camera"></i> Foto de Check-in
                 </div>
             </div>
 
             <div class="camera-section">
                 <input type="file" id="cameraIniciar" accept="image/*" capture="environment" style="display: none;">
                 <label for="cameraIniciar" class="camera-btn">
-                    <i class="icon-camera"></i>
+                    <i class="bx bx-camera"></i>
                     <span>Tirar Foto</span>
                 </label>
                 <img id="previewIniciar" class="photo-preview" style="display: none;">
@@ -560,7 +560,7 @@
 
         <div class="exec-actions">
             <button type="submit" class="exec-btn exec-btn-primary" id="btnIniciar">
-                <i class="icon-play"></i>
+                <i class="bx bx-play"></i>
                 <span>Iniciar Atividade</span>
             </button>
         </div>
@@ -573,14 +573,14 @@
         <form action="<?php echo site_url('obras_tecnico/pausarAtividade'); ?>" method="post" style="display: contents;">
             <input type="hidden" name="atividade_id" value="<?php echo $atividade->id; ?>">
             <button type="submit" class="exec-btn exec-btn-warning">
-                <i class="icon-pause"></i>
+                <i class="bx bx-pause"></i>
                 <span>Pausar</span>
             </button>
         </form>
 
         <!-- Finalizar -->
         <a href="#modalFinalizar" class="exec-btn exec-btn-primary" data-bs-toggle="modal">
-            <i class="icon-check"></i>
+            <i class="bx bx-check"></i>
             <span>Finalizar</span>
         </a>
     </div>
@@ -629,7 +629,7 @@
 
         <div class="exec-actions">
             <button type="submit" class="exec-btn exec-btn-info">
-                <i class="icon-play"></i>
+                <i class="bx bx-play"></i>
                 <span>Retomar Atividade</span>
             </button>
         </div>
@@ -639,7 +639,7 @@
     <div class="exec-card" style="margin-top: 25px;">
         <div class="exec-card-header">
             <div class="exec-card-title">
-                <i class="icon-warning-sign"></i> Registrar Impedimento
+                <i class="bx bx-error"></i> Registrar Impedimento
             </div>
         </div>
 
@@ -665,7 +665,7 @@
             </div>
 
             <button type="submit" class="exec-btn exec-btn-danger">
-                <i class="icon-warning-sign"></i>
+                <i class="bx bx-error"></i>
                 <span>Registrar Impedimento</span>
             </button>
         </form>
@@ -675,7 +675,7 @@
     <!-- Botão Voltar -->
     <div style="text-align: center; margin-top: 30px;">
         <a href="<?php echo site_url('obras_tecnico/obra/' . $obra->id); ?>" class="btn btn-large">
-            <i class="icon-arrow-left"></i> Voltar para Obra
+            <i class="bx bx-arrow-back"></i> Voltar para Obra
         </a>
     </div>
 </div>

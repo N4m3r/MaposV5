@@ -314,10 +314,10 @@
     <!-- Botões de ação -->
     <div class="print-actions no-print">
         <button onclick="window.print()" class="print-btn print-btn-primary">
-            <i class="icon-print"></i> Imprimir / Salvar PDF
+            <i class="bx bx-printer"></i> Imprimir / Salvar PDF
         </button>
         <button onclick="window.close()" class="print-btn print-btn-secondary">
-            <i class="icon-remove"></i> Fechar
+            <i class="bx bx-x"></i> Fechar
         </button>
     </div>
 

@@ -180,11 +180,11 @@
     <div class="widget-content nopadding tab-content">
 
         <?php if ($this->session->flashdata('success')): ?>
-            <div class="alert alert-success" style="margin: 20px;"><i class="icon-ok"></i> <?php echo $this->session->flashdata('success'); ?></div>
+            <div class="alert alert-success" style="margin: 20px;"><i class="bx bx-check"></i> <?php echo $this->session->flashdata('success'); ?></div>
         <?php endif; ?>
 
         <?php if ($this->session->flashdata('error')): ?>
-            <div class="alert alert-danger" style="margin: 20px;"><i class="icon-remove"></i> <?php echo $this->session->flashdata('error'); ?></div>
+            <div class="alert alert-danger" style="margin: 20px;"><i class="bx bx-x"></i> <?php echo $this->session->flashdata('error'); ?></div>
         <?php endif; ?>
 
         <?php if (isset($results) && count($results) > 0): ?>

@@ -557,20 +557,20 @@
         <div class="atividades-header-content">
             <div class="atividades-header-left">
                 <div class="atividades-breadcrumb">
-                    <a href="<?php echo site_url('obras'); ?>"><i class="icon-arrow-left"></i> Obras</a> &raquo;
+                    <a href="<?php echo site_url('obras'); ?>"><i class="bx bx-arrow-back"></i> Obras</a> &raquo;
                     <a href="<?php echo site_url('obras/visualizar/' . $obra->id); ?>"><?php echo $obra->nome; ?></a> &raquo;
                     <span>Atividades</span>
                 </div>
-                <h1><i class="icon-calendar"></i> Atividades da Obra</h1>
+                <h1><i class="bx bx-calendar"></i> Atividades da Obra</h1>
                 <div class="atividades-subtitle">Gerencie as atividades e acompanhe o progresso do trabalho</div>
             </div>
             <div class="atividades-actions">
                 <a href="<?php echo site_url('obras/visualizar/' . $obra->id); ?>" class="atividades-btn atividades-btn-secondary">
-                    <i class="icon-eye-open"></i> Ver Obra
+                    <i class="bx bx-show"></i> Ver Obra
                 </a>
                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
                 <button onclick="$('#modalAdicionar').modal('show')" class="atividades-btn atividades-btn-primary">
-                    <i class="icon-plus"></i> Nova Atividade
+                    <i class="bx bx-plus"></i> Nova Atividade
                 </button>
                 <?php endif; ?>
             </div>
@@ -580,14 +580,14 @@
     <!-- Mensagens Flash -->
     <?php if ($this->session->flashdata('success')): ?>
     <div style="background: #d4edda; border: 1px solid #28a745; color: #155724; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
-        <i class="icon-ok" style="font-size: 20px;"></i>
+        <i class="bx bx-check" style="font-size: 20px;"></i>
         <strong><?php echo $this->session->flashdata('success'); ?></strong>
     </div>
     <?php endif; ?>
 
     <?php if ($this->session->flashdata('error')): ?>
     <div style="background: #f8d7da; border: 1px solid #dc3545; color: #721c24; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
-        <i class="icon-remove" style="font-size: 20px;"></i>
+        <i class="bx bx-x" style="font-size: 20px;"></i>
         <strong><?php echo $this->session->flashdata('error'); ?></strong>
     </div>
     <?php endif; ?>
@@ -607,28 +607,28 @@
     ?>
     <div class="atividades-stats">
         <div class="atividades-stat-card">
-            <div class="atividades-stat-icon total"><i class="icon-tasks"></i></div>
+            <div class="atividades-stat-icon total"><i class="bx bx-list-check"></i></div>
             <div class="atividades-stat-content">
                 <div class="atividades-stat-value"><?php echo $total; ?></div>
                 <div class="atividades-stat-label">Total de Atividades</div>
             </div>
         </div>
         <div class="atividades-stat-card">
-            <div class="atividades-stat-icon hoje"><i class="icon-calendar"></i></div>
+            <div class="atividades-stat-icon hoje"><i class="bx bx-calendar"></i></div>
             <div class="atividades-stat-content">
                 <div class="atividades-stat-value"><?php echo $hoje; ?></div>
                 <div class="atividades-stat-label">Atividades Hoje</div>
             </div>
         </div>
         <div class="atividades-stat-card">
-            <div class="atividades-stat-icon agendadas"><i class="icon-time"></i></div>
+            <div class="atividades-stat-icon agendadas"><i class="bx bx-time-five"></i></div>
             <div class="atividades-stat-content">
                 <div class="atividades-stat-value"><?php echo $agendadas; ?></div>
                 <div class="atividades-stat-label">Agendadas</div>
             </div>
         </div>
         <div class="atividades-stat-card">
-            <div class="atividades-stat-icon concluidas"><i class="icon-check"></i></div>
+            <div class="atividades-stat-icon concluidas"><i class="bx bx-check"></i></div>
             <div class="atividades-stat-content">
                 <div class="atividades-stat-value"><?php echo $concluidas; ?></div>
                 <div class="atividades-stat-label">Concluídas</div>
@@ -639,7 +639,7 @@
 
     <!-- Filtros -->
     <div class="atividades-filters">
-        <i class="icon-search" style="font-size: 20px; color: #667eea;"></i>
+        <i class="bx bx-search" style="font-size: 20px; color: #667eea;"></i>
         <input type="text" id="searchAtividade" class="atividades-filter-input" placeholder="Buscar atividade..." onkeyup="filtrarAtividades()">
         <select id="filterStatus" class="atividades-filter-select" onchange="filtrarAtividades()">
             <option value="">Todos os Status</option>
@@ -888,7 +888,7 @@ function iniciarRegistroAtividade(event) {
 <div id="modalAdicionar" class="modal fade modal-atividades" tabindex="-1" role="dialog" aria-labelledby="modalAtividadeLabel" aria-hidden="true">
     <div class="modal-header">
         <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">&times;</button>
-        <h3 id="modalAtividadeLabel"><i class="icon-plus-sign"></i> Nova Atividade - Wizard</h3>
+        <h3 id="modalAtividadeLabel"><i class="bx bx-plus-circle"></i> Nova Atividade - Wizard</h3>
     </div>
 
     <form id="formAdicionarAtividade" onsubmit="return salvarAtividadeWizard(event)">
@@ -900,14 +900,14 @@ function iniciarRegistroAtividade(event) {
 
             <!-- Alerta informativo -->
             <div style="background: #e3f2fd; border-left: 4px solid #2196f3; padding: 12px 15px; margin-bottom: 20px; border-radius: 0 8px 8px 0;">
-                <i class="icon-info-sign" style="color: #2196f3;"></i>
+                <i class="bx bx-info-circle" style="color: #2196f3;"></i>
                 <strong>Modo Wizard:</strong> Esta atividade será criada no sistema de atendimento técnico.
             </div>
 
             <!-- Seleção de Etapa (OBRIGATÓRIA) -->
             <div class="atividades-form-group">
                 <label class="atividades-form-label" for="etapa_id_nova">
-                    <i class="icon-tasks"></i> Etapa da Obra <span style="color: #dc3545;">*</span>
+                    <i class="bx bx-list-check"></i> Etapa da Obra <span style="color: #dc3545;">*</span>
                 </label>
                 <select name="etapa_id" id="etapa_id_nova" class="atividades-form-select" required>
                     <option value="">Selecione uma etapa...</option>
@@ -925,7 +925,7 @@ function iniciarRegistroAtividade(event) {
                     <?php endif; ?>
                 </select>
                 <div class="atividades-form-hint">
-                    <i class="icon-info-sign"></i> Selecione a etapa em que a atividade será executada.
+                    <i class="bx bx-info-circle"></i> Selecione a etapa em que a atividade será executada.
                 </div>
             </div>
 
@@ -933,7 +933,7 @@ function iniciarRegistroAtividade(event) {
             <?php if (!empty($tipos_atividades)): ?>
             <div class="atividades-form-group">
                 <label class="atividades-form-label" for="tipo_id_nova">
-                    <i class="icon-wrench"></i> Tipo de Atividade <span style="color: #dc3545;">*</span>
+                    <i class="bx bx-wrench"></i> Tipo de Atividade <span style="color: #dc3545;">*</span>
                 </label>
                 <select name="tipo_id" id="tipo_id_nova" class="atividades-form-select" required>
                     <option value="">Selecione o tipo...</option>
@@ -951,7 +951,7 @@ function iniciarRegistroAtividade(event) {
             <!-- Título -->
             <div class="atividades-form-group">
                 <label class="atividades-form-label" for="titulo_nova">
-                    <i class="icon-tag"></i> Título da Atividade <span style="color: #dc3545;">*</span>
+                    <i class="bx bx-tag"></i> Título da Atividade <span style="color: #dc3545;">*</span>
                 </label>
                 <input type="text" name="titulo" id="titulo_nova" class="atividades-form-input" placeholder="Ex: Instalação elétrica..." required>
             </div>
@@ -959,7 +959,7 @@ function iniciarRegistroAtividade(event) {
             <!-- Descrição -->
             <div class="atividades-form-group">
                 <label class="atividades-form-label" for="descricao_nova">
-                    <i class="icon-align-left"></i> Descrição da Atividade
+                    <i class="bx bx-align-left"></i> Descrição da Atividade
                 </label>
                 <textarea name="descricao" id="descricao_nova" class="atividades-form-textarea" rows="2" placeholder="Descreva o trabalho que será realizado..."></textarea>
             </div>
@@ -967,7 +967,7 @@ function iniciarRegistroAtividade(event) {
             <!-- Equipamento/Local -->
             <div class="atividades-form-group">
                 <label class="atividades-form-label" for="equipamento_nova">
-                    <i class="icon-wrench"></i> Equipamento/Local
+                    <i class="bx bx-wrench"></i> Equipamento/Local
                 </label>
                 <input type="text" name="equipamento" id="equipamento_nova" class="atividades-form-input" placeholder="Ex: Rack principal, Câmera 1, Sala do servidor...">
             </div>
@@ -975,13 +975,13 @@ function iniciarRegistroAtividade(event) {
             <!-- Localização GPS -->
             <div class="atividades-form-group">
                 <label class="atividades-form-label">
-                    <i class="icon-map-marker"></i> Localização GPS
+                    <i class="bx bx-map"></i> Localização GPS
                 </label>
                 <button type="button" class="btn btn-info" onclick="obterLocalizacaoNovaAtividade()" style="margin-bottom: 10px;">
-                    <i class="icon-map-marker"></i> Obter Localização Atual
+                    <i class="bx bx-map"></i> Obter Localização Atual
                 </button>
                 <div id="gps_info_nova" class="atividades-form-hint">
-                    <i class="icon-info-sign"></i> Clique para registrar a localização.
+                    <i class="bx bx-info-circle"></i> Clique para registrar a localização.
                 </div>
             </div>
 
@@ -992,7 +992,7 @@ function iniciarRegistroAtividade(event) {
                 <!-- Técnico Responsável -->
                 <div class="atividades-form-group">
                     <label class="atividades-form-label" for="tecnico_id_nova">
-                        <i class="icon-user"></i> Técnico Responsável
+                        <i class="bx bx-user"></i> Técnico Responsável
                     </label>
                     <select name="tecnico_id" id="tecnico_id_nova" class="atividades-form-select">
                         <option value="">Selecione um técnico...</option>
@@ -1021,10 +1021,10 @@ function iniciarRegistroAtividade(event) {
 
         <div class="modal-footer">
             <button type="button" class="atividades-btn-cancel" data-bs-dismiss="modal">
-                <i class="icon-remove"></i> Cancelar
+                <i class="bx bx-x"></i> Cancelar
             </button>
             <button type="submit" class="atividades-btn-submit" id="btnSalvarAtividade" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
-                <i class="icon-save"></i> CRIAR ATIVIDADE
+                <i class="bx bx-save"></i> CRIAR ATIVIDADE
             </button>
         </div>
     </form>
@@ -1035,20 +1035,20 @@ function iniciarRegistroAtividade(event) {
 // Função para obter localização GPS
 function obterLocalizacaoNovaAtividade() {
     if ('geolocation' in navigator) {
-        document.getElementById('gps_info_nova').innerHTML = '<i class="icon-time"></i> Obtendo localização...';
+        document.getElementById('gps_info_nova').innerHTML = '<i class="bx bx-time-five"></i> Obtendo localização...';
         navigator.geolocation.getCurrentPosition(
             function(position) {
                 document.getElementById('nova_latitude').value = position.coords.latitude;
                 document.getElementById('nova_longitude').value = position.coords.longitude;
-                document.getElementById('gps_info_nova').innerHTML = '<i class="icon-ok" style="color: #28a745;"></i> Localização: ' + position.coords.latitude.toFixed(6) + ', ' + position.coords.longitude.toFixed(6);
+                document.getElementById('gps_info_nova').innerHTML = '<i class="bx bx-check" style="color: #28a745;"></i> Localização: ' + position.coords.latitude.toFixed(6) + ', ' + position.coords.longitude.toFixed(6);
             },
             function(error) {
-                document.getElementById('gps_info_nova').innerHTML = '<i class="icon-remove" style="color: #dc3545;"></i> Erro: ' + error.message;
+                document.getElementById('gps_info_nova').innerHTML = '<i class="bx bx-x" style="color: #dc3545;"></i> Erro: ' + error.message;
             },
             { enableHighAccuracy: true, timeout: 10000 }
         );
     } else {
-        document.getElementById('gps_info_nova').innerHTML = '<i class="icon-remove" style="color: #dc3545;"></i> GPS não disponível.';
+        document.getElementById('gps_info_nova').innerHTML = '<i class="bx bx-x" style="color: #dc3545;"></i> GPS não disponível.';
     }
 }
 
@@ -1085,7 +1085,7 @@ function salvarAtividadeWizard(event) {
     // Desabilita botão para evitar duplo clique
     const btn = document.getElementById('btnSalvarAtividade');
     btn.disabled = true;
-    btn.innerHTML = '<i class="icon-time"></i> Salvando...';
+    btn.innerHTML = '<i class="bx bx-time-five"></i> Salvando...';
 
     // Envia requisição AJAX
     fetch('<?php echo site_url("atividades/checkin_obra"); ?>', {
@@ -1104,14 +1104,14 @@ function salvarAtividadeWizard(event) {
         } else {
             alert('Erro: ' + (data.message || 'Erro ao criar atividade'));
             btn.disabled = false;
-            btn.innerHTML = '<i class="icon-save"></i> CRIAR ATIVIDADE';
+            btn.innerHTML = '<i class="bx bx-save"></i> CRIAR ATIVIDADE';
         }
     })
     .catch(error => {
         console.error('Erro:', error);
         alert('Erro ao criar atividade. Tente novamente.');
         btn.disabled = false;
-        btn.innerHTML = '<i class="icon-save"></i> CRIAR ATIVIDADE';
+        btn.innerHTML = '<i class="bx bx-save"></i> CRIAR ATIVIDADE';
     });
 
     return false;

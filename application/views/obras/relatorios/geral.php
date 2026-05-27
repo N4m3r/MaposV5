@@ -17,10 +17,10 @@ $dias_restantes = $data_prevista ? ceil((strtotime($data_prevista) - time()) / 8
 
 // Status da obra com cor
 $statusObra = $obra->status ?? 'Em Andamento';
-$statusConfig = ['bg' => '#7f8c8d', 'text' => '#fff', 'label' => 'INDEFINIDO', 'icon' => 'icon-question-sign'];
+$statusConfig = ['bg' => '#7f8c8d', 'text' => '#fff', 'label' => 'INDEFINIDO', 'icon' => 'bx bx-help-circle'];
 foreach ($status_obra as $s) {
     if (strcasecmp($statusObra, $s->nome) === 0) {
-        $statusConfig = ['bg' => $s->cor ?? '#7f8c8d', 'text' => '#fff', 'label' => strtoupper($s->nome), 'icon' => $s->icone ?? 'icon-question-sign'];
+        $statusConfig = ['bg' => $s->cor ?? '#7f8c8d', 'text' => '#fff', 'label' => strtoupper($s->nome), 'icon' => $s->icone ?? 'bx bx-help-circle'];
         break;
     }
 }
@@ -855,7 +855,7 @@ $emitente_logo = $emitente->url_logo ?? '';
                 </div>
 
                 <div class="relatorio-titulo no-print">
-                    <i class="icon-file-alt"></i>
+                    <i class="bx bx-file-alt"></i>
                     <div class="relatorio-titulo-text">
                         <h1>Relatório Geral da Obra</h1>
                         <p>Visão completa do projeto e acompanhamento</p>
@@ -872,9 +872,9 @@ $emitente_logo = $emitente->url_logo ?? '';
         <div class="relatorio-header-info">
             <div class="relatorio-obra-nome"><?php echo htmlspecialchars($obra->nome); ?></div>
             <div class="relatorio-meta">
-                <span><i class="icon-calendar"></i> <?php echo date('d/m/Y'); ?></span>
-                <span><i class="icon-file-alt"></i> <?php echo $numero_relatorio; ?></span>
-                <span><i class="icon-user"></i> <?php echo htmlspecialchars($obra->cliente_nome ?? 'Cliente não definido'); ?></span>
+                <span><i class="bx bx-calendar"></i> <?php echo date('d/m/Y'); ?></span>
+                <span><i class="bx bx-file-alt"></i> <?php echo $numero_relatorio; ?></span>
+                <span><i class="bx bx-user"></i> <?php echo htmlspecialchars($obra->cliente_nome ?? 'Cliente não definido'); ?></span>
             </div>
         </div>
     </div>
@@ -882,10 +882,10 @@ $emitente_logo = $emitente->url_logo ?? '';
     <!-- BOTÕES DE AÇÃO -->
     <div class="relatorio-actions no-print">
         <a href="<?php echo site_url('obras/visualizar/' . $obra->id); ?>" class="relatorio-btn relatorio-btn-secondary">
-            <i class="icon-arrow-left"></i> Voltar à Obra
+            <i class="bx bx-arrow-back"></i> Voltar à Obra
         </a>
         <a href="<?php echo site_url('obras/imprimirRelatorio/' . $obra->id); ?>" target="_blank" class="relatorio-btn relatorio-btn-primary">
-            <i class="icon-print"></i> Imprimir / PDF
+            <i class="bx bx-printer"></i> Imprimir / PDF
         </a>
     </div>
 
@@ -894,7 +894,7 @@ $emitente_logo = $emitente->url_logo ?? '';
         <!-- Progresso -->
         <div class="relatorio-ind-card destaque">
             <div class="relatorio-ind-header">
-                <i class="icon-tasks"></i> Progresso da Obra
+                <i class="bx bx-list-check"></i> Progresso da Obra
             </div>
             <div class="relatorio-ind-body">
                 <div class="relatorio-progress-circle" style="--progress: <?php echo $percentual_concluido; ?>">
@@ -909,7 +909,7 @@ $emitente_logo = $emitente->url_logo ?? '';
         <!-- Atividades -->
         <div class="relatorio-ind-card">
             <div class="relatorio-ind-header">
-                <i class="icon-check"></i> Atividades
+                <i class="bx bx-check"></i> Atividades
             </div>
             <div class="relatorio-ind-body">
                 <div class="relatorio-status-grid">
@@ -936,7 +936,7 @@ $emitente_logo = $emitente->url_logo ?? '';
         <!-- Cronograma -->
         <div class="relatorio-ind-card">
             <div class="relatorio-ind-header">
-                <i class="icon-calendar"></i> Cronograma
+                <i class="bx bx-calendar"></i> Cronograma
             </div>
             <div class="relatorio-ind-body">
                 <?php if ($data_inicio && $data_prevista):
@@ -976,7 +976,7 @@ $emitente_logo = $emitente->url_logo ?? '';
         <!-- Horas -->
         <div class="relatorio-ind-card">
             <div class="relatorio-ind-header">
-                <i class="icon-time"></i> Mão de Obra
+                <i class="bx bx-time-five"></i> Mão de Obra
             </div>
             <div class="relatorio-ind-body" style="text-align: center;">
                 <div style="font-size: 36px; font-weight: 700; color: #2c3e50;">
@@ -995,7 +995,7 @@ $emitente_logo = $emitente->url_logo ?? '';
     <!-- INFORMAÇÕES DA OBRA -->
     <div class="relatorio-card no-break">
         <div class="relatorio-card-header">
-            <i class="icon-building"></i>
+            <i class="bx bx-building"></i>
             <h3>Informações da Obra</h3>
         </div>
         <div class="relatorio-card-body">
@@ -1049,20 +1049,20 @@ $emitente_logo = $emitente->url_logo ?? '';
     <!-- EQUIPE TÉCNICA -->
     <div class="relatorio-card no-break">
         <div class="relatorio-card-header">
-            <i class="icon-group"></i>
+            <i class="bx bx-group"></i>
             <h3>Equipe Técnica</h3>
         </div>
         <div class="relatorio-card-body">
             <div class="relatorio-equipe-grid">
                 <div class="relatorio-equipe-card">
-                    <div class="relatorio-equipe-avatar"><i class="icon-user-md"></i></div>
+                    <div class="relatorio-equipe-avatar"><i class="bx bx-user-md"></i></div>
                     <div class="relatorio-equipe-info">
                         <div class="relatorio-equipe-cargo">Gestor de Projeto</div>
                         <div class="relatorio-equipe-nome"><?php echo htmlspecialchars($obra->gestor_nome ?? 'Não alocado'); ?></div>
                     </div>
                 </div>
                 <div class="relatorio-equipe-card">
-                    <div class="relatorio-equipe-avatar"><i class="icon-wrench"></i></div>
+                    <div class="relatorio-equipe-avatar"><i class="bx bx-wrench"></i></div>
                     <div class="relatorio-equipe-info">
                         <div class="relatorio-equipe-cargo">Responsável Técnico</div>
                         <div class="relatorio-equipe-nome"><?php echo htmlspecialchars($obra->responsavel_tecnico_nome ?? $obra->gestor_nome ?? 'Não alocado'); ?></div>
@@ -1071,7 +1071,7 @@ $emitente_logo = $emitente->url_logo ?? '';
                 <?php if (!empty($equipe)): ?>
                     <?php foreach (array_slice($equipe, 0, 4) as $membro): ?>
                     <div class="relatorio-equipe-card" style="border-left-color: #95a5a6;">
-                        <div class="relatorio-equipe-avatar" style="background: #95a5a6;"><i class="icon-user"></i></div>
+                        <div class="relatorio-equipe-avatar" style="background: #95a5a6;"><i class="bx bx-user"></i></div>
                         <div class="relatorio-equipe-info">
                             <div class="relatorio-equipe-cargo"><?php echo htmlspecialchars($membro->funcao ?? 'Técnico'); ?></div>
                             <div class="relatorio-equipe-nome"><?php echo htmlspecialchars($membro->nome ?? $membro->nomeUsuario ?? 'N/A'); ?></div>
@@ -1086,7 +1086,7 @@ $emitente_logo = $emitente->url_logo ?? '';
     <!-- ETAPAS DA OBRA -->
     <div class="relatorio-card">
         <div class="relatorio-card-header">
-            <i class="icon-sitemap"></i>
+            <i class="bx bx-sitemap"></i>
             <h3>Etapas / Disciplinas</h3>
         </div>
         <div class="relatorio-card-body">
@@ -1145,7 +1145,7 @@ $emitente_logo = $emitente->url_logo ?? '';
             </div>
             <?php else: ?>
             <div style="text-align: center; padding: 40px; color: #6c757d;">
-                <i class="icon-info-sign" style="font-size: 32px; margin-bottom: 15px; display: block;"></i>
+                <i class="bx bx-info-circle" style="font-size: 32px; margin-bottom: 15px; display: block;"></i>
                 <p>Nenhuma etapa cadastrada para esta obra.</p>
             </div>
             <?php endif; ?>
@@ -1155,7 +1155,7 @@ $emitente_logo = $emitente->url_logo ?? '';
     <!-- ATIVIDADES RECENTES -->
     <div class="relatorio-card">
         <div class="relatorio-card-header">
-            <i class="icon-check"></i>
+            <i class="bx bx-check"></i>
             <h3>Atividades Executadas</h3>
         </div>
         <div class="relatorio-card-body">
@@ -1211,7 +1211,7 @@ $emitente_logo = $emitente->url_logo ?? '';
             </div>
             <?php else: ?>
             <div style="text-align: center; padding: 40px; color: #6c757d;">
-                <i class="icon-info-sign" style="font-size: 32px; margin-bottom: 15px; display: block;"></i>
+                <i class="bx bx-info-circle" style="font-size: 32px; margin-bottom: 15px; display: block;"></i>
                 <p>Nenhuma atividade registrada.</p>
             </div>
             <?php endif; ?>

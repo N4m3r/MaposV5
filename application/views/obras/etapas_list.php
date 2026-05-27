@@ -1060,18 +1060,18 @@
         <div class="obra-header-row">
             <div class="obra-header-info">
                 <div class="obra-breadcrumb">
-                    <a href="<?php echo site_url('obras'); ?>"><i class="icon-arrow-left"></i> Obras</a>
+                    <a href="<?php echo site_url('obras'); ?>"><i class="bx bx-arrow-back"></i> Obras</a>
                     <span>/</span>
                     <a href="<?php echo site_url('obras/visualizar/' . $obra->id); ?>"><?php echo htmlspecialchars($obra->nome); ?></a>
                     <span>/</span>
                     <span>Etapas</span>
                 </div>
                 <h1 class="obra-title">
-                    <i class="icon-tasks"></i>
+                    <i class="bx bx-list-check"></i>
                     Gerenciar Etapas
                 </h1>
                 <div class="obra-cliente">
-                    <i class="icon-user"></i>
+                    <i class="bx bx-user"></i>
                     <?php echo htmlspecialchars($obra->cliente_nome ?? 'Sem cliente'); ?>
                 </div>
             </div>
@@ -1096,14 +1096,14 @@
     <div class="acoes-bar">
         <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
         <button class="acao-btn acao-etapa" onclick="abrirModalEtapa()">
-            <i class="icon-plus"></i> Nova Etapa
+            <i class="bx bx-plus"></i> Nova Etapa
         </button>
         <?php endif; ?>
         <a href="<?php echo site_url('obras/visualizar/' . $obra->id); ?>" class="acao-btn acao-visualizar">
-            <i class="icon-eye-open"></i> Ver Obra
+            <i class="bx bx-show"></i> Ver Obra
         </a>
         <a href="<?php echo site_url('obras'); ?>" class="acao-btn acao-voltar">
-            <i class="icon-arrow-left"></i> Voltar
+            <i class="bx bx-arrow-back"></i> Voltar
         </a>
     </div>
 
@@ -1115,7 +1115,7 @@
             <div class="card">
                 <div class="card-header">
                     <div class="card-title">
-                        <i class="icon-calendar"></i>
+                        <i class="bx bx-calendar"></i>
                         Prazo da Obra
                     </div>
                 </div>
@@ -1125,14 +1125,14 @@
                         <div class="prazo-item">
                             <div class="prazo-label">Data de Início</div>
                             <div class="prazo-value">
-                                <i class="icon-play"></i>
+                                <i class="bx bx-play"></i>
                                 <?php echo $obra->data_inicio_contrato ? date('d/m/Y', strtotime($obra->data_inicio_contrato)) : 'Não definida'; ?>
                             </div>
                         </div>
                         <div class="prazo-item">
                             <div class="prazo-label">Data de Término Prevista</div>
                             <div class="prazo-value">
-                                <i class="icon-flag-checkered"></i>
+                                <i class="bx bx-flag-checkered"></i>
                                 <?php echo $obra->data_fim_prevista ? date('d/m/Y', strtotime($obra->data_fim_prevista)) : 'Não definida'; ?>
                             </div>
                         </div>
@@ -1152,7 +1152,7 @@
                             <div class="prazo-value">
                                 <?php
                                 if ($obra->status == 'Concluida' || $obra->status == 'concluida') {
-                                    echo '<i class="icon-check"></i> Finalizada';
+                                    echo '<i class="bx bx-check"></i> Finalizada';
                                 } else {
                                     echo abs($dias_restantes) . ' dias';
                                 }
@@ -1167,21 +1167,21 @@
                     <div class="info-item">
                         <div class="info-label">Código</div>
                         <div class="info-value">
-                            <i class="icon-barcode"></i>
+                            <i class="bx bx-barcode"></i>
                             <?php echo htmlspecialchars($obra->codigo ?? 'N/A'); ?>
                         </div>
                     </div>
                     <div class="info-item">
                         <div class="info-label">Tipo</div>
                         <div class="info-value">
-                            <i class="icon-cog"></i>
+                            <i class="bx bx-cog"></i>
                             <?php echo htmlspecialchars($obra->tipo_obra ?? 'N/A'); ?>
                         </div>
                     </div>
                     <div class="info-item full-width">
                         <div class="info-label">Endereço</div>
                         <div class="info-value">
-                            <i class="icon-map-marker"></i>
+                            <i class="bx bx-map"></i>
                             <?php
                             $endereco = [];
                             if (!empty($obra->endereco)) $endereco[] = $obra->endereco;
@@ -1199,7 +1199,7 @@
             <div class="card">
                 <div class="card-header">
                     <div class="card-title">
-                        <i class="icon-road"></i>
+                        <i class="bx bx-trip"></i>
                         Timeline de Etapas
                     </div>
                     <div style="font-size: 13px; color: #888;">
@@ -1267,19 +1267,19 @@
                                         <div class="etapa-info">
                                             <div class="etapa-name"><?php echo htmlspecialchars($etapa->nome); ?></div>
                                             <div class="etapa-meta-text">
-                                                <span><i class="icon-calendar"></i>
+                                                <span><i class="bx bx-calendar"></i>
                                                     <?php
                                                     if ($etapa->data_inicio_prevista && $etapa->data_fim_prevista) {
                                                         echo date('d/m/Y', strtotime($etapa->data_inicio_prevista)) . ' a ' . date('d/m/Y', strtotime($etapa->data_fim_prevista));
                                                     } elseif ($etapa->data_inicio_prevista) {
                                                         echo 'Início: ' . date('d/m/Y', strtotime($etapa->data_inicio_prevista));
                                                     } else {
-                                                        echo '<span style="color: #999;"><i class="icon-warning-sign" style="color: #f39c12;"></i> Prazo não definido</span>';
+                                                        echo '<span style="color: #999;"><i class="bx bx-error" style="color: #f39c12;"></i> Prazo não definido</span>';
                                                     }
                                                     ?>
                                                 </span>
                                                 <?php if ($etapa->total_atividades > 0): ?>
-                                                <span><i class="icon-tasks"></i> <?php echo $etapa->total_atividades; ?> ativ.</span>
+                                                <span><i class="bx bx-list-check"></i> <?php echo $etapa->total_atividades; ?> ativ.</span>
                                                 <?php endif; ?>
                                             </div>
                                         </div>
@@ -1302,17 +1302,17 @@
                                     <div class="etapa-actions">
                                         <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
                                         <button type="button" class="etapa-btn etapa-btn-edit" onclick="event.stopPropagation(); editarEtapa(<?php echo $etapa->id; ?>, '<?php echo htmlspecialchars($etapa->nome, ENT_QUOTES); ?>', '<?php echo htmlspecialchars($etapa->descricao ?? '', ENT_QUOTES); ?>', '<?php echo $etapa->numero_etapa; ?>', '<?php echo $etapa->especialidade ?? ''; ?>', '<?php echo $etapa->data_inicio_prevista ?? ''; ?>', '<?php echo $etapa->data_fim_prevista ?? ''; ?>', '<?php echo $etapa->status; ?>', '<?php echo $progresso_etapa; ?>')" title="Editar">
-                                            <i class="icon-edit"></i>
+                                            <i class="bx bx-edit"></i>
                                         </button>
                                         <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dObras')): ?>
                                         <a href="<?php echo site_url('obras/excluirEtapa/' . $etapa->id); ?>" class="etapa-btn etapa-btn-delete" onclick="event.stopPropagation(); return confirm('Tem certeza que deseja excluir esta etapa?');" title="Excluir">
-                                            <i class="icon-trash"></i>
+                                            <i class="bx bx-trash"></i>
                                         </a>
                                         <?php endif; ?>
                                         <?php endif; ?>
                                         <?php if ($tem_atividades): ?>
                                         <div class="etapa-toggle" id="toggle-<?php echo $etapa->id; ?>" onclick="event.stopPropagation(); toggleEtapa(<?php echo $etapa->id; ?>)">
-                                            <i class="icon-chevron-down"></i>
+                                            <i class="bx bx-chevron-down"></i>
                                         </div>
                                         <?php endif; ?>
                                     </div>
@@ -1333,19 +1333,19 @@
                                             switch ($ativ_status) {
                                                 case 'concluida':
                                                     $ativ_class = 'concluida';
-                                                    $ativ_icon = 'icon-check';
+                                                    $ativ_icon = 'bx bx-check';
                                                     break;
                                                 case 'iniciada':
                                                     $ativ_class = 'andamento';
-                                                    $ativ_icon = 'icon-play';
+                                                    $ativ_icon = 'bx bx-play';
                                                     break;
                                                 case 'pausada':
                                                     $ativ_class = 'pausada';
-                                                    $ativ_icon = 'icon-pause';
+                                                    $ativ_icon = 'bx bx-pause';
                                                     break;
                                                 default:
                                                     $ativ_class = 'pendente';
-                                                    $ativ_icon = 'icon-time';
+                                                    $ativ_icon = 'bx bx-time-five';
                                             }
                                         ?>
                                         <div class="atividade-subitem">
@@ -1355,9 +1355,9 @@
                                             <div class="atividade-content">
                                                 <div class="atividade-title"><?php echo htmlspecialchars($atividade->titulo ?? 'Atividade #' . $atividade->id); ?></div>
                                                 <div class="atividade-meta">
-                                                    <span><i class="icon-calendar"></i> <?php echo date('d/m/Y', strtotime($atividade->data_atividade)); ?></span>
+                                                    <span><i class="bx bx-calendar"></i> <?php echo date('d/m/Y', strtotime($atividade->data_atividade)); ?></span>
                                                     <?php if (!empty($atividade->tecnico_nome)): ?>
-                                                    <span><i class="icon-user"></i> <?php echo htmlspecialchars($atividade->tecnico_nome); ?></span>
+                                                    <span><i class="bx bx-user"></i> <?php echo htmlspecialchars($atividade->tecnico_nome); ?></span>
                                                     <?php endif; ?>
                                                 </div>
                                             </div>
@@ -1378,12 +1378,12 @@
                     </div>
                     <?php else: ?>
                     <div class="empty-state">
-                        <i class="icon-tasks"></i>
+                        <i class="bx bx-list-check"></i>
                         <h4>Nenhuma etapa cadastrada</h4>
                         <p>Adicione etapas para organizar o progresso da obra.</p>
                         <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
                         <button onclick="abrirModalEtapa()" class="card-action" style="margin-top: 16px;">
-                            <i class="icon-plus"></i> Adicionar Primeira Etapa
+                            <i class="bx bx-plus"></i> Adicionar Primeira Etapa
                         </button>
                         <?php endif; ?>
                     </div>
@@ -1398,7 +1398,7 @@
             <div class="card">
                 <div class="card-header">
                     <div class="card-title">
-                        <i class="icon-bar-chart"></i>
+                        <i class="bx bx-bar-chart"></i>
                         Estatísticas
                     </div>
                 </div>
@@ -1427,7 +1427,7 @@
             <div class="card">
                 <div class="card-header">
                     <div class="card-title">
-                        <i class="icon-group"></i>
+                        <i class="bx bx-group"></i>
                         Equipe
                     </div>
                 </div>
@@ -1437,7 +1437,7 @@
                     <?php foreach (array_slice($equipe, 0, 6) as $membro): ?>
                     <div class="equipe-item">
                         <div class="equipe-avatar">
-                            <i class="icon-user"></i>
+                            <i class="bx bx-user"></i>
                         </div>
                         <div class="equipe-name"><?php echo htmlspecialchars($membro->nome ?? $membro->tecnico_nome ?? 'Sem nome'); ?></div>
                         <div class="equipe-role"><?php echo htmlspecialchars($membro->funcao ?? 'Técnico'); ?></div>
@@ -1446,7 +1446,7 @@
                     <?php if (count($equipe) > 6): ?>
                     <div class="equipe-item" style="opacity: 0.6;">
                         <div class="equipe-avatar" style="background: #95a5a6;">
-                            <i class="icon-plus"></i>
+                            <i class="bx bx-plus"></i>
                         </div>
                         <div class="equipe-name">+<?php echo count($equipe) - 6; ?></div>
                         <div class="equipe-role">membros</div>
@@ -1464,7 +1464,7 @@
             <div class="card">
                 <div class="card-header">
                     <div class="card-title">
-                        <i class="icon-check"></i>
+                        <i class="bx bx-check"></i>
                         Atividades Recentes
                     </div>
                 </div>
@@ -1474,12 +1474,12 @@
                     <?php foreach (array_slice($atividades_recentes, 0, 5) as $atividade): ?>
                     <div style="display: flex; align-items: center; gap: 10px; padding: 12px; background: #f8f9fa; border-radius: 8px; margin-bottom: 8px;">
                         <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(102, 126, 234, 0.1); color: #667eea; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                            <i class="icon-tasks"></i>
+                            <i class="bx bx-list-check"></i>
                         </div>
                         <div style="flex: 1; min-width: 0;">
                             <div style="font-weight: 600; font-size: 13px; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><?php echo htmlspecialchars($atividade->titulo ?? 'Atividade #' . $atividade->id); ?></div>
                             <div style="font-size: 11px; color: #888;">
-                                <i class="icon-calendar"></i> <?php echo date('d/m/Y', strtotime($atividade->data_atividade)); ?>
+                                <i class="bx bx-calendar"></i> <?php echo date('d/m/Y', strtotime($atividade->data_atividade)); ?>
                             </div>
                         </div>
                     </div>
@@ -1497,7 +1497,7 @@
             <div class="card">
                 <div class="card-header">
                     <div class="card-title">
-                        <i class="icon-time"></i>
+                        <i class="bx bx-time-five"></i>
                         Registro de Horas
                     </div>
                 </div>
@@ -1521,7 +1521,7 @@
 <div id="modalEtapa" class="modal fade modal-etapas" tabindex="-1" role="dialog" aria-labelledby="modalEtapaLabel" aria-hidden="true">
     <div class="modal-header">
         <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">&times;</button>
-        <h3 id="modalEtapaLabel"><i class="icon-plus-sign"></i> <span id="modalEtapaTitle">Nova Etapa</span></h3>
+        <h3 id="modalEtapaLabel"><i class="bx bx-plus-circle"></i> <span id="modalEtapaTitle">Nova Etapa</span></h3>
     </div>
 
     <form id="formEtapa" action="<?php echo site_url('obras/adicionarEtapa'); ?>" method="post">

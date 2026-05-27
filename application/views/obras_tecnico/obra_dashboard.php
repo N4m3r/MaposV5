@@ -288,10 +288,10 @@
     <div class="obra-dash-header">
         <div class="obra-dash-header-content">
             <div class="obra-dash-title">
-                <h1><i class="icon-building"></i> <?php echo $obra->nome; ?></h1>
+                <h1><i class="bx bx-building"></i> <?php echo $obra->nome; ?></h1>
                 <div class="obra-dash-subtitle">
-                    <i class="icon-user"></i> <?php echo $obra->cliente_nome ?? 'Cliente não definido'; ?> |
-                    <i class="icon-map-marker"></i> <?php echo $obra->endereco ?: 'Endereço não informado'; ?>
+                    <i class="bx bx-user"></i> <?php echo $obra->cliente_nome ?? 'Cliente não definido'; ?> |
+                    <i class="bx bx-map"></i> <?php echo $obra->endereco ?: 'Endereço não informado'; ?>
                 </div>
             </div>
             <div class="obra-dash-progress">
@@ -308,7 +308,7 @@
             <div class="obra-dash-card">
                 <div class="obra-dash-card-header">
                     <div class="obra-dash-card-title">
-                        <i class="icon-tasks"></i> Minhas Atividades
+                        <i class="bx bx-list-check"></i> Minhas Atividades
                     </div>
                 </div>
 
@@ -319,13 +319,13 @@
                     ?>
                     <div class="atividade-card <?php echo $statusClass; ?>">
                         <div class="atividade-icon">
-                            <i class="icon-tasks"></i>
+                            <i class="bx bx-list-check"></i>
                         </div>
                         <div class="atividade-info">
                             <div class="atividade-title"><?php echo $ativ->titulo; ?></div>
                             <div class="atividade-meta">
-                                <span><i class="icon-calendar"></i> <?php echo date('d/m/Y', strtotime($ativ->data_atividade)); ?></span>
-                                <span><i class="icon-time"></i> <?php echo $ativ->hora_inicio ? substr($ativ->hora_inicio, 0, 5) : '--:--'; ?></span>
+                                <span><i class="bx bx-calendar"></i> <?php echo date('d/m/Y', strtotime($ativ->data_atividade)); ?></span>
+                                <span><i class="bx bx-time-five"></i> <?php echo $ativ->hora_inicio ? substr($ativ->hora_inicio, 0, 5) : '--:--'; ?></span>
                             </div>
                             <div class="atividade-status-badge <?php echo $ativ->status; ?>">
                                 <?php
@@ -343,15 +343,15 @@
                         <div class="atividade-actions">
                             <?php if ($ativ->status == 'agendada'): ?>>
                             <a href="<?php echo site_url('obras_tecnico/atividade/' . $ativ->id); ?>" class="btn-acao btn-acao-iniciar">
-                                <i class="icon-play"></i> Iniciar
+                                <i class="bx bx-play"></i> Iniciar
                             </a>
                             <?php elseif ($ativ->status == 'iniciada'): ?>>
                             <a href="<?php echo site_url('obras_tecnico/atividade/' . $ativ->id); ?>" class="btn-acao btn-acao-continuar">
-                                <i class="icon-refresh"></i> Continuar
+                                <i class="bx bx-refresh"></i> Continuar
                             </a>
                             <?php else: ?>>
                             <a href="<?php echo site_url('obras_tecnico/atividade/' . $ativ->id); ?>" class="btn-acao btn-acao-visualizar">
-                                <i class="icon-eye-open"></i> Ver
+                                <i class="bx bx-show"></i> Ver
                             </a>
                             <?php endif; ?>>
                         </div>
@@ -360,7 +360,7 @@
                 </div>
                 <?php else: ?>>
                 <div class="empty-state">
-                    <div class="empty-state-icon"><i class="icon-tasks"></i></div>
+                    <div class="empty-state-icon"><i class="bx bx-list-check"></i></div>
                     <div class="empty-state-text">Nenhuma atividade atribuída para você nesta obra.</div>
                 </div>
                 <?php endif; ?>
@@ -412,7 +412,7 @@
             <div class="obra-dash-card">
                 <div class="obra-dash-card-header">
                     <div class="obra-dash-card-title">
-                        <i class="icon-road"></i> Etapas da Obra
+                        <i class="bx bx-trip"></i> Etapas da Obra
                     </div>
                 </div>
 
@@ -449,7 +449,7 @@
                 </div>
                 <?php else: ?>>
                 <div class="empty-state">
-                    <div class="empty-state-icon"><i class="icon-road"></i></div>
+                    <div class="empty-state-icon"><i class="bx bx-trip"></i></div>
                     <div class="empty-state-text">Nenhuma etapa cadastrada.</div>
                 </div>
                 <?php endif; ?>>
@@ -462,18 +462,18 @@
             <div class="obra-dash-card">
                 <div class="obra-dash-card-header">
                     <div class="obra-dash-card-title">
-                        <i class="icon-bolt"></i> Ações Rápidas
+                        <i class="bx bx-bolt"></i> Ações Rápidas
                     </div>
                 </div>
 
                 <div class="quick-actions">
                     <a href="<?php echo site_url('obras_tecnico/minhasObras'); ?>" class="quick-action-btn">
-                        <i class="icon-arrow-left"></i>
+                        <i class="bx bx-arrow-back"></i>
                         <span>Voltar</span>
                     </a>
 
                     <a href="tel:<?php echo preg_replace('/[^0-9]/', '', $obra->cliente_telefone ?? ''); ?>" class="quick-action-btn">
-                        <i class="icon-phone"></i>
+                        <i class="bx bx-phone"></i>
                         <span>Ligar Cliente</span>
                     </a>
                 </div>
@@ -483,7 +483,7 @@
             <div class="obra-dash-card">
                 <div class="obra-dash-card-header">
                     <div class="obra-dash-card-title">
-                        <i class="icon-info-sign"></i> Informações
+                        <i class="bx bx-info-circle"></i> Informações
                     </div>
                 </div>
 

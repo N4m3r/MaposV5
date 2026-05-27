@@ -40,7 +40,7 @@
     color: #888;
     font-size: 14px;
 }
-.stat-icon-tecnico {
+.stat-bx bx-user-pin {
     float: right;
     width: 50px;
     height: 50px;
@@ -182,7 +182,7 @@
     border-radius: 15px;
     box-shadow: 0 2px 20px rgba(0,0,0,0.08);
 }
-.empty-icon-tecnico {
+.empty-bx bx-user-pin {
     width: 120px;
     height: 120px;
     border-radius: 50%;
@@ -206,7 +206,7 @@
 
     <!-- Header -->
     <div class="tecnico-header">
-        <h1><i class="icon-hard-hat"></i> Minhas Obras</h1>
+        <h1><i class="bx bx-hard-hat"></i> Minhas Obras</h1>
         <p>Área de execução das obras atribuídas a você</p>
     </div>
 
@@ -214,19 +214,19 @@
         <!-- Stats Cards -->
         <div class="stats-cards-tecnico">
             <div class="stat-card-tecnico">
-                <div class="stat-icon-tecnico"><i class="icon-building"></i></div>
+                <div class="stat-bx bx-user-pin"><i class="bx bx-building"></i></div>
                 <div class="stat-number-tecnico"><?= count($obras) ?></div>
                 <div class="stat-label-tecnico">Obras Ativas</div>
             </div>
             <div class="stat-card-tecnico warning">
-                <div class="stat-icon-tecnico" style="background: linear-gradient(135deg, #f093fb, #f5576c);"><i class="icon-tasks"></i></div>
+                <div class="stat-bx bx-user-pin" style="background: linear-gradient(135deg, #f093fb, #f5576c);"><i class="bx bx-list-check"></i></div>
                 <div class="stat-number-tecnico">
                     <?= array_sum(array_column($obras, 'etapas_pendentes')) ?>
                 </div>
                 <div class="stat-label-tecnico">Etapas Pendentes</div>
             </div>
             <div class="stat-card-tecnico info">
-                <div class="stat-icon-tecnico" style="background: linear-gradient(135deg, #667eea, #764ba2);"><i class="icon-clipboard"></i></div>
+                <div class="stat-bx bx-user-pin" style="background: linear-gradient(135deg, #667eea, #764ba2);"><i class="bx bx-clipboard"></i></div>
                 <div class="stat-number-tecnico">
                     <?= array_sum(array_column($obras, 'minhas_os')) ?>
                 </div>
@@ -247,11 +247,11 @@
                             <?= $obra->status == 'EmExecucao' ? 'Em Execução' : $obra->status ?>
                         </span>
                         <div class="obra-tecnico-codigo">
-                            <i class="icon-barcode"></i> <?= $obra->codigo ?>
+                            <i class="bx bx-barcode"></i> <?= $obra->codigo ?>
                         </div>
                         <h4 class="obra-tecnico-title"><?= htmlspecialchars($obra->nome) ?></h4>
                         <div class="obra-tecnico-cliente">
-                            <i class="icon-user"></i> <?= htmlspecialchars($obra->cliente_nome ?? 'Não informado') ?>
+                            <i class="bx bx-user"></i> <?= htmlspecialchars($obra->cliente_nome ?? 'Não informado') ?>
                         </div>
                     </div>
 
@@ -286,7 +286,7 @@
 
                     <div class="obra-tecnico-actions">
                         <a href="<?= site_url('tecnicos_admin/tecnico_executar_obra/' . $obra->id) ?>" class="btn-executar">
-                            <i class="icon-play-circle"></i> Executar Obra
+                            <i class="bx bx-play-circle"></i> Executar Obra
                         </a>
                     </div>
                 </div>
@@ -294,13 +294,13 @@
         </div>
     <?php else: ?>
         <div class="empty-state-tecnico">
-            <div class="empty-icon-tecnico">
-                <i class="icon-building"></i>
+            <div class="empty-bx bx-user-pin">
+                <i class="bx bx-building"></i>
             </div>
             <h3>Nenhuma obra atribuída</h3>
             <p>Você não está alocado em nenhuma obra no momento.</p>
             <p style="color: #888; font-size: 14px;">
-                <i class="icon-info-sign"></i> Entre em contato com o gestor para ser alocado em uma obra.
+                <i class="bx bx-info-circle"></i> Entre em contato com o gestor para ser alocado em uma obra.
             </p>
         </div>
     <?php endif; ?>

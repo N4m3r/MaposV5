@@ -130,24 +130,24 @@
 <div class="diagnostico-container">
 
     <div class="header">
-        <h1><i class="icon-cogs"></i> Diagnóstico do Sistema</h1>
+        <h1><i class="bx bx-cogs"></i> Diagnóstico do Sistema</h1>
         <p>Verificação completa das tabelas e funcionalidades</p>
     </div>
 
     <?php if ($this->session->flashdata('success')): ?>
         <div class="alert alert-success">
-            <i class="icon-ok"></i> <?= $this->session->flashdata('success') ?>
+            <i class="bx bx-check"></i> <?= $this->session->flashdata('success') ?>
         </div>
     <?php endif; ?>
 
     <!-- Status das Tabelas -->
     <div class="card">
-        <h2><i class="icon-table"></i> Status das Tabelas</h2>
+        <h2><i class="bx bx-table"></i> Status das Tabelas</h2>
 
         <?php if (isset($tabelas) && is_array($tabelas)): ?>
             <?php foreach ($tabelas as $nome => $existe): ?>
                 <div class="tabela-item">
-                    <span><i class="icon-database"></i> <?= $nome ?></span>
+                    <span><i class="bx bx-data"></i> <?= $nome ?></span>
                     <span class="<?= $existe ? 'status-ok' : 'status-erro' ?>">
                         <?= $existe ? '✅ EXISTE' : '❌ NÃO EXISTE' ?>
                     </span>
@@ -161,24 +161,24 @@
 
             <?php if (!$todas_existem): ?>
                 <a href="<?= site_url('diagnostico/criar_tabelas') ?>" class="btn-acao btn-sucesso">
-                    <i class="icon-plus"></i> Criar Tabelas Ausentes
+                    <i class="bx bx-plus"></i> Criar Tabelas Ausentes
                 </a>
             <?php else: ?>
                 <div class="alert alert-success" style="margin-top: 20px;">
-                    <i class="icon-check"></i> Todas as tabelas estão criadas corretamente!
+                    <i class="bx bx-check"></i> Todas as tabelas estão criadas corretamente!
                 </div>
             <?php endif; ?>
 
         <?php else: ?>
             <div class="alert alert-warning">
-                <i class="icon-warning-sign"></i> Não foi possível verificar as tabelas.
+                <i class="bx bx-error"></i> Não foi possível verificar as tabelas.
             </div>
         <?php endif; ?>
     </div>
 
     <!-- Estatísticas -->
     <div class="card">
-        <h2><i class="icon-bar-chart"></i> Estatísticas</h2>
+        <h2><i class="bx bx-bar-chart"></i> Estatísticas</h2>
 
         <div class="stats-grid">
             <div class="stat-card">
@@ -205,26 +205,26 @@
 
     <!-- Links Rápidos -->
     <div class="card">
-        <h2><i class="icon-link"></i> Links Rápidos</h2>
+        <h2><i class="bx bx-link"></i> Links Rápidos</h2>
 
         <div style="display: flex; gap: 10px; flex-wrap: wrap;">
             <a href="<?= site_url('obras') ?>" class="btn-acao btn-sucesso">
-                <i class="icon-building"></i> Gerenciar Obras
+                <i class="bx bx-building"></i> Gerenciar Obras
             </a>
 
             <a href="<?= site_url('tecnicos/login') ?>" class="btn-acao btn-sucesso" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
-                <i class="icon-user"></i> Portal do Técnico
+                <i class="bx bx-user"></i> Portal do Técnico
             </a>
 
             <a href="<?= site_url('mine') ?>" class="btn-acao btn-sucesso" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
-                <i class="icon-user"></i> Portal do Cliente
+                <i class="bx bx-user"></i> Portal do Cliente
             </a>
         </div>
     </div>
 
     <!-- Informações do Sistema -->
     <div class="card">
-        <h2><i class="icon-info-sign"></i> Informações do Sistema</h2>
+        <h2><i class="bx bx-info-circle"></i> Informações do Sistema</h2>
 
         <p><strong>Versão PHP:</strong> <?= phpversion() ?></p>
         <p><strong>Versão CodeIgniter:</strong> <?= CI_VERSION ?></p>

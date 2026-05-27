@@ -18,11 +18,11 @@ $id = $tecnico->idUsuarios ?? $tecnico->id;
     <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
-                <span class="icon"><i class="icon-shopping-cart"></i></span>
+                <span class="icon"><i class="bx bx-cart"></i></span>
                 <h5>Estoque do Veículo - <?php echo $tecnico->nome; ?></h5>
                 <div class="buttons">
                     <a href="<?php echo site_url('tecnicos_admin/ver_tecnico/' . $id); ?>" class="btn btn-sm">
-                        <i class="icon-arrow-left"></i> Voltar
+                        <i class="bx bx-arrow-back"></i> Voltar
                     </a>
                 </div>
             </div>
@@ -33,7 +33,7 @@ $id = $tecnico->idUsuarios ?? $tecnico->id;
                     <div class="col-12">
                         <div class="widget-box">
                             <div class="widget-title">
-                                <span class="icon"><i class="icon-plus"></i></span>
+                                <span class="icon"><i class="bx bx-plus"></i></span>
                                 <h5>Adicionar Produto ao Estoque</h5>
                             </div>
                             <div class="widget-content">
@@ -54,7 +54,7 @@ $id = $tecnico->idUsuarios ?? $tecnico->id;
                                     <input type="number" name="quantidade" class="input-small" min="1" value="1" required>
 
                                     <button type="submit" class="btn btn-success">
-                                        <i class="icon-plus icon-white"></i> Adicionar
+                                        <i class="bx bx-plus text-white"></i> Adicionar
                                     </button>
                                 </form>
                             </div>
@@ -92,10 +92,10 @@ $id = $tecnico->idUsuarios ?? $tecnico->id;
                                             <td><?php echo isset($item->data_atualizacao) ? date('d/m/Y H:i', strtotime($item->data_atualizacao)) : '-'; ?></td>
                                             <td class="button-tip">
                                                 <a href="#" class="btn btn-sm btn-warning" title="Ajustar">
-                                                    <i class="icon-edit icon-white"></i>
+                                                    <i class="bx bx-edit text-white"></i>
                                                 </a>
                                                 <a href="#" class="btn btn-sm btn-danger" title="Remover">
-                                                    <i class="icon-remove icon-white"></i>
+                                                    <i class="bx bx-x text-white"></i>
                                                 </a>
                                             </td>
                                         </tr>
@@ -104,7 +104,7 @@ $id = $tecnico->idUsuarios ?? $tecnico->id;
                             </table>
                         <?php else: ?>
                             <div class="alert alert-info">
-                                <i class="icon-info-sign"></i> Nenhum produto em estoque para este técnico.
+                                <i class="bx bx-info-circle"></i> Nenhum produto em estoque para este técnico.
                             </div>
                         <?php endif; ?>
                     </div>
@@ -114,7 +114,7 @@ $id = $tecnico->idUsuarios ?? $tecnico->id;
                 <div class="row">
                     <div class="col-12">
                         <div class="alert alert-info">
-                            <i class="icon-info-sign"></i> <strong>Dica:</strong>
+                            <i class="bx bx-info-circle"></i> <strong>Dica:</strong>
                             O estoque vinculado ao técnico é descontado automaticamente quando ele registra o uso de material em uma OS.
                             <br>Para reabastecer, utilize o formulário acima.
                         </div>

@@ -19,14 +19,14 @@ $estoque = $estoque ?? [];
     <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
-                <span class="icon"><i class="icon-user"></i></span>
+                <span class="icon"><i class="bx bx-user"></i></span>
                 <h5>Detalhes do Técnico</h5>
                 <div class="buttons">
                     <a href="<?php echo site_url('tecnicos_admin/editar_tecnico/' . $id); ?>" class="btn btn-sm btn-warning">
-                        <i class="icon-edit icon-white"></i> Editar
+                        <i class="bx bx-edit text-white"></i> Editar
                     </a>
                     <a href="<?php echo site_url('tecnicos_admin/tecnicos'); ?>" class="btn btn-sm">
-                        <i class="icon-arrow-left"></i> Voltar
+                        <i class="bx bx-arrow-back"></i> Voltar
                     </a>
                 </div>
             </div>
@@ -35,7 +35,7 @@ $estoque = $estoque ?? [];
                 <!-- Informações Básicas -->
                 <div class="row">
                     <div class="col-4">
-                        <h4><i class="icon-user"></i> <?php echo $tecnico->nome; ?></h4>
+                        <h4><i class="bx bx-user"></i> <?php echo $tecnico->nome; ?></h4>
                         <table class="table table-bordered">
                             <tr><td><strong>E-mail:</strong></td><td><?php echo $tecnico->email; ?></td></tr>
                             <tr><td><strong>Telefone:</strong></td><td><?php echo $tecnico->telefone ?: '-'; ?></td></tr>
@@ -45,7 +45,7 @@ $estoque = $estoque ?? [];
                         </table>
                     </div>
                     <div class="col-4">
-                        <h4><i class="icon-car"></i> Veículo</h4>
+                        <h4><i class="bx bx-car"></i> Veículo</h4>
                         <table class="table table-bordered">
                             <tr><td><strong>Tipo:</strong></td><td><?php echo $tecnico->veiculo_tipo ?: '-'; ?></td></tr>
                             <tr><td><strong>Placa:</strong></td><td><?php echo $tecnico->veiculo_placa ?: '-'; ?></td></tr>
@@ -63,7 +63,7 @@ $estoque = $estoque ?? [];
                         </table>
                     </div>
                     <div class="col-4">
-                        <h4><i class="icon-dashboard"></i> Estatísticas (Mês)</h4>
+                        <h4><i class="bx bx-dashboard"></i> Estatísticas (Mês)</h4>
                         <table class="table table-bordered">
                             <tr>
                                 <td><strong>OS Concluídas:</strong></td>
@@ -86,7 +86,7 @@ $estoque = $estoque ?? [];
                 <!-- OS Recentes -->
                 <div class="row">
                     <div class="col-8">
-                        <h4><i class="icon-tasks"></i> Ordens de Serviço Recentes</h4>
+                        <h4><i class="bx bx-list-check"></i> Ordens de Serviço Recentes</h4>
                         <?php if (!empty($os_recentes)): ?>
                             <table class="table table-bordered table-striped">
                                 <thead>
@@ -111,7 +111,7 @@ $estoque = $estoque ?? [];
                                             <td><?php echo isset($os->data_checkin) ? date('d/m/Y', strtotime($os->data_checkin)) : '-'; ?></td>
                                             <td>
                                                 <a href="<?php echo site_url('os/visualizar/' . ($os->idOs ?? $os->os_id)); ?>" class="btn btn-sm btn-info">
-                                                    <i class="icon-eye-open icon-white"></i>
+                                                    <i class="bx bx-show text-white"></i>
                                                 </a>
                                             </td>
                                         </tr>
@@ -125,9 +125,9 @@ $estoque = $estoque ?? [];
 
                     <!-- Estoque -->
                     <div class="col-4">
-                        <h4><i class="icon-shopping-cart"></i> Estoque no Veículo</h4>
+                        <h4><i class="bx bx-cart"></i> Estoque no Veículo</h4>
                         <a href="<?php echo site_url('tecnicos_admin/estoque_tecnico/' . $id); ?>" class="btn btn-sm btn-success float-end">
-                            <i class="icon-plus icon-white"></i> Gerenciar Estoque
+                            <i class="bx bx-plus text-white"></i> Gerenciar Estoque
                         </a>
                         <div class="clearfix"></div>
                         <?php if (!empty($estoque)): ?>

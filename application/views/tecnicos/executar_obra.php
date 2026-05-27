@@ -1011,10 +1011,10 @@ textarea.wizard-input {
     <!-- Header da Obra -->
     <div class="obra-header">
         <a href="<?= site_url('tecnicos/minhas_obras') ?>" class="btn-voltar">
-            <i class="icon-arrow-left"></i> Voltar
+            <i class="bx bx-arrow-back"></i> Voltar
         </a>
-        <h1><i class="icon-building"></i> <?= htmlspecialchars($obra->nome ?? 'Obra sem nome') ?></h1>
-        <p><i class="icon-user"></i> <?= htmlspecialchars($obra->cliente_nome ?? 'Cliente não informado') ?></p>
+        <h1><i class="bx bx-building"></i> <?= htmlspecialchars($obra->nome ?? 'Obra sem nome') ?></h1>
+        <p><i class="bx bx-user"></i> <?= htmlspecialchars($obra->cliente_nome ?? 'Cliente não informado') ?></p>
     </div>
 
     <!-- Alerta de Atividade em Andamento -->
@@ -1025,7 +1025,7 @@ textarea.wizard-input {
         $isEffectiveImpedimento = $isImpedimento || $isStatusImpedimento;
         $alertaClass = $isEffectiveImpedimento ? 'atividade-impedimento' : (($wizard_em_andamento->status === 'pausada') ? 'atividade-pausada' : '');
         $alertaTitulo = $isEffectiveImpedimento ? 'Atividade com Impedimento' : (($wizard_em_andamento->status === 'pausada') ? 'Atividade Pausada' : 'Atividade em Andamento');
-        $alertaIcon = $isEffectiveImpedimento ? 'icon-warning-sign' : 'icon-time';
+        $alertaIcon = $isEffectiveImpedimento ? 'bx bx-error' : 'bx bx-time-five';
     ?>
     <div class="atividade-andamento <?= $alertaClass ?>" style="<?= $isEffectiveImpedimento ? 'background: linear-gradient(135deg, #e67e22, #d35400);' : '' ?>">
         <h3><i class="<?= $alertaIcon ?>"></i> <?= $alertaTitulo ?></h3>
@@ -1035,7 +1035,7 @@ textarea.wizard-input {
             <small>Iniciado às <?= date('H:i', strtotime($wizard_em_andamento->hora_inicio)) ?> - <?= date('d/m/Y', strtotime($wizard_em_andamento->data_atividade ?? 'now')) ?></small>
             <?php if ($isEffectiveImpedimento): ?>
                 <br><span style="color: #fff; font-weight: bold; background: rgba(0,0,0,0.2); padding: 4px 10px; border-radius: 12px; display: inline-block; margin-top: 6px;">
-                    <i class="icon-lock"></i> Aguardando Reabertura pelo Administrador
+                    <i class="bx bx-lock"></i> Aguardando Reabertura pelo Administrador
                 </span>
             <?php elseif ($wizard_em_andamento->status === 'pausada'): ?>
                 <br><span style="color: #e74c3c; font-weight: bold;">⏸️ Atividade pausada</span>
@@ -1044,7 +1044,7 @@ textarea.wizard-input {
         <?php $ativAndamentoId = $wizard_em_andamento->id ?? $wizard_em_andamento->idAtividade ?? null; ?>
         <?php if ($ativAndamentoId && !$isEffectiveImpedimento): ?>
         <button class="btn-continuar" onclick="WizardAtendimento.continuar(<?= $ativAndamentoId ?>)">
-            <i class="icon-play"></i> CONTINUAR ATENDIMENTO
+            <i class="bx bx-play"></i> CONTINUAR ATENDIMENTO
         </button>
         <?php endif; ?>
     </div>
@@ -1052,7 +1052,7 @@ textarea.wizard-input {
 
     <!-- Cards de Etapas -->
     <div class="etapas-section">
-        <h3 class="section-title"><i class="icon-list"></i> Etapas da Obra</h3>
+        <h3 class="section-title"><i class="bx bx-list-ul"></i> Etapas da Obra</h3>
 
         <?php
         // Normalize etapas to array
@@ -1063,7 +1063,7 @@ textarea.wizard-input {
         <?php if (empty($etapas)): ?>
         <div class="wizard-card">
             <div class="empty-state">
-                <div class="empty-icon"><i class="icon-list-alt"></i></div>
+                <div class="empty-icon"><i class="bx bx-list-ul-alt"></i></div>
                 <h4>Nenhuma etapa cadastrada</h4>
                 <p>Entre em contato com o gestor da obra.</p>
             </div>
@@ -1126,10 +1126,10 @@ textarea.wizard-input {
                 <div class="etapa-card">
                     <div class="etapa-header <?= $statusClass ?>">
                         <span class="etapa-status-badge"><?= $statusLabel ?></span>
-                        <div class="etapa-numero"><i class="icon-hard-hat"></i> Etapa #<?= $etapa->numero_etapa ?? $etapaId ?></div>
+                        <div class="etapa-numero"><i class="bx bx-hard-hat"></i> Etapa #<?= $etapa->numero_etapa ?? $etapaId ?></div>
                         <h2 class="etapa-nome"><?= htmlspecialchars($etapa->nome ?? 'Etapa sem nome') ?></h2>
                         <div class="etapa-progresso">
-                            <i class="icon-chart"></i> <?= $percentualReal ?>% concluído
+                            <i class="bx bx-line-chart"></i> <?= $percentualReal ?>% concluído
                         </div>
                     </div>
 
@@ -1185,33 +1185,33 @@ textarea.wizard-input {
                                     <div class="atividade-acoes">
                                         <?php if (($statusAtiv === 'em_andamento' || $statusAtiv === 'iniciada') && $ativId): ?>
                                         <button class="btn-acao finalizar" onclick="WizardAtendimento.continuar(<?= $ativId ?>)">
-                                            <i class="icon-stop"></i> Finalizar
+                                            <i class="bx bx-stop"></i> Finalizar
                                         </button>
                                         <?php elseif ($statusAtiv === 'concluida' && $ativId): ?>
                                         <!-- Atividade concluida: sem acao de reabrir para tecnico (somente pelo painel administrativo) -->
                                         <span class="btn-acao" style="background:#95a5a6;cursor:default;">
-                                            <i class="icon-check"></i> Concluída
+                                            <i class="bx bx-check"></i> Concluída
                                         </span>
                                         <?php elseif ($statusAtiv === 'finalizado' && $ativId): ?>
                                         <!-- Reabrir permitido somente pelo painel administrativo -->
                                         <button class="btn-acao reabrir" onclick="reabrirAtividade(<?= $ativId ?>, '<?= htmlspecialchars($ativ->titulo ?? $ativ->descricao ?? 'Atividade #' . $ativId, ENT_QUOTES) ?>')">
-                                            <i class="icon-refresh"></i> Reabrir
+                                            <i class="bx bx-refresh"></i> Reabrir
                                         </button>
                                         <?php elseif ($temImpedimento || $statusAtiv === 'impedimento'): ?>
                                         <button class="btn-acao impedido" disabled>
-                                            <i class="icon-warning-sign"></i> Impedido
+                                            <i class="bx bx-error"></i> Impedido
                                         </button>
                                         <?php elseif (($statusAtiv === 'pausada' || $statusAtiv === 'pausado') && $ativId): ?>
                                         <button class="btn-acao continuar" onclick="WizardAtendimento.continuar(<?= $ativId ?>)">
-                                            <i class="icon-play"></i> Continuar
+                                            <i class="bx bx-play"></i> Continuar
                                         </button>
                                         <?php elseif (in_array($statusAtiv, ['agendada', 'pendente', 'aberta', 'reaberta', 'reaberto', 'nao_iniciada', 'nao_iniciado']) && $ativId): ?>
                                         <button class="btn-acao iniciar" onclick="WizardAtendimento.iniciarAtividade(<?= $ativId ?>)">
-                                            <i class="icon-play"></i> Iniciar
+                                            <i class="bx bx-play"></i> Iniciar
                                         </button>
                                         <?php else: ?>
                                         <span class="btn-acao detalhes">
-                                            <i class="icon-check"></i> <?= $statusAtivLabel ?>
+                                            <i class="bx bx-check"></i> <?= $statusAtivLabel ?>
                                         </span>
                                         <?php endif; ?>
                                     </div>
@@ -1242,28 +1242,28 @@ textarea.wizard-input {
         <!-- Header -->
         <div class="wizard-header">
             <button class="btn-fechar-wizard" onclick="WizardAtendimento.fechar()">
-                <i class="icon-remove"></i>
+                <i class="bx bx-x"></i>
             </button>
-            <h2 id="wizardTitulo"><i class="icon-walk"></i> Iniciar Atendimento</h2>
+            <h2 id="wizardTitulo"><i class="bx bx-walk"></i> Iniciar Atendimento</h2>
             <p id="wizardSubtitulo">Selecione a etapa e atividade para iniciar</p>
         </div>
 
         <!-- Steps -->
         <div class="wizard-steps" id="wizardSteps">
             <div class="wizard-step active" data-step="1">
-                <div class="wizard-step-icon"><i class="icon-list"></i></div>
+                <div class="wizard-step-icon"><i class="bx bx-list-ul"></i></div>
                 <div class="wizard-step-label">Etapa</div>
             </div>
             <div class="wizard-step" data-step="2">
-                <div class="wizard-step-icon"><i class="icon-tasks"></i></div>
+                <div class="wizard-step-icon"><i class="bx bx-list-check"></i></div>
                 <div class="wizard-step-label">Atividade</div>
             </div>
             <div class="wizard-step" data-step="3">
-                <div class="wizard-step-icon"><i class="icon-signin"></i></div>
+                <div class="wizard-step-icon"><i class="bx bx-log-in"></i></div>
                 <div class="wizard-step-label">Check-in</div>
             </div>
             <div class="wizard-step" data-step="4">
-                <div class="wizard-step-icon"><i class="icon-signout"></i></div>
+                <div class="wizard-step-icon"><i class="bx bx-log-out"></i></div>
                 <div class="wizard-step-label">Check-out</div>
             </div>
         </div>
@@ -1275,7 +1275,7 @@ textarea.wizard-input {
             <div id="step1" class="wizard-step-content">
                 <div class="wizard-card">
                     <div class="wizard-card-titulo">
-                        <i class="icon-list"></i> Selecione a Etapa
+                        <i class="bx bx-list-ul"></i> Selecione a Etapa
                     </div>
                     <div class="etapas-grid" id="etapasGrid">
                         <?php
@@ -1288,7 +1288,7 @@ textarea.wizard-input {
                             if (!$etapaId) continue;
                         ?>
                         <div class="etapa-selecao" data-etapa-id="<?= $etapaId ?>" onclick="WizardAtendimento.selecionarEtapa(this)">
-                            <i class="icon-hard-hat"></i>
+                            <i class="bx bx-hard-hat"></i>
                             <h4><?= htmlspecialchars($etapa->nome ?? 'Etapa') ?></h4>
                             <p><?= $percentualReal ?>% concluído</p>
                         </div>
@@ -1299,7 +1299,7 @@ textarea.wizard-input {
                 </div>
 
                 <button class="wizard-btn-principal" id="btnAvancarEtapa" onclick="WizardAtendimento.avancarParaAtividade()" disabled>
-                    <i class="icon-arrow-right"></i> AVANÇAR PARA ATIVIDADE
+                    <i class="bx bx-right-arrow-alt"></i> AVANÇAR PARA ATIVIDADE
                 </button>
             </div>
 
@@ -1307,7 +1307,7 @@ textarea.wizard-input {
             <div id="step2" class="wizard-step-content" style="display: none;">
                 <div class="wizard-card">
                     <div class="wizard-card-titulo">
-                        <i class="icon-tasks"></i> Selecione a Atividade
+                        <i class="bx bx-list-check"></i> Selecione a Atividade
                     </div>
                     <div class="atividades-grid" id="atividadesGrid">
                         <!-- Preenchido via JS -->
@@ -1317,7 +1317,7 @@ textarea.wizard-input {
                 </div>
 
                 <button class="wizard-btn-principal" id="btnAvancarAtividade" onclick="WizardAtendimento.avancarParaCheckin()" disabled>
-                    <i class="icon-arrow-right"></i> AVANÇAR PARA CHECK-IN
+                    <i class="bx bx-right-arrow-alt"></i> AVANÇAR PARA CHECK-IN
                 </button>
             </div>
 
@@ -1325,14 +1325,14 @@ textarea.wizard-input {
             <div id="step3" class="wizard-step-content" style="display: none;">
                 <div class="wizard-card">
                     <div class="wizard-card-titulo">
-                        <i class="icon-signin"></i> Check-in de Entrada
+                        <i class="bx bx-log-in"></i> Check-in de Entrada
                     </div>
 
                     <!-- Opções -->
                     <div class="opcoes-atividade">
                         <label class="opcao-item normal" onclick="WizardAtendimento.selecionarTipoExecucao('normal')">
                             <input type="radio" name="tipoExecucao" value="normal" checked>
-                            <i class="icon-play"></i>
+                            <i class="bx bx-play"></i>
                             <div class="opcao-info">
                                 <h5>Iniciar Atividade Normalmente</h5>
                                 <p>Registro de hora e localização de entrada</p>
@@ -1341,7 +1341,7 @@ textarea.wizard-input {
 
                         <label class="opcao-item impedimento" onclick="WizardAtendimento.selecionarTipoExecucao('impedimento')">
                             <input type="radio" name="tipoExecucao" value="impedimento">
-                            <i class="icon-exclamation-sign"></i>
+                            <i class="bx bx-error-circle"></i>
                             <div class="opcao-info">
                                 <h5>Não é Possível Realizar</h5>
                                 <p>Registrar impedimento com justificativa</p>
@@ -1351,17 +1351,17 @@ textarea.wizard-input {
 
                     <!-- Justificativa (mostrar se impedimento) -->
                     <div id="boxJustificativa" class="justificativa-box" style="display: none;">
-                        <h4><i class="icon-exclamation-sign"></i> Justificativa do Impedimento</h4>
+                        <h4><i class="bx bx-error-circle"></i> Justificativa do Impedimento</h4>
                         <textarea id="justificativaTexto" class="wizard-input" rows="3" placeholder="Descreva o motivo pelo qual não é possível realizar esta atividade..."></textarea>
                     </div>
 
                     <!-- Foto Opcional -->
                     <div style="margin-top: 20px;">
                         <div class="wizard-card-titulo">
-                            <i class="icon-camera"></i> Foto de Registro (Opcional)
+                            <i class="bx bx-camera"></i> Foto de Registro (Opcional)
                         </div>
                         <div class="foto-upload" id="uploadCheckin" onclick="document.getElementById('fotoCheckin').click()">
-                            <i class="icon-camera"></i>
+                            <i class="bx bx-camera"></i>
                             <h4>Clique para adicionar foto</h4>
                             <p>Registre o estado inicial do local</p>
                             <input type="file" id="fotoCheckin" accept="image/*" capture="environment" style="display: none;" onchange="WizardAtendimento.previewFoto(this, 'previewCheckin', 'uploadCheckin')">
@@ -1369,14 +1369,14 @@ textarea.wizard-input {
                         <div id="containerPreviewCheckin" style="display: none; position: relative; margin-top: 15px;">
                             <img id="previewCheckin" class="foto-preview" style="width: 100%; max-width: 300px; border-radius: 10px;">
                             <button type="button" class="btn-remover-foto" onclick="WizardAtendimento.removerFoto('fotoCheckin', 'previewCheckin', 'containerPreviewCheckin', 'uploadCheckin')" title="Remover foto">
-                                <i class="icon-remove"></i>
+                                <i class="bx bx-x"></i>
                             </button>
                         </div>
                     </div>
 
                     <!-- Info de Localização -->
                     <div style="margin-top: 20px; background: #e3f2fd; border-radius: 10px; padding: 15px; display: flex; align-items: center; gap: 10px;">
-                        <i class="icon-map-marker" style="font-size: 20px; color: #3498db;"></i>
+                        <i class="bx bx-map" style="font-size: 20px; color: #3498db;"></i>
                         <div>
                             <strong style="font-size: 13px; color: #333;">Localização será registrada automaticamente</strong>
                             <p style="margin: 0; font-size: 12px; color: #666;">Hora de entrada: <span id="horaEntrada">--:--</span></p>
@@ -1385,7 +1385,7 @@ textarea.wizard-input {
                 </div>
 
                 <button class="wizard-btn-principal" onclick="WizardAtendimento.realizarCheckin()">
-                    <i class="icon-signin"></i> CONFIRMAR ENTRADA
+                    <i class="bx bx-log-in"></i> CONFIRMAR ENTRADA
                 </button>
             </div>
 
@@ -1394,7 +1394,7 @@ textarea.wizard-input {
                 <!-- Timer -->
                 <div class="wizard-timer">
                     <div class="timer-tempo" id="timerExecucao">00:00:00</div>
-                    <div class="timer-label"><i class="icon-time"></i> Tempo de Execução</div>
+                    <div class="timer-label"><i class="bx bx-time-five"></i> Tempo de Execução</div>
                 </div>
 
                 <!-- Info -->
@@ -1406,26 +1406,26 @@ textarea.wizard-input {
                 <!-- Ações durante execução -->
                 <div class="wizard-card">
                     <div class="wizard-card-titulo">
-                        <i class="icon-cogs"></i> Ações Durante a Execução
+                        <i class="bx bx-cogs"></i> Ações Durante a Execução
                     </div>
                     <div class="wizard-acoes">
                         <div class="wizard-acao registrar" onclick="WizardAtendimento.registrarProgresso()">
-                            <i class="icon-edit"></i>
+                            <i class="bx bx-edit"></i>
                             <strong>Registrar</strong>
                             <small>Anotações</small>
                         </div>
                         <div class="wizard-acao foto" onclick="WizardAtendimento.adicionarFoto()">
-                            <i class="icon-camera"></i>
+                            <i class="bx bx-camera"></i>
                             <strong>Foto</strong>
                             <small>Documentar</small>
                         </div>
                         <div class="wizard-acao pausar" onclick="WizardAtendimento.pausarExecucao()">
-                            <i class="icon-pause"></i>
+                            <i class="bx bx-pause"></i>
                             <strong>Pausar</strong>
                             <small>Interromper</small>
                         </div>
                         <div class="wizard-acao finalizar" onclick="WizardAtendimento.avancarParaCheckout()">
-                            <i class="icon-stop"></i>
+                            <i class="bx bx-stop"></i>
                             <strong>Finalizar</strong>
                             <small>Encerrar</small>
                         </div>
@@ -1449,7 +1449,7 @@ textarea.wizard-input {
 
                 <div class="wizard-card">
                     <div class="wizard-card-titulo">
-                        <i class="icon-check"></i> Marcar Atividades
+                        <i class="bx bx-check"></i> Marcar Atividades
                     </div>
                     <div class="checkout-atividades" id="checkoutAtividades">
                         <!-- Preenchido via JS -->
@@ -1458,10 +1458,10 @@ textarea.wizard-input {
 
                 <div class="wizard-card">
                     <div class="wizard-card-titulo">
-                        <i class="icon-camera"></i> Fotos de Registro
+                        <i class="bx bx-camera"></i> Fotos de Registro
                     </div>
                     <div class="foto-upload" id="uploadCheckout" onclick="document.getElementById('fotoCheckout').click()">
-                        <i class="icon-camera"></i>
+                        <i class="bx bx-camera"></i>
                         <h4>Adicionar foto de saída</h4>
                         <p>Documente o trabalho realizado</p>
                         <input type="file" id="fotoCheckout" accept="image/*" capture="environment" style="display: none;" onchange="WizardAtendimento.previewFoto(this, 'previewCheckout', 'uploadCheckout')">
@@ -1469,7 +1469,7 @@ textarea.wizard-input {
                     <div id="containerPreviewCheckout" style="display: none; position: relative; margin-top: 15px;">
                         <img id="previewCheckout" class="foto-preview" style="width: 100%; max-width: 300px; border-radius: 10px;">
                         <button type="button" class="btn-remover-foto" onclick="WizardAtendimento.removerFoto('fotoCheckout', 'previewCheckout', 'containerPreviewCheckout', 'uploadCheckout')" title="Remover foto">
-                            <i class="icon-remove"></i>
+                            <i class="bx bx-x"></i>
                         </button>
                     </div>
 
@@ -1481,13 +1481,13 @@ textarea.wizard-input {
 
                 <div class="wizard-card">
                     <div class="wizard-card-titulo">
-                        <i class="icon-edit"></i> Observações Finais
+                        <i class="bx bx-edit"></i> Observações Finais
                     </div>
                     <textarea id="observacoesCheckout" class="wizard-input" rows="3" placeholder="Descreva o que foi realizado, pendências ou observações importantes..."></textarea>
                 </div>
 
                 <button class="wizard-btn-principal" onclick="WizardAtendimento.mostrarConfirmacaoCheckout()">
-                    <i class="icon-signout"></i> FINALIZAR ATENDIMENTO
+                    <i class="bx bx-log-out"></i> FINALIZAR ATENDIMENTO
                 </button>
             </div>
 
@@ -1500,7 +1500,7 @@ textarea.wizard-input {
     <div class="wizard-container" style="justify-content: center;">
         <div class="wizard-card" style="max-width: 500px; margin: 0 auto;">
             <div class="wizard-card-titulo">
-                <i class="icon-edit"></i> Registrar Progresso
+                <i class="bx bx-edit"></i> Registrar Progresso
             </div>
             <textarea id="textoProgresso" class="wizard-input" rows="5" placeholder="Descreva o progresso realizado..."></textarea>
             <div style="display: flex; gap: 10px; margin-top: 20px;">
@@ -1520,7 +1520,7 @@ textarea.wizard-input {
     <div class="wizard-container" style="justify-content: center;">
         <div class="confirm-modal-card">
             <div class="confirm-modal-icon">
-                <i class="icon-play-circle"></i>
+                <i class="bx bx-play-circle"></i>
             </div>
             <h3 class="confirm-modal-titulo">Iniciar Atendimento?</h3>
             <p class="confirm-modal-subtitulo">
@@ -1529,22 +1529,22 @@ textarea.wizard-input {
 
             <div class="confirm-modal-info-box">
                 <div class="confirm-modal-info-item">
-                    <i class="icon-hard-hat"></i>
+                    <i class="bx bx-hard-hat"></i>
                     <span id="confirmarIniciarEtapa">--</span>
                 </div>
                 <div class="confirm-modal-divider"></div>
                 <div class="confirm-modal-info-item highlight">
-                    <i class="icon-tasks"></i>
+                    <i class="bx bx-list-check"></i>
                     <span id="confirmarIniciarAtividade">--</span>
                 </div>
             </div>
 
             <div class="confirm-modal-botoes">
                 <button class="confirm-modal-btn cancelar" onclick="document.getElementById('modalConfirmarIniciar').style.display='none'">
-                    <i class="icon-remove"></i> Cancelar
+                    <i class="bx bx-x"></i> Cancelar
                 </button>
                 <button class="confirm-modal-btn confirmar" onclick="WizardAtendimento.confirmarIniciar()">
-                    <i class="icon-play"></i> Iniciar Agora
+                    <i class="bx bx-play"></i> Iniciar Agora
                 </button>
             </div>
         </div>
@@ -1749,7 +1749,7 @@ textarea.wizard-input {
     <div class="wizard-container" style="justify-content: center;">
         <div class="wizard-card" style="max-width: 450px; margin: 0 auto; text-align: center;">
             <div style="font-size: 60px; color: #27ae60; margin-bottom: 20px;">
-                <i class="icon-stop-circle"></i>
+                <i class="bx bx-stop-circle"></i>
             </div>
 
             <h3 style="margin: 0 0 10px 0; font-size: 20px;">Finalizar Atendimento?</h3>
@@ -1767,10 +1767,10 @@ textarea.wizard-input {
 
             <div style="display: flex; gap: 10px;">
                 <button class="wizard-btn-principal" style="background: #95a5a6; flex: 1;" onclick="document.getElementById('modalConfirmarFinalizar').style.display='none'">
-                    <i class="icon-remove"></i> Continuar
+                    <i class="bx bx-x"></i> Continuar
                 </button>
                 <button class="wizard-btn-principal" style="flex: 1; background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);" onclick="WizardAtendimento.confirmarFinalizar()">
-                    <i class="icon-stop"></i> Finalizar
+                    <i class="bx bx-stop"></i> Finalizar
                 </button>
             </div>
         </div>
@@ -1782,7 +1782,7 @@ textarea.wizard-input {
     <div class="wizard-container" style="justify-content: center;">
         <div class="wizard-card" style="max-width: 450px; margin: 0 auto; text-align: center;">
             <div style="font-size: 60px; color: #f39c12; margin-bottom: 20px;">
-                <i class="icon-pause-circle"></i>
+                <i class="bx bx-pause-circle"></i>
             </div>
             <h3 style="margin: 0 0 10px 0; font-size: 20px;">Pausar Atividade?</h3>
             <p style="color: #666; margin-bottom: 20px;">
@@ -1799,17 +1799,17 @@ textarea.wizard-input {
 
             <div style="background: #fff3cd; border-radius: 10px; padding: 15px; margin-bottom: 20px; text-align: left;">
                 <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #856404;">
-                    <i class="icon-edit"></i> Motivo da pausa (opcional):
+                    <i class="bx bx-edit"></i> Motivo da pausa (opcional):
                 </label>
                 <textarea id="motivoPausa" class="wizard-input" rows="3" placeholder="Informe o motivo da pausa..."></textarea>
             </div>
 
             <div style="display: flex; gap: 10px;">
                 <button class="wizard-btn-principal" style="background: #95a5a6; flex: 1;" onclick="document.getElementById('modalConfirmarPausar').style.display='none'">
-                    <i class="icon-remove"></i> Continuar
+                    <i class="bx bx-x"></i> Continuar
                 </button>
                 <button class="wizard-btn-principal" style="flex: 1; background: linear-gradient(135deg, #f39c12 0%, #f1c40f 100%);" onclick="WizardAtendimento.confirmarPausar()">
-                    <i class="icon-pause"></i> Pausar
+                    <i class="bx bx-pause"></i> Pausar
                 </button>
             </div>
         </div>
@@ -1821,7 +1821,7 @@ textarea.wizard-input {
     <div class="wizard-container" style="justify-content: center;">
         <div class="wizard-card" style="max-width: 400px; margin: 0 auto; text-align: center;">
             <div style="font-size: 60px; color: #3498db; margin-bottom: 20px;">
-                <i class="icon-edit-sign"></i>
+                <i class="bx bx-edit-sign"></i>
             </div>
             <h3 style="margin: 0 0 10px 0; font-size: 20px;">Registrar Anotação?</h3>
             <p style="color: #666; margin-bottom: 20px;">
@@ -1830,21 +1830,21 @@ textarea.wizard-input {
 
             <div style="background: #e3f2fd; border-radius: 10px; padding: 15px; margin-bottom: 20px; text-align: left;">
                 <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-                    <i class="icon-tasks" style="color: #3498db;"></i>
+                    <i class="bx bx-list-check" style="color: #3498db;"></i>
                     <span id="confirmarAnotacaoAtividade" style="font-weight: 600;">--</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #666;">
-                    <i class="icon-time" style="color: #3498db;"></i>
+                    <i class="bx bx-time-five" style="color: #3498db;"></i>
                     <span id="confirmarAnotacaoTempo">Tempo: 00:00</span>
                 </div>
             </div>
 
             <div style="display: flex; gap: 10px;">
                 <button class="wizard-btn-principal" style="background: #95a5a6; flex: 1;" onclick="document.getElementById('modalConfirmarAnotacao').style.display='none'">
-                    <i class="icon-remove"></i> Cancelar
+                    <i class="bx bx-x"></i> Cancelar
                 </button>
                 <button class="wizard-btn-principal" style="flex: 1; background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);" onclick="WizardAtendimento.abrirModalAnotacao()">
-                    <i class="icon-check"></i> Sim, Prosseguir
+                    <i class="bx bx-check"></i> Sim, Prosseguir
                 </button>
             </div>
         </div>
@@ -1856,7 +1856,7 @@ textarea.wizard-input {
     <div class="wizard-container" style="justify-content: center;">
         <div class="wizard-card" style="max-width: 500px; margin: 0 auto;">
             <div style="font-size: 50px; color: #3498db; margin-bottom: 15px; text-align: center;">
-                <i class="icon-edit-sign"></i>
+                <i class="bx bx-edit-sign"></i>
             </div>
             <h3 style="margin: 0 0 10px 0; font-size: 20px; text-align: center;">Registrar Progresso</h3>
             <p style="color: #666; margin-bottom: 20px; text-align: center;">
@@ -1865,11 +1865,11 @@ textarea.wizard-input {
 
             <div style="background: #e3f2fd; border-radius: 10px; padding: 15px; margin-bottom: 20px;">
                 <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-                    <i class="icon-tasks" style="color: #3498db;"></i>
+                    <i class="bx bx-list-check" style="color: #3498db;"></i>
                     <span id="confirmarProgressoAtividade" style="font-weight: 600;">--</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #666;">
-                    <i class="icon-time" style="color: #3498db;"></i>
+                    <i class="bx bx-time-five" style="color: #3498db;"></i>
                     <span id="confirmarProgressoTempo">Tempo: 00:00</span>
                 </div>
             </div>
@@ -1878,10 +1878,10 @@ textarea.wizard-input {
 
             <div style="display: flex; gap: 10px; margin-top: 20px;">
                 <button class="wizard-btn-principal" style="background: #95a5a6; flex: 1;" onclick="document.getElementById('modalConfirmarProgresso').style.display='none'">
-                    <i class="icon-remove"></i> Cancelar
+                    <i class="bx bx-x"></i> Cancelar
                 </button>
                 <button class="wizard-btn-principal" style="flex: 1; background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);" onclick="WizardAtendimento.confirmarRegistrarProgresso()">
-                    <i class="icon-save"></i> Registrar
+                    <i class="bx bx-save"></i> Registrar
                 </button>
             </div>
         </div>
@@ -1893,7 +1893,7 @@ textarea.wizard-input {
     <div class="wizard-container" style="justify-content: center;">
         <div class="wizard-card" style="max-width: 450px; margin: 0 auto; text-align: center;">
             <div style="font-size: 60px; color: #27ae60; margin-bottom: 20px;">
-                <i class="icon-signout"></i>
+                <i class="bx bx-log-out"></i>
             </div>
             <h3 style="margin: 0 0 10px 0; font-size: 20px;">Finalizar Atividade?</h3>
             <p style="color: #666; margin-bottom: 20px;">
@@ -1914,7 +1914,7 @@ textarea.wizard-input {
 
             <div style="background: #fff3cd; border-radius: 10px; padding: 15px; margin-bottom: 20px; text-align: left;">
                 <p style="margin: 0; color: #856404; font-size: 13px;">
-                    <i class="icon-info-sign"></i> <strong>Atenção:</strong> Ao prosseguir, você será direcionado para o checkout onde poderá:
+                    <i class="bx bx-info-circle"></i> <strong>Atenção:</strong> Ao prosseguir, você será direcionado para o checkout onde poderá:
                 </p>
                 <ul style="margin: 10px 0 0 0; padding-left: 20px; color: #856404; font-size: 13px;">
                     <li>Marcar a atividade como concluída, pendente ou não realizada</li>
@@ -1925,10 +1925,10 @@ textarea.wizard-input {
 
             <div style="display: flex; gap: 10px;">
                 <button class="wizard-btn-principal" style="background: #95a5a6; flex: 1;" onclick="document.getElementById('modalConfirmarCheckout').style.display='none'">
-                    <i class="icon-remove"></i> Voltar
+                    <i class="bx bx-x"></i> Voltar
                 </button>
                 <button class="wizard-btn-principal" style="flex: 1; background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);" onclick="WizardAtendimento.confirmarAvancarCheckout()">
-                    <i class="icon-arrow-right"></i> Prosseguir
+                    <i class="bx bx-right-arrow-alt"></i> Prosseguir
                 </button>
             </div>
         </div>
@@ -1940,7 +1940,7 @@ textarea.wizard-input {
     <div class="wizard-container" style="justify-content: center;">
         <div class="wizard-card" style="max-width: 400px; margin: 0 auto; text-align: center;">
             <div style="font-size: 60px; color: #9b59b6; margin-bottom: 20px;">
-                <i class="icon-camera"></i>
+                <i class="bx bx-camera"></i>
             </div>
             <h3 style="margin: 0 0 10px 0; font-size: 20px;">Foto Registrada!</h3>
             <p style="color: #666; margin-bottom: 20px;">
@@ -1954,16 +1954,16 @@ textarea.wizard-input {
 
             <div style="background: #e3f2fd; border-radius: 10px; padding: 15px; margin-bottom: 20px; text-align: left;">
                 <p style="margin: 0; color: #1976d2; font-size: 13px;">
-                    <i class="icon-info-sign"></i> <strong>Localização registrada:</strong><br>
+                    <i class="bx bx-info-circle"></i> <strong>Localização registrada:</strong><br>
                     <span id="fotoLocalizacao">--</span>
                 </p>
                 <p style="margin: 8px 0 0 0; color: #1976d2; font-size: 13px;">
-                    <i class="icon-time"></i> <strong>Data/Hora:</strong> <span id="fotoDataHora">--</span>
+                    <i class="bx bx-time-five"></i> <strong>Data/Hora:</strong> <span id="fotoDataHora">--</span>
                 </p>
             </div>
 
             <button class="wizard-btn-principal" onclick="WizardAtendimento.fecharModalFoto()">
-                <i class="icon-ok"></i> OK, Entendido
+                <i class="bx bx-check"></i> OK, Entendido
             </button>
         </div>
     </div>
@@ -1974,7 +1974,7 @@ textarea.wizard-input {
     <div class="wizard-container" style="justify-content: center;">
         <div class="wizard-card" style="max-width: 400px; margin: 0 auto; text-align: center;">
             <div style="font-size: 60px; color: #27ae60; margin-bottom: 20px;">
-                <i class="icon-check"></i>
+                <i class="bx bx-check"></i>
             </div>
             <h3 style="margin: 0 0 10px 0; font-size: 20px;">Anotação Registrada!</h3>
             <p style="color: #666; margin-bottom: 20px;">
@@ -1983,13 +1983,13 @@ textarea.wizard-input {
 
             <div style="background: #e8f5e9; border-radius: 10px; padding: 15px; margin-bottom: 20px; text-align: left;">
                 <p style="margin: 0; color: #2e7d32; font-size: 13px;">
-                    <i class="icon-info-sign"></i> <strong>Resumo:</strong><br>
+                    <i class="bx bx-info-circle"></i> <strong>Resumo:</strong><br>
                     <span id="resumoAnotacaoSalva">Anotação registrada com sucesso.</span>
                 </p>
             </div>
 
             <button class="wizard-btn-principal" style="background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);" onclick="WizardAtendimento.fecharModalAnotacaoSalva()">
-                <i class="icon-ok"></i> OK, Entendido
+                <i class="bx bx-check"></i> OK, Entendido
             </button>
         </div>
     </div>
@@ -2000,7 +2000,7 @@ textarea.wizard-input {
     <div class="wizard-container" style="justify-content: center;">
         <div class="wizard-card" style="max-width: 400px; margin: 0 auto; text-align: center;">
             <div style="font-size: 60px; color: #e74c3c; margin-bottom: 20px;">
-                <i class="icon-signout"></i>
+                <i class="bx bx-log-out"></i>
             </div>
             <h3 style="margin: 0 0 10px 0; font-size: 20px;">Confirmar Finalização?</h3>
             <p style="color: #666; margin-bottom: 20px;">
@@ -2009,21 +2009,21 @@ textarea.wizard-input {
 
             <div style="background: #ffebee; border-radius: 10px; padding: 15px; margin-bottom: 20px; text-align: left;">
                 <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-                    <i class="icon-tasks" style="color: #c62828;"></i>
+                    <i class="bx bx-list-check" style="color: #c62828;"></i>
                     <span id="confirmarSalvarAtividade" style="font-weight: 600; color: #c62828;">--</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #666;">
-                    <i class="icon-time" style="color: #c62828;"></i>
+                    <i class="bx bx-time-five" style="color: #c62828;"></i>
                     <span id="confirmarSalvarTempo">Tempo total: 00:00</span>
                 </div>
             </div>
 
             <div style="display: flex; gap: 10px;">
                 <button class="wizard-btn-principal" style="background: #95a5a6; flex: 1;" onclick="document.getElementById('modalConfirmarSalvarCheckout').style.display='none'">
-                    <i class="icon-remove"></i> Voltar
+                    <i class="bx bx-x"></i> Voltar
                 </button>
                 <button class="wizard-btn-principal" style="flex: 1; background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);" onclick="WizardAtendimento.confirmarSalvarCheckout()">
-                    <i class="icon-check"></i> Sim, Finalizar
+                    <i class="bx bx-check"></i> Sim, Finalizar
                 </button>
             </div>
         </div>
@@ -2035,7 +2035,7 @@ textarea.wizard-input {
     <div class="wizard-container" style="justify-content: center;">
         <div class="wizard-card" style="max-width: 400px; margin: 0 auto; text-align: center;">
             <div style="font-size: 60px; color: #27ae60; margin-bottom: 20px;">
-                <i class="icon-check"></i>
+                <i class="bx bx-check"></i>
             </div>
             <h3 style="margin: 0 0 10px 0; font-size: 20px;">Atendimento Finalizado!</h3>
             <p style="color: #666; margin-bottom: 20px;">
@@ -2044,17 +2044,17 @@ textarea.wizard-input {
 
             <div style="background: #e8f5e9; border-radius: 10px; padding: 15px; margin-bottom: 20px; text-align: left;">
                 <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-                    <i class="icon-tasks" style="color: #2e7d32;"></i>
+                    <i class="bx bx-list-check" style="color: #2e7d32;"></i>
                     <span id="resumoFinalizadoAtividade" style="font-weight: 600; color: #2e7d32;">--</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #666;">
-                    <i class="icon-time" style="color: #2e7d32;"></i>
+                    <i class="bx bx-time-five" style="color: #2e7d32;"></i>
                     <span id="resumoFinalizadoTempo">Tempo total: 00:00</span>
                 </div>
             </div>
 
             <button class="wizard-btn-principal" style="background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);" onclick="WizardAtendimento.fecharModalFinalizado()">
-                <i class="icon-ok"></i> OK, Fechar
+                <i class="bx bx-check"></i> OK, Fechar
             </button>
         </div>
     </div>
@@ -2382,7 +2382,7 @@ const WizardAtendimento = {
         // Atualizar título
         var titulo = document.getElementById('wizardTitulo');
         var subtitulo = document.getElementById('wizardSubtitulo');
-        if (titulo) titulo.innerHTML = '<i class="icon-play"></i> Execução em Andamento';
+        if (titulo) titulo.innerHTML = '<i class="bx bx-play"></i> Execução em Andamento';
         if (subtitulo) subtitulo.textContent = 'Finalize ou registre o progresso da atividade';
 
         // Preencher info da atividade em andamento
@@ -2517,11 +2517,11 @@ const WizardAtendimento = {
         const tituloStep2 = document.querySelector('#step2 .wizard-card-titulo');
         if (tituloStep2) {
             if (atividadesDisponiveis.length === 0) {
-                tituloStep2.innerHTML = '<i class="icon-tasks"></i> Selecione a Atividade (Atividade Geral)';
+                tituloStep2.innerHTML = '<i class="bx bx-list-check"></i> Selecione a Atividade (Atividade Geral)';
             } else if (atividadesDisponiveis.length === 1) {
-                tituloStep2.innerHTML = '<i class="icon-tasks"></i> Selecione a Atividade (1 disponível)';
+                tituloStep2.innerHTML = '<i class="bx bx-list-check"></i> Selecione a Atividade (1 disponível)';
             } else {
-                tituloStep2.innerHTML = '<i class="icon-tasks"></i> Selecione uma das ' + atividadesDisponiveis.length + ' Atividades';
+                tituloStep2.innerHTML = '<i class="bx bx-list-check"></i> Selecione uma das ' + atividadesDisponiveis.length + ' Atividades';
             }
         }
 
@@ -2529,7 +2529,7 @@ const WizardAtendimento = {
             // Se não tem atividades disponíveis, criar opção de atividade geral
             grid.innerHTML = `
                 <div class="atividade-selecao" data-atividade-id="0" onclick="WizardAtendimento.selecionarAtividade(this)">
-                    <i class="icon-tasks"></i>
+                    <i class="bx bx-list-check"></i>
                     <div class="atividade-selecao-info">
                         <h5>Atividade Geral na Etapa</h5>
                         <p>Execução de trabalhos diversos em ${this.etapaSelecionada.nome}</p>
@@ -2925,7 +2925,7 @@ const WizardAtendimento = {
                     var subtituloEl = document.getElementById('wizardSubtitulo');
                     var infoEl = document.getElementById('infoAtividadeExecucao');
 
-                    if (tituloEl) tituloEl.innerHTML = '<i class="icon-play"></i> Execução em Andamento';
+                    if (tituloEl) tituloEl.innerHTML = '<i class="bx bx-play"></i> Execução em Andamento';
                     if (subtituloEl) subtituloEl.textContent = 'Atividade iniciada com sucesso';
                     if (infoEl) {
                         var nomeEtapa = this.etapaSelecionada ? this.etapaSelecionada.nome : 'Etapa';
@@ -3128,7 +3128,7 @@ const WizardAtendimento = {
         // Mostrar loading
         const loading = document.createElement('div');
         loading.id = 'fotoLoading';
-        loading.innerHTML = '<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:99999;display:flex;align-items:center;justify-content:center;"><div style="background:white;padding:20px;border-radius:10px;text-align:center;"><i class="icon-spinner icon-spin" style="font-size:30px;color:#9b59b6;"></i><p>Otimizando foto...</p></div></div>';
+        loading.innerHTML = '<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:99999;display:flex;align-items:center;justify-content:center;"><div style="background:white;padding:20px;border-radius:10px;text-align:center;"><i class="bx bx-loader-circle bx-spin" style="font-size:30px;color:#9b59b6;"></i><p>Otimizando foto...</p></div></div>';
         document.body.appendChild(loading);
 
         // Comprimir imagem (max 1280px, qualidade 0.8)
@@ -3170,7 +3170,7 @@ const WizardAtendimento = {
         // Mostrar loading
         const loading = document.createElement('div');
         loading.id = 'fotoLoading';
-        loading.innerHTML = '<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:99999;display:flex;align-items:center;justify-content:center;"><div style="background:white;padding:20px;border-radius:10px;text-align:center;"><i class="icon-spinner icon-spin" style="font-size:30px;color:#9b59b6;"></i><p>Enviando foto...</p></div></div>';
+        loading.innerHTML = '<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:99999;display:flex;align-items:center;justify-content:center;"><div style="background:white;padding:20px;border-radius:10px;text-align:center;"><i class="bx bx-loader-circle bx-spin" style="font-size:30px;color:#9b59b6;"></i><p>Enviando foto...</p></div></div>';
         document.body.appendChild(loading);
 
         // Preparar envio
@@ -3552,7 +3552,7 @@ const WizardAtendimento = {
         var btn = document.querySelector('#step5 .wizard-btn-principal');
         if (btn) {
             btn.dataset.originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="icon-spinner icon-spin"></i> Salvando...';
+            btn.innerHTML = '<i class="bx bx-loader-circle bx-spin"></i> Salvando...';
             btn.disabled = true;
         }
 
@@ -3791,7 +3791,7 @@ function reabrirAtividade(atividadeId, tituloAtividade) {
     var btn = document.querySelector('button[onclick*="reabrirAtividade(' + atividadeId + '"]');
     if (btn) {
         btn.disabled = true;
-        btn.innerHTML = '<i class="icon-refresh icon-spin"></i> Reabrindo...';
+        btn.innerHTML = '<i class="bx bx-refresh bx-spin"></i> Reabrindo...';
     }
 
     // Preparar dados para envio
@@ -3831,7 +3831,7 @@ function reabrirAtividade(atividadeId, tituloAtividade) {
             // Reabilitar o botão em caso de erro
             if (btn) {
                 btn.disabled = false;
-                btn.innerHTML = '<i class="icon-refresh"></i> Reabrir';
+                btn.innerHTML = '<i class="bx bx-refresh"></i> Reabrir';
             }
         }
     })
@@ -3841,7 +3841,7 @@ function reabrirAtividade(atividadeId, tituloAtividade) {
         // Reabilitar o botão em caso de erro
         if (btn) {
             btn.disabled = false;
-            btn.innerHTML = '<i class="icon-refresh"></i> Reabrir';
+            btn.innerHTML = '<i class="bx bx-refresh"></i> Reabrir';
         }
     });
 }

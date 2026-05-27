@@ -281,7 +281,7 @@
     <div class="obras-tec-header">
         <div class="obras-tec-header-content">
             <div class="obras-tec-title">
-                <h1><i class="icon-building"></i> Minhas Obras</h1>
+                <h1><i class="bx bx-building"></i> Minhas Obras</h1>
                 <div class="obras-tec-subtitle">Acompanhe suas obras e atividades</div>
             </div>
             <div class="obras-tec-stats">
@@ -302,20 +302,20 @@
     <div class="atividades-hoje">
         <div class="atividades-hoje-header">
             <div class="atividades-hoje-title">
-                <i class="icon-calendar"></i> Atividades de Hoje
+                <i class="bx bx-calendar"></i> Atividades de Hoje
             </div>
             <div class="atividades-hoje-count"><?php echo count($atividades_hoje); ?> atividade(s)</div>
         </div>
         <?php foreach ($atividades_hoje as $ativ): ?>
         <div class="atividade-item <?php echo $ativ->status; ?>">
             <div class="atividade-icon">
-                <i class="icon-tasks"></i>
+                <i class="bx bx-list-check"></i>
             </div>
             <div class="atividade-content">
                 <div class="atividade-title"><?php echo $ativ->titulo; ?></div>
                 <div class="atividade-meta">
-                    <i class="icon-building"></i> <?php echo $ativ->obra_nome ?? 'Obra não definida'; ?>
-                    <?php if ($ativ->hora_inicio): ?> | <i class="icon-time"></i> <?php echo substr($ativ->hora_inicio, 0, 5); ?>
+                    <i class="bx bx-building"></i> <?php echo $ativ->obra_nome ?? 'Obra não definida'; ?>
+                    <?php if ($ativ->hora_inicio): ?> | <i class="bx bx-time-five"></i> <?php echo substr($ativ->hora_inicio, 0, 5); ?>
                     <?php endif; ?>
                 </div>
             </div>
@@ -345,7 +345,7 @@
             <div class="obra-tec-header-card <?php echo $statusClass; ?>">
                 <div class="obra-tec-status"><?php echo $obra->status; ?></div>
                 <div class="obra-tec-title-card"><?php echo $obra->nome; ?></div>
-                <div class="obra-tec-cliente"><i class="icon-user"></i> <?php echo $obra->cliente_nome ?? 'Cliente não definido'; ?></div>
+                <div class="obra-tec-cliente"><i class="bx bx-user"></i> <?php echo $obra->cliente_nome ?? 'Cliente não definido'; ?></div>
             </div>
 
             <div class="obra-tec-body">
@@ -374,7 +374,7 @@
 
             <div class="obra-tec-footer">
                 <a href="<?php echo site_url('obras_tecnico/obra/' . $obra->id); ?>" class="obra-tec-btn">
-                    <i class="icon-eye-open"></i> Acessar Obra
+                    <i class="bx bx-show"></i> Acessar Obra
                 </a>
             </div>
         </div>
@@ -382,7 +382,7 @@
     </div>
     <?php else: ?>
     <div class="empty-state">
-        <div class="empty-state-icon"><i class="icon-building"></i></div>
+        <div class="empty-state-icon"><i class="bx bx-building"></i></div>
         <div class="empty-state-title">Nenhuma obra atribuída</div>
         <div class="empty-state-text">Você ainda não está designado para nenhuma obra.</div>
     </div>

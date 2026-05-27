@@ -424,7 +424,7 @@
 
     <!-- Header -->
     <div class="obras-header">
-        <h1><i class="icon-hard-hat"></i> Minhas Obras</h1>
+        <h1><i class="bx bx-hard-hat"></i> Minhas Obras</h1>
         <p>Obras em que você está alocado para execução</p>
     </div>
 
@@ -448,7 +448,7 @@
 
         <!-- Info Box -->
         <div class="info-box">
-            <i class="icon-info-sign"></i>
+            <i class="bx bx-info-circle"></i>
             <p>
                 <strong>Dica:</strong> Clique em "Executar Obra" para registrar seu check-in,
                 acompanhar etapas e registrar atividades com fotos.
@@ -467,11 +467,11 @@
                     <div class="obra-header-card <?= $headerClass ?>">
                         <span class="obra-status-badge"><?= $statusLabel ?></span>
                         <div class="obra-codigo">
-                            <i class="icon-barcode"></i> <?= $obra->codigo ?>
+                            <i class="bx bx-barcode"></i> <?= $obra->codigo ?>
                         </div>
                         <h2 class="obra-nome"><?= htmlspecialchars($obra->nome) ?></h2>
                         <div class="obra-cliente">
-                            <i class="icon-user"></i> <?= htmlspecialchars($obra->cliente_nome ?? 'Não informado') ?>
+                            <i class="bx bx-user"></i> <?= htmlspecialchars($obra->cliente_nome ?? 'Não informado') ?>
                         </div>
                     </div>
 
@@ -506,7 +506,7 @@
                             <?php endforeach; ?>
                             <?php if (count($obra->etapas) > 4): ?>
                             <div class="etapa-mini-item" style="justify-content: center; color: #888; font-size: 11px;">
-                                <i class="icon-ellipsis-horizontal"></i> <?= count($obra->etapas) - 4 ?> etapa(s) a mais
+                                <i class="bx bx-dots-horizontal-rounded"></i> <?= count($obra->etapas) - 4 ?> etapa(s) a mais
                             </div>
                             <?php endif; ?>
                         </div>
@@ -515,15 +515,15 @@
                         <!-- Atividades Stats -->
                         <div class="atividades-stats">
                             <div class="atividade-stat total">
-                                <i class="icon-tasks"></i>
+                                <i class="bx bx-list-check"></i>
                                 <span class="num"><?= $obra->atividades_total ?? 0 ?></span> ativ.
                             </div>
                             <div class="atividade-stat concluidas">
-                                <i class="icon-check"></i>
+                                <i class="bx bx-check"></i>
                                 <span class="num"><?= $obra->atividades_concluidas ?? 0 ?></span> concl.
                             </div>
                             <div class="atividade-stat pendentes">
-                                <i class="icon-clock"></i>
+                                <i class="bx bx-clock"></i>
                                 <span class="num"><?= $obra->atividades_pendentes ?? 0 ?></span> pend.
                             </div>
                         </div>
@@ -547,7 +547,7 @@
 
                     <div class="obra-actions">
                         <a href="<?= site_url('tecnicos/executar_obra/' . $obra->id) ?>" class="btn-executar-obra">
-                            <i class="icon-play-circle"></i> Executar Obra
+                            <i class="bx bx-play-circle"></i> Executar Obra
                         </a>
                     </div>
                 </div>
@@ -558,12 +558,12 @@
 
         <div class="empty-state">
             <div class="empty-icon">
-                <i class="icon-building"></i>
+                <i class="bx bx-building"></i>
             </div>
             <h3>Nenhuma obra atribuída</h3>
             <p>Você não está alocado em nenhuma obra no momento.</p>
             <p style="color: #888; font-size: 14px; margin-top: 15px;">
-                <i class="icon-info-sign"></i> Entre em contato com o gestor para ser alocado em uma obra.
+                <i class="bx bx-info-circle"></i> Entre em contato com o gestor para ser alocado em uma obra.
             </p>
         </div>
 

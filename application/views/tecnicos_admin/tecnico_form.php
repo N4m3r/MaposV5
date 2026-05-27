@@ -12,7 +12,7 @@ $titulo = $is_edicao ? 'Editar Técnico' : 'Cadastrar Técnico';
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon">
-                    <i class="icon-user"></i>
+                    <i class="bx bx-user"></i>
                 </span>
                 <h5><?php echo $titulo; ?></h5>
             </div>
@@ -125,10 +125,10 @@ $titulo = $is_edicao ? 'Editar Técnico' : 'Cadastrar Técnico';
 
                     <div class="form-actions">
                         <button type="submit" class="btn btn-success">
-                            <i class="icon-ok icon-white"></i> Salvar
+                            <i class="bx bx-check text-white"></i> Salvar
                         </button>
                         <a href="<?php echo site_url('tecnicos_admin/tecnicos'); ?>" class="btn">
-                            <i class="icon-arrow-left"></i> Voltar
+                            <i class="bx bx-arrow-back"></i> Voltar
                         </a>
                     </div>
 

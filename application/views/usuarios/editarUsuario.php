@@ -62,7 +62,7 @@
                         <label for="senha" class="form-label">Senha</label>
                         <div class="controls">
                             <input id="senha" type="password" name="senha" value="" placeholder="Não preencha se não quiser alterar." />
-                            <i class="icon-exclamation-sign tip-top" title="Se não quiser alterar a senha, não preencha esse campo."></i>
+                            <i class="bx bx-error-circle tip-top" title="Se não quiser alterar a senha, não preencha esse campo."></i>
                         </div>
                     </div>
 

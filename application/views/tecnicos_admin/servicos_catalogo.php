@@ -9,11 +9,11 @@ $servicos = $servicos ?? [];
     <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
-                <span class="icon"><i class="icon-wrench"></i></span>
+                <span class="icon"><i class="bx bx-wrench"></i></span>
                 <h5>Catálogo de Serviços</h5>
                 <div class="buttons">
                     <a href="<?php echo site_url('servicos/adicionar'); ?>" class="btn btn-sm btn-success">
-                        <i class="icon-plus icon-white"></i> Novo Serviço
+                        <i class="bx bx-plus text-white"></i> Novo Serviço
                     </a>
                 </div>
             </div>
@@ -39,11 +39,11 @@ $servicos = $servicos ?? [];
                                     <td class="button-tip">
                                         <a href="<?php echo site_url('servicos/editar/' . $servico->idServicos); ?>"
                                            class="btn btn-sm btn-warning" title="Editar">
-                                            <i class="icon-edit icon-white"></i>
+                                            <i class="bx bx-edit text-white"></i>
                                         </a>
                                         <a href="<?php echo site_url('servicos/visualizar/' . $servico->idServicos); ?>"
                                            class="btn btn-sm btn-info" title="Visualizar">
-                                            <i class="icon-eye-open icon-white"></i>
+                                            <i class="bx bx-show icon-white"></i>
                                         </a>
                                     </td>
                                 </tr>
@@ -52,9 +52,9 @@ $servicos = $servicos ?? [];
                     </table>
                 <?php else: ?>
                     <div class="alert alert-info" style="margin: 20px;">
-                        <i class="icon-info-sign"></i> Nenhum serviço cadastrado.
+                        <i class="bx bx-info-circle"></i> Nenhum serviço cadastrado.
                         <a href="<?php echo site_url('servicos/adicionar'); ?>" class="btn btn-sm btn-success">
-                            <i class="icon-plus icon-white"></i> Cadastrar primeiro serviço
+                            <i class="bx bx-plus text-white"></i> Cadastrar primeiro serviço
                         </a>
                     </div>
                 <?php endif; ?>

@@ -81,7 +81,7 @@
                               <option value="margemLucro">Margem de Lucro</option>
                             </select>
                             <input style="width: 4em;" id="Lucro" name="Lucro" type="text" placeholder="%" maxlength="3" size="2" />
-                            <i class="icon-info-sign tip-left" title="Markup: Porcentagem aplicada ao valor de compra | Margem de Lucro: Porcentagem aplicada ao valor de venda"></i>
+                            <i class="bx bx-info-circle tip-left" title="Markup: Porcentagem aplicada ao valor de compra | Margem de Lucro: Porcentagem aplicada ao valor de venda"></i>
                         </div>
                     </div>
                     <div class="mb-3">

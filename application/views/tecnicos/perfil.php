@@ -1031,7 +1031,7 @@
     <!-- Header com Avatar -->
     <div class="perfil-header">
         <button class="btn-editar" onclick="abrirModalEdicao()">
-            <i class="icon-pencil"></i> Editar Perfil
+            <i class="bx bx-edit"></i> Editar Perfil
         </button>
 
         <div class="perfil-avatar-wrapper">
@@ -1040,19 +1040,19 @@
                     <img src="<?php echo base_url($tecnico->foto_tecnico); ?>?v=<?php echo time(); ?>" alt="Foto">
                 <?php else: ?>
                     <div class="avatar-placeholder">
-                        <i class="icon-user"></i>
+                        <i class="bx bx-user"></i>
                     </div>
                 <?php endif; ?>
             </div>
             <div class="avatar-edit-badge" onclick="abrirCamera()" title="Alterar Foto">
-                <i class="icon-camera"></i>
+                <i class="bx bx-camera"></i>
             </div>
         </div>
 
         <h3 class="perfil-nome"><?php echo htmlspecialchars($tecnico->nome ?? 'Técnico', ENT_COMPAT | ENT_HTML5, 'UTF-8'); ?></h3>
 
         <div class="perfil-nivel">
-            <i class="icon-star"></i>
+            <i class="bx bx-star"></i>
             <span>Técnico Nível <?php echo $tecnico->nivel_tecnico ?? 1; ?></span>
         </div>
     </div>
@@ -1061,7 +1061,7 @@
     <div class="perfil-section">
         <div class="section-header">
             <div class="section-icon">
-                <i class="icon-user"></i>
+                <i class="bx bx-user"></i>
             </div>
             <h4 class="section-title">Informações Pessoais</h4>
         </div>
@@ -1069,7 +1069,7 @@
         <div class="info-grid">
             <div class="info-card">
                 <div class="info-card-icon">
-                    <i class="icon-envelope"></i>
+                    <i class="bx bx-envelope"></i>
                 </div>
                 <div class="info-card-content">
                     <div class="info-card-label">E-mail</div>
@@ -1079,7 +1079,7 @@
 
             <div class="info-card">
                 <div class="info-card-icon">
-                    <i class="icon-phone"></i>
+                    <i class="bx bx-phone"></i>
                 </div>
                 <div class="info-card-content">
                     <div class="info-card-label">Telefone</div>
@@ -1089,7 +1089,7 @@
 
             <div class="info-card">
                 <div class="info-card-icon">
-                    <i class="icon-credit-card"></i>
+                    <i class="bx bx-credit-card"></i>
                 </div>
                 <div class="info-card-content">
                     <div class="info-card-label">CPF</div>
@@ -1103,7 +1103,7 @@
     <div class="perfil-section">
         <div class="section-header">
             <div class="section-icon">
-                <i class="icon-wrench"></i>
+                <i class="bx bx-wrench"></i>
             </div>
             <h4 class="section-title">Informações Profissionais</h4>
         </div>
@@ -1112,14 +1112,14 @@
             <?php if (!empty($tecnico->especialidades)): ?>
             <div class="info-card" style="grid-column: 1 / -1;">
                 <div class="info-card-icon">
-                    <i class="icon-lightbulb"></i>
+                    <i class="bx bx-bulb"></i>
                 </div>
                 <div class="info-card-content">
                     <div class="info-card-label">Especialidades</div>
                     <div class="especialidades-list">
                         <?php foreach (explode(',', $tecnico->especialidades) as $esp): ?>
                             <span class="especialidade-tag">
-                                <i class="icon-ok"></i>
+                                <i class="bx bx-check"></i>
                                 <?php echo trim(htmlspecialchars($esp, ENT_COMPAT | ENT_HTML5, 'UTF-8')); ?>
                             </span>
                         <?php endforeach; ?>
@@ -1131,7 +1131,7 @@
             <?php if ($tecnico->veiculo_placa): ?>
             <div class="info-card">
                 <div class="info-card-icon">
-                    <i class="icon-truck"></i>
+                    <i class="bx bx-truck"></i>
                 </div>
                 <div class="info-card-content">
                     <div class="info-card-label">Veículo</div>
@@ -1144,13 +1144,13 @@
 
             <div class="info-card">
                 <div class="info-card-icon">
-                    <i class="icon-time"></i>
+                    <i class="bx bx-time-five"></i>
                 </div>
                 <div class="info-card-content">
                     <div class="info-card-label">Plantão 24h</div>
                     <div class="info-card-value">
                         <span class="plantao-badge <?php echo ($tecnico->plantao_24h ?? 0) ? 'ativo' : 'inativo'; ?>">
-                            <i class="icon <?php echo ($tecnico->plantao_24h ?? 0) ? 'icon-ok' : 'icon-remove'; ?>"></i>
+                            <i class="icon <?php echo ($tecnico->plantao_24h ?? 0) ? 'bx bx-check' : 'bx bx-x'; ?>"></i>
                             <?php echo ($tecnico->plantao_24h ?? 0) ? 'Disponível' : 'Indisponível'; ?>
                         </span>
                     </div>
@@ -1179,7 +1179,7 @@
     <div class="perfil-section">
         <div class="section-header">
             <div class="section-icon">
-                <i class="icon-cog"></i>
+                <i class="bx bx-cog"></i>
             </div>
             <h4 class="section-title">Configurações</h4>
         </div>
@@ -1187,7 +1187,7 @@
         <div class="info-grid">
             <div class="info-card">
                 <div class="info-card-icon">
-                    <i class="icon-time"></i>
+                    <i class="bx bx-time-five"></i>
                 </div>
                 <div class="info-card-content">
                     <div class="info-card-label">Último Acesso</div>
@@ -1199,7 +1199,7 @@
 
             <div class="info-card">
                 <div class="info-card-icon">
-                    <i class="icon-mobile-phone"></i>
+                    <i class="bx bx-mobile"></i>
                 </div>
                 <div class="info-card-content">
                     <div class="info-card-label">Versão do App</div>
@@ -1211,7 +1211,7 @@
 
     <!-- Botão Sair -->
     <a href="<?php echo site_url('tecnicos/logout'); ?>" class="btn-logout">
-        <i class="icon-signout"></i>
+        <i class="bx bx-log-out"></i>
         <span>Sair do Sistema</span>
     </a>
 </div>
@@ -1220,23 +1220,23 @@
 <div class="modal foto-modal" id="cameraModal">
     <div class="modal-header">
         <button type="button" class="close" onclick="fecharCamera()" style="color: white; opacity: 0.8;">&times;</button>
-        <h3><i class="icon-camera"></i> Atualizar Foto de Perfil</h3>
+        <h3><i class="bx bx-camera"></i> Atualizar Foto de Perfil</h3>
     </div>
     <div class="modal-body">
         <!-- Abas -->
         <ul class="nav nav-tabs" id="fotoTab">
-            <li class="active"><a href="#tab-camera" data-bs-toggle="tab"><i class="icon-camera"></i> Câmera</a></li>
-            <li><a href="#tab-upload" data-bs-toggle="tab"><i class="icon-upload"></i> Galeria</a></li>
+            <li class="active"><a href="#tab-camera" data-bs-toggle="tab"><i class="bx bx-camera"></i> Câmera</a></li>
+            <li><a href="#tab-upload" data-bs-toggle="tab"><i class="bx bx-upload"></i> Galeria</a></li>
         </ul>
 
         <div class="tab-content">
             <!-- Aba Câmera -->
             <div class="tab-pane active" id="tab-camera">
                 <div class="foto-preview-area" id="camera-off">
-                    <i class="icon-camera"></i>
+                    <i class="bx bx-camera"></i>
                     <p>Clique no botão abaixo para iniciar a câmera</p>
                     <button type="button" class="btn-capturar" onclick="iniciarCamera()">
-                        <i class="icon-camera"></i> Iniciar Câmera
+                        <i class="bx bx-camera"></i> Iniciar Câmera
                     </button>
                 </div>
                 <div class="text-center" id="camera-on" style="display: none;">
@@ -1244,12 +1244,12 @@
                         <video id="video" autoplay playsinline></video>
                         <!-- Botão de captura flutuante no mobile -->
                         <button type="button" class="btn-captura-mobile" onclick="capturarDaCamera()" title="Tirar Foto">
-                            <i class="icon-camera"></i>
+                            <i class="bx bx-camera"></i>
                         </button>
                     </div>
                     <!-- Botão fallback desktop -->
                     <button type="button" class="btn-capturar btn-capturar-desktop" onclick="capturarDaCamera()">
-                        <i class="icon-camera"></i> Tirar Foto
+                        <i class="bx bx-camera"></i> Tirar Foto
                     </button>
                 </div>
             </div>
@@ -1257,25 +1257,25 @@
             <!-- Aba Upload -->
             <div class="tab-pane" id="tab-upload">
                 <div class="foto-preview-area" id="upload-placeholder">
-                    <i class="icon-picture"></i>
+                    <i class="bx bx-image"></i>
                     <p>Selecione uma foto da galeria ou tire uma foto agora</p>
                     <input type="file" id="input-foto" accept="image/*" style="display: none;" onchange="previewUpload(this)">
 
                     <!-- Botão Galeria -->
                     <button type="button" class="btn-capturar" onclick="selecionarArquivo('gallery')" style="margin-bottom: 10px;">
-                        <i class="icon-folder-open"></i> Abrir Galeria
+                        <i class="bx bx-folder-open"></i> Abrir Galeria
                     </button>
 
                     <!-- Botão Câmera (fallback para mobile) -->
                     <button type="button" class="btn-capturar" onclick="selecionarArquivo('camera')" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
-                        <i class="icon-camera"></i> Tirar Foto Agora
+                        <i class="bx bx-camera"></i> Tirar Foto Agora
                     </button>
                 </div>
                 <div class="text-center" id="upload-preview" style="display: none;">
                     <img id="preview-img" src="" alt="Preview">
                     <br><br>
                     <button type="button" class="btn" onclick="resetUpload()">
-                        <i class="icon-remove"></i> Escolher Outra
+                        <i class="bx bx-x"></i> Escolher Outra
                     </button>
                 </div>
             </div>
@@ -1284,7 +1284,7 @@
     <div class="modal-footer">
         <button type="button" class="btn" onclick="fecharCamera()">Cancelar</button>
         <button type="button" class="btn btn-primary" id="btn-salvar-foto" onclick="salvarFoto()" disabled>
-            <i class="icon-ok"></i> Salvar Foto
+            <i class="bx bx-check"></i> Salvar Foto
         </button>
     </div>
 </div>
@@ -1380,7 +1380,7 @@ function iniciarCamera() {
     // Mostrar loading
     var btnIniciar = document.querySelector('#camera-off .btn-capturar');
     if (btnIniciar) {
-        btnIniciar.innerHTML = '<i class="icon-spinner icon-spin"></i> Iniciando...';
+        btnIniciar.innerHTML = '<i class="bx bx-loader-circle bx-spin"></i> Iniciando...';
         btnIniciar.disabled = true;
     }
 
@@ -1435,7 +1435,7 @@ function iniciarCamera() {
     }).finally(function() {
         // Restaurar botão
         if (btnIniciar) {
-            btnIniciar.innerHTML = '<i class="icon-camera"></i> Iniciar Câmera';
+            btnIniciar.innerHTML = '<i class="bx bx-camera"></i> Iniciar Câmera';
             btnIniciar.disabled = false;
         }
     });
@@ -1455,7 +1455,7 @@ function previewUpload(input) {
 
         // Mostrar loading
         var placeholder = document.getElementById('upload-placeholder');
-        placeholder.innerHTML = '<i class="icon-spinner icon-spin"></i><p>Processando imagem...</p>';
+        placeholder.innerHTML = '<i class="bx bx-loader-circle bx-spin"></i><p>Processando imagem...</p>';
 
         var reader = new FileReader();
         reader.onload = function(e) {
@@ -1496,7 +1496,7 @@ function previewUpload(input) {
                 document.getElementById('upload-preview').style.display = 'block';
 
                 // Restaurar placeholder
-                placeholder.innerHTML = '<i class="icon-picture"></i><p>Selecione uma foto da galeria ou tire uma foto agora</p><input type="file" id="input-foto" accept="image/*" style="display: none;" onchange="previewUpload(this)"><button type="button" class="btn-capturar" onclick="selecionarArquivo(\'gallery\')" style="margin-bottom: 10px;"><i class="icon-folder-open"></i> Abrir Galeria</button><button type="button" class="btn-capturar" onclick="selecionarArquivo(\'camera\')" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);"><i class="icon-camera"></i> Tirar Foto Agora</button>';
+                placeholder.innerHTML = '<i class="bx bx-image"></i><p>Selecione uma foto da galeria ou tire uma foto agora</p><input type="file" id="input-foto" accept="image/*" style="display: none;" onchange="previewUpload(this)"><button type="button" class="btn-capturar" onclick="selecionarArquivo(\'gallery\')" style="margin-bottom: 10px;"><i class="bx bx-folder-open"></i> Abrir Galeria</button><button type="button" class="btn-capturar" onclick="selecionarArquivo(\'camera\')" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);"><i class="bx bx-camera"></i> Tirar Foto Agora</button>';
 
                 habilitarSalvar();
             };
@@ -1580,7 +1580,7 @@ function salvarFoto() {
     // Mostrar loading no botão
     var btnSalvar = document.getElementById('btn-salvar-foto');
     var textoOriginal = btnSalvar.innerHTML;
-    btnSalvar.innerHTML = '<i class="icon-spinner icon-spin"></i> Salvando...';
+    btnSalvar.innerHTML = '<i class="bx bx-loader-circle bx-spin"></i> Salvando...';
     btnSalvar.disabled = true;
 
     var formData = new FormData();
@@ -1867,7 +1867,7 @@ function mostrarErro(msg) {
 <div class="modal modal-edicao" id="edicaoModal">
     <div class="modal-header">
         <button type="button" class="close" onclick="fecharModalEdicao()" style="color: white; opacity: 0.8;">&times;</button>
-        <h3><i class="icon-pencil"></i> Editar Perfil</h3>
+        <h3><i class="bx bx-edit"></i> Editar Perfil</h3>
     </div>
     <div class="modal-body" style="padding: 25px;">
         <!-- Mensagens -->
@@ -1877,10 +1877,10 @@ function mostrarErro(msg) {
         <!-- Abas -->
         <div class="abas-navegacao">
             <button class="aba-btn active" data-aba="info" onclick="trocarAba('info')">
-                <i class="icon-user"></i> Informações
+                <i class="bx bx-user"></i> Informações
             </button>
             <button class="aba-btn" data-aba="senha" onclick="trocarAba('senha')">
-                <i class="icon-lock"></i> Trocar Senha
+                <i class="bx bx-lock"></i> Trocar Senha
             </button>
         </div>
 
@@ -1924,7 +1924,7 @@ function mostrarErro(msg) {
 
             <div style="text-align: right; margin-top: 25px;">
                 <button type="button" class="btn btn-salvar" onclick="salvarInformacoes()">
-                    <i class="icon-ok"></i> Salvar Alterações
+                    <i class="bx bx-check"></i> Salvar Alterações
                 </button>
             </div>
         </div>
@@ -1948,7 +1948,7 @@ function mostrarErro(msg) {
 
             <div style="text-align: right; margin-top: 25px;">
                 <button type="button" class="btn btn-salvar" onclick="trocarSenha()">
-                    <i class="icon-ok"></i> Trocar Senha
+                    <i class="bx bx-check"></i> Trocar Senha
                 </button>
             </div>
         </div>

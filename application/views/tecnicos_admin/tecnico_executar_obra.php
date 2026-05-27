@@ -338,11 +338,11 @@
         <div class="exec-header">
             <div class="exec-header-top">
                 <div class="exec-header-info">
-                    <h1><i class="icon-play-circle"></i> <?= htmlspecialchars($obra->nome) ?></h1>
-                    <p><i class="icon-user"></i> <?= htmlspecialchars($obra->cliente_nome ?? 'Não informado') ?></p>
+                    <h1><i class="bx bx-play-circle"></i> <?= htmlspecialchars($obra->nome) ?></h1>
+                    <p><i class="bx bx-user"></i> <?= htmlspecialchars($obra->cliente_nome ?? 'Não informado') ?></p>
                 </div>
                 <a href="<?= site_url('tecnicos_admin/minhas_obras') ?>" class="btn-action" style="background: rgba(255,255,255,0.2); color: white;">
-                    <i class="icon-arrow-left"></i> Voltar
+                    <i class="bx bx-arrow-back"></i> Voltar
                 </a>
             </div>
 
@@ -365,7 +365,7 @@
                 <div class="exec-card">
                     <div class="exec-card-header">
                         <div class="exec-card-title">
-                            <i class="icon-tasks"></i> Etapas da Obra
+                            <i class="bx bx-list-check"></i> Etapas da Obra
                         </div>
                     </div>
 
@@ -405,17 +405,17 @@
                                     <?php if ($etapaStatus !== 'concluida'): ?>
                                         <div class="etapa-actions">
                                             <button type="button" class="btn-action btn-action-primary" onclick="atualizarProgresso(<?= $etapa->id ?>, '<?= htmlspecialchars($etapa->nome) ?>')">
-                                                <i class="icon-refresh"></i> Atualizar
+                                                <i class="bx bx-refresh"></i> Atualizar
                                             </button>
                                             <?php if ($etapaStatus === 'em_andamento'): ?>
                                                 <button type="button" class="btn-action btn-action-success" onclick="concluirEtapa(<?= $etapa->id ?>)" style="flex: 0.5;">
-                                                    <i class="icon-check"></i>
+                                                    <i class="bx bx-check"></i>
                                                 </button>
                                             <?php endif; ?>
                                         </div>
                                     <?php else: ?>
                                         <div class="concluido-badge">
-                                            <i class="icon-check-circle"></i> Etapa Concluída
+                                            <i class="bx bx-check-circle"></i> Etapa Concluída
                                         </div>
                                     <?php endif; ?>
                                 </div>
@@ -424,7 +424,7 @@
                         </div>
                     <?php else: ?>
                         <div class="empty-state-modern">
-                            <i class="icon-list-ul"></i>
+                            <i class="bx bx-list-ul-ul"></i>
                             <p>Nenhuma etapa cadastrada para esta obra.</p>
                         </div>
                     <?php endif; ?>
@@ -434,13 +434,13 @@
                 <div class="exec-card">
                     <div class="exec-card-header">
                         <div class="exec-card-title" style="color: #667eea;">
-                            <i class="icon-pushpin"></i> Minhas Tarefas
+                            <i class="bx bx-pin"></i> Minhas Tarefas
                         </div>
                     </div>
 
                     <div id="minhas-tarefas">
                         <div class="empty-state-modern">
-                            <i class="icon-refresh icon-spin"></i>
+                            <i class="bx bx-refresh bx-spin"></i>
                             <p>Carregando tarefas...</p>
                         </div>
                     </div>
@@ -450,7 +450,7 @@
                 <div class="exec-card">
                     <div class="exec-card-header">
                         <div class="exec-card-title" style="color: #764ba2;">
-                            <i class="icon-file-alt"></i> Minhas OS na Obra
+                            <i class="bx bx-file-alt"></i> Minhas OS na Obra
                         </div>
                     </div>
 
@@ -468,19 +468,19 @@
                             <div class="os-avatar">#<?= $os->idOs ?></div>
                             <div class="os-info">
                                 <div class="os-cliente"><?= htmlspecialchars($os->nomeCliente) ?></div>
-                                <div class="os-data"><i class="icon-calendar"></i> <?= date('d/m/Y', strtotime($os->dataInicial)) ?></div>
+                                <div class="os-data"><i class="bx bx-calendar"></i> <?= date('d/m/Y', strtotime($os->dataInicial)) ?></div>
                             </div>
                             <span class="os-status" style="background: <?= $osStyle[1] ?>; color: <?= $osStyle[0] ?>;">
                                 <?= $os->status ?>
                             </span>
                             <a href="<?= site_url('os/visualizar/' . $os->idOs) ?>" class="btn-action btn-action-secondary" style="padding: 8px 12px;">
-                                <i class="icon-eye-open"></i>
+                                <i class="bx bx-show"></i>
                             </a>
                         </div>
                         <?php endforeach; ?>
                     <?php else: ?>
                         <div class="empty-state-modern">
-                            <i class="icon-clipboard"></i>
+                            <i class="bx bx-clipboard"></i>
                             <p>Você não possui OS nesta obra.</p>
                         </div>
                     <?php endif; ?>
@@ -494,21 +494,21 @@
                 <div class="exec-card" style="background: linear-gradient(135deg, #f8f9fa, #e9ecef);">
                     <div class="exec-card-header" style="border-bottom-color: #e0e0e0;">
                         <div class="exec-card-title">
-                            <i class="icon-info-sign" style="color: #764ba2;"></i> Informações
+                            <i class="bx bx-info-circle" style="color: #764ba2;"></i> Informações
                         </div>
                     </div>
 
                     <div class="info-card" style="background: white;">
                         <div class="info-row">
-                            <span class="info-label"><i class="icon-map-marker"></i> Endereço</span>
+                            <span class="info-label"><i class="bx bx-map"></i> Endereço</span>
                             <span class="info-value"><?= htmlspecialchars($obra->endereco ?? 'N/A') ?></span>
                         </div>
                         <div class="info-row">
-                            <span class="info-label"><i class="icon-calendar"></i> Previsão</span>
+                            <span class="info-label"><i class="bx bx-calendar"></i> Previsão</span>
                             <span class="info-value"><?= isset($obra->data_fim_prevista) ? date('d/m/Y', strtotime($obra->data_fim_prevista)) : '-' ?></span>
                         </div>
                         <div class="info-row">
-                            <span class="info-label"><i class="icon-tag"></i> Tipo</span>
+                            <span class="info-label"><i class="bx bx-tag"></i> Tipo</span>
                             <span class="info-value"><?= $obra->tipo_obra ?? 'N/A' ?></span>
                         </div>
                     </div>
@@ -516,7 +516,7 @@
 
                 <!-- Registrar Atividade -->
                 <div class="registrar-card">
-                    <h4><i class="icon-plus-sign"></i> Registrar Atividade</h4>
+                    <h4><i class="bx bx-plus-circle"></i> Registrar Atividade</h4>
 
                     <form action="<?= site_url('tecnicos_admin/adicionar_comentario') ?>" method="post" class="form-modern">
                         <input type="hidden" name="obra_id" value="<?= $obra->id ?>">
@@ -530,7 +530,7 @@
                         <textarea name="descricao" placeholder="Descreva sua atividade..." required></textarea>
 
                         <button type="submit" class="btn-registrar">
-                            <i class="icon-save"></i> Registrar
+                            <i class="bx bx-save"></i> Registrar
                         </button>
                     </form>
                 </div>
@@ -542,7 +542,7 @@
         <div id="modal-atualizar-progresso" class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-header" style="background: linear-gradient(135deg, #11998e, #38ef7d); color: white;">
                 <button type="button" class="close" data-bs-dismiss="modal" style="color: white;">×</button>
-                <h4><i class="icon-refresh"></i> Atualizar Progresso</h4>
+                <h4><i class="bx bx-refresh"></i> Atualizar Progresso</h4>
             </div>
             <form id="form-atualizar-progresso" action="<?= site_url('tecnicos_admin/tecnico_atualizar_etapa') ?>" method="post">
                 <input type="hidden" name="etapa_id" id="progresso-etapa-id">
@@ -567,7 +567,7 @@
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-large" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-success btn-large"><i class="icon-save"></i> Salvar Progresso</button>
+                    <button type="submit" class="btn btn-success btn-large"><i class="bx bx-save"></i> Salvar Progresso</button>
                 </div>
             </form>
         </div>
@@ -576,7 +576,7 @@
         <div id="modal-tarefa-progresso" class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-header" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white;">
                 <button type="button" class="close" data-bs-dismiss="modal" style="color: white;">×</button>
-                <h4><i class="icon-pushpin"></i> Atualizar Tarefa</h4>
+                <h4><i class="bx bx-pin"></i> Atualizar Tarefa</h4>
             </div>
             <form id="form-tarefa-progresso">
                 <input type="hidden" name="tarefa_id" id="tarefa-id">
@@ -608,7 +608,7 @@
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-large" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-success btn-large"><i class="icon-save"></i> Salvar</button>
+                    <button type="submit" class="btn btn-success btn-large"><i class="bx bx-save"></i> Salvar</button>
                 </div>
             </form>
         </div>
@@ -695,13 +695,13 @@
                             }
                             html += '<div style="margin-top: 8px; display: flex; gap: 10px; align-items: center;">';
                             html += '<span style="padding: 2px 8px; border-radius: 10px; font-size: 11px; background: ' + cor + '20; color: ' + cor + ';">' + t.prioridade.toUpperCase() + '</span>';
-                            html += '<span style="font-size: 12px; color: #888;"><i class="icon-calendar"></i> ' + t.data_fim_prevista + '</span>';
+                            html += '<span style="font-size: 12px; color: #888;"><i class="bx bx-calendar"></i> ' + t.data_fim_prevista + '</span>';
                             html += '</div>';
                             html += '</div>';
 
                             if (!isConcluida) {
                                 html += '<button type="button" class="btn-action btn-action-secondary" onclick="abrirModalTarefa(' + t.id + ', \'' + t.titulo + '\', ' + t.percentual_concluido + ')" style="padding: 8px 12px;">';
-                                html += '<i class="icon-edit"></i>';
+                                html += '<i class="bx bx-edit"></i>';
                                 html += '</button>';
                             }
                             html += '</div>';
@@ -722,11 +722,11 @@
                         html += '</div>';
                         $('#minhas-tarefas').html(html);
                     } else {
-                        $('#minhas-tarefas').html('<div class="empty-state-modern"><i class="icon-pushpin" style="font-size: 40px;"></i><p>Nenhuma tarefa atribuída</p></div>';
+                        $('#minhas-tarefas').html('<div class="empty-state-modern"><i class="bx bx-pin" style="font-size: 40px;"></i><p>Nenhuma tarefa atribuída</p></div>';
                     }
                 },
                 error: function() {
-                    $('#minhas-tarefas').html('<div class="empty-state-modern" style="color: #f44336;"><i class="icon-exclamation-sign"></i><p>Erro ao carregar tarefas</p></div>';
+                    $('#minhas-tarefas').html('<div class="empty-state-modern" style="color: #f44336;"><i class="bx bx-error-circle"></i><p>Erro ao carregar tarefas</p></div>';
                 }
             });
         }
@@ -749,12 +749,12 @@
     <?php else: ?>
         <div style="text-align: center; padding: 100px 20px; background: white; border-radius: 20px; box-shadow: 0 2px 20px rgba(0,0,0,0.08);">
             <div style="font-size: 80px; color: #e0e0e0; margin-bottom: 20px;">
-                <i class="icon-exclamation-sign"></i>
+                <i class="bx bx-error-circle"></i>
             </div>
             <h2 style="color: #666; font-weight: 400; margin-bottom: 15px;">Obra não encontrada</h2>
             <p style="color: #999; margin-bottom: 30px;">Você não tem acesso a esta obra ou ela não existe.</p>
             <a href="<?= site_url('tecnicos_admin/minhas_obras') ?>" class="btn-action btn-action-primary" style="display: inline-flex; padding: 15px 30px;">
-                <i class="icon-arrow-left"></i> Voltar para Minhas Obras
+                <i class="bx bx-arrow-back"></i> Voltar para Minhas Obras
             </a>
         </div>
     <?php endif; ?>

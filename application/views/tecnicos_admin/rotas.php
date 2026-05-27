@@ -13,7 +13,7 @@ $tecnicos = $tecnicos ?? [];
     <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
-                <span class="icon"><i class="icon-road"></i></span>
+                <span class="icon"><i class="bx bx-trip"></i></span>
                 <h5>Rastreamento de Rotas</h5>
             </div>
             <div class="widget-content">
@@ -35,14 +35,14 @@ $tecnicos = $tecnicos ?? [];
                     <input type="date" name="data" value="<?php echo $data; ?>" class="input-small">
 
                     <button type="submit" class="btn btn-primary">
-                        <i class="icon-filter icon-white"></i> Filtrar
+                        <i class="bx bx-filter icon-white"></i> Filtrar
                     </button>
                 </form>
 
                 <!-- Informações do Técnico -->
                 <?php if ($tecnico): ?>
                     <div class="alert alert-info">
-                        <strong><i class="icon-user"></i> <?php echo $tecnico->nome; ?></strong> |
+                        <strong><i class="bx bx-user"></i> <?php echo $tecnico->nome; ?></strong> |
                         <?php if ($tecnico->veiculo_placa): ?>
                             Veículo: <?php echo $tecnico->veiculo_tipo . ' - ' . $tecnico->veiculo_placa; ?> |
                         <?php endif; ?>
@@ -85,7 +85,7 @@ $tecnicos = $tecnicos ?? [];
                                                     <?php if ($rota->latitude && $rota->longitude): ?>
                                                         <a href="https://www.google.com/maps?q=<?php echo $rota->latitude; ?>,<?php echo $rota->longitude; ?>"
                                                            target="_blank" class="btn btn-sm">
-                                                            <i class="icon-map-marker"></i> Ver no Mapa
+                                                            <i class="bx bx-map"></i> Ver no Mapa
                                                         </a>
                                                     <?php else: ?>
                                                         <span class="muted">Sem coordenadas</span>
@@ -98,7 +98,7 @@ $tecnicos = $tecnicos ?? [];
                             </div>
                         <?php else: ?>
                             <div class="alert alert-info">
-                                <i class="icon-info-sign"></i>
+                                <i class="bx bx-info-circle"></i>
                                 <?php if ($tecnico_id): ?>
                                     Nenhum ponto de rastreamento encontrado para esta data.
                                 <?php else: ?>
@@ -113,7 +113,7 @@ $tecnicos = $tecnicos ?? [];
                         <h5>Visualização no Mapa</h5>
                         <div style="background: #f5f5f5; border: 2px dashed #ddd; height: 400px; display: flex; align-items: center; justify-content: center;">
                             <div class="text-center text-muted">
-                                <i class="icon-map-marker" style="font-size: 3em; display: block; margin-bottom: 10px;"></i>
+                                <i class="bx bx-map" style="font-size: 3em; display: block; margin-bottom: 10px;"></i>
                                 <p>Mapa de visualização das rotas</p>
                                 <?php if (!empty($rotas)): ?>
                                     <p><small><?php echo count($rotas); ?> pontos registrados</small></p>
