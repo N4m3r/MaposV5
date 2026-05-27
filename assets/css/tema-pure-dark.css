@@ -8,6 +8,14 @@
   --sidebar-accent-rgb: 16, 134, 221;
   --sidebar-hover-bg: rgba(255,255,255,0.04);
   --sidebar-text-muted: #676779;
+  --select-bg: #1c1d26;
+  --select-color: #caced8;
+  --select-border: #272835;
+  --select-focus-border: #1086dd;
+  --select-focus-shadow: rgba(16, 134, 221, 0.15);
+  --select-placeholder: #8788a4;
+  --select-disabled-bg: #14141a;
+  --select-disabled-color: #8788a4;
 }
 
 input[type="search"],
@@ -986,7 +994,210 @@ input::placeholder, textarea::placeholder {
    FIM TOPBAR + COMPONENTS DARK OVERRIDES
    ============================================ */
 
-@media (min-width: 1024px) and (max-width: 1366px) {
+/* ============================================
+   MATRIX-STYLE HARD-CODED LIGHT OVERRIDES
+   ============================================ */
+
+/* Stat boxes */
+.stat-boxes2 li {
+    background: var(--dark-2) !important;
+    border: 1px solid var(--dark-1) !important;
+}
+
+.stat-boxes2 li:hover {
+    background: var(--dark-1) !important;
+}
+
+.stat-boxes2 .left {
+    border-right-color: var(--dark-1) !important;
+}
+
+.stat-boxes2 .right {
+    color: var(--cinza0) !important;
+}
+
+/* Widget title nav tabs */
+.widget-title .nav-tabs li a {
+    color: var(--cinza0) !important;
+    text-shadow: none !important;
+    border-left-color: var(--dark-1) !important;
+    border-right-color: var(--dark-1) !important;
+}
+
+.widget-title .nav-tabs li a:hover {
+    color: var(--branco) !important;
+}
+
+.widget-title .nav-tabs li.active a {
+    background-color: var(--dark-2) !important;
+    color: var(--branco) !important;
+    text-shadow: none !important;
+}
+
+/* Panel right */
+.panel-right,
+.panel-right2 {
+    background-color: var(--dark-2) !important;
+}
+
+.panel-right .panel-title,
+.panel-right2 .panel-title {
+    background-color: var(--dark-1) !important;
+}
+
+.panel-right .panel-title h5,
+.panel-right2 .panel-title h5 {
+    color: var(--cinza0) !important;
+    text-shadow: none !important;
+}
+
+/* DataTables pagination */
+.dataTables_paginate .ui-button,
+.pagination.alternate li a {
+    background: var(--dark-2) !important;
+    color: var(--branco) !important;
+    border-color: var(--dark-1) !important;
+    text-shadow: none !important;
+}
+
+.dataTables_paginate .ui-button:hover,
+.pagination.alternate li a:hover {
+    background: rgba(16, 134, 221, 0.1) !important;
+    color: var(--dark-azul) !important;
+}
+
+.dataTables_paginate .ui-state-disabled,
+.dataTables_paginate .ui-state-disabled:hover {
+    color: var(--dark-cinz) !important;
+    background: var(--dark-1) !important;
+}
+
+.pagination.alternate li.active a {
+    background: var(--dark-azul) !important;
+    color: #fff !important;
+}
+
+/* Help text */
+.help-block,
+.help-inline {
+    color: var(--cinza0) !important;
+}
+
+/* User info */
+.user-info {
+    color: var(--cinza0) !important;
+}
+
+/* Chat messages */
+#chat-messages-inner .msg-block {
+    background: var(--dark-2) !important;
+    border-color: var(--dark-1) !important;
+}
+
+#chat-messages-inner .time {
+    color: var(--dark-cinz) !important;
+}
+
+/* Notify UI */
+.notify-ui li {
+    background: var(--dark-2) !important;
+    border-color: var(--dark-1) !important;
+}
+
+.notify-ui li:hover {
+    background: var(--dark-1) !important;
+    color: var(--cinza0) !important;
+}
+
+/* Page header */
+#content-header h1,
+.page-header {
+    color: var(--branco) !important;
+}
+
+/* Dropdown menu items */
+.dropdown-menu>li>a {
+    color: var(--cinza0) !important;
+}
+
+.dropdown-menu>li>a:hover {
+    color: var(--dark-azul) !important;
+    background: rgba(16, 134, 221, 0.1) !important;
+}
+
+/* Invoice content */
+.invoice-content h5 {
+    color: var(--branco) !important;
+}
+
+.amount-word {
+    color: var(--cinza0) !important;
+}
+
+/* Recent posts/comments/users */
+.recent-posts li.viewall a,
+.recent-comments li.viewall a,
+.recent-users li.viewall a {
+    color: var(--cinza0) !important;
+}
+
+.recent-posts li.viewall a:hover,
+.recent-comments li.viewall a:hover,
+.recent-users li.viewall a:hover {
+    background-color: var(--dark-1) !important;
+    color: var(--branco) !important;
+}
+
+/* User thumb */
+.user-thumb {
+    background: var(--dark-2) !important;
+}
+
+/* Profile images */
+.profileMC .profile-img,
+.profile .profile-img {
+    background: var(--dark-2) !important;
+}
+
+/* Switch toggle */
+.switch::before {
+    background: var(--branco) !important;
+}
+
+/* Checked table rows */
+.table tr.checked td {
+    background-color: rgba(16, 134, 221, 0.1) !important;
+}
+
+/* Login fields */
+.campo-digita {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    color: var(--branco) !important;
+}
+
+.campo-digita:active {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.campo-digita:focus {
+    border-color: var(--dark-azul) !important;
+}
+
+/* Discount badge */
+.discount-badge {
+    background: rgba(255, 193, 7, 0.15) !important;
+    border-color: rgba(255, 193, 7, 0.4) !important;
+    color: var(--cinza0) !important;
+}
+
+/* Inline-styled badges */
+.badge[style*="background-color"] {
+    color: #fff !important;
+}
+
+/* ============================================
+   FIM MATRIX-STYLE HARD-CODED LIGHT OVERRIDES
+   ============================================ */
     #sidebar .search-box {
         border-radius: 50%;
         height       : 45px;

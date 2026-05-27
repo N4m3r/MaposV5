@@ -768,11 +768,11 @@ textarea {
 select {
     height: 46px !important;
     padding: 10px 35px 10px 15px !important;
-    border: 2px solid #e8e8e8 !important;
+    border: 2px solid var(--select-border, #e8e8e8) !important;
     border-radius: 10px !important;
     font-size: 14px !important;
-    background-color: white !important;
-    color: #000 !important;
+    background-color: var(--select-bg, #ffffff) !important;
+    color: var(--select-color, #000000) !important;
     line-height: 1.4 !important;
     cursor: pointer !important;
     -webkit-appearance: none !important;
@@ -792,28 +792,28 @@ select::-ms-expand {
 
 /* Estilo quando o select está em foco */
 select:focus {
-    border-color: #667eea !important;
+    border-color: var(--select-focus-border, #667eea) !important;
     outline: none !important;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+    box-shadow: 0 0 0 3px var(--select-focus-shadow, rgba(102, 126, 234, 0.1)) !important;
 }
 
 /* Estilo para as options dentro do select */
 select option {
-    color: #000 !important;
-    background: white !important;
+    color: var(--select-color, #000000) !important;
+    background: var(--select-bg, #ffffff) !important;
     padding: 10px !important;
     font-size: 14px !important;
 }
 
 /* Primeira option (placeholder) */
 select option:first-child {
-    color: #999 !important;
+    color: var(--select-placeholder, #999999) !important;
 }
 
 /* Estilo quando o select está desabilitado */
 select:disabled {
-    background-color: #f5f5f5 !important;
-    color: #666 !important;
+    background-color: var(--select-disabled-bg, #f5f5f5) !important;
+    color: var(--select-disabled-color, #666666) !important;
     cursor: not-allowed !important;
 }
 
@@ -824,14 +824,14 @@ select.col-5,
 select.col-4,
 select.col-3 {
     height: 46px !important;
-    color: #000 !important;
+    color: var(--select-color, #000000) !important;
     padding: 10px 35px 10px 15px !important;
 }
 
 /* Corrige selects dentro de controls (formulários antigos) */
 .controls select {
     height: 46px !important;
-    color: #000 !important;
+    color: var(--select-color, #000000) !important;
     padding: 10px 35px 10px 15px !important;
 }
 

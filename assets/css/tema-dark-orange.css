@@ -8,6 +8,14 @@
   --sidebar-accent-rgb: 222, 121, 2;
   --sidebar-hover-bg: rgba(255,255,255,0.05);
   --sidebar-text-muted: #757e89;
+  --select-bg: #1c1610;
+  --select-color: #caced8;
+  --select-border: #2a2018;
+  --select-focus-border: #f97316;
+  --select-focus-shadow: rgba(249, 115, 22, 0.15);
+  --select-placeholder: #757e89;
+  --select-disabled-bg: #14141a;
+  --select-disabled-color: #757e89;
 }
 
 input[type="search"],
@@ -419,6 +427,10 @@ table tbody tr:hover {
 
 .table-bordered {
     color: var(--branco);
+}
+
+.table-dark {
+    background: var(--dark-1) !important;
 }
 
 hr {
@@ -883,6 +895,192 @@ input::placeholder, textarea::placeholder {
 
 /* ============================================
    FIM TOPBAR + COMPONENTS DARK OVERRIDES - ORANGE
+   ============================================ */
+
+/* ============================================
+   MATRIX-STYLE HARD-CODED LIGHT OVERRIDES - ORANGE
+   ============================================ */
+
+.stat-boxes2 li {
+    background: var(--dark-2) !important;
+    border: 1px solid var(--dark-1) !important;
+}
+
+.stat-boxes2 li:hover {
+    background: var(--dark-1) !important;
+}
+
+.stat-boxes2 .left {
+    border-right-color: var(--dark-1) !important;
+}
+
+.stat-boxes2 .right {
+    color: var(--dark-orange-tit1) !important;
+}
+
+.widget-title .nav-tabs li a {
+    color: var(--dark-orange-tit1) !important;
+    text-shadow: none !important;
+    border-left-color: var(--dark-1) !important;
+    border-right-color: var(--dark-1) !important;
+}
+
+.widget-title .nav-tabs li a:hover {
+    color: var(--branco) !important;
+}
+
+.widget-title .nav-tabs li.active a {
+    background-color: var(--dark-orange-cont) !important;
+    color: var(--branco) !important;
+    text-shadow: none !important;
+}
+
+.panel-right,
+.panel-right2 {
+    background-color: var(--dark-orange-cont) !important;
+}
+
+.panel-right .panel-title,
+.panel-right2 .panel-title {
+    background-color: var(--dark-1) !important;
+}
+
+.panel-right .panel-title h5,
+.panel-right2 .panel-title h5 {
+    color: var(--dark-orange-tit1) !important;
+    text-shadow: none !important;
+}
+
+.dataTables_paginate .ui-button,
+.pagination.alternate li a {
+    background: var(--dark-2) !important;
+    color: var(--branco) !important;
+    border-color: var(--dark-1) !important;
+    text-shadow: none !important;
+}
+
+.dataTables_paginate .ui-button:hover,
+.pagination.alternate li a:hover {
+    background: rgba(222, 121, 2, 0.1) !important;
+    color: #f59e0b !important;
+}
+
+.dataTables_paginate .ui-state-disabled,
+.dataTables_paginate .ui-state-disabled:hover {
+    color: var(--dark-orange-tit1) !important;
+    background: var(--dark-1) !important;
+}
+
+.pagination.alternate li.active a {
+    background: #f97316 !important;
+    color: #fff !important;
+}
+
+.help-block,
+.help-inline {
+    color: var(--dark-orange-tit1) !important;
+}
+
+.user-info {
+    color: var(--dark-orange-tit1) !important;
+}
+
+#chat-messages-inner .msg-block {
+    background: var(--dark-orange-cont) !important;
+    border-color: var(--dark-1) !important;
+}
+
+#chat-messages-inner .time {
+    color: var(--dark-orange-tit1) !important;
+}
+
+.notify-ui li {
+    background: var(--dark-orange-cont) !important;
+    border-color: var(--dark-1) !important;
+}
+
+.notify-ui li:hover {
+    background: var(--dark-1) !important;
+    color: var(--dark-orange-tit1) !important;
+}
+
+#content-header h1,
+.page-header {
+    color: var(--dark-orange-tit) !important;
+}
+
+.dropdown-menu>li>a {
+    color: var(--cinza0) !important;
+}
+
+.dropdown-menu>li>a:hover {
+    color: #f59e0b !important;
+    background: rgba(222, 121, 2, 0.1) !important;
+}
+
+.invoice-content h5 {
+    color: var(--dark-orange-tit) !important;
+}
+
+.amount-word {
+    color: var(--dark-orange-tit1) !important;
+}
+
+.recent-posts li.viewall a,
+.recent-comments li.viewall a,
+.recent-users li.viewall a {
+    color: var(--dark-orange-tit1) !important;
+}
+
+.recent-posts li.viewall a:hover,
+.recent-comments li.viewall a:hover,
+.recent-users li.viewall a:hover {
+    background-color: var(--dark-1) !important;
+    color: var(--branco) !important;
+}
+
+.user-thumb {
+    background: var(--dark-orange-cont) !important;
+}
+
+.profileMC .profile-img,
+.profile .profile-img {
+    background: var(--dark-orange-cont) !important;
+}
+
+.switch::before {
+    background: var(--branco) !important;
+}
+
+.table tr.checked td {
+    background-color: rgba(222, 121, 2, 0.1) !important;
+}
+
+.campo-digita {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    color: var(--branco) !important;
+}
+
+.campo-digita:active {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.campo-digita:focus {
+    border-color: #f97316 !important;
+}
+
+.discount-badge {
+    background: rgba(255, 193, 7, 0.15) !important;
+    border-color: rgba(255, 193, 7, 0.4) !important;
+    color: var(--dark-orange-tit1) !important;
+}
+
+.badge[style*="background-color"] {
+    color: #fff !important;
+}
+
+/* ============================================
+   FIM MATRIX-STYLE HARD-CODED LIGHT OVERRIDES - ORANGE
    ============================================ */
 
 @media (min-width: 1024px) and (max-width: 1366px) {

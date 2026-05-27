@@ -8,6 +8,14 @@
   --sidebar-accent-rgb: 107, 41, 248;
   --sidebar-hover-bg: rgba(255,255,255,0.05);
   --sidebar-text-muted: #c3b2e9;
+  --select-bg: #1e1040;
+  --select-color: #caced8;
+  --select-border: #3f2c7a;
+  --select-focus-border: #7c3aed;
+  --select-focus-shadow: rgba(107, 41, 248, 0.15);
+  --select-placeholder: #c3b2e9;
+  --select-disabled-bg: #14141a;
+  --select-disabled-color: #c3b2e9;
 }
 
 input[type="search"],
@@ -143,6 +151,15 @@ body {
 #sidebar li .title {
     color     : var(--branco);
     transition: var(--tran-02);
+}
+
+#newlog {
+    filter: invert(100%);
+}
+
+#newlog .icon2,
+#newlog .title1 {
+    filter: invert(100%);
 }
 
 #sidebar > ul li ul li a:hover {
@@ -462,12 +479,24 @@ hr {
 }
 
 /* TABELA CALENDAR */
+.fc .fc-non-business {
+    background: rgba(107, 41, 248, 0.08) !important;
+}
+
+.fc .fc-daygrid-day.fc-day-today {
+    background-color: rgba(107, 41, 248, 0.15) !important;
+}
+
 .fc-theme-standard .fc-scrollgrid {
     border: 1px solid #211546 !important;
 }
 
 .fc-theme-standard td, .fc-theme-standard th {
     border: 1px solid #211546 !important;
+}
+
+.table-dark {
+    background: var(--dark-1) !important;
 }
 
 .fc .fc-daygrid-day-number {
@@ -502,7 +531,6 @@ hr {
 .btn-nwe5,
 .btn-nwe6 {
   text-shadow: 1 1 3px rgba(66, 62, 62, 0.549);
-  font-size: ;
 }
 
 .btn-nwe {
@@ -651,7 +679,15 @@ textarea, .uneditable-input {
     border-top: 1px solid var(--dark-1);
 }
 
+.widget-title .buttons, .button {
+    box-shadow: 0 4px 17px rgb(0 0 0 / 19%);
+}
+
 /* MODAL */
+.modal.fade.in {
+    background: transparent;
+}
+
 .modal-header {
     background: var(--dark-azul);
     color: #ffffff;
@@ -940,6 +976,192 @@ input::placeholder, textarea::placeholder {
    FIM TOPBAR + COMPONENTS DARK OVERRIDES - VIOLET
    ============================================ */
 
+/* ============================================
+   MATRIX-STYLE HARD-CODED LIGHT OVERRIDES - VIOLET
+   ============================================ */
+
+.stat-boxes2 li {
+    background: var(--dark-violet-cont) !important;
+    border: 1px solid var(--dark-1) !important;
+}
+
+.stat-boxes2 li:hover {
+    background: var(--dark-1) !important;
+}
+
+.stat-boxes2 .left {
+    border-right-color: var(--dark-1) !important;
+}
+
+.stat-boxes2 .right {
+    color: var(--dark-violet-tit2) !important;
+}
+
+.widget-title .nav-tabs li a {
+    color: var(--dark-violet-tit2) !important;
+    text-shadow: none !important;
+    border-left-color: var(--dark-1) !important;
+    border-right-color: var(--dark-1) !important;
+}
+
+.widget-title .nav-tabs li a:hover {
+    color: var(--branco) !important;
+}
+
+.widget-title .nav-tabs li.active a {
+    background-color: var(--dark-violet-cont) !important;
+    color: var(--branco) !important;
+    text-shadow: none !important;
+}
+
+.panel-right,
+.panel-right2 {
+    background-color: var(--dark-violet-cont) !important;
+}
+
+.panel-right .panel-title,
+.panel-right2 .panel-title {
+    background-color: var(--dark-1) !important;
+}
+
+.panel-right .panel-title h5,
+.panel-right2 .panel-title h5 {
+    color: var(--dark-violet-tit2) !important;
+    text-shadow: none !important;
+}
+
+.dataTables_paginate .ui-button,
+.pagination.alternate li a {
+    background: var(--dark-violet-cont) !important;
+    color: var(--branco) !important;
+    border-color: var(--dark-1) !important;
+    text-shadow: none !important;
+}
+
+.dataTables_paginate .ui-button:hover,
+.pagination.alternate li a:hover {
+    background: rgba(107, 41, 248, 0.1) !important;
+    color: #a78bfa !important;
+}
+
+.dataTables_paginate .ui-state-disabled,
+.dataTables_paginate .ui-state-disabled:hover {
+    color: var(--dark-violet-tit2) !important;
+    background: var(--dark-1) !important;
+}
+
+.pagination.alternate li.active a {
+    background: #7c3aed !important;
+    color: #fff !important;
+}
+
+.help-block,
+.help-inline {
+    color: var(--dark-violet-tit2) !important;
+}
+
+.user-info {
+    color: var(--dark-violet-tit2) !important;
+}
+
+#chat-messages-inner .msg-block {
+    background: var(--dark-violet-cont) !important;
+    border-color: var(--dark-1) !important;
+}
+
+#chat-messages-inner .time {
+    color: var(--dark-violet-tit2) !important;
+}
+
+.notify-ui li {
+    background: var(--dark-violet-cont) !important;
+    border-color: var(--dark-1) !important;
+}
+
+.notify-ui li:hover {
+    background: var(--dark-1) !important;
+    color: var(--dark-violet-tit2) !important;
+}
+
+#content-header h1,
+.page-header {
+    color: var(--dark-violet-tit) !important;
+}
+
+.dropdown-menu>li>a {
+    color: var(--cinza0) !important;
+}
+
+.dropdown-menu>li>a:hover {
+    color: #a78bfa !important;
+    background: rgba(107, 41, 248, 0.1) !important;
+}
+
+.invoice-content h5 {
+    color: var(--dark-violet-tit) !important;
+}
+
+.amount-word {
+    color: var(--dark-violet-tit2) !important;
+}
+
+.recent-posts li.viewall a,
+.recent-comments li.viewall a,
+.recent-users li.viewall a {
+    color: var(--dark-violet-tit2) !important;
+}
+
+.recent-posts li.viewall a:hover,
+.recent-comments li.viewall a:hover,
+.recent-users li.viewall a:hover {
+    background-color: var(--dark-1) !important;
+    color: var(--branco) !important;
+}
+
+.user-thumb {
+    background: var(--dark-violet-cont) !important;
+}
+
+.profileMC .profile-img,
+.profile .profile-img {
+    background: var(--dark-violet-cont) !important;
+}
+
+.switch::before {
+    background: var(--branco) !important;
+}
+
+.table tr.checked td {
+    background-color: rgba(107, 41, 248, 0.1) !important;
+}
+
+.campo-digita {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    color: var(--branco) !important;
+}
+
+.campo-digita:active {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.campo-digita:focus {
+    border-color: #7c3aed !important;
+}
+
+.discount-badge {
+    background: rgba(255, 193, 7, 0.15) !important;
+    border-color: rgba(255, 193, 7, 0.4) !important;
+    color: var(--dark-violet-tit2) !important;
+}
+
+.badge[style*="background-color"] {
+    color: #fff !important;
+}
+
+/* ============================================
+   FIM MATRIX-STYLE HARD-CODED LIGHT OVERRIDES - VIOLET
+   ============================================ */
+
 @media (max-width: 480px) {
     .cardBox .card {
     padding: 15px 20px;
@@ -1014,5 +1236,19 @@ input::placeholder, textarea::placeholder {
 
     #sidebar .search-box {
         background: #291a57;
+    }
+}
+
+@media (min-width: 1024px) and (max-width: 1366px) {
+    #sidebar .search-box {
+        border-radius: 50%;
+        height       : 45px;
+    }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+    #sidebar .search-box {
+        border-radius: 50%;
+        height       : 45px;
     }
 }
