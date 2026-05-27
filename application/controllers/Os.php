@@ -13,6 +13,12 @@ require_once APPPATH . 'traits/Os/OsValidationTrait.php';
 require_once APPPATH . 'traits/LegacyJsonResponseTrait.php';
 
 use Libraries\Webhooks\WebhookManager;
+use Application\Traits\LegacyJsonResponseTrait;
+use Application\Traits\Os\OsEmailTrait;
+use Application\Traits\Os\OsAutocompleteTrait;
+use Application\Traits\Os\OsAttachmentTrait;
+use Application\Traits\Os\OsItemTrait;
+use Application\Traits\Os\OsValidationTrait;
 
 class Os extends MY_Controller
 {

@@ -11,7 +11,7 @@ class Mine extends CI_Controller
         parent::__construct();
         $this->load->model('Conecte_model');
         $this->load->model('clientes_model');
-        $this->load->helper('Security_helper');
+        $this->load->helper('security');
     }
 
     public function index()
