@@ -32,15 +32,16 @@ class SmtpPool
             }
         }
 
+        $ciConfig = isset($this->ci->data['config']) ? $this->ci->data['config'] : [];
         $this->config = array_merge([
             'pool_size' => 3,
-            'smtp_host' => $dbConfig['smtp_host'] ?? $this->ci->data['config']['smtp_host'] ?? $_ENV['EMAIL_SMTP_HOST'] ?? '',
-            'smtp_port' => (int) ($dbConfig['smtp_port'] ?? $this->ci->data['config']['smtp_port'] ?? $_ENV['EMAIL_SMTP_PORT'] ?? 587),
-            'smtp_user' => $dbConfig['smtp_user'] ?? $this->ci->data['config']['smtp_user'] ?? $_ENV['EMAIL_SMTP_USER'] ?? '',
-            'smtp_pass' => $dbConfig['smtp_pass'] ?? $this->ci->data['config']['smtp_pass'] ?? $_ENV['EMAIL_SMTP_PASS'] ?? '',
-            'smtp_crypto' => $dbConfig['smtp_crypto'] ?? $this->ci->data['config']['smtp_crypto'] ?? $_ENV['EMAIL_SMTP_CRYPTO'] ?? 'tls',
-            'from_email' => $dbConfig['from'] ?? $this->ci->data['config']['email'] ?? $_ENV['EMAIL_FROM'] ?? '',
-            'from_name' => $dbConfig['from_name'] ?? $this->ci->data['config']['nome'] ?? $_ENV['EMAIL_FROM_NAME'] ?? 'Sistema',
+            'smtp_host' => $dbConfig['smtp_host'] ?? $ciConfig['smtp_host'] ?? $_ENV['EMAIL_SMTP_HOST'] ?? '',
+            'smtp_port' => (int) ($dbConfig['smtp_port'] ?? $ciConfig['smtp_port'] ?? $_ENV['EMAIL_SMTP_PORT'] ?? 587),
+            'smtp_user' => $dbConfig['smtp_user'] ?? $ciConfig['smtp_user'] ?? $_ENV['EMAIL_SMTP_USER'] ?? '',
+            'smtp_pass' => $dbConfig['smtp_pass'] ?? $ciConfig['smtp_pass'] ?? $_ENV['EMAIL_SMTP_PASS'] ?? '',
+            'smtp_crypto' => $dbConfig['smtp_crypto'] ?? $ciConfig['smtp_crypto'] ?? $_ENV['EMAIL_SMTP_CRYPTO'] ?? 'tls',
+            'from_email' => $dbConfig['from'] ?? $ciConfig['email'] ?? $_ENV['EMAIL_FROM'] ?? '',
+            'from_name' => $dbConfig['from_name'] ?? $ciConfig['nome'] ?? $_ENV['EMAIL_FROM_NAME'] ?? 'Sistema',
             'timeout' => 30
         ], $config);
     }
