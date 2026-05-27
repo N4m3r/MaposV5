@@ -675,7 +675,8 @@
       "Bash(where.exe pscp *)",
       "Bash(where.exe winscp *)",
       "Bash(sftp -oBatchMode=no -oStrictHostKeyChecking=no jjferreiras05@ftp.web10f91.kinghost.net)",
-      "Bash(C:\\\\Program Files\\\\PuTTY\\\\plink.exe *)"
+      "Bash(C:\\\\Program Files\\\\PuTTY\\\\plink.exe *)",
+      "Bash(C:\\\\xampp\\\\mysql\\\\bin\\\\mysql.exe *)"
     ]
   }
 }
