@@ -3,7 +3,7 @@
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon">
-                    <i class="icon-hdd"></i>
+                    <i class="bx bx-hard-drive"></i>
                 </span>
                 <h5>Gerenciamento de Backups</h5>
             </div>
@@ -13,21 +13,21 @@
                 <?php if ($this->session->flashdata('success')): ?>
                     <div class="alert alert-success">
                         <button class="close" data-bs-dismiss="alert">×</button>
-                        <i class="icon-check"></i> <?php echo $this->session->flashdata('success'); ?>
+                        <i class="bx bx-check"></i> <?php echo $this->session->flashdata('success'); ?>
                     </div>
                 <?php endif; ?>
 
                 <?php if ($this->session->flashdata('error')): ?>
                     <div class="alert alert-danger">
                         <button class="close" data-bs-dismiss="alert">×</button>
-                        <i class="icon-remove"></i> <?php echo $this->session->flashdata('error'); ?>
+                        <i class="bx bx-x"></i> <?php echo $this->session->flashdata('error'); ?>
                     </div>
                 <?php endif; ?>
 
                 <?php if ($this->session->flashdata('warning')): ?>
                     <div class="alert alert-warning">
                         <button class="close" data-bs-dismiss="alert">×</button>
-                        <i class="icon-exclamation-sign"></i> <?php echo $this->session->flashdata('warning'); ?>
+                        <i class="bx bx-error-circle"></i> <?php echo $this->session->flashdata('warning'); ?>
                     </div>
                 <?php endif; ?>
 
@@ -35,28 +35,28 @@
                 <div class="row" style="margin-bottom: 20px;">
                     <div class="col-3">
                         <div class="stat-box" style="background: #5bc0de; color: white; padding: 15px; border-radius: 5px; text-align: center;">
-                            <i class="icon-hdd" style="font-size: 30px; display: block; margin-bottom: 10px;"></i>
+                            <i class="bx bx-hard-drive" style="font-size: 30px; display: block; margin-bottom: 10px;"></i>
                             <span style="font-size: 12px; opacity: 0.9;">Banco de Dados</span>
                             <strong style="display: block; font-size: 18px; margin-top: 5px;"><?php echo $database_info['nome']; ?></strong>
                         </div>
                     </div>
                     <div class="col-3">
                         <div class="stat-box" style="background: #5cb85c; color: white; padding: 15px; border-radius: 5px; text-align: center;">
-                            <i class="icon-table" style="font-size: 30px; display: block; margin-bottom: 10px;"></i>
+                            <i class="bx bx-table" style="font-size: 30px; display: block; margin-bottom: 10px;"></i>
                             <span style="font-size: 12px; opacity: 0.9;">Tabelas</span>
                             <strong style="display: block; font-size: 18px; margin-top: 5px;"><?php echo $database_info['tabelas']; ?></strong>
                         </div>
                     </div>
                     <div class="col-3">
                         <div class="stat-box" style="background: #f0ad4e; color: white; padding: 15px; border-radius: 5px; text-align: center;">
-                            <i class="icon-backward" style="font-size: 30px; display: block; margin-bottom: 10px;"></i>
+                            <i class="bx bx-archive" style="font-size: 30px; display: block; margin-bottom: 10px;"></i>
                             <span style="font-size: 12px; opacity: 0.9;">Backups Disponíveis</span>
                             <strong style="display: block; font-size: 18px; margin-top: 5px;"><?php echo count($backups); ?></strong>
                         </div>
                     </div>
                     <div class="col-3">
                         <div class="stat-box" style="background: #d9534f; color: white; padding: 15px; border-radius: 5px; text-align: center;">
-                            <i class="icon-time" style="font-size: 30px; display: block; margin-bottom: 10px;"></i>
+                            <i class="bx bx-time-five" style="font-size: 30px; display: block; margin-bottom: 10px;"></i>
                             <span style="font-size: 12px; opacity: 0.9;">Último Backup</span>
                             <strong style="display: block; font-size: 14px; margin-top: 5px;">
                                 <?php echo $ultimo_backup ? date('d/m/Y H:i', strtotime($ultimo_backup['data'])) : 'Nunca'; ?>
@@ -69,10 +69,10 @@
                 <div class="row" style="margin-bottom: 20px;">
                     <div class="col-12">
                         <a href="#" id="btnNovoBackup" class="btn btn-success">
-                            <i class="icon-plus icon-white"></i> Realizar Backup Agora
+                            <i class="bx bx-plus text-white"></i> Realizar Backup Agora
                         </a>
                         <a href="<?php echo site_url('backup/restaurar'); ?>" class="btn btn-warning">
-                            <i class="icon-refresh icon-white"></i> Restaurar Backup
+                            <i class="bx bx-refresh text-white"></i> Restaurar Backup
                         </a>
                     </div>
                 </div>
@@ -80,7 +80,7 @@
                 <!-- Progresso do Backup -->
                 <div id="progressoBackup" style="display: none; margin-bottom: 20px;">
                     <div class="alert alert-info">
-                        <i class="icon-spinner icon-spin"></i> Realizando backup, aguarde...
+                        <i class="bx bx-loader-circle bx-spin"></i> Realizando backup, aguarde...
                     </div>
                     <div class="progress progress-striped active">
                         <div class="bar" style="width: 100%;"></div>
@@ -89,18 +89,18 @@
 
                 <!-- Lista de Backups -->
                 <h4 style="border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-top: 30px;">
-                    <i class="icon-list"></i> Backups Disponíveis
+                    <i class="bx bx-list-ul"></i> Backups Disponíveis
                 </h4>
 
                 <?php if (empty($backups)): ?>
                     <div class="alert alert-info">
-                        <i class="icon-info-sign"></i> Nenhum backup encontrado. Clique em "Realizar Backup Agora" para criar seu primeiro backup.
+                        <i class="bx bx-info-circle"></i> Nenhum backup encontrado. Clique em "Realizar Backup Agora" para criar seu primeiro backup.
                     </div>
                 <?php else: ?>
                     <table class="table table-bordered table-striped">
                         <thead>
                             <tr>
-                                <th width="50"><i class="icon-file"></i></th>
+                                <th width="50"><i class="bx bx-file"></i></th>
                                 <th>Nome do Arquivo</th>
                                 <th width="150">Data</th>
                                 <th width="100">Tamanho</th>
@@ -112,9 +112,9 @@
                             <tr>
                                 <td style="text-align: center;">
                                     <?php if (strpos($backup['nome'], '.gz') !== false): ?>
-                                        <i class="icon-compressed" title="Compactado"></i>
+                                        <i class="bx bx-archive" title="Compactado"></i>
                                     <?php else: ?>
-                                        <i class="icon-file-text" title="SQL"></i>
+                                        <i class="bx bx-file-blank" title="SQL"></i>
                                     <?php endif; ?>
                                 </td>
                                 <td>
@@ -128,18 +128,18 @@
                                 <td>
                                     <a href="<?php echo site_url('backup/download/' . $backup['nome']); ?>"
                                        class="btn btn-sm btn-primary" title="Download">
-                                        <i class="icon-download-alt icon-white"></i>
+                                        <i class="bx bx-download text-white"></i>
                                     </a>
                                     <a href="#"
                                        onclick="return verificarBackup('<?php echo $backup['nome']; ?>')"
                                        class="btn btn-sm btn-info" title="Verificar">
-                                        <i class="icon-check icon-white"></i>
+                                        <i class="bx bx-check text-white"></i>
                                     </a>
                                     <a href="<?php echo site_url('backup/excluir/' . $backup['nome']); ?>"
                                        class="btn btn-sm btn-danger"
                                        onclick="return confirm('Tem certeza que deseja excluir este backup?')"
                                        title="Excluir">
-                                        <i class="icon-trash icon-white"></i>
+                                        <i class="bx bx-trash text-white"></i>
                                     </a>
                                 </td>
                             </tr>
@@ -150,7 +150,7 @@
 
                 <!-- Dicas -->
                 <div class="alert alert-info" style="margin-top: 30px;">
-                    <h5><i class="icon-info-sign"></i> Dicas Importantes</h5>
+                    <h5><i class="bx bx-info-circle"></i> Dicas Importantes</h5>
                     <ul style="margin-top: 10px;">
                         <li>Realize backups periodicamente (recomendado: diariamente)</li>
                         <li>Antes de qualquer restauração, é feito um backup automático de segurança</li>
@@ -169,11 +169,11 @@
 <div id="modalVerificacao" class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-header">
         <button type="button" class="close" data-bs-dismiss="modal">×</button>
-        <h3><i class="icon-check"></i> Verificação de Backup</h3>
+        <h3><i class="bx bx-check"></i> Verificação de Backup</h3>
     </div>
     <div class="modal-body">
         <div id="verificacaoResultado">
-            <p class="text-center"><i class="icon-spinner icon-spin" style="font-size: 24px;"></i> Verificando...</p>
+            <p class="text-center"><i class="bx bx-loader-circle bx-spin" style="font-size: 24px;"></i> Verificando...</p>
         </div>
     </div>
     <div class="modal-footer">
@@ -219,7 +219,7 @@ $(document).ready(function() {
 // Verificar backup
 function verificarBackup(arquivo) {
     $('#modalVerificacao').modal('show');
-    $('#verificacaoResultado').html('<p class="text-center"><i class="icon-spinner icon-spin" style="font-size: 24px;"></i> Verificando...</p>');
+    $('#verificacaoResultado').html('<p class="text-center"><i class="bx bx-loader-circle bx-spin" style="font-size: 24px;"></i> Verificando...</p>');
 
     $.ajax({
         url: '<?php echo site_url('backup/verificar'); ?>',
@@ -229,14 +229,14 @@ function verificarBackup(arquivo) {
         success: function(response) {
             var html = '';
             if (response.valido) {
-                html += '<div class="alert alert-success"><i class="icon-ok"></i> <strong>Arquivo válido!</strong></div>';
+                html += '<div class="alert alert-success"><i class="bx bx-check"></i> <strong>Arquivo válido!</strong></div>';
                 html += '<table class="table table-sm">';
                 html += '<tr><td><strong>Tamanho:</strong></td><td>' + response.tamanho + '</td></tr>';
                 html += '<tr><td><strong>Estrutura:</strong></td><td>' + (response.tem_estrutura ? '<span class="badge bg-success">Sim</span>' : '<span class="label">Não</span>') + '</td></tr>';
                 html += '<tr><td><strong>Dados:</strong></td><td>' + (response.tem_dados ? '<span class="badge bg-success">Sim</span>' : '<span class="label">Não</span>') + '</td></tr>';
                 html += '</table>';
             } else {
-                html = '<div class="alert alert-danger"><i class="icon-remove"></i> <strong>Problema encontrado:</strong> ' + response.mensagem + '</div>';
+                html = '<div class="alert alert-danger"><i class="bx bx-x"></i> <strong>Problema encontrado:</strong> ' + response.mensagem + '</div>';
             }
             $('#verificacaoResultado').html(html);
         },

@@ -22,14 +22,14 @@ $ci = &get_instance();
     <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
-                <span class="icon"><i class="icon-th"></i></span>
+                <span class="icon"><i class="bx bx-grid-alt"></i></span>
                 <h5>Kanban Board - Total: <?= $total_os ?> OS</h5>
                 <div class="buttons">
                     <a href="<?= base_url('kanban/print') ?>" target="_blank" class="btn btn-sm">
-                        <i class="icon-print"></i> Imprimir
+                        <i class="bx bx-printer"></i> Imprimir
                     </a>
                     <a href="<?= base_url('os') ?>" class="btn btn-sm btn-info">
-                        <i class="icon-list"></i> Lista
+                        <i class="bx bx-list-ul"></i> Lista
                     </a>
                 </div>
             </div>
@@ -54,7 +54,7 @@ $ci = &get_instance();
                                value="<?= $filters['data_fim'] ?>">
 
                         <button type="submit" class="btn btn-primary">
-                            <i class="icon-search"></i> Filtrar
+                            <i class="bx bx-search"></i> Filtrar
                         </button>
 
                         <a href="<?= base_url('kanban') ?>" class="btn">Limpar</a>
@@ -92,26 +92,26 @@ $ci = &get_instance();
 
                                             <?php if ($item->telefone): ?>
                                                 <small class="text-muted">
-                                                    <i class="icon-phone"></i> <?= $item->telefone ?>
+                                                    <i class="bx bx-phone"></i> <?= $item->telefone ?>
                                                 </small>
                                             <?php endif; ?>
                                         </div>
 
                                         <div class="kanban-card-footer">
                                             <small class="text-muted">
-                                                <i class="icon-calendar"></i>
+                                                <i class="bx bx-calendar"></i>
                                                 <?= date('d/m', strtotime($item->dataInicial)) ?>
                                             </small>
 
                                             <div class="kanban-card-actions">
                                                 <a href="<?= base_url("os/visualizar/{$item->idOs}") ?>"
                                                    class="btn btn-sm btn-info" title="Visualizar">
-                                                    <i class="icon-eye-open"></i>
+                                                    <i class="bx bx-show"></i>
                                                 </a>
 
                                                 <a href="<?= base_url("os/editar/{$item->idOs}") ?>"
                                                    class="btn btn-sm btn-primary" title="Editar">
-                                                    <i class="icon-edit"></i>
+                                                    <i class="bx bx-edit"></i>
                                                 </a>
                                             </div>
                                         </div>

@@ -299,7 +299,7 @@ echo number_format($soma_descontos_pagos, 2, ',', '.')?></strong></td>
 	      </div>
 		            
           <div class="col-3">  
-          <label for="valor_desconto">Val.Desc <i class="icon-info-sign tip-left" title="Não altere esta campo, caso clicar nele e sair e ficar vázio, terá que recarregar á pagina e inserir de novo"></i></label>
+          <label for="valor_desconto">Val.Desc <i class="bx bx-info-circle tip-left" title="Não altere esta campo, caso clicar nele e sair e ficar vázio, terá que recarregar á pagina e inserir de novo"></i></label>
           <input class="col-12 money" id="valor_desconto" readOnly="true" title="Não altere este campo" type="text" name="valor_desconto" value="<?php echo number_format("0.00", 2, ',', '.') ?>"/>
         </div>
 
@@ -415,7 +415,7 @@ echo number_format($soma_descontos_pagos, 2, ',', '.')?></strong></td>
 	      </div>
 		         
           <div class="col-3" style="margin-left: 0">  
-	        <label for="desconto_parc">Desconto <i class="icon-info-sign tip-left" title="Não altere esta campo, caso clicar nele e sair e ficar vázio, terá que recarregar á pagina e inserir de novo"></i></label>
+	        <label for="desconto_parc">Desconto <i class="bx bx-info-circle tip-left" title="Não altere esta campo, caso clicar nele e sair e ficar vázio, terá que recarregar á pagina e inserir de novo"></i></label>
             <input class="col-6 money"  id="desconto_parc" readOnly="true" title="Não altere este campo" type="text" name="desconto_parc" value="<?php echo number_format("0.00", 2, ',', '.') ?>" style="float: left;" />
 	      </div>
 			
@@ -457,7 +457,7 @@ echo number_format($soma_descontos_pagos, 2, ',', '.')?></strong></td>
 
 	    <div class="col-12" style="margin-left: 0;"> 
 	    	<div class="col-4">
-	    		<label for="entrada">Entrada <i class="icon-info-sign tip-right" title="O valor da entrada será lançado como pago no dia atual (Hoje)"></i></label>
+	    		<label for="entrada">Entrada <i class="bx bx-info-circle tip-right" title="O valor da entrada será lançado como pago no dia atual (Hoje)"></i></label>
 	    		<input class="col-12 money" id="entrada" type="text" name="entrada" value="0" />
 	    	</div>
 
@@ -467,7 +467,7 @@ echo number_format($soma_descontos_pagos, 2, ',', '.')?></strong></td>
 	    	</div>
 	    	
 	    	<div class="col-4" style="margin-left: 1">
-	    		<label for="dia_base_pgto">Data Base de Pgto* <i class="icon-info-sign tip-left" title="Dia do mês que serão lançadas as parcelas restantes, iniciando-se pela data selecionada."></i></label>
+	    		<label for="dia_base_pgto">Data Base de Pgto* <i class="bx bx-info-circle tip-left" title="Dia do mês que serão lançadas as parcelas restantes, iniciando-se pela data selecionada."></i></label>
 	    		<input class="col-12 datepicker" id="dia_base_pgto" type="text" autocomplete="off" name="dia_base_pgto" required  />
 	    	</div>
 

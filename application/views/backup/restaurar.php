@@ -61,7 +61,7 @@
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon">
-                    <i class="icon-refresh"></i>
+                    <i class="bx bx-refresh"></i>
                 </span>
                 <h5>Restaurar Backup</h5>
             </div>
@@ -70,7 +70,7 @@
 
                 <!-- Alerta de Segurança -->
                 <div class="warning-box">
-                    <h4><i class="icon-exclamation-sign"></i> Atenção - Operação Crítica!</h4>
+                    <h4><i class="bx bx-error-circle"></i> Atenção - Operação Crítica!</h4>
                     <ul>
                         <li><strong>Esta operação não pode ser desfeita.</strong></li>
                         <li>Todos os dados atuais serão substituídos pelos dados do backup.</li>
@@ -84,18 +84,18 @@
                 <?php if ($this->session->flashdata('error')): ?>
                     <div class="alert alert-danger">
                         <button class="close" data-bs-dismiss="alert">×</button>
-                        <i class="icon-remove"></i> <?php echo $this->session->flashdata('error'); ?>
+                        <i class="bx bx-x"></i> <?php echo $this->session->flashdata('error'); ?>
                     </div>
                 <?php endif; ?>
 
-                <?php echo validation_errors('<div class="alert alert-danger"><button class="close" data-bs-dismiss="alert">×</button><i class="icon-remove"></i> ', '</div>'); ?>
+                <?php echo validation_errors('<div class="alert alert-danger"><button class="close" data-bs-dismiss="alert">×</button><i class="bx bx-x"></i> ', '</div>'); ?>
 
                 <!-- Formulário de Upload -->
                 <form action="<?php echo site_url('backup/processar_restauracao'); ?>" method="POST" enctype="multipart/form-data" id="formRestauracao">
 
                     <!-- Área de Upload -->
                     <div class="upload-area" id="uploadArea">
-                        <i class="icon-cloud-upload"></i>
+                        <i class="bx bx-cloud-upload"></i>
                         <h4>Clique ou arraste o arquivo SQL aqui</h4>
                         <p class="text-muted">Formatos aceitos: .sql, .gz, .zip<br>Tamanho máximo: 100MB</p>
                         <input type="file" name="arquivo_sql" id="arquivo_sql" accept=".sql,.gz,.zip" style="display: none;" required>
@@ -103,7 +103,7 @@
 
                     <!-- Informações do Arquivo -->
                     <div id="fileInfo">
-                        <h5><i class="icon-file"></i> Arquivo Selecionado</h5>
+                        <h5><i class="bx bx-file"></i> Arquivo Selecionado</h5>
                         <div class="row">
                             <div class="col-6">
                                 <strong>Nome:</strong> <span id="fileName"></span>
@@ -117,7 +117,7 @@
                     <!-- Backups Disponíveis -->
                     <?php if (!empty($backups_disponiveis)): ?>
                     <h5 style="margin-top: 30px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
-                        <i class="icon-hdd"></i> Ou selecione um backup do servidor:
+                        <i class="bx bx-hard-drive"></i> Ou selecione um backup do servidor:
                     </h5>
 
                     <div class="row" style="max-height: 300px; overflow-y: auto;">
@@ -148,7 +148,7 @@
                     <!-- Botões -->
                     <div class="form-actions" style="margin-top: 30px;">
                         <button type="submit" class="btn btn-large btn-warning" id="btnRestaurar" disabled>
-                            <i class="icon-refresh icon-white"></i> Iniciar Restauração
+                            <i class="bx bx-refresh text-white"></i> Iniciar Restauração
                         </button>
                         <a href="<?php echo site_url('backup'); ?>" class="btn btn-large">Cancelar</a>
                     </div>
@@ -158,7 +158,7 @@
                 <!-- Progresso da Restauração -->
                 <div id="progressoRestauracao" style="display: none; margin-top: 20px;">
                     <div class="alert alert-warning">
-                        <i class="icon-spinner icon-spin"></i>
+                        <i class="bx bx-loader-circle bx-spin"></i>
                         <strong>Restaurando banco de dados, aguarde...</strong>
                         <br>Não feche esta janela durante o processo.
                     </div>
