@@ -364,13 +364,29 @@
                 <!-- CONFIGURACOES -->
                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vUsuariosCliente') ||
                           $this->permission->checkPermission($this->session->userdata('permissao'), 'vArquivo') ||
-                          $this->permission->checkPermission($this->session->userdata('permissao'), 'cPermissao')) { ?>
+                          $this->permission->checkPermission($this->session->userdata('permissao'), 'cPermissao') ||
+                          $this->permission->checkPermission($this->session->userdata('permissao'), 'cUsuario') ||
+                          $this->permission->checkPermission($this->session->userdata('permissao'), 'cEmitente') ||
+                          $this->permission->checkPermission($this->session->userdata('permissao'), 'cSistema') ||
+                          $this->permission->checkPermission($this->session->userdata('permissao'), 'cBackup') ||
+                          $this->permission->checkPermission($this->session->userdata('permissao'), 'cAuditoria') ||
+                          $this->permission->checkPermission($this->session->userdata('permissao'), 'cConfiguracao')) { ?>
                     <li class="menu-divider"><span class="divider-text">CONFIGURACOES</span></li>
+
+                    <!-- Usuarios do Sistema -->
+                    <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cUsuario')) { ?>
+                        <li class="<?php if (isset($menuUsuarios)) { echo 'active'; }; ?>"><a href="<?= site_url('usuarios') ?>"><i class='bx bx-user-circle iconX'></i><span class="title">Usuarios</span><span class="title-tooltip">Usuarios do Sistema</span></a></li>
+                    <?php } ?>
+
+                    <!-- Permissoes -->
+                    <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cPermissao')) { ?>
+                        <li class="<?php if (isset($menuPermissoes)) { echo 'active'; }; ?>"><a href="<?= site_url('permissoes') ?>"><i class='bx bx-shield-quarter iconX'></i><span class="title">Permissoes</span><span class="title-tooltip">Grupos de Permissao</span></a></li>
+                    <?php } ?>
 
                     <!-- Usuarios Cliente (submenu) -->
                     <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vUsuariosCliente')) { ?>
                         <li class="submenu <?php if (isset($menuUsuariosCliente)) { echo 'active open'; }; ?>">
-                            <a class="tip-bottom" title="" href="#"><i class='bx bx-user-check iconX'></i>
+                            <a class="tip-bottom" title="" href="#"><i class='bx bx-group iconX'></i>
                                 <span class="title">Usuarios Cliente</span>
                                 <span class="title-tooltip">Portal Cliente</span>
                                 <i class='bx bx-chevron-down arrow'></i>
@@ -398,9 +414,29 @@
                         <li class="<?php if (isset($menuArquivos)) { echo 'active'; }; ?>"><a class="tip-bottom" href="<?= site_url('arquivos') ?>"><i class='bx bx-box iconX'></i><span class="title">Arquivos</span><span class="title-tooltip">Arquivos</span></a></li>
                     <?php } ?>
 
+                    <!-- Emitente -->
+                    <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cEmitente')) { ?>
+                        <li class="<?php if (isset($menuEmitente)) { echo 'active'; }; ?>"><a href="<?= site_url('mapos/emitente') ?>"><i class='bx bx-building iconX'></i><span class="title">Emitente</span><span class="title-tooltip">Dados da Empresa</span></a></li>
+                    <?php } ?>
+
+                    <!-- Configuracoes do Sistema -->
+                    <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cSistema')) { ?>
+                        <li class="<?php if (isset($menuConfigSistema)) { echo 'active'; }; ?>"><a href="<?= site_url('mapos/configurar') ?>"><i class='bx bx-cog iconX'></i><span class="title">Config. Sistema</span><span class="title-tooltip">Configuracoes do Sistema</span></a></li>
+                    <?php } ?>
+
                     <!-- Modulos -->
                     <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cPermissao')) { ?>
                         <li class="<?php if (isset($menuModulos)) { echo 'active'; }; ?>"><a class="tip-bottom" href="<?= site_url('modulos') ?>"><i class='bx bx-extension iconX'></i><span class="title">Modulos</span><span class="title-tooltip">Modulos</span></a></li>
+                    <?php } ?>
+
+                    <!-- Backup -->
+                    <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cBackup')) { ?>
+                        <li class="<?php if (isset($menuBackup)) { echo 'active'; }; ?>"><a href="<?= site_url('backup') ?>"><i class='bx bx-data iconX'></i><span class="title">Backup</span><span class="title-tooltip">Backup e Restauracao</span></a></li>
+                    <?php } ?>
+
+                    <!-- Auditoria -->
+                    <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cAuditoria')) { ?>
+                        <li class="<?php if (isset($menuAuditoria)) { echo 'active'; }; ?>"><a href="<?= site_url('auditoria') ?>"><i class='bx bx-file-find iconX'></i><span class="title">Auditoria</span><span class="title-tooltip">Logs de Auditoria</span></a></li>
                     <?php } ?>
 
                     <!-- Comunicacao (WhatsApp/Notificacoes) -->
@@ -433,6 +469,7 @@
                     <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cPermissao')) { ?>
                         <li class="menu-divider-sub"><span class="divider-text-sub">Administracao</span></li>
                         <li class="<?php if (isset($menuMigrate)) { echo 'active'; }; ?>"><a href="<?= site_url('migrate') ?>"><i class='bx bx-data iconX'></i><span class="title">Migracoes DB</span><span class="title-tooltip">Migracoes</span></a></li>
+                        <li class="<?php if (isset($menuDiagnostico)) { echo 'active'; }; ?>"><a href="<?= site_url('diagnostico') ?>"><i class='bx bx-bug iconX'></i><span class="title">Diagnostico</span><span class="title-tooltip">Diagnostico do Sistema</span></a></li>
                         <li class="<?php if (isset($menuEmailQueue)) { echo 'active'; }; ?>"><a href="<?= site_url('emails/dashboard') ?>"><i class='bx bx-envelope iconX'></i><span class="title">Fila de Emails</span><span class="title-tooltip">Fila Emails</span></a></li>
                         <li class="<?php if (isset($menuEmailConfig)) { echo 'active'; }; ?>"><a href="<?= site_url('email/configuracoes') ?>"><i class='bx bx-cog iconX'></i><span class="title">Config. Emails</span><span class="title-tooltip">Config Emails</span></a></li>
                         <li class="<?php if (isset($menuWebhooks)) { echo 'active'; }; ?>"><a href="<?= site_url('webhooks') ?>"><i class='bx bx-webhook iconX'></i><span class="title">Webhooks</span><span class="title-tooltip">Webhooks</span></a></li>
@@ -446,6 +483,13 @@
 
         <div class="botton-content">
             <ul style="padding: 0; margin: 0; list-style: none;">
+                <li class="<?php if (isset($menuMinhaConta)) { echo 'active'; }; ?>">
+                    <a class="tip-bottom" title="" href="<?= site_url('mapos/minhaConta'); ?>">
+                        <i class='bx bx-user iconX'></i>
+                        <span class="title">Minha Conta</span>
+                        <span class="title-tooltip">Minha Conta</span>
+                    </a>
+                </li>
                 <li>
                     <a class="tip-bottom" title="" href="<?= site_url('login/sair'); ?>">
                         <i class='bx bx-log-out-circle iconX'></i>
