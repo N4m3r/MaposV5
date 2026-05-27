@@ -204,9 +204,9 @@
                                         <td colspan="3" class="alert">Você precisa configurar os dados do emitente. >>><a href="<?php echo base_url(); ?>index.php/mapos/emitente">Configurar <<< </a></td>
                                     </tr>
                                 <?php } ?>
-                                <h3><i class='bx bx-file'></i> Ordem de Serviço #<?php echo sprintf('%04d', $result->idOs) ?></h3>
                             </tbody>
                         </table>
+                        <h3><i class='bx bx-file'></i> Ordem de Serviço #<?php echo sprintf('%04d', $result->idOs) ?></h3>
                         <table class="table table-condensend">
                             <tbody>
                                 <tr>
@@ -919,6 +919,7 @@
 
                     </div>
                 </div>
+                    </div><!-- /invoice-content -->
                     </div><!-- /tab-pane#tab-detalhes -->
 
                     <!-- ===== ABA NOTAS FISCAIS ===== -->
@@ -974,10 +975,36 @@
 
 <?php $this->load->view('nfse_os/nfse_scripts'); ?>
 
-<!-- Controle isolado das sub-abas de Notas Fiscais -->
+<!-- Controle das abas principais e sub-abas de Notas Fiscais -->
 <script>
 (function($) {
     $(function() {
+        // Controle das abas principais (Detalhes / Notas Fiscais)
+        var $mainTabs = $('#os-main-tabs');
+        var $mainPanes = $mainTabs.closest('.tab-content').find('.tab-pane');
+
+        $mainTabs.on('click', 'a', function(e) {
+            e.preventDefault();
+            var target = $(this).attr('href');
+
+            $mainTabs.find('li').removeClass('active');
+            $mainPanes.removeClass('active');
+
+            $(this).closest('li').addClass('active');
+            $(target).addClass('active');
+
+            // Ao abrir Notas Fiscais, garantir primeira sub-aba ativa
+            if (target === '#tab-notas-fiscais') {
+                var $nfTabs = $('#nf-sub-tabs');
+                var $nfPanes = $('#nf-sub-content').find('.nf-pane');
+                if (!$nfTabs.find('li.nf-active').length) {
+                    $nfTabs.find('li:first').addClass('nf-active');
+                    $nfPanes.first().addClass('nf-active');
+                }
+            }
+        });
+
+        // Controle das sub-abas de Notas Fiscais
         var $tabs = $('#nf-sub-tabs');
         var $panes = $('#nf-sub-content').find('.nf-pane');
 
@@ -990,14 +1017,6 @@
 
             $(this).closest('li').addClass('nf-active');
             $(target).addClass('nf-active');
-        });
-
-        // Ao abrir a aba pai "Notas Fiscais", garantir primeira sub-aba ativa
-        $('a[href="#tab-notas-fiscais"]').on('shown', function() {
-            if (!$tabs.find('li.nf-active').length) {
-                $tabs.find('li:first').addClass('nf-active');
-                $panes.first().addClass('nf-active');
-            }
         });
     });
 })(jQuery);
