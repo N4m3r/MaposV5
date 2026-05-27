@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * View: configuracoes.php
  * Painel de configuracoes do Agente IA

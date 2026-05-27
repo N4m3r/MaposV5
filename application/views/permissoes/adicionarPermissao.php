@@ -1,4 +1,4 @@
-﻿<div class="col-12" style="margin-left: 0">
+<div class="col-12" style="margin-left: 0">
     <form action="<?php echo base_url(); ?>index.php/permissoes/adicionar" id="formPermissao" method="post">
         <div class="col-12" style="margin-left: 0">
             <div class="widget-box">

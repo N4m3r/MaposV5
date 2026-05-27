@@ -1,4 +1,4 @@
-﻿<div class="widget-box">
+<div class="widget-box">
     <div class="widget-title">
         <span class="icon"><i class="bx bx-time"></i></span>
         <h5>Relatório de Atendimentos</h5>

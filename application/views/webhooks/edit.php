@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 $eventsSelected = json_decode($webhook->events ?? '[]', true);
 ?>
 

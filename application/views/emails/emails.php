@@ -1,4 +1,4 @@
-﻿<div class="widget-box">
+<div class="widget-box">
     <div class="widget-title" style="margin: -20px 0 0">
         <span class="icon">
             <i class="fas fa-envelope"></i>

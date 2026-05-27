@@ -1,4 +1,4 @@
-﻿<div class="row" style="margin-top: 0">
+<div class="row" style="margin-top: 0">
     <div class="col-12">
         <ul class="breadcrumb">
             <li><a href="<?= site_url('dashboard') ?>">Dashboard</a> <span class="dropdown-divider">/</span></li>

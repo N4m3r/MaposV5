@@ -1,4 +1,4 @@
-﻿<link href="<?= base_url('assets/css/custom.css'); ?>" rel="stylesheet">
+<link href="<?= base_url('assets/css/custom.css'); ?>" rel="stylesheet">
 
 <!-- Scripts do Sistema de Check-in (carregados antes dos modais) -->
 <script src="<?php echo base_url(); ?>assets/js/assinatura-canvas.js?v=3"></script>

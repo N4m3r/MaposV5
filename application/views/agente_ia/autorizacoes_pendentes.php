@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * View: autorizacoes_pendentes.php
  * Painel de autorizacoes pendentes do agente IA

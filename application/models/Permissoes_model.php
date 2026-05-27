@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 class Permissoes_model extends CI_Model
 {

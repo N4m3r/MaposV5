@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * View: Visualizar Detalhes do Usuário do Portal do Cliente
  */

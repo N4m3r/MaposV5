@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Log de Envios de Email
  */

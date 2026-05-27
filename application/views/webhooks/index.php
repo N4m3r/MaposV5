@@ -1,4 +1,4 @@
-﻿<div class="row">
+<div class="row">
     <div class="col-12">
         <ul class="breadcrumb">
             <li><a href="<?= base_url() ?>">Dashboard</a><span class="dropdown-divider">/</span></li>

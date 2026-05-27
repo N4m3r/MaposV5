@@ -1,4 +1,4 @@
-﻿<div class="widget-box">
+<div class="widget-box">
     <div class="widget-title">
         <span class="icon"><i class="bx bx-dollar-circle"></i></span>
         <h5>Relatório Financeiro</h5>

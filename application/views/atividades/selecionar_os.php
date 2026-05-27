@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 $os_pendentes = $os_pendentes ?? [];
 $os_hoje = $os_hoje ?? [];
 $atividade_andamento = $atividade_andamento ?? null;

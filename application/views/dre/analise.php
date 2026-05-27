@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Análise Vertical e Horizontal do DRE
  */

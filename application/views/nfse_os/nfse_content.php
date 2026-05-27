@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * NFS-e — Sub-aba Servicos dentro de Notas Fiscais
  * Tema Dark MapOS

@@ -1,4 +1,4 @@
-﻿<div class="new122">
+<div class="new122">
     <!-- Header -->
     <div class="widget-title" style="margin: -20px 0 0">
         <span class="icon">

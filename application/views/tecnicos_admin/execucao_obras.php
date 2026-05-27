@@ -1,4 +1,4 @@
-﻿<!-- Visão de Execução das Obras - Dashboard Simplificado -->
+<!-- Visão de Execução das Obras - Dashboard Simplificado -->
 <div class="new122">
     <!-- Header -->
     <div class="widget-title" style="margin: -20px 0 0; display: flex; justify-content: space-between; align-items: center;">

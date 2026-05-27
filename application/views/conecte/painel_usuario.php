@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * View: Painel do Usuário do Portal do Cliente
  * Com suporte a permissões para cobranças, boletos, notas fiscais e obras

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Piggly\Pix\StaticPayload;
 

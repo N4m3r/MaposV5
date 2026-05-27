@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Kanban Board View
  * Visualização em Kanban das Ordens de Serviço

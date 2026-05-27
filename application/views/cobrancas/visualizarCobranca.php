@@ -1,4 +1,4 @@
-﻿<div class="accordion" id="collapse-group">
+<div class="accordion" id="collapse-group">
     <div class="accordion-group widget-box">
         <div class="accordion-heading">
             <div class="widget-title" style="margin: -20px 0 0">

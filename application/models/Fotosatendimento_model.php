@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 class Fotosatendimento_model extends CI_Model
 {

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 class Mapos_model extends MY_Model
 {

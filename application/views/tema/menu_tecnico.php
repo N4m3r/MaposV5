@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Menu exclusivo para técnicos
  * Este menu é carregado automaticamente quando o usuário tem permissão de técnico

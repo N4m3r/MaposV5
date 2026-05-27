@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * View: dashboard.php
  * Dashboard geral do Agente IA no MapOS

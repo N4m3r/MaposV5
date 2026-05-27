@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * View: Login de Usuário do Portal do Cliente
  * Design Moderno com Animações

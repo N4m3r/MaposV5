@@ -661,7 +661,21 @@
       "Bash(del _migrate_bs5_grid.ps1 _migrate_bs5_assets.ps1 _migrate_bs5_components.ps1 _migrate_bs5_extra.ps1 _migrate_bs5_cleanup.ps1 _migrate_bs5_css.ps1 _migrate_bs5_css_extra.ps1 _migrate_bs5_js.ps1)",
       "Bash(Select-String -Pattern \"api_docs\" -SimpleMatch)",
       "Bash(git pull *)",
-      "Bash(findstr /i \"ci_controller\")"
+      "Bash(findstr /i \"ci_controller\")",
+      "Bash(mysql *)",
+      "Bash(xxd -l 3 \"C:\\\\Users\\\\thail\\\\Desktop\\\\IVMS-CRUD\\\\MaposV5\\\\application\\\\config\\\\config.php\")",
+      "Bash(xxd -l 3 \"C:\\\\Users\\\\thail\\\\Desktop\\\\IVMS-CRUD\\\\MaposV5\\\\application\\\\config\\\\database.php\")",
+      "Bash(xxd -l 3 \"C:\\\\Users\\\\thail\\\\Desktop\\\\IVMS-CRUD\\\\MaposV5\\\\application\\\\config\\\\hooks.php\")",
+      "Bash(xxd -l 3 \"C:\\\\Users\\\\thail\\\\Desktop\\\\IVMS-CRUD\\\\MaposV5\\\\application\\\\config\\\\routes.php\")",
+      "Bash(xxd -l 3 \"C:\\\\Users\\\\thail\\\\Desktop\\\\IVMS-CRUD\\\\MaposV5\\\\application\\\\config\\\\autoload.php\")",
+      "Bash(xxd *)",
+      "Bash(where.exe lftp *)",
+      "Bash(where.exe sftp *)",
+      "Bash(where.exe plink *)",
+      "Bash(where.exe pscp *)",
+      "Bash(where.exe winscp *)",
+      "Bash(sftp -oBatchMode=no -oStrictHostKeyChecking=no jjferreiras05@ftp.web10f91.kinghost.net)",
+      "Bash(C:\\\\Program Files\\\\PuTTY\\\\plink.exe *)"
     ]
   }
 }

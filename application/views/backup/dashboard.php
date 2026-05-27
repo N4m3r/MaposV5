@@ -1,4 +1,4 @@
-﻿<div class="row">
+<div class="row">
     <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">

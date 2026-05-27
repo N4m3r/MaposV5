@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 class Checkin_model extends CI_Model
 {

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Documentação: Webhooks do MAPOS
  * Sistema de notificações em tempo real

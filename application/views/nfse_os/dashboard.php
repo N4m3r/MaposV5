@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Dashboard de NFS-e e Boletos
  * Visão geral de notas fiscais e cobranças vinculadas a OS

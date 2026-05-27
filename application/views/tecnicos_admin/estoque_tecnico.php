@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Gerenciamento de Estoque do Técnico
  */

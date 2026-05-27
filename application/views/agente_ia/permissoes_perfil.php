@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * View: permissoes_perfil.php
  * Gerenciamento de permissoes do agente IA por perfil

@@ -1,4 +1,4 @@
-﻿<style>
+<style>
     .col-lg-12,
     .col-lg-3,
     .col-lg-9,

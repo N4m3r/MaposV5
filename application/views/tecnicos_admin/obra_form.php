@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * View: Formulário de Edição de Obra
  */

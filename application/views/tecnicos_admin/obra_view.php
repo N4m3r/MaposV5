@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // Status labels e cores
 $statusLabels = [
     'Prospeccao' => 'Prospecção',

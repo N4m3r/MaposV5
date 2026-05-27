@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Dashboard DRE - Demonstração do Resultado do Exercício
  */

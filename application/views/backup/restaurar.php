@@ -1,4 +1,4 @@
-﻿<style>
+<style>
     .upload-area {
         border: 3px dashed #ddd;
         border-radius: 10px;

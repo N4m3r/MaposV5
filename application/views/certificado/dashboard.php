@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Dashboard do Certificado Digital
  */

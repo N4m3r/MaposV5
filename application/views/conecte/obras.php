@@ -1,4 +1,4 @@
-﻿<?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
+<?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
 
 <!-- Tema Moderno Obras -->
 <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/obras-modern-theme.css">

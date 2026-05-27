@@ -1,4 +1,4 @@
-﻿<!-- Templates de Checklists - Versão Moderna -->
+<!-- Templates de Checklists - Versão Moderna -->
 <div class="new122">
     <!-- Header -->
     <div class="widget-title" style="margin: -20px 0 0">

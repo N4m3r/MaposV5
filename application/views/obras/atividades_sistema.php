@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // View parcial para integração de atividades do novo sistema na visualização da obra
 $atividades_sistema = $atividades_sistema ?? [];
 $estatisticas_atividades = $estatisticas_atividades ?? null;

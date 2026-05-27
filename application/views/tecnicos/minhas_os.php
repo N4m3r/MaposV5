@@ -1,4 +1,4 @@
-﻿<!-- Minhas OS - Portal do Técnico -->
+<!-- Minhas OS - Portal do Técnico -->
 <style>
 .portal-tecnico-content { margin-top: 0 !important; }
 @media (max-width: 768px) { .portal-tecnico-content { margin-top: 0 !important; } }

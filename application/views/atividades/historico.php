@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 $atividades = $atividades ?? [];
 $estatisticas = $estatisticas ?? ['total_atividades' => 0, 'concluidas' => 0, 'tempo_total_horas' => 0, 'por_categoria' => []];
 $filtros = $filtros ?? ['data_inicio' => date('Y-m-01'), 'data_fim' => date('Y-m-t')];

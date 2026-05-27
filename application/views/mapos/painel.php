@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Dashboard MapOS - Versão Moderna e Responsiva
  * Mantém o tema original com melhorias visuais e funcionais

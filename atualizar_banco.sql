@@ -12,60 +12,6 @@ SET NAMES utf8mb4;
 USE `jjferreiras05`;
 SET FOREIGN_KEY_CHECKS = 0;
 
--- ============================================================
--- DELIMITER para procedimentos armazenados
--- ============================================================
-DELIMITER $$
-
--- ============================================================
--- PROCEDIMENTO: Adicionar coluna se nao existir
--- ============================================================
-DROP PROCEDURE IF EXISTS add_column_if_not_exists$$
-CREATE PROCEDURE add_column_if_not_exists(
-    IN p_table VARCHAR(100),
-    IN p_column VARCHAR(100),
-    IN p_definition TEXT
-)
-BEGIN
-    DECLARE col_count INT;
-    SELECT COUNT(*) INTO col_count
-    FROM INFORMATION_SCHEMA.COLUMNS
-    WHERE TABLE_SCHEMA = DATABASE()
-      AND TABLE_NAME = p_table
-      AND COLUMN_NAME = p_column;
-    IF col_count = 0 THEN
-        SET @sql = CONCAT('ALTER TABLE `', p_table, '` ADD COLUMN `', p_column, '` ', p_definition);
-        PREPARE stmt FROM @sql;
-        EXECUTE stmt;
-        DEALLOCATE PREPARE stmt;
-    END IF;
-END$$
-
--- ============================================================
--- PROCEDIMENTO: Criar indice se nao existir
--- ============================================================
-DROP PROCEDURE IF EXISTS create_index_if_not_exists$$
-CREATE PROCEDURE create_index_if_not_exists(
-    IN p_table VARCHAR(100),
-    IN p_index_name VARCHAR(100),
-    IN p_columns VARCHAR(500)
-)
-BEGIN
-    DECLARE idx_count INT;
-    SELECT COUNT(*) INTO idx_count
-    FROM INFORMATION_SCHEMA.STATISTICS
-    WHERE TABLE_SCHEMA = DATABASE()
-      AND TABLE_NAME = p_table
-      AND INDEX_NAME = p_index_name;
-    IF idx_count = 0 THEN
-        SET @sql = CONCAT('ALTER TABLE `', p_table, '` ADD INDEX `', p_index_name, '` (', p_columns, ')');
-        PREPARE stmt FROM @sql;
-        EXECUTE stmt;
-        DEALLOCATE PREPARE stmt;
-    END IF;
-END$$
-
-DELIMITER ;
 
 -- ============================================================
 -- MIGRATION: 20260417000001 - Consolidated Schema Update
@@ -100,26 +46,134 @@ CREATE TABLE IF NOT EXISTS `cobrancas` (
     PRIMARY KEY (`idCobranca`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-CALL add_column_if_not_exists('cobrancas', 'linha_digitavel', "VARCHAR(255) DEFAULT NULL");
-CALL add_column_if_not_exists('cobrancas', 'pix_code', "TEXT DEFAULT NULL");
-CALL add_column_if_not_exists('cobrancas', 'paid_at', "DATETIME DEFAULT NULL");
-CALL add_column_if_not_exists('cobrancas', 'updated_at', "DATETIME DEFAULT NULL");
-CALL create_index_if_not_exists('cobrancas', 'idx_cobrancas_charge_id', '`charge_id`');
-CALL create_index_if_not_exists('cobrancas', 'idx_cobrancas_status_gateway', '`status`, `payment_gateway`');
+-- Add column `linha_digitavel` to `cobrancas` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'cobrancas' AND COLUMN_NAME = 'linha_digitavel');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `cobrancas` ADD COLUMN `linha_digitavel` VARCHAR(255) DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `pix_code` to `cobrancas` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'cobrancas' AND COLUMN_NAME = 'pix_code');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `cobrancas` ADD COLUMN `pix_code` TEXT DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `paid_at` to `cobrancas` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'cobrancas' AND COLUMN_NAME = 'paid_at');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `cobrancas` ADD COLUMN `paid_at` DATETIME DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `updated_at` to `cobrancas` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'cobrancas' AND COLUMN_NAME = 'updated_at');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `cobrancas` ADD COLUMN `updated_at` DATETIME DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add index `idx_cobrancas_charge_id` to `cobrancas` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'cobrancas' AND INDEX_NAME = 'idx_cobrancas_charge_id');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `cobrancas` ADD INDEX `idx_cobrancas_charge_id` (`charge_id`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add index `idx_cobrancas_status_gateway` to `cobrancas` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'cobrancas' AND INDEX_NAME = 'idx_cobrancas_status_gateway');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `cobrancas` ADD INDEX `idx_cobrancas_status_gateway` (`status`, `payment_gateway`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
 
 -- --- os ---
-CALL add_column_if_not_exists('os', 'tecnico_responsavel', "INT(11) DEFAULT NULL COMMENT 'ID do usuario tecnico responsavel pela OS'");
-CALL add_column_if_not_exists('os', 'nfse_status', "ENUM('Pendente','Emitida','Cancelada') DEFAULT 'Pendente' COMMENT 'Status da NFS-e vinculada'");
-CALL add_column_if_not_exists('os', 'boleto_status', "ENUM('Pendente','Emitido','Pago','Vencido','Cancelado') DEFAULT 'Pendente' COMMENT 'Status do boleto vinculado'");
-CALL add_column_if_not_exists('os', 'data_vencimento_boleto', "DATE DEFAULT NULL COMMENT 'Data de vencimento do boleto'");
-CALL add_column_if_not_exists('os', 'valor_com_impostos', "DECIMAL(15,2) DEFAULT NULL COMMENT 'Valor liquido apos deducao de impostos'");
-CALL add_column_if_not_exists('os', 'certificado_vinculado', "INT(11) UNSIGNED DEFAULT NULL");
-CALL add_column_if_not_exists('os', 'retencao_impostos', "TINYINT(1) DEFAULT 0");
-CALL add_column_if_not_exists('os', 'calculo_impostos', "TEXT DEFAULT NULL COMMENT 'JSON com detalhes dos impostos calculados'");
-CALL add_column_if_not_exists('os', 'obra_id', "INT(11) UNSIGNED DEFAULT NULL COMMENT 'ID da obra vinculada'");
-CALL create_index_if_not_exists('os', 'idx_tecnico_responsavel', '`tecnico_responsavel`');
-CALL create_index_if_not_exists('os', 'idx_obra_id', '`obra_id`');
-CALL add_column_if_not_exists('os', 'status', "VARCHAR(45) DEFAULT NULL");
+-- Add column `tecnico_responsavel` to `os` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'os' AND COLUMN_NAME = 'tecnico_responsavel');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `os` ADD COLUMN `tecnico_responsavel` INT(11) DEFAULT NULL COMMENT 'ID do usuario tecnico responsavel pela OS''), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `nfse_status` to `os` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'os' AND COLUMN_NAME = 'nfse_status');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `os` ADD COLUMN `nfse_status` ENUM('Pendente','Emitida','Cancelada') DEFAULT 'Pendente' COMMENT 'Status da NFS-e vinculada''), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `boleto_status` to `os` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'os' AND COLUMN_NAME = 'boleto_status');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `os` ADD COLUMN `boleto_status` ENUM('Pendente','Emitido','Pago','Vencido','Cancelado') DEFAULT 'Pendente' COMMENT 'Status do boleto vinculado''), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `data_vencimento_boleto` to `os` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'os' AND COLUMN_NAME = 'data_vencimento_boleto');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `os` ADD COLUMN `data_vencimento_boleto` DATE DEFAULT NULL COMMENT 'Data de vencimento do boleto''), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `valor_com_impostos` to `os` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'os' AND COLUMN_NAME = 'valor_com_impostos');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `os` ADD COLUMN `valor_com_impostos` DECIMAL(15,2) DEFAULT NULL COMMENT 'Valor liquido apos deducao de impostos''), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `certificado_vinculado` to `os` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'os' AND COLUMN_NAME = 'certificado_vinculado');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `os` ADD COLUMN `certificado_vinculado` INT(11) UNSIGNED DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `retencao_impostos` to `os` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'os' AND COLUMN_NAME = 'retencao_impostos');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `os` ADD COLUMN `retencao_impostos` TINYINT(1) DEFAULT 0'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `calculo_impostos` to `os` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'os' AND COLUMN_NAME = 'calculo_impostos');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `os` ADD COLUMN `calculo_impostos` TEXT DEFAULT NULL COMMENT 'JSON com detalhes dos impostos calculados''), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `obra_id` to `os` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'os' AND COLUMN_NAME = 'obra_id');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `os` ADD COLUMN `obra_id` INT(11) UNSIGNED DEFAULT NULL COMMENT 'ID da obra vinculada''), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add index `idx_tecnico_responsavel` to `os` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'os' AND INDEX_NAME = 'idx_tecnico_responsavel');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `os` ADD INDEX `idx_tecnico_responsavel` (`tecnico_responsavel`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add index `idx_obra_id` to `os` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'os' AND INDEX_NAME = 'idx_obra_id');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `os` ADD INDEX `idx_obra_id` (`obra_id`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `status` to `os` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'os' AND COLUMN_NAME = 'status');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `os` ADD COLUMN `status` VARCHAR(45) DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
 
 -- --- os_nfse_emitida ---
 CREATE TABLE IF NOT EXISTS `os_nfse_emitida` (
@@ -169,41 +223,203 @@ CREATE TABLE IF NOT EXISTS `os_nfse_emitida` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --- lancamentos ---
-CALL add_column_if_not_exists('lancamentos', 'observacoes', "TEXT DEFAULT NULL");
-CALL add_column_if_not_exists('lancamentos', 'webhook_notificado', "TINYINT(1) DEFAULT 0");
+-- Add column `observacoes` to `lancamentos` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'lancamentos' AND COLUMN_NAME = 'observacoes');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `lancamentos` ADD COLUMN `observacoes` TEXT DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `webhook_notificado` to `lancamentos` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'lancamentos' AND COLUMN_NAME = 'webhook_notificado');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `lancamentos` ADD COLUMN `webhook_notificado` TINYINT(1) DEFAULT 0'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
 
 -- --- usuarios ---
-CALL add_column_if_not_exists('usuarios', 'is_tecnico', "TINYINT(1) DEFAULT 0 COMMENT 'Indica se e tecnico de campo'");
-CALL add_column_if_not_exists('usuarios', 'nivel_tecnico', "ENUM('I','II','III','IV') DEFAULT 'II' COMMENT 'Nivel do tecnico'");
-CALL add_column_if_not_exists('usuarios', 'especialidades', "VARCHAR(255) DEFAULT NULL");
-CALL add_column_if_not_exists('usuarios', 'veiculo_placa', "VARCHAR(10) DEFAULT NULL");
-CALL add_column_if_not_exists('usuarios', 'veiculo_tipo', "ENUM('Moto','Carro','Nenhum') DEFAULT 'Nenhum'");
-CALL add_column_if_not_exists('usuarios', 'coordenadas_base_lat', "DECIMAL(10,8) DEFAULT NULL");
-CALL add_column_if_not_exists('usuarios', 'coordenadas_base_lng', "DECIMAL(11,8) DEFAULT NULL");
-CALL add_column_if_not_exists('usuarios', 'raio_atuacao_km', "INT DEFAULT 50");
-CALL add_column_if_not_exists('usuarios', 'plantao_24h', "TINYINT(1) DEFAULT 0");
-CALL add_column_if_not_exists('usuarios', 'app_tecnico_instalado', "TINYINT(1) DEFAULT 0");
-CALL add_column_if_not_exists('usuarios', 'token_app', "VARCHAR(255) DEFAULT NULL");
-CALL add_column_if_not_exists('usuarios', 'token_expira', "DATETIME DEFAULT NULL");
-CALL add_column_if_not_exists('usuarios', 'ultimo_acesso_app', "DATETIME DEFAULT NULL");
-CALL add_column_if_not_exists('usuarios', 'foto_tecnico', "VARCHAR(255) DEFAULT NULL");
+-- Add column `is_tecnico` to `usuarios` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'usuarios' AND COLUMN_NAME = 'is_tecnico');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `usuarios` ADD COLUMN `is_tecnico` TINYINT(1) DEFAULT 0 COMMENT 'Indica se e tecnico de campo''), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `nivel_tecnico` to `usuarios` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'usuarios' AND COLUMN_NAME = 'nivel_tecnico');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `usuarios` ADD COLUMN `nivel_tecnico` ENUM('I','II','III','IV') DEFAULT 'II' COMMENT 'Nivel do tecnico''), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `especialidades` to `usuarios` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'usuarios' AND COLUMN_NAME = 'especialidades');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `usuarios` ADD COLUMN `especialidades` VARCHAR(255) DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `veiculo_placa` to `usuarios` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'usuarios' AND COLUMN_NAME = 'veiculo_placa');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `usuarios` ADD COLUMN `veiculo_placa` VARCHAR(10) DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `veiculo_tipo` to `usuarios` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'usuarios' AND COLUMN_NAME = 'veiculo_tipo');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `usuarios` ADD COLUMN `veiculo_tipo` ENUM('Moto','Carro','Nenhum') DEFAULT 'Nenhum''), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `coordenadas_base_lat` to `usuarios` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'usuarios' AND COLUMN_NAME = 'coordenadas_base_lat');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `usuarios` ADD COLUMN `coordenadas_base_lat` DECIMAL(10,8) DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `coordenadas_base_lng` to `usuarios` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'usuarios' AND COLUMN_NAME = 'coordenadas_base_lng');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `usuarios` ADD COLUMN `coordenadas_base_lng` DECIMAL(11,8) DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `raio_atuacao_km` to `usuarios` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'usuarios' AND COLUMN_NAME = 'raio_atuacao_km');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `usuarios` ADD COLUMN `raio_atuacao_km` INT DEFAULT 50'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `plantao_24h` to `usuarios` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'usuarios' AND COLUMN_NAME = 'plantao_24h');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `usuarios` ADD COLUMN `plantao_24h` TINYINT(1) DEFAULT 0'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `app_tecnico_instalado` to `usuarios` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'usuarios' AND COLUMN_NAME = 'app_tecnico_instalado');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `usuarios` ADD COLUMN `app_tecnico_instalado` TINYINT(1) DEFAULT 0'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `token_app` to `usuarios` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'usuarios' AND COLUMN_NAME = 'token_app');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `usuarios` ADD COLUMN `token_app` VARCHAR(255) DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `token_expira` to `usuarios` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'usuarios' AND COLUMN_NAME = 'token_expira');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `usuarios` ADD COLUMN `token_expira` DATETIME DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `ultimo_acesso_app` to `usuarios` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'usuarios' AND COLUMN_NAME = 'ultimo_acesso_app');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `usuarios` ADD COLUMN `ultimo_acesso_app` DATETIME DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `foto_tecnico` to `usuarios` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'usuarios' AND COLUMN_NAME = 'foto_tecnico');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `usuarios` ADD COLUMN `foto_tecnico` VARCHAR(255) DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
 
 -- --- clientes ---
-CALL add_column_if_not_exists('clientes', 'contato', "VARCHAR(45) DEFAULT NULL");
-CALL add_column_if_not_exists('clientes', 'complemento', "VARCHAR(45) DEFAULT NULL");
-CALL add_column_if_not_exists('clientes', 'fornecedor', "BOOLEAN DEFAULT 0");
-CALL add_column_if_not_exists('clientes', 'senha', "VARCHAR(200) DEFAULT NULL");
-CALL add_column_if_not_exists('clientes', 'asaas_id', "VARCHAR(255) DEFAULT NULL");
+-- Add column `contato` to `clientes` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'clientes' AND COLUMN_NAME = 'contato');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `clientes` ADD COLUMN `contato` VARCHAR(45) DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `complemento` to `clientes` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'clientes' AND COLUMN_NAME = 'complemento');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `clientes` ADD COLUMN `complemento` VARCHAR(45) DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `fornecedor` to `clientes` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'clientes' AND COLUMN_NAME = 'fornecedor');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `clientes` ADD COLUMN `fornecedor` BOOLEAN DEFAULT 0'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `senha` to `clientes` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'clientes' AND COLUMN_NAME = 'senha');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `clientes` ADD COLUMN `senha` VARCHAR(200) DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `asaas_id` to `clientes` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'clientes' AND COLUMN_NAME = 'asaas_id');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `clientes` ADD COLUMN `asaas_id` VARCHAR(255) DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
 
 -- --- vendas ---
-CALL add_column_if_not_exists('vendas', 'observacoes', "TEXT DEFAULT NULL");
-CALL add_column_if_not_exists('vendas', 'observacoes_cliente', "TEXT DEFAULT NULL");
-CALL add_column_if_not_exists('vendas', 'garantia', "VARCHAR(45) DEFAULT NULL");
-CALL add_column_if_not_exists('vendas', 'status', "VARCHAR(45) DEFAULT NULL");
+-- Add column `observacoes` to `vendas` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'vendas' AND COLUMN_NAME = 'observacoes');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `vendas` ADD COLUMN `observacoes` TEXT DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `observacoes_cliente` to `vendas` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'vendas' AND COLUMN_NAME = 'observacoes_cliente');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `vendas` ADD COLUMN `observacoes_cliente` TEXT DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `garantia` to `vendas` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'vendas' AND COLUMN_NAME = 'garantia');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `vendas` ADD COLUMN `garantia` VARCHAR(45) DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `status` to `vendas` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'vendas' AND COLUMN_NAME = 'status');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `vendas` ADD COLUMN `status` VARCHAR(45) DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
 
 -- --- emitente ---
-CALL add_column_if_not_exists('emitente', 'cep', "VARCHAR(20) DEFAULT NULL");
-CALL add_column_if_not_exists('emitente', 'inscricao_municipal', "VARCHAR(50) DEFAULT NULL");
+-- Add column `cep` to `emitente` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'emitente' AND COLUMN_NAME = 'cep');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `emitente` ADD COLUMN `cep` VARCHAR(20) DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `inscricao_municipal` to `emitente` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'emitente' AND COLUMN_NAME = 'inscricao_municipal');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `emitente` ADD COLUMN `inscricao_municipal` VARCHAR(50) DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
 
 -- --- resets_de_senha ---
 CREATE TABLE IF NOT EXISTS `resets_de_senha` (
@@ -381,8 +597,20 @@ CREATE TABLE IF NOT EXISTS `notificacoes` (
     `data_notificacao` DATETIME NOT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-CALL create_index_if_not_exists('notificacoes', 'idx_usuario_lida', '`usuario_id`, `lida`');
-CALL create_index_if_not_exists('notificacoes', 'idx_data', '`data_notificacao`');
+-- Add index `idx_usuario_lida` to `notificacoes` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'notificacoes' AND INDEX_NAME = 'idx_usuario_lida');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `notificacoes` ADD INDEX `idx_usuario_lida` (`usuario_id`, `lida`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add index `idx_data` to `notificacoes` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'notificacoes' AND INDEX_NAME = 'idx_data');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `notificacoes` ADD INDEX `idx_data` (`data_notificacao`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
 
 -- --- checkin ---
 CREATE TABLE IF NOT EXISTS `checkin` (
@@ -398,7 +626,13 @@ CREATE TABLE IF NOT EXISTS `checkin` (
     `localizacao` VARCHAR(255) DEFAULT NULL,
     PRIMARY KEY (`idCheckin`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-CALL create_index_if_not_exists('checkin', 'idx_os_id', '`os_id`');
+-- Add index `idx_os_id` to `checkin` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'checkin' AND INDEX_NAME = 'idx_os_id');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `checkin` ADD INDEX `idx_os_id` (`os_id`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
 
 -- --- os_checkin ---
 CREATE TABLE IF NOT EXISTS `os_checkin` (
@@ -418,8 +652,20 @@ CREATE TABLE IF NOT EXISTS `os_checkin` (
     `data_atualizacao` DATETIME DEFAULT NULL,
     PRIMARY KEY (`idCheckin`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-CALL create_index_if_not_exists('os_checkin', 'idx_os_id', '`os_id`');
-CALL create_index_if_not_exists('os_checkin', 'idx_status', '`status`');
+-- Add index `idx_os_id` to `os_checkin` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'os_checkin' AND INDEX_NAME = 'idx_os_id');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `os_checkin` ADD INDEX `idx_os_id` (`os_id`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add index `idx_status` to `os_checkin` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'os_checkin' AND INDEX_NAME = 'idx_status');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `os_checkin` ADD INDEX `idx_status` (`status`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
 
 -- --- os_assinaturas ---
 CREATE TABLE IF NOT EXISTS `os_assinaturas` (
@@ -435,8 +681,20 @@ CREATE TABLE IF NOT EXISTS `os_assinaturas` (
     `data_cadastro` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`idAssinatura`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-CALL create_index_if_not_exists('os_assinaturas', 'idx_os_id', '`os_id`');
-CALL create_index_if_not_exists('os_assinaturas', 'idx_tipo', '`tipo`');
+-- Add index `idx_os_id` to `os_assinaturas` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'os_assinaturas' AND INDEX_NAME = 'idx_os_id');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `os_assinaturas` ADD INDEX `idx_os_id` (`os_id`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add index `idx_tipo` to `os_assinaturas` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'os_assinaturas' AND INDEX_NAME = 'idx_tipo');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `os_assinaturas` ADD INDEX `idx_tipo` (`tipo`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
 
 -- --- os_fotos_atendimento ---
 CREATE TABLE IF NOT EXISTS `os_fotos_atendimento` (
@@ -456,8 +714,20 @@ CREATE TABLE IF NOT EXISTS `os_fotos_atendimento` (
     `data_upload` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`idFoto`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-CALL create_index_if_not_exists('os_fotos_atendimento', 'idx_os_id', '`os_id`');
-CALL create_index_if_not_exists('os_fotos_atendimento', 'idx_etapa', '`etapa`');
+-- Add index `idx_os_id` to `os_fotos_atendimento` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'os_fotos_atendimento' AND INDEX_NAME = 'idx_os_id');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `os_fotos_atendimento` ADD INDEX `idx_os_id` (`os_id`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add index `idx_etapa` to `os_fotos_atendimento` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'os_fotos_atendimento' AND INDEX_NAME = 'idx_etapa');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `os_fotos_atendimento` ADD INDEX `idx_etapa` (`etapa`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
 
 -- --- fotos_atendimento ---
 CREATE TABLE IF NOT EXISTS `fotos_atendimento` (
@@ -555,7 +825,13 @@ CREATE TABLE IF NOT EXISTS `usuarios_cliente` (
     `updated_at` DATETIME DEFAULT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-CALL create_index_if_not_exists('usuarios_cliente', 'idx_cliente_id', '`cliente_id`');
+-- Add index `idx_cliente_id` to `usuarios_cliente` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'usuarios_cliente' AND INDEX_NAME = 'idx_cliente_id');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `usuarios_cliente` ADD INDEX `idx_cliente_id` (`cliente_id`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
 
 -- --- usuarios_cliente_cnpjs ---
 CREATE TABLE IF NOT EXISTS `usuarios_cliente_cnpjs` (
@@ -568,7 +844,13 @@ CREATE TABLE IF NOT EXISTS `usuarios_cliente_cnpjs` (
     `created_at` DATETIME DEFAULT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-CALL create_index_if_not_exists('usuarios_cliente_cnpjs', 'idx_usuario_cnpj', '`usuario_cliente_id`, `cnpj`');
+-- Add index `idx_usuario_cnpj` to `usuarios_cliente_cnpjs` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'usuarios_cliente_cnpjs' AND INDEX_NAME = 'idx_usuario_cnpj');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `usuarios_cliente_cnpjs` ADD INDEX `idx_usuario_cnpj` (`usuario_cliente_id`, `cnpj`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
 
 -- --- usuarios_cliente_permissoes ---
 CREATE TABLE IF NOT EXISTS `usuarios_cliente_permissoes` (
@@ -580,7 +862,13 @@ CREATE TABLE IF NOT EXISTS `usuarios_cliente_permissoes` (
     `updated_at` DATETIME DEFAULT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-CALL create_index_if_not_exists('usuarios_cliente_permissoes', 'idx_usuario_chave', '`usuario_cliente_id`, `chave`');
+-- Add index `idx_usuario_chave` to `usuarios_cliente_permissoes` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'usuarios_cliente_permissoes' AND INDEX_NAME = 'idx_usuario_chave');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `usuarios_cliente_permissoes` ADD INDEX `idx_usuario_chave` (`usuario_cliente_id`, `chave`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
 
 -- --- os_documentos ---
 CREATE TABLE IF NOT EXISTS `os_documentos` (
@@ -620,8 +908,20 @@ CREATE TABLE IF NOT EXISTS `dre_contas` (
     `updated_at` DATETIME NOT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-CALL create_index_if_not_exists('dre_contas', 'idx_tipo', '`tipo`');
-CALL create_index_if_not_exists('dre_contas', 'idx_ativo', '`ativo`');
+-- Add index `idx_tipo` to `dre_contas` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'dre_contas' AND INDEX_NAME = 'idx_tipo');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `dre_contas` ADD INDEX `idx_tipo` (`tipo`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add index `idx_ativo` to `dre_contas` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'dre_contas' AND INDEX_NAME = 'idx_ativo');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `dre_contas` ADD INDEX `idx_ativo` (`ativo`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
 
 -- --- dre_lancamentos ---
 CREATE TABLE IF NOT EXISTS `dre_lancamentos` (
@@ -640,16 +940,76 @@ CREATE TABLE IF NOT EXISTS `dre_lancamentos` (
     `updated_at` DATETIME DEFAULT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-CALL add_column_if_not_exists('dre_lancamentos', 'os_id', "INT(11) UNSIGNED DEFAULT NULL");
-CALL add_column_if_not_exists('dre_lancamentos', 'venda_id', "INT(11) UNSIGNED DEFAULT NULL");
-CALL add_column_if_not_exists('dre_lancamentos', 'lancamento_id', "INT(11) UNSIGNED DEFAULT NULL");
-CALL add_column_if_not_exists('dre_lancamentos', 'usuarios_id', "INT(11) UNSIGNED DEFAULT NULL");
-CALL add_column_if_not_exists('dre_lancamentos', 'updated_at', "DATETIME DEFAULT NULL");
-CALL add_column_if_not_exists('dre_lancamentos', 'tipo_movimento', "ENUM('CREDITO','DEBITO') DEFAULT 'CREDITO'");
-CALL add_column_if_not_exists('dre_lancamentos', 'documento', "VARCHAR(100) DEFAULT NULL");
-CALL create_index_if_not_exists('dre_lancamentos', 'idx_conta_id', '`conta_id`');
-CALL create_index_if_not_exists('dre_lancamentos', 'idx_data_referencia', '`data`');
-CALL create_index_if_not_exists('dre_lancamentos', 'idx_os_id', '`os_id`');
+-- Add column `os_id` to `dre_lancamentos` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'dre_lancamentos' AND COLUMN_NAME = 'os_id');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `dre_lancamentos` ADD COLUMN `os_id` INT(11) UNSIGNED DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `venda_id` to `dre_lancamentos` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'dre_lancamentos' AND COLUMN_NAME = 'venda_id');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `dre_lancamentos` ADD COLUMN `venda_id` INT(11) UNSIGNED DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `lancamento_id` to `dre_lancamentos` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'dre_lancamentos' AND COLUMN_NAME = 'lancamento_id');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `dre_lancamentos` ADD COLUMN `lancamento_id` INT(11) UNSIGNED DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `usuarios_id` to `dre_lancamentos` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'dre_lancamentos' AND COLUMN_NAME = 'usuarios_id');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `dre_lancamentos` ADD COLUMN `usuarios_id` INT(11) UNSIGNED DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `updated_at` to `dre_lancamentos` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'dre_lancamentos' AND COLUMN_NAME = 'updated_at');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `dre_lancamentos` ADD COLUMN `updated_at` DATETIME DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `tipo_movimento` to `dre_lancamentos` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'dre_lancamentos' AND COLUMN_NAME = 'tipo_movimento');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `dre_lancamentos` ADD COLUMN `tipo_movimento` ENUM('CREDITO','DEBITO') DEFAULT 'CREDITO''), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `documento` to `dre_lancamentos` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'dre_lancamentos' AND COLUMN_NAME = 'documento');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `dre_lancamentos` ADD COLUMN `documento` VARCHAR(100) DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add index `idx_conta_id` to `dre_lancamentos` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'dre_lancamentos' AND INDEX_NAME = 'idx_conta_id');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `dre_lancamentos` ADD INDEX `idx_conta_id` (`conta_id`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add index `idx_data_referencia` to `dre_lancamentos` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'dre_lancamentos' AND INDEX_NAME = 'idx_data_referencia');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `dre_lancamentos` ADD INDEX `idx_data_referencia` (`data`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add index `idx_os_id` to `dre_lancamentos` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'dre_lancamentos' AND INDEX_NAME = 'idx_os_id');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `dre_lancamentos` ADD INDEX `idx_os_id` (`os_id`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
 
 -- --- dre_demonstracoes ---
 CREATE TABLE IF NOT EXISTS `dre_demonstracoes` (
@@ -664,8 +1024,20 @@ CREATE TABLE IF NOT EXISTS `dre_demonstracoes` (
     `updated_at` TIMESTAMP DEFAULT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-CALL create_index_if_not_exists('dre_demonstracoes', 'idx_data', '`data_inicio`, `data_fim`');
-CALL create_index_if_not_exists('dre_demonstracoes', 'idx_tipo', '`tipo`');
+-- Add index `idx_data` to `dre_demonstracoes` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'dre_demonstracoes' AND INDEX_NAME = 'idx_data');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `dre_demonstracoes` ADD INDEX `idx_data` (`data_inicio`, `data_fim`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add index `idx_tipo` to `dre_demonstracoes` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'dre_demonstracoes' AND INDEX_NAME = 'idx_tipo');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `dre_demonstracoes` ADD INDEX `idx_tipo` (`tipo`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
 
 -- --- impostos_config ---
 CREATE TABLE IF NOT EXISTS `impostos_config` (
@@ -707,9 +1079,27 @@ CREATE TABLE IF NOT EXISTS `impostos_retidos` (
     `created_at` DATETIME NOT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-CALL create_index_if_not_exists('impostos_retidos', 'idx_id_os', '`id_os`');
-CALL create_index_if_not_exists('impostos_retidos', 'idx_id_venda', '`id_venda`');
-CALL create_index_if_not_exists('impostos_retidos', 'idx_tipo_imposto', '`tipo_imposto`');
+-- Add index `idx_id_os` to `impostos_retidos` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'impostos_retidos' AND INDEX_NAME = 'idx_id_os');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `impostos_retidos` ADD INDEX `idx_id_os` (`id_os`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add index `idx_id_venda` to `impostos_retidos` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'impostos_retidos' AND INDEX_NAME = 'idx_id_venda');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `impostos_retidos` ADD INDEX `idx_id_venda` (`id_venda`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add index `idx_tipo_imposto` to `impostos_retidos` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'impostos_retidos' AND INDEX_NAME = 'idx_tipo_imposto');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `impostos_retidos` ADD INDEX `idx_tipo_imposto` (`tipo_imposto`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
 
 -- --- configuracoes_impostos ---
 CREATE TABLE IF NOT EXISTS `configuracoes_impostos` (
@@ -1237,7 +1627,13 @@ CREATE TABLE IF NOT EXISTS `obra_atividades_vinculo` (
     INDEX `idx_obra_vinculo` (`obra_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-CALL add_column_if_not_exists('obra_etapas', 'progresso_real', "INT(3) DEFAULT 0 COMMENT 'Progresso baseado nas atividades registradas'");
+-- Add column `progresso_real` to `obra_etapas` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'obra_etapas' AND COLUMN_NAME = 'progresso_real');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `obra_etapas` ADD COLUMN `progresso_real` INT(3) DEFAULT 0 COMMENT 'Progresso baseado nas atividades registradas''), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
 
 -- ============================================================
 -- MIGRATION: 20260425000002 - obras_config tables
@@ -1257,7 +1653,13 @@ CREATE TABLE IF NOT EXISTS `obras_config` (
 -- ============================================================
 -- MIGRATION: 20260426000001 - nfse certificado + simples_nacional
 -- ============================================================
-CALL add_column_if_not_exists('certificado_digital', 'ambiente', "ENUM('homologacao','producao') DEFAULT 'homologacao'");
+-- Add column `ambiente` to `certificado_digital` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'certificado_digital' AND COLUMN_NAME = 'ambiente');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `certificado_digital` ADD COLUMN `ambiente` ENUM('homologacao','producao') DEFAULT 'homologacao''), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
 
 -- ============================================================
 -- MIGRATION: 20260428000001 - remove lucro_presumido (skip - config change)
@@ -1267,8 +1669,20 @@ CALL add_column_if_not_exists('certificado_digital', 'ambiente', "ENUM('homologa
 -- ============================================================
 -- MIGRATION: 20260428000002 - add inscricoes to clientes
 -- ============================================================
-CALL add_column_if_not_exists('clientes', 'inscricao_estadual', "VARCHAR(50) DEFAULT NULL");
-CALL add_column_if_not_exists('clientes', 'inscricao_municipal', "VARCHAR(50) DEFAULT NULL");
+-- Add column `inscricao_estadual` to `clientes` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'clientes' AND COLUMN_NAME = 'inscricao_estadual');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `clientes` ADD COLUMN `inscricao_estadual` VARCHAR(50) DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `inscricao_municipal` to `clientes` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'clientes' AND COLUMN_NAME = 'inscricao_municipal');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `clientes` ADD COLUMN `inscricao_municipal` VARCHAR(50) DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
 
 -- ============================================================
 -- MIGRATION: 20260428000003 - add inscricao_municipal to emitente
@@ -1288,7 +1702,13 @@ CALL add_column_if_not_exists('clientes', 'inscricao_municipal', "VARCHAR(50) DE
 -- ============================================================
 -- MIGRATION: 20260501000001 - add n_dps to os_nfse_emitida
 -- ============================================================
-CALL add_column_if_not_exists('os_nfse_emitida', 'n_dps', "VARCHAR(50) DEFAULT NULL");
+-- Add column `n_dps` to `os_nfse_emitida` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'os_nfse_emitida' AND COLUMN_NAME = 'n_dps');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `os_nfse_emitida` ADD COLUMN `n_dps` VARCHAR(50) DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
 
 -- ============================================================
 -- MIGRATION: 20260501000003 - agente_ia tables
@@ -1332,8 +1752,20 @@ CREATE TABLE IF NOT EXISTS `agente_ia_permissoes` (
     `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-CALL create_index_if_not_exists('agente_ia_permissoes', 'idx_acao', '`acao`');
-CALL create_index_if_not_exists('agente_ia_permissoes', 'idx_ativo', '`ativo`');
+-- Add index `idx_acao` to `agente_ia_permissoes` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'agente_ia_permissoes' AND INDEX_NAME = 'idx_acao');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `agente_ia_permissoes` ADD INDEX `idx_acao` (`acao`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add index `idx_ativo` to `agente_ia_permissoes` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'agente_ia_permissoes' AND INDEX_NAME = 'idx_ativo');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `agente_ia_permissoes` ADD INDEX `idx_ativo` (`ativo`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
 
 CREATE TABLE IF NOT EXISTS `agente_ia_autorizacoes` (
     `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -1349,9 +1781,27 @@ CREATE TABLE IF NOT EXISTS `agente_ia_autorizacoes` (
     `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-CALL create_index_if_not_exists('agente_ia_autorizacoes', 'idx_expires_at', '`expires_at`');
-CALL create_index_if_not_exists('agente_ia_autorizacoes', 'idx_acao_status', '`acao`, `status`');
-CALL create_index_if_not_exists('agente_ia_autorizacoes', 'idx_usuarios_id', '`numero_telefone`');
+-- Add index `idx_expires_at` to `agente_ia_autorizacoes` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'agente_ia_autorizacoes' AND INDEX_NAME = 'idx_expires_at');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `agente_ia_autorizacoes` ADD INDEX `idx_expires_at` (`expires_at`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add index `idx_acao_status` to `agente_ia_autorizacoes` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'agente_ia_autorizacoes' AND INDEX_NAME = 'idx_acao_status');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `agente_ia_autorizacoes` ADD INDEX `idx_acao_status` (`acao`, `status`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add index `idx_usuarios_id` to `agente_ia_autorizacoes` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'agente_ia_autorizacoes' AND INDEX_NAME = 'idx_usuarios_id');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `agente_ia_autorizacoes` ADD INDEX `idx_usuarios_id` (`numero_telefone`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
 
 -- ============================================================
 -- MIGRATION: 20260504000001 - fix webhooks table
@@ -1397,9 +1847,27 @@ CREATE TABLE IF NOT EXISTS `whatsapp_log_interacoes` (
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-CALL create_index_if_not_exists('whatsapp_log_interacoes', 'idx_numero', '`numero_telefone`');
-CALL create_index_if_not_exists('whatsapp_log_interacoes', 'idx_intencao', '`intencao_detectada`');
-CALL create_index_if_not_exists('whatsapp_log_interacoes', 'idx_created', '`created_at`');
+-- Add index `idx_numero` to `whatsapp_log_interacoes` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'whatsapp_log_interacoes' AND INDEX_NAME = 'idx_numero');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `whatsapp_log_interacoes` ADD INDEX `idx_numero` (`numero_telefone`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add index `idx_intencao` to `whatsapp_log_interacoes` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'whatsapp_log_interacoes' AND INDEX_NAME = 'idx_intencao');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `whatsapp_log_interacoes` ADD INDEX `idx_intencao` (`intencao_detectada`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add index `idx_created` to `whatsapp_log_interacoes` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'whatsapp_log_interacoes' AND INDEX_NAME = 'idx_created');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `whatsapp_log_interacoes` ADD INDEX `idx_created` (`created_at`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
 
 CREATE TABLE IF NOT EXISTS `agente_ia_notificacoes_agendadas` (
     `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -1413,8 +1881,20 @@ CREATE TABLE IF NOT EXISTS `agente_ia_notificacoes_agendadas` (
     `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-CALL create_index_if_not_exists('agente_ia_notificacoes_agendadas', 'idx_numero', '`numero_telefone`');
-CALL create_index_if_not_exists('agente_ia_notificacoes_agendadas', 'idx_tipo', '`tipo_notificacao`');
+-- Add index `idx_numero` to `agente_ia_notificacoes_agendadas` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'agente_ia_notificacoes_agendadas' AND INDEX_NAME = 'idx_numero');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `agente_ia_notificacoes_agendadas` ADD INDEX `idx_numero` (`numero_telefone`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add index `idx_tipo` to `agente_ia_notificacoes_agendadas` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'agente_ia_notificacoes_agendadas' AND INDEX_NAME = 'idx_tipo');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `agente_ia_notificacoes_agendadas` ADD INDEX `idx_tipo` (`tipo_notificacao`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
 
 CREATE TABLE IF NOT EXISTS `whatsapp_integracao` (
     `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -1436,44 +1916,224 @@ CREATE TABLE IF NOT EXISTS `whatsapp_integracao` (
 -- ============================================================
 -- MIGRATION: 20260524000002 - soft delete columns
 -- ============================================================
-CALL add_column_if_not_exists('os', 'deleted_at', "DATETIME DEFAULT NULL");
-CALL add_column_if_not_exists('clientes', 'deleted_at', "DATETIME DEFAULT NULL");
-CALL add_column_if_not_exists('produtos', 'deleted_at', "DATETIME DEFAULT NULL");
-CALL add_column_if_not_exists('servicos', 'deleted_at', "DATETIME DEFAULT NULL");
-CALL add_column_if_not_exists('usuarios', 'deleted_at', "DATETIME DEFAULT NULL");
-CALL add_column_if_not_exists('lancamentos', 'deleted_at', "DATETIME DEFAULT NULL");
-CALL add_column_if_not_exists('cobrancas', 'deleted_at', "DATETIME DEFAULT NULL");
+-- Add column `deleted_at` to `os` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'os' AND COLUMN_NAME = 'deleted_at');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `os` ADD COLUMN `deleted_at` DATETIME DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `deleted_at` to `clientes` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'clientes' AND COLUMN_NAME = 'deleted_at');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `clientes` ADD COLUMN `deleted_at` DATETIME DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `deleted_at` to `produtos` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'produtos' AND COLUMN_NAME = 'deleted_at');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `produtos` ADD COLUMN `deleted_at` DATETIME DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `deleted_at` to `servicos` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'servicos' AND COLUMN_NAME = 'deleted_at');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `servicos` ADD COLUMN `deleted_at` DATETIME DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `deleted_at` to `usuarios` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'usuarios' AND COLUMN_NAME = 'deleted_at');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `usuarios` ADD COLUMN `deleted_at` DATETIME DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `deleted_at` to `lancamentos` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'lancamentos' AND COLUMN_NAME = 'deleted_at');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `lancamentos` ADD COLUMN `deleted_at` DATETIME DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `deleted_at` to `cobrancas` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'cobrancas' AND COLUMN_NAME = 'deleted_at');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `cobrancas` ADD COLUMN `deleted_at` DATETIME DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
 
 -- ============================================================
 -- MIGRATION: 20260524000003 - performance indexes
 -- ============================================================
-CALL create_index_if_not_exists('os', 'idx_os_status', '`status`');
-CALL create_index_if_not_exists('os', 'idx_os_dataInicial', '`dataInicial`');
-CALL create_index_if_not_exists('os', 'idx_os_clientes_id', '`clientes_id`');
-CALL create_index_if_not_exists('os', 'idx_os_usuarios_id', '`usuarios_id`');
-CALL create_index_if_not_exists('os', 'idx_os_status_data', '`status`, `dataInicial`');
-CALL create_index_if_not_exists('lancamentos', 'idx_lanc_baixado', '`baixado`');
-CALL create_index_if_not_exists('lancamentos', 'idx_lanc_data_vencimento', '`data_vencimento`');
-CALL create_index_if_not_exists('lancamentos', 'idx_lanc_tipo', '`tipo`');
-CALL create_index_if_not_exists('lancamentos', 'idx_lanc_tipo_baixado', '`tipo`, `baixado`');
-CALL create_index_if_not_exists('produtos_os', 'idx_produtos_os_os_id', '`os_id`');
-CALL create_index_if_not_exists('servicos_os', 'idx_servicos_os_os_id', '`os_id`');
-CALL create_index_if_not_exists('clientes', 'idx_clientes_nomeCliente', '`nomeCliente`');
-CALL create_index_if_not_exists('clientes', 'idx_clientes_documento', '`documento`');
-CALL create_index_if_not_exists('clientes', 'idx_clientes_email', '`email`');
-CALL create_index_if_not_exists('usuarios', 'idx_usuarios_email', '`email`');
-CALL create_index_if_not_exists('usuarios', 'idx_usuarios_situacao', '`situacao`');
-CALL create_index_if_not_exists('cobrancas', 'idx_cobrancas_status', '`status`');
-CALL create_index_if_not_exists('cobrancas', 'idx_cobrancas_os_id', '`os_id`');
+-- Add index `idx_os_status` to `os` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'os' AND INDEX_NAME = 'idx_os_status');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `os` ADD INDEX `idx_os_status` (`status`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add index `idx_os_dataInicial` to `os` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'os' AND INDEX_NAME = 'idx_os_dataInicial');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `os` ADD INDEX `idx_os_dataInicial` (`dataInicial`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add index `idx_os_clientes_id` to `os` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'os' AND INDEX_NAME = 'idx_os_clientes_id');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `os` ADD INDEX `idx_os_clientes_id` (`clientes_id`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add index `idx_os_usuarios_id` to `os` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'os' AND INDEX_NAME = 'idx_os_usuarios_id');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `os` ADD INDEX `idx_os_usuarios_id` (`usuarios_id`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add index `idx_os_status_data` to `os` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'os' AND INDEX_NAME = 'idx_os_status_data');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `os` ADD INDEX `idx_os_status_data` (`status`, `dataInicial`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add index `idx_lanc_baixado` to `lancamentos` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'lancamentos' AND INDEX_NAME = 'idx_lanc_baixado');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `lancamentos` ADD INDEX `idx_lanc_baixado` (`baixado`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add index `idx_lanc_data_vencimento` to `lancamentos` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'lancamentos' AND INDEX_NAME = 'idx_lanc_data_vencimento');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `lancamentos` ADD INDEX `idx_lanc_data_vencimento` (`data_vencimento`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add index `idx_lanc_tipo` to `lancamentos` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'lancamentos' AND INDEX_NAME = 'idx_lanc_tipo');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `lancamentos` ADD INDEX `idx_lanc_tipo` (`tipo`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add index `idx_lanc_tipo_baixado` to `lancamentos` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'lancamentos' AND INDEX_NAME = 'idx_lanc_tipo_baixado');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `lancamentos` ADD INDEX `idx_lanc_tipo_baixado` (`tipo`, `baixado`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add index `idx_produtos_os_os_id` to `produtos_os` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'produtos_os' AND INDEX_NAME = 'idx_produtos_os_os_id');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `produtos_os` ADD INDEX `idx_produtos_os_os_id` (`os_id`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add index `idx_servicos_os_os_id` to `servicos_os` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'servicos_os' AND INDEX_NAME = 'idx_servicos_os_os_id');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `servicos_os` ADD INDEX `idx_servicos_os_os_id` (`os_id`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add index `idx_clientes_nomeCliente` to `clientes` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'clientes' AND INDEX_NAME = 'idx_clientes_nomeCliente');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `clientes` ADD INDEX `idx_clientes_nomeCliente` (`nomeCliente`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add index `idx_clientes_documento` to `clientes` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'clientes' AND INDEX_NAME = 'idx_clientes_documento');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `clientes` ADD INDEX `idx_clientes_documento` (`documento`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add index `idx_clientes_email` to `clientes` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'clientes' AND INDEX_NAME = 'idx_clientes_email');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `clientes` ADD INDEX `idx_clientes_email` (`email`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add index `idx_usuarios_email` to `usuarios` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'usuarios' AND INDEX_NAME = 'idx_usuarios_email');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `usuarios` ADD INDEX `idx_usuarios_email` (`email`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add index `idx_usuarios_situacao` to `usuarios` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'usuarios' AND INDEX_NAME = 'idx_usuarios_situacao');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `usuarios` ADD INDEX `idx_usuarios_situacao` (`situacao`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add index `idx_cobrancas_status` to `cobrancas` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'cobrancas' AND INDEX_NAME = 'idx_cobrancas_status');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `cobrancas` ADD INDEX `idx_cobrancas_status` (`status`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add index `idx_cobrancas_os_id` to `cobrancas` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'cobrancas' AND INDEX_NAME = 'idx_cobrancas_os_id');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `cobrancas` ADD INDEX `idx_cobrancas_os_id` (`os_id`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
 
 -- ============================================================
 -- MIGRATION: 20260525000001 - LGPD + token_acesso
 -- ============================================================
-CALL add_column_if_not_exists('clientes', 'consentimento_lgpd', "TINYINT(1) DEFAULT 0");
-CALL add_column_if_not_exists('clientes', 'data_consentimento', "DATETIME DEFAULT NULL");
-CALL add_column_if_not_exists('clientes', 'origem_dados', "VARCHAR(50) DEFAULT NULL");
-CALL add_column_if_not_exists('clientes', 'token_acesso', "VARCHAR(64) DEFAULT NULL");
-CALL create_index_if_not_exists('clientes', 'idx_clientes_token_acesso', '`token_acesso`');
+-- Add column `consentimento_lgpd` to `clientes` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'clientes' AND COLUMN_NAME = 'consentimento_lgpd');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `clientes` ADD COLUMN `consentimento_lgpd` TINYINT(1) DEFAULT 0'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `data_consentimento` to `clientes` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'clientes' AND COLUMN_NAME = 'data_consentimento');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `clientes` ADD COLUMN `data_consentimento` DATETIME DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `origem_dados` to `clientes` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'clientes' AND COLUMN_NAME = 'origem_dados');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `clientes` ADD COLUMN `origem_dados` VARCHAR(50) DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add column `token_acesso` to `clientes` if not exists
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'clientes' AND COLUMN_NAME = 'token_acesso');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `clientes` ADD COLUMN `token_acesso` VARCHAR(64) DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add index `idx_clientes_token_acesso` to `clientes` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'clientes' AND INDEX_NAME = 'idx_clientes_token_acesso');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `clientes` ADD INDEX `idx_clientes_token_acesso` (`token_acesso`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
 
 -- ============================================================
 -- MIGRATION: 20260525000002 - audit_log
@@ -1492,10 +2152,34 @@ CREATE TABLE IF NOT EXISTS `audit_log` (
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-CALL create_index_if_not_exists('audit_log', 'idx_audit_table_record', '`table_name`, `record_id`');
-CALL create_index_if_not_exists('audit_log', 'idx_audit_user', '`user_id`');
-CALL create_index_if_not_exists('audit_log', 'idx_audit_action', '`action`');
-CALL create_index_if_not_exists('audit_log', 'idx_audit_created', '`created_at`');
+-- Add index `idx_audit_table_record` to `audit_log` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'audit_log' AND INDEX_NAME = 'idx_audit_table_record');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `audit_log` ADD INDEX `idx_audit_table_record` (`table_name`, `record_id`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add index `idx_audit_user` to `audit_log` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'audit_log' AND INDEX_NAME = 'idx_audit_user');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `audit_log` ADD INDEX `idx_audit_user` (`user_id`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add index `idx_audit_action` to `audit_log` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'audit_log' AND INDEX_NAME = 'idx_audit_action');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `audit_log` ADD INDEX `idx_audit_action` (`action`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Add index `idx_audit_created` to `audit_log` if not exists
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'audit_log' AND INDEX_NAME = 'idx_audit_created');
+SET @sql = IF(@idx_exists = 0, CONCAT('ALTER TABLE `audit_log` ADD INDEX `idx_audit_created` (`created_at`)'), 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
 
 -- ============================================================
 -- MIGRATION: 20260525000005 - data_breach_notifications
@@ -1612,10 +2296,151 @@ DELETE FROM `migrations`;
 INSERT INTO `migrations` (`version`) VALUES ('20260525000005');
 
 -- ============================================================
--- LIMPAR PROCEDIMENTOS
+-- CORRECAO: email_queue - colunas faltantes no servidor
+-- A tabela existente no servidor tem: id, to, cc, bcc, message, status, scheduled_at, date, headers
+-- As colunas abaixo sao necessarias pelo codigo novo
 -- ============================================================
-DROP PROCEDURE IF EXISTS `add_column_if_not_exists`;
-DROP PROCEDURE IF EXISTS `create_index_if_not_exists`;
+
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'email_queue' AND COLUMN_NAME = 'to_email');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `email_queue` ADD COLUMN `to_email` VARCHAR(255) DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'email_queue' AND COLUMN_NAME = 'to_name');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `email_queue` ADD COLUMN `to_name` VARCHAR(255) DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'email_queue' AND COLUMN_NAME = 'subject');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `email_queue` ADD COLUMN `subject` VARCHAR(500) DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'email_queue' AND COLUMN_NAME = 'body_html');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `email_queue` ADD COLUMN `body_html` LONGTEXT DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'email_queue' AND COLUMN_NAME = 'body_text');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `email_queue` ADD COLUMN `body_text` LONGTEXT DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'email_queue' AND COLUMN_NAME = 'template');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `email_queue` ADD COLUMN `template` VARCHAR(100) DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'email_queue' AND COLUMN_NAME = 'template_data');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `email_queue` ADD COLUMN `template_data` TEXT DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'email_queue' AND COLUMN_NAME = 'attachments');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `email_queue` ADD COLUMN `attachments` TEXT DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'email_queue' AND COLUMN_NAME = 'priority');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `email_queue` ADD COLUMN `priority` TINYINT(1) DEFAULT 3'), 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'email_queue' AND COLUMN_NAME = 'attempts');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `email_queue` ADD COLUMN `attempts` TINYINT(1) DEFAULT 0'), 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'email_queue' AND COLUMN_NAME = 'max_retries');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `email_queue` ADD COLUMN `max_retries` TINYINT(1) DEFAULT 3'), 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'email_queue' AND COLUMN_NAME = 'tracking_id');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `email_queue` ADD COLUMN `tracking_id` VARCHAR(32) DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'email_queue' AND COLUMN_NAME = 'message_id');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `email_queue` ADD COLUMN `message_id` VARCHAR(255) DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'email_queue' AND COLUMN_NAME = 'sent_at');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `email_queue` ADD COLUMN `sent_at` DATETIME DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'email_queue' AND COLUMN_NAME = 'opened_at');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `email_queue` ADD COLUMN `opened_at` DATETIME DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'email_queue' AND COLUMN_NAME = 'clicked_at');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `email_queue` ADD COLUMN `clicked_at` DATETIME DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'email_queue' AND COLUMN_NAME = 'created_at');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `email_queue` ADD COLUMN `created_at` DATETIME DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'email_queue' AND COLUMN_NAME = 'updated_at');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `email_queue` ADD COLUMN `updated_at` DATETIME DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'email_queue' AND COLUMN_NAME = 'last_attempt');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `email_queue` ADD COLUMN `last_attempt` DATETIME DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'email_queue' AND COLUMN_NAME = 'failed_at');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `email_queue` ADD COLUMN `failed_at` DATETIME DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'email_queue' AND COLUMN_NAME = 'error_message');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `email_queue` ADD COLUMN `error_message` TEXT DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'email_queue' AND COLUMN_NAME = 'ip_address');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `email_queue` ADD COLUMN `ip_address` VARCHAR(45) DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'email_queue' AND COLUMN_NAME = 'user_agent');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `email_queue` ADD COLUMN `user_agent` TEXT DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+-- Migrar dados das colunas antigas para as novas (se existirem dados)
+UPDATE `email_queue` SET `to_email` = `to` WHERE `to_email` IS NULL AND `to` IS NOT NULL AND `to_email` IS NULL;
+UPDATE `email_queue` SET `body_html` = `message` WHERE `body_html` IS NULL AND `message` IS NOT NULL AND `body_html` IS NULL;
+UPDATE `email_queue` SET `created_at` = `date` WHERE `created_at` IS NULL AND `date` IS NOT NULL AND `created_at` IS NULL;
+
+-- Alterar o status ENUM para incluir novos valores
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'email_queue' AND COLUMN_NAME = 'status' AND COLUMN_TYPE LIKE '%processing%');
+SET @sql = IF(@col_exists = 0, 'ALTER TABLE `email_queue` MODIFY COLUMN `status` ENUM(''pending'',''processing'',''sent'',''failed'',''cancelled'',''scheduled'') DEFAULT ''pending''', 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+-- ============================================================
+-- CORRECAO: dre_lancamentos - colunas faltantes no servidor
+-- A tabela existente tem: id_os, id_venda, id_lancamento
+-- O codigo usa: os_id, venda_id, lancamento_id, tipo_movimento, documento, usuarios_id, updated_at
+-- ============================================================
+
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'dre_lancamentos' AND COLUMN_NAME = 'os_id');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `dre_lancamentos` ADD COLUMN `os_id` INT(11) UNSIGNED DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'dre_lancamentos' AND COLUMN_NAME = 'venda_id');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `dre_lancamentos` ADD COLUMN `venda_id` INT(11) UNSIGNED DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'dre_lancamentos' AND COLUMN_NAME = 'lancamento_id');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `dre_lancamentos` ADD COLUMN `lancamento_id` INT(11) UNSIGNED DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'dre_lancamentos' AND COLUMN_NAME = 'tipo_movimento');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `dre_lancamentos` ADD COLUMN `tipo_movimento` VARCHAR(50) DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'dre_lancamentos' AND COLUMN_NAME = 'documento');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `dre_lancamentos` ADD COLUMN `documento` VARCHAR(100) DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'dre_lancamentos' AND COLUMN_NAME = 'usuarios_id');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `dre_lancamentos` ADD COLUMN `usuarios_id` INT(11) DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'dre_lancamentos' AND COLUMN_NAME = 'updated_at');
+SET @sql = IF(@col_exists = 0, CONCAT('ALTER TABLE `dre_lancamentos` ADD COLUMN `updated_at` DATETIME DEFAULT NULL'), 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+-- Migrar dados das colunas antigas para as novas
+UPDATE `dre_lancamentos` SET `os_id` = `id_os` WHERE `os_id` IS NULL AND `id_os` IS NOT NULL;
+UPDATE `dre_lancamentos` SET `venda_id` = `id_venda` WHERE `venda_id` IS NULL AND `id_venda` IS NOT NULL;
+UPDATE `dre_lancamentos` SET `lancamento_id` = `id_lancamento` WHERE `lancamento_id` IS NULL AND `id_lancamento` IS NOT NULL;
 
 SET FOREIGN_KEY_CHECKS = 1;
 

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 class Assinaturas_model extends CI_Model
 {

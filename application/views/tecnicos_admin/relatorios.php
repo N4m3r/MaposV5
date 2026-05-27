@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Relatórios de Produtividade dos Técnicos
  */

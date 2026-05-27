@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Configuracoes de Notificacoes por Email
  */

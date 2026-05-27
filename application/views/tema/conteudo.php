@@ -1,4 +1,4 @@
-﻿<div id="content">
+<div id="content">
 <!--start-top-serch-->
   <div id="content-header">
    <div></div>

@@ -1,4 +1,4 @@
-﻿<!-- Relatório de Execução - Portal do Técnico -->
+<!-- Relatório de Execução - Portal do Técnico -->
 <div id="content">
 <style>
 .portal-tecnico-content { margin-top: 15px !important; }

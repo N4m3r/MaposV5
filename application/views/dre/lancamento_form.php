@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Formulário de Lançamento DRE
  */

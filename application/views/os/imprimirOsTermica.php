@@ -1,4 +1,4 @@
-﻿<?php $totalServico = 0;
+<?php $totalServico = 0;
 $totalProdutos = 0; ?>
 <!DOCTYPE html>
 <html lang="pt-br">

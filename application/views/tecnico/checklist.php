@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * View: Checklist Técnico
  * Lista de verificação para OS

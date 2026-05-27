@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 class Servicos_model extends MY_Model
 {

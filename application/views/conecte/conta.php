@@ -1,4 +1,4 @@
-﻿<div class="widget-box">
+<div class="widget-box">
     <div class="widget-title">
         <ul class="nav nav-tabs">
             <li class="active"><a data-bs-toggle="tab" href="#tab1">Meus Dados</a></li>

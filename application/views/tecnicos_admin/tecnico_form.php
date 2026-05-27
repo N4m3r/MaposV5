@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Formulário de Cadastro/Edição de Técnico
  * Suporta modo de criação e edição

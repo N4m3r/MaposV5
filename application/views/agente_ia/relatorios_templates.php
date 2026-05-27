@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * View: relatorios_templates.php
  * Gerenciamento de templates de relatorio do Agente IA

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 $atividade_em_andamento = $atividade_em_andamento ?? null;
 $resumo_dia = $resumo_dia ?? ['em_andamento' => null, 'total_atividades' => 0, 'tempo_trabalhado_horas' => 0];
 $estatisticas = $estatisticas ?? ['total_atividades' => 0, 'concluidas' => 0, 'tempo_total_horas' => 0, 'por_categoria' => []];

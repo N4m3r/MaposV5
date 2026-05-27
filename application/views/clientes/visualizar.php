@@ -1,4 +1,4 @@
-﻿<div class="widget-box">
+<div class="widget-box">
     <div class="widget-title" style="margin: 0;font-size: 1.1em">
         <ul class="nav nav-tabs">
             <li class="active"><a data-bs-toggle="tab" href="#tab1">Dados do Cliente</a></li>

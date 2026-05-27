@@ -1,4 +1,4 @@
-﻿<!--sidebar-menu-->
+<!--sidebar-menu-->
 <nav id="sidebar">
     <div id="newlog">
         <div class="icon2">

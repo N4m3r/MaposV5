@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Conteúdo Produtos - Tabela fiscal de produtos da OS
  * Usado como sub-aba dentro de Notas Fiscais

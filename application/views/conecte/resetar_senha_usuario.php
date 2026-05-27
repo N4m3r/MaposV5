@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * View: Resetar Senha do Usuário do Portal
  */

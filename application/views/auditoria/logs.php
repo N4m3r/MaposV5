@@ -1,4 +1,4 @@
-﻿<style>
+<style>
   select { width: 70px; }
 </style>
 <div class="new122" style="margin-top: 0; min-height: 100vh">

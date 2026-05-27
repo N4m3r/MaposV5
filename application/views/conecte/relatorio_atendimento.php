@@ -1,4 +1,4 @@
-﻿<?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
+<?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
 <!-- Relatório de Atendimento - Área do Cliente -->
 <?php
 // Carregar helper de permissões

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Configuracoes de Impostos Simples Nacional
  * Adaptado ao tema escuro MapOS v5

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 $os = $os ?? null;
 $atividade_em_andamento = $atividade_em_andamento ?? null;
 $atividades_lista = $atividades_lista ?? [];

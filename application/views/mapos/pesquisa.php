@@ -1,4 +1,4 @@
-﻿<div class="col-12" style="margin-left: 0; margin-top: 0">
+<div class="col-12" style="margin-left: 0; margin-top: 0">
     <!-- Formulário de Busca Unificada -->
     <div class="widget-box" style="margin-bottom: 20px">
         <div class="widget-title" style="margin: -20px 0 0">

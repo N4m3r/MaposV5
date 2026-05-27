@@ -1,4 +1,4 @@
-﻿<div class="new122" style="margin-top: 0; min-height: 100vh">
+<div class="new122" style="margin-top: 0; min-height: 100vh">
 <div class="widget-title" style="margin: -20px 0 0">
     <span class="icon"><i class="fas fa-exclamation-triangle"></i></span>
     <h5>Notificacoes de Vazamento (LGPD Art. 48)</h5>

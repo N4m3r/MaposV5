@@ -1,4 +1,4 @@
-﻿<table class="table table-bordered table-sm">
+<table class="table table-bordered table-sm">
     <tr>
         <td style="width: 180px">
             <img style="width: 150px;" src="<?= e($em_logo) ?>">

@@ -1,4 +1,4 @@
-﻿<?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
+<?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
 
 <div class="container-fluid" style="padding: 20px;">
     <h2>Diagnóstico da Atividade #<?php echo $atividade_id; ?></h2>

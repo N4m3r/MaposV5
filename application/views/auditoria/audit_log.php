@@ -1,4 +1,4 @@
-﻿<div class="new122" style="margin-top: 0; min-height: 100vh">
+<div class="new122" style="margin-top: 0; min-height: 100vh">
 <div class="widget-title" style="margin: -20px 0 0">
     <span class="icon"><i class="fas fa-shield-alt"></i></span>
     <h5>Auditoria Estruturada</h5>

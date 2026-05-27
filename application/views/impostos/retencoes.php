@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Lista de Retenções de Impostos
  */

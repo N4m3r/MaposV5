@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Catálogo de Serviços - Usa tabela 'servicos' do sistema
  */

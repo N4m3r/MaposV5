@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Rastreamento de Rotas dos Técnicos
  */

@@ -1,4 +1,4 @@
-﻿<?php if ($this->session->flashdata('success') != null) { ?>
+<?php if ($this->session->flashdata('success') != null) { ?>
 <div class="alert alert-success">
     <button type="button" class="close" data-bs-dismiss="alert">&times;</button>
     <?php echo e($this->session->flashdata('success')); ?>

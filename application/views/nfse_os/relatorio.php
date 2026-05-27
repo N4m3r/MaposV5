@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Relatório de NFS-e e Boletos
  * Filtros e listagem completa

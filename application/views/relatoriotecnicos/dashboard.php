@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Dashboard de Performance dos Técnicos
  * Relatório completo com gráficos e métricas

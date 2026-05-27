@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * View para edição de Template de Email
  */

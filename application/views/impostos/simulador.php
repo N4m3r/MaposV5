@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Simulador de Impostos Simples Nacional
  */

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * View: Componente de Assinatura Digital
  * Uso: $this->load->view('checkin/assinatura_canvas', [

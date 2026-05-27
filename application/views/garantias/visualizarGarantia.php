@@ -1,4 +1,4 @@
-﻿<?php $totalProdutos = 0; ?>
+<?php $totalProdutos = 0; ?>
 <div class="row" style="margin-top: 0">
     <div class="col-12">
         <div class="widget-box">

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Dashboard da Área do Cliente - Versão Moderna
  * Com controle de acesso baseado em permissões

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Boleto — Sub-aba dentro de Notas Fiscais
  * Tema Dark MapOS

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Email Dashboard View
  * Painel administrativo de emails

@@ -1,4 +1,4 @@
-﻿<style>
+<style>
     .config-select {
         background-color: var(--input-bg, #fff);
         color: var(--input-color, #333);

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Visualizar detalhes de um atendimento
  */

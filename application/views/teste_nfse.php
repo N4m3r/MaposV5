@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * View: Diagnóstico Completo do Módulo NFSe
  */

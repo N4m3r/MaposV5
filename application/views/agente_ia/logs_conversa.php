@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * View: logs_conversa.php
  * Historico de conversas com o agente IA

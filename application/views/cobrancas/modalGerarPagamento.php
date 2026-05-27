@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 $this->load->config('payment_gateways');
 ?>
 

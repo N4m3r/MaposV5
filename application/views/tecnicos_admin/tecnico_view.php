@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * View de Detalhes do Técnico
  * Exibe informações completas, estatísticas, OS recentes e estoque

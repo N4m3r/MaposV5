@@ -1,4 +1,4 @@
-﻿<!--sidebar-menu tecnico-->
+<!--sidebar-menu tecnico-->
 <nav id="sidebar" style="background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);">
     <div id="newlog">
         <div class="icon2">

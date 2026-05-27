@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // Inicializar variáveis
 $totalServico = 0;
 $totalProdutos = 0;

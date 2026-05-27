@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * View: Editar Usuário do Portal do Cliente - Versão Intuitiva
  */

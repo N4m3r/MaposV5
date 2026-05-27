@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Importar NFS-e via XML
  * Interface moderna com drag-and-drop e preview
