@@ -75,10 +75,18 @@ class Migration_Create_audit_log_table extends CI_Migration
         $this->dbforge->add_key('id', true);
         $this->dbforge->create_table('audit_log', true);
 
-        $this->db->query('CREATE INDEX idx_audit_table_record ON audit_log(table_name, record_id)');
-        $this->db->query('CREATE INDEX idx_audit_user ON audit_log(user_id)');
-        $this->db->query('CREATE INDEX idx_audit_action ON audit_log(action)');
-        $this->db->query('CREATE INDEX idx_audit_created ON audit_log(created_at)');
+        $indexes = [
+            'idx_audit_table_record' => 'table_name, record_id',
+            'idx_audit_user' => 'user_id',
+            'idx_audit_action' => 'action',
+            'idx_audit_created' => 'created_at',
+        ];
+        foreach ($indexes as $name => $cols) {
+            $exists = $this->db->query("SHOW INDEX FROM audit_log WHERE Key_name = ?", [$name])->num_rows();
+            if (!$exists) {
+                $this->db->query("ALTER TABLE audit_log ADD INDEX `{$name}` ({$cols})");
+            }
+        }
     }
 
     public function down()

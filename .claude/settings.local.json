@@ -660,7 +660,8 @@
       "Bash(findstr /S /N \"bootstrap.min.css\" \"application\\\\views\\\\*.php\")",
       "Bash(del _migrate_bs5_grid.ps1 _migrate_bs5_assets.ps1 _migrate_bs5_components.ps1 _migrate_bs5_extra.ps1 _migrate_bs5_cleanup.ps1 _migrate_bs5_css.ps1 _migrate_bs5_css_extra.ps1 _migrate_bs5_js.ps1)",
       "Bash(Select-String -Pattern \"api_docs\" -SimpleMatch)",
-      "Bash(git pull *)"
+      "Bash(git pull *)",
+      "Bash(findstr /i \"ci_controller\")"
     ]
   }
 }

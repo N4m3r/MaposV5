@@ -1,8 +1,7 @@
 <?php
+namespace Application\Traits;
 
 defined('BASEPATH') or exit('No direct script access allowed');
-
-namespace Application\Traits;
 
 trait LegacyJsonResponseTrait
 {

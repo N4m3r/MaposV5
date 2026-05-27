@@ -144,7 +144,7 @@
                         <tr style="background: #f0f0f0; font-weight: bold;">
                             <td colspan="4" class="text-right">TOTAL:</td>
                             <td class="text-right">
-                                <?
+                                <?php
                                 $total = 0;
                                 foreach ($lancamentos as $l) {
                                     $total += ($l->tipo_movimento == 'CREDITO' ? $l->valor : -$l->valor);
