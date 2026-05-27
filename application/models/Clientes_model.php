@@ -163,7 +163,7 @@ class Clientes_model extends MY_Model
     /**
      * Restore a soft-deleted client
      */
-    public function restore($id)
+    public function restore(int $id): bool
     {
         $this->db->where($this->primaryKey, $id);
         $this->db->update($this->mainTable, ['deleted_at' => null]);
