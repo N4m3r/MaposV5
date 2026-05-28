@@ -14,8 +14,8 @@
     .os-tab-btn:hover { background: #2d2e3a; color: var(--branco, #caced8); text-decoration: none; }
     .os-tab-btn.active { background: #2d335b; color: #fff; font-weight: bold; border-color: #4a4d7a; }
     .os-tab-btn i { font-size: 15px; }
-    .tab-content > .tab-pane { display: none; }
-    .tab-content > .tab-pane.active { display: block; }
+    .os-tab-content > .os-tab-pane { display: none; }
+    .os-tab-content > .os-tab-pane.active { display: block; }
     @media (max-width: 767px) {
         .os-tabs { flex-direction: column; }
         .os-tab-btn { width: 100%; justify-content: center; }
@@ -71,7 +71,7 @@
                     </a>
                 </div>
             </div>
-            <div class="widget-content nopadding tab-content">
+            <div class="widget-content nopadding os-tab-content">
                 <div class="col-12" id="divProdutosServicos" style=" margin-left: 0">
                     <div class="os-tabs">
                         <button class="os-tab-btn active" onclick="showOsTab('tab1', this)" data-tab="tab1"><i class="bx bx-file"></i> Detalhes da OS</button>
@@ -82,8 +82,8 @@
                         <button class="os-tab-btn" onclick="showOsTab('tab6', this)" data-tab="tab6"><i class="bx bx-note"></i> Anotações</button>
                         <button class="os-tab-btn" onclick="showOsTab('tab7', this)" data-tab="tab7"><i class="bx bx-map"></i> Check-in</button>
                     </div>
-                    <div class="tab-content">
-                        <div class="tab-pane active" id="tab1">
+                    <div class="os-tab-content">
+                        <div class="os-tab-pane active" id="tab1">
                             <div class="col-12" id="divCadastrarOs">
                                 <form action="<?php echo current_url(); ?>" method="post" id="formOs">
                                     <?php echo form_hidden('idOs', $result->idOs) ?>
@@ -162,7 +162,7 @@
                         <!--Desconto-->
                         <?php $total = 0; foreach ($produtos as $p) {$total = $total + $p->subTotal;}?>
                         <?php $totals = 0; foreach ($servicos as $s) { $preco = $s->preco ?: $s->precoVenda; $subtotals = $preco * ($s->quantidade ?: 1); $totals = $totals + $subtotals;}?>
-                        <div class="tab-pane" id="tab2">
+                        <div class="os-tab-pane" id="tab2" style="display:none;">
                             <div class="col-12 well" style="padding: 1%; margin-left: 0">
                                 <form id="formDesconto" action="<?php echo base_url(); ?>index.php/os/adicionarDesconto" method="POST">
                                     <div id="divValorTotal">
@@ -202,7 +202,7 @@
                         </div>
 
                         <!--Produtos-->
-                        <div class="tab-pane" id="tab3">
+                        <div class="os-tab-pane" id="tab3" style="display:none;">
                             <div class="col-12 well" style="padding: 1%; margin-left: 0">
                                 <form id="formProdutos" action="<?php echo base_url() ?>index.php/os/adicionarProduto" method="post">
                                     <div class="col-6">
@@ -291,7 +291,7 @@
                         </div>
 
                         <!--Serviços-->
-                        <div class="tab-pane" id="tab4">
+                        <div class="os-tab-pane" id="tab4" style="display:none;">
                             <div class="col-12 well" style="padding: 1%; margin-left: 0">
                                 <form id="formServicos" action="<?php echo base_url() ?>index.php/os/adicionarServico"
                                     method="post">
@@ -373,7 +373,7 @@
                         </div>
 
                         <!--Anexos-->
-                        <div class="tab-pane" id="tab5">
+                        <div class="os-tab-pane" id="tab5" style="display:none;">
                             <div class="col-12" style="padding: 1%; margin-left: 0">
                                 <div class="col-12 well" style="padding: 1%; margin-left: 0" id="form-anexos">
                                     <form id="formAnexos" enctype="multipart/form-data" action="javascript:;"
@@ -415,7 +415,7 @@
                         </div>
 
                         <!--Anotações-->
-                        <div class="tab-pane" id="tab6">
+                        <div class="os-tab-pane" id="tab6" style="display:none;">
                             <div class="col-12" style="padding: 1%; margin-left: 0">
 
                                 <div class="col-12" id="divAnotacoes" style="margin-left: 0">
@@ -456,7 +456,7 @@
                         <!-- Fim tab anotações -->
 
                         <!-- Check-in -->
-                        <div class="tab-pane" id="tab7">
+                        <div class="os-tab-pane" id="tab7" style="display:none;">
                             <div class="col-12" style="padding: 1%; margin-left: 0">
 
                                 <!-- Stepper Visual -->
@@ -2293,10 +2293,10 @@
 <script>
 function showOsTab(tabId, btn) {
     document.querySelectorAll('.os-tabs .os-tab-btn').forEach(function(b) { b.classList.remove('active'); });
-    document.querySelectorAll('.tab-content .tab-pane').forEach(function(p) { p.classList.remove('active'); });
+    document.querySelectorAll('.os-tab-content .os-tab-pane').forEach(function(p) { p.classList.remove('active'); p.style.display = 'none'; });
     btn.classList.add('active');
     var pane = document.getElementById(tabId);
-    if (pane) pane.classList.add('active');
+    if (pane) { pane.classList.add('active'); pane.style.display = 'block'; }
     localStorage.setItem('os_editar_tab_ativa', tabId);
     if (history.replaceState) history.replaceState(null, null, '#' + tabId);
 }

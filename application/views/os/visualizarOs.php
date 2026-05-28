@@ -179,14 +179,14 @@
                         border-color: #4a4d7a;
                     }
                     .os-tab-btn i { font-size: 15px; }
-                    .tab-content-custom > .tab-pane { display: none !important; }
-                    .tab-content-custom > .tab-pane.active { display: block !important; }
+                    .os-tab-content > .os-tab-pane { display: none !important; }
+                    .os-tab-content > .os-tab-pane.active { display: block !important; }
 
                     @media print {
                         #os-main-tabs { display: none !important; }
                         .os-tabs { display: none !important; }
                         #nf-sub-tabs { display: none !important; }
-                        .tab-content > .tab-pane { display: block !important; opacity: 1 !important; }
+                        .os-tab-content > .os-tab-pane { display: block !important; opacity: 1 !important; }
                         #tab-notas-fiscais { display: none !important; }
                     }
                     @media (max-width: 767px) {
@@ -204,8 +204,8 @@
                     </button>
                 </div>
 
-                <div class="tab-content tab-content-custom">
-                    <div class="tab-pane active" id="tab-detalhes">
+                <div class="os-tab-content">
+                    <div class="os-tab-pane active" id="tab-detalhes">
                 <div class="invoice-content">
                     <div class="invoice-head" style="margin-bottom: 0; margin-top:-30px">
                         <table class="table table-sm">
@@ -934,7 +934,7 @@
                     </div><!-- /tab-pane#tab-detalhes -->
 
                     <!-- ===== ABA NOTAS FISCAIS ===== -->
-                    <div class="tab-pane" id="tab-notas-fiscais">
+                    <div class="os-tab-pane" id="tab-notas-fiscais" style="display:none;">
                         <div class="os-tabs" id="nf-sub-tabs">
                             <button class="os-tab-btn active" onclick="showNfSubTab('subtab-nfse', this)"><i class="fas fa-file-invoice"></i> Serviços (NFS-e)</button>
                             <button class="os-tab-btn" onclick="showNfSubTab('subtab-produtos', this)"><i class="bx bx-box"></i> Produtos NF-e</button>
@@ -988,15 +988,35 @@
 
 <!-- Controle das abas principais e sub-abas de Notas Fiscais -->
 <script>
-function showOsTab(tabId, btn) {
-    // Desativa todos os botões e painéis
-    document.querySelectorAll('#os-main-tabs .os-tab-btn').forEach(function(b) { b.classList.remove('active'); });
-    document.querySelectorAll('.tab-content-custom .tab-pane').forEach(function(p) { p.classList.remove('active'); });
+// Desabilita Bootstrap tab JS nesta secao — usamos controle manual
+document.addEventListener('DOMContentLoaded', function() {
+    // Garante estado inicial correto
+    document.querySelectorAll('.os-tab-content > .os-tab-pane').forEach(function(p) {
+        if (p.id === 'tab-detalhes') {
+            p.classList.add('active');
+            p.style.display = '';
+        } else {
+            p.classList.remove('active');
+            p.style.display = 'none';
+        }
+    });
+});
 
-    // Ativa o botão clicado e o painel correspondente
+function showOsTab(tabId, btn) {
+    // Desativa todos os botoes e paineis
+    document.querySelectorAll('#os-main-tabs .os-tab-btn').forEach(function(b) { b.classList.remove('active'); });
+    document.querySelectorAll('.os-tab-content > .os-tab-pane').forEach(function(p) {
+        p.classList.remove('active');
+        p.style.display = 'none';
+    });
+
+    // Ativa o botao clicado e o painel correspondente
     btn.classList.add('active');
     var pane = document.getElementById(tabId);
-    if (pane) pane.classList.add('active');
+    if (pane) {
+        pane.classList.add('active');
+        pane.style.display = 'block';
+    }
 
     // Ao abrir Notas Fiscais, garantir primeira sub-aba ativa
     if (tabId === 'tab-notas-fiscais') {

@@ -1218,9 +1218,9 @@
             <button class="os-tab-btn" onclick="showOsTab('tab-upload', this)" data-tab="tab-upload"><i class="bx bx-upload"></i> Galeria</button>
         </div>
 
-        <div class="tab-content">
+        <div class="os-tab-content">
             <!-- Aba Câmera -->
-            <div class="tab-pane active" id="tab-camera">
+            <div class="os-tab-pane active" id="tab-camera">
                 <div class="foto-preview-area" id="camera-off">
                     <i class="bx bx-camera"></i>
                     <p>Clique no botão abaixo para iniciar a câmera</p>
@@ -1244,7 +1244,7 @@
             </div>
 
             <!-- Aba Upload -->
-            <div class="tab-pane" id="tab-upload">
+            <div class="os-tab-pane" id="tab-upload" style="display:none;">
                 <div class="foto-preview-area" id="upload-placeholder">
                     <i class="bx bx-image"></i>
                     <p>Selecione uma foto da galeria ou tire uma foto agora</p>
@@ -1854,10 +1854,10 @@ function mostrarErro(msg) {
 <script>
 function showOsTab(tabId, btn) {
     document.querySelectorAll('.os-tabs .os-tab-btn').forEach(function(b) { b.classList.remove('active'); });
-    document.querySelectorAll('.tab-content .tab-pane').forEach(function(p) { p.classList.remove('active'); });
+    document.querySelectorAll('.os-tab-content .os-tab-pane').forEach(function(p) { p.classList.remove('active'); p.style.display = 'none'; });
     btn.classList.add('active');
     var pane = document.getElementById(tabId);
-    if (pane) pane.classList.add('active');
+    if (pane) { pane.classList.add('active'); pane.style.display = 'block'; }
 }
 </script>
 

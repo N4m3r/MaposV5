@@ -13,8 +13,8 @@
     .os-tab-btn:hover { background: #2d2e3a; color: var(--branco, #caced8); text-decoration: none; }
     .os-tab-btn.active { background: #2d335b; color: #fff; font-weight: bold; border-color: #4a4d7a; }
     .os-tab-btn i { font-size: 15px; }
-    .tab-content > .tab-pane { display: none; }
-    .tab-content > .tab-pane.active { display: block; }
+    .os-tab-content > .os-tab-pane { display: none; }
+    .os-tab-content > .os-tab-pane.active { display: block; }
     @media (max-width: 767px) {
         .os-tabs { flex-direction: column; }
         .os-tab-btn { width: 100%; justify-content: center; }
@@ -27,14 +27,14 @@
             <div class="widget-title">
                 <h5>Cadastro de OS</h5>
             </div>
-            <div class="widget-content nopadding tab-content">
+            <div class="widget-content nopadding os-tab-content">
                 <div class="col-12" id="divProdutosServicos" style=" margin-left: 0">
 
                     <div class="os-tabs">
                         <button class="os-tab-btn active" onclick="showOsTab('tab1', this)" data-tab="tab1"><i class="bx bx-file"></i> Detalhes da OS</button>
                     </div>
-                    <div class="tab-content">
-                        <div class="tab-pane active" id="tab1">
+                    <div class="os-tab-content">
+                        <div class="os-tab-pane active" id="tab1">
                             <div class="col-12" id="divCadastrarOs">
                                 <?php if ($custom_error == true) { ?>
                                     <div class="col-12 alert alert-danger" id="divInfo" style="padding: 1%;">Dados incompletos, verifique os campos com asterisco ou se selecionou corretamente cliente, responsável e garantia.<br />Ou se tem um cliente e um termo de garantia cadastrado.</div>
@@ -203,9 +203,9 @@
 <script>
 function showOsTab(tabId, btn) {
     document.querySelectorAll('.os-tabs .os-tab-btn').forEach(function(b) { b.classList.remove('active'); });
-    document.querySelectorAll('.tab-content .tab-pane').forEach(function(p) { p.classList.remove('active'); });
+    document.querySelectorAll('.os-tab-content .os-tab-pane').forEach(function(p) { p.classList.remove('active'); p.style.display = 'none'; });
     btn.classList.add('active');
     var pane = document.getElementById(tabId);
-    if (pane) pane.classList.add('active');
+    if (pane) { pane.classList.add('active'); pane.style.display = 'block'; }
 }
 </script>

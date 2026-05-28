@@ -4,9 +4,9 @@
     .os-tab-btn:hover { background: #2d2e3a; color: var(--branco, #caced8); text-decoration: none; }
     .os-tab-btn.active { background: #2d335b; color: #fff; font-weight: bold; border-color: #4a4d7a; }
     .os-tab-btn i { font-size: 15px; }
-    .tab-content > .tab-pane { display: none; }
-    .tab-content > .tab-pane.active { display: block; }
-    .tab-pane.fade { opacity: 1; transition: none; }
+    .os-tab-content > .os-tab-pane { display: none; }
+    .os-tab-content > .os-tab-pane.active { display: block; }
+    .os-tab-pane.fade { opacity: 1; transition: none; }
     @media (max-width: 767px) {
         .os-tabs { flex-direction: column; }
         .os-tab-btn { width: 100%; justify-content: center; }
@@ -62,10 +62,10 @@
                 <button class="os-tab-btn" onclick="showOsTab('menu7', this)" data-tab="menu7"><i class="bx bx-envelope"></i> E-mail</button>
             </div>
             <form action="<?php echo current_url(); ?>" id="formConfigurar" method="post" class="form-horizontal">
-                <div class="widget-content nopadding tab-content">
+                <div class="widget-content nopadding os-tab-content">
                     <?php echo e($custom_error); ?>
                     <!-- Menu Gerais -->
-                    <div id="home" class="tab-pane fade in active">
+                    <div id="home" class="os-tab-pane active">
                         <div class="mb-3">
                             <label for="app_name" class="form-label">Nome do Sistema</label>
                             <div class="controls">
@@ -120,7 +120,7 @@
                         </div>
                     </div>
                     <!-- Menu Financeiro -->
-                    <div id="menu1" class="tab-pane fade">
+                    <div id="menu1" class="os-tab-pane" style="display:none;">
                         <div class="mb-3">
                             <label for="control_baixa" class="form-label">Controle de baixa retroativa</label>
                             <div class="controls">
@@ -357,7 +357,7 @@
                     </div>
 
                     <!-- Menu Produtos -->
-                    <div id="menu2" class="tab-pane fade">
+                    <div id="menu2" class="os-tab-pane" style="display:none;">
                         <div class="mb-3">
                             <label for="control_estoque" class="form-label">Controlar Estoque</label>
                             <div class="controls">
@@ -378,7 +378,7 @@
                         </div>
                     </div>
                     <!-- Menu Notificações -->
-                    <div id="menu3" class="tab-pane fade">
+                    <div id="menu3" class="os-tab-pane" style="display:none;">
                         <div class="mb-3">
                             <label for="os_notification" class="form-label">Notificação de OS</label>
                             <div class="controls">
@@ -442,7 +442,7 @@
                         </div>
                     </div>
                     <!-- Menu Atualização -->
-                    <div id="menu4" class="tab-pane fade">
+                    <div id="menu4" class="os-tab-pane" style="display:none;">
                         <div class="form-actions">
                             <div class="col-8">
                                 <div class="col-9" style="display:flex">
@@ -455,7 +455,7 @@
                         </div>
                     </div>
                     <!-- Menu OS -->
-                    <div id="menu5" class="tab-pane fade">
+                    <div id="menu5" class="os-tab-pane" style="display:none;">
                         <div class="mb-3">
                             <div class="col-8" style="margin-left: 3em;">
                                 <label for="control_2vias" class="form-label">Controle de Impressão em 2 Vias</label>
@@ -502,7 +502,7 @@
                         </div>
                     </div>
                     <!-- Menu API -->
-                    <div id="menu6" class="tab-pane fade">
+                    <div id="menu6" class="os-tab-pane" style="display:none;">
                         <div class="mb-3">
                             <label for="apiEnabled" class="form-label">Ativar acesso à API</label>
                             <div class="controls">
@@ -552,7 +552,7 @@
                         </div>
                     </div>
                     <!-- Menu E-mail -->
-                    <div id="menu7" class="tab-pane fade">
+                    <div id="menu7" class="os-tab-pane" style="display:none;">
                         <div class="mb-3">
                             <label for="EMAIL_PROTOCOL" class="form-label">Protocolo de E-mail</label>
                             <div class="controls">
@@ -669,9 +669,9 @@
 <script>
 function showOsTab(tabId, btn) {
     document.querySelectorAll('.os-tabs .os-tab-btn').forEach(function(b) { b.classList.remove('active'); });
-    document.querySelectorAll('.tab-content .tab-pane').forEach(function(p) { p.classList.remove('active'); });
+    document.querySelectorAll('.os-tab-content .os-tab-pane').forEach(function(p) { p.classList.remove('active'); p.style.display = 'none'; });
     btn.classList.add('active');
     var pane = document.getElementById(tabId);
-    if (pane) pane.classList.add('active');
+    if (pane) { pane.classList.add('active'); pane.style.display = 'block'; }
 }
 </script>

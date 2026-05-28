@@ -4,8 +4,8 @@
     .os-tab-btn:hover { background: #2d2e3a; color: var(--branco, #caced8); text-decoration: none; }
     .os-tab-btn.active { background: #2d335b; color: #fff; font-weight: bold; border-color: #4a4d7a; }
     .os-tab-btn i { font-size: 15px; }
-    .tab-content > .tab-pane { display: none; }
-    .tab-content > .tab-pane.active { display: block; }
+    .os-tab-content > .os-tab-pane { display: none; }
+    .os-tab-content > .os-tab-pane.active { display: block; }
     @media (max-width: 767px) {
         .os-tabs { flex-direction: column; }
         .os-tab-btn { width: 100%; justify-content: center; }
@@ -19,8 +19,8 @@
             <button class="os-tab-btn" onclick="showOsTab('tab3', this)" data-tab="tab3"><i class="bx bx-cart"></i> Vendas</button>
         </div>
     </div>
-    <div class="widget-content tab-content">
-        <div id="tab1" class="tab-pane active" style="min-height: 300px">
+    <div class="widget-content os-tab-content">
+        <div id="tab1" class="os-tab-pane active" style="min-height: 300px">
             <div class="accordion" id="collapse-group">
                 <div class="accordion-group widget-box">
                     <div class="accordion-heading">
@@ -176,7 +176,7 @@
             </div>
         </div>
         <!--Tab 2-->
-        <div id="tab2" class="tab-pane" style="min-height: 300px">
+        <div id="tab2" class="os-tab-pane" style="min-height: 300px; display:none;">
             <?php if (!$results) { ?>
                 <table class="table table-bordered ">
                     <thead>
@@ -239,7 +239,7 @@
             } ?>
         </div>
         <!--Tab 3-->
-        <div id="tab3" class="tab-pane" style="min-height: 300px">
+        <div id="tab3" class="os-tab-pane" style="min-height: 300px; display:none;">
             <?php if (!$result_vendas) { ?>
                 <table class="table table-bordered ">
                     <thead>
@@ -314,9 +314,9 @@
 <script>
 function showOsTab(tabId, btn) {
     document.querySelectorAll('.os-tabs .os-tab-btn').forEach(function(b) { b.classList.remove('active'); });
-    document.querySelectorAll('.tab-content .tab-pane').forEach(function(p) { p.classList.remove('active'); });
+    document.querySelectorAll('.os-tab-content .os-tab-pane').forEach(function(p) { p.classList.remove('active'); p.style.display = 'none'; });
     btn.classList.add('active');
     var pane = document.getElementById(tabId);
-    if (pane) pane.classList.add('active');
+    if (pane) { pane.classList.add('active'); pane.style.display = 'block'; }
 }
 </script>
