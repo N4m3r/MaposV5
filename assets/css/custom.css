@@ -1350,7 +1350,9 @@ textarea:focus {
 .fas,
 .far,
 .fab,
-.fa {
+.fa,
+[class^="icon-"],
+[class*=" icon-"] {
     font-family: 'Font Awesome 6 Free', 'Font Awesome 5 Free', FontAwesome !important;
     font-weight: 900 !important;
     -webkit-font-smoothing: antialiased;
@@ -1358,9 +1360,38 @@ textarea:focus {
     font-style: normal;
     font-variant: normal;
     line-height: 1;
+    text-rendering: auto;
 }
 
-/* Ajuste nos botões de ação rápidos do CRUD Mapos */
+/* Mapeamento de compatibilidade para classes de ícones legadas (Bootstrap 2 / FontAwesome antigo) */
+.icon-pencil::before { content: "\f304" !important; }
+.icon-trash::before { content: "\f2ed" !important; }
+.icon-eye-open::before, .icon-eye::before { content: "\f06e" !important; }
+.icon-plus::before { content: "\f067" !important; }
+.icon-print::before { content: "\f02f" !important; }
+.icon-remove::before, .icon-remove-sign::before { content: "\f00d" !important; }
+.icon-search::before { content: "\f002" !important; }
+.icon-file::before { content: "\f15b" !important; }
+.icon-cog::before, .icon-settings::before { content: "\f013" !important; }
+.icon-user::before { content: "\f007" !important; }
+.icon-barcode::before { content: "\f02a" !important; }
+.icon-list::before { content: "\f03a" !important; }
+.icon-download::before { content: "\f019" !important; }
+.icon-usd::before, .icon-money::before { content: "\f155" !important; }
+.icon-calendar::before { content: "\f073" !important; }
+.icon-info-sign::before { content: "\f05a" !important; }
+.icon-key::before { content: "\f084" !important; }
+.icon-lock::before { content: "\f023" !important; }
+.icon-envelope::before { content: "\f0e0" !important; }
+.icon-phone::before { content: "\f095" !important; }
+.icon-map-marker::before { content: "\f3c5" !important; }
+.icon-briefcase::before { content: "\f0b1" !important; }
+.icon-check::before { content: "\f00c" !important; }
+.icon-share::before { content: "\f064" !important; }
+.icon-backward::before { content: "\f04a" !important; }
+.icon-edit::before { content: "\f044" !important; }
+
+/* Ajuste nos botões de ação rápidos do CRUD Mapos (Integrados aos Temas Dinâmicos) */
 .btn-nwe,
 .btn-nwe2,
 .btn-nwe3,
@@ -1379,48 +1410,103 @@ textarea:focus {
     margin: 0 2px !important;
     font-size: 1.05rem !important;
     box-shadow: none !important;
+    position: relative !important;
 }
 
+/* Injeção Automática de Ícones via CSS se os botões estiverem vazios no HTML (Garantia de 100% de exibição) */
+.btn-nwe:empty::before {
+    content: "\f06e" !important; /* fa-eye (Visualizar) */
+    font-family: 'Font Awesome 6 Free' !important;
+    font-weight: 900 !important;
+}
+.btn-nwe3:empty::before {
+    content: "\f304" !important; /* fa-pencil (Editar) */
+    font-family: 'Font Awesome 6 Free' !important;
+    font-weight: 900 !important;
+}
+.btn-nwe4:empty::before {
+    content: "\f2ed" !important; /* fa-trash-can (Excluir) */
+    font-family: 'Font Awesome 6 Free' !important;
+    font-weight: 900 !important;
+}
+.btn-nwe5:empty::before {
+    content: "\f155" !important; /* fa-dollar-sign (Faturar/Financeiro) */
+    font-family: 'Font Awesome 6 Free' !important;
+    font-weight: 900 !important;
+}
+.btn-nwe2:empty::before {
+    content: "\f013" !important; /* fa-cog (Configurações) */
+    font-family: 'Font Awesome 6 Free' !important;
+    font-weight: 900 !important;
+}
+
+/* 1. Botão de Visualização / Ação Primária (Respeita 100% o tema do sistema) */
 .btn-nwe {
-    background-color: rgba(4, 103, 252, 0.1) !important;
-    color: #0467fc !important;
+    background-color: rgba(var(--sidebar-accent-rgb, 4, 103, 252), 0.12) !important;
+    color: var(--sidebar-accent, #0467fc) !important;
+}
+.btn-nwe:hover {
+    background-color: var(--sidebar-accent, #0467fc) !important;
+    color: #ffffff !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(var(--sidebar-accent-rgb, 4, 103, 252), 0.25) !important;
 }
 
-.btn-nwe:hover {
-    background-color: #0467fc !important;
+/* 2. Botão de Opções Secundárias do Tema */
+.btn-nwe2 {
+    background-color: rgba(var(--sidebar-accent-rgb, 4, 103, 252), 0.08) !important;
+    color: var(--sidebar-accent, #0467fc) !important;
+    opacity: 0.9 !important;
+}
+.btn-nwe2:hover {
+    background-color: var(--sidebar-accent, #0467fc) !important;
     color: #ffffff !important;
     transform: translateY(-2px) !important;
 }
 
+/* 3. Botão de Edição (Estilo Sucesso Clean) */
 .btn-nwe3 {
-    background-color: rgba(16, 185, 129, 0.1) !important;
+    background-color: rgba(16, 185, 129, 0.12) !important;
     color: #10b981 !important;
 }
-
 .btn-nwe3:hover {
     background-color: #10b981 !important;
     color: #ffffff !important;
     transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25) !important;
 }
 
+/* 4. Botão de Exclusão (Estilo Alerta/Erro Danger Clean) */
 .btn-nwe4 {
-    background-color: rgba(239, 68, 68, 0.1) !important;
+    background-color: rgba(239, 68, 68, 0.12) !important;
     color: #ef4444 !important;
 }
-
 .btn-nwe4:hover {
     background-color: #ef4444 !important;
     color: #ffffff !important;
     transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25) !important;
 }
 
+/* 5. Botão de Financeiro / Faturamento (Estilo Atenção Warning Clean) */
 .btn-nwe5 {
-    background-color: rgba(245, 158, 11, 0.1) !important;
+    background-color: rgba(245, 158, 11, 0.12) !important;
     color: #f59e0b !important;
 }
-
 .btn-nwe5:hover {
     background-color: #f59e0b !important;
+    color: #ffffff !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25) !important;
+}
+
+/* 6. Botão de Apoio Geral (Neutral Slate) */
+.btn-nwe6 {
+    background-color: rgba(148, 163, 184, 0.12) !important;
+    color: #64748b !important;
+}
+.btn-nwe6:hover {
+    background-color: #64748b !important;
     color: #ffffff !important;
     transform: translateY(-2px) !important;
 }
