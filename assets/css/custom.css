@@ -2104,3 +2104,59 @@ body:not([data-theme="puredark"]):not([data-theme="darkviolet"]):not([data-theme
 body:not([data-theme="puredark"]):not([data-theme="darkviolet"]):not([data-theme="darkorange"]) h3 {
     color: #0f172a !important;
 }
+
+/* ========================================================================= */
+/* AJUSTE DO MENU SUSPENSO DE SUGESTÕES (Autocomplete jQuery UI)             */
+/* ========================================================================= */
+.ui-autocomplete {
+    background: var(--card-bg, #ffffff) !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    border-radius: 8px !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+    padding: 6px !important;
+    max-height: 280px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    z-index: 999999 !important;
+    margin-top: 4px !important; /* Força ficar exatamente abaixo do campo de texto */
+}
+
+/* Ajuste nos Temas Escuros */
+body[data-theme="puredark"] .ui-autocomplete,
+body[data-theme="darkviolet"] .ui-autocomplete,
+body[data-theme="darkorange"] .ui-autocomplete {
+    background: #1e1e2d !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Itens do Menu de Sugestão */
+.ui-autocomplete .ui-menu-item {
+    margin: 2px 0 !important;
+    list-style: none !important;
+}
+
+.ui-autocomplete .ui-menu-item-wrapper {
+    padding: 8px 12px !important;
+    color: var(--cinza0, #444444) !important;
+    border-radius: 6px !important;
+    transition: all 0.15s ease-in-out !important;
+    border: none !important;
+    background: transparent !important;
+    display: block !important;
+    cursor: pointer !important;
+    font-size: 0.88rem !important;
+}
+
+body[data-theme="puredark"] .ui-autocomplete .ui-menu-item-wrapper,
+body[data-theme="darkviolet"] .ui-autocomplete .ui-menu-item-wrapper,
+body[data-theme="darkorange"] .ui-autocomplete .ui-menu-item-wrapper {
+    color: #e1e3e6 !important;
+}
+
+/* Hover e Item Ativo */
+.ui-autocomplete .ui-menu-item-wrapper.ui-state-active,
+.ui-autocomplete .ui-menu-item-wrapper:hover {
+    background-color: var(--sidebar-accent, #0467fc) !important;
+    color: #ffffff !important;
+}
