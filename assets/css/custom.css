@@ -597,6 +597,74 @@ textarea {
     transition: all 0.2s ease;
 }
 
+/* ========================================================================= */
+/* ALTO CONTRASTE E VISIBILIDADE DO MENU LATERAL (SIDEBAR/HIDEBAR)           */
+/* ========================================================================= */
+#sidebar li a,
+#sidebar li a .iconX,
+#sidebar li a .title,
+#sidebar li a i {
+    color: var(--sidebar-text-muted, #7f8c8d) !important;
+}
+
+/* Tema Claro Padrão - Aumenta o contraste das opções inativas */
+body:not([data-theme="puredark"]):not([data-theme="darkviolet"]):not([data-theme="darkorange"]) #sidebar li a,
+body:not([data-theme="puredark"]):not([data-theme="darkviolet"]):not([data-theme="darkorange"]) #sidebar li a .iconX,
+body:not([data-theme="puredark"]):not([data-theme="darkviolet"]):not([data-theme="darkorange"]) #sidebar li a .title,
+body:not([data-theme="puredark"]):not([data-theme="darkviolet"]):not([data-theme="darkorange"]) #sidebar li a i {
+    color: #4b5563 !important; /* Slate escuro para excelente contraste */
+}
+
+/* Quando ativo ou hover */
+#sidebar li.active a,
+#sidebar li.active a .iconX,
+#sidebar li.active a .title,
+#sidebar li.active i,
+#sidebar li a:hover,
+#sidebar li a:hover .iconX,
+#sidebar li a:hover .title,
+#sidebar li a:hover i {
+    color: var(--sidebar-accent, #0467fc) !important;
+}
+
+/* Ajuste Fino de Contraste para Temas Escuros */
+body[data-theme="puredark"] #sidebar li a,
+body[data-theme="puredark"] #sidebar li a .iconX,
+body[data-theme="puredark"] #sidebar li a .title,
+body[data-theme="puredark"] #sidebar li a i {
+    color: #cbd5e1 !important; /* Cinza bem claro */
+}
+
+body[data-theme="darkviolet"] #sidebar li a,
+body[data-theme="darkviolet"] #sidebar li a .iconX,
+body[data-theme="darkviolet"] #sidebar li a .title,
+body[data-theme="darkviolet"] #sidebar li a i {
+    color: #e9d5ff !important; /* Lilás claro */
+}
+
+body[data-theme="darkorange"] #sidebar li a,
+body[data-theme="darkorange"] #sidebar li a .iconX,
+body[data-theme="darkorange"] #sidebar li a .title,
+body[data-theme="darkorange"] #sidebar li a i {
+    color: #ffe4e6 !important; /* Pêssego/Salmão suave */
+}
+
+/* Cor ativa nos temas escuros preserva o destaque */
+body[data-theme="puredark"] #sidebar li.active a,
+body[data-theme="puredark"] #sidebar li.active a .iconX,
+body[data-theme="puredark"] #sidebar li.active a .title,
+body[data-theme="puredark"] #sidebar li.active i,
+body[data-theme="darkviolet"] #sidebar li.active a,
+body[data-theme="darkviolet"] #sidebar li.active a .iconX,
+body[data-theme="darkviolet"] #sidebar li.active a .title,
+body[data-theme="darkviolet"] #sidebar li.active i,
+body[data-theme="darkorange"] #sidebar li.active a,
+body[data-theme="darkorange"] #sidebar li.active a .iconX,
+body[data-theme="darkorange"] #sidebar li.active a .title,
+body[data-theme="darkorange"] #sidebar li.active i {
+    color: var(--sidebar-accent) !important;
+}
+
 /* --- Section Dividers --- */
 .menu-divider {
     padding: 18px 0 6px 15px;
