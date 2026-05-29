@@ -1566,40 +1566,15 @@ textarea:focus {
 }
 
 /* Injeção Automática de Ícones via CSS se os botões estiverem vazios no HTML (Garantia de 100% de exibição) */
-.btn-nwe:empty::before {
-    content: "\f06e" !important;
-    /* fa-eye (Visualizar) */
-    font-family: 'Font Awesome 6 Free' !important;
-    font-weight: 900 !important;
-}
+/* Removed pseudo-element icons for .btn-nwe; using inline SVG img tags */
 
-.btn-nwe3:empty::before {
-    content: "\f304" !important;
-    /* fa-pencil (Editar) */
-    font-family: 'Font Awesome 6 Free' !important;
-    font-weight: 900 !important;
-}
+/* Removed pseudo-element icons for .btn-nwe3; using inline SVG img tags */
 
-.btn-nwe4:empty::before {
-    content: "\f2ed" !important;
-    /* fa-trash-can (Excluir) */
-    font-family: 'Font Awesome 6 Free' !important;
-    font-weight: 900 !important;
-}
+/* Removed pseudo-element icons for .btn-nwe4; using inline SVG img tags */
 
-.btn-nwe5:empty::before {
-    content: "\f155" !important;
-    /* fa-dollar-sign (Faturar/Financeiro) */
-    font-family: 'Font Awesome 6 Free' !important;
-    font-weight: 900 !important;
-}
+/* Removed pseudo-element icons for .btn-nwe5; using inline SVG img tags */
 
-.btn-nwe2:empty::before {
-    content: "\f013" !important;
-    /* fa-cog (Configurações) */
-    font-family: 'Font Awesome 6 Free' !important;
-    font-weight: 900 !important;
-}
+/* Removed pseudo-element icons for .btn-nwe2; using inline SVG img tags */
 
 /* 1. Botão de Visualização / Ação Primária (Respeita 100% o tema do sistema) */
 .btn-nwe {
