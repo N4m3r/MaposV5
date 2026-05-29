@@ -170,15 +170,15 @@
                                 $editavel = $this->os_model->isEditable($r->idOs);
 
                                 if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vOs')) {
-                                    echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/os/visualizar/' . $r->idOs . '" class="btn-nwe" title="Ver mais detalhes"><i class="bx bx-show"></i></a>';
-                                    echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/os/imprimir/' . $r->idOs . '" target="_blank" class="btn-nwe6" title="Imprimir A4"><i class="bx bx-printer bx-xs"></i></a>';
-                                    echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/os/imprimirTermica/' . $r->idOs . '" target="_blank" class="btn-nwe6" title="Imprimir Não Fiscal"><i class="bx bx-printer bx-xs"></i></a>';
+                                    echo '<a href="' . base_url() . 'index.php/os/visualizar/' . $r->idOs . '" class="btn-nwe" title="Ver mais detalhes"><img src="' . base_url() . 'assets/svg/visualizar.svg" alt="Visualizar"></a>';
+                                    echo '<a href="' . base_url() . 'index.php/os/imprimir/' . $r->idOs . '" target="_blank" class="btn-nwe6" title="Imprimir A4"><img src="' . base_url() . 'assets/svg/imprimir.svg" alt="Imprimir A4"></a>';
+                                    echo '<a href="' . base_url() . 'index.php/os/imprimirTermica/' . $r->idOs . '" target="_blank" class="btn-nwe6" title="Imprimir Não Fiscal"><img src="' . base_url() . 'assets/svg/imprimir.svg" alt="Imprimir Não Fiscal"></a>';
                                 }
                                 if ($editavel) {
-                                    echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/os/editar/' . $r->idOs . '" class="btn-nwe3" title="Editar OS"><i class="bx bx-edit"></i></a>';
+                                    echo '<a href="' . base_url() . 'index.php/os/editar/' . $r->idOs . '" class="btn-nwe3" title="Editar OS"><img src="' . base_url() . 'assets/svg/editar.svg" alt="Editar"></a>';
                                 }
                                 if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dOs') && $editavel) {
-                                    echo '<a href="#modal-excluir" role="button" data-bs-toggle="modal" os="' . $r->idOs . '" class="btn-nwe4" title="Excluir OS"><i class="bx bx-trash-alt"></i></a>  ';
+                                    echo '<a href="#modal-excluir" role="button" data-bs-toggle="modal" os="' . $r->idOs . '" class="btn-nwe4" title="Excluir OS"><img src="' . base_url() . 'assets/svg/excluir.svg" alt="Excluir"></a>';
                                 }
                                 echo '</td>';
                                 echo '</tr>';
