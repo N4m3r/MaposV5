@@ -2104,12 +2104,3 @@ body:not([data-theme="puredark"]):not([data-theme="darkviolet"]):not([data-theme
 body:not([data-theme="puredark"]):not([data-theme="darkviolet"]):not([data-theme="darkorange"]) h3 {
     color: #0f172a !important;
 }
-
-/* ========================================================================= */
-/* 6. REMOÇÃO DE BACKGROUND GLOBAL DE TABELAS (Override Bootstrap 5)         */
-/* ========================================================================= */
-
-.table > :not(caption) > * > * {
-    background-color: transparent !important;
-    box-shadow: none !important;
-}
