@@ -2265,3 +2265,222 @@ body[data-theme="darkorange"] .ui-autocomplete .ui-menu-item-wrapper {
         color: #ffffff !important;
     }
 }
+
+/* ========================================================================= */
+/* ESTILO PREMIUM ULTRA-MODERNO: NAVEBARN, BOTÕES DE AÇÕES E CARDS           */
+/* ========================================================================= */
+
+/* --- 1. Navebarn Glassmorphism Premium --- */
+.navebarn {
+    background: rgba(var(--card-bg-rgb, 255, 255, 255), 0.75) !important;
+    backdrop-filter: blur(16px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03) !important;
+    height: 64px !important;
+    padding: 0 24px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 1000 !important;
+    transition: all 0.3s ease !important;
+}
+
+/* Ajustes no Tema Escuro da Barra Superior */
+body[data-theme="puredark"] .navebarn,
+body[data-theme="darkviolet"] .navebarn,
+body[data-theme="darkorange"] .navebarn {
+    background: rgba(26, 26, 39, 0.8) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Ícones de Ação da Topbar */
+.topbar-action {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 12px !important;
+    background: rgba(var(--sidebar-accent-rgb, 4, 103, 252), 0.06) !important;
+    color: var(--sidebar-accent, #0467fc) !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    margin-left: 10px !important;
+    border: 1px solid rgba(var(--sidebar-accent-rgb, 4, 103, 252), 0.05) !important;
+}
+
+.topbar-action:hover {
+    background: var(--sidebar-accent, #0467fc) !important;
+    color: #ffffff !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 20px rgba(var(--sidebar-accent-rgb, 4, 103, 252), 0.25) !important;
+}
+
+/* Ajuste no Tema Escuro */
+body[data-theme="puredark"] .topbar-action,
+body[data-theme="darkviolet"] .topbar-action,
+body[data-theme="darkorange"] .topbar-action {
+    background: rgba(255, 255, 255, 0.04) !important;
+    color: #f3f4f6 !important;
+    border-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+body[data-theme="puredark"] .topbar-action:hover,
+body[data-theme="darkviolet"] .topbar-action:hover,
+body[data-theme="darkorange"] .topbar-action:hover {
+    background: var(--sidebar-accent, #0467fc) !important;
+    color: #ffffff !important;
+}
+
+/* Breadcrumb do Topo */
+.topbar-breadcrumb span {
+    font-family: 'Outfit', 'Inter', sans-serif !important;
+    font-size: 1.15rem !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.5px !important;
+    background: linear-gradient(135deg, var(--sidebar-accent, #0467fc), #8b5cf6) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    display: inline-flex !important;
+    align-items: center !important;
+}
+
+/* --- 2. Cards Modernos e Dinâmicos com Efeito Hover Glow --- */
+.quick-card, .widget-card, .widget-box {
+    background: var(--card-bg, #ffffff) !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.02), 0 8px 12px -6px rgba(0, 0, 0, 0.02) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    overflow: hidden !important;
+    position: relative !important;
+}
+
+body[data-theme="puredark"] .quick-card, body[data-theme="puredark"] .widget-card, body[data-theme="puredark"] .widget-box,
+body[data-theme="darkviolet"] .quick-card, body[data-theme="darkviolet"] .widget-card, body[data-theme="darkviolet"] .widget-box,
+body[data-theme="darkorange"] .quick-card, body[data-theme="darkorange"] .widget-card, body[data-theme="darkorange"] .widget-box {
+    background: #1e1e2d !important;
+    border-color: rgba(255, 255, 255, 0.05) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+}
+
+.quick-card:hover {
+    transform: translateY(-4px) !important;
+    box-shadow: 0 20px 40px rgba(var(--sidebar-accent-rgb, 4, 103, 252), 0.12) !important;
+    border-color: rgba(var(--sidebar-accent-rgb, 4, 103, 252), 0.2) !important;
+}
+
+/* Icon Wrapper nos Cards */
+.quick-card .icon-wrapper {
+    width: 48px !important;
+    height: 48px !important;
+    border-radius: 14px !important;
+    background: rgba(var(--sidebar-accent-rgb, 4, 103, 252), 0.08) !important;
+    color: var(--sidebar-accent, #0467fc) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 1.4rem !important;
+    margin-bottom: 12px !important;
+    transition: all 0.3s ease !important;
+}
+
+.quick-card:hover .icon-wrapper {
+    background: var(--sidebar-accent, #0467fc) !important;
+    color: #ffffff !important;
+    transform: scale(1.05) rotate(5deg) !important;
+}
+
+/* --- 3. Botões de Ação Redesenhados (btn-nwe) --- */
+.btn-nwe, .btn-nwe2, .btn-nwe3, .btn-nwe4, .btn-nwe5, .btn-nwe6 {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 12px !important;
+    font-size: 1.15rem !important;
+    border: 1px solid transparent !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    margin: 0 4px !important;
+}
+
+/* Efeitos Hover nos Botões de Ação */
+.btn-nwe:hover, .btn-nwe2:hover, .btn-nwe3:hover, .btn-nwe4:hover, .btn-nwe5:hover, .btn-nwe6:hover {
+    transform: translateY(-2px) scale(1.05) !important;
+}
+
+/* Botão Visualizar (Blue Glow) */
+.btn-nwe {
+    background: rgba(4, 103, 252, 0.08) !important;
+    color: #0467fc !important;
+    border-color: rgba(4, 103, 252, 0.05) !important;
+}
+.btn-nwe:hover {
+    background: #0467fc !important;
+    color: #ffffff !important;
+    box-shadow: 0 6px 15px rgba(4, 103, 252, 0.3) !important;
+}
+
+/* Botão Opções/Secundário (Purple Glow) */
+.btn-nwe2 {
+    background: rgba(139, 92, 246, 0.08) !important;
+    color: #8b5cf6 !important;
+    border-color: rgba(139, 92, 246, 0.05) !important;
+}
+.btn-nwe2:hover {
+    background: #8b5cf6 !important;
+    color: #ffffff !important;
+    box-shadow: 0 6px 15px rgba(139, 92, 246, 0.3) !important;
+}
+
+/* Botão Editar (Emerald Green Glow) */
+.btn-nwe3 {
+    background: rgba(16, 185, 129, 0.08) !important;
+    color: #10b981 !important;
+    border-color: rgba(16, 185, 129, 0.05) !important;
+}
+.btn-nwe3:hover {
+    background: #10b981 !important;
+    color: #ffffff !important;
+    box-shadow: 0 6px 15px rgba(16, 185, 129, 0.3) !important;
+}
+
+/* Botão Excluir (Rose Red Glow) */
+.btn-nwe4 {
+    background: rgba(244, 63, 94, 0.08) !important;
+    color: #f43f5e !important;
+    border-color: rgba(244, 63, 94, 0.05) !important;
+}
+.btn-nwe4:hover {
+    background: #f43f5e !important;
+    color: #ffffff !important;
+    box-shadow: 0 6px 15px rgba(244, 63, 94, 0.3) !important;
+}
+
+/* Botão Estoque/Financeiro (Amber Orange Glow) */
+.btn-nwe5 {
+    background: rgba(245, 158, 11, 0.08) !important;
+    color: #f59e0b !important;
+    border-color: rgba(245, 158, 11, 0.05) !important;
+}
+.btn-nwe5:hover {
+    background: #f59e0b !important;
+    color: #ffffff !important;
+    box-shadow: 0 6px 15px rgba(245, 158, 11, 0.3) !important;
+}
+
+/* Botão Imprimir/Outros (Cool Slate Glow) */
+.btn-nwe6 {
+    background: rgba(100, 116, 139, 0.08) !important;
+    color: #64748b !important;
+    border-color: rgba(100, 116, 139, 0.05) !important;
+}
+.btn-nwe6:hover {
+    background: #64748b !important;
+    color: #ffffff !important;
+    box-shadow: 0 6px 15px rgba(100, 116, 139, 0.3) !important;
+}
