@@ -1987,3 +1987,68 @@ body[data-theme="darkorange"] .pagination .page-item.active .page-link {
     font-family: 'Font Awesome 6 Free' !important;
     font-weight: 900 !important;
 }
+
+/* ========================================================================= */
+/* 5. AJUSTES GLOBAIS DE CONTRASTE DE TEXTO (Temas Claros e Escuros)         */
+/* ========================================================================= */
+
+/* Temas Escuros (Pure Dark, Dark Violet, Dark Orange) */
+body[data-theme="puredark"], body[data-theme="darkviolet"], body[data-theme="darkorange"] {
+    color: #e2e8f0 !important; /* Cor base clara para bom contraste */
+}
+
+body[data-theme="puredark"] .widget-content, body[data-theme="puredark"] table td, body[data-theme="puredark"] table th, body[data-theme="puredark"] label, body[data-theme="puredark"] p, body[data-theme="puredark"] span:not(.badge):not(.button__text2),
+body[data-theme="darkviolet"] .widget-content, body[data-theme="darkviolet"] table td, body[data-theme="darkviolet"] table th, body[data-theme="darkviolet"] label, body[data-theme="darkviolet"] p, body[data-theme="darkviolet"] span:not(.badge):not(.button__text2),
+body[data-theme="darkorange"] .widget-content, body[data-theme="darkorange"] table td, body[data-theme="darkorange"] table th, body[data-theme="darkorange"] label, body[data-theme="darkorange"] p, body[data-theme="darkorange"] span:not(.badge):not(.button__text2) {
+    color: #e2e8f0 !important;
+}
+
+/* Títulos mais brilhantes nos temas escuros */
+body[data-theme="puredark"] h1, body[data-theme="puredark"] h2, body[data-theme="puredark"] h3, body[data-theme="puredark"] h4, body[data-theme="puredark"] h5, body[data-theme="puredark"] .widget-title h5,
+body[data-theme="darkviolet"] h1, body[data-theme="darkviolet"] h2, body[data-theme="darkviolet"] h3, body[data-theme="darkviolet"] h4, body[data-theme="darkviolet"] h5, body[data-theme="darkviolet"] .widget-title h5,
+body[data-theme="darkorange"] h1, body[data-theme="darkorange"] h2, body[data-theme="darkorange"] h3, body[data-theme="darkorange"] h4, body[data-theme="darkorange"] h5, body[data-theme="darkorange"] .widget-title h5 {
+    color: #ffffff !important;
+}
+
+/* Inputs nos temas escuros */
+body[data-theme="puredark"] input:not([type="submit"]):not([type="button"]), body[data-theme="puredark"] select, body[data-theme="puredark"] textarea,
+body[data-theme="darkviolet"] input:not([type="submit"]):not([type="button"]), body[data-theme="darkviolet"] select, body[data-theme="darkviolet"] textarea,
+body[data-theme="darkorange"] input:not([type="submit"]):not([type="button"]), body[data-theme="darkorange"] select, body[data-theme="darkorange"] textarea {
+    color: #f8fafc !important;
+    background-color: rgba(30, 41, 59, 0.8) !important;
+    border: 1px solid #475569 !important;
+}
+
+body[data-theme="puredark"] input:focus, body[data-theme="puredark"] select:focus, body[data-theme="puredark"] textarea:focus,
+body[data-theme="darkviolet"] input:focus, body[data-theme="darkviolet"] select:focus, body[data-theme="darkviolet"] textarea:focus,
+body[data-theme="darkorange"] input:focus, body[data-theme="darkorange"] select:focus, body[data-theme="darkorange"] textarea:focus {
+    border-color: #3b82f6 !important;
+    outline: none !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25) !important;
+}
+
+/* Links em fundos escuros */
+body[data-theme="puredark"] a:not(.btn-nwe):not(.btn-nwe2):not(.btn-nwe3):not(.btn-nwe4):not(.btn-nwe5):not(.btn-nwe6):not(.page-link):not(.button),
+body[data-theme="darkviolet"] a:not(.btn-nwe):not(.btn-nwe2):not(.btn-nwe3):not(.btn-nwe4):not(.btn-nwe5):not(.btn-nwe6):not(.page-link):not(.button),
+body[data-theme="darkorange"] a:not(.btn-nwe):not(.btn-nwe2):not(.btn-nwe3):not(.btn-nwe4):not(.btn-nwe5):not(.btn-nwe6):not(.page-link):not(.button) {
+    color: #60a5fa !important; /* Azul claro e acessível */
+}
+
+body[data-theme="puredark"] a:not(.btn):hover,
+body[data-theme="darkviolet"] a:not(.btn):hover,
+body[data-theme="darkorange"] a:not(.btn):hover {
+    color: #93c5fd !important;
+    text-decoration: underline !important;
+}
+
+/* Temas Claros (Default) */
+body:not([data-theme="puredark"]):not([data-theme="darkviolet"]):not([data-theme="darkorange"]) {
+    color: #334155 !important;
+}
+
+body:not([data-theme="puredark"]):not([data-theme="darkviolet"]):not([data-theme="darkorange"]) .widget-title h5,
+body:not([data-theme="puredark"]):not([data-theme="darkviolet"]):not([data-theme="darkorange"]) h1,
+body:not([data-theme="puredark"]):not([data-theme="darkviolet"]):not([data-theme="darkorange"]) h2,
+body:not([data-theme="puredark"]):not([data-theme="darkviolet"]):not([data-theme="darkorange"]) h3 {
+    color: #0f172a !important;
+}
