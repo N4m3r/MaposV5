@@ -2373,28 +2373,30 @@ body[data-theme="darkorange"] .quick-card, body[data-theme="darkorange"] .widget
     border-color: rgba(var(--sidebar-accent-rgb, 4, 103, 252), 0.2) !important;
 }
 
-/* Icon Wrapper nos Cards */
+/* Icon Wrapper nos Cards (Sólido de Alto Contraste com Gradiente & Ícone Branco) */
 .quick-card .icon-wrapper {
     width: 48px !important;
     height: 48px !important;
     border-radius: 14px !important;
-    background: rgba(var(--sidebar-accent-rgb, 4, 103, 252), 0.08) !important;
-    color: var(--sidebar-accent, #0467fc) !important;
+    background: linear-gradient(135deg, var(--sidebar-accent, #0467fc), #6366f1) !important;
+    color: #ffffff !important; /* Ícone branco por cima para contraste absoluto! */
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    font-size: 1.4rem !important;
+    font-size: 1.45rem !important;
     margin-bottom: 12px !important;
     transition: all 0.3s ease !important;
+    box-shadow: 0 4px 12px rgba(var(--sidebar-accent-rgb, 4, 103, 252), 0.2) !important;
 }
 
 .quick-card:hover .icon-wrapper {
-    background: var(--sidebar-accent, #0467fc) !important;
+    background: linear-gradient(135deg, #6366f1, var(--sidebar-accent, #0467fc)) !important;
     color: #ffffff !important;
-    transform: scale(1.05) rotate(5deg) !important;
+    transform: scale(1.1) rotate(8deg) !important;
+    box-shadow: 0 6px 16px rgba(var(--sidebar-accent-rgb, 4, 103, 252), 0.35) !important;
 }
 
-/* --- 3. Botões de Ação Redesenhados (btn-nwe) --- */
+/* --- 3. Botões de Ação Redesenhados (Sólidos de Alto Contraste com Ícones Brancos) --- */
 .btn-nwe, .btn-nwe2, .btn-nwe3, .btn-nwe4, .btn-nwe5, .btn-nwe6 {
     display: inline-flex !important;
     align-items: center !important;
@@ -2403,84 +2405,73 @@ body[data-theme="darkorange"] .quick-card, body[data-theme="darkorange"] .widget
     height: 36px !important;
     border-radius: 12px !important;
     font-size: 1.15rem !important;
-    border: 1px solid transparent !important;
+    border: none !important;
+    color: #ffffff !important; /* Ícones em BRANCO PURO para contraste extremo! */
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
     margin: 0 4px !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08) !important;
+}
+
+.btn-nwe i, .btn-nwe2 i, .btn-nwe3 i, .btn-nwe4 i, .btn-nwe5 i, .btn-nwe6 i {
+    color: #ffffff !important; /* Força os ícones internos em branco */
 }
 
 /* Efeitos Hover nos Botões de Ação */
 .btn-nwe:hover, .btn-nwe2:hover, .btn-nwe3:hover, .btn-nwe4:hover, .btn-nwe5:hover, .btn-nwe6:hover {
-    transform: translateY(-2px) scale(1.05) !important;
+    transform: translateY(-3px) scale(1.08) !important;
+    filter: brightness(1.1) !important;
 }
 
-/* Botão Visualizar (Blue Glow) */
+/* Botão Visualizar (Azul Forte Premium) */
 .btn-nwe {
-    background: rgba(4, 103, 252, 0.08) !important;
-    color: #0467fc !important;
-    border-color: rgba(4, 103, 252, 0.05) !important;
+    background: #0284c7 !important; /* Azul cobalto vibrante */
+    box-shadow: 0 4px 10px rgba(2, 132, 199, 0.25) !important;
 }
 .btn-nwe:hover {
-    background: #0467fc !important;
-    color: #ffffff !important;
-    box-shadow: 0 6px 15px rgba(4, 103, 252, 0.3) !important;
+    box-shadow: 0 6px 15px rgba(2, 132, 199, 0.45) !important;
 }
 
-/* Botão Opções/Secundário (Purple Glow) */
+/* Botão Opções/Secundário (Roxo Ametista) */
 .btn-nwe2 {
-    background: rgba(139, 92, 246, 0.08) !important;
-    color: #8b5cf6 !important;
-    border-color: rgba(139, 92, 246, 0.05) !important;
+    background: #7c3aed !important; /* Roxo vibrante */
+    box-shadow: 0 4px 10px rgba(124, 58, 237, 0.25) !important;
 }
 .btn-nwe2:hover {
-    background: #8b5cf6 !important;
-    color: #ffffff !important;
-    box-shadow: 0 6px 15px rgba(139, 92, 246, 0.3) !important;
+    box-shadow: 0 6px 15px rgba(124, 58, 237, 0.45) !important;
 }
 
-/* Botão Editar (Emerald Green Glow) */
+/* Botão Editar (Verde Esmeralda Forte) */
 .btn-nwe3 {
-    background: rgba(16, 185, 129, 0.08) !important;
-    color: #10b981 !important;
-    border-color: rgba(16, 185, 129, 0.05) !important;
+    background: #059669 !important; /* Verde esmeralda escuro e nítido */
+    box-shadow: 0 4px 10px rgba(5, 150, 105, 0.25) !important;
 }
 .btn-nwe3:hover {
-    background: #10b981 !important;
-    color: #ffffff !important;
-    box-shadow: 0 6px 15px rgba(16, 185, 129, 0.3) !important;
+    box-shadow: 0 6px 15px rgba(5, 150, 105, 0.45) !important;
 }
 
-/* Botão Excluir (Rose Red Glow) */
+/* Botão Excluir (Vermelho Coral Intenso) */
 .btn-nwe4 {
-    background: rgba(244, 63, 94, 0.08) !important;
-    color: #f43f5e !important;
-    border-color: rgba(244, 63, 94, 0.05) !important;
+    background: #e11d48 !important; /* Vermelho vibrante de perigo */
+    box-shadow: 0 4px 10px rgba(225, 29, 72, 0.25) !important;
 }
 .btn-nwe4:hover {
-    background: #f43f5e !important;
-    color: #ffffff !important;
-    box-shadow: 0 6px 15px rgba(244, 63, 94, 0.3) !important;
+    box-shadow: 0 6px 15px rgba(225, 29, 72, 0.45) !important;
 }
 
-/* Botão Estoque/Financeiro (Amber Orange Glow) */
+/* Botão Estoque/Financeiro (Laranja Âmbar) */
 .btn-nwe5 {
-    background: rgba(245, 158, 11, 0.08) !important;
-    color: #f59e0b !important;
-    border-color: rgba(245, 158, 11, 0.05) !important;
+    background: #d97706 !important; /* Laranja escuro de alta visibilidade */
+    box-shadow: 0 4px 10px rgba(217, 119, 6, 0.25) !important;
 }
 .btn-nwe5:hover {
-    background: #f59e0b !important;
-    color: #ffffff !important;
-    box-shadow: 0 6px 15px rgba(245, 158, 11, 0.3) !important;
+    box-shadow: 0 6px 15px rgba(217, 119, 6, 0.45) !important;
 }
 
-/* Botão Imprimir/Outros (Cool Slate Glow) */
+/* Botão Imprimir/Outros (Cinza Ardósia Escuro) */
 .btn-nwe6 {
-    background: rgba(100, 116, 139, 0.08) !important;
-    color: #64748b !important;
-    border-color: rgba(100, 116, 139, 0.05) !important;
+    background: #475569 !important; /* Cinza ardósia escuro de alto contraste */
+    box-shadow: 0 4px 10px rgba(71, 85, 105, 0.25) !important;
 }
 .btn-nwe6:hover {
-    background: #64748b !important;
-    color: #ffffff !important;
-    box-shadow: 0 6px 15px rgba(100, 116, 139, 0.3) !important;
+    box-shadow: 0 6px 15px rgba(71, 85, 105, 0.45) !important;
 }

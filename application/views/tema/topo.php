@@ -11,7 +11,6 @@
   <link rel="stylesheet" href="<?= base_url(); ?>assets/css/bootstrap5.min.css" />
   <link rel="stylesheet" href="<?= base_url(); ?>assets/css/matrix-style.css" />
   <link rel="stylesheet" href="<?= base_url(); ?>assets/css/matrix-media.css" />
-  <link rel="stylesheet" href="<?= base_url(); ?>assets/css/custom.css" />
   <link href="<?= base_url(); ?>assets/font-awesome/css/font-awesome.css" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" crossorigin="anonymous" />
   <link rel="stylesheet" href="<?= base_url(); ?>assets/css/fullcalendar.css" />
@@ -33,6 +32,7 @@
   <?php if (($configuration['app_theme'] ?? null) == 'whiteblack') { ?>
     <link rel="stylesheet" href="<?= base_url(); ?>assets/css/tema-white-black.css" />
   <?php } ?>
+  <link rel="stylesheet" href="<?= base_url(); ?>assets/css/custom.css" />
   <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700,800' rel='stylesheet' type='text/css' crossorigin="anonymous">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" crossorigin="anonymous">
   <link href='https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300;400;500;700&display=swap' rel='stylesheet' type='text/css' crossorigin="anonymous">
@@ -350,6 +350,7 @@
         <i class='bx bx-menu'></i>
       </a>
       <div class="topbar-breadcrumb" style="color:rgba(255,255,255,0.85); display: flex; align-items: center;">
+        <i class='bx bx-hard-hat' style="margin-right: 8px; font-size: 26px; color: #fff; filter: drop-shadow(0 2px 8px rgba(255,255,255,0.3));"></i>
         <span style="color:#fff;">Portal Tecnico</span>
       </div>
     </div>
@@ -415,6 +416,7 @@
         <i class='bx bx-menu'></i>
       </a>
       <div class="topbar-breadcrumb" style="display: flex; align-items: center;">
+        <i class='bx bx-cube-alt' style="margin-right: 8px; font-size: 26px; color: var(--sidebar-accent, #0467fc); filter: drop-shadow(0 2px 8px rgba(var(--sidebar-accent-rgb, 4, 103, 252), 0.3));"></i>
         <span><?= $configuration['app_name'] ?? 'Map-OS' ?></span>
       </div>
     </div>
