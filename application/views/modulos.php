@@ -566,7 +566,7 @@
             <div class="col-6">
                 <h4 style="margin-bottom: 15px;">Referência GitHub</h4>
                 <p style="margin-bottom: 15px;">Acesse o repositório original para comparar com a versão base do sistema:</p>
-                <a href="https://github.com/RamonSilva20/mapos/pulse" target="_blank" class="github-link">
+                <a href="https://github.com/RamonSilva20/mapos/pulse" target="_blank" class="github-link btn">
                     <i class="bx bxl-github"></i>
                     Ver Map-OS Original no GitHub
                 </a>

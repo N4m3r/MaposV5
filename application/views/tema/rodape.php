@@ -6,7 +6,7 @@
 <!-- Footer -->
 <div class="row">
     <div id="footer" class="col-12">
-        <a class="pecolor" href="https://github.com/RamonSilva20/mapos" target="_blank">
+        <a class="pecolor btn" href="https://github.com/RamonSilva20/mapos" target="_blank">
             <?= date('Y') ?> &copy; Ramon Silva - Map-OS - Versão: <?= $this->config->item('app_version') ?>
         </a>
     </div>

@@ -366,7 +366,7 @@
 
       <!-- Notifications -->
       <div class="topbar-dropdown topbar-notif-dropdown" id="notifications-dropdown">
-        <a href="#" class="topbar-action" data-bs-toggle="dropdown" title="Notificacoes" style="color:rgba(255,255,255,0.8);">
+        <a href="#" class="topbar-action btn" data-bs-toggle="dropdown" title="Notificacoes" style="color:rgba(255,255,255,0.8);">
           <i class='bx bx-bell'></i>
           <span class="topbar-badge" id="notif-count" style="display:none;">0</span>
         </a>
@@ -386,7 +386,7 @@
 
       <!-- User Profile Dropdown -->
       <div class="topbar-dropdown">
-        <a href="#" class="topbar-user" data-bs-toggle="dropdown" style="background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.15);">
+        <a href="#" class="topbar-user btn" data-bs-toggle="dropdown" style="background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.15);">
           <div class="topbar-user-avatar" style="background:rgba(255,255,255,0.2);">
             <?= strtoupper(mb_substr($this->session->userdata('tec_nome') ?? 'T', 0, 2)) ?>
           </div>
@@ -432,7 +432,7 @@
 
       <!-- Notifications -->
       <div class="topbar-dropdown topbar-notif-dropdown" id="notifications-dropdown">
-        <a href="#" class="topbar-action" data-bs-toggle="dropdown" title="Notificacoes">
+        <a href="#" class="topbar-action btn" data-bs-toggle="dropdown" title="Notificacoes">
           <i class='bx bx-bell'></i>
           <span class="topbar-badge" id="notif-count" style="display:none;">0</span>
         </a>
@@ -452,7 +452,7 @@
 
       <!-- Reports Dropdown -->
       <div class="topbar-dropdown">
-        <a href="#" class="topbar-action" data-bs-toggle="dropdown" title="Relatorios">
+        <a href="#" class="topbar-action btn" data-bs-toggle="dropdown" title="Relatorios">
           <i class='bx bx-pie-chart-alt-2'></i>
         </a>
         <ul class="dropdown-menu">
@@ -470,7 +470,7 @@
 
       <!-- Quick Settings Dropdown -->
       <div class="topbar-dropdown">
-        <a href="#" class="topbar-action" data-bs-toggle="dropdown" title="Configuracoes Rapidas">
+        <a href="#" class="topbar-action btn" data-bs-toggle="dropdown" title="Configuracoes Rapidas">
           <i class='bx bx-cog'></i>
         </a>
         <ul class="dropdown-menu">
@@ -489,7 +489,7 @@
 
       <!-- User Profile Dropdown -->
       <div class="topbar-dropdown">
-        <a href="#" class="topbar-user" data-bs-toggle="dropdown">
+        <a href="#" class="topbar-user btn" data-bs-toggle="dropdown">
           <div class="topbar-user-avatar">
             <?= strtoupper(mb_substr($this->session->userdata('nome') ?? 'U', 0, 2)) ?>
           </div>

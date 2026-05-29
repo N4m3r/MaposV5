@@ -885,7 +885,7 @@
 
     <div class="tec-wrapper">
         <!-- Sidebar -->
-        <aside class="tec-sidebar" id="tecSidebar">
+        <aside class="tec-sidebar btn" id="tecSidebar">
             <div class="tec-sidebar-header">
                 <img src="<?= base_url() ?>assets/img/logo-mapos-branco.png" alt="Map-OS" class="tec-sidebar-logo">
             </div>

@@ -3275,7 +3275,7 @@ async function salvarFotoServico() {
             item.id = 'foto-item-' + data.foto_id;
             // Usa a URL do servidor (mesmo padrão do sistema de atendimento)
             const fotoUrl = data.url || fotoServicoBase64;
-            item.innerHTML = `<a href="${fotoUrl}" target="_blank" class="foto-link"><img src="${fotoUrl}" alt="Foto"></a>
+            item.innerHTML = `<a href="${fotoUrl}" target="_blank" class="foto-link btn"></a>
                 <button type="button" class="btn-remover-foto" onclick="removerFoto(${data.foto_id})" title="Remover foto"><i class="bx bx-trash"></i></button>`;
             grid.insertBefore(item, grid.children[1]);
 

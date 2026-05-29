@@ -8,7 +8,7 @@
             <?= $configuration['app_theme'] == 'white' ||  $configuration['app_theme'] == 'whitegreen' ? '<img src="' . base_url() . 'assets/img/logo-mapos.png">' : '<img src="' . base_url() . 'assets/img/logo-mapos-branco.png">'; ?>
         </div>
     </div>
-    <a href="#" class="d-inline d-sm-none">
+    <a href="#" class="d-inline d-sm-none btn">
         <div class="mode">
             <div class="moon-menu">
                 <i class='bx bx-chevron-right iconX open-2'></i>
@@ -34,7 +34,7 @@
                 <li class="<?php if (isset($menuPainel)) {
                     echo 'active';
                 }; ?>">
-                    <a class="tip-bottom" title="" href="<?= base_url() ?>"><i class='bx bx-home-alt iconX'></i>
+                    <a class="tip-bottom btn" title="" href="<?= base_url() ?>"><i class='bx bx-home-alt iconX'></i>
                         <span class="title nav-title">Home</span>
                         <span class="title-tooltip">Início</span>
                     </a>
@@ -45,7 +45,7 @@
                     <li class="<?php if (isset($menuDashboard)) {
                         echo 'active';
                     }; ?>">
-                        <a class="tip-bottom" title="" href="<?= site_url('dashboard') ?>"><i class='bx bx-dashboard iconX'></i>
+                        <a class="tip-bottom btn" title="" href="<?= site_url('dashboard') ?>"><i class='bx bx-dashboard iconX'></i>
                             <span class="title">Dashboard</span>
                             <span class="title-tooltip">Dashboard</span>
                         </a>
@@ -57,7 +57,7 @@
                     <li class="submenu <?php if (isset($menuRelatorios)) {
                         echo 'active open';
                     }; ?>">
-                        <a class="tip-bottom" title="" href="#"><i class='bx bx-line-chart iconX'></i>
+                        <a class="tip-bottom btn" title="" href="#"><i class='bx bx-line-chart iconX'></i>
                             <span class="title">Relatórios</span>
                             <span class="title-tooltip">Relatórios</span>
                             <i class='bx bx-chevron-down arrow'></i>
@@ -111,7 +111,7 @@
                     <li class="<?php if (isset($menuClientes)) {
                         echo 'active';
                     }; ?>">
-                        <a class="tip-bottom" title="" href="<?= site_url('clientes') ?>"><i class='bx bx-user iconX'></i>
+                        <a class="tip-bottom btn" title="" href="<?= site_url('clientes') ?>"><i class='bx bx-user iconX'></i>
                             <span class="title">Cliente / Fornecedor</span>
                             <span class="title-tooltip">Clientes</span>
                         </a>
@@ -122,7 +122,7 @@
                     <li class="<?php if (isset($menuProdutos)) {
                         echo 'active';
                     }; ?>">
-                        <a class="tip-bottom" title="" href="<?= site_url('produtos') ?>"><i class='bx bx-basket iconX'></i>
+                        <a class="tip-bottom btn" title="" href="<?= site_url('produtos') ?>"><i class='bx bx-basket iconX'></i>
                             <span class="title">Produtos</span>
                             <span class="title-tooltip">Produtos</span>
                         </a>
@@ -133,7 +133,7 @@
                     <li class="<?php if (isset($menuServicos)) {
                         echo 'active';
                     }; ?>">
-                        <a class="tip-bottom" title="" href="<?= site_url('servicos') ?>"><i class='bx bx-wrench iconX'></i>
+                        <a class="tip-bottom btn" title="" href="<?= site_url('servicos') ?>"><i class='bx bx-wrench iconX'></i>
                             <span class="title">Serviços</span>
                             <span class="title-tooltip">Serviços</span>
                         </a>
@@ -144,7 +144,7 @@
                     <li class="<?php if (isset($menuVendas)) {
                         echo 'active';
                     }; ?>">
-                        <a class="tip-bottom" title="" href="<?= site_url('vendas') ?>"><i class='bx bx-cart-alt iconX'></i></span>
+                        <a class="tip-bottom btn" title="" href="<?= site_url('vendas') ?>"><i class='bx bx-cart-alt iconX'></i></span>
                             <span class="title">Vendas</span>
                             <span class="title-tooltip">Vendas</span>
                         </a>
@@ -155,7 +155,7 @@
                     <li class="<?php if (isset($menuOs)) {
                         echo 'active';
                     }; ?>">
-                        <a class="tip-bottom" title="" href="<?= site_url('os') ?>"><i class='bx bx-file iconX'></i>
+                        <a class="tip-bottom btn" title="" href="<?= site_url('os') ?>"><i class='bx bx-file iconX'></i>
                             <span class="title">Ordens de Serviço</span>
                             <span class="title-tooltip">Ordens</span>
                         </a>
@@ -166,7 +166,7 @@
                     <li class="<?php if (isset($menuKanban)) {
                         echo 'active';
                     }; ?>">
-                        <a class="tip-bottom" title="" href="<?= site_url('kanban') ?>"><i class='bx bx-columns iconX'></i>
+                        <a class="tip-bottom btn" title="" href="<?= site_url('kanban') ?>"><i class='bx bx-columns iconX'></i>
                             <span class="title">Kanban Board</span>
                             <span class="title-tooltip">Kanban</span>
                         </a>
@@ -177,7 +177,7 @@
                     <li class="<?php if (isset($menuAtribuir)) {
                         echo 'active';
                     }; ?>">
-                        <a class="tip-bottom" title="" href="<?= site_url('os/atribuir') ?>"><i class='bx bx-user-plus iconX'></i>
+                        <a class="tip-bottom btn" title="" href="<?= site_url('os/atribuir') ?>"><i class='bx bx-user-plus iconX'></i>
                             <span class="title">Atribuir Técnico</span>
                             <span class="title-tooltip">Atribuir Téc.</span>
                         </a>
@@ -188,7 +188,7 @@
                     <li class="<?php if (isset($menuGarantia)) {
                         echo 'active';
                     }; ?>">
-                        <a class="tip-bottom" title="" href="<?= site_url('garantias') ?>"><i class='bx bx-receipt iconX'></i>
+                        <a class="tip-bottom btn" title="" href="<?= site_url('garantias') ?>"><i class='bx bx-receipt iconX'></i>
                             <span class="title">Termos de Garantias</span>
                             <span class="title-tooltip">Garantias</span>
                         </a>
@@ -199,7 +199,7 @@
                     <li class="<?php if (isset($menuArquivos)) {
                         echo 'active';
                     }; ?>">
-                        <a class="tip-bottom" title="" href="<?= site_url('arquivos') ?>"><i class='bx bx-box iconX'></i>
+                        <a class="tip-bottom btn" title="" href="<?= site_url('arquivos') ?>"><i class='bx bx-box iconX'></i>
                             <span class="title">Arquivos</span>
                             <span class="title-tooltip">Arquivos</span>
                         </a>
@@ -210,7 +210,7 @@
                     <li class="<?php if (isset($menuLancamentos)) {
                         echo 'active';
                     }; ?>">
-                        <a class="tip-bottom" title="" href="<?= site_url('financeiro/lancamentos') ?>"><i class="bx bx-bar-chart-alt-2 iconX"></i>
+                        <a class="tip-bottom btn" title="" href="<?= site_url('financeiro/lancamentos') ?>"><i class="bx bx-bar-chart-alt-2 iconX"></i>
                             <span class="title">Lançamentos</span>
                             <span class="title-tooltip">Lançamentos</span>
                         </a>
@@ -220,7 +220,7 @@
                     <li class="<?php if (isset($menuCobrancas)) {
                         echo 'active';
                     }; ?>">
-                        <a class="tip-bottom" title="" href="<?= site_url('cobrancas/cobrancas') ?>"><i class='bx bx-dollar-circle iconX'></i>
+                        <a class="tip-bottom btn" title="" href="<?= site_url('cobrancas/cobrancas') ?>"><i class='bx bx-dollar-circle iconX'></i>
                             <span class="title">Cobranças</span>
                             <span class="title-tooltip">Cobranças</span>
                         </a>
@@ -232,7 +232,7 @@
                     <li class="<?php if (isset($menuRelatorioAtendimentos)) {
                         echo 'active';
                     }; ?>">
-                        <a class="tip-bottom" title="" href="<?= site_url('relatorioatendimentos') ?>"><i class='bx bx-time iconX'></i>
+                        <a class="tip-bottom btn" title="" href="<?= site_url('relatorioatendimentos') ?>"><i class='bx bx-time iconX'></i>
                             <span class="title">Atendimentos</span>
                             <span class="title-tooltip">Atendimentos</span>
                         </a>
@@ -244,7 +244,7 @@
                     <li class="<?php if (isset($menuWebhooks)) {
                         echo 'active';
                     }; ?>">
-                        <a class="tip-bottom" title="" href="<?= site_url('webhooks') ?>"><i class='bx bx-webhook iconX'></i>
+                        <a class="tip-bottom btn" title="" href="<?= site_url('webhooks') ?>"><i class='bx bx-webhook iconX'></i>
                             <span class="title">Webhooks</span>
                             <span class="title-tooltip">Webhooks</span>
                         </a>
@@ -256,7 +256,7 @@
                     <li class="<?php if (isset($menuNfseListar)) {
                         echo 'active';
                     }; ?>">
-                        <a class="tip-bottom" title="" href="<?= site_url('nfse') ?>"><i class='bx bx-receipt iconX'></i>
+                        <a class="tip-bottom btn" title="" href="<?= site_url('nfse') ?>"><i class='bx bx-receipt iconX'></i>
                             <span class="title">NFS-e</span>
                             <span class="title-tooltip">NFS-e</span>
                         </a>
@@ -268,7 +268,7 @@
                     <li class="submenu <?php if (isset($menuCertificado)) {
                         echo 'active open';
                     }; ?>">
-                        <a class="tip-bottom" title="" href="#"><i class='bx bx-id-card iconX'></i>
+                        <a class="tip-bottom btn" title="" href="#"><i class='bx bx-id-card iconX'></i>
                             <span class="title">Certificado Digital</span>
                             <span class="title-tooltip">Certificado</span>
                             <i class='bx bx-chevron-down arrow'></i>
@@ -307,7 +307,7 @@
                     <li class="submenu <?php if (isset($menuImpostos)) {
                         echo 'active open';
                     }; ?>">
-                        <a class="tip-bottom" title="" href="#"><i class='bx bx-money iconX'></i>
+                        <a class="tip-bottom btn" title="" href="#"><i class='bx bx-money iconX'></i>
                             <span class="title">Impostos Simples</span>
                             <span class="title-tooltip">Impostos</span>
                             <i class='bx bx-chevron-down arrow'></i>
@@ -340,7 +340,7 @@
                     <li class="submenu <?php if (isset($menuDRE)) {
                         echo 'active open';
                     }; ?>">
-                        <a class="tip-bottom" title="" href="#"><i class='bx bx-line-chart-down iconX'></i>
+                        <a class="tip-bottom btn" title="" href="#"><i class='bx bx-line-chart-down iconX'></i>
                             <span class="title">DRE Contábil</span>
                             <span class="title-tooltip">DRE Contábil</span>
                             <i class='bx bx-chevron-down arrow'></i>
@@ -372,7 +372,7 @@
                     <li class="submenu <?php if (isset($menuDRE)) {
                         echo 'active open';
                     }; ?>">
-                        <a class="tip-bottom" title="" href="#"><i class='bx bx-line-chart-down iconX'></i>
+                        <a class="tip-bottom btn" title="" href="#"><i class='bx bx-line-chart-down iconX'></i>
                             <span class="title">DRE Contábil</span>
                             <span class="title-tooltip">DRE Contábil</span>
                             <i class='bx bx-chevron-down arrow'></i>
@@ -404,7 +404,7 @@
                     <li class="submenu <?php if (isset($menuCertificado)) {
                         echo 'active open';
                     }; ?>">
-                        <a class="tip-bottom" title="" href="#"><i class='bx bx-id-card iconX'></i>
+                        <a class="tip-bottom btn" title="" href="#"><i class='bx bx-id-card iconX'></i>
                             <span class="title">Certificado Digital</span>
                             <span class="title-tooltip">Certificado</span>
                             <i class='bx bx-chevron-down arrow'></i>
@@ -442,7 +442,7 @@
                     <li class="submenu <?php if (isset($menuImpostos)) {
                         echo 'active open';
                     }; ?>">
-                        <a class="tip-bottom" title="" href="#"><i class='bx bx-money iconX'></i>
+                        <a class="tip-bottom btn" title="" href="#"><i class='bx bx-money iconX'></i>
                             <span class="title">Impostos Simples</span>
                             <span class="title-tooltip">Impostos</span>
                             <i class='bx bx-chevron-down arrow'></i>
@@ -474,7 +474,7 @@
                     <li class="submenu <?php if (isset($menuUsuariosCliente)) {
                         echo 'active open';
                     }; ?>">
-                        <a class="tip-bottom" title="" href="#"><i class='bx bx-user-check iconX'></i>
+                        <a class="tip-bottom btn" title="" href="#"><i class='bx bx-user-check iconX'></i>
                             <span class="title">Usuários Cliente</span>
                             <span class="title-tooltip">Portal Cliente</span>
                             <i class='bx bx-chevron-down arrow'></i>
@@ -502,7 +502,7 @@
                     <li class="submenu <?php if (isset($menuFerramentasV5)) {
                         echo 'active open';
                     }; ?>">
-                        <a class="tip-bottom" title="" href="#"><i class='bx bx-rocket iconX'></i>
+                        <a class="tip-bottom btn" title="" href="#"><i class='bx bx-rocket iconX'></i>
                             <span class="title">Ferramentas V5</span>
                             <span class="title-tooltip">Ferramentas</span>
                             <i class='bx bx-chevron-down arrow'></i>
@@ -548,7 +548,7 @@
 
         <div class="botton-content">
             <li class="">
-                <a class="tip-bottom" title="" href="<?= site_url('login/sair'); ?>">
+                <a class="tip-bottom btn" title="" href="<?= site_url('login/sair'); ?>">
                     <i class='bx bx-log-out-circle iconX'></i>
                     <span class="title">Sair</span>
                     <span class="title-tooltip">Sair</span>

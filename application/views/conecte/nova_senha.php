@@ -104,7 +104,7 @@
 
     <!--Footer-part-->
     <div class="row">
-        <div id="footer" class="col-12" style="padding: 10px"> <a class="pecolor" href="https://github.com/RamonSilva20/mapos" target="_blank">
+        <div id="footer" class="col-12" style="padding: 10px"> <a class="pecolor btn" href="https://github.com/RamonSilva20/mapos" target="_blank">
                 <?= date('Y') ?> &copy; Ramon Silva - <?php echo $this->config->item('app_name') ?> - Versão: <?= $this->config->item('app_version'); ?>
             </a></div>
     </div>

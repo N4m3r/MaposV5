@@ -337,7 +337,7 @@ $etapaStatusColors = [
                     </div>
                     <div class="widget-content" style="padding: 20px;">
                         <div style="display: flex; flex-direction: column; gap: 10px;">
-                            <a href="#modal-equipe" data-bs-toggle="modal" class="quick-action" style="display: flex; align-items: center; gap: 12px; padding: 15px; background: #e3f2fd; border-radius: 12px; text-decoration: none; color: #1976d2;">
+                            <a href="#modal-equipe" data-bs-toggle="modal" class="quick-action btn" style="display: flex; align-items: center; gap: 12px; padding: 15px; background: #e3f2fd; border-radius: 12px; text-decoration: none; color: #1976d2;">
                                 <i class="bx bx-user-plus" style="font-size: 1.3rem;"></i>
                                 <span style="font-weight: 600;">Alocar Técnico</span>
                             </a>
@@ -345,7 +345,7 @@ $etapaStatusColors = [
                                 <i class="bx bx-file" style="font-size: 1.3rem;"></i>
                                 <span style="font-weight: 600;">Criar OS para Obra</span>
                             </a>
-                            <a href="#modal-materiais" data-bs-toggle="modal" class="quick-action" style="display: flex; align-items: center; gap: 12px; padding: 15px; background: #fff3e0; border-radius: 12px; text-decoration: none; color: #f57c00;">
+                            <a href="#modal-materiais" data-bs-toggle="modal" class="quick-action btn" style="display: flex; align-items: center; gap: 12px; padding: 15px; background: #fff3e0; border-radius: 12px; text-decoration: none; color: #f57c00;">
                                 <i class="bx bx-package" style="font-size: 1.3rem;"></i>
                                 <span style="font-weight: 600;">Materiais</span>
                             </a>

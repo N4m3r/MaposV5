@@ -240,7 +240,7 @@ $ci->load->helper('date');
             <!-- Tags de Cliente -->
             <div class="accordion-group">
                 <div class="accordion-heading">
-                    <a class="accordion-toggle" data-bs-toggle="collapse" data-parent="#accordionTags" href="#collapseCliente">
+                    <a class="accordion-toggle btn" data-bs-toggle="collapse" data-parent="#accordionTags" href="#collapseCliente">
                         <i class="fas fa-user"></i> <strong>Cliente</strong>
                     </a>
                 </div>
@@ -263,7 +263,7 @@ $ci->load->helper('date');
             <!-- Tags de OS -->
             <div class="accordion-group">
                 <div class="accordion-heading">
-                    <a class="accordion-toggle" data-bs-toggle="collapse" data-parent="#accordionTags" href="#collapseOS">
+                    <a class="accordion-toggle btn" data-bs-toggle="collapse" data-parent="#accordionTags" href="#collapseOS">
                         <i class="fas fa-wrench"></i> <strong>Ordem de Serviço</strong>
                     </a>
                 </div>
@@ -288,7 +288,7 @@ $ci->load->helper('date');
             <!-- Tags de Venda -->
             <div class="accordion-group">
                 <div class="accordion-heading">
-                    <a class="accordion-toggle" data-bs-toggle="collapse" data-parent="#accordionTags" href="#collapseVenda">
+                    <a class="accordion-toggle btn" data-bs-toggle="collapse" data-parent="#accordionTags" href="#collapseVenda">
                         <i class="fas fa-shopping-cart"></i> <strong>Venda</strong>
                     </a>
                 </div>
@@ -310,7 +310,7 @@ $ci->load->helper('date');
             <!-- Tags de Cobrança -->
             <div class="accordion-group">
                 <div class="accordion-heading">
-                    <a class="accordion-toggle" data-bs-toggle="collapse" data-parent="#accordionTags" href="#collapseCobranca">
+                    <a class="accordion-toggle btn" data-bs-toggle="collapse" data-parent="#accordionTags" href="#collapseCobranca">
                         <i class="fas fa-dollar-sign"></i> <strong>Cobrança</strong>
                     </a>
                 </div>
@@ -332,7 +332,7 @@ $ci->load->helper('date');
             <!-- Tags de Sistema -->
             <div class="accordion-group">
                 <div class="accordion-heading">
-                    <a class="accordion-toggle" data-bs-toggle="collapse" data-parent="#accordionTags" href="#collapseSistema">
+                    <a class="accordion-toggle btn" data-bs-toggle="collapse" data-parent="#accordionTags" href="#collapseSistema">
                         <i class="fas fa-cog"></i> <strong>Sistema</strong>
                     </a>
                 </div>
@@ -359,7 +359,7 @@ $ci->load->helper('date');
             <!-- Tags Personalizadas -->
             <div class="accordion-group">
                 <div class="accordion-heading">
-                    <a class="accordion-toggle" data-bs-toggle="collapse" data-parent="#accordionTags" href="#collapsePersonalizado">
+                    <a class="accordion-toggle btn" data-bs-toggle="collapse" data-parent="#accordionTags" href="#collapsePersonalizado">
                         <i class="fas fa-pencil-alt"></i> <strong>Personalizadas</strong>
                     </a>
                 </div>

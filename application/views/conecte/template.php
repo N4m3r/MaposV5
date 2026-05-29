@@ -58,7 +58,7 @@ $podeEditarPerfil = clienteHasPermission('editar_perfil');
                 $linkSair = ($tipoAcesso == 'usuario_cliente') ? 'mine/sair_usuario' : 'mine/sair';
                 ?>
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown"><i class='bx bx-user-circle iconN1'></i> <?= htmlspecialchars($nomeUsuario) ?> </a>
+                    <a href="#" class="dropdown-toggle btn" data-bs-toggle="dropdown"><i class='bx bx-user-circle iconN1'></i> <?= htmlspecialchars($nomeUsuario) ?> </a>
                     <ul class="dropdown-menu">
                         <?php if ($podeEditarPerfil): ?>
                         <li class=""><a title="Meu Perfil" href="<?php echo base_url() ?>index.php/mine/conta"><i class="fas fa-user"></i> <span class="text">Meu Perfil</span></a></li>
@@ -80,7 +80,7 @@ $podeEditarPerfil = clienteHasPermission('editar_perfil');
                 <img src="<?= base_url() ?>assets/img/logo-mapos-branco.png">
             </div>
         </div>
-        <a href="#" class="d-inline d-sm-none">
+        <a href="#" class="d-inline d-sm-none btn">
             <div class="mode">
                 <div class="moon-menu">
                     <i class='bx bx-chevron-right iconX open-2'></i>
@@ -92,34 +92,34 @@ $podeEditarPerfil = clienteHasPermission('editar_perfil');
         <div class="menu-bar">
             <div class="menu">
                 <ul class="menu-links" style="position: relative;">
-                    <li class="<?php if (isset($menuPainel)) { echo 'active'; } ?>"><a class="tip-bottom" title="" href="<?php echo base_url() ?>index.php/mine/painel"><i class='bx bx-home-alt iconX'></i> <span class="title">Painel</span></a></li>
+                    <li class="<?php if (isset($menuPainel)) { echo 'active'; } ?>"><a class="tip-bottom btn" title="" href="<?php echo base_url() ?>index.php/mine/painel"><i class='bx bx-home-alt iconX'></i> <span class="title">Painel</span></a></li>
 
                     <?php if ($podeEditarPerfil): ?>
-                    <li class="<?php if (isset($menuConta)) { echo 'active'; } ?>"><a class="tip-bottom" title="" href="<?php echo base_url() ?>index.php/mine/conta"><i class="bx bx-user-circle iconX"></i> <span class="title">Minha Conta</span></a></li>
+                    <li class="<?php if (isset($menuConta)) { echo 'active'; } ?>"><a class="tip-bottom btn" title="" href="<?php echo base_url() ?>index.php/mine/conta"><i class="bx bx-user-circle iconX"></i> <span class="title">Minha Conta</span></a></li>
                     <?php endif; ?>
 
                     <?php if ($podeVerOS): ?>
-                    <li class="<?php if (isset($menuOs)) { echo 'active'; } ?>"><a class="tip-bottom" title="" href="<?php echo base_url() ?>index.php/mine/os"><i class='bx bx-spreadsheet iconX'></i> <span class="title">Ordens de Serviço</span></a></li>
+                    <li class="<?php if (isset($menuOs)) { echo 'active'; } ?>"><a class="tip-bottom btn" title="" href="<?php echo base_url() ?>index.php/mine/os"><i class='bx bx-spreadsheet iconX'></i> <span class="title">Ordens de Serviço</span></a></li>
                     <?php endif; ?>
 
                     <?php if ($podeVerCompras): ?>
-                    <li class="<?php if (isset($menuVendas)) { echo 'active'; } ?>"><a class="tip-bottom" title="" href="<?php echo base_url() ?>index.php/mine/compras"><i class='bx bx-cart-alt iconX'></i> <span class="title">Compras</span></a></li>
+                    <li class="<?php if (isset($menuVendas)) { echo 'active'; } ?>"><a class="tip-bottom btn" title="" href="<?php echo base_url() ?>index.php/mine/compras"><i class='bx bx-cart-alt iconX'></i> <span class="title">Compras</span></a></li>
                     <?php endif; ?>
 
                     <?php if ($podeVerCobrancas): ?>
-                    <li class="<?php if (isset($menuCobrancas)) { echo 'active'; } ?>"><a class="tip-bottom" title="" href="<?php echo base_url() ?>index.php/mine/cobrancas"><i class='bx bx-credit-card-front iconX'></i> <span class="title">Cobranças</span></a></li>
+                    <li class="<?php if (isset($menuCobrancas)) { echo 'active'; } ?>"><a class="tip-bottom btn" title="" href="<?php echo base_url() ?>index.php/mine/cobrancas"><i class='bx bx-credit-card-front iconX'></i> <span class="title">Cobranças</span></a></li>
                     <?php endif; ?>
 
 
                     <?php if ($podeVerObras): ?>
-                    <li class="<?php if (isset($menuObras)) { echo 'active'; } ?>"><a class="tip-bottom" title="" href="<?php echo base_url() ?>index.php/mine/obras"><i class='bx bx-building-house iconX'></i> <span class="title">Obras</span></a></li>
+                    <li class="<?php if (isset($menuObras)) { echo 'active'; } ?>"><a class="tip-bottom btn" title="" href="<?php echo base_url() ?>index.php/mine/obras"><i class='bx bx-building-house iconX'></i> <span class="title">Obras</span></a></li>
                     <?php endif; ?>
                 </ul>
             </div>
 
             <div class="botton-content">
                 <li class="">
-                    <a class="tip-bottom" title="" href="<?= base_url('index.php/login/sair'); ?>">
+                    <a class="tip-bottom btn" title="" href="<?= base_url('index.php/login/sair'); ?>">
                         <i class='bx bx-log-out-circle iconX'></i>
                         <span class="title">Sair</span></a>
                 </li>

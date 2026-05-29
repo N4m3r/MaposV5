@@ -8,7 +8,7 @@
             <?= $configuration['app_theme'] == 'white' ||  $configuration['app_theme'] == 'whitegreen' ? '<img src="' . base_url() . 'assets/img/logo-mapos.png">' : '<img src="' . base_url() . 'assets/img/logo-mapos-branco.png">'; ?>
         </div>
     </div>
-    <a href="#" class="d-inline d-sm-none">
+    <a href="#" class="d-inline d-sm-none btn">
         <div class="mode">
             <div class="moon-menu">
                 <i class='bx bx-chevron-right iconX open-2'></i>
@@ -51,7 +51,7 @@
                 <li class="menu-divider"><span class="divider-text">PRINCIPAL</span></li>
 
                 <li class="<?php if (isset($menuPainel)) { echo 'active'; }; ?>">
-                    <a class="tip-bottom" title="" href="<?= base_url() ?>"><i class='bx bx-home-alt iconX'></i>
+                    <a class="tip-bottom btn" title="" href="<?= base_url() ?>"><i class='bx bx-home-alt iconX'></i>
                         <span class="title nav-title">Inicio</span>
                         <span class="title-tooltip">Inicio</span>
                     </a>
@@ -59,7 +59,7 @@
 
                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vDashboard') || $this->permission->checkPermission($this->session->userdata('permissao'), 'cPermissao')) { ?>
                     <li class="<?php if (isset($menuDashboard)) { echo 'active'; }; ?>">
-                        <a class="tip-bottom" title="" href="<?= site_url('dashboard') ?>"><i class='bx bx-dashboard iconX'></i>
+                        <a class="tip-bottom btn" title="" href="<?= site_url('dashboard') ?>"><i class='bx bx-dashboard iconX'></i>
                             <span class="title">Dashboard</span>
                             <span class="title-tooltip">Dashboard</span>
                         </a>
@@ -72,7 +72,7 @@
 
                     <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vObras')) { ?>
                         <li class="<?php if (isset($menuObras)) { echo 'active'; }; ?>">
-                            <a class="tip-bottom" href="<?= site_url('obras') ?>" title="Gerenciar Obras">
+                            <a class="tip-bottom btn" href="<?= site_url('obras') ?>" title="Gerenciar Obras">
                                 <i class='bx bx-building-house iconX'></i>
                                 <span class="title">Gerenciar Obras</span>
                                 <span class="title-tooltip">Obras</span>
@@ -82,7 +82,7 @@
 
                     <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cObras')) { ?>
                         <li class="<?php if (isset($menuObrasAdd)) { echo 'active'; }; ?>">
-                            <a class="tip-bottom" href="<?= site_url('obras/adicionar') ?>" title="Nova Obra">
+                            <a class="tip-bottom btn" href="<?= site_url('obras/adicionar') ?>" title="Nova Obra">
                                 <i class='bx bx-plus-circle iconX'></i>
                                 <span class="title">Nova Obra</span>
                                 <span class="title-tooltip">Nova Obra</span>
@@ -107,19 +107,19 @@
                     <li class="menu-divider"><span class="divider-text">ORDENS DE SERVICO</span></li>
 
                     <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vOs')) { ?>
-                        <li class="<?php if (isset($menuOs)) { echo 'active'; }; ?>"><a class="tip-bottom" href="<?= site_url('os') ?>"><i class='bx bx-file iconX'></i><span class="title">Todas as OS</span><span class="title-tooltip">Listar OS</span></a></li>
+                        <li class="<?php if (isset($menuOs)) { echo 'active'; }; ?>"><a class="tip-bottom btn" href="<?= site_url('os') ?>"><i class='bx bx-file iconX'></i><span class="title">Todas as OS</span><span class="title-tooltip">Listar OS</span></a></li>
                     <?php } ?>
 
                     <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vOs')) { ?>
-                        <li class="<?php if (isset($menuKanban)) { echo 'active'; }; ?>"><a class="tip-bottom" href="<?= site_url('kanban') ?>"><i class='bx bx-columns iconX'></i><span class="title">Kanban Board</span><span class="title-tooltip">Kanban</span></a></li>
+                        <li class="<?php if (isset($menuKanban)) { echo 'active'; }; ?>"><a class="tip-bottom btn" href="<?= site_url('kanban') ?>"><i class='bx bx-columns iconX'></i><span class="title">Kanban Board</span><span class="title-tooltip">Kanban</span></a></li>
                     <?php } ?>
 
                     <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eOs')) { ?>
-                        <li class="<?php if (isset($menuAtribuir)) { echo 'active'; }; ?>"><a class="tip-bottom" href="<?= site_url('os/atribuir') ?>"><i class='bx bx-user-plus iconX'></i><span class="title">Atribuir Tecnico</span><span class="title-tooltip">Atribuir</span></a></li>
+                        <li class="<?php if (isset($menuAtribuir)) { echo 'active'; }; ?>"><a class="tip-bottom btn" href="<?= site_url('os/atribuir') ?>"><i class='bx bx-user-plus iconX'></i><span class="title">Atribuir Tecnico</span><span class="title-tooltip">Atribuir</span></a></li>
                     <?php } ?>
 
                     <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vGarantia')) { ?>
-                        <li class="<?php if (isset($menuGarantia)) { echo 'active'; }; ?>"><a class="tip-bottom" href="<?= site_url('garantias') ?>"><i class='bx bx-receipt iconX'></i><span class="title">Garantias</span><span class="title-tooltip">Garantias</span></a></li>
+                        <li class="<?php if (isset($menuGarantia)) { echo 'active'; }; ?>"><a class="tip-bottom btn" href="<?= site_url('garantias') ?>"><i class='bx bx-receipt iconX'></i><span class="title">Garantias</span><span class="title-tooltip">Garantias</span></a></li>
                     <?php } ?>
                 <?php } ?>
 
@@ -176,19 +176,19 @@
                     <li class="menu-divider"><span class="divider-text">CADASTROS</span></li>
 
                     <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vCliente')) { ?>
-                        <li class="<?php if (isset($menuClientes)) { echo 'active'; }; ?>"><a class="tip-bottom" href="<?= site_url('clientes') ?>"><i class='bx bx-user iconX'></i><span class="title">Clientes</span><span class="title-tooltip">Clientes</span></a></li>
+                        <li class="<?php if (isset($menuClientes)) { echo 'active'; }; ?>"><a class="tip-bottom btn" href="<?= site_url('clientes') ?>"><i class='bx bx-user iconX'></i><span class="title">Clientes</span><span class="title-tooltip">Clientes</span></a></li>
                     <?php } ?>
 
                     <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vProduto')) { ?>
-                        <li class="<?php if (isset($menuProdutos)) { echo 'active'; }; ?>"><a class="tip-bottom" href="<?= site_url('produtos') ?>"><i class='bx bx-basket iconX'></i><span class="title">Produtos</span><span class="title-tooltip">Produtos</span></a></li>
+                        <li class="<?php if (isset($menuProdutos)) { echo 'active'; }; ?>"><a class="tip-bottom btn" href="<?= site_url('produtos') ?>"><i class='bx bx-basket iconX'></i><span class="title">Produtos</span><span class="title-tooltip">Produtos</span></a></li>
                     <?php } ?>
 
                     <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vServico')) { ?>
-                        <li class="<?php if (isset($menuServicos)) { echo 'active'; }; ?>"><a class="tip-bottom" href="<?= site_url('servicos') ?>"><i class='bx bx-wrench iconX'></i><span class="title">Servicos</span><span class="title-tooltip">Servicos</span></a></li>
+                        <li class="<?php if (isset($menuServicos)) { echo 'active'; }; ?>"><a class="tip-bottom btn" href="<?= site_url('servicos') ?>"><i class='bx bx-wrench iconX'></i><span class="title">Servicos</span><span class="title-tooltip">Servicos</span></a></li>
                     <?php } ?>
 
                     <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vVenda')) { ?>
-                        <li class="<?php if (isset($menuVendas)) { echo 'active'; }; ?>"><a class="tip-bottom" href="<?= site_url('vendas') ?>"><i class='bx bx-cart-alt iconX'></i><span class="title">Vendas</span><span class="title-tooltip">Vendas</span></a></li>
+                        <li class="<?php if (isset($menuVendas)) { echo 'active'; }; ?>"><a class="tip-bottom btn" href="<?= site_url('vendas') ?>"><i class='bx bx-cart-alt iconX'></i><span class="title">Vendas</span><span class="title-tooltip">Vendas</span></a></li>
                     <?php } ?>
 
                     <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cTecnico')) { ?>
@@ -197,7 +197,7 @@
                         $this->load->model('tecnico_model');
                         $total_tecnicos = $this->db->where('is_tecnico', 1)->count_all_results('usuarios');
                         ?>
-                        <li class="<?php if (isset($menuTecnicosAdmin)) { echo 'active'; }; ?>"><a class="tip-bottom" href="<?= site_url('tecnicos_admin') ?>">
+                        <li class="<?php if (isset($menuTecnicosAdmin)) { echo 'active'; }; ?>"><a class="tip-bottom btn" href="<?= site_url('tecnicos_admin') ?>">
                             <i class='bx bx-hard-hat iconX'></i>
                             <span class="title">Tecnicos</span>
                             <span class="menu-badge"><?= $total_tecnicos ?></span>
@@ -237,7 +237,7 @@
                     <!-- Certificado Digital (submenu) -->
                     <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vCertificado')) { ?>
                         <li class="submenu <?php if (isset($menuCertificado)) { echo 'active open'; }; ?>">
-                            <a class="tip-bottom" title="" href="#"><i class='bx bx-id-card iconX'></i>
+                            <a class="tip-bottom btn" title="" href="#"><i class='bx bx-id-card iconX'></i>
                                 <span class="title">Certificado Digital</span>
                                 <span class="title-tooltip">Certificado</span>
                                 <i class='bx bx-chevron-down arrow'></i>
@@ -274,7 +274,7 @@
                     <!-- Impostos Simples (submenu) -->
                     <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vImpostos')) { ?>
                         <li class="submenu <?php if (isset($menuImpostos)) { echo 'active open'; }; ?>">
-                            <a class="tip-bottom" title="" href="#"><i class='bx bx-money iconX'></i>
+                            <a class="tip-bottom btn" title="" href="#"><i class='bx bx-money iconX'></i>
                                 <span class="title">Impostos Simples</span>
                                 <span class="title-tooltip">Impostos</span>
                                 <i class='bx bx-chevron-down arrow'></i>
@@ -332,7 +332,7 @@
                     <!-- DRE Contabil (submenu) -->
                     <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vDRE')) { ?>
                         <li class="submenu <?php if (isset($menuDRE)) { echo 'active open'; }; ?>">
-                            <a class="tip-bottom" title="" href="#"><i class='bx bx-line-chart-down iconX'></i>
+                            <a class="tip-bottom btn" title="" href="#"><i class='bx bx-line-chart-down iconX'></i>
                                 <span class="title">DRE Contabil</span>
                                 <span class="title-tooltip">DRE Contabil</span>
                                 <i class='bx bx-chevron-down arrow'></i>
@@ -386,7 +386,7 @@
                     <!-- Usuarios Cliente (submenu) -->
                     <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vUsuariosCliente')) { ?>
                         <li class="submenu <?php if (isset($menuUsuariosCliente)) { echo 'active open'; }; ?>">
-                            <a class="tip-bottom" title="" href="#"><i class='bx bx-group iconX'></i>
+                            <a class="tip-bottom btn" title="" href="#"><i class='bx bx-group iconX'></i>
                                 <span class="title">Usuarios Cliente</span>
                                 <span class="title-tooltip">Portal Cliente</span>
                                 <i class='bx bx-chevron-down arrow'></i>
@@ -411,7 +411,7 @@
                     <?php } ?>
 
                     <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vArquivo')) { ?>
-                        <li class="<?php if (isset($menuArquivos)) { echo 'active'; }; ?>"><a class="tip-bottom" href="<?= site_url('arquivos') ?>"><i class='bx bx-box iconX'></i><span class="title">Arquivos</span><span class="title-tooltip">Arquivos</span></a></li>
+                        <li class="<?php if (isset($menuArquivos)) { echo 'active'; }; ?>"><a class="tip-bottom btn" href="<?= site_url('arquivos') ?>"><i class='bx bx-box iconX'></i><span class="title">Arquivos</span><span class="title-tooltip">Arquivos</span></a></li>
                     <?php } ?>
 
                     <!-- Emitente -->
@@ -426,7 +426,7 @@
 
                     <!-- Modulos -->
                     <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cPermissao')) { ?>
-                        <li class="<?php if (isset($menuModulos)) { echo 'active'; }; ?>"><a class="tip-bottom" href="<?= site_url('modulos') ?>"><i class='bx bx-extension iconX'></i><span class="title">Modulos</span><span class="title-tooltip">Modulos</span></a></li>
+                        <li class="<?php if (isset($menuModulos)) { echo 'active'; }; ?>"><a class="tip-bottom btn" href="<?= site_url('modulos') ?>"><i class='bx bx-extension iconX'></i><span class="title">Modulos</span><span class="title-tooltip">Modulos</span></a></li>
                     <?php } ?>
 
                     <!-- Backup -->
@@ -484,14 +484,14 @@
         <div class="botton-content">
             <ul style="padding: 0; margin: 0; list-style: none;">
                 <li class="<?php if (isset($menuMinhaConta)) { echo 'active'; }; ?>">
-                    <a class="tip-bottom" title="" href="<?= site_url('mapos/minhaConta'); ?>">
+                    <a class="tip-bottom btn" title="" href="<?= site_url('mapos/minhaConta'); ?>">
                         <i class='bx bx-user iconX'></i>
                         <span class="title">Minha Conta</span>
                         <span class="title-tooltip">Minha Conta</span>
                     </a>
                 </li>
                 <li>
-                    <a class="tip-bottom" title="" href="<?= site_url('login/sair'); ?>">
+                    <a class="tip-bottom btn" title="" href="<?= site_url('login/sair'); ?>">
                         <i class='bx bx-log-out-circle iconX'></i>
                         <span class="title">Sair</span>
                         <span class="title-tooltip">Sair</span>

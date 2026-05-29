@@ -8,7 +8,7 @@
             <img src="<?php echo base_url() ?>assets/img/logo-mapos-branco.png">
         </div>
     </div>
-    <a href="#" class="d-inline d-sm-none">
+    <a href="#" class="d-inline d-sm-none btn">
         <div class="mode">
             <div class="moon-menu">
                 <i class='bx bx-chevron-right iconX open-2'></i>
@@ -23,7 +23,7 @@
 
                 <!-- Home -->
                 <li class="<?php if (isset($menuHome)) { echo 'active'; }; ?>">
-                    <a class="tip-bottom" title="" href="<?= site_url('tecnico') ?>">
+                    <a class="tip-bottom btn" title="" href="<?= site_url('tecnico') ?>">
                         <i class='bx bx-home-alt iconX'></i>
                         <span class="title nav-title">Home</span>
                         <span class="title-tooltip">Início</span>
@@ -32,7 +32,7 @@
 
                 <!-- Minhas OS -->
                 <li class="<?php if (isset($menuMinhasOs)) { echo 'active'; }; ?>">
-                    <a class="tip-bottom" title="" href="<?= site_url('tecnico/os') ?>">
+                    <a class="tip-bottom btn" title="" href="<?= site_url('tecnico/os') ?>">
                         <i class='bx bx-file iconX'></i>
                         <span class="title">Minhas OS</span>
                         <span class="title-tooltip">Ordens</span>
@@ -41,7 +41,7 @@
 
                 <!-- Produtos -->
                 <li class="<?php if (isset($menuProdutos)) { echo 'active'; }; ?>">
-                    <a class="tip-bottom" title="" href="<?= site_url('tecnico/produtos') ?>">
+                    <a class="tip-bottom btn" title="" href="<?= site_url('tecnico/produtos') ?>">
                         <i class='bx bx-basket iconX'></i>
                         <span class="title">Produtos</span>
                         <span class="title-tooltip">Produtos</span>
@@ -50,7 +50,7 @@
 
                 <!-- Serviços -->
                 <li class="<?php if (isset($menuServicos)) { echo 'active'; }; ?>">
-                    <a class="tip-bottom" title="" href="<?= site_url('tecnico/servicos') ?>">
+                    <a class="tip-bottom btn" title="" href="<?= site_url('tecnico/servicos') ?>">
                         <i class='bx bx-wrench iconX'></i>
                         <span class="title">Serviços</span>
                         <span class="title-tooltip">Serviços</span>
@@ -59,7 +59,7 @@
 
                 <!-- Voltar ao Sistema Principal -->
                 <li style="margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
-                    <a class="tip-bottom" title="" href="<?= base_url() ?>">
+                    <a class="tip-bottom btn" title="" href="<?= base_url() ?>">
                         <i class='bx bx-arrow-back iconX'></i>
                         <span class="title">Voltar ao Sistema</span>
                         <span class="title-tooltip">Principal</span>
@@ -71,7 +71,7 @@
 
         <div class="botton-content">
             <li class="">
-                <a class="tip-bottom" title="" href="<?= site_url('login/sair'); ?>">
+                <a class="tip-bottom btn" title="" href="<?= site_url('login/sair'); ?>">
                     <i class='bx bx-log-out-circle iconX'></i>
                     <span class="title">Sair</span>
                     <span class="title-tooltip">Sair</span>
