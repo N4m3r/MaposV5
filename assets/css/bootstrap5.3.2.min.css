@@ -2169,12 +2169,6 @@ progress {
     border-color: var(--bs-table-border-color)
 }
 
-.table>:not(caption)>*>* {
-    padding: .5rem .5rem;
-    color: var(--bs-table-color-state, var(--bs-table-color-type, var(--bs-table-color)));
-    border-bottom-width: var(--bs-border-width)
-}
-
 .table>tbody {
     vertical-align: inherit
 }
