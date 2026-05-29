@@ -10,8 +10,11 @@
     <meta name="csrf-cookie-name" content="<?= config_item("csrf_cookie_name") ?>">
     <link rel="stylesheet" href="<?php echo base_url() ?>assets/css/bootstrap5.min.css" />
     <link rel="stylesheet" href="<?php echo base_url() ?>assets/css/matrix-login.css" />
+    <link rel="stylesheet" href="<?php echo base_url() ?>assets/css/custom.css" />
     <link href="<?= base_url('assets/css/particula.css'); ?>" rel="stylesheet">
     <link href="<?php echo base_url(); ?>assets/font-awesome/css/font-awesome.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" crossorigin="anonymous" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" crossorigin="anonymous">
     <script src="<?php echo base_url() ?>assets/js/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <link rel="shortcut icon" href="<?php echo base_url(); ?>assets/img/favicon.png">
     <script src="<?php echo base_url() ?>assets/js/jquery.mask.min.js"></script>
