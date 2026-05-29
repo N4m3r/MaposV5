@@ -54,7 +54,7 @@
                             echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/garantias/editar/' . $r->idGarantias . '" class="btn-nwe3" title="Editar"><i class="bx bx-edit bx-xs"></i></a>';
                         }
                         if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dGarantia')) {
-                            echo '<a href="#modal-excluir" role="button" data-bs-toggle="modal" garantia="' . $r->idGarantias . '" class="btn-nwe4" title="Excluir"><i class="bx bx-trash-alt bx-xs"></a>';
+                            echo '<a href="#modal-excluir" role="button" data-bs-toggle="modal" garantia="' . $r->idGarantias . '" class="btn-nwe4" title="Excluir"><i class="bx bx-trash-alt bx-xs"></i></a>';
                         }
                         echo '</td>';
                         echo '</tr>';
