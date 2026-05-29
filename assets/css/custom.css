@@ -1364,32 +1364,113 @@ textarea:focus {
 }
 
 /* Mapeamento de compatibilidade para classes de ícones legadas (Bootstrap 2 / FontAwesome antigo) */
-.icon-pencil::before { content: "\f304" !important; }
-.icon-trash::before { content: "\f2ed" !important; }
-.icon-eye-open::before, .icon-eye::before { content: "\f06e" !important; }
-.icon-plus::before { content: "\f067" !important; }
-.icon-print::before { content: "\f02f" !important; }
-.icon-remove::before, .icon-remove-sign::before { content: "\f00d" !important; }
-.icon-search::before { content: "\f002" !important; }
-.icon-file::before { content: "\f15b" !important; }
-.icon-cog::before, .icon-settings::before { content: "\f013" !important; }
-.icon-user::before { content: "\f007" !important; }
-.icon-barcode::before { content: "\f02a" !important; }
-.icon-list::before { content: "\f03a" !important; }
-.icon-download::before { content: "\f019" !important; }
-.icon-usd::before, .icon-money::before { content: "\f155" !important; }
-.icon-calendar::before { content: "\f073" !important; }
-.icon-info-sign::before { content: "\f05a" !important; }
-.icon-key::before { content: "\f084" !important; }
-.icon-lock::before { content: "\f023" !important; }
-.icon-envelope::before { content: "\f0e0" !important; }
-.icon-phone::before { content: "\f095" !important; }
-.icon-map-marker::before { content: "\f3c5" !important; }
-.icon-briefcase::before { content: "\f0b1" !important; }
-.icon-check::before { content: "\f00c" !important; }
-.icon-share::before { content: "\f064" !important; }
-.icon-backward::before { content: "\f04a" !important; }
-.icon-edit::before { content: "\f044" !important; }
+.icon-pencil::before {
+    content: "\f304" !important;
+}
+
+.icon-trash::before {
+    content: "\f2ed" !important;
+}
+
+.icon-eye-open::before,
+.icon-eye::before {
+    content: "\f06e" !important;
+}
+
+.icon-plus::before {
+    content: "\f067" !important;
+}
+
+.icon-print::before {
+    content: "\f02f" !important;
+}
+
+.icon-remove::before,
+.icon-remove-sign::before {
+    content: "\f00d" !important;
+}
+
+.icon-search::before {
+    content: "\f002" !important;
+}
+
+.icon-file::before {
+    content: "\f15b" !important;
+}
+
+.icon-cog::before,
+.icon-settings::before {
+    content: "\f013" !important;
+}
+
+.icon-user::before {
+    content: "\f007" !important;
+}
+
+.icon-barcode::before {
+    content: "\f02a" !important;
+}
+
+.icon-list::before {
+    content: "\f03a" !important;
+}
+
+.icon-download::before {
+    content: "\f019" !important;
+}
+
+.icon-usd::before,
+.icon-money::before {
+    content: "\f155" !important;
+}
+
+.icon-calendar::before {
+    content: "\f073" !important;
+}
+
+.icon-info-sign::before {
+    content: "\f05a" !important;
+}
+
+.icon-key::before {
+    content: "\f084" !important;
+}
+
+.icon-lock::before {
+    content: "\f023" !important;
+}
+
+.icon-envelope::before {
+    content: "\f0e0" !important;
+}
+
+.icon-phone::before {
+    content: "\f095" !important;
+}
+
+.icon-map-marker::before {
+    content: "\f3c5" !important;
+}
+
+.icon-briefcase::before {
+    content: "\f0b1" !important;
+}
+
+.icon-check::before {
+    content: "\f00c" !important;
+}
+
+.icon-share::before {
+    content: "\f064" !important;
+}
+
+.icon-backward::before {
+    content: "\f04a" !important;
+}
+
+.icon-edit::before {
+    content: "\f044" !important;
+}
 
 /* Ajuste nos botões de ação rápidos do CRUD Mapos (Integrados aos Temas Dinâmicos) */
 .btn-nwe,
@@ -1415,27 +1496,36 @@ textarea:focus {
 
 /* Injeção Automática de Ícones via CSS se os botões estiverem vazios no HTML (Garantia de 100% de exibição) */
 .btn-nwe:empty::before {
-    content: "\f06e" !important; /* fa-eye (Visualizar) */
+    content: "\f06e" !important;
+    /* fa-eye (Visualizar) */
     font-family: 'Font Awesome 6 Free' !important;
     font-weight: 900 !important;
 }
+
 .btn-nwe3:empty::before {
-    content: "\f304" !important; /* fa-pencil (Editar) */
+    content: "\f304" !important;
+    /* fa-pencil (Editar) */
     font-family: 'Font Awesome 6 Free' !important;
     font-weight: 900 !important;
 }
+
 .btn-nwe4:empty::before {
-    content: "\f2ed" !important; /* fa-trash-can (Excluir) */
+    content: "\f2ed" !important;
+    /* fa-trash-can (Excluir) */
     font-family: 'Font Awesome 6 Free' !important;
     font-weight: 900 !important;
 }
+
 .btn-nwe5:empty::before {
-    content: "\f155" !important; /* fa-dollar-sign (Faturar/Financeiro) */
+    content: "\f155" !important;
+    /* fa-dollar-sign (Faturar/Financeiro) */
     font-family: 'Font Awesome 6 Free' !important;
     font-weight: 900 !important;
 }
+
 .btn-nwe2:empty::before {
-    content: "\f013" !important; /* fa-cog (Configurações) */
+    content: "\f013" !important;
+    /* fa-cog (Configurações) */
     font-family: 'Font Awesome 6 Free' !important;
     font-weight: 900 !important;
 }
@@ -1445,6 +1535,7 @@ textarea:focus {
     background-color: rgba(var(--sidebar-accent-rgb, 4, 103, 252), 0.12) !important;
     color: var(--sidebar-accent, #0467fc) !important;
 }
+
 .btn-nwe:hover {
     background-color: var(--sidebar-accent, #0467fc) !important;
     color: #ffffff !important;
@@ -1458,6 +1549,7 @@ textarea:focus {
     color: var(--sidebar-accent, #0467fc) !important;
     opacity: 0.9 !important;
 }
+
 .btn-nwe2:hover {
     background-color: var(--sidebar-accent, #0467fc) !important;
     color: #ffffff !important;
@@ -1469,6 +1561,7 @@ textarea:focus {
     background-color: rgba(16, 185, 129, 0.12) !important;
     color: #10b981 !important;
 }
+
 .btn-nwe3:hover {
     background-color: #10b981 !important;
     color: #ffffff !important;
@@ -1481,6 +1574,7 @@ textarea:focus {
     background-color: rgba(239, 68, 68, 0.12) !important;
     color: #ef4444 !important;
 }
+
 .btn-nwe4:hover {
     background-color: #ef4444 !important;
     color: #ffffff !important;
@@ -1493,6 +1587,7 @@ textarea:focus {
     background-color: rgba(245, 158, 11, 0.12) !important;
     color: #f59e0b !important;
 }
+
 .btn-nwe5:hover {
     background-color: #f59e0b !important;
     color: #ffffff !important;
@@ -1505,6 +1600,7 @@ textarea:focus {
     background-color: rgba(148, 163, 184, 0.12) !important;
     color: #64748b !important;
 }
+
 .btn-nwe6:hover {
     background-color: #64748b !important;
     color: #ffffff !important;
@@ -1654,7 +1750,8 @@ body[data-theme="puredark"] .table th {
 /* Botões de Salvar (btn-success com tipo submit ou com a palavra Salvar) */
 .btn-success:not(:has(i))::before,
 button[type="submit"].btn-success:not(:has(i))::before {
-    content: "\f0c7" !important; /* fa-save (Disquete) */
+    content: "\f0c7" !important;
+    /* fa-save (Disquete) */
     font-family: 'Font Awesome 6 Free' !important;
     font-weight: 900 !important;
     margin-right: 8px !important;
@@ -1663,14 +1760,16 @@ button[type="submit"].btn-success:not(:has(i))::before {
 
 /* Botões de Cancelar/Voltar (btn-danger ou btn-warning vazios de ícone) */
 .btn-danger:not(:has(i))::before {
-    content: "\f00d" !important; /* fa-xmark (Fechar/Cancelar) */
+    content: "\f00d" !important;
+    /* fa-xmark (Fechar/Cancelar) */
     font-family: 'Font Awesome 6 Free' !important;
     font-weight: 900 !important;
     margin-right: 8px !important;
 }
 
 .btn-warning:not(:has(i))::before {
-    content: "\f060" !important; /* fa-arrow-left (Voltar) */
+    content: "\f060" !important;
+    /* fa-arrow-left (Voltar) */
     font-family: 'Font Awesome 6 Free' !important;
     font-weight: 900 !important;
     margin-right: 8px !important;
@@ -1681,15 +1780,210 @@ body[data-theme="puredark"] .quick-card {
     background: #1c1d26 !important;
     border-color: #272835 !important;
 }
+
 body[data-theme="puredark"] .quick-card .title {
     color: #f8fafc !important;
 }
+
 body[data-theme="puredark"] .pagination a {
     background-color: #1c1d26 !important;
     border-color: #272835 !important;
     color: #cbd5e1 !important;
 }
+
 body[data-theme="puredark"] .pagination a:hover {
     background-color: rgba(var(--sidebar-accent-rgb, 107, 41, 248), 0.15) !important;
     color: var(--sidebar-accent) !important;
+}
+
+/* ========================================================================= */
+/* MODERNIZAÇÃO GLOBAL: BOTÕES DE AÇÃO E PAGINAÇÃO                           */
+/* ========================================================================= */
+
+/* 1. Botões de Ação Modernos (.btn-nwe) */
+.btn-nwe,
+.btn-nwe2,
+.btn-nwe3,
+.btn-nwe4,
+.btn-nwe5,
+.btn-nwe6 {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    padding: 6px 10px !important;
+    border-radius: 6px !important;
+    font-size: 0.9rem !important;
+    font-weight: 500 !important;
+    transition: all 0.3s ease !important;
+    border: none !important;
+    color: #fff !important;
+    cursor: pointer !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+    text-decoration: none !important;
+}
+
+.btn-nwe:hover,
+.btn-nwe2:hover,
+.btn-nwe3:hover,
+.btn-nwe4:hover,
+.btn-nwe5:hover,
+.btn-nwe6:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+    color: #fff !important;
+}
+
+/* Cores específicas para cada tipo de ação */
+.btn-nwe {
+    background-color: #3b82f6 !important;
+}
+
+/* Visualizar (Azul) */
+.btn-nwe2 {
+    background-color: #10b981 !important;
+}
+
+/* Ações Adicionais (Verde) */
+.btn-nwe3 {
+    background-color: #f59e0b !important;
+}
+
+/* Editar (Laranja/Amarelo) */
+.btn-nwe4 {
+    background-color: #ef4444 !important;
+}
+
+/* Excluir (Vermelho) */
+.btn-nwe5 {
+    background-color: #8b5cf6 !important;
+}
+
+/* Atualizar/Estoque (Roxo) */
+.btn-nwe6 {
+    background-color: #64748b !important;
+}
+
+/* Imprimir/Zerar (Cinza Escuro) */
+
+/* 2. Coluna de Ações Globalmente Alinhada */
+td.acoes-col,
+th.acoes-col,
+.acoes-col,
+td:has(.btn-nwe),
+td:has(.btn-nwe3) {
+    white-space: nowrap !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+}
+
+td:has(.btn-nwe)>a,
+td:has(.btn-nwe)>span {
+    margin-right: 4px !important;
+    margin-bottom: 2px !important;
+}
+
+/* 3. Paginação Bootstrap 5 Modernizada */
+.pagination {
+    display: flex !important;
+    padding-left: 0 !important;
+    list-style: none !important;
+    justify-content: center !important;
+    gap: 4px !important;
+    margin-top: 1rem !important;
+    margin-bottom: 1rem !important;
+}
+
+.pagination .page-item {
+    margin: 0 !important;
+}
+
+.pagination .page-link {
+    padding: 8px 16px !important;
+    border-radius: 8px !important;
+    background-color: #fff !important;
+    border: 1px solid #e2e8f0 !important;
+    color: #475569 !important;
+    font-weight: 500 !important;
+    transition: all 0.2s ease !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.pagination .page-link:hover {
+    background-color: #f8fafc !important;
+    color: #2563eb !important;
+    border-color: #cbd5e1 !important;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #3b82f6 !important;
+    border-color: #3b82f6 !important;
+    color: #fff !important;
+    box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.4) !important;
+}
+
+.pagination .page-item.disabled .page-link {
+    background-color: #f1f5f9 !important;
+    color: #94a3b8 !important;
+    cursor: not-allowed !important;
+    border-color: #e2e8f0 !important;
+}
+
+body[data-theme="puredark"] .pagination .page-link,
+body[data-theme="darkviolet"] .pagination .page-link,
+body[data-theme="darkorange"] .pagination .page-link {
+    background-color: var(--wid-dark, #1c1d26) !important;
+    border-color: var(--dark-1, #14141a) !important;
+    color: var(--branco, #caced8) !important;
+}
+
+body[data-theme="puredark"] .pagination .page-item.active .page-link,
+body[data-theme="darkviolet"] .pagination .page-item.active .page-link,
+body[data-theme="darkorange"] .pagination .page-item.active .page-link {
+    background-color: #3b82f6 !important;
+    color: #fff !important;
+}
+
+/* ========================================================================= */
+/* 4. INJEÇÃO DE ÍCONES FALTANTES (Fallback para botões sem ícones)        */
+/* ========================================================================= */
+
+/* Se algum botão de ação não tiver um ícone (<i class="bx...">), injetamos um padrão via CSS usando FontAwesome */
+.btn-nwe:not(:has(i))::before {
+    content: "\f06e" !important; /* fa-eye */
+    font-family: 'Font Awesome 6 Free' !important;
+    font-weight: 900 !important;
+}
+
+.btn-nwe2:not(:has(i))::before {
+    content: "\f0c4" !important; /* fa-cut ou fa-bars */
+    font-family: 'Font Awesome 6 Free' !important;
+    font-weight: 900 !important;
+}
+
+.btn-nwe3:not(:has(i))::before {
+    content: "\f044" !important; /* fa-pen-to-square */
+    font-family: 'Font Awesome 6 Free' !important;
+    font-weight: 900 !important;
+}
+
+.btn-nwe4:not(:has(i))::before {
+    content: "\f1f8" !important; /* fa-trash */
+    font-family: 'Font Awesome 6 Free' !important;
+    font-weight: 900 !important;
+}
+
+.btn-nwe5:not(:has(i))::before {
+    content: "\f021" !important; /* fa-arrows-rotate */
+    font-family: 'Font Awesome 6 Free' !important;
+    font-weight: 900 !important;
+}
+
+.btn-nwe6:not(:has(i))::before {
+    content: "\f02f" !important; /* fa-print */
+    font-family: 'Font Awesome 6 Free' !important;
+    font-weight: 900 !important;
 }
