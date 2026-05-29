@@ -974,7 +974,9 @@ select.form-select {
 
 /* Consistent sizing for both Boxicons and Font Awesome in widget titles */
 .widget-title span.icon i.bx,
-.widget-title span.icon i.fas {
+.widget-title span.icon i.fas,
+.widget-title div.icon i.bx,
+.widget-title div.icon i.fas {
     font-size: 1.4em;
     vertical-align: middle;
 }
@@ -1202,7 +1204,8 @@ html {
     line-height: 1.3 !important;
 }
 
-.widget-title span.icon {
+.widget-title span.icon,
+.widget-title div.icon {
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
