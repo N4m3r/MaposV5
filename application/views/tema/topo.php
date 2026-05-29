@@ -345,8 +345,11 @@
   <!-- Header para Area do Tecnico - Modern Design -->
   <div class="navebarn" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-bottom-color: rgba(255,255,255,0.1);">
     <!-- Left Section -->
-    <div class="topbar-left">
-      <div class="topbar-breadcrumb" style="color:rgba(255,255,255,0.85);">
+    <div class="topbar-left" style="display: flex; align-items: center;">
+      <a href="#" id="sidebar-toggle-mobile" class="topbar-toggle-btn" title="Menu" style="margin-right: 15px; color: #fff; font-size: 24px; display: flex; align-items: center; justify-content: center;">
+        <i class='bx bx-menu'></i>
+      </a>
+      <div class="topbar-breadcrumb" style="color:rgba(255,255,255,0.85); display: flex; align-items: center;">
         <span style="color:#fff;">Portal Tecnico</span>
       </div>
     </div>
@@ -407,8 +410,11 @@
   <!-- Header Padrão (Admin) - Modern Design -->
   <div class="navebarn">
     <!-- Left Section -->
-    <div class="topbar-left">
-      <div class="topbar-breadcrumb">
+    <div class="topbar-left" style="display: flex; align-items: center;">
+      <a href="#" id="sidebar-toggle-mobile-admin" class="topbar-toggle-btn" title="Menu" style="margin-right: 15px; font-size: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+        <i class='bx bx-menu'></i>
+      </a>
+      <div class="topbar-breadcrumb" style="display: flex; align-items: center;">
         <span><?= $configuration['app_name'] ?? 'Map-OS' ?></span>
       </div>
     </div>
@@ -510,3 +516,20 @@
   <?php endif; ?>
 
   <!-- Search overlay (hidden, uses sidebar search) -->
+
+  <script>
+    $(document).ready(function() {
+      $('#sidebar-toggle-mobile, #sidebar-toggle-mobile-admin').click(function(e) {
+        e.preventDefault();
+        var sidebar = $('#sidebar');
+        var ul = $('#sidebar > ul');
+        if (sidebar.hasClass('open')) {
+          sidebar.removeClass('open');
+          ul.slideUp(250);
+        } else {
+          sidebar.addClass('open');
+          ul.slideDown(250);
+        }
+      });
+    });
+  </script>

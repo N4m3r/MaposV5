@@ -2231,3 +2231,37 @@ body[data-theme="darkorange"] .ui-autocomplete .ui-menu-item-wrapper {
     background-color: var(--sidebar-accent, #0467fc) !important;
     color: #ffffff !important;
 }
+
+/* ========================================================================= */
+/* BOTÃO DE MENUS DO TOPBAR (HAMBURGUER MOBILE PARA EXPANÇÃO DE HIDEBAR)     */
+/* ========================================================================= */
+.topbar-toggle-btn {
+    display: none !important;
+}
+
+@media (max-width: 768px) {
+    .topbar-toggle-btn {
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 38px;
+        border-radius: 8px;
+        background: rgba(var(--sidebar-accent-rgb, 4, 103, 252), 0.08);
+        color: var(--sidebar-accent, #0467fc) !important;
+        transition: all 0.2s ease-in-out;
+        cursor: pointer;
+    }
+    
+    .topbar-toggle-btn:hover {
+        background: var(--sidebar-accent, #0467fc);
+        color: #ffffff !important;
+    }
+
+    body[data-theme="puredark"] .topbar-toggle-btn,
+    body[data-theme="darkviolet"] .topbar-toggle-btn,
+    body[data-theme="darkorange"] .topbar-toggle-btn {
+        background: rgba(255, 255, 255, 0.08);
+        color: #ffffff !important;
+    }
+}
