@@ -1539,3 +1539,157 @@ body[data-theme="puredark"] .table th {
     color: #f8fafc !important;
     border-bottom-color: #272835 !important;
 }
+
+/* ==========================================================================
+   ATALHOS DA HOME (QUICK CARDS) E SISTEMA DE PÁGINAS (PAGINAÇÃO)
+   ========================================================================== */
+
+/* 1. Quick Cards (Atalhos Rápidos na Home) */
+.quick-card {
+    background: var(--widget-box, #ffffff) !important;
+    border-radius: 16px !important;
+    border: 1px solid rgba(var(--sidebar-accent-rgb, 4, 103, 252), 0.08) !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+.quick-card::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 4px !important;
+    background: var(--sidebar-accent, #0467fc) !important;
+    transform: scaleX(0) !important;
+    transition: transform 0.3s ease !important;
+}
+
+.quick-card:hover {
+    transform: translateY(-5px) !important;
+    box-shadow: 0 12px 25px rgba(var(--sidebar-accent-rgb, 4, 103, 252), 0.15) !important;
+    border-color: rgba(var(--sidebar-accent-rgb, 4, 103, 252), 0.15) !important;
+}
+
+.quick-card:hover::before {
+    transform: scaleX(1) !important;
+}
+
+.quick-card .icon-wrapper {
+    background: linear-gradient(135deg, var(--sidebar-accent, #0467fc) 0%, rgba(var(--sidebar-accent-rgb, 4, 103, 252), 0.7) 100%) !important;
+    box-shadow: 0 8px 20px rgba(var(--sidebar-accent-rgb, 4, 103, 252), 0.2) !important;
+    transition: transform 0.3s ease !important;
+}
+
+.quick-card:hover .icon-wrapper {
+    transform: scale(1.1) rotate(5deg) !important;
+}
+
+.quick-card .title {
+    color: var(--cinza0, #2c3e50) !important;
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 600 !important;
+}
+
+.quick-card .shortcut {
+    color: var(--sidebar-text-muted, #7f8c8d) !important;
+}
+
+/* 2. Sistema de Páginas (Paginação do CodeIgniter) Premium */
+.pagination {
+    display: flex !important;
+    padding-left: 0 !important;
+    list-style: none !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 24px 0 !important;
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+}
+
+.pagination a,
+.pagination strong,
+.pagination span {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: 38px !important;
+    width: auto !important;
+    height: 38px !important;
+    padding: 0 14px !important;
+    font-size: 0.88rem !important;
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 500 !important;
+    color: var(--cinza0, #4b5563) !important;
+    background-color: var(--widget-box, #ffffff) !important;
+    border: 1.5px solid rgba(var(--sidebar-accent-rgb, 4, 103, 252), 0.08) !important;
+    border-radius: 10px !important;
+    text-decoration: none !important;
+    transition: all 0.2s ease-in-out !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02) !important;
+    cursor: pointer !important;
+}
+
+/* Página Atual (Strong) */
+.pagination strong {
+    background-color: var(--sidebar-accent, #0467fc) !important;
+    border-color: var(--sidebar-accent, #0467fc) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(var(--sidebar-accent-rgb, 4, 103, 252), 0.25) !important;
+    font-weight: 600 !important;
+    cursor: default !important;
+}
+
+/* Hover nos Links de Páginas */
+.pagination a:hover {
+    background-color: rgba(var(--sidebar-accent-rgb, 4, 103, 252), 0.08) !important;
+    border-color: var(--sidebar-accent, #0467fc) !important;
+    color: var(--sidebar-accent, #0467fc) !important;
+    transform: translateY(-1px) !important;
+}
+
+/* 3. Injeção e Garantia de Ícones nos Botões do Sistema (Salvar, Voltar/Cancelar, Serviços) */
+/* Botões de Salvar (btn-success com tipo submit ou com a palavra Salvar) */
+.btn-success:not(:has(i))::before,
+button[type="submit"].btn-success:not(:has(i))::before {
+    content: "\f0c7" !important; /* fa-save (Disquete) */
+    font-family: 'Font Awesome 6 Free' !important;
+    font-weight: 900 !important;
+    margin-right: 8px !important;
+    font-size: 0.95rem !important;
+}
+
+/* Botões de Cancelar/Voltar (btn-danger ou btn-warning vazios de ícone) */
+.btn-danger:not(:has(i))::before {
+    content: "\f00d" !important; /* fa-xmark (Fechar/Cancelar) */
+    font-family: 'Font Awesome 6 Free' !important;
+    font-weight: 900 !important;
+    margin-right: 8px !important;
+}
+
+.btn-warning:not(:has(i))::before {
+    content: "\f060" !important; /* fa-arrow-left (Voltar) */
+    font-family: 'Font Awesome 6 Free' !important;
+    font-weight: 900 !important;
+    margin-right: 8px !important;
+}
+
+/* Ajustes de Modo Escuro para Paginação e Quick Cards */
+body[data-theme="puredark"] .quick-card {
+    background: #1c1d26 !important;
+    border-color: #272835 !important;
+}
+body[data-theme="puredark"] .quick-card .title {
+    color: #f8fafc !important;
+}
+body[data-theme="puredark"] .pagination a {
+    background-color: #1c1d26 !important;
+    border-color: #272835 !important;
+    color: #cbd5e1 !important;
+}
+body[data-theme="puredark"] .pagination a:hover {
+    background-color: rgba(var(--sidebar-accent-rgb, 107, 41, 248), 0.15) !important;
+    color: var(--sidebar-accent) !important;
+}
