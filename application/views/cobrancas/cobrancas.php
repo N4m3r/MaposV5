@@ -62,10 +62,10 @@
                             echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/cobrancas/atualizar/' . $r->idCobranca . '" class="btn-nwe" title="Atualizar Cobrança">' . svg_icon('refresh', 16, 16) . '</a>';
                             echo '<a style="margin-right: 1%" href="#modal-confirmar" role="button" data-bs-toggle="modal" confirma_id="' . $r->idCobranca . '" class="btn-nwe3" title="Confirmar pagamento">' . svg_icon('check', 16, 16) . '</a>';
                             echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/cobrancas/visualizar/' . $r->idCobranca . '" class="btn-nwe2" title="Ver mais detalhes">' . svg_icon('eye', 16, 16) . '</a>';
-                            echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/cobrancas/enviarEmail/' . $r->idCobranca . '" class="btn-nwe5" title="Enviar por E-mail"><i class="bx bx-envelope" ></i></a>';
+                            echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/cobrancas/enviarEmail/' . $r->idCobranca . '" class="btn-nwe5" title="Enviar por E-mail">' . svg_icon('envelope', 16, 16) . '</a>';
                         }
                         if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eCobranca') && $r->barcode != '') {
-                            echo '<a style="margin-right: 1%" href="' . e($r->link) . '" target="_blank" class="btn-nwe" title="Visualizar boleto"><i class="bx bx-barcode" ></i></a>';
+                            echo '<a style="margin-right: 1%" href="' . e($r->link) . '" target="_blank" class="btn-nwe" title="Visualizar boleto">' . svg_icon('barcode', 16, 16) . '</a>';
                         }
                         if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dCobranca')) {
                             echo '<a href="#modal-excluir" role="button" data-bs-toggle="modal" excluir_id="' . $r->idCobranca . '" class="btn-nwe4" title="Excluir Cobrança">' . svg_icon('trash', 16, 16) . '</a>';
@@ -91,8 +91,8 @@
                 <h5 style="text-align: center">Deseja realmente excluir esta cobrança? A cobrança será cancelada.</h5>
             </div>
             <div class="modal-footer" style="display:flex;justify-content: center">
-                <button class="button btn btn-warning" data-bs-dismiss="modal" aria-hidden="true"><span class="button__icon"><i class="bx bx-x"></i></span><span class="button__text2">Cancelar</span></button>
-                <button class="button btn btn-danger"><span class="button__icon"><i class='bx bx-trash'></i></span> <span class="button__text2">Excluir</span></button>
+                <button class="button btn btn-warning" data-bs-dismiss="modal" aria-hidden="true"><span class="button__icon"><?= svg_icon('x', 16, 16) ?></span><span class="button__text2">Cancelar</span></button>
+                <button class="button btn btn-danger"><span class="button__icon"><?= svg_icon('trash', 16, 16) ?></span> <span class="button__text2">Excluir</span></button>
             </div>
         </form>
     </div>

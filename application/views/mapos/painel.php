@@ -545,6 +545,13 @@
         transition: transform 0.3s ease;
     }
 
+    .quick-card .icon-wrapper svg.svg-icon {
+        width: 28px;
+        height: 28px;
+        color: #ffffff !important;
+        stroke: #ffffff !important;
+    }
+
     .quick-card:hover .icon-wrapper {
         transform: scale(1.1) rotate(5deg);
     }
@@ -617,7 +624,7 @@
         gap: 8px;
     }
 
-    .widget-header h5 i {
+    .widget-header h5 i, .widget-header h5 svg.svg-icon {
         color: #667eea;
         font-size: 1.2rem;
     }
@@ -843,6 +850,76 @@
             </div>
             <div class="title">Financeiro</div>
             <div class="shortcut">F7</div>
+        </a>
+        <?php endif ?>
+
+        <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vObras')) : ?>
+        <a href="<?= site_url('obras') ?>" class="quick-card">
+            <div class="icon-wrapper">
+                <?= svg_icon('building-house', 28, 28) ?>
+            </div>
+            <div class="title">Obras</div>
+            <div class="shortcut">Gestão</div>
+        </a>
+        <?php endif ?>
+
+        <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vOs')) : ?>
+        <a href="<?= site_url('kanban') ?>" class="quick-card">
+            <div class="icon-wrapper">
+                <?= svg_icon('columns', 28, 28) ?>
+            </div>
+            <div class="title">Kanban</div>
+            <div class="shortcut">Board</div>
+        </a>
+        <?php endif ?>
+
+        <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vGarantia')) : ?>
+        <a href="<?= site_url('garantias') ?>" class="quick-card">
+            <div class="icon-wrapper">
+                <?= svg_icon('receipt', 28, 28) ?>
+            </div>
+            <div class="title">Garantias</div>
+            <div class="shortcut">Warranty</div>
+        </a>
+        <?php endif ?>
+
+        <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vCobranca')) : ?>
+        <a href="<?= site_url('cobrancas/cobrancas') ?>" class="quick-card">
+            <div class="icon-wrapper">
+                <?= svg_icon('credit-card', 28, 28) ?>
+            </div>
+            <div class="title">Cobranças</div>
+            <div class="shortcut">Billing</div>
+        </a>
+        <?php endif ?>
+
+        <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vRelatorioCompleto')) : ?>
+        <a href="<?= site_url('relatorios/clientes') ?>" class="quick-card">
+            <div class="icon-wrapper">
+                <?= svg_icon('bar-chart-alt', 28, 28) ?>
+            </div>
+            <div class="title">Relatórios</div>
+            <div class="shortcut">Reports</div>
+        </a>
+        <?php endif ?>
+
+        <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cUsuario')) : ?>
+        <a href="<?= site_url('usuarios') ?>" class="quick-card">
+            <div class="icon-wrapper">
+                <?= svg_icon('users', 28, 28) ?>
+            </div>
+            <div class="title">Usuários</div>
+            <div class="shortcut">Users</div>
+        </a>
+        <?php endif ?>
+
+        <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cSistema')) : ?>
+        <a href="<?= site_url('mapos/configurar') ?>" class="quick-card">
+            <div class="icon-wrapper">
+                <?= svg_icon('cog', 28, 28) ?>
+            </div>
+            <div class="title">Configurações</div>
+            <div class="shortcut">Settings</div>
         </a>
         <?php endif ?>
     </div>
