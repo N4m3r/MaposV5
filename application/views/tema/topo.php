@@ -550,13 +550,6 @@
         <?= svg_icon('home', 16, 16) ?> Inicio
       </a>
 
-      <!-- Dashboard -->
-      <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vDashboard') || $this->permission->checkPermission($this->session->userdata('permissao'), 'cPermissao')) { ?>
-      <a href="<?= site_url('dashboard') ?>" class="topbar-nav-link <?php if (isset($menuDashboard)) { echo 'active'; }; ?>">
-        <?= svg_icon('dashboard', 16, 16) ?> Dashboard
-      </a>
-      <?php } ?>
-
       <!-- Obras -->
       <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vObras') || $this->permission->checkPermission($this->session->userdata('permissao'), 'cObras')) { ?>
       <div class="topbar-nav-dropdown dropdown">

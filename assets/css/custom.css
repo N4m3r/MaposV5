@@ -1743,85 +1743,74 @@ body[data-theme="darkorange"] .quick-card, body[data-theme="darkorange"] .widget
     box-shadow: 0 6px 16px rgba(var(--sidebar-accent-rgb, 4, 103, 252), 0.35) !important;
 }
 
-/* --- 3. BotÃµes de AÃ§Ã£o Redesenhados (SÃ³lidos de Alto Contraste com Ãcones Brancos) --- */
+/* --- 3. Botões de Ação (ícone SVG único, estilo consistente) --- */
+.btn-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: none;
+    color: #fff;
+    text-decoration: none;
+    margin: 0 2px;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+    cursor: pointer;
+}
+.btn-action svg.svg-icon {
+    width: 16px;
+    height: 16px;
+    color: #fff;
+    stroke: currentColor;
+}
+.btn-action:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    color: #fff;
+    text-decoration: none;
+}
+.btn-action-view { background: #0284c7; }
+.btn-action-view:hover { box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4); }
+.btn-action-edit { background: #059669; }
+.btn-action-edit:hover { box-shadow: 0 4px 12px rgba(5, 150, 105, 0.4); }
+.btn-action-delete { background: #e11d48; }
+.btn-action-delete:hover { box-shadow: 0 4px 12px rgba(225, 29, 72, 0.4); }
+.btn-action-print { background: #475569; }
+.btn-action-print:hover { box-shadow: 0 4px 12px rgba(71, 85, 105, 0.4); }
+.btn-action-secondary { background: #7c3aed; }
+.btn-action-secondary:hover { box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4); }
+.btn-action-finance { background: #d97706; }
+.btn-action-finance:hover { box-shadow: 0 4px 12px rgba(217, 119, 6, 0.4); }
+
+/* Backward compat: old btn-nwe classes map to btn-action */
 .btn-nwe, .btn-nwe2, .btn-nwe3, .btn-nwe4, .btn-nwe5, .btn-nwe6 {
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    width: 36px !important;
-    height: 36px !important;
-    border-radius: 12px !important;
-    font-size: 1.15rem !important;
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 8px !important;
     border: none !important;
-    color: #ffffff !important; /* Ãcones em BRANCO PURO para contraste extremo! */
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    margin: 0 4px !important;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08) !important;
+    color: #fff !important;
+    margin: 0 2px !important;
+    transition: all 0.2s ease !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12) !important;
+    text-decoration: none !important;
 }
-
-.btn-nwe i, .btn-nwe2 i, .btn-nwe3 i, .btn-nwe4 i, .btn-nwe5 i, .btn-nwe6 i {
-    color: #ffffff !important; /* ForÃ§a os Ã­cones internos em branco */
-}
-
-/* Efeitos Hover nos BotÃµes de AÃ§Ã£o */
 .btn-nwe:hover, .btn-nwe2:hover, .btn-nwe3:hover, .btn-nwe4:hover, .btn-nwe5:hover, .btn-nwe6:hover {
-    transform: translateY(-3px) scale(1.08) !important;
+    transform: translateY(-1px) !important;
     filter: brightness(1.1) !important;
+    color: #fff !important;
 }
-
-/* BotÃ£o Visualizar (Azul Forte Premium) */
-.btn-nwe {
-    background: #0284c7 !important; /* Azul cobalto vibrante */
-    box-shadow: 0 4px 10px rgba(2, 132, 199, 0.25) !important;
-}
-.btn-nwe:hover {
-    box-shadow: 0 6px 15px rgba(2, 132, 199, 0.45) !important;
-}
-
-/* BotÃ£o OpÃ§Ãµes/SecundÃ¡rio (Roxo Ametista) */
-.btn-nwe2 {
-    background: #7c3aed !important; /* Roxo vibrante */
-    box-shadow: 0 4px 10px rgba(124, 58, 237, 0.25) !important;
-}
-.btn-nwe2:hover {
-    box-shadow: 0 6px 15px rgba(124, 58, 237, 0.45) !important;
-}
-
-/* BotÃ£o Editar (Verde Esmeralda Forte) */
-.btn-nwe3 {
-    background: #059669 !important; /* Verde esmeralda escuro e nÃ­tido */
-    box-shadow: 0 4px 10px rgba(5, 150, 105, 0.25) !important;
-}
-.btn-nwe3:hover {
-    box-shadow: 0 6px 15px rgba(5, 150, 105, 0.45) !important;
-}
-
-/* BotÃ£o Excluir (Vermelho Coral Intenso) */
-.btn-nwe4 {
-    background: #e11d48 !important; /* Vermelho vibrante de perigo */
-    box-shadow: 0 4px 10px rgba(225, 29, 72, 0.25) !important;
-}
-.btn-nwe4:hover {
-    box-shadow: 0 6px 15px rgba(225, 29, 72, 0.45) !important;
-}
-
-/* BotÃ£o Estoque/Financeiro (Laranja Ã‚mbar) */
-.btn-nwe5 {
-    background: #d97706 !important; /* Laranja escuro de alta visibilidade */
-    box-shadow: 0 4px 10px rgba(217, 119, 6, 0.25) !important;
-}
-.btn-nwe5:hover {
-    box-shadow: 0 6px 15px rgba(217, 119, 6, 0.45) !important;
-}
-
-/* BotÃ£o Imprimir/Outros (Cinza ArdÃ³sia Escuro) */
-.btn-nwe6 {
-    background: #475569 !important; /* Cinza ardÃ³sia escuro de alto contraste */
-    box-shadow: 0 4px 10px rgba(71, 85, 105, 0.25) !important;
-}
-.btn-nwe6:hover {
-    box-shadow: 0 6px 15px rgba(71, 85, 105, 0.45) !important;
-}
+.btn-nwe { background: #0284c7 !important; }
+.btn-nwe2 { background: #7c3aed !important; }
+.btn-nwe3 { background: #059669 !important; }
+.btn-nwe4 { background: #e11d48 !important; }
+.btn-nwe5 { background: #d97706 !important; }
+.btn-nwe6 { background: #475569 !important; }
 
 /* ========================================================================= */
 /* SISTEMA DE ÃCONES SVG INLINE                                              */
@@ -1883,13 +1872,26 @@ svg.svg-icon use {
 .btn-nwe4 img,
 .btn-nwe5 img,
 .btn-nwe6 img {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
     object-fit: contain;
     filter: brightness(0) invert(1);
 }
 
+.btn-nwe svg.svg-icon,
+.btn-nwe2 svg.svg-icon,
+.btn-nwe3 svg.svg-icon,
+.btn-nwe4 svg.svg-icon,
+.btn-nwe5 svg.svg-icon,
+.btn-nwe6 svg.svg-icon {
+    width: 16px;
+    height: 16px;
+    color: #fff;
+    stroke: currentColor;
+}
+
 /* Hide Boxicons icons when SVG is present alongside */
+.btn-action svg.svg-icon + i.bx,
 .btn-nwe svg.svg-icon + i.bx,
 .btn-nwe2 svg.svg-icon + i.bx,
 .btn-nwe3 svg.svg-icon + i.bx,

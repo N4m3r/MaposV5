@@ -165,20 +165,20 @@
                                     echo '<td class="ph4">R$ ' . number_format($r->faturado ? floatval($r->valor_desconto) : 0.00, 2, ',', '.') . '</td>';
                                 }
                                 echo '<td><span class="badge" style="background-color: ' . $cor . '; border-color: ' . $cor . '">' . e($r->status) . '</span> </td>';
-                                echo '<td>';
+                                echo '<td class="text-nowrap">';
 
                                 $editavel = $this->os_model->isEditable($r->idOs);
 
                                 if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vOs')) {
-                                    echo '<a href="' . base_url() . 'index.php/os/visualizar/' . $r->idOs . '" class="btn-nwe" title="Ver mais detalhes"><img src="' . base_url() . 'assets/svg/visualizar.svg" alt="Visualizar"></a>';
-                                    echo '<a href="' . base_url() . 'index.php/os/imprimir/' . $r->idOs . '" target="_blank" class="btn-nwe6" title="Imprimir A4"><img src="' . base_url() . 'assets/svg/imprimir.svg" alt="Imprimir A4"></a>';
-                                    echo '<a href="' . base_url() . 'index.php/os/imprimirTermica/' . $r->idOs . '" target="_blank" class="btn-nwe6" title="Imprimir Não Fiscal"><img src="' . base_url() . 'assets/svg/imprimir.svg" alt="Imprimir Não Fiscal"></a>';
+                                    echo '<a href="' . base_url() . 'index.php/os/visualizar/' . $r->idOs . '" class="btn-action btn-action-view" title="Ver mais detalhes">' . svg_icon('eye', 16, 16) . '</a>';
+                                    echo '<a href="' . base_url() . 'index.php/os/imprimir/' . $r->idOs . '" target="_blank" class="btn-action btn-action-print" title="Imprimir A4">' . svg_icon('printer', 16, 16) . '</a>';
+                                    echo '<a href="' . base_url() . 'index.php/os/imprimirTermica/' . $r->idOs . '" target="_blank" class="btn-action btn-action-print" title="Imprimir Não Fiscal">' . svg_icon('printer', 16, 16) . '</a>';
                                 }
                                 if ($editavel) {
-                                    echo '<a href="' . base_url() . 'index.php/os/editar/' . $r->idOs . '" class="btn-nwe3" title="Editar OS"><img src="' . base_url() . 'assets/svg/editar.svg" alt="Editar"></a>';
+                                    echo '<a href="' . base_url() . 'index.php/os/editar/' . $r->idOs . '" class="btn-action btn-action-edit" title="Editar OS">' . svg_icon('edit', 16, 16) . '</a>';
                                 }
                                 if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dOs') && $editavel) {
-                                    echo '<a href="#modal-excluir" role="button" data-bs-toggle="modal" os="' . $r->idOs . '" class="btn-nwe4" title="Excluir OS"><img src="' . base_url() . 'assets/svg/excluir.svg" alt="Excluir"></a>';
+                                    echo '<a href="#modal-excluir" role="button" data-bs-toggle="modal" os="' . $r->idOs . '" class="btn-action btn-action-delete" title="Excluir OS">' . svg_icon('trash', 16, 16) . '</a>';
                                 }
                                 echo '</td>';
                                 echo '</tr>';
