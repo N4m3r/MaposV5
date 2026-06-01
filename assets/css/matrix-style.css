@@ -124,16 +124,15 @@ a:focus {
 
 .dropdown-menu {
   min-width: 120px;
-  top      : 25px;
 }
 
-.dropdown-menu>li>a {
+.navebarn .dropdown-menu>li>a {
   padding  : 3px 10px;
   color    : #666;
   font-size: 12px;
 }
 
-.dropdown-menu>li>a i {
+.navebarn .dropdown-menu>li>a i {
   padding-right: 3px;
 }
 
@@ -3372,9 +3371,7 @@ form {
     height: 50px !important;
   }
 
-  .dropdown-menu {
-    top : 29px;
-    left: -8px;
+  .navebarn .dropdown-menu {
   }
 
   select {
