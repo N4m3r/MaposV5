@@ -958,11 +958,11 @@ body[data-theme="darkorange"] #sidebar li.active i {
     border-radius: 4px !important;
 }
 
-/* Collapsed sidebar: category submenus flyout to the right */
+/* Collapsed sidebar: category submenus flyout via fixed positioning
+   Uses position:fixed to escape overflow clipping from .menu-scrollable */
 #sidebar.open > .menu-bar > .menu > .menu-links > li.submenu > ul {
-    position: absolute !important;
-    left: 68px !important;
-    top: 0 !important;
+    position: fixed !important;
+    left: 80px !important;
     width: 240px !important;
     max-height: 80vh !important;
     overflow-y: auto !important;
@@ -1043,19 +1043,20 @@ body:not([data-theme="puredark"]):not([data-theme="darkviolet"]):not([data-theme
    SIDEBAR LAYOUT FIXES - Overflow & Content Shift
    ============================================ */
 
-/* Prevent sidebar content from overflowing horizontally */
+/* CRITICAL: .menu-bar and .menu-scrollable must have overflow:visible
+   so that expanded submenus and flyout menus are NOT clipped.
+   Scrolling is handled by #sidebar (flex column) + JS scroll position. */
 #sidebar .menu-bar {
     overflow: visible;
 }
 
 #sidebar .menu-scrollable {
-    overflow-x: hidden;
-    overflow-y: auto;
+    overflow: visible !important;
 }
 
 /* Sidebar submenu UL must not overflow sidebar width in expanded state */
 #sidebar:not(.open) li.submenu > ul {
-    max-width: 100%;
+    max-width: calc(100% - 16px);
     box-sizing: border-box;
 }
 
@@ -2726,4 +2727,153 @@ body[data-theme="darkorange"] .quick-card, body[data-theme="darkorange"] .widget
 }
 .btn-nwe6:hover {
     box-shadow: 0 6px 15px rgba(71, 85, 105, 0.45) !important;
+}
+
+/* ========================================================================= */
+/* SISTEMA DE ÍCONES SVG INLINE                                              */
+/* ========================================================================= */
+
+/* Sprite SVG base — 1 request carrega todos os ícones */
+svg.svg-icon {
+    display: inline-block;
+    vertical-align: middle;
+    line-height: 1;
+    flex-shrink: 0;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform 0.2s ease, color 0.2s ease;
+    pointer-events: none; /* Não captura cliques */
+}
+
+svg.svg-icon use {
+    pointer-events: none;
+}
+
+/* --- Sidebar Menu --- */
+#sidebar li a svg.svg-icon,
+.botton-content li a svg.svg-icon {
+    width: 22px;
+    height: 22px;
+    color: inherit; /* Herda cor do link/sidebar */
+}
+
+#sidebar li a:hover svg.svg-icon {
+    transform: scale(1.1);
+}
+
+#sidebar li.active a svg.svg-icon,
+#sidebar li.active svg.svg-icon {
+    color: var(--sidebar-accent) !important;
+}
+
+/* Seta de submenu */
+#sidebar li.submenu > a svg.svg-icon.arrow,
+#sidebar li.submenu > a .arrow {
+    width: 18px;
+    height: 18px;
+    margin-left: auto;
+    transition: transform 0.25s ease;
+}
+
+#sidebar li.submenu.open > a svg.svg-icon.arrow,
+#sidebar li.submenu.active > a svg.svg-icon.arrow {
+    transform: rotate(180deg);
+}
+
+/* --- Topbar Actions --- */
+.topbar-action svg.svg-icon {
+    width: 22px;
+    height: 22px;
+    color: inherit;
+}
+
+.topbar-action:hover svg.svg-icon {
+    transform: scale(1.1);
+}
+
+.topbar-dropdown .dropdown-menu li a svg.svg-icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+/* --- Botões de Ação (.btn-nwe) --- */
+.btn-nwe svg.svg-icon,
+.btn-nwe2 svg.svg-icon,
+.btn-nwe3 svg.svg-icon,
+.btn-nwe4 svg.svg-icon,
+.btn-nwe5 svg.svg-icon,
+.btn-nwe6 svg.svg-icon {
+    width: 18px;
+    height: 18px;
+    color: #ffffff !important;
+    stroke: #ffffff !important;
+}
+
+/* Hide Boxicons icons when SVG is present alongside */
+.btn-nwe svg.svg-icon + i.bx,
+.btn-nwe2 svg.svg-icon + i.bx,
+.btn-nwe3 svg.svg-icon + i.bx,
+.btn-nwe4 svg.svg-icon + i.bx,
+.btn-nwe5 svg.svg-icon + i.bx,
+.btn-nwe6 svg.svg-icon + i.bx {
+    display: none !important;
+}
+
+/* --- Quick Cards --- */
+.quick-card svg.svg-icon.icon-card {
+    width: 28px;
+    height: 28px;
+    color: #ffffff !important;
+    stroke: #ffffff !important;
+}
+
+.icon-wrapper svg.svg-icon {
+    width: 28px;
+    height: 28px;
+    color: #ffffff !important;
+    stroke: #ffffff !important;
+}
+
+/* --- Temas Escuros SVG --- */
+body[data-theme="puredark"] svg.svg-icon,
+body[data-theme="darkviolet"] svg.svg-icon,
+body[data-theme="darkorange"] svg.svg-icon {
+    stroke: currentColor;
+}
+
+/* Sidebar escuro */
+body[data-theme="puredark"] #sidebar li a svg.svg-icon,
+body[data-theme="darkviolet"] #sidebar li a svg.svg-icon,
+body[data-theme="darkorange"] #sidebar li a svg.svg-icon {
+    color: inherit;
+}
+
+/* --- Widget Title Icons --- */
+.widget-title svg.svg-icon,
+h5 svg.svg-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 6px;
+    color: var(--sidebar-accent, #0467fc);
+    vertical-align: text-bottom;
+}
+
+/* --- Notification Icon --- */
+.notif-icone svg.svg-icon {
+    width: 18px;
+    height: 18px;
+    color: var(--sidebar-accent, #0467fc);
+}
+
+/* --- Tema toggle SVG animation --- */
+#theme-icon.svg-icon {
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s ease;
+}
+
+#btn-toggle-theme:hover #theme-icon.svg-icon {
+    transform: rotate(30deg) scale(1.15);
 }

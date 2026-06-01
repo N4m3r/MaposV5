@@ -858,6 +858,7 @@ End hora certa */
   overflow-x: hidden;
   max-height: calc(100vh - 150px);
   padding-bottom: 20px;
+  overscroll-behavior: contain;
 }
 
 .menu-scrollable::-webkit-scrollbar {
@@ -4528,19 +4529,8 @@ body.theme-whitegreen #sidebar > ul > li.submenu > ul > li.submenu > ul {
   z-index: 100001 !important;
 }
 
-/* Submenu nível 1 - abre ao lado */
-#sidebar > ul > li.submenu > ul {
-  position: absolute !important;
-  left: 100% !important;
-  top: 0 !important;
-  width: 220px !important;
-  z-index: 100002 !important;
-  background-color: rgb(248 249 250 / 98%) !important;
-  box-shadow: 5px 5px 20px rgb(0 0 0 / 30%) !important;
-  border-radius: 8px !important;
-  max-height: 80vh !important;
-  overflow-y: auto !important;
-}
+/* Submenu nível 1 - comportamento controlado por custom.css */
+/* (regras de position/left/top movidas para custom.css com seletores mais especificos) */
 
 /* Submenu nível 2 (aninhado) - aparece abaixo do item pai */
 #sidebar > ul > li.submenu > ul > li.submenu > ul {
@@ -4580,11 +4570,10 @@ body.theme-whitegreen #sidebar > ul > li.submenu > ul > li.submenu > ul {
   background-color: rgb(248 249 250 / 98%) !important;
 }
 
-/* Ajuste para o menu quando sidebar está aberta/fechada */
+/* Ajuste para o menu quando sidebar está recolhida */
+/* Comportamento controlado por custom.css (position:fixed para flyouts) */
 #sidebar.open .submenu ul {
-  position: relative;
-  left: auto;
-  width: auto;
+  /* position e left controlados por custom.css */
 }
 
 /* Submenu deve aparecer acima do conteúdo principal */
@@ -4593,17 +4582,12 @@ body.theme-whitegreen #sidebar > ul > li.submenu > ul > li.submenu > ul {
 }
 
 /* Animação suave para submenus */
+/* Animação suave para submenus (exceto position que é controlado por custom.css) */
 #sidebar .submenu ul {
-  transition: all 0.3s ease;
+  transition: opacity 0.2s ease, max-height 0.3s ease;
 }
 
-/* Corrigir posicionamento quando o menu está recolhido */
-@media (min-width: 769px) {
-  #sidebar:not(.open) > ul > li.submenu > ul {
-    left: 80px;
-    width: 220px;
-  }
-}
+/* Posicionamento de submenus controlado por custom.css */
 
 /* Submenu nível 2 sempre abaixo do item pai */
 #sidebar > ul > li.submenu > ul > li.submenu > ul {

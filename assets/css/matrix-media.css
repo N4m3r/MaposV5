@@ -33,20 +33,11 @@ body {
 #sidebar > ul > li > a:hover {
 	background-color: transparent; color: var(--funCont); text-shadow: 0 -1px 0 rgb(0 0 0 / 25%);
 }
-/* Submenu principal - ao lado no desktop */
+/* Submenu principal - comportamento controlado por custom.css */
+/* (regras de position/left movidas para custom.css com seletores mais especificos) */
 #sidebar > ul > li.submenu > ul {
-    position: absolute;
-    left: 100%;
-    width: 220px;
-    bottom: auto;
-    top: 0;
-    background-color: rgb(248 249 250 / 98%);
-    border-radius: 8px;
-    box-shadow: 5px 5px 20px rgb(0 0 0 / 30%);
-    z-index: 100002 !important;
     display: none;
-    max-height: 80vh;
-    overflow-y: auto;
+    z-index: 100002 !important;
 }
 
 /* Submenu aninhado (nível 2+) - aparece abaixo do item pai */
@@ -65,11 +56,8 @@ body {
     padding: 5px 0;
 }
 
-/* Ajuste para sidebar fechado - submenu ainda abre ao lado */
-#sidebar.open > ul > li.submenu > ul {
-    left: 80px;
-    width: 220px;
-}
+/* Ajuste para sidebar fechado - comportamento controlado por custom.css */
+/* (position:fixed e left calculados via JS/CSS em custom.css) */
 
 /* Scrollbar para submenus longos */
 #sidebar > ul > li.submenu > ul::-webkit-scrollbar {

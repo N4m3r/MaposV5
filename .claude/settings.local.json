@@ -679,7 +679,8 @@
       "Bash(C:\\\\xampp\\\\mysql\\\\bin\\\\mysql.exe *)",
       "Bash(cat .env)",
       "Bash(cat .env.production)",
-      "Bash(cat .env.example)"
+      "Bash(cat .env.example)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\thail\\\\Desktop\\\\IVMS-CRUD\\\\MaposV5\" -Recurse -Directory -Depth 2)"
     ]
   }
 }
