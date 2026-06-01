@@ -683,9 +683,9 @@ body[data-theme="darkorange"] #sidebar li.active i {
 
 .menu-divider .divider-text {
     font-size: 10px;
-    font-weight: 600;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 1.2px;
     color: var(--sidebar-text-muted);
     display: block;
     position: relative;
@@ -703,6 +703,88 @@ body[data-theme="darkorange"] #sidebar li.active i {
     letter-spacing: 0.5px;
     color: var(--sidebar-text-muted);
     opacity: 0.7;
+}
+
+/* ============================================
+   COLLAPSIBLE CATEGORY SUBMENU STYLES
+   ============================================ */
+
+/* Category submenu header link */
+#sidebar li.submenu > a {
+    border-radius: 6px;
+    transition: background 0.2s ease;
+}
+
+/* Arrow rotation on open */
+#sidebar li.submenu > a .arrow {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 1.1em;
+    margin-left: auto;
+    opacity: 0.6;
+}
+
+#sidebar li.submenu.open > a .arrow,
+#sidebar li.submenu.active > a .arrow {
+    transform: rotate(180deg);
+    opacity: 1;
+}
+
+/* Category submenu header active/hover state */
+#sidebar li.submenu.open > a,
+#sidebar li.submenu.active > a {
+    background: var(--sidebar-hover-bg);
+}
+
+#sidebar li.submenu.open > a .iconX,
+#sidebar li.submenu.active > a .iconX {
+    color: var(--sidebar-accent) !important;
+}
+
+#sidebar li.submenu.open > a .title,
+#sidebar li.submenu.active > a .title {
+    color: var(--sidebar-accent) !important;
+    font-weight: 500;
+}
+
+/* Collapsible submenu items */
+#sidebar li.submenu > ul > li > a {
+    padding: 6px 10px;
+    font-size: 0.92em;
+    border-radius: 4px;
+}
+
+/* Nested submenu indentation */
+#sidebar li.submenu > ul > li.submenu > ul > li > a {
+    padding-left: 18px;
+    font-size: 0.88em;
+}
+
+/* Submenu open/close animation */
+#sidebar li.submenu > ul {
+    overflow: hidden;
+}
+
+/* Submenu item hover enhancement */
+#sidebar li.submenu > ul > li > a:hover {
+    background: var(--sidebar-hover-bg);
+    transform: translateX(2px);
+}
+
+#sidebar li.submenu > ul > li > a:hover .iconX {
+    transform: scale(1.1);
+    color: var(--sidebar-accent);
+}
+
+/* Category divider accent bar */
+.menu-divider .divider-text::before {
+    content: '';
+    display: inline-block;
+    width: 3px;
+    height: 10px;
+    background: var(--sidebar-accent);
+    border-radius: 2px;
+    margin-right: 6px;
+    vertical-align: middle;
 }
 
 /* --- Search Box --- */
@@ -842,6 +924,119 @@ body[data-theme="darkorange"] #sidebar li.active i {
 /* --- Menu badge enhancement --- */
 #sidebar li.active .menu-badge {
     background: var(--sidebar-accent);
+}
+
+/* ============================================
+   INLINE EXPAND / FLYOUT BEHAVIOR
+   Expanded sidebar: submenus expand inline (slideDown)
+   Collapsed sidebar: submenus flyout to the right
+   ============================================ */
+
+/* Expanded sidebar: category submenus expand inline */
+#sidebar:not(.open) > .menu-bar > .menu > .menu-links > li.submenu > ul {
+    position: relative !important;
+    left: auto !important;
+    width: auto !important;
+    max-height: none !important;
+    background-color: rgba(var(--sidebar-accent-rgb), 0.06) !important;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+    border-radius: 6px !important;
+    margin: 2px 8px 4px 8px !important;
+    padding: 4px 0 4px 0 !important;
+}
+
+/* Expanded sidebar: nested submenus inside categories */
+#sidebar:not(.open) > .menu-bar > .menu > .menu-links > li.submenu > ul > li.submenu > ul {
+    position: relative !important;
+    left: 0 !important;
+    width: auto !important;
+    margin-left: 8px !important;
+    margin-right: 8px !important;
+    margin-top: 2px !important;
+    background-color: rgba(var(--sidebar-accent-rgb), 0.04) !important;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06) !important;
+    border-radius: 4px !important;
+}
+
+/* Collapsed sidebar: category submenus flyout to the right */
+#sidebar.open > .menu-bar > .menu > .menu-links > li.submenu > ul {
+    position: absolute !important;
+    left: 68px !important;
+    top: 0 !important;
+    width: 240px !important;
+    max-height: 80vh !important;
+    overflow-y: auto !important;
+    background-color: var(--funSider, #232332) !important;
+    box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.35) !important;
+    border-radius: 8px !important;
+    padding: 8px 0 !important;
+    margin: 0 !important;
+    z-index: 100002 !important;
+}
+
+/* Collapsed sidebar: show on hover */
+#sidebar.open > .menu-bar > .menu > .menu-links > li.submenu:hover > ul {
+    display: block !important;
+}
+
+/* Collapsed sidebar: hide submenu text, show icon only */
+#sidebar.open li.submenu > a .title {
+    display: none;
+}
+
+#sidebar.open li.submenu > a .arrow {
+    display: none;
+}
+
+/* Collapsed sidebar: tooltip for category header */
+#sidebar.open li.submenu:hover > a .title-tooltip {
+    display: block;
+    opacity: 1;
+    animation: tooltipFadeIn 0.2s ease forwards;
+}
+
+/* Theme adjustments for collapsed flyout */
+body:not([data-theme="puredark"]):not([data-theme="darkviolet"]):not([data-theme="darkorange"])
+#sidebar.open > .menu-bar > .menu > .menu-links > li.submenu > ul {
+    background-color: #2a2a3e !important;
+}
+
+body[data-theme="puredark"]
+#sidebar.open > .menu-bar > .menu > .menu-links > li.submenu > ul {
+    background-color: #1a1a2e !important;
+}
+
+body[data-theme="darkviolet"]
+#sidebar.open > .menu-bar > .menu > .menu-links > li.submenu > ul {
+    background-color: #2d1b69 !important;
+}
+
+body[data-theme="darkorange"]
+#sidebar.open > .menu-bar > .menu > .menu-links > li.submenu > ul {
+    background-color: #2d1b0e !important;
+}
+
+/* White theme inline submenu backgrounds */
+body:not([data-theme="puredark"]):not([data-theme="darkviolet"]):not([data-theme="darkorange"])
+#sidebar:not(.open) > .menu-bar > .menu > .menu-links > li.submenu > ul {
+    background-color: rgba(0, 0, 0, 0.04) !important;
+}
+
+body:not([data-theme="puredark"]):not([data-theme="darkviolet"]):not([data-theme="darkorange"])
+#sidebar:not(.open) > .menu-bar > .menu > .menu-links > li.submenu > ul > li.submenu > ul {
+    background-color: rgba(0, 0, 0, 0.03) !important;
+}
+
+/* Inline submenu item styling */
+#sidebar:not(.open) > .menu-bar > .menu > .menu-links > li.submenu > ul > li {
+    height: auto;
+    min-height: 36px;
+}
+
+#sidebar:not(.open) > .menu-bar > .menu > .menu-links > li.submenu > ul > li > a {
+    padding: 6px 12px;
+    font-size: 0.95em;
+    border-radius: 4px;
 }
 
 /* ============================================
