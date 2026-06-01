@@ -16,8 +16,8 @@
     <!-- Botão toggle do sidebar -->
     <div class="mode" title="Recolher/Expandir Menu">
         <div class="moon-menu">
-            <i class='bx bx-chevron-left iconX open-2'></i>
-            <i class='bx bx-chevron-right iconX close-2'></i>
+            <?= svg_icon('chevron-left', 18, 18, 'iconX open-2') ?>
+            <?= svg_icon('chevron-right', 18, 18, 'iconX close-2') ?>
         </div>
     </div>
 
@@ -29,7 +29,7 @@
                 <!-- Dashboard -->
                 <li class="<?php if (isset($menuDashboard)) { echo 'active'; }; ?>">
                     <a class="tip-bottom btn" title="" href="<?= site_url('tecnicos/dashboard') ?>">
-                        <i class='bx bx-home-alt iconX'></i>
+                        <?= svg_icon('home', 20, 20, 'iconX') ?>
                         <span class="title nav-title">Dashboard</span>
                         <span class="title-tooltip">Início</span>
                     </a>
@@ -38,7 +38,7 @@
                 <!-- Minhas OS -->
                 <li class="<?php if (isset($menuMinhasOs)) { echo 'active'; }; ?>">
                     <a class="tip-bottom btn" title="" href="<?= site_url('tecnicos/minhas_os') ?>">
-                        <i class='bx bx-clipboard iconX'></i>
+                        <?= svg_icon('clipboard', 20, 20, 'iconX') ?>
                         <span class="title">Minhas OS</span>
                         <span class="title-tooltip">Minhas OS</span>
                     </a>
@@ -47,7 +47,7 @@
                 <!-- Minhas Obras -->
                 <li class="<?php if (isset($menuObras)) { echo 'active'; }; ?>">
                     <a class="tip-bottom btn" title="" href="<?= site_url('tecnicos/minhas_obras') ?>">
-                        <i class='bx bx-building iconX'></i>
+                        <?= svg_icon('building', 20, 20, 'iconX') ?>
                         <span class="title">Minhas Obras</span>
                         <span class="title-tooltip">Minhas Obras</span>
                     </a>
@@ -56,7 +56,7 @@
                 <!-- Meu Estoque -->
                 <li class="<?php if (isset($menuEstoque)) { echo 'active'; }; ?>">
                     <a class="tip-bottom btn" title="" href="<?= site_url('tecnicos/meu_estoque') ?>">
-                        <i class='bx bx-package iconX'></i>
+                        <?= svg_icon('package', 20, 20, 'iconX') ?>
                         <span class="title">Meu Estoque</span>
                         <span class="title-tooltip">Meu Estoque</span>
                     </a>
@@ -65,7 +65,7 @@
                 <!-- Meu Perfil -->
                 <li class="<?php if (isset($menuPerfil)) { echo 'active'; }; ?>">
                     <a class="tip-bottom btn" title="" href="<?= site_url('tecnicos/perfil') ?>">
-                        <i class='bx bx-user iconX'></i>
+                        <?= svg_icon('user', 20, 20, 'iconX') ?>
                         <span class="title">Meu Perfil</span>
                         <span class="title-tooltip">Meu Perfil</span>
                     </a>
@@ -74,7 +74,7 @@
                 <!-- Sair -->
                 <li>
                     <a class="tip-bottom btn" title="" href="<?= site_url('tecnicos/logout') ?>">
-                        <i class='bx bx-log-out iconX'></i>
+                        <?= svg_icon('log-out', 20, 20, 'iconX') ?>
                         <span class="title">Sair</span>
                         <span class="title-tooltip">Sair</span>
                     </a>

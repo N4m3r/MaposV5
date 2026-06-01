@@ -4520,5 +4520,5 @@ body.theme-whitegreen #sidebar > ul > li.submenu > ul > li.submenu > ul {
 
 /* Animação suave para submenus */
 #sidebar .submenu ul {
-  transition: opacity 0.2s ease;
+  transition: max-height 0.2s ease, opacity 0.2s ease;
 }

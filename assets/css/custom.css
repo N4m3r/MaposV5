@@ -932,7 +932,7 @@ body[data-theme="darkorange"] #sidebar li.active i {
    dentro do sidebar, sem flyout lateral.
    ============================================ */
 
-/* Container: permite que submenus sejam visiveis */
+/* Container: submenus abrem dentro da area scrollavel */
 #sidebar .menu-bar {
     overflow: visible;
 }
@@ -940,6 +940,7 @@ body[data-theme="darkorange"] #sidebar li.active i {
 #sidebar .menu-scrollable {
     overflow-y: auto !important;
     overflow-x: hidden !important;
+    position: relative;
 }
 
 /* Submenu dropdown (abre abaixo do item) - todos os niveis */
@@ -954,6 +955,12 @@ body[data-theme="darkorange"] #sidebar li.active i {
     border-radius: 6px !important;
     box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.08) !important;
     list-style: none !important;
+}
+
+/* Submenu visivel quando aberto */
+#sidebar li.submenu.open > ul,
+#sidebar li.submenu.active > ul {
+    display: block !important;
 }
 
 /* Submenu aninhado (nivel 2) */
@@ -979,25 +986,39 @@ body:not([data-theme="puredark"]):not([data-theme="darkviolet"]):not([data-theme
     background-color: rgba(0, 0, 0, 0.03) !important;
 }
 
-/* Itens do submenu */
+/* Itens do submenu - links clicáveis com rotas */
 #sidebar li.submenu > ul > li {
     height: auto;
     min-height: 36px;
+    position: relative;
+    display: block;
 }
 
 #sidebar li.submenu > ul > li > a {
-    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
     font-size: 0.92em;
     border-radius: 4px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    color: inherit;
+    cursor: pointer;
+    text-decoration: none;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* Submenu hover */
 #sidebar li.submenu > ul > li > a:hover {
     background: rgba(255, 255, 255, 0.08);
     transform: translateX(2px);
+}
+
+#sidebar li.submenu > ul > li > a:hover .iconX {
+    transform: scale(1.1);
+    color: var(--sidebar-accent);
 }
 
 /* --- Sidebar colapsada: flyout lateral via hover --- */

@@ -143,10 +143,10 @@
 
                             if ($r->faturado != 1 || $editavel) {
                                 if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eVenda')) {
-                                    echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/vendas/editar/' . e($r->idVendas) . '" class="btn-nwe3" title="Editar venda"><i class="bx bx-edit bx-xs"></i></a>';
+                                    echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/vendas/editar/' . e($r->idVendas) . '" class="btn-nwe3" title="Editar venda">' . svg_icon('edit', 16, 16) . '</a>';
                                 }
                                 if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dVenda')) {
-                                    echo '<a href="#modal-excluir" role="button" data-bs-toggle="modal" venda="' . e($r->idVendas) . '" class="btn-nwe4" title="Excluir Venda"><i class="bx bx-trash-alt bx-xs"></i></a>';
+                                    echo '<a href="#modal-excluir" role="button" data-bs-toggle="modal" venda="' . e($r->idVendas) . '" class="btn-nwe4" title="Excluir Venda">' . svg_icon('trash', 16, 16) . '</a>';
                                 }
                             }
                             echo '</td>';

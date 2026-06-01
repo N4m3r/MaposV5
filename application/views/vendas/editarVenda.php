@@ -197,7 +197,7 @@ foreach ($produtos as $p) {
     echo '<td>' . e($p->descricao) . '</td>';
     echo '<td><div align="center">' . e($p->quantidade) . '</td>';
     echo '<td><div align="center">R$: ' . e($preco) . '</td>';
-    echo '<td><div align="center"><a href="" idAcao="' . e($p->idItens) . '" prodAcao="' . e($p->idProdutos) . '" quantAcao="' . e($p->quantidade) . '" title="Excluir Produto" class="btn-nwe4"><i class="bx bx-trash-alt"></i></a></td>';
+    echo '<td><div align="center"><a href="" idAcao="' . e($p->idItens) . '" prodAcao="' . e($p->idProdutos) . '" quantAcao="' . e($p->quantidade) . '" title="Excluir Produto" class="btn-nwe4">' . svg_icon('trash', 16, 16) . '</a></td>';
     echo '<td><div align="center">R$: ' . number_format($p->subTotal, 2, '.', '') . '</td>';
     echo '</tr>';
 } ?>

@@ -18,8 +18,8 @@
     <a href="#" class="d-inline d-sm-none btn">
         <div class="mode">
             <div class="moon-menu">
-                <i class='bx bx-chevron-right iconX open-2'></i>
-                <i class='bx bx-chevron-left iconX close-2'></i>
+                <?= svg_icon('chevron-right', 18, 18, 'iconX open-2') ?>
+                <?= svg_icon('chevron-left', 18, 18, 'iconX close-2') ?>
             </div>
         </div>
     </a>
@@ -38,7 +38,7 @@
     <li class="search-box">
         <form style="display: flex" action="<?= site_url('mapos/pesquisar') ?>">
             <button style="background:transparent;border:transparent" type="submit" class="tip-bottom" title="">
-                <i class='bx bx-search iconX'></i></button>
+                <?= svg_icon('search', 20, 20, 'iconX') ?></button>
             <input style="background:transparent;<?= $configuration['app_theme'] == 'white' ? 'color:#313030;' : 'color:#fff;' ?>border:transparent" type="search" name="termo" placeholder="Pesquise aqui...">
             <span class="title-tooltip">Pesquisar</span>
         </form>
@@ -53,7 +53,7 @@
                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vTecnicoDashboard')) { ?>
                 <li class="<?php if (isset($menuTecnicoDashboard)) { echo 'active'; }; ?>">
                     <a class="tip-bottom btn" title="" href="<?= site_url('tecnico') ?>">
-                        <i class='bx bx-home-alt iconX'></i>
+                        <?= svg_icon('home', 20, 20, 'iconX') ?>
                         <span class="title nav-title">Home</span>
                         <span class="title-tooltip">Início</span>
                     </a>
@@ -64,7 +64,7 @@
                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vTecnicoOS')) { ?>
                 <li class="<?php if (isset($menuMinhasOs) || isset($menuOs)) { echo 'active'; }; ?>">
                     <a class="tip-bottom btn" title="" href="<?= site_url('tecnico/os') ?>">
-                        <i class='bx bx-file iconX'></i>
+                        <?= svg_icon('file', 20, 20, 'iconX') ?>
                         <span class="title">Minhas OS</span>
                         <span class="title-tooltip">Minhas OS</span>
                     </a>
@@ -77,7 +77,7 @@
                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vProduto')) { ?>
                 <li class="<?php if (isset($menuProdutos)) { echo 'active'; }; ?>">
                     <a class="tip-bottom btn" title="" href="<?= site_url('produtos') ?>">
-                        <i class='bx bx-basket iconX'></i>
+                        <?= svg_icon('basket', 20, 20, 'iconX') ?>
                         <span class="title">Produtos</span>
                         <span class="title-tooltip">Produtos</span>
                     </a>
@@ -88,7 +88,7 @@
                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vServico')) { ?>
                 <li class="<?php if (isset($menuServicos)) { echo 'active'; }; ?>">
                     <a class="tip-bottom btn" title="" href="<?= site_url('servicos') ?>">
-                        <i class='bx bx-wrench iconX'></i>
+                        <?= svg_icon('wrench', 20, 20, 'iconX') ?>
                         <span class="title">Serviços</span>
                         <span class="title-tooltip">Serviços</span>
                     </a>
@@ -99,7 +99,7 @@
                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vCliente')) { ?>
                 <li class="<?php if (isset($menuClientes)) { echo 'active'; }; ?>">
                     <a class="tip-bottom btn" title="" href="<?= site_url('clientes') ?>">
-                        <i class='bx bx-user iconX'></i>
+                        <?= svg_icon('user', 20, 20, 'iconX') ?>
                         <span class="title">Clientes</span>
                         <span class="title-tooltip">Clientes</span>
                     </a>
@@ -112,7 +112,7 @@
                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vRelatorioTecnicos')) { ?>
                 <li class="<?php if (isset($menuRelTecnicos)) { echo 'active'; }; ?>">
                     <a class="tip-bottom btn" title="" href="<?= site_url('relatoriotecnicos') ?>">
-                        <i class='bx bx-hard-hat iconX'></i>
+                        <?= svg_icon('hard-hat', 20, 20, 'iconX') ?>
                         <span class="title">Performance</span>
                         <span class="title-tooltip">Performance Técnicos</span>
                     </a>
@@ -121,7 +121,7 @@
                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vRelatorioAtendimentos')) { ?>
                 <li class="<?php if (isset($menuRelatorioAtendimentos)) { echo 'active'; }; ?>">
                     <a class="tip-bottom btn" title="" href="<?= site_url('relatorioatendimentos') ?>">
-                        <i class='bx bx-time iconX'></i>
+                        <?= svg_icon('timer', 20, 20, 'iconX') ?>
                         <span class="title">Atendimentos</span>
                         <span class="title-tooltip">Rel. Atendimentos</span>
                     </a>
@@ -136,7 +136,7 @@
             <ul style="padding: 0; margin: 0; list-style: none;">
                 <li>
                     <a class="tip-bottom btn" title="" href="<?= site_url('login/sair'); ?>">
-                        <i class='bx bx-log-out-circle iconX'></i>
+                        <?= svg_icon('log-out', 20, 20, 'iconX') ?>
                         <span class="title">Sair</span>
                         <span class="title-tooltip">Sair</span>
                     </a>

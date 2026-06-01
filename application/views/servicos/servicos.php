@@ -56,10 +56,10 @@
                             echo '<td>' . e($r->descricao) . '</td>';
                             echo '<td>';
                             if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eServico')) {
-                                echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/servicos/editar/' . $r->idServicos . '" class="btn-nwe3" title="Editar Serviço"><i class="bx bx-edit bx-xs"></i></a>';
+                                echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/servicos/editar/' . $r->idServicos . '" class="btn-nwe3" title="Editar Serviço">' . svg_icon('edit', 16, 16) . '</a>';
                             }
                             if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dServico')) {
-                                echo '<a href="#modal-excluir" role="button" data-bs-toggle="modal" servico="' . $r->idServicos . '" class="btn-nwe4" title="Excluir Serviço"><i class="bx bx-trash-alt bx-xs"></i></a>  ';
+                                echo '<a href="#modal-excluir" role="button" data-bs-toggle="modal" servico="' . $r->idServicos . '" class="btn-nwe4" title="Excluir Serviço">' . svg_icon('trash', 16, 16) . '</a>  ';
                             }
                             echo '</td>';
                             echo '</tr>';

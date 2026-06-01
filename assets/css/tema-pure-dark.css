@@ -228,11 +228,10 @@ body {
     border-radius: 4px;
 }
 
-/* Submenu flyout dark override */
+/* Submenu dropdown inline dark override */
 #sidebar > ul > li.submenu > ul {
     background-color: rgba(28, 29, 38, 0.98) !important;
-    box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.5) !important;
-    border: 1px solid rgba(16, 134, 221, 0.1) !important;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3) !important;
 }
 
 #sidebar > ul > li.submenu > ul > li > a {

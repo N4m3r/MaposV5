@@ -11,8 +11,8 @@
     <a href="#" class="d-inline d-sm-none btn">
         <div class="mode">
             <div class="moon-menu">
-                <i class='bx bx-chevron-right iconX open-2'></i>
-                <i class='bx bx-chevron-left iconX close-2'></i>
+                <?= svg_icon('chevron-right', 18, 18, 'iconX open-2') ?>
+                <?= svg_icon('chevron-left', 18, 18, 'iconX close-2') ?>
             </div>
         </div>
     </a>
@@ -20,7 +20,7 @@
     <li class="search-box">
         <form style="display: flex" action="<?= site_url('mapos/pesquisar') ?>">
         <button style="background:transparent;border:transparent" type="submit" class="tip-bottom" title="">
-                <i class='bx bx-search iconX'></i></button>
+                <?= svg_icon('search', 20, 20, 'iconX') ?></button>
                 <input style="background:transparent;<?= $configuration['app_theme'] == 'white' ? 'color:#313030;' : 'color:#fff;' ?>border:transparent" type="search" name="termo" placeholder="Pesquise aqui...">
             <span class="title-tooltip">Pesquisar</span>
         </form>
@@ -34,7 +34,7 @@
                 <li class="<?php if (isset($menuPainel)) {
                     echo 'active';
                 }; ?>">
-                    <a class="tip-bottom btn" title="" href="<?= base_url() ?>"><i class='bx bx-home-alt iconX'></i>
+                    <a class="tip-bottom btn" title="" href="<?= base_url() ?>"><?= svg_icon('home', 20, 20, 'iconX') ?>
                         <span class="title nav-title">Home</span>
                         <span class="title-tooltip">Início</span>
                     </a>
@@ -45,7 +45,7 @@
                     <li class="<?php if (isset($menuDashboard)) {
                         echo 'active';
                     }; ?>">
-                        <a class="tip-bottom btn" title="" href="<?= site_url('dashboard') ?>"><i class='bx bx-dashboard iconX'></i>
+                        <a class="tip-bottom btn" title="" href="<?= site_url('dashboard') ?>"><?= svg_icon('dashboard', 20, 20, 'iconX') ?>
                             <span class="title">Dashboard</span>
                             <span class="title-tooltip">Dashboard</span>
                         </a>
@@ -57,17 +57,17 @@
                     <li class="submenu <?php if (isset($menuRelatorios)) {
                         echo 'active open';
                     }; ?>">
-                        <a class="tip-bottom btn" title="" href="#"><i class='bx bx-line-chart iconX'></i>
+                        <a class="tip-bottom btn" title="" href="#"><?= svg_icon('line-chart-down', 20, 20, 'iconX') ?>
                             <span class="title">Relatórios</span>
                             <span class="title-tooltip">Relatórios</span>
-                            <i class='bx bx-chevron-down arrow'></i>
+                            <?= svg_icon('chevron-down', 18, 18, 'arrow') ?>
                         </a>
                         <ul style="display: <?php echo isset($menuRelatorios) ? 'block' : 'none'; ?>;">
                             <li class="<?php if (isset($menuRelAtendimentos)) {
                                 echo 'active';
                             }; ?>">
                                 <a href="<?= site_url('dashboard/relatorio_atendimentos') ?>">
-                                    <i class='bx bx-time iconX'></i>
+                                    <?= svg_icon('timer', 20, 20, 'iconX') ?>
                                     <span class="title">Atendimentos</span>
                                 </a>
                             </li>
@@ -75,7 +75,7 @@
                                 echo 'active';
                             }; ?>">
                                 <a href="<?= site_url('dashboard/relatorio_financeiro') ?>">
-                                    <i class='bx bx-dollar-circle iconX'></i>
+                                    <?= svg_icon('dollar-circle', 20, 20, 'iconX') ?>
                                     <span class="title">Financeiro</span>
                                 </a>
                             </li>
@@ -83,7 +83,7 @@
                                 echo 'active';
                             }; ?>">
                                 <a href="<?= site_url('dashboard/relatorio_produtos') ?>">
-                                    <i class='bx bx-package iconX'></i>
+                                    <?= svg_icon('package', 20, 20, 'iconX') ?>
                                     <span class="title">Produtos</span>
                                 </a>
                             </li>
@@ -91,7 +91,7 @@
                                 echo 'active';
                             }; ?>">
                                 <a href="<?= site_url('dashboard/relatorio_clientes') ?>">
-                                    <i class='bx bx-user-check iconX'></i>
+                                    <?= svg_icon('user-check', 20, 20, 'iconX') ?>
                                     <span class="title">Clientes</span>
                                 </a>
                             </li>
@@ -99,7 +99,7 @@
                                 echo 'active';
                             }; ?>">
                                 <a href="<?= site_url('relatoriotecnicos') ?>">
-                                    <i class='bx bx-hard-hat iconX'></i>
+                                    <?= svg_icon('hard-hat', 20, 20, 'iconX') ?>
                                     <span class="title">Performance Técnicos</span>
                                 </a>
                             </li>
@@ -111,7 +111,7 @@
                     <li class="<?php if (isset($menuClientes)) {
                         echo 'active';
                     }; ?>">
-                        <a class="tip-bottom btn" title="" href="<?= site_url('clientes') ?>"><i class='bx bx-user iconX'></i>
+                        <a class="tip-bottom btn" title="" href="<?= site_url('clientes') ?>"><?= svg_icon('user', 20, 20, 'iconX') ?>
                             <span class="title">Cliente / Fornecedor</span>
                             <span class="title-tooltip">Clientes</span>
                         </a>
@@ -122,7 +122,7 @@
                     <li class="<?php if (isset($menuProdutos)) {
                         echo 'active';
                     }; ?>">
-                        <a class="tip-bottom btn" title="" href="<?= site_url('produtos') ?>"><i class='bx bx-basket iconX'></i>
+                        <a class="tip-bottom btn" title="" href="<?= site_url('produtos') ?>"><?= svg_icon('basket', 20, 20, 'iconX') ?>
                             <span class="title">Produtos</span>
                             <span class="title-tooltip">Produtos</span>
                         </a>
@@ -133,7 +133,7 @@
                     <li class="<?php if (isset($menuServicos)) {
                         echo 'active';
                     }; ?>">
-                        <a class="tip-bottom btn" title="" href="<?= site_url('servicos') ?>"><i class='bx bx-wrench iconX'></i>
+                        <a class="tip-bottom btn" title="" href="<?= site_url('servicos') ?>"><?= svg_icon('wrench', 20, 20, 'iconX') ?>
                             <span class="title">Serviços</span>
                             <span class="title-tooltip">Serviços</span>
                         </a>
@@ -144,7 +144,7 @@
                     <li class="<?php if (isset($menuVendas)) {
                         echo 'active';
                     }; ?>">
-                        <a class="tip-bottom btn" title="" href="<?= site_url('vendas') ?>"><i class='bx bx-cart-alt iconX'></i></span>
+                        <a class="tip-bottom btn" title="" href="<?= site_url('vendas') ?>"><?= svg_icon('cart', 20, 20, 'iconX') ?></span>
                             <span class="title">Vendas</span>
                             <span class="title-tooltip">Vendas</span>
                         </a>
@@ -155,7 +155,7 @@
                     <li class="<?php if (isset($menuOs)) {
                         echo 'active';
                     }; ?>">
-                        <a class="tip-bottom btn" title="" href="<?= site_url('os') ?>"><i class='bx bx-file iconX'></i>
+                        <a class="tip-bottom btn" title="" href="<?= site_url('os') ?>"><?= svg_icon('file', 20, 20, 'iconX') ?>
                             <span class="title">Ordens de Serviço</span>
                             <span class="title-tooltip">Ordens</span>
                         </a>
@@ -166,7 +166,7 @@
                     <li class="<?php if (isset($menuKanban)) {
                         echo 'active';
                     }; ?>">
-                        <a class="tip-bottom btn" title="" href="<?= site_url('kanban') ?>"><i class='bx bx-columns iconX'></i>
+                        <a class="tip-bottom btn" title="" href="<?= site_url('kanban') ?>"><?= svg_icon('columns', 20, 20, 'iconX') ?>
                             <span class="title">Kanban Board</span>
                             <span class="title-tooltip">Kanban</span>
                         </a>
@@ -177,7 +177,7 @@
                     <li class="<?php if (isset($menuAtribuir)) {
                         echo 'active';
                     }; ?>">
-                        <a class="tip-bottom btn" title="" href="<?= site_url('os/atribuir') ?>"><i class='bx bx-user-plus iconX'></i>
+                        <a class="tip-bottom btn" title="" href="<?= site_url('os/atribuir') ?>"><?= svg_icon('user-plus', 20, 20, 'iconX') ?>
                             <span class="title">Atribuir Técnico</span>
                             <span class="title-tooltip">Atribuir Téc.</span>
                         </a>
@@ -188,7 +188,7 @@
                     <li class="<?php if (isset($menuGarantia)) {
                         echo 'active';
                     }; ?>">
-                        <a class="tip-bottom btn" title="" href="<?= site_url('garantias') ?>"><i class='bx bx-receipt iconX'></i>
+                        <a class="tip-bottom btn" title="" href="<?= site_url('garantias') ?>"><?= svg_icon('receipt', 20, 20, 'iconX') ?>
                             <span class="title">Termos de Garantias</span>
                             <span class="title-tooltip">Garantias</span>
                         </a>
@@ -199,7 +199,7 @@
                     <li class="<?php if (isset($menuArquivos)) {
                         echo 'active';
                     }; ?>">
-                        <a class="tip-bottom btn" title="" href="<?= site_url('arquivos') ?>"><i class='bx bx-box iconX'></i>
+                        <a class="tip-bottom btn" title="" href="<?= site_url('arquivos') ?>"><?= svg_icon('box', 20, 20, 'iconX') ?>
                             <span class="title">Arquivos</span>
                             <span class="title-tooltip">Arquivos</span>
                         </a>
@@ -210,7 +210,7 @@
                     <li class="<?php if (isset($menuLancamentos)) {
                         echo 'active';
                     }; ?>">
-                        <a class="tip-bottom btn" title="" href="<?= site_url('financeiro/lancamentos') ?>"><i class="bx bx-bar-chart-alt-2 iconX"></i>
+                        <a class="tip-bottom btn" title="" href="<?= site_url('financeiro/lancamentos') ?>"><?= svg_icon('bar-chart-alt', 20, 20, 'iconX') ?>
                             <span class="title">Lançamentos</span>
                             <span class="title-tooltip">Lançamentos</span>
                         </a>
@@ -220,7 +220,7 @@
                     <li class="<?php if (isset($menuCobrancas)) {
                         echo 'active';
                     }; ?>">
-                        <a class="tip-bottom btn" title="" href="<?= site_url('cobrancas/cobrancas') ?>"><i class='bx bx-dollar-circle iconX'></i>
+                        <a class="tip-bottom btn" title="" href="<?= site_url('cobrancas/cobrancas') ?>"><?= svg_icon('dollar-circle', 20, 20, 'iconX') ?>
                             <span class="title">Cobranças</span>
                             <span class="title-tooltip">Cobranças</span>
                         </a>
@@ -232,7 +232,7 @@
                     <li class="<?php if (isset($menuRelatorioAtendimentos)) {
                         echo 'active';
                     }; ?>">
-                        <a class="tip-bottom btn" title="" href="<?= site_url('relatorioatendimentos') ?>"><i class='bx bx-time iconX'></i>
+                        <a class="tip-bottom btn" title="" href="<?= site_url('relatorioatendimentos') ?>"><?= svg_icon('timer', 20, 20, 'iconX') ?>
                             <span class="title">Atendimentos</span>
                             <span class="title-tooltip">Atendimentos</span>
                         </a>
@@ -244,7 +244,7 @@
                     <li class="<?php if (isset($menuWebhooks)) {
                         echo 'active';
                     }; ?>">
-                        <a class="tip-bottom btn" title="" href="<?= site_url('webhooks') ?>"><i class='bx bx-webhook iconX'></i>
+                        <a class="tip-bottom btn" title="" href="<?= site_url('webhooks') ?>"><?= svg_icon('webhook', 20, 20, 'iconX') ?>
                             <span class="title">Webhooks</span>
                             <span class="title-tooltip">Webhooks</span>
                         </a>
@@ -256,7 +256,7 @@
                     <li class="<?php if (isset($menuNfseListar)) {
                         echo 'active';
                     }; ?>">
-                        <a class="tip-bottom btn" title="" href="<?= site_url('nfse') ?>"><i class='bx bx-receipt iconX'></i>
+                        <a class="tip-bottom btn" title="" href="<?= site_url('nfse') ?>"><?= svg_icon('receipt', 20, 20, 'iconX') ?>
                             <span class="title">NFS-e</span>
                             <span class="title-tooltip">NFS-e</span>
                         </a>
@@ -268,33 +268,33 @@
                     <li class="submenu <?php if (isset($menuCertificado)) {
                         echo 'active open';
                     }; ?>">
-                        <a class="tip-bottom btn" title="" href="#"><i class='bx bx-id-card iconX'></i>
+                        <a class="tip-bottom btn" title="" href="#"><?= svg_icon('id-card', 20, 20, 'iconX') ?>
                             <span class="title">Certificado Digital</span>
                             <span class="title-tooltip">Certificado</span>
-                            <i class='bx bx-chevron-down arrow'></i>
+                            <?= svg_icon('chevron-down', 18, 18, 'arrow') ?>
                         </a>
                         <ul style="display: <?php echo isset($menuCertificado) ? 'block' : 'none'; ?>;">
                             <li class="<?php if (isset($menuCertificadoDashboard)) { echo 'active'; }; ?>">
                                 <a href="<?= site_url('certificado') ?>">
-                                    <i class='bx bx-check-shield iconX'></i>
+                                    <?= svg_icon('shield-check', 20, 20, 'iconX') ?>
                                     <span class="title">Status</span>
                                 </a>
                             </li>
                             <li class="<?php if (isset($menuCertificadoConfig)) { echo 'active'; }; ?>">
                                 <a href="<?= site_url('certificado/configurar') ?>">
-                                    <i class='bx bx-cog iconX'></i>
+                                    <?= svg_icon('cog', 20, 20, 'iconX') ?>
                                     <span class="title">Configurar</span>
                                 </a>
                             </li>
                             <li class="<?php if (isset($menuNfseListar)) { echo 'active'; }; ?>">
                                 <a href="<?= site_url('nfse') ?>">
-                                    <i class='bx bx-receipt iconX'></i>
+                                    <?= svg_icon('receipt', 20, 20, 'iconX') ?>
                                     <span class="title">NFS-e Importadas</span>
                                 </a>
                             </li>
                             <li class="<?php if (isset($menuCertificadoImportar)) { echo 'active'; }; ?>">
                                 <a href="<?= site_url('certificado/importar_nfse') ?>">
-                                    <i class='bx bx-import iconX'></i>
+                                    <?= svg_icon('import', 20, 20, 'iconX') ?>
                                     <span class="title">Importar NFS-e</span>
                                 </a>
                             </li>
@@ -307,27 +307,27 @@
                     <li class="submenu <?php if (isset($menuImpostos)) {
                         echo 'active open';
                     }; ?>">
-                        <a class="tip-bottom btn" title="" href="#"><i class='bx bx-money iconX'></i>
+                        <a class="tip-bottom btn" title="" href="#"><?= svg_icon('money', 20, 20, 'iconX') ?>
                             <span class="title">Impostos Simples</span>
                             <span class="title-tooltip">Impostos</span>
-                            <i class='bx bx-chevron-down arrow'></i>
+                            <?= svg_icon('chevron-down', 18, 18, 'arrow') ?>
                         </a>
                         <ul style="display: <?php echo isset($menuImpostos) ? 'block' : 'none'; ?>;">
                             <li class="<?php if (isset($menuImpostosDashboard)) { echo 'active'; }; ?>">
                                 <a href="<?= site_url('impostos') ?>">
-                                    <i class='bx bx-chart iconX'></i>
+                                    <?= svg_icon('chart', 20, 20, 'iconX') ?>
                                     <span class="title">Dashboard</span>
                                 </a>
                             </li>
                             <li class="<?php if (isset($menuImpostosConfig)) { echo 'active'; }; ?>">
                                 <a href="<?= site_url('impostos/configuracoes') ?>">
-                                    <i class='bx bx-cog iconX'></i>
+                                    <?= svg_icon('cog', 20, 20, 'iconX') ?>
                                     <span class="title">Configurações</span>
                                 </a>
                             </li>
                             <li class="<?php if (isset($menuImpostosSimulador)) { echo 'active'; }; ?>">
                                 <a href="<?= site_url('impostos/simulador') ?>">
-                                    <i class='bx bx-calculator iconX'></i>
+                                    <?= svg_icon('calculator', 20, 20, 'iconX') ?>
                                     <span class="title">Simulador</span>
                                 </a>
                             </li>
@@ -340,27 +340,27 @@
                     <li class="submenu <?php if (isset($menuDRE)) {
                         echo 'active open';
                     }; ?>">
-                        <a class="tip-bottom btn" title="" href="#"><i class='bx bx-line-chart-down iconX'></i>
+                        <a class="tip-bottom btn" title="" href="#"><?= svg_icon('line-chart-down', 20, 20, 'iconX') ?>
                             <span class="title">DRE Contábil</span>
                             <span class="title-tooltip">DRE Contábil</span>
-                            <i class='bx bx-chevron-down arrow'></i>
+                            <?= svg_icon('chevron-down', 18, 18, 'arrow') ?>
                         </a>
                         <ul style="display: <?php echo isset($menuDRE) ? 'block' : 'none'; ?>;">
                             <li class="<?php if (isset($menuDREDashboard)) { echo 'active'; }; ?>">
                                 <a href="<?= site_url('dre') ?>">
-                                    <i class='bx bx-bar-chart-alt-2 iconX'></i>
+                                    <?= svg_icon('bar-chart-alt', 20, 20, 'iconX') ?>
                                     <span class="title">Demonstração</span>
                                 </a>
                             </li>
                             <li class="<?php if (isset($menuDREContas)) { echo 'active'; }; ?>">
                                 <a href="<?= site_url('dre/contas') ?>">
-                                    <i class='bx bx-list-ul iconX'></i>
+                                    <?= svg_icon('list-ul', 20, 20, 'iconX') ?>
                                     <span class="title">Plano de Contas</span>
                                 </a>
                             </li>
                             <li class="<?php if (isset($menuDRELancamentos)) { echo 'active'; }; ?>">
                                 <a href="<?= site_url('dre/lancamentos') ?>">
-                                    <i class='bx bx-book iconX'></i>
+                                    <?= svg_icon('book', 20, 20, 'iconX') ?>
                                     <span class="title">Lançamentos</span>
                                 </a>
                             </li>
@@ -372,27 +372,27 @@
                     <li class="submenu <?php if (isset($menuDRE)) {
                         echo 'active open';
                     }; ?>">
-                        <a class="tip-bottom btn" title="" href="#"><i class='bx bx-line-chart-down iconX'></i>
+                        <a class="tip-bottom btn" title="" href="#"><?= svg_icon('line-chart-down', 20, 20, 'iconX') ?>
                             <span class="title">DRE Contábil</span>
                             <span class="title-tooltip">DRE Contábil</span>
-                            <i class='bx bx-chevron-down arrow'></i>
+                            <?= svg_icon('chevron-down', 18, 18, 'arrow') ?>
                         </a>
                         <ul style="display: <?php echo isset($menuDRE) ? 'block' : 'none'; ?>;">
                             <li class="<?php if (isset($menuDREDashboard)) { echo 'active'; }; ?>">
                                 <a href="<?= site_url('dre') ?>">
-                                    <i class='bx bx-bar-chart-alt-2 iconX'></i>
+                                    <?= svg_icon('bar-chart-alt', 20, 20, 'iconX') ?>
                                     <span class="title">Demonstração</span>
                                 </a>
                             </li>
                             <li class="<?php if (isset($menuDREContas)) { echo 'active'; }; ?>">
                                 <a href="<?= site_url('dre/contas') ?>">
-                                    <i class='bx bx-list-ul iconX'></i>
+                                    <?= svg_icon('list-ul', 20, 20, 'iconX') ?>
                                     <span class="title">Plano de Contas</span>
                                 </a>
                             </li>
                             <li class="<?php if (isset($menuDRELancamentos)) { echo 'active'; }; ?>">
                                 <a href="<?= site_url('dre/lancamentos') ?>">
-                                    <i class='bx bx-book iconX'></i>
+                                    <?= svg_icon('book', 20, 20, 'iconX') ?>
                                     <span class="title">Lançamentos</span>
                                 </a>
                             </li>
@@ -404,33 +404,33 @@
                     <li class="submenu <?php if (isset($menuCertificado)) {
                         echo 'active open';
                     }; ?>">
-                        <a class="tip-bottom btn" title="" href="#"><i class='bx bx-id-card iconX'></i>
+                        <a class="tip-bottom btn" title="" href="#"><?= svg_icon('id-card', 20, 20, 'iconX') ?>
                             <span class="title">Certificado Digital</span>
                             <span class="title-tooltip">Certificado</span>
-                            <i class='bx bx-chevron-down arrow'></i>
+                            <?= svg_icon('chevron-down', 18, 18, 'arrow') ?>
                         </a>
                         <ul style="display: <?php echo isset($menuCertificado) ? 'block' : 'none'; ?>;">
                             <li class="<?php if (isset($menuCertificadoDashboard)) { echo 'active'; }; ?>">
                                 <a href="<?= site_url('certificado') ?>">
-                                    <i class='bx bx-check-shield iconX'></i>
+                                    <?= svg_icon('shield-check', 20, 20, 'iconX') ?>
                                     <span class="title">Status</span>
                                 </a>
                             </li>
                             <li class="<?php if (isset($menuCertificadoConfig)) { echo 'active'; }; ?>">
                                 <a href="<?= site_url('certificado/configurar') ?>">
-                                    <i class='bx bx-cog iconX'></i>
+                                    <?= svg_icon('cog', 20, 20, 'iconX') ?>
                                     <span class="title">Configurar</span>
                                 </a>
                             </li>
                             <li class="<?php if (isset($menuNfseListar)) { echo 'active'; }; ?>">
                                 <a href="<?= site_url('nfse') ?>">
-                                    <i class='bx bx-receipt iconX'></i>
+                                    <?= svg_icon('receipt', 20, 20, 'iconX') ?>
                                     <span class="title">NFS-e Importadas</span>
                                 </a>
                             </li>
                             <li class="<?php if (isset($menuCertificadoImportar)) { echo 'active'; }; ?>">
                                 <a href="<?= site_url('certificado/importar_nfse') ?>">
-                                    <i class='bx bx-import iconX'></i>
+                                    <?= svg_icon('import', 20, 20, 'iconX') ?>
                                     <span class="title">Importar NFS-e</span>
                                 </a>
                             </li>
@@ -442,27 +442,27 @@
                     <li class="submenu <?php if (isset($menuImpostos)) {
                         echo 'active open';
                     }; ?>">
-                        <a class="tip-bottom btn" title="" href="#"><i class='bx bx-money iconX'></i>
+                        <a class="tip-bottom btn" title="" href="#"><?= svg_icon('money', 20, 20, 'iconX') ?>
                             <span class="title">Impostos Simples</span>
                             <span class="title-tooltip">Impostos</span>
-                            <i class='bx bx-chevron-down arrow'></i>
+                            <?= svg_icon('chevron-down', 18, 18, 'arrow') ?>
                         </a>
                         <ul style="display: <?php echo isset($menuImpostos) ? 'block' : 'none'; ?>;">
                             <li class="<?php if (isset($menuImpostosDashboard)) { echo 'active'; }; ?>">
                                 <a href="<?= site_url('impostos') ?>">
-                                    <i class='bx bx-chart iconX'></i>
+                                    <?= svg_icon('chart', 20, 20, 'iconX') ?>
                                     <span class="title">Dashboard</span>
                                 </a>
                             </li>
                             <li class="<?php if (isset($menuImpostosConfig)) { echo 'active'; }; ?>">
                                 <a href="<?= site_url('impostos/configuracoes') ?>">
-                                    <i class='bx bx-cog iconX'></i>
+                                    <?= svg_icon('cog', 20, 20, 'iconX') ?>
                                     <span class="title">Configurações</span>
                                 </a>
                             </li>
                             <li class="<?php if (isset($menuImpostosSimulador)) { echo 'active'; }; ?>">
                                 <a href="<?= site_url('impostos/simulador') ?>">
-                                    <i class='bx bx-calculator iconX'></i>
+                                    <?= svg_icon('calculator', 20, 20, 'iconX') ?>
                                     <span class="title">Simulador</span>
                                 </a>
                             </li>
@@ -474,22 +474,22 @@
                     <li class="submenu <?php if (isset($menuUsuariosCliente)) {
                         echo 'active open';
                     }; ?>">
-                        <a class="tip-bottom btn" title="" href="#"><i class='bx bx-user-check iconX'></i>
+                        <a class="tip-bottom btn" title="" href="#"><?= svg_icon('user-check', 20, 20, 'iconX') ?>
                             <span class="title">Usuários Cliente</span>
                             <span class="title-tooltip">Portal Cliente</span>
-                            <i class='bx bx-chevron-down arrow'></i>
+                            <?= svg_icon('chevron-down', 18, 18, 'arrow') ?>
                         </a>
                         <ul style="display: <?php echo isset($menuUsuariosCliente) ? 'block' : 'none'; ?>;">
                             <li class="<?php if (isset($menuUsuariosClienteListar)) { echo 'active'; }; ?>">
                                 <a href="<?= site_url('usuarioscliente') ?>">
-                                    <i class='bx bx-list-ul iconX'></i>
+                                    <?= svg_icon('list-ul', 20, 20, 'iconX') ?>
                                     <span class="title">Listar Usuários</span>
                                 </a>
                             </li>
                             <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cUsuariosCliente')) { ?>
                             <li class="<?php if (isset($menuUsuariosClienteAdicionar)) { echo 'active'; }; ?>">
                                 <a href="<?= site_url('usuarioscliente/adicionar') ?>">
-                                    <i class='bx bx-plus iconX'></i>
+                                    <?= svg_icon('plus', 20, 20, 'iconX') ?>
                                     <span class="title">Novo Usuário</span>
                                 </a>
                             </li>
@@ -502,17 +502,17 @@
                     <li class="submenu <?php if (isset($menuFerramentasV5)) {
                         echo 'active open';
                     }; ?>">
-                        <a class="tip-bottom btn" title="" href="#"><i class='bx bx-rocket iconX'></i>
+                        <a class="tip-bottom btn" title="" href="#"><?= svg_icon('rocket', 20, 20, 'iconX') ?>
                             <span class="title">Ferramentas V5</span>
                             <span class="title-tooltip">Ferramentas</span>
-                            <i class='bx bx-chevron-down arrow'></i>
+                            <?= svg_icon('chevron-down', 18, 18, 'arrow') ?>
                         </a>
                         <ul style="display: <?php echo isset($menuFerramentasV5) ? 'block' : 'none'; ?>;">
                             <li class="<?php if (isset($menuEmailQueue)) {
                                 echo 'active';
                             }; ?>">
                                 <a href="<?= site_url('emails/dashboard') ?>">
-                                    <i class='bx bx-envelope iconX'></i>
+                                    <?= svg_icon('envelope', 20, 20, 'iconX') ?>
                                     <span class="title">Fila de Emails</span>
                                 </a>
                             </li>
@@ -520,7 +520,7 @@
                                 echo 'active';
                             }; ?>">
                                 <a href="<?= site_url('webhooks') ?>">
-                                    <i class='bx bx-webhook iconX'></i>
+                                    <?= svg_icon('webhook', 20, 20, 'iconX') ?>
                                     <span class="title">Webhooks</span>
                                 </a>
                             </li>
@@ -528,7 +528,7 @@
                                 echo 'active';
                             }; ?>">
                                 <a href="<?= site_url('webhooks/docs') ?>" target="_blank">
-                                    <i class='bx bx-book-open iconX'></i>
+                                    <?= svg_icon('book-open', 20, 20, 'iconX') ?>
                                     <span class="title">Docs Webhooks</span>
                                 </a>
                             </li>
@@ -536,7 +536,7 @@
                                 echo 'active';
                             }; ?>">
                                 <a href="<?= site_url('api/docs') ?>">
-                                    <i class='bx bx-code-alt iconX'></i>
+                                    <?= svg_icon('code-alt', 20, 20, 'iconX') ?>
                                     <span class="title">API v2</span>
                                 </a>
                             </li>
@@ -549,7 +549,7 @@
         <div class="botton-content">
             <li class="">
                 <a class="tip-bottom btn" title="" href="<?= site_url('login/sair'); ?>">
-                    <i class='bx bx-log-out-circle iconX'></i>
+                    <?= svg_icon('log-out', 20, 20, 'iconX') ?>
                     <span class="title">Sair</span>
                     <span class="title-tooltip">Sair</span>
                 </a>
