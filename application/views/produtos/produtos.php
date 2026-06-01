@@ -2,19 +2,6 @@
   select {
     width: 70px;
   }
-  .btn-nwe6 {
-    background-color: #ff9800;
-    color: white;
-    padding: 4px 8px;
-    border-radius: 3px;
-    text-decoration: none;
-    display: inline-block;
-  }
-  .btn-nwe6:hover {
-    background-color: #f57c00;
-    color: white;
-    text-decoration: none;
-  }
 </style>
 <div class="new122">
     <div class="widget-title" style="margin: -20px 0 0">
@@ -74,21 +61,21 @@
                     echo '<td>' . e($r->descricao) . '</td>';
                     echo '<td>' . $r->estoque . '</td>';
                     echo '<td>' . number_format($r->precoVenda, 2, ',', '.') . '</td>';
-                    echo '<td>';
+                    echo '<td class="text-nowrap">';
                     if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vProduto')) {
-                        echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/produtos/visualizar/' . $r->idProdutos . '" class="btn-nwe" title="Visualizar Produto">' . svg_icon('eye', 16, 16) . '</a>  ';
+                        echo '<a href="' . base_url() . 'index.php/produtos/visualizar/' . $r->idProdutos . '" class="btn-action btn-action-view" title="Visualizar Produto">' . svg_icon('eye', 16, 16) . '</a>';
                     }
                     if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eProduto')) {
-                        echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/produtos/editar/' . $r->idProdutos . '" class="btn-nwe3" title="Editar Produto">' . svg_icon('edit', 16, 16) . '</a>';
+                        echo '<a href="' . base_url() . 'index.php/produtos/editar/' . $r->idProdutos . '" class="btn-action btn-action-edit" title="Editar Produto">' . svg_icon('edit', 16, 16) . '</a>';
                     }
                     if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dProduto')) {
-                        echo '<a style="margin-right: 1%" href="#modal-excluir" role="button" data-bs-toggle="modal" produto="' . $r->idProdutos . '" class="btn-nwe4" title="Excluir Produto">' . svg_icon('trash', 16, 16) . '</a>';
+                        echo '<a href="#modal-excluir" role="button" data-bs-toggle="modal" produto="' . $r->idProdutos . '" class="btn-action btn-action-delete" title="Excluir Produto">' . svg_icon('trash', 16, 16) . '</a>';
                     }
                     if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eProduto')) {
-                        echo '<a href="#atualizar-estoque" role="button" data-bs-toggle="modal" produto="' . $r->idProdutos . '" estoque="' . $r->estoque . '" class="btn-nwe5" title="Atualizar Estoque">' . svg_icon('plus-circle', 16, 16) . '</a>';
+                        echo '<a href="#atualizar-estoque" role="button" data-bs-toggle="modal" produto="' . $r->idProdutos . '" estoque="' . $r->estoque . '" class="btn-action btn-action-secondary" title="Atualizar Estoque">' . svg_icon('plus-circle', 16, 16) . '</a>';
                     }
                     if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eProduto')) {
-                        echo '<a style="margin-right: 1%" href="javascript:void(0);" onclick="zerarValor(' . $r->idProdutos . ', \'' . htmlspecialchars($r->descricao, ENT_QUOTES) . '\')" class="btn-nwe6" title="Zerar Valor"><i class="bx bx-reset bx-xs"></i></a>';
+                        echo '<a href="javascript:void(0);" onclick="zerarValor(' . $r->idProdutos . ', \'' . htmlspecialchars($r->descricao, ENT_QUOTES) . '\')" class="btn-action btn-action-secondary" title="Zerar Valor">' . svg_icon('refresh', 16, 16) . '</a>';
                     }
                     echo '</td>';
                     echo '</tr>';

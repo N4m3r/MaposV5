@@ -1289,14 +1289,17 @@ td.acoes-col,
 th.acoes-col,
 .acoes-col,
 td:has(.btn-nwe),
-td:has(.btn-nwe3) {
+td:has(.btn-nwe3),
+td:has(.btn-action) {
     white-space: nowrap !important;
     text-align: center !important;
     vertical-align: middle !important;
 }
 
 td:has(.btn-nwe)>a,
-td:has(.btn-nwe)>span {
+td:has(.btn-nwe)>span,
+td:has(.btn-action)>a,
+td:has(.btn-action)>span {
     margin-right: 4px !important;
     margin-bottom: 2px !important;
 }
@@ -1369,43 +1372,49 @@ body[data-theme="darkorange"] .pagination .page-item.active .page-link {
 /* 4. INJEÃ‡ÃƒO DE ÃCONES FALTANTES (Fallback para botÃµes sem Ã­cones)        */
 /* ========================================================================= */
 
-/* Se algum botÃ£o de aÃ§Ã£o nÃ£o tiver um Ã­cone (<i class="bx...">), injetamos um padrÃ£o via CSS usando FontAwesome */
-.btn-nwe:not(:has(i))::before {
+/* Se algum botÃ£o de aÃ§Ã£o nÃ£o tiver um Ã­cone, injetamos um padrÃ£o via CSS usando FontAwesome */
+.btn-nwe:not(:has(i)):not(:has(svg))::before,
+.btn-action.btn-action-view:not(:has(i)):not(:has(svg))::before {
     content: "\f06e" !important;
     /* fa-eye */
     font-family: 'Font Awesome 6 Free' !important;
     font-weight: 900 !important;
 }
 
-.btn-nwe2:not(:has(i))::before {
+.btn-nwe2:not(:has(i)):not(:has(svg))::before,
+.btn-action.btn-action-secondary:not(:has(i)):not(:has(svg))::before {
     content: "\f0c4" !important;
     /* fa-cut ou fa-bars */
     font-family: 'Font Awesome 6 Free' !important;
     font-weight: 900 !important;
 }
 
-.btn-nwe3:not(:has(i))::before {
+.btn-nwe3:not(:has(i)):not(:has(svg))::before,
+.btn-action.btn-action-edit:not(:has(i)):not(:has(svg))::before {
     content: "\f044" !important;
     /* fa-pen-to-square */
     font-family: 'Font Awesome 6 Free' !important;
     font-weight: 900 !important;
 }
 
-.btn-nwe4:not(:has(i))::before {
+.btn-nwe4:not(:has(i)):not(:has(svg))::before,
+.btn-action.btn-action-delete:not(:has(i)):not(:has(svg))::before {
     content: "\f1f8" !important;
     /* fa-trash */
     font-family: 'Font Awesome 6 Free' !important;
     font-weight: 900 !important;
 }
 
-.btn-nwe5:not(:has(i))::before {
+.btn-nwe5:not(:has(i)):not(:has(svg))::before,
+.btn-action.btn-action-finance:not(:has(i)):not(:has(svg))::before {
     content: "\f021" !important;
     /* fa-arrows-rotate */
     font-family: 'Font Awesome 6 Free' !important;
     font-weight: 900 !important;
 }
 
-.btn-nwe6:not(:has(i))::before {
+.btn-nwe6:not(:has(i)):not(:has(svg))::before,
+.btn-action.btn-action-print:not(:has(i)):not(:has(svg))::before {
     content: "\f02f" !important;
     /* fa-print */
     font-family: 'Font Awesome 6 Free' !important;
@@ -1497,9 +1506,9 @@ body[data-theme="darkorange"] textarea:focus {
 }
 
 /* Links em fundos escuros */
-body[data-theme="puredark"] a:not(.btn-nwe):not(.btn-nwe2):not(.btn-nwe3):not(.btn-nwe4):not(.btn-nwe5):not(.btn-nwe6):not(.page-link):not(.button),
-body[data-theme="darkviolet"] a:not(.btn-nwe):not(.btn-nwe2):not(.btn-nwe3):not(.btn-nwe4):not(.btn-nwe5):not(.btn-nwe6):not(.page-link):not(.button),
-body[data-theme="darkorange"] a:not(.btn-nwe):not(.btn-nwe2):not(.btn-nwe3):not(.btn-nwe4):not(.btn-nwe5):not(.btn-nwe6):not(.page-link):not(.button) {
+body[data-theme="puredark"] a:not(.btn-nwe):not(.btn-nwe2):not(.btn-nwe3):not(.btn-nwe4):not(.btn-nwe5):not(.btn-nwe6):not(.btn-action):not(.page-link):not(.button),
+body[data-theme="darkviolet"] a:not(.btn-nwe):not(.btn-nwe2):not(.btn-nwe3):not(.btn-nwe4):not(.btn-nwe5):not(.btn-nwe6):not(.btn-action):not(.page-link):not(.button),
+body[data-theme="darkorange"] a:not(.btn-nwe):not(.btn-nwe2):not(.btn-nwe3):not(.btn-nwe4):not(.btn-nwe5):not(.btn-nwe6):not(.btn-action):not(.page-link):not(.button) {
     color: #60a5fa !important;
     /* Azul claro e acessÃ­vel */
 }

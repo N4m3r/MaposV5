@@ -46,16 +46,16 @@
 
                         echo '<td>' . $cobrancaStatus . '</td>';
                         echo '<td>R$ ' . number_format($r->total / 100, 2, ',', '.') . '</td>';
-                        echo '<td>';
+                        echo '<td class="text-nowrap">';
                         if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vCobranca')) {
-                            echo '<a style="margin-right: 1%" href="' . base_url('index.php/mine/atualizarcobranca/' . $r->idCobranca) . '"  class="btn-nwe" title="Atualizar Cobrança">' . svg_icon('refresh', 16, 16) . '</a>';
+                            echo '<a href="' . base_url('index.php/mine/atualizarcobranca/' . $r->idCobranca) . '" class="btn-action btn-action-secondary" title="Atualizar Cobrança">' . svg_icon('refresh', 16, 16) . '</a>';
                         }
 
                         if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eCobranca')) {
-                            echo '<a style="margin-right: 1%" href="' . $r->link . '"  target="_blank" class="btn-nwe" title="Visualizar boleto"><i class="bx bx-barcode" ></i></a>';
-                            echo '<a style="margin-right: 1%" href="' . base_url('index.php/mine/enviarcobranca/' . $r->idCobranca) . '" class="btn-nwe2" title="Reenviar por email"><i class="bx bx-mail-send" ></i></a>';
+                            echo '<a href="' . $r->link . '" target="_blank" class="btn-action btn-action-secondary" title="Visualizar boleto">' . svg_icon('barcode', 16, 16) . '</a>';
+                            echo '<a href="' . base_url('index.php/mine/enviarcobranca/' . $r->idCobranca) . '" class="btn-action btn-action-finance" title="Reenviar por email">' . svg_icon('envelope', 16, 16) . '</a>';
                         }
-                        echo '<a style="margin-right: 1%" href="' . $r->link . '"  target="_blank" class="btn-nwe" title="Visualizar boleto"><i class="bx bx-barcode" ></i></a>';
+                        echo '<a href="' . $r->link . '" target="_blank" class="btn-action btn-action-secondary" title="Visualizar boleto">' . svg_icon('barcode', 16, 16) . '</a>';
                         echo '</td>';
                         echo '</tr>';
                     } ?>

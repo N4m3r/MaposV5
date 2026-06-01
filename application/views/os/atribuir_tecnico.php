@@ -610,10 +610,10 @@
                                     </td>
                                     <td class="text-center">
                                         <a href="<?php echo base_url(); ?>index.php/os/visualizar/<?php echo (int)$os->idOs; ?>"
-                                           class="btn-nwe btn-acao" title="Visualizar OS">
-                                            <i class='fas fa-eye'></i>
+                                           class="btn-action btn-action-view" title="Visualizar OS">
+                                            <?php echo svg_icon('eye', 16, 16); ?>
                                         </a>
-                                        <button class="btn-nwe3 btn-acao btn-atribuir"
+                                        <button class="btn-action btn-action-secondary btn-atribuir"
                                                 data-os="<?php echo e($os->idOs); ?>"
                                                 data-cliente="<?php echo e($os->nomeCliente); ?>"
                                                 data-tecnico-atual="<?php echo e($os->tecnico_responsavel); ?>"
@@ -622,7 +622,7 @@
                                             <i class='<?php echo $os->tecnico_responsavel ? 'fas fa-exchange-alt' : 'fas fa-user-plus'; ?>'></i>
                                         </button>
                                         <?php if ($os->tecnico_responsavel): ?>
-                                            <button class="btn-nwe4 btn-acao btn-remover"
+                                            <button class="btn-action btn-action-delete btn-remover"
                                                     data-os="<?php echo e($os->idOs); ?>"
                                                     data-cliente="<?php echo e($os->nomeCliente); ?>"
                                                     title="Remover Técnico">

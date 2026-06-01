@@ -131,22 +131,22 @@
 
                             echo '<td><span class="badge" style="background-color: ' . $corStatus . '; border-color: ' . $corStatus . '">' . e($r->status) . '</span> </td>';
                             echo '<td>' . $faturado . '</td>';
-                            echo '<td style="text-align:left">';
+                            echo '<td class="text-nowrap" style="text-align:left">';
 
                             if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vVenda')) {
-                                echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/vendas/visualizar/' . e($r->idVendas) . '" class="btn-nwe" title="Ver mais detalhes">' . svg_icon('eye', 16, 16) . '</a>';
-                                echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/vendas/imprimir/' . e($r->idVendas) . '" target="_blank" class="btn-nwe6" title="Imprimir A4">' . svg_icon('printer', 16, 16) . '</a>';
-                                echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/vendas/imprimirTermica/' . e($r->idVendas) . '" target="_blank" class="btn-nwe6" title="Imprimir Não Fiscal">' . svg_icon('printer', 16, 16) . '</a>';
+                                echo '<a href="' . base_url() . 'index.php/vendas/visualizar/' . e($r->idVendas) . '" class="btn-action btn-action-view" title="Ver mais detalhes">' . svg_icon('eye', 16, 16) . '</a>';
+                                echo '<a href="' . base_url() . 'index.php/vendas/imprimir/' . e($r->idVendas) . '" target="_blank" class="btn-action btn-action-print" title="Imprimir A4">' . svg_icon('printer', 16, 16) . '</a>';
+                                echo '<a href="' . base_url() . 'index.php/vendas/imprimirTermica/' . e($r->idVendas) . '" target="_blank" class="btn-action btn-action-print" title="Imprimir Não Fiscal">' . svg_icon('printer', 16, 16) . '</a>';
                             }
 
                             $editavel = $this->vendas_model->isEditable($r->idVendas);
 
                             if ($r->faturado != 1 || $editavel) {
                                 if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eVenda')) {
-                                    echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/vendas/editar/' . e($r->idVendas) . '" class="btn-nwe3" title="Editar venda">' . svg_icon('edit', 16, 16) . '</a>';
+                                    echo '<a href="' . base_url() . 'index.php/vendas/editar/' . e($r->idVendas) . '" class="btn-action btn-action-edit" title="Editar venda">' . svg_icon('edit', 16, 16) . '</a>';
                                 }
                                 if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dVenda')) {
-                                    echo '<a href="#modal-excluir" role="button" data-bs-toggle="modal" venda="' . e($r->idVendas) . '" class="btn-nwe4" title="Excluir Venda">' . svg_icon('trash', 16, 16) . '</a>';
+                                    echo '<a href="#modal-excluir" role="button" data-bs-toggle="modal" venda="' . e($r->idVendas) . '" class="btn-action btn-action-delete" title="Excluir Venda">' . svg_icon('trash', 16, 16) . '</a>';
                                 }
                             }
                             echo '</td>';

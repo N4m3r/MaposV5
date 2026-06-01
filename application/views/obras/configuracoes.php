@@ -1,4 +1,6 @@
-<?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
+﻿<?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
+
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/obras-modern-theme.css">
 
 <div class="row" style="padding: 0 20px 20px 20px;">
     <div class="col-12">

@@ -66,12 +66,12 @@
                                     <td><?php echo e($r->nomeCliente) ?></td>
                                     <td><?php echo e($r->documento) ?></td>
                                     <td><?php echo e($r->telefone ?: $r->celular) ?></td>
-                                    <td>
+                                    <td class="text-nowrap">
                                         <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vCliente')) { ?>
-                                            <a href="<?php echo base_url() ?>index.php/clientes/visualizar/<?php echo (int)$r->idClientes ?>" class="btn-nwe" title="Ver mais detalhes"><?= svg_icon('eye', 16, 16) ?></a>
+                                            <a href="<?php echo base_url() ?>index.php/clientes/visualizar/<?php echo (int)$r->idClientes ?>" class="btn-action btn-action-view" title="Ver mais detalhes"><?= svg_icon('eye', 16, 16) ?></a>
                                         <?php } ?>
                                         <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eCliente')) { ?>
-                                            <a href="<?php echo base_url() ?>index.php/clientes/editar/<?php echo (int)$r->idClientes ?>" class="btn-nwe3" title="Editar Cliente"><?= svg_icon('edit', 16, 16) ?></a>
+                                            <a href="<?php echo base_url() ?>index.php/clientes/editar/<?php echo (int)$r->idClientes ?>" class="btn-action btn-action-edit" title="Editar Cliente"><?= svg_icon('edit', 16, 16) ?></a>
                                         <?php } ?>
                                     </td>
                                 </tr>
@@ -130,12 +130,12 @@
                                     <td><?php echo e($r->nomeCliente) ?></td>
                                     <td><span class="badge" style="background-color: <?php echo e($cor); ?>; border-color: <?php echo e($cor); ?>"><?php echo e($r->status) ?></span></td>
                                     <td><?php echo date('d/m/Y', strtotime($r->dataInicial)) ?></td>
-                                    <td>
+                                    <td class="text-nowrap">
                                         <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vOs')) { ?>
-                                            <a href="<?php echo base_url() ?>index.php/os/visualizar/<?php echo (int)$r->idOs ?>" class="btn-nwe" title="Ver mais detalhes"><?= svg_icon('eye', 16, 16) ?></a>
+                                            <a href="<?php echo base_url() ?>index.php/os/visualizar/<?php echo (int)$r->idOs ?>" class="btn-action btn-action-view" title="Ver mais detalhes"><?= svg_icon('eye', 16, 16) ?></a>
                                         <?php } ?>
                                         <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eOs')) { ?>
-                                            <a href="<?php echo base_url() ?>index.php/os/editar/<?php echo (int)$r->idOs ?>" class="btn-nwe3" title="Editar OS"><?= svg_icon('edit', 16, 16) ?></a>
+                                            <a href="<?php echo base_url() ?>index.php/os/editar/<?php echo (int)$r->idOs ?>" class="btn-action btn-action-edit" title="Editar OS"><?= svg_icon('edit', 16, 16) ?></a>
                                         <?php } ?>
                                     </td>
                                 </tr>
@@ -183,12 +183,12 @@
                                     <td><?php echo e($r->descricao) ?></td>
                                     <td>R$ <?php echo number_format($r->precoVenda, 2, ',', '.') ?></td>
                                     <td><?php echo e($r->estoque) ?></td>
-                                    <td>
+                                    <td class="text-nowrap">
                                         <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vProduto')) { ?>
-                                            <a href="<?php echo base_url() ?>index.php/produtos/visualizar/<?php echo (int)$r->idProdutos ?>" class="btn-nwe" title="Ver mais detalhes"><?= svg_icon('eye', 16, 16) ?></a>
+                                            <a href="<?php echo base_url() ?>index.php/produtos/visualizar/<?php echo (int)$r->idProdutos ?>" class="btn-action btn-action-view" title="Ver mais detalhes"><?= svg_icon('eye', 16, 16) ?></a>
                                         <?php } ?>
                                         <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eProduto')) { ?>
-                                            <a href="<?php echo base_url() ?>index.php/produtos/editar/<?php echo (int)$r->idProdutos ?>" class="btn-nwe3" title="Editar Produto"><?= svg_icon('edit', 16, 16) ?></a>
+                                            <a href="<?php echo base_url() ?>index.php/produtos/editar/<?php echo (int)$r->idProdutos ?>" class="btn-action btn-action-edit" title="Editar Produto"><?= svg_icon('edit', 16, 16) ?></a>
                                         <?php } ?>
                                     </td>
                                 </tr>
@@ -232,9 +232,9 @@
                                     <td><?php echo (int)$r->idServicos ?></td>
                                     <td><?php echo e($r->nome) ?></td>
                                     <td>R$ <?php echo number_format($r->preco, 2, ',', '.') ?></td>
-                                    <td>
+                                    <td class="text-nowrap">
                                         <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eServico')) { ?>
-                                            <a href="<?php echo base_url() ?>index.php/servicos/editar/<?php echo (int)$r->idServicos ?>" class="btn-nwe3" title="Editar Serviço"><?= svg_icon('edit', 16, 16) ?></a>
+                                            <a href="<?php echo base_url() ?>index.php/servicos/editar/<?php echo (int)$r->idServicos ?>" class="btn-action btn-action-edit" title="Editar Serviço"><?= svg_icon('edit', 16, 16) ?></a>
                                         <?php } ?>
                                     </td>
                                 </tr>

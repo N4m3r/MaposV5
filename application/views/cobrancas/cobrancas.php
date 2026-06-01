@@ -56,19 +56,19 @@
 
                         echo '<td>' . e($cobrancaStatus) . '</td>';
                         echo '<td>R$ ' . e(number_format($r->total / 100, 2, ',', '.')) . '</td>';
-                        echo '<td>';
+                        echo '<td class="text-nowrap">';
                         if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vCobranca')) {
-                            echo '<a style="margin-right: 1%" href="#modal-cancelar" role="button" data-bs-toggle="modal" cancela_id="' . $r->idCobranca . '" class="btn-nwe4" title="Cancelar Cobrança">' . svg_icon('x', 16, 16) . '</a>';
-                            echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/cobrancas/atualizar/' . $r->idCobranca . '" class="btn-nwe" title="Atualizar Cobrança">' . svg_icon('refresh', 16, 16) . '</a>';
-                            echo '<a style="margin-right: 1%" href="#modal-confirmar" role="button" data-bs-toggle="modal" confirma_id="' . $r->idCobranca . '" class="btn-nwe3" title="Confirmar pagamento">' . svg_icon('check', 16, 16) . '</a>';
-                            echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/cobrancas/visualizar/' . $r->idCobranca . '" class="btn-nwe2" title="Ver mais detalhes">' . svg_icon('eye', 16, 16) . '</a>';
-                            echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/cobrancas/enviarEmail/' . $r->idCobranca . '" class="btn-nwe5" title="Enviar por E-mail">' . svg_icon('envelope', 16, 16) . '</a>';
+                            echo '<a href="#modal-cancelar" role="button" data-bs-toggle="modal" cancela_id="' . $r->idCobranca . '" class="btn-action btn-action-delete" title="Cancelar Cobrança">' . svg_icon('x', 16, 16) . '</a>';
+                            echo '<a href="' . base_url() . 'index.php/cobrancas/atualizar/' . $r->idCobranca . '" class="btn-action btn-action-secondary" title="Atualizar Cobrança">' . svg_icon('refresh', 16, 16) . '</a>';
+                            echo '<a href="#modal-confirmar" role="button" data-bs-toggle="modal" confirma_id="' . $r->idCobranca . '" class="btn-action btn-action-finance" title="Confirmar pagamento">' . svg_icon('check', 16, 16) . '</a>';
+                            echo '<a href="' . base_url() . 'index.php/cobrancas/visualizar/' . $r->idCobranca . '" class="btn-action btn-action-view" title="Ver mais detalhes">' . svg_icon('eye', 16, 16) . '</a>';
+                            echo '<a href="' . base_url() . 'index.php/cobrancas/enviarEmail/' . $r->idCobranca . '" class="btn-action btn-action-finance" title="Enviar por E-mail">' . svg_icon('envelope', 16, 16) . '</a>';
                         }
                         if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eCobranca') && $r->barcode != '') {
-                            echo '<a style="margin-right: 1%" href="' . e($r->link) . '" target="_blank" class="btn-nwe" title="Visualizar boleto">' . svg_icon('barcode', 16, 16) . '</a>';
+                            echo '<a href="' . e($r->link) . '" target="_blank" class="btn-action btn-action-secondary" title="Visualizar boleto">' . svg_icon('barcode', 16, 16) . '</a>';
                         }
                         if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dCobranca')) {
-                            echo '<a href="#modal-excluir" role="button" data-bs-toggle="modal" excluir_id="' . $r->idCobranca . '" class="btn-nwe4" title="Excluir Cobrança">' . svg_icon('trash', 16, 16) . '</a>';
+                            echo '<a href="#modal-excluir" role="button" data-bs-toggle="modal" excluir_id="' . $r->idCobranca . '" class="btn-action btn-action-delete" title="Excluir Cobrança">' . svg_icon('trash', 16, 16) . '</a>';
                         }
                         echo '</td>';
                         echo '</tr>';

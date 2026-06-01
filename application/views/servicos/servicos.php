@@ -54,12 +54,12 @@
                             echo '<td>' . e($r->nome) . '</td>';
                             echo '<td>' . number_format($r->preco, 2, ',', '.') . '</td>';
                             echo '<td>' . e($r->descricao) . '</td>';
-                            echo '<td>';
+                            echo '<td class="text-nowrap">';
                             if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eServico')) {
-                                echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/servicos/editar/' . $r->idServicos . '" class="btn-nwe3" title="Editar Serviço">' . svg_icon('edit', 16, 16) . '</a>';
+                                echo '<a href="' . base_url() . 'index.php/servicos/editar/' . $r->idServicos . '" class="btn-action btn-action-edit" title="Editar Serviço">' . svg_icon('edit', 16, 16) . '</a>';
                             }
                             if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dServico')) {
-                                echo '<a href="#modal-excluir" role="button" data-bs-toggle="modal" servico="' . $r->idServicos . '" class="btn-nwe4" title="Excluir Serviço">' . svg_icon('trash', 16, 16) . '</a>  ';
+                                echo '<a href="#modal-excluir" role="button" data-bs-toggle="modal" servico="' . $r->idServicos . '" class="btn-action btn-action-delete" title="Excluir Serviço">' . svg_icon('trash', 16, 16) . '</a>';
                             }
                             echo '</td>';
                             echo '</tr>';
