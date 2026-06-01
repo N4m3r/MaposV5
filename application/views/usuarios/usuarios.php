@@ -61,7 +61,7 @@
                                 <td><span class="badge <?= $situacaoClasse ?>"><?= ucfirst($situacao) ?></span></td>
                                 <td><?= e($r->dataExpiracao) ?></td>
                                 <td>
-                                    <a href="<?= base_url('index.php/usuarios/editar/' . $r->idUsuarios) ?>" class="btn-nwe3" title="Editar OS"><i class="bx bx-edit"></i></a>
+                                    <a href="<?= base_url('index.php/usuarios/editar/' . $r->idUsuarios) ?>" class="btn-nwe3" title="Editar OS"><?= svg_icon('edit', 16, 16) ?></a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

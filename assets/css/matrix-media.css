@@ -33,31 +33,25 @@ body {
 #sidebar > ul > li > a:hover {
 	background-color: transparent; color: var(--funCont); text-shadow: 0 -1px 0 rgb(0 0 0 / 25%);
 }
-/* Submenu principal - comportamento controlado por custom.css */
-/* (regras de position/left movidas para custom.css com seletores mais especificos) */
+/* Submenu principal - dropdown inline controlado por custom.css */
 #sidebar > ul > li.submenu > ul {
     display: none;
-    z-index: 100002 !important;
 }
 
-/* Submenu aninhado (nível 2+) - aparece abaixo do item pai */
+/* Submenu aninhado (nível 2+) - inline abaixo do item pai */
 #sidebar > ul > li.submenu > ul > li.submenu > ul {
     position: relative;
     left: auto;
     width: auto;
     bottom: auto;
     top: auto;
-    background-color: rgb(240 241 245 / 98%);
     border-radius: 4px;
-    box-shadow: inset 0 2px 4px rgb(0 0 0 / 10%);
-    z-index: 100003 !important;
     display: none;
     margin-left: 15px;
     padding: 5px 0;
 }
 
 /* Ajuste para sidebar fechado - comportamento controlado por custom.css */
-/* (position:fixed e left calculados via JS/CSS em custom.css) */
 
 /* Scrollbar para submenus longos */
 #sidebar > ul > li.submenu > ul::-webkit-scrollbar {

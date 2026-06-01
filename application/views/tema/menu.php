@@ -510,14 +510,14 @@
                                 </li>
                                 <li class="<?php if (isset($menuConfiguracoesTemplates)) { echo 'active'; }; ?>">
                                     <a href="<?= site_url('notificacoes/templates') ?>">
-                                        <i class='bx bx-message-square-dots iconX'></i>
+                                        <?= svg_icon('message-square-dots', 20, 20, 'iconX') ?>
                                         <span class="title">Templates</span>
                                         <span class="title-tooltip">Templates</span>
                                     </a>
                                 </li>
                                 <li class="<?php if (isset($menuConfiguracoesLogs)) { echo 'active'; }; ?>">
                                     <a href="<?= site_url('notificacoes/logs') ?>">
-                                        <i class='bx bx-history iconX'></i>
+                                        <?= svg_icon('history', 20, 20, 'iconX') ?>
                                         <span class="title">Historico</span>
                                         <span class="title-tooltip">Historico</span>
                                     </a>
@@ -528,13 +528,13 @@
                             <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cPermissao')) { ?>
                                 <li class="menu-divider-sub"><span class="divider-text-sub">Administracao</span></li>
                                 <li class="<?php if (isset($menuMigrate)) { echo 'active'; }; ?>"><a href="<?= site_url('migrate') ?>"><?= svg_icon('database', 20, 20, 'iconX') ?><span class="title">Migracoes DB</span><span class="title-tooltip">Migracoes</span></a></li>
-                                <li class="<?php if (isset($menuDiagnostico)) { echo 'active'; }; ?>"><a href="<?= site_url('diagnostico') ?>"><i class='bx bx-bug iconX'></i><span class="title">Diagnostico</span><span class="title-tooltip">Diagnostico do Sistema</span></a></li>
-                                <li class="<?php if (isset($menuEmailQueue)) { echo 'active'; }; ?>"><a href="<?= site_url('emails/dashboard') ?>"><i class='bx bx-envelope iconX'></i><span class="title">Fila de Emails</span><span class="title-tooltip">Fila Emails</span></a></li>
+                                <li class="<?php if (isset($menuDiagnostico)) { echo 'active'; }; ?>"><a href="<?= site_url('diagnostico') ?>"><?= svg_icon('bug', 20, 20, 'iconX') ?><span class="title">Diagnostico</span><span class="title-tooltip">Diagnostico do Sistema</span></a></li>
+                                <li class="<?php if (isset($menuEmailQueue)) { echo 'active'; }; ?>"><a href="<?= site_url('emails/dashboard') ?>"><?= svg_icon('envelope', 20, 20, 'iconX') ?><span class="title">Fila de Emails</span><span class="title-tooltip">Fila Emails</span></a></li>
                                 <li class="<?php if (isset($menuEmailConfig)) { echo 'active'; }; ?>"><a href="<?= site_url('email/configuracoes') ?>"><?= svg_icon('cog', 20, 20, 'iconX') ?><span class="title">Config. Emails</span><span class="title-tooltip">Config Emails</span></a></li>
-                                <li class="<?php if (isset($menuWebhooks)) { echo 'active'; }; ?>"><a href="<?= site_url('webhooks') ?>"><i class='bx bx-webhook iconX'></i><span class="title">Webhooks</span><span class="title-tooltip">Webhooks</span></a></li>
-                                <li class="<?php if (isset($menuWebhooksDocs)) { echo 'active'; }; ?>"><a href="<?= site_url('webhooks/docs') ?>" target="_blank"><i class='bx bx-book-open iconX'></i><span class="title">Docs Webhooks</span><span class="title-tooltip">Docs Webhooks</span></a></li>
-                                <li class="<?php if (isset($menuApiDocs)) { echo 'active'; }; ?>"><a href="<?= site_url('api/docs') ?>"><i class='bx bx-code-alt iconX'></i><span class="title">API v2</span><span class="title-tooltip">API v2</span></a></li>
-                                <li class="<?php if (isset($menuAgenteIA)) { echo 'active'; }; ?>"><a href="<?= site_url('agente_ia') ?>"><i class='bx bx-bot iconX'></i><span class="title">Agente IA</span><span class="title-tooltip">Agente IA</span></a></li>
+                                <li class="<?php if (isset($menuWebhooks)) { echo 'active'; }; ?>"><a href="<?= site_url('webhooks') ?>"><?= svg_icon('webhook', 20, 20, 'iconX') ?><span class="title">Webhooks</span><span class="title-tooltip">Webhooks</span></a></li>
+                                <li class="<?php if (isset($menuWebhooksDocs)) { echo 'active'; }; ?>"><a href="<?= site_url('webhooks/docs') ?>" target="_blank"><?= svg_icon('book-open', 20, 20, 'iconX') ?><span class="title">Docs Webhooks</span><span class="title-tooltip">Docs Webhooks</span></a></li>
+                                <li class="<?php if (isset($menuApiDocs)) { echo 'active'; }; ?>"><a href="<?= site_url('api/docs') ?>"><?= svg_icon('code-alt', 20, 20, 'iconX') ?><span class="title">API v2</span><span class="title-tooltip">API v2</span></a></li>
+                                <li class="<?php if (isset($menuAgenteIA)) { echo 'active'; }; ?>"><a href="<?= site_url('agente_ia') ?>"><?= svg_icon('bot', 20, 20, 'iconX') ?><span class="title">Agente IA</span><span class="title-tooltip">Agente IA</span></a></li>
                             <?php } ?>
                         </ul>
                     </li>
@@ -553,7 +553,7 @@
                 </li>
                 <li>
                     <a class="tip-bottom btn" title="" href="<?= site_url('login/sair'); ?>">
-                        <i class='bx bx-log-out-circle iconX'></i>
+                        <?= svg_icon('log-out', 20, 20, 'iconX') ?>
                         <span class="title">Sair</span>
                         <span class="title-tooltip">Sair</span>
                     </a>

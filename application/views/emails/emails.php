@@ -36,7 +36,7 @@
                     echo '<td>' . $status[$r->status] . '</td>';
                     echo '<td>' . date('d/m/Y H:i:s', strtotime($r->date)) . '</td>';
                     echo '<td>';
-                    echo '<a href="#modal-excluir" role="button" data-bs-toggle="modal" email="' . $r->id . '" class="btn-nwe4" title="Excluir item"><i class="bx bx-trash-alt"></i></a>  ';
+                    echo '<a href="#modal-excluir" role="button" data-bs-toggle="modal" email="' . $r->id . '" class="btn-nwe4" title="Excluir item">' . svg_icon('trash', 16, 16) . '</a>  ';
                     echo '</td>';
                     echo '</tr>';
                 } ?>

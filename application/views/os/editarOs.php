@@ -262,8 +262,8 @@
                                                 echo '<td><div align="center">R$: ' . $precoProduto . '</td>';
                                                 if (strtolower($result->status) != "cancelado") {
                                                     echo '<td><div align="center">';
-                                                    echo '<a href="#" class="btn-nwe4 editar-produto" data-id="' . $p->idProdutos_os . '" data-descricao="' . e($p->descricao) . '" data-quantidade="' . $p->quantidade . '" data-preco="' . $precoProduto . '" title="Editar Produto"><i class="bx bx-edit"></i></a>&nbsp;';
-                                                    echo '<a href="" idAcao="' . $p->idProdutos_os . '" prodAcao="' . $p->idProdutos . '" quantAcao="' . $p->quantidade . '" title="Excluir Produto" class="btn-nwe4"><i class="bx bx-trash-alt"></i></a>';
+                                                    echo '<a href="#" class="btn-nwe4 editar-produto" data-id="' . $p->idProdutos_os . '" data-descricao="' . e($p->descricao) . '" data-quantidade="' . $p->quantidade . '" data-preco="' . $precoProduto . '" title="Editar Produto">' . svg_icon('edit', 16, 16) . '</a>&nbsp;';
+                                                    echo '<a href="" idAcao="' . $p->idProdutos_os . '" prodAcao="' . $p->idProdutos . '" quantAcao="' . $p->quantidade . '" title="Excluir Produto" class="btn-nwe4">' . svg_icon('trash', 16, 16) . '</a>';
                                                     echo '</td>';
                                                 } else {
                                                     echo '<td></td>';
@@ -347,8 +347,8 @@
                                                 echo '<td><div align="center">' . $quantidade . '</div></td>';
                                                 echo '<td><div align="center">R$ ' . $preco . '</div></td>';
                                                 echo '<td><div align="center">';
-                                                echo '<span class="btn-nwe4 editar-servico" data-id="' . $s->idServicos_os . '" data-nome="' . e($s->nome) . '" data-quantidade="' . $quantidade . '" data-preco="' . $preco . '" title="Editar Serviço"><i class="bx bx-edit"></i></span>&nbsp;';
-                                                echo '<span idAcao="' . $s->idServicos_os . '" title="Excluir Serviço" class="btn-nwe4 servico"><i class="bx bx-trash-alt"></i></span>';
+                                                echo '<span class="btn-nwe4 editar-servico" data-id="' . $s->idServicos_os . '" data-nome="' . e($s->nome) . '" data-quantidade="' . $quantidade . '" data-preco="' . $preco . '" title="Editar Serviço">' . svg_icon('edit', 16, 16) . '</span>&nbsp;';
+                                                echo '<span idAcao="' . $s->idServicos_os . '" title="Excluir Serviço" class="btn-nwe4 servico">' . svg_icon('trash', 16, 16) . '</span>';
                                                 echo '</div></td>';
                                                 echo '<td><div align="center">R$: ' . number_format($subtotals, 2, ',', '.') . '</div></td>';
                                                 echo '</tr>';
@@ -439,7 +439,7 @@
                                                 echo '<tr>';
                                                 echo '<td>' . date('d/m/Y H:i:s', strtotime($a->data_hora)) . '</td>';
                                                 echo '<td>' . e($a->anotacao) . '</td>';
-                                                echo '<td><span idAcao="' . $a->idAnotacoes . '" title="Excluir Anotação" class="btn-nwe4 anotacao"><i class="bx bx-trash-alt"></i></span></td>';
+                                                echo '<td><span idAcao="' . $a->idAnotacoes . '" title="Excluir Anotação" class="btn-nwe4 anotacao">' . svg_icon('trash', 16, 16) . '</span></td>';
                                                 echo '</tr>';
                                             }
                                             if (!$anotacoes) {

@@ -1,4 +1,4 @@
-/* Personalização da DIV com os campos de usuário e senha na área de login */
+﻿/* PersonalizaÃ§Ã£o da DIV com os campos de usuÃ¡rio e senha na Ã¡rea de login */
 
 .div-login {
     background-color: rgba(242, 242, 242, 0.1);
@@ -39,17 +39,17 @@
     color: #FFFFFF !important;
 }
 
-/* FIM DA PERSONALIZAÇÃO DA DIV LOGIN */
+/* FIM DA PERSONALIZAÃ‡ÃƒO DA DIV LOGIN */
 
-/* Personalização da calsse visualizar OS */
+/* PersonalizaÃ§Ã£o da calsse visualizar OS */
 
 #valores {
     color: green;
 }
 
-/* FIM DA PERSONALZIAÇÃODA CLASSE VISUALIZAR OS */
+/* FIM DA PERSONALZIAÃ‡ÃƒODA CLASSE VISUALIZAR OS */
 
-/* PERSONALIZAR DATA E HORA NO TOP DA PÁGINA */
+/* PERSONALIZAR DATA E HORA NO TOP DA PÃGINA */
 
 .date-time-top {
     margin-left: 5px !important;
@@ -65,7 +65,7 @@
     margin-bottom: 8px !important;
 }
 
-/* Correção do Mini Caledário */
+/* CorreÃ§Ã£o do Mini CaledÃ¡rio */
 .ui-datepicker {
     z-index: 99999 !important;
 }
@@ -162,7 +162,7 @@ textarea {
     filter: drop-shadow(0 0 10px rgba(40, 167, 69, 0.5));
 }
 
-/* Estilos específicos para mobile */
+/* Estilos especÃ­ficos para mobile */
 @media (max-width: 768px) {
     .upload-progress-overlay svg {
         width: 100px !important;
@@ -183,7 +183,7 @@ textarea {
     }
 }
 
-/* Animação de pulso no círculo de progresso */
+/* AnimaÃ§Ã£o de pulso no cÃ­rculo de progresso */
 @keyframes pulse {
 
     0%,
@@ -460,7 +460,7 @@ textarea {
     vertical-align: middle;
 }
 
-/* Badge para técnicos online */
+/* Badge para tÃ©cnicos online */
 .menu-badge.online {
     background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
     animation: pulse-badge 2s infinite;
@@ -607,7 +607,7 @@ textarea {
     color: var(--sidebar-text-muted, #7f8c8d) !important;
 }
 
-/* Tema Claro Padrão - Aumenta o contraste das opções inativas */
+/* Tema Claro PadrÃ£o - Aumenta o contraste das opÃ§Ãµes inativas */
 body:not([data-theme="puredark"]):not([data-theme="darkviolet"]):not([data-theme="darkorange"]) #sidebar li a,
 body:not([data-theme="puredark"]):not([data-theme="darkviolet"]):not([data-theme="darkorange"]) #sidebar li a .iconX,
 body:not([data-theme="puredark"]):not([data-theme="darkviolet"]):not([data-theme="darkorange"]) #sidebar li a .title,
@@ -639,14 +639,14 @@ body[data-theme="darkviolet"] #sidebar li a,
 body[data-theme="darkviolet"] #sidebar li a .iconX,
 body[data-theme="darkviolet"] #sidebar li a .title,
 body[data-theme="darkviolet"] #sidebar li a i {
-    color: #e9d5ff !important; /* Lilás claro */
+    color: #e9d5ff !important; /* LilÃ¡s claro */
 }
 
 body[data-theme="darkorange"] #sidebar li a,
 body[data-theme="darkorange"] #sidebar li a .iconX,
 body[data-theme="darkorange"] #sidebar li a .title,
 body[data-theme="darkorange"] #sidebar li a i {
-    color: #ffe4e6 !important; /* Pêssego/Salmão suave */
+    color: #ffe4e6 !important; /* PÃªssego/SalmÃ£o suave */
 }
 
 /* Cor ativa nos temas escuros preserva o destaque */
@@ -927,40 +927,81 @@ body[data-theme="darkorange"] #sidebar li.active i {
 }
 
 /* ============================================
-   INLINE EXPAND / FLYOUT BEHAVIOR
-   Expanded sidebar: submenus expand inline (slideDown)
-   Collapsed sidebar: submenus flyout to the right
+   SIDEBAR SUBMENU - DROPDOWN INLINE
+   Submenus abrem logo abaixo do item clicado,
+   dentro do sidebar, sem flyout lateral.
    ============================================ */
 
-/* Expanded sidebar: category submenus expand inline */
-#sidebar:not(.open) > .menu-bar > .menu > .menu-links > li.submenu > ul {
+/* Container: permite que submenus sejam visiveis */
+#sidebar .menu-bar {
+    overflow: visible;
+}
+
+#sidebar .menu-scrollable {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+}
+
+/* Submenu dropdown (abre abaixo do item) - todos os niveis */
+#sidebar li.submenu > ul {
     position: relative !important;
     left: auto !important;
     width: auto !important;
     max-height: none !important;
-    background-color: rgba(var(--sidebar-accent-rgb), 0.06) !important;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.08) !important;
-    border-radius: 6px !important;
     margin: 2px 8px 4px 8px !important;
-    padding: 4px 0 4px 0 !important;
+    padding: 4px 0 !important;
+    background-color: rgba(var(--sidebar-accent-rgb), 0.06) !important;
+    border-radius: 6px !important;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+    list-style: none !important;
 }
 
-/* Expanded sidebar: nested submenus inside categories */
-#sidebar:not(.open) > .menu-bar > .menu > .menu-links > li.submenu > ul > li.submenu > ul {
+/* Submenu aninhado (nivel 2) */
+#sidebar li.submenu > ul > li.submenu > ul {
     position: relative !important;
     left: 0 !important;
     width: auto !important;
-    margin-left: 8px !important;
-    margin-right: 8px !important;
-    margin-top: 2px !important;
+    margin: 2px 8px 4px 8px !important;
+    padding: 4px 0 !important;
     background-color: rgba(var(--sidebar-accent-rgb), 0.04) !important;
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06) !important;
     border-radius: 4px !important;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06) !important;
 }
 
-/* Collapsed sidebar: category submenus flyout via fixed positioning
-   Uses position:fixed to escape overflow clipping from .menu-scrollable */
-#sidebar.open > .menu-bar > .menu > .menu-links > li.submenu > ul {
+/* Temas claros */
+body:not([data-theme="puredark"]):not([data-theme="darkviolet"]):not([data-theme="darkorange"])
+#sidebar li.submenu > ul {
+    background-color: rgba(0, 0, 0, 0.04) !important;
+}
+
+body:not([data-theme="puredark"]):not([data-theme="darkviolet"]):not([data-theme="darkorange"])
+#sidebar li.submenu > ul > li.submenu > ul {
+    background-color: rgba(0, 0, 0, 0.03) !important;
+}
+
+/* Itens do submenu */
+#sidebar li.submenu > ul > li {
+    height: auto;
+    min-height: 36px;
+}
+
+#sidebar li.submenu > ul > li > a {
+    padding: 6px 12px;
+    font-size: 0.92em;
+    border-radius: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Submenu hover */
+#sidebar li.submenu > ul > li > a:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateX(2px);
+}
+
+/* --- Sidebar colapsada: flyout lateral via hover --- */
+#sidebar.open li.submenu > ul {
     position: fixed !important;
     left: 80px !important;
     width: 240px !important;
@@ -974,12 +1015,10 @@ body[data-theme="darkorange"] #sidebar li.active i {
     z-index: 100002 !important;
 }
 
-/* Collapsed sidebar: show on hover */
-#sidebar.open > .menu-bar > .menu > .menu-links > li.submenu:hover > ul {
+#sidebar.open li.submenu:hover > ul {
     display: block !important;
 }
 
-/* Collapsed sidebar: hide submenu text, show icon only */
 #sidebar.open li.submenu > a .title {
     display: none;
 }
@@ -988,86 +1027,32 @@ body[data-theme="darkorange"] #sidebar li.active i {
     display: none;
 }
 
-/* Collapsed sidebar: tooltip for category header */
 #sidebar.open li.submenu:hover > a .title-tooltip {
     display: block;
     opacity: 1;
-    animation: tooltipFadeIn 0.2s ease forwards;
 }
 
-/* Theme adjustments for collapsed flyout */
 body:not([data-theme="puredark"]):not([data-theme="darkviolet"]):not([data-theme="darkorange"])
-#sidebar.open > .menu-bar > .menu > .menu-links > li.submenu > ul {
+#sidebar.open li.submenu > ul {
     background-color: #2a2a3e !important;
 }
 
-body[data-theme="puredark"]
-#sidebar.open > .menu-bar > .menu > .menu-links > li.submenu > ul {
+body[data-theme="puredark"] #sidebar.open li.submenu > ul {
     background-color: #1a1a2e !important;
 }
 
-body[data-theme="darkviolet"]
-#sidebar.open > .menu-bar > .menu > .menu-links > li.submenu > ul {
+body[data-theme="darkviolet"] #sidebar.open li.submenu > ul {
     background-color: #2d1b69 !important;
 }
 
-body[data-theme="darkorange"]
-#sidebar.open > .menu-bar > .menu > .menu-links > li.submenu > ul {
+body[data-theme="darkorange"] #sidebar.open li.submenu > ul {
     background-color: #2d1b0e !important;
 }
 
-/* White theme inline submenu backgrounds */
-body:not([data-theme="puredark"]):not([data-theme="darkviolet"]):not([data-theme="darkorange"])
-#sidebar:not(.open) > .menu-bar > .menu > .menu-links > li.submenu > ul {
-    background-color: rgba(0, 0, 0, 0.04) !important;
-}
-
-body:not([data-theme="puredark"]):not([data-theme="darkviolet"]):not([data-theme="darkorange"])
-#sidebar:not(.open) > .menu-bar > .menu > .menu-links > li.submenu > ul > li.submenu > ul {
-    background-color: rgba(0, 0, 0, 0.03) !important;
-}
-
-/* Inline submenu item styling */
-#sidebar:not(.open) > .menu-bar > .menu > .menu-links > li.submenu > ul > li {
-    height: auto;
-    min-height: 36px;
-}
-
-#sidebar:not(.open) > .menu-bar > .menu > .menu-links > li.submenu > ul > li > a {
-    padding: 6px 12px;
-    font-size: 0.95em;
-    border-radius: 4px;
-}
-
 /* ============================================
-   SIDEBAR LAYOUT FIXES - Overflow & Content Shift
+   SIDEBAR LAYOUT FIXES - Content Shift
    ============================================ */
 
-/* CRITICAL: .menu-bar and .menu-scrollable must have overflow:visible
-   so that expanded submenus and flyout menus are NOT clipped.
-   Scrolling is handled by #sidebar (flex column) + JS scroll position. */
-#sidebar .menu-bar {
-    overflow: visible;
-}
-
-#sidebar .menu-scrollable {
-    overflow: visible !important;
-}
-
-/* Sidebar submenu UL must not overflow sidebar width in expanded state */
-#sidebar:not(.open) li.submenu > ul {
-    max-width: calc(100% - 16px);
-    box-sizing: border-box;
-}
-
-/* Ensure inline submenu items don't exceed sidebar width */
-#sidebar:not(.open) li.submenu > ul > li > a {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-/* Smooth transition for content shift */
 #content,
 .navebarn,
 #footer {
@@ -1075,7 +1060,6 @@ body:not([data-theme="puredark"]):not([data-theme="darkviolet"]):not([data-theme
                 padding-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* When sidebar is collapsed (.open = 80px), shift content left */
 @media (min-width: 769px) {
     body.sidebar-collapsed #content {
         margin-left: 80px !important;
@@ -1098,7 +1082,7 @@ body:not([data-theme="puredark"]):not([data-theme="darkviolet"]):not([data-theme
    ESTILOS GLOBAIS PARA SELECTS
    ============================================ */
 
-/* Estilo padrão para todos os selects do sistema */
+/* Estilo padrÃ£o para todos os selects do sistema */
 select {
     height: 46px !important;
     padding: 10px 35px 10px 15px !important;
@@ -1119,12 +1103,12 @@ select {
     box-sizing: border-box !important;
 }
 
-/* Remove a seta padrão do IE */
+/* Remove a seta padrÃ£o do IE */
 select::-ms-expand {
     display: none !important;
 }
 
-/* Estilo quando o select está em foco */
+/* Estilo quando o select estÃ¡ em foco */
 select:focus {
     border-color: var(--select-focus-border, #667eea) !important;
     outline: none !important;
@@ -1144,14 +1128,14 @@ select option:first-child {
     color: var(--select-placeholder, #999999) !important;
 }
 
-/* Estilo quando o select está desabilitado */
+/* Estilo quando o select estÃ¡ desabilitado */
 select:disabled {
     background-color: var(--select-disabled-bg, #f5f5f5) !important;
     color: var(--select-disabled-color, #666666) !important;
     cursor: not-allowed !important;
 }
 
-/* Para selects com classes específicas do sistema antigo */
+/* Para selects com classes especÃ­ficas do sistema antigo */
 select.col-12,
 select.col-6,
 select.col-5,
@@ -1162,19 +1146,19 @@ select.col-3 {
     padding: 10px 35px 10px 15px !important;
 }
 
-/* Corrige selects dentro de controls (formulários antigos) */
+/* Corrige selects dentro de controls (formulÃ¡rios antigos) */
 .controls select {
     height: 46px !important;
     color: var(--select-color, #000000) !important;
     padding: 10px 35px 10px 15px !important;
 }
 
-/* Ajuste para formulários em linha */
+/* Ajuste para formulÃ¡rios em linha */
 .form-horizontal select {
     margin-bottom: 0 !important;
 }
 
-/* Estilo específico para selects com a classe form-select */
+/* Estilo especÃ­fico para selects com a classe form-select */
 select.form-select {
     width: 100% !important;
 }
@@ -1183,7 +1167,7 @@ select.form-select {
    WIZARD + NFS-e DARK THEME
    ============================================ */
 
-/* Wizard steps — Dark */
+/* Wizard steps â€” Dark */
 .wizard-steps li:before {
     background: var(--dark-2, #272835);
 }
@@ -1339,7 +1323,7 @@ select.form-select {
    ============================================ */
 
 /* ============================================
-   SUBMENU UX - Animações e hierarquia visual
+   SUBMENU UX - AnimaÃ§Ãµes e hierarquia visual
    ============================================ */
 
 /* Submenu smooth slide-in animation */
@@ -1461,7 +1445,7 @@ select.form-select {
    ============================================ */
 
 /* ==========================================================================
-   MODERNIZAÇÃO VISUAL GLOBAL E COMPATIBILIDADE DE ÍCONES (MAPOSV5 PREMIUM)
+   MODERNIZAÃ‡ÃƒO VISUAL GLOBAL E COMPATIBILIDADE DE ÃCONES (MAPOSV5 PREMIUM)
    ========================================================================== */
 
 /* Fonte Global */
@@ -1472,7 +1456,7 @@ html {
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* 1. Cartões Modernos e Clean (widget-box) */
+/* 1. CartÃµes Modernos e Clean (widget-box) */
 .widget-box,
 .widget-box0,
 .widget-box2,
@@ -1497,7 +1481,7 @@ html {
     box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.06), 0 4px 12px -2px rgba(0, 0, 0, 0.03) !important;
 }
 
-/* 2. Cabeçalho de Cards Clean (widget-title) */
+/* 2. CabeÃ§alho de Cards Clean (widget-title) */
 .widget-title {
     background: transparent !important;
     border-bottom: 1px solid rgba(var(--sidebar-accent-rgb, 4, 103, 252), 0.08) !important;
@@ -1537,7 +1521,7 @@ html {
     background: transparent !important;
 }
 
-/* 3. Tabelas de Dados Premium e Respiráveis */
+/* 3. Tabelas de Dados Premium e RespirÃ¡veis */
 .table {
     border-collapse: separate !important;
     border-spacing: 0 !important;
@@ -1580,7 +1564,7 @@ html {
     transition: background-color 0.15s ease-in-out !important;
 }
 
-/* 4. Formulários e Inputs Modernizados */
+/* 4. FormulÃ¡rios e Inputs Modernizados */
 .form-control,
 .form-select,
 select,
@@ -1611,7 +1595,7 @@ textarea:focus {
     outline: none !important;
 }
 
-/* 5. Botões Modernos e Fluidos */
+/* 5. BotÃµes Modernos e Fluidos */
 .btn {
     border-radius: 8px !important;
     padding: 9px 18px !important;
@@ -1663,7 +1647,7 @@ textarea:focus {
     box-shadow: 0 4px 12px rgba(4, 103, 252, 0.2) !important;
 }
 
-/* 6. Garantia de Exibição e Correção de Ícones */
+/* 6. Garantia de ExibiÃ§Ã£o e CorreÃ§Ã£o de Ãcones */
 .fas,
 .far,
 .fab,
@@ -1680,7 +1664,7 @@ textarea:focus {
     text-rendering: auto;
 }
 
-/* Mapeamento de compatibilidade para classes de ícones legadas (Bootstrap 2 / FontAwesome antigo) */
+/* Mapeamento de compatibilidade para classes de Ã­cones legadas (Bootstrap 2 / FontAwesome antigo) */
 .icon-pencil::before {
     content: "\f304" !important;
 }
@@ -1789,7 +1773,7 @@ textarea:focus {
     content: "\f044" !important;
 }
 
-/* Ajuste nos botões de ação rápidos do CRUD Mapos (Integrados aos Temas Dinâmicos) */
+/* Ajuste nos botÃµes de aÃ§Ã£o rÃ¡pidos do CRUD Mapos (Integrados aos Temas DinÃ¢micos) */
 .btn-nwe,
 .btn-nwe2,
 .btn-nwe3,
@@ -1811,7 +1795,7 @@ textarea:focus {
     position: relative !important;
 }
 
-/* Injeção Automática de Ícones via CSS se os botões estiverem vazios no HTML (Garantia de 100% de exibição) */
+/* InjeÃ§Ã£o AutomÃ¡tica de Ãcones via CSS se os botÃµes estiverem vazios no HTML (Garantia de 100% de exibiÃ§Ã£o) */
 /* Removed pseudo-element icons for .btn-nwe; using inline SVG img tags */
 
 /* Removed pseudo-element icons for .btn-nwe3; using inline SVG img tags */
@@ -1822,7 +1806,7 @@ textarea:focus {
 
 /* Removed pseudo-element icons for .btn-nwe2; using inline SVG img tags */
 
-/* 1. Botão de Visualização / Ação Primária (Respeita 100% o tema do sistema) */
+/* 1. BotÃ£o de VisualizaÃ§Ã£o / AÃ§Ã£o PrimÃ¡ria (Respeita 100% o tema do sistema) */
 .btn-nwe {
     background-color: rgba(var(--sidebar-accent-rgb, 4, 103, 252), 0.12) !important;
     color: var(--sidebar-accent, #0467fc) !important;
@@ -1835,7 +1819,7 @@ textarea:focus {
     box-shadow: 0 4px 12px rgba(var(--sidebar-accent-rgb, 4, 103, 252), 0.25) !important;
 }
 
-/* 2. Botão de Opções Secundárias do Tema */
+/* 2. BotÃ£o de OpÃ§Ãµes SecundÃ¡rias do Tema */
 .btn-nwe2 {
     background-color: rgba(var(--sidebar-accent-rgb, 4, 103, 252), 0.08) !important;
     color: var(--sidebar-accent, #0467fc) !important;
@@ -1848,7 +1832,7 @@ textarea:focus {
     transform: translateY(-2px) !important;
 }
 
-/* 3. Botão de Edição (Estilo Sucesso Clean) */
+/* 3. BotÃ£o de EdiÃ§Ã£o (Estilo Sucesso Clean) */
 .btn-nwe3 {
     background-color: rgba(16, 185, 129, 0.12) !important;
     color: #10b981 !important;
@@ -1861,7 +1845,7 @@ textarea:focus {
     box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25) !important;
 }
 
-/* 4. Botão de Exclusão (Estilo Alerta/Erro Danger Clean) */
+/* 4. BotÃ£o de ExclusÃ£o (Estilo Alerta/Erro Danger Clean) */
 .btn-nwe4 {
     background-color: rgba(239, 68, 68, 0.12) !important;
     color: #ef4444 !important;
@@ -1874,7 +1858,7 @@ textarea:focus {
     box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25) !important;
 }
 
-/* 5. Botão de Financeiro / Faturamento (Estilo Atenção Warning Clean) */
+/* 5. BotÃ£o de Financeiro / Faturamento (Estilo AtenÃ§Ã£o Warning Clean) */
 .btn-nwe5 {
     background-color: rgba(245, 158, 11, 0.12) !important;
     color: #f59e0b !important;
@@ -1887,7 +1871,7 @@ textarea:focus {
     box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25) !important;
 }
 
-/* 6. Botão de Apoio Geral (Neutral Slate) */
+/* 6. BotÃ£o de Apoio Geral (Neutral Slate) */
 .btn-nwe6 {
     background-color: rgba(148, 163, 184, 0.12) !important;
     color: #64748b !important;
@@ -1899,7 +1883,7 @@ textarea:focus {
     transform: translateY(-2px) !important;
 }
 
-/* Correções específicas para o Modo Escuro */
+/* CorreÃ§Ãµes especÃ­ficas para o Modo Escuro */
 body[data-theme="puredark"] .widget-box,
 body[data-theme="puredark"] .widget-box0,
 body[data-theme="puredark"] .widget-box2,
@@ -1929,10 +1913,10 @@ body[data-theme="puredark"] .table th {
 }
 
 /* ==========================================================================
-   ATALHOS DA HOME (QUICK CARDS) E SISTEMA DE PÁGINAS (PAGINAÇÃO)
+   ATALHOS DA HOME (QUICK CARDS) E SISTEMA DE PÃGINAS (PAGINAÃ‡ÃƒO)
    ========================================================================== */
 
-/* 1. Quick Cards (Atalhos Rápidos na Home) */
+/* 1. Quick Cards (Atalhos RÃ¡pidos na Home) */
 .quick-card {
     background: var(--widget-box, #ffffff) !important;
     border-radius: 16px !important;
@@ -2017,7 +2001,7 @@ body[data-theme="puredark"] .table th {
     box-sizing: border-box !important;
 }
 
-/* 2. Sistema de Páginas (Paginação do CodeIgniter) Premium */
+/* 2. Sistema de PÃ¡ginas (PaginaÃ§Ã£o do CodeIgniter) Premium */
 .pagination {
     display: flex !important;
     padding-left: 0 !important;
@@ -2052,7 +2036,7 @@ body[data-theme="puredark"] .table th {
     cursor: pointer !important;
 }
 
-/* Página Atual (Strong) */
+/* PÃ¡gina Atual (Strong) */
 .pagination strong {
     background-color: var(--sidebar-accent, #0467fc) !important;
     border-color: var(--sidebar-accent, #0467fc) !important;
@@ -2062,7 +2046,7 @@ body[data-theme="puredark"] .table th {
     cursor: default !important;
 }
 
-/* Hover nos Links de Páginas */
+/* Hover nos Links de PÃ¡ginas */
 .pagination a:hover {
     background-color: rgba(var(--sidebar-accent-rgb, 4, 103, 252), 0.08) !important;
     border-color: var(--sidebar-accent, #0467fc) !important;
@@ -2070,8 +2054,8 @@ body[data-theme="puredark"] .table th {
     transform: translateY(-1px) !important;
 }
 
-/* 3. Injeção e Garantia de Ícones nos Botões do Sistema (Salvar, Voltar/Cancelar, Serviços) */
-/* Botões de Salvar (btn-success com tipo submit ou com a palavra Salvar) */
+/* 3. InjeÃ§Ã£o e Garantia de Ãcones nos BotÃµes do Sistema (Salvar, Voltar/Cancelar, ServiÃ§os) */
+/* BotÃµes de Salvar (btn-success com tipo submit ou com a palavra Salvar) */
 .btn-success:not(:has(i))::before,
 button[type="submit"].btn-success:not(:has(i))::before {
     content: "\f0c7" !important;
@@ -2082,7 +2066,7 @@ button[type="submit"].btn-success:not(:has(i))::before {
     font-size: 0.95rem !important;
 }
 
-/* Botões de Cancelar/Voltar (btn-danger ou btn-warning vazios de ícone) */
+/* BotÃµes de Cancelar/Voltar (btn-danger ou btn-warning vazios de Ã­cone) */
 .btn-danger:not(:has(i))::before {
     content: "\f00d" !important;
     /* fa-xmark (Fechar/Cancelar) */
@@ -2099,7 +2083,7 @@ button[type="submit"].btn-success:not(:has(i))::before {
     margin-right: 8px !important;
 }
 
-/* Ajustes de Modo Escuro para Paginação e Quick Cards */
+/* Ajustes de Modo Escuro para PaginaÃ§Ã£o e Quick Cards */
 body[data-theme="puredark"] .quick-card {
     background: #1c1d26 !important;
     border-color: #272835 !important;
@@ -2121,10 +2105,10 @@ body[data-theme="puredark"] .pagination a:hover {
 }
 
 /* ========================================================================= */
-/* MODERNIZAÇÃO GLOBAL: BOTÕES DE AÇÃO E PAGINAÇÃO                           */
+/* MODERNIZAÃ‡ÃƒO GLOBAL: BOTÃ•ES DE AÃ‡ÃƒO E PAGINAÃ‡ÃƒO                           */
 /* ========================================================================= */
 
-/* 1. Botões de Ação Modernos (.btn-nwe) */
+/* 1. BotÃµes de AÃ§Ã£o Modernos (.btn-nwe) */
 .btn-nwe,
 .btn-nwe2,
 .btn-nwe3,
@@ -2158,7 +2142,7 @@ body[data-theme="puredark"] .pagination a:hover {
     color: #fff !important;
 }
 
-/* Cores específicas para cada tipo de ação */
+/* Cores especÃ­ficas para cada tipo de aÃ§Ã£o */
 .btn-nwe {
     background-color: #3b82f6 !important;
 }
@@ -2168,7 +2152,7 @@ body[data-theme="puredark"] .pagination a:hover {
     background-color: #10b981 !important;
 }
 
-/* Ações Adicionais (Verde) */
+/* AÃ§Ãµes Adicionais (Verde) */
 .btn-nwe3 {
     background-color: #f59e0b !important;
 }
@@ -2190,7 +2174,7 @@ body[data-theme="puredark"] .pagination a:hover {
 
 /* Imprimir/Zerar (Cinza Escuro) */
 
-/* 2. Coluna de Ações Globalmente Alinhada */
+/* 2. Coluna de AÃ§Ãµes Globalmente Alinhada */
 td.acoes-col,
 th.acoes-col,
 .acoes-col,
@@ -2207,7 +2191,7 @@ td:has(.btn-nwe)>span {
     margin-bottom: 2px !important;
 }
 
-/* 3. Paginação Bootstrap 5 Modernizada */
+/* 3. PaginaÃ§Ã£o Bootstrap 5 Modernizada */
 .pagination {
     display: flex !important;
     padding-left: 0 !important;
@@ -2272,10 +2256,10 @@ body[data-theme="darkorange"] .pagination .page-item.active .page-link {
 }
 
 /* ========================================================================= */
-/* 4. INJEÇÃO DE ÍCONES FALTANTES (Fallback para botões sem ícones)        */
+/* 4. INJEÃ‡ÃƒO DE ÃCONES FALTANTES (Fallback para botÃµes sem Ã­cones)        */
 /* ========================================================================= */
 
-/* Se algum botão de ação não tiver um ícone (<i class="bx...">), injetamos um padrão via CSS usando FontAwesome */
+/* Se algum botÃ£o de aÃ§Ã£o nÃ£o tiver um Ã­cone (<i class="bx...">), injetamos um padrÃ£o via CSS usando FontAwesome */
 .btn-nwe:not(:has(i))::before {
     content: "\f06e" !important;
     /* fa-eye */
@@ -2351,7 +2335,7 @@ body[data-theme="darkorange"] span:not(.badge):not(.button__text2) {
     color: #e2e8f0 !important;
 }
 
-/* Títulos mais brilhantes nos temas escuros */
+/* TÃ­tulos mais brilhantes nos temas escuros */
 body[data-theme="puredark"] h1,
 body[data-theme="puredark"] h2,
 body[data-theme="puredark"] h3,
@@ -2407,7 +2391,7 @@ body[data-theme="puredark"] a:not(.btn-nwe):not(.btn-nwe2):not(.btn-nwe3):not(.b
 body[data-theme="darkviolet"] a:not(.btn-nwe):not(.btn-nwe2):not(.btn-nwe3):not(.btn-nwe4):not(.btn-nwe5):not(.btn-nwe6):not(.page-link):not(.button),
 body[data-theme="darkorange"] a:not(.btn-nwe):not(.btn-nwe2):not(.btn-nwe3):not(.btn-nwe4):not(.btn-nwe5):not(.btn-nwe6):not(.page-link):not(.button) {
     color: #60a5fa !important;
-    /* Azul claro e acessível */
+    /* Azul claro e acessÃ­vel */
 }
 
 body[data-theme="puredark"] a:not(.btn):hover,
@@ -2430,7 +2414,7 @@ body:not([data-theme="puredark"]):not([data-theme="darkviolet"]):not([data-theme
 }
 
 /* ========================================================================= */
-/* AJUSTE DO MENU SUSPENSO DE SUGESTÕES (Autocomplete jQuery UI)             */
+/* AJUSTE DO MENU SUSPENSO DE SUGESTÃ•ES (Autocomplete jQuery UI)             */
 /* ========================================================================= */
 .ui-autocomplete {
     background: var(--card-bg, #ffffff) !important;
@@ -2442,7 +2426,7 @@ body:not([data-theme="puredark"]):not([data-theme="darkviolet"]):not([data-theme
     overflow-y: auto !important;
     overflow-x: hidden !important;
     z-index: 999999 !important;
-    margin-top: 4px !important; /* Força ficar exatamente abaixo do campo de texto */
+    margin-top: 4px !important; /* ForÃ§a ficar exatamente abaixo do campo de texto */
 }
 
 /* Ajuste nos Temas Escuros */
@@ -2454,7 +2438,7 @@ body[data-theme="darkorange"] .ui-autocomplete {
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4) !important;
 }
 
-/* Itens do Menu de Sugestão */
+/* Itens do Menu de SugestÃ£o */
 .ui-autocomplete .ui-menu-item {
     margin: 2px 0 !important;
     list-style: none !important;
@@ -2486,7 +2470,7 @@ body[data-theme="darkorange"] .ui-autocomplete .ui-menu-item-wrapper {
 }
 
 /* ========================================================================= */
-/* BOTÃO DE MENUS DO TOPBAR (HAMBURGUER MOBILE PARA EXPANÇÃO DE HIDEBAR)     */
+/* BOTÃƒO DE MENUS DO TOPBAR (HAMBURGUER MOBILE PARA EXPANÃ‡ÃƒO DE HIDEBAR)     */
 /* ========================================================================= */
 .topbar-toggle-btn {
     display: none !important;
@@ -2520,7 +2504,7 @@ body[data-theme="darkorange"] .ui-autocomplete .ui-menu-item-wrapper {
 }
 
 /* ========================================================================= */
-/* ESTILO PREMIUM ULTRA-MODERNO: NAVEBARN, BOTÕES DE AÇÕES E CARDS           */
+/* ESTILO PREMIUM ULTRA-MODERNO: NAVEBARN, BOTÃ•ES DE AÃ‡Ã•ES E CARDS           */
 /* ========================================================================= */
 
 /* --- 1. Navebarn Glassmorphism Premium --- */
@@ -2550,7 +2534,7 @@ body[data-theme="darkorange"] .navebarn {
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2) !important;
 }
 
-/* Ícones de Ação da Topbar */
+/* Ãcones de AÃ§Ã£o da Topbar */
 .topbar-action {
     display: inline-flex !important;
     align-items: center !important;
@@ -2601,7 +2585,7 @@ body[data-theme="darkorange"] .topbar-action:hover {
     align-items: center !important;
 }
 
-/* --- 2. Cards Modernos e Dinâmicos com Efeito Hover Glow --- */
+/* --- 2. Cards Modernos e DinÃ¢micos com Efeito Hover Glow --- */
 .quick-card, .widget-card, .widget-box {
     background: var(--card-bg, #ffffff) !important;
     border: 1px solid rgba(0, 0, 0, 0.05) !important;
@@ -2626,13 +2610,13 @@ body[data-theme="darkorange"] .quick-card, body[data-theme="darkorange"] .widget
     border-color: rgba(var(--sidebar-accent-rgb, 4, 103, 252), 0.2) !important;
 }
 
-/* Icon Wrapper nos Cards (Sólido de Alto Contraste com Gradiente & Ícone Branco) */
+/* Icon Wrapper nos Cards (SÃ³lido de Alto Contraste com Gradiente & Ãcone Branco) */
 .quick-card .icon-wrapper {
     width: 48px !important;
     height: 48px !important;
     border-radius: 14px !important;
     background: linear-gradient(135deg, var(--sidebar-accent, #0467fc), #6366f1) !important;
-    color: #ffffff !important; /* Ícone branco por cima para contraste absoluto! */
+    color: #ffffff !important; /* Ãcone branco por cima para contraste absoluto! */
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -2649,7 +2633,7 @@ body[data-theme="darkorange"] .quick-card, body[data-theme="darkorange"] .widget
     box-shadow: 0 6px 16px rgba(var(--sidebar-accent-rgb, 4, 103, 252), 0.35) !important;
 }
 
-/* --- 3. Botões de Ação Redesenhados (Sólidos de Alto Contraste com Ícones Brancos) --- */
+/* --- 3. BotÃµes de AÃ§Ã£o Redesenhados (SÃ³lidos de Alto Contraste com Ãcones Brancos) --- */
 .btn-nwe, .btn-nwe2, .btn-nwe3, .btn-nwe4, .btn-nwe5, .btn-nwe6 {
     display: inline-flex !important;
     align-items: center !important;
@@ -2659,23 +2643,23 @@ body[data-theme="darkorange"] .quick-card, body[data-theme="darkorange"] .widget
     border-radius: 12px !important;
     font-size: 1.15rem !important;
     border: none !important;
-    color: #ffffff !important; /* Ícones em BRANCO PURO para contraste extremo! */
+    color: #ffffff !important; /* Ãcones em BRANCO PURO para contraste extremo! */
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
     margin: 0 4px !important;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08) !important;
 }
 
 .btn-nwe i, .btn-nwe2 i, .btn-nwe3 i, .btn-nwe4 i, .btn-nwe5 i, .btn-nwe6 i {
-    color: #ffffff !important; /* Força os ícones internos em branco */
+    color: #ffffff !important; /* ForÃ§a os Ã­cones internos em branco */
 }
 
-/* Efeitos Hover nos Botões de Ação */
+/* Efeitos Hover nos BotÃµes de AÃ§Ã£o */
 .btn-nwe:hover, .btn-nwe2:hover, .btn-nwe3:hover, .btn-nwe4:hover, .btn-nwe5:hover, .btn-nwe6:hover {
     transform: translateY(-3px) scale(1.08) !important;
     filter: brightness(1.1) !important;
 }
 
-/* Botão Visualizar (Azul Forte Premium) */
+/* BotÃ£o Visualizar (Azul Forte Premium) */
 .btn-nwe {
     background: #0284c7 !important; /* Azul cobalto vibrante */
     box-shadow: 0 4px 10px rgba(2, 132, 199, 0.25) !important;
@@ -2684,7 +2668,7 @@ body[data-theme="darkorange"] .quick-card, body[data-theme="darkorange"] .widget
     box-shadow: 0 6px 15px rgba(2, 132, 199, 0.45) !important;
 }
 
-/* Botão Opções/Secundário (Roxo Ametista) */
+/* BotÃ£o OpÃ§Ãµes/SecundÃ¡rio (Roxo Ametista) */
 .btn-nwe2 {
     background: #7c3aed !important; /* Roxo vibrante */
     box-shadow: 0 4px 10px rgba(124, 58, 237, 0.25) !important;
@@ -2693,16 +2677,16 @@ body[data-theme="darkorange"] .quick-card, body[data-theme="darkorange"] .widget
     box-shadow: 0 6px 15px rgba(124, 58, 237, 0.45) !important;
 }
 
-/* Botão Editar (Verde Esmeralda Forte) */
+/* BotÃ£o Editar (Verde Esmeralda Forte) */
 .btn-nwe3 {
-    background: #059669 !important; /* Verde esmeralda escuro e nítido */
+    background: #059669 !important; /* Verde esmeralda escuro e nÃ­tido */
     box-shadow: 0 4px 10px rgba(5, 150, 105, 0.25) !important;
 }
 .btn-nwe3:hover {
     box-shadow: 0 6px 15px rgba(5, 150, 105, 0.45) !important;
 }
 
-/* Botão Excluir (Vermelho Coral Intenso) */
+/* BotÃ£o Excluir (Vermelho Coral Intenso) */
 .btn-nwe4 {
     background: #e11d48 !important; /* Vermelho vibrante de perigo */
     box-shadow: 0 4px 10px rgba(225, 29, 72, 0.25) !important;
@@ -2711,7 +2695,7 @@ body[data-theme="darkorange"] .quick-card, body[data-theme="darkorange"] .widget
     box-shadow: 0 6px 15px rgba(225, 29, 72, 0.45) !important;
 }
 
-/* Botão Estoque/Financeiro (Laranja Âmbar) */
+/* BotÃ£o Estoque/Financeiro (Laranja Ã‚mbar) */
 .btn-nwe5 {
     background: #d97706 !important; /* Laranja escuro de alta visibilidade */
     box-shadow: 0 4px 10px rgba(217, 119, 6, 0.25) !important;
@@ -2720,9 +2704,9 @@ body[data-theme="darkorange"] .quick-card, body[data-theme="darkorange"] .widget
     box-shadow: 0 6px 15px rgba(217, 119, 6, 0.45) !important;
 }
 
-/* Botão Imprimir/Outros (Cinza Ardósia Escuro) */
+/* BotÃ£o Imprimir/Outros (Cinza ArdÃ³sia Escuro) */
 .btn-nwe6 {
-    background: #475569 !important; /* Cinza ardósia escuro de alto contraste */
+    background: #475569 !important; /* Cinza ardÃ³sia escuro de alto contraste */
     box-shadow: 0 4px 10px rgba(71, 85, 105, 0.25) !important;
 }
 .btn-nwe6:hover {
@@ -2730,10 +2714,10 @@ body[data-theme="darkorange"] .quick-card, body[data-theme="darkorange"] .widget
 }
 
 /* ========================================================================= */
-/* SISTEMA DE ÍCONES SVG INLINE                                              */
+/* SISTEMA DE ÃCONES SVG INLINE                                              */
 /* ========================================================================= */
 
-/* Sprite SVG base — 1 request carrega todos os ícones */
+/* Sprite SVG base â€” 1 request carrega todos os Ã­cones */
 svg.svg-icon {
     display: inline-block;
     vertical-align: middle;
@@ -2745,7 +2729,7 @@ svg.svg-icon {
     stroke-linecap: round;
     stroke-linejoin: round;
     transition: transform 0.2s ease, color 0.2s ease;
-    pointer-events: none; /* Não captura cliques */
+    pointer-events: none; /* NÃ£o captura cliques */
 }
 
 svg.svg-icon use {
@@ -2800,7 +2784,7 @@ svg.svg-icon use {
     flex-shrink: 0;
 }
 
-/* --- Botões de Ação (.btn-nwe) --- */
+/* --- BotÃµes de AÃ§Ã£o (.btn-nwe) --- */
 .btn-nwe svg.svg-icon,
 .btn-nwe2 svg.svg-icon,
 .btn-nwe3 svg.svg-icon,

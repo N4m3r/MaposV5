@@ -134,9 +134,9 @@
                             echo '<td style="text-align:left">';
 
                             if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vVenda')) {
-                                echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/vendas/visualizar/' . e($r->idVendas) . '" class="btn-nwe" title="Ver mais detalhes"><i class="bx bx-show bx-xs"></i></a>';
-                                echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/vendas/imprimir/' . e($r->idVendas) . '" target="_blank" class="btn-nwe6" title="Imprimir A4"><i class="bx bx-printer bx-xs"></i></a>';
-                                echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/vendas/imprimirTermica/' . e($r->idVendas) . '" target="_blank" class="btn-nwe6" title="Imprimir Não Fiscal"><i class="bx bx-printer bx-xs"></i></a>';
+                                echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/vendas/visualizar/' . e($r->idVendas) . '" class="btn-nwe" title="Ver mais detalhes">' . svg_icon('eye', 16, 16) . '</a>';
+                                echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/vendas/imprimir/' . e($r->idVendas) . '" target="_blank" class="btn-nwe6" title="Imprimir A4">' . svg_icon('printer', 16, 16) . '</a>';
+                                echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/vendas/imprimirTermica/' . e($r->idVendas) . '" target="_blank" class="btn-nwe6" title="Imprimir Não Fiscal">' . svg_icon('printer', 16, 16) . '</a>';
                             }
 
                             $editavel = $this->vendas_model->isEditable($r->idVendas);

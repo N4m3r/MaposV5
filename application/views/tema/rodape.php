@@ -124,11 +124,22 @@ var temaCssMap = {
     'whiteblack': 'tema-white-black.css'
 };
 var temaAlternar = { 'default': 'white', 'white': 'default', 'puredark': 'white', 'darkviolet': 'white', 'darkorange': 'white', 'whitegreen': 'default', 'whiteblack': 'default' };
-var temaIcone = { 'default': 'bx-sun', 'white': 'bx-moon', 'puredark': 'bx-sun', 'darkviolet': 'bx-sun', 'darkorange': 'bx-sun', 'whitegreen': 'bx-moon', 'whiteblack': 'bx-moon' };
+var temaIcone = { 'default': 'sun', 'white': 'moon', 'puredark': 'sun', 'darkviolet': 'sun', 'darkorange': 'sun', 'whitegreen': 'moon', 'whiteblack': 'moon' };
+var svgBaseUrl = '<?= base_url() ?>assets/svg/icons.svg';
 
 function atualizarIconeTema() {
-    var icon = temaIcone[temaAtual] || 'bx-sun';
-    $('#theme-icon').removeClass('bx-sun bx-moon').addClass(icon);
+    var iconName = temaIcone[temaAtual] || 'sun';
+    var themeIcon = document.getElementById('theme-icon');
+    if (themeIcon) {
+        var svgUse = themeIcon.querySelector('use');
+        if (svgUse) {
+            svgUse.setAttribute('href', svgBaseUrl + '#' + iconName);
+            svgUse.setAttribute('xlink:href', svgBaseUrl + '#' + iconName);
+        } else {
+            // Fallback: rebuild the SVG if no <use> found
+            themeIcon.innerHTML = '<svg class="svg-icon" width="20" height="20" aria-hidden="true"><use href="' + svgBaseUrl + '#' + iconName + '"/></svg>';
+        }
+    }
 }
 
 atualizarIconeTema();

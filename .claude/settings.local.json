@@ -680,7 +680,8 @@
       "Bash(cat .env)",
       "Bash(cat .env.production)",
       "Bash(cat .env.example)",
-      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\thail\\\\Desktop\\\\IVMS-CRUD\\\\MaposV5\" -Recurse -Directory -Depth 2)"
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\thail\\\\Desktop\\\\IVMS-CRUD\\\\MaposV5\" -Recurse -Directory -Depth 2)",
+      "Bash(del *)"
     ]
   }
 }

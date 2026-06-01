@@ -14,7 +14,7 @@ $(document).ready(function(){
 		var isNested = $li.parent().closest('.submenu').length > 0;
 		var sidebarCollapsed = $('#sidebar').hasClass('open');
 
-		// No estado colapsado, apenas mostra no hover — não alterna .open
+		// No estado colapsado, hover cuida do flyout — não alterna .open
 		if (sidebarCollapsed) {
 			return;
 		}
@@ -227,34 +227,13 @@ $(document).ready(function(){
 		}
 	});
 
-	// === Posicionar flyouts do sidebar colapsado === //
-	// Flyouts usam position:fixed para escapar do overflow clipping.
-	// Calcula o top baseado na posicao do item pai.
-	function positionCollapsedFlyouts() {
-		if (!$('#sidebar').hasClass('open')) return;
-		$('#sidebar.open > .menu-bar > .menu > .menu-links > li.submenu').each(function() {
-			var $li = $(this);
-			var $flyout = $li.children('ul').first();
-			if ($flyout.is(':visible')) {
-				var liTop = $li.offset().top;
-				var flyoutHeight = $flyout.outerHeight();
-				var maxTop = $(window).height() - flyoutHeight - 10;
-				var topPos = Math.min(liTop, Math.max(10, maxTop));
-				$flyout.css('top', topPos + 'px');
-			}
-		});
-	}
-
 	// Fecha flyouts do sidebar colapsado ao clicar fora
 	$(document).on('click', function(e) {
 		if ($('#sidebar').hasClass('open')) {
 			if (!$(e.target).closest('#sidebar').length) {
-				$('#sidebar.open > .menu-bar > .menu > .menu-links > li.submenu > ul').hide();
+				$('#sidebar.open li.submenu > ul').hide();
 			}
 		}
 	});
-
-	// Recalcula posicao dos flyouts ao redimensionar janela
-	$(window).on('resize', positionCollapsedFlyouts);
 
 });

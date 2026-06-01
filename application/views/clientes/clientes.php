@@ -78,14 +78,14 @@
 
                         echo '<td>';
                         if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vCliente')) {
-                            echo '<a href="' . base_url() . 'index.php/clientes/visualizar/' . $r->idClientes . '" style="margin-right: 1%" class="btn-nwe" title="Ver mais detalhes"><i class="bx bx-show bx-xs"></i></a>';
-                            echo '<a href="' . base_url() . 'index.php/mine?t=' . urlencode($r->token_acesso ?? '') . '" target="new" style="margin-right: 1%" class="btn-nwe2" title="Área do cliente"><i class="bx bx-key bx-xs"></i></a>';
+                            echo '<a href="' . base_url() . 'index.php/clientes/visualizar/' . $r->idClientes . '" style="margin-right: 1%" class="btn-nwe" title="Ver mais detalhes">' . svg_icon('eye', 16, 16) . '</a>';
+                            echo '<a href="' . base_url() . 'index.php/mine?t=' . urlencode($r->token_acesso ?? '') . '" target="new" style="margin-right: 1%" class="btn-nwe2" title="Área do cliente">' . svg_icon('key', 16, 16) . '</a>';
                         }
                         if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eCliente')) {
-                            echo '<a href="' . base_url() . 'index.php/clientes/editar/' . $r->idClientes . '" style="margin-right: 1%" class="btn-nwe3" title="Editar Cliente"><i class="bx bx-edit bx-xs"></i></a>';
+                            echo '<a href="' . base_url() . 'index.php/clientes/editar/' . $r->idClientes . '" style="margin-right: 1%" class="btn-nwe3" title="Editar Cliente">' . svg_icon('edit', 16, 16) . '</a>';
                         }
                         if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dCliente')) {
-                            echo '<a href="#modal-excluir" role="button" data-bs-toggle="modal" cliente="' . $r->idClientes . '" style="margin-right: 1%" class="btn-nwe4" title="Excluir Cliente"><i class="bx bx-trash-alt bx-xs"></i></a>';
+                            echo '<a href="#modal-excluir" role="button" data-bs-toggle="modal" cliente="' . $r->idClientes . '" style="margin-right: 1%" class="btn-nwe4" title="Excluir Cliente">' . svg_icon('trash', 16, 16) . '</a>';
                         }
                         echo '</td>';
                         echo '</tr>';

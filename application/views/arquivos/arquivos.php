@@ -70,15 +70,15 @@
                                 <td><?= e($r->tamanho) ?> KB</td>
                                 <td><?= e($r->tipo) ?></td>
                                 <td><?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vArquivo')) : ?>
-                                        <a href="<?= base_url() ?>index.php/arquivos/download/<?= $r->idDocumentos; ?>" class="btn-nwe" title="Baixar Arquivo"><i class="bx bx-download"></i>
+                                        <a href="<?= base_url() ?>index.php/arquivos/download/<?= $r->idDocumentos; ?>" class="btn-nwe" title="Baixar Arquivo"><?= svg_icon('download', 16, 16) ?>
                                         <?php endif ?>
 
                                         <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eArquivo')) : ?>
-                                            <a href="<?= base_url() ?>index.php/arquivos/editar/<?= $r->idDocumentos ?>" class="btn-nwe3" title="Editar"><i class="bx bx-edit"></i></a>
+                                            <a href="<?= base_url() ?>index.php/arquivos/editar/<?= $r->idDocumentos ?>" class="btn-nwe3" title="Editar"><?= svg_icon('edit', 16, 16) ?></a>
                                         <?php endif ?>
 
                                         <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dArquivo')) : ?>
-                                            <a href="#modal-excluir" style="margin-right: 1%" role="button" data-bs-toggle="modal" arquivo="<?= $r->idDocumentos ?>" class="btn-nwe4" title="Excluir"><i class="bx bx-trash-alt"></i></a>
+                                            <a href="#modal-excluir" style="margin-right: 1%" role="button" data-bs-toggle="modal" arquivo="<?= $r->idDocumentos ?>" class="btn-nwe4" title="Excluir"><?= svg_icon('trash', 16, 16) ?></a>
                                         </a>
                                     <?php endif ?>
                                 </td>

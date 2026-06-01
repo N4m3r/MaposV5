@@ -48,9 +48,9 @@
                         echo '<td>' . $situacao . '</td>';
                         $btnExcluir = $r->idPermissao == 1
                             ? ''
-                            : ' <a href="#modal-excluir" role="button" data-bs-toggle="modal" permissao="' . e($r->idPermissao) . '" nome="' . e($r->nome) . '" class="btn-nwe4" title="Excluir Permissão"><i class="bx bx-trash"></i></a>';
+                            : ' <a href="#modal-excluir" role="button" data-bs-toggle="modal" permissao="' . e($r->idPermissao) . '" nome="' . e($r->nome) . '" class="btn-nwe4" title="Excluir Permissão">' . svg_icon('trash', 16, 16) . '</a>';
                         echo '<td>
-                                <a href="' . base_url() . 'index.php/permissoes/editar/' . $r->idPermissao . '" class="btn-nwe3" title="Editar permissões"><i class="bx bx-edit"></i></a>' . $btnExcluir . '
+                                <a href="' . base_url() . 'index.php/permissoes/editar/' . $r->idPermissao . '" class="btn-nwe3" title="Editar permissões">' . svg_icon('edit', 16, 16) . '</a>' . $btnExcluir . '
                               </td>';
                         echo '</tr>';
                     } ?>

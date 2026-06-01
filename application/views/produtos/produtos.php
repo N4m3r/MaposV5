@@ -76,16 +76,16 @@
                     echo '<td>' . number_format($r->precoVenda, 2, ',', '.') . '</td>';
                     echo '<td>';
                     if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vProduto')) {
-                        echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/produtos/visualizar/' . $r->idProdutos . '" class="btn-nwe" title="Visualizar Produto"><i class="bx bx-show bx-xs"></i></a>  ';
+                        echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/produtos/visualizar/' . $r->idProdutos . '" class="btn-nwe" title="Visualizar Produto">' . svg_icon('eye', 16, 16) . '</a>  ';
                     }
                     if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eProduto')) {
-                        echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/produtos/editar/' . $r->idProdutos . '" class="btn-nwe3" title="Editar Produto"><i class="bx bx-edit bx-xs"></i></a>';
+                        echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/produtos/editar/' . $r->idProdutos . '" class="btn-nwe3" title="Editar Produto">' . svg_icon('edit', 16, 16) . '</a>';
                     }
                     if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dProduto')) {
-                        echo '<a style="margin-right: 1%" href="#modal-excluir" role="button" data-bs-toggle="modal" produto="' . $r->idProdutos . '" class="btn-nwe4" title="Excluir Produto"><i class="bx bx-trash-alt bx-xs"></i></a>';
+                        echo '<a style="margin-right: 1%" href="#modal-excluir" role="button" data-bs-toggle="modal" produto="' . $r->idProdutos . '" class="btn-nwe4" title="Excluir Produto">' . svg_icon('trash', 16, 16) . '</a>';
                     }
                     if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eProduto')) {
-                        echo '<a href="#atualizar-estoque" role="button" data-bs-toggle="modal" produto="' . $r->idProdutos . '" estoque="' . $r->estoque . '" class="btn-nwe5" title="Atualizar Estoque"><i class="bx bx-plus-circle bx-xs"></i></a>';
+                        echo '<a href="#atualizar-estoque" role="button" data-bs-toggle="modal" produto="' . $r->idProdutos . '" estoque="' . $r->estoque . '" class="btn-nwe5" title="Atualizar Estoque">' . svg_icon('plus-circle', 16, 16) . '</a>';
                     }
                     if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eProduto')) {
                         echo '<a style="margin-right: 1%" href="javascript:void(0);" onclick="zerarValor(' . $r->idProdutos . ', \'' . htmlspecialchars($r->descricao, ENT_QUOTES) . '\')" class="btn-nwe6" title="Zerar Valor"><i class="bx bx-reset bx-xs"></i></a>';

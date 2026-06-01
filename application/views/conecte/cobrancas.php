@@ -48,7 +48,7 @@
                         echo '<td>R$ ' . number_format($r->total / 100, 2, ',', '.') . '</td>';
                         echo '<td>';
                         if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vCobranca')) {
-                            echo '<a style="margin-right: 1%" href="' . base_url('index.php/mine/atualizarcobranca/' . $r->idCobranca) . '"  class="btn-nwe" title="Atualizar Cobrança"><i class="bx bx-refresh"></i></a>';
+                            echo '<a style="margin-right: 1%" href="' . base_url('index.php/mine/atualizarcobranca/' . $r->idCobranca) . '"  class="btn-nwe" title="Atualizar Cobrança">' . svg_icon('refresh', 16, 16) . '</a>';
                         }
 
                         if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eCobranca')) {

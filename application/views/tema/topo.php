@@ -141,11 +141,10 @@
       color: var(--sidebar-accent, #0467fc);
       transform: translateY(-1px);
     }
-    .topbar-action i {
-      font-size: 20px;
+    .topbar-action .svg-icon {
       transition: all 0.2s ease;
     }
-    .topbar-action:hover i {
+    .topbar-action:hover .svg-icon {
       transform: scale(1.1);
     }
 
@@ -212,10 +211,9 @@
       color: var(--sidebar-accent, #0467fc);
       transform: translateX(2px);
     }
-    .topbar-dropdown .dropdown-menu li a i {
-      font-size: 16px;
+    .topbar-dropdown .dropdown-menu li a .svg-icon {
       width: 20px;
-      text-align: center;
+      flex-shrink: 0;
     }
     .topbar-dropdown .dropdown-menu .dropdown-divider {
       border-color: rgba(var(--sidebar-accent-rgb, 4,103,252), 0.1);
@@ -328,7 +326,7 @@
     .notif-item .notif-titulo { font-weight: 600; font-size: 12px; margin-bottom: 2px; color: var(--cinza0, #a4a6b3); }
     .notif-item .notif-msg { font-size: 11px; color: var(--sidebar-text-muted, #8a8a8a); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .notif-item .notif-data { font-size: 10px; color: var(--sidebar-text-muted, #8a8a8a); margin-top: 2px; }
-    .notif-item .notif-icone { margin-right: 8px; font-size: 16px; vertical-align: middle; color: var(--sidebar-accent, #0467fc); }
+    .notif-item .notif-icone { margin-right: 8px; vertical-align: middle; color: var(--sidebar-accent, #0467fc); }
     .notif-header { color: var(--cinza0, #a4a6b3) !important; border-bottom-color: rgba(var(--sidebar-accent-rgb, 4,103,252), 0.15) !important; }
     .notif-header a { color: var(--sidebar-accent, #0467fc) !important; }
 
@@ -347,10 +345,10 @@
     <!-- Left Section -->
     <div class="topbar-left" style="display: flex; align-items: center;">
       <a href="#" id="sidebar-toggle-mobile" class="topbar-toggle-btn" title="Menu" style="margin-right: 15px; color: #fff; font-size: 24px; display: flex; align-items: center; justify-content: center;">
-        <i class='bx bx-menu'></i>
+        <?= svg_icon('menu', 24, 24) ?>
       </a>
       <div class="topbar-breadcrumb" style="color:rgba(255,255,255,0.85); display: flex; align-items: center;">
-        <i class='bx bx-hard-hat' style="margin-right: 8px; font-size: 26px; color: #fff; filter: drop-shadow(0 2px 8px rgba(255,255,255,0.3));"></i>
+        <?= svg_icon('hard-hat', 26, 26, '', 'margin-right:8px;color:#fff;filter:drop-shadow(0 2px 8px rgba(255,255,255,0.3))') ?>
         <span style="color:#fff;">Portal Tecnico</span>
       </div>
     </div>
@@ -360,14 +358,14 @@
       <!-- Theme Toggle -->
       <div class="topbar-action" id="theme-toggle-btn">
         <a href="#" title="Alternar Tema" id="btn-toggle-theme" style="color:rgba(255,255,255,0.8);text-decoration:none;">
-          <i class='bx bx-sun' id="theme-icon" style="font-size:20px;"></i>
+          <span id="theme-icon" class="svg-icon-wrap"><?= svg_icon('sun', 20, 20) ?></span>
         </a>
       </div>
 
       <!-- Notifications -->
       <div class="topbar-dropdown topbar-notif-dropdown" id="notifications-dropdown">
         <a href="#" class="topbar-action btn" data-bs-toggle="dropdown" title="Notificacoes" style="color:rgba(255,255,255,0.8);">
-          <i class='bx bx-bell'></i>
+          <?= svg_icon('bell', 22, 22) ?>
           <span class="topbar-badge" id="notif-count" style="display:none;">0</span>
         </a>
         <ul class="dropdown-menu" id="notif-list">
@@ -377,7 +375,7 @@
           </li>
           <li id="notif-items" style="max-height:320px;overflow-y:auto;padding:4px;">
             <div style="padding:20px;text-align:center;font-size:13px;opacity:0.5;">
-              <i class='bx bx-bell' style="font-size:32px;"></i><br>
+              <?= svg_icon('bell', 32, 32) ?><br>
               Carregando...
             </div>
           </li>
@@ -394,13 +392,13 @@
             <div class="topbar-user-name" style="color:rgba(255,255,255,0.9);"><?= e($this->session->userdata('tec_nome') ?? 'Tecnico') ?></div>
             <div class="topbar-user-role" style="color:rgba(255,255,255,0.6);">Tecnico</div>
           </div>
-          <i class='bx bx-chevron-down topbar-user-chevron' style="color:rgba(255,255,255,0.6);"></i>
+          <?= svg_icon('chevron-down', 16, 16, 'topbar-user-chevron', 'color:rgba(255,255,255,0.6)') ?>
         </a>
         <ul class="dropdown-menu">
-          <li><a href="<?= site_url('tecnicos/dashboard') ?>"><i class='bx bx-home-alt'></i> Dashboard</a></li>
-          <li><a href="<?= site_url('tecnicos/perfil') ?>"><i class='bx bx-user'></i> Meu Perfil</a></li>
+          <li><a href="<?= site_url('tecnicos/dashboard') ?>"><?= svg_icon('home-alt', 16, 16) ?> Dashboard</a></li>
+          <li><a href="<?= site_url('tecnicos/perfil') ?>"><?= svg_icon('user', 16, 16) ?> Meu Perfil</a></li>
           <li class="dropdown-divider"></li>
-          <li><a href="<?= site_url('tecnicos/logout') ?>" style="color:#e05555;"><i class='bx bx-log-out-circle'></i> Sair</a></li>
+          <li><a href="<?= site_url('tecnicos/logout') ?>" style="color:#e05555;"><?= svg_icon('log-out', 16, 16) ?> Sair</a></li>
         </ul>
       </div>
     </div>
@@ -413,10 +411,10 @@
     <!-- Left Section -->
     <div class="topbar-left" style="display: flex; align-items: center;">
       <a href="#" id="sidebar-toggle-mobile-admin" class="topbar-toggle-btn" title="Menu" style="margin-right: 15px; font-size: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
-        <i class='bx bx-menu'></i>
+        <?= svg_icon('menu', 24, 24) ?>
       </a>
       <div class="topbar-breadcrumb" style="display: flex; align-items: center;">
-        <i class='bx bx-cube-alt' style="margin-right: 8px; font-size: 26px; color: var(--sidebar-accent, #0467fc); filter: drop-shadow(0 2px 8px rgba(var(--sidebar-accent-rgb, 4, 103, 252), 0.3));"></i>
+        <?= svg_icon('cube-alt', 26, 26, '', 'margin-right:8px;color:var(--sidebar-accent, #0467fc);filter:drop-shadow(0 2px 8px rgba(var(--sidebar-accent-rgb, 4, 103, 252), 0.3))') ?>
         <span><?= $configuration['app_name'] ?? 'Map-OS' ?></span>
       </div>
     </div>
@@ -426,14 +424,14 @@
       <!-- Theme Toggle -->
       <div class="topbar-action" id="theme-toggle-btn">
         <a href="#" title="Alternar Tema" id="btn-toggle-theme" style="color:inherit;text-decoration:none;">
-          <i class='bx bx-sun' id="theme-icon" style="font-size:20px;"></i>
+          <span id="theme-icon" class="svg-icon-wrap"><?= svg_icon('sun', 20, 20) ?></span>
         </a>
       </div>
 
       <!-- Notifications -->
       <div class="topbar-dropdown topbar-notif-dropdown" id="notifications-dropdown">
         <a href="#" class="topbar-action btn" data-bs-toggle="dropdown" title="Notificacoes">
-          <i class='bx bx-bell'></i>
+          <?= svg_icon('bell', 22, 22) ?>
           <span class="topbar-badge" id="notif-count" style="display:none;">0</span>
         </a>
         <ul class="dropdown-menu" id="notif-list">
@@ -443,7 +441,7 @@
           </li>
           <li id="notif-items" style="max-height:320px;overflow-y:auto;padding:4px;">
             <div style="padding:20px;text-align:center;color:var(--sidebar-text-muted,#8a8a8a);font-size:13px;">
-              <i class='bx bx-bell' style="font-size:32px;opacity:0.3;"></i><br>
+              <?= svg_icon('bell', 32, 32, '', 'opacity:0.3') ?><br>
               Carregando...
             </div>
           </li>
@@ -453,37 +451,37 @@
       <!-- Reports Dropdown -->
       <div class="topbar-dropdown">
         <a href="#" class="topbar-action btn" data-bs-toggle="dropdown" title="Relatorios">
-          <i class='bx bx-pie-chart-alt-2'></i>
+          <?= svg_icon('pie-chart', 22, 22) ?>
         </a>
         <ul class="dropdown-menu">
-          <li><a href="<?= site_url('relatorios/clientes') ?>"><i class='bx bx-user'></i> Clientes</a></li>
-          <li><a href="<?= site_url('relatorios/produtos') ?>"><i class='bx bx-basket'></i> Produtos</a></li>
-          <li><a href="<?= site_url('relatorios/servicos') ?>"><i class='bx bx-wrench'></i> Servicos</a></li>
-          <li><a href="<?= site_url('relatorios/os') ?>"><i class='bx bx-file'></i> Ordens de Servico</a></li>
-          <li><a href="<?= site_url('relatorios/vendas') ?>"><i class='bx bx-cart-alt'></i> Vendas</a></li>
-          <li><a href="<?= site_url('relatorios/financeiro') ?>"><i class='bx bx-bar-chart-alt-2'></i> Financeiro</a></li>
+          <li><a href="<?= site_url('relatorios/clientes') ?>"><?= svg_icon('user', 16, 16) ?> Clientes</a></li>
+          <li><a href="<?= site_url('relatorios/produtos') ?>"><?= svg_icon('basket', 16, 16) ?> Produtos</a></li>
+          <li><a href="<?= site_url('relatorios/servicos') ?>"><?= svg_icon('wrench', 16, 16) ?> Servicos</a></li>
+          <li><a href="<?= site_url('relatorios/os') ?>"><?= svg_icon('file', 16, 16) ?> Ordens de Servico</a></li>
+          <li><a href="<?= site_url('relatorios/vendas') ?>"><?= svg_icon('cart', 16, 16) ?> Vendas</a></li>
+          <li><a href="<?= site_url('relatorios/financeiro') ?>"><?= svg_icon('bar-chart-alt', 16, 16) ?> Financeiro</a></li>
           <li class="dropdown-divider"></li>
-          <li><a href="<?= site_url('relatorios/sku') ?>"><i class='bx bx-barcode'></i> SKU</a></li>
-          <li><a href="<?= site_url('relatorios/receitasBrutasMei') ?>"><i class='bx bx-line-chart'></i> Receitas Brutas MEI</a></li>
+          <li><a href="<?= site_url('relatorios/sku') ?>"><?= svg_icon('barcode', 16, 16) ?> SKU</a></li>
+          <li><a href="<?= site_url('relatorios/receitasBrutasMei') ?>"><?= svg_icon('line-chart', 16, 16) ?> Receitas Brutas MEI</a></li>
         </ul>
       </div>
 
       <!-- Quick Settings Dropdown -->
       <div class="topbar-dropdown">
         <a href="#" class="topbar-action btn" data-bs-toggle="dropdown" title="Configuracoes Rapidas">
-          <i class='bx bx-cog'></i>
+          <?= svg_icon('cog', 22, 22) ?>
         </a>
         <ul class="dropdown-menu">
-          <li><a href="<?= site_url('mapos/configurar') ?>"><i class='bx bx-slider-alt'></i> Sistema</a></li>
-          <li><a href="<?= site_url('mapos/emitente') ?>"><i class='bx bx-building'></i> Emitente</a></li>
-          <li><a href="<?= site_url('usuarios') ?>"><i class='bx bx-user-circle'></i> Usuarios</a></li>
-          <li><a href="<?= site_url('permissoes') ?>"><i class='bx bx-shield-quarter'></i> Permissoes</a></li>
+          <li><a href="<?= site_url('mapos/configurar') ?>"><?= svg_icon('slider-alt', 16, 16) ?> Sistema</a></li>
+          <li><a href="<?= site_url('mapos/emitente') ?>"><?= svg_icon('building', 16, 16) ?> Emitente</a></li>
+          <li><a href="<?= site_url('usuarios') ?>"><?= svg_icon('user-circle', 16, 16) ?> Usuarios</a></li>
+          <li><a href="<?= site_url('permissoes') ?>"><?= svg_icon('shield-check', 16, 16) ?> Permissoes</a></li>
           <li class="dropdown-divider"></li>
-          <li><a href="<?= site_url('backup') ?>"><i class='bx bx-data'></i> Backup</a></li>
-          <li><a href="<?= site_url('auditoria') ?>"><i class='bx bx-file-find'></i> Auditoria</a></li>
-          <li><a href="<?= site_url('diagnostico') ?>"><i class='bx bx-bug'></i> Diagnostico</a></li>
+          <li><a href="<?= site_url('backup') ?>"><?= svg_icon('database', 16, 16) ?> Backup</a></li>
+          <li><a href="<?= site_url('auditoria') ?>"><?= svg_icon('file-find', 16, 16) ?> Auditoria</a></li>
+          <li><a href="<?= site_url('diagnostico') ?>"><?= svg_icon('bug', 16, 16) ?> Diagnostico</a></li>
           <li class="dropdown-divider"></li>
-          <li><a href="<?= site_url('email/logs') ?>"><i class='bx bx-envelope'></i> Emails</a></li>
+          <li><a href="<?= site_url('email/logs') ?>"><?= svg_icon('envelope', 16, 16) ?> Emails</a></li>
         </ul>
       </div>
 
@@ -503,13 +501,13 @@
               ?>
             </div>
           </div>
-          <i class='bx bx-chevron-down topbar-user-chevron'></i>
+          <?= svg_icon('chevron-down', 16, 16, 'topbar-user-chevron') ?>
         </a>
         <ul class="dropdown-menu" style="min-width:200px;">
-          <li><a href="<?= site_url('mapos/minhaConta') ?>"><i class='bx bx-user'></i> Meu Perfil</a></li>
-          <li><a href="<?= site_url() ?>/mine" target="_blank"><i class='bx bx-globe'></i> Area do Cliente</a></li>
+          <li><a href="<?= site_url('mapos/minhaConta') ?>"><?= svg_icon('user', 16, 16) ?> Meu Perfil</a></li>
+          <li><a href="<?= site_url() ?>/mine" target="_blank"><?= svg_icon('globe', 16, 16) ?> Area do Cliente</a></li>
           <li class="dropdown-divider"></li>
-          <li><a href="<?= site_url('login/sair') ?>" style="color:#e05555;"><i class='bx bx-log-out-circle'></i> Sair do Sistema</a></li>
+          <li><a href="<?= site_url('login/sair') ?>" style="color:#e05555;"><?= svg_icon('log-out', 16, 16) ?> Sair do Sistema</a></li>
         </ul>
       </div>
     </div>

@@ -161,10 +161,10 @@ $periodo = $this->input->get('periodo');
                             }
 
                             if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eLancamento')) {
-                                echo '<a href="#modalEditar" style="margin-right: 1%" data-bs-toggle="modal" role="button" idLancamento="' . e($r->idLancamentos) . '" descricao="' . e($r->descricao) . '" valor="' . e($r->valor) . '" vencimento="' . e(date('d/m/Y', strtotime($r->data_vencimento))) . '" pagamento="' . e($data_pagamento) . '" baixado="' . e($r->baixado) . '" cliente="' . e($r->cliente_fornecedor) . '" formaPgto="' . e($r->forma_pgto) . '" tipo="' . e($r->tipo) . '" observacoes="' . e($r->observacoes) . '" descontos_editar="' . e($r->desconto) . '" valor_desconto_editar="' . e($r->desconto) . '" usuario="' . e($r->nome) . '" class="btn-nwe3 editar" title="Editar OS"><i class="bx bx-edit"></i></a>';
+                                echo '<a href="#modalEditar" style="margin-right: 1%" data-bs-toggle="modal" role="button" idLancamento="' . e($r->idLancamentos) . '" descricao="' . e($r->descricao) . '" valor="' . e($r->valor) . '" vencimento="' . e(date('d/m/Y', strtotime($r->data_vencimento))) . '" pagamento="' . e($data_pagamento) . '" baixado="' . e($r->baixado) . '" cliente="' . e($r->cliente_fornecedor) . '" formaPgto="' . e($r->forma_pgto) . '" tipo="' . e($r->tipo) . '" observacoes="' . e($r->observacoes) . '" descontos_editar="' . e($r->desconto) . '" valor_desconto_editar="' . e($r->desconto) . '" usuario="' . e($r->nome) . '" class="btn-nwe3 editar" title="Editar OS">' . svg_icon('edit', 16, 16) . '</a>';
                             }
                             if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dLancamento')) {
-                                echo '<a href="#modalExcluir" data-bs-toggle="modal" role="button" idLancamento="' . e($r->idLancamentos) . '" class="btn-nwe4 excluir" title="Excluir OS"><i class="bx bx-trash-alt"></i></a>';
+                                echo '<a href="#modalExcluir" data-bs-toggle="modal" role="button" idLancamento="' . e($r->idLancamentos) . '" class="btn-nwe4 excluir" title="Excluir OS">' . svg_icon('trash', 16, 16) . '</a>';
                             }
 
                             echo '</td>';
