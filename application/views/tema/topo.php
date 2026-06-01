@@ -528,9 +528,11 @@
         if (sidebar.hasClass('open')) {
           sidebar.removeClass('open');
           ul.slideUp(250);
+          document.body.classList.remove('sidebar-collapsed');
         } else {
           sidebar.addClass('open');
           ul.slideDown(250);
+          document.body.classList.add('sidebar-collapsed');
         }
       });
     });

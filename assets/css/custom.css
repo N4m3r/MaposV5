@@ -1040,6 +1040,56 @@ body:not([data-theme="puredark"]):not([data-theme="darkviolet"]):not([data-theme
 }
 
 /* ============================================
+   SIDEBAR LAYOUT FIXES - Overflow & Content Shift
+   ============================================ */
+
+/* Prevent sidebar content from overflowing horizontally */
+#sidebar .menu-bar {
+    overflow: visible;
+}
+
+#sidebar .menu-scrollable {
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+/* Sidebar submenu UL must not overflow sidebar width in expanded state */
+#sidebar:not(.open) li.submenu > ul {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* Ensure inline submenu items don't exceed sidebar width */
+#sidebar:not(.open) li.submenu > ul > li > a {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Smooth transition for content shift */
+#content,
+.navebarn,
+#footer {
+    transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                padding-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* When sidebar is collapsed (.open = 80px), shift content left */
+@media (min-width: 769px) {
+    body.sidebar-collapsed #content {
+        margin-left: 80px !important;
+    }
+
+    body.sidebar-collapsed .navebarn {
+        margin-left: 82px !important;
+    }
+
+    body.sidebar-collapsed #footer {
+        padding-left: 90px !important;
+    }
+}
+
+/* ============================================
    FIM SIDEBAR ENHANCEMENTS
    ============================================ */
 

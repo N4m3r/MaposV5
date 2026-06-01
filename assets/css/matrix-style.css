@@ -669,7 +669,7 @@ End hora certa */
   flex-direction : column;
   transition     : var(--tran-01);
   border-right   : #4b4d60 solid 1px;
-  /* overflow-x     : hidden; */
+  overflow       : visible;
   z-index        : 99999;
 }
 

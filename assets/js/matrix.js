@@ -55,8 +55,9 @@ $(document).ready(function(){
 	});
 
 	// Limpa estado .open dos submenus quando sidebar muda de estado
-	var sidebarToggleBtn = document.querySelector('#sidebar .mode');
-	if (sidebarToggleBtn) {
+	// E alterna classe sidebar-collapsed no body para ajustar conteudo
+	var sidebarEl = document.getElementById('sidebar');
+	if (sidebarEl) {
 		var observer = new MutationObserver(function(mutations) {
 			mutations.forEach(function(mutation) {
 				if (mutation.attributeName === 'class') {
@@ -64,11 +65,21 @@ $(document).ready(function(){
 					if (sidebar && sidebar.classList.contains('open')) {
 						// Sidebar colapsou — limpa todos os .open de submenus
 						$('#sidebar li.submenu').removeClass('open');
+						// Adiciona classe no body para ajustar conteudo/topbar
+						document.body.classList.add('sidebar-collapsed');
+					} else {
+						// Sidebar expandida — remove classe do body
+						document.body.classList.remove('sidebar-collapsed');
 					}
 				}
 			});
 		});
-		observer.observe(document.getElementById('sidebar'), { attributes: true });
+		observer.observe(sidebarEl, { attributes: true });
+
+		// Define estado inicial baseado no sidebar
+		if (sidebarEl.classList.contains('open')) {
+			document.body.classList.add('sidebar-collapsed');
+		}
 	}
 
 	var ul = $('#sidebar > ul');
