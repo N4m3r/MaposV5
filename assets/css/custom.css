@@ -1059,116 +1059,6 @@ textarea:focus {
     content: "\f044" !important;
 }
 
-/* Ajuste nos botÃµes de aÃ§Ã£o rÃ¡pidos do CRUD Mapos (Integrados aos Temas DinÃ¢micos) */
-.btn-nwe,
-.btn-nwe2,
-.btn-nwe3,
-.btn-nwe4,
-.btn-nwe5,
-.btn-nwe6 {
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: 32px !important;
-    height: 32px !important;
-    border-radius: 8px !important;
-    border: none !important;
-    transition: all 0.2s ease-in-out !important;
-    text-decoration: none !important;
-    margin: 0 2px !important;
-    font-size: 1.05rem !important;
-    box-shadow: none !important;
-    position: relative !important;
-}
-
-/* InjeÃ§Ã£o AutomÃ¡tica de Ãcones via CSS se os botÃµes estiverem vazios no HTML (Garantia de 100% de exibiÃ§Ã£o) */
-/* Removed pseudo-element icons for .btn-nwe; using inline SVG img tags */
-
-/* Removed pseudo-element icons for .btn-nwe3; using inline SVG img tags */
-
-/* Removed pseudo-element icons for .btn-nwe4; using inline SVG img tags */
-
-/* Removed pseudo-element icons for .btn-nwe5; using inline SVG img tags */
-
-/* Removed pseudo-element icons for .btn-nwe2; using inline SVG img tags */
-
-/* 1. BotÃ£o de VisualizaÃ§Ã£o / AÃ§Ã£o PrimÃ¡ria (Respeita 100% o tema do sistema) */
-.btn-nwe {
-    background-color: rgba(var(--sidebar-accent-rgb, 4, 103, 252), 0.12) !important;
-    color: var(--sidebar-accent, #0467fc) !important;
-}
-
-.btn-nwe:hover {
-    background-color: var(--sidebar-accent, #0467fc) !important;
-    color: #ffffff !important;
-    transform: translateY(-2px) !important;
-    box-shadow: 0 4px 12px rgba(var(--sidebar-accent-rgb, 4, 103, 252), 0.25) !important;
-}
-
-/* 2. BotÃ£o de OpÃ§Ãµes SecundÃ¡rias do Tema */
-.btn-nwe2 {
-    background-color: rgba(var(--sidebar-accent-rgb, 4, 103, 252), 0.08) !important;
-    color: var(--sidebar-accent, #0467fc) !important;
-    opacity: 0.9 !important;
-}
-
-.btn-nwe2:hover {
-    background-color: var(--sidebar-accent, #0467fc) !important;
-    color: #ffffff !important;
-    transform: translateY(-2px) !important;
-}
-
-/* 3. BotÃ£o de EdiÃ§Ã£o (Estilo Sucesso Clean) */
-.btn-nwe3 {
-    background-color: rgba(16, 185, 129, 0.12) !important;
-    color: #10b981 !important;
-}
-
-.btn-nwe3:hover {
-    background-color: #10b981 !important;
-    color: #ffffff !important;
-    transform: translateY(-2px) !important;
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25) !important;
-}
-
-/* 4. BotÃ£o de ExclusÃ£o (Estilo Alerta/Erro Danger Clean) */
-.btn-nwe4 {
-    background-color: rgba(239, 68, 68, 0.12) !important;
-    color: #ef4444 !important;
-}
-
-.btn-nwe4:hover {
-    background-color: #ef4444 !important;
-    color: #ffffff !important;
-    transform: translateY(-2px) !important;
-    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25) !important;
-}
-
-/* 5. BotÃ£o de Financeiro / Faturamento (Estilo AtenÃ§Ã£o Warning Clean) */
-.btn-nwe5 {
-    background-color: rgba(245, 158, 11, 0.12) !important;
-    color: #f59e0b !important;
-}
-
-.btn-nwe5:hover {
-    background-color: #f59e0b !important;
-    color: #ffffff !important;
-    transform: translateY(-2px) !important;
-    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25) !important;
-}
-
-/* 6. BotÃ£o de Apoio Geral (Neutral Slate) */
-.btn-nwe6 {
-    background-color: rgba(148, 163, 184, 0.12) !important;
-    color: #64748b !important;
-}
-
-.btn-nwe6:hover {
-    background-color: #64748b !important;
-    color: #ffffff !important;
-    transform: translateY(-2px) !important;
-}
-
 /* CorreÃ§Ãµes especÃ­ficas para o Modo Escuro */
 body[data-theme="puredark"] .widget-box,
 body[data-theme="puredark"] .widget-box0,
@@ -1393,72 +1283,6 @@ body[data-theme="puredark"] .pagination a:hover {
 /* ========================================================================= */
 /* MODERNIZAÃ‡ÃƒO GLOBAL: BOTÃ•ES DE AÃ‡ÃƒO E PAGINAÃ‡ÃƒO                           */
 /* ========================================================================= */
-
-/* 1. BotÃµes de AÃ§Ã£o Modernos (.btn-nwe) */
-.btn-nwe,
-.btn-nwe2,
-.btn-nwe3,
-.btn-nwe4,
-.btn-nwe5,
-.btn-nwe6 {
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 6px !important;
-    padding: 6px 10px !important;
-    border-radius: 6px !important;
-    font-size: 0.9rem !important;
-    font-weight: 500 !important;
-    transition: all 0.3s ease !important;
-    border: none !important;
-    color: #fff !important;
-    cursor: pointer !important;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
-    text-decoration: none !important;
-}
-
-.btn-nwe:hover,
-.btn-nwe2:hover,
-.btn-nwe3:hover,
-.btn-nwe4:hover,
-.btn-nwe5:hover,
-.btn-nwe6:hover {
-    transform: translateY(-2px) !important;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
-    color: #fff !important;
-}
-
-/* Cores especÃ­ficas para cada tipo de aÃ§Ã£o */
-.btn-nwe {
-    background-color: #3b82f6 !important;
-}
-
-/* Visualizar (Azul) */
-.btn-nwe2 {
-    background-color: #10b981 !important;
-}
-
-/* AÃ§Ãµes Adicionais (Verde) */
-.btn-nwe3 {
-    background-color: #f59e0b !important;
-}
-
-/* Editar (Laranja/Amarelo) */
-.btn-nwe4 {
-    background-color: #ef4444 !important;
-}
-
-/* Excluir (Vermelho) */
-.btn-nwe5 {
-    background-color: #8b5cf6 !important;
-}
-
-/* Atualizar/Estoque (Roxo) */
-.btn-nwe6 {
-    background-color: #64748b !important;
-}
-
-/* Imprimir/Zerar (Cinza Escuro) */
 
 /* 2. Coluna de AÃ§Ãµes Globalmente Alinhada */
 td.acoes-col,
@@ -2051,6 +1875,18 @@ svg.svg-icon use {
     height: 18px;
     color: #ffffff !important;
     stroke: #ffffff !important;
+}
+
+.btn-nwe img,
+.btn-nwe2 img,
+.btn-nwe3 img,
+.btn-nwe4 img,
+.btn-nwe5 img,
+.btn-nwe6 img {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
 }
 
 /* Hide Boxicons icons when SVG is present alongside */
