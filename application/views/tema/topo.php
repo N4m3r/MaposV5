@@ -521,16 +521,16 @@
     $(document).ready(function() {
       $('#sidebar-toggle-mobile, #sidebar-toggle-mobile-admin').click(function(e) {
         e.preventDefault();
-        var sidebar = $('#sidebar');
-        var ul = $('#sidebar > ul');
-        if (sidebar.hasClass('open')) {
-          sidebar.removeClass('open');
-          ul.slideUp(250);
+        var sidebar = document.getElementById('sidebar');
+        if (!sidebar) return;
+        if (sidebar.classList.contains('collapsed')) {
+          sidebar.classList.remove('collapsed');
           document.body.classList.remove('sidebar-collapsed');
+          localStorage.setItem('sidebar-collapsed', 'false');
         } else {
-          sidebar.addClass('open');
-          ul.slideDown(250);
+          sidebar.classList.add('collapsed');
           document.body.classList.add('sidebar-collapsed');
+          localStorage.setItem('sidebar-collapsed', 'true');
         }
       });
     });

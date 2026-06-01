@@ -111,7 +111,7 @@ body {
     box-shadow: 15px 0 16px rgb(64 70 96 / 8%) !important;
 }
 
-#sidebar.open {
+#sidebar.collapsed {
     box-shadow: 15px 0 16px rgb(64 70 96 / 20%) !important;
 }
 
@@ -209,12 +209,12 @@ body {
     color: #72737a;
 }
 
-#sidebar.open li a:hover .iconX,
-#sidebar.open li a:hover .title {
+#sidebar.collapsed li a:hover .iconX,
+#sidebar.collapsed li a:hover .title {
     color: var(--white-gre0);
 }
 
-#sidebar.open li a:hover {
+#sidebar.collapsed li a:hover {
     background: var(--white-gre2);
 }
 
@@ -502,7 +502,7 @@ label {
 }
 
 @media (max-width: 480px) {
-    #sidebar.open {
+    #sidebar.collapsed {
         background: var(--white-blak-side);
     }
 

@@ -132,7 +132,7 @@ body {
     box-shadow  : 15px 0 14px rgb(15 23 28 / 49%) !important;
 }
 
-#sidebar.open {
+#sidebar.collapsed {
     box-shadow: 15px 0 16px rgba(15, 23, 28, 0.7) !important;
 }
 
@@ -146,7 +146,7 @@ body {
     background: #14141a;
 }
 
-#sidebar.open .search-box {
+#sidebar.collapsed .search-box {
     background: #14141a;
     border-radius: 5px;
     height: 45px;
@@ -1097,7 +1097,7 @@ input::placeholder, textarea::placeholder {
 }
 
 @media (max-width: 480px) {
-    #sidebar.open {
+    #sidebar.collapsed {
         background: var(--wid-dark);
     }
 

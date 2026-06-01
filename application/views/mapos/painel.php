@@ -789,7 +789,7 @@
         <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vCliente')) : ?>
         <a href="<?= site_url('clientes') ?>" class="quick-card">
             <div class="icon-wrapper">
-                <i class='bx bx-user'></i>
+                <?= svg_icon('user', 28, 28) ?>
             </div>
             <div class="title">Clientes</div>
             <div class="shortcut">F1</div>
@@ -799,7 +799,7 @@
         <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vProduto')) : ?>
         <a href="<?= site_url('produtos') ?>" class="quick-card">
             <div class="icon-wrapper">
-                <i class='bx bx-basket'></i>
+                <?= svg_icon('basket', 28, 28) ?>
             </div>
             <div class="title">Produtos</div>
             <div class="shortcut">F2</div>
@@ -809,7 +809,7 @@
         <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vServico')) : ?>
         <a href="<?= site_url('servicos') ?>" class="quick-card">
             <div class="icon-wrapper">
-                <i class='bx bx-wrench'></i>
+                <?= svg_icon('wrench', 28, 28) ?>
             </div>
             <div class="title">Serviços</div>
             <div class="shortcut">F3</div>
@@ -819,7 +819,7 @@
         <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vOs')) : ?>
         <a href="<?= site_url('os') ?>" class="quick-card">
             <div class="icon-wrapper">
-                <i class='bx bx-file'></i>
+                <?= svg_icon('file', 28, 28) ?>
             </div>
             <div class="title">Ordens</div>
             <div class="shortcut">F4</div>
@@ -829,7 +829,7 @@
         <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vVenda')) : ?>
         <a href="<?= site_url('vendas/') ?>" class="quick-card">
             <div class="icon-wrapper">
-                <i class='bx bx-cart-alt'></i>
+                <?= svg_icon('cart', 28, 28) ?>
             </div>
             <div class="title">Vendas</div>
             <div class="shortcut">F6</div>
@@ -839,7 +839,7 @@
         <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vLancamento')) : ?>
         <a href="<?= site_url('financeiro/lancamentos') ?>" class="quick-card">
             <div class="icon-wrapper">
-                <i class='bx bx-bar-chart-alt-2'></i>
+                <?= svg_icon('bar-chart-alt', 28, 28) ?>
             </div>
             <div class="title">Financeiro</div>
             <div class="shortcut">F7</div>
@@ -854,7 +854,7 @@
             <!-- Calendário -->
             <div class="widget-card">
                 <div class="widget-header">
-                    <h5><i class='bx bx-calendar'></i> Agenda de Ordens de Serviço</h5>
+                    <h5><?= svg_icon('calendar', 18, 18) ?> Agenda de Ordens de Serviço</h5>
                     <select class="col-2" name="statusOsGet" id="statusOsGet" style="margin: 0;">
                         <option value="">Todos Status</option>
                         <option value="Aberto">Aberto</option>
@@ -868,7 +868,7 @@
                         <option value="Aprovado">Aprovado</option>
                     </select>
                     <button type="button" class="btn btn-sm btn-info" id="btn-calendar">
-                        <i class="bx bx-search"></i> Filtrar
+                        <?= svg_icon('search', 14, 14) ?> Filtrar
                     </button>
                 </div>
                 <div class="widget-body">
@@ -881,7 +881,7 @@
             <!-- OS Recentes -->
             <div class="widget-card">
                 <div class="widget-header">
-                    <h5><i class='bx bx-clipboard'></i> Ordens de Serviço Recentes</h5>
+                    <h5><?= svg_icon('clipboard', 18, 18) ?> Ordens de Serviço Recentes</h5>
                     <a href="<?= site_url('os') ?>" class="btn btn-sm">Ver Todas</a>
                 </div>
                 <div class="widget-body" style="padding: 0;">
@@ -924,7 +924,7 @@
                                     <td>
                                         <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vOs')) : ?>
                                             <a href="<?= base_url() ?>index.php/os/visualizar/<?= $o->idOs ?>" class="btn btn-sm btn-info" title="Visualizar">
-                                                <i class="bx bx-show"></i>
+                                                <?= svg_icon('eye', 16, 16) ?>
                                             </a>
                                         <?php endif ?>
                                     </td>
@@ -933,7 +933,7 @@
                             <?php else : ?>
                                 <tr>
                                     <td colspan="5" style="text-align: center; padding: 30px;">
-                                        <i class='bx bx-inbox' style="font-size: 2rem; color: #ccc;"></i>
+                                        <?= svg_icon('inbox', 32, 32, '', 'color:#ccc;') ?>
                                         <p style="color: #999; margin-top: 10px;">Nenhuma OS recente</p>
                                     </td>
                                 </tr>
@@ -969,21 +969,21 @@
             <!-- Ações Rápidas -->
             <div class="widget-card">
                 <div class="widget-header">
-                    <h5><i class='bx bx-bolt'></i> Ações Rápidas</h5>
+                    <h5><?= svg_icon('bolt', 18, 18) ?> Ações Rápidas</h5>
                 </div>
                 <div class="widget-body">
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                         <a href="<?php echo base_url(); ?>index.php/clientes/adicionar" class="btn btn-block" style="background: #f8f9fa; border: 1px solid #dee2e6; color: #495057; padding: 12px; border-radius: 8px;">
-                            <i class='bx bx-user-plus'></i> Novo Cliente
+                            <?= svg_icon('user-plus', 16, 16) ?> Novo Cliente
                         </a>
                         <a href="<?php echo base_url(); ?>index.php/os/adicionar" class="btn btn-block" style="background: #f8f9fa; border: 1px solid #dee2e6; color: #495057; padding: 12px; border-radius: 8px;">
-                            <i class='bx bx-file-plus'></i> Nova OS
+                            <?= svg_icon('file-plus', 16, 16) ?> Nova OS
                         </a>
                         <a href="<?php echo base_url(); ?>index.php/produtos/adicionar" class="btn btn-block" style="background: #f8f9fa; border: 1px solid #dee2e6; color: #495057; padding: 12px; border-radius: 8px;">
-                            <i class='bx bx-package'></i> Novo Produto
+                            <?= svg_icon('package', 16, 16) ?> Novo Produto
                         </a>
                         <a href="<?php echo base_url(); ?>index.php/vendas/adicionar" class="btn btn-block" style="background: #f8f9fa; border: 1px solid #dee2e6; color: #495057; padding: 12px; border-radius: 8px;">
-                            <i class='bx bx-cart'></i> Nova Venda
+                            <?= svg_icon('cart', 16, 16) ?> Nova Venda
                         </a>
                     </div>
                 </div>
@@ -992,7 +992,7 @@
             <!-- OS por Status -->
             <div class="widget-card">
                 <div class="widget-header">
-                    <h5><i class='bx bx-pie-chart'></i> OS por Status</h5>
+                    <h5><?= svg_icon('pie-chart', 18, 18) ?> OS por Status</h5>
                 </div>
                 <div class="widget-body">
                     <div style="height: 200px;">
@@ -1004,7 +1004,7 @@
             <!-- Produtos com Estoque Baixo -->
             <div class="widget-card">
                 <div class="widget-header">
-                    <h5><i class='bx bx-error-circle'></i> Estoque Baixo</h5>
+                    <h5><?= svg_icon('error-circle', 18, 18) ?> Estoque Baixo</h5>
                     <span class="badge badge-warning"><?= count($produtos ?? []) ?></span>
                 </div>
                 <div class="widget-body" style="padding: 0; max-height: 300px; overflow-y: auto;" class="custom-scroll">
@@ -1025,7 +1025,7 @@
                             <?php else : ?>
                                 <tr>
                                     <td colspan="2" style="text-align: center; padding: 30px; color: #888;">
-                                        <i class='bx bx-check-circle' style="font-size: 2rem; color: #4caf50;"></i>
+                                        <?= svg_icon('check-circle', 32, 32, '', 'color:#4caf50;') ?>
                                         <p style="margin-top: 10px;">Estoque OK</p>
                                     </td>
                                 </tr>
@@ -1043,10 +1043,10 @@
         <div class="dashboard-col-8">
             <div class="widget-card">
                 <div class="widget-header">
-                    <h5><i class='bx bx-trending-up'></i> Balanço Mensal</h5>
+                    <h5><?= svg_icon('trending-up', 18, 18) ?> Balanço Mensal</h5>
                     <form method="get" style="margin: 0; display: flex; gap: 10px;">
                         <input type="number" name="year" style="width: 80px; margin: 0;" value="<?php echo intval(preg_replace('/[^0-9]/', '', $this->input->get('year'))) ?: date('Y') ?>" class="input-small">
-                        <button type="submit" class="btn btn-sm btn-info"><i class='bx bx-search'></i></button>
+                        <button type="submit" class="btn btn-sm btn-info"><?= svg_icon('search', 14, 14) ?></button>
                     </form>
                 </div>
                 <div class="widget-body">
@@ -1059,7 +1059,7 @@
         <div class="dashboard-col-4">
             <div class="widget-card">
                 <div class="widget-header">
-                    <h5><i class='bx bx-wallet'></i> Resumo Financeiro</h5>
+                    <h5><?= svg_icon('wallet', 18, 18) ?> Resumo Financeiro</h5>
                 </div>
                 <div class="widget-body">
                     <div style="display: flex; flex-direction: column; gap: 15px;">
@@ -1093,7 +1093,7 @@
 <div id="calendarModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-header">
         <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="myModalLabel"><i class='bx bx-calendar-check'></i> Detalhes da OS</h3>
+        <h3 id="myModalLabel"><?= svg_icon('calendar-check', 18, 18) ?> Detalhes da OS</h3>
     </div>
     <div class="modal-body">
         <div class="row">
@@ -1130,17 +1130,17 @@
     <div class="modal-footer" style="display: flex; justify-content: center; gap: 10px;">
         <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vOs')) : ?>
             <a id="modalIdVisualizar" href="" class="btn tip-top" title="Ver mais detalhes">
-                <i class="fas fa-eye"></i> Visualizar
+                <?= svg_icon('eye', 14, 14) ?> Visualizar
             </a>
         <?php endif; ?>
         <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eOs')) : ?>
             <a id="modalIdEditar" href="" class="btn btn-info tip-top" title="Editar OS">
-                <i class="fas fa-edit"></i> Editar
+                <?= svg_icon('edit', 14, 14) ?> Editar
             </a>
         <?php endif; ?>
         <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dOs')) : ?>
             <a id="linkExcluir" href="#modal-excluir-os" role="button" data-bs-toggle="modal" os="" class="btn btn-danger tip-top" title="Excluir OS">
-                <i class="fas fa-trash-alt"></i> Excluir
+                <?= svg_icon('trash', 14, 14) ?> Excluir
             </a>
         <?php endif; ?>
     </div>

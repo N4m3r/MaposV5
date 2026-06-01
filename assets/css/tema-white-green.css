@@ -104,7 +104,7 @@ body {
     border-right: 1px solid var(--white-gre0);
 }
 
-#sidebar.open {
+#sidebar.collapsed {
     box-shadow: 15px 0 16px rgba(16, 16, 31, 0.2) !important;
 }
 
@@ -206,12 +206,12 @@ body {
     background: var(--white-gre2);
 }
 
-#sidebar.open li a:hover .iconX,
-#sidebar.open li a:hover .title {
+#sidebar.collapsed li a:hover .iconX,
+#sidebar.collapsed li a:hover .title {
     color: var(--white-gre0);
 }
 
-#sidebar.open li a:hover {
+#sidebar.collapsed li a:hover {
     background: var(--white-gre2);
 }
 
@@ -466,7 +466,7 @@ label {
 }
 
 @media (max-width: 480px) {
-    #sidebar.open {
+    #sidebar.collapsed {
         background: var(--white-bran);
     }
 }

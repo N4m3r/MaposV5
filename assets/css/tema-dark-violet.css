@@ -118,7 +118,7 @@ body {
     border-right: 1px solid rgba(0, 0, 0, 0.08);
 }
 
-#sidebar.open {
+#sidebar.collapsed {
     box-shadow: 15px 0 16px rgba(26, 16, 31, 0.6) !important;
 }
 
@@ -1229,7 +1229,7 @@ input::placeholder, textarea::placeholder {
         margin-top: 2px;
     }
 
-    #sidebar.open {
+    #sidebar.collapsed {
         background: #32056b;
     }
 

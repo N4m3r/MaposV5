@@ -351,7 +351,7 @@ body {
 }
 
 @media (max-width: 480px) {
-  #sidebar.open .toggle {
+  #sidebar.collapsed .toggle {
     background: var(--funSider-w);
   }
 
@@ -369,7 +369,7 @@ body {
     color     : #b0b8c1;
   }
 
-  #sidebar.open .mode {
+  #sidebar.collapsed .mode {
     background: var(--bodycolor-w);
     border: 2px solid var(--cinza0);
     color: var(--cinza0);

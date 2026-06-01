@@ -673,17 +673,17 @@ End hora certa */
   z-index        : 99999;
 }
 
-#sidebar.open {
+#sidebar.collapsed {
   width: 80px;
 }
 
-#sidebar.open .title {
+#sidebar.collapsed .title {
   opacity   : 0;
   font-size : 1.05em;
   transition: var(--tran-03);
 }
 
-#sidebar.open #newlog .title1 {
+#sidebar.collapsed #newlog .title1 {
   display   : none;
 }
 
@@ -759,7 +759,7 @@ End hora certa */
   transition     : var(--tran-05);
 }
 
-#sidebar.open .mode {
+#sidebar.collapsed .mode {
   transition: var(--tran-05);
 }
 
@@ -778,13 +778,13 @@ End hora certa */
   opacity: 0;
 }
 
-#sidebar.open .mode i.close-2 {
+#sidebar.collapsed .mode i.close-2 {
   opacity   : 1;
   transition: var(--tran-05);
   font-size : 1.8em;
 }
 
-#sidebar.open .mode i.open-2 {
+#sidebar.collapsed .mode i.open-2 {
   opacity   : 0;
   transition: var(--tran-02);
 }
@@ -810,7 +810,7 @@ End hora certa */
   color        : #e6e2e2;
 }
 
-#sidebar.open li a {
+#sidebar.collapsed li a {
   justify-content: flex-start;
   transition     : var(--tran-03);
 }
@@ -3158,7 +3158,7 @@ form {
     padding: 17px 10px !important;
   }
 
-  #sidebar.open {
+  #sidebar.collapsed {
     width: 200px;
   }
 
@@ -3189,20 +3189,20 @@ form {
     transition: var(--tran-05);
   }
 
-  #sidebar.open li a:hover .title-tooltip {
+  #sidebar.collapsed li a:hover .title-tooltip {
     display: none;
   }
 
-  #sidebar.open li form:hover .title-tooltip {
+  #sidebar.collapsed li form:hover .title-tooltip {
     display: none;
   }
 
-  #sidebar.open .title {
+  #sidebar.collapsed .title {
     opacity: 1 !important;
     display: block;
   }
 
-  #sidebar.open .mode {
+  #sidebar.collapsed .mode {
       right  : -15px;
       z-index: 999999;
   }
@@ -3211,7 +3211,7 @@ form {
     margin: 35px 20px 8px 20px;
   }
 
-  #sidebar.open #newlog .title1 {
+  #sidebar.collapsed #newlog .title1 {
     width: 100px !important;
     display: inherit;
   }
@@ -3297,7 +3297,7 @@ form {
     width: 23px;
   }
 
-  #sidebar.open {
+  #sidebar.collapsed {
     width: 200px;
   }
 
@@ -3318,7 +3318,7 @@ form {
     display: none;
   }
 
-  #sidebar.open .title {
+  #sidebar.collapsed .title {
     opacity: 1 !important;
     display: block;
   }
@@ -3333,15 +3333,15 @@ form {
     transition: var(--tran-05);
   }
 
-  #sidebar.open li a:hover .title-tooltip {
+  #sidebar.collapsed li a:hover .title-tooltip {
     display: none;
   }
 
-  #sidebar.open li form:hover .title-tooltip {
+  #sidebar.collapsed li form:hover .title-tooltip {
     display: none;
   }
 
-  #sidebar.open .mode {
+  #sidebar.collapsed .mode {
       right  : -6px;
       z-index: 999999;
   }
@@ -3350,7 +3350,7 @@ form {
     margin: 35px 20px 8px 20px;
   }
 
-  #sidebar.open #newlog .title1 {
+  #sidebar.collapsed #newlog .title1 {
     width: 100px !important;
     display: inherit;
   }
@@ -3629,7 +3629,7 @@ form {
     display: none;
   }
 
-  #sidebar.open {
+  #sidebar.collapsed {
     width: 220px;
   }
 
@@ -3637,12 +3637,12 @@ form {
     width: 33px;
   }
 
-  #sidebar.open #newlog .title1 {
+  #sidebar.collapsed #newlog .title1 {
     display: block;
     width  : 113px;
   }
 
-  #sidebar.open .title {
+  #sidebar.collapsed .title {
     opacity   : 1 !important;
     font-size : 1.05em;
     transition: var(--tran-03);
@@ -3659,11 +3659,11 @@ form {
     transition: var(--tran-05);
   }
 
-  #sidebar.open li a:hover .title-tooltip {
+  #sidebar.collapsed li a:hover .title-tooltip {
     display: none;
   }
 
-  #sidebar.open li form:hover .title-tooltip {
+  #sidebar.collapsed li form:hover .title-tooltip {
     display: none;
   }
 
@@ -4008,7 +4008,7 @@ form {
     text-align: center;
   }
 
-  #sidebar.open #newlog .title1 {
+  #sidebar.collapsed #newlog .title1 {
     display: inherit;
   }
 
@@ -4171,7 +4171,7 @@ form {
     font-size: 1.5em;
   }
 
-  #sidebar.open {
+  #sidebar.collapsed {
     margin-left : 0;
     width       : 240px;
     background  : #303244;
@@ -4181,8 +4181,8 @@ form {
     opacity     : 1;
   }
 
-  #sidebar.open .icon2,
-  #sidebar.open .iconX {
+  #sidebar.collapsed .icon2,
+  #sidebar.collapsed .iconX {
     opacity   : 1;
     transition: var(--tran-03);
   }
@@ -4195,7 +4195,7 @@ form {
     margin-top: 2px;
     opacity   : 0;
   }
-  #sidebar.open li {
+  #sidebar.collapsed li {
     opacity: 1;
   }
 
@@ -4217,24 +4217,24 @@ form {
     opacity    : 0;
   }
 
-  #sidebar.open #newlog {
+  #sidebar.collapsed #newlog {
     margin-left: 0;
     transition : var(--tran-03);
     opacity    : 1;
   }
 
-  #sidebar.open .menu-bar {
+  #sidebar.collapsed .menu-bar {
     margin-left: 0;
     transition : var(--tran-03);
   }
 
-  #sidebar.open .search-box {
+  #sidebar.collapsed .search-box {
     margin-left: 20px;
     transition : var(--tran-03);
     opacity    : 1;
   }
 
-  #sidebar.open .title {
+  #sidebar.collapsed .title {
     opacity    : 1 !important;
     display    : block;
     transition : var(--tran-04);
@@ -4252,7 +4252,7 @@ form {
     left: 12px;
   }
 
-  #sidebar.open .mode i {
+  #sidebar.collapsed .mode i {
     left: auto;
   }
 
@@ -4278,7 +4278,7 @@ form {
     color          : #42484e;
   }
 
-  #sidebar.open .toggle {
+  #sidebar.collapsed .toggle {
     background: var(--funSider);
     color     : #faa936;
     transition: var(--tran-02);

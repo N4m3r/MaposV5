@@ -1,136 +1,134 @@
 $(document).ready(function(){
 
+	// === Sidebar Navigation — Modern sidebar with .collapsed state ===
 
-	// === Sidebar navigation === //
-
-	// === Sidebar navigation - Suporte a submenus aninhados === //
-
+	// Submenu click handler — works in both expanded and collapsed states
 	$('.submenu > a').click(function(e)
 	{
 		e.preventDefault();
 		var $link = $(this);
 		var $li = $link.closest('li');
-		var $submenu = $link.siblings('ul');
+		var $submenu = $link.siblings('ul').first();
 		var isNested = $li.parent().closest('.submenu').length > 0;
-		var sidebarCollapsed = $('#sidebar').hasClass('open');
 
-		// No estado colapsado, hover cuida do flyout — não alterna .open
-		if (sidebarCollapsed) {
-			return;
+		// In collapsed state, expand the sidebar first
+		if ($('#sidebar').hasClass('collapsed')) {
+			$('#sidebar').removeClass('collapsed');
+			document.body.classList.remove('sidebar-collapsed');
+			localStorage.setItem('sidebar-collapsed', 'false');
 		}
 
 		if($li.hasClass('open'))
 		{
-			// Fecha o submenu atual
-			if(($(window).width() > 768) || ($(window).width() < 479)) {
-				$submenu.slideUp(200);
-			} else {
-				$submenu.fadeOut(250);
-			}
+			// Close this submenu
+			$submenu.slideUp(200);
 			$li.removeClass('open');
-			// Fecha todos os submenus filhos também
-			$li.find('li.submenu').removeClass('open').find('> ul').slideUp(200);
+			// Also close any open child submenus
+			$li.find('li.submenu.open').removeClass('open').find('> ul').slideUp(200);
 		} else
 		{
-			// Se não for submenu aninhado, fecha outros submenus no mesmo nível
+			// Close sibling submenus at the same level
 			if (!isNested) {
-				var $siblings = $li.siblings('li.submenu');
+				var $siblings = $li.siblings('li.submenu.open');
 				$siblings.removeClass('open').find('> ul').slideUp(200);
-				$siblings.find('li.submenu').removeClass('open').find('> ul').slideUp(200);
+				$siblings.find('li.submenu.open').removeClass('open').find('> ul').slideUp(200);
 			} else {
-				// Se for submenu aninhado, fecha apenas os irmãos no mesmo nível
 				var $parentUl = $li.parent('ul');
-				var $siblings = $parentUl.children('li.submenu');
+				var $siblings = $parentUl.children('li.submenu.open');
 				$siblings.not($li).removeClass('open').find('> ul').slideUp(200);
 			}
 
-			// Abre o submenu atual
-			if(($(window).width() > 768) || ($(window).width() < 479)) {
-				$submenu.slideDown(200);
-			} else {
-				$submenu.fadeIn(250);
-			}
+			// Open this submenu
+			$submenu.slideDown(200);
 			$li.addClass('open');
 		}
 	});
 
-	// Limpa estado .open dos submenus quando sidebar muda de estado
-	// E alterna classe sidebar-collapsed no body para ajustar conteudo
+	// Desktop collapse/expand toggle
+	$(document).on('click', '.sidebar-collapse-toggle', function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		toggleSidebar();
+	});
+
+	// Mobile toggle (topbar hamburger)
+	$(document).on('click', '#sidebar-toggle-mobile, #sidebar-toggle-mobile-admin', function(e) {
+		e.preventDefault();
+		toggleSidebar();
+	});
+
+	// Toggle sidebar state
+	function toggleSidebar() {
+		var sidebar = document.getElementById('sidebar');
+		if (!sidebar) return;
+
+		var isCollapsing = !sidebar.classList.contains('collapsed');
+
+		if (isCollapsing) {
+			sidebar.classList.add('collapsed');
+			document.body.classList.add('sidebar-collapsed');
+			// Close all open submenus when collapsing
+			$('#sidebar li.submenu.open').removeClass('open');
+			$('#sidebar li.submenu > ul').slideUp(0);
+		} else {
+			sidebar.classList.remove('collapsed');
+			document.body.classList.remove('sidebar-collapsed');
+		}
+
+		localStorage.setItem('sidebar-collapsed', isCollapsing ? 'true' : 'false');
+	}
+
+	// Initialize sidebar state from localStorage
 	var sidebarEl = document.getElementById('sidebar');
 	if (sidebarEl) {
+		var savedCollapsed = localStorage.getItem('sidebar-collapsed');
+		if (savedCollapsed === 'true') {
+			sidebarEl.classList.add('collapsed');
+			document.body.classList.add('sidebar-collapsed');
+		}
+
+		// MutationObserver to sync body class if sidebar class changes externally
 		var observer = new MutationObserver(function(mutations) {
 			mutations.forEach(function(mutation) {
 				if (mutation.attributeName === 'class') {
 					var sidebar = document.getElementById('sidebar');
-					if (sidebar && sidebar.classList.contains('open')) {
-						// Sidebar colapsou — limpa todos os .open de submenus
-						$('#sidebar li.submenu').removeClass('open');
-						// Esconde flyouts
-						$('#sidebar li.submenu > ul').hide();
-						// Adiciona classe no body para ajustar conteudo/topbar
+					if (sidebar && sidebar.classList.contains('collapsed')) {
 						document.body.classList.add('sidebar-collapsed');
 					} else {
-						// Sidebar expandida — remove classe do body
 						document.body.classList.remove('sidebar-collapsed');
 					}
 				}
 			});
 		});
 		observer.observe(sidebarEl, { attributes: true });
-
-		// Define estado inicial baseado no sidebar
-		if (sidebarEl.classList.contains('open')) {
-			document.body.classList.add('sidebar-collapsed');
-		}
 	}
 
-	var ul = $('#sidebar > ul');
-
-	$('#sidebar > a').click(function(e)
-	{
-		e.preventDefault();
-		var sidebar = $('#sidebar');
-		if(sidebar.hasClass('open'))
-		{
-			sidebar.removeClass('open');
-			ul.slideUp(250);
-		} else
-		{
-			sidebar.addClass('open');
-			ul.slideDown(250);
-		}
-	});
-
-	// === Resize window related === //
+	// === Resize window === //
 	$(window).resize(function()
 	{
 		if($(window).width() > 479)
 		{
-			ul.css({'display':'block'});
 			$('#content-header .btn-group').css({width:'auto'});
 		}
 		if($(window).width() < 479)
 		{
-			ul.css({'display':'none'});
 			fix_position();
 		}
 		if($(window).width() > 768)
 		{
 			$('#user-nav > ul').css({width:'auto',margin:'0'});
-	            $('#content-header .btn-group').css({width:'auto'});
+			$('#content-header .btn-group').css({width:'auto'});
 		}
 	});
 
 	if($(window).width() < 468)
 	{
-		ul.css({'display':'none'});
 		fix_position();
 	}
 
 	if($(window).width() > 479)
 	{
-	   $('#content-header .btn-group').css({width:'auto'});
-		ul.css({'display':'block'});
+		$('#content-header .btn-group').css({width:'auto'});
 	}
 
 	// === Tooltips === //
@@ -140,20 +138,14 @@ $(document).ready(function(){
 	$('.tip-top').tooltip({ placement: 'top' });
 	$('.tip-bottom').tooltip({ placement: 'bottom' });
 
-	// === Search input typeahead === //
-	//$('#search input[type=text]').typeahead({
-		//source: ['Dashboard','Form elements','Common Elements','Validation','Wizard','Buttons','Icons','Interface elements','Support','Calendar','Gallery','Reports','Charts','Graphs','Widgets'],
-		//items: 4
-	//});
-
 	// === Fixes the position of buttons group in content header and top user navigation === //
 	function fix_position()
 	{
 		var uwidth = $('#user-nav > ul').width();
 		$('#user-nav > ul').css({width:uwidth,'margin-left':'-' + uwidth / 2 + 'px'});
 
-        var cwidth = $('#content-header .btn-group').width();
-        $('#content-header .btn-group').css({width:cwidth,'margin-left':'-' + uwidth / 2 + 'px'});
+		var cwidth = $('#content-header .btn-group').width();
+		$('#content-header .btn-group').css({width:cwidth,'margin-left':'-' + uwidth / 2 + 'px'});
 	}
 
 	// === Style switcher === //
@@ -181,26 +173,19 @@ $(document).ready(function(){
 	});
 
 	$('.lightbox_trigger').click(function(e) {
-
 		e.preventDefault();
-
 		var image_href = $(this).attr("href");
 
 		if ($('#lightbox').length > 0) {
-
 			$('#imgbox').html('<img src="' + image_href +'" /><p><i class="icon-remove icon-white"></i></p>');
-
 			$('#lightbox').slideDown(500);
-		}
-
-		else {
+		} else {
 			var lightbox =
 			'<div id="lightbox" style="display:none;">' +
 				'<div id="imgbox"><img src="' + image_href +'" />' +
 					'<p><i class="icon-remove icon-white"></i></p>' +
-				'</div>'
+				'</div>' +
 			'</div>';
-
 			$('body').append(lightbox);
 			$('#lightbox').slideDown(500);
 		}
@@ -208,7 +193,6 @@ $(document).ready(function(){
 		$(document).on('click', '#lightbox', function() {
 			$('#lightbox').hide(200);
 		});
-
 	});
 
 	// === Salvar e Restaurar posição do scroll do menu lateral === //
@@ -224,15 +208,6 @@ $(document).ready(function(){
 	$(document).on('click', '.menu-scrollable a, .menu-links a', function(e) {
 		if (menuScrollable.length) {
 			localStorage.setItem('menuScrollPosition', menuScrollable.scrollTop());
-		}
-	});
-
-	// Fecha flyouts do sidebar colapsado ao clicar fora
-	$(document).on('click', function(e) {
-		if ($('#sidebar').hasClass('open')) {
-			if (!$(e.target).closest('#sidebar').length) {
-				$('#sidebar.open li.submenu > ul').hide();
-			}
 		}
 	});
 

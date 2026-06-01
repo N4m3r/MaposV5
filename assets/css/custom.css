@@ -546,17 +546,17 @@ textarea {
     text-overflow: ellipsis;
 }
 
-#sidebar.open .sidebar-user {
+#sidebar.collapsed .sidebar-user {
     justify-content: center;
     padding: 8px;
     margin: 8px 10px 0;
 }
 
-#sidebar.open .sidebar-user-info {
+#sidebar.collapsed .sidebar-user-info {
     display: none;
 }
 
-#sidebar.open .sidebar-user-avatar {
+#sidebar.collapsed .sidebar-user-avatar {
     width: 32px;
     height: 32px;
     min-width: 32px;
@@ -713,6 +713,7 @@ body[data-theme="darkorange"] #sidebar li.active i {
 #sidebar li.submenu > a {
     border-radius: 6px;
     transition: background 0.2s ease;
+    cursor: pointer;
 }
 
 /* Arrow rotation on open */
@@ -857,7 +858,7 @@ body[data-theme="darkorange"] #sidebar li.active i {
 }
 
 /* --- Tooltips (collapsed state) --- */
-#sidebar.open li .title-tooltip {
+#sidebar.collapsed li .title-tooltip {
     display: none;
     position: absolute;
     left: 68px;
@@ -877,13 +878,13 @@ body[data-theme="darkorange"] #sidebar li.active i {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-#sidebar.open li:hover .title-tooltip {
+#sidebar.collapsed li:hover .title-tooltip {
     display: block;
     opacity: 1;
     animation: tooltipFadeIn 0.2s ease forwards;
 }
 
-#sidebar.open li .title-tooltip::before {
+#sidebar.collapsed li .title-tooltip::before {
     content: '';
     position: absolute;
     left: -5px;
@@ -927,14 +928,91 @@ body[data-theme="darkorange"] #sidebar li.active i {
 }
 
 /* ============================================
-   SIDEBAR SUBMENU - DROPDOWN INLINE
-   Submenus abrem logo abaixo do item clicado,
-   dentro do sidebar, sem flyout lateral.
+   SIDEBAR NAVIGATION - CONSOLIDATED RULES
+   .collapsed = sidebar colapsado (80px, icones)
+   .open = submenu aberto (dropdown abaixo)
    ============================================ */
 
-/* Container: submenus abrem dentro da area scrollavel */
+/* --- Base Sidebar Layout --- */
+#sidebar {
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#sidebar.collapsed {
+    width: 80px;
+}
+
+#sidebar.collapsed .title,
+#sidebar.collapsed #newlog .title1,
+#sidebar.collapsed .sidebar-user-info,
+#sidebar.collapsed .search-box input,
+#sidebar.collapsed .menu-divider .divider-text,
+#sidebar.collapsed .menu-divider-sub .divider-text-sub,
+#sidebar.collapsed .menu-badge {
+    display: none !important;
+}
+
+#sidebar.collapsed .sidebar-user {
+    justify-content: center;
+    padding: 8px;
+    margin: 8px 10px 0;
+}
+
+#sidebar.collapsed .sidebar-user-avatar {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    font-size: 12px;
+}
+
+/* Collapse toggle button */
+.sidebar-collapse-toggle {
+    position: absolute;
+    top: 15px;
+    right: -14px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--funSider, #232332);
+    border: 2px solid var(--cinza0, #676779);
+    color: var(--cinza0, #676779);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 0;
+}
+
+@media (min-width: 769px) {
+    .sidebar-collapse-toggle {
+        display: flex;
+    }
+}
+
+.sidebar-collapse-toggle:hover {
+    border-color: var(--sidebar-accent);
+    color: var(--sidebar-accent);
+    transform: scale(1.15);
+    box-shadow: 0 0 0 4px rgba(var(--sidebar-accent-rgb), 0.15);
+}
+
+#sidebar.collapsed .collapse-icon {
+    display: none;
+}
+
+#sidebar:not(.collapsed) .expand-icon {
+    display: none;
+}
+
+/* --- Menu Structure --- */
 #sidebar .menu-bar {
     overflow: visible;
+    height: calc(100% - 50px);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
 }
 
 #sidebar .menu-scrollable {
@@ -943,39 +1021,51 @@ body[data-theme="darkorange"] #sidebar li.active i {
     position: relative;
 }
 
-/* Submenu dropdown (abre abaixo do item) - todos os niveis */
+/* --- Submenu: Inline Dropdown (position:relative, abre abaixo) --- */
+#sidebar li.submenu {
+    position: relative;
+    height: auto;
+    min-height: 40px;
+}
+
 #sidebar li.submenu > ul {
     position: relative !important;
     left: auto !important;
     width: auto !important;
     max-height: none !important;
-    margin: 2px 8px 4px 8px !important;
-    padding: 4px 0 !important;
-    background-color: rgba(var(--sidebar-accent-rgb), 0.06) !important;
-    border-radius: 6px !important;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.08) !important;
-    list-style: none !important;
+    display: none;
+    margin: 2px 8px 4px 8px;
+    padding: 4px 0;
+    background-color: rgba(var(--sidebar-accent-rgb), 0.06);
+    border-radius: 6px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.08);
+    list-style: none;
 }
 
-/* Submenu visivel quando aberto */
 #sidebar li.submenu.open > ul,
 #sidebar li.submenu.active > ul {
     display: block !important;
 }
 
-/* Submenu aninhado (nivel 2) */
+/* Nested submenu level 2 */
 #sidebar li.submenu > ul > li.submenu > ul {
     position: relative !important;
     left: 0 !important;
     width: auto !important;
-    margin: 2px 8px 4px 8px !important;
-    padding: 4px 0 !important;
-    background-color: rgba(var(--sidebar-accent-rgb), 0.04) !important;
-    border-radius: 4px !important;
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06) !important;
+    display: none;
+    margin: 2px 8px 4px 8px;
+    padding: 4px 0;
+    background-color: rgba(var(--sidebar-accent-rgb), 0.04);
+    border-radius: 4px;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06);
 }
 
-/* Temas claros */
+#sidebar li.submenu > ul > li.submenu.open > ul,
+#sidebar li.submenu > ul > li.submenu.active > ul {
+    display: block !important;
+}
+
+/* Theme-specific submenu backgrounds */
 body:not([data-theme="puredark"]):not([data-theme="darkviolet"]):not([data-theme="darkorange"])
 #sidebar li.submenu > ul {
     background-color: rgba(0, 0, 0, 0.04) !important;
@@ -986,7 +1076,7 @@ body:not([data-theme="puredark"]):not([data-theme="darkviolet"]):not([data-theme
     background-color: rgba(0, 0, 0, 0.03) !important;
 }
 
-/* Itens do submenu - links clicáveis com rotas */
+/* Submenu items - clickable links with routes */
 #sidebar li.submenu > ul > li {
     height: auto;
     min-height: 36px;
@@ -1008,9 +1098,9 @@ body:not([data-theme="puredark"]):not([data-theme="darkviolet"]):not([data-theme
     text-decoration: none;
     width: 100%;
     box-sizing: border-box;
+    transition: background 0.2s ease, transform 0.2s ease;
 }
 
-/* Submenu hover */
 #sidebar li.submenu > ul > li > a:hover {
     background: rgba(255, 255, 255, 0.08);
     transform: translateX(2px);
@@ -1021,59 +1111,27 @@ body:not([data-theme="puredark"]):not([data-theme="darkviolet"]):not([data-theme
     color: var(--sidebar-accent);
 }
 
-/* --- Sidebar colapsada: flyout lateral via hover --- */
-#sidebar.open li.submenu > ul {
-    position: fixed !important;
-    left: 80px !important;
-    width: 240px !important;
-    max-height: 80vh !important;
-    overflow-y: auto !important;
-    background-color: var(--funSider, #232332) !important;
-    box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.35) !important;
-    border-radius: 8px !important;
-    padding: 8px 0 !important;
-    margin: 0 !important;
-    z-index: 100002 !important;
+/* --- Collapsed state: hide submenus, show tooltips --- */
+#sidebar.collapsed li.submenu > ul {
+    display: none !important;
 }
 
-#sidebar.open li.submenu:hover > ul {
-    display: block !important;
-}
-
-#sidebar.open li.submenu > a .title {
+#sidebar.collapsed li.submenu > a .arrow {
     display: none;
 }
 
-#sidebar.open li.submenu > a .arrow {
-    display: none;
-}
-
-#sidebar.open li.submenu:hover > a .title-tooltip {
+#sidebar.collapsed li:hover > .title-tooltip {
     display: block;
     opacity: 1;
+    animation: tooltipFadeIn 0.2s ease forwards;
 }
 
-body:not([data-theme="puredark"]):not([data-theme="darkviolet"]):not([data-theme="darkorange"])
-#sidebar.open li.submenu > ul {
-    background-color: #2a2a3e !important;
+@keyframes tooltipFadeIn {
+    from { opacity: 0; transform: translateY(-50%) translateX(4px); }
+    to { opacity: 1; transform: translateY(-50%) translateX(0); }
 }
 
-body[data-theme="puredark"] #sidebar.open li.submenu > ul {
-    background-color: #1a1a2e !important;
-}
-
-body[data-theme="darkviolet"] #sidebar.open li.submenu > ul {
-    background-color: #2d1b69 !important;
-}
-
-body[data-theme="darkorange"] #sidebar.open li.submenu > ul {
-    background-color: #2d1b0e !important;
-}
-
-/* ============================================
-   SIDEBAR LAYOUT FIXES - Content Shift
-   ============================================ */
-
+/* --- Content Area Shift --- */
 #content,
 .navebarn,
 #footer {
@@ -1082,10 +1140,12 @@ body[data-theme="darkorange"] #sidebar.open li.submenu > ul {
 }
 
 @media (min-width: 769px) {
+    #sidebar.collapsed ~ #content,
     body.sidebar-collapsed #content {
         margin-left: 80px !important;
     }
 
+    #sidebar.collapsed ~ .navebarn,
     body.sidebar-collapsed .navebarn {
         margin-left: 82px !important;
     }
@@ -1096,6 +1156,8 @@ body[data-theme="darkorange"] #sidebar.open li.submenu > ul {
 }
 
 /* ============================================
+   FIM SIDEBAR ENHANCEMENTS
+   ============================================ */
    FIM SIDEBAR ENHANCEMENTS
    ============================================ */
 

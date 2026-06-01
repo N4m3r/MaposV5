@@ -8,6 +8,12 @@
             <?= $configuration['app_theme'] == 'white' ||  $configuration['app_theme'] == 'whitegreen' ? '<img src="' . base_url() . 'assets/img/logo-mapos.png">' : '<img src="' . base_url() . 'assets/img/logo-mapos-branco.png">'; ?>
         </div>
     </div>
+    <!-- Desktop collapse/expand toggle -->
+    <button class="sidebar-collapse-toggle" title="Expandir/Recolher menu" aria-label="Alternar menu">
+        <?= svg_icon('chevrons-left', 20, 20, 'iconX collapse-icon') ?>
+        <?= svg_icon('chevrons-right', 20, 20, 'iconX expand-icon') ?>
+    </button>
+    <!-- Mobile toggle (kept for small screens) -->
     <a href="#" class="d-inline d-sm-none btn">
         <div class="mode">
             <div class="moon-menu">

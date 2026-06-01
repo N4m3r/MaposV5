@@ -291,7 +291,7 @@ body {
 }
 
 @media (max-width: 480px) {
-  #sidebar.open .toggle {
+  #sidebar.collapsed .toggle {
     background: var(--funSider-w);
   }
 
