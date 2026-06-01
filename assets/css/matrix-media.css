@@ -18,69 +18,6 @@ body {
 #search input[type=text]:focus {
 	color: #777777;
 }
-#sidebar > ul > li.active {
-	background-color: transparent;
-}
-#sidebar > ul > li.active a {
-	text-decoration:none;
-}
-#sidebar > ul > li > a > .label {
-	background-color: transparent; transition: 0.6s; color: #87909d;
-}
-#sidebar > ul > li > a:hover .label {
-	transform: rotate(0.25turn);
-}
-#sidebar > ul > li > a:hover {
-	background-color: transparent; color: var(--funCont); text-shadow: 0 -1px 0 rgb(0 0 0 / 25%);
-}
-
-/* Scrollbar para submenus longos */
-#sidebar > ul > li.submenu > ul {
-	scrollbar-width: thin;
-	scrollbar-color: rgba(0,0,0,0.3) transparent;
-}
-
-#sidebar > ul > li.submenu > ul::-webkit-scrollbar {
-	width: 6px;
-}
-
-#sidebar > ul > li.submenu > ul::-webkit-scrollbar-thumb {
-	background-color: rgba(0,0,0,0.3);
-	border-radius: 3px;
-}
-
-/* Quando o submenu esta aberto */
-#sidebar > ul > li.submenu.open > ul,
-#sidebar > ul > li.submenu.active > ul {
-	display: block;
-}
-
-/* Submenu nivel 2 quando pai esta ativo/aberto */
-#sidebar > ul > li.submenu > ul > li.submenu.open > ul,
-#sidebar > ul > li.submenu > ul > li.submenu.active > ul {
-	display: block;
-}
-
-/* Ajuste para os itens do submenu */
-#sidebar > ul li ul li {
-	position: relative;
-	display: block;
-}
-
-#sidebar > ul li ul li a {
-	padding: 10px 15px;
-	display: flex;
-	align-items: center;
-	white-space: nowrap;
-	color: #25233c;
-	font-weight: 400;
-	padding-left: 20px;
-	font-size: 1.05em;
-}
-#sidebar > ul li ul li a:hover,
-#sidebar > ul li ul li.active a {
-	color: #f5a907;
-}
 #search input[type=text] {
 	background-color: #47515b; color: #f89b37;
 }
@@ -131,11 +68,6 @@ color: #fff;
 
 @media (min-width: 768px) and (max-width: 970px) {.quick-actions_homepage .quick-actions li{ min-width:20.5%;}}
 @media (min-width: 481px) and (max-width: 767px) {
-	#sidebar > ul ul:before {
-		}
-	#sidebar > ul ul:after {
-		border-right: 6px solid #222222;
-    }
 	.quick-actions_homepage .quick-actions li{ min-width:47%;}
 }
 div.tagsinput { border:1px solid #CCC; background: #FFF; padding:5px; width:300px; height:100px; overflow-y: auto;}

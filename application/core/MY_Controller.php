@@ -131,17 +131,6 @@ class MY_Controller extends CI_Controller
         // load views
         $this->load->view('tema/topo', $this->data);
 
-        // Verifica se deve usar menu do portal do tecnico (flag definida no controller)
-        if (!empty($this->data['use_menu_portal_tecnico'])) {
-            $this->load->view('tema/menu_portal_tecnico', $this->data);
-        }
-        // Verifica se eh tecnico e carrega menu apropriado
-        elseif ($this->isTecnico()) {
-            $this->load->view('tema/menu_tecnico');
-        } else {
-            $this->load->view('tema/menu');
-        }
-
         $this->load->view('tema/conteudo', $this->data);
         $this->load->view('tema/rodape');
     }

@@ -98,42 +98,6 @@ body {
     color: var(--white-gre2);
 }
 
-/* SIDEBAR */
-#sidebar {
-    background  : var(--white);
-    border-right: 1px solid var(--white-gre0);
-}
-
-#sidebar.collapsed {
-    box-shadow: 15px 0 16px rgba(16, 16, 31, 0.2) !important;
-}
-
-#sidebar > ul > li.active a {
-    background-color: #525a64;
-    color        : #ffffff;
-    border-radius: 5px;
-}
-
-#sidebar .search-box {
-    background: var(--white);
-    border: 1px solid var(--white-gre0);
-}
-
-#user-nav > ul > li > a:hover,#user-nav > ul > li.open > a {
-    color: #090909;
-}
-
-#sidebar > ul > li > a:hover {
-    background-color: #909eb5;
-    color        : #fff;
-    border-radius: 5px;
-}
-
-#sidebar li .title-tooltip {
-    background   : var(--white-gre2);
-    color        : var(--white);
-}
-
 #newlog {
     filter: invert(100%);
 }
@@ -143,99 +107,21 @@ body {
     filter: hue-rotate(320deg);
 }
 
-#sidebar li .iconX, #sidebar li .title {
-    color: var(--white-gre);
-    transition: var(--tran-02);
-}
-
-#sidebar li .icon,
-#sidebar li .title {
-    color     : var(--white-gre2);
-    transition: var(--tran-02);
-}
-
-#sidebar > ul li ul li a:hover {
-    background-color: var(--white-gre2);
+#user-nav > ul > li > a:hover,#user-nav > ul > li.open > a {
+    color: #090909;
 }
 
 #user-nav > ul > li > a:hover {
     opacity: 0.7;
 }
 
-#sidebar > ul > li > a > .label:hover {
-    background-color: #ffffff;
-}
-
 .quick-actions li a:hover {
     border-radius: 5px;
 }
 
-#sidebar .mode {
-    background: var(--white);
-    border    : 2px solid var(--white-gre);
-    color     : var(--white-gre2);
-}
-
-#sidebar > ul > li {
-    border: none !important;
-}
-
-#sidebar > ul > li > ul {
-    background-color: #fbfcff;
-}
-
-#sidebar > ul li ul li a {
-    color: black;
-}
-
-#sidebar > ul {
-    border: none;
-}
-
-#user-nav > ul > li > a > i,
-#sidebar li a i {
+#user-nav > ul > li > a > i {
     opacity: 0.99;
     color  : var(--white-gre)
-}
-
-#sidebar > ul > li > a {
-    color: #72737a;
-}
-
-#sidebar li a:hover {
-    background: var(--white-gre2);
-}
-
-#sidebar.collapsed li a:hover .iconX,
-#sidebar.collapsed li a:hover .title {
-    color: var(--white-gre0);
-}
-
-#sidebar.collapsed li a:hover {
-    background: var(--white-gre2);
-}
-
-#sidebar li a:hover .iconX,
-#sidebar li a:hover .title {
-    color: var(--white-gre0);
-}
-
-#sidebar li.active {
-    background: var(--white-gre);
-}
-
-#sidebar li.active .iconX,
-#sidebar li.active .title {
-    color: var(--white);
-}
-
-/* Divisores de menu - Tema White Green */
-.menu-divider .divider-text {
-    color: #6dad8d;
-}
-
-.menu-divider-sub .divider-text-sub {
-    color: #8fbfa0;
 }
 
 /* CARDS */
@@ -465,8 +351,3 @@ label {
     color: var(--white-gre2);
 }
 
-@media (max-width: 480px) {
-    #sidebar.collapsed {
-        background: var(--white-bran);
-    }
-}
