@@ -182,9 +182,9 @@
 </div>
 
 <!-- Modal Visualizar/Editar Atividade -->
-<div id="modalVerAtividade" class="modal fade modal-atividades" tabindex="-1" role="dialog" aria-labelledby="modalVerLabel" aria-hidden="true" style="width: 800px; margin-left: -400px;">
+<div id="modalVerAtividade" class="modal hide fade modal-atividades" tabindex="-1" role="dialog" aria-labelledby="modalVerLabel" aria-hidden="true" style="width: 800px; margin-left: -400px;">
     <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-        <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true" style="color: white; opacity: 0.8;">&times;</button>
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true" style="color: white; opacity: 0.8;">&times;</button>
         <h3 id="modalVerLabel"><i class="bx bx-calendar-check"></i> Detalhes da Atividade</h3>
     </div>
 
@@ -196,7 +196,7 @@
     </div>
 
     <div class="modal-footer" id="modalVerFooter">
-        <button type="button" class="atividades-btn-cancel" data-bs-dismiss="modal">
+        <button type="button" class="atividades-btn-cancel" data-dismiss="modal">
             <i class="bx bx-x"></i> Fechar
         </button>
         <button type="button" class="atividades-btn-submit" id="btnEditarAtividade" onclick="toggleEdicao()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
@@ -346,7 +346,7 @@ function renderizarAtividadeAntigo(atividade, execucao) {
 
 function renderizarAtividadeNovo(atividade) {
     var html = '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 10px;">';
-    html += '<div><strong>Status:</strong> <span class="badge bg-info">' + (atividade.status ? atividade.status.toUpperCase() : 'N/A') + '</span></div>';
+    html += '<div><strong>Status:</strong> <span class="label label-info">' + (atividade.status ? atividade.status.toUpperCase() : 'N/A') + '</span></div>';
     html += '<div style="color: #666; font-size: 13px;">Sistema Novo (Wizard) - ID: #' + atividade.idAtividade + '</div>';
     html += '</div>';
 

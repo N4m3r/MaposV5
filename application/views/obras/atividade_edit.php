@@ -1,6 +1,219 @@
-﻿<?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
+<?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
 
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/obras-modern-theme.css">
+<style>
+.atividade-edit {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Header */
+.atividade-edit-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    padding: 30px;
+    color: white;
+    margin-bottom: 25px;
+    box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+}
+.atividade-edit-header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+.atividade-edit-header-left { flex: 1; }
+.atividade-edit-breadcrumb {
+    font-size: 14px;
+    opacity: 0.9;
+    margin-bottom: 10px;
+}
+.atividade-edit-breadcrumb a {
+    color: white;
+    text-decoration: none;
+    opacity: 0.8;
+    transition: opacity 0.3s;
+}
+.atividade-edit-breadcrumb a:hover {
+    opacity: 1;
+    text-decoration: underline;
+}
+.atividade-edit-header h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Form Card */
+.edit-card {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid #e8e8e8;
+}
+.edit-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f0f0f0;
+}
+.edit-card-icon {
+    width: 45px;
+    height: 45px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
+.edit-card-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #333;
+}
+
+/* Form Grid */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+.form-group {
+    margin-bottom: 20px;
+}
+.form-group.full-width {
+    grid-column: span 2;
+}
+.form-label {
+    display: block;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+.form-label .required {
+    color: #e74c3c;
+}
+.form-input,
+.form-select,
+.form-textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e8e8e8;
+    border-radius: 10px;
+    font-size: 14px;
+    color: #333;
+    background: white;
+    transition: all 0.3s;
+    box-sizing: border-box;
+}
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+    border-color: #667eea;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+.form-textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+.form-hint {
+    font-size: 12px;
+    color: #888;
+    margin-top: 5px;
+}
+
+/* Checkbox */
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    cursor: pointer;
+}
+.checkbox-container input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: #667eea;
+}
+.checkbox-container label {
+    margin: 0;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+/* Progress Input */
+.progress-input-group {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.progress-input {
+    flex: 1;
+}
+.progress-value-display {
+    font-size: 24px;
+    font-weight: 700;
+    color: #667eea;
+    min-width: 60px;
+    text-align: right;
+}
+
+/* Buttons */
+.form-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    padding: 20px 0;
+}
+.form-btn {
+    padding: 15px 40px;
+    border-radius: 12px;
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+.form-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+}
+.form-btn-primary {
+    background: linear-gradient(135deg, #11998e, #38ef7d);
+    color: white;
+}
+.form-btn-secondary {
+    background: #f8f9fa;
+    color: #666;
+    border: 2px solid #e8e8e8;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .form-group.full-width { grid-column: span 1; }
+    .form-actions { flex-direction: column; }
+    .form-btn { width: 100%; justify-content: center; }
+}
+</style>
 
 <div class="atividade-edit">
     <!-- Header -->
@@ -14,7 +227,7 @@
                     <a href="<?php echo site_url('obras/visualizarAtividade/' . $atividade->id); ?>">Visualizar</a> &raquo;
                     <span>Editar</span>
                 </div>
-                <h1><i class="bx bx-edit"></i> Editar Atividade</h1>
+                <h1><i class="icon-edit"></i> Editar Atividade</h1>
             </div>
         </div>
     </div>
@@ -22,14 +235,14 @@
     <!-- Mensagens -->
     <?php if ($this->session->flashdata('success')): ?>
     <div style="background: #d4edda; border: 1px solid #28a745; color: #155724; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
-        <i class="bx bx-check" style="font-size: 20px;"></i>
+        <i class="icon-ok" style="font-size: 20px;"></i>
         <strong><?php echo $this->session->flashdata('success'); ?></strong>
     </div>
     <?php endif; ?>
 
     <?php if ($this->session->flashdata('error')): ?>
     <div style="background: #f8d7da; border: 1px solid #dc3545; color: #721c24; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
-        <i class="bx bx-x" style="font-size: 20px;"></i>
+        <i class="icon-remove" style="font-size: 20px;"></i>
         <strong><?php echo $this->session->flashdata('error'); ?></strong>
     </div>
     <?php endif; ?>
@@ -38,7 +251,7 @@
         <!-- Dados da Atividade -->
         <div class="edit-card">
             <div class="edit-card-header">
-                <div class="edit-card-icon"><i class="bx bx-file-alt"></i></div>
+                <div class="edit-card-icon"><i class="icon-file-alt"></i></div>
                 <div class="edit-card-title">Dados da Atividade</div>
             </div>
 
@@ -135,11 +348,11 @@
         <!-- Actions -->
         <div class="form-actions">
             <button type="submit" class="form-btn form-btn-primary">
-                <i class="bx bx-save"></i> Salvar Alterações
+                <i class="icon-save"></i> Salvar Alterações
             </button>
 
             <a href="<?php echo site_url('obras/visualizarAtividade/' . $atividade->id); ?>" class="form-btn form-btn-secondary" style="text-decoration: none;">
-                <i class="bx bx-x"></i> Cancelar
+                <i class="icon-remove"></i> Cancelar
             </a>
         </div>
     </form>

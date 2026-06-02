@@ -441,16 +441,16 @@ if (!function_exists('formatar_duracao')) {
 </div>
 
 <!-- Modal para visualizar foto grande -->
-<div id="modal-foto-grande" class="modal fade modal-foto-grande" tabindex="-1">
+<div id="modal-foto-grande" class="modal hide fade modal-foto-grande" tabindex="-1">
     <div class="modal-header">
-        <button type="button" class="close" data-bs-dismiss="modal">×</button>
+        <button type="button" class="close" data-dismiss="modal">×</button>
         <h3>Foto da Atividade</h3>
     </div>
     <div class="modal-body">
         <img id="foto-grande-img" src="" alt="Foto">
     </div>
     <div class="modal-footer">
-        <button class="btn" data-bs-dismiss="modal">Fechar</button>
+        <button class="btn" data-dismiss="modal">Fechar</button>
     </div>
 </div>
 

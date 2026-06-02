@@ -1058,17 +1058,9 @@ class Tecnicos extends MY_Controller
         // Carregar fotos do portal do técnico (tec_os_fotos)
         $this->data['fotosTecnico'] = $this->tec_os_model->getFotosByOs($os_id);
 
-        $this->load->view('tema/topo', $this->data);
+        $this->data['pageTitle'] = 'Relatório OS #' . sprintf('%04d', $os_id);
 
-        // Carregar menu apropriado: menu padrão para admin, menu portal para técnico
-        if ($isAdmin) {
-            $this->load->view('tema/menu', $this->data);
-        } else {
-            $this->load->view('tema/menu_portal_tecnico', $this->data);
-        }
-
-        $this->load->view('tecnicos/relatorio_execucao', $this->data);
-        $this->load->view('tema/rodape', $this->data);
+        $this->_load_tec_layout('relatorio_execucao', $this->data);
     }
 
     /**

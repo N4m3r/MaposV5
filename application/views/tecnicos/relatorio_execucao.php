@@ -1,8 +1,7 @@
 <!-- Relatório de Execução - Portal do Técnico -->
-<div id="content">
 <style>
-.portal-tecnico-content { margin-top: 15px !important; }
-@media (max-width: 768px) { .portal-tecnico-content { margin-top: 10px !important; } }
+.portal-tecnico-content { margin-top: 0 !important; }
+@media (max-width: 768px) { .portal-tecnico-content { margin-top: 0 !important; } }
 
 /* ===== Relatório Modern Theme ===== */
 :root {
@@ -33,6 +32,36 @@
 .status-badge.status-finalizada {
     background: linear-gradient(135deg, #dcfce7, #bbf7d0);
     color: #166534;
+}
+
+/* ===== Page Header ===== */
+.rel-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid rgba(var(--rel-accent-rgb), 0.12);
+    flex-wrap: wrap;
+}
+.rel-page-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.rel-page-title svg.svg-icon { color: var(--rel-accent); flex-shrink: 0; }
+.rel-page-title h5 {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--rel-text);
+    letter-spacing: -0.01em;
+}
+
+/* ===== Page Body ===== */
+.rel-page-body {
+    /* No extra styling needed — cards handle their own spacing */
 }
 
 /* ===== Relatório Card ===== */
@@ -512,20 +541,22 @@
     <div class="col-12">
 
         <!-- Header -->
-        <div class="widget-box">
-            <div class="widget-title">
-                <span class="icon"><?= svg_icon('file-text', 20, 20) ?></span>
+        <div class="rel-page-header">
+            <div class="rel-page-title">
+                <?= svg_icon('file-text', 24, 24) ?>
                 <h5>Relatório de Execução - OS #<?php echo $os->idOs; ?></h5>
-                <div class="buttons rel-header-actions">
-                    <button type="button" class="rel-btn-whatsapp" onclick="abrirModalWhatsApp()">
-                        <?= svg_icon('whatsapp', 16, 16) ?> Enviar PDF
-                    </button>
-                    <a href="<?php echo site_url('tecnicos/minhas_os'); ?>" class="rel-btn-back">
-                        <?= svg_icon('chevron-left', 16, 16) ?> Voltar
-                    </a>
-                </div>
             </div>
-            <div class="widget-content">
+            <div class="rel-header-actions">
+                <button type="button" class="rel-btn-whatsapp" onclick="abrirModalWhatsApp()">
+                    <?= svg_icon('whatsapp', 16, 16) ?> Enviar PDF
+                </button>
+                <a href="<?php echo site_url('tecnicos/minhas_os'); ?>" class="rel-btn-back">
+                    <?= svg_icon('chevron-left', 16, 16) ?> Voltar
+                </a>
+            </div>
+        </div>
+
+        <div class="rel-page-body">
 
                 <!-- Informações da Empresa (Emitente) -->
                 <?php if (!empty($emitente)): ?>
@@ -1130,7 +1161,6 @@
                     </a>
                 </div>
 
-            </div>
         </div>
 
     </div>

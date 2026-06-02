@@ -922,7 +922,7 @@ class Obras extends MY_Controller
         $this->load->model('atividades_model');
         $this->data['status_atividade'] = $this->atividades_model->getStatusAtividade() ?? [];
 
-        $this->data['view'] = 'obras/atividades_list';
+        $this->data['view'] = 'obras/atividades_novo';
 
         return $this->layout();
     }

@@ -1,680 +1,1182 @@
-<?php if (!defined('BASEPATH')) exit('No direct script access allowed');
-
-$total = count($atividades);
-$hoje = count(array_filter($atividades, function($a) { return isset($a->data_atividade) && $a->data_atividade == date('Y-m-d'); }));
-$agendadas = count(array_filter($atividades, function($a) { return isset($a->status) && $a->status == 'agendada'; }));
-$concluidas = count(array_filter($atividades, function($a) { return isset($a->status) && $a->status == 'concluida'; }));
-
-$statusColors = [
-    'agendada' => '#95a5a6',
-    'iniciada' => '#3498db',
-    'em-andamento' => '#4facfe',
-    'pausada' => '#f39c12',
-    'concluida' => '#27ae60',
-    'cancelada' => '#7f8c8d',
-];
-?>
+<?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
 
 <style>
-.atv-stats { display: flex; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
-.atv-stat-item { flex: 1; min-width: 120px; text-align: center; padding: 10px 8px; border-radius: 8px; background: rgba(var(--sidebar-accent-rgb, 4,103,252), 0.06); }
-.atv-stat-item .stat-val { font-size: 22px; font-weight: 700; color: var(--title, #333); }
-.atv-stat-item .stat-lbl { font-size: 11px; color: var(--cinza0, #9aa6b3); text-transform: uppercase; margin-top: 2px; }
-body[data-theme="puredark"] .atv-stat-item .stat-val,
-body[data-theme="darkviolet"] .atv-stat-item .stat-val,
-body[data-theme="darkorange"] .atv-stat-item .stat-val { color: #e2e8f0; }
-.atv-filters { display: flex; gap: 10px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
-.atv-filters input, .atv-filters select { height: 32px; font-size: 13px; }
-.atv-status-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
-.atv-progress-bar { display: inline-block; width: 80px; height: 8px; background: rgba(0,0,0,0.08); border-radius: 4px; overflow: hidden; vertical-align: middle; margin-right: 6px; }
-body[data-theme="puredark"] .atv-progress-bar,
-body[data-theme="darkviolet"] .atv-progress-bar,
-body[data-theme="darkorange"] .atv-progress-bar { background: rgba(255,255,255,0.1); }
-.atv-progress-fill { height: 100%; border-radius: 4px; transition: width 0.3s; }
+.atividades-modern {
+    padding: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Header */
+.atividades-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    padding: 30px;
+    color: white;
+    margin-bottom: 25px;
+    box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+}
+.atividades-header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+.atividades-header-left { flex: 1; }
+.atividades-breadcrumb {
+    font-size: 14px;
+    opacity: 0.9;
+    margin-bottom: 10px;
+}
+.atividades-breadcrumb a {
+    color: white;
+    text-decoration: none;
+    opacity: 0.8;
+    transition: opacity 0.3s;
+}
+.atividades-breadcrumb a:hover {
+    opacity: 1;
+    text-decoration: underline;
+}
+.atividades-header h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.atividades-header h1 i { font-size: 32px; }
+.atividades-subtitle {
+    margin-top: 8px;
+    opacity: 0.9;
+    font-size: 15px;
+}
+
+.atividades-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.atividades-btn {
+    padding: 12px 24px;
+    border-radius: 12px;
+    border: none;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+}
+.atividades-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+}
+.atividades-btn-secondary {
+    background: rgba(255,255,255,0.2);
+    color: white;
+}
+.atividades-btn-secondary:hover { background: rgba(255,255,255,0.3); }
+.atividades-btn-primary {
+    background: white;
+    color: #667eea;
+}
+.atividades-btn-primary:hover { background: #f8f9fa; }
+
+/* Stats Cards */
+.atividades-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+    margin-bottom: 25px;
+}
+.atividades-stat-card {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: transform 0.3s;
+}
+.atividades-stat-card:hover { transform: translateY(-3px); }
+.atividades-stat-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+.atividades-stat-icon.total { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+.atividades-stat-icon.hoje { background: linear-gradient(135deg, #11998e, #38ef7d); color: white; }
+.atividades-stat-icon.agendadas { background: linear-gradient(135deg, #4facfe, #00f2fe); color: white; }
+.atividades-stat-icon.concluidas { background: linear-gradient(135deg, #f093fb, #f5576c); color: white; }
+.atividades-stat-content { flex: 1; }
+.atividades-stat-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #333;
+    line-height: 1;
+}
+.atividades-stat-label {
+    font-size: 13px;
+    color: #888;
+    margin-top: 4px;
+}
+
+/* Filtros */
+.atividades-filters {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+.atividades-filter-input,
+.atividades-filter-select {
+    flex: 1;
+    min-width: 200px;
+    padding: 12px 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 14px;
+    color: #333;
+    background: white;
+    transition: all 0.3s;
+}
+.atividades-filter-input:focus,
+.atividades-filter-select:focus {
+    border-color: #667eea;
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+.atividades-filter-input::placeholder { color: #999; }
+
+/* Grid de Atividades */
+.atividades-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.atividade-card {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border-left: 5px solid transparent;
+    transition: all 0.3s;
+    cursor: pointer;
+    position: relative;
+}
+.atividade-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+}
+.atividade-card.agendada { border-left-color: #95a5a6; }
+.atividade-card.iniciada { border-left-color: #3498db; background: linear-gradient(135deg, #fff, #ebf5fb); }
+.atividade-card.pausada { border-left-color: #f39c12; background: linear-gradient(135deg, #fff, #fef9e7); }
+.atividade-card.concluida { border-left-color: #27ae60; background: linear-gradient(135deg, #fff, #eafaf1); }
+.atividade-card.cancelada { border-left-color: #e74c3c; background: linear-gradient(135deg, #fff, #fdedec); }
+
+.atividade-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+}
+.atividade-card-title-section { flex: 1; min-width: 0; }
+.atividade-card-date {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #f0f0f0;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 10px;
+}
+.atividade-card-date i { color: #667eea; }
+.atividade-card-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.atividade-status-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    margin-left: 10px;
+}
+.atividade-status-badge.agendada { background: #ecf0f1; color: #7f8c8d; }
+.atividade-status-badge.iniciada { background: #3498db; color: white; }
+.atividade-status-badge.pausada { background: #f39c12; color: white; }
+.atividade-status-badge.concluida { background: #27ae60; color: white; }
+.atividade-status-badge.cancelada { background: #e74c3c; color: white; }
+
+.atividade-card-body { margin-bottom: 15px; }
+.atividade-card-desc {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.5;
+    margin-bottom: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.atividade-card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+.atividade-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #555;
+    background: #f8f9fa;
+    padding: 6px 12px;
+    border-radius: 8px;
+}
+.atividade-meta-item i { color: #667eea; font-size: 14px; }
+.atividade-meta-item.tipo-trabalho i { color: #3498db; }
+.atividade-meta-item.tipo-visita i { color: #27ae60; }
+.atividade-meta-item.tipo-impedimento i { color: #e74c3c; }
+.atividade-meta-item.tipo-manutencao i { color: #f39c12; }
+
+.atividade-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+.atividade-progress-section {
+    flex: 1;
+    margin-right: 15px;
+}
+.atividade-progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+.atividade-progress-label {
+    font-size: 12px;
+    color: #888;
+}
+.atividade-progress-value {
+    font-size: 14px;
+    font-weight: 700;
+    color: #667eea;
+}
+.atividade-progress-bar {
+    height: 6px;
+    background: #e0e0e0;
+    border-radius: 3px;
+    overflow: hidden;
+}
+.atividade-progress-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.5s ease;
+}
+
+.atividade-card-actions {
+    display: flex;
+    gap: 8px;
+}
+.atividade-card-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-decoration: none;
+    font-size: 14px;
+}
+.atividade-card-btn:hover {
+    transform: scale(1.1);
+}
+.atividade-card-btn-view {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+.atividade-card-btn-view:hover {
+    background: #1976d2;
+    color: white;
+}
+.atividade-card-btn-delete {
+    background: #ffebee;
+    color: #c62828;
+}
+.atividade-card-btn-delete:hover {
+    background: #c62828;
+    color: white;
+}
+
+.atividade-visibilidade {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.atividade-visibilidade.visivel {
+    background: #27ae60;
+    color: white;
+}
+.atividade-visibilidade.oculto {
+    background: #95a5a6;
+    color: white;
+}
+
+/* Empty State */
+.atividades-empty {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+.atividades-empty-icon {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f5f7fa, #e4e8ec);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 25px;
+    font-size: 50px;
+    color: #667eea;
+}
+.atividades-empty h3 {
+    font-size: 22px;
+    color: #333;
+    margin-bottom: 10px;
+}
+.atividades-empty p {
+    color: #888;
+    margin-bottom: 25px;
+}
+
+/* Modal Moderno */
+.modal-atividades .modal-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 25px 30px;
+    border: none;
+    border-radius: 15px 15px 0 0;
+}
+.modal-atividades .modal-header h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.modal-atividades .modal-header .close {
+    color: white;
+    opacity: 0.9;
+    font-size: 28px;
+    font-weight: 300;
+    text-shadow: none;
+}
+.modal-atividades .modal-body {
+    padding: 30px;
+    background: #fafafa;
+}
+.modal-atividades .modal-footer {
+    padding: 20px 30px;
+    background: white;
+    border-top: 1px solid #e0e0e0;
+    border-radius: 0 0 15px 15px;
+}
+
+.atividades-form-group {
+    margin-bottom: 20px;
+}
+.atividades-form-label {
+    display: block;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+.atividades-form-label .required {
+    color: #e74c3c;
+}
+.atividades-form-input,
+.atividades-form-select,
+.atividades-form-textarea {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 15px;
+    color: #333;
+    background: white;
+    transition: all 0.3s;
+    box-sizing: border-box;
+}
+.atividades-form-input:focus,
+.atividades-form-select:focus,
+.atividades-form-textarea:focus {
+    border-color: #667eea;
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+.atividades-form-textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+.atividades-form-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+.atividades-form-hint {
+    font-size: 12px;
+    color: #888;
+    margin-top: 6px;
+}
+
+.atividades-form-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px;
+    background: white;
+    border-radius: 10px;
+    border: 2px solid #e0e0e0;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.atividades-form-checkbox:hover {
+    border-color: #667eea;
+}
+.atividades-form-checkbox input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+.atividades-form-checkbox-label {
+    font-weight: 600;
+    color: #333;
+    cursor: pointer;
+}
+.atividades-form-checkbox-hint {
+    font-size: 12px;
+    color: #888;
+    margin-left: 30px;
+}
+
+.atividades-btn-submit {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 14px 32px;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.atividades-btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+}
+.atividades-btn-cancel {
+    background: #f5f5f5;
+    color: #666;
+    padding: 14px 28px;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.atividades-btn-cancel:hover {
+    background: #e0e0e0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .atividades-header-content { flex-direction: column; }
+    .atividades-grid { grid-template-columns: 1fr; }
+    .atividades-form-row { grid-template-columns: 1fr; }
+    .atividades-filters { flex-direction: column; }
+    .atividades-filter-input, .atividades-filter-select { width: 100%; }
+}
 </style>
 
-<div class="new122">
-    <div class="widget-title" style="margin: -20px 0 0">
-        <span class="icon">
-            <i class="bx bx-calendar-check"></i>
-        </span>
-        <h5>Atividades — <?php echo htmlspecialchars($obra->nome); ?></h5>
-        <div class="buttons">
-            <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
-            <button onclick="$('#modalAdicionar').modal('show')" class="button btn btn-sm btn-success">
-                <span class="button__icon"><i class="bx bx-plus-circle"></i></span>
-                <span class="button__text2">Nova Atividade</span>
-            </button>
-            <?php endif; ?>
-            <a href="<?php echo site_url('obras/visualizar/' . $obra->id); ?>" class="button btn btn-sm btn-warning">
-                <span class="button__icon"><i class="bx bx-arrow-back"></i></span>
-                <span class="button__text2">Ver Obra</span>
-            </a>
-        </div>
-    </div>
-
-    <?php if ($this->session->flashdata('success')): ?>
-    <div class="col-12" style="margin-left:0;margin-top:8px;">
-        <div class="alert alert-success">
-            <i class="bx bx-check-circle"></i> <?php echo htmlspecialchars($this->session->flashdata('success')); ?>
-        </div>
-    </div>
-    <?php endif; ?>
-    <?php if ($this->session->flashdata('error')): ?>
-    <div class="col-12" style="margin-left:0;margin-top:8px;">
-        <div class="alert alert-danger">
-            <i class="bx bx-x-circle"></i> <?php echo htmlspecialchars($this->session->flashdata('error')); ?>
-        </div>
-    </div>
-    <?php endif; ?>
-
-    <div class="col-12" style="margin-left:0;margin-top:8px;">
-        <div class="atv-stats">
-            <div class="atv-stat-item">
-                <div class="stat-val"><?php echo $total; ?></div>
-                <div class="stat-lbl">Total</div>
+<div class="atividades-modern">
+    <!-- Header -->
+    <div class="atividades-header">
+        <div class="atividades-header-content">
+            <div class="atividades-header-left">
+                <div class="atividades-breadcrumb">
+                    <a href="<?php echo site_url('obras'); ?>"><i class="icon-arrow-left"></i> Obras</a> &raquo;
+                    <a href="<?php echo site_url('obras/visualizar/' . $obra->id); ?>"><?php echo $obra->nome; ?></a> &raquo;
+                    <span>Atividades</span>
+                </div>
+                <h1><i class="icon-calendar"></i> Atividades da Obra</h1>
+                <div class="atividades-subtitle">Gerencie as atividades e acompanhe o progresso do trabalho</div>
             </div>
-            <div class="atv-stat-item">
-                <div class="stat-val"><?php echo $hoje; ?></div>
-                <div class="stat-lbl">Hoje</div>
-            </div>
-            <div class="atv-stat-item">
-                <div class="stat-val"><?php echo $agendadas; ?></div>
-                <div class="stat-lbl">Agendadas</div>
-            </div>
-            <div class="atv-stat-item">
-                <div class="stat-val"><?php echo $concluidas; ?></div>
-                <div class="stat-lbl">Concluídas</div>
-            </div>
-        </div>
-
-        <div class="atv-filters">
-            <input type="text" id="searchAtividade" placeholder="Buscar atividade..." class="col-3" onkeyup="filtrarAtividades()">
-            <select id="filterStatus" class="col-2" onchange="filtrarAtividades()">
-                <option value="">Todos os Status</option>
-                <option value="agendada">Agendada</option>
-                <option value="iniciada">Iniciada</option>
-                <option value="pausada">Pausada</option>
-                <option value="concluida">Concluída</option>
-                <option value="cancelada">Cancelada</option>
-            </select>
-            <select id="filterTipo" class="col-2" onchange="filtrarAtividades()">
-                <option value="">Todos os Tipos</option>
-                <option value="trabalho">Trabalho</option>
-                <option value="visita">Visita Técnica</option>
-                <option value="manutencao">Manutenção</option>
-                <option value="impedimento">Impedimento</option>
-                <option value="outro">Outro</option>
-            </select>
-        </div>
-    </div>
-
-    <div class="widget-box" style="margin-top: 4px;">
-        <div class="widget-content nopadding tab-content">
-
-            <?php
-            $todas_atividades = [];
-            if (!empty($atividades)) {
-                foreach ($atividades as $ativ) {
-                    $todas_atividades[] = [
-                        'id' => $ativ->id ?? $ativ->idAtividade ?? 0,
-                        'titulo' => $ativ->titulo ?? 'Atividade',
-                        'descricao' => $ativ->descricao ?? '',
-                        'status' => $ativ->status ?? 'agendada',
-                        'tipo' => $ativ->tipo ?? 'trabalho',
-                        'data' => $ativ->data_atividade ?? $ativ->data_criacao ?? date('Y-m-d'),
-                        'tecnico' => $ativ->nome_tecnico ?? $ativ->tecnico_nome ?? '—',
-                        'etapa' => $ativ->nome_etapa ?? $ativ->etapa_nome ?? '—',
-                        'progresso' => $ativ->percentual_concluido ?? 0,
-                        'sistema' => 'antigo'
-                    ];
-                }
-            }
-            if (!empty($atividades_registradas)) {
-                foreach ($atividades_registradas as $ativ) {
-                    $status = 'agendada';
-                    if (!empty($ativ->hora_fim)) { $status = 'concluida'; }
-                    elseif (!empty($ativ->hora_inicio)) { $status = 'iniciada'; }
-                    $todas_atividades[] = [
-                        'id' => $ativ->idAtividade ?? 0,
-                        'titulo' => $ativ->titulo ?? $ativ->tipo_atividade ?? 'Atividade Técnica',
-                        'descricao' => $ativ->descricao ?? '',
-                        'status' => $ativ->status ?? $status,
-                        'tipo' => $ativ->categoria ?? 'trabalho',
-                        'data' => date('Y-m-d', strtotime($ativ->hora_inicio ?? 'now')),
-                        'tecnico' => $ativ->nome_tecnico ?? '—',
-                        'etapa' => $ativ->etapa_nome ?? '—',
-                        'progresso' => ($ativ->status == 'finalizada' && $ativ->concluida) ? 100 : 0,
-                        'hora_inicio' => $ativ->hora_inicio ?? null,
-                        'hora_fim' => $ativ->hora_fim ?? null,
-                        'duracao' => $ativ->duracao_minutos ?? null,
-                        'sistema' => 'novo'
-                    ];
-                }
-            }
-            usort($todas_atividades, function($a, $b) { return strtotime($b['data']) - strtotime($a['data']); });
-            ?>
-
-            <?php if (!empty($todas_atividades)): ?>
-            <div class="table-responsive">
-                <table class="table table-bordered table-striped" id="atividadesTable">
-                    <thead>
-                        <tr>
-                            <th>Data</th>
-                            <th>Título</th>
-                            <th>Técnico</th>
-                            <th>Etapa</th>
-                            <th>Tipo</th>
-                            <th>Status</th>
-                            <th>Progresso</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody id="atividadesTableBody">
-                        <?php foreach ($todas_atividades as $a):
-                            $sColor = $statusColors[$a['status']] ?? '#667eea';
-                            $sLabel = ucfirst($a['status']);
-                            $pColor = $a['progresso'] >= 100 ? '#27ae60' : ($a['progresso'] > 50 ? '#3498db' : '#f39c12');
-                            $aId = (int)$a['id'];
-                            $aSistema = htmlspecialchars($a['sistema'] ?? 'antigo');
-                        ?>
-                        <tr data-titulo="<?php echo strtolower(str_replace('"', '', $a['titulo'])); ?>"
-                            data-status="<?php echo $a['status']; ?>"
-                            data-tipo="<?php echo $a['tipo']; ?>">
-                            <td style="white-space:nowrap;">
-                                <?php echo date('d/m/Y', strtotime($a['data'])); ?>
-                                <?php if ($a['sistema'] == 'novo' && !empty($a['hora_inicio'])): ?>
-                                <br><small style="color:var(--cinza0,#9aa6b3);"><?php echo date('H:i', strtotime($a['hora_inicio'])); ?>
-                                <?php if (!empty($a['hora_fim'])): ?>
-                                — <?php echo date('H:i', strtotime($a['hora_fim'])); ?>
-                                <?php endif; ?>
-                                </small>
-                                <?php endif; ?>
-                            </td>
-                            <td>
-                                <a href="javascript:void(0)" onclick="abrirModalAtividade(<?php echo $aId; ?>, '<?php echo $aSistema; ?>')" style="font-weight:600;">
-                                    <?php echo htmlspecialchars($a['titulo']); ?>
-                                </a>
-                                <?php if (!empty($a['descricao'])): ?>
-                                <br><small style="color:var(--cinza0,#9aa6b3);"><?php echo htmlspecialchars(mb_strimwidth($a['descricao'], 0, 60, '...')); ?></small>
-                                <?php endif; ?>
-                            </td>
-                            <td><?php echo htmlspecialchars($a['tecnico']); ?></td>
-                            <td><?php echo htmlspecialchars($a['etapa']); ?></td>
-                            <td>
-                                <?php
-                                $tipoIcons = ['trabalho' => 'bx-wrench', 'visita' => 'bx-map', 'manutencao' => 'bx-refresh', 'impedimento' => 'bx-block', 'outro' => 'bx-dots-horizontal'];
-                                $tipoIcon = $tipoIcons[$a['tipo']] ?? 'bx-dots-horizontal';
-                                ?>
-                                <i class="bx <?php echo $tipoIcon; ?>"></i> <?php echo ucfirst($a['tipo']); ?>
-                            </td>
-                            <td>
-                                <span class="atv-status-dot" style="background:<?php echo $sColor; ?>"></span>
-                                <?php echo $sLabel; ?>
-                            </td>
-                            <td style="white-space:nowrap;">
-                                <span class="atv-progress-bar"><span class="atv-progress-fill" style="width:<?php echo $a['progresso']; ?>%;background:<?php echo $pColor; ?>;"></span></span>
-                                <span style="font-size:12px;font-weight:600;"><?php echo $a['progresso']; ?>%</span>
-                            </td>
-                            <td class="text-nowrap">
-                                <a href="javascript:void(0)" class="btn-action btn-action-view" title="Ver detalhes" onclick="abrirModalAtividade(<?php echo $aId; ?>, '<?php echo $aSistema; ?>')">
-                                    <svg><use href="<?php echo base_url(); ?>assets/svg/icons.svg#view"/></svg>
-                                </a>
-                                <?php if ($this->session->userdata('permissao') == 1): ?>
-                                <a href="javascript:void(0)" class="btn-action btn-action-delete" title="Excluir" onclick="event.stopPropagation(); excluirAtividade(<?php echo $aId; ?>, '<?php echo $aSistema; ?>')">
-                                    <svg><use href="<?php echo base_url(); ?>assets/svg/icons.svg#delete"/></svg>
-                                </a>
-                                <?php endif; ?>
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-            <?php else: ?>
-            <div style="text-align:center;padding:40px;color:var(--cinza0,#9aa6b3);">
-                <i class="bx bx-calendar-x" style="font-size:48px;display:block;margin-bottom:10px;opacity:0.4;"></i>
-                <p>Nenhuma atividade encontrada.</p>
+            <div class="atividades-actions">
+                <a href="<?php echo site_url('obras/visualizar/' . $obra->id); ?>" class="atividades-btn atividades-btn-secondary">
+                    <i class="icon-eye-open"></i> Ver Obra
+                </a>
                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
-                <button onclick="$('#modalAdicionar').modal('show')" class="button btn btn-sm btn-success" style="margin-top:10px;">
-                    <span class="button__icon"><i class="bx bx-plus-circle"></i></span>
-                    <span class="button__text2">Adicionar Atividade</span>
+                <button onclick="$('#modalAdicionar').modal('show')" class="atividades-btn atividades-btn-primary">
+                    <i class="icon-plus"></i> Nova Atividade
                 </button>
                 <?php endif; ?>
             </div>
-            <?php endif; ?>
         </div>
     </div>
-</div>
 
-<!-- Modal Iniciar Registro -->
-<div id="modalIniciarRegistro" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" style="z-index:10000;">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">&times;</button>
-                <h3><i class="bx bx-play-circle"></i> Iniciar Atividade</h3>
+    <!-- Mensagens Flash -->
+    <?php if ($this->session->flashdata('success')): ?>
+    <div style="background: #d4edda; border: 1px solid #28a745; color: #155724; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+        <i class="icon-ok" style="font-size: 20px;"></i>
+        <strong><?php echo $this->session->flashdata('success'); ?></strong>
+    </div>
+    <?php endif; ?>
+
+    <?php if ($this->session->flashdata('error')): ?>
+    <div style="background: #f8d7da; border: 1px solid #dc3545; color: #721c24; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+        <i class="icon-remove" style="font-size: 20px;"></i>
+        <strong><?php echo $this->session->flashdata('error'); ?></strong>
+    </div>
+    <?php endif; ?>
+
+    <!-- Stats -->
+    <?php
+    $total = count($atividades);
+    $hoje = count(array_filter($atividades, function($a) {
+        return isset($a->data_atividade) && $a->data_atividade == date('Y-m-d');
+    }));
+    $agendadas = count(array_filter($atividades, function($a) {
+        return isset($a->status) && $a->status == 'agendada';
+    }));
+    $concluidas = count(array_filter($atividades, function($a) {
+        return isset($a->status) && $a->status == 'concluida';
+    }));
+    ?>
+    <div class="atividades-stats">
+        <div class="atividades-stat-card">
+            <div class="atividades-stat-icon total"><i class="icon-tasks"></i></div>
+            <div class="atividades-stat-content">
+                <div class="atividades-stat-value"><?php echo $total; ?></div>
+                <div class="atividades-stat-label">Total de Atividades</div>
             </div>
-            <form id="formIniciarRegistro" onsubmit="return iniciarRegistroAtividade(event)">
-                <div class="modal-body">
-                    <input type="hidden" name="obra_id" value="<?php echo $obra->id; ?>">
-                    <input type="hidden" name="latitude" id="registro_latitude">
-                    <input type="hidden" name="longitude" id="registro_longitude">
-                    <div class="mb-3">
-                        <label for="etapa_id_registro"><strong>Etapa da Obra</strong> <span class="required">*</span></label>
-                        <select name="etapa_id" id="etapa_id_registro" class="col-12" required>
-                            <option value="">Selecione uma etapa...</option>
-                            <?php if (isset($etapas) && !empty($etapas)): ?>
-                                <?php foreach ($etapas as $e): ?>
-                                <option value="<?php echo $e->id; ?>">#<?php echo $e->numero_etapa ?? 'N/A'; ?> — <?php echo $e->nome; ?><?php echo isset($e->progresso_real) && $e->progresso_real > 0 ? ' (' . $e->progresso_real . '%)' : ''; ?></option>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <option value="" disabled>Nenhuma etapa cadastrada</option>
-                            <?php endif; ?>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="tipo_id_registro"><strong>Tipo de Atividade</strong> <span class="required">*</span></label>
-                        <select name="tipo_id" id="tipo_id_registro" class="col-12" required>
-                            <option value="">Selecione o tipo...</option>
-                            <?php if (!empty($tipos_atividades)): ?>
-                                <?php foreach ($tipos_atividades as $tipo): ?>
-                                <option value="<?php echo $tipo->idTipo; ?>"><?php echo $tipo->nome; ?></option>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <option value="1">Trabalho Técnico</option>
-                            <?php endif; ?>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="descricao_registro"><strong>Descrição</strong></label>
-                        <textarea name="descricao" id="descricao_registro" class="col-12" rows="2" placeholder="Descreva o trabalho que será realizado..."></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label for="equipamento_registro"><strong>Equipamento/Local</strong></label>
-                        <input type="text" name="equipamento" id="equipamento_registro" class="col-12" placeholder="Ex: Rack principal, Câmera 1...">
-                    </div>
-                    <div class="mb-3">
-                        <label><strong>Localização GPS</strong></label><br>
-                        <button type="button" class="btn btn-sm btn-info" onclick="obterLocalizacaoRegistro()">
-                            <i class="bx bx-map-pin"></i> Obter Localização
-                        </button>
-                        <div id="gps_info_registro" style="margin-top:4px;font-size:12px;color:var(--cinza0,#9aa6b3);">
-                            Clique para registrar a localização.
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary" id="btnIniciarRegistro">
-                        <i class="bx bx-play"></i> Iniciar Atividade
-                    </button>
-                </div>
-            </form>
+        </div>
+        <div class="atividades-stat-card">
+            <div class="atividades-stat-icon hoje"><i class="icon-calendar"></i></div>
+            <div class="atividades-stat-content">
+                <div class="atividades-stat-value"><?php echo $hoje; ?></div>
+                <div class="atividades-stat-label">Atividades Hoje</div>
+            </div>
+        </div>
+        <div class="atividades-stat-card">
+            <div class="atividades-stat-icon agendadas"><i class="icon-time"></i></div>
+            <div class="atividades-stat-content">
+                <div class="atividades-stat-value"><?php echo $agendadas; ?></div>
+                <div class="atividades-stat-label">Agendadas</div>
+            </div>
+        </div>
+        <div class="atividades-stat-card">
+            <div class="atividades-stat-icon concluidas"><i class="icon-check"></i></div>
+            <div class="atividades-stat-content">
+                <div class="atividades-stat-value"><?php echo $concluidas; ?></div>
+                <div class="atividades-stat-label">Concluídas</div>
+            </div>
         </div>
     </div>
+
+
+    <!-- Filtros -->
+    <div class="atividades-filters">
+        <i class="icon-search" style="font-size: 20px; color: #667eea;"></i>
+        <input type="text" id="searchAtividade" class="atividades-filter-input" placeholder="Buscar atividade..." onkeyup="filtrarAtividades()">
+        <select id="filterStatus" class="atividades-filter-select" onchange="filtrarAtividades()">
+            <option value="">Todos os Status</option>
+            <option value="agendada">Agendada</option>
+            <option value="iniciada">Iniciada</option>
+            <option value="pausada">Pausada</option>
+            <option value="concluida">Concluída</option>
+            <option value="cancelada">Cancelada</option>
+        </select>
+        <select id="filterTipo" class="atividades-filter-select" onchange="filtrarAtividades()">
+            <option value="">Todos os Tipos</option>
+            <option value="trabalho">Trabalho</option>
+            <option value="visita">Visita Técnica</option>
+            <option value="manutencao">Manutenção</option>
+            <option value="impedimento">Impedimento</option>
+            <option value="outro">Outro</option>
+        </select>
+    </div>
+
+
+    <!-- Grid de Atividades (Mesclado: Sistema Antigo + Wizard) -->
+    <?php $this->load->view('obras/atividades_list_new'); ?>
 </div>
 
-<!-- Modal Adicionar Atividade -->
-<?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
-<div id="modalAdicionar" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" style="z-index:10000;">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">&times;</button>
-                <h3><i class="bx bx-plus-circle"></i> Nova Atividade</h3>
-            </div>
-            <form id="formAdicionarAtividade" onsubmit="return salvarAtividadeWizard(event)">
-                <div class="modal-body">
-                    <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>">
-                    <input type="hidden" name="obra_id" value="<?php echo $obra->id; ?>">
-                    <input type="hidden" name="latitude" id="nova_latitude">
-                    <input type="hidden" name="longitude" id="nova_longitude">
+<!-- Modal Iniciar Registro de Atividade (Hora Início/Fim) -->
+<div id="modalIniciarRegistro" class="modal hide fade modal-atividades" tabindex="-1" role="dialog" aria-labelledby="modalRegistroLabel" aria-hidden="true">
+    <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true" style="color: white; opacity: 0.8;">&times;</button>
+        <h3 id="modalRegistroLabel"><i class="bx bx-timer"></i> Iniciar Atividade - Registro de Tempo</h3>
+    </div>
 
-                    <div class="alert alert-info" style="margin-bottom:15px;">
-                        <i class="bx bx-info-circle"></i> A atividade será criada no sistema de atendimento técnico.
-                    </div>
+    <form id="formIniciarRegistro" onsubmit="return iniciarRegistroAtividade(event)">
+        <div class="modal-body">
+            <input type="hidden" name="obra_id" value="<?php echo $obra->id; ?>">
+            <input type="hidden" name="latitude" id="registro_latitude">
+            <input type="hidden" name="longitude" id="registro_longitude">
 
-                    <div class="row">
-                        <div class="col-12">
-                            <label for="etapa_id_nova"><strong>Etapa da Obra</strong> <span class="required">*</span></label>
-                            <select name="etapa_id" id="etapa_id_nova" class="col-12" required>
-                                <option value="">Selecione uma etapa...</option>
-                                <?php if (isset($etapas) && !empty($etapas)): ?>
-                                    <?php foreach ($etapas as $e): ?>
-                                    <option value="<?php echo $e->id; ?>">#<?php echo $e->numero_etapa ?? 'N/A'; ?> — <?php echo $e->nome; ?><?php echo isset($e->progresso_real) && $e->progresso_real > 0 ? ' (' . $e->progresso_real . '%)' : ''; ?></option>
-                                    <?php endforeach; ?>
-                                <?php else: ?>
-                                    <option value="" disabled>Nenhuma etapa cadastrada</option>
-                                <?php endif; ?>
-                            </select>
-                        </div>
-                    </div>
-
-                    <?php if (!empty($tipos_atividades)): ?>
-                    <div class="row" style="margin-top:10px;">
-                        <div class="col-6">
-                            <label for="tipo_id_nova"><strong>Tipo de Atividade</strong> <span class="required">*</span></label>
-                            <select name="tipo_id" id="tipo_id_nova" class="col-12" required>
-                                <option value="">Selecione o tipo...</option>
-                                <?php foreach ($tipos_atividades as $tipo): ?>
-                                <option value="<?php echo $tipo->idTipo; ?>"><?php echo $tipo->nome; ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                    </div>
+            <!-- Seleção de Etapa (OBRIGATÓRIA) -->
+            <div class="atividades-form-group">
+                <label class="atividades-form-label" for="etapa_id_registro">
+                    <i class="bx bx-layer"></i> Etapa da Obra <span style="color: #dc3545;">*</span>
+                </label>
+                <select name="etapa_id" id="etapa_id_registro" class="atividades-form-select" required>
+                    <option value="">Selecione uma etapa...</option>
+                    <?php if (isset($etapas) && !empty($etapas)): ?>
+                        <?php foreach ($etapas as $e): ?>
+                        <option value="<?php echo $e->id; ?>">
+                            #<?php echo $e->numero_etapa ?? 'N/A'; ?> - <?php echo $e->nome; ?>
+                            <?php if (isset($e->progresso_real) && $e->progresso_real > 0): ?>
+                                (<?php echo $e->progresso_real; ?>%)
+                            <?php endif; ?>
+                        </option>
+                        <?php endforeach; ?>
                     <?php else: ?>
-                    <input type="hidden" name="tipo_id" value="1">
+                        <option value="" disabled>Nenhuma etapa cadastrada</option>
                     <?php endif; ?>
-
-                    <div class="row" style="margin-top:10px;">
-                        <div class="col-12">
-                            <label for="titulo_nova"><strong>Título da Atividade</strong> <span class="required">*</span></label>
-                            <input type="text" name="titulo" id="titulo_nova" class="col-12" placeholder="Ex: Instalação elétrica..." required>
-                        </div>
-                    </div>
-
-                    <div class="row" style="margin-top:10px;">
-                        <div class="col-12">
-                            <label for="descricao_nova"><strong>Descrição</strong></label>
-                            <textarea name="descricao" id="descricao_nova" class="col-12" rows="2" placeholder="Descreva o trabalho..."></textarea>
-                        </div>
-                    </div>
-
-                    <div class="row" style="margin-top:10px;">
-                        <div class="col-6">
-                            <label for="equipamento_nova"><strong>Equipamento/Local</strong></label>
-                            <input type="text" name="equipamento" id="equipamento_nova" class="col-12" placeholder="Ex: Rack principal...">
-                        </div>
-                        <div class="col-6">
-                            <label><strong>Localização GPS</strong></label><br>
-                            <button type="button" class="btn btn-sm btn-info" onclick="obterLocalizacaoNovaAtividade()">
-                                <i class="bx bx-map-pin"></i> Obter Localização
-                            </button>
-                            <div id="gps_info_nova" style="margin-top:4px;font-size:12px;color:var(--cinza0,#9aa6b3);">
-                                Clique para registrar a localização.
-                            </div>
-                        </div>
-                    </div>
-
-                    <hr>
-
-                    <div class="row">
-                        <div class="col-6">
-                            <label for="tecnico_id_nova"><strong>Técnico Responsável</strong></label>
-                            <select name="tecnico_id" id="tecnico_id_nova" class="col-12">
-                                <option value="">Selecione um técnico...</option>
-                                <?php if (!empty($tecnicos)): ?>
-                                    <?php foreach ($tecnicos as $t): ?>
-                                    <option value="<?php echo $t->idUsuarios; ?>"><?php echo $t->nome; ?></option>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            </select>
-                        </div>
-                        <div class="col-6" style="padding-top:28px;">
-                            <label style="font-weight:normal;">
-                                <input type="checkbox" name="visivel_cliente" value="1" checked> Visível ao cliente
-                            </label>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary" id="btnSalvarAtividade">
-                        <i class="bx bx-save"></i> Criar Atividade
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-<?php endif; ?>
-
-<!-- Modal Visualizar/Editar Atividade -->
-<div id="modalVerAtividade" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" style="z-index:10000;">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">&times;</button>
-                <h3 id="modalVerLabel"><i class="bx bx-calendar-check"></i> Detalhes da Atividade</h3>
-            </div>
-            <div class="modal-body" id="modalVerBody" style="max-height:500px;overflow-y:auto;">
-                <div style="text-align:center;padding:40px;">
-                    <i class="bx bx-loader-alt bx-spin" style="font-size:40px;color:var(--sidebar-accent,#667eea);"></i>
-                    <p style="margin-top:15px;color:var(--cinza0,#9aa6b3);">Carregando...</p>
+                </select>
+                <div style="font-size: 12px; color: #666; margin-top: 5px;">
+                    <i class="bx bx-info-circle"></i> Selecione a etapa em que você está trabalhando. Obrigatório.
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn" data-bs-dismiss="modal">Fechar</button>
-                <button type="button" class="btn btn-warning" id="btnEditarAtividade" onclick="toggleEdicao()">
-                    <i class="bx bx-edit"></i> Editar
+
+            <!-- Tipo de Atividade -->
+            <div class="atividades-form-group">
+                <label class="atividades-form-label" for="tipo_id_registro">
+                    <i class="bx bx-wrench"></i> Tipo de Atividade <span style="color: #dc3545;">*</span>
+                </label>
+                <select name="tipo_id" id="tipo_id_registro" class="atividades-form-select" required>
+                    <option value="">Selecione o tipo...</option>
+                    <?php if (!empty($tipos_atividades)): ?>
+                        <optgroup label="Rede Estruturada">
+                        <?php foreach ($tipos_atividades as $tipo): ?>
+                            <?php if ($tipo->categoria == 'rede'): ?>
+                            <option value="<?php echo $tipo->idTipo; ?>" data-categoria="rede">
+                                <i class="bx bx-network-chart"></i> <?php echo $tipo->nome; ?>
+                            </option>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                        </optgroup>
+                        <optgroup label="CFTV">
+                        <?php foreach ($tipos_atividades as $tipo): ?>
+                            <?php if ($tipo->categoria == 'cftv'): ?>
+                            <option value="<?php echo $tipo->idTipo; ?>" data-categoria="cftv">
+                                <i class="bx bx-camera"></i> <?php echo $tipo->nome; ?>
+                            </option>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                        </optgroup>
+                        <optgroup label="Infraestrutura">
+                        <?php foreach ($tipos_atividades as $tipo): ?>
+                            <?php if ($tipo->categoria == 'infra'): ?>
+                            <option value="<?php echo $tipo->idTipo; ?>" data-categoria="infra">
+                                <i class="bx bx-server"></i> <?php echo $tipo->nome; ?>
+                            </option>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                        </optgroup>
+                        <optgroup label="Segurança">
+                        <?php foreach ($tipos_atividades as $tipo): ?>
+                            <?php if ($tipo->categoria == 'seguranca'): ?>
+                            <option value="<?php echo $tipo->idTipo; ?>" data-categoria="seguranca">
+                                <i class="bx bx-shield"></i> <?php echo $tipo->nome; ?>
+                            </option>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                        </optgroup>
+                        <optgroup label="Geral">
+                        <?php foreach ($tipos_atividades as $tipo): ?>
+                            <?php if (!in_array($tipo->categoria, ['rede', 'cftv', 'infra', 'seguranca'])): ?>
+                            <option value="<?php echo $tipo->idTipo; ?>">
+                                <i class="bx bx-wrench"></i> <?php echo $tipo->nome; ?>
+                            </option>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                        </optgroup>
+                    <?php else: ?>
+                        <option value="1">Trabalho Técnico</option>
+                    <?php endif; ?>
+                </select>
+            </div>
+
+            <!-- Descrição -->
+            <div class="atividades-form-group">
+                <label class="atividades-form-label" for="descricao_registro">
+                    <i class="bx bx-detail"></i> Descrição da Atividade
+                </label>
+                <textarea name="descricao" id="descricao_registro" class="atividades-form-textarea" rows="2" placeholder="Descreva o trabalho que será realizado..."></textarea>
+            </div>
+
+            <!-- Equipamento/Local -->
+            <div class="atividades-form-group">
+                <label class="atividades-form-label" for="equipamento_registro">
+                    <i class="bx bx-wrench"></i> Equipamento/Local
+                </label>
+                <input type="text" name="equipamento" id="equipamento_registro" class="atividades-form-input" placeholder="Ex: Rack principal, Câmera 1, Sala do servidor...">
+            </div>
+
+            <!-- GPS -->
+            <div class="atividades-form-group">
+                <label class="atividades-form-label">
+                    <i class="bx bx-map"></i> Localização GPS
+                </label>
+                <button type="button" class="btn btn-info" onclick="obterLocalizacaoRegistro()">
+                    <i class="bx bx-map-pin"></i> Obter Localização
                 </button>
-                <button type="button" class="btn btn-success" id="btnSalvarAtividade" onclick="salvarAtividade()" style="display:none;">
-                    <i class="bx bx-save"></i> Salvar
-                </button>
+                <div id="gps_info_registro" style="margin-top: 10px; font-size: 12px; color: #666;">
+                    <i class="bx bx-info-circle"></i> Clique no botão acima para registrar sua localização.
+                </div>
             </div>
         </div>
-    </div>
+
+        <div class="modal-footer">
+            <button type="button" class="atividades-btn-cancel" data-dismiss="modal">
+                <i class="bx bx-x"></i> Cancelar
+            </button>
+            <button type="submit" class="atividades-btn-submit" id="btnIniciarRegistro" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                <i class="bx bx-play"></i> INICIAR ATIVIDADE
+            </button>
+        </div>
+    </form>
 </div>
 
 <script>
-var atividadeAtual = null;
-var modoEdicao = false;
-
-function filtrarAtividades() {
-    var search = document.getElementById('searchAtividade').value.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
-    var status = document.getElementById('filterStatus').value;
-    var tipo = document.getElementById('filterTipo').value;
-    var rows = document.querySelectorAll('#atividadesTableBody tr');
-    rows.forEach(function(row) {
-        var titulo = (row.getAttribute('data-titulo') || '').toLowerCase();
-        var rowStatus = row.getAttribute('data-status') || '';
-        var rowTipo = row.getAttribute('data-tipo') || '';
-        var matchSearch = !search || titulo.includes(search);
-        var matchStatus = !status || rowStatus === status;
-        var matchTipo = !tipo || rowTipo === tipo;
-        row.style.display = matchSearch && matchStatus && matchTipo ? '' : 'none';
-    });
-}
-
+// Função para obter localização GPS
 function obterLocalizacaoRegistro() {
     if ('geolocation' in navigator) {
-        navigator.geolocation.getCurrentPosition(function(position) {
-            document.getElementById('registro_latitude').value = position.coords.latitude;
-            document.getElementById('registro_longitude').value = position.coords.longitude;
-            document.getElementById('gps_info_registro').innerHTML = '<span style="color:#27ae60;"><i class="bx bx-check-circle"></i> Localização obtida!</span>';
-        }, function(error) {
-            document.getElementById('gps_info_registro').innerHTML = '<span style="color:#e74c3c;"><i class="bx bx-x-circle"></i> Erro: ' + error.message + '</span>';
-        });
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                document.getElementById('registro_latitude').value = position.coords.latitude;
+                document.getElementById('registro_longitude').value = position.coords.longitude;
+                document.getElementById('gps_info_registro').innerHTML =
+                    '<i class="bx bx-check-circle" style="color: #28a745;"></i> Localização obtida com sucesso!';
+            },
+            function(error) {
+                document.getElementById('gps_info_registro').innerHTML =
+                    '<i class="bx bx-error-circle" style="color: #dc3545;"></i> Erro ao obter localização: ' + error.message;
+            }
+        );
     } else {
-        document.getElementById('gps_info_registro').innerHTML = '<span style="color:#e74c3c;">GPS não disponível.</span>';
+        document.getElementById('gps_info_registro').innerHTML =
+            '<i class="bx bx-error-circle" style="color: #dc3545;"></i> GPS não disponível no dispositivo.';
     }
 }
 
+// Função para iniciar o registro de atividade
 function iniciarRegistroAtividade(event) {
     event.preventDefault();
-    var form = document.getElementById('formIniciarRegistro');
-    var formData = new FormData(form);
-    var etapaId = formData.get('etapa_id');
-    var tipoId = formData.get('tipo_id');
-    if (!etapaId) { alert('Selecione uma etapa da obra.'); document.getElementById('etapa_id_registro').focus(); return false; }
-    if (!tipoId) { alert('Selecione o tipo de atividade.'); document.getElementById('tipo_id_registro').focus(); return false; }
+
+    const form = document.getElementById('formIniciarRegistro');
+    const formData = new FormData(form);
+
+    // Validação
+    const etapaId = formData.get('etapa_id');
+    const tipoId = formData.get('tipo_id');
+
+    if (!etapaId) {
+        alert('Por favor, selecione uma etapa da obra.');
+        document.getElementById('etapa_id_registro').focus();
+        return false;
+    }
+
+    if (!tipoId) {
+        alert('Por favor, selecione o tipo de atividade.');
+        document.getElementById('tipo_id_registro').focus();
+        return false;
+    }
+
+    // Desabilita botão para evitar duplo clique
     document.getElementById('btnIniciarRegistro').disabled = true;
     document.getElementById('btnIniciarRegistro').innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Iniciando...';
-    fetch('<?php echo site_url("atividades/checkin_obra"); ?>', { method: 'POST', body: formData, headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-        if (data.success) { $('#modalIniciarRegistro').modal('hide'); alert('Atividade iniciada com sucesso!'); location.reload(); }
-        else { alert('Erro: ' + (data.message || 'Erro ao iniciar atividade')); document.getElementById('btnIniciarRegistro').disabled = false; document.getElementById('btnIniciarRegistro').innerHTML = '<i class="bx bx-play"></i> Iniciar Atividade'; }
+
+    // Envia requisição AJAX
+    fetch('<?php echo site_url("atividades/checkin_obra"); ?>', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
     })
-    .catch(function() { alert('Erro ao iniciar atividade.'); document.getElementById('btnIniciarRegistro').disabled = false; document.getElementById('btnIniciarRegistro').innerHTML = '<i class="bx bx-play"></i> Iniciar Atividade'; });
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Fecha modal e recarrega página
+            $('#modalIniciarRegistro').modal('hide');
+            alert('Atividade iniciada com sucesso! Hora Início registrada.');
+            location.reload();
+        } else {
+            alert('Erro: ' + (data.message || 'Erro ao iniciar atividade'));
+            document.getElementById('btnIniciarRegistro').disabled = false;
+            document.getElementById('btnIniciarRegistro').innerHTML = '<i class="bx bx-play"></i> INICIAR ATIVIDADE';
+        }
+    })
+    .catch(error => {
+        console.error('Erro:', error);
+        alert('Erro ao iniciar atividade. Tente novamente.');
+        document.getElementById('btnIniciarRegistro').disabled = false;
+        document.getElementById('btnIniciarRegistro').innerHTML = '<i class="bx bx-play"></i> INICIAR ATIVIDADE';
+    });
+
     return false;
 }
+</script>
 
+<!-- Modal Adicionar Atividade (Integrado com Wizard) -->
+<?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
+<div id="modalAdicionar" class="modal hide fade modal-atividades" tabindex="-1" role="dialog" aria-labelledby="modalAtividadeLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3 id="modalAtividadeLabel"><i class="icon-plus-sign"></i> Nova Atividade - Wizard</h3>
+    </div>
+
+    <form id="formAdicionarAtividade" onsubmit="return salvarAtividadeWizard(event)">
+        <div class="modal-body">
+            <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>">
+            <input type="hidden" name="obra_id" value="<?php echo $obra->id; ?>">
+            <input type="hidden" name="latitude" id="nova_latitude">
+            <input type="hidden" name="longitude" id="nova_longitude">
+
+            <!-- Alerta informativo -->
+            <div style="background: #e3f2fd; border-left: 4px solid #2196f3; padding: 12px 15px; margin-bottom: 20px; border-radius: 0 8px 8px 0;">
+                <i class="icon-info-sign" style="color: #2196f3;"></i>
+                <strong>Modo Wizard:</strong> Esta atividade será criada no sistema de atendimento técnico.
+            </div>
+
+            <!-- Seleção de Etapa (OBRIGATÓRIA) -->
+            <div class="atividades-form-group">
+                <label class="atividades-form-label" for="etapa_id_nova">
+                    <i class="icon-tasks"></i> Etapa da Obra <span style="color: #dc3545;">*</span>
+                </label>
+                <select name="etapa_id" id="etapa_id_nova" class="atividades-form-select" required>
+                    <option value="">Selecione uma etapa...</option>
+                    <?php if (isset($etapas) && !empty($etapas)): ?>
+                        <?php foreach ($etapas as $e): ?>
+                        <option value="<?php echo $e->id; ?>">
+                            #<?php echo $e->numero_etapa ?? 'N/A'; ?> - <?php echo $e->nome; ?>
+                            <?php if (isset($e->progresso_real) && $e->progresso_real > 0): ?>
+                                (<?php echo $e->progresso_real; ?>%)
+                            <?php endif; ?>
+                        </option>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <option value="" disabled>Nenhuma etapa cadastrada</option>
+                    <?php endif; ?>
+                </select>
+                <div class="atividades-form-hint">
+                    <i class="icon-info-sign"></i> Selecione a etapa em que a atividade será executada.
+                </div>
+            </div>
+
+            <!-- Tipo de Atividade (do wizard) -->
+            <?php if (!empty($tipos_atividades)): ?>
+            <div class="atividades-form-group">
+                <label class="atividades-form-label" for="tipo_id_nova">
+                    <i class="icon-wrench"></i> Tipo de Atividade <span style="color: #dc3545;">*</span>
+                </label>
+                <select name="tipo_id" id="tipo_id_nova" class="atividades-form-select" required>
+                    <option value="">Selecione o tipo...</option>
+                    <?php foreach ($tipos_atividades as $tipo): ?>
+                    <option value="<?php echo $tipo->idTipo; ?>" data-categoria="<?php echo $tipo->categoria ?? 'geral'; ?>">
+                        <?php echo $tipo->nome; ?>
+                    </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <?php else: ?>
+            <input type="hidden" name="tipo_id" value="1">
+            <?php endif; ?>
+
+            <!-- Título -->
+            <div class="atividades-form-group">
+                <label class="atividades-form-label" for="titulo_nova">
+                    <i class="icon-tag"></i> Título da Atividade <span style="color: #dc3545;">*</span>
+                </label>
+                <input type="text" name="titulo" id="titulo_nova" class="atividades-form-input" placeholder="Ex: Instalação elétrica..." required>
+            </div>
+
+            <!-- Descrição -->
+            <div class="atividades-form-group">
+                <label class="atividades-form-label" for="descricao_nova">
+                    <i class="icon-align-left"></i> Descrição da Atividade
+                </label>
+                <textarea name="descricao" id="descricao_nova" class="atividades-form-textarea" rows="2" placeholder="Descreva o trabalho que será realizado..."></textarea>
+            </div>
+
+            <!-- Equipamento/Local -->
+            <div class="atividades-form-group">
+                <label class="atividades-form-label" for="equipamento_nova">
+                    <i class="icon-wrench"></i> Equipamento/Local
+                </label>
+                <input type="text" name="equipamento" id="equipamento_nova" class="atividades-form-input" placeholder="Ex: Rack principal, Câmera 1, Sala do servidor...">
+            </div>
+
+            <!-- Localização GPS -->
+            <div class="atividades-form-group">
+                <label class="atividades-form-label">
+                    <i class="icon-map-marker"></i> Localização GPS
+                </label>
+                <button type="button" class="btn btn-info" onclick="obterLocalizacaoNovaAtividade()" style="margin-bottom: 10px;">
+                    <i class="icon-map-marker"></i> Obter Localização Atual
+                </button>
+                <div id="gps_info_nova" class="atividades-form-hint">
+                    <i class="icon-info-sign"></i> Clique para registrar a localização.
+                </div>
+            </div>
+
+            <hr style="margin: 20px 0; border-color: #e0e0e0;">
+
+            <!-- Campos adicionais -->
+            <div class="atividades-form-row">
+                <!-- Técnico Responsável -->
+                <div class="atividades-form-group">
+                    <label class="atividades-form-label" for="tecnico_id_nova">
+                        <i class="icon-user"></i> Técnico Responsável
+                    </label>
+                    <select name="tecnico_id" id="tecnico_id_nova" class="atividades-form-select">
+                        <option value="">Selecione um técnico...</option>
+                        <?php if (!empty($tecnicos)): ?>
+                            <?php foreach ($tecnicos as $t): ?>
+                            <option value="<?php echo $t->idUsuarios; ?>"><?php echo $t->nome; ?></option>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </select>
+                </div>
+
+                <!-- Visível ao Cliente -->
+                <div class="atividades-form-group">
+                    <label class="atividades-form-checkbox" style="margin: 10px 0 0 0;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <input type="checkbox" name="visivel_cliente" value="1" checked style="width: 20px; height: 20px; margin: 0;">
+                            <div>
+                                <div class="atividades-form-checkbox-label">Visível ao cliente</div>
+                                <div class="atividades-form-checkbox-hint">O cliente poderá ver esta atividade</div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="atividades-btn-cancel" data-dismiss="modal">
+                <i class="icon-remove"></i> Cancelar
+            </button>
+            <button type="submit" class="atividades-btn-submit" id="btnSalvarAtividade" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                <i class="icon-save"></i> CRIAR ATIVIDADE
+            </button>
+        </div>
+    </form>
+</div>
+<?php endif; ?>
+
+<script>
+// Função para obter localização GPS
 function obterLocalizacaoNovaAtividade() {
     if ('geolocation' in navigator) {
-        document.getElementById('gps_info_nova').innerHTML = 'Obtendo localização...';
-        navigator.geolocation.getCurrentPosition(function(position) {
-            document.getElementById('nova_latitude').value = position.coords.latitude;
-            document.getElementById('nova_longitude').value = position.coords.longitude;
-            document.getElementById('gps_info_nova').innerHTML = '<span style="color:#27ae60;"><i class="bx bx-check-circle"></i> Localização: ' + position.coords.latitude.toFixed(6) + ', ' + position.coords.longitude.toFixed(6) + '</span>';
-        }, function(error) {
-            document.getElementById('gps_info_nova').innerHTML = '<span style="color:#e74c3c;"><i class="bx bx-x-circle"></i> Erro: ' + error.message + '</span>';
-        }, { enableHighAccuracy: true, timeout: 10000 });
+        document.getElementById('gps_info_nova').innerHTML = '<i class="icon-time"></i> Obtendo localização...';
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                document.getElementById('nova_latitude').value = position.coords.latitude;
+                document.getElementById('nova_longitude').value = position.coords.longitude;
+                document.getElementById('gps_info_nova').innerHTML = '<i class="icon-ok" style="color: #28a745;"></i> Localização: ' + position.coords.latitude.toFixed(6) + ', ' + position.coords.longitude.toFixed(6);
+            },
+            function(error) {
+                document.getElementById('gps_info_nova').innerHTML = '<i class="icon-remove" style="color: #dc3545;"></i> Erro: ' + error.message;
+            },
+            { enableHighAccuracy: true, timeout: 10000 }
+        );
     } else {
-        document.getElementById('gps_info_nova').innerHTML = '<span style="color:#e74c3c;">GPS não disponível.</span>';
+        document.getElementById('gps_info_nova').innerHTML = '<i class="icon-remove" style="color: #dc3545;"></i> GPS não disponível.';
     }
 }
 
+// Função para salvar atividade no formato do wizard
 function salvarAtividadeWizard(event) {
     event.preventDefault();
-    var form = document.getElementById('formAdicionarAtividade');
-    var formData = new FormData(form);
-    var etapaId = formData.get('etapa_id');
-    var tipoId = formData.get('tipo_id');
-    var titulo = formData.get('titulo');
-    if (!etapaId) { alert('Selecione uma etapa da obra.'); document.getElementById('etapa_id_nova').focus(); return false; }
-    if (!tipoId) { alert('Selecione o tipo de atividade.'); document.getElementById('tipo_id_nova').focus(); return false; }
-    if (!titulo || titulo.trim() === '') { alert('Informe o título da atividade.'); document.getElementById('titulo_nova').focus(); return false; }
-    var btn = document.getElementById('btnSalvarAtividade');
+
+    const form = document.getElementById('formAdicionarAtividade');
+    const formData = new FormData(form);
+
+    // Validação
+    const etapaId = formData.get('etapa_id');
+    const tipoId = formData.get('tipo_id');
+    const titulo = formData.get('titulo');
+
+    if (!etapaId) {
+        alert('Por favor, selecione uma etapa da obra.');
+        document.getElementById('etapa_id_nova').focus();
+        return false;
+    }
+
+    if (!tipoId) {
+        alert('Por favor, selecione o tipo de atividade.');
+        document.getElementById('tipo_id_nova').focus();
+        return false;
+    }
+
+    if (!titulo || titulo.trim() === '') {
+        alert('Por favor, informe o título da atividade.');
+        document.getElementById('titulo_nova').focus();
+        return false;
+    }
+
+    // Desabilita botão para evitar duplo clique
+    const btn = document.getElementById('btnSalvarAtividade');
     btn.disabled = true;
-    btn.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Salvando...';
-    fetch('<?php echo site_url("atividades/checkin_obra"); ?>', { method: 'POST', body: formData, headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-        if (data.success) { $('#modalAdicionar').modal('hide'); alert('Atividade criada com sucesso!'); location.reload(); }
-        else { alert('Erro: ' + (data.message || 'Erro ao criar atividade')); btn.disabled = false; btn.innerHTML = '<i class="bx bx-save"></i> Criar Atividade'; }
+    btn.innerHTML = '<i class="icon-time"></i> Salvando...';
+
+    // Envia requisição AJAX
+    fetch('<?php echo site_url("atividades/checkin_obra"); ?>', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
     })
-    .catch(function() { alert('Erro ao criar atividade.'); btn.disabled = false; btn.innerHTML = '<i class="bx bx-save"></i> Criar Atividade'; });
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            $('#modalAdicionar').modal('hide');
+            alert('Atividade criada com sucesso no sistema de atendimento!');
+            location.reload();
+        } else {
+            alert('Erro: ' + (data.message || 'Erro ao criar atividade'));
+            btn.disabled = false;
+            btn.innerHTML = '<i class="icon-save"></i> CRIAR ATIVIDADE';
+        }
+    })
+    .catch(error => {
+        console.error('Erro:', error);
+        alert('Erro ao criar atividade. Tente novamente.');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="icon-save"></i> CRIAR ATIVIDADE';
+    });
+
     return false;
 }
+</script>
 
-function abrirModalAtividade(id, sistema) {
-    atividadeAtual = { id: id, sistema: sistema };
-    modoEdicao = false;
-    document.getElementById('modalVerBody').innerHTML = '<div style="text-align:center;padding:40px;"><i class="bx bx-loader-alt bx-spin" style="font-size:40px;color:var(--sidebar-accent,#667eea);"></i><p style="margin-top:15px;color:var(--cinza0,#9aa6b3);">Carregando...</p></div>';
-    document.getElementById('btnEditarAtividade').style.display = 'inline-block';
-    document.getElementById('btnSalvarAtividade').style.display = 'none';
-    $('#modalVerAtividade').modal('show');
-    var url = sistema === 'novo' ? '<?php echo site_url("atividades/detalhes/"); ?>' + id : '<?php echo site_url("obras/api_getAtividade/"); ?>' + id;
-    $.ajax({ url: url, type: 'GET', dataType: 'json', headers: { 'X-Requested-With': 'XMLHttpRequest' },
-        success: function(data) {
-            if (data.success) {
-                if (sistema === 'novo') { renderizarAtividadeNovo(data.atividade); }
-                else { atividadeAtual.dados = data.atividade; atividadeAtual.execucao = data.execucao_real; renderizarAtividadeAntigo(data.atividade, data.execucao_real); }
-            } else {
-                document.getElementById('modalVerBody').innerHTML = '<div style="text-align:center;padding:40px;color:#e74c3c;"><i class="bx bx-error-circle" style="font-size:40px;"></i><p>' + (data.message || 'Erro ao carregar') + '</p></div>';
-            }
-        },
-        error: function() {
-            document.getElementById('modalVerBody').innerHTML = '<div style="text-align:center;padding:40px;color:#e74c3c;"><i class="bx bx-error-circle" style="font-size:40px;"></i><p>Erro ao carregar atividade</p></div>';
+<script>
+// Filtro de atividades
+function filtrarAtividades() {
+    const search = document.getElementById('searchAtividade').value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    const status = document.getElementById('filterStatus').value;
+    const tipo = document.getElementById('filterTipo').value;
+    const cards = document.querySelectorAll('.atividade-card');
+
+    cards.forEach(card => {
+        const titulo = card.getAttribute('data-titulo');
+        const cardStatus = card.getAttribute('data-status');
+        const cardTipo = card.getAttribute('data-tipo');
+
+        const matchSearch = !search || titulo.includes(search);
+        const matchStatus = !status || cardStatus === status;
+        const matchTipo = !tipo || cardTipo === tipo;
+
+        card.style.display = matchSearch && matchStatus && matchTipo ? 'block' : 'none';
+    });
+}
+
+// Focus no campo título quando abrir o modal
+$('#modalAdicionar').on('shown.bs.modal', function () {
+    $('#titulo').focus();
+});
+
+// Animação de entrada
+$(document).ready(function() {
+    $('.atividade-card').each(function(index) {
+        $(this).hide().delay(index * 100).fadeIn(400);
+    });
+});
+
+// Auto-refresh a cada 10 segundos se a aba estiver visível
+let refreshInterval;
+
+function startAutoRefresh() {
+    refreshInterval = setInterval(function() {
+        if (!document.hidden) {
+            location.reload();
         }
-    });
+    }, 10000); // 10 segundos
 }
 
-function renderizarAtividadeAntigo(atividade, execucao) {
-    var statusClass = atividade.status || 'agendada';
-    var statusLabel = statusClass.charAt(0).toUpperCase() + statusClass.slice(1);
-    var h = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;padding:10px;background:var(--widget-box,#f8f9fa);border-radius:8px;">';
-    h += '<div><strong>Status:</strong> <span class="label label-' + (statusClass === 'concluida' ? 'success' : (statusClass === 'iniciada' ? 'info' : 'default')) + '">' + statusLabel + '</span></div>';
-    h += '<div style="color:var(--cinza0,#9aa6b3);font-size:12px;">ID: #' + atividade.id + '</div></div>';
-    h += '<div class="mb-3"><label style="font-weight:600;"><i class="bx bx-tag"></i> Título</label>';
-    h += '<div class="view-field" style="padding:10px;background:var(--widget-box,#f5f5f5);border-radius:6px;border:1px solid var(--border-color,#e0e0e0);">' + (atividade.titulo || '—') + '</div>';
-    h += '<input type="text" name="titulo" class="col-12 edit-field" value="' + (atividade.titulo || '').replace(/"/g, '&quot;') + '" style="display:none;"></div>';
-    h += '<div class="mb-3"><label style="font-weight:600;"><i class="bx bx-detail"></i> Descrição</label>';
-    h += '<div class="view-field" style="padding:10px;background:var(--widget-box,#f5f5f5);border-radius:6px;border:1px solid var(--border-color,#e0e0e0);min-height:50px;">' + (atividade.descricao || '—') + '</div>';
-    h += '<textarea name="descricao" class="col-12 edit-field" rows="3" style="display:none;">' + (atividade.descricao || '') + '</textarea></div>';
-    h += '<div class="row"><div class="col-6"><label style="font-weight:600;"><i class="bx bx-calendar"></i> Data</label>';
-    h += '<div class="view-field" style="padding:10px;background:var(--widget-box,#f5f5f5);border-radius:6px;border:1px solid var(--border-color,#e0e0e0);">' + (atividade.data_atividade ? formatarData(atividade.data_atividade) : '—') + '</div>';
-    h += '<input type="date" name="data_atividade" class="col-12 edit-field" value="' + (atividade.data_atividade || '') + '" style="display:none;"></div>';
-    h += '<div class="col-6"><label style="font-weight:600;"><i class="bx bx-wrench"></i> Tipo</label>';
-    h += '<div class="view-field" style="padding:10px;background:var(--widget-box,#f5f5f5);border-radius:6px;border:1px solid var(--border-color,#e0e0e0);">' + (atividade.tipo ? atividade.tipo.charAt(0).toUpperCase() + atividade.tipo.slice(1) : '—') + '</div>';
-    h += '<select name="tipo" class="col-12 edit-field" style="display:none;">';
-    h += '<option value="trabalho" ' + (atividade.tipo === 'trabalho' ? 'selected' : '') + '>Trabalho</option>';
-    h += '<option value="visita" ' + (atividade.tipo === 'visita' ? 'selected' : '') + '>Visita Técnica</option>';
-    h += '<option value="manutencao" ' + (atividade.tipo === 'manutencao' ? 'selected' : '') + '>Manutenção</option>';
-    h += '<option value="impedimento" ' + (atividade.tipo === 'impedimento' ? 'selected' : '') + '>Impedimento</option>';
-    h += '<option value="outro" ' + (atividade.tipo === 'outro' ? 'selected' : '') + '>Outro</option></select></div></div>';
-    if (execucao && execucao.idAtividade) {
-        h += '<hr style="margin:20px 0;border-color:var(--border-color,#e0e0e0);">';
-        h += '<div style="background:rgba(var(--sidebar-accent-rgb,4,103,252),0.06);padding:15px;border-radius:8px;border-left:4px solid var(--sidebar-accent,#667eea);">';
-        h += '<h4 style="margin:0 0 10px 0;color:var(--sidebar-accent,#667eea);"><i class="bx bx-timer"></i> Execução Real</h4>';
-        h += '<div class="row"><div class="col-6"><label style="font-weight:600;">Hora Início</label><div style="padding:10px;background:var(--widget-box,#fff);border-radius:6px;border:1px solid var(--border-color,#e0e0e0);">' + (execucao.hora_inicio ? formatarDataHora(execucao.hora_inicio) : '—') + '</div></div>';
-        h += '<div class="col-6"><label style="font-weight:600;">Hora Fim</label><div style="padding:10px;background:var(--widget-box,#fff);border-radius:6px;border:1px solid var(--border-color,#e0e0e0);">' + (execucao.hora_fim ? formatarDataHora(execucao.hora_fim) : '—') + '</div></div></div>';
-        if (execucao.duracao_minutos) { var hrs = Math.floor(execucao.duracao_minutos / 60); var mins = execucao.duracao_minutos % 60; h += '<div style="margin-top:10px;padding:10px;background:var(--widget-box,#fff);border-radius:6px;text-align:center;"><strong style="color:var(--sidebar-accent,#667eea);font-size:18px;"><i class="bx bx-time"></i> Duração: ' + hrs + 'h ' + mins + 'min</strong></div>'; }
-        if (execucao.observacoes) { h += '<div style="margin-top:10px;"><label style="font-weight:600;">Observações</label><div style="padding:10px;background:var(--widget-box,#fff);border-radius:6px;border:1px solid var(--border-color,#e0e0e0);white-space:pre-wrap;">' + execucao.observacoes + '</div></div>'; }
-        h += '</div>';
-    }
-    h += '</div>';
-    document.getElementById('modalVerBody').innerHTML = h;
+function stopAutoRefresh() {
+    clearInterval(refreshInterval);
 }
 
-function renderizarAtividadeNovo(atividade) {
-    var h = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;padding:10px;background:var(--widget-box,#f8f9fa);border-radius:8px;">';
-    h += '<div><strong>Status:</strong> <span class="badge bg-info">' + (atividade.status ? atividade.status.toUpperCase() : 'N/A') + '</span></div>';
-    h += '<div style="color:var(--cinza0,#9aa6b3);font-size:12px;">ID: #' + atividade.idAtividade + '</div></div>';
-    h += '<div class="mb-3"><label style="font-weight:600;"><i class="bx bx-tag"></i> Tipo de Atividade</label>';
-    h += '<div style="padding:10px;background:var(--widget-box,#f5f5f5);border-radius:6px;border:1px solid var(--border-color,#e0e0e0);">' + (atividade.tipo_atividade || '—') + '</div></div>';
-    h += '<div class="mb-3"><label style="font-weight:600;"><i class="bx bx-detail"></i> Descrição</label>';
-    h += '<div style="padding:10px;background:var(--widget-box,#f5f5f5);border-radius:6px;border:1px solid var(--border-color,#e0e0e0);min-height:50px;">' + (atividade.descricao || '—') + '</div></div>';
-    if (atividade.hora_inicio) {
-        h += '<div class="row"><div class="col-6"><label style="font-weight:600;"><i class="bx bx-time"></i> Hora Início</label>';
-        h += '<div style="padding:10px;background:var(--widget-box,#f5f5f5);border-radius:6px;border:1px solid var(--border-color,#e0e0e0);">' + formatarDataHora(atividade.hora_inicio) + '</div></div>';
-        h += '<div class="col-6"><label style="font-weight:600;"><i class="bx bx-time"></i> Hora Fim</label>';
-        h += '<div style="padding:10px;background:var(--widget-box,#f5f5f5);border-radius:6px;border:1px solid var(--border-color,#e0e0e0);">' + (atividade.hora_fim ? formatarDataHora(atividade.hora_fim) : 'Em andamento...') + '</div></div></div>';
-        if (atividade.duracao_minutos) { var hrs = Math.floor(atividade.duracao_minutos / 60); var mins = atividade.duracao_minutos % 60; h += '<div style="margin-top:10px;padding:10px;background:rgba(var(--sidebar-accent-rgb,4,103,252),0.06);border-radius:8px;text-align:center;"><strong style="color:var(--sidebar-accent,#667eea);font-size:18px;"><i class="bx bx-timer"></i> Duração: ' + hrs + 'h ' + mins + 'min</strong></div>'; }
-    }
-    if (atividade.nome_tecnico) { h += '<div class="mb-3" style="margin-top:10px;"><label style="font-weight:600;"><i class="bx bx-user"></i> Técnico</label><div style="padding:10px;background:var(--widget-box,#f5f5f5);border-radius:6px;border:1px solid var(--border-color,#e0e0e0);">' + atividade.nome_tecnico + '</div></div>'; }
-    if (atividade.etapa_nome) { h += '<div class="mb-3"><label style="font-weight:600;"><i class="bx bx-layer"></i> Etapa</label><div style="padding:10px;background:var(--widget-box,#f5f5f5);border-radius:6px;border:1px solid var(--border-color,#e0e0e0);">' + atividade.etapa_nome + '</div></div>'; }
-    if (atividade.observacoes) { h += '<div class="mb-3"><label style="font-weight:600;"><i class="bx bx-note"></i> Observações</label><div style="padding:10px;background:var(--widget-box,#f5f5f5);border-radius:6px;border:1px solid var(--border-color,#e0e0e0);white-space:pre-wrap;">' + atividade.observacoes + '</div></div>'; }
-    document.getElementById('modalVerBody').innerHTML = h;
-    document.getElementById('btnEditarAtividade').style.display = 'none';
-    document.getElementById('btnSalvarAtividade').style.display = 'none';
-}
+// Iniciar auto-refresh quando a página carregar
+$(document).ready(function() {
+    startAutoRefresh();
+});
 
-function toggleEdicao() {
-    modoEdicao = !modoEdicao;
-    if (modoEdicao) {
-        $('.view-field').hide(); $('.edit-field').show();
-        document.getElementById('btnEditarAtividade').style.display = 'none';
-        document.getElementById('btnSalvarAtividade').style.display = 'inline-block';
-    } else {
-        $('.view-field').show(); $('.edit-field').hide();
-        document.getElementById('btnEditarAtividade').style.display = 'inline-block';
-        document.getElementById('btnSalvarAtividade').style.display = 'none';
-    }
-}
+// Parar refresh quando o modal estiver aberto (para não perder dados do formulário)
+$('#modalAdicionar').on('shown.bs.modal', function () {
+    stopAutoRefresh();
+});
 
-function salvarAtividade() {
-    if (!atividadeAtual || !atividadeAtual.id) { alert('Nenhuma atividade selecionada'); return; }
-    var dados = { id: atividadeAtual.id };
-    var tituloEl = document.querySelector('input[name="titulo"]');
-    var descricaoEl = document.querySelector('textarea[name="descricao"]');
-    var dataEl = document.querySelector('input[name="data_atividade"]');
-    var tipoEl = document.querySelector('select[name="tipo"]');
-    if (tituloEl) dados.titulo = tituloEl.value;
-    if (descricaoEl) dados.descricao = descricaoEl.value;
-    if (dataEl) dados.data_atividade = dataEl.value;
-    if (tipoEl) dados.tipo = tipoEl.value;
-    var btn = document.getElementById('btnSalvarAtividade');
-    btn.disabled = true; btn.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Salvando...';
-    $.ajax({ url: '<?php echo site_url("obras/api_salvarAtividade"); ?>', type: 'POST', dataType: 'json', data: dados, headers: { 'X-Requested-With': 'XMLHttpRequest' },
-        success: function(data) { if (data.success) { alert('Atividade atualizada!'); $('#modalVerAtividade').modal('hide'); location.reload(); } else { alert('Erro: ' + (data.message || 'Não foi possível salvar')); btn.disabled = false; btn.innerHTML = '<i class="bx bx-save"></i> Salvar'; } },
-        error: function() { alert('Erro ao salvar'); btn.disabled = false; btn.innerHTML = '<i class="bx bx-save"></i> Salvar'; }
-    });
-}
-
-function formatarData(dataStr) { if (!dataStr) return '—'; var parts = dataStr.split('-'); if (parts.length !== 3) return dataStr; return parts[2] + '/' + parts[1] + '/' + parts[0]; }
-function formatarDataHora(dataHoraStr) { if (!dataHoraStr) return '—'; var data = new Date(dataHoraStr); if (isNaN(data.getTime())) return dataHoraStr; return data.toLocaleString('pt-BR'); }
-
-function excluirAtividade(id, sistema) {
-    if (!confirm('Tem certeza que deseja excluir esta atividade?')) return;
-    var url = sistema === 'novo' ? '<?php echo site_url('atividades/excluir/'); ?>' + id : '<?php echo site_url('obras/excluirAtividade/'); ?>' + id;
-    $.ajax({ url: url, type: 'POST', dataType: 'json', headers: { 'X-Requested-With': 'XMLHttpRequest' },
-        success: function(data) { if (data.success) { location.reload(); } else { alert('Erro: ' + (data.message || 'Não foi possível excluir')); } },
-        error: function() { location.reload(); }
-    });
-}
-
-$('#modalAdicionar').on('shown.bs.modal', function() { $('#titulo').focus(); });
+$('#modalAdicionar').on('hidden.bs.modal', function () {
+    startAutoRefresh();
+});
 </script>
