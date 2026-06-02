@@ -1,8 +1,6 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
-// Garantir que a variável $obras exista (controller pode passar como $results)
 $obras = isset($obras) ? $obras : (isset($results) ? $results : []);
 
-// Debug: log para verificar dados
 if (empty($obras)) {
     log_message('debug', 'obras_list.php: Nenhuma obra encontrada para exibição');
 } else {
@@ -10,11 +8,9 @@ if (empty($obras)) {
 }
 ?>
 
-<!-- Tema Moderno Obras - CSS Unificado -->
 <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/obras-modern-theme.css">
 
 <style>
-/* Dynamic status colors from DB */
 <?php foreach ($status_obra as $s): ?>
 .obra-card-header.<?php echo strtolower(preg_replace('/[^a-z]/', '', $s->nome)); ?> {
     background: linear-gradient(135deg, <?php echo $s->cor ?? '#667eea'; ?> 0%, <?php echo $s->cor ?? '#667eea'; ?> 100%) !important;
@@ -23,24 +19,23 @@ if (empty($obras)) {
 </style>
 
 <div class="obras-unified-container">
-    <!-- Header Principal -->
     <div class="obras-main-header">
         <div class="obras-header-content">
             <div class="obras-header-title">
                 <h1><?= svg_icon('building', 28, 28) ?> Gerenciamento de Obras</h1>
                 <p>Acompanhe e gerencie todas as obras do sistema</p>
             </div>
-            <div style="display: flex; gap: 12px; align-items: center;">
+            <div class="obras-header-actions">
                 <a href="<?php echo site_url('obras/adicionar'); ?>" class="obras-filter-btn obras-add-btn">
                     <?= svg_icon('plus', 16, 16) ?> Nova Obra
                 </a>
                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cObras')): ?>
-                <a href="<?php echo site_url('obras/configuracoes'); ?>" class="obras-filter-btn" style="background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); color: white;">
+                <a href="<?php echo site_url('obras/configuracoes'); ?>" class="obras-filter-btn obras-filter-btn-config">
                     <?= svg_icon('cog', 16, 16) ?> Configurações
                 </a>
                 <?php endif; ?>
                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
-                <button type="button" class="obras-filter-btn" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white;" onclick="atualizarTodosProgressos()">
+                <button type="button" class="obras-filter-btn obras-filter-btn-recalc" onclick="atualizarTodosProgressos()">
                     <?= svg_icon('refresh', 16, 16) ?> Recalcular Progressos
                 </button>
                 <?php endif; ?>
@@ -48,7 +43,6 @@ if (empty($obras)) {
         </div>
     </div>
 
-    <!-- Estatísticas -->
     <div class="obras-stats-row">
         <div class="obras-stat-card">
             <div class="obras-stat-icon blue">
@@ -91,17 +85,6 @@ if (empty($obras)) {
         </div>
     </div>
 
-
-    <!-- CSS dinâmico para cores de status configuradas -->
-    <style>
-    <?php foreach ($status_obra as $s): ?>
-    .obra-card-header.<?php echo strtolower(preg_replace('/[^a-z]/', '', $s->nome)); ?> {
-        background: linear-gradient(135deg, <?php echo $s->cor ?? '#667eea'; ?> 0%, <?php echo $s->cor ?? '#667eea'; ?> 100%) !important;
-    }
-    <?php endforeach; ?>
-    </style>
-
-    <!-- Filtros -->
     <div class="obras-filter-bar">
         <div class="obras-filter-group">
             <label><?= svg_icon('search', 16, 16) ?> Buscar:</label>
@@ -123,15 +106,12 @@ if (empty($obras)) {
         </button>
     </div>
 
-    <!-- Grid de Obras -->
     <?php if (!empty($obras)): ?>
     <div class="obras-cards-grid" id="obrasGrid">
         <?php foreach ($obras as $obra): ?>
         <?php
-        // Debug: garantir que objeto tenha todas as propriedades
         if (!is_object($obra)) continue;
 
-        // Construir mapa de status para lookup rápido (idealmente feito fora do loop)
         static $statusMapList = null;
         if ($statusMapList === null) {
             $statusMapList = [];
@@ -143,7 +123,7 @@ if (empty($obras)) {
 
         $status_class = '';
         $status_label = '';
-        $status_normalized = ''; // Valor normalizado para o filtro
+        $status_normalized = '';
         $status_cor = '';
 
         $status_lower = strtolower(trim($obra->status ?? ''));
@@ -156,7 +136,6 @@ if (empty($obras)) {
             $status_normalized = $status_norm_key;
             $status_cor = $s->cor ?? '';
         } else {
-            // Fallback hardcoded para compatibilidade
             switch ($status_lower) {
                 case 'em-andamento':
                 case 'em_execucao':
@@ -251,7 +230,6 @@ if (empty($obras)) {
                     </span>
                 </div>
 
-                <!-- Progresso -->
                 <div class="obra-card-progress">
                     <div class="obra-card-progress-header">
                         <span class="obra-card-progress-label">Progresso</span>
@@ -262,7 +240,6 @@ if (empty($obras)) {
                     </div>
                 </div>
 
-                <!-- Stats rápidas -->
                 <div class="obra-card-stats">
                     <div class="obra-card-stat">
                         <span class="obra-card-stat-value"><?php echo $obra->total_etapas ?? 0; ?></span>
@@ -289,16 +266,15 @@ if (empty($obras)) {
                 </a>
                 <?php endif; ?>
                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dObras')): ?>
-                <form action="<?php echo site_url('obras/excluir'); ?>" method="post" style="display:inline;" onsubmit="return confirm('Tem certeza que deseja excluir esta obra?');">
+                <form action="<?php echo site_url('obras/excluir'); ?>" method="post" class="obra-delete-form" onsubmit="return confirm('Tem certeza que deseja excluir esta obra?');">
                     <input type="hidden" name="id" value="<?php echo $obra->id; ?>">
                     <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>">
-                    <button type="submit" class="obra-card-btn" style="background: #e74c3c;">
+                    <button type="submit" class="obra-card-btn delete">
                         <?= svg_icon('trash', 16, 16) ?> Excluir
                     </button>
                 </form>
                 <?php endif; ?>
                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
-                <!-- Botão de Ações Rápidas -->
                 <div class="obra-quick-actions">
                     <button type="button" class="obra-card-btn quick-action-toggle" onclick="toggleQuickMenu(<?php echo $obra->id; ?>)">
                         <?= svg_icon('chevron-down', 16, 16) ?> Ações
@@ -308,26 +284,26 @@ if (empty($obras)) {
                             <?= svg_icon('bolt', 16, 16) ?> Ações Rápidas
                         </div>
                         <div class="obra-quick-menu-item" onclick="atualizarStatusRapido(<?php echo $obra->id; ?>, 'prospeccao')">
-                            <span class="obra-status-dot" style="background: #a8edea;"></span> Prospecção
+                            <span class="obra-status-dot status-dot-prospeccao"></span> Prospecção
                         </div>
                         <div class="obra-quick-menu-item" onclick="atualizarStatusRapido(<?php echo $obra->id; ?>, 'contratada')">
-                            <span class="obra-status-dot" style="background: #f39c12;"></span> Contratada
+                            <span class="obra-status-dot status-dot-contratada"></span> Contratada
                         </div>
                         <div class="obra-quick-menu-item" onclick="atualizarStatusRapido(<?php echo $obra->id; ?>, 'em-andamento')">
-                            <span class="obra-status-dot" style="background: #4facfe;"></span> Em Andamento
+                            <span class="obra-status-dot status-dot-andamento"></span> Em Andamento
                         </div>
                         <div class="obra-quick-menu-item" onclick="atualizarStatusRapido(<?php echo $obra->id; ?>, 'paralisada')">
-                            <span class="obra-status-dot" style="background: #ff6b6b;"></span> Paralisada
+                            <span class="obra-status-dot status-dot-paralisada"></span> Paralisada
                         </div>
                         <div class="obra-quick-menu-item" onclick="atualizarStatusRapido(<?php echo $obra->id; ?>, 'concluida')">
-                            <span class="obra-status-dot" style="background: #11998e;"></span> Concluída
+                            <span class="obra-status-dot status-dot-concluida"></span> Concluída
                         </div>
                         <div class="obra-quick-menu-item" onclick="atualizarStatusRapido(<?php echo $obra->id; ?>, 'cancelada')">
-                            <span class="obra-status-dot" style="background: #636e72;"></span> Cancelada
+                            <span class="obra-status-dot status-dot-cancelada"></span> Cancelada
                         </div>
                         <div class="obra-quick-menu-divider"></div>
                         <a href="<?php echo site_url('obras/relatorioGeral/' . $obra->id); ?>" class="obra-quick-menu-item">
-                            <?= svg_icon('file-text', 16, 16, '', 'color: #667eea;') ?> Relatório Geral
+                            <?= svg_icon('file-text', 16, 16) ?> Relatório Geral
                         </a>
                     </div>
                 </div>
@@ -337,7 +313,6 @@ if (empty($obras)) {
         <?php endforeach; ?>
     </div>
 
-    <!-- Paginação -->
     <?php if (isset($pagination)): ?>
     <div class="obras-pagination">
         <?php echo $pagination; ?>
@@ -345,10 +320,9 @@ if (empty($obras)) {
     <?php endif; ?>
 
     <?php else: ?>
-    <!-- Empty State -->
     <div class="obras-empty-state">
         <div class="obras-empty-icon">
-            <?= svg_icon('building', 48, 48, '', 'color:var(--cinza0,#9aa6b3)') ?>
+            <?= svg_icon('building', 64, 64, '', 'color:var(--cinza0,#9aa6b3)') ?>
         </div>
         <h3 class="obras-empty-title">Nenhuma obra encontrada</h3>
         <p class="obras-empty-desc">Comece cadastrando uma nova obra para gerenciar seus projetos.</p>
@@ -360,7 +334,6 @@ if (empty($obras)) {
 </div>
 
 <script>
-// Filtro de obras
 function filtrarObras() {
     const search = document.getElementById('searchObra').value.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
     const status = document.getElementById('filterStatus').value;
@@ -369,10 +342,8 @@ function filtrarObras() {
     cards.forEach(card => {
         const nome = card.getAttribute('data-nome');
         const cardStatus = card.getAttribute('data-status');
-
         const matchSearch = !search || nome.includes(search);
         const matchStatus = !status || cardStatus === status;
-
         card.style.display = matchSearch && matchStatus ? 'flex' : 'none';
     });
 }
@@ -383,58 +354,36 @@ function limparFiltros() {
     filtrarObras();
 }
 
-// Animação de entrada
 $(document).ready(function() {
     $('.obra-item-card').each(function(index) {
         $(this).hide().delay(index * 100).fadeIn(400);
     });
 });
 
-// Menu de Ações Rápidas - Toggle
 function toggleQuickMenu(obraId) {
     const menu = document.getElementById('quickMenu_' + obraId);
     const allMenus = document.querySelectorAll('.obra-quick-menu');
-
-    // Fechar todos os outros menus
     allMenus.forEach(function(m) {
         if (m !== menu && m.classList.contains('active')) {
             m.classList.remove('active');
         }
     });
-
-    // Toggle do menu atual
     if (menu) {
         menu.classList.toggle('active');
     }
-
-    // Fechar menu ao clicar fora
     function closeMenu(e) {
         if (!e.target.closest('.obra-quick-actions')) {
-            allMenus.forEach(function(m) {
-                m.classList.remove('active');
-            });
+            allMenus.forEach(function(m) { m.classList.remove('active'); });
             document.removeEventListener('click', closeMenu);
         }
     }
-
-    // Adicionar listener após um pequeno delay para não fechar imediatamente
-    setTimeout(function() {
-        document.addEventListener('click', closeMenu);
-    }, 100);
+    setTimeout(function() { document.addEventListener('click', closeMenu); }, 100);
 }
 
-// Atualizar status via AJAX
 function atualizarStatusRapido(obraId, novoStatus) {
-    // Fechar menu
     const menu = document.getElementById('quickMenu_' + obraId);
-    if (menu) {
-        menu.classList.remove('active');
-    }
-
-    // Mostrar loading
+    if (menu) menu.classList.remove('active');
     mostrarToast('Atualizando...', 'Alterando status da obra', 'info');
-
-    // Enviar requisição AJAX
     $.ajax({
         url: '<?php echo site_url("obras/ajax_atualizar_status"); ?>',
         method: 'POST',
@@ -447,7 +396,6 @@ function atualizarStatusRapido(obraId, novoStatus) {
         success: function(response) {
             if (response.success) {
                 mostrarToast('Sucesso!', 'Status atualizado com sucesso', 'success');
-                // Recarregar cards após 1 segundo
                 setTimeout(function() {
                     if (typeof atualizarCardsManual === 'function') {
                         atualizarCardsManual();
@@ -466,11 +414,8 @@ function atualizarStatusRapido(obraId, novoStatus) {
     });
 }
 
-// Função para mostrar toast de notificação
-// Recalcular progressos de todas as obras visíveis
 function atualizarTodosProgressos() {
     mostrarToast('Recalculando...', 'Atualizando progresso de todas as obras', 'info');
-
     $.ajax({
         url: '<?php echo site_url("obras/api_atualizarProgressoGeral"); ?>',
         method: 'POST',
@@ -481,9 +426,7 @@ function atualizarTodosProgressos() {
         success: function(response) {
             if (response.success) {
                 mostrarToast('Sucesso!', 'Progressos atualizados. Recarregando...', 'success');
-                setTimeout(function() {
-                    location.reload();
-                }, 1500);
+                setTimeout(function() { location.reload(); }, 1500);
             } else {
                 mostrarToast('Erro!', response.message || 'Erro ao recalcular progressos', 'error');
             }
@@ -496,49 +439,30 @@ function atualizarTodosProgressos() {
 }
 
 function mostrarToast(titulo, mensagem, tipo) {
-    // Remover toasts anteriores
     const toastsAnteriores = document.querySelectorAll('.obra-toast');
-    toastsAnteriores.forEach(function(t) {
-        t.remove();
-    });
+    toastsAnteriores.forEach(function(t) { t.remove(); });
 
-    // Criar novo toast
     const toast = document.createElement('div');
     toast.className = 'obra-toast ' + tipo;
 
-    let iconClass = 'bx bx-info-circle';
-    if (tipo === 'success') iconClass = 'bx bx-check';
-    if (tipo === 'error') iconClass = 'bx bx-x';
-    // SVG icon replacements
     let svgIcon = '';
     if (tipo === 'success') svgIcon = '<?= svg_icon("check-circle", 20, 20, "", "color:#27ae60;") ?>';
     else if (tipo === 'error') svgIcon = '<?= svg_icon("x", 20, 20, "", "color:#e74c3c;") ?>';
     else svgIcon = '<?= svg_icon("info-circle", 20, 20, "", "color:#667eea;") ?>';
 
-    toast.innerHTML = `
-        <div class="obra-toast-icon">
-            ${svgIcon}
-        </div>
-        <div class="obra-toast-content">
-            <h4 class="obra-toast-title">${titulo}</h4>
-            <p class="obra-toast-message">${mensagem}</p>
-        </div>
-    `;
+    toast.innerHTML = '<div class="obra-toast-icon">' + svgIcon + '</div>' +
+        '<div class="obra-toast-content">' +
+        '<h4 class="obra-toast-title">' + titulo + '</h4>' +
+        '<p class="obra-toast-message">' + mensagem + '</p>' +
+        '</div>';
 
     document.body.appendChild(toast);
+    setTimeout(function() { toast.classList.add('show'); }, 10);
 
-    // Animar entrada
-    setTimeout(function() {
-        toast.classList.add('show');
-    }, 10);
-
-    // Remover após 3 segundos (se não for tipo info)
     if (tipo !== 'info') {
         setTimeout(function() {
             toast.classList.remove('show');
-            setTimeout(function() {
-                toast.remove();
-            }, 300);
+            setTimeout(function() { toast.remove(); }, 300);
         }, 3000);
     }
 }

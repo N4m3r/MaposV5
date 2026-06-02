@@ -1,73 +1,76 @@
-﻿<?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
+<?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
 
-<!-- Nova Visualização de Obra - Design Moderno -->
 <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/obras-modern-theme.css">
 
+<?php
+// Construir mapas de configuração para lookup
+$statusObraMap = [];
+foreach ($status_obra as $s) {
+    $key = strtolower(preg_replace('/[^a-z]/', '', $s->nome));
+    $statusObraMap[$key] = $s;
+}
+$tiposObraMap = [];
+foreach ($tipos_obra as $t) {
+    $tiposObraMap[$t->nome] = $t;
+}
+
+// Definir classe e label do status baseado na configuração
+$status_atual_norm = strtolower(preg_replace('/[^a-z]/', '', $obra->status ?? ''));
+if (isset($statusObraMap[$status_atual_norm])) {
+    $status_config = $statusObraMap[$status_atual_norm];
+    $status_label = $status_config->nome;
+    $status_cor = $status_config->cor ?? '#667eea';
+} else {
+    switch ($obra->status) {
+        case 'EmExecucao':
+        case 'Em Andamento':
+        case 'em-andamento':
+            $status_label = 'Em Andamento';
+            $status_cor = '#4facfe';
+            break;
+        case 'Concluida':
+        case 'concluida':
+            $status_label = 'Concluída';
+            $status_cor = '#11998e';
+            break;
+        case 'Paralisada':
+        case 'paralisada':
+            $status_label = 'Paralisada';
+            $status_cor = '#f093fb';
+            break;
+        default:
+            $status_label = ucfirst($obra->status);
+            $status_cor = '#667eea';
+    }
+}
+$status_class = 'status-dinamico';
+
+// Calcular dias restantes
+$dias_restantes = null;
+$prazo_class = '';
+if ($obra->data_fim_prevista) {
+    $hoje = new DateTime();
+    $previsto = new DateTime($obra->data_fim_prevista);
+    $dias_restantes = $hoje->diff($previsto, false)->format('%r%a');
+    if ($obra->status == 'Concluida' || $obra->status == 'concluida') {
+        $prazo_class = 'concluido';
+    } elseif ($dias_restantes < 0) {
+        $prazo_class = 'atrasado';
+    }
+}
+
+$progresso = $obra->percentual_concluido ?? 0;
+?>
+
+<style>
+.obra-header.status-dinamico {
+    background: linear-gradient(135deg, <?php echo $status_cor; ?> 0%, <?php echo $status_cor; ?> 100%) !important;
+}
+</style>
+
 <div class="obra-container">
-    <?php
-    // Construir mapas de configuração para lookup
-    $statusObraMap = [];
-    foreach ($status_obra as $s) {
-        $key = strtolower(preg_replace('/[^a-z]/', '', $s->nome));
-        $statusObraMap[$key] = $s;
-    }
-    $tiposObraMap = [];
-    foreach ($tipos_obra as $t) {
-        $tiposObraMap[$t->nome] = $t;
-    }
-
-    // Definir classe e label do status baseado na configuração
-    $status_atual_norm = strtolower(preg_replace('/[^a-z]/', '', $obra->status ?? ''));
-    if (isset($statusObraMap[$status_atual_norm])) {
-        $status_config = $statusObraMap[$status_atual_norm];
-        $status_label = $status_config->nome;
-        $status_cor = $status_config->cor ?? '#667eea';
-    } else {
-        // Fallback hardcoded para compatibilidade
-        switch ($obra->status) {
-            case 'EmExecucao':
-            case 'Em Andamento':
-            case 'em-andamento':
-                $status_label = 'Em Andamento';
-                $status_cor = '#4facfe';
-                break;
-            case 'Concluida':
-            case 'concluida':
-                $status_label = 'Concluída';
-                $status_cor = '#11998e';
-                break;
-            case 'Paralisada':
-            case 'paralisada':
-                $status_label = 'Paralisada';
-                $status_cor = '#f093fb';
-                break;
-            default:
-                $status_label = ucfirst($obra->status);
-                $status_cor = '#667eea';
-        }
-    }
-    $status_class = 'status-dinamico';
-
-    // Calcular dias restantes
-    $dias_restantes = null;
-    $prazo_class = '';
-    if ($obra->data_fim_prevista) {
-        $hoje = new DateTime();
-        $previsto = new DateTime($obra->data_fim_prevista);
-        $dias_restantes = $hoje->diff($previsto, false)->format('%r%a');
-
-        if ($obra->status == 'Concluida' || $obra->status == 'concluida') {
-            $prazo_class = 'concluido';
-        } elseif ($dias_restantes < 0) {
-            $prazo_class = 'atrasado';
-        }
-    }
-
-    $progresso = $obra->percentual_concluido ?? 0;
-    ?>
-
     <!-- Header da Obra -->
-    <div class="obra-header <?php echo $status_class; ?>" style="background: linear-gradient(135deg, <?php echo $status_cor; ?> 0%, <?php echo $status_cor; ?> 100%);">
+    <div class="obra-header <?php echo $status_class; ?>">
         <div class="obra-header-row">
             <div class="obra-header-info">
                 <div class="obra-breadcrumb">
@@ -89,9 +92,9 @@
                 <span class="status-badge"><?php echo $status_label; ?></span>
 
                 <div class="obra-progress-section">
-                    <div class="progress-header">
-                        <span class="progress-title">Progresso Total</span>
-                        <span class="progress-percentage"><?php echo $progresso; ?>%</span>
+                    <div class="progresso-header">
+                        <span class="progresso-label">Progresso Total</span>
+                        <span class="progresso-valor"><?php echo $progresso; ?>%</span>
                     </div>
                     <div class="progress-bar-container">
                         <div class="progress-bar-fill" style="width: <?php echo $progresso; ?>%"></div>
@@ -103,22 +106,22 @@
 
     <!-- Ações Rápidas -->
     <div class="acoes-bar">
-        <a href="<?php echo site_url('obras/relatorioGeral/' . $obra->id); ?>" class="acao-btn acao-relatorio">
+        <a href="<?php echo site_url('obras/relatorioGeral/' . $obra->id); ?>" class="acao-btn view">
             <?= svg_icon('file-text', 16, 16) ?> Relatório Geral
         </a>
-        <a href="<?php echo site_url('obras/etapas/' . $obra->id); ?>" class="acao-btn acao-etapas">
+        <a href="<?php echo site_url('obras/etapas/' . $obra->id); ?>" class="acao-btn edit">
             <?= svg_icon('list-check', 16, 16) ?> Gerenciar Etapas
         </a>
-        <a href="<?php echo site_url('obras/equipe/' . $obra->id); ?>" class="acao-btn acao-equipe">
+        <a href="<?php echo site_url('obras/equipe/' . $obra->id); ?>" class="acao-btn edit">
             <?= svg_icon('users', 16, 16) ?> Equipe
         </a>
-        <a href="<?php echo site_url('obras/atividades/' . $obra->id); ?>" class="acao-btn acao-atividades">
+        <a href="<?php echo site_url('obras/atividades/' . $obra->id); ?>" class="acao-btn view">
             <?= svg_icon('check', 16, 16) ?> Atividades
         </a>
-        <a href="<?php echo site_url('obras/editar/' . $obra->id); ?>" class="acao-btn acao-editar">
+        <a href="<?php echo site_url('obras/editar/' . $obra->id); ?>" class="acao-btn edit">
             <?= svg_icon('edit', 16, 16) ?> Editar
         </a>
-        <a href="<?php echo site_url('obras'); ?>" class="acao-btn acao-voltar">
+        <a href="<?php echo site_url('obras'); ?>" class="acao-btn back">
             <?= svg_icon('chevron-left', 16, 16) ?> Voltar
         </a>
     </div>
@@ -168,7 +171,7 @@
                             <div class="prazo-value">
                                 <?php
                                 if ($obra->status == 'Concluida' || $obra->status == 'concluida') {
-                                    echo '<?= svg_icon('check', 16, 16) ?> Finalizada';
+                                    echo svg_icon('check', 16, 16) . ' Finalizada';
                                 } else {
                                     echo abs($dias_restantes) . ' dias';
                                 }
@@ -191,9 +194,7 @@
                         <div class="info-label">Tipo</div>
                         <div class="info-value">
                             <?= svg_icon('cog', 16, 16) ?>
-                            <?php
-                            echo htmlspecialchars($tiposObraMap[$obra->tipo_obra]->nome ?? ($obra->tipo_obra ?: 'Não definido'));
-                            ?>
+                            <?php echo htmlspecialchars($tiposObraMap[$obra->tipo_obra]->nome ?? ($obra->tipo_obra ?: 'Não definido')); ?>
                         </div>
                     </div>
                     <div class="info-item full-width">
@@ -222,7 +223,7 @@
                     <?php if (!empty($obra->observacoes)): ?>
                     <div class="info-item full-width">
                         <div class="info-label">Observações</div>
-                        <div class="info-value" style="white-space: pre-wrap;">
+                        <div class="info-value info-value-prewrap">
                             <?php echo nl2br(htmlspecialchars($obra->observacoes)); ?>
                         </div>
                     </div>
@@ -245,7 +246,6 @@
                 <?php if (!empty($etapas)): ?>
                 <div class="etapas-container">
                     <?php
-                    // Buscar atividades por etapa
                     $atividades_por_etapa = [];
                     if (!empty($atividades_recentes)) {
                         foreach ($atividades_recentes as $atividade) {
@@ -303,7 +303,7 @@
                                             } elseif ($etapa->data_inicio_prevista) {
                                                 echo 'Início: ' . date('d/m/Y', strtotime($etapa->data_inicio_prevista));
                                             } else {
-                                                echo '<span style="color: #999;">' . svg_icon('error-circle', 14, 14, '', 'color:#f39c12;vertical-align:middle;') . ' Prazo não definido</span>';
+                                                echo '<span class="etapa-prazo-undefined">' . svg_icon('error-circle', 14, 14) . ' Prazo não definido</span>';
                                             }
                                             ?>
                                         </span>
@@ -389,7 +389,7 @@
                     <?php endforeach; ?>
                 </div>
                 <?php else: ?>
-                <div class="empty-state">
+                <div class="empty-state-moderno">
                     <?= svg_icon('list-check', 22, 22) ?>
                     <h4>Nenhuma etapa cadastrada</h4>
                     <p>Clique em "Gerenciar" para adicionar etapas à obra.</p>
@@ -424,8 +424,8 @@
                     </div>
                     <?php endforeach; ?>
                     <?php if (count($equipe) > 8): ?>
-                    <div class="equipe-item" style="opacity: 0.6;">
-                        <div class="equipe-avatar" style="background: #95a5a6;">
+                    <div class="equipe-item equipe-item-overflow">
+                        <div class="equipe-avatar equipe-avatar-gray">
                             <?= svg_icon('plus', 16, 16) ?>
                         </div>
                         <div class="equipe-name">+<?php echo count($equipe) - 8; ?></div>
@@ -434,8 +434,8 @@
                     <?php endif; ?>
                 </div>
                 <?php else: ?>
-                <div class="empty-state">
-                    <?= svg_icon('users', 48, 48, 'empty-icon', 'display:block;margin:0 auto 16px;opacity:0.4;') ?>
+                <div class="empty-state-moderno">
+                    <?= svg_icon('users', 48, 48, '', 'opacity:0.4;display:block;margin:0 auto 16px;') ?>
                     <h4>Sem equipe alocada</h4>
                     <p>Adicione técnicos à equipe da obra.</p>
                 </div>
@@ -476,8 +476,8 @@
                     <?php endforeach; ?>
                 </div>
                 <?php else: ?>
-                <div class="empty-state">
-                    <?= svg_icon('check', 48, 48, '', 'opacity:0.4;display:block;margin-bottom:16px;color:#11998e;') ?>
+                <div class="empty-state-moderno">
+                    <?= svg_icon('check', 48, 48, '', 'opacity:0.4;display:block;margin:0 auto 16px;color:#11998e;') ?>
                     <h4>Sem atividades recentes</h4>
                     <p>As atividades aparecerão aqui.</p>
                 </div>
@@ -497,28 +497,28 @@
                     <div class="info-item">
                         <div class="info-label">Total de Atividades</div>
                         <div class="info-value">
-                            <?= svg_icon('list-check', 16, 16, '', 'color: #667eea;') ?>
+                            <span class="info-icon-blue"><?= svg_icon('list-check', 16, 16) ?></span>
                             <?php echo $estatisticas_atividades['total_atividades'] ?? 0; ?>
                         </div>
                     </div>
                     <div class="info-item">
                         <div class="info-label">Concluídas</div>
                         <div class="info-value">
-                            <?= svg_icon('check-circle', 16, 16, '', 'color: #11998e;') ?>
+                            <span class="info-icon-green"><?= svg_icon('check-circle', 16, 16) ?></span>
                             <?php echo $estatisticas_atividades['concluidas'] ?? 0; ?>
                         </div>
                     </div>
                     <div class="info-item">
                         <div class="info-label">Em Andamento</div>
                         <div class="info-value">
-                            <?= svg_icon('play', 16, 16, '', 'color: #f39c12;') ?>
+                            <span class="info-icon-orange"><?= svg_icon('play', 16, 16) ?></span>
                             <?php echo $estatisticas_atividades['em_andamento'] ?? 0; ?>
                         </div>
                     </div>
                     <div class="info-item">
                         <div class="info-label">Horas Trabalhadas</div>
                         <div class="info-value">
-                            <?= svg_icon('clock', 16, 16, '', 'color: #9b59b6;') ?>
+                            <span class="info-icon-purple"><?= svg_icon('clock', 16, 16) ?></span>
                             <?php echo round(($estatisticas_atividades['tempo_total_minutos'] ?? 0) / 60, 1); ?>h
                         </div>
                     </div>
@@ -529,156 +529,136 @@
     </div>
 </div>
 
+<!-- Wizard Modal -->
+<div id="wizardModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="wizardModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content obra-modal-container">
+            <div class="obra-modal-header">
+                <h3 id="wizardModalLabel"><?= svg_icon('magic-wand', 20, 20) ?> Nova Etapa + Atividades</h3>
+                <button type="button" class="obra-modal-close" data-bs-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <form id="wizardForm" action="<?php echo site_url('obras/salvarWizard/' . $obra->id); ?>" method="post">
+                <div class="obra-modal-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <h4><?= svg_icon('list-check', 18, 18) ?> Informações da Etapa</h4>
+                            <hr class="obra-modal-divider">
+
+                            <div class="row">
+                                <div class="col-2">
+                                    <label for="etapa_numero">Número <span class="required">*</span></label>
+                                    <input type="number" name="etapa_numero" id="etapa_numero" class="col-12" value="<?php echo (count($etapas ?? []) + 1); ?>" min="1" required>
+                                </div>
+                                <div class="col-10">
+                                    <label for="etapa_nome">Nome da Etapa <span class="required">*</span></label>
+                                    <input type="text" name="etapa_nome" id="etapa_nome" class="col-12" placeholder="Ex: Fundação, Estrutura, Acabamento..." required>
+                                </div>
+                            </div>
+
+                            <div class="row obra-modal-row">
+                                <div class="col-12">
+                                    <label for="etapa_descricao">Descrição</label>
+                                    <textarea name="etapa_descricao" id="etapa_descricao" class="col-12" rows="2" placeholder="Descreva o que será feito nesta etapa..."></textarea>
+                                </div>
+                            </div>
+
+                            <div class="row obra-modal-row">
+                                <div class="col-6">
+                                    <label for="etapa_data_inicio">Data de Início Prevista</label>
+                                    <input type="date" name="etapa_data_inicio" id="etapa_data_inicio" class="col-12">
+                                </div>
+                                <div class="col-6">
+                                    <label for="etapa_data_fim">Data de Término Prevista</label>
+                                    <input type="date" name="etapa_data_fim" id="etapa_data_fim" class="col-12">
+                                </div>
+                            </div>
+
+                            <h4 class="obra-modal-section-title"><?= svg_icon('check', 18, 18) ?> Atividades da Etapa</h4>
+                            <hr class="obra-modal-divider">
+
+                            <div id="atividadesContainer">
+                            </div>
+
+                            <button type="button" class="obra-wizard-add-btn" onclick="adicionarAtividade()">
+                                <?= svg_icon('plus', 16, 16) ?> Adicionar Atividade
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="obra-modal-footer">
+                    <button type="button" class="form-btn form-btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="form-btn form-btn-primary"><?= svg_icon('save', 16, 16) ?> Salvar Etapa e Atividades</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
-// Toggle de etapas
 function toggleEtapa(etapaId) {
     const atividadesDiv = document.getElementById('atividades-' + etapaId);
     const toggleBtn = document.getElementById('toggle-' + etapaId);
-
     if (atividadesDiv) {
         atividadesDiv.classList.toggle('expanded');
         toggleBtn.classList.toggle('expanded');
     }
 }
 
-// Abrir wizard (reutilizando função existente se disponível)
 function abrirWizard() {
     if (typeof window.abrirWizardModal === 'function') {
         window.abrirWizardModal();
     } else {
-        // Fallback: redirecionar para página de etapas
         window.location.href = '<?php echo site_url('obras/etapas/' . $obra->id); ?>';
     }
 }
 
-// Animação de entrada
 $(document).ready(function() {
     $('.card').each(function(index) {
         $(this).hide().delay(index * 100).fadeIn(400);
     });
 });
-</script>
 
-<!-- Wizard Modal -->
-<div id="wizardModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="wizardModalLabel" aria-hidden="true" style="width: 800px; max-width: 90%; left: 50%; margin-left: -400px;">
-    <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 4px 4px 0 0;">
-        <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true" style="color: white; opacity: 0.8;">&times;</button>
-        <h3 id="wizardModalLabel"><?= svg_icon('magic-wand', 20, 20) ?> Nova Etapa + Atividades</h3>
-    </div>
-    <form id="wizardForm" action="<?php echo site_url('obras/salvarWizard/' . $obra->id); ?>" method="post">
-        <div class="modal-body" style="max-height: 500px; overflow-y: auto;">
-            <div class="row">
-                <div class="col-12">
-                    <h4><?= svg_icon('list-check', 18, 18) ?> Informações da Etapa</h4>
-                    <hr style="margin: 10px 0;">
-
-                    <div class="row">
-                        <div class="col-2">
-                            <label for="etapa_numero">Número <span class="required">*</span></label>
-                            <input type="number" name="etapa_numero" id="etapa_numero" class="col-12" value="<?php echo (count($etapas ?? []) + 1); ?>" min="1" required>
-                        </div>
-                        <div class="col-10">
-                            <label for="etapa_nome">Nome da Etapa <span class="required">*</span></label>
-                            <input type="text" name="etapa_nome" id="etapa_nome" class="col-12" placeholder="Ex: Fundação, Estrutura, Acabamento..." required>
-                        </div>
-                    </div>
-
-                    <div class="row" style="margin-top: 10px;">
-                        <div class="col-12">
-                            <label for="etapa_descricao">Descrição</label>
-                            <textarea name="etapa_descricao" id="etapa_descricao" class="col-12" rows="2" placeholder="Descreva o que será feito nesta etapa..."></textarea>
-                        </div>
-                    </div>
-
-                    <div class="row" style="margin-top: 10px;">
-                        <div class="col-6">
-                            <label for="etapa_data_inicio">Data de Início Prevista</label>
-                            <input type="date" name="etapa_data_inicio" id="etapa_data_inicio" class="col-12">
-                        </div>
-                        <div class="col-6">
-                            <label for="etapa_data_fim">Data de Término Prevista</label>
-                            <input type="date" name="etapa_data_fim" id="etapa_data_fim" class="col-12">
-                        </div>
-                    </div>
-
-                    <h4 style="margin-top: 25px;"><?= svg_icon('check', 18, 18) ?> Atividades da Etapa</h4>
-                    <hr style="margin: 10px 0;">
-
-                    <div id="atividadesContainer">
-                        <!-- Atividades serão adicionadas aqui -->
-                    </div>
-
-                    <button type="button" class="btn btn-block" onclick="adicionarAtividade()" style="margin-top: 10px; border: 2px dashed #ddd; background: #f9f9f9; color: #666;">
-                        <?= svg_icon('plus', 16, 16) ?> Adicionar Atividade
-                    </button>
-                </div>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn" data-bs-dismiss="modal">Cancelar</button>
-            <button type="submit" class="btn btn-primary"><?= svg_icon('save', 16, 16) ?> Salvar Etapa e Atividades</button>
-        </div>
-    </form>
-</div>
-
-<script>
-// Variáveis do wizard
 let atividadeCount = 0;
 
-// Abrir modal do wizard
-function abrirWizard() {
+window.abrirWizardModal = function() {
     $('#wizardModal').modal('show');
-    // Limpar e adicionar primeira atividade
     document.getElementById('atividadesContainer').innerHTML = '';
     adicionarAtividade();
-}
+};
 
-// Abrir modal do wizard (compatibilidade)
-window.abrirWizardModal = abrirWizard;
-
-// Adicionar campo de atividade
 function adicionarAtividade() {
     const container = document.getElementById('atividadesContainer');
     const index = atividadeCount++;
-
-    const html = `
-        <div class="row atividade-item" style="margin-bottom: 10px;" id="atividade-${index}">
-            <div class="col-8">
-                <input type="text" name="atividades[${index}][titulo]" class="col-12" placeholder="Título da atividade" required>
-            </div>
-            <div class="col-3">
-                <select name="atividades[${index}][tipo]" class="col-12">
-                    <option value="trabalho">Trabalho</option>
-                    <option value="visita">Visita</option>
-                    <option value="manutencao">Manutenção</option>
-                    <option value="impedimento">Impedimento</option>
-                    <option value="outro">Outro</option>
-                </select>
-            </div>
-            <div class="col-1">
-                <button type="button" class="btn btn-danger btn-block" onclick="removerAtividade(${index})" title="Remover">
-                    <?= svg_icon('trash', 16, 16) ?>
-                </button>
-            </div>
-        </div>
-    `;
-
+    const html = '<div class="row obra-wizard-atividade" id="atividade-' + index + '">' +
+        '<div class="col-8">' +
+        '<input type="text" name="atividades[' + index + '][titulo]" class="col-12" placeholder="Título da atividade" required>' +
+        '</div>' +
+        '<div class="col-3">' +
+        '<select name="atividades[' + index + '][tipo]" class="col-12">' +
+        '<option value="trabalho">Trabalho</option>' +
+        '<option value="visita">Visita</option>' +
+        '<option value="manutencao">Manutenção</option>' +
+        '<option value="impedimento">Impedimento</option>' +
+        '<option value="outro">Outro</option>' +
+        '</select>' +
+        '</div>' +
+        '<div class="col-1">' +
+        '<button type="button" class="obra-wizard-remove-btn" onclick="removerAtividade(' + index + ')" title="Remover">' +
+        '<?= svg_icon("trash", 16, 16) ?>' +
+        '</button>' +
+        '</div>' +
+        '</div>';
     container.insertAdjacentHTML('beforeend', html);
 }
 
-// Remover campo de atividade
 function removerAtividade(index) {
     const item = document.getElementById('atividade-' + index);
-    if (item) {
-        item.remove();
-    }
+    if (item) item.remove();
 }
 
-// Validar formulário antes de enviar
 document.getElementById('wizardForm').addEventListener('submit', function(e) {
     const numero = document.getElementById('etapa_numero').value;
     const nome = document.getElementById('etapa_nome').value;
-
     if (!numero || !nome) {
         e.preventDefault();
         alert('Preencha o número e o nome da etapa.');
