@@ -421,7 +421,7 @@
                                 <div class="col-12" id="divAnotacoes" style="margin-left: 0">
 
                                     <a href="#modal-anotacao" id="btn-anotacao" role="button" data-bs-toggle="modal"
-                                        class="button btn btn-success" style="max-width: 160px">
+                                        class="button btn btn-success">
                                         <span class="button__icon"><i class='bx bx-plus-circle'></i></span><span
                                             class="button__text2">Adicionar anotação</span></a>
                                     <hr>

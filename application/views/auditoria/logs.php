@@ -23,7 +23,7 @@
     <a class="os-tab-btn <?php echo ($tab ?? 'logs') === 'logs' ? 'active' : ''; ?>" href="<?php echo site_url('auditoria?tab=logs'); ?>"><i class="bx bx-list-ul"></i> Logs (Legado)</a>
     <a class="os-tab-btn <?php echo ($tab ?? '') === 'audit' ? 'active' : ''; ?>" href="<?php echo site_url('auditoria?tab=audit'); ?>"><i class="bx bx-shield-alt"></i> Auditoria Estruturada</a>
 </div>
-  <a href="#modal-excluir" role="button" data-bs-toggle="modal" class="button btn btn-danger tip-top" style="max-width: 250px" title="Excluir Logs">
+  <a href="#modal-excluir" role="button" data-bs-toggle="modal" class="button btn btn-danger tip-top" title="Excluir Logs">
   <span class="button__icon"><i class='bx bx-trash'></i></span> <span class="button__text2">Remover Logs - 30 dias ou mais</span></a>
 
 <div class="widget-box">

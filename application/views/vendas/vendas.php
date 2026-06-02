@@ -15,7 +15,7 @@
         <form method="get" action="<?php echo base_url(); ?>index.php/vendas/gerenciar">
             <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'aVenda')) { ?>
                 <div class="col-3">
-                    <a href="<?php echo base_url(); ?>index.php/vendas/adicionar" class="button btn btn-sm btn-success" style="max-width: 160px">
+                    <a href="<?php echo base_url(); ?>index.php/vendas/adicionar" class="button btn btn-sm btn-success">
                         <span class="button__icon"><i class='bx bx-plus-circle'></i></span>
                         <span class="button__text2">Nova Venda</span>
                     </a>

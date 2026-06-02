@@ -63,7 +63,7 @@
                 </div>
                 <div class="widget-content ">
                     <div class="alert alert-danger">Nenhum dado foi cadastrado até o momento. Essas informações estarão disponíveis na tela de impressão de OS.</div>
-                    <a href="#modalCadastrar" data-bs-toggle="modal" role="button" class="button btn btn-success" style="max-width: 150px"> <span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2">Cadastrar Dados</span></a>
+                    <a href="#modalCadastrar" data-bs-toggle="modal" role="button" class="button btn btn-success"> <span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2">Cadastrar Dados</span></a>
                 </div>
             </div>
         </div>

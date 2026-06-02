@@ -34,7 +34,7 @@ $periodo = $this->input->get('periodo');
     </div>
     <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'aLancamento')) { ?>
         <div class="" style="display:flex">
-            <a href="#modalReceita" data-bs-toggle="modal" role="button" class="button btn btn-sm btn-success" style="width: 230px">
+            <a href="#modalReceita" data-bs-toggle="modal" role="button" class="button btn btn-sm btn-success">
                 <span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2" title="Cadastrar nova receita ou despesa"> Receita/Despesa</span></a>
         </div>
     <?php } ?>

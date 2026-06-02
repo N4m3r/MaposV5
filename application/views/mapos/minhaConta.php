@@ -164,7 +164,7 @@
                             <label for="">Confirmar Senha</label>
                             <input type="password" name="confirmarSenha" class="col-12" />
                         </div>
-                            <button class="button btn btn-primary" style="max-width: 140px;text-align: center">
+                            <button class="button btn btn-primary" style="text-align: center">
                               <span class="button__icon"><i class='bx bx-lock-alt'></i></span><span class="button__text2">Alterar Senha</span></button>
                     </form>
                 </div>

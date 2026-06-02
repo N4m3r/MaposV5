@@ -11,7 +11,7 @@
         <h5>Permissões</h5>
     </div>
 
-  <a href="<?php echo base_url(); ?>index.php/permissoes/adicionar" class="button btn btn-success"style="max-width: 150px">
+  <a href="<?php echo base_url(); ?>index.php/permissoes/adicionar" class="button btn btn-success">
   <span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2">Adicionar</span></a>
 
 <div class="widget-box">

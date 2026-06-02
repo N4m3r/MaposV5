@@ -12,7 +12,7 @@
         <form method="get" action="<?= current_url(); ?>">
             <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'aArquivo')) : ?>
                 <div class="col-3">
-                    <a href="<?= base_url(); ?>index.php/arquivos/adicionar" class="button btn btn-sm btn-success" style="max-width:150px">
+                    <a href="<?= base_url(); ?>index.php/arquivos/adicionar" class="button btn btn-sm btn-success">
                         <span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2">Arquivo</span></a>
                 </div>
             <?php endif ?>

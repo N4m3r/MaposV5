@@ -110,7 +110,7 @@
                     <div class="form-actions">
                         <div class="col-12">
                             <div class="col-6 offset-md-3" style="display: flex;justify-content: center">
-                                <button type="submit" class="button btn btn-sm btn-success" style="max-width: 160px"><span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2">Adicionar</span></button>
+                                <button type="submit" class="button btn btn-sm btn-success"><span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2">Adicionar</span></button>
                                 <a href="<?php echo base_url() ?>index.php/produtos" id="" class="button btn btn-sm btn-warning"><span class="button__icon"><i class="bx bx-undo"></i></span><span class="button__text2">Voltar</span></a>
                             </div>
                         </div>

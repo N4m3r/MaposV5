@@ -1822,6 +1822,45 @@ body[data-theme="darkorange"] .quick-card, body[data-theme="darkorange"] .widget
 .btn-nwe6 { background: #475569 !important; }
 
 /* ========================================================================= */
+/* BOTÃ•ES DE AÃ‡ÃƒO PADRONIZADOS                                               */
+/* ========================================================================= */
+
+/* BotÃµes .button com .btn-success / .btn-warning / .btn-danger / .btn-primary */
+.button.btn-success,
+.button.btn-warning,
+.button.btn-danger,
+.button.btn-primary,
+.button.btn-inverse,
+.button.btn-default {
+    height: 32px;
+    min-width: auto;
+    padding: 0;
+    font-size: 0.875rem;
+    border-radius: 6px;
+    white-space: nowrap;
+    align-items: center;
+}
+
+.button .button__text2 {
+    padding: 0 10px;
+    white-space: nowrap;
+    font-size: 0.875rem;
+    line-height: 1;
+}
+
+.button .button__icon {
+    font-size: 1.15em;
+    padding: 0 6px 0 8px;
+}
+
+/* Dark theme: manter texto branco nos botÃµes */
+body[data-theme="puredark"] .button .button__text2,
+body[data-theme="darkviolet"] .button .button__text2,
+body[data-theme="darkorange"] .button .button__text2 {
+    color: #fff !important;
+}
+
+/* ========================================================================= */
 /* SISTEMA DE ÃCONES SVG INLINE                                              */
 /* ========================================================================= */
 

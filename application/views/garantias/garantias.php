@@ -11,7 +11,7 @@
         <h5>Termo de Garantia</h5>
     </div>
     <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'aGarantia')) { ?>
-    <a href="<?php echo base_url(); ?>index.php/garantias/adicionar" class="button btn btn-sm btn-success" style="max-width: 160px">
+    <a href="<?php echo base_url(); ?>index.php/garantias/adicionar" class="button btn btn-sm btn-success">
       <span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2">Termo Garantia</span></a>
 <?php } ?>
 

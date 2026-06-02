@@ -22,7 +22,7 @@
         <form method="get" action="<?php echo base_url(); ?>index.php/os/gerenciar">
             <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'aOs')) { ?>
                 <div class="col-3">
-                    <a href="<?php echo base_url(); ?>index.php/os/adicionar" class="button btn btn-sm btn-success" style="max-width: 160px">
+                    <a href="<?php echo base_url(); ?>index.php/os/adicionar" class="button btn btn-sm btn-success">
                         <span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2">Ordem de Serviço</span></a>
                 </div>
             <?php

@@ -113,7 +113,7 @@
                                         <div class="col-6 offset-md-3" style="display:flex">
                                             <button class="button btn btn-success" id="btnContinuar">
                                               <span class="button__icon"><i class='bx bx-chevrons-right'></i></span><span class="button__text2">Continuar</span></button>
-                                            <a href="<?php echo base_url() ?>index.php/os" class="button btn btn-sm btn-warning" style="max-width: 160px">
+                                            <a href="<?php echo base_url() ?>index.php/os" class="button btn btn-sm btn-warning">
                                               <span class="button__icon"><i class="bx bx-undo"></i></span><span class="button__text2">Voltar</span></a>
                                         </div>
                                     </div>

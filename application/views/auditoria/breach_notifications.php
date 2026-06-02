@@ -22,7 +22,7 @@
     <a class="os-tab-btn active" href="<?php echo site_url('auditoria/vazamentos'); ?>"><i class="bx bx-error-circle"></i> Vazamentos</a>
 </div>
 
-<a href="#modal-novo-vazamento" role="button" data-bs-toggle="modal" class="button btn btn-warning tip-top" style="max-width: 300px" title="Registrar Vazamento">
+<a href="#modal-novo-vazamento" role="button" data-bs-toggle="modal" class="button btn btn-warning tip-top" title="Registrar Vazamento">
     <span class="button__icon"><i class='fas fa-exclamation-triangle'></i></span>
     <span class="button__text2">Registrar Novo Vazamento</span>
 </a>

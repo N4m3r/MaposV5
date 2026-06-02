@@ -47,7 +47,7 @@
 </form>
 
 <!-- Clean button -->
-<a href="#modal-clean-audit" role="button" data-bs-toggle="modal" class="button btn btn-danger tip-top" style="max-width: 280px" title="Limpar Auditoria">
+<a href="#modal-clean-audit" role="button" data-bs-toggle="modal" class="button btn btn-danger tip-top" title="Limpar Auditoria">
     <span class="button__icon"><i class='bx bx-trash'></i></span> <span class="button__text2">Remover Registros Antigos (90+ dias)</span>
 </a>
 
