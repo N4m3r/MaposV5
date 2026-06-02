@@ -37,7 +37,6 @@
 
 /* ===== Relatório Card ===== */
 .rel-card {
-    background: var(--rel-card-bg);
     border: 1px solid var(--rel-border);
     border-radius: var(--rel-radius);
     box-shadow: var(--rel-shadow);
