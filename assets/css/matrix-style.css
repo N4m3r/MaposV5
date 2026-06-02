@@ -278,6 +278,10 @@ h3 {
   background : var(--bodycolor);
   border-top : 1px solid rgba(0, 0, 0, 0.1);
 }
+#footer .pecolor.btn {
+  display: inline-block;
+  text-align: center;
+}
 
 hr {
   border-top-color: #dadada;
