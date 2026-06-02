@@ -1,6 +1,5 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 $obras = isset($obras) ? $obras : (isset($results) ? $results : []);
-
 if (empty($obras)) {
     log_message('debug', 'obras_list.php: Nenhuma obra encontrada para exibição');
 } else {
@@ -8,462 +7,228 @@ if (empty($obras)) {
 }
 ?>
 
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/obras-modern-theme.css">
-
 <style>
-<?php foreach ($status_obra as $s): ?>
-.obra-card-header.<?php echo strtolower(preg_replace('/[^a-z]/', '', $s->nome)); ?> {
-    background: linear-gradient(135deg, <?php echo $s->cor ?? '#667eea'; ?> 0%, <?php echo $s->cor ?? '#667eea'; ?> 100%) !important;
-}
-<?php endforeach; ?>
+.obras-stats { display: flex; gap: 12px; margin-bottom: 15px; flex-wrap: wrap; }
+.obras-stat-item { flex: 1; min-width: 130px; text-align: center; padding: 10px 8px; border-radius: 8px; background: rgba(var(--sidebar-accent-rgb, 4,103,252), 0.06); }
+.obras-stat-item .stat-val { font-size: 22px; font-weight: 700; color: var(--title, #333); }
+.obras-stat-item .stat-lbl { font-size: 11px; color: var(--cinza0, #9aa6b3); text-transform: uppercase; margin-top: 2px; }
+body[data-theme="puredark"] .obras-stat-item .stat-val,
+body[data-theme="darkviolet"] .obras-stat-item .stat-val,
+body[data-theme="darkorange"] .obras-stat-item .stat-val { color: #e2e8f0; }
+.obras-filters { display: flex; gap: 10px; align-items: center; margin-bottom: 15px; flex-wrap: wrap; }
+.obras-filters input, .obras-filters select { height: 32px; font-size: 13px; }
+.obra-status-dot-inline { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
 </style>
 
-<div class="obras-unified-container">
-    <div class="obras-main-header">
-        <div class="obras-header-content">
-            <div class="obras-header-title">
-                <h1><?= svg_icon('building', 28, 28) ?> Gerenciamento de Obras</h1>
-                <p>Acompanhe e gerencie todas as obras do sistema</p>
-            </div>
-            <div class="obras-header-actions">
-                <a href="<?php echo site_url('obras/adicionar'); ?>" class="obras-filter-btn obras-add-btn">
-                    <?= svg_icon('plus', 16, 16) ?> Nova Obra
-                </a>
-                <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cObras')): ?>
-                <a href="<?php echo site_url('obras/configuracoes'); ?>" class="obras-filter-btn obras-filter-btn-config">
-                    <?= svg_icon('cog', 16, 16) ?> Configurações
-                </a>
-                <?php endif; ?>
-                <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
-                <button type="button" class="obras-filter-btn obras-filter-btn-recalc" onclick="atualizarTodosProgressos()">
-                    <?= svg_icon('refresh', 16, 16) ?> Recalcular Progressos
-                </button>
-                <?php endif; ?>
-            </div>
+<div class="new122">
+    <div class="widget-title" style="margin: -20px 0 0">
+        <span class="icon">
+            <i class="bx bx-building"></i>
+        </span>
+        <h5>Obras</h5>
+        <div class="buttons">
+            <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cObras')): ?>
+            <a href="<?php echo site_url('obras/adicionar'); ?>" class="button btn btn-sm btn-success">
+                <span class="button__icon"><i class="bx bx-plus-circle"></i></span>
+                <span class="button__text2">Nova Obra</span>
+            </a>
+            <?php endif; ?>
+            <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cObras')): ?>
+            <a href="<?php echo site_url('obras/configuracoes'); ?>" class="button btn btn-sm btn-warning">
+                <span class="button__icon"><i class="bx bx-cog"></i></span>
+                <span class="button__text2">Configurações</span>
+            </a>
+            <?php endif; ?>
         </div>
     </div>
 
-    <div class="obras-stats-row">
-        <div class="obras-stat-card">
-            <div class="obras-stat-icon blue">
-                <?= svg_icon('building', 24, 24) ?>
+    <!-- Estatísticas rápidas -->
+    <div class="col-12" style="margin-left: 0; margin-top: 10px;">
+        <div class="obras-stats">
+            <div class="obras-stat-item">
+                <div class="stat-val"><?php echo isset($total_obras) ? $total_obras : count($obras); ?></div>
+                <div class="stat-lbl">Total</div>
             </div>
-            <div class="obras-stat-info">
-                <div class="obras-stat-value"><?php echo isset($total_obras) ? $total_obras : count($obras); ?></div>
-                <div class="obras-stat-label">Total de Obras</div>
+            <div class="obras-stat-item">
+                <div class="stat-val"><?php echo isset($obras_em_andamento) ? $obras_em_andamento : count(array_filter($obras ?? [], function($o) { return ($o->status ?? '') == 'em-andamento'; })); ?></div>
+                <div class="stat-lbl">Em Andamento</div>
             </div>
-        </div>
-
-        <div class="obras-stat-card">
-            <div class="obras-stat-icon green">
-                <?= svg_icon('play-circle', 24, 24) ?>
+            <div class="obras-stat-item">
+                <div class="stat-val"><?php echo isset($obras_contratadas) ? $obras_contratadas : count(array_filter($obras ?? [], function($o) { return ($o->status ?? '') == 'contratada'; })); ?></div>
+                <div class="stat-lbl">Contratadas</div>
             </div>
-            <div class="obras-stat-info">
-                <div class="obras-stat-value"><?php echo isset($obras_em_andamento) ? $obras_em_andamento : count(array_filter($obras ?? [], function($o) { return ($o->status ?? '') == 'em-andamento'; })); ?></div>
-                <div class="obras-stat-label">Em Andamento</div>
-            </div>
-        </div>
-
-        <div class="obras-stat-card">
-            <div class="obras-stat-icon cyan">
-                <?= svg_icon('calendar', 24, 24) ?>
-            </div>
-            <div class="obras-stat-info">
-                <div class="obras-stat-value"><?php echo isset($obras_contratadas) ? $obras_contratadas : count(array_filter($obras ?? [], function($o) { return ($o->status ?? '') == 'contratada'; })); ?></div>
-                <div class="obras-stat-label">Contratadas</div>
+            <div class="obras-stat-item">
+                <div class="stat-val"><?php echo isset($obras_concluidas) ? $obras_concluidas : count(array_filter($obras ?? [], function($o) { return ($o->status ?? '') == 'concluida'; })); ?></div>
+                <div class="stat-lbl">Concluídas</div>
             </div>
         </div>
 
-        <div class="obras-stat-card">
-            <div class="obras-stat-icon orange">
-                <?= svg_icon('check-circle', 24, 24) ?>
-            </div>
-            <div class="obras-stat-info">
-                <div class="obras-stat-value"><?php echo isset($obras_concluidas) ? $obras_concluidas : count(array_filter($obras ?? [], function($o) { return ($o->status ?? '') == 'concluida'; })); ?></div>
-                <div class="obras-stat-label">Concluídas</div>
-            </div>
-        </div>
-    </div>
-
-    <div class="obras-filter-bar">
-        <div class="obras-filter-group">
-            <label><?= svg_icon('search', 16, 16) ?> Buscar:</label>
-            <input type="text" id="searchObra" class="obras-filter-input" placeholder="Nome da obra..." onkeyup="filtrarObras()">
-        </div>
-
-        <div class="obras-filter-group">
-            <label><?= svg_icon('filter', 16, 16) ?> Status:</label>
-            <select id="filterStatus" class="obras-filter-select" onchange="filtrarObras()">
-                <option value="">Todos</option>
+        <!-- Filtros -->
+        <div class="obras-filters">
+            <input type="text" id="searchObra" placeholder="Buscar obra..." class="col-3" onkeyup="filtrarObras()">
+            <select id="filterStatus" class="col-2" onchange="filtrarObras()">
+                <option value="">Todos os Status</option>
                 <?php foreach ($status_obra as $s): ?>
                     <option value="<?php echo htmlspecialchars(strtolower(preg_replace('/[^a-z]/', '', $s->nome))); ?>"><?php echo htmlspecialchars($s->nome); ?></option>
                 <?php endforeach; ?>
             </select>
+            <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
+            <button type="button" class="button btn btn-sm btn-info" onclick="atualizarTodosProgressos()">
+                <span class="button__icon"><i class="bx bx-refresh"></i></span>
+                <span class="button__text2">Recalcular</span>
+            </button>
+            <?php endif; ?>
         </div>
-
-        <button class="obras-filter-btn secondary" onclick="limparFiltros()">
-            <?= svg_icon('refresh', 16, 16) ?> Limpar
-        </button>
     </div>
 
-    <?php if (!empty($obras)): ?>
-    <div class="obras-cards-grid" id="obrasGrid">
-        <?php foreach ($obras as $obra): ?>
-        <?php
-        if (!is_object($obra)) continue;
+    <div class="widget-box" style="margin-top: 8px">
+        <div class="widget-content nopadding tab-content">
+            <?php if (!empty($obras)): ?>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Obra</th>
+                            <th>Cliente</th>
+                            <th>Status</th>
+                            <th>Progresso</th>
+                            <th>Início</th>
+                            <th>Previsão</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="obrasTableBody">
+                        <?php
+                        static $statusMapList = null;
+                        if ($statusMapList === null) {
+                            $statusMapList = [];
+                            foreach ($status_obra as $s) {
+                                $key = strtolower(preg_replace('/[^a-z]/', '', $s->nome));
+                                $statusMapList[$key] = $s;
+                            }
+                        }
 
-        static $statusMapList = null;
-        if ($statusMapList === null) {
-            $statusMapList = [];
-            foreach ($status_obra as $s) {
-                $key = strtolower(preg_replace('/[^a-z]/', '', $s->nome));
-                $statusMapList[$key] = $s;
-            }
-        }
+                        foreach ($obras as $obra):
+                            if (!is_object($obra)) continue;
 
-        $status_class = '';
-        $status_label = '';
-        $status_normalized = '';
-        $status_cor = '';
+                            $status_lower = strtolower(trim($obra->status ?? ''));
+                            $status_norm_key = strtolower(preg_replace('/[^a-z]/', '', $obra->status ?? ''));
+                            $status_label = ucfirst($obra->status ?? '');
+                            $status_cor = '#667eea';
 
-        $status_lower = strtolower(trim($obra->status ?? ''));
-        $status_norm_key = strtolower(preg_replace('/[^a-z]/', '', $obra->status ?? ''));
-
-        if (isset($statusMapList[$status_norm_key])) {
-            $s = $statusMapList[$status_norm_key];
-            $status_label = $s->nome;
-            $status_class = $status_norm_key;
-            $status_normalized = $status_norm_key;
-            $status_cor = $s->cor ?? '';
-        } else {
-            switch ($status_lower) {
-                case 'em-andamento':
-                case 'em_execucao':
-                case 'em execucao':
-                case 'emexecucao':
-                case 'execucao':
-                    $status_class = 'andamento';
-                    $status_label = 'Em Andamento';
-                    $status_normalized = 'em-andamento';
-                    break;
-                case 'concluida':
-                case 'concluída':
-                case 'finalizada':
-                case 'entregue':
-                case 'concluido':
-                    $status_class = 'concluida';
-                    $status_label = 'Concluída';
-                    $status_normalized = 'concluida';
-                    break;
-                case 'paralisada':
-                case 'pausada':
-                case 'suspensa':
-                    $status_class = 'paralisada';
-                    $status_label = 'Paralisada';
-                    $status_normalized = 'paralisada';
-                    break;
-                case 'prospeccao':
-                case 'prospecção':
-                case 'prospectacao':
-                case 'novo':
-                case 'nova':
-                    $status_class = 'prospeccao';
-                    $status_label = 'Prospecção';
-                    $status_normalized = 'prospeccao';
-                    break;
-                case 'contratada':
-                case 'aprovada':
-                case 'iniciada':
-                    $status_class = 'contratada';
-                    $status_label = 'Contratada';
-                    $status_normalized = 'contratada';
-                    break;
-                case 'cancelada':
-                case 'cancelado':
-                case 'encerrada':
-                    $status_class = 'cancelada';
-                    $status_label = 'Cancelada';
-                    $status_normalized = 'cancelada';
-                    break;
-                default:
-                    $status_class = '';
-                    $status_label = ucfirst($obra->status);
-                    $status_normalized = $obra->status;
-            }
-        }
-        $progresso = $obra->percentual_concluido ?? 0;
-        ?>
-        <div class="obra-item-card" data-nome="<?php echo strtolower($obra->nome); ?>" data-status="<?php echo $status_normalized; ?>">
-            <div class="obra-card-header <?php echo $status_class; ?>">
-                <span class="obra-card-status-badge"><?php echo $status_label; ?></span>
-                <h3 class="obra-card-title"><?php echo htmlspecialchars($obra->nome); ?></h3>
-                <div class="obra-card-cliente">
-                    <?= svg_icon('user', 16, 16) ?> <?php echo htmlspecialchars($obra->cliente_nome ?? 'Sem cliente'); ?>
-                </div>
+                            if (isset($statusMapList[$status_norm_key])) {
+                                $s = $statusMapList[$status_norm_key];
+                                $status_label = $s->nome;
+                                $status_cor = $s->cor ?? '#667eea';
+                            } else {
+                                switch ($status_lower) {
+                                    case 'em-andamento': case 'em_execucao': case 'em execucao': $status_label = 'Em Andamento'; $status_cor = '#4facfe'; break;
+                                    case 'concluida': case 'concluída': case 'finalizada': $status_label = 'Concluída'; $status_cor = '#11998e'; break;
+                                    case 'paralisada': case 'pausada': case 'suspensa': $status_label = 'Paralisada'; $status_cor = '#e74c3c'; break;
+                                    case 'prospeccao': case 'prospecção': case 'novo': case 'nova': $status_label = 'Prospecção'; $status_cor = '#95a5a6'; break;
+                                    case 'contratada': case 'aprovada': $status_label = 'Contratada'; $status_cor = '#f39c12'; break;
+                                    case 'cancelada': case 'cancelado': $status_label = 'Cancelada'; $status_cor = '#7f8c8d'; break;
+                                }
+                            }
+                            $progresso = $obra->percentual_concluido ?? 0;
+                            $status_normalized = $status_norm_key ?: $status_lower;
+                        ?>
+                        <tr data-nome="<?php echo strtolower($obra->nome); ?>" data-status="<?php echo $status_normalized; ?>">
+                            <td><?php echo $obra->id; ?></td>
+                            <td>
+                                <a href="<?php echo site_url('obras/visualizar/' . $obra->id); ?>" style="font-weight:600;">
+                                    <?php echo htmlspecialchars($obra->nome); ?>
+                                </a>
+                            </td>
+                            <td><?php echo htmlspecialchars($obra->cliente_nome ?? '—'); ?></td>
+                            <td>
+                                <span class="obra-status-dot-inline" style="background: <?php echo $status_cor; ?>"></span>
+                                <?php echo $status_label; ?>
+                            </td>
+                            <td>
+                                <div style="display:flex;align-items:center;gap:6px;">
+                                    <div style="flex:1;height:8px;background:rgba(0,0,0,0.1);border-radius:4px;overflow:hidden;">
+                                        <div style="width:<?php echo $progresso; ?>%;height:100%;background:<?php echo $status_cor; ?>;border-radius:4px;"></div>
+                                    </div>
+                                    <span style="font-size:12px;font-weight:600;min-width:32px;"><?php echo $progresso; ?>%</span>
+                                </div>
+                            </td>
+                            <td><?php echo $obra->data_inicio_contrato ? date('d/m/Y', strtotime($obra->data_inicio_contrato)) : '—'; ?></td>
+                            <td><?php echo $obra->data_fim_prevista ? date('d/m/Y', strtotime($obra->data_fim_prevista)) : '—'; ?></td>
+                            <td class="text-nowrap">
+                                <a href="<?php echo site_url('obras/visualizar/' . $obra->id); ?>" class="btn-action btn-action-view" title="Visualizar">
+                                    <svg><use href="<?php echo base_url(); ?>assets/svg/icons.svg#view"/></svg>
+                                </a>
+                                <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
+                                <a href="<?php echo site_url('obras/editar/' . $obra->id); ?>" class="btn-action btn-action-edit" title="Editar">
+                                    <svg><use href="<?php echo base_url(); ?>assets/svg/icons.svg#edit"/></svg>
+                                </a>
+                                <?php endif; ?>
+                                <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dObras')): ?>
+                                <a href="<?php echo site_url('obras/excluir/' . $obra->id); ?>" class="btn-action btn-action-delete" title="Excluir" onclick="return confirm('Tem certeza que deseja excluir esta obra?');">
+                                    <svg><use href="<?php echo base_url(); ?>assets/svg/icons.svg#delete"/></svg>
+                                </a>
+                                <?php endif; ?>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
             </div>
-
-            <div class="obra-card-body">
-                <div class="obra-card-info-row">
-                    <span class="obra-card-info-label">
-                        <?= svg_icon('map', 14, 14) ?> Endereço
-                    </span>
-                    <span class="obra-card-info-value">
-                        <?php echo htmlspecialchars($obra->endereco ?? 'Não informado'); ?>
-                    </span>
-                </div>
-
-                <div class="obra-card-info-row">
-                    <span class="obra-card-info-label">
-                        <?= svg_icon('calendar', 14, 14) ?> Início
-                    </span>
-                    <span class="obra-card-info-value">
-                        <?php echo $obra->data_inicio_contrato ? date('d/m/Y', strtotime($obra->data_inicio_contrato)) : 'Não definido'; ?>
-                    </span>
-                </div>
-
-                <div class="obra-card-info-row">
-                    <span class="obra-card-info-label">
-                        <?= svg_icon('flag-checkered', 14, 14) ?> Previsão
-                    </span>
-                    <span class="obra-card-info-value">
-                        <?php echo $obra->data_fim_prevista ? date('d/m/Y', strtotime($obra->data_fim_prevista)) : 'Não definido'; ?>
-                    </span>
-                </div>
-
-                <div class="obra-card-progress">
-                    <div class="obra-card-progress-header">
-                        <span class="obra-card-progress-label">Progresso</span>
-                        <span class="obra-card-progress-value"><?php echo $progresso; ?>%</span>
-                    </div>
-                    <div class="obra-card-progress-bar">
-                        <div class="obra-card-progress-fill" style="width: <?php echo $progresso; ?>%"></div>
-                    </div>
-                </div>
-
-                <div class="obra-card-stats">
-                    <div class="obra-card-stat">
-                        <span class="obra-card-stat-value"><?php echo $obra->total_etapas ?? 0; ?></span>
-                        <span class="obra-card-stat-label">Etapas</span>
-                    </div>
-                    <div class="obra-card-stat">
-                        <span class="obra-card-stat-value"><?php echo $obra->total_atividades ?? 0; ?></span>
-                        <span class="obra-card-stat-label">Atividades</span>
-                    </div>
-                    <div class="obra-card-stat">
-                        <span class="obra-card-stat-value"><?php echo $obra->total_equipe ?? 0; ?></span>
-                        <span class="obra-card-stat-label">Equipe</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="obra-card-actions">
-                <a href="<?php echo site_url('obras/visualizar/' . $obra->id); ?>" class="obra-card-btn view">
-                    <?= svg_icon('eye', 16, 16) ?> Visualizar
+            <?php else: ?>
+            <div style="text-align:center;padding:40px;color:var(--cinza0,#9aa6b3);">
+                <i class="bx bx-building" style="font-size:48px;display:block;margin-bottom:10px;opacity:0.4;"></i>
+                <p>Nenhuma obra encontrada.</p>
+                <a href="<?php echo site_url('obras/adicionar'); ?>" class="button btn btn-sm btn-success">
+                    <span class="button__icon"><i class="bx bx-plus-circle"></i></span>
+                    <span class="button__text2">Cadastrar Obra</span>
                 </a>
-                <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
-                <a href="<?php echo site_url('obras/editar/' . $obra->id); ?>" class="obra-card-btn edit">
-                    <?= svg_icon('edit', 16, 16) ?> Editar
-                </a>
-                <?php endif; ?>
-                <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dObras')): ?>
-                <form action="<?php echo site_url('obras/excluir'); ?>" method="post" class="obra-delete-form" onsubmit="return confirm('Tem certeza que deseja excluir esta obra?');">
-                    <input type="hidden" name="id" value="<?php echo $obra->id; ?>">
-                    <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>">
-                    <button type="submit" class="obra-card-btn delete">
-                        <?= svg_icon('trash', 16, 16) ?> Excluir
-                    </button>
-                </form>
-                <?php endif; ?>
-                <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
-                <div class="obra-quick-actions">
-                    <button type="button" class="obra-card-btn quick-action-toggle" onclick="toggleQuickMenu(<?php echo $obra->id; ?>)">
-                        <?= svg_icon('chevron-down', 16, 16) ?> Ações
-                    </button>
-                    <div class="obra-quick-menu" id="quickMenu_<?php echo $obra->id; ?>">
-                        <div class="obra-quick-menu-header">
-                            <?= svg_icon('bolt', 16, 16) ?> Ações Rápidas
-                        </div>
-                        <div class="obra-quick-menu-item" onclick="atualizarStatusRapido(<?php echo $obra->id; ?>, 'prospeccao')">
-                            <span class="obra-status-dot status-dot-prospeccao"></span> Prospecção
-                        </div>
-                        <div class="obra-quick-menu-item" onclick="atualizarStatusRapido(<?php echo $obra->id; ?>, 'contratada')">
-                            <span class="obra-status-dot status-dot-contratada"></span> Contratada
-                        </div>
-                        <div class="obra-quick-menu-item" onclick="atualizarStatusRapido(<?php echo $obra->id; ?>, 'em-andamento')">
-                            <span class="obra-status-dot status-dot-andamento"></span> Em Andamento
-                        </div>
-                        <div class="obra-quick-menu-item" onclick="atualizarStatusRapido(<?php echo $obra->id; ?>, 'paralisada')">
-                            <span class="obra-status-dot status-dot-paralisada"></span> Paralisada
-                        </div>
-                        <div class="obra-quick-menu-item" onclick="atualizarStatusRapido(<?php echo $obra->id; ?>, 'concluida')">
-                            <span class="obra-status-dot status-dot-concluida"></span> Concluída
-                        </div>
-                        <div class="obra-quick-menu-item" onclick="atualizarStatusRapido(<?php echo $obra->id; ?>, 'cancelada')">
-                            <span class="obra-status-dot status-dot-cancelada"></span> Cancelada
-                        </div>
-                        <div class="obra-quick-menu-divider"></div>
-                        <a href="<?php echo site_url('obras/relatorioGeral/' . $obra->id); ?>" class="obra-quick-menu-item">
-                            <?= svg_icon('file-text', 16, 16) ?> Relatório Geral
-                        </a>
-                    </div>
-                </div>
-                <?php endif; ?>
             </div>
+            <?php endif; ?>
         </div>
-        <?php endforeach; ?>
     </div>
 
     <?php if (isset($pagination)): ?>
-    <div class="obras-pagination">
-        <?php echo $pagination; ?>
-    </div>
-    <?php endif; ?>
-
-    <?php else: ?>
-    <div class="obras-empty-state">
-        <div class="obras-empty-icon">
-            <?= svg_icon('building', 64, 64, '', 'color:var(--cinza0,#9aa6b3)') ?>
-        </div>
-        <h3 class="obras-empty-title">Nenhuma obra encontrada</h3>
-        <p class="obras-empty-desc">Comece cadastrando uma nova obra para gerenciar seus projetos.</p>
-        <a href="<?php echo site_url('obras/adicionar'); ?>" class="obras-filter-btn">
-            <?= svg_icon('plus', 16, 16) ?> Cadastrar Nova Obra
-        </a>
-    </div>
+    <?php echo $pagination; ?>
     <?php endif; ?>
 </div>
+
+<!-- Toast container -->
+<div id="obra-toast-container"></div>
 
 <script>
 function filtrarObras() {
     const search = document.getElementById('searchObra').value.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
     const status = document.getElementById('filterStatus').value;
-    const cards = document.querySelectorAll('.obra-item-card');
+    const rows = document.querySelectorAll('#obrasTableBody tr');
 
-    cards.forEach(card => {
-        const nome = card.getAttribute('data-nome');
-        const cardStatus = card.getAttribute('data-status');
+    rows.forEach(row => {
+        const nome = (row.getAttribute('data-nome') || '').toLowerCase();
+        const rowStatus = row.getAttribute('data-status') || '';
         const matchSearch = !search || nome.includes(search);
-        const matchStatus = !status || cardStatus === status;
-        card.style.display = matchSearch && matchStatus ? 'flex' : 'none';
-    });
-}
-
-function limparFiltros() {
-    document.getElementById('searchObra').value = '';
-    document.getElementById('filterStatus').value = '';
-    filtrarObras();
-}
-
-$(document).ready(function() {
-    $('.obra-item-card').each(function(index) {
-        $(this).hide().delay(index * 100).fadeIn(400);
-    });
-});
-
-function toggleQuickMenu(obraId) {
-    const menu = document.getElementById('quickMenu_' + obraId);
-    const allMenus = document.querySelectorAll('.obra-quick-menu');
-    allMenus.forEach(function(m) {
-        if (m !== menu && m.classList.contains('active')) {
-            m.classList.remove('active');
-        }
-    });
-    if (menu) {
-        menu.classList.toggle('active');
-    }
-    function closeMenu(e) {
-        if (!e.target.closest('.obra-quick-actions')) {
-            allMenus.forEach(function(m) { m.classList.remove('active'); });
-            document.removeEventListener('click', closeMenu);
-        }
-    }
-    setTimeout(function() { document.addEventListener('click', closeMenu); }, 100);
-}
-
-function atualizarStatusRapido(obraId, novoStatus) {
-    const menu = document.getElementById('quickMenu_' + obraId);
-    if (menu) menu.classList.remove('active');
-    mostrarToast('Atualizando...', 'Alterando status da obra', 'info');
-    $.ajax({
-        url: '<?php echo site_url("obras/ajax_atualizar_status"); ?>',
-        method: 'POST',
-        dataType: 'json',
-        data: {
-            obra_id: obraId,
-            status: novoStatus,
-            '<?php echo $this->security->get_csrf_token_name(); ?>': '<?php echo $this->security->get_csrf_hash(); ?>'
-        },
-        success: function(response) {
-            if (response.success) {
-                mostrarToast('Sucesso!', 'Status atualizado com sucesso', 'success');
-                setTimeout(function() {
-                    if (typeof atualizarCardsManual === 'function') {
-                        atualizarCardsManual();
-                    } else {
-                        location.reload();
-                    }
-                }, 1000);
-            } else {
-                mostrarToast('Erro!', response.message || 'Erro ao atualizar status', 'error');
-            }
-        },
-        error: function(xhr, status, error) {
-            console.error('Erro ao atualizar status:', error);
-            mostrarToast('Erro!', 'Falha na comunicação com o servidor', 'error');
-        }
+        const matchStatus = !status || rowStatus === status;
+        row.style.display = matchSearch && matchStatus ? '' : 'none';
     });
 }
 
 function atualizarTodosProgressos() {
-    mostrarToast('Recalculando...', 'Atualizando progresso de todas as obras', 'info');
     $.ajax({
         url: '<?php echo site_url("obras/api_atualizarProgressoGeral"); ?>',
         method: 'POST',
         dataType: 'json',
-        data: {
-            '<?php echo $this->security->get_csrf_token_name(); ?>': '<?php echo $this->security->get_csrf_hash(); ?>'
-        },
+        data: { '<?php echo $this->security->get_csrf_token_name(); ?>': '<?php echo $this->security->get_csrf_hash(); ?>' },
         success: function(response) {
             if (response.success) {
-                mostrarToast('Sucesso!', 'Progressos atualizados. Recarregando...', 'success');
-                setTimeout(function() { location.reload(); }, 1500);
+                alert('Progressos atualizados com sucesso!');
+                location.reload();
             } else {
-                mostrarToast('Erro!', response.message || 'Erro ao recalcular progressos', 'error');
+                alert('Erro: ' + (response.message || 'Erro ao recalcular progressos'));
             }
         },
-        error: function(xhr, status, error) {
-            console.error('Erro ao recalcular progressos:', error);
-            mostrarToast('Erro!', 'Falha na comunicação com o servidor', 'error');
+        error: function() {
+            alert('Erro ao recalcular progressos. Tente novamente.');
         }
     });
-}
-
-function mostrarToast(titulo, mensagem, tipo) {
-    const toastsAnteriores = document.querySelectorAll('.obra-toast');
-    toastsAnteriores.forEach(function(t) { t.remove(); });
-
-    const toast = document.createElement('div');
-    toast.className = 'obra-toast ' + tipo;
-
-    let svgIcon = '';
-    if (tipo === 'success') svgIcon = '<?= svg_icon("check-circle", 20, 20, "", "color:#27ae60;") ?>';
-    else if (tipo === 'error') svgIcon = '<?= svg_icon("x", 20, 20, "", "color:#e74c3c;") ?>';
-    else svgIcon = '<?= svg_icon("info-circle", 20, 20, "", "color:#667eea;") ?>';
-
-    toast.innerHTML = '<div class="obra-toast-icon">' + svgIcon + '</div>' +
-        '<div class="obra-toast-content">' +
-        '<h4 class="obra-toast-title">' + titulo + '</h4>' +
-        '<p class="obra-toast-message">' + mensagem + '</p>' +
-        '</div>';
-
-    document.body.appendChild(toast);
-    setTimeout(function() { toast.classList.add('show'); }, 10);
-
-    if (tipo !== 'info') {
-        setTimeout(function() {
-            toast.classList.remove('show');
-            setTimeout(function() { toast.remove(); }, 300);
-        }, 3000);
-    }
 }
 </script>

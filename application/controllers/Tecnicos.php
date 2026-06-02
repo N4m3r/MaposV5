@@ -1001,7 +1001,8 @@ class Tecnicos extends MY_Controller
 
         // Carregar dados completos do cliente (igual ao checkin/imprimir)
         $this->load->model('clientes_model');
-        $this->data['cliente'] = $this->clientes_model->getById($os->clientes_id);
+        $cliente = $this->clientes_model->getById($os->clientes_id);
+        $this->data['cliente'] = ($cliente) ? $cliente : new stdClass();
 
         $this->data['produtos'] = $this->tec_os_model->getProdutosOs($os_id);
 
