@@ -4,7 +4,7 @@
  */
 ?>
 
-<div class="row" style="margin-top: 0">
+<div class="row" style="margin-top:0">
     <div class="col-12">
         <ul class="breadcrumb">
             <li><a href="<?= site_url('dashboard') ?>">Dashboard</a> <span class="dropdown-divider">/</span></li>
@@ -15,15 +15,14 @@
 </div>
 
 <div class="row">
-    <div class="col-4">
-        <!-- Informações do Usuário -->
+    <div class="col-md-4">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="bx bx-user"></i></span>
                 <h5>Dados do Usuário</h5>
                 <div class="buttons">
-                    <a href="<?= site_url('usuarioscliente/editar/' . $usuario->id) ?>" class="btn btn-sm btn-warning">
-                        <i class="bx bx-edit"></i> Editar
+                    <a href="<?= site_url('usuarioscliente/editar/' . $usuario->id) ?>" class="btn-action btn-action-edit" title="Editar">
+                        <svg><use href="<?= base_url() ?>assets/svg/icons.svg#edit"/></svg>
                     </a>
                 </div>
             </div>
@@ -43,7 +42,6 @@
             </div>
         </div>
 
-        <!-- CNPJs Vinculados -->
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="bx bx-buildings"></i></span>
@@ -68,14 +66,13 @@
                         </tbody>
                     </table>
                 <?php else: ?>
-                    <div class="alert alert-info" style="margin: 10px;">
+                    <div class="alert alert-info" style="margin:10px;">
                         Nenhum CNPJ vinculado.
                     </div>
                 <?php endif; ?>
             </div>
         </div>
 
-        <!-- Estatísticas -->
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="bx bx-stats"></i></span>
@@ -98,8 +95,7 @@
         </div>
     </div>
 
-    <div class="col-8">
-        <!-- Permissões -->
+    <div class="col-md-8">
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="bx bx-shield"></i></span>
@@ -132,7 +128,6 @@
             </div>
         </div>
 
-        <!-- Ordens de Serviço -->
         <div class="widget-box">
             <div class="widget-title">
                 <span class="icon"><i class="bx bx-file"></i></span>
@@ -160,8 +155,8 @@
                                 <td><?= $o->documento ?></td>
                                 <td><span class="label"><?= $o->status ?></span></td>
                                 <td class="text-center">
-                                    <a href="<?= site_url('os/visualizar/' . $o->idOs) ?>" class="btn btn-sm btn-info" target="_blank">
-                                        <i class="bx bx-show"></i>
+                                    <a href="<?= site_url('os/visualizar/' . $o->idOs) ?>" class="btn-action btn-action-view" title="Visualizar">
+                                        <svg><use href="<?= base_url() ?>assets/svg/icons.svg#view"/></svg>
                                     </a>
                                 </td>
                             </tr>
@@ -169,12 +164,12 @@
                         </tbody>
                     </table>
                     <?php if (count($os) > 20): ?>
-                        <div class="alert alert-info" style="margin: 10px;">
+                        <div class="alert alert-info" style="margin:10px;">
                             Exibindo 20 de <?= count($os) ?> OS. <a href="<?= site_url('os?cliente=' . ($usuario->cliente_id ?? '')) ?>">Ver todas</a>
                         </div>
                     <?php endif; ?>
                 <?php else: ?>
-                    <div class="alert alert-info" style="margin: 10px;">
+                    <div class="alert alert-info" style="margin:10px;">
                         Nenhuma ordem de serviço vinculada aos CNPJs deste usuário.
                     </div>
                 <?php endif; ?>

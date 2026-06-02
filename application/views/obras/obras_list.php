@@ -27,21 +27,21 @@ if (empty($obras)) {
     <div class="obras-main-header">
         <div class="obras-header-content">
             <div class="obras-header-title">
-                <h1><i class="bx bx-building"></i> Gerenciamento de Obras</h1>
+                <h1><?= svg_icon('building', 28, 28) ?> Gerenciamento de Obras</h1>
                 <p>Acompanhe e gerencie todas as obras do sistema</p>
             </div>
             <div style="display: flex; gap: 12px; align-items: center;">
                 <a href="<?php echo site_url('obras/adicionar'); ?>" class="obras-filter-btn obras-add-btn">
-                    <i class="bx bx-plus"></i> Nova Obra
+                    <?= svg_icon('plus', 16, 16) ?> Nova Obra
                 </a>
                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cObras')): ?>
                 <a href="<?php echo site_url('obras/configuracoes'); ?>" class="obras-filter-btn" style="background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); color: white;">
-                    <i class="bx bx-cog"></i> Configurações
+                    <?= svg_icon('cog', 16, 16) ?> Configurações
                 </a>
                 <?php endif; ?>
                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
                 <button type="button" class="obras-filter-btn" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white;" onclick="atualizarTodosProgressos()">
-                    <i class="bx bx-refresh"></i> Recalcular Progressos
+                    <?= svg_icon('refresh', 16, 16) ?> Recalcular Progressos
                 </button>
                 <?php endif; ?>
             </div>
@@ -52,7 +52,7 @@ if (empty($obras)) {
     <div class="obras-stats-row">
         <div class="obras-stat-card">
             <div class="obras-stat-icon blue">
-                <i class="bx bx-building"></i>
+                <?= svg_icon('building', 24, 24) ?>
             </div>
             <div class="obras-stat-info">
                 <div class="obras-stat-value"><?php echo isset($total_obras) ? $total_obras : count($obras); ?></div>
@@ -62,7 +62,7 @@ if (empty($obras)) {
 
         <div class="obras-stat-card">
             <div class="obras-stat-icon green">
-                <i class="bx bx-play-circle"></i>
+                <?= svg_icon('play-circle', 24, 24) ?>
             </div>
             <div class="obras-stat-info">
                 <div class="obras-stat-value"><?php echo isset($obras_em_andamento) ? $obras_em_andamento : count(array_filter($obras ?? [], function($o) { return ($o->status ?? '') == 'em-andamento'; })); ?></div>
@@ -72,7 +72,7 @@ if (empty($obras)) {
 
         <div class="obras-stat-card">
             <div class="obras-stat-icon cyan">
-                <i class="bx bx-calendar"></i>
+                <?= svg_icon('calendar', 24, 24) ?>
             </div>
             <div class="obras-stat-info">
                 <div class="obras-stat-value"><?php echo isset($obras_contratadas) ? $obras_contratadas : count(array_filter($obras ?? [], function($o) { return ($o->status ?? '') == 'contratada'; })); ?></div>
@@ -82,7 +82,7 @@ if (empty($obras)) {
 
         <div class="obras-stat-card">
             <div class="obras-stat-icon orange">
-                <i class="bx bx-check-circle"></i>
+                <?= svg_icon('check-circle', 24, 24) ?>
             </div>
             <div class="obras-stat-info">
                 <div class="obras-stat-value"><?php echo isset($obras_concluidas) ? $obras_concluidas : count(array_filter($obras ?? [], function($o) { return ($o->status ?? '') == 'concluida'; })); ?></div>
@@ -104,12 +104,12 @@ if (empty($obras)) {
     <!-- Filtros -->
     <div class="obras-filter-bar">
         <div class="obras-filter-group">
-            <label><i class="bx bx-search"></i> Buscar:</label>
+            <label><?= svg_icon('search', 16, 16) ?> Buscar:</label>
             <input type="text" id="searchObra" class="obras-filter-input" placeholder="Nome da obra..." onkeyup="filtrarObras()">
         </div>
 
         <div class="obras-filter-group">
-            <label><i class="bx bx-filter"></i> Status:</label>
+            <label><?= svg_icon('filter', 16, 16) ?> Status:</label>
             <select id="filterStatus" class="obras-filter-select" onchange="filtrarObras()">
                 <option value="">Todos</option>
                 <?php foreach ($status_obra as $s): ?>
@@ -119,7 +119,7 @@ if (empty($obras)) {
         </div>
 
         <button class="obras-filter-btn secondary" onclick="limparFiltros()">
-            <i class="bx bx-refresh"></i> Limpar
+            <?= svg_icon('refresh', 16, 16) ?> Limpar
         </button>
     </div>
 
@@ -219,14 +219,14 @@ if (empty($obras)) {
                 <span class="obra-card-status-badge"><?php echo $status_label; ?></span>
                 <h3 class="obra-card-title"><?php echo htmlspecialchars($obra->nome); ?></h3>
                 <div class="obra-card-cliente">
-                    <i class="bx bx-user"></i> <?php echo htmlspecialchars($obra->cliente_nome ?? 'Sem cliente'); ?>
+                    <?= svg_icon('user', 16, 16) ?> <?php echo htmlspecialchars($obra->cliente_nome ?? 'Sem cliente'); ?>
                 </div>
             </div>
 
             <div class="obra-card-body">
                 <div class="obra-card-info-row">
                     <span class="obra-card-info-label">
-                        <i class="bx bx-map"></i> Endereço
+                        <?= svg_icon('map', 14, 14) ?> Endereço
                     </span>
                     <span class="obra-card-info-value">
                         <?php echo htmlspecialchars($obra->endereco ?? 'Não informado'); ?>
@@ -235,7 +235,7 @@ if (empty($obras)) {
 
                 <div class="obra-card-info-row">
                     <span class="obra-card-info-label">
-                        <i class="bx bx-calendar"></i> Início
+                        <?= svg_icon('calendar', 14, 14) ?> Início
                     </span>
                     <span class="obra-card-info-value">
                         <?php echo $obra->data_inicio_contrato ? date('d/m/Y', strtotime($obra->data_inicio_contrato)) : 'Não definido'; ?>
@@ -244,7 +244,7 @@ if (empty($obras)) {
 
                 <div class="obra-card-info-row">
                     <span class="obra-card-info-label">
-                        <i class="bx bx-flag-checkered"></i> Previsão
+                        <?= svg_icon('flag-checkered', 14, 14) ?> Previsão
                     </span>
                     <span class="obra-card-info-value">
                         <?php echo $obra->data_fim_prevista ? date('d/m/Y', strtotime($obra->data_fim_prevista)) : 'Não definido'; ?>
@@ -281,11 +281,11 @@ if (empty($obras)) {
 
             <div class="obra-card-actions">
                 <a href="<?php echo site_url('obras/visualizar/' . $obra->id); ?>" class="obra-card-btn view">
-                    <i class="bx bx-show"></i> Visualizar
+                    <?= svg_icon('eye', 16, 16) ?> Visualizar
                 </a>
                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
                 <a href="<?php echo site_url('obras/editar/' . $obra->id); ?>" class="obra-card-btn edit">
-                    <i class="bx bx-edit"></i> Editar
+                    <?= svg_icon('edit', 16, 16) ?> Editar
                 </a>
                 <?php endif; ?>
                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dObras')): ?>
@@ -293,7 +293,7 @@ if (empty($obras)) {
                     <input type="hidden" name="id" value="<?php echo $obra->id; ?>">
                     <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>">
                     <button type="submit" class="obra-card-btn" style="background: #e74c3c;">
-                        <i class="bx bx-trash"></i> Excluir
+                        <?= svg_icon('trash', 16, 16) ?> Excluir
                     </button>
                 </form>
                 <?php endif; ?>
@@ -301,11 +301,11 @@ if (empty($obras)) {
                 <!-- Botão de Ações Rápidas -->
                 <div class="obra-quick-actions">
                     <button type="button" class="obra-card-btn quick-action-toggle" onclick="toggleQuickMenu(<?php echo $obra->id; ?>)">
-                        <i class="bx bx-chevron-down"></i> Ações
+                        <?= svg_icon('chevron-down', 16, 16) ?> Ações
                     </button>
                     <div class="obra-quick-menu" id="quickMenu_<?php echo $obra->id; ?>">
                         <div class="obra-quick-menu-header">
-                            <i class="bx bx-bolt"></i> Ações Rápidas
+                            <?= svg_icon('bolt', 16, 16) ?> Ações Rápidas
                         </div>
                         <div class="obra-quick-menu-item" onclick="atualizarStatusRapido(<?php echo $obra->id; ?>, 'prospeccao')">
                             <span class="obra-status-dot" style="background: #a8edea;"></span> Prospecção
@@ -327,7 +327,7 @@ if (empty($obras)) {
                         </div>
                         <div class="obra-quick-menu-divider"></div>
                         <a href="<?php echo site_url('obras/relatorioGeral/' . $obra->id); ?>" class="obra-quick-menu-item">
-                            <i class="bx bx-file-alt" style="color: #667eea;"></i> Relatório Geral
+                            <?= svg_icon('file-text', 16, 16, '', 'color: #667eea;') ?> Relatório Geral
                         </a>
                     </div>
                 </div>
@@ -348,12 +348,12 @@ if (empty($obras)) {
     <!-- Empty State -->
     <div class="obras-empty-state">
         <div class="obras-empty-icon">
-            <i class="bx bx-building"></i>
+            <?= svg_icon('building', 48, 48, '', 'color:var(--cinza0,#9aa6b3)') ?>
         </div>
         <h3 class="obras-empty-title">Nenhuma obra encontrada</h3>
         <p class="obras-empty-desc">Comece cadastrando uma nova obra para gerenciar seus projetos.</p>
         <a href="<?php echo site_url('obras/adicionar'); ?>" class="obras-filter-btn">
-            <i class="bx bx-plus"></i> Cadastrar Nova Obra
+            <?= svg_icon('plus', 16, 16) ?> Cadastrar Nova Obra
         </a>
     </div>
     <?php endif; ?>
@@ -509,10 +509,15 @@ function mostrarToast(titulo, mensagem, tipo) {
     let iconClass = 'bx bx-info-circle';
     if (tipo === 'success') iconClass = 'bx bx-check';
     if (tipo === 'error') iconClass = 'bx bx-x';
+    // SVG icon replacements
+    let svgIcon = '';
+    if (tipo === 'success') svgIcon = '<?= svg_icon("check-circle", 20, 20, "", "color:#27ae60;") ?>';
+    else if (tipo === 'error') svgIcon = '<?= svg_icon("x", 20, 20, "", "color:#e74c3c;") ?>';
+    else svgIcon = '<?= svg_icon("info-circle", 20, 20, "", "color:#667eea;") ?>';
 
     toast.innerHTML = `
         <div class="obra-toast-icon">
-            <i class="${iconClass}"></i>
+            ${svgIcon}
         </div>
         <div class="obra-toast-content">
             <h4 class="obra-toast-title">${titulo}</h4>

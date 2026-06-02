@@ -1,4 +1,4 @@
-<div class="row" style="margin-top: 0">
+<div class="row" style="margin-top:0">
     <div class="col-12">
         <div class="widget-box">
             <div class="widget-title">
@@ -6,9 +6,7 @@
                 <h5>Usuários do Portal do Cliente</h5>
                 <div class="buttons">
                     <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cUsuariosCliente')): ?>
-                        <a href="<?= site_url('usuarioscliente/adicionar') ?>" class="btn btn-success btn-sm">
-                            <i class="bx bx-plus"></i> Novo Usuário
-                        </a>
+                        <a href="<?= site_url('usuarioscliente/adicionar') ?>" class="button btn btn-success btn-sm"><span class="button__icon"><i class="bx bx-plus"></i></span><span class="button__text2">Novo Usuário</span></a>
                     <?php endif; ?>
                 </div>
             </div>
@@ -49,17 +47,17 @@
                                     </td>
                                     <td><?= $u->ultimo_acesso ? date('d/m/Y H:i', strtotime($u->ultimo_acesso)) : 'Nunca' ?></td>
                                     <td class="text-center">
-                                        <a href="<?= site_url('usuarioscliente/visualizar/' . $u->id) ?>" class="btn btn-sm btn-info" title="Visualizar">
-                                            <i class="bx bx-show"></i>
+                                        <a href="<?= site_url('usuarioscliente/visualizar/' . $u->id) ?>" class="btn-action btn-action-view" title="Visualizar">
+                                            <svg><use href="<?= base_url() ?>assets/svg/icons.svg#view"/></svg>
                                         </a>
                                         <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eUsuariosCliente')): ?>
-                                            <a href="<?= site_url('usuarioscliente/editar/' . $u->id) ?>" class="btn btn-sm btn-warning" title="Editar">
-                                                <i class="bx bx-edit"></i>
+                                            <a href="<?= site_url('usuarioscliente/editar/' . $u->id) ?>" class="btn-action btn-action-edit" title="Editar">
+                                                <svg><use href="<?= base_url() ?>assets/svg/icons.svg#edit"/></svg>
                                             </a>
                                         <?php endif; ?>
                                         <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dUsuariosCliente')): ?>
-                                            <a href="<?= site_url('usuarioscliente/excluir/' . $u->id) ?>" class="btn btn-sm btn-danger" title="Excluir" onclick="return confirm('Tem certeza que deseja excluir este usuário?');">
-                                                <i class="bx bx-trash"></i>
+                                            <a href="<?= site_url('usuarioscliente/excluir/' . $u->id) ?>" class="btn-action btn-action-delete" title="Excluir" onclick="return confirm('Tem certeza que deseja excluir este usuário?');">
+                                                <svg><use href="<?= base_url() ?>assets/svg/icons.svg#delete"/></svg>
                                             </a>
                                         <?php endif; ?>
                                     </td>
@@ -68,12 +66,10 @@
                         </tbody>
                     </table>
                 <?php else: ?>
-                    <div class="alert alert-info" style="margin: 20px;">
+                    <div class="alert alert-info" style="margin:20px;">
                         <i class="bx bx-info-circle"></i> Nenhum usuário do portal do cliente cadastrado.
                         <br><br>
-                        <a href="<?= site_url('usuarioscliente/adicionar') ?>" class="btn btn-success">
-                            <i class="bx bx-plus"></i> Cadastrar Primeiro Usuário
-                        </a>
+                        <a href="<?= site_url('usuarioscliente/adicionar') ?>" class="button btn btn-success"><span class="button__icon"><i class="bx bx-plus"></i></span><span class="button__text2">Cadastrar Primeiro Usuário</span></a>
                     </div>
                 <?php endif; ?>
             </div>

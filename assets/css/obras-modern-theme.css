@@ -5688,3 +5688,249 @@ body[data-theme="dark"] .modal-close { background: #252a3a; color: #a0aec0; }
     font-weight: 600;
     margin-left: 8px;
 }
+
+/* ============================================
+   SVG ICON SUPPORT FOR OBRAS
+   ============================================ */
+
+.obras-stat-icon svg.svg-icon {
+    width: 24px;
+    height: 24px;
+    color: #fff;
+    stroke: #fff;
+    fill: none;
+}
+
+.obra-card-info-label svg.svg-icon {
+    width: 14px;
+    height: 14px;
+    vertical-align: middle;
+    margin-right: 4px;
+    color: inherit;
+    stroke: currentColor;
+}
+
+.obra-card-cliente svg.svg-icon {
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
+    margin-right: 4px;
+}
+
+.obras-header-title svg.svg-icon {
+    width: 28px;
+    height: 28px;
+    vertical-align: middle;
+    margin-right: 8px;
+}
+
+.obras-filter-btn svg.svg-icon {
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
+    margin-right: 4px;
+    stroke: currentColor;
+    fill: none;
+}
+
+.obra-card-btn svg.svg-icon {
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
+    margin-right: 4px;
+    stroke: currentColor;
+    fill: none;
+}
+
+.obras-empty-icon svg.svg-icon {
+    display: block;
+    margin: 0 auto 16px;
+}
+
+.obra-quick-menu-header svg.svg-icon {
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
+    margin-right: 4px;
+}
+
+.obra-quick-menu-item svg.svg-icon {
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
+    margin-right: 6px;
+}
+
+/* Toast SVG icons */
+.obra-toast-icon svg.svg-icon {
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+}
+
+/* Card action & action button SVG icons */
+.card-action svg.svg-icon,
+.acao-btn svg.svg-icon {
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
+    stroke: currentColor;
+    fill: none;
+}
+
+.card-title svg.svg-icon {
+    width: 22px;
+    height: 22px;
+    vertical-align: middle;
+    margin-right: 6px;
+}
+
+.obra-title svg.svg-icon {
+    width: 28px;
+    height: 28px;
+    vertical-align: middle;
+    margin-right: 8px;
+}
+
+.obra-breadcrumb svg.svg-icon {
+    width: 14px;
+    height: 14px;
+    vertical-align: middle;
+    margin-right: 4px;
+}
+
+.prazo-value svg.svg-icon,
+.info-value svg.svg-icon {
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
+    margin-right: 4px;
+    color: #667eea;
+    stroke: currentColor;
+    fill: none;
+}
+
+.etapa-meta-text svg.svg-icon {
+    width: 14px;
+    height: 14px;
+    vertical-align: middle;
+    margin-right: 3px;
+}
+
+.etapa-toggle svg.svg-icon {
+    width: 14px;
+    height: 14px;
+    stroke: #667eea;
+    fill: none;
+}
+
+.etapa-toggle.expanded svg.svg-icon {
+    stroke: #fff;
+}
+
+.atividade-meta svg.svg-icon,
+.atividade-recente-meta svg.svg-icon {
+    width: 12px;
+    height: 12px;
+    vertical-align: middle;
+    margin-right: 3px;
+}
+
+.atividade-status-icon svg.svg-icon {
+    width: 16px;
+    height: 16px;
+}
+
+.equipe-avatar svg.svg-icon {
+    width: 20px;
+    height: 20px;
+    stroke: #fff;
+    fill: none;
+}
+
+.form-card-icon svg.svg-icon {
+    width: 22px;
+    height: 22px;
+    stroke: #fff;
+    fill: none;
+}
+
+.form-btn svg.svg-icon {
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
+    margin-right: 6px;
+    stroke: currentColor;
+    fill: none;
+}
+
+.checkbox-container svg.svg-icon {
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
+    margin-right: 6px;
+}
+
+.obra-header svg.svg-icon {
+    stroke: currentColor;
+    fill: none;
+}
+
+/* Obras header label SVG icons */
+.obras-filter-group svg.svg-icon {
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
+    margin-right: 4px;
+}
+
+/* Empty state SVG */
+.empty-state svg.svg-icon {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 16px;
+    opacity: 0.4;
+    display: block;
+}
+
+/* Dark theme SVG adjustments */
+body[data-theme="puredark"] .obras-filter-btn svg.svg-icon,
+body[data-theme="darkviolet"] .obras-filter-btn svg.svg-icon,
+body[data-theme="darkorange"] .obras-filter-btn svg.svg-icon {
+    stroke: currentColor;
+    fill: none;
+}
+
+body[data-theme="puredark"] .obra-card-info-label svg.svg-icon,
+body[data-theme="darkviolet"] .obra-card-info-label svg.svg-icon,
+body[data-theme="darkorange"] .obra-card-info-label svg.svg-icon {
+    color: var(--dark-7, #a0aec0);
+}
+
+body[data-theme="puredark"] .card-title svg.svg-icon,
+body[data-theme="darkviolet"] .card-title svg.svg-icon,
+body[data-theme="darkorange"] .card-title svg.svg-icon {
+    color: var(--sidebar-accent, #667eea);
+}
+
+body[data-theme="puredark"] .prazo-value svg.svg-icon,
+body[data-theme="darkviolet"] .prazo-value svg.svg-icon,
+body[data-theme="darkorange"] .prazo-value svg.svg-icon,
+body[data-theme="puredark"] .info-value svg.svg-icon,
+body[data-theme="darkviolet"] .info-value svg.svg-icon,
+body[data-theme="darkorange"] .info-value svg.svg-icon {
+    color: var(--sidebar-accent, #667eea);
+}
+
+body[data-theme="puredark"] .etapa-toggle svg.svg-icon,
+body[data-theme="darkviolet"] .etapa-toggle svg.svg-icon,
+body[data-theme="darkorange"] .etapa-toggle svg.svg-icon {
+    stroke: var(--sidebar-accent, #667eea);
+}
+
+body[data-theme="puredark"] .form-btn svg.svg-icon,
+body[data-theme="darkviolet"] .form-btn svg.svg-icon,
+body[data-theme="darkorange"] .form-btn svg.svg-icon {
+    stroke: currentColor;
+    fill: none;
+}

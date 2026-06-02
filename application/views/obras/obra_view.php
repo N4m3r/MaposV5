@@ -71,16 +71,16 @@
         <div class="obra-header-row">
             <div class="obra-header-info">
                 <div class="obra-breadcrumb">
-                    <a href="<?php echo site_url('obras'); ?>"><i class="bx bx-arrow-back"></i> Obras</a>
+                    <a href="<?php echo site_url('obras'); ?>"><?= svg_icon('chevron-left', 14, 14) ?> Obras</a>
                     <span>/</span>
                     <span>Visualizar</span>
                 </div>
                 <h1 class="obra-title">
-                    <i class="bx bx-building"></i>
+                    <?= svg_icon('building', 28, 28) ?>
                     <?php echo htmlspecialchars($obra->nome); ?>
                 </h1>
                 <div class="obra-cliente">
-                    <i class="bx bx-user"></i>
+                    <?= svg_icon('user', 16, 16) ?>
                     <?php echo htmlspecialchars($obra->cliente_nome ?? 'Sem cliente'); ?>
                 </div>
             </div>
@@ -104,22 +104,22 @@
     <!-- Ações Rápidas -->
     <div class="acoes-bar">
         <a href="<?php echo site_url('obras/relatorioGeral/' . $obra->id); ?>" class="acao-btn acao-relatorio">
-            <i class="bx bx-file-alt"></i> Relatório Geral
+            <?= svg_icon('file-text', 16, 16) ?> Relatório Geral
         </a>
         <a href="<?php echo site_url('obras/etapas/' . $obra->id); ?>" class="acao-btn acao-etapas">
-            <i class="bx bx-list-check"></i> Gerenciar Etapas
+            <?= svg_icon('list-check', 16, 16) ?> Gerenciar Etapas
         </a>
         <a href="<?php echo site_url('obras/equipe/' . $obra->id); ?>" class="acao-btn acao-equipe">
-            <i class="bx bx-group"></i> Equipe
+            <?= svg_icon('users', 16, 16) ?> Equipe
         </a>
         <a href="<?php echo site_url('obras/atividades/' . $obra->id); ?>" class="acao-btn acao-atividades">
-            <i class="bx bx-check"></i> Atividades
+            <?= svg_icon('check', 16, 16) ?> Atividades
         </a>
         <a href="<?php echo site_url('obras/editar/' . $obra->id); ?>" class="acao-btn acao-editar">
-            <i class="bx bx-edit"></i> Editar
+            <?= svg_icon('edit', 16, 16) ?> Editar
         </a>
         <a href="<?php echo site_url('obras'); ?>" class="acao-btn acao-voltar">
-            <i class="bx bx-arrow-back"></i> Voltar
+            <?= svg_icon('chevron-left', 16, 16) ?> Voltar
         </a>
     </div>
 
@@ -131,7 +131,7 @@
             <div class="card">
                 <div class="card-header">
                     <div class="card-title">
-                        <i class="bx bx-calendar"></i>
+                        <?= svg_icon('calendar', 22, 22) ?>
                         Prazo da Obra
                     </div>
                 </div>
@@ -141,14 +141,14 @@
                         <div class="prazo-item">
                             <div class="prazo-label">Data de Início</div>
                             <div class="prazo-value">
-                                <i class="bx bx-play"></i>
+                                <?= svg_icon('play', 16, 16) ?>
                                 <?php echo $obra->data_inicio_contrato ? date('d/m/Y', strtotime($obra->data_inicio_contrato)) : 'Não definida'; ?>
                             </div>
                         </div>
                         <div class="prazo-item">
                             <div class="prazo-label">Data de Término Prevista</div>
                             <div class="prazo-value">
-                                <i class="bx bx-flag-checkered"></i>
+                                <?= svg_icon('flag-checkered', 16, 16) ?>
                                 <?php echo $obra->data_fim_prevista ? date('d/m/Y', strtotime($obra->data_fim_prevista)) : 'Não definida'; ?>
                             </div>
                         </div>
@@ -168,7 +168,7 @@
                             <div class="prazo-value">
                                 <?php
                                 if ($obra->status == 'Concluida' || $obra->status == 'concluida') {
-                                    echo '<i class="bx bx-check"></i> Finalizada';
+                                    echo '<?= svg_icon('check', 16, 16) ?> Finalizada';
                                 } else {
                                     echo abs($dias_restantes) . ' dias';
                                 }
@@ -183,14 +183,14 @@
                     <div class="info-item">
                         <div class="info-label">Código</div>
                         <div class="info-value">
-                            <i class="bx bx-barcode"></i>
+                            <?= svg_icon('barcode', 16, 16) ?>
                             <?php echo htmlspecialchars($obra->codigo ?? 'N/A'); ?>
                         </div>
                     </div>
                     <div class="info-item">
                         <div class="info-label">Tipo</div>
                         <div class="info-value">
-                            <i class="bx bx-cog"></i>
+                            <?= svg_icon('cog', 16, 16) ?>
                             <?php
                             echo htmlspecialchars($tiposObraMap[$obra->tipo_obra]->nome ?? ($obra->tipo_obra ?: 'Não definido'));
                             ?>
@@ -199,7 +199,7 @@
                     <div class="info-item full-width">
                         <div class="info-label">Endereço</div>
                         <div class="info-value">
-                            <i class="bx bx-map"></i>
+                            <?= svg_icon('map', 16, 16) ?>
                             <?php
                             $endereco = [];
                             if (!empty($obra->endereco)) $endereco[] = $obra->endereco;
@@ -214,7 +214,7 @@
                     <div class="info-item">
                         <div class="info-label">Valor do Contrato</div>
                         <div class="info-value">
-                            <i class="bx bx-money"></i>
+                            <?= svg_icon('money', 16, 16) ?>
                             R$ <?php echo number_format($obra->valor_contrato, 2, ',', '.'); ?>
                         </div>
                     </div>
@@ -234,11 +234,11 @@
             <div class="card">
                 <div class="card-header">
                     <div class="card-title">
-                        <i class="bx bx-list-check"></i>
+                        <?= svg_icon('list-check', 22, 22) ?>
                         Etapas da Obra
                     </div>
                     <a href="<?php echo site_url('obras/etapas/' . $obra->id); ?>" class="card-action">
-                        <i class="bx bx-plus"></i> Gerenciar
+                        <?= svg_icon('plus', 14, 14) ?> Gerenciar
                     </a>
                 </div>
 
@@ -296,19 +296,19 @@
                                 <div class="etapa-info">
                                     <div class="etapa-name"><?php echo htmlspecialchars($etapa->nome); ?></div>
                                     <div class="etapa-meta-text">
-                                        <span><i class="bx bx-calendar"></i>
+                                        <span><?= svg_icon('calendar', 14, 14) ?>
                                             <?php
                                             if ($etapa->data_inicio_prevista && $etapa->data_fim_prevista) {
                                                 echo date('d/m/Y', strtotime($etapa->data_inicio_prevista)) . ' a ' . date('d/m/Y', strtotime($etapa->data_fim_prevista));
                                             } elseif ($etapa->data_inicio_prevista) {
                                                 echo 'Início: ' . date('d/m/Y', strtotime($etapa->data_inicio_prevista));
                                             } else {
-                                                echo '<span style="color: #999;"><i class="bx bx-error" style="color: #f39c12;"></i> Prazo não definido</span>';
+                                                echo '<span style="color: #999;">' . svg_icon('error-circle', 14, 14, '', 'color:#f39c12;vertical-align:middle;') . ' Prazo não definido</span>';
                                             }
                                             ?>
                                         </span>
                                         <?php if ($etapa->total_atividades > 0): ?>
-                                        <span><i class="bx bx-list-check"></i> <?php echo $etapa->total_atividades; ?> atividade(s)</span>
+                                        <span><?= svg_icon('list-check', 14, 14) ?> <?php echo $etapa->total_atividades; ?> atividade(s)</span>
                                         <?php endif; ?>
                                     </div>
                                 </div>
@@ -324,7 +324,7 @@
                             <span class="etapa-status <?php echo $etapa_class; ?>"><?php echo $status_text; ?></span>
 
                             <div class="etapa-toggle <?php echo $tem_atividades ? '' : 'disabled'; ?>" id="toggle-<?php echo $etapa->id; ?>">
-                                <i class="bx bx-chevron-down"></i>
+                                <?= svg_icon('chevron-down', 14, 14) ?>
                             </div>
                         </div>
 
@@ -343,31 +343,31 @@
                                     switch ($ativ_status) {
                                         case 'concluida':
                                             $ativ_class = 'concluida';
-                                            $ativ_icon = 'bx bx-check';
+                                            $ativ_icon = 'check';
                                             break;
                                         case 'iniciada':
                                             $ativ_class = 'andamento';
-                                            $ativ_icon = 'bx bx-play';
+                                            $ativ_icon = 'play';
                                             break;
                                         case 'pausada':
                                             $ativ_class = 'pausada';
-                                            $ativ_icon = 'bx bx-pause';
+                                            $ativ_icon = 'pause';
                                             break;
                                         default:
                                             $ativ_class = 'pendente';
-                                            $ativ_icon = 'bx bx-time-five';
+                                            $ativ_icon = 'clock';
                                     }
                                 ?>
                                 <div class="atividade-item">
                                     <div class="atividade-status-icon <?php echo $ativ_class; ?>">
-                                        <i class="<?php echo $ativ_icon; ?>"></i>
+                                        <?= svg_icon($ativ_icon, 16, 16) ?>
                                     </div>
                                     <div class="atividade-content">
                                         <div class="atividade-title"><?php echo htmlspecialchars($atividade->titulo ?? 'Atividade #' . $atividade->id); ?></div>
                                         <div class="atividade-meta">
-                                            <span><i class="bx bx-calendar"></i> <?php echo date('d/m/Y', strtotime($atividade->data_atividade)); ?></span>
+                                            <span><?= svg_icon('calendar', 14, 14) ?> <?php echo date('d/m/Y', strtotime($atividade->data_atividade)); ?></span>
                                             <?php if (!empty($atividade->tecnico_nome)): ?>
-                                            <span><i class="bx bx-user"></i> <?php echo htmlspecialchars($atividade->tecnico_nome); ?></span>
+                                            <span><?= svg_icon('user', 14, 14) ?> <?php echo htmlspecialchars($atividade->tecnico_nome); ?></span>
                                             <?php endif; ?>
                                             <span class="atividade-status-text <?php echo $ativ_class; ?>">
                                                 <?php echo ucfirst($ativ_status); ?>
@@ -390,7 +390,7 @@
                 </div>
                 <?php else: ?>
                 <div class="empty-state">
-                    <i class="bx bx-list-check"></i>
+                    <?= svg_icon('list-check', 22, 22) ?>
                     <h4>Nenhuma etapa cadastrada</h4>
                     <p>Clique em "Gerenciar" para adicionar etapas à obra.</p>
                 </div>
@@ -404,11 +404,11 @@
             <div class="card">
                 <div class="card-header">
                     <div class="card-title">
-                        <i class="bx bx-group"></i>
+                        <?= svg_icon('users', 22, 22) ?>
                         Equipe
                     </div>
                     <a href="<?php echo site_url('obras/equipe/' . $obra->id); ?>" class="card-action">
-                        <i class="bx bx-cog"></i> Gerenciar
+                        <?= svg_icon('cog', 14, 14) ?> Gerenciar
                     </a>
                 </div>
 
@@ -417,7 +417,7 @@
                     <?php foreach (array_slice($equipe, 0, 8) as $membro): ?>
                     <div class="equipe-item">
                         <div class="equipe-avatar">
-                            <i class="bx bx-user"></i>
+                            <?= svg_icon('user', 16, 16) ?>
                         </div>
                         <div class="equipe-name"><?php echo htmlspecialchars($membro->nome ?? $membro->tecnico_nome ?? 'Sem nome'); ?></div>
                         <div class="equipe-role"><?php echo htmlspecialchars($membro->funcao ?? 'Técnico'); ?></div>
@@ -426,7 +426,7 @@
                     <?php if (count($equipe) > 8): ?>
                     <div class="equipe-item" style="opacity: 0.6;">
                         <div class="equipe-avatar" style="background: #95a5a6;">
-                            <i class="bx bx-plus"></i>
+                            <?= svg_icon('plus', 16, 16) ?>
                         </div>
                         <div class="equipe-name">+<?php echo count($equipe) - 8; ?></div>
                         <div class="equipe-role">membros</div>
@@ -435,7 +435,7 @@
                 </div>
                 <?php else: ?>
                 <div class="empty-state">
-                    <i class="bx bx-group"></i>
+                    <?= svg_icon('users', 48, 48, 'empty-icon', 'display:block;margin:0 auto 16px;opacity:0.4;') ?>
                     <h4>Sem equipe alocada</h4>
                     <p>Adicione técnicos à equipe da obra.</p>
                 </div>
@@ -446,11 +446,11 @@
             <div class="card">
                 <div class="card-header">
                     <div class="card-title">
-                        <i class="bx bx-check"></i>
+                        <?= svg_icon('check', 22, 22) ?>
                         Atividades Recentes
                     </div>
                     <a href="<?php echo site_url('obras/atividades/' . $obra->id); ?>" class="card-action">
-                        <i class="bx bx-show"></i> Ver Todas
+                        <?= svg_icon('eye', 14, 14) ?> Ver Todas
                     </a>
                 </div>
 
@@ -461,14 +461,14 @@
                     ?>
                     <div class="atividade-recente <?php echo $ativ_class; ?>">
                         <div class="atividade-recente-icon">
-                            <i class="bx bx-list-check"></i>
+                            <?= svg_icon('list-check', 22, 22) ?>
                         </div>
                         <div class="atividade-recente-content">
                             <div class="atividade-recente-title"><?php echo htmlspecialchars($atividade->titulo ?? 'Atividade #' . $atividade->id); ?></div>
                             <div class="atividade-recente-meta">
-                                <i class="bx bx-calendar"></i> <?php echo date('d/m/Y', strtotime($atividade->data_atividade)); ?>
+                                <?= svg_icon('calendar', 14, 14) ?> <?php echo date('d/m/Y', strtotime($atividade->data_atividade)); ?>
                                 <?php if (!empty($atividade->tecnico_nome)): ?>
-                                | <i class="bx bx-user"></i> <?php echo htmlspecialchars($atividade->tecnico_nome); ?>
+                                | <?= svg_icon('user', 14, 14) ?> <?php echo htmlspecialchars($atividade->tecnico_nome); ?>
                                 <?php endif; ?>
                             </div>
                         </div>
@@ -477,7 +477,7 @@
                 </div>
                 <?php else: ?>
                 <div class="empty-state">
-                    <i class="bx bx-check"></i>
+                    <?= svg_icon('check', 48, 48, '', 'opacity:0.4;display:block;margin-bottom:16px;color:#11998e;') ?>
                     <h4>Sem atividades recentes</h4>
                     <p>As atividades aparecerão aqui.</p>
                 </div>
@@ -489,7 +489,7 @@
             <div class="card">
                 <div class="card-header">
                     <div class="card-title">
-                        <i class="bx bx-bar-chart"></i>
+                        <?= svg_icon('bar-chart', 22, 22) ?>
                         Estatísticas
                     </div>
                 </div>
@@ -497,28 +497,28 @@
                     <div class="info-item">
                         <div class="info-label">Total de Atividades</div>
                         <div class="info-value">
-                            <i class="bx bx-list-check" style="color: #667eea;"></i>
+                            <?= svg_icon('list-check', 16, 16, '', 'color: #667eea;') ?>
                             <?php echo $estatisticas_atividades['total_atividades'] ?? 0; ?>
                         </div>
                     </div>
                     <div class="info-item">
                         <div class="info-label">Concluídas</div>
                         <div class="info-value">
-                            <i class="bx bx-check" style="color: #11998e;"></i>
+                            <?= svg_icon('check-circle', 16, 16, '', 'color: #11998e;') ?>
                             <?php echo $estatisticas_atividades['concluidas'] ?? 0; ?>
                         </div>
                     </div>
                     <div class="info-item">
                         <div class="info-label">Em Andamento</div>
                         <div class="info-value">
-                            <i class="bx bx-play" style="color: #f39c12;"></i>
+                            <?= svg_icon('play', 16, 16, '', 'color: #f39c12;') ?>
                             <?php echo $estatisticas_atividades['em_andamento'] ?? 0; ?>
                         </div>
                     </div>
                     <div class="info-item">
                         <div class="info-label">Horas Trabalhadas</div>
                         <div class="info-value">
-                            <i class="bx bx-time-five" style="color: #9b59b6;"></i>
+                            <?= svg_icon('clock', 16, 16, '', 'color: #9b59b6;') ?>
                             <?php echo round(($estatisticas_atividades['tempo_total_minutos'] ?? 0) / 60, 1); ?>h
                         </div>
                     </div>
@@ -563,13 +563,13 @@ $(document).ready(function() {
 <div id="wizardModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="wizardModalLabel" aria-hidden="true" style="width: 800px; max-width: 90%; left: 50%; margin-left: -400px;">
     <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 4px 4px 0 0;">
         <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true" style="color: white; opacity: 0.8;">&times;</button>
-        <h3 id="wizardModalLabel"><i class="bx bx-magic-wand"></i> Nova Etapa + Atividades</h3>
+        <h3 id="wizardModalLabel"><?= svg_icon('magic-wand', 20, 20) ?> Nova Etapa + Atividades</h3>
     </div>
     <form id="wizardForm" action="<?php echo site_url('obras/salvarWizard/' . $obra->id); ?>" method="post">
         <div class="modal-body" style="max-height: 500px; overflow-y: auto;">
             <div class="row">
                 <div class="col-12">
-                    <h4><i class="bx bx-list-check"></i> Informações da Etapa</h4>
+                    <h4><?= svg_icon('list-check', 18, 18) ?> Informações da Etapa</h4>
                     <hr style="margin: 10px 0;">
 
                     <div class="row">
@@ -601,7 +601,7 @@ $(document).ready(function() {
                         </div>
                     </div>
 
-                    <h4 style="margin-top: 25px;"><i class="bx bx-check"></i> Atividades da Etapa</h4>
+                    <h4 style="margin-top: 25px;"><?= svg_icon('check', 18, 18) ?> Atividades da Etapa</h4>
                     <hr style="margin: 10px 0;">
 
                     <div id="atividadesContainer">
@@ -609,14 +609,14 @@ $(document).ready(function() {
                     </div>
 
                     <button type="button" class="btn btn-block" onclick="adicionarAtividade()" style="margin-top: 10px; border: 2px dashed #ddd; background: #f9f9f9; color: #666;">
-                        <i class="bx bx-plus"></i> Adicionar Atividade
+                        <?= svg_icon('plus', 16, 16) ?> Adicionar Atividade
                     </button>
                 </div>
             </div>
         </div>
         <div class="modal-footer">
             <button type="button" class="btn" data-bs-dismiss="modal">Cancelar</button>
-            <button type="submit" class="btn btn-primary"><i class="bx bx-save"></i> Salvar Etapa e Atividades</button>
+            <button type="submit" class="btn btn-primary"><?= svg_icon('save', 16, 16) ?> Salvar Etapa e Atividades</button>
         </div>
     </form>
 </div>
@@ -657,7 +657,7 @@ function adicionarAtividade() {
             </div>
             <div class="col-1">
                 <button type="button" class="btn btn-danger btn-block" onclick="removerAtividade(${index})" title="Remover">
-                    <i class="bx bx-trash"></i>
+                    <?= svg_icon('trash', 16, 16) ?>
                 </button>
             </div>
         </div>

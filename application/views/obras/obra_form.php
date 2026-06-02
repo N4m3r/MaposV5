@@ -7,8 +7,8 @@
     <div class="form-header">
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <div>
-                <h1><i class="bx bx-building"></i> <?php echo isset($result) ? 'Editar' : 'Nova'; ?> Obra</h1>
-                <p><i class="bx bx-arrow-back"></i> <a href="<?php echo site_url('obras'); ?>" style="color: white;">Voltar para lista</a></p>
+                <h1><?= svg_icon('building', 28, 28) ?> <?php echo isset($result) ? 'Editar' : 'Nova'; ?> Obra</h1>
+                <p><?= svg_icon('chevron-left', 16, 16) ?> <a href="<?php echo site_url('obras'); ?>" style="color: white;">Voltar para lista</a></p>
             </div>
             <?php if (isset($result)): ?>
             <div style="text-align: right;">
@@ -24,7 +24,7 @@
             <!-- Dados Básicos -->
             <div class="form-card">
                 <div class="form-card-header">
-                    <div class="form-card-icon"><i class="bx bx-file-alt"></i></div>
+                    <div class="form-card-icon"><?= svg_icon('file-text', 22, 22) ?></div>
                     <div class="form-card-title">Dados Básicos</div>
                 </div>
 
@@ -59,7 +59,7 @@
                         <input type="hidden" name="cliente_id" value="<?php echo $result->cliente_id; ?>">
                         <?php endif; ?>
                         <div id="cliente_info" style="margin-top: 10px; font-size: 13px; color: #667eea; display: none;">
-                            <i class="bx bx-info-circle"></i> <span id="cliente_doc"></span>
+                            <?= svg_icon('info-circle', 14, 14) ?> <span id="cliente_doc"></span>
                         </div>
                     </div>
 
@@ -88,7 +88,7 @@
             <!-- Localização -->
             <div class="form-card">
                 <div class="form-card-header">
-                    <div class="form-card-icon" style="background: linear-gradient(135deg, #11998e, #38ef7d);"><i class="bx bx-map"></i></div>
+                    <div class="form-card-icon" style="background: linear-gradient(135deg, #11998e, #38ef7d);"><?= svg_icon('map', 22, 22) ?></div>
                     <div class="form-card-title">Localização</div>
                 </div>
 
@@ -135,7 +135,7 @@
             <!-- Gestão -->
             <div class="form-card">
                 <div class="form-card-header">
-                    <div class="form-card-icon" style="background: linear-gradient(135deg, #f093fb, #f5576c);"><i class="bx bx-user"></i></div>
+                    <div class="form-card-icon" style="background: linear-gradient(135deg, #f093fb, #f5576c);"><?= svg_icon('user', 22, 22) ?></div>
                     <div class="form-card-title">Gestão</div>
                 </div>
 
@@ -222,7 +222,7 @@
                             <?php endforeach; ?>
                         </select>
                         <small style="display: block; margin-top: 5px; color: #888; font-size: 12px;">
-                            <i class="bx bx-info-circle"></i> Status atual no banco: <strong><?php echo htmlspecialchars($result->status); ?></strong>
+                            <?= svg_icon('info-circle', 14, 14) ?> Status atual no banco: <strong><?php echo htmlspecialchars($result->status); ?></strong>
                             <span style="color: #667eea;">(mapeado para: <?php echo $status_selecionado; ?>)</span>
                         </small>
                     </div>
@@ -233,7 +233,7 @@
                             <input type="checkbox" id="visivel_cliente" name="visivel_cliente" value="1"
                                 <?php echo (isset($result) && $result->visivel_cliente) ? 'checked' : ''; ?>
                             >
-                            <label for="visivel_cliente"><i class="bx bx-show"></i> Permitir cliente acompanhar progresso</label>
+                            <label for="visivel_cliente"><?= svg_icon('eye', 16, 16) ?> Permitir cliente acompanhar progresso</label>
                         </div>
                     </div>
                     <?php endif; ?>
@@ -243,7 +243,7 @@
             <!-- Observações -->
             <div class="form-card">
                 <div class="form-card-header">
-                    <div class="form-card-icon" style="background: linear-gradient(135deg, #fa709a, #fee140);"><i class="bx bx-comment"></i></div>
+                    <div class="form-card-icon" style="background: linear-gradient(135deg, #fa709a, #fee140);"><?= svg_icon('comment', 22, 22) ?></div>
                     <div class="form-card-title">Observações</div>
                 </div>
 
@@ -256,11 +256,11 @@
             <div class="form-card" style="background: transparent; box-shadow: none; border: none;">
                 <div style="display: flex; justify-content: center; gap: 15px; padding: 20px 0;">
                     <button type="submit" class="form-btn form-btn-primary">
-                        <i class="bx bx-save"></i> Salvar Obra
+                        <?= svg_icon('save', 16, 16) ?> Salvar Obra
                     </button>
 
                     <a href="<?php echo site_url('obras'); ?>" class="form-btn form-btn-secondary" style="text-decoration: none;">
-                        <i class="bx bx-x"></i> Cancelar
+                        <?= svg_icon('x', 16, 16) ?> Cancelar
                     </a>
                 </div>
             </div>
