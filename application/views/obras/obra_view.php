@@ -45,6 +45,10 @@ if (isset($statusObraMap[$status_atual_norm])) {
 }
 $status_class = 'status-dinamico';
 
+// Normalizar status para comparações
+$status_norm = strtolower(preg_replace('/[^a-z]/', '', $obra->status ?? ''));
+$obra_concluida = in_array($status_norm, ['concluida', 'finalizada']);
+
 // Usar variáveis calculadas pelo controller (cálculo automático)
 $dias_restantes = $dias_restantes ?? null;
 $dias_corridos = $dias_corridos ?? null;
@@ -92,7 +96,7 @@ $progresso = $obra->percentual_concluido ?? 0;
                     <div class="progress-bar-container">
                         <div class="progress-bar-fill" style="width: <?php echo $progresso; ?>%"></div>
                     </div>
-                    <?php if ($percentual_tempo !== null && $obra->status != 'Concluida' && $obra->status != 'concluida'): ?>
+                    <?php if ($percentual_tempo !== null && !$obra_concluida): ?>
                     <div style="margin-top:6px;font-size:11px;color:var(--cinza0,#9aa6b3);">
                         Tempo: <?php echo $percentual_tempo; ?>%
                         <?php if ($progresso > 0 && $percentual_tempo > 0): ?>
@@ -165,7 +169,7 @@ $progresso = $obra->percentual_concluido ?? 0;
                         <div class="prazo-item prazo-dias <?php echo $prazo_class; ?>">
                             <div class="prazo-label">
                                 <?php
-                                if ($obra->status == 'Concluida' || $obra->status == 'concluida') {
+                                if ($obra_concluida) {
                                     echo 'Obra Concluída';
                                 } elseif ($dias_restantes !== null && $dias_restantes < 0) {
                                     echo 'Dias de Atraso';
@@ -176,7 +180,7 @@ $progresso = $obra->percentual_concluido ?? 0;
                             </div>
                             <div class="prazo-value">
                                 <?php
-                                if ($obra->status == 'Concluida' || $obra->status == 'concluida') {
+                                if ($obra_concluida) {
                                     echo svg_icon('check', 16, 16) . ' Finalizada';
                                 } elseif ($dias_restantes !== null && $dias_restantes < 0) {
                                     echo abs($dias_restantes) . ' dias';
