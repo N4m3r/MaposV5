@@ -8,10 +8,10 @@
         <div class="equipe-header-content">
             <div class="equipe-title-section">
                 <div class="equipe-subtitle">
-                    <a href="<?php echo site_url('obras'); ?>"><i class="bx bx-arrow-back"></i> Obras</a> &raquo;
+                    <a href="<?php echo site_url('obras'); ?>"><?= svg_icon('chevron-left', 14, 14) ?> Obras</a> &raquo;
                     <a href="<?php echo site_url('obras/visualizar/' . $obra->id); ?>"><?php echo $obra->nome; ?></a>
                 </div>
-                <h1><i class="bx bx-group"></i> Gerenciar Equipe</h1>
+                <h1><?= svg_icon('users', 24, 24) ?> Gerenciar Equipe</h1>
             </div>
             <div class="equipe-stats-header">
                 <div class="equipe-stat-header">
@@ -28,7 +28,7 @@
 
     <!-- Filter Bar -->
     <div class="filter-bar-equipe">
-        <i class="bx bx-search" style="font-size: 22px; color: #11998e;"></i>
+        <?= svg_icon('search', 22, 22, '', 'color:#11998e;') ?>
         <input type="text" id="searchEquipe" placeholder="Buscar técnico por nome..." onkeyup="filtrarEquipe()">
 
         <select id="filterFuncao" onchange="filtrarEquipe()">
@@ -48,7 +48,7 @@
 
         <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
         <button class="btn-add-equipe" data-bs-toggle="modal" data-bs-target="#modalAdicionar">
-            <i class="bx bx-plus"></i> Adicionar Técnico
+            <?= svg_icon('plus', 16, 16) ?> Adicionar Técnico
         </button>
         <?php endif; ?>
     </div>
@@ -61,7 +61,7 @@
                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
                 <div class="add-team-card" data-bs-toggle="modal" data-bs-target="#modalAdicionar">
                     <div class="add-team-icon">
-                        <i class="bx bx-plus"></i>
+                        <?= svg_icon('plus', 16, 16) ?>
                     </div>
                     <div class="add-team-text">Adicionar Técnico</div>
                     <div class="add-team-subtext">Clique para alocar novo membro à equipe</div>
@@ -84,18 +84,18 @@
 
                     <div class="team-details">
                         <div class="team-detail-row">
-                            <span class="team-detail-label"><i class="bx bx-calendar"></i> Data de Entrada</span>
+                            <span class="team-detail-label"><?= svg_icon('calendar', 14, 14) ?> Data de Entrada</span>
                             <span class="team-detail-value"><?php echo date('d/m/Y', strtotime($membro->data_entrada)); ?></span>
                         </div>
                         <div class="team-detail-row">
-                            <span class="team-detail-label"><i class="bx bx-refresh"></i> Status na Equipe</span>
+                            <span class="team-detail-label"><?= svg_icon('refresh', 14, 14) ?> Status na Equipe</span>
                             <span class="team-detail-value" style="color: <?php echo $membro->ativo ? '#2e7d32' : '#666'; ?>;">
                                 <?php echo $membro->ativo ? 'Ativo' : 'Inativo'; ?>
                             </span>
                         </div>
                         <?php if ($membro->nivel_tecnico): ?>
                         <div class="team-detail-row">
-                            <span class="team-detail-label"><i class="bx bx-star"></i> Nível Técnico</span>
+                            <span class="team-detail-label"><?= svg_icon('star', 14, 14) ?> Nível Técnico</span>
                             <span class="team-detail-value"><?php echo $membro->nivel_tecnico; ?></span>
                         </div>
                         <?php endif; ?>
@@ -104,7 +104,7 @@
                     <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
                     <div class="team-actions">
                         <a href="<?php echo site_url('obras/removerTecnico/' . $membro->id); ?>" class="team-btn team-btn-danger" onclick="return confirm('Tem certeza que deseja remover este técnico da equipe?')">
-                            <i class="bx bx-x"></i> Remover da Equipe
+                            <?= svg_icon('x', 14, 14) ?> Remover da Equipe
                         </a>
                     </div>
                     <?php endif; ?>
@@ -113,12 +113,12 @@
             </div>
         <?php else: ?>
             <div class="empty-state-equipe">
-                <i class="bx bx-group"></i>
+                <?= svg_icon('users', 48, 48, '', 'display:block;margin:0 auto 16px;opacity:0.4;') ?>
                 <h3>Nenhum técnico alocado</h3>
                 <p>Adicione técnicos à equipe desta obra para começar a registrar atividades.</p>
                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eObras')): ?>
                 <button class="btn-add-equipe" data-bs-toggle="modal" data-bs-target="#modalAdicionar">
-                    <i class="bx bx-plus"></i> Adicionar Primeiro Técnico
+                    <?= svg_icon('plus', 16, 16) ?> Adicionar Primeiro Técnico
                 </button>
                 <?php endif; ?>
             </div>
@@ -131,7 +131,7 @@
     <div class="modal-header">
         <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">&times;</button>
         <h3 id="modalAdicionarLabel">
-            <i class="bx bx-plus-circle"></i> Adicionar Técnico à Equipe
+            <?= svg_icon('plus-circle', 16, 16) ?> Adicionar Técnico à Equipe
         </h3>
     </div>
 
@@ -142,7 +142,7 @@
             <!-- Seleção de Técnico -->
             <div class="form-group-equipe">
                 <label class="form-label-equipe" for="tecnico_id">
-                    <i class="bx bx-user"></i> Selecione o Técnico <span class="required">*</span>
+                    <?= svg_icon('user', 16, 16) ?> Selecione o Técnico <span class="required">*</span>
                 </label>
                 <select name="tecnico_id" id="tecnico_id" class="form-select-equipe" required>
                     <option value="" disabled selected>-- Escolha um técnico --</option>
@@ -160,7 +160,7 @@
                             <?php if (!$ja_na_equipe): ?>
                             <option value="<?php echo $t->idUsuarios; ?>">
                                 <?php echo $t->nome; ?>
-                                <?php if ($t->nivel_tecnico): ?> - <?php echo $t->nivel_tecnico; ?><?php endif; ?>
+                                <?php if (isset($t->nivel_tecnico) && $t->nivel_tecnico): ?> - <?php echo $t->nivel_tecnico; ?><?php endif; ?>
                             </option>
                             <?php endif; ?>
                         <?php endforeach; ?>
@@ -171,7 +171,7 @@
             <!-- Seleção de Função -->
             <div class="form-group-equipe">
                 <label class="form-label-equipe" for="funcao">
-                    <i class="bx bx-briefcase"></i> Função na Obra <span class="required">*</span>
+                    <?= svg_icon('briefcase', 16, 16) ?> Função na Obra <span class="required">*</span>
                 </label>
                 <select name="funcao" id="funcao" class="form-select-equipe" required>
                     <option value="" disabled selected>-- Selecione a função --</option>
@@ -183,7 +183,7 @@
 
             <!-- Alerta Informativo -->
             <div class="alert-equipe">
-                <i class="bx bx-info-circle"></i>
+                <?= svg_icon('info-circle', 16, 16) ?>
                 <div class="alert-equipe-content">
                     <div class="alert-equipe-title">Importante</div>
                     <div class="alert-equipe-text">
@@ -195,10 +195,10 @@
 
         <div class="modal-footer">
             <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">
-                <i class="bx bx-x"></i> Cancelar
+                <?= svg_icon('x', 16, 16) ?> Cancelar
             </button>
             <button type="submit" class="btn-modal-submit">
-                <i class="bx bx-plus text-white"></i> Adicionar à Equipe
+                <?= svg_icon('plus', 16, 16, 'text-white') ?> Adicionar à Equipe
             </button>
         </div>
     </form>
